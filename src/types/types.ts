@@ -1,5 +1,22 @@
 import { ExistingAsset } from "./type_tokens"
 
+export type SortedState = "asc" | "desc" | "none"
+
+export type ListSort = {
+  key: string
+  direction: SortedState
+}
+
+export type ListState = {
+  sort?: ListSort
+  search?: string
+}
+
+export type ListHeaderData = {
+  label?: string
+  key: string
+}
+
 export type ListRowData = {
   token: ExistingAsset
   name: string
@@ -15,3 +32,5 @@ export type ListRowData = {
     raw?: number // Raw numerical value for calculations
   }[]
 }
+
+export type IndicatorData = { title: string; value: string | number }

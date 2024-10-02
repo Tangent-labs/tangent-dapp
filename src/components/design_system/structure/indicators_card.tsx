@@ -1,5 +1,8 @@
 "use client"
 
+import { IndicatorData } from "@/types"
+import Panel from "./panel"
+
 interface IndicatorCardProps {
   title: string
   value: string | number
@@ -8,25 +11,25 @@ interface IndicatorCardProps {
 
 const IndicatorCard = ({ title, value, className = "" }: IndicatorCardProps) => {
   return (
-    <div className={`flex flex-col items-center justify-center p-4 rounded-md bg-gray-800 text-white shadow-md ${className}`}>
-      <span className="text-sm text-gray-400">{title}</span>
-      <span className="text-xl font-bold">{value}</span>
+    <div className={`flex flex-col items-center justify-center  ${className}`}>
+      <span className="text-[14px] ">{title}</span>
+      <span className="text-[12px] text-gray-400">{value}</span>
     </div>
   )
 }
 
 interface IndicatorCardsProps {
-  indicators: { title: string; value: string | number }[]
+  indicators: IndicatorData[]
   className?: string
 }
 
 const IndicatorCards = ({ indicators, className = "" }: IndicatorCardsProps) => {
   return (
-    <div className={`flex space-x-4 ${className}`}>
+    <Panel className={`inline-flex gap-10 w-auto  ${className}`}>
       {indicators.map((indicator, index) => (
         <IndicatorCard key={index} title={indicator.title} value={indicator.value} />
       ))}
-    </div>
+    </Panel>
   )
 }
 

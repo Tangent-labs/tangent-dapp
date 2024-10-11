@@ -1,3 +1,5 @@
+import { formatUnits } from "viem"
+
 /**
  * Formats a number or string into a dollar amount with specified decimal places.
  *
@@ -38,30 +40,12 @@ export function toBigInt(num: number, decimals: number): bigint {
  * @returns A string representing the formatted value with thousands separators and limited decimal places.
  */
 export function formatBigInt(value: bigint | string | undefined, decimals: number, displayDecimals: number): string {
-  // Convert the input value (a string) into a BigInt for precise calculations.
-
   if (value === undefined || value === null) return ""
-
   const bigIntValue: bigint = typeof value === "string" ? BigInt(value) : value
-
-  // Calculate the divisor, which is 10^decimals, to scale the value down to its proper decimal representation.
-  const divisor = BigInt(10 ** decimals)
-
-  // Divide the bigIntValue by the divisor to get the integer part.
-  const integerPart = bigIntValue / divisor
-
-  // Calculate the fractional part using the modulus operator (%) to get the remainder of the division.
-  const fractionalPart = bigIntValue % divisor
-
-  // Convert the fractional part to a string, pad it with leading zeros if necessary, and limit it to displayDecimals digits.
-  const fractionalPartString = fractionalPart
-    .toString()
-    .padStart(decimals, "0") // Ensures leading zeros if the fractional part is smaller than expected
-    .slice(0, displayDecimals) // Limits the number of decimals to displayDecimals
-
-  // Format the integer part using the "en-US" locale, which adds thousands separators for readability (e.g., 1,000,000).
-  const formattedIntegerPart = new Intl.NumberFormat("en-US").format(Number(integerPart))
-
-  // Combine the formatted integer part and the fractional part into the final formatted output and return it.
-  return `${formattedIntegerPart}.${fractionalPartString}`
+  const reduceNumber = parseFloat(formatUnits(bigIntValue, decimals))
+  if (!isNaN(reduceNumber)) {
+    const num = parseFloat(reduceNumber.toFixed(displayDecimals))
+    return new Intl.NumberFormat("en-US").format(num)
+  }
+  return ""
 }

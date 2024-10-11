@@ -1,4 +1,4 @@
-import ExamplePanelDisposition from "@/components/examples/example_panel_disposition"
+import ExamplePanelDisposition from "@/components/pages/examples/list/example_panel_disposition"
 
 const ExmapleLayoutPage = async () => {
   return <ExamplePanelDisposition />

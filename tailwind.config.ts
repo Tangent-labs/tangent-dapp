@@ -10,11 +10,11 @@ const config: Config = {
         serif: "Roobert, serif",
       },
       backgroundImage: {
-        "list-row-hover":
-          " linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)),linear-gradient(90deg, #FFB800 0%, rgba(0, 0, 0, 0) 60%)",
+        "button-active": "var(--tgt-bg-button-active)",
+        "list-row-hover": "var(--tgt-list-row-hover)",
       },
       colors: {
-        "row-tonic": "#FFB800",
+        "row-tonic": "var(--tgt-row-tonic)",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

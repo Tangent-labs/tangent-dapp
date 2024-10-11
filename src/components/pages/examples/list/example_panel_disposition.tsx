@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
 
-import Panel from "../design_system/structure/panel"
-import ExampleTitle from "./example_title"
+import Panel from "../../../design_system/structure/panel"
+import ExampleTitle from "../example_title"
 
 const Filler = ({ height }: { height: number }) => {
   return (

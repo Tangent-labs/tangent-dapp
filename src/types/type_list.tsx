@@ -1,4 +1,4 @@
-import { ExistingAsset } from "./type_tokens"
+import { ExistingAsset } from "."
 
 export type SortedState = "asc" | "desc" | "none"
 
@@ -28,9 +28,7 @@ export type ListRowData = {
   indicators: {
     key: string
     label: string
-    value: string // Display value, e.g., "2.5x veCRV"
+    value: string
     raw?: number // Raw numerical value for calculations
   }[]
 }
-
-export type IndicatorData = { title: string; value: string | number }

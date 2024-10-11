@@ -25,7 +25,7 @@ export default function Menu({ className, links }: MenuProps) {
             data-active={pathname === l.href ? "true" : "false"}
             className=" transition-all duration-700 data-[active=true]:text-row-tonic hover:text-row-tonic"
           >
-            <Link className="text-[14px]" href={l.href}>
+            <Link className="text-sm" href={l.href}>
               {l.label}
             </Link>
           </li>

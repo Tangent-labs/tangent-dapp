@@ -1,9 +1,9 @@
-import texts from "@/app/dictionnaries/en.json";
-import { getDatasets } from "@/services/gouv";
+import texts from "@/app/dictionnaries/en.json"
+import { getDatasets } from "@/services/service_gouv"
 
-export const dynamic = "force-static";
+export const dynamic = "force-static"
 
-const datasets = await getDatasets();
+const datasets = await getDatasets()
 
 export default function Home() {
   return (
@@ -20,5 +20,5 @@ export default function Home() {
         ))}
       </ul>
     </main>
-  );
+  )
 }

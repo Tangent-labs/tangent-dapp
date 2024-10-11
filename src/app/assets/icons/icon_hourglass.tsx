@@ -3,7 +3,7 @@ interface IconProps {
   className?: string
 }
 
-export  function IconHourGlass({ className = "" }: IconProps) {
+export function IconHourGlass({ className = "" }: IconProps) {
   return (
     <svg className={className || ""} width="20" height="29" viewBox="0 0 20 29" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path

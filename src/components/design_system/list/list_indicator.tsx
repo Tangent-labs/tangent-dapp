@@ -11,7 +11,7 @@ const HighLightDisplay = ({ val }: { val?: string }) => {
 }
 
 const QuietDisplay = ({ val }: { val?: string }) => {
-  return <span className="text-[12px] text-gray-400"> {val}</span>
+  return <span className="text-xs text-gray-400"> {val}</span>
 }
 
 const ListIndicator = ({ info, value, valueFirst = false }: ListIndicatorProps) => {

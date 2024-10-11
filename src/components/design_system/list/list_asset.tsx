@@ -19,7 +19,7 @@ const ListAsset = ({ name, token, assetsEarned, className = "" }: ListAssetProps
         {assetsEarned && (
           <>
             <div className="flex gap-2">
-              <span className="text-[12px] ">Earn :</span>
+              <span className="text-xs ">Earn :</span>
               {assetsEarned.map((earn) => (
                 <div key={earn.token} className="flex items-center">
                   <TokenImage token={earn.token} size={20} />

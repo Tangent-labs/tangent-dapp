@@ -12,8 +12,8 @@ interface IndicatorCardProps {
 const IndicatorCard = ({ title, value, className = "" }: IndicatorCardProps) => {
   return (
     <div className={`flex flex-col items-center justify-center  ${className}`}>
-      <span className="text-[14px] ">{title}</span>
-      <span className="text-[12px] text-gray-400">{value}</span>
+      <span className="text-sm ">{title}</span>
+      <span className="text-xs text-gray-400">{value}</span>
     </div>
   )
 }

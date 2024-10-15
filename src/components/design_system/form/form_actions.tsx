@@ -3,6 +3,8 @@
 import { FormState, FormAction } from "@/types"
 import { Button } from "@/components/design_system/inputs/button"
 import { useMemo } from "react"
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "@radix-ui/react-hover-card"
+import Panel from "../structure/panel"
 
 type FormButtonsProps = {
   formState: FormState
@@ -21,17 +23,31 @@ export default function FormButtons({ formState, labelApprove = "Approve", label
   }, [formState])
 
   return (
-    <div className="flex items-center justify-between gap-2 w-full mt-[22px]">
-      <Button label={labelApprove} onClick={actions.handleApprove} state={approveState} className="flex-1 justify-center min-h-10" />
-      <div>
-        <svg width="11" height="12" viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M10.5303 6.53033C10.8232 6.23744 10.8232 5.76256 10.5303 5.46967L5.75736 0.6967C5.46447 0.403806 4.98959 0.403806 4.6967 0.6967C4.40381 0.989593 4.40381 1.46447 4.6967 1.75736L8.93934 6L4.6967 10.2426C4.40381 10.5355 4.40381 11.0104 4.6967 11.3033C4.98959 11.5962 5.46447 11.5962 5.75736 11.3033L10.5303 6.53033ZM-5.52269e-08 6.75L10 6.75L10 5.25L5.52269e-08 5.25L-5.52269e-08 6.75Z"
-            fill="white"
-          />
-        </svg>
-      </div>
-      <Button label={labelProcess} onClick={actions.handleProcess} state={processState} className="flex-1 justify-center min-h-10" />
-    </div>
+    <>
+      <HoverCard openDelay={300}>
+        <HoverCardTrigger className="w-full">
+          <div className="flex  items-center justify-between gap-2 w-full mt-[22px]">
+            <Button label={labelApprove} onClick={actions.handleApprove} state={approveState} className="flex-1 justify-center min-h-10" />
+            <div>
+              <svg width="11" height="12" viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M10.5303 6.53033C10.8232 6.23744 10.8232 5.76256 10.5303 5.46967L5.75736 0.6967C5.46447 0.403806 4.98959 0.403806 4.6967 0.6967C4.40381 0.989593 4.40381 1.46447 4.6967 1.75736L8.93934 6L4.6967 10.2426C4.40381 10.5355 4.40381 11.0104 4.6967 11.3033C4.98959 11.5962 5.46447 11.5962 5.75736 11.3033L10.5303 6.53033ZM-5.52269e-08 6.75L10 6.75L10 5.25L5.52269e-08 5.25L-5.52269e-08 6.75Z"
+                  fill="white"
+                />
+              </svg>
+            </div>
+            <Button label={labelProcess} onClick={actions.handleProcess} state={processState} className="flex-1 justify-center min-h-10" />
+          </div>
+        </HoverCardTrigger>
+
+        <HoverCardContent align="start" sideOffset={2} sticky="partial">
+          {formState?.cantProcessReasons?.length > 0 && (
+            <Panel className="w-full border-red-500 text-red-500 bg-opacity-20">
+              <ul className="text-xs list-disc px-2">{formState?.cantProcessReasons.map((r, i) => <li key={i}>{r}</li>)}</ul>
+            </Panel>
+          )}
+        </HoverCardContent>
+      </HoverCard>
+    </>
   )
 }

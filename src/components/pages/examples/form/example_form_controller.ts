@@ -128,7 +128,6 @@ export async function doDeposit(contract: Address, assetType: ExampleFormAssetTy
 
 export function getFormState(currentAsset: ExampleFormAssetData & (AssetUserData | undefined), formValues: ExampleFormValues, isWellConnected: boolean) {
   let isApproved = false
-  let canProcess = false
   const reasons: string[] = []
 
   // check the wallet
@@ -138,19 +137,14 @@ export function getFormState(currentAsset: ExampleFormAssetData & (AssetUserData
     if (currentAsset) {
       // check the allowance (no allowance or check numbers)
       isApproved = !currentAsset?.approveContract || (!!currentAsset?.allowance && formValues.value <= currentAsset.allowance)
-      canProcess = isApproved
-      if (canProcess) {
-        if (formValues.value === 0n) {
-          //Check the amount > 0
-          reasons.push("No amount.")
-        } else if (canProcess && formValues.value > currentAsset.balance!) {
-          // check the balance
-          reasons.push("Not enough balance.")
-        }
+      if (formValues.value === 0n) {
+        reasons.push("No amount.")
+      } else if (formValues.value > currentAsset.balance!) {
+        reasons.push("Not enough balance.")
       }
     } else {
       reasons.push("No selected asset.")
     }
   }
-  return { canProcess: canProcess && reasons.length === 0, cantProcessReasons: reasons, haveToApprove: !isApproved }
+  return { canProcess: isApproved && reasons.length === 0, cantProcessReasons: reasons, haveToApprove: !isApproved }
 }

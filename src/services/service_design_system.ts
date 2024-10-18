@@ -74,6 +74,6 @@ const listData: ListRowData[] = [
 
 export const getGrid1Data = async () => {
   return new Promise<{ headers: ListHeaderData[]; rows: ListRowData[] }>((resolve) => {
-    resolve({ headers, rows: listData })
+    setTimeout(() => resolve({ headers, rows: listData }), 0)
   })
 }

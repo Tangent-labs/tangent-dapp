@@ -8,7 +8,7 @@ type ButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
 }
 
 export function Button({ label, state = "active", ...props }: ButtonProps) {
-  let stateCss = state === "disabled" ? "text-black bg-button-active opacity-50" : ""
+  let stateCss = state === "disabled" ? "text-black bg-button-active grayscale-[100%]" : ""
   stateCss += state === "active" ? "bg-button-active text-black" : ""
   stateCss += state === "inactive" ? " cursor-not-allowed" : ""
 
@@ -18,7 +18,7 @@ export function Button({ label, state = "active", ...props }: ButtonProps) {
       disabled={state === "disabled"}
       className={cn(
         props?.className || "",
-        "disabled:cursor-not-allowed flex items-center border hover:bg-white hover:bg-opacity-[3%] border-white border-opacity-50 rounded-[10px]",
+        "disabled:cursor-not-allowed flex items-center border hover:bg-white hover:bg-opacity-[3%] border-white border-opacity-50 rounded-[10px] transition-all duration-300",
         stateCss
       )}
     >

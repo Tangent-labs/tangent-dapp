@@ -1,6 +1,6 @@
 "use client"
-import { IconCircleHelp } from "@/app/assets/icons/icon_circle_help"
-import { IconHourGlass } from "@/app/assets/icons/icon_hourglass"
+import { IconCircleHelp } from "@/components/icons/icon_circle_help"
+import { IconHourGlass } from "@/components/icons/icon_hourglass"
 import { Popover, PopoverTrigger, PopoverContent } from "../../ui/popover"
 import Panel from "../structure/panel"
 
@@ -17,7 +17,7 @@ export default function ListHarvestIndicator({ isHarvested, helpMessage, classNa
       <Popover>
         <PopoverTrigger asChild>
           <button aria-label="Help" type="button">
-            <IconCircleHelp className="w-[20px] h-auto" />
+            <IconCircleHelp className="w-[20px] h-auto text-row-tonic" />
             <span className="sr-only"> Info on harvest </span>
           </button>
         </PopoverTrigger>

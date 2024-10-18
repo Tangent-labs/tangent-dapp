@@ -6,11 +6,13 @@ import Panel from "../structure/panel"
 interface ListRowProps {
   children: React.ReactNode[]
   className?: string
+  navigate?: () => void
 }
 
-const ListRow = ({ children, className = "" }: ListRowProps) => {
+const ListRow = ({ children, navigate, className = "" }: ListRowProps) => {
   return (
     <Panel
+      onClick={() => navigate && navigate()}
       className={` hover:cursor-pointer p-5 border  mb-2  before:absolute before:inset-0 before:opacity-70 before:-z-10
          before:rounded-[10px] hover:before:bg-list-row-hover    ${className}`}
     >

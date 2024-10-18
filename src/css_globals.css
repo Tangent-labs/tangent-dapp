@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "./css_animations.css";
+
+@font-face {
+  font-family: "Roobert";
+  src: url("/fonts/RoobertTRIALVF.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+@layer base {
+  /* Variables add by ShadCn  */
+  :root {
+    --tgt-row-tonic:  #0075FF ;
+    --tgt-bg-button-active :linear-gradient(135deg, #0075FF 0%, #00C2FF 100%);
+    --tgt-list-row-hover:  linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)),   linear-gradient(90deg, #0075FF 0%, rgba(0, 0, 0, 0) 50%);
+    --tgt-panel-title-gradient: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)),    linear-gradient(90deg, #0075FF 0%, rgba(0, 0, 0, 0) 50%);
+
+    --background: #000;
+    --foreground: #fff;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: none;
+    --popover-foreground: none;
+    --primary: 210 20% 98%;
+    --primary-foreground: 220.9 39.3% 11%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: none;
+    --input: 215 27.9% 16.9%;
+    --ring: 216 12.2% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --radius: 0.5rem;
+  }
+
+  body {
+    color: var(--foreground);
+    background: var(--background);
+    font-family: var(--font-sans), sans-serif;
+  }
+
+
+}

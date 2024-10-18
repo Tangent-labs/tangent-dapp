@@ -2,7 +2,7 @@
 
 import { ListHeaderData, ListSort, SortedState } from "@/types"
 import ListRowDisposition from "./list_row_disposition"
-import { IconSortHeader } from "@/app/assets/icons/icon_sort_header"
+import { IconSortHeader } from "@/components/icons/icon_sort_header"
 
 interface ListHeaderProps {
   headers: ListHeaderData[]

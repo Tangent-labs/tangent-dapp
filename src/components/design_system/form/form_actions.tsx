@@ -4,7 +4,7 @@ import { FormState, FormAction } from "@/types"
 import { Button } from "@/components/design_system/inputs/button"
 import { useMemo } from "react"
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@radix-ui/react-hover-card"
-import Panel from "../structure/panel"
+import Panel from "@/components/design_system/structure/panel"
 
 type FormButtonsProps = {
   formState: FormState

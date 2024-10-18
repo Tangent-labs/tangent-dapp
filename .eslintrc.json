@@ -3,6 +3,7 @@
   "rules": {
     "no-console": ["error", { "allow": ["error", "info"] }],
     "no-multiple-empty-lines": ["error", { "max": 1, "maxBOF": 0, "maxEOF": 0 }],
-    "react-hooks/exhaustive-deps": "off"
+    "react-hooks/exhaustive-deps": "off",
+    "react/jsx-no-duplicate-props": "warn"
   }
 }

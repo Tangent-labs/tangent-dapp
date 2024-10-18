@@ -12,6 +12,7 @@ const config: Config = {
       backgroundImage: {
         "button-active": "var(--tgt-bg-button-active)",
         "list-row-hover": "var(--tgt-list-row-hover)",
+        "panel-title-gradient": "var(--tgt-panel-title-gradient)",
       },
       colors: {
         "row-tonic": "var(--tgt-row-tonic)",

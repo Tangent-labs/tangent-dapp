@@ -37,11 +37,6 @@ const NavigationContext = createContext<NavigationContextValues | undefined>(und
 
 // Create a provider component
 export const NavigationProvider = ({ children, _currentProduct, _currentFeature, _currentItem }: NavigationProviderProps) => {
-  /**
-   *  claim & List are globalk feature do not  required a item to be selected
-   *
-   */
-
   const [currentProduct, setCurrentProduct] = useState<ProductKey>(_currentProduct)
   const [currentFeature, setCurrentFeature] = useState<string>(_currentFeature)
   const [currentItem, setcurrentItem] = useState<string | undefined>(_currentItem)

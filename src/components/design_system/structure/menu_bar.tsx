@@ -9,16 +9,16 @@ export type MenuBarLink = {
   disabled?: boolean
 }
 
-interface MenuBarProps {
+interface MenuBarProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string
   links: MenuBarLink[]
 }
 
-export default function MenuBar({ className, links }: MenuBarProps) {
+export default function MenuBar({ className, links, ...props }: MenuBarProps) {
   const pathname = usePathname()
 
   return (
-    <Panel className={` inline-block ${className || ""}`}>
+    <Panel className={` inline-block ${className || ""}`} {...props}>
       <ul className="flex justify-center gap-10  ">
         {links?.map((l) => (
           <li

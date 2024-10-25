@@ -32,14 +32,26 @@
 }
 
 @layer base {
-  /* Variables add by ShadCn  */
+  /* Variables tangent   */
   :root {
     --tgt-row-tonic: #0075ff;
     --tgt-bg-button-active: linear-gradient(135deg, #0075ff 0%, #00c2ff 100%);
     --tgt-list-row-hover: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), linear-gradient(90deg, #0075ff 0%, rgba(0, 0, 0, 0) 50%);
     --tgt-panel-title-gradient: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)),
       linear-gradient(90deg, #0075ff 0%, rgba(0, 0, 0, 0) 50%);
+  }
+  /* Variables @web3-onboard   */
+  :root {
+    --w3o-background-color: #1a1d26;
+    --w3o-foreground-color: #242835;
+    --w3o-text-color: #eff1fc;
+    --w3o-border-color: #33394b;
+    --w3o-action-color: #929bed;
+    --w3o-border-radius: 16px;
+  }
 
+  /* Variables add by ShadCn  */
+  :root {
     --background: #000;
     --foreground: #fff;
     --card: 224 71.4% 4.1%;

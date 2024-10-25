@@ -10,9 +10,9 @@ const ListRowSkeleton = () => {
          before:rounded-[10px] hover:before:bg-list-row-hover `}
     >
       <ListRowDisposition>
-        <div className="relative rounded-lg max-xl:hidden !w-full h-10 an-skeleton" />
-        <div className="relative rounded-lg max-xl:hidden !w-full h-10 an-skeleton" />
-        <div className="relative rounded-lg  !w-full h-10 an-skeleton" />
+        <div className="relative rounded-lg max-xl:hidden !w-10 h-5 an-skeleton" />
+        <div className="relative rounded-lg max-xl:hidden !w-10 h-5 an-skeleton" />
+        <div className="relative rounded-lg  !w-10 h-5 an-skeleton" />
       </ListRowDisposition>
     </Panel>
   )

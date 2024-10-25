@@ -13,7 +13,7 @@ export default function MockUpList() {
   const { navigate, currentProduct } = useNavigationContext()
 
   return (
-    <>
+    <div>
       {/* Render the list header */}
       <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       {/* Render the rows of data */}
@@ -28,6 +28,6 @@ export default function MockUpList() {
           </>
         </ListRow>
       ))}
-    </>
+    </div>
   )
 }

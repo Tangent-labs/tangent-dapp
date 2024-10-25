@@ -5,6 +5,25 @@ export const productBoosterData: ProductData = {
   url: "sdtokens-booster",
   header: <ProductBoosterHeader />,
   key: "booster",
+  defaultFeature: "deposit",
+  features: [
+    {
+      key: "deposit",
+      isGlobal: false,
+    },
+    {
+      key: "withdraw",
+      isGlobal: false,
+    },
+    {
+      key: "claim",
+      isGlobal: true,
+    },
+    {
+      key: "harvest",
+      isGlobal: true,
+    },
+  ],
 }
 
 export default function ProductBoosterHeader() {

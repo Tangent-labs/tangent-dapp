@@ -1,17 +1,8 @@
 "use client"
-import { ProductBaseFeature, ProductData, ProductKey } from "@/types"
+import { FeaturesData, ProductData, ProductKey } from "@/types"
 import { useRouter } from "next/navigation"
 import React, { createContext, useContext, useState, ReactNode, useMemo } from "react"
 import { productsData } from "../products"
-
-/** claim & List are global feature they do not required a item to be selected */
-const _globalFeatures = ["list", "claim"]
-
-/** defautFeatures are not present in the URL  */
-const _defautFeatures = {
-  global: "list",
-  item: "deposit",
-}
 
 /** !!! if needed _globalFeatures & _defautFeatures can be personalized for each product  */
 
@@ -19,24 +10,26 @@ const _defautFeatures = {
 interface NavigationProviderProps {
   children: ReactNode
   _currentProduct: ProductKey
-  _currentFeature: ProductBaseFeature
+  _currentFeature: string
   _currentItem?: string
 }
 
 type NavigateParams = {
   productTo: ProductKey
-  featureTo: ProductBaseFeature
+  featureTo: string
   itemSlug?: string
 }
 
 // Define what is returned by the provider
 interface NavigationContextValues {
   currentProduct: ProductKey
-  currentFeature: ProductBaseFeature
+  currentFeature: string
   currentItem?: string
-  getCurrentProductData: ProductData
+  currentProductData: ProductData
+  currentFeatureData: FeaturesData
   navigate: ({ productTo, featureTo, itemSlug }: NavigateParams) => void
   getLink: ({ productTo, featureTo, itemSlug }: NavigateParams) => string
+  getFeatureData: (feature: string) => FeaturesData
 }
 
 // Create the context
@@ -50,24 +43,33 @@ export const NavigationProvider = ({ children, _currentProduct, _currentFeature,
    */
 
   const [currentProduct, setCurrentProduct] = useState<ProductKey>(_currentProduct)
-  const [currentFeature, setCurrentFeature] = useState<ProductBaseFeature>(_currentFeature)
+  const [currentFeature, setCurrentFeature] = useState<string>(_currentFeature)
   const [currentItem, setcurrentItem] = useState<string | undefined>(_currentItem)
   const router = useRouter()
 
-  const getCurrentProductData = useMemo(() => {
+  const currentProductData = useMemo(() => {
     return productsData[currentProduct]
   }, [currentProduct])
 
+  const getFeatureData = (feature: string) => {
+    const data = productsData[currentProduct]?.features?.find((f) => f.key === feature)
+    return data || { key: "list", isGlobal: true }
+  }
+  const currentFeatureData = useMemo(() => {
+    return getFeatureData(currentFeature)
+  }, [currentProduct, currentFeature])
+
   const getLink = ({ productTo, featureTo, itemSlug }: NavigateParams) => {
     const data = productsData[productTo]
+    const featureToData = data.features.find((a) => a.key === featureTo)
     let url = `/${data.url}`
-    if (_globalFeatures.includes(featureTo)) {
-      if (featureTo !== _defautFeatures.global) {
+    if (featureToData?.isGlobal) {
+      if (featureTo !== "list") {
         url = `${url}/${featureTo}`
       }
     } else {
       url = `${url}/${itemSlug}`
-      if (featureTo !== _defautFeatures.item) {
+      if (featureTo !== data.defaultFeature) {
         url = `${url}/${featureTo}`
       }
     }
@@ -75,9 +77,12 @@ export const NavigationProvider = ({ children, _currentProduct, _currentFeature,
   }
 
   const navigate = ({ productTo, featureTo, itemSlug }: NavigateParams) => {
+    const data = productsData[productTo]
+    const featureToData = data.features.find((a) => a.key === featureTo)
     setCurrentFeature(featureTo)
+
     if (productTo !== currentProduct) setCurrentProduct(productTo)
-    itemSlug = _globalFeatures.includes(featureTo) ? undefined : itemSlug
+    itemSlug = featureToData?.isGlobal ? undefined : itemSlug
     if (currentItem !== itemSlug) setcurrentItem(itemSlug)
     const url = getLink({ productTo, featureTo, itemSlug })
     router.push(url)
@@ -86,10 +91,12 @@ export const NavigationProvider = ({ children, _currentProduct, _currentFeature,
   const contextValue: NavigationContextValues = {
     currentProduct,
     currentFeature,
-    getCurrentProductData,
     currentItem,
+    currentProductData,
+    currentFeatureData,
     navigate,
     getLink,
+    getFeatureData,
   }
 
   return <NavigationContext.Provider value={contextValue}>{children}</NavigationContext.Provider>

@@ -17,7 +17,6 @@ export default function RootLayout({
       </head>
       <body className="antialiased dark ">
         <main className=" mx-auto min-h-[80vh]">{children}</main>
-        <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">footer main layout</footer>
       </body>
     </html>
   )

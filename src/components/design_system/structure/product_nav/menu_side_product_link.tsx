@@ -1,19 +1,19 @@
 "use client"
-import { ProductBaseFeature, ProductData } from "@/types"
+import { ProductData } from "@/types"
 import { cn } from "@/lib/utils"
 import { useNavigationContext } from "@/components/pages/navigation_context"
 
 type MenuSideProductLinkProps = {
-  feature: ProductBaseFeature
+  feature: string
   productData: ProductData
 }
 
 export function MenuSideProductLink({ feature, productData }: MenuSideProductLinkProps) {
-  const { currentFeature, currentItem, navigate, getLink } = useNavigationContext()
+  const { currentFeature, currentItem, navigate, getLink, getFeatureData } = useNavigationContext()
   return (
     <a
       className="flex gap-3 items-center aria-disabled:text-gray-700 aria-disabled:cursor-not-allowed"
-      aria-disabled={!currentItem && feature !== "claim"}
+      aria-disabled={!currentItem && !getFeatureData(feature).isGlobal}
       href={getLink({ featureTo: feature, productTo: productData.key, itemSlug: currentItem })}
       onClick={(e) => {
         e.preventDefault()

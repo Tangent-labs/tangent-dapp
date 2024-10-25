@@ -5,6 +5,25 @@ export const productSplitterData: ProductData = {
   url: "llama-split",
   header: <ProductBoosterHeader />,
   key: "splitter",
+  defaultFeature: "deposit",
+  features: [
+    {
+      key: "deposit",
+      isGlobal: false,
+    },
+    {
+      key: "withdraw",
+      isGlobal: false,
+    },
+    {
+      key: "claim",
+      isGlobal: true,
+    },
+    {
+      key: "harvest",
+      isGlobal: true,
+    },
+  ],
 }
 
 export default function ProductBoosterHeader() {

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 export type MenuBarLink = {
   href: string
   label: string
+  disabled?: boolean
 }
 
 interface MenuBarProps {
@@ -23,9 +24,9 @@ export default function MenuBar({ className, links }: MenuBarProps) {
           <li
             key={l.href}
             data-active={pathname === l.href ? "true" : "false"}
-            className=" transition-all duration-700 data-[active=true]:text-row-tonic hover:text-row-tonic"
+            className=" transition-all duration-700 data-[active=true]:text-row-tonic hover:text-row-tonic "
           >
-            <Link className="text-sm" href={l.href}>
+            <Link className="text-sm aria-disabled:text-gray-700" href={l.href} aria-disabled={l.disabled}>
               {l.label}
             </Link>
           </li>

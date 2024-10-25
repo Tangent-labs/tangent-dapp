@@ -13,6 +13,7 @@ const config: Config = {
         "button-active": "var(--tgt-bg-button-active)",
         "list-row-hover": "var(--tgt-list-row-hover)",
         "panel-title-gradient": "var(--tgt-panel-title-gradient)",
+        page: "url('/medias/background.svg')", // Define your SVG background
       },
       colors: {
         "row-tonic": "var(--tgt-row-tonic)",

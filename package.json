@@ -13,7 +13,7 @@
     "lintfix": "prettier --write --list-different . ",
     "prepare": "husky",
     "helper:build-token-tstype": "node ./_utils/create_tokens_ts_type.js",
-    "validate": "npm run lint && npm run lint:tsc"
+    "validate": "npm run lint && npm run lint:tsc && npm run lint:prettier"
   },
   "dependencies": {
     "@radix-ui/react-hover-card": "^1.1.2",

@@ -3,5 +3,5 @@ import { useParams } from "next/navigation"
 
 export default function Page() {
   const { id } = useParams<{ id: string }>()
-  return <div>SDTOKEN BOOSTER  DETAIL WITHDRAW {id}</div>
+  return <div>SDTOKEN BOOSTER DETAIL WITHDRAW {id}</div>
 }

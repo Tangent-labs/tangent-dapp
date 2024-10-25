@@ -1,59 +1,74 @@
-
 /* Menu side  -------------------------------- */
 @keyframes menuIn {
-  from {     transform: translateX(20%);  }
-  to  { transform: translateX(0);    }
+  from {
+    transform: translateX(20%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 .an-menu-transition {
   animation: menuIn 0.5s ease-in-out both;
- 
 }
-
-
 
 /* Page header -------------------------------- */
-@keyframes barIn{
-  from {  scale:0.5;   transform: translateX(-5%);opacity: 0;  }
-  to  {  scale:1; transform: translateX(0); opacity: 1;    }
+@keyframes barIn {
+  from {
+    scale: 0.5;
+    transform: translateX(-5%);
+    opacity: 0;
+  }
+  to {
+    scale: 1;
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
-@keyframes logoIn{
-  from {  scale:0.5;   opacity: 0;  }
-  to  { scale:1;  opacity: 1;    }
+@keyframes logoIn {
+  from {
+    scale: 0.5;
+    opacity: 0;
+  }
+  to {
+    scale: 1;
+    opacity: 1;
+  }
 }
-@keyframes textIn{
-  from { transform: translateX(30%);opacity: 0;  }
-  to  {  transform: translateX(0); opacity: 1;  }
+@keyframes textIn {
+  from {
+    transform: translateX(30%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .an-page-header {
-    .an-logo {
-      animation-name: logoIn ;
-      animation-duration: 0.5s;
-      animation-timing-function:ease-in-out ;
-      animation-fill-mode: both;
-    }
-    .an-bg {
-      animation-name: barIn ;
-      animation-duration: 0.5s;
-      animation-timing-function:ease-in-out ;
-      animation-fill-mode: both;
-  
-    }
-    .an-text  > * {
-      animation-name: textIn ;
-      animation-duration: 0.5s;
-      animation-timing-function:ease-in-out ;
-      animation-fill-mode: both;
-    }
+  .an-logo {
+    animation-name: logoIn;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: both;
+  }
+  .an-bg {
+    animation-name: barIn;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: both;
+  }
+  .an-text > * {
+    animation-name: textIn;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: both;
+  }
 }
-
-
 
 /*Skeleton  -------------------------------- */
 .an-skeleton {
   overflow: hidden;
-
- 
 }
 .an-skeleton::after {
   content: "";
@@ -71,13 +86,12 @@
   animation: an-skeleton-animation 2s infinite;
 }
 
-
 @keyframes an-skeleton-animation {
   0% {
-      transform: translateX(-100%);
+    transform: translateX(-100%);
   }
 
   100% {
-      transform: translateX(100%);
+    transform: translateX(100%);
   }
 }

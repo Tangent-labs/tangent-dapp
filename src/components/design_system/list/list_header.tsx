@@ -1,0 +1,74 @@
+"use client"
+
+import { ListHeaderData, ListSort, SortedState } from "@/types"
+import ListRowDisposition from "./list_row_disposition"
+import { IconSortHeader } from "@/components/icons/icon_sort_header"
+
+interface ListHeaderProps {
+  headers: ListHeaderData[]
+  className?: string
+  activeSort?: ListSort
+  onSort?: (key: string) => void
+}
+
+interface HeaderDisplayProps {
+  label?: string
+  sort: SortedState
+  onSort?: (key: string) => void
+  field: string
+}
+
+const HeaderDisplay = ({ label, sort = "none", onSort, field }: HeaderDisplayProps) => {
+  return (
+    <div className="flex-1 ">
+      <button className=" gap-2 flex justify-center  w-full " type="button" onClick={() => onSort && onSort(field)}>
+        <span>{label} </span>
+        <div className="text-row-tonic">
+          <IconSortHeader sort={sort} />
+        </div>
+      </button>
+    </div>
+  )
+}
+
+const ListHeader = ({ headers, className = "", activeSort, onSort }: ListHeaderProps) => {
+  return (
+    <div className={` p-4  hidden xl:block leading-[10px] ${className}`}>
+      <ListRowDisposition>
+        {!!headers?.at(0)?.key && (
+          <HeaderDisplay
+            key={headers?.at(0)?.key}
+            label={headers?.at(0)?.label}
+            sort={(activeSort?.key == headers?.at(0)?.key && activeSort?.direction) || "none"}
+            field={headers?.at(0)?.key || ""}
+            onSort={onSort}
+          />
+        )}
+        {!!headers?.at(1)?.key && (
+          <HeaderDisplay
+            key={headers?.at(1)?.key}
+            label={headers?.at(1)?.label}
+            sort={(activeSort?.key == headers?.at(1)?.key && activeSort?.direction) || "none"}
+            field={headers?.at(1)?.key || ""}
+            onSort={onSort}
+          />
+        )}
+        <>
+          {headers
+            ?.slice(2)
+            ?.map((header) => (
+              <HeaderDisplay
+                key={header.key}
+                label={header.label}
+                sort={(activeSort?.key == header.key && activeSort?.direction) || "none"}
+                field={header.key}
+                onSort={onSort}
+              />
+            ))}
+        </>
+      </ListRowDisposition>
+    </div>
+  )
+}
+
+export default ListHeader

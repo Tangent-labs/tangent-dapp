@@ -1,0 +1,34 @@
+import { ExistingAsset } from "."
+
+export type SortedState = "asc" | "desc" | "none"
+
+export type ListSort = {
+  key: string
+  direction: SortedState
+}
+
+export type ListState = {
+  sort?: ListSort
+  search?: string
+}
+
+export type ListHeaderData = {
+  label?: string
+  key: string
+}
+
+export type ListRowData = {
+  token: ExistingAsset
+  name: string
+  apr: {
+    current?: number
+    projected?: number
+  }
+  assetsEarned: { token: ExistingAsset }[]
+  indicators: {
+    key: string
+    label: string
+    value: string
+    raw?: number // Raw numerical value for calculations
+  }[]
+}

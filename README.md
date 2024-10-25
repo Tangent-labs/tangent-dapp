@@ -26,3 +26,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ```bash
 npm run build
 ```
+
+### Get path in server components
+
+adpated from https://www.propelauth.com/post/getting-url-in-next-server-components

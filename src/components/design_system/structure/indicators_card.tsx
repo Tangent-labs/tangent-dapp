@@ -11,8 +11,8 @@ interface IndicatorCardProps {
 
 const IndicatorCard = ({ title, value, className = "" }: IndicatorCardProps) => {
   return (
-    <div className={`flex flex-col items-center justify-center  ${className}`}>
-      <span className="text-sm ">{title}</span>
+    <div className={`flex flex-col justify-center lg:items-center ${className}`}>
+      <span className="text-sm">{title}</span>
       <span className="text-xs text-gray-400">{value}</span>
     </div>
   )
@@ -25,7 +25,7 @@ interface IndicatorCardsProps {
 
 const IndicatorCards = ({ indicators, className = "" }: IndicatorCardsProps) => {
   return (
-    <Panel className={`inline-flex gap-10 w-auto  ${className}`}>
+    <Panel className={`inline-flex w-auto gap-2 lg:gap-10 ${className}`}>
       {indicators.map((indicator, index) => (
         <IndicatorCard key={index} title={indicator.title} value={indicator.value} />
       ))}

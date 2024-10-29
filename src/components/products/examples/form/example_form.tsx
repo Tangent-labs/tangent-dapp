@@ -14,13 +14,13 @@ export const ExampleForm = () => {
 
   return (
     <Panel>
-      <div className="flex flex-col gap-10 ">
+      <div className="flex flex-col gap-10">
         <p className="max-w-5xl font-[13px]">
           Lorem ipsum dolor, sit amet consectetur adipisicing elit. Porro quod consectetur minima rem! Pariatur voluptatem obcaecati, id voluptate nulla enim in
           sed fugit dolores unde voluptas repellat deleniti, laudantium repudiandae!
         </p>
-        <div className="flex gap-2 justify-between ">
-          <div className="flex w-2/3 gap-5 justify-start">
+        <div className="flex justify-between gap-2">
+          <div className="flex w-2/3 justify-start gap-5">
             <div>
               <InputSelectAsset
                 className="min-w-[250px]"
@@ -58,8 +58,8 @@ export const ExampleForm = () => {
               />
             </div>
           </div>
-          <div className="w-1/3 ">
-            <div className="flex gap-5 justify-between">
+          <div className="w-1/3">
+            <div className="flex justify-between gap-5">
               <FormButtons actions={{ handleApprove: actionApprove, handleProcess: actionDeposit }} formState={formState} labelProcess="Deposit & Stake" />
             </div>
           </div>

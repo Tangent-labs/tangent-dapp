@@ -18,13 +18,13 @@ export default function MenuBar({ className, links, ...props }: MenuBarProps) {
   const pathname = usePathname()
 
   return (
-    <Panel className={` inline-block ${className || ""}`} {...props}>
-      <ul className="flex justify-center gap-10  ">
+    <Panel className={`inline-block ${className || ""}`} {...props}>
+      <ul className="flex justify-center gap-10">
         {links?.map((l) => (
           <li
             key={l.href}
             data-active={pathname === l.href ? "true" : "false"}
-            className=" transition-all duration-700 data-[active=true]:text-row-tonic hover:text-row-tonic "
+            className="transition-all duration-700 hover:text-row-tonic data-[active=true]:text-row-tonic"
           >
             <Link className="text-sm aria-disabled:text-gray-700" href={l.href} aria-disabled={l.disabled}>
               {l.label}

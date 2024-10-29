@@ -1,5 +1,7 @@
 "use client"
 
+import PanelRaw from "./panel_raw"
+
 interface PanelProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
   className?: string
@@ -7,8 +9,8 @@ interface PanelProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export default function Panel({ children, className, ...props }: PanelProps) {
   return (
-    <div {...props} className={` p-4 border border-white border-opacity-25 bg-white backdrop-blur-[30px] rounded-[10px] bg-opacity-[3%]  mb-2  ${className}`}>
+    <PanelRaw className={`mb-2 p-4 ${className}`} {...props}>
       {children}
-    </div>
+    </PanelRaw>
   )
 }

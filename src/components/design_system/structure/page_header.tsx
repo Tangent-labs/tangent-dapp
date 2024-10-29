@@ -10,11 +10,11 @@ export function PageHeader({ product }: PageHeaderProps) {
   const productData: ProductData = productsData[product]
 
   return (
-    <div className="flex gap-10 h-48 bg-right w-full an-page-header">
-      <div className="w-2/5  bg-[url('/medias/header_bg.png')] bg-no-repeat bg-right flex justify-end items-center an-bg">
-        <Image height={360} width={360} quality={100} className="w-[180px] h-[180px] an-logo" src={`/medias/product_${product}.png`} alt="splitter" />
+    <div className="an-page-header flex w-full gap-10 bg-right xl:h-48">
+      <div className="an-bg hidden items-center justify-end bg-[url('/medias/header_bg.png')] bg-right bg-no-repeat lg:w-2/5 xl:flex">
+        <Image height={360} width={360} quality={100} className="an-logo h-[180px] w-[180px]" src={`/medias/product_${product}.png`} alt="splitter" />
       </div>
-      <div className="w-3/5 flex  flex-col gap-5 an-text ">{productData.header}</div>
+      <div className="an-text flex w-full flex-col gap-5 xl:w-3/5">{productData.header}</div>
     </div>
   )
 }

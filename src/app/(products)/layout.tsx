@@ -16,6 +16,7 @@ import { dappConfig } from "@/dapp_config"
 import MenuBarFeature from "@/components/products/product_nav/menu_bar_feature"
 import { WalletConnexionProvider } from "@/components/products/wallet/wallet_connexion_context"
 import { WalletConnexionButton } from "@/components/products/wallet/Wallet_connexion_button"
+import MenuSideToogle from "@/components/products/product_nav/menu_side_toogle"
 
 async function getNavIsOpen() {
   const cookieStore = await cookies()
@@ -43,19 +44,25 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
   return (
     <>
       <WalletConnexionProvider>
-        <NavigationProvider _currentProduct={productData.key} _currentFeature={currentFeature} _currentItem={itemSlug}>
-          <div className="flex ml-2 gap-6  mt-2 bg-page  bg-repeat">
-            <div className="   ">
-              <MenuSide initialIsOpen={initialIsOpen} />
+        <NavigationProvider _currentProduct={productData.key} _currentFeature={currentFeature} _currentItem={itemSlug} initialIsOpen={initialIsOpen}>
+          <div className="ml-2 mt-2 flex bg-page bg-repeat">
+            <div className="absolute lg:relative">
+              <MenuSide />
             </div>
-            <div className="w-full mr-24 ">
-              <div className="flex justify-between">
-                <MenuBarFeature />
-                <div>
-                  <WalletConnexionButton />
+            <div className="mr-4 w-full lg:mr-24">
+              <div className="flex justify-between max-lg:flex-col">
+                <div className="order-2 lg:order-1">
+                  <MenuBarFeature />
+                </div>
+                <div className="order-1 lg:order-2">
+                  <div className="flex items-center gap-1">
+                    <MenuSideToogle className="lg:hidden" />
+
+                    <WalletConnexionButton />
+                  </div>
                 </div>
               </div>
-              <div className="flex content-center mb-4">
+              <div className="mb-4 flex content-center">
                 <PageHeader product={productData!.key} />
               </div>
               <div>{children}</div>

@@ -73,16 +73,16 @@ const InputAssetValue = ({ value, balance, asset, onChange, options, className, 
   }
   const placeholder = `#.${"0".repeat(options.displayDecimals || asset.decimals)}`
   return (
-    <div className={`flex flex-col  gap-1 ${className}`}>
+    <div className={`flex flex-col gap-1 ${className}`}>
       <div className="flex justify-between">
         <label className={`text-xs ${!options?.displayLabel && "sr-only"} `}>{label}</label>
-        {options.displayBalance && <span className={`text-xs text-gray-400  `}>{displayBalance}</span>}
+        {options.displayBalance && <span className={`text-xs text-gray-400`}>{displayBalance}</span>}
       </div>
       <input
         type="number"
         value={innerValue}
         onChange={handleInputChange}
-        className="min-h-10 bg-transparent border border-white border-opacity-20 rounded-[10px] p-2 text-xs "
+        className="min-h-10 rounded-[10px] border border-white border-opacity-20 bg-transparent p-2 text-xs"
         placeholder={placeholder}
       />
       <div className="text-xs text-gray-400">{dollarValueDisplay}</div>

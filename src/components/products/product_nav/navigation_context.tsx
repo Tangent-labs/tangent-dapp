@@ -3,6 +3,8 @@ import { FeaturesData, ProductData, ProductKey } from "@/types"
 import { useRouter } from "next/navigation"
 import React, { createContext, useContext, useState, ReactNode, useMemo } from "react"
 import { productsData } from "@/components/products/products"
+import { dappConfig } from "@/dapp_config"
+import { useCookieState } from "@/hooks/useCookieState"
 
 /** !!! if needed _globalFeatures & _defautFeatures can be personalized for each product  */
 
@@ -12,6 +14,7 @@ interface NavigationProviderProps {
   _currentProduct: ProductKey
   _currentFeature: string
   _currentItem?: string
+  initialIsOpen: boolean
 }
 
 type NavigateParams = {
@@ -30,16 +33,19 @@ interface NavigationContextValues {
   navigate: ({ productTo, featureTo, itemSlug }: NavigateParams) => void
   getLink: ({ productTo, featureTo, itemSlug }: NavigateParams) => string
   getFeatureData: (feature: string) => FeaturesData
+  isOpen: boolean
+  setIsOpen: (arg: boolean) => void
 }
 
 // Create the context
 const NavigationContext = createContext<NavigationContextValues | undefined>(undefined)
 
 // Create a provider component
-export const NavigationProvider = ({ children, _currentProduct, _currentFeature, _currentItem }: NavigationProviderProps) => {
+export const NavigationProvider = ({ children, _currentProduct, _currentFeature, _currentItem, initialIsOpen }: NavigationProviderProps) => {
   const [currentProduct, setCurrentProduct] = useState<ProductKey>(_currentProduct)
   const [currentFeature, setCurrentFeature] = useState<string>(_currentFeature)
   const [currentItem, setcurrentItem] = useState<string | undefined>(_currentItem)
+  const [isOpen, setIsOpen] = useCookieState<boolean>(dappConfig.keyPaths.navIsOpen, initialIsOpen)
   const router = useRouter()
 
   const currentProductData = useMemo(() => {
@@ -92,6 +98,8 @@ export const NavigationProvider = ({ children, _currentProduct, _currentFeature,
     navigate,
     getLink,
     getFeatureData,
+    isOpen,
+    setIsOpen,
   }
 
   return <NavigationContext.Provider value={contextValue}>{children}</NavigationContext.Provider>

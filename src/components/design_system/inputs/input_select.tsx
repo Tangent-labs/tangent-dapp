@@ -17,7 +17,7 @@ interface InputSelectProps {
 const InputSelectAsset = ({ options, onChange, label, placeholder = "Select an option", className = "", value, template }: InputSelectProps) => {
   return (
     <>
-      <div className={`flex flex-col  gap-1 ${className}`}>
+      <div className={`flex flex-col gap-1 ${className}`}>
         <div className="flex justify-between text-xs">{label}</div>
         <div>
           <Select value={value} onValueChange={(value) => onChange(value)}>
@@ -30,7 +30,7 @@ const InputSelectAsset = ({ options, onChange, label, placeholder = "Select an o
                   {template ? (
                     template(option)
                   ) : (
-                    <div className="flex items-center gap-2 ">
+                    <div className="flex items-center gap-2">
                       <span className="text-xs">{option.label}</span>
                     </div>
                   )}

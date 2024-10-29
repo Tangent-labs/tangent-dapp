@@ -12,7 +12,7 @@ export function MenuSideProductLink({ feature, productData }: MenuSideProductLin
   const { currentFeature, currentItem, navigate, getLink, getFeatureData } = useNavigationContext()
   return (
     <a
-      className="flex gap-3 items-center aria-disabled:text-gray-700 aria-disabled:cursor-not-allowed"
+      className="flex items-center gap-3 aria-disabled:cursor-not-allowed aria-disabled:text-gray-700"
       aria-disabled={!currentItem && !getFeatureData(feature).isGlobal}
       href={getLink({ featureTo: feature, productTo: productData.key, itemSlug: currentItem })}
       onClick={(e) => {
@@ -20,7 +20,7 @@ export function MenuSideProductLink({ feature, productData }: MenuSideProductLin
         navigate({ featureTo: feature, productTo: productData.key, itemSlug: currentItem })
       }}
     >
-      <div className={cn("w-4 h-[1px] mt-1 border", feature === currentFeature && "border-row-tonic")}></div>
+      <div className={cn("mt-1 h-[1px] w-4 border", feature === currentFeature && "border-row-tonic")}></div>
       <span className={cn("capitalize", feature === currentFeature && "text-row-tonic")}>{feature}</span>
     </a>
   )

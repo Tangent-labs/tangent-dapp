@@ -20,7 +20,7 @@ const InputSelectAsset = ({ options, onChange, label, placeholder = "Select an o
 
   return (
     <>
-      <div className={`flex flex-col  gap-1 ${className}`}>
+      <div className={`flex flex-col gap-1 ${className}`}>
         <div className="flex justify-between text-xs">{label}</div>
         <div>
           <Select value={value} onValueChange={(val) => onChange(seletedValue(val))}>
@@ -31,7 +31,7 @@ const InputSelectAsset = ({ options, onChange, label, placeholder = "Select an o
               {options.map((option) => (
                 <SelectItem value={seletedValue(option)} key={option}>
                   {/* Custom HTML for Option 1 */}
-                  <div className="flex items-center gap-2 ">
+                  <div className="flex items-center gap-2">
                     <TokenImage token={option} size={25} />
                     <span className="text-xs">{option}</span>
                   </div>

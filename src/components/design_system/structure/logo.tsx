@@ -1,6 +1,8 @@
-export function Logo() {
+type LogoProps = React.HTMLAttributes<SVGElement>
+
+export function Logo({ ...props }: LogoProps) {
   return (
-    <svg width="24" height="40" className="w-16 h-16" viewBox="0 0 24 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="24" height="40" viewBox="0 0 24 40" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path
         d="M23.2446 20.0023C22.7043 20.0406 22.1783 20.098 21.6666 20.1745C17.3247 20.8296 14.0109 23.0292 12.5094 29.9199C11.9356 32.5403 11.6295 35.8446 11.6248 40V19.9976H23.2446V20.0023Z"
         fill="white"

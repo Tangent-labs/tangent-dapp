@@ -30,7 +30,7 @@ export default function ProductWrapperHeader() {
   return (
     <>
       <h1 className="text-5xl">{productWrapperData.name}</h1>
-      <div className="flex flex-col  gap-4 font-light pr-28  delay-200">
+      <div className="flex flex-col gap-2 font-light delay-200 xl:pr-28">
         <span>
           Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT
           stable pool & CVX stable pool).

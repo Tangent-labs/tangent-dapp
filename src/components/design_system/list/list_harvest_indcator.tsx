@@ -17,17 +17,17 @@ export default function ListHarvestIndicator({ isHarvested, helpMessage, classNa
       <Popover>
         <PopoverTrigger asChild>
           <button aria-label="Help" type="button">
-            <IconCircleHelp className="w-[20px] h-auto text-row-tonic" />
+            <IconCircleHelp className="h-auto w-[20px] text-row-tonic" />
             <span className="sr-only"> Info on harvest </span>
           </button>
         </PopoverTrigger>
-        <PopoverContent className="border-none  p-3">
+        <PopoverContent className="border-none p-3">
           <Panel>{helpMessage || "No help available"}</Panel>
         </PopoverContent>
       </Popover>
 
       {/* IconHourGlass */}
-      <IconHourGlass className={`w-[20px] h-auto ${isHarvested ? "text-row-tonic" : "text-gray-400"}`} />
+      <IconHourGlass className={`h-auto w-[20px] ${isHarvested ? "text-row-tonic" : "text-gray-400"}`} />
     </div>
   )
 }

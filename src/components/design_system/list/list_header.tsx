@@ -20,8 +20,8 @@ interface HeaderDisplayProps {
 
 const HeaderDisplay = ({ label, sort = "none", onSort, field }: HeaderDisplayProps) => {
   return (
-    <div className="flex-1 ">
-      <button className=" gap-2 flex justify-center  w-full " type="button" onClick={() => onSort && onSort(field)}>
+    <div className="flex-1">
+      <button className="flex w-full justify-center gap-2" type="button" onClick={() => onSort && onSort(field)}>
         <span>{label} </span>
         <div className="text-row-tonic">
           <IconSortHeader sort={sort} />
@@ -33,7 +33,7 @@ const HeaderDisplay = ({ label, sort = "none", onSort, field }: HeaderDisplayPro
 
 const ListHeader = ({ headers, className = "", activeSort, onSort }: ListHeaderProps) => {
   return (
-    <div className={` p-4  hidden xl:block leading-[10px] ${className}`}>
+    <div className={`hidden p-4 leading-[10px] xl:block ${className}`}>
       <ListRowDisposition>
         {!!headers?.at(0)?.key && (
           <HeaderDisplay

@@ -22,13 +22,13 @@ export default function RootLayout({
 }>) {
   return (
     <>
-      <div className="flex ml-2 gap-6">
-        <div className=" w-[360px] "></div>
-        <div className="w-full mr-24">
-          <div className="flex content-start mb-4">
+      <div className="ml-2 flex gap-6">
+        <div className="w-[360px]"></div>
+        <div className="mr-24 w-full">
+          <div className="mb-4 flex content-start">
             <MenuBar links={links} />
           </div>
-          <div className="flex content-center mb-4">
+          <div className="mb-4 flex content-center">
             <PageHeader product="wrapper" />
           </div>
           <div>{children}</div>

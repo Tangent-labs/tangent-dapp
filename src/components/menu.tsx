@@ -7,7 +7,7 @@ export default function Menu() {
   const pathname = usePathname()
 
   return (
-    <nav className="flex justify-center gap-5 font-serif p-10 underline ">
+    <nav className="flex justify-center gap-5 p-10 font-serif underline">
       <Link href="/" className={(pathname === "/" && "font-bold") || ""}>
         Home
       </Link>

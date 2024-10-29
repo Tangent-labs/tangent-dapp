@@ -26,8 +26,8 @@ export default function FormButtons({ formState, labelApprove = "Approve", label
     <>
       <HoverCard openDelay={300}>
         <HoverCardTrigger className="w-full">
-          <div className="flex  items-center justify-between gap-2 w-full mt-[22px]">
-            <Button label={labelApprove} onClick={actions.handleApprove} state={approveState} className="flex-1 justify-center min-h-10" />
+          <div className="mt-[22px] flex w-full items-center justify-between gap-2">
+            <Button label={labelApprove} onClick={actions.handleApprove} state={approveState} className="min-h-10 flex-1 justify-center" />
             <div>
               <svg width="11" height="12" viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -36,14 +36,14 @@ export default function FormButtons({ formState, labelApprove = "Approve", label
                 />
               </svg>
             </div>
-            <Button label={labelProcess} onClick={actions.handleProcess} state={processState} className="flex-1 justify-center min-h-10" />
+            <Button label={labelProcess} onClick={actions.handleProcess} state={processState} className="min-h-10 flex-1 justify-center" />
           </div>
         </HoverCardTrigger>
 
         <HoverCardContent align="start" sideOffset={2} sticky="partial">
           {formState?.cantProcessReasons?.length > 0 && (
-            <Panel className="w-full border-red-500 text-red-500 bg-opacity-20">
-              <ul className="text-xs list-disc px-2">{formState?.cantProcessReasons.map((r, i) => <li key={i}>{r}</li>)}</ul>
+            <Panel className="w-full border-red-500 bg-opacity-20 text-red-500">
+              <ul className="list-disc px-2 text-xs">{formState?.cantProcessReasons.map((r, i) => <li key={i}>{r}</li>)}</ul>
             </Panel>
           )}
         </HoverCardContent>

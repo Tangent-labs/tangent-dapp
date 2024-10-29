@@ -50,6 +50,16 @@
     --w3o-border-radius: 16px;
   }
 
+  onboard-account-center::part(.ac-container) {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  :root {
+    --account-center-position-top: -10px;
+  }
+
   /* Variables add by ShadCn  */
   :root {
     --background: #000;

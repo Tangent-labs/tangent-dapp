@@ -7,7 +7,7 @@ interface ListIndicatorProps {
 }
 
 const HighLightDisplay = ({ val }: { val?: string }) => {
-  return <span className="text-[20px] ">{val}</span>
+  return <span className="text-[20px]">{val}</span>
 }
 
 const QuietDisplay = ({ val }: { val?: string }) => {
@@ -16,7 +16,7 @@ const QuietDisplay = ({ val }: { val?: string }) => {
 
 const ListIndicator = ({ info, value, valueFirst = false }: ListIndicatorProps) => {
   return (
-    <div className="flex flex-col items-center leading-5 basis-[48%] md:flex-1">
+    <div className="flex basis-[48%] flex-col items-center leading-5 md:flex-1">
       {valueFirst ? <HighLightDisplay val={value} /> : <QuietDisplay val={info} />}
       {valueFirst ? <QuietDisplay val={info} /> : <HighLightDisplay val={value} />}
     </div>

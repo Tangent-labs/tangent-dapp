@@ -38,6 +38,7 @@ const ledger = ledgerModule(wcV2InitOptions as unknown as LedgerOptionsWCv2)
 
 const wallets = [injectedModule(), walletConnect, safe, ledger]
 const web3Onboard = init({
+  // containerElements: { accountCenter: "#body" },
   wallets,
   chains,
   appMetadata,

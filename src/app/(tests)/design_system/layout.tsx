@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import "@/globals.css"
+import "@/css_globals.css"
 import MenuBar, { MenuBarLink } from "@/components/design_system/structure/menu_bar"
 export const metadata: Metadata = {
   title: "Create Next App",

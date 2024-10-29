@@ -4,8 +4,6 @@ import { useNavigationContext } from "@/components/pages/navigation_context"
 import { useMemo } from "react"
 
 export default function MenuBarFeature() {
-  //const links = [] as MenuBarLink[]
-
   const { currentFeature, currentProduct, currentItem, currentProductData: getCurrentProductData, getLink } = useNavigationContext()
 
   const links = useMemo(() => {

@@ -1,7 +1,7 @@
 "use client"
 import { ProductData } from "@/types"
 import { cn } from "@/lib/utils"
-import { useNavigationContext } from "@/components/pages/navigation_context"
+import { useNavigationContext } from "@/components/products/product_nav/navigation_context"
 
 type MenuSideProductLinkProps = {
   feature: string

@@ -1,6 +1,6 @@
 "use client"
 import { ExistingAsset } from "@/types"
-import TokenImage from "../structure/token_image"
+import TokenImage from "@/components/design_system/structure/token_image"
 
 interface ListAssetProps {
   name: string

@@ -7,7 +7,7 @@ import {
   ExampleFormChainViewData,
   ExampleFormSetUpData,
   ExampleFormInitData,
-} from "./example_form_type"
+} from "@/components/products/examples/form/example_form_type"
 import { Address } from "viem"
 import { AssetUserData, SelectOption, TokenizedPosition } from "@/types"
 

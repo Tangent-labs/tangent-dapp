@@ -1,12 +1,12 @@
 "use client"
 
-import ListAPR from "../../../design_system/list/list_apr"
-import ListAsset from "../../../design_system/list/list_asset"
-import ListHeader from "../../../design_system/list/list_header"
-import ListIndicator from "../../../design_system/list/list_indicator"
-import ListRow from "../../../design_system/list/list_row"
+import ListAPR from "@/components/design_system/list/list_apr"
+import ListAsset from "@/components/design_system/list/list_asset"
+import ListHeader from "@/components/design_system/list/list_header"
+import ListIndicator from "@/components/design_system/list/list_indicator"
+import ListRow from "@/components/design_system/list/list_row"
 import { useListContext } from "@/components/design_system/list/list_context"
-import ExampleTitle from "../example_title"
+import ExampleTitle from "@/components/products/examples/example_title"
 
 export default function ListExample1() {
   const { headers, listState, displayRows, udpateSort } = useListContext()

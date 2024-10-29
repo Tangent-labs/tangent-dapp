@@ -1,4 +1,4 @@
-import ExamplePanelTabs from "@/components/pages/examples/list/example_panel_tab"
+import ExamplePanelTabs from "@/components/products/examples/list/example_panel_tab"
 
 const ExampleListPage = async () => {
   return <ExamplePanelTabs />

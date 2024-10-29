@@ -11,8 +11,8 @@ import {
   ExampleFormValues,
   ExampleFormValueTypes,
   FormExampleValueField,
-} from "./example_form_type"
-import { getDefaultValues, getSetUpData, doApprove, doDeposit, getFormState } from "./example_form_controller"
+} from "@/components/products/examples/form/example_form_type"
+import { getDefaultValues, getSetUpData, doApprove, doDeposit, getFormState } from "@/components/products/examples/form/example_form_controller"
 
 // Create the context
 export const exampleFormContext = createContext<ExampleFormContextValue>(undefined!)

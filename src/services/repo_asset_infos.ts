@@ -1,5 +1,5 @@
 import { AssetData } from "@/types"
-import { TOKEN_ADDR } from "./repo_asset_addresses"
+import { TOKEN_ADDR } from "@/services/repo_asset_addresses"
 
 export type AssetConfigKey = keyof typeof TOKEN_ADDR
 

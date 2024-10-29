@@ -1,7 +1,7 @@
 "use client"
 
-import ListHeader from "../../../design_system/list/list_header"
-import ListRowSkeleton from "../../list/list_row_skeleton"
+import ListHeader from "@/components/design_system/list/list_header"
+import ListRowSkeleton from "@/components/design_system/list/list_row_skeleton"
 import { ListHeaderData } from "@/types"
 
 const headers: ListHeaderData[] = [

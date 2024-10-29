@@ -1,9 +1,9 @@
 "use client"
-import { Logo } from "../logo"
-import Panel from "../panel"
+import { Logo } from "@/components/design_system/structure/logo"
+import Panel from "@/components/design_system/structure/panel"
 import Image from "next/image"
-import { productsData } from "@/components/products"
-import { MenuSideProduct } from "./menu_side_product"
+import { productsData } from "@/components/products/products"
+import { MenuSideProduct } from "@/components/products/product_nav/menu_side_product"
 
 import { cn } from "@/lib/utils"
 import { useCookieState } from "@/hooks/useCookieState"

@@ -4,8 +4,8 @@ import Panel from "@/components/design_system/structure/panel"
 import Image from "next/image"
 
 import { cn } from "@/lib/utils"
-import { MenuSideProductLink } from "./menu_side_product_link"
-import { useNavigationContext } from "@/components/pages/navigation_context"
+import { MenuSideProductLink } from "@/components/products/product_nav/menu_side_product_link"
+import { useNavigationContext } from "@/components/products/product_nav/navigation_context"
 import { useMemo } from "react"
 
 type MenuSideProductProps = {

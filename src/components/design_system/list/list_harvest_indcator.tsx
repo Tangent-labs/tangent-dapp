@@ -1,8 +1,8 @@
 "use client"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { IconHourGlass } from "@/components/icons/icon_hourglass"
-import { Popover, PopoverTrigger, PopoverContent } from "../../ui/popover"
-import Panel from "../structure/panel"
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import Panel from "@/components/design_system/structure/panel"
 
 interface ListHarvestIndicatorProps {
   isHarvested: boolean

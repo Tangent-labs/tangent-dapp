@@ -16,7 +16,7 @@ const listeState: ListState = {
 const ExmapleListPage = async () => {
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between max-md:flex-col max-md:items-start">
         <div>
           <IndicatorCards indicators={[{ title: "Epoch", value: "Next reward: 20days, 10 hours" }]} />
         </div>

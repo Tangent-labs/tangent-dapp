@@ -30,7 +30,7 @@ export default function ProductBoosterHeader() {
   return (
     <>
       <h1 className="text-5xl">{productSplitterData.name}</h1>
-      <div className="flex flex-col  gap-4 font-light pr-28  delay-200">
+      <div className="flex flex-col gap-2 font-light delay-200 xl:pr-28">
         <span>Supply crvUSD to Llamalend, and earn the boosted rewards of your choice</span>
       </div>
     </>

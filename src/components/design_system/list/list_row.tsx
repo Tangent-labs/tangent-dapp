@@ -13,8 +13,7 @@ const ListRow = ({ children, navigate, className = "" }: ListRowProps) => {
   return (
     <Panel
       onClick={() => navigate && navigate()}
-      className={` hover:cursor-pointer p-5 border  mb-2  before:absolute before:inset-0 before:opacity-70 before:-z-10
-         before:rounded-[10px] hover:before:bg-list-row-hover    ${className}`}
+      className={`mb-2 border p-5 before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover ${className}`}
     >
       <ListRowDisposition>
         <> {children?.at(0)}</>

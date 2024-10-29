@@ -18,7 +18,7 @@ export function Button({ label, state = "active", ...props }: ButtonProps) {
       disabled={state === "disabled"}
       className={cn(
         props?.className || "",
-        "disabled:cursor-not-allowed p-2 px-4 flex items-center text-xs font-semibold border font-sans hover:bg-white hover:bg-opacity-[3%] border-white border-opacity-50 rounded-[10px] transition-all duration-300",
+        "flex items-center rounded-[10px] border border-white border-opacity-50 p-2 px-4 font-sans text-xs font-semibold transition-all duration-300 hover:bg-white hover:bg-opacity-[3%] disabled:cursor-not-allowed",
         stateCss
       )}
     >

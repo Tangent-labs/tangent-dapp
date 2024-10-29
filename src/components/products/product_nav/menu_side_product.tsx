@@ -21,16 +21,16 @@ export function MenuSideProduct({ productData, isOpen }: MenuSideProductProps) {
     <div key={productData.key}>
       {isCurrentProduct ? (
         <>
-          <Panel className={cn("!py-2", isCurrentProduct && "bg-panel-title-gradient", !isOpen && "border-transparent !px-1")}>
-            <a href={`/${productData.url}`} className="hover:bg-clip-text hover:bg-row-tonic flex content-center items-center gap-2">
-              <Image width={40} height={40} src={`/medias/product_${productData.key}.png`} alt={productData.name} />
-              <span className={cn("duration-600 text-nowrap overflow-x-hidden transition-all hover:text-transparent ", !isOpen ? "opacity-0" : "opacity-100")}>
+          <Panel className={cn("!py-2", isCurrentProduct && "bg-panel-title-gradient", !isOpen && "border-transparent")}>
+            <a href={`/${productData.url}`} className="flex content-center items-center gap-2 hover:bg-row-tonic hover:bg-clip-text">
+              <Image width={30} height={30} src={`/medias/product_${productData.key}_flat.webp`} alt={productData.name} />
+              <span className={cn("duration-600 overflow-x-hidden text-nowrap transition-all hover:text-transparent", !isOpen ? "opacity-0" : "opacity-100")}>
                 {productData.name}
               </span>
             </a>
           </Panel>
-          <div className={cn("ml-5 border-l  border-gray-400", !isOpen && "hidden")}>
-            <div className={cn("ml-4 pt-2 flex flex-col gap-2 an-menu-transition overflow-x-hidden", !isOpen && "hidden")}>
+          <div className={cn("ml-5 border-l border-gray-400", !isOpen && "hidden")}>
+            <div className={cn("an-menu-transition ml-4 flex flex-col gap-2 overflow-x-hidden pt-2", !isOpen && "hidden")}>
               {productData.features.map((f) => (
                 <MenuSideProductLink key={f.key} feature={f.key} productData={productData} />
               ))}
@@ -38,10 +38,10 @@ export function MenuSideProduct({ productData, isOpen }: MenuSideProductProps) {
           </div>
         </>
       ) : (
-        <div className={cn("!py-2")}>
-          <a href={`/${productData.url}`} className="hover:bg-clip-text hover:bg-row-tonic flex content-center items-center gap-2">
-            <Image width={40} height={40} src={`/medias/product_${productData.key}.png`} alt={productData.name} />
-            <span className={cn("duration-600 text-nowrap overflow-x-hidden transition-all hover:text-transparent ", !isOpen ? "opacity-0" : "opacity-100")}>
+        <div className={cn("px-4 py-2")}>
+          <a href={`/${productData.url}`} className="flex content-center items-center gap-2 hover:bg-row-tonic hover:bg-clip-text">
+            <Image width={30} height={30} src={`/medias/product_${productData.key}_flat.webp`} alt={productData.name} />
+            <span className={cn("duration-600 overflow-x-hidden text-nowrap transition-all hover:text-transparent", !isOpen ? "opacity-0" : "opacity-100")}>
               {productData.name}
             </span>
           </a>

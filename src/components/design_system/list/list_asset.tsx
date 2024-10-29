@@ -11,15 +11,15 @@ interface ListAssetProps {
 
 const ListAsset = ({ name, token, assetsEarned, className = "" }: ListAssetProps) => {
   return (
-    <div className={`flex items-center gap-4  relative ${className}`}>
-      <TokenImage token={token} size={50} className=" w-18" />
+    <div className={`relative flex items-center gap-4 ${className}`}>
+      <TokenImage token={token} size={50} className="w-18" />
 
       <div className="flex flex-col leading-8">
-        <span className="text-[32px] font-semibold ">{name}</span>
+        <span className="text-[32px] font-semibold">{name}</span>
         {assetsEarned && (
           <>
             <div className="flex gap-2">
-              <span className="text-xs ">Earn :</span>
+              <span className="text-xs">Earn :</span>
               {assetsEarned.map((earn) => (
                 <div key={earn.token} className="flex items-center">
                   <TokenImage token={earn.token} size={20} />

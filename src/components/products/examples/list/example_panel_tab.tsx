@@ -8,7 +8,7 @@ export default function ExamplePanelTabs() {
       <ExampleTitle title="Panel and tab" />
       <Panel>
         <Tabs defaultValue="deposit" className="bg-none">
-          <TabsList className=" flex justify-start gap-2 bg-transparent">
+          <TabsList className="flex justify-start gap-2 bg-transparent">
             <TabsTrigger value="deposit" className="min-w-40">
               Deposit
             </TabsTrigger>

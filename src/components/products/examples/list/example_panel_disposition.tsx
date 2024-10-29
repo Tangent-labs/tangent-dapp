@@ -20,7 +20,7 @@ export default function ExamplePanelDisposition() {
 
       <div className="flex flex-col gap-2">
         <div className="flex gap-3">
-          <div className="flex max-lg:flex-col w-full gap-3">
+          <div className="flex w-full gap-3 max-lg:flex-col">
             <Panel className="lg:w-1/3">
               <Filler height={200} />
             </Panel>
@@ -29,8 +29,8 @@ export default function ExamplePanelDisposition() {
             </Panel>
           </div>
         </div>
-        <div className="flex gap-3 ">
-          <div className="flex w-full gap-3  max-lg:flex-col">
+        <div className="flex gap-3">
+          <div className="flex w-full gap-3 max-lg:flex-col">
             <Panel className="lg:w-1/2">
               <Filler height={100} />
             </Panel>

@@ -1,5 +1,5 @@
 import { Address } from "viem"
-import { ExistingAsset } from "./type_tokens"
+import { ExistingAsset } from "@/types/type_tokens"
 
 export type AssetData = {
   address: Address

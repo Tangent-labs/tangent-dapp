@@ -1,6 +1,6 @@
 "use client"
 
-import ListHarvestIndicator from "./list_harvest_indcator"
+import ListHarvestIndicator from "@/components/design_system/list/list_harvest_indcator"
 
 interface ListAPRProps {
   apr?: number

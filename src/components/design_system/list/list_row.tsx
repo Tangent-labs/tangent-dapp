@@ -1,7 +1,7 @@
 "use client"
 import React from "react"
-import ListRowDisposition from "./list_row_disposition"
-import Panel from "../structure/panel"
+import ListRowDisposition from "@/components/design_system/list/list_row_disposition"
+import Panel from "@/components/design_system/structure/panel"
 
 interface ListRowProps {
   children: React.ReactNode[]

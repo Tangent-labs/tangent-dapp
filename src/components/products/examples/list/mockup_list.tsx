@@ -1,12 +1,12 @@
 "use client"
 
-import ListAPR from "../../../design_system/list/list_apr"
-import ListAsset from "../../../design_system/list/list_asset"
-import ListHeader from "../../../design_system/list/list_header"
-import ListIndicator from "../../../design_system/list/list_indicator"
-import ListRow from "../../../design_system/list/list_row"
+import ListAPR from "@/components/design_system/list/list_apr"
+import ListAsset from "@/components/design_system/list/list_asset"
+import ListHeader from "@/components/design_system/list/list_header"
+import ListIndicator from "@/components/design_system/list/list_indicator"
+import ListRow from "@/components/design_system/list/list_row"
 import { useListContext } from "@/components/design_system/list/list_context"
-import { useNavigationContext } from "../../navigation_context"
+import { useNavigationContext } from "@/components/products/product_nav/navigation_context"
 
 export default function MockUpList() {
   const { headers, listState, displayRows, udpateSort } = useListContext()

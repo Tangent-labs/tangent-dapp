@@ -2,7 +2,7 @@ import { ADDR_TOKEN, TOKEN_ADDR } from "@/services/repo_asset_addresses"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import { AssetDataPriced, AssetData } from "@/types"
 import { Address } from "viem"
-import { getPrices } from "./service_price"
+import { getPrices } from "@/services/service_price"
 
 export const getAssetInfoByAddress = (address: Address): AssetData | undefined => {
   const key = ADDR_TOKEN[address] ? ADDR_TOKEN[address] : address

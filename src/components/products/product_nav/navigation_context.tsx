@@ -2,7 +2,7 @@
 import { FeaturesData, ProductData, ProductKey } from "@/types"
 import { useRouter } from "next/navigation"
 import React, { createContext, useContext, useState, ReactNode, useMemo } from "react"
-import { productsData } from "../products"
+import { productsData } from "@/components/products/products"
 
 /** !!! if needed _globalFeatures & _defautFeatures can be personalized for each product  */
 

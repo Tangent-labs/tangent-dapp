@@ -1,7 +1,7 @@
 import { ListProvider } from "@/components/design_system/list/list_context"
 import { getGrid1Data } from "@/services/service_design_system"
 import { ListState } from "@/types"
-import MockUpList from "@/components/pages/examples/list/mockup_list"
+import MockUpList from "@/components/products/examples/list/mockup_list"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 
 const { headers, rows } = await getGrid1Data()

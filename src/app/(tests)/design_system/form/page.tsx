@@ -1,7 +1,7 @@
-import { ExampleForm } from "@/components/pages/examples/form/example_form"
-import ExampleTitle from "@/components/pages/examples/example_title"
-import { ExampleFormProvider } from "@/components/pages/examples/form/example_form_context"
-import { getFormExampleInitData, transformAssetToOptions } from "@/components/pages/examples/form/example_form_controller"
+import { ExampleForm } from "@/components/products/examples/form/example_form"
+import ExampleTitle from "@/components/products/examples/example_title"
+import { ExampleFormProvider } from "@/components/products/examples/form/example_form_context"
+import { getFormExampleInitData, transformAssetToOptions } from "@/components/products/examples/form/example_form_controller"
 
 const { assetList, contract } = await getFormExampleInitData()
 

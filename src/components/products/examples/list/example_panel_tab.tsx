@@ -1,6 +1,6 @@
-import Panel from "../../../design_system/structure/panel"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../ui/tabs"
-import ExampleTitle from "../example_title"
+import Panel from "@/components/design_system/structure/panel"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import ExampleTitle from "@/components/products/examples/example_title"
 
 export default function ExamplePanelTabs() {
   return (

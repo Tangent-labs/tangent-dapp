@@ -4,18 +4,18 @@ export const metadata: Metadata = {
   description: "the tangent DAPP",
 }
 import { PageHeader } from "@/components/design_system/structure/page_header"
-import { MenuSide } from "@/components/design_system/structure/product_nav/menu_side"
+import { MenuSide } from "@/components/products/product_nav/menu_side"
 import { ProductKey } from "@/types"
 import { ReactNode } from "react"
-import { productsData } from "@/components/products"
+import { productsData } from "@/components/products/products"
 import { getUrlServerSide } from "@/middleware"
 import NotFound from "./not-found"
-import { NavigationProvider } from "@/components/pages/navigation_context"
+import { NavigationProvider } from "@/components/products/product_nav/navigation_context"
 import { cookies } from "next/headers"
 import { dappConfig } from "@/dapp_config"
-import MenuBarFeature from "@/components/design_system/structure/product_nav/menu_bar_feature"
-import { WalletConnexionProvider } from "@/components/pages/wallet_connexion_context"
-import { WalletConnexionButton } from "@/components/products/Wallet_connexion_button"
+import MenuBarFeature from "@/components/products/product_nav/menu_bar_feature"
+import { WalletConnexionProvider } from "@/components/products/wallet/wallet_connexion_context"
+import { WalletConnexionButton } from "@/components/products/wallet/Wallet_connexion_button"
 
 async function getNavIsOpen() {
   const cookieStore = await cookies()

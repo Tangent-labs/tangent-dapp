@@ -1,7 +1,7 @@
 "use client"
 
 import { IndicatorData } from "@/types"
-import Panel from "./panel"
+import Panel from "@/components/design_system/structure/panel"
 
 interface IndicatorCardProps {
   title: string

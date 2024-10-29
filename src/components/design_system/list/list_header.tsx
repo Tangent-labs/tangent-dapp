@@ -1,7 +1,7 @@
 "use client"
 
 import { ListHeaderData, ListSort, SortedState } from "@/types"
-import ListRowDisposition from "./list_row_disposition"
+import ListRowDisposition from "@/components/design_system/list/list_row_disposition"
 import { IconSortHeader } from "@/components/icons/icon_sort_header"
 
 interface ListHeaderProps {

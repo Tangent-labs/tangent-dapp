@@ -27,7 +27,7 @@
     "**/*.tsx",
     "next-env.d.ts",
     ".next/types/**/*.ts",
-    "src/components/pages/examples/form/example_form.tsx",
+    "src/components/products/examples/form/example_form.tsx",
     "src/components/design_system/list/list_context.tsx"
   ],
   "exclude": ["node_modules", ".next"]

@@ -1,4 +1,4 @@
-import ListExample1 from "@/components/pages/examples/list/example_list_1"
+import ListExample1 from "@/components/products/examples/list/example_list_1"
 import { ListProvider } from "@/components/design_system/list/list_context"
 import { getGrid1Data } from "@/services/service_design_system"
 import { ListState } from "@/types"

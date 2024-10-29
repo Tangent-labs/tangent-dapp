@@ -5,8 +5,8 @@ import InputSelect from "@/components/design_system/inputs/input_select"
 import Panel from "@/components/design_system/structure/panel"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { useContext } from "react"
-import { exampleFormContext } from "@/components/pages/examples/form/example_form_context"
-import { ExampleFormAssetType, ExampleFormContextValue } from "./example_form_type"
+import { exampleFormContext } from "@/components/products/examples/form/example_form_context"
+import { ExampleFormAssetType, ExampleFormContextValue } from "@/components/products/examples/form/example_form_type"
 
 export const ExampleForm = () => {
   const { formState, currentAsset, assetOptions, updateFormValues, formValues, setUpData, actionApprove, actionDeposit } =

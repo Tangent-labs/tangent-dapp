@@ -1,7 +1,7 @@
 "use client"
 import { useMemo } from "react"
-import { Button } from "../design_system/inputs/button"
-import { useWalletConnexionContext } from "../pages/wallet_connexion_context"
+import { Button } from "@/components/design_system/inputs/button"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { formatAddress } from "@/lib/utils"
 
 type WalletConnexionButtonProps = React.HTMLAttributes<HTMLButtonElement>

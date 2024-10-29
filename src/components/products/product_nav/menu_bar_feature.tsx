@@ -1,6 +1,6 @@
 "use client"
-import MenuBar, { MenuBarLink } from "../menu_bar"
-import { useNavigationContext } from "@/components/pages/navigation_context"
+import MenuBar, { MenuBarLink } from "@/components/design_system/structure/menu_bar"
+import { useNavigationContext } from "@/components/products/product_nav/navigation_context"
 import { useMemo } from "react"
 
 export default function MenuBarFeature() {

@@ -17,6 +17,7 @@ export type WalletConnexionContextValues = {
   isChainConnected: boolean
   isWellConnected: boolean
   currentAccount?: Account
+  currentWallet?: WalletState
   isConnecting: boolean
   connect: () => void
   disconnect: () => void
@@ -120,10 +121,12 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
 
   const contextValue: WalletConnexionContextValues = {
     currentAccount,
+    currentWallet,
     isConnected,
     isChainConnected,
     isWellConnected,
     isConnecting,
+
     connect,
     disconnect,
     changeNetwork,

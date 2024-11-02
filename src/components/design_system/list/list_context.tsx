@@ -25,11 +25,10 @@ const ListContext = createContext<ListContextValues | undefined>(undefined)
 // Create a provider component
 export const ListProvider = ({ children, _listState, _rows, _headers }: ListProviderProps) => {
   const [listState, setListState] = useState<ListState>(_listState)
-  const [rows] = useState<ListRowData[]>(_rows)
   const [headers] = useState<ListHeaderData[]>(_headers)
 
   const displayRows = useMemo(() => {
-    let activeRows = rows ? [...rows] : []
+    let activeRows = _rows ? (JSON.parse(JSON.stringify(_rows)) as ListRowData[]) : []
     if (listState?.search) {
       activeRows = activeRows.filter((r) => r.name.toLowerCase().includes(listState.search!.toLowerCase()))
     }
@@ -37,7 +36,7 @@ export const ListProvider = ({ children, _listState, _rows, _headers }: ListProv
       //Let's sort IT
     }
     return activeRows
-  }, [listState, rows])
+  }, [listState])
 
   const udpateSort = (field: string) => {
     const newSort = { ...listState.sort } as ListSort

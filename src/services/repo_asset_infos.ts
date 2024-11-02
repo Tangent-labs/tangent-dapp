@@ -28,4 +28,28 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     displayDecimals: 0,
     logo: "CRV",
   },
+  FXN: {
+    symbol: "FXN",
+    name: "FXN Token",
+    decimals: 18,
+    address: TOKEN_ADDR.FXN,
+    displayDecimals: 0,
+    logo: "FXN",
+  },
+  BAL: {
+    symbol: "BAL",
+    name: "Balancer",
+    decimals: 18,
+    displayDecimals: 0,
+    logo: "BAL",
+    address: TOKEN_ADDR.BAL,
+  },
+  PENDLE: {
+    symbol: "PENDLE",
+    name: "Pendle",
+    decimals: 18,
+    logo: "PENDLE",
+    address: TOKEN_ADDR.PENDLE,
+    displayDecimals: 0,
+  },
 }

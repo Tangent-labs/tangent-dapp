@@ -1,8 +1,19 @@
 import { dappConfig } from "@/dapp_config"
-import { WalletState } from "@web3-onboard/core"
-import { Address, Chain, createPublicClient, createWalletClient, custom, encodeFunctionData, EncodeFunctionDataReturnType, http, WalletClient } from "viem"
+import {
+  Abi,
+  Address,
+  Chain,
+  createPublicClient,
+  decodeErrorResult,
+  encodeDeployData,
+  encodeFunctionData,
+  EncodeFunctionDataReturnType,
+  Hex,
+  http,
+  WalletClient,
+} from "viem"
 
-const chain: Chain = {
+export const chain: Chain = {
   id: dappConfig.chain.id,
   nativeCurrency: {
     decimals: 18,
@@ -19,17 +30,6 @@ export const getPublicClient = () => {
     transport: http(),
   })
   return publicClient
-}
-
-export const getWalletClient = async (onBoardWallet: WalletState): Promise<WalletClient | undefined> => {
-  if (!onBoardWallet) return
-
-  const client = createWalletClient({
-    chain,
-    transport: custom(onBoardWallet.provider),
-  })
-
-  return client
 }
 
 export const getApproveTx = (contract: Address, spender: Address, amount: bigint): { data: EncodeFunctionDataReturnType; to: Address } => {
@@ -60,7 +60,7 @@ export const getApproveTx = (contract: Address, spender: Address, amount: bigint
   }
 }
 
-export const executeTransaction = async (client: WalletClient, txData: { data: EncodeFunctionDataReturnType; to: Address }) => {
+export const executeTransaction = async (client: WalletClient, txData: { data: EncodeFunctionDataReturnType; to?: Address }) => {
   const [address] = await client.getAddresses()
   const txHash = await client.request({
     method: "eth_sendTransaction",
@@ -72,4 +72,48 @@ export const executeTransaction = async (client: WalletClient, txData: { data: E
     ],
   })
   return txHash
+}
+
+export const getDeployTx = (abi: Abi, byteCode: Hex, args?: unknown[]) => {
+  const data = encodeDeployData({
+    abi: abi,
+    bytecode: byteCode,
+    args: args || [],
+  })
+  return data
+}
+
+export const executeChainViewUnique = async <T>(abi: Abi, byteCode: Hex, args?: unknown[]): Promise<T | undefined> => {
+  const data = await executeChainView<[T]>(abi, byteCode, args)
+  return data?.at(0)
+}
+
+export const executeChainView = async <T>(abi: Abi, byteCode: Hex, args?: unknown[]): Promise<T | undefined> => {
+  function isNestedErrorWithData(error: unknown): error is { cause: { cause: { cause: { data: { data: Hex } } } } } {
+    return (
+      typeof error === "object" &&
+      error !== null &&
+      "cause" in error &&
+      typeof (error as { cause: unknown }).cause === "object" &&
+      (error as { cause: { cause: unknown } }).cause.cause !== undefined &&
+      typeof (error as { cause: { cause: { cause: unknown } } }).cause.cause.cause === "object" &&
+      (error as { cause: { cause: { cause: { data: unknown } } } }).cause.cause.cause.data !== undefined &&
+      typeof (error as { cause: { cause: { cause: { data: { data: Hex } } } } }).cause.cause.cause.data.data === "string"
+    )
+  }
+
+  const txData = getDeployTx(abi, byteCode, args)
+  const client = getPublicClient()
+  try {
+    await client.estimateGas({ data: txData })
+  } catch (e: unknown | { cause: { cause: { cause: { data: { data: Hex } } } } }) {
+    if (!isNestedErrorWithData(e)) throw e
+    const dataRaw = e.cause.cause.cause.data.data
+    if (!dataRaw) throw e
+    const v = decodeErrorResult({
+      abi,
+      data: dataRaw,
+    })
+    return v?.args as T
+  }
 }

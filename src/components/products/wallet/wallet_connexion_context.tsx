@@ -2,10 +2,11 @@
 import { dappConfig } from "@/dapp_config"
 import { formatAddress } from "@/lib/utils"
 import web3Onboard from "@/services/config_wallet_provider"
+import { chain } from "@/services/service_rpc"
 import { WalletState } from "@web3-onboard/core"
 import { NotificationType } from "@web3-onboard/core/dist/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { Address, toHex } from "viem"
+import { Address, createWalletClient, custom, toHex, WalletClient } from "viem"
 
 export type Account = {
   address: Address
@@ -22,6 +23,7 @@ export type WalletConnexionContextValues = {
   connect: () => void
   disconnect: () => void
   changeNetwork: () => void
+  getWalletClient: () => WalletClient | undefined
 }
 
 interface WalletConnexionProviderProps {
@@ -49,6 +51,17 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
 
   const changeNetwork = () => {
     web3Onboard.setChain({ chainId: dappConfig.chain.id })
+  }
+
+  const getWalletClient = (): WalletClient | undefined => {
+    if (!currentWallet) return
+
+    const client = createWalletClient({
+      chain,
+      transport: custom(currentWallet.provider),
+    })
+
+    return client
   }
 
   const disconnect = async () => {
@@ -126,7 +139,7 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
     isChainConnected,
     isWellConnected,
     isConnecting,
-
+    getWalletClient,
     connect,
     disconnect,
     changeNetwork,

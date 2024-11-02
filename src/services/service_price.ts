@@ -4,8 +4,8 @@ import { dappConfig } from "@/dapp_config"
 import { Address } from "viem"
 import { revalidateTag, unstable_cache } from "next/cache"
 
-const CACHE_TAG = "tgt-defillama-price"
-const CACHE_OPTION = { revalidate: dappConfig.defillamaCacheTime * 60 }
+const CACHE_PRICE_TAG = "tgt-price"
+const CACHE_PRICE_OPTION = { revalidate: dappConfig.cacheTime.price * 60 }
 
 type DefillamaTokenInfo = {
   decimals: number
@@ -42,13 +42,13 @@ const _getPrice = async (): Promise<Record<AssetConfigKey, number> | undefined> 
 }
 
 export const resetPricesCache = () => {
-  revalidateTag(CACHE_TAG)
+  revalidateTag(CACHE_PRICE_TAG)
 }
 
 export const getPrices = unstable_cache(
   async () => {
     return _getPrice()
   },
-  [CACHE_TAG],
-  CACHE_OPTION
+  [CACHE_PRICE_TAG],
+  CACHE_PRICE_OPTION
 )

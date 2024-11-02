@@ -17,6 +17,11 @@ export const getAssetInfoByKey = (key: string): AssetData | undefined => {
   return
 }
 
+export const getAssetInfoUnique = async (key: AssetConfigKey): Promise<AssetDataPriced | undefined> => {
+  const data = await getAssetInfo([key])
+  return data?.at(0)
+}
+
 export const getAssetInfo = async (keys: AssetConfigKey[]): Promise<AssetDataPriced[]> => {
   const list: Record<AssetConfigKey, AssetData> = assetConfig
   const prices = await getPrices()
@@ -29,6 +34,10 @@ export const getAssetInfo = async (keys: AssetConfigKey[]): Promise<AssetDataPri
           ...v,
           price: prices ? prices[k] : 0,
         }
+      })
+      .sort((a, b) => {
+        // we sort by the  index of the input array
+        return keys.indexOf(a.symbol) - keys.indexOf(b.symbol)
       })
   )
 }

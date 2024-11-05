@@ -1,15 +1,17 @@
 import { BoosterListProvider } from "@/components/products/booster/booster_list/booster_list_context"
 import BoosterList from "@/components/products/booster/booster_list/booster_list"
-import { getAssetInfo } from "@/services/service_existing_asset"
+import { getBoosterListServerData } from "@/components/products/booster/booster_list/booster_list_controller"
 
-const [balInfo, crvInfo, fxnInfo, pendleInfo] = await getAssetInfo(["BAL", "CRV", "FXN", "PENDLE"])
+const { assetsInfos, rewardsInfo } = await getBoosterListServerData()
 
-const ExmapleListPage = async () => {
+const BoosterListPage = async () => {
   return (
-    <BoosterListProvider infos={[balInfo, crvInfo, fxnInfo, pendleInfo]}>
-      <BoosterList />
-    </BoosterListProvider>
+    <>
+      <BoosterListProvider assetsInfos={assetsInfos} rewardsInfo={rewardsInfo}>
+        <BoosterList />
+      </BoosterListProvider>
+    </>
   )
 }
 
-export default ExmapleListPage
+export default BoosterListPage

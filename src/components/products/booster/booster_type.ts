@@ -29,7 +29,7 @@ export type BoosterStakingInfo = {
   sdAsset: Address
   gaugeAsset: Address
   pool?: Address
-  rewards?: Address[]
+  rewards?: ExistingAsset[]
 }
 
 export type BoosterStakingInfos = Record<BoosterExistingAsset, BoosterStakingInfo>

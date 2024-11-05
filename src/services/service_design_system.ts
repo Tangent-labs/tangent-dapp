@@ -23,11 +23,11 @@ const listData: ListRowData[] = [
       { key: "deposited", label: "Deposited", value: "$2,500,000", raw: 2500000 },
       { key: "claimable", label: "Claimable", value: "$2,500,000", raw: 2500000 },
     ],
-    assetsEarned: [{ token: "DAI" }, { token: "USDC" }],
+    assetsEarned: [{ token: "WETH" }, { token: "USDC" }],
   },
   {
-    token: "DAI",
-    name: "DAI",
+    token: "WETH",
+    name: "WETH",
     apr: {
       current: 55.3,
       projected: 65.0,
@@ -53,7 +53,7 @@ const listData: ListRowData[] = [
       { key: "deposited", label: "Deposited", value: "$3,000,000", raw: 3000000 },
       { key: "claimable", label: "Claimable", value: "$2,000,000", raw: 2000000 },
     ],
-    assetsEarned: [{ token: "DAI" }],
+    assetsEarned: [{ token: "WETH" }],
   },
   {
     token: "ETH",
@@ -68,7 +68,7 @@ const listData: ListRowData[] = [
       { key: "deposited", label: "Deposited", value: "$4,200,000", raw: 4200000 },
       { key: "claimable", label: "Claimable", value: "$3,500,000", raw: 3500000 },
     ],
-    assetsEarned: [{ token: "USDC" }, { token: "DAI" }],
+    assetsEarned: [{ token: "USDC" }, { token: "WETH" }],
   },
 ]
 

@@ -7,7 +7,7 @@ export type AssetData = {
   displayDecimals: number
   symbol: string
   name?: string
-  logo?: ExistingAsset
+  logo: ExistingAsset
 }
 
 export type AssetDataPriced = AssetData & {
@@ -28,4 +28,15 @@ export type AssetUserData = {
 export type AssetValueData = {
   value?: bigint
   balance?: bigint
+}
+
+export type TokenAmountPricedRow = {
+  symbol: string
+  dollarValue: number
+  tokenAmount: number
+}
+
+export type TokenAmountPriced = {
+  totalDollar: number
+  details: TokenAmountPricedRow[]
 }

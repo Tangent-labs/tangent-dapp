@@ -19,7 +19,7 @@ export default function MockUpList() {
       {/* Render the rows of data */}
       {displayRows.map((item, index) => (
         <ListRow key={index} navigate={() => navigate({ productTo: currentProduct, featureTo: "deposit", itemSlug: item.token })}>
-          <ListAsset name={item.name} token={item.token} assetsEarned={[{ token: "DAI" }, { token: "USDC" }]} />
+          <ListAsset name={item.name} token={item.token} assetsEarned={[{ token: "WETH" }, { token: "USDC" }]} />
           <ListAPR apr={item.apr.current} projectedApr={item.apr.projected} harvestHelpMessage="Rewards has not been harvested yet." />
           <>
             {item.indicators.map((i) => (

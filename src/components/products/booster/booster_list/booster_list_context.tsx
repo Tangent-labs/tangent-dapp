@@ -8,7 +8,10 @@ import { AssetApr, AssetDataPriced, ListRowData } from "@/types"
 
 type BoosterListProps = {
   children: ReactNode
-  infos: [AssetDataPriced, AssetDataPriced, AssetDataPriced, AssetDataPriced]
+  assetsInfos: {
+    [K in BoosterExistingAsset]: AssetDataPriced
+  }
+  rewardsInfo: AssetDataPriced[]
 }
 
 type BoosterListContextValues = {
@@ -18,9 +21,7 @@ type BoosterListContextValues = {
 
 export const BoosterListContext = createContext<BoosterListContextValues | undefined>(undefined)
 
-export const BoosterListProvider = ({ children, infos }: BoosterListProps) => {
-  const [balInfo, crvInfo, fxnInfo, pendleInfo] = infos
-
+export const BoosterListProvider = ({ children, assetsInfos, rewardsInfo }: BoosterListProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [rows, setRows] = useState<OutputBoosterList | undefined>()
   const [aprs, setAprs] = useState<Record<BoosterExistingAsset, AssetApr> | undefined>()
@@ -35,7 +36,7 @@ export const BoosterListProvider = ({ children, infos }: BoosterListProps) => {
   }, [])
 
   const displayRows = useMemo(() => {
-    return transformBoosterList(rows, aprs, [balInfo, crvInfo, fxnInfo, pendleInfo])
+    return transformBoosterList(rows, aprs, assetsInfos, rewardsInfo)
   }, [rows, aprs])
 
   const loadData = useCallback(() => {

@@ -1,6 +1,6 @@
 "use client"
 import { dappConfig } from "@/dapp_config"
-import { formatAddress } from "@/lib/utils"
+import { formatAddress } from "@/lib/other_formatter"
 import web3Onboard from "@/services/config_wallet_provider"
 import { chain } from "@/services/service_rpc"
 import { WalletState } from "@web3-onboard/core"

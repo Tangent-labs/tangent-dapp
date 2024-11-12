@@ -11,6 +11,7 @@ export type DappConfig = {
     name: string
     rpc: string
     walletConnectId: string
+    explorerContractUrl: string
   }
   apiUrl: string
 }
@@ -29,6 +30,7 @@ export const dappConfig: DappConfig = {
     name: process.env.NEXT_PUBLIC_CHAIN_NAME || "",
     rpc: process.env.NEXT_PUBLIC_CHAIN_RPC || "",
     walletConnectId: process.env.NEXT_PUBLIC_WALLETCONECT_ID || "",
+    explorerContractUrl: process.env.NEXT_PUBLIC_CHAIN_CONTRACT_EXPLORER || "",
   },
   apiUrl: process.env.NEXT_PUBLIC_API_URL || "",
 }

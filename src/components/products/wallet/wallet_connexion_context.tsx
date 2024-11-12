@@ -19,6 +19,7 @@ export type WalletConnexionContextValues = {
   isWellConnected: boolean
   currentAccount?: Account
   currentWallet?: WalletState
+  currentAddress?: Address
   isConnecting: boolean
   connect: () => void
   disconnect: () => void
@@ -59,6 +60,7 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
     const client = createWalletClient({
       chain,
       transport: custom(currentWallet.provider),
+      account: currentAddress,
     })
 
     return client
@@ -78,6 +80,10 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
   const isChainConnected = useMemo<boolean>(() => {
     return currentWallet?.chains?.at(0)?.id === toHex(dappConfig.chain.id)
   }, [currentWallet])
+
+  const currentAddress = useMemo<Address | undefined>(() => {
+    return currentAccount?.address
+  }, [currentAccount])
 
   // are all the condition for interacting with the daap are met .
   const isWellConnected = useMemo<boolean>(() => {
@@ -133,6 +139,7 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
   }, [currentWallet, currentAccount])
 
   const contextValue: WalletConnexionContextValues = {
+    currentAddress,
     currentAccount,
     currentWallet,
     isConnected,

@@ -29,3 +29,30 @@ export type AssetApr = {
   projectedApr?: AprEntry
   boostsData?: unknown
 }
+
+export type AprDisplay = {
+  title: string
+  total: string
+  details: {
+    asset: string
+    value: string
+    percent: number
+  }[]
+}
+
+export type PositionData = {
+  tokenId: number
+  deposited: number
+  tokensClaimable: TokenAmount[]
+}
+
+export type BalanceAllowances = {
+  token: Address
+  balance: bigint
+  allowances?: Allowance[]
+}
+
+export type Allowance = {
+  spender: Address
+  allowance: bigint
+}

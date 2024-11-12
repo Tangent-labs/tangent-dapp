@@ -5,6 +5,7 @@ import { getBoosterListData, transformBoosterList } from "./booster_list_control
 import { BoosterExistingAsset, OutputBoosterList } from "../booster_type"
 import { getBoosterApr } from "../booster_controller"
 import { AssetApr, AssetDataPriced, ListRowData } from "@/types"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
 type BoosterListProps = {
   children: ReactNode
@@ -25,6 +26,7 @@ export const BoosterListProvider = ({ children, assetsInfos, rewardsInfo }: Boos
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [rows, setRows] = useState<OutputBoosterList | undefined>()
   const [aprs, setAprs] = useState<Record<BoosterExistingAsset, AssetApr> | undefined>()
+  const { currentAddress } = useWalletConnexionContext()
 
   useEffect(() => {
     loadData()
@@ -41,7 +43,7 @@ export const BoosterListProvider = ({ children, assetsInfos, rewardsInfo }: Boos
 
   const loadData = useCallback(() => {
     setIsLoading(true)
-    getBoosterListData().then((data) => {
+    getBoosterListData(currentAddress).then((data) => {
       setRows(data)
       setIsLoading(false)
     })

@@ -20,20 +20,21 @@ interface InputAssetValueProps {
   asset: AssetDataPriced
   label?: string
   onChange: (value: bigint) => void
-  options: InputAssetValueOptions
-}
-
-export const inputAssetValueFullOption = (displayDecimals: number): InputAssetValueOptions => {
-  return {
-    displayDecimals,
-    displayLabel: true,
-    displayBalance: true,
-    displayMax: true,
-    displayDollarValue: true,
-  }
+  options?: InputAssetValueOptions
 }
 
 const InputAssetValue = ({ value, balance, asset, onChange, options, className, label }: InputAssetValueProps) => {
+  options = {
+    ...{
+      displayDecimals: asset?.displayDecimals || 0,
+      displayLabel: true,
+      displayBalance: true,
+      displayMax: true,
+      displayDollarValue: true,
+    },
+    ...(options || {}),
+  }
+
   // Debounce
   const [innerValue, setInnverValue] = useState<number>(Number(formatUnits(value || BigInt(0), asset.decimals)))
   useEffect(() => {
@@ -51,7 +52,7 @@ const InputAssetValue = ({ value, balance, asset, onChange, options, className, 
    */
   const displayBalance = useMemo(() => {
     if (!options?.displayBalance) return ""
-    const formattedBalance = formatBigInt(balance || "0", asset.decimals, options.displayDecimals || asset.decimals)
+    const formattedBalance = formatBigInt(balance || "0", asset.decimals, options?.displayDecimals || asset.displayDecimals)
     return `Balance: ${formattedBalance} ${asset?.symbol || ""}`
   }, [balance, asset, options])
 
@@ -71,12 +72,12 @@ const InputAssetValue = ({ value, balance, asset, onChange, options, className, 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInnverValue(Number(e.target.value))
   }
-  const placeholder = `#.${"0".repeat(options.displayDecimals || asset.decimals)}`
+  const placeholder = `#.${"0".repeat(options?.displayDecimals || asset.displayDecimals)}`
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
       <div className="flex justify-between">
         <label className={`text-xs ${!options?.displayLabel && "sr-only"} `}>{label}</label>
-        {options.displayBalance && <span className={`text-xs text-gray-400`}>{displayBalance}</span>}
+        {options?.displayBalance && <span className={`text-xs text-gray-400`}>{displayBalance}</span>}
       </div>
       <input
         type="number"

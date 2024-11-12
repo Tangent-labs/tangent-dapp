@@ -61,17 +61,22 @@ export const getApproveTx = (contract: Address, spender: Address, amount: bigint
 }
 
 export const executeTransaction = async (client: WalletClient, txData: { data: EncodeFunctionDataReturnType; to?: Address }) => {
-  const [address] = await client.getAddresses()
-  const txHash = await client.request({
-    method: "eth_sendTransaction",
-    params: [
-      {
-        ...txData,
-        from: address,
-      },
-    ],
-  })
-  return txHash
+  try {
+    const [address] = await client.getAddresses()
+    const txHash = await client.request({
+      method: "eth_sendTransaction",
+      params: [
+        {
+          ...txData,
+          from: address,
+        },
+      ],
+    })
+    return txHash
+  } catch (e) {
+    console.error(e)
+    throw e
+  }
 }
 
 export const getDeployTx = (abi: Abi, byteCode: Hex, args?: unknown[]) => {

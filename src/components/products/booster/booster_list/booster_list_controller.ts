@@ -1,6 +1,7 @@
 import BoosterListABI from "@/abi/booster/BoosterList.json"
+
 import { executeChainViewUnique } from "@/services/service_rpc"
-import { Abi, formatUnits, Hex, zeroAddress } from "viem"
+import { Abi, Address, formatUnits, Hex, zeroAddress } from "viem"
 import { BoosterExistingAsset, BoosterRowExtend, OutputBoosterList } from "../booster_type"
 import { AssetApr, AssetDataPriced, ExistingAsset, ListHeaderData, ListRowData } from "@/types"
 import { boosterStakingInfos } from "../booster_repository"
@@ -32,9 +33,9 @@ export const getBoosterListServerData = async () => {
   return { assetsInfos: assetsInfos as { [K in BoosterExistingAsset]: AssetDataPriced }, rewardsInfo }
 }
 
-export const getBoosterListData = async () => {
-  const data = await executeChainViewUnique<OutputBoosterList>(BoosterListABI.abi as Abi, BoosterListABI.bytecode as Hex, [zeroAddress])
-  return data
+export const getBoosterListData = async (address: Address | undefined) => {
+  address = address || zeroAddress
+  return await executeChainViewUnique<OutputBoosterList>(BoosterListABI.abi as Abi, BoosterListABI.bytecode as Hex, [address])
 }
 
 export const transformBoosterList = (

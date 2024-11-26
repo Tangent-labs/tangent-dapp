@@ -23,7 +23,7 @@ export const boosterStakingInfos: BoosterStakingInfos = {
     stakingAddress: "0x508f0E1b565b40AeB94671BeD228083203330882",
     asset: "PENDLE",
     sdAsset: "sdPENDLE",
-    gaugeAsset: "0x50DC9aE51f78C593d4138263da7088A973b8184E",
+    gaugeAsset: "0x5Ea630e00D6eE438d3deA1556A110359ACdc10A9",
     pool: "0x26f3f26f46cbee59d1f8860865e13aa39e36a8c0",
     rewards: ["PENDLE", "WETH", "sdPENDLE"],
   },

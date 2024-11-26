@@ -17,12 +17,16 @@ export type OutputBoosterList = {
   fxnRow: BoosterRow
 }
 
-export type BoosterDetailOut = {
+export type BoosterDetail = {
   totalStaked: bigint
   userStaked: bigint
   tokensClaimable: TokenAmount[]
   positionsDetails: PositionData[]
   isProcessed: boolean
+}
+
+export type BoosterDetailOut = {
+  boosterDetail: BoosterDetail
   obas: BalanceAllowances[]
 }
 
@@ -49,14 +53,34 @@ export type BoosterDepositAssetInfo = {
   balance: AssetUserData
   address: Address
   current: BoosterDepositType
+  asset?: AssetDataPriced
 }
 
-export type BoosterDepositParams = {
+export type BoosterGaugeParams = {
   walletClient: WalletClient
   tokenId: number
   stakingInfo: BoosterStakingInfo
-  currentAsset: BoosterDepositAssetInfo
-  splippage: number
   weiValue: bigint
+}
+
+export type BoosterDepositParams = BoosterGaugeParams & {
+  current: BoosterDepositType
+  expectedSdAsset: bigint
   isLock: boolean
+}
+
+export type ConvertAndStakeSdAssetParams = [
+  _tokenId: number, // uint256 is mapped to bigint in TS
+  _sdAssetStaking: string, // address is mapped to string
+  _gaugeAssetAmount: bigint,
+  _minSdAssetAmountReceivedDuringSwap: bigint,
+  _sdAssetAmount: bigint,
+  _assetAmount: bigint,
+  isLock: boolean,
+]
+
+export type BoosterConvertOut = {
+  sdAssetAmountOut: bigint
+  feePercentage: bigint
+  feeOrIncentiveAmount: bigint
 }

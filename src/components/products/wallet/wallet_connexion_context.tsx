@@ -25,6 +25,7 @@ export type WalletConnexionContextValues = {
   disconnect: () => void
   changeNetwork: () => void
   getWalletClient: () => WalletClient | undefined
+  canInteract: boolean
 }
 
 interface WalletConnexionProviderProps {
@@ -138,6 +139,10 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
     }
   }, [currentWallet, currentAccount])
 
+  const canInteract = useMemo(() => {
+    return !!currentAddress && isWellConnected
+  }, [currentAddress, isWellConnected])
+
   const contextValue: WalletConnexionContextValues = {
     currentAddress,
     currentAccount,
@@ -150,6 +155,7 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
     connect,
     disconnect,
     changeNetwork,
+    canInteract,
   }
 
   return <WalletConnexionContext.Provider value={contextValue}>{children} </WalletConnexionContext.Provider>

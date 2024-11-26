@@ -6,8 +6,9 @@ import {
   createPublicClient,
   decodeErrorResult,
   encodeDeployData,
-  encodeFunctionData,
+  EncodeFunctionDataParameters,
   EncodeFunctionDataReturnType,
+  Hash,
   Hex,
   http,
   WalletClient,
@@ -32,7 +33,9 @@ export const getPublicClient = () => {
   return publicClient
 }
 
-export const getApproveTx = (contract: Address, spender: Address, amount: bigint): { data: EncodeFunctionDataReturnType; to: Address } => {
+export type ApproveTxResult = EncodeFunctionDataParameters & { gas: undefined | bigint; address: Address }
+
+export const getApproveTx = (contract: Address, spender: Address, amount: bigint): ApproveTxResult => {
   const approveAbi = [
     {
       inputs: [
@@ -47,17 +50,32 @@ export const getApproveTx = (contract: Address, spender: Address, amount: bigint
   ]
 
   // Prepare approve transaction data
-  const data = encodeFunctionData({
-    abi: approveAbi,
+  return {
+    abi: approveAbi as unknown as Abi,
     functionName: "approve",
     args: [spender, amount],
-  })
-
-  // Encoded TX
-  return {
-    to: contract,
-    data,
+    gas: undefined,
+    address: contract,
   }
+
+  // // Encoded TX
+  // return {
+  //   encoded: {
+  //     to: contract,
+  //     data: encodeFunctionData(data),
+  //   },
+  //   raw: {
+  //     ...data,
+  //     address: contract,
+  //     gas: undefined,
+  //   },
+  // }
+}
+
+export const waitForTransaction = async (hash: Hash) => {
+  const publicClient = await getPublicClient()
+  const receipt = await publicClient.waitForTransactionReceipt({ hash })
+  return receipt.status === "success"
 }
 
 export const executeTransaction = async (client: WalletClient, txData: { data: EncodeFunctionDataReturnType; to?: Address }) => {

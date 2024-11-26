@@ -11,6 +11,7 @@ import { useNavigationContext } from "../../product_nav/navigation_context"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import BoosterRecordApr from "./booster_record_apr"
 import BoosterRecordContract from "./booster_record_contracts"
+import PanelRaw from "@/components/design_system/structure/panel_raw"
 
 type BoosterRecordLayoutProps = {
   children: ReactNode
@@ -31,7 +32,7 @@ export default function BoosterRecordLayout({ children, asset, assetInfo, reward
   )
 
   return (
-    <BoosterRecordProvider asset={asset} assetInfo={assetInfo} rewardsInfo={rewardsInfo} stakingInfo={stakingInfo}>
+    <BoosterRecordProvider asset={asset} assetInfo={assetInfo} tokenInfo={rewardsInfo} stakingInfo={stakingInfo}>
       <div className="flex flex-col gap-4">
         <div className="flex justify-between">
           <div>select </div>
@@ -42,7 +43,7 @@ export default function BoosterRecordLayout({ children, asset, assetInfo, reward
         </div>
         <Divider />
         <div className="flex gap-4 max-xl:flex-col">
-          <div className="c xl:w-3/5">
+          <div className="xl:w-2/5">
             <Panel className="h-full">
               <div className="flex gap-2">
                 <ButtonTab active={currentFeature === "deposit"} label={"Deposit"} onClick={() => onTabClick("deposit")} />
@@ -51,17 +52,14 @@ export default function BoosterRecordLayout({ children, asset, assetInfo, reward
               <div>{children}</div>
             </Panel>
           </div>
-          <div className="w-full xl:w-2/5">
-            <Panel className="h-full w-full">
+          <div className="flex h-full w-full flex-col gap-2 xl:w-3/5">
+            <PanelRaw className="p-4">
               <BoosterRecordApr />
-            </Panel>
+            </PanelRaw>
+            <PanelRaw className="p-4">
+              <BoosterRecordContract />
+            </PanelRaw>
           </div>
-        </div>
-        <Divider />
-        <div>
-          <Panel>
-            <BoosterRecordContract />
-          </Panel>
         </div>
       </div>
     </BoosterRecordProvider>

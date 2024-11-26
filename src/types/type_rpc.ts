@@ -42,7 +42,7 @@ export type AprDisplay = {
 
 export type PositionData = {
   tokenId: number
-  deposited: number
+  deposited: bigint
   tokensClaimable: TokenAmount[]
 }
 

@@ -8,6 +8,7 @@ export type AssetData = {
   symbol: string
   name?: string
   logo: ExistingAsset
+  displaySymbol?: string
 }
 
 export type AssetDataPriced = AssetData & {

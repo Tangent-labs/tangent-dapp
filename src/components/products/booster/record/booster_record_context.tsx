@@ -8,11 +8,11 @@ import { BoosterDetailOut, BoosterExistingAsset, BoosterStakingInfo } from "@pro
 import { useDebouncedCallback } from "use-debounce"
 import { getBoosterRecordData } from "@products/booster/record/booster_record_controller"
 
-type BoosterRcordProps = {
+type BoosterRecordProps = {
   children: ReactNode
   assetInfo?: AssetDataPriced
   asset: BoosterExistingAsset
-  rewardsInfo?: AssetDataPriced[]
+  tokenInfo?: AssetDataPriced[]
   stakingInfo: BoosterStakingInfo
 }
 
@@ -21,13 +21,14 @@ type BoosterRecordContextValues = {
   apr?: AssetApr
   onChainData?: BoosterDetailOut
   assetInfo?: AssetDataPriced
-  rewardsInfo?: AssetDataPriced[]
+  tokenInfo?: AssetDataPriced[]
   stakingInfo: BoosterStakingInfo
+  reloadOnChainData: () => void
 }
 
 export const BoosterRecordContext = createContext<BoosterRecordContextValues | undefined>(undefined)
 
-export const BoosterRecordProvider = ({ children, asset, assetInfo, stakingInfo, rewardsInfo }: BoosterRcordProps) => {
+export const BoosterRecordProvider = ({ children, asset, assetInfo, stakingInfo, tokenInfo }: BoosterRecordProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [onChainData, setOnChainData] = useState<BoosterDetailOut | undefined>()
   const [apr, setApr] = useState<AssetApr | undefined>()
@@ -40,6 +41,12 @@ export const BoosterRecordProvider = ({ children, asset, assetInfo, stakingInfo,
       setIsLoading(false)
     })
   }, [currentAddress])
+
+  const reloadOnChainData = () => {
+    getBoosterRecordData(currentAddress, stakingInfo.stakingAddress).then((data) => {
+      setOnChainData(data)
+    })
+  }
 
   const debouncedLoadData = useDebouncedCallback(loadData, 1000)
   const loadApr = useCallback(() => {
@@ -64,8 +71,9 @@ export const BoosterRecordProvider = ({ children, asset, assetInfo, stakingInfo,
     apr,
     onChainData,
     assetInfo,
-    rewardsInfo,
+    tokenInfo,
     stakingInfo,
+    reloadOnChainData,
   }
 
   return <BoosterRecordContext.Provider value={contextValue}>{children}</BoosterRecordContext.Provider>

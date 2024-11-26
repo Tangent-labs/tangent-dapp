@@ -5,6 +5,11 @@ export type SelectOption = {
   value: string
 }
 
+export type SelectOptionAmount = SelectOption & {
+  amountRaw: number
+  amountDisplay: string
+}
+
 export type SelectAssetLogoOption = SelectOption & {
   logo: ExistingAsset
 }

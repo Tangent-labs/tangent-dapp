@@ -28,8 +28,8 @@ export const ExampleForm = () => {
                 optionValues={assetOptions.optionValues}
                 label="Asset"
                 value={formValues.assetIn}
-                onChange={function (value: string): void {
-                  updateFormValues("assetIn", value as ExampleFormAssetType)
+                onChange={function (): void {
+                  updateFormValues("assetIn", "e.target.value" as ExampleFormAssetType)
                 }}
               />
             </div>

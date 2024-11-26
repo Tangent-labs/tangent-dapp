@@ -1,11 +1,10 @@
 "use client"
 
-interface InputSearchProps {
+type InputSearchProps = React.ParamHTMLAttributes<HTMLInputElement> & {
   placeholder?: string
   value: string
   onChange: (value: string) => void
   onSearch?: () => void // Optional prop if you want a search button
-  className?: string
 }
 
 const InputSearch = ({ placeholder = "Search...", value, onChange, onSearch, className = "" }: InputSearchProps) => {

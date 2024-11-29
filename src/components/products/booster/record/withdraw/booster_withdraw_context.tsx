@@ -10,7 +10,6 @@ import { doBoosterWithdraw } from "./booster_withdraw_controller"
 
 type BoosterWithdrawProps = {
   children: ReactNode
-  sdAssetInfo?: AssetDataPriced
 }
 
 type BoosterWithdrawContextValues = {
@@ -26,9 +25,9 @@ type BoosterWithdrawContextValues = {
 
 export const BoosterWithdrawContext = createContext<BoosterWithdrawContextValues | undefined>(undefined)
 
-export const BoosterWithdrawProvider = ({ children, sdAssetInfo }: BoosterWithdrawProps) => {
+export const BoosterWithdrawProvider = ({ children }: BoosterWithdrawProps) => {
   const { getWalletClient } = useWalletConnexionContext()
-  const { stakingInfo, onChainData, reloadOnChainData } = useBoosterRecordContext()
+  const { stakingInfo, onChainData, reloadOnChainData, sdAssetInfo } = useBoosterRecordContext()
   const [weiValue, setWeiValue] = useState<bigint | undefined>()
   const [currentPosition, setCurrentPosition] = useState<string | undefined>()
 
@@ -58,7 +57,7 @@ export const BoosterWithdrawProvider = ({ children, sdAssetInfo }: BoosterWithdr
 
   const gaugeAssetInfo = useMemo(() => {
     return { ...sdAssetInfo, symbol: `${sdAssetInfo?.symbol}-gauge`, address: stakingInfo.gaugeAsset } as AssetDataPriced
-  }, [])
+  }, [sdAssetInfo])
 
   const contextValue = {
     bool: true,

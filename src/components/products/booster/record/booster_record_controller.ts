@@ -1,12 +1,12 @@
 import BoosterDetailABI from "@/abi/booster/BoosterDetail.json"
-import { Abi, Address, Hex, zeroAddress } from "viem"
-import { BoosterDetailOut, BoosterExistingAsset } from "@products/booster/booster_type"
+import { Abi, Address, formatUnits, Hex, zeroAddress } from "viem"
+import { BoosterDetailOut, BoosterExistingAsset, BoosterRecordPageHaderData } from "@products/booster/booster_type"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import { boosterStakingInfos } from "@products/booster/booster_repository"
-import { AssetDataPriced, ExistingAsset } from "@/types"
+import { AssetDataPriced, ExistingAsset, TokenAmountData } from "@/types"
 import { getAssetInfo } from "@/services/service_existing_asset"
 import { assert } from "@/lib/utils"
-import { ADDR_TOKEN } from "@/services/repo_asset_addresses"
+import { getPricesFromTokenAmounts } from "@/lib/asset_utils"
 
 export const getBoosterRecordData = async (address: Address | undefined, staking: Address) => {
   address = address || zeroAddress
@@ -22,7 +22,7 @@ export const getBoosterRecordServerData = async (asset: BoosterExistingAsset) =>
   let assetsInfo: AssetDataPriced | undefined
   let sdAssetInfo: AssetDataPriced | undefined
   set.add(asset)
-  const sdAsset = ADDR_TOKEN[stakingInfo.gaugeAsset] as ExistingAsset
+  const sdAsset = stakingInfo.sdAsset as ExistingAsset
   set.add(sdAsset)
   stakingInfo.rewards?.forEach((r) => set.add(r))
   const list = Array.from(set)
@@ -38,4 +38,21 @@ export const getBoosterRecordServerData = async (asset: BoosterExistingAsset) =>
     rewardsInfo.push(info)
   })
   return { assetsInfo, sdAssetInfo, rewardsInfo, stakingInfo }
+}
+
+export const transformRecordToheaderData = (sdAssetInfo?: AssetDataPriced, data?: BoosterDetailOut, rewardsInfo?: AssetDataPriced[]) => {
+  if (!data || !sdAssetInfo || !rewardsInfo) return
+
+  const tvl = { dollarValue: "0", tokenAmount: "0" } as TokenAmountData
+  const deposited = { dollarValue: "0", tokenAmount: "0" } as TokenAmountData
+  const claimable = { dollarValue: "0", tokenAmount: "0" } as TokenAmountData
+  const tokenAmout = Number(formatUnits(data?.boosterDetail?.totalStaked || 0n, sdAssetInfo.decimals))
+  tvl.tokenAmount = `${tokenAmout.toFixed(sdAssetInfo?.displayDecimals)} ${sdAssetInfo.symbol}`
+  tvl.dollarValue = `$${(tokenAmout * sdAssetInfo?.price || 0).toFixed(0)}`
+  const depositedAmount = Number(formatUnits(data?.boosterDetail?.userStaked || 0n, sdAssetInfo.decimals))
+  deposited.tokenAmount = `${depositedAmount.toFixed(sdAssetInfo?.displayDecimals)} ${sdAssetInfo.symbol}`
+  deposited.dollarValue = `$${(depositedAmount * sdAssetInfo?.price || 0).toFixed(0)}`
+  const claimableAmount = getPricesFromTokenAmounts(data?.boosterDetail?.tokensClaimable, rewardsInfo)
+  claimable.dollarValue = `$${claimableAmount.data?.totalDollar.toFixed(0)}`
+  return { tvl, deposited, claimable } as BoosterRecordPageHaderData
 }

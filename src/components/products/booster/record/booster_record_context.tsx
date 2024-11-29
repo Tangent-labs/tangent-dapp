@@ -1,12 +1,12 @@
 "use client"
 
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { getBoosterApr } from "@products/booster/booster_controller"
 import { AssetApr, AssetDataPriced } from "@/types"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { BoosterDetailOut, BoosterExistingAsset, BoosterStakingInfo } from "@products/booster/booster_type"
+import { BoosterDetailOut, BoosterExistingAsset, BoosterRecordPageHaderData, BoosterStakingInfo } from "@products/booster/booster_type"
 import { useDebouncedCallback } from "use-debounce"
-import { getBoosterRecordData } from "@products/booster/record/booster_record_controller"
+import { getBoosterRecordData, transformRecordToheaderData } from "@products/booster/record/booster_record_controller"
 
 type BoosterRecordProps = {
   children: ReactNode
@@ -14,6 +14,7 @@ type BoosterRecordProps = {
   asset: BoosterExistingAsset
   tokenInfo?: AssetDataPriced[]
   stakingInfo: BoosterStakingInfo
+  sdAssetInfo?: AssetDataPriced
 }
 
 type BoosterRecordContextValues = {
@@ -24,11 +25,13 @@ type BoosterRecordContextValues = {
   tokenInfo?: AssetDataPriced[]
   stakingInfo: BoosterStakingInfo
   reloadOnChainData: () => void
+  headerData?: Awaited<Promise<BoosterRecordPageHaderData>>
+  sdAssetInfo?: AssetDataPriced
 }
 
 export const BoosterRecordContext = createContext<BoosterRecordContextValues | undefined>(undefined)
 
-export const BoosterRecordProvider = ({ children, asset, assetInfo, stakingInfo, tokenInfo }: BoosterRecordProps) => {
+export const BoosterRecordProvider = ({ children, asset, assetInfo, stakingInfo, tokenInfo, sdAssetInfo }: BoosterRecordProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [onChainData, setOnChainData] = useState<BoosterDetailOut | undefined>()
   const [apr, setApr] = useState<AssetApr | undefined>()
@@ -47,6 +50,10 @@ export const BoosterRecordProvider = ({ children, asset, assetInfo, stakingInfo,
       setOnChainData(data)
     })
   }
+
+  const headerData = useMemo(() => {
+    return transformRecordToheaderData(sdAssetInfo, onChainData, tokenInfo)
+  }, [sdAssetInfo, onChainData])
 
   const debouncedLoadData = useDebouncedCallback(loadData, 1000)
   const loadApr = useCallback(() => {
@@ -74,6 +81,8 @@ export const BoosterRecordProvider = ({ children, asset, assetInfo, stakingInfo,
     tokenInfo,
     stakingInfo,
     reloadOnChainData,
+    headerData,
+    sdAssetInfo,
   }
 
   return <BoosterRecordContext.Provider value={contextValue}>{children}</BoosterRecordContext.Provider>

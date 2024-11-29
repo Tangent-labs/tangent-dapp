@@ -1,11 +1,11 @@
-import { AssetDataPriced, TokenAmount, TokenAmountPriced } from "@/types"
+import { AssetDataPriced, TokenAmount, TokenAmountPriced, TokenAmountPricedRow } from "@/types"
 import { formatUnits } from "viem"
 
 /**
  *
  */
 export const getPricesFromTokenAmounts = (amounts: TokenAmount[], assets: AssetDataPriced[]): { data: TokenAmountPriced; errors: string[] } => {
-  const finalData = { totalDollar: 0, details: [] }
+  const finalData = { totalDollar: 0, details: [] as TokenAmountPricedRow[] }
   const errors: string[] = []
   amounts?.reduce<TokenAmountPriced>((agg, amount) => {
     const assetData = assets.find((a) => a.address === amount.token)
@@ -16,8 +16,8 @@ export const getPricesFromTokenAmounts = (amounts: TokenAmount[], assets: AssetD
       agg.totalDollar += dollarValue
       agg.details.push({
         symbol: amount.token,
-        dollarValue: dollarValue,
-        tokenAmount: actualAmount,
+        dollarValue: dollarValue || 0,
+        tokenAmount: actualAmount || 0,
       })
     } else {
       errors.push(`${amount.token} has been ignored `)

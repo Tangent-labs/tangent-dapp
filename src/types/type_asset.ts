@@ -37,6 +37,11 @@ export type TokenAmountPricedRow = {
   tokenAmount: number
 }
 
+export type TokenAmountData = {
+  dollarValue: string | undefined
+  tokenAmount: string | undefined
+}
+
 export type TokenAmountPriced = {
   totalDollar: number
   details: TokenAmountPricedRow[]

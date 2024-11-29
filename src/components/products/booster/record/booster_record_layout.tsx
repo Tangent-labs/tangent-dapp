@@ -1,6 +1,5 @@
 "use client"
 
-import RecordPageHeader from "@/components/design_system/structure/record_page_header"
 import { ReactNode, useCallback } from "react"
 import { BoosterRecordProvider } from "./booster_record_context"
 import { BoosterExistingAsset, BoosterStakingInfo } from "../booster_type"
@@ -12,6 +11,8 @@ import ButtonTab from "@/components/design_system/inputs/button_tab"
 import BoosterRecordApr from "./booster_record_apr"
 import BoosterRecordContract from "./booster_record_contracts"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
+import { BoosterRecordPageHeader } from "./booster_record_page_header"
+import { ButtonPanel } from "@/components/design_system/inputs/button_panel"
 
 type BoosterRecordLayoutProps = {
   children: ReactNode
@@ -19,9 +20,10 @@ type BoosterRecordLayoutProps = {
   asset: BoosterExistingAsset
   rewardsInfo?: AssetDataPriced[]
   stakingInfo: BoosterStakingInfo
+  sdAssetInfo?: AssetDataPriced
 }
 
-export default function BoosterRecordLayout({ children, asset, assetInfo, rewardsInfo, stakingInfo }: BoosterRecordLayoutProps) {
+export default function BoosterRecordLayout({ children, asset, assetInfo, rewardsInfo, stakingInfo, sdAssetInfo }: BoosterRecordLayoutProps) {
   const { currentFeature, currentProduct, navigate } = useNavigationContext()
   const onTabClick = useCallback(
     (feature: string) => {
@@ -30,16 +32,21 @@ export default function BoosterRecordLayout({ children, asset, assetInfo, reward
     },
     [currentFeature]
   )
+  const onBackClick = useCallback(() => {
+    navigate({ productTo: currentProduct, featureTo: "list", itemSlug: undefined })
+  }, [currentFeature])
 
   return (
-    <BoosterRecordProvider asset={asset} assetInfo={assetInfo} tokenInfo={rewardsInfo} stakingInfo={stakingInfo}>
+    <BoosterRecordProvider asset={asset} assetInfo={assetInfo} tokenInfo={rewardsInfo} stakingInfo={stakingInfo} sdAssetInfo={sdAssetInfo}>
       <div className="flex flex-col gap-4">
         <div className="flex justify-between">
           <div>select </div>
-          <div>Back</div>
+          <div>
+            <ButtonPanel onClick={onBackClick}>Back</ButtonPanel>
+          </div>
         </div>
         <div>
-          <RecordPageHeader />
+          <BoosterRecordPageHeader />
         </div>
         <Divider />
         <div className="flex gap-4 max-xl:flex-col">

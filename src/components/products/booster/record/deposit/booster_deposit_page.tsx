@@ -11,7 +11,7 @@ type BoosterRecordDepositProps = {
 export default async function BoosterDepositPage({ id }: BoosterRecordDepositProps) {
   const data = await getBoosterRecordServerData(id)
   return (
-    <BoosterRecordLayout asset={id} assetInfo={data?.assetsInfo} rewardsInfo={data?.rewardsInfo} stakingInfo={data.stakingInfo}>
+    <BoosterRecordLayout asset={id} assetInfo={data?.assetsInfo} rewardsInfo={data?.rewardsInfo} stakingInfo={data.stakingInfo} sdAssetInfo={data?.sdAssetInfo}>
       <BoosterDepositProvider>
         <BoosterDepositPanel />
       </BoosterDepositProvider>

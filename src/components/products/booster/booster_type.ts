@@ -1,4 +1,4 @@
-import { AssetApr, AssetDataPriced, AssetUserData, BalanceAllowances, ExistingAsset, PositionData, TokenAmount } from "@/types"
+import { AssetApr, AssetDataPriced, AssetUserData, BalanceAllowances, ExistingAsset, PositionData, TokenAmount, TokenAmountData } from "@/types"
 import { Address, WalletClient } from "viem"
 
 export type BoosterExistingAsset = Extract<ExistingAsset, "BAL" | "CRV" | "PENDLE" | "FXN">
@@ -83,4 +83,10 @@ export type BoosterConvertOut = {
   sdAssetAmountOut: bigint
   feePercentage: bigint
   feeOrIncentiveAmount: bigint
+}
+
+export type BoosterRecordPageHaderData = {
+  tvl: TokenAmountData
+  claimable: TokenAmountData
+  deposited: TokenAmountData
 }

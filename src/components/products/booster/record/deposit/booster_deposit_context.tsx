@@ -11,8 +11,8 @@ import {
   getDepositAssetInfo,
   getExpectedSdAsset,
   getFormState,
-  getPositionInfo,
 } from "@/components/products/booster/record/deposit/booster_deposit_controller"
+import { getPositionInfo } from "../booster_record_controller"
 
 type BoosterDepositProps = {
   children: ReactNode
@@ -50,7 +50,7 @@ export const BoosterDepositProvider = ({ children }: BoosterDepositProps) => {
 
   const positionInfos = useMemo(() => {
     if (!onChainData) return []
-    const { list, selected } = getPositionInfo(onChainData, stakingInfo)
+    const { list, selected } = getPositionInfo(onChainData, stakingInfo, true)
     if (!currentPosition && !!selected) setCurrentPosition(selected.value)
     return list
   }, [onChainData])
@@ -77,7 +77,13 @@ export const BoosterDepositProvider = ({ children }: BoosterDepositProps) => {
 
   useEffect(() => {
     if (expected) setExpected(undefined)
-    if (!weiValue || weiValue === 0n || currentAsset !== "asset") return
+    if (!weiValue || weiValue === 0n) return
+
+    if (currentAsset !== "asset") {
+      setExpected(weiValue)
+      return
+    }
+
     ;(async () => {
       try {
         const result = await getExpectedSdAsset(stakingInfo.stakingAddress, weiValue, true)

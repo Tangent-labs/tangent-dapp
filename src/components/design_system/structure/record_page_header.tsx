@@ -10,7 +10,7 @@ type RecordPageHeaderProps = {
 export default function RecordPageHeader({ apr, indicators }: RecordPageHeaderProps) {
   return (
     <Panel>
-      <div className="flex justify-evenly gap-4">
+      <div className="flex min-h-20 justify-evenly gap-4">
         {apr && (
           <div>
             <RecordPageHeaderIndicator

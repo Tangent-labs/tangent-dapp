@@ -4,6 +4,7 @@ import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { AssetDataPriced } from "@/types"
 import { useMemo } from "react"
 import { formatUnits } from "viem"
+import { cn } from "@/lib/utils"
 
 type InputAssetValueOptions = {
   displayDecimals?: number
@@ -15,6 +16,7 @@ type InputAssetValueOptions = {
 
 interface InputAssetValueProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChange"> {
   className?: string
+  inputClassName?: string
   value?: bigint
   balance?: bigint
   asset?: AssetDataPriced
@@ -23,7 +25,7 @@ interface InputAssetValueProps extends Omit<React.InputHTMLAttributes<HTMLInputE
   options?: InputAssetValueOptions
 }
 
-const InputAssetValue = ({ value, balance, asset, onChange, options, className, label, ...props }: InputAssetValueProps) => {
+const InputAssetValue = ({ value, balance, asset, onChange, options, className, inputClassName, label, ...props }: InputAssetValueProps) => {
   options = {
     ...{
       displayDecimals: asset?.displayDecimals || 0,
@@ -48,6 +50,9 @@ const InputAssetValue = ({ value, balance, asset, onChange, options, className, 
     }
   }, [innerValue, asset])
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInnverValue(!e.target.value ? undefined : Number(e.target.value))
+  }
   /**
    * Handle/Format balance
    */
@@ -70,10 +75,6 @@ const InputAssetValue = ({ value, balance, asset, onChange, options, className, 
     return <>no decimals</>
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInnverValue(!e.target.value ? undefined : Number(e.target.value))
-  }
-
   if (!asset) return <></>
 
   return (
@@ -87,9 +88,12 @@ const InputAssetValue = ({ value, balance, asset, onChange, options, className, 
         type="number"
         value={innerValue}
         onChange={handleInputChange}
-        className="min-h-10 rounded-[10px] border border-white border-opacity-20 bg-transparent p-2 text-xs disabled:bg-gray-400 disabled:bg-opacity-30"
+        className={cn(
+          "min-h-10 rounded-[10px] border border-white border-opacity-20 bg-transparent p-2 disabled:bg-gray-400 disabled:bg-opacity-30",
+          inputClassName
+        )}
       />
-      <div className="text-xs text-gray-400">{dollarValueDisplay}</div>
+      {options?.displayDollarValue && <div className="text-xs text-gray-400">{dollarValueDisplay}</div>}
     </div>
   )
 }

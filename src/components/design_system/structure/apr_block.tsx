@@ -38,17 +38,17 @@ export default function AprBlock({ title, aprEntry }: AprBlockProps) {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex w-full flex-col gap-1">
         {display.details.map((a) => (
-          <div key={a.asset} className="flex justify-between">
-            <div className="flex w-1/5 gap-2">
+          <div key={a.asset} className="flex w-full justify-between">
+            <div className="flex w-1/3 gap-2 lg:w-1/5">
               <TokenImage token={a.asset as ExistingAsset} size={25} />
               <span className="text-sm">{a.asset}</span>
             </div>
-            <div className="w-2/5 md:w-3/5">
-              <ProgressBar percent={a.percent} />
+            <div className="w-1/3 lg:w-3/5">
+              <ProgressBar percent={a.percent} minPercent={5} />
             </div>
-            <span>{a.value} %</span>
+            <span className="w-1/3 text-right lg:w-1/5">{a.value} %</span>
           </div>
         ))}
       </div>

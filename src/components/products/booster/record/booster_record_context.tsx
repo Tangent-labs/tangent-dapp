@@ -27,12 +27,16 @@ type BoosterRecordContextValues = {
   reloadOnChainData: () => void
   headerData?: Awaited<Promise<BoosterRecordPageHaderData>>
   sdAssetInfo?: AssetDataPriced
+  isProMode: boolean
+  setIsProMode: (arg: boolean) => void
+  positionCount: number
 }
 
 export const BoosterRecordContext = createContext<BoosterRecordContextValues | undefined>(undefined)
 
 export const BoosterRecordProvider = ({ children, asset, assetInfo, stakingInfo, tokenInfo, sdAssetInfo }: BoosterRecordProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isProMode, setIsProMode] = useState<boolean>(false)
   const [onChainData, setOnChainData] = useState<BoosterDetailOut | undefined>()
   const [apr, setApr] = useState<AssetApr | undefined>()
   const { currentAddress } = useWalletConnexionContext()
@@ -41,6 +45,9 @@ export const BoosterRecordProvider = ({ children, asset, assetInfo, stakingInfo,
     setIsLoading(true)
     getBoosterRecordData(currentAddress, stakingInfo.stakingAddress).then((data) => {
       setOnChainData(data)
+      if ((data?.boosterDetail?.positionsDetails?.filter((p) => p.deposited > 0n).length || 0) > 1) {
+        setIsProMode(true)
+      }
       setIsLoading(false)
     })
   }, [currentAddress])
@@ -69,6 +76,10 @@ export const BoosterRecordProvider = ({ children, asset, assetInfo, stakingInfo,
     }
   }, [debouncedLoadData, currentAddress])
 
+  const positionCount = useMemo(() => {
+    return onChainData?.boosterDetail?.positionsDetails?.filter((p) => p.deposited > 0n)?.length || 0
+  }, [onChainData])
+
   useEffect(() => {
     loadApr()
   }, [])
@@ -83,6 +94,9 @@ export const BoosterRecordProvider = ({ children, asset, assetInfo, stakingInfo,
     reloadOnChainData,
     headerData,
     sdAssetInfo,
+    isProMode,
+    setIsProMode,
+    positionCount,
   }
 
   return <BoosterRecordContext.Provider value={contextValue}>{children}</BoosterRecordContext.Provider>

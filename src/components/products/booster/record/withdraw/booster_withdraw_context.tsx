@@ -1,12 +1,14 @@
 "use client"
 import { createContext, ReactNode, useContext, useMemo, useState } from "react"
 
-import { getPositionInfo } from "../deposit/booster_deposit_controller"
 import { useBoosterRecordContext } from "../booster_record_context"
 import { AssetDataPriced, SelectOptionAmount } from "@/types"
 import { BoosterGaugeParams } from "../../booster_type"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doBoosterWithdraw } from "./booster_withdraw_controller"
+import { getPositionInfo } from "../booster_record_controller"
+import { formatUnits } from "viem"
+import { formatBigInt } from "@/lib/number_formatter"
 
 type BoosterWithdrawProps = {
   children: ReactNode
@@ -19,8 +21,11 @@ type BoosterWithdrawContextValues = {
   positionInfos: SelectOptionAmount[]
   currentPosition?: string
   setCurrentPosition: (arg?: string) => void
+  currentPositionInfo?: SelectOptionAmount
   actionWithdraw: () => void
   gaugeAssetInfo: AssetDataPriced
+  recieveDollarValue: string
+  recieveAmount: string
 }
 
 export const BoosterWithdrawContext = createContext<BoosterWithdrawContextValues | undefined>(undefined)
@@ -33,10 +38,15 @@ export const BoosterWithdrawProvider = ({ children }: BoosterWithdrawProps) => {
 
   const positionInfos = useMemo(() => {
     if (!onChainData) return []
-    const { list, selected } = getPositionInfo(onChainData, stakingInfo)
+    const { list, selected } = getPositionInfo(onChainData, stakingInfo, false)
     if (!currentPosition && !!selected) setCurrentPosition(selected.value)
     return list
   }, [onChainData])
+
+  const currentPositionInfo = useMemo(() => {
+    const info = positionInfos?.find((p) => p.value === currentPosition)
+    return info
+  }, [positionInfos, currentPosition])
 
   const canInteract = useMemo(() => {
     return true
@@ -54,20 +64,32 @@ export const BoosterWithdrawProvider = ({ children }: BoosterWithdrawProps) => {
     await doBoosterWithdraw(params)
     reloadOnChainData()
   }
+  const recieveAmount = useMemo(() => {
+    return formatBigInt(weiValue, sdAssetInfo?.decimals || 18, sdAssetInfo?.displayDecimals || 2)
+  }, [weiValue])
+
+  const recieveDollarValue = useMemo(() => {
+    return (Number(formatUnits(weiValue || 0n, sdAssetInfo?.decimals || 18)) * (sdAssetInfo?.price || 0))?.toFixed(2)
+  }, [weiValue])
 
   const gaugeAssetInfo = useMemo(() => {
-    return { ...sdAssetInfo, symbol: `${sdAssetInfo?.symbol}-gauge`, address: stakingInfo.gaugeAsset } as AssetDataPriced
+    const gauge = { ...sdAssetInfo, symbol: `${sdAssetInfo?.symbol}-gauge`, address: stakingInfo.gaugeAsset } as AssetDataPriced
+    return gauge
   }, [sdAssetInfo])
 
   const contextValue = {
     bool: true,
     gaugeAssetInfo,
+    weiValue,
     setWeiValue,
     currentPosition,
     setCurrentPosition,
+    currentPositionInfo,
     canInteract,
     positionInfos,
     actionWithdraw,
+    recieveDollarValue,
+    recieveAmount,
   }
   return <BoosterWithdrawContext.Provider value={contextValue}>{children}</BoosterWithdrawContext.Provider>
 }

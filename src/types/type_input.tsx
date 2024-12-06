@@ -8,6 +8,7 @@ export type SelectOption = {
 export type SelectOptionAmount = SelectOption & {
   amountRaw: number
   amountDisplay: string
+  amountBig: bigint
 }
 
 export type SelectAssetLogoOption = SelectOption & {

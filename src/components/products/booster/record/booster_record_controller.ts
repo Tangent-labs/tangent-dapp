@@ -1,10 +1,10 @@
 import BoosterDetailABI from "@/abi/booster/BoosterDetail.json"
 import { Abi, Address, formatUnits, Hex, zeroAddress } from "viem"
-import { BoosterDetailOut, BoosterExistingAsset, BoosterRecordPageHaderData } from "@products/booster/booster_type"
+import { BoosterDetailOut, BoosterExistingAsset, BoosterRecordPageHaderData, BoosterStakingInfo } from "@products/booster/booster_type"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import { boosterStakingInfos } from "@products/booster/booster_repository"
-import { AssetDataPriced, ExistingAsset, TokenAmountData } from "@/types"
-import { getAssetInfo } from "@/services/service_existing_asset"
+import { AssetDataPriced, ExistingAsset, SelectOptionAmount, TokenAmountData } from "@/types"
+import { getAssetInfo, getAssetInfoByKey } from "@/services/service_existing_asset"
 import { assert } from "@/lib/utils"
 import { getPricesFromTokenAmounts } from "@/lib/asset_utils"
 
@@ -55,4 +55,30 @@ export const transformRecordToheaderData = (sdAssetInfo?: AssetDataPriced, data?
   const claimableAmount = getPricesFromTokenAmounts(data?.boosterDetail?.tokensClaimable, rewardsInfo)
   claimable.dollarValue = `$${claimableAmount.data?.totalDollar.toFixed(0)}`
   return { tvl, deposited, claimable } as BoosterRecordPageHaderData
+}
+
+export const getPositionInfo = (onChainData: BoosterDetailOut, stakingInfo: BoosterStakingInfo, addNew: boolean) => {
+  const sdAsset = getAssetInfoByKey(stakingInfo.sdAsset)
+  const list: SelectOptionAmount[] =
+    onChainData?.boosterDetail?.positionsDetails?.map((p) => {
+      const amount = Number(formatUnits(p.deposited, sdAsset!.decimals))
+      return {
+        value: p.tokenId.toString(),
+        label: `Tkn. ${p.tokenId}`,
+        amountRaw: Number(amount),
+        amountDisplay: `${amount?.toFixed(sdAsset?.displayDecimals)} ${sdAsset?.symbol}`,
+        amountBig: p.deposited,
+      }
+    }) || []
+
+  const maxPosition = list.reduce(
+    (maxItem, currentItem) => {
+      return currentItem.amountRaw > (maxItem?.amountRaw || 0) ? currentItem : maxItem
+    },
+    undefined as SelectOptionAmount | undefined
+  )
+  if (addNew) {
+    list.splice(0, 0, { label: "new", value: "0", amountRaw: 0, amountDisplay: "", amountBig: 0n })
+  }
+  return { list: list as SelectOptionAmount[], selected: maxPosition }
 }

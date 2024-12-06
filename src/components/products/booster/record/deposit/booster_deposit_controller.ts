@@ -1,7 +1,7 @@
 import SdtUtilitiesABI from "@/abi/booster/SdtUtilities.json"
 import BoosterOutExpectedABI from "@/abi/booster/BoosterOutExpected.json"
 import SdtStakingPositionServiceABI from "@/abi/booster/SdtStakingPositionService.json"
-import { Abi, Address, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters, zeroAddress } from "viem"
+import { Abi, Address, Hex, maxUint256, WalletClient, WriteContractParameters, zeroAddress } from "viem"
 import {
   BoosterConvertOut,
   BoosterDepositAssetInfo,
@@ -13,32 +13,9 @@ import {
   ConvertAndStakeSdAssetParams,
 } from "@products/booster/booster_type"
 import { TOKEN_ADDR } from "@/services/repo_asset_addresses"
-import { AssetDataPriced, AssetUserData, ExistingAsset, SelectOptionAmount } from "@/types"
+import { AssetDataPriced, AssetUserData, ExistingAsset } from "@/types"
 import { BOOSTER_CONTRACT } from "../../booster_repository"
 import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import { getAssetInfoByKey } from "@/services/service_existing_asset"
-
-export const getPositionInfo = (onChainData: BoosterDetailOut, stakingInfo: BoosterStakingInfo) => {
-  const sdAsset = getAssetInfoByKey(stakingInfo.sdAsset)
-  const list: SelectOptionAmount[] =
-    onChainData?.boosterDetail?.positionsDetails?.map((p) => {
-      const amount = Number(formatUnits(p.deposited, sdAsset!.decimals))
-      return {
-        value: p.tokenId.toString(),
-        label: `Tkn. ${p.tokenId}`,
-        amountRaw: Number(amount),
-        amountDisplay: `${amount?.toFixed(sdAsset?.displayDecimals)} ${sdAsset?.symbol}`,
-      }
-    }) || []
-
-  const maxPosition = list.reduce(
-    (maxItem, currentItem) => {
-      return currentItem.amountRaw > (maxItem?.amountRaw || 0) ? currentItem : maxItem
-    },
-    undefined as SelectOptionAmount | undefined
-  )
-  return { list: list as SelectOptionAmount[], selected: maxPosition }
-}
 
 export const getDepositAssetInfo = (
   currentAsset: BoosterDepositType,

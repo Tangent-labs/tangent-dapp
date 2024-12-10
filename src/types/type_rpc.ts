@@ -1,8 +1,13 @@
-import { Address } from "viem"
+import { Abi, Address } from "viem"
+import { ExistingAsset } from "./type_tokens"
 
 export type TokenAmount = {
   token: string
   amount: bigint
+}
+
+export type TokenAmountDollar = TokenAmount & {
+  dollarValue: number
 }
 
 export type AprDetails = {
@@ -55,4 +60,20 @@ export type BalanceAllowances = {
 export type Allowance = {
   spender: Address
   allowance: bigint
+}
+
+export type HarvestRow = {
+  asset: ExistingAsset
+  harvesterFees: number
+  totalHarvest: number
+  details: TokenAmountDollar[]
+}
+
+export type TxContractCallData = {
+  abi: Abi
+  functionName: string
+  args: unknown[]
+  address: Address
+  account?: Address
+  gas?: bigint
 }

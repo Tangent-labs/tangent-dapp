@@ -9,7 +9,7 @@ export default function MenuBarFeature() {
   const links = useMemo(() => {
     return getCurrentProductData.features.map((f) => {
       return {
-        href: getLink({ featureTo: f.key, productTo: currentProduct, itemSlug: currentItem }),
+        href: getLink({ featureTo: f.key, productTo: currentProduct, itemSlug: f.isGlobal ? undefined : currentItem }),
         label: f.label || f.key,
         disabled: !f.isGlobal && !currentItem,
       } as MenuBarLink

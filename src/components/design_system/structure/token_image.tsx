@@ -4,7 +4,7 @@ import Image from "next/image"
 import { SyntheticEvent } from "react"
 
 interface TokenImageProps extends React.HTMLAttributes<HTMLImageElement> {
-  token: ExistingAsset
+  token?: ExistingAsset
   size: number
 }
 
@@ -14,7 +14,7 @@ export default function TokenImage({ token, size, ...props }: TokenImageProps) {
     <Image
       {...props}
       src={url}
-      alt={token}
+      alt={token || ""}
       width={size}
       height={size}
       onError={(event: SyntheticEvent<HTMLImageElement, Event>) => {

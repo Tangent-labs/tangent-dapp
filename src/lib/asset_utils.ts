@@ -12,12 +12,13 @@ export const getPricesFromTokenAmounts = (amounts: TokenAmount[], assets: AssetD
     if (assetData) {
       const actualAmount = parseFloat(formatUnits(amount?.amount || 0n, assetData.decimals))
       // Calculate the dollar value for this token amount
-      const dollarValue = actualAmount * assetData.price
+      const dollarValue = actualAmount * assetData.price || 0
       agg.totalDollar += dollarValue
       agg.details.push({
         symbol: amount.token,
         dollarValue: dollarValue || 0,
         tokenAmount: actualAmount || 0,
+        logo: assetData?.logo,
       })
     } else {
       errors.push(`${amount.token} has been ignored `)

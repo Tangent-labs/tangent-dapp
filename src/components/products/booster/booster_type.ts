@@ -1,4 +1,14 @@
-import { AssetApr, AssetDataPriced, AssetUserData, BalanceAllowances, ExistingAsset, PositionData, TokenAmount, TokenAmountData } from "@/types"
+import {
+  AssetApr,
+  AssetDataPriced,
+  AssetUserData,
+  BalanceAllowances,
+  ExistingAsset,
+  PositionData,
+  TokenAmount,
+  TokenAmountData,
+  TokenAmountPriced,
+} from "@/types"
 import { Address, WalletClient } from "viem"
 
 export type BoosterExistingAsset = Extract<ExistingAsset, "BAL" | "CRV" | "PENDLE" | "FXN">
@@ -89,4 +99,25 @@ export type BoosterRecordPageHaderData = {
   tvl: TokenAmountData
   claimable: TokenAmountData
   deposited: TokenAmountData
+}
+
+export type HarvesterInfo = {
+  stakingContract: string // Address
+  stakingName: string
+  harvesterPercentage: bigint // uint256
+  isSdtProcessed: boolean
+  tokenAmounts: TokenAmount[] // Array of TokenAmount structs
+}
+
+export type SdtStakingProcessableRewards = {
+  harvesterInfos: HarvesterInfo[] // Array of HarvesterInfo structs
+}
+
+export type HarvesterInfoDisplay = {
+  asset: ExistingAsset // Address
+  stakingAddress: Address
+  rewards: TokenAmountPriced
+  isProcessed: boolean
+  percentage: number
+  harvesterFees: number
 }

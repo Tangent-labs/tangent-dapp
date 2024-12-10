@@ -145,7 +145,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "Balancer Aave Boosted StablePool",
     decimals: 18,
     address: TOKEN_ADDR.BAL80,
-    logo: "wstETH",
+    logo: "BAL",
     displayDecimals: 2,
   },
   TRICRV: {

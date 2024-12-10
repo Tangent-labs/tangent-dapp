@@ -17,6 +17,14 @@ export function formatDollar(value?: number | string, decimals: number = 2) {
   return `$${new Intl.NumberFormat("en-US").format(Number(formattedDollarValue))}`
 }
 
+export function formatPercent(value?: number | string, decimals: number = 2) {
+  // Convert the input value to a number, or default to 0 if the conversion fails or the value is undefined.
+  const formattedValue = (Number(value) || 0).toFixed(decimals)
+
+  // Format the number with the "en-US" locale to add thousands separators and return the result with a dollar sign.
+  return `${formattedValue}%`
+}
+
 /**
  * Converts a number into a BigInt with a specified number of decimals.
  * @param num - The number to convert.

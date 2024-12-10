@@ -1,4 +1,5 @@
 import { dappConfig } from "@/dapp_config"
+import { TxContractCallData } from "@/types"
 import {
   Abi,
   Address,
@@ -12,6 +13,7 @@ import {
   Hex,
   http,
   WalletClient,
+  WriteContractParameters,
 } from "viem"
 
 export const chain: Chain = {
@@ -104,6 +106,16 @@ export const getDeployTx = (abi: Abi, byteCode: Hex, args?: unknown[]) => {
     args: args || [],
   })
   return data
+}
+
+export const executeContractCall = async (walletClient: WalletClient, txData: TxContractCallData) => {
+  const [account] = await walletClient.requestAddresses()
+  const publicClient = await getPublicClient()
+  txData.account = account
+  const gas = await publicClient.estimateContractGas(txData)
+  txData.gas = gas
+  const hash = await walletClient.writeContract(txData as unknown as WriteContractParameters)
+  return hash
 }
 
 export const executeChainViewUnique = async <T>(abi: Abi, byteCode: Hex, args?: unknown[]): Promise<T | undefined> => {

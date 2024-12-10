@@ -140,4 +140,20 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     logo: "wstETH",
     displayDecimals: 4,
   },
+  BAL80: {
+    symbol: "BAL80",
+    name: "Balancer Aave Boosted StablePool",
+    decimals: 18,
+    address: TOKEN_ADDR.BAL80,
+    logo: "wstETH",
+    displayDecimals: 2,
+  },
+  TRICRV: {
+    symbol: "3CRV",
+    name: "Curve.fi DAI/USDC/USDT",
+    decimals: 18,
+    address: TOKEN_ADDR.TRICRV,
+    logo: "TRICRV",
+    displayDecimals: 2,
+  },
 }

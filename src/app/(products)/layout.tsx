@@ -37,6 +37,18 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
   const pathParts = currentUrl.split("/").filter(Boolean)
   const [, itemSlug, featureTo] = pathParts
 
+  let item: string | undefined = itemSlug
+
+  // We prevent  the claim and harvest  to be considered as itemID
+  if (
+    productData?.features
+      .filter((p) => p.isGlobal)
+      .map((p) => p.key)
+      .includes(itemSlug)
+  ) {
+    item = undefined
+  }
+
   const isListPage = !itemSlug
   const currentFeature = isListPage ? "list" : !featureTo ? productData.defaultFeature : (featureTo as string)
   // Server side fecth
@@ -44,7 +56,7 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
   return (
     <>
       <WalletConnexionProvider>
-        <NavigationProvider _currentProduct={productData.key} _currentFeature={currentFeature} _currentItem={itemSlug} initialIsOpen={initialIsOpen}>
+        <NavigationProvider _currentProduct={productData.key} _currentFeature={currentFeature} _currentItem={item} initialIsOpen={initialIsOpen}>
           <div className="ml-2 mt-2 flex bg-page bg-repeat">
             <div className="absolute lg:relative">
               <MenuSide />

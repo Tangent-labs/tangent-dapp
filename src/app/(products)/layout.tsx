@@ -61,15 +61,14 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
             <div className="absolute lg:relative">
               <MenuSide />
             </div>
-            <div className="mr-4 w-full lg:mr-24">
-              <div className="flex justify-between max-lg:flex-col">
-                <div className="order-2 lg:order-1">
+            <div className="mr-2 w-full lg:mr-24">
+              <div className="flex justify-between max-md:flex-col">
+                <div className="cw-full order-2 md:order-1">
                   <MenuBarFeature />
                 </div>
-                <div className="order-1 lg:order-2">
+                <div className="order-1 md:order-2">
                   <div className="flex items-center gap-1">
                     <MenuSideToogle className="lg:hidden" />
-
                     <WalletConnexionButton />
                   </div>
                 </div>

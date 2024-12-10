@@ -16,5 +16,5 @@ export default function MenuBarFeature() {
     })
   }, [currentFeature, currentProduct, currentItem])
 
-  return <MenuBar links={links} />
+  return <MenuBar links={links} className="max-sm:w-full" />
 }

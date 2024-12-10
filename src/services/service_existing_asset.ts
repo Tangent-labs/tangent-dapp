@@ -28,11 +28,11 @@ export const getAssetInfo = async (keys: AssetConfigKey[]): Promise<AssetDataPri
   return (
     Object.entries(list)
       // Filter only the keys that are in the `keys` array
-      .filter(([k]) => keys.includes(k as AssetConfigKey))
+      .filter(([k]) => keys.indexOf(k as AssetConfigKey) !== -1)
       .map(([k, v]) => {
         return {
           ...v,
-          price: prices ? prices[k as AssetConfigKey] : 0,
+          price: (prices ? prices[k as AssetConfigKey] : 0) || 0,
         }
       })
       .sort((a, b) => {

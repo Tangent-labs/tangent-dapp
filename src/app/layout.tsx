@@ -11,7 +11,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preload" href="/fonts/RoobertTRIALVF.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
       </head>

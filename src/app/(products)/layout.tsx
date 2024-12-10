@@ -30,7 +30,7 @@ type ProductLayoutProps = {
 }
 
 export default async function RootLayout({ children }: ProductLayoutProps) {
-  const currentUrl = getUrlServerSide()
+  const currentUrl = await getUrlServerSide()
   const productData = Object.values(productsData).find((p) => currentUrl.startsWith(`/${p.url}`))
   if (!productData) return NotFound()
 

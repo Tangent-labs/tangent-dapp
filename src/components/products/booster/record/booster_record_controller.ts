@@ -14,7 +14,14 @@ export const getBoosterRecordData = async (address: Address | undefined, staking
   return data
 }
 
-export const getBoosterRecordServerData = async (asset: BoosterExistingAsset) => {
+export type BoosterRecordServerData = {
+  assetsInfo?: AssetDataPriced
+  sdAssetInfo?: AssetDataPriced
+  rewardsInfo: AssetDataPriced[]
+  stakingInfo: BoosterStakingInfo
+}
+
+export const getBoosterRecordServerData = async (asset: BoosterExistingAsset): Promise<BoosterRecordServerData> => {
   const set: Set<ExistingAsset> = new Set<ExistingAsset>()
   const stakingInfo = boosterStakingInfos[asset]
   assert(!!stakingInfo, `${asset} is not referenced as a Booster staking`)

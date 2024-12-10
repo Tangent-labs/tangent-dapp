@@ -16,7 +16,7 @@ export const config = {
   ],
 }
 
-export function getUrlServerSide() {
-  const headerList = headers()
+export async function getUrlServerSide() {
+  const headerList = await headers()
   return headerList.get("x-current-path") || ""
 }

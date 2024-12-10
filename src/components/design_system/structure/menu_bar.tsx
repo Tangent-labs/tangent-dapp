@@ -19,7 +19,7 @@ export default function MenuBar({ className, links, ...props }: MenuBarProps) {
 
   return (
     <Panel className={`inline-block ${className || ""}`} {...props}>
-      <ul className="flex justify-center gap-10">
+      <ul className="flex justify-center gap-5 md:gap-10">
         {links?.map((l) => (
           <li
             key={l.href}

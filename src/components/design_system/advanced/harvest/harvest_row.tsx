@@ -18,38 +18,40 @@ type HarvestRowProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
 
 export default function HarvestRow({ info, onHarvest, className, ...props }: HarvestRowProps) {
   return (
-    <Panel {...props} className={cn(className, "flex items-center justify-between gap-2")}>
+    <Panel {...props} className={cn(className, "flex items-center justify-between gap-2 max-md:flex-col")}>
       <div className={`relative flex min-w-[180px] items-center gap-4`}>
         <TokenImage token={info.asset} size={50} className="w-18" />
         <div className="flex flex-col leading-8">
           <span className="text-[32px] font-semibold">{info.asset}</span>
         </div>
       </div>
-      <div className="flex items-center gap-4">
-        <ListIndicator info="Total Rewards" value={formatDollar(info?.rewards?.totalDollar || 0)} valueFirst={false} />
-        <div>
-          <HelpPropover title={`${info?.asset} Rewards Breakdown`}>
-            <>
-              <div className="flex flex-col gap-1 text-sm">
-                {info?.rewards?.details?.map((reward, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <div className="w-10">
-                      <TokenImage token={reward.logo} size={20} />
+      <div className="flex grow items-center justify-between gap-2 md:justify-evenly">
+        <div className="flex items-center gap-4">
+          <ListIndicator info="Total Rewards" value={formatDollar(info?.rewards?.totalDollar || 0)} valueFirst={false} />
+          <div>
+            <HelpPropover title={`${info?.asset} Rewards Breakdown`}>
+              <>
+                <div className="flex flex-col gap-1 text-sm">
+                  {info?.rewards?.details?.map((reward, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <div className="w-10">
+                        <TokenImage token={reward.logo} size={20} />
+                      </div>
+                      <span className="w-20"> {reward.logo}</span>
+                      <span className=""> {formatDollar(reward.dollarValue)}</span>
                     </div>
-                    <span className="w-20"> {reward.logo}</span>
-                    <span className=""> {formatDollar(reward.dollarValue)}</span>
-                  </div>
-                ))}
-              </div>
-            </>
-          </HelpPropover>
+                  ))}
+                </div>
+              </>
+            </HelpPropover>
+          </div>
         </div>
-      </div>
-      <div>
-        <ListIndicator info="Harvester Fees" value={formatPercent(info?.percentage)} valueFirst={false} />
-      </div>
-      <div>
-        <ListIndicator info="Harvester Rewards" value={formatDollar(info?.harvesterFees || 0)} valueFirst={false} />
+        <div>
+          <ListIndicator info="Harvester Fees" value={formatPercent(info?.percentage)} valueFirst={false} />
+        </div>
+        <div>
+          <ListIndicator info="Harvester Rewards" value={formatDollar(info?.harvesterFees || 0)} valueFirst={false} />
+        </div>
       </div>
       <div>
         <Button label="Harvest" disabled={true} onClick={() => onHarvest && onHarvest(info.stakingAddress)} />

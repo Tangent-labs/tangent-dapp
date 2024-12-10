@@ -5,7 +5,7 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useCallback } from "react"
 
-interface InputSelectAssetProps {
+type InputSelectAssetProps = React.ParamHTMLAttributes<HTMLSelectElement> & {
   options: ExistingAsset[]
   onChange: (value: ExistingAsset | string) => void
   label?: string

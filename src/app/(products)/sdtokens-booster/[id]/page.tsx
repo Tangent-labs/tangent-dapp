@@ -1,7 +1,7 @@
-"use client"
-import { useParams } from "next/navigation"
+import BoosterDepositPage from "@/components/products/booster/record/deposit/booster_deposit_page"
+import { BoosterExistingAsset } from "@/components/products/booster/booster_type"
 
-export default function Page() {
-  const { id } = useParams<{ id: string }>()
-  return <div>SDTOKEN BOOSTER DETAIL DEPOSIT {id}</div>
+export default async function Page({ params }: { params: Promise<{ id: BoosterExistingAsset }> }) {
+  const id = (await params).id
+  return <BoosterDepositPage id={id} />
 }

@@ -1,20 +1,37 @@
 "use client"
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { SelectOption } from "@/types"
+import { SelectOption, SelectOptionAmount } from "@/types"
 import { ReactNode } from "react"
 
-interface InputSelectProps {
-  options?: SelectOption[]
+interface InputSelectProps<T extends SelectOption | SelectOptionAmount> {
+  options?: T[] // Generic array based on type T
   onChange: (value: string) => void
   label?: string
   placeholder?: string
   className?: string
   value?: string
-  template?: (option: SelectOption) => ReactNode
+  template?: (option: T) => ReactNode // Template matches the type of options
 }
 
-const InputSelectAsset = ({ options, onChange, label, placeholder = "Select an option", className = "", value, template }: InputSelectProps) => {
+export const InputSelectAmountTemplate = (option: SelectOptionAmount) => {
+  return (
+    <div className="flex items-center gap-1">
+      <span className="text-sm">{option.label}</span>
+      <span className="text-xs text-gray-400">{option.amountDisplay && `(${option.amountDisplay})`}</span>
+    </div>
+  )
+}
+
+const InputSelect = <T extends SelectOption | SelectOptionAmount>({
+  options,
+  onChange,
+  label,
+  placeholder = "Select an option",
+  className = "",
+  value,
+  template,
+}: InputSelectProps<T>) => {
   return (
     <>
       <div className={`flex flex-col gap-1 ${className}`}>
@@ -28,7 +45,7 @@ const InputSelectAsset = ({ options, onChange, label, placeholder = "Select an o
               {options?.map((option: SelectOption) => (
                 <SelectItem value={option.value} key={option.value}>
                   {template ? (
-                    template(option)
+                    template(option as T)
                   ) : (
                     <div className="flex items-center gap-2">
                       <span className="text-xs">{option.label}</span>
@@ -44,7 +61,7 @@ const InputSelectAsset = ({ options, onChange, label, placeholder = "Select an o
   )
 }
 
-export default InputSelectAsset
+export default InputSelect
 
 /* 
 

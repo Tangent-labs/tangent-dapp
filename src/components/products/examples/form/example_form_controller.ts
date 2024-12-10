@@ -9,7 +9,7 @@ import {
   ExampleFormInitData,
 } from "@/components/products/examples/form/example_form_type"
 import { Address } from "viem"
-import { AssetUserData, SelectOption, TokenizedPosition } from "@/types"
+import { AssetUserData, ExistingAsset, SelectOption, TokenizedPosition } from "@/types"
 
 /**
  *
@@ -29,12 +29,12 @@ export const getFormExampleInitData = async () => {
     CRV: "sdAsset",
     CVX: "gaugeAsset",
   }
-  const assetList = await getAssetInfo(Object.keys(paramsList))
+  const assetList = await getAssetInfo(Object.keys(paramsList) as unknown as ExistingAsset[])
   return {
     assetList: assetList.map((a, index) => {
       return {
         ...a,
-        assetType: paramsList[a.symbol],
+        assetType: paramsList[a.symbol as ExistingAsset],
         approveContract: index === 0 ? undefined : "0x122",
       } as ExampleFormAssetData
     }),

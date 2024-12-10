@@ -1,5 +1,22 @@
 // All existing asset must have an image  in medias/tokens/{name|lowercase}.wepb
-export type ExistingAsset = "CRV" | "CVX" | "BAL" | "ETH" | "FXN" | "FXS" | "SDT" | "WETH" | "USDC" | "DAI" | "CVGSDT" | "CVGCVX" | "CRVUSD" | "PENDLE"
+
+type BoosterRewards = "sdBAL" | "sdPENDLE" | "sdCRV" | "sdFXN"
+
+export type ExistingAsset =
+  | BoosterRewards
+  | "CRV"
+  | "CVX"
+  | "BAL"
+  | "ETH"
+  | "FXN"
+  | "SDT"
+  | "WETH"
+  | "USDC"
+  | "CVGSDT"
+  | "CVGCVX"
+  | "CRVUSD"
+  | "PENDLE"
+  | "wstETH"
 
 // Based on  image folder parsing. ps: see _utils\create_tokens_ts_type.js
 export type AllExistingAsset =

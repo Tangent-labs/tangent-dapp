@@ -16,7 +16,7 @@ const ListAsset = ({ name, token, assetsEarned, className = "" }: ListAssetProps
 
       <div className="flex flex-col leading-8">
         <span className="text-[32px] font-semibold">{name}</span>
-        {assetsEarned && (
+        {assetsEarned && assetsEarned?.length > 0 && (
           <>
             <div className="flex gap-2">
               <span className="text-xs">Earn :</span>

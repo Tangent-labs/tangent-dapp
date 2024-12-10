@@ -3,13 +3,13 @@
 import { IndicatorData } from "@/types"
 import Panel from "@/components/design_system/structure/panel"
 
-interface IndicatorCardProps {
+type IndicatorCardProps = {
   title: string
   value: string | number
   className?: string
 }
 
-const IndicatorCard = ({ title, value, className = "" }: IndicatorCardProps) => {
+export const IndicatorCard = ({ title, value, className = "" }: IndicatorCardProps) => {
   return (
     <div className={`flex flex-col justify-center lg:items-center ${className}`}>
       <span className="text-sm">{title}</span>

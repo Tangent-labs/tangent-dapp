@@ -1,23 +1,17 @@
-import { ListProvider } from "@/components/design_system/list/list_context"
-import { getGrid1Data } from "@/services/service_design_system"
-import { ListState } from "@/types"
-import MockUpList from "@/components/products/examples/list/mockup_list"
+import { BoosterListProvider } from "@/components/products/booster/booster_list/booster_list_context"
+import BoosterList from "@/components/products/booster/booster_list/booster_list"
+import { getBoosterListServerData } from "@/components/products/booster/booster_list/booster_list_controller"
 
-const { headers, rows } = await getGrid1Data()
-const listeState: ListState = {
-  search: undefined,
-  sort: {
-    key: "strategy",
-    direction: "asc",
-  },
-}
+const { assetsInfos, rewardsInfo } = await getBoosterListServerData()
 
-const ExmapleListPage = async () => {
+const BoosterListPage = async () => {
   return (
-    <ListProvider _headers={headers} _rows={rows} _listState={listeState}>
-      <MockUpList />
-    </ListProvider>
+    <>
+      <BoosterListProvider assetsInfos={assetsInfos} rewardsInfo={rewardsInfo}>
+        <BoosterList />
+      </BoosterListProvider>
+    </>
   )
 }
 
-export default ExmapleListPage
+export default BoosterListPage

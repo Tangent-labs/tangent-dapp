@@ -5,10 +5,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// usage  {JSON.stringify(data, bigIntSerialize)}
 export const bigIntSerialize = (_: unknown, value: unknown): unknown => (typeof value === "bigint" ? value.toString() : value)
 
-export const formatAddress = (address?: string, len: number = 5): string => {
-  if (!address) return "-"
-  return `${address?.substring(0, len)}...${address?.substring(42 - len - 1, 42)}`
+export const JSONdebug = (data: unknown) => {
+  return JSON.stringify(data, bigIntSerialize, 2) // Pretty-print with 2-space indentation
+}
+
+export function assert(condition: unknown, message: string): asserts condition {
+  if (!condition) {
+    throw new Error(message)
+  }
 }

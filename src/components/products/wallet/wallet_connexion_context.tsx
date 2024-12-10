@@ -1,11 +1,12 @@
 "use client"
 import { dappConfig } from "@/dapp_config"
-import { formatAddress } from "@/lib/utils"
+import { formatAddress } from "@/lib/other_formatter"
 import web3Onboard from "@/services/config_wallet_provider"
+import { chain } from "@/services/service_rpc"
 import { WalletState } from "@web3-onboard/core"
 import { NotificationType } from "@web3-onboard/core/dist/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { Address, toHex } from "viem"
+import { Address, createWalletClient, custom, toHex, WalletClient } from "viem"
 
 export type Account = {
   address: Address
@@ -17,10 +18,14 @@ export type WalletConnexionContextValues = {
   isChainConnected: boolean
   isWellConnected: boolean
   currentAccount?: Account
+  currentWallet?: WalletState
+  currentAddress?: Address
   isConnecting: boolean
   connect: () => void
   disconnect: () => void
   changeNetwork: () => void
+  getWalletClient: () => WalletClient | undefined
+  canInteract: boolean
 }
 
 interface WalletConnexionProviderProps {
@@ -50,6 +55,18 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
     web3Onboard.setChain({ chainId: dappConfig.chain.id })
   }
 
+  const getWalletClient = (): WalletClient | undefined => {
+    if (!currentWallet) return
+
+    const client = createWalletClient({
+      chain,
+      transport: custom(currentWallet.provider),
+      account: currentAddress,
+    })
+
+    return client
+  }
+
   const disconnect = async () => {
     if (!currentWallet) return
     await web3Onboard.disconnectWallet({ label: currentWallet?.label })
@@ -64,6 +81,10 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
   const isChainConnected = useMemo<boolean>(() => {
     return currentWallet?.chains?.at(0)?.id === toHex(dappConfig.chain.id)
   }, [currentWallet])
+
+  const currentAddress = useMemo<Address | undefined>(() => {
+    return currentAccount?.address
+  }, [currentAccount])
 
   // are all the condition for interacting with the daap are met .
   const isWellConnected = useMemo<boolean>(() => {
@@ -118,15 +139,23 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
     }
   }, [currentWallet, currentAccount])
 
+  const canInteract = useMemo(() => {
+    return !!currentAddress && isWellConnected
+  }, [currentAddress, isWellConnected])
+
   const contextValue: WalletConnexionContextValues = {
+    currentAddress,
     currentAccount,
+    currentWallet,
     isConnected,
     isChainConnected,
     isWellConnected,
     isConnecting,
+    getWalletClient,
     connect,
     disconnect,
     changeNetwork,
+    canInteract,
   }
 
   return <WalletConnexionContext.Provider value={contextValue}>{children} </WalletConnexionContext.Provider>

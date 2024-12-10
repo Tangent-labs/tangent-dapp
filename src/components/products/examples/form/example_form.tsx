@@ -1,5 +1,5 @@
 "use client"
-import InputAssetValue, { inputAssetValueFullOption } from "@/components/design_system/inputs/input_asset_value"
+import InputAssetValue from "@/components/design_system/inputs/input_asset_value"
 import InputSelectAsset from "@/components/design_system/inputs/input_select_asset"
 import InputSelect from "@/components/design_system/inputs/input_select"
 import Panel from "@/components/design_system/structure/panel"
@@ -28,8 +28,8 @@ export const ExampleForm = () => {
                 optionValues={assetOptions.optionValues}
                 label="Asset"
                 value={formValues.assetIn}
-                onChange={function (value: string): void {
-                  updateFormValues("assetIn", value as ExampleFormAssetType)
+                onChange={function (): void {
+                  updateFormValues("assetIn", "e.target.value" as ExampleFormAssetType)
                 }}
               />
             </div>
@@ -40,7 +40,6 @@ export const ExampleForm = () => {
                 asset={currentAsset!}
                 balance={currentAsset?.balance}
                 value={formValues.value}
-                options={inputAssetValueFullOption(2)}
                 onChange={(v) => {
                   updateFormValues("value", v)
                 }}

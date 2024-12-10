@@ -3,7 +3,7 @@ export const metadata: Metadata = {
   title: "Tangent",
   description: "the tangent DAPP",
 }
-import { PageHeader } from "@/components/design_system/structure/page_header"
+import { PageHeader } from "@/components/design_system/structure/list_page_header"
 import { MenuSide } from "@/components/products/product_nav/menu_side"
 import { ProductKey } from "@/types"
 import { ReactNode } from "react"
@@ -62,9 +62,11 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
                   </div>
                 </div>
               </div>
-              <div className="mb-4 flex content-center">
-                <PageHeader product={productData!.key} />
-              </div>
+              {isListPage && (
+                <div className="mb-4 flex content-center">
+                  <PageHeader product={productData!.key} />
+                </div>
+              )}
               <div>{children}</div>
             </div>
           </div>

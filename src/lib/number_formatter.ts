@@ -44,8 +44,21 @@ export function formatBigInt(value: bigint | string | undefined, decimals: numbe
   const bigIntValue: bigint = typeof value === "string" ? BigInt(value) : value
   const reduceNumber = parseFloat(formatUnits(bigIntValue, decimals))
   if (!isNaN(reduceNumber)) {
-    const num = parseFloat(reduceNumber.toFixed(displayDecimals))
-    return new Intl.NumberFormat("en-US").format(num)
+    return formatNumber(reduceNumber, displayDecimals)
   }
   return ""
+}
+
+/**
+ * Formats a big integer value (as a string) into a human-readable decimal format.
+ *
+ * @param value - The big integer value as a string (e.g., "1000000000000000000").
+ * @param decimals - The number of decimals the value is scaled by (e.g., 18 for ETH).
+ * @param displayDecimals - The number of decimal places to show in the formatted output.
+ * @returns A string representing the formatted value with thousands separators and limited decimal places.
+ */
+export function formatNumber(value: number, displayDecimals: number): string {
+  if (value === undefined || value === null) return ""
+  const num = parseFloat(value.toFixed(displayDecimals))
+  return new Intl.NumberFormat("en-US").format(num)
 }

@@ -56,13 +56,17 @@ export const NavigationProvider = ({ children, _currentProduct, _currentFeature,
     const data = productsData[currentProduct]?.features?.find((f) => f.key === feature)
     return data || { key: "list", isGlobal: true }
   }
+
+  const getFeatureDataFormProduct = (featureTo: string, data: ProductData) => {
+    return featureTo === "list" ? { key: "list", isGlobal: true } : data.features.find((a) => a.key === featureTo)
+  }
   const currentFeatureData = useMemo(() => {
     return getFeatureData(currentFeature)
   }, [currentProduct, currentFeature])
 
   const getLink = ({ productTo, featureTo, itemSlug }: NavigateParams) => {
     const data = productsData[productTo]
-    const featureToData = data.features.find((a) => a.key === featureTo)
+    const featureToData = getFeatureDataFormProduct(featureTo, data)
     let url = `/${data.url}`
     if (featureToData?.isGlobal) {
       if (featureTo !== "list") {
@@ -78,15 +82,16 @@ export const NavigationProvider = ({ children, _currentProduct, _currentFeature,
   }
 
   const navigate = ({ productTo, featureTo, itemSlug }: NavigateParams) => {
-    const data = productsData[productTo]
-    const featureToData = data.features.find((a) => a.key === featureTo)
+    if (productTo !== currentProduct) setCurrentProduct(productTo)
+
+    const featureToData = getFeatureData(featureTo)
     setCurrentFeature(featureTo)
 
-    if (productTo !== currentProduct) setCurrentProduct(productTo)
     itemSlug = featureToData?.isGlobal ? undefined : itemSlug
     if (currentItem !== itemSlug) setcurrentItem(itemSlug)
     const url = getLink({ productTo, featureTo, itemSlug })
     router.push(url)
+    setCurrentFeature(featureTo)
   }
 
   const contextValue: NavigationContextValues = {

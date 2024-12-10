@@ -9,7 +9,7 @@ interface TokenImageProps extends React.HTMLAttributes<HTMLImageElement> {
 }
 
 export default function TokenImage({ token, size, ...props }: TokenImageProps) {
-  const url = `/medias/tokens/${token.toLowerCase()}.webp`
+  const url = token ? `/medias/tokens/${token.toLowerCase()}.webp` : "/medias/fallback_token_image.webp"
   return (
     <Image
       {...props}

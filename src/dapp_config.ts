@@ -1,6 +1,9 @@
 export type DappConfig = {
   /** Cache time for price in minutes  */
-  defillamaCacheTime: number
+  cacheTime: {
+    price: number
+    apr: number
+  }
   keyPaths: Record<string, string>
   dappUrl: string
   chain: {
@@ -8,11 +11,16 @@ export type DappConfig = {
     name: string
     rpc: string
     walletConnectId: string
+    explorerContractUrl: string
   }
+  apiUrl: string
 }
 
 export const dappConfig: DappConfig = {
-  defillamaCacheTime: Number(process.env.DEFILLAMA_CACHE_TIME) || 10,
+  cacheTime: {
+    price: 30,
+    apr: 10,
+  },
   keyPaths: {
     navIsOpen: "tgt.nav.isOpen",
   },
@@ -22,5 +30,7 @@ export const dappConfig: DappConfig = {
     name: process.env.NEXT_PUBLIC_CHAIN_NAME || "",
     rpc: process.env.NEXT_PUBLIC_CHAIN_RPC || "",
     walletConnectId: process.env.NEXT_PUBLIC_WALLETCONECT_ID || "",
+    explorerContractUrl: process.env.NEXT_PUBLIC_CHAIN_CONTRACT_EXPLORER || "",
   },
+  apiUrl: process.env.NEXT_PUBLIC_API_URL || "",
 }

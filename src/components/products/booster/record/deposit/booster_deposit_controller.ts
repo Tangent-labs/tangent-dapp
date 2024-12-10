@@ -1,7 +1,7 @@
 import SdtUtilitiesABI from "@/abi/booster/SdtUtilities.json"
 import BoosterOutExpectedABI from "@/abi/booster/BoosterOutExpected.json"
 import SdtStakingPositionServiceABI from "@/abi/booster/SdtStakingPositionService.json"
-import { Abi, Address, Hex, maxUint256, WalletClient, WriteContractParameters, zeroAddress } from "viem"
+import { Abi, Address, EstimateContractGasParameters, Hex, maxUint256, WalletClient, WriteContractParameters, zeroAddress } from "viem"
 import {
   BoosterConvertOut,
   BoosterDepositAssetInfo,
@@ -106,14 +106,14 @@ export const doApprove = async (walletClient: WalletClient, assetType: BoosterDe
     case "asset":
     case "sdAsset": {
       const txData = getApproveTx(assetAddress, BOOSTER_CONTRACT.SDT_UTILITIES, amount)
-      const gas = await publicClient.estimateContractGas(txData as unknown as WriteContractParameters)
+      const gas = await publicClient.estimateContractGas(txData as unknown as EstimateContractGasParameters)
       txData.gas = gas
       const hash = await walletClient.writeContract(txData as unknown as WriteContractParameters)
       return await waitForTransaction(hash)
     }
     case "gaugeAsset": {
       const txData = getApproveTx(assetAddress, stakingContract, amount)
-      const gas = await publicClient.estimateContractGas(txData as unknown as WriteContractParameters)
+      const gas = await publicClient.estimateContractGas(txData as unknown as EstimateContractGasParameters)
       txData.gas = gas
       const hash = await walletClient.writeContract(txData as unknown as WriteContractParameters)
       return await waitForTransaction(hash)

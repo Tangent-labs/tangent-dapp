@@ -8,6 +8,7 @@ import {
   TokenAmount,
   TokenAmountData,
   TokenAmountPriced,
+  TokenAmountPricedRow,
 } from "@/types"
 import { Address, WalletClient } from "viem"
 
@@ -17,6 +18,7 @@ export type BoosterRow = {
   totalStaked: bigint
   userStaked: bigint
   tokensClaimable: TokenAmount[]
+  positionsDetails: PositionData[]
   isProcessed: boolean
 }
 
@@ -120,4 +122,29 @@ export type HarvesterInfoDisplay = {
   isProcessed: boolean
   percentage: number
   harvesterFees: number
+}
+
+export type BoosterClaimListRow = {
+  token: ExistingAsset
+  stakingAddress: Address
+  name: string
+  apr: {
+    current: number
+    projected: number
+  }
+  claimableDetail: TokenAmountPricedRow[]
+  claimable: { key: string; label: string; value: string; raw?: number }
+  positionsDetails: PositionData[]
+}
+
+export type ClaimSdtStakingContract = {
+  stakingContract: string
+  tokenIds: number[]
+}
+
+export interface ClaimMultipleStakingArgs {
+  claimContracts: ClaimSdtStakingContract[]
+  minCvgSdtAmountOut: bigint
+  isConvert: boolean
+  sdtRewardCount: number
 }

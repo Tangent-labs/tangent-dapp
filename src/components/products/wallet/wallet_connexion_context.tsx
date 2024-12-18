@@ -64,7 +64,7 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
       account: currentAddress,
     })
 
-    return client
+    return client as WalletClient
   }
 
   const disconnect = async () => {

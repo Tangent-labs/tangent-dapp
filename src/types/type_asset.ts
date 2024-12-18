@@ -36,6 +36,7 @@ export type TokenAmountPricedRow = {
   dollarValue: number
   tokenAmount: number
   logo?: ExistingAsset
+  tokenAmountFormatted?: string
 }
 
 export type TokenAmountData = {

@@ -47,7 +47,7 @@ export const BoosterHarvestProvider = ({ children, rewardsInfo }: BoosterHarvest
   const actionHarvest = useCallback(
     (stakingAddress: Address) => {
       const walletClient = getWalletClient()
-      doHarvest(stakingAddress, walletClient!)
+      doHarvest(stakingAddress, walletClient!).then(loadData)
     },
     [currentAddress]
   )

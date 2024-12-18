@@ -8,5 +8,9 @@ type BoosterHarvestContextProps = React.ButtonHTMLAttributes<HTMLDivElement>
 
 export default function BoosterHarvestContent({ ...props }: BoosterHarvestContextProps) {
   const { displayRows, actionHarvest } = useBoosterHarvestContext()
-  return <HarvestList {...props} rows={displayRows} onHarvest={actionHarvest} />
+  return (
+    <div className="mt-10">
+      <HarvestList {...props} rows={displayRows} onHarvest={actionHarvest} />
+    </div>
+  )
 }

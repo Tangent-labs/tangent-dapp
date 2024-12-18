@@ -54,7 +54,7 @@ export default function HarvestRow({ info, onHarvest, className, ...props }: Har
         </div>
       </div>
       <div>
-        <Button label="Harvest" disabled={true} onClick={() => onHarvest && onHarvest(info.stakingAddress)} />
+        <Button label="Harvest" disabled={!info || info.harvesterFees === 0} onClick={() => onHarvest && onHarvest(info.stakingAddress)} />
       </div>
     </Panel>
   )

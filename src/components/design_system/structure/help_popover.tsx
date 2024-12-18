@@ -18,11 +18,11 @@ export default function HelpPropover({ children, title, ...props }: HelpPropover
           <IconCircleHelp />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="z-20 !m-0 w-80 border-none !p-0">
+      <PopoverContent side="top" className="z-20 !m-0 w-80 border-none !p-0">
         <Panel>
           <div className="grid gap-4">
             <div className="space-y-2">
-              <span className="font-medium font-semibold leading-none">{title}</span>
+              <span className="font-medium leading-none">{title}</span>
               <div className="mt-4">{children}</div>
             </div>
             <div className="grid gap-2"></div>

@@ -40,4 +40,5 @@ export const boosterStakingInfos: BoosterStakingInfos = {
 export const BOOSTER_CONTRACT = {
   SDT_UTILITIES: "0xD861Ff854206d0Db64f1C0f3108f59576A5CCc04" as Address,
   BLACK_HOLE: "0x21777106355Ba506A31FF7984c0aE5C924deB77f" as Address,
+  REWARD_DISTRIBUTOR: "0x6B65525a40704a4c48d07c25b8D05654854DFEcD" as Address,
 }

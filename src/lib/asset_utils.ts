@@ -1,5 +1,6 @@
 import { AssetDataPriced, TokenAmount, TokenAmountPriced, TokenAmountPricedRow } from "@/types"
 import { formatUnits } from "viem"
+import { formatBigInt } from "./number_formatter"
 
 /**
  *
@@ -19,6 +20,7 @@ export const getPricesFromTokenAmounts = (amounts: TokenAmount[], assets: AssetD
         dollarValue: dollarValue || 0,
         tokenAmount: actualAmount || 0,
         logo: assetData?.logo,
+        tokenAmountFormatted: formatBigInt(amount?.amount || 0n, assetData.decimals, assetData.displayDecimals),
       })
     } else {
       errors.push(`${amount.token} has been ignored `)

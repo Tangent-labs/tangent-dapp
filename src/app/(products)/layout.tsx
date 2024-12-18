@@ -49,7 +49,12 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
     item = undefined
   }
 
-  const isListPage = !itemSlug
+  const isListPage =
+    !itemSlug &&
+    !productData.features
+      .filter((p) => p.isGlobal)
+      .map((p) => p.key)
+      .includes(itemSlug)
   const currentFeature = isListPage ? "list" : !featureTo ? productData.defaultFeature : (featureTo as string)
   // Server side fecth
   const initialIsOpen = await getNavIsOpen()

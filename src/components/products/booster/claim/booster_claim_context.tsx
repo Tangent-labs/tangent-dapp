@@ -25,6 +25,7 @@ type BoosterClaimContextValues = {
     depositedDollarValue: number
     claimableDollarValue: number
   }
+  isLoading: boolean
 }
 
 export const BoosterClaimContext = createContext<BoosterClaimContextValues | undefined>(undefined)
@@ -32,21 +33,23 @@ export const BoosterClaimContext = createContext<BoosterClaimContextValues | und
 export const BoosterClaimProvider = ({ children, rewardsInfo, assetsInfos }: BoosterClaimContextProps) => {
   const [rows, setRows] = useState<OutputBoosterList | undefined>()
   const { getWalletClient, currentAddress } = useWalletConnexionContext()
-
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [aprs, setAprs] = useState<Record<BoosterExistingAsset, AssetApr> | undefined>()
 
   const loadData = () => {
     getBoosterListData(currentAddress).then((data) => {
       setRows(data)
+      setIsLoading(false)
     })
   }
 
   useEffectDebounce(
     () => {
+      setIsLoading(true)
       loadData()
     },
     [currentAddress],
-    1000
+    200
   )
 
   useEffect(() => {
@@ -86,6 +89,7 @@ export const BoosterClaimProvider = ({ children, rewardsInfo, assetsInfos }: Boo
     actionClaim,
     actionClaimAll,
     totals,
+    isLoading,
   }
   return <BoosterClaimContext.Provider value={contextValue}>{children}</BoosterClaimContext.Provider>
 }

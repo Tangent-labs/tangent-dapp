@@ -14,9 +14,10 @@ import HelpPropover from "../../structure/help_popover"
 type HarvestRowProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
   info: HarvesterInfoDisplay
   onHarvest: (arg: Address) => void
+  canInteract: boolean
 }
 
-export default function HarvestRow({ info, onHarvest, className, ...props }: HarvestRowProps) {
+export default function HarvestRow({ info, onHarvest, canInteract, className, ...props }: HarvestRowProps) {
   return (
     <Panel {...props} className={cn(className, "flex items-center justify-between gap-2 max-md:flex-col")}>
       <div className={`relative flex min-w-[180px] items-center gap-4`}>
@@ -54,7 +55,7 @@ export default function HarvestRow({ info, onHarvest, className, ...props }: Har
         </div>
       </div>
       <div>
-        <Button label="Harvest" disabled={!info || info.harvesterFees === 0} onClick={() => onHarvest && onHarvest(info.stakingAddress)} />
+        <Button label="Harvest" disabled={!canInteract || !info || info.harvesterFees === 0} onClick={() => onHarvest && onHarvest(info.stakingAddress)} />
       </div>
     </Panel>
   )

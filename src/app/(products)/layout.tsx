@@ -3,7 +3,7 @@ export const metadata: Metadata = {
   title: "Tangent",
   description: "the tangent DAPP",
 }
-import { PageHeader } from "@/components/design_system/structure/list_page_header"
+
 import { MenuSide } from "@/components/products/product_nav/menu_side"
 import { ProductKey } from "@/types"
 import { ReactNode } from "react"
@@ -49,12 +49,7 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
     item = undefined
   }
 
-  const isListPage =
-    !itemSlug &&
-    !productData.features
-      .filter((p) => p.isGlobal)
-      .map((p) => p.key)
-      .includes(itemSlug)
+  const isListPage = !itemSlug && !featureTo
   const currentFeature = isListPage ? "list" : !featureTo ? productData.defaultFeature : (featureTo as string)
   // Server side fecth
   const initialIsOpen = await getNavIsOpen()
@@ -62,7 +57,7 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
     <>
       <WalletConnexionProvider>
         <NavigationProvider _currentProduct={productData.key} _currentFeature={currentFeature} _currentItem={item} initialIsOpen={initialIsOpen}>
-          <div className="ml-2 mt-2 flex bg-page bg-repeat">
+          <div className="ml-2 mt-2 flex bg-repeat">
             <div className="absolute lg:relative">
               <MenuSide />
             </div>
@@ -78,11 +73,7 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
                   </div>
                 </div>
               </div>
-              {isListPage && (
-                <div className="mb-4 flex content-center">
-                  <PageHeader product={productData!.key} />
-                </div>
-              )}
+
               <div>{children}</div>
             </div>
           </div>

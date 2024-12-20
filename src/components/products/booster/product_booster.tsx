@@ -8,6 +8,11 @@ export const productBoosterData: ProductData = {
   defaultFeature: "deposit",
   features: [
     {
+      key: "list",
+      isGlobal: true,
+      label: "Pools",
+    },
+    {
       key: "deposit",
       isGlobal: false,
     },

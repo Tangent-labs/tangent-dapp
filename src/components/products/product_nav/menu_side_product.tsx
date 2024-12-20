@@ -31,9 +31,11 @@ export function MenuSideProduct({ productData, isOpen }: MenuSideProductProps) {
           </Panel>
           <div className={cn("ml-5 border-l border-gray-400", !isOpen && "hidden")}>
             <div className={cn("an-menu-transition ml-4 flex flex-col gap-2 overflow-x-hidden pt-2", !isOpen && "hidden")}>
-              {productData.features.map((f) => (
-                <MenuSideProductLink key={f.key} feature={f.key} productData={productData} />
-              ))}
+              {productData.features
+                .filter((f) => f.isGlobal)
+                .map((f) => (
+                  <MenuSideProductLink key={f.key} feature={f.key} productData={productData} />
+                ))}
             </div>
           </div>
         </>

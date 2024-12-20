@@ -11,8 +11,8 @@ import { useNavigationContext } from "./navigation_context"
 export function MenuSide() {
   const { isOpen, setIsOpen } = useNavigationContext()
   return (
-    <nav className={cn("absolute z-10 flex items-center justify-between gap-2 lg:relative", !isOpen && "hidden lg:flex")}>
-      <Panel className={cn("min-h-[98dvh] !p-0 transition-all duration-300 ease-in-out", !isOpen ? "w-[80px]" : "w-[250px]")}>
+    <nav className={cn("absolute z-10 flex h-full items-center justify-between gap-2 lg:relative", !isOpen && "hidden lg:flex")}>
+      <Panel className={cn("h-full min-h-[98dvh] !p-0 transition-all duration-300 ease-in-out", !isOpen ? "w-[80px]" : "w-[250px]")}>
         <Panel className="!p-2 text-3xl">
           <div className="flex items-center">
             <Logo className="h-16 w-16" />

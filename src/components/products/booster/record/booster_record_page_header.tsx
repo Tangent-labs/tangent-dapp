@@ -2,10 +2,11 @@ import { useBoosterRecordContext } from "./booster_record_context"
 import RecordPageHeader from "@/components/design_system/structure/record_page_header"
 
 export function BoosterRecordPageHeader() {
-  const { apr, headerData } = useBoosterRecordContext()
+  const { apr, headerData, assetInfo } = useBoosterRecordContext()
 
   return (
     <RecordPageHeader
+      token={assetInfo!.logo}
       apr={apr}
       indicators={[
         {

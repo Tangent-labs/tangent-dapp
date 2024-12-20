@@ -11,13 +11,14 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import { formatDollar } from "@/lib/number_formatter"
 import { cn } from "@/lib/utils"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
+import Loader from "@/components/design_system/structure/loader"
 export default function BoosterClaimContent() {
-  const { displayRows, actionClaim, actionClaimAll, totals } = useBoosterClaimContext()
-
+  const { displayRows, actionClaim, actionClaimAll, totals, isLoading } = useBoosterClaimContext()
+  if (isLoading) return <Loader />
   return (
     <>
       {/* <pre>{JSONdebug(displayRows)}</pre> */}
-      <div className="flex items-center justify-between">
+      <div className="mt-10 flex items-center justify-between">
         <IndicatorCards
           indicators={[
             { title: "Total deposited", value: formatDollar(totals.depositedDollarValue) },

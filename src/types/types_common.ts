@@ -8,7 +8,7 @@ export type FeaturesData = {
   isGlobal: boolean
 }
 
-export type ProductKey = "splitter" | "booster" | "wrapper"
+export type ProductKey = "splitter" | "booster" | "wrapper" | "tgUsd"
 
 export type ProductData = {
   name: string

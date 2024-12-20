@@ -7,13 +7,15 @@ export default function MenuBarFeature() {
   const { currentFeature, currentProduct, currentItem, currentProductData: getCurrentProductData, getLink } = useNavigationContext()
 
   const links = useMemo(() => {
-    return getCurrentProductData.features.map((f) => {
-      return {
-        href: getLink({ featureTo: f.key, productTo: currentProduct, itemSlug: f.isGlobal ? undefined : currentItem }),
-        label: f.label || f.key,
-        disabled: !f.isGlobal && !currentItem,
-      } as MenuBarLink
-    })
+    return getCurrentProductData.features
+      .filter((f) => f.isGlobal)
+      .map((f) => {
+        return {
+          href: getLink({ featureTo: f.key, productTo: currentProduct, itemSlug: f.isGlobal ? undefined : currentItem }),
+          label: f.label || f.key,
+          disabled: !f.isGlobal && !currentItem,
+        } as MenuBarLink
+      })
   }, [currentFeature, currentProduct, currentItem])
 
   return <MenuBar links={links} className="max-sm:w-full" />

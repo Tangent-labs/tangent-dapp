@@ -1,3 +1,5 @@
+"use client"
+
 import { productsData } from "@/components/products/products"
 import { ProductData, ProductKey } from "@/types"
 import Image from "next/image"

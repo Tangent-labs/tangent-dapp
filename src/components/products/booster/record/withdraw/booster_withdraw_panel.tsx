@@ -70,7 +70,7 @@ export default function BoosterWithdrawPanel() {
           }}
           onValueChange={(value: bigint | undefined) => setWeiValue(value)}
         />
-        <Button onClick={actionWithdraw} label={"Withdraw"}></Button>
+        <Button onClick={actionWithdraw} disabled={!canInteract} label={"Withdraw"}></Button>
       </div>
     </>
   )

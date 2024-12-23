@@ -9,12 +9,10 @@ export function middleware(request: NextRequest) {
   return NextResponse.next({ headers })
 }
 
-export const config = {
-  matcher: [
-    // match all routes except static files and APIs
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
-  ],
-}
+export const matcher = [
+  // Match all routes except static files and APIs
+  "/((?!api|_next/static|_next/image|favicon.ico).*)",
+]
 
 export async function getUrlServerSide() {
   const headerList = await headers()

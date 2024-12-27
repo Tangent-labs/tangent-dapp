@@ -1,7 +1,8 @@
 "use client"
-import { ExistingAsset } from "@/types"
+
 import Image from "next/image"
 import { SyntheticEvent } from "react"
+import { ExistingAsset } from "@/types"
 
 interface TokenImageProps extends React.HTMLAttributes<HTMLImageElement> {
   token?: ExistingAsset
@@ -9,18 +10,16 @@ interface TokenImageProps extends React.HTMLAttributes<HTMLImageElement> {
 }
 
 export default function TokenImage({ token, size, ...props }: TokenImageProps) {
-  const url = token ? `/medias/tokens/${token.toLowerCase()}.webp` : "/medias/fallback_token_image.webp"
-  return (
-    <Image
-      {...props}
-      src={url}
-      alt={token || ""}
-      width={size}
-      height={size}
-      onError={(event: SyntheticEvent<HTMLImageElement, Event>) => {
-        event.currentTarget.onerror = null // prevents looping
-        event.currentTarget.src = "/medias/fallback_token_image.webp"
-      }}
-    />
-  )
+  const fallbackSrc = "/medias/fallback_token_image.webp"
+  const url = token ? `/medias/tokens/${token.toLowerCase()}.webp` : fallbackSrc
+
+  const handleError = (event: SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = event.currentTarget
+    if (target.src !== fallbackSrc) {
+      target.onerror = null // Prevent further error handling
+      target.src = fallbackSrc
+    }
+  }
+
+  return <Image {...props} src={url} alt={token || "Token image"} width={size} height={size} onError={handleError} />
 }

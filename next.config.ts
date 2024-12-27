@@ -7,6 +7,11 @@ const nextConfig: NextConfig = {
       fullUrl: true,
     },
   },
+
+  images: {
+    imageSizes: [16, 20, 25, 32, 35, 48, 50, 64, 96, 128, 256, 384],
+  },
+
   /* config options here */
 }
 

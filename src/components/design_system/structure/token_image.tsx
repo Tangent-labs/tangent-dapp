@@ -21,5 +21,5 @@ export default function TokenImage({ token, size, ...props }: TokenImageProps) {
     }
   }
 
-  return <Image {...props} src={url} alt={token || "Token image"} width={size} height={size} onError={handleError} />
+  return <Image {...props} src={url} overrideSrc={url} alt={token || "Token image"} width={size} height={size} onError={handleError} />
 }

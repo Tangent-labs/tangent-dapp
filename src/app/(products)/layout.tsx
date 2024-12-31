@@ -31,11 +31,22 @@ type ProductLayoutProps = {
 
 export default async function RootLayout({ children }: ProductLayoutProps) {
   const currentUrl = await getUrlServerSide()
-  const productData = Object.values(productsData).find((p) => currentUrl.startsWith(`/${p.url}`))
-  if (!productData) return NotFound()
 
   const pathParts = currentUrl.split("/").filter(Boolean)
-  const [, itemSlug, featureTo] = pathParts
+  const [productPart, ,] = pathParts
+  let itemSlug: string = "",
+    featureTo: string = ""
+  let productData = Object.values(productsData).find((p) => p.url === productPart)
+  if (!productData) {
+    itemSlug = pathParts?.at(0) || ""
+    featureTo = pathParts?.at(1) || ""
+  } else {
+    itemSlug = pathParts?.at(1) || ""
+    featureTo = pathParts?.at(2) || ""
+  }
+  productData = productData || productsData.tgUsd
+
+  if (!productData) return NotFound()
 
   let item: string | undefined = itemSlug
 
@@ -47,6 +58,7 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
       .includes(itemSlug)
   ) {
     item = undefined
+    featureTo = itemSlug
   }
 
   const isListPage = !itemSlug && !featureTo

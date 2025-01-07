@@ -3,7 +3,7 @@ import { ProductData } from "@/types"
 export const productgUsdData: ProductData = {
   name: "tgUSD",
   url: "",
-  header: <ProductBoosterHeader />,
+  header: <ProductTgUsdHeader />,
   key: "tgUsd",
   defaultFeature: "deposit",
   features: [
@@ -41,17 +41,17 @@ export const productgUsdData: ProductData = {
       isGlobal: true,
     },
     {
-      key: "points",
+      key: "harvest",
       isGlobal: true,
     },
     {
-      key: "buy",
+      key: "claim",
       isGlobal: true,
     },
   ],
 }
 
-export default function ProductBoosterHeader() {
+export default function ProductTgUsdHeader() {
   return (
     <>
       <h1 className="text-5xl">{productgUsdData.name}</h1>

@@ -1,13 +1,18 @@
+import ProductPageHeader from "@/components/products/product_nav/product_page_header"
+import TgUsdMarketList from "@/components/products/tg_usd/markets/tg_usd_market_list"
+import { TgUsdMaketListProvider } from "@/components/products/tg_usd/markets/tg_usd_market_list_context"
+import { TgUsdProvider } from "@/components/products/tg_usd/tg_usd_context"
 import React from "react"
 
-type tgUsdMarketPageProps = React.ButtonHTMLAttributes<HTMLDivElement>
+export default async function tgUsdMarketPage() {
+  // get price for asset here
 
-export default async function tgUsdMarketPage({ ...props }: tgUsdMarketPageProps) {
-  // Fetch data here if needed
   return (
-    <div {...props}>
-      <h1>tgUsdMarketPage</h1>
-      <p>This is a server-side component.</p>
-    </div>
+    <TgUsdProvider>
+      <TgUsdMaketListProvider>
+        <ProductPageHeader />
+        <TgUsdMarketList />
+      </TgUsdMaketListProvider>
+    </TgUsdProvider>
   )
 }

@@ -24,7 +24,6 @@ export type ListRowData = {
     current?: number
     projected?: number
   }
-  assetsEarned: { token: ExistingAsset }[]
   indicators: {
     key: string
     label: string

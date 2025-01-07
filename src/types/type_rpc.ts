@@ -77,3 +77,5 @@ export type TxContractCallData = {
   account?: Address
   gas?: bigint
 }
+
+export type Network = "mainnet"

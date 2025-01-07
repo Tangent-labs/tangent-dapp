@@ -5,7 +5,7 @@ import Divider from "@/components/design_system/structure/divider"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import Title from "@/components/design_system/structure/title"
 import React from "react"
-import { AreaChart, Area, XAxis, YAxis,  Tooltip, ResponsiveContainer } from "recharts"
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 
 const CollateralGraph = () => {
   const data = [

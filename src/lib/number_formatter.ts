@@ -60,8 +60,7 @@ export function formatBigInt(value: bigint | string | undefined, decimals: numbe
 /**
  * Formats a big integer value (as a string) into a human-readable decimal format.
  *
- * @param value - The big integer value as a string (e.g., "1000000000000000000").
- * @param decimals - The number of decimals the value is scaled by (e.g., 18 for ETH).
+ * @param value - The value .
  * @param displayDecimals - The number of decimal places to show in the formatted output.
  * @returns A string representing the formatted value with thousands separators and limited decimal places.
  */

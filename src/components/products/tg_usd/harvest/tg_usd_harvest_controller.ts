@@ -2,10 +2,12 @@ import { executeChainViewUnique, executeContractCall } from "@/services/service_
 import { Abi, Address, Hex, WalletClient } from "viem"
 import harvestUI from "@/abi/tgusd/HarvestUI.json"
 import { HarvesterInfo } from "../tg_usd_type"
-import { AssetDataPriced } from "@/types"
+import { AssetData, AssetDataPriced, ExistingAsset } from "@/types"
 import { tgUsdMarkets } from "../tg_usd_repository"
 import { getPricesFromTokenAmounts } from "@/lib/asset_utils"
 import { HarvesterInfoDisplay } from "../../booster/booster_type"
+import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
+import { getTokensPrice } from "@/services/service_price"
 
 export async function doHarvest(stakingAddress: Address, walletClient: WalletClient) {
   const txData = {
@@ -28,9 +30,6 @@ export function transformHarvestOnChainData(harvesterInfos: HarvesterInfo[], ass
     const stakingInfo = Object.values(tgUsdMarkets).find((i) => i.marketAddress === info.marketAddress)
     if (!stakingInfo) return
 
-    // const assetInfo = assetInfos.find((a) => a.address === TOKEN_ADDR[stakingInfo.asset])
-    // if (!assetInfo) return
-
     const rewards = getPricesFromTokenAmounts(info.tokenAmounts, assetInfos)
     const percentage = Number(info.harvesterFeePercentage) / 1000
     return {
@@ -43,4 +42,37 @@ export function transformHarvestOnChainData(harvesterInfos: HarvesterInfo[], ass
     } as HarvesterInfoDisplay
   }
   return harvesterInfos?.map(processOne).filter((a) => !!a) || []
+}
+
+export const computeAndReturnPrices = async (harvestInfo: HarvesterInfo[]) => {
+  const tokens: ExistingAsset[] = []
+
+  harvestInfo.forEach((el) => {
+    el.tokenAmounts.forEach((t) => {
+      if (!tokens.includes(t?.symbol)) tokens.push(t.symbol)
+    })
+  })
+
+  try {
+    const list: Record<AssetConfigKey, AssetData> = assetConfig
+
+    const prices = await getTokensPrice(tokens)
+
+    const allInfos = Object.entries(list)
+      .filter(([k]) => tokens.indexOf(k as AssetConfigKey) !== -1)
+      .map(([k, v]) => {
+        return {
+          ...v,
+          price: (prices ? prices[k as AssetConfigKey] : 0) || 0,
+        }
+      })
+      .sort((a, b) => {
+        return (a?.logo ? tokens.indexOf(a.logo) : -1) - (b?.logo ? tokens.indexOf(b.logo) : -1)
+      })
+
+    return allInfos
+  } catch (error) {
+    console.error("Failed to load asset information:", error)
+    return
+  }
 }

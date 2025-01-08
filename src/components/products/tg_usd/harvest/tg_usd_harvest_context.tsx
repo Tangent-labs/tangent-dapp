@@ -2,10 +2,8 @@
 
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { Address } from "viem"
-import { doHarvest, getTgUsdHarvestOnChainData, transformHarvestOnChainData } from "./tg_usd_harvest_controller"
-import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
-import { AssetData, AssetDataPriced, ExistingAsset } from "@/types"
-import { getTokensPrice } from "@/services/service_price"
+import { computeAndReturnPrices, doHarvest, getTgUsdHarvestOnChainData, transformHarvestOnChainData } from "./tg_usd_harvest_controller"
+import { AssetDataPriced } from "@/types"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { HarvesterInfoDisplay } from "../../booster/booster_type"
 import { HarvesterInfo } from "../tg_usd_type"
@@ -29,10 +27,6 @@ export const TgUsdHarvestProvider = ({ children }: TgUsdHarvestContextProps) => 
 
   const { getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  /**
-   * Not sure about this
-   */
-
   useEffect(() => {
     setIsLoading(true)
     loadPrices()
@@ -41,39 +35,10 @@ export const TgUsdHarvestProvider = ({ children }: TgUsdHarvestContextProps) => 
   const loadPrices = async () => {
     if (!harvestInfo) return
 
-    const tokens: ExistingAsset[] = []
+    const allInfos = await computeAndReturnPrices(harvestInfo)
 
-    harvestInfo.forEach((el) => {
-      el.tokenAmounts.forEach((t) => {
-        if (!tokens.includes(t?.symbol)) tokens.push(t.symbol)
-      })
-    })
-
-    try {
-      const list: Record<AssetConfigKey, AssetData> = assetConfig
-
-      const prices = await getTokensPrice(tokens)
-
-      const allInfos = Object.entries(list)
-        .filter(([k]) => tokens.indexOf(k as AssetConfigKey) !== -1)
-        .map(([k, v]) => {
-          return {
-            ...v,
-            price: (prices ? prices[k as AssetConfigKey] : 0) || 0,
-          }
-        })
-        .sort((a, b) => {
-          return (a?.logo ? tokens.indexOf(a.logo) : -1) - (b?.logo ? tokens.indexOf(b.logo) : -1)
-        })
-
-      setRewardsInfo(allInfos)
-    } catch (error) {
-      console.error("Failed to load asset information:", error)
-    }
+    setRewardsInfo(allInfos)
   }
-  /**
-   * END Not sure
-   */
 
   useEffect(() => {
     setIsLoading(true)

@@ -1,6 +1,6 @@
 "use client"
 
-import Image, { ImageProps } from "next/image"
+import { ImageProps } from "next/image"
 import { useEffect, useState } from "react"
 import { ExistingAsset } from "@/types"
 

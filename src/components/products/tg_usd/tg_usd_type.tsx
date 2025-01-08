@@ -1,4 +1,5 @@
 import { AprEntry, ExistingAsset, Network } from "@/types"
+import { Address } from "viem"
 
 export type TgUsdGlobalMarketData = {
   tgUsdPrice: number
@@ -28,6 +29,19 @@ export type TgUsdMarketData = {
   cap: number
 }
 
+export type TgUSDTokenAmount = {
+  token: string
+  symbol: ExistingAsset
+  amount: bigint
+}
+
+export type HarvesterInfo = {
+  collateralName: string
+  harvesterFeePercentage: bigint
+  marketAddress: string
+  tokenAmounts: TgUSDTokenAmount[]
+}
+
 export type TgUsdMarketDataUser = {
   debt: number
   health: number
@@ -47,4 +61,9 @@ export type TgUsdGlobalData = {
   APY: number // %
   globalCr: number // %
   GlobalTvl: number // $
+}
+
+export type TgUsdMarket = {
+  marketAddress: Address
+  marketName: string
 }

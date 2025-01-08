@@ -14,10 +14,12 @@ const config: Config = {
         "button-active": "var(--tgt-bg-button-active)",
         "list-row-hover": "var(--tgt-list-row-hover)",
         "panel-title-gradient": "var(--tgt-panel-title-gradient)",
-        page: "url('/medias/background.svg')", // Define your SVG background
+        page: "url('/medias/background.svg')",
       },
       colors: {
         "row-tonic": "var(--tgt-row-tonic)",
+        tonic: "var(--tgt-tonic)",
+        danger: "var(--tgt-danger)",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

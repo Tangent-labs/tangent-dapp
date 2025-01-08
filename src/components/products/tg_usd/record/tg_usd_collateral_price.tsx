@@ -81,7 +81,7 @@ export default function TgUsdCollateralPrice() {
         <Divider />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <TokenImage token={"TRICRV"} size={50} />
+            <TokenImage token={"TRICRV"} size={48} />
             <span>TRICRV</span>
           </div>
           <div>

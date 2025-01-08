@@ -12,7 +12,7 @@ interface ListAssetProps {
 const ListAsset = ({ name, token, assetsEarned, className = "" }: ListAssetProps) => {
   return (
     <div className={`relative flex items-center gap-4 ${className}`}>
-      <TokenImage token={token} size={50} className="w-18" />
+      <TokenImage token={token} size={48} className="w-18" />
 
       <div className="flex flex-col leading-8">
         <span className="text-[32px] font-semibold">{name}</span>
@@ -22,7 +22,7 @@ const ListAsset = ({ name, token, assetsEarned, className = "" }: ListAssetProps
               <span className="text-xs">Earn :</span>
               {assetsEarned.map((earn) => (
                 <div key={earn.token} className="flex items-center">
-                  <TokenImage token={earn.token} size={20} />
+                  <TokenImage token={earn.token} size={16} />
                   <span className="sr-only">{earn.token}</span>
                 </div>
               ))}

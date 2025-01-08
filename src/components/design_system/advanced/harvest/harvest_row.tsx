@@ -21,7 +21,7 @@ export default function HarvestRow({ info, onHarvest, canInteract, className, ..
   return (
     <Panel {...props} className={cn(className, "flex items-center justify-between gap-2 max-md:flex-col")}>
       <div className={`relative flex min-w-[180px] items-center gap-4`}>
-        <TokenImage token={info.asset} size={50} className="w-18" />
+        <TokenImage token={info.asset} size={48} className="w-18" />
         <div className="flex flex-col leading-8">
           <span className="text-[32px] font-semibold">{info.asset}</span>
         </div>
@@ -36,7 +36,7 @@ export default function HarvestRow({ info, onHarvest, canInteract, className, ..
                   {info?.rewards?.details?.map((reward, index) => (
                     <div key={index} className="flex items-center gap-2">
                       <div className="w-10">
-                        <TokenImage token={reward.logo} size={20} />
+                        <TokenImage token={reward.logo} size={16} />
                       </div>
                       <span className="w-20"> {reward.logo}</span>
                       <span className=""> {formatDollar(reward.dollarValue)}</span>

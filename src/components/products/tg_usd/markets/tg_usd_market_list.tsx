@@ -35,7 +35,7 @@ export default function TgUsdMarketList() {
               { title: "Supply", value: formatNumber(globalData.tgUsdsupply, 0) },
             ]}
           >
-            <TokenImage token={"tgUSD" as ExistingAsset} className="" size={35} />
+            <TokenImage token={"tgUSD" as ExistingAsset} className="" size={32} />
           </IndicatorCards>
           <IndicatorCards
             indicators={[
@@ -44,7 +44,7 @@ export default function TgUsdMarketList() {
               { title: "APY", value: formatPercent(globalData.APY, 2) },
             ]}
           >
-            <TokenImage token={"sgUSD" as ExistingAsset} className="" size={35} />
+            <TokenImage token={"sgUSD" as ExistingAsset} className="" size={32} />
           </IndicatorCards>
         </div>
         <div className="flex items-center gap-2">

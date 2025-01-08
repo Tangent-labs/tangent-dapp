@@ -18,19 +18,19 @@ export default function TgUsdRecordPageHader({ onBackClick, ...props }: TgUsdRec
           <Panel>
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-2">
-                <TokenImage token={"TRICRV"} size={40} />
+                <TokenImage token={"TRICRV"} size={32} />
                 <span className="text-3xl">TRICRV</span>
               </div>
               <div className="flex items-center gap-2 rounded-full border border-white border-opacity-[15%] px-4 py-1">
-                <TokenImage token={"CRV"} size={15} />
+                <TokenImage token={"CRV"} size={16} />
                 <span className="text-sm">Curve</span>
               </div>
               <div className="flex items-center gap-2 rounded-full border border-white border-opacity-[15%] px-4 py-1">
-                <TokenImage token={"CVX"} size={15} />
+                <TokenImage token={"CVX"} size={16} />
                 <span className="text-sm">Convex</span>
               </div>
               <div>
-                <TokenImage token={"ETH"} size={35} />
+                <TokenImage token={"ETH"} size={32} />
               </div>
             </div>
           </Panel>

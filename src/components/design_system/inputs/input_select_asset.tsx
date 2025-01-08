@@ -32,7 +32,7 @@ const InputSelectAsset = ({ options, onChange, label, placeholder = "Select an o
                 <SelectItem value={seletedValue(option)} key={option}>
                   {/* Custom HTML for Option 1 */}
                   <div className="flex items-center gap-2">
-                    <TokenImage token={option} size={25} />
+                    <TokenImage token={option} size={32} />
                     <span className="text-xs">{option}</span>
                   </div>
                 </SelectItem>

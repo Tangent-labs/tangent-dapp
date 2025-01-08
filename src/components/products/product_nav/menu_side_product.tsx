@@ -14,7 +14,7 @@ type MenuSideProductProps = {
 }
 
 export function MenuSideProduct({ productData, isOpen }: MenuSideProductProps) {
-  const { currentFeature, currentProduct } = useNavigationContext()
+  const { currentFeature, currentProduct, navigate } = useNavigationContext()
   const isCurrentProduct = useMemo(() => currentProduct === productData.key, [currentFeature])
 
   return (
@@ -22,12 +22,15 @@ export function MenuSideProduct({ productData, isOpen }: MenuSideProductProps) {
       {isCurrentProduct ? (
         <>
           <Panel className={cn("!py-2", isCurrentProduct && "bg-panel-title-gradient", !isOpen && "border-transparent")}>
-            <a href={`/${productData.url}`} className="flex content-center items-center gap-2 hover:bg-row-tonic hover:bg-clip-text">
+            <span
+              onClick={() => navigate({ productTo: productData.key, featureTo: "list" })}
+              className="flex content-center items-center gap-2 hover:bg-row-tonic hover:bg-clip-text"
+            >
               <Image width={30} height={30} src={`/medias/product_${productData.key}_flat.webp`} alt={productData.name} />
               <span className={cn("duration-600 overflow-x-hidden text-nowrap transition-all hover:text-transparent", !isOpen ? "opacity-0" : "opacity-100")}>
                 {productData.name}
               </span>
-            </a>
+            </span>
           </Panel>
           <div className={cn("ml-5 border-l border-gray-400", !isOpen && "hidden")}>
             <div className={cn("an-menu-transition ml-4 flex flex-col gap-2 overflow-x-hidden pt-2", !isOpen && "hidden")}>

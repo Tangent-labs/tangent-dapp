@@ -2,6 +2,7 @@
 import Link from "next/link"
 import Panel from "@/components/design_system/structure/panel"
 import { usePathname } from "next/navigation"
+import { dappConfig } from "@/dapp_config"
 
 export type MenuBarLink = {
   href: string
@@ -23,7 +24,7 @@ export default function MenuBar({ className, links, ...props }: MenuBarProps) {
         {links?.map((l) => (
           <li
             key={l.href}
-            data-active={pathname === l.href ? "true" : "false"}
+            data-active={pathname === l.href || (l.href === dappConfig.dappUrl && pathname === "/") ? "true" : "false"}
             className="transition-all duration-700 hover:text-row-tonic data-[active=true]:text-row-tonic"
           >
             <Link className="text-sm aria-disabled:text-gray-700" href={l.href} aria-disabled={l.disabled}>

@@ -67,7 +67,11 @@ export const NavigationProvider = ({ children, _currentProduct, _currentFeature,
   const getLink = ({ productTo, featureTo, itemSlug }: NavigateParams) => {
     const data = productsData[productTo]
     const featureToData = getFeatureDataFormProduct(featureTo, data)
-    let url = `/${data.url}`
+    if (productTo === "tgUsd" && featureTo === "list") {
+      return dappConfig.dappUrl
+    }
+
+    let url = data.url ? `/${data.url}` : ""
     if (featureToData?.isGlobal) {
       if (featureTo !== "list") {
         url = `${url}/${featureTo}`
@@ -90,6 +94,7 @@ export const NavigationProvider = ({ children, _currentProduct, _currentFeature,
     itemSlug = featureToData?.isGlobal ? undefined : itemSlug
     if (currentItem !== itemSlug) setcurrentItem(itemSlug)
     const url = getLink({ productTo, featureTo, itemSlug })
+
     router.push(url)
     setCurrentFeature(featureTo)
   }

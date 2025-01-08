@@ -20,17 +20,16 @@ export function MenuSide() {
           </div>
         </Panel>
         <div className={cn("mt-6 flex flex-col gap-4 px-2", isOpen ? "px-2" : "px-1")}>
-          {[productsData.wrapper, productsData.splitter, productsData.booster].map((productData) => (
+          {[productsData.tgUsd, productsData.wrapper, productsData.booster].map((productData) => (
             <MenuSideProduct key={productData.key} productData={productData} isOpen={isOpen} />
           ))}
-          {/* Product TGUSD  ---------------------------------------- */}
-
+          {/* Products SOON  ---------------------------------------- */}
           <div>
             <div className={cn("ml-4 flex items-center gap-5 overflow-x-clip text-gray-700 duration-200", !isOpen ? "hidden opacity-0" : "opacity-100")}>
               <div className="mr-2 flex w-full items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Image width={40} height={40} src="/medias/product_tgusd.png" alt="tg USD" />
-                  <span className="font-semibold text-gray-700">tgUSD</span>
+                  <Image width={40} height={40} src="/medias/product_splitter.png" alt="tg USD" />
+                  <span className="font-semibold text-gray-700">Splitter</span>
                 </div>
                 <span className="rounded-full bg-button-active px-4 py-1 text-black">Soon</span>
               </div>

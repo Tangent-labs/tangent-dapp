@@ -1,7 +1,6 @@
 "use client"
 
 import HarvestList from "@/components/design_system/advanced/harvest/harvest_list"
-import React from "react"
 import { useTgUsdHarvestContext } from "./tg_usd_harvest_context"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 

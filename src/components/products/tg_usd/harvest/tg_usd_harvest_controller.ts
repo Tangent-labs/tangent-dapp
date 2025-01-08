@@ -1,6 +1,7 @@
 import { executeChainViewUnique, executeContractCall } from "@/services/service_rpc"
 import { Abi, Address, Hex, WalletClient } from "viem"
 import harvestUI from "@/abi/tgusd/HarvestUI.json"
+import market from "@/abi/tgusd/Market.json"
 import { HarvesterInfo } from "../tg_usd_type"
 import { AssetData, AssetDataPriced, ExistingAsset } from "@/types"
 import { tgUsdMarkets } from "../tg_usd_repository"
@@ -10,10 +11,12 @@ import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import { getTokensPrice } from "@/services/service_price"
 
 export async function doHarvest(stakingAddress: Address, walletClient: WalletClient) {
+  const [account] = await walletClient.requestAddresses()
+
   const txData = {
-    abi: harvestUI.abi as Abi,
+    abi: market.abi as Abi,
     functionName: "processRewards",
-    args: [],
+    args: [account],
     address: stakingAddress,
     gas: undefined as undefined | bigint,
   }

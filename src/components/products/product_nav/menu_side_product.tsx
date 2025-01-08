@@ -45,7 +45,7 @@ export function MenuSideProduct({ productData, isOpen }: MenuSideProductProps) {
       ) : (
         <div className={cn("px-4 py-2")}>
           <a href={`/${productData.url}`} className="flex content-center items-center gap-2 hover:bg-row-tonic hover:bg-clip-text">
-            <Image width={30} height={30} src={`/medias/product_${productData.key}_flat.webp`} alt={productData.name} />
+            <Image width={30} height={30} src={`/medias/product_${productData.key.toLowerCase()}_flat.webp`} alt={productData.name} />
             <span className={cn("duration-600 overflow-x-hidden text-nowrap transition-all hover:text-transparent", !isOpen ? "opacity-0" : "opacity-100")}>
               {productData.name}
             </span>

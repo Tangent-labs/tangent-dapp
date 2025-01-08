@@ -1,4 +1,5 @@
-import { AprEntry, ExistingAsset, Network } from "@/types"
+import { AprEntry, ExistingAsset, Network, TokenAmountPriced } from "@/types"
+import { Address } from "viem"
 
 export type TgUsdGlobalMarketData = {
   tgUsdPrice: number
@@ -47,4 +48,52 @@ export type TgUsdGlobalData = {
   APY: number // %
   globalCr: number // %
   GlobalTvl: number // $
+}
+
+export type TgUsdMarket = {
+  marketAddress: Address
+  marketName: string
+}
+
+export type ClaimerInfoDisplay = {
+  asset: ExistingAsset // Address
+  stakingAddress: Address
+  rewards: TokenAmountPriced
+  isProcessed: boolean
+  percentage: number
+  harvesterFees: number
+}
+
+export type CollatStaked = {
+  amount: bigint
+  decimals: bigint
+  symbol: ExistingAsset
+  token: Address
+}
+
+export type ClaimerInfo = {
+  marketAddress: Address
+  collatStakedUsdValue: bigint
+  collatStaked: CollatStaked
+  claimableTokens: CollatStaked[]
+}
+
+export type ClaimAsset = {
+  amount: string
+  valueInUsd: string
+  symbol: ExistingAsset
+}
+
+export type ClaimData = {
+  marketAddress: Address
+  marketName: ExistingAsset
+  claimable: ClaimAsset[]
+  totalClaimableValue: string
+  deposited: ClaimAsset
+  totalDepositedValue: string
+}
+
+export type ClaimableMarket = {
+  marketName: ExistingAsset
+  claimable: string
 }

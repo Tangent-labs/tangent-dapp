@@ -1,13 +1,10 @@
-import React from "react"
+import TgUsdClaimContent from "@/components/products/tg_usd/claim/tg_usd_claim_content"
+import { TgUsdClaimProvider } from "@/components/products/tg_usd/claim/tg_usd_claim_context"
 
-type TgUsdClaimPageProps = React.ButtonHTMLAttributes<HTMLDivElement>
-
-export default async function TgUsdClaimPage({ ...props }: TgUsdClaimPageProps) {
-  // Fetch data here if needed
+export default async function TgUsdHarvestPage() {
   return (
-    <div {...props}>
-      <h1>TgUsdClaimPage</h1>
-      <p>This is a server-side component.</p>
-    </div>
+    <TgUsdClaimProvider>
+      <TgUsdClaimContent />
+    </TgUsdClaimProvider>
   )
 }

@@ -1,0 +1,94 @@
+"use client"
+
+import IndicatorCards from "@/components/design_system/structure/indicators_card"
+import { useTgUsdClaimContext } from "./tg_usd_claim_context"
+import ListAsset from "@/components/design_system/list/list_asset"
+import { formatDollar } from "@/lib/number_formatter"
+import ListIndicator from "@/components/design_system/list/list_indicator"
+import Panel from "@/components/design_system/structure/panel"
+import { Switch } from "@/components/ui/switch"
+import { useState } from "react"
+import TokenImage from "@/components/design_system/structure/token_image"
+import { ClaimableMarket } from "../tg_usd_type"
+
+export default function TgUsdClaimContent() {
+  const [marketsToClaim, setMarketsToClaim] = useState<ClaimableMarket[]>([])
+
+  const { displayRows } = useTgUsdClaimContext()
+
+  const addToClaimableMarkets = (rowData: ClaimableMarket) => {
+    setMarketsToClaim((prevMarkets: ClaimableMarket[]) => {
+      const isMarketAlreadyAdded = prevMarkets.some((market) => market.marketName === rowData.marketName)
+
+      if (isMarketAlreadyAdded) {
+        return prevMarkets
+      }
+
+      return [...prevMarkets, { marketName: rowData.marketName, claimable: rowData.claimable }]
+    })
+  }
+
+  return (
+    <>
+      <div className="mt-10 flex items-center justify-between">
+        <IndicatorCards
+          indicators={[
+            { title: "Total deposited", value: "$300,000" },
+            { title: "Total claimable", value: "$100,000" },
+          ]}
+        />
+      </div>
+
+      <div className="flex w-full items-center justify-center gap-4">
+        <div className="flex w-9/12 flex-col items-start justify-start">
+          {displayRows?.map((item) => (
+            <Panel
+              key={item.marketName}
+              onClick={() => addToClaimableMarkets({ marketName: item.marketName, claimable: item.totalClaimableValue })}
+              className={`mb-2 flex w-full items-center justify-center border p-5 before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover`}
+            >
+              <div className={`flex min-w-[360px] items-center gap-4`}>
+                <ListAsset name={item.marketName} token={item.marketName} assetsEarned={[]} />
+              </div>
+
+              <div className={`flex min-w-16 flex-col text-center`}>
+                <span className="text-[20px] leading-4">vAPR</span>
+
+                <span className="whitespace-nowrap font-bold text-row-tonic">10%</span>
+              </div>
+
+              <ListIndicator info="Deposited" value={formatDollar(item?.totalDepositedValue || 0)} valueFirst={false} />
+
+              <ListIndicator info="Claimable" value={formatDollar(item?.totalClaimableValue || 0)} valueFirst={false} />
+
+              <Switch />
+            </Panel>
+          ))}
+        </div>
+
+        <div className="flex w-3/12 items-start justify-start">
+          <div className="flex w-full flex-col items-start justify-start rounded-xl border border-white p-5">
+            <div className="flex w-full items-center justify-between">
+              <div className="flex flex-col items-start justify-start">Market</div>
+
+              <div className="flex flex-col items-start justify-start">Claimable</div>
+            </div>
+
+            <div className="flex w-full flex-col">
+              {marketsToClaim.map((el: ClaimableMarket) => (
+                <div key={el.marketName} className="flex w-full items-center justify-between">
+                  <div className={`relative flex items-center gap-4`}>
+                    <TokenImage token={el.marketName} size={16} className="w-8" />
+                    <span className="text-[12px] font-semibold">{el.marketName}</span>
+                  </div>
+
+                  <span className="text-[12px] font-semibold">{el.claimable}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}

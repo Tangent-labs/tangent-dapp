@@ -15,7 +15,7 @@ interface ImageWithFallbackProps extends Omit<ImageProps, "src"> {
 }
 
 const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
-  fallback = "/fallback-image.png", // Default fallback image path
+  fallback, // Default fallback image path
   src,
   alt,
   ...props
@@ -39,7 +39,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
 
 export default function TokenImage({ token, size, ...props }: TokenImageProps) {
   const fallbackSrc = "/medias/fallback_token_image.webp"
-  const url = token ? `/medias/tokens/${token.toLowerCase()}.webp` : fallbackSrc
+  const url = token ? `/medias/tokens/${token}.webp` : fallbackSrc
 
   return <ImageWithFallback {...props} src={url} alt={token || "Token image"} width={size} height={size} />
 }

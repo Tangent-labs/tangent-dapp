@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
     },
   },
 
+  images: {
+    disableStaticImages: true,
+  },
   /* config options here */
 }
 

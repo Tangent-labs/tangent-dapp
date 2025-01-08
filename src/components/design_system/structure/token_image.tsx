@@ -27,7 +27,8 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   }, [src])
 
   return (
-    <Image
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
       {...props}
       alt={alt}
       src={hasError ? fallback : src}

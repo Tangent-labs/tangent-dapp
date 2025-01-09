@@ -22,7 +22,7 @@ export const TgUsdClaimContext = createContext<TgUsdClaimContextValues | undefin
 export const TgUsdClaimProvider = ({ children }: TgUsdClaimContextProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [claimInfo, setClaimInfo] = useState<ClaimerInfo[] | undefined>()
-  const [rewardsInfo, setRewardsInfo] = useState<AssetDataPriced[]>([])
+  const [rewardsInfo, setRewardsInfo] = useState<AssetDataPriced[] | undefined>()
 
   const { getWalletClient, currentAddress } = useWalletConnexionContext()
 
@@ -62,7 +62,7 @@ export const TgUsdClaimProvider = ({ children }: TgUsdClaimContextProps) => {
   const actionClaim = useCallback(
     (contractAddress: Address, markets: Address[]) => {
       const walletClient = getWalletClient()
-      doClaim(contractAddress, markets, rewardsInfo.length, walletClient!).then(loadData)
+      doClaim(contractAddress, markets, rewardsInfo?.length || 1, walletClient!).then(loadData)
     },
     [currentAddress]
   )

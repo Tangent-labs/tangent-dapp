@@ -1,5 +1,5 @@
 import { executeChainViewUnique, executeContractCall } from "@/services/service_rpc"
-import { Abi, Address, Hex, WalletClient } from "viem"
+import { Abi, Address, formatUnits, Hex, WalletClient } from "viem"
 import { tgUsdMarkets } from "../tg_usd_repository"
 import { ClaimerInfo } from "../tg_usd_type"
 import claimUI from "@/abi/tgusd/ClaimUI.json"
@@ -21,6 +21,7 @@ export async function doClaim(contractAddress: Address, markets: Address[], rewa
 
 export async function getTgUsdClaimOnChainData() {
   const addresses: Address[] = tgUsdMarkets.map((m) => m.marketAddress)
+  // somehow did not find a way to pass the address dynamically...
   return await executeChainViewUnique<ClaimerInfo[]>(claimUI.abi as Abi, claimUI.bytecode as Hex, ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", addresses])
 }
 
@@ -68,7 +69,8 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
   const result = claimerInfos.map((claimer) => {
     const claimable = claimer.claimableTokens.map((token) => {
       const tokenPrice = getPriceBySymbol(token.symbol)
-      const valueInUsd = Number(token.amount / BigInt(10 ** Number(token.decimals))) * tokenPrice
+
+      const valueInUsd = Number(formatUnits(token.amount, Number(token.decimals))) * tokenPrice
 
       return {
         symbol: token.symbol,
@@ -79,8 +81,7 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
 
     const totalClaimableValue = claimable.reduce((sum, token) => sum + parseFloat(token.valueInUsd), 0)
 
-    const tokenPrice = getPriceBySymbol(claimer.collatStaked.symbol)
-    const depositedValueInUsd = Number(claimer.collatStaked.amount / BigInt(10 ** Number(claimer.collatStaked.decimals))) * tokenPrice
+    const depositedValueInUsd = Number(formatUnits(claimer.collatStakedUsdValue, Number(claimer.collatStaked.decimals)))
 
     const deposited = {
       symbol: claimer.collatStaked.symbol,

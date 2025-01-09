@@ -16,7 +16,7 @@
     "validate": "npm run lint && npm run lint:tsc && npm run lint:prettier"
   },
   "dependencies": {
-    "@radix-ui/react-hover-card": "^1.1.2",
+    "@radix-ui/react-hover-card": "^1.1.4",
     "@radix-ui/react-menubar": "^1.1.1",
     "@radix-ui/react-navigation-menu": "^1.2.0",
     "@radix-ui/react-popover": "^1.1.1",

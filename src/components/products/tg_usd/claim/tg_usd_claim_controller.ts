@@ -3,21 +3,16 @@ import { Abi, Address, Hex, WalletClient } from "viem"
 import { tgUsdMarkets } from "../tg_usd_repository"
 import { ClaimerInfo } from "../tg_usd_type"
 import claimUI from "@/abi/tgusd/ClaimUI.json"
+import claimContract from "@/abi/tgusd/RewardAccumulator.json"
 import { AssetData, AssetDataPriced, ExistingAsset } from "@/types"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import { getTokensPrice } from "@/services/service_price"
 
-const claim = { abi: {} }
-
-export async function doClaim(contractAddress: Address, walletClient: WalletClient) {
-  const [account] = await walletClient.requestAddresses()
-
-  const markets = {}
-
+export async function doClaim(contractAddress: Address, markets: Address[], rewardsLength: number, walletClient: WalletClient) {
   const txData = {
-    abi: claim.abi as Abi,
-    functionName: "claim",
-    args: [account, markets],
+    abi: claimContract.abi as Abi,
+    functionName: markets.length === 1 ? "claimSimple" : "claimMultiple",
+    args: markets.length === 1 ? [markets[0]] : [markets, rewardsLength],
     address: contractAddress,
     gas: undefined as undefined | bigint,
   }
@@ -60,7 +55,7 @@ export const computeAndReturnPrices = async (claimInfo: ClaimerInfo[]) => {
     return allInfos
   } catch (error) {
     console.error("Failed to load asset information:", error)
-    return
+    return []
   }
 }
 

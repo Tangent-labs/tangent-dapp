@@ -95,5 +95,6 @@ export type ClaimData = {
 
 export type ClaimableMarket = {
   marketName: ExistingAsset
+  marketAddress: Address
   claimable: string
 }

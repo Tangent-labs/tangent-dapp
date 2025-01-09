@@ -10,22 +10,33 @@ import { Switch } from "@/components/ui/switch"
 import { useState } from "react"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { ClaimableMarket } from "../tg_usd_type"
+import Divider from "@/components/design_system/structure/divider"
+import { Button } from "@/components/design_system/inputs/button"
 
 export default function TgUsdClaimContent() {
   const [marketsToClaim, setMarketsToClaim] = useState<ClaimableMarket[]>([])
 
-  const { displayRows } = useTgUsdClaimContext()
+  const { displayRows, actionClaim } = useTgUsdClaimContext()
 
   const addToClaimableMarkets = (rowData: ClaimableMarket) => {
     setMarketsToClaim((prevMarkets: ClaimableMarket[]) => {
-      const isMarketAlreadyAdded = prevMarkets.some((market) => market.marketName === rowData.marketName)
+      const market = prevMarkets.find((market) => market.marketName === rowData.marketName)
 
-      if (isMarketAlreadyAdded) {
-        return prevMarkets
+      if (market) {
+        return prevMarkets.filter((m) => m.marketName !== market.marketName)
+      } else {
+        return [...prevMarkets, { marketName: rowData.marketName, claimable: rowData.claimable, marketAddress: rowData.marketAddress }]
       }
-
-      return [...prevMarkets, { marketName: rowData.marketName, claimable: rowData.claimable }]
     })
+  }
+
+  const onClickClaim = () => {
+    //
+    const rewardAccumulatorContractAddress = "0xDC0a0B1Cd093d321bD1044B5e0Acb71b525ABb6b"
+    //
+
+    const marketAddressesToClaim = marketsToClaim.map((el) => el.marketAddress)
+    actionClaim(rewardAccumulatorContractAddress, marketAddressesToClaim)
   }
 
   return (
@@ -39,12 +50,18 @@ export default function TgUsdClaimContent() {
         />
       </div>
 
-      <div className="flex w-full items-center justify-center gap-4">
-        <div className="flex w-9/12 flex-col items-start justify-start">
+      <div className="flex w-full items-start justify-start gap-4">
+        <div className="flex w-9/12 flex-col">
           {displayRows?.map((item) => (
             <Panel
               key={item.marketName}
-              onClick={() => addToClaimableMarkets({ marketName: item.marketName, claimable: item.totalClaimableValue })}
+              onClick={() =>
+                addToClaimableMarkets({
+                  marketName: item.marketName,
+                  claimable: item.totalClaimableValue,
+                  marketAddress: item.marketAddress,
+                })
+              }
               className={`mb-2 flex w-full items-center justify-center border p-5 before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover`}
             >
               <div className={`flex min-w-[360px] items-center gap-4`}>
@@ -57,35 +74,38 @@ export default function TgUsdClaimContent() {
                 <span className="whitespace-nowrap font-bold text-row-tonic">10%</span>
               </div>
 
-              <ListIndicator info="Deposited" value={formatDollar(item?.totalDepositedValue || 0)} valueFirst={false} />
-
               <ListIndicator info="Claimable" value={formatDollar(item?.totalClaimableValue || 0)} valueFirst={false} />
 
+              <ListIndicator info="Deposited" value={formatDollar(item?.totalDepositedValue || 0)} valueFirst={false} />
               <Switch />
             </Panel>
           ))}
         </div>
 
-        <div className="flex w-3/12 items-start justify-start">
-          <div className="flex w-full flex-col items-start justify-start rounded-xl border border-white p-5">
-            <div className="flex w-full items-center justify-between">
-              <div className="flex flex-col items-start justify-start">Market</div>
+        <div className="flex w-3/12 flex-col items-start justify-start rounded-xl border border-white p-5">
+          <div className="flex w-full items-center justify-between">
+            <div className="flex flex-col items-start justify-start">Market</div>
 
-              <div className="flex flex-col items-start justify-start">Claimable</div>
-            </div>
+            <div className="flex flex-col items-start justify-start">Claimable</div>
+          </div>
 
-            <div className="flex w-full flex-col">
-              {marketsToClaim.map((el: ClaimableMarket) => (
-                <div key={el.marketName} className="flex w-full items-center justify-between">
-                  <div className={`relative flex items-center gap-4`}>
-                    <TokenImage token={el.marketName} size={16} className="w-8" />
-                    <span className="text-[12px] font-semibold">{el.marketName}</span>
-                  </div>
+          <Divider className="h-0.5 w-full bg-white/10" />
 
-                  <span className="text-[12px] font-semibold">{el.claimable}</span>
+          <div className="flex w-full flex-col">
+            {marketsToClaim.map((el: ClaimableMarket) => (
+              <div key={el.marketName} className="flex w-full items-center justify-between">
+                <div className={`relative flex items-center gap-4`}>
+                  <TokenImage token={el.marketName} size={16} className="w-8" />
+                  <span className="text-[12px] font-semibold">{el.marketName}</span>
                 </div>
-              ))}
-            </div>
+
+                <span className="text-[12px] font-semibold">{el.claimable}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-24 flex w-full">
+            {marketsToClaim.length > 0 && <Button label={"claim"} className="flex w-full items-center justify-center" onClick={() => onClickClaim()} />}
           </div>
         </div>
       </div>

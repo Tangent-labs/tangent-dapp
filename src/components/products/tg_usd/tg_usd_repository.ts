@@ -2,11 +2,11 @@ import { TgUsdMarket } from "./tg_usd_type"
 
 export const tgUsdMarkets: TgUsdMarket[] = [
   {
-    marketAddress: "0x987dc367f3530Bb94Ef107508f4faC6126c89378",
+    marketAddress: "0xe38063979f912dA98123A226a5aD12147045b7eB",
     marketName: "crvUSD_USDC",
   },
   {
-    marketAddress: "0x274588CffBC8413749Bd7249bD94618467E2E433",
+    marketAddress: "0xc6170F953327f823AAdFe379966b7804c7e49Fdf",
     marketName: "USDC_fxUSD",
   },
 ]

@@ -4,7 +4,7 @@ import { tgUsdMarkets } from "../tg_usd_repository"
 import { ClaimerInfo } from "../tg_usd_type"
 import claimUI from "@/abi/tgusd/ClaimUI.json"
 import claimContract from "@/abi/tgusd/RewardAccumulator.json"
-import { AssetData, AssetDataPriced, ExistingAsset } from "@/types"
+import { AssetDataPriced, ExistingAsset } from "@/types"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import { getTokensPrice } from "@/services/service_price"
 
@@ -26,27 +26,27 @@ export async function getTgUsdClaimOnChainData() {
 }
 
 export const computeAndReturnPrices = async (claimInfo: ClaimerInfo[]) => {
-  const tokens: ExistingAsset[] = []
+  const tokensSet = new Set<ExistingAsset>()
 
   claimInfo.forEach((el) => {
     el.claimableTokens.forEach((t) => {
-      if (!tokens.includes(t?.symbol)) tokens.push(t.symbol)
+      if (t?.symbol) tokensSet.add(t.symbol)
     })
 
-    if (!tokens.includes(el.collatStaked.symbol)) tokens.push(el.collatStaked.symbol)
+    tokensSet.add(el.collatStaked.symbol)
   })
 
-  try {
-    const list: Record<AssetConfigKey, AssetData> = assetConfig
+  const tokens: ExistingAsset[] = Array.from(tokensSet)
 
+  try {
     const prices = await getTokensPrice(tokens)
 
-    const allInfos = Object.entries(list)
-      .filter(([k]) => tokens.indexOf(k as AssetConfigKey) !== -1)
-      .map(([k, v]) => {
+    const allInfos = Object.entries(assetConfig)
+      .filter(([assetSymbol]) => tokens.indexOf(assetSymbol as AssetConfigKey) !== -1)
+      .map(([symbol, config]) => {
         return {
-          ...v,
-          price: (prices ? prices[k as AssetConfigKey] : 0) || 0,
+          ...config,
+          price: (prices ? prices[symbol as AssetConfigKey] : 0) || 0,
         }
       })
       .sort((a, b) => {
@@ -56,7 +56,7 @@ export const computeAndReturnPrices = async (claimInfo: ClaimerInfo[]) => {
     return allInfos
   } catch (error) {
     console.error("Failed to load asset information:", error)
-    return []
+    return undefined
   }
 }
 
@@ -81,7 +81,7 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
 
     const totalClaimableValue = claimable.reduce((sum, token) => sum + parseFloat(token.valueInUsd), 0)
 
-    const depositedValueInUsd = Number(formatUnits(claimer.collatStakedUsdValue, Number(claimer.collatStaked.decimals)))
+    const depositedValueInUsd = parseFloat(formatUnits(claimer.collatStakedUsdValue, Number(claimer.collatStaked.decimals)))
 
     const deposited = {
       symbol: claimer.collatStaked.symbol,
@@ -100,6 +100,8 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
       totalDepositedValue: deposited.valueInUsd,
     }
   })
+
+  result.sort((marketA, marketB) => parseFloat(marketB.totalClaimableValue) - parseFloat(marketA.totalClaimableValue))
 
   return result
 }

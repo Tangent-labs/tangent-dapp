@@ -6,39 +6,14 @@ import ListAsset from "@/components/design_system/list/list_asset"
 import { formatDollar } from "@/lib/number_formatter"
 import ListIndicator from "@/components/design_system/list/list_indicator"
 import Panel from "@/components/design_system/structure/panel"
-import { Switch } from "@/components/ui/switch"
-import { useState } from "react"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { ClaimableMarket } from "../tg_usd_type"
 import Divider from "@/components/design_system/structure/divider"
 import { Button } from "@/components/design_system/inputs/button"
-import HelpPropover from "@/components/design_system/structure/help_popover"
+import TgHoverCard from "@/components/design_system/structure/tg_hover_card"
 
 export default function TgUsdClaimContent() {
-  const [marketsToClaim, setMarketsToClaim] = useState<ClaimableMarket[]>([])
-
-  const { displayRows, actionClaim } = useTgUsdClaimContext()
-
-  const addToClaimableMarkets = (rowData: ClaimableMarket) => {
-    setMarketsToClaim((prevMarkets: ClaimableMarket[]) => {
-      const market = prevMarkets.find((market) => market.marketName === rowData.marketName)
-
-      if (market) {
-        return prevMarkets.filter((m) => m.marketName !== market.marketName)
-      } else {
-        return [...prevMarkets, { marketName: rowData.marketName, claimable: rowData.claimable, marketAddress: rowData.marketAddress }]
-      }
-    })
-  }
-
-  const onClickClaim = () => {
-    //
-    // fetch dynamically
-    const rewardAccumulatorContractAddress = "0xDC0a0B1Cd093d321bD1044B5e0Acb71b525ABb6b"
-
-    const marketAddressesToClaim = marketsToClaim.map((el) => el.marketAddress)
-    actionClaim(rewardAccumulatorContractAddress, marketAddressesToClaim)
-  }
+  const { displayRows, onClickClaim, marketsToClaim, addToClaimableMarkets } = useTgUsdClaimContext()
 
   return (
     <>
@@ -72,7 +47,7 @@ export default function TgUsdClaimContent() {
                 <ListAsset name={item.marketName} token={item.marketName} assetsEarned={[]} />
               </div>
 
-              <div className={`flex min-w-24 flex-col text-center`}>
+              <div className={`flex min-w-36 flex-col text-center`}>
                 <span className="text-[20px] leading-4">vAPR</span>
 
                 <span className="whitespace-nowrap font-bold text-row-tonic">10%</span>
@@ -81,24 +56,20 @@ export default function TgUsdClaimContent() {
               <div className="flex items-center gap-4">
                 <ListIndicator info="Claimable" value={formatDollar(item?.totalClaimableValue || 0)} valueFirst={false} />
 
-                {/* change from click to hover */}
-                <HelpPropover title="Rewards Breakdown">
-                  <div className="flex flex-col gap-1 text-sm">
-                    {item?.claimable?.map((reward, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <div className="w-10">
-                          <TokenImage token={reward.symbol} size={16} />
-                        </div>
-                        <span className="w-20"> {reward.symbol}</span>
-                        <span className=""> {formatDollar(reward?.valueInUsd)}</span>
+                <TgHoverCard title={"Rewards Breakdown"}>
+                  {item?.claimable?.map((reward, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <div className="w-10">
+                        <TokenImage token={reward.symbol} size={16} />
                       </div>
-                    ))}
-                  </div>
-                </HelpPropover>
+                      <span className="w-20"> {reward.symbol}</span>
+                      <span className=""> {formatDollar(reward?.valueInUsd)}</span>
+                    </div>
+                  ))}
+                </TgHoverCard>
               </div>
 
               <ListIndicator info="Deposited" value={formatDollar(item?.totalDepositedValue || 0)} valueFirst={false} />
-              <Switch />
             </Panel>
           ))}
         </div>
@@ -126,7 +97,9 @@ export default function TgUsdClaimContent() {
           </div>
 
           <div className="mt-8 flex w-full">
-            {marketsToClaim.length > 0 && <Button label="CLAIM" className="flex w-full items-center justify-center" onClick={() => onClickClaim()} />}
+            {marketsToClaim.length > 0 && (
+              <Button label="CLAIM" className="flex w-full items-center justify-center" onClick={() => onClickClaim(marketsToClaim)} />
+            )}
           </div>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, 
 import { Address } from "viem"
 import { AssetDataPriced } from "@/types"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { ClaimData, ClaimerInfo } from "../tg_usd_type"
+import { ClaimableMarket, ClaimData, ClaimerInfo } from "../tg_usd_type"
 import { computeAndReturnPrices, doClaim, getTgUsdClaimOnChainData, transformClaimOnChainData } from "./tg_usd_claim_controller"
 
 type TgUsdClaimContextProps = {
@@ -12,22 +12,25 @@ type TgUsdClaimContextProps = {
 }
 
 type TgUsdClaimContextValues = {
-  isLoading: boolean
   displayRows: ClaimData[]
   actionClaim: (arg: Address, markets: Address[]) => void
+  onClickClaim: (marketsToClaim: ClaimableMarket[]) => void
+  addToClaimableMarkets: (rowData: ClaimableMarket) => void
+  marketsToClaim: ClaimableMarket[]
 }
 
 export const TgUsdClaimContext = createContext<TgUsdClaimContextValues | undefined>(undefined)
 
 export const TgUsdClaimProvider = ({ children }: TgUsdClaimContextProps) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const rewardAccumulatorContractAddress = "0xDC0a0B1Cd093d321bD1044B5e0Acb71b525ABb6b"
+
   const [claimInfo, setClaimInfo] = useState<ClaimerInfo[] | undefined>()
   const [rewardsInfo, setRewardsInfo] = useState<AssetDataPriced[] | undefined>()
+  const [marketsToClaim, setMarketsToClaim] = useState<ClaimableMarket[]>([])
 
   const { getWalletClient, currentAddress } = useWalletConnexionContext()
 
   useEffect(() => {
-    setIsLoading(true)
     loadPrices()
   }, [claimInfo])
 
@@ -40,14 +43,12 @@ export const TgUsdClaimProvider = ({ children }: TgUsdClaimContextProps) => {
   }
 
   useEffect(() => {
-    setIsLoading(true)
     loadData()
   }, [])
 
   const loadData = useCallback(() => {
     getTgUsdClaimOnChainData().then((data) => {
       setClaimInfo(data)
-      setIsLoading(false)
     })
   }, [])
 
@@ -67,10 +68,29 @@ export const TgUsdClaimProvider = ({ children }: TgUsdClaimContextProps) => {
     [currentAddress]
   )
 
+  const onClickClaim = (marketsToClaim: ClaimableMarket[]) => {
+    const marketAddressesToClaim = marketsToClaim.map((el) => el.marketAddress)
+    actionClaim(rewardAccumulatorContractAddress, marketAddressesToClaim)
+  }
+
+  const addToClaimableMarkets = (rowData: ClaimableMarket) => {
+    setMarketsToClaim((prevMarkets: ClaimableMarket[]) => {
+      const market = prevMarkets.find((market) => market.marketName === rowData.marketName)
+
+      if (market) {
+        return prevMarkets.filter((m) => m.marketName !== market.marketName)
+      } else {
+        return [...prevMarkets, { marketName: rowData.marketName, claimable: rowData.claimable, marketAddress: rowData.marketAddress }]
+      }
+    })
+  }
+
   const contextValue: TgUsdClaimContextValues = {
-    isLoading,
     displayRows,
     actionClaim,
+    onClickClaim,
+    addToClaimableMarkets,
+    marketsToClaim,
   }
 
   return <TgUsdClaimContext.Provider value={contextValue}>{children}</TgUsdClaimContext.Provider>

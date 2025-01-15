@@ -122,6 +122,7 @@ export type HarvesterInfoDisplay = {
   isProcessed: boolean
   percentage: number
   harvesterFees: number
+  lastHarvestDate: bigint
 }
 
 export type BoosterClaimListRow = {

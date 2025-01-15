@@ -42,6 +42,7 @@ export function transformHarvestOnChainData(harvesterInfos: HarvesterInfo[], ass
       rewards: rewards?.data,
       isProcessed: true,
       contractAddress: stakingInfo.marketAddress,
+      lastHarvestDate: info.lastHarvestDate,
     } as HarvesterInfoDisplay
   }
   return harvesterInfos?.map(processOne).filter((a) => !!a) || []

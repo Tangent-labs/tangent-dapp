@@ -40,6 +40,7 @@ export type HarvesterInfo = {
   harvesterFeePercentage: bigint
   marketAddress: string
   tokenAmounts: TgUSDTokenAmount[]
+  lastHarvestDate: bigint
 }
 
 export type TgUsdMarketDataUser = {

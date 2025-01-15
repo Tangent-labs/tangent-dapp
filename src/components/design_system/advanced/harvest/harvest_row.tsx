@@ -10,6 +10,7 @@ import { Button } from "../../inputs/button"
 import { formatDollar, formatPercent } from "@/lib/number_formatter"
 import { Address } from "viem"
 import HelpPropover from "../../structure/help_popover"
+import { formatDate } from "@/lib/other_formatter"
 
 type HarvestRowProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
   info: HarvesterInfoDisplay
@@ -54,8 +55,9 @@ export default function HarvestRow({ info, onHarvest, canInteract, className, ..
           <ListIndicator info="Harvester Rewards" value={formatDollar(info?.harvesterFees || 0)} valueFirst={false} />
         </div>
       </div>
-      <div>
+      <div className="flex flex-col items-center justify-center">
         <Button label="Harvest" disabled={!canInteract || !info || info.harvesterFees === 0} onClick={() => onHarvest && onHarvest(info.contractAddress)} />
+        <span className="mt-1 text-xs"> Last Harvest {formatDate(new Date(Number(info.lastHarvestDate) * 1000), "dd-MM-yyyy")} </span>
       </div>
     </Panel>
   )

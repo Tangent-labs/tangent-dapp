@@ -18,7 +18,7 @@ export default function TgHoverCard({ children, title }: TgHoverCardProps) {
           <IconCircleHelp />
         </button>
       </HoverCardTrigger>
-      <HoverCardContent side="top" className="z-20 !m-0 w-80 border-none bg-black !p-0">
+      <HoverCardContent side="top" className="z-20 !m-0 w-fit border-none bg-black !p-0">
         <Panel>
           <div className="grid gap-4">
             <div className="space-y-2">

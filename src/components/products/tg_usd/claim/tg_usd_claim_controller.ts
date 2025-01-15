@@ -4,11 +4,11 @@ import { tgUsdMarkets } from "../tg_usd_repository"
 import { ClaimerInfo } from "../tg_usd_type"
 import claimUI from "@/abi/tgusd/ClaimUI.json"
 import claimContract from "@/abi/tgusd/RewardAccumulator.json"
-import { AssetDataPriced, ExistingAsset } from "@/types"
+import { AssetDataPriced, ExistingAsset, ListHeaderData } from "@/types"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import { getTokensPrice } from "@/services/service_price"
 
-export async function doClaim(contractAddress: Address, markets: Address[], rewardsLength: number, walletClient: WalletClient) {
+export async function doClaim(contractAddress: Address, markets: Address[], rewardsLength: number | undefined, walletClient: WalletClient) {
   const txData = {
     abi: claimContract.abi as Abi,
     functionName: markets.length === 1 ? "claimSimple" : "claimMultiple",
@@ -105,3 +105,10 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
 
   return result
 }
+
+export const claimListHeaders: ListHeaderData[] = [
+  { label: "Market", key: "marketName" },
+  { label: "APR", key: "apr" },
+  { label: "Claimable", key: "totalClaimableValue" },
+  { label: "Deposited", key: "totalDepositedValue" },
+]

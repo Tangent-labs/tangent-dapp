@@ -9,6 +9,7 @@ interface ListHeaderProps {
   className?: string
   activeSort?: ListSort
   onSort?: (key: string) => void
+  rowDisposition?: React.ComponentType<{ children: React.ReactNode[] }> // Simplified custom disposition component
 }
 
 interface HeaderDisplayProps {
@@ -31,10 +32,10 @@ const HeaderDisplay = ({ label, sort = "none", onSort, field }: HeaderDisplayPro
   )
 }
 
-const ListHeader = ({ headers, className = "", activeSort, onSort }: ListHeaderProps) => {
+const ListHeader = ({ headers, className = "", activeSort, onSort, rowDisposition: CustomRowDisposition = ListRowDisposition }: ListHeaderProps) => {
   return (
     <div className={`hidden p-4 leading-[10px] xl:block ${className}`}>
-      <ListRowDisposition>
+      <CustomRowDisposition>
         {!!headers?.at(0)?.key && (
           <HeaderDisplay
             key={headers?.at(0)?.key}
@@ -66,7 +67,7 @@ const ListHeader = ({ headers, className = "", activeSort, onSort }: ListHeaderP
               />
             ))}
         </>
-      </ListRowDisposition>
+      </CustomRowDisposition>
     </div>
   )
 }

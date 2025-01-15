@@ -17,6 +17,7 @@ import MenuBarFeature from "@/components/products/product_nav/menu_bar_feature"
 import { WalletConnexionProvider } from "@/components/products/wallet/wallet_connexion_context"
 import { WalletConnexionButton } from "@/components/products/wallet/Wallet_connexion_button"
 import MenuSideToogle from "@/components/products/product_nav/menu_side_toogle"
+import { Button } from "@/components/design_system/inputs/button"
 
 async function getNavIsOpen() {
   const cookieStore = await cookies()
@@ -75,8 +76,9 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
             </div>
             <div className="mr-2 w-full lg:mr-24">
               <div className="flex justify-between max-md:flex-col">
-                <div className="cw-full order-2 md:order-1">
+                <div className="cw-full order-2 flex gap-3 md:order-1">
                   <MenuBarFeature />
+                  <Button className="mb-2 px-12 text-sm" label="Buy tgUSD" />
                 </div>
                 <div className="order-1 md:order-2">
                   <div className="flex items-center gap-1">

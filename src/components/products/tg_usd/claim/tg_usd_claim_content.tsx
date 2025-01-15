@@ -19,7 +19,6 @@ import ListHeader from "@/components/design_system/list/list_header"
 import { ListState } from "@/types"
 import ListRow from "@/components/design_system/list/list_row"
 import ListAPR from "@/components/design_system/list/list_apr"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
 
 const listeState: ListState = {
   search: undefined,
@@ -115,9 +114,7 @@ function ClaimList() {
 
   return (
     <>
-      <PanelRaw className="mb-1">
-        <ListHeader rowDisposition={ClaimRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
-      </PanelRaw>
+      <ListHeader rowDisposition={ClaimRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
 
       {displayRows &&
         (displayRows as ClaimData[])?.map((item: ClaimData) => (

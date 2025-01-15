@@ -34,28 +34,26 @@ const InputSelect = <T extends SelectOption | SelectOptionAmount>({
 }: InputSelectProps<T>) => {
   return (
     <>
-      <div className={`flex flex-col gap-1 ${className}`}>
-        <div className="flex justify-between text-xs">{label}</div>
-        <div>
-          <Select value={value} onValueChange={(value) => onChange(value)}>
-            <SelectTrigger className={className}>
-              <SelectValue placeholder={placeholder} />
-            </SelectTrigger>
-            <SelectContent>
-              {options?.map((option: SelectOption) => (
-                <SelectItem value={option.value} key={option.value}>
-                  {template ? (
-                    template(option as T)
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs">{option.label}</span>
-                    </div>
-                  )}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      <div className={`flex flex-col items-center gap-1 ${className}`}>
+        <div className="flex justify-between text-xs text-white/60">{label}</div>
+        <Select value={value} onValueChange={(value) => onChange(value)}>
+          <SelectTrigger className={className}>
+            <SelectValue placeholder={placeholder} />
+          </SelectTrigger>
+          <SelectContent>
+            {options?.map((option: SelectOption) => (
+              <SelectItem value={option.value} key={option.value}>
+                {template ? (
+                  template(option as T)
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs">{option.label}</span>
+                  </div>
+                )}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </>
   )

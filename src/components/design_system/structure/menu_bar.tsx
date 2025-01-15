@@ -28,7 +28,7 @@ export default function MenuBar({ className, links, ...props }: MenuBarProps) {
             className="transition-all duration-700 hover:text-row-tonic data-[active=true]:text-row-tonic"
           >
             <Link className="text-sm aria-disabled:text-gray-700" href={l.href} aria-disabled={l.disabled}>
-              {l.label}
+              {l.label.substring(0, 1).toUpperCase() + l.label.substring(1, l.label.length)}
             </Link>
           </li>
         ))}

@@ -11,7 +11,7 @@ interface ListAPRProps {
 
 const ListAPR = ({ apr, projectedApr, className = "", harvestHelpMessage }: ListAPRProps) => {
   return (
-    <div className="flex gap-6">
+    <div className="flex gap-2">
       <div className={`flex min-w-16 flex-col text-left ${className}`}>
         <span className="text-[20px] font-bold leading-4 text-row-tonic">{apr}%</span>
         {projectedApr && (

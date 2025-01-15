@@ -1,16 +1,18 @@
 "use client"
 
-type InputSearchProps = React.ParamHTMLAttributes<HTMLInputElement> & {
+type InputSearchProps = {
   placeholder?: string
   value: string
   onChange: (value: string) => void
-  onSearch?: () => void // Optional prop if you want a search button
+  onSearch?: () => void
+  className?: string
+  inputClassName?: string
 }
 
-const InputSearch = ({ placeholder = "Search...", value, onChange, onSearch, className = "" }: InputSearchProps) => {
+const InputSearch = ({ placeholder = "Search...", value, onChange, onSearch, className = "", inputClassName = "" }: InputSearchProps) => {
   return (
     <div className={`relative flex items-center ${className}`}>
-      <input type="text" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="" />
+      <input type="text" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className={`${inputClassName}`} />
       {value && (
         <button type="button" onClick={() => onChange("")} className="absolute right-2 focus:outline-none">
           &#x2715;

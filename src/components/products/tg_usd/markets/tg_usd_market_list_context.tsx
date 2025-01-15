@@ -1,7 +1,7 @@
 "use client"
 
 import { ListRowData } from "@/types"
-import { createContext, ReactNode, useContext, useMemo } from "react"
+import { createContext, ReactNode, useContext, useMemo, useState } from "react"
 import { getMarketDatas, mockTgUsdGlobalData, transformMarketDataToRows } from "./tg_usd_market_controller"
 import { TgUsdGlobalData } from "../tg_usd_type"
 
@@ -12,14 +12,20 @@ type TgUsdMaketListContextProps = {
 type TgUsdMaketListContextValues = {
   displayRows: ListRowData[]
   globalData: TgUsdGlobalData
+  searchQuery: string
+  setSearchQuery: (value: string) => void
 }
 
 export const TgUsdMaketListContext = createContext<TgUsdMaketListContextValues | undefined>(undefined)
 
 export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps) => {
+  const [searchQuery, setSearchQuery] = useState<string>("")
+
   const displayRows = useMemo<ListRowData[]>(() => {
-    return getMarketDatas().map((data) => transformMarketDataToRows(data))
-  }, [])
+    return getMarketDatas()
+      .map((data) => transformMarketDataToRows(data))
+      .filter((row) => row.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  }, [searchQuery])
 
   const globalData = useMemo<TgUsdGlobalData>(() => {
     return mockTgUsdGlobalData
@@ -28,6 +34,8 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
   const contextValue: TgUsdMaketListContextValues = {
     displayRows,
     globalData,
+    searchQuery,
+    setSearchQuery,
   }
 
   return <TgUsdMaketListContext.Provider value={contextValue}>{children}</TgUsdMaketListContext.Provider>

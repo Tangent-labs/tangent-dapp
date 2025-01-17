@@ -21,6 +21,9 @@ export const TOKEN_ADDR: Record<ExistingAsset, Address> = {
   sdPENDLE: "0x5Ea630e00D6eE438d3deA1556A110359ACdc10A9",
   BAL80: "0x7b50775383d3d6f0215a8f290f2c9e2eebbeceb2",
   TRICRV: "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
+  "crvUSD-USDC": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
+  "crvUSD-USDT": "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4 ",
+  "USDC-fxUSD": "0x5018BE882DccE5E3F2f3B0913AE2096B9b3fB61f",
 }
 
 export const ADDR_TOKEN: Record<Address, string> = Object.entries(TOKEN_ADDR).reduce(

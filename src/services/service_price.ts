@@ -3,6 +3,7 @@ import { AssetConfigKey } from "@/services/repo_asset_infos"
 import { dappConfig } from "@/dapp_config"
 import { Address } from "viem"
 import { revalidateTag, unstable_cache } from "next/cache"
+import { ExistingAsset } from "@/types"
 
 const CACHE_PRICE_TAG = "tan-price"
 const CACHE_PRICE_OPTION = { revalidate: dappConfig.cacheTime.price * 60 }
@@ -22,8 +23,7 @@ type DefillamaPriceData = {
   coins: DefillamaCoins
 }
 
-const _getPrice = async (): Promise<Record<AssetConfigKey, number> | undefined> => {
-  const list = Object.values(TOKEN_ADDR)
+const _fetchAndReturnPrices = async (list: Address[]): Promise<Record<AssetConfigKey, number> | undefined> => {
   const param = `ethereum:${list.join(",ethereum:")}`
   const priceResponse = await fetch(`https://coins.llama.fi/prices/current/${param}?searchWidth=4h`)
   if (priceResponse.status === 200) {
@@ -41,6 +41,11 @@ const _getPrice = async (): Promise<Record<AssetConfigKey, number> | undefined> 
   }
 }
 
+const _getPrice = async (): Promise<Record<AssetConfigKey, number> | undefined> => {
+  const list = Object.values(TOKEN_ADDR)
+  return _fetchAndReturnPrices(list)
+}
+
 export const resetPricesCache = () => {
   revalidateTag(CACHE_PRICE_TAG)
 }
@@ -52,3 +57,16 @@ export const getPrices = unstable_cache(
   [CACHE_PRICE_TAG],
   CACHE_PRICE_OPTION
 )
+
+/**
+ *
+ * @param tokens only returns the price of some selected tokens
+ * @returns
+ */
+export const getTokensPrice = async (tokens: ExistingAsset[]) => {
+  const selectedAddresses: Address[] = Object.entries(TOKEN_ADDR)
+    .filter(([key]) => tokens.includes(key as ExistingAsset))
+    .map(([, value]) => value)
+
+  return _fetchAndReturnPrices(selectedAddresses)
+}

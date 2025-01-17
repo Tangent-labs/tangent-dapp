@@ -51,12 +51,18 @@ export type PositionData = {
   tokensClaimable: TokenAmount[]
 }
 
+export type ERC20StaticInfos = {
+  token: string // Address of the token (IERC20Metadata)
+  decimals: number // Number of decimals for the token
+  symbol: string // Symbol of the token
+}
+
 export type BalanceAllowances = {
   token: Address
   balance: bigint
   allowances?: Allowance[]
 }
-
+export type OutputBalanceAllowances = BalanceAllowances
 export type Allowance = {
   spender: Address
   allowance: bigint

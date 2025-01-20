@@ -21,11 +21,14 @@ export const TOKEN_ADDR: Record<ExistingAsset, Address> = {
   sdPENDLE: "0x5Ea630e00D6eE438d3deA1556A110359ACdc10A9",
   BAL80: "0x7b50775383d3d6f0215a8f290f2c9e2eebbeceb2",
   TRICRV: "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
+  tgUSD: "0x2963ff0196a901ec3F56d7531e7C4Ce8F226462B",
+  sgUSD: "0x374039ebeed6a9185b1ccf320daa2301f26246f6",
 }
 
 export const ADDR_TOKEN: Record<Address, string> = Object.entries(TOKEN_ADDR).reduce(
   (acc, [symbol, address]) => {
     acc[address] = symbol
+
     return acc
   },
   {} as Record<string, string>

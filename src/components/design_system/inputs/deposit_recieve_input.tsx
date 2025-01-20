@@ -98,7 +98,7 @@ export function DepositRecieveInput({
               value={innerValue}
               placeholder="Amount"
               onChange={handleInputChange}
-              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 disabled:bg-gray-400 disabled:bg-opacity-30")}
+              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 outline-none disabled:bg-gray-400 disabled:bg-opacity-30")}
             />
           </div>
 

@@ -18,6 +18,8 @@ export type ExistingAsset =
   | "PENDLE"
   | "wstETH"
   | "TRICRV"
+  | "tgUSD"
+  | "sgUSD"
 
 // Based on  image folder parsing. ps: see _utils\create_tokens_ts_type.js
 export type AllExistingAsset =

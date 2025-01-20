@@ -1,4 +1,5 @@
-import { AprEntry, ExistingAsset, Network } from "@/types"
+import { AprEntry, AssetDataPriced, ExistingAsset, Network } from "@/types"
+import { Address } from "viem"
 
 export type TgUsdGlobalMarketData = {
   tgUsdPrice: number
@@ -47,4 +48,31 @@ export type TgUsdGlobalData = {
   APY: number // %
   globalCr: number // %
   GlobalTvl: number // $
+}
+
+export type TgUsdMarket = {
+  marketAddress: Address
+  marketName: ExistingAsset
+  collatAddress: Address
+  marketType: "Convex_CRV" | "Convex_FXN"
+}
+
+export type StakingInfo = {
+  sgUSDBalance: bigint
+  sgUSDPrice: bigint
+  sgUSDSupply: bigint
+  tgUSDAllowance: bigint
+  tgUSDBalance: bigint
+  tgUSDPercentageInSgUSD: bigint
+  tgUSDPrice: bigint
+  tgUSDSupply: bigint
+}
+
+export type StakingDepositType = "asset" | "sdAsset"
+
+export type StakingAssetInfo = {
+  balance: bigint | undefined
+  address: Address
+  current: StakingDepositType
+  asset?: AssetDataPriced
 }

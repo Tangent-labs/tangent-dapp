@@ -156,4 +156,20 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     logo: "TRICRV",
     displayDecimals: 2,
   },
+  tgUSD: {
+    symbol: "tgUSD",
+    name: "tgUSD stablecoin",
+    decimals: 18,
+    address: TOKEN_ADDR.tgUSD,
+    logo: "tgUSD",
+    displayDecimals: 2,
+  },
+  sgUSD: {
+    symbol: "sgUSD",
+    name: "sgUSD",
+    decimals: 18,
+    address: TOKEN_ADDR.sgUSD,
+    logo: "sgUSD",
+    displayDecimals: 2,
+  },
 }

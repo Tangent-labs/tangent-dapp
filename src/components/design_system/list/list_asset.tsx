@@ -15,7 +15,7 @@ const ListAsset = ({ name, token, assetsEarned, className = "" }: ListAssetProps
       <TokenImage token={token} size={48} className="w-18" />
 
       <div className="flex flex-col leading-8">
-        <span className="text-[32px] font-semibold">{name}</span>
+        <span className="text-[20px] font-semibold">{name}</span>
         {assetsEarned && assetsEarned?.length > 0 && (
           <>
             <div className="flex gap-2">

@@ -30,6 +30,20 @@ export type TgUsdMarketData = {
   marketAddress: Address
 }
 
+export type TgUSDTokenAmount = {
+  token: string
+  symbol: ExistingAsset
+  amount: bigint
+}
+
+export type HarvesterInfo = {
+  collateralName: string
+  harvesterFeePercentage: bigint
+  marketAddress: string
+  tokenAmounts: TgUSDTokenAmount[]
+  lastHarvestDate: bigint
+}
+
 export type TgUsdMarketDataUser = {
   debt: number
   health: number

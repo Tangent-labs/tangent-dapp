@@ -12,22 +12,21 @@ import { ExistingAsset, SelectOption } from "@/types"
 import TokenImage from "@/components/design_system/structure/token_image"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import { Button } from "@/components/design_system/inputs/button"
-import { StakingDepositType } from "../tg_usd_type"
 import { TGUSD_CONTRACT } from "../tg_usd_repository"
 
 export default function TgUsdClaimContent() {
   const {
+    actionStake,
+    actionUnstake,
+    setCurrentFeature,
+    actionApprove,
+    setWeiValue,
     stakeInfo,
     currentFeature,
     depositAssetOptions,
-    actionApprove,
     currentAssetInfo,
-    actionStake,
-    setCurrentFeature,
     weiValue,
-    setWeiValue,
     expected,
-    setCurrentAsset,
     receivedTokenInfo,
     hasToApprove,
     computeProjectedValue,
@@ -36,15 +35,7 @@ export default function TgUsdClaimContent() {
   const AssetSelect = () => {
     return (
       <div className="min-w-48">
-        <InputSelect
-          className="w-full"
-          template={AssetSelectTemplate}
-          value={currentAssetInfo?.current}
-          options={depositAssetOptions}
-          onChange={(v) => {
-            setCurrentAsset(v as StakingDepositType)
-          }}
-        />
+        <InputSelect className="w-full" template={AssetSelectTemplate} value={currentAssetInfo?.current} options={depositAssetOptions} onChange={() => {}} />
       </div>
     )
   }
@@ -56,7 +47,7 @@ export default function TgUsdClaimContent() {
       displayDecimals: 2,
       logo: "tgUSD",
       name: "tgUSD",
-      price: 0,
+      price: stakeInfo?.tgUSDPrice,
       symbol: "tgUSD",
     }
 
@@ -66,7 +57,7 @@ export default function TgUsdClaimContent() {
       displayDecimals: 0,
       logo: "sgUSD",
       name: "sgUSD",
-      price: 0,
+      price: stakeInfo?.sgUSDPrice,
       symbol: "sgUSD",
     }
 
@@ -79,10 +70,7 @@ export default function TgUsdClaimContent() {
 
     return (
       <div className="flex items-center gap-2">
-        <div>
-          <TokenImage token={logo} size={32} />
-        </div>
-
+        <TokenImage token={logo} size={32} />
         <span className="text-sm font-bold">{option.label}</span>
       </div>
     )
@@ -93,9 +81,7 @@ export default function TgUsdClaimContent() {
 
     return (
       <PanelRaw className="flex w-48 items-center gap-2 border-white !bg-opacity-0 px-4 py-2 !backdrop-blur-none">
-        <div className="">
-          <TokenImage token={receivedTokenInfo.logo as ExistingAsset} size={32} />
-        </div>
+        <TokenImage token={receivedTokenInfo.logo as ExistingAsset} size={32} />
         <span className="text-sm font-bold leading-3">
           <span>{receivedTokenInfo.symbol}</span>
         </span>
@@ -175,13 +161,21 @@ export default function TgUsdClaimContent() {
             onValueChange={(value: bigint | undefined) => setWeiValue(value)}
           />
 
-          {hasToApprove ? (
-            <Button disabled={!weiValue} onClick={actionApprove} className="flex w-full justify-center" label="Approve">
-              Approve
-            </Button>
+          {currentFeature === "stake" ? (
+            <>
+              {hasToApprove ? (
+                <Button disabled={!weiValue} onClick={actionApprove} className="flex w-full justify-center" label="Approve">
+                  Approve
+                </Button>
+              ) : (
+                <Button disabled={!weiValue} onClick={actionStake} className="flex w-full justify-center" label="Stake">
+                  Stake
+                </Button>
+              )}
+            </>
           ) : (
-            <Button disabled={!weiValue} onClick={actionStake} className="flex w-full justify-center" label="Stake">
-              Stake
+            <Button disabled={!weiValue} onClick={actionUnstake} className="flex w-full justify-center" label="Unstake">
+              Unstake
             </Button>
           )}
         </Panel>

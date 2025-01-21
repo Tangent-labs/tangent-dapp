@@ -1,12 +1,25 @@
 import { TgUsdMarket } from "./tg_usd_type"
+import addresses from "./addresses.json"
+import { Address } from "viem"
 
-export const tgUsdMarkets: TgUsdMarket[] = [
-  {
-    marketAddress: "0xBdEeeFc32432B67E96838ecff7191Ec9e10Bf6D5",
-    marketName: "crvUSD_USDC",
-  },
-  {
-    marketAddress: "0xCE9E29366CCf02e82E313fE2dfD694d0F6E60a8b",
-    marketName: "USDC_fxUSD",
-  },
-]
+type RawMarket = {
+  marketAddress: string
+  collatName: string
+  collatAddress: string
+  marketType: string
+}
+
+export const tgUsdMarkets: TgUsdMarket[] = addresses.markets.map((market: RawMarket) => ({
+  marketAddress: market.marketAddress as Address,
+  marketName: market.collatName.replace("_", "-") as string,
+  collatAddress: market.collatAddress as Address,
+  marketType: market.marketType as string,
+})) as TgUsdMarket[]
+
+export const TGUSD_CONTRACT = {
+  REWARD_ACCUMULATOR: addresses.utilities.rewardAccumulator as Address,
+  ZAPPER: addresses.utilities.zapper as Address,
+  CONTROL_TOWER: addresses.utilities.controlTower as Address,
+  TG_USD: addresses.tokens.tgUSD as Address,
+  TG_USD_ORACLE: addresses.oracles.tgUSD as Address,
+}

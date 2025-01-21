@@ -117,11 +117,12 @@ export type SdtStakingProcessableRewards = {
 
 export type HarvesterInfoDisplay = {
   asset: ExistingAsset // Address
-  stakingAddress: Address
+  contractAddress: Address
   rewards: TokenAmountPriced
   isProcessed: boolean
   percentage: number
   harvesterFees: number
+  lastHarvestDate: bigint
 }
 
 export type BoosterClaimListRow = {

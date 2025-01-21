@@ -57,7 +57,6 @@ export const BoosterHarvestProvider = ({ children, rewardsInfo }: BoosterHarvest
     displayRows,
     actionHarvest,
   }
-
   return <BoosterHarvestContext.Provider value={contextValue}>{children}</BoosterHarvestContext.Provider>
 }
 

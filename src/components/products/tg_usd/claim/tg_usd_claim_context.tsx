@@ -6,6 +6,7 @@ import { AssetDataPriced, ListState } from "@/types"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { ClaimableMarket, ClaimData, ClaimerInfo } from "../tg_usd_type"
 import { computeAndReturnPrices, doClaim, getTgUsdClaimOnChainData, transformClaimOnChainData } from "./tg_usd_claim_controller"
+import { TGUSD_CONTRACT } from "../tg_usd_repository"
 
 type TgUsdClaimContextProps = {
   children: ReactNode
@@ -24,8 +25,6 @@ type TgUsdClaimContextValues = {
 export const TgUsdClaimContext = createContext<TgUsdClaimContextValues | undefined>(undefined)
 
 export const TgUsdClaimProvider = ({ children }: TgUsdClaimContextProps) => {
-  const rewardAccumulatorContractAddress = "0x01D4648B896F53183d652C02619c226727477C82"
-
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [claimInfo, setClaimInfo] = useState<ClaimerInfo[] | undefined>()
   const [rewardsInfo, setRewardsInfo] = useState<AssetDataPriced[]>()
@@ -39,27 +38,25 @@ export const TgUsdClaimProvider = ({ children }: TgUsdClaimContextProps) => {
 
   const loadPrices = async () => {
     if (!claimInfo) return
-
     const allInfos = await computeAndReturnPrices(claimInfo)
-
     setRewardsInfo(allInfos)
   }
 
   useEffect(() => {
     loadData()
-  }, [])
+  }, [currentAddress])
 
   const loadData = useCallback(() => {
-    getTgUsdClaimOnChainData().then((data) => {
-      setClaimInfo(data)
-    })
-  }, [])
+    if (currentAddress) {
+      getTgUsdClaimOnChainData(currentAddress).then((data) => {
+        setClaimInfo(data)
+      })
+    }
+  }, [currentAddress])
 
   const displayRows = useMemo(() => {
     if (!claimInfo || !rewardsInfo) return []
-
     const rows = transformClaimOnChainData(claimInfo, rewardsInfo)
-
     setIsLoading(false)
     setMarketsToClaim([])
     return rows
@@ -92,7 +89,7 @@ export const TgUsdClaimProvider = ({ children }: TgUsdClaimContextProps) => {
 
   const onClickClaim = (marketsToClaim: ClaimableMarket[]) => {
     const marketAddressesToClaim = marketsToClaim.map((el) => el.marketAddress)
-    actionClaim(rewardAccumulatorContractAddress, marketAddressesToClaim)
+    actionClaim(TGUSD_CONTRACT.REWARD_ACCUMULATOR, marketAddressesToClaim)
   }
 
   const addToClaimableMarkets = (rowData: ClaimableMarket) => {

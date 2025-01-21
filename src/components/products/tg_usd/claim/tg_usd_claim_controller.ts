@@ -2,8 +2,8 @@ import { executeChainViewUnique, executeContractCall } from "@/services/service_
 import { Abi, Address, formatUnits, Hex, WalletClient } from "viem"
 import { tgUsdMarkets } from "../tg_usd_repository"
 import { ClaimerInfo } from "../tg_usd_type"
-import claimUI from "@/abi/tgusd/ClaimUI.json"
-import claimContract from "@/abi/tgusd/RewardAccumulator.json"
+import claimUI from "../../../../abi/tgusd/ClaimUI.json"
+import claimContract from "../../../../abi/tgusd/RewardAccumulator.json"
 import { AssetDataPriced, ExistingAsset, ListHeaderData } from "@/types"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import { getTokensPrice } from "@/services/service_price"
@@ -19,10 +19,9 @@ export async function doClaim(contractAddress: Address, markets: Address[], rewa
   return await executeContractCall(walletClient, txData)
 }
 
-export async function getTgUsdClaimOnChainData() {
+export async function getTgUsdClaimOnChainData(currentAddress: Address | undefined) {
   const addresses: Address[] = tgUsdMarkets.map((m) => m.marketAddress)
-  // somehow did not find a way to pass the address dynamically...
-  return await executeChainViewUnique<ClaimerInfo[]>(claimUI.abi as Abi, claimUI.bytecode as Hex, ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", addresses])
+  return await executeChainViewUnique<ClaimerInfo[]>(claimUI.abi as Abi, claimUI.bytecode as Hex, [currentAddress, addresses])
 }
 
 export const computeAndReturnPrices = async (claimInfo: ClaimerInfo[]) => {

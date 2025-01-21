@@ -156,4 +156,28 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     logo: "TRICRV",
     displayDecimals: 2,
   },
+  "crvUSD-USDC": {
+    symbol: "crvUSD-USDC",
+    name: "Curve USD/USDC",
+    decimals: 18,
+    address: TOKEN_ADDR["crvUSD-USDC"],
+    logo: "crvUSD-USDC",
+    displayDecimals: 2,
+  },
+  "crvUSD-USDT": {
+    symbol: "crvUSD-USDT",
+    name: "Curve USD/USDT",
+    decimals: 18,
+    address: TOKEN_ADDR["crvUSD-USDT"],
+    logo: "crvUSD-USDT",
+    displayDecimals: 2,
+  },
+  "USDC-fxUSD": {
+    symbol: "USDC-fxUSD",
+    name: "USDC-fxUSD",
+    decimals: 18,
+    address: TOKEN_ADDR["USDC-fxUSD"],
+    logo: "USDC-fxUSD",
+    displayDecimals: 2,
+  },
 }

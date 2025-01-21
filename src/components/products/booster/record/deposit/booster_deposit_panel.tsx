@@ -39,7 +39,7 @@ export default function BoosterDepositPanel() {
     return (
       <PanelRaw className="flex w-48 items-center gap-2 border-white !bg-opacity-0 px-4 py-2 !backdrop-blur-none">
         <div className="">
-          <TokenImage token={sdAssetInfo.logo} size={35} />
+          <TokenImage token={sdAssetInfo.logo} size={32} />
         </div>
         <span className="flex flex-col text-lg leading-3">
           <span>{sdAssetInfo.symbol}</span>
@@ -62,7 +62,7 @@ export default function BoosterDepositPanel() {
     return (
       <div className="flex items-center gap-1">
         <div>
-          <TokenImage token={logo} size={35} />
+          <TokenImage token={logo} size={32} />
         </div>
         {isGauge ? (
           <span className="flex flex-col items-start text-lg leading-3">

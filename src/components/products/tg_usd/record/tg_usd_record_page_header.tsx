@@ -7,10 +7,12 @@ import RecordPageHeader from "@/components/design_system/structure/record_page_h
 import TokenImage from "@/components/design_system/structure/token_image"
 import { formatNumber, formatPercent } from "@/lib/number_formatter"
 import React from "react"
+import { useTgUsdRecordContext } from "./tg_usd_record_context"
 
-type TgUsdRecordPageHaderProps = React.ButtonHTMLAttributes<HTMLDivElement> & { onBackClick: () => void }
+type TgUsdRecordPageHeaderProps = React.ButtonHTMLAttributes<HTMLDivElement> & { onBackClick: () => void }
 
-export default function TgUsdRecordPageHader({ onBackClick, ...props }: TgUsdRecordPageHaderProps) {
+export default function TgUsdRecordPageHeader({ onBackClick, ...props }: TgUsdRecordPageHeaderProps) {
+  const { collateralInfo } = useTgUsdRecordContext()
   return (
     <>
       <div className="mt-10 flex justify-between" {...props}>
@@ -18,19 +20,19 @@ export default function TgUsdRecordPageHader({ onBackClick, ...props }: TgUsdRec
           <Panel>
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-2">
-                <TokenImage token={"TRICRV"} size={40} />
-                <span className="text-3xl">TRICRV</span>
+                <TokenImage token={collateralInfo.logo} size={32} />
+                <span className="text-3xl">{collateralInfo.symbol}</span>
               </div>
               <div className="flex items-center gap-2 rounded-full border border-white border-opacity-[15%] px-4 py-1">
-                <TokenImage token={"CRV"} size={15} />
+                <TokenImage token={"CRV"} size={16} />
                 <span className="text-sm">Curve</span>
               </div>
               <div className="flex items-center gap-2 rounded-full border border-white border-opacity-[15%] px-4 py-1">
-                <TokenImage token={"CVX"} size={15} />
+                <TokenImage token={"CVX"} size={16} />
                 <span className="text-sm">Convex</span>
               </div>
               <div>
-                <TokenImage token={"ETH"} size={35} />
+                <TokenImage token={"ETH"} size={32} />
               </div>
             </div>
           </Panel>
@@ -44,7 +46,7 @@ export default function TgUsdRecordPageHader({ onBackClick, ...props }: TgUsdRec
       </div>
       <div>
         <RecordPageHeader
-          token={"TRICRV"}
+          token={collateralInfo.logo}
           apr={{
             actualsApr: {
               details: { baseApr: 0.03, boostApr: 0.02, type: "variable" },

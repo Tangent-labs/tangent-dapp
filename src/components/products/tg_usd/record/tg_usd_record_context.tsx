@@ -1,29 +1,31 @@
 "use client"
 
 import { AssetDataPriced, TgUsdMarketAsset } from "@/types"
-import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { ChainViewMarketRow, TgUsdMarket } from "../tg_usd_type"
-import { getTgUsdMarketRecordData } from "./tg_usd_record_controller"
+import { ChainViewMarketRow, MarketDetailData, TgUsdMarket } from "../tg_usd_type"
+import { getTgUsdMarketRecordData, transformMarketData } from "./tg_usd_record_controller"
 
 type TgUsdRecordContextProps = {
   children: ReactNode
   collateral: TgUsdMarketAsset
   collateralInfo: AssetDataPriced
   marketInfo: TgUsdMarket
+  tgUSDInfo: AssetDataPriced
 }
 
 type TgUsdRecordContextValues = {
   collateral: TgUsdMarketAsset
   collateralInfo: AssetDataPriced
-  marketInfo: TgUsdMarket
   isLoading: boolean
-  onChainData?: ChainViewMarketRow
+  marketData?: MarketDetailData
+  loadOnChainData: () => void
+  tgUSDInfo: AssetDataPriced
 }
 
 export const TgUsdRecordContext = createContext<TgUsdRecordContextValues | undefined>(undefined)
 
-export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, children }: TgUsdRecordContextProps) => {
+export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, children, tgUSDInfo }: TgUsdRecordContextProps) => {
   const [onChainData, setOnChainData] = useState<ChainViewMarketRow | undefined>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const { currentAddress } = useWalletConnexionContext()
@@ -40,12 +42,18 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     })
   }
 
+  const marketData = useMemo(() => {
+    if (!onChainData) return
+    return transformMarketData(onChainData, collateralInfo)
+  }, [onChainData])
+
   const contextValue: TgUsdRecordContextValues = {
     isLoading,
     collateral,
     collateralInfo,
-    marketInfo,
-    onChainData,
+    marketData,
+    loadOnChainData,
+    tgUSDInfo,
   }
 
   return <TgUsdRecordContext.Provider value={contextValue}>{children}</TgUsdRecordContext.Provider>

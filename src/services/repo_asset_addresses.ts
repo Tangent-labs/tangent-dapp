@@ -1,3 +1,4 @@
+import { TGUSD_CONTRACT } from "@/components/products/tg_usd/tg_usd_repository"
 import { ExistingAsset } from "@/types"
 import { Address } from "viem"
 
@@ -24,6 +25,7 @@ export const TOKEN_ADDR: Record<ExistingAsset, Address> = {
   "crvUSD-USDC": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
   "crvUSD-USDT": "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4 ",
   "USDC-fxUSD": "0x5018BE882DccE5E3F2f3B0913AE2096B9b3fB61f",
+  tgUSD: TGUSD_CONTRACT.TG_USD,
 }
 
 export const ADDR_TOKEN: Record<Address, string> = Object.entries(TOKEN_ADDR).reduce(

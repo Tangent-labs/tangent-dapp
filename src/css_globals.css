@@ -34,6 +34,8 @@
 @layer base {
   /* Variables tangent   */
   :root {
+    --tgt-background: #000;
+    --tgt-foreground: #fff;
     --tgt-row-tonic: #0075ff;
     --tgt-bg-button-active: linear-gradient(135deg, #0075ff 0%, #00c2ff 100%);
     --tgt-bg-progress: linear-gradient(90deg, #000000 0%, #0075ff 100%);
@@ -43,6 +45,7 @@
     --tgt-panel-title-gradient: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)),
       linear-gradient(90deg, #0075ff 0%, rgba(0, 0, 0, 0) 50%);
   }
+
   /* Variables @web3-onboard   */
   :root {
     --w3o-background-color: #1a1d26;
@@ -65,13 +68,13 @@
 
   /* Variables add by ShadCn  */
   :root {
-    --background: #000;
-    --foreground: #fff;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
     --card: 224 71.4% 4.1%;
     --card-foreground: 210 20% 98%;
     --popover: none;
     --popover-foreground: none;
-    --primary: 210 20% 98%;
+    --primary: 0 0% 80%;
     --primary-foreground: 220.9 39.3% 11%;
     --secondary: 215 27.9% 16.9%;
     --secondary-foreground: 210 20% 98%;
@@ -82,7 +85,7 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 20% 98%;
     --border: none;
-    --input: 215 27.9% 16.9%;
+    --input: 0 0% 20%;
     --ring: 216 12.2% 83.9%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -93,8 +96,8 @@
   }
 
   body {
-    color: var(--foreground);
-    background: var(--background);
+    color: var(--tgt-foreground);
+    background: var(--tgt-background);
     font-family: var(--font-sans), sans-serif;
   }
 }

@@ -5,14 +5,16 @@ import IndicatorCards from "@/components/design_system/structure/indicators_card
 import Panel from "@/components/design_system/structure/panel"
 import RecordPageHeader from "@/components/design_system/structure/record_page_header"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { formatNumber, formatPercent } from "@/lib/number_formatter"
+import { formatDollar, formatNumber, formatPercent } from "@/lib/number_formatter"
 import React from "react"
 import { useTgUsdRecordContext } from "./tg_usd_record_context"
+import { formatEther } from "viem"
 
 type TgUsdRecordPageHeaderProps = React.ButtonHTMLAttributes<HTMLDivElement> & { onBackClick: () => void }
 
 export default function TgUsdRecordPageHeader({ onBackClick, ...props }: TgUsdRecordPageHeaderProps) {
-  const { collateralInfo } = useTgUsdRecordContext()
+  const { collateralInfo, marketData } = useTgUsdRecordContext()
+
   return (
     <>
       <div className="mt-10 flex justify-between" {...props}>
@@ -38,7 +40,9 @@ export default function TgUsdRecordPageHeader({ onBackClick, ...props }: TgUsdRe
           </Panel>
         </div>
         <div className="flex items-center gap-4">
-          <IndicatorCards indicators={[{ title: "TVL", value: formatPercent(100000, 2) }]} />
+          <IndicatorCards
+            indicators={[{ title: "TVL", value: formatDollar(Number(formatEther(BigInt(marketData?.collateralInfos?.totalCollateralUSDValue || 0n))), 0) }]}
+          />
           <IndicatorCards indicators={[{ title: "Borrowed", value: formatNumber(100000, 0) }]} />
           <IndicatorCards indicators={[{ title: "Cap", value: formatPercent(100000, 2) }]} />
           <ButtonPanel onClick={onBackClick}>Back</ButtonPanel>

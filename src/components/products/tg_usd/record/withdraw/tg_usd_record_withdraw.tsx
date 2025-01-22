@@ -5,24 +5,25 @@ import TgUsdRecordLayout from "../tg_usd_record_layout"
 import { AssetDataPriced, TgUsdMarketAsset } from "@/types"
 
 import { TgUsdMarket } from "../../tg_usd_type"
-import { TgUsdDepositProvider } from "./tg_usd_record_deposit_context"
-import TgUsdDepositPanel from "./tg_usd_record_deposit_panel"
-import { TgUsdRecordProvider } from "../tg_usd_record_context"
 
-type TgUsdRecordDepositProps = {
+import { TgUsdRecordProvider } from "../tg_usd_record_context"
+import { TgUsdWithdrawProvider } from "./tg_usd_record_withdraw_context"
+import TgUsdWithdrawPanel from "./tg_usd_record_withdraw_panel"
+
+type TgUsdRecordWithdrawProps = {
   collateral: TgUsdMarketAsset
   collateralInfo: AssetDataPriced
   marketInfo: TgUsdMarket
   tgUSDInfo: AssetDataPriced
 }
 
-export default function TgUsdRecordDepositPage({ collateral, collateralInfo, marketInfo, tgUSDInfo }: TgUsdRecordDepositProps) {
+export default function TgUsdRecordWithdrawPage({ collateral, collateralInfo, marketInfo, tgUSDInfo }: TgUsdRecordWithdrawProps) {
   return (
     <TgUsdRecordProvider collateral={collateral} collateralInfo={collateralInfo} marketInfo={marketInfo} tgUSDInfo={tgUSDInfo}>
       <TgUsdRecordLayout>
-        <TgUsdDepositProvider collateralInfo={collateralInfo} marketInfo={marketInfo}>
-          <TgUsdDepositPanel />
-        </TgUsdDepositProvider>
+        <TgUsdWithdrawProvider>
+          <TgUsdWithdrawPanel />
+        </TgUsdWithdrawProvider>
       </TgUsdRecordLayout>
     </TgUsdRecordProvider>
   )

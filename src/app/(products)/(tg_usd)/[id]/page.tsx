@@ -9,8 +9,9 @@ export default async function tgUsdMarketDetailDepositPage({ params }: { params:
   const collateral = (await params).id
   const collateralInfo = await getAssetInfo([collateral])
   const marketInfo = tgUsdMarkets.find((market) => market.marketName === collateral)
+  const tgUSDInfo = (await getAssetInfo(["tgUSD"]))?.at(0)
 
   if (!marketInfo || !collateralInfo?.length) return NotFound()
 
-  return <TgUsdRecordDepositPage collateral={collateral} collateralInfo={collateralInfo.at(0)!} marketInfo={marketInfo} />
+  return <TgUsdRecordDepositPage collateral={collateral} collateralInfo={collateralInfo.at(0)!} marketInfo={marketInfo} tgUSDInfo={tgUSDInfo!} />
 }

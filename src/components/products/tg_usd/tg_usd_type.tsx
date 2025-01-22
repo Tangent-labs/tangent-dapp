@@ -1,4 +1,4 @@
-import { AprEntry, ERC20StaticInfos, ExistingAsset, Network, TokenAmountPriced } from "@/types"
+import { AprEntry, AssetDataPriced, ERC20StaticInfos, ExistingAsset, Network, TokenAmountPriced } from "@/types"
 import { Address } from "viem"
 
 export type TgUsdGlobalMarketData = {
@@ -153,4 +153,34 @@ export type ChainViewMarketList = {
   sgUSDSupply: bigint // uint256
   tgUSDPercentageInSgUSD: bigint // uint256
   rowInfos: ChainViewMarketRow[]
+}
+
+export type MarketDetailData = {
+  marketAddress: Address
+  collateralInfo: AssetDataPriced
+  debtInfos: DebtInfos
+  constants: MarketConstants
+  collateralBalance: bigint
+  collateralAllowance: bigint
+  collateralInfos: CollateralInfos
+}
+
+export type TgUsdtMarketDepositParams = TgUsdtMarketBorrowParams & {
+  isStaking: boolean
+  isDepositAndBorrow: boolean
+  depositWeiValue: bigint
+}
+
+export type TgUsdtMarketBorrowParams = {
+  borrowWeiValue?: bigint
+  marketAddress: Address
+}
+
+export type TgUsdtMarketWitrhdrawParams = {
+  withdrawWeiValue?: bigint
+  marketAddress: Address
+}
+export type TgUsdtMarketRepayParams = {
+  repayWeiValue?: bigint
+  marketAddress: Address
 }

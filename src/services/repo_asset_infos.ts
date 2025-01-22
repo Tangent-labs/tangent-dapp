@@ -180,4 +180,12 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     logo: "USDC-fxUSD",
     displayDecimals: 2,
   },
+  tgUSD: {
+    symbol: "tgUSD",
+    name: "tgUSD",
+    decimals: 18,
+    address: TOKEN_ADDR.tgUSD,
+    logo: "tgUSD",
+    displayDecimals: 2,
+  },
 }

@@ -105,3 +105,14 @@ input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+.recharts-responsive-container {
+  font-size: 13px;
+  max-height: 270px;
+  width: 100%;
+}
+
+.recharts-legend-wrapper {
+  display: none;
+  height: 0px;
+}

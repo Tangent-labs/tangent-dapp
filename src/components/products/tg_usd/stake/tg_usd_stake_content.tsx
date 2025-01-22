@@ -11,8 +11,11 @@ import InputSelect from "@/components/design_system/inputs/input_select"
 import { ExistingAsset, SelectOption } from "@/types"
 import TokenImage from "@/components/design_system/structure/token_image"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
-import { Button } from "@/components/design_system/inputs/button"
 import { TGUSD_CONTRACT } from "../tg_usd_repository"
+import { ForecastGraph } from "./tg_usd_staking_forecast"
+import Divider from "@/components/design_system/structure/divider"
+import { Button } from "@/components/design_system/inputs/button"
+import { computeProjection } from "./tg_usd_stake_controller"
 
 export default function TgUsdClaimContent() {
   const {
@@ -28,7 +31,7 @@ export default function TgUsdClaimContent() {
     weiValue,
     expected,
     receivedTokenInfo,
-    hasToApprove,
+    formState,
     computeProjectedValue,
   } = useTgUsdStakeContext()
 
@@ -118,7 +121,7 @@ export default function TgUsdClaimContent() {
             </div>
             <div className="flex flex-col items-center justify-center font-bold">
               <span className="text-sm text-subtitle">sgUSD</span>
-              <span className="text-lg font-bold">{formatDollar(formatUnits(stakeInfo.sgUSDPrice, 18))}</span>
+              <span className="text-lg font-bold">{formatDollar(formatUnits(stakeInfo.sgUSDPrice, 18), 2)}</span>
             </div>
             <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-2">
               <span className="text-black">APY</span>
@@ -128,7 +131,7 @@ export default function TgUsdClaimContent() {
         )}
       </div>
 
-      <div className="mt-4 flex w-full items-start justify-start gap-4">
+      <div className="my-8 flex w-full items-start justify-start gap-4">
         <Panel className="flex w-full flex-col items-center justify-center gap-2">
           <div className="flex w-full items-center justify-between gap-4">
             <ButtonTab
@@ -144,6 +147,8 @@ export default function TgUsdClaimContent() {
               label="Unstake"
             ></ButtonTab>
           </div>
+
+          <Divider className="h-1 w-full"></Divider>
 
           <DepositRecieveInput
             labelDeposit={currentFeature === "stake" ? "You deposit" : "You unstake"}
@@ -161,53 +166,45 @@ export default function TgUsdClaimContent() {
             onValueChange={(value: bigint | undefined) => setWeiValue(value)}
           />
 
-          {currentFeature === "stake" ? (
-            <>
-              {hasToApprove ? (
-                <Button disabled={!weiValue} onClick={actionApprove} className="flex w-full justify-center" label="Approve">
-                  Approve
-                </Button>
-              ) : (
-                <Button disabled={!weiValue} onClick={actionStake} className="flex w-full justify-center" label="Stake">
-                  Stake
-                </Button>
-              )}
-            </>
-          ) : (
-            <Button disabled={!weiValue} onClick={actionUnstake} className="flex w-full justify-center" label="Unstake">
-              Unstake
-            </Button>
-          )}
+          <div className="mb-6 mt-2 flex w-full">
+            {currentFeature === "stake" ? (
+              <>
+                {formState?.haveToApprove ? (
+                  <Button disabled={!weiValue} onClick={actionApprove} className="flex w-full justify-center" label="Approve">
+                    Approve
+                  </Button>
+                ) : (
+                  <Button disabled={!formState?.canProcess} onClick={actionStake} className="flex w-full justify-center" label="Stake">
+                    Stake
+                  </Button>
+                )}
+              </>
+            ) : (
+              <Button disabled={!formState?.canProcess} onClick={actionUnstake} className="flex w-full justify-center" label="Unstake">
+                Unstake
+              </Button>
+            )}
+          </div>
+
+          {/* FormButtons not really adapted for this use case 
+          <FormButtons
+            actions={{ handleApprove: actionApprove, handleProcess: currentFeature === "stake" ? actionStake : actionUnstake }}
+            formState={formState}
+            labelProcess={currentFeature === "stake" ? "Deposit & Stake" : "Unstake"}
+          />
+          END : FormButtons not really adapted for this use case 
+          */}
         </Panel>
         <Panel className="flex w-full flex-col items-start justify-start">
           <span className="text-lg font-bold">Performance</span>
 
-          <div className="flex h-8 w-full items-center justify-between">
-            <div className="flex items-center justify-start gap-2">
-              <PanelRaw className="flex w-fit items-center gap-2 border-white !bg-opacity-0 px-4 py-2 !backdrop-blur-none">
-                <div className="">
-                  <TokenImage token="sgUSD" size={16} />
-                </div>
-                <span className="text-sm font-bold leading-3">
-                  <span>sgUSD</span>
-                </span>
-              </PanelRaw>
+          <ForecastGraph
+            initialInvestment={Number(formatUnits(stakeInfo?.sgUSDBalance || 0n, 18))}
+            apr={15}
+            additionalLiquidity={currentFeature === "stake" ? (weiValue ? Number(formatUnits(weiValue!, 18)) : 0) : 0}
+          ></ForecastGraph>
 
-              <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-4 py-1">
-                <span className="text-lg font-bold">15.32%</span>
-              </div>
-            </div>
-
-            <div className="flex items-end justify-end gap-2">
-              <div className="cursor-pointer rounded-xl border border-white/30 px-4 py-1 text-xs">1w</div>
-              <div className="cursor-pointer rounded-xl border border-white/30 px-4 py-1 text-xs">1m</div>
-              <div className="cursor-pointer rounded-xl border border-white/30 px-4 py-1 text-xs">1y</div>
-            </div>
-          </div>
-
-          <Panel className="mt-3 flex h-full min-h-56 w-full items-center justify-center">GRAPH</Panel>
-
-          <div className="flex w-full items-center justify-between gap-4">
+          <div className="flex w-full items-center justify-between gap-2 text-sm font-bold">
             <div className="flex min-w-32 flex-col items-start justify-start">
               <span className="text-subtitle">sgUSD balance</span>
               <PanelRaw className="flex w-full items-center justify-between gap-4 px-4 py-1">
@@ -220,18 +217,18 @@ export default function TgUsdClaimContent() {
             <div className="flex min-w-32 flex-col items-start justify-start">
               <span className="text-subtitle">30 days projection</span>
               <PanelRaw className="flex w-full items-center justify-between gap-4 px-4 py-1">
-                <span className="text-white"> $150 </span>
+                <span className="text-white"> {computeProjection(stakeInfo!, 1 / 12, 15).toFixed(2)} </span>
                 <span> {"=>"} </span>
-                <span className="text-tonic"> $2,000 </span>
+                <span className="text-tonic"> {computeProjection(stakeInfo!, 1 / 12, 15, weiValue).toFixed(2)} </span>
               </PanelRaw>
             </div>
 
             <div className="flex min-w-32 flex-col items-start justify-start">
               <span className="text-subtitle">1 year projection</span>
               <PanelRaw className="flex w-full items-center justify-between gap-4 px-4 py-1">
-                <span className="text-white"> $1500 </span>
+                <span className="text-white"> {computeProjection(stakeInfo!, 1, 15).toFixed(2)} </span>
                 <span> {"=>"} </span>
-                <span className="text-tonic"> $20,000 </span>
+                <span className="text-tonic"> {computeProjection(stakeInfo!, 1, 15, weiValue).toFixed(2)} </span>
               </PanelRaw>
             </div>
           </div>

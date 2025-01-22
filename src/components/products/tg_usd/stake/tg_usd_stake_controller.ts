@@ -1,4 +1,4 @@
-import { Abi, Address, EstimateContractGasParameters, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
+import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
 import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import stakeSgUSD from "../../../../abi/tgusd/sgUsdStake.json"
 import stakeUI from "../../../../abi/tgusd/sgUSDUI.json"
@@ -12,6 +12,26 @@ export async function getTgUsdStakeOnChainData(currentAddress: Address | undefin
     TGUSD_CONTRACT.TG_USD,
     TGUSD_CONTRACT.SG_USD,
   ])
+}
+
+export function getFormState(stakeInfo: StakingInfo, weiValue?: bigint, expected?: bigint, isWellConnected?: boolean) {
+  let isApproved = false
+  const reasons: string[] = []
+
+  if (!isWellConnected) {
+    reasons.push("No connected wallet.")
+  } else {
+    isApproved = !!stakeInfo?.tgUSDAllowance && (weiValue || 0n) <= stakeInfo?.tgUSDAllowance
+    if (weiValue === 0n) {
+      reasons.push("No amount.")
+    } else if ((weiValue || 0n) > (stakeInfo?.tgUSDBalance || 0n)) {
+      reasons.push("Not enough balance.")
+    }
+    if (!expected || expected === 0n) {
+      reasons.push("")
+    }
+  }
+  return { canProcess: isApproved && reasons.length === 0, cantProcessReasons: reasons, haveToApprove: !isApproved }
 }
 
 export const getExpectedTgUSD = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
@@ -103,4 +123,16 @@ export const doStakeTgUSD = async ({ walletClient, stakingAddress, weiValue }: {
 
   const hash = await walletClient.writeContract(txData as unknown as WriteContractParameters)
   return hash
+}
+
+export const computeProjection = (stakeInfo: StakingInfo, timeFrame: number, apr: number, addedLiquidity?: bigint) => {
+  let projection = 0
+
+  if (addedLiquidity) {
+    projection =
+      (Number(formatUnits(addedLiquidity, 18)) + Number(formatUnits(stakeInfo?.sgUSDBalance || 0n, 18))) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
+  } else {
+    projection = Number(formatUnits(stakeInfo?.sgUSDBalance || 0n, 18)) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
+  }
+  return projection
 }

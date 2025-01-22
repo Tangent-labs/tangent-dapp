@@ -1,10 +1,10 @@
 "use client"
 
-import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSgUSD, getExpectedTgUSD, getTgUsdStakeOnChainData } from "./tg_usd_stake_controller"
+import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSgUSD, getExpectedTgUSD, getFormState, getTgUsdStakeOnChainData } from "./tg_usd_stake_controller"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { StakingAssetInfo, StakingDepositType, StakingInfo } from "../tg_usd_type"
-import { AssetDataPriced, ExistingAsset, SelectAssetLogoOption } from "@/types"
+import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { formatUnits } from "viem"
 import { TGUSD_CONTRACT } from "../tg_usd_repository"
 
@@ -28,6 +28,7 @@ type TgUsdStakeContextValues = {
   receivedTokenInfo: AssetDataPriced
   hasToApprove: boolean
   computeProjectedValue: number
+  formState: FormState
 }
 
 export const TgUsdStakeContext = createContext<TgUsdStakeContextValues | undefined>(undefined)
@@ -133,6 +134,8 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     }
   }, [currentFeature, stakeInfo])
 
+  const formState = useMemo<FormState>(() => getFormState(stakeInfo!, weiValue, expected, true), [stakeInfo, weiValue, expected])
+
   const hasToApprove = useMemo(() => {
     if (!weiValue) return true
 
@@ -154,6 +157,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     }
     await doUnstakeTgUSD(params)
     loadData()
+    setWeiValue(undefined)
   }
 
   const actionStake = async () => {
@@ -167,6 +171,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     }
     await doStakeTgUSD(params)
     loadData()
+    setWeiValue(undefined)
   }
 
   const actionApprove = async () => {
@@ -220,6 +225,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     depositAssetOptions,
     receivedTokenInfo,
     hasToApprove,
+    formState,
   }
 
   return <TgUsdStakeContext.Provider value={contextValue}>{children}</TgUsdStakeContext.Provider>

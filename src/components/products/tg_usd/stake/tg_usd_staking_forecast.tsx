@@ -1,5 +1,6 @@
 "use client"
 
+import ButtonTab from "@/components/design_system/inputs/button_tab"
 import Panel from "@/components/design_system/structure/panel"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -86,15 +87,30 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
         </div>
 
         <div className="flex items-end justify-end gap-2">
-          {Object.entries(timeFilters).map(([label, value]) => (
-            <div
-              key={label}
-              onClick={() => setFilter(value)}
-              className={`cursor-pointer rounded-xl border border-white/30 px-4 py-1 text-xs ${filter === value ? "bg-white text-black" : ""}`}
-            >
-              {label === "week" ? "1w" : label === "month" ? "1m" : label === "year" ? "1y" : "2y"}
-            </div>
-          ))}
+          <ButtonTab
+            onClick={() => setFilter(timeFilters.week)}
+            label={"1w"}
+            active={false}
+            className={`cursor-pointer rounded-xl border border-white/30 px-4 py-1 text-xs ${filter === timeFilters.week ? "bg-white text-black" : ""}`}
+          />
+          <ButtonTab
+            onClick={() => setFilter(timeFilters.month)}
+            label={"1m"}
+            active={false}
+            className={`cursor-pointer rounded-xl border border-white/30 px-4 py-1 text-xs ${filter === timeFilters.month ? "bg-white text-black" : ""}`}
+          />
+          <ButtonTab
+            onClick={() => setFilter(timeFilters.year)}
+            label={"1y"}
+            active={false}
+            className={`cursor-pointer rounded-xl border border-white/30 px-4 py-1 text-xs ${filter === timeFilters.year ? "bg-white text-black" : ""}`}
+          />
+          <ButtonTab
+            onClick={() => setFilter(timeFilters.twoYears)}
+            label={"2y"}
+            active={false}
+            className={`cursor-pointer rounded-xl border border-white/30 px-4 py-1 text-xs ${filter === timeFilters.twoYears ? "bg-white text-black" : ""}`}
+          />
         </div>
       </div>
 
@@ -115,8 +131,15 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
             />
 
             <Legend />
-            <Line type="monotone" dataKey="baseAmount" stroke="#FFFFFF" name="Base Investment (USD)" dot={false} />
-            <Line type="monotone" dataKey="amountWithLiquidity" stroke="url(#gradientColor)" name="Investment + Additional Liquidity (USD)" dot={false} />
+            <Line strokeWidth={"2px"} type="monotone" dataKey="baseAmount" stroke="#FFFFFF" name="Base Investment (USD)" dot={false} />
+            <Line
+              strokeWidth={"2px"}
+              type="monotone"
+              dataKey="amountWithLiquidity"
+              stroke="url(#gradientColor)"
+              name="Investment + Additional Liquidity (USD)"
+              dot={false}
+            />
           </LineChart>
         </ResponsiveContainer>
 

@@ -14,17 +14,19 @@ export async function getTgUsdStakeOnChainData(currentAddress: Address | undefin
   ])
 }
 
-export function getFormState(stakeInfo: StakingInfo, weiValue?: bigint, expected?: bigint, isWellConnected?: boolean) {
+export function getFormState(stakeInfo: StakingInfo, currentFeature: "stake" | "unstake", weiValue?: bigint, expected?: bigint, isWellConnected?: boolean) {
   let isApproved = false
   const reasons: string[] = []
 
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
   } else {
-    isApproved = !!stakeInfo?.tgUSDAllowance && (weiValue || 0n) <= stakeInfo?.tgUSDAllowance
+    isApproved = (currentFeature === "stake" && !!stakeInfo?.tgUSDAllowance && (weiValue || 0n) <= stakeInfo?.tgUSDAllowance) || currentFeature === "unstake"
     if (weiValue === 0n) {
       reasons.push("No amount.")
-    } else if ((weiValue || 0n) > (stakeInfo?.tgUSDBalance || 0n)) {
+    } else if (currentFeature === "stake" && (weiValue || 0n) > (stakeInfo?.tgUSDBalance || 0n)) {
+      reasons.push("Not enough balance.")
+    } else if (currentFeature === "unstake" && (weiValue || 0n) > (stakeInfo?.sgUSDBalance || 0n)) {
       reasons.push("Not enough balance.")
     }
     if (!expected || expected === 0n) {

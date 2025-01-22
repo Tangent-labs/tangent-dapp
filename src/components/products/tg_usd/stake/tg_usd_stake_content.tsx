@@ -14,8 +14,9 @@ import PanelRaw from "@/components/design_system/structure/panel_raw"
 import { TGUSD_CONTRACT } from "../tg_usd_repository"
 import { ForecastGraph } from "./tg_usd_staking_forecast"
 import Divider from "@/components/design_system/structure/divider"
-import { Button } from "@/components/design_system/inputs/button"
 import { computeProjection } from "./tg_usd_stake_controller"
+import EvolutionBox from "@/components/design_system/structure/evolution_box"
+import FormButtons from "@/components/design_system/form/form_actions"
 
 export default function TgUsdClaimContent() {
   const {
@@ -166,34 +167,14 @@ export default function TgUsdClaimContent() {
             onValueChange={(value: bigint | undefined) => setWeiValue(value)}
           />
 
-          <div className="mb-6 mt-2 flex w-full">
-            {currentFeature === "stake" ? (
-              <>
-                {formState?.haveToApprove ? (
-                  <Button disabled={!weiValue} onClick={actionApprove} className="flex w-full justify-center" label="Approve">
-                    Approve
-                  </Button>
-                ) : (
-                  <Button disabled={!formState?.canProcess} onClick={actionStake} className="flex w-full justify-center" label="Stake">
-                    Stake
-                  </Button>
-                )}
-              </>
-            ) : (
-              <Button disabled={!formState?.canProcess} onClick={actionUnstake} className="flex w-full justify-center" label="Unstake">
-                Unstake
-              </Button>
-            )}
-          </div>
-
-          {/* FormButtons not really adapted for this use case 
           <FormButtons
-            actions={{ handleApprove: actionApprove, handleProcess: currentFeature === "stake" ? actionStake : actionUnstake }}
+            actions={{
+              handleApprove: currentFeature === "stake" ? actionApprove : undefined,
+              handleProcess: currentFeature === "stake" ? actionStake : actionUnstake,
+            }}
             formState={formState}
             labelProcess={currentFeature === "stake" ? "Deposit & Stake" : "Unstake"}
           />
-          END : FormButtons not really adapted for this use case 
-          */}
         </Panel>
         <Panel className="flex w-full flex-col items-start justify-start">
           <span className="text-lg font-bold">Performance</span>
@@ -204,33 +185,19 @@ export default function TgUsdClaimContent() {
             additionalLiquidity={currentFeature === "stake" ? (weiValue ? Number(formatUnits(weiValue!, 18)) : 0) : 0}
           ></ForecastGraph>
 
-          <div className="flex w-full items-center justify-between gap-2 text-sm font-bold">
-            <div className="flex min-w-32 flex-col items-start justify-start">
-              <span className="text-subtitle">sgUSD balance</span>
-              <PanelRaw className="flex w-full items-center justify-between gap-4 px-4 py-1">
-                <span className="text-white"> {formatUnits(stakeInfo?.sgUSDBalance || 0n, 18)} </span>
-                <span> {"=>"} </span>
-                <span className="text-tonic"> {computeProjectedValue} </span>
-              </PanelRaw>
-            </div>
+          <div className="flex w-full items-center justify-between gap-2">
+            <EvolutionBox originalValue={formatUnits(stakeInfo?.sgUSDBalance || 0n, 18)} label="sgUSD balance" newValue={computeProjectedValue.toString()} />
 
-            <div className="flex min-w-32 flex-col items-start justify-start">
-              <span className="text-subtitle">30 days projection</span>
-              <PanelRaw className="flex w-full items-center justify-between gap-4 px-4 py-1">
-                <span className="text-white"> {computeProjection(stakeInfo!, 1 / 12, 15).toFixed(2)} </span>
-                <span> {"=>"} </span>
-                <span className="text-tonic"> {computeProjection(stakeInfo!, 1 / 12, 15, weiValue).toFixed(2)} </span>
-              </PanelRaw>
-            </div>
-
-            <div className="flex min-w-32 flex-col items-start justify-start">
-              <span className="text-subtitle">1 year projection</span>
-              <PanelRaw className="flex w-full items-center justify-between gap-4 px-4 py-1">
-                <span className="text-white"> {computeProjection(stakeInfo!, 1, 15).toFixed(2)} </span>
-                <span> {"=>"} </span>
-                <span className="text-tonic"> {computeProjection(stakeInfo!, 1, 15, weiValue).toFixed(2)} </span>
-              </PanelRaw>
-            </div>
+            <EvolutionBox
+              originalValue={computeProjection(stakeInfo!, 1 / 12, 15).toFixed(2)}
+              label="30 days projection"
+              newValue={computeProjection(stakeInfo!, 1 / 12, 15, weiValue).toFixed(2)}
+            />
+            <EvolutionBox
+              originalValue={computeProjection(stakeInfo!, 1, 15).toFixed(2)}
+              label="1 year projection"
+              newValue={computeProjection(stakeInfo!, 1, 15, weiValue).toFixed(2)}
+            />
           </div>
         </Panel>
       </div>

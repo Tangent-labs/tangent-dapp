@@ -134,7 +134,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     }
   }, [currentFeature, stakeInfo])
 
-  const formState = useMemo<FormState>(() => getFormState(stakeInfo!, weiValue, expected, true), [stakeInfo, weiValue, expected])
+  const formState = useMemo<FormState>(() => getFormState(stakeInfo!, currentFeature, weiValue, expected, true), [stakeInfo, weiValue, expected])
 
   const hasToApprove = useMemo(() => {
     if (!weiValue) return true

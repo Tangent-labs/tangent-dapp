@@ -51,11 +51,13 @@ export type TgUsdGlobalData = {
   globalTvl: string // $
 }
 
+export type TgUsdMarketType = "Convex_CRV" | "Convex_FXN"
+
 export type TgUsdMarket = {
   marketAddress: Address
   marketName: ExistingAsset
   collatAddress: Address
-  marketType: "Convex_CRV" | "Convex_FXN"
+  marketType: TgUsdMarketType
 }
 
 export type ClaimerInfoDisplay = {
@@ -163,6 +165,7 @@ export type MarketDetailData = {
   collateralBalance: bigint
   collateralAllowance: bigint
   collateralInfos: CollateralInfos
+  marketType?: TgUsdMarketType
 }
 
 export type TgUsdtMarketDepositParams = TgUsdtMarketBorrowParams & {
@@ -183,4 +186,28 @@ export type TgUsdtMarketWitrhdrawParams = {
 export type TgUsdtMarketRepayParams = {
   repayWeiValue?: bigint
   marketAddress: Address
+}
+
+export type TgUsdMarketLoanDisplayData = {
+  collateralValue: string
+  debt: string
+  health: string
+  ltv: string
+  maxBorrowable: string
+  maxWithdrawable: string
+}
+
+export type TgUsdMarketDisplayData = TgUsdMarketLoanDisplayData & {
+  tvl: string
+  tvlDollar: string
+  borrowed: string
+  borrowRateCurrent: string
+  borrowRateNext: string
+  cap: string
+  maxLtv: string
+  maxLtvDollar: string
+  rewardsCut: string
+  rewardsCutPower: string
+  lt: string
+  ltDollar: string
 }

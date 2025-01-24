@@ -2,25 +2,28 @@ import { AssetApr, ExistingAsset } from "@/types"
 import Panel from "./panel"
 import { cn } from "@/lib/utils"
 import TokenImage from "./token_image"
+import { ReactNode } from "react"
 
 type RecordPageHeaderProps = {
   apr?: AssetApr
   indicators?: RecordPageHeaderIndicatorProps[]
-  token: ExistingAsset
+  token?: ExistingAsset
 }
 
 export default function RecordPageHeader({ apr, indicators, token }: RecordPageHeaderProps) {
   return (
     <Panel>
       <div className="flex min-h-20 items-center justify-evenly gap-4">
-        <div>
-          <div className={`relative flex items-center gap-4`}>
-            <TokenImage token={token} size={48} className="w-18" />
-            <div className="flex flex-col leading-8">
-              <span className="text-[32px] font-semibold">{token}</span>
+        {token && (
+          <div>
+            <div className={`relative flex items-center gap-4`}>
+              <TokenImage token={token} size={48} className="w-18" />
+              <div className="flex flex-col leading-8">
+                <span className="text-[32px] font-semibold">{token}</span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
         {apr && (
           <div>
             <RecordPageHeaderIndicator
@@ -43,8 +46,8 @@ export default function RecordPageHeader({ apr, indicators, token }: RecordPageH
 
 type RecordPageHeaderIndicatorProps = {
   title: string
-  value?: string | number
-  subValue?: string | number
+  value?: string | number | ReactNode
+  subValue?: string | number | ReactNode
   className?: string
 }
 

@@ -3,6 +3,7 @@ import { ChainViewMarketRow, MarketDetailData } from "../tg_usd_type"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import MarketDetailsUI from "@/abi/tgusd/MarketDetailsUI.json"
 import { AssetDataPriced } from "@/types"
+import { tgUsdMarkets } from "../tg_usd_repository"
 
 export const getTgUsdMarketRecordData = async (address: Address | undefined, market: Address) => {
   address = address || zeroAddress
@@ -10,6 +11,7 @@ export const getTgUsdMarketRecordData = async (address: Address | undefined, mar
 }
 
 export const transformMarketData = (onChainData: ChainViewMarketRow, collateralInfo: AssetDataPriced): MarketDetailData => {
+  const staticMarketData = tgUsdMarkets.find((m) => m.marketAddress === onChainData.marketAddress)
   return {
     marketAddress: onChainData.marketAddress as Address,
     collateralInfo,
@@ -20,6 +22,7 @@ export const transformMarketData = (onChainData: ChainViewMarketRow, collateralI
       onChainData.obas.find((o) => o.token === collateralInfo.address)?.allowances?.find((a) => a.spender === onChainData.marketAddress)?.allowance || 0n
     ),
     collateralInfos: onChainData.collateralInfos,
+    marketType: staticMarketData?.marketType,
   }
 }
 
@@ -51,6 +54,19 @@ export function getBorrowState(marketData?: MarketDetailData, depositWeiValue?: 
       }
     }
   }
-
   return reasons
+}
+
+export function getComputedLoanData(marketData?: MarketDetailData) {
+  const depositedDollar = BigInt(marketData?.collateralInfos?.positionCollateralUSDValue || 0n)
+  const existingDebt = BigInt(marketData?.debtInfos?.positionDebt || 0n)
+  const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
+  const minLoan = BigInt(marketData?.constants?.minimumLoan || "0")
+  const maxBorrowable = (depositedDollar * maxLTV) / 100n - existingDebt
+  const deposited = BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n)
+  const maxWithDrawable = deposited - existingDebt - minLoan
+  const maxMarketDebt = BigInt(marketData?.constants.maxMarketDebt || "0")
+  const currentLtv = depositedDollar !== 0n ? (existingDebt * 100000n) / depositedDollar : 0n
+
+  return { maxBorrowable, maxWithDrawable, maxLTV, maxMarketDebt, minLoan, currentLtv }
 }

@@ -31,8 +31,6 @@ export default function TgUsdBorrowPanel() {
   return (
     <>
       <div className="flex flex-col gap-2">
-        {/* <div>-- {JSONdebug(marketData)} --</div> */}
-
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <span className="text-2xl">Borrow tgUSD</span>
@@ -59,7 +57,6 @@ export default function TgUsdBorrowPanel() {
         <div>
           <FormButtons actions={{ handleApprove: undefined, handleProcess: actionBorrow }} formState={formState} labelProcess="Borrow" />
         </div>
-        <div>Detail</div>
       </div>
     </>
   )

@@ -55,7 +55,6 @@ export default function TgUsdDepositPanel() {
   return (
     <>
       <div className="flex flex-col gap-2">
-        {/* <div>-- {JSONdebug(marketData)} --</div> */}
         <div className="flex justify-end gap-2">
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-400">Save gas</span>
@@ -115,7 +114,6 @@ export default function TgUsdDepositPanel() {
         <div>
           <FormButtons actions={{ handleApprove: actionApprove, handleProcess: actionDeposit }} formState={formState} labelProcess="Deposit" />
         </div>
-        <div>Detail</div>
       </div>
     </>
   )

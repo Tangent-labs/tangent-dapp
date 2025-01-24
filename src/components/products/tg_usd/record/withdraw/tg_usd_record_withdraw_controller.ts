@@ -3,7 +3,7 @@ import { MarketDetailData, TgUsdtMarketWitrhdrawParams } from "../../tg_usd_type
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
 import { executeContractCall } from "@/services/service_rpc"
 
-export function getFormState(marketData?: MarketDetailData, withdrawWeiValue?: bigint, isWellConnected?: boolean) {
+export function getWithdrawFormState(marketData?: MarketDetailData, withdrawWeiValue?: bigint, isWellConnected?: boolean) {
   const reasons: string[] = []
   // check the wallet
   if (!isWellConnected) {

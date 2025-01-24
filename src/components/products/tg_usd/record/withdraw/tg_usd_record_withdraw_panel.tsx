@@ -32,13 +32,10 @@ export default function TgUsdWithdrawPanel() {
   return (
     <>
       <div className="flex flex-col gap-2">
-        {/* <div>-- {JSONdebug(marketData)} --</div> */}
-
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <span className="text-2xl">Withdraw collateral {collateralInfo.symbol}</span>
           </div>
-
           <div>
             <DepositRecieveInput
               displayRecieve={false}
@@ -60,7 +57,6 @@ export default function TgUsdWithdrawPanel() {
         <div>
           <FormButtons actions={{ handleApprove: undefined, handleProcess: actionWithdraw }} formState={formState} labelProcess="Withdraw" />
         </div>
-        <div>Detail</div>
       </div>
     </>
   )

@@ -2,9 +2,9 @@ import { Abi, Address, WalletClient, zeroAddress } from "viem"
 import { MarketDetailData, TgUsdtMarketDepositParams } from "../../tg_usd_type"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
 import { executeAppove, executeContractCall } from "@/services/service_rpc"
-import { getBorrowState } from "../tg_usd_record_controller"
+import { getBorrowCommonFormState } from "../tg_usd_record_controller"
 
-export function getFormState(
+export function getDepositFormState(
   marketData?: MarketDetailData,
   depositWeiValue?: bigint,
   borrowWeiValue?: bigint,
@@ -25,7 +25,7 @@ export function getFormState(
     }
 
     if (isDepositAndBorrow) {
-      const borrowReasons = getBorrowState(marketData, depositWeiValue, borrowWeiValue)
+      const borrowReasons = getBorrowCommonFormState(marketData, depositWeiValue, borrowWeiValue)
       reasons.push(...borrowReasons)
     }
   }

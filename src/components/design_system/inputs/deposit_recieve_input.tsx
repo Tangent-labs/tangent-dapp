@@ -7,6 +7,7 @@ import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatBigInt, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
+import DisplayReceivePanel from "./display_recieve_panel"
 
 type DepositRecieveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
@@ -122,16 +123,12 @@ export function DepositRecieveInput({
         </div>
       </PanelRaw>
       {displayRecieve && (
-        <PanelRaw className="flex flex-col gap-1 !bg-opacity-20 p-2">
-          <div className="text-sm text-gray-400">{labelRecieve}</div>
-          <div className="mb-2 flex justify-between">
-            <div className="text-xl font-medium">{recieveAmount || "-"}</div>
-            <div>{recieveAssetDisplay}</div>
-          </div>
-          <div className="flex justify-between text-xs text-gray-400">
-            <div>$({recieveDollarValue || "-"})</div>
-          </div>
-        </PanelRaw>
+        <DisplayReceivePanel
+          labelRecieve={labelRecieve}
+          recieveAmount={recieveAmount}
+          recieveAssetDisplay={recieveAssetDisplay}
+          recieveDollarValue={recieveDollarValue}
+        />
       )}
     </div>
   )

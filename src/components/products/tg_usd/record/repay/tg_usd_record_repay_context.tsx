@@ -4,7 +4,7 @@ import { FormState } from "@/types"
 import { createContext, ReactNode, useContext, useMemo, useState } from "react"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doMarketRepay, getFormState } from "./tg_usd_record_repay_controller"
+import { doMarketRepay, getRepayFormState } from "./tg_usd_record_repay_controller"
 
 type TgUsdRepayContextProps = {
   children: ReactNode
@@ -29,7 +29,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     if (walletClient) doMarketRepay(walletClient, { marketAddress: marketData!.marketAddress, repayWeiValue }).then(() => loadOnChainData())
   }
 
-  const formState = useMemo(() => getFormState(marketData, repayWeiValue, isWellConnected), [marketData, repayWeiValue, isWellConnected, currentAddress])
+  const formState = useMemo(() => getRepayFormState(marketData, repayWeiValue, isWellConnected), [marketData, repayWeiValue, isWellConnected, currentAddress])
 
   const contextValue: TgUsdRepayContextValues = {
     actionRepay,

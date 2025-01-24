@@ -4,7 +4,7 @@ import { FormState } from "@/types"
 import { createContext, ReactNode, useContext, useMemo, useState } from "react"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doMarketBorrow, getFormState } from "./tg_usd_record_borrow_controller"
+import { doMarketBorrow, getBorrowFormState } from "./tg_usd_record_borrow_controller"
 
 type TgUsdBorrowContextProps = {
   children: ReactNode
@@ -29,7 +29,10 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
     if (walletClient) doMarketBorrow(walletClient, { marketAddress: marketData!.marketAddress, borrowWeiValue }).then(() => loadOnChainData())
   }
 
-  const formState = useMemo(() => getFormState(marketData, borrowWeiValue, isWellConnected), [marketData, borrowWeiValue, isWellConnected, currentAddress])
+  const formState = useMemo(
+    () => getBorrowFormState(marketData, borrowWeiValue, isWellConnected),
+    [marketData, borrowWeiValue, isWellConnected, currentAddress]
+  )
 
   const contextValue: TgUsdBorrowContextValues = {
     actionBorrow,

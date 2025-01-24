@@ -92,9 +92,9 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
         ltDollar: "-",
         maxLtv: "-",
         maxLtvDollar: "-",
-        rewardsCut: "-",
-        rewardsCutPower: "-",
-      }
+        rewardsCutCurrent: "-",
+        rewardsCutNext: "-",
+      } as TgUsdMarketDisplayData
 
     const { maxBorrowable, maxWithDrawable, currentLtv, maxLTV, maxMarketDebt } = getComputedLoanData(marketData)
 
@@ -111,14 +111,14 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
       ltv: formatNumber(Number(BigInt(currentLtv || 0n)) / 1000, 2) + "%",
       maxBorrowable: formatDollar(Number(formatEther(BigInt(maxBorrowable || 0n))), 0),
       maxWithdrawable: formatDollar(Number(formatEther(BigInt(maxWithDrawable || 0n))), 0),
-      borrowRateCurrent: formatNumber(Number(formatEther(BigInt(marketData?.debtInfos.actualBorrowRate || 0n))), 2) + "%",
-      borrowRateNext: formatNumber(Number(formatEther(BigInt(marketData?.debtInfos.nextBorrowRate || 0n))), 2) + "%",
-      lt: "-",
+      borrowRateCurrent: formatNumber(Number(formatEther(BigInt(marketData?.debtInfos.currentBorrowRate || 0n))), 2) + "%",
+      borrowRateNext: formatNumber(Number(formatEther(BigInt(marketData?.debtInfos.futureBorrowRate || 0n))), 2) + "%",
+      lt: formatNumber(Number(formatEther(BigInt(marketData?.constants.liquidationThreshold || 0n))), 2) + "%",
       ltDollar: "-",
       maxLtv: formatNumber(Number(BigInt(maxLTV || 0n)), 2) + "%",
       maxLtvDollar: formatDollar(Number(formatEther(BigInt(maxMarketDebt || 0n))), 2),
-      rewardsCut: "-",
-      rewardsCutPower: "-",
+      rewardsCutCurrent: formatNumber(Number(formatEther(BigInt(marketData?.debtInfos.currentRewardCut || 0n))), 2) + "%",
+      rewardsCutNext: formatNumber(Number(formatEther(BigInt(marketData?.debtInfos.futureRewardCut || 0n))), 2) + "%",
     } as TgUsdMarketDisplayData
   }, [marketData])
 

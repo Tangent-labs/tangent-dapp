@@ -31,8 +31,6 @@ export default function TgUsdRepayPanel() {
   return (
     <>
       <div className="flex flex-col gap-2">
-        {/* <div>-- {JSONdebug(marketData)} --</div> */}
-
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <span className="text-2xl">Repay tgUSD</span>

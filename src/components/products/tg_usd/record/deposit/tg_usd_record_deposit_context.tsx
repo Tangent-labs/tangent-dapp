@@ -3,7 +3,7 @@
 import { AssetDataPriced, FormState } from "@/types"
 import { createContext, ReactNode, useContext, useMemo, useState } from "react"
 import { TgUsdMarket } from "../../tg_usd_type"
-import { doApproveMarketDeposit, doMarketDeposit, getFormState } from "./tg_usd_record_deposit_controller"
+import { doApproveMarketDeposit, doMarketDeposit, getDepositFormState } from "./tg_usd_record_deposit_controller"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
@@ -59,7 +59,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
   }
 
   const formState = useMemo(
-    () => getFormState(marketData, depositWeiValue, borrowWeiValue, isDepositAndBorrow, isWellConnected),
+    () => getDepositFormState(marketData, depositWeiValue, borrowWeiValue, isDepositAndBorrow, isWellConnected),
     [marketData, isDepositAndBorrow, borrowWeiValue, depositWeiValue, isWellConnected, currentAddress]
   )
 

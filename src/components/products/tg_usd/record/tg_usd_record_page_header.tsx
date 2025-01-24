@@ -66,8 +66,8 @@ export default function TgUsdRecordPageHeader({ onBackClick, ...props }: TgUsdRe
             },
             {
               title: "Rewards cut",
-              value: marketDisplayData.rewardsCut,
-              subValue: marketDisplayData.rewardsCutPower,
+              value: marketDisplayData.rewardsCutCurrent,
+              subValue: marketDisplayData.rewardsCutNext,
             },
             {
               title: "max. LTV",

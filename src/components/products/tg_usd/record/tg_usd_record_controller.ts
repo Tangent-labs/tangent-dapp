@@ -2,8 +2,9 @@ import { Abi, Address, formatEther, Hex, parseEther, zeroAddress } from "viem"
 import { ChainViewMarketRow, MarketDetailData } from "../tg_usd_type"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import MarketDetailsUI from "@/abi/tgusd/MarketDetailsUI.json"
-import { AssetDataPriced } from "@/types"
+import { AssetDataPriced, ExistingAsset } from "@/types"
 import { tgUsdMarkets } from "../tg_usd_repository"
+import { getAssetInfo } from "@/services/service_existing_asset"
 
 export const getTgUsdMarketRecordData = async (address: Address | undefined, market: Address) => {
   address = address || zeroAddress
@@ -26,7 +27,7 @@ export const transformMarketData = (onChainData: ChainViewMarketRow, collateralI
   }
 }
 
-export function getBorrowState(marketData?: MarketDetailData, depositWeiValue?: bigint, borrowWeiValue?: bigint) {
+export function getBorrowCommonFormState(marketData?: MarketDetailData, depositWeiValue?: bigint, borrowWeiValue?: bigint) {
   const reasons: string[] = []
 
   if (!borrowWeiValue || borrowWeiValue === 0n) {
@@ -42,13 +43,10 @@ export function getBorrowState(marketData?: MarketDetailData, depositWeiValue?: 
       const existingDebt = BigInt(marketData?.debtInfos?.positionDebt || 0n)
       const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 10000n
       const maxMarketDebt = BigInt(marketData?.constants.maxMarketDebt || "0")
-
       const maxLoan = maxLTV * (depositWeiValue || 0n) + depositedCollateral
-
       if (maxLoan < borrowWeiValue + existingDebt) {
         reasons.push(`max debt is ${parseEther(maxLoan.toString())}`)
       }
-
       if (maxMarketDebt < borrowWeiValue + totalDebt) {
         reasons.push(`max market debt is exceeded`)
       }
@@ -69,4 +67,13 @@ export function getComputedLoanData(marketData?: MarketDetailData) {
   const currentLtv = depositedDollar !== 0n ? (existingDebt * 100000n) / depositedDollar : 0n
 
   return { maxBorrowable, maxWithDrawable, maxLTV, maxMarketDebt, minLoan, currentLtv }
+}
+
+export async function loadMarketServerData(collateral: ExistingAsset) {
+  const tokenInfos = await getAssetInfo([collateral, "tgUSD"])
+  const marketInfo = tgUsdMarkets.find((market) => market.marketName === collateral)
+  const collateralInfo = tokenInfos.at(0)
+  const tgUSDInfo = tokenInfos.at(1)
+
+  return { collateralInfo, tgUSDInfo, marketInfo }
 }

@@ -4,7 +4,7 @@ import { FormState } from "@/types"
 import { createContext, ReactNode, useContext, useMemo, useState } from "react"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doMarketWithdraw, getFormState } from "./tg_usd_record_withdraw_controller"
+import { doMarketWithdraw, getWithdrawFormState } from "./tg_usd_record_withdraw_controller"
 
 type TgUsdWithdrawContextProps = {
   children: ReactNode
@@ -29,7 +29,10 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
     if (walletClient) doMarketWithdraw(walletClient, { marketAddress: marketData!.marketAddress, withdrawWeiValue }).then(() => loadOnChainData())
   }
 
-  const formState = useMemo(() => getFormState(marketData, withdrawWeiValue, isWellConnected), [marketData, withdrawWeiValue, isWellConnected, currentAddress])
+  const formState = useMemo(
+    () => getWithdrawFormState(marketData, withdrawWeiValue, isWellConnected),
+    [marketData, withdrawWeiValue, isWellConnected, currentAddress]
+  )
 
   const contextValue: TgUsdWithdrawContextValues = {
     actionWithdraw,

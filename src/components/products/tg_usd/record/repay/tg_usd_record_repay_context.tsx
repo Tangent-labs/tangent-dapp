@@ -1,7 +1,7 @@
 "use client"
 
 import { FormState } from "@/types"
-import { createContext, ReactNode, useContext, useMemo, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doMarketRepay, getRepayFormState } from "./tg_usd_record_repay_controller"
@@ -21,8 +21,14 @@ export const TgUsdRepayContext = createContext<TgUsdRepayContextValues | undefin
 
 export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   const [repayWeiValue, setRepayWeiValue] = useState<bigint | undefined>()
-  const { marketData, loadOnChainData } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+
+  useEffect(() => {
+    setCurrentAmounts({
+      repayWeiValue: repayWeiValue || 0n,
+    })
+  }, [repayWeiValue])
 
   const actionRepay = () => {
     const walletClient = getWalletClient()

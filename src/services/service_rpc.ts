@@ -76,7 +76,7 @@ export const getApproveTx = (contract: Address, spender: Address, amount: bigint
 
 export const executeAppove = async (client: WalletClient, contract: Address, spender: Address, amount: bigint) => {
   const txData = getApproveTx(contract, spender, amount)
-  executeContractCall(client, txData as TxContractCallData)
+  return executeContractCall(client, txData as TxContractCallData)
 }
 
 export const waitForTransaction = async (hash: Hash) => {

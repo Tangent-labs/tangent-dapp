@@ -1,7 +1,7 @@
 import { Abi, WalletClient } from "viem"
 import { MarketDetailData, TgUsdtMarketWitrhdrawParams } from "../../tg_usd_type"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
-import { executeContractCall } from "@/services/service_rpc"
+import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
 
 export function getWithdrawFormState(marketData?: MarketDetailData, withdrawWeiValue?: bigint, isWellConnected?: boolean) {
   const reasons: string[] = []
@@ -21,5 +21,6 @@ export async function doMarketWithdraw(walletClient: WalletClient, args: TgUsdtM
     args: [args.withdrawWeiValue],
     gas: undefined as undefined | bigint,
   }
-  return await executeContractCall(walletClient, txData)
+  const txHash = await executeContractCall(walletClient, txData)
+  return await waitForTransaction(txHash)
 }

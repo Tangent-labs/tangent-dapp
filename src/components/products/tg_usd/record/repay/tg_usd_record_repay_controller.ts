@@ -1,7 +1,7 @@
 import { Abi, WalletClient, zeroAddress } from "viem"
 import { MarketDetailData, TgUsdtMarketRepayParams } from "../../tg_usd_type"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
-import { executeContractCall } from "@/services/service_rpc"
+import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
 
 export function getRepayFormState(marketData?: MarketDetailData, repayWeiValue?: bigint, isWellConnected?: boolean) {
   const reasons: string[] = []
@@ -23,5 +23,6 @@ export async function doMarketRepay(walletClient: WalletClient, args: TgUsdtMark
     args: [account, args.repayWeiValue, zeroAddress],
     gas: undefined as undefined | bigint,
   }
-  return await executeContractCall(walletClient, txData)
+  const txHash = await executeContractCall(walletClient, txData)
+  return await waitForTransaction(txHash)
 }

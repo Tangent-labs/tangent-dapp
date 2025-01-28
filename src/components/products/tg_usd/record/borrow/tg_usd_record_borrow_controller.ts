@@ -1,7 +1,7 @@
 import { Abi, WalletClient } from "viem"
 import { MarketDetailData, TgUsdtMarketBorrowParams } from "../../tg_usd_type"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
-import { executeContractCall } from "@/services/service_rpc"
+import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
 import { getBorrowCommonFormState } from "../tg_usd_record_controller"
 
 export function getBorrowFormState(marketData?: MarketDetailData, borrowWeiValue?: bigint, isWellConnected?: boolean) {
@@ -25,5 +25,6 @@ export async function doMarketBorrow(walletClient: WalletClient, args: TgUsdtMar
     args: [account, args.borrowWeiValue],
     gas: undefined as undefined | bigint,
   }
-  return await executeContractCall(walletClient, txData)
+  const txHash = await executeContractCall(walletClient, txData)
+  return await waitForTransaction(txHash)
 }

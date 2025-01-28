@@ -1,7 +1,7 @@
 import { Abi, Address, WalletClient, zeroAddress } from "viem"
 import { MarketDetailData, TgUsdtMarketDepositParams } from "../../tg_usd_type"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
-import { executeAppove, executeContractCall } from "@/services/service_rpc"
+import { executeAppove, executeContractCall, waitForTransaction } from "@/services/service_rpc"
 import { getBorrowCommonFormState } from "../tg_usd_record_controller"
 
 export function getDepositFormState(
@@ -47,7 +47,8 @@ export async function doMarketDeposit(walletClient: WalletClient, args: TgUsdtMa
       args: [account, args.depositWeiValue, args.isStaking],
       gas: undefined as undefined | bigint,
     }
-    return await executeContractCall(walletClient, txData)
+    const txHash = await executeContractCall(walletClient, txData)
+    return await waitForTransaction(txHash)
   } else {
     const txData = {
       abi: MarketExternalActions.abi as Abi,
@@ -61,5 +62,6 @@ export async function doMarketDeposit(walletClient: WalletClient, args: TgUsdtMa
 }
 
 export async function doApproveMarketDeposit(walletClient: WalletClient, collateralAddress: Address, args: TgUsdtMarketDepositParams) {
-  return await executeAppove(walletClient, collateralAddress, args.marketAddress, args.depositWeiValue)
+  const txHash = await executeAppove(walletClient, collateralAddress, args.marketAddress, args.depositWeiValue)
+  return await waitForTransaction(txHash)
 }

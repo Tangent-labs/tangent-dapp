@@ -1,7 +1,7 @@
 "use client"
 
 import { AssetDataPriced, FormState } from "@/types"
-import { createContext, ReactNode, useContext, useMemo, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { TgUsdMarket } from "../../tg_usd_type"
 import { doApproveMarketDeposit, doMarketDeposit, getDepositFormState } from "./tg_usd_record_deposit_controller"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
@@ -36,8 +36,15 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
   const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(false)
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
-  const { marketData, loadOnChainData } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+
+  useEffect(() => {
+    setCurrentAmounts({
+      depositWeiValue: depositWeiValue || 0n,
+      borrowWeiValue: borrowWeiValue || 0n,
+    })
+  }, [depositWeiValue, borrowWeiValue])
 
   const actionApprove = () => {
     const walletClient = getWalletClient()

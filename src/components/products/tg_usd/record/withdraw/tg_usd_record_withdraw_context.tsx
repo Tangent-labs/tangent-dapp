@@ -1,7 +1,7 @@
 "use client"
 
 import { FormState } from "@/types"
-import { createContext, ReactNode, useContext, useMemo, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doMarketWithdraw, getWithdrawFormState } from "./tg_usd_record_withdraw_controller"
@@ -21,8 +21,14 @@ export const TgUsdWithdrawContext = createContext<TgUsdWithdrawContextValues | u
 
 export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) => {
   const [withdrawWeiValue, setWithdrawWeiValue] = useState<bigint | undefined>()
-  const { marketData, loadOnChainData } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+
+  useEffect(() => {
+    setCurrentAmounts({
+      withdrawWeiValue: withdrawWeiValue || 0n,
+    })
+  }, [withdrawWeiValue])
 
   const actionWithdraw = () => {
     const walletClient = getWalletClient()

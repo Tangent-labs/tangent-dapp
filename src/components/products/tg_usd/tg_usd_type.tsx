@@ -220,3 +220,10 @@ export type TgUsdMarketDisplayData = TgUsdMarketLoanDisplayData & {
   lt: string
   ltDollar: string
 }
+
+export type TgUsdMarketAmounts = {
+  depositWeiValue?: bigint
+  borrowWeiValue?: bigint
+  withdrawWeiValue?: bigint
+  repayWeiValue?: bigint
+}

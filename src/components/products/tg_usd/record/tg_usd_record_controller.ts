@@ -93,7 +93,7 @@ export function getComputedFutureLoanData(
   const futureDepositedDollarRaw = (futureDeposited * collateralPriceRaw) / DECIMALS
   const futureDepositedDollar = collateralValueToNumber(futureDeposited) * collateralprice
   const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
-  const maxBorrowable = (futureDeposited * maxLTV) / 100n - futureDebt
+  const maxBorrowable = (futureDeposited * maxLTV) / 100n - (futureDebt * DECIMALS) / collateralPriceRaw
   const maxWithDrawable = collateralPriceRaw !== 0n ? futureDepositedDollarRaw - (futureDebt * DECIMALS) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
   const ltv = futureDepositedDollar !== 0 ? (Number(futureDebt) / futureDepositedDollar) * 100 : 0
   const health = futureDebt !== 0n ? (futureDeposited * collateralPriceRaw * liquidationThresholdRaw) / (futureDebt * DENOMINATOR) : 0n

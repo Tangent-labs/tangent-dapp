@@ -5,6 +5,6 @@ export type FormState = {
 }
 
 export type FormAction = {
-  handleApprove: () => void
+  handleApprove?: () => void
   handleProcess: () => void
 }

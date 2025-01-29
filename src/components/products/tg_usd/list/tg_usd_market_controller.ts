@@ -90,7 +90,7 @@ function transformMarketDataToRow(data: TgUsdMarketData & TgUsdMarketDataUser, o
       projected: Number(data.apr.details.baseApr),
     },
     indicators: [
-      { key: "borrowRate", label: "Borrow Rate", value: formatBigInt(onChainRow?.debtInfos.actualBorrowRate, 18, 0) || "-", raw: 0 },
+      { key: "borrowRate", label: "Borrow Rate", value: formatBigInt(onChainRow?.debtInfos.currentBorrowRate, 18, 0) || "-", raw: 0 },
       {
         key: "tvl",
         label: "Tvl",

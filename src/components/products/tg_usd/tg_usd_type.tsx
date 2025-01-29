@@ -1,4 +1,4 @@
-import { AprEntry, ERC20StaticInfos, ExistingAsset, Network, TokenAmountPriced } from "@/types"
+import { AprEntry, AssetDataPriced, ERC20StaticInfos, ExistingAsset, Network, TokenAmountPriced } from "@/types"
 import { Address } from "viem"
 
 export type TgUsdGlobalMarketData = {
@@ -65,11 +65,13 @@ export type TgUsdGlobalData = {
   globalTvl: string // $
 }
 
+export type TgUsdMarketType = "Convex_CRV" | "Convex_FXN"
+
 export type TgUsdMarket = {
   marketAddress: Address
   marketName: ExistingAsset
   collatAddress: Address
-  marketType: "Convex_CRV" | "Convex_FXN"
+  marketType: TgUsdMarketType
 }
 
 export type ClaimerInfoDisplay = {
@@ -127,37 +129,40 @@ export interface ChainViewMarketRow {
 
 export interface CollateralInfos {
   collateralToken: ERC20StaticInfos
-  totalCollateralUSDValue: string // Value in string format to handle large numbers
-  totalCollateralAmount: string // Value in string format
-  collateralUSDPrice: string // Value in string format
-  positionCollateralAmount: string // Value in string format
-  positionCollateralUSDValue: string // Value in string format
+  totalCollateralUSDValue: string
+  totalCollateralAmount: string
+  collateralUSDPrice: string
+  positionCollateralAmount: string
+  positionCollateralUSDValue: string
   priceOracle: string
 }
 
 export interface DebtInfos {
-  totalDebt: string // Value in string format
-  positionDebt: string // Value in string format
-  healthRatio: string // Value in string format for maximum precision
-  actualBorrowRate: string // Value in string format
-  nextBorrowRate: string // Value in string format
+  totalDebt: string
+  positionDebt: string
+  healthRatio: string
+  currentBorrowRate: string
+  futureBorrowRate: string
+  currentRewardCut: string
+  futureRewardCut: string
 }
 
 export interface MarketConstants {
-  maxLTV: string // Value in string format
-  maxMarketDebt: string // Value in string format
-  minimumLoan: string // Value in string format
+  maxLTV: string
+  maxMarketDebt: string
+  minimumLoan: string
+  liquidationThreshold: string
 }
 
 export interface OutputBalanceAllowances {
   token: string // Address of the token
-  balance: string // Value in string format
+  balance: string
   allowances: Allowance[]
 }
 
 export interface Allowance {
   spender: string // Address of the spender
-  allowance: string // Value in string format
+  allowance: string
 }
 
 export type ChainViewMarketList = {
@@ -167,4 +172,72 @@ export type ChainViewMarketList = {
   sgUSDSupply: bigint // uint256
   tgUSDPercentageInSgUSD: bigint // uint256
   rowInfos: ChainViewMarketRow[]
+}
+
+export type MarketDetailData = {
+  marketAddress: Address
+  collateralInfo: AssetDataPriced
+  debtInfos: DebtInfos
+  constants: MarketConstants
+  collateralBalance: bigint
+  collateralAllowance: bigint
+  collateralInfos: CollateralInfos
+  marketType?: TgUsdMarketType
+}
+
+export type TgUsdtMarketDepositParams = TgUsdtMarketBorrowParams & {
+  isStaking: boolean
+  isDepositAndBorrow: boolean
+  depositWeiValue: bigint
+}
+
+export type TgUsdtMarketBorrowParams = {
+  borrowWeiValue?: bigint
+  marketAddress: Address
+}
+
+export type TgUsdtMarketWitrhdrawParams = {
+  withdrawWeiValue?: bigint
+  marketAddress: Address
+}
+
+export type TgUsdtMarketLiquidateParams = {
+  liquidateWeiValue?: bigint
+  marketAddress: Address
+}
+
+export type TgUsdtMarketRepayParams = {
+  repayWeiValue?: bigint
+  marketAddress: Address
+}
+
+export type TgUsdMarketLoanDisplayData = {
+  collateralValue: string
+  debt: string
+  health: string
+  ltv: string
+  maxBorrowable: string
+  maxWithdrawable: string
+}
+
+export type TgUsdMarketDisplayData = TgUsdMarketLoanDisplayData & {
+  tvl: string
+  tvlDollar: string
+  borrowed: string
+  borrowRateCurrent: string
+  borrowRateNext: string
+  cap: string
+  maxLtv: string
+  maxLtvDollar: string
+  rewardsCutCurrent: string
+  rewardsCutNext: string
+  lt: string
+  ltDollar: string
+}
+
+export type TgUsdMarketAmounts = {
+  depositWeiValue?: bigint
+  borrowWeiValue?: bigint
+  withdrawWeiValue?: bigint
+  repayWeiValue?: bigint
 }

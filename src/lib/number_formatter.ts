@@ -55,6 +55,15 @@ export function formatBigInt(value: bigint | string | undefined, decimals: numbe
   }
   return ""
 }
+export function formatDollarBigInt(value: bigint | string | undefined, decimals: number, displayDecimals: number): string {
+  if (value === undefined || value === null) return ""
+  const bigIntValue: bigint = typeof value === "string" ? BigInt(value) : value
+  const reduceNumber = parseFloat(formatUnits(bigIntValue, decimals))
+  if (!isNaN(reduceNumber)) {
+    return formatDollar(reduceNumber, displayDecimals)
+  }
+  return ""
+}
 
 /**
  * Formats a big integer value (as a string) into a human-readable decimal format.

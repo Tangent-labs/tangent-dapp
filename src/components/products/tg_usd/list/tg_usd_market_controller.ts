@@ -80,7 +80,7 @@ export function transformToRows(datas: (TgUsdMarketData & TgUsdMarketDataUser)[]
 function transformMarketDataToRow(data: TgUsdMarketData & TgUsdMarketDataUser, onChainRow?: ChainViewMarketRow): ListRowData {
   //console.log("transformMarketDataToRow", data, onChainRow)
 
-  const health = BigInt(onChainRow?.debtInfos?.totalDebt || "0") > 0n ? formatBigInt(onChainRow?.debtInfos?.healthRatio, 18, 0) : "-"
+  const health = BigInt(onChainRow?.debtInfos?.positionDebt || "0") > 0 ? formatBigInt(onChainRow?.debtInfos?.healthRatio, 18, 2) : "-"
 
   return {
     token: data.collateral as ExistingAsset,
@@ -90,7 +90,7 @@ function transformMarketDataToRow(data: TgUsdMarketData & TgUsdMarketDataUser, o
       projected: Number(data.apr.details.baseApr),
     },
     indicators: [
-      { key: "borrowRate", label: "Borrow Rate", value: formatBigInt(onChainRow?.debtInfos.currentBorrowRate, 18, 0) || "-", raw: 0 },
+      { key: "borrowRate", label: "Borrow Rate", value: formatBigInt(onChainRow?.debtInfos.currentBorrowRate, 18, 2) || "-", raw: 0 },
       {
         key: "tvl",
         label: "Tvl",
@@ -99,7 +99,7 @@ function transformMarketDataToRow(data: TgUsdMarketData & TgUsdMarketDataUser, o
       },
       { key: "borrowed", label: "Borrowed", value: formatBigInt(onChainRow?.debtInfos?.totalDebt, 18, 0) || "-", raw: data.borrowed },
       { key: "cap", label: "Cap", value: formatBigInt(onChainRow?.constants?.maxMarketDebt, 18, 0) || "-", raw: data.cap },
-      { key: "debt", label: "Debt", value: formatBigInt(onChainRow?.debtInfos?.totalDebt, 18, 0) || "-", raw: Number(onChainRow?.debtInfos?.totalDebt) },
+      { key: "debt", label: "Debt", value: formatBigInt(onChainRow?.debtInfos?.positionDebt, 18, 0) || "-", raw: Number(onChainRow?.debtInfos?.totalDebt) },
       {
         key: "health",
         label: "Health",

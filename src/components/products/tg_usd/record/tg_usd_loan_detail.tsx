@@ -27,7 +27,7 @@ export default function TgUsdLoanDetail({ ...props }: TgUsdLoanDetailProps) {
           newValue={futureMarketDisplayData.collateralValue}
           className="flex-1"
         />
-        <EvolutionBox originalValue={marketDisplayData.debt} label={"Debt"} newValue={futureMarketDisplayData.debt} className="flex-1" />
+        <EvolutionBox originalValue={marketDisplayData.debt} label={"Debt"} newValue={futureMarketDisplayData.debt} className="flex-1" logo="tgUSD" />
         <EvolutionBox originalValue={marketDisplayData.health} label={"Health"} newValue={futureMarketDisplayData.health} className="flex-1" />
         <EvolutionBox originalValue={marketDisplayData.ltv} label={"LTV"} newValue={futureMarketDisplayData.ltv} className="flex-1" />
         <EvolutionBox
@@ -35,6 +35,7 @@ export default function TgUsdLoanDetail({ ...props }: TgUsdLoanDetailProps) {
           label={"Max borrowable"}
           newValue={futureMarketDisplayData.maxBorrowable}
           className="flex-1"
+          logo="tgUSD"
         />
         <EvolutionBox
           originalValue={marketDisplayData.maxWithdrawable}

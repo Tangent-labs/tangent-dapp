@@ -19,7 +19,7 @@ export function getDepositFormState(
     reasons.push("No connected wallet.")
   } else {
     if (depositWeiValue === 0n) {
-      reasons.push("No amount.")
+      reasons.push("Amount must be greater than zero.")
     } else if ((depositWeiValue || 0n) > (marketData?.collateralBalance || 0n)) {
       reasons.push("Not enough balance.")
     }

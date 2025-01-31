@@ -70,3 +70,20 @@ export const getTokensPrice = async (tokens: ExistingAsset[]) => {
 
   return _fetchAndReturnPrices(selectedAddresses)
 }
+
+/**
+ *
+ * @param tokens only returns the price of a selected token
+ * @returns
+ */
+export const getSwapAssetPrice = async (address: Address) => {
+  const priceResponse = await fetch(`https://coins.llama.fi/prices/current/ethereum:${address}?searchWidth=4h`)
+  if (priceResponse.status === 200) {
+    const responseData = (await priceResponse.json()) as DefillamaPriceData
+
+    const price = Object.values(responseData.coins)[0]?.price
+
+    return price
+  }
+  return null
+}

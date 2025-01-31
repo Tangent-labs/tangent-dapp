@@ -116,6 +116,13 @@ export async function loadMarketServerData(collateral: ExistingAsset) {
   return { collateralInfo, tgUSDInfo, marketInfo }
 }
 
+export async function fetchTokens() {
+  const tokensData = await fetch("https://files.cow.fi/tokens/CowSwap.json")
+  // const tokensData = await fetch("https://curvefi.github.io/curve-assets/ethereum.json")
+  const { tokens } = await tokensData.json()
+  return tokens
+}
+
 export function getMarketDisplayData(marketData?: MarketDetailData, collateralInfo?: AssetDataPriced) {
   if (!marketData || !collateralInfo)
     return {

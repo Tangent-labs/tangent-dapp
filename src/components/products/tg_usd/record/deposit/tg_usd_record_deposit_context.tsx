@@ -1,16 +1,17 @@
 "use client"
 
+import { TgUsdMarket, ZapperData, ZapToken } from "../../tg_usd_type"
 import { AssetDataPriced, FormState } from "@/types"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { TgUsdMarket } from "../../tg_usd_type"
-import { doApproveMarketDeposit, doMarketDeposit, getDepositFormState } from "./tg_usd_record_deposit_controller"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { computeSwapAssetPrice, doApproveMarketDeposit, doMarketDeposit, getDepositFormState, getEnsoRouteForZap } from "./tg_usd_record_deposit_controller"
 
 type TgUsdDepositContextProps = {
   children: ReactNode
   collateralInfo: AssetDataPriced
   marketInfo: TgUsdMarket
+  tokens: ZapToken[]
 }
 
 type TgUsdDepositContextValues = {
@@ -27,17 +28,65 @@ type TgUsdDepositContextValues = {
   formState: FormState
   borrowWeiValue?: bigint
   setBorrowWeiValue: (arg: bigint | undefined) => void
+  setDepositAsset: (arg: string) => void
+  depositAsset: string | undefined
+  tokens: ZapToken[]
+  ensoData: ZapperData | null
+  isLoading: boolean
+  setIsLoading: (arg: boolean) => void
+  swapAssetPrice: number | null
 }
 
 export const TgUsdDepositContext = createContext<TgUsdDepositContextValues | undefined>(undefined)
 
-export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: TgUsdDepositContextProps) => {
+export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tokens }: TgUsdDepositContextProps) => {
   const [isStaking, setIsStaking] = useState<boolean>(false)
   const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(false)
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
   const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+  const [depositAsset, setDepositAsset] = useState<string | undefined>(undefined)
+
+  const [ensoData, setEnsoData] = useState<ZapperData | null>(null)
+  const [swapAssetPrice, setSwapAssetPrice] = useState<number | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (!ensoData || !depositAsset) return
+
+    const fetchSwapAssetData = async () => {
+      setIsLoading(true)
+      try {
+        const data = await computeSwapAssetPrice(tokens, depositAsset)
+        setSwapAssetPrice(data)
+      } catch (error) {
+        console.error("Error fetching Enso data:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchSwapAssetData()
+  }, [ensoData])
+
+  useEffect(() => {
+    if (!depositWeiValue || !currentAddress || !depositAsset) return
+
+    const fetchEnsoData = async () => {
+      setIsLoading(true)
+      try {
+        const data = await getEnsoRouteForZap(depositWeiValue, currentAddress, collateralInfo, tokens, depositAsset)
+        setEnsoData(data)
+      } catch (error) {
+        console.error("Error fetching Enso data:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchEnsoData()
+  }, [depositWeiValue, depositAsset, currentAddress])
 
   useEffect(() => {
     setCurrentAmounts({
@@ -84,6 +133,13 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
     formState,
     borrowWeiValue,
     setBorrowWeiValue,
+    setDepositAsset,
+    depositAsset,
+    tokens,
+    ensoData,
+    isLoading,
+    setIsLoading,
+    swapAssetPrice,
   }
 
   return <TgUsdDepositContext.Provider value={contextValue}>{children}</TgUsdDepositContext.Provider>

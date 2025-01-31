@@ -1,4 +1,4 @@
-import { AprEntry, AssetDataPriced, ERC20StaticInfos, ExistingAsset, Network, TokenAmountPriced } from "@/types"
+import { AprEntry, AssetData, AssetDataPriced, ERC20StaticInfos, ExistingAsset, Network, TokenAmountPriced } from "@/types"
 import { Address } from "viem"
 
 export type TgUsdGlobalMarketData = {
@@ -240,4 +240,14 @@ export type TgUsdMarketAmounts = {
   borrowWeiValue?: bigint
   withdrawWeiValue?: bigint
   repayWeiValue?: bigint
+}
+
+export type ZapperData = {
+  amountOut: bigint
+}
+
+export type ZapToken = AssetData & {
+  chainId?: number
+  logoURI: string
+  price: number
 }

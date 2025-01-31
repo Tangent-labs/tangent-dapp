@@ -35,7 +35,7 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, depositW
   const reasons: string[] = []
 
   if (!borrowWeiValue || borrowWeiValue === 0n) {
-    reasons.push("No amount.")
+    reasons.push("Amount must be greater than zero.")
   } else {
     const minLoan = BigInt(marketData?.constants?.minimumLoan || "0")
     const totalDebt = BigInt(marketData?.debtInfos?.totalDebt || 0n)

@@ -21,7 +21,7 @@ export const TgUsdWithdrawContext = createContext<TgUsdWithdrawContextValues | u
 
 export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) => {
   const [withdrawWeiValue, setWithdrawWeiValue] = useState<bigint | undefined>()
-  const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts, collateralInfo } = useTgUsdRecordContext()
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
   }
 
   const formState = useMemo(
-    () => getWithdrawFormState(marketData, withdrawWeiValue, isWellConnected),
+    () => getWithdrawFormState(marketData, withdrawWeiValue, collateralInfo, isWellConnected),
     [marketData, withdrawWeiValue, isWellConnected, currentAddress]
   )
 

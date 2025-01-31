@@ -40,7 +40,7 @@ export default function TgUsdRepayPanel() {
             <DepositRecieveInput
               displayRecieve={false}
               depositAmount={repayWeiValue}
-              labelDeposit="You borrow"
+              labelDeposit="You repay"
               depositSelect={<BorrowAssetDisplay />}
               disabled={!canInteract}
               depositAsset={tgUSDInfo}

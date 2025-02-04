@@ -1,6 +1,6 @@
 import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
 import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import stakeSgUSD from "../../../../abi/tgusd/sgUsdStake.json"
+import yearnV3Vault from "../../../../abi/tgusd/YearnV3Vault.json"
 import stakeUI from "../../../../abi/tgusd/sgUSDUI.json"
 import { StakingInfo } from "../tg_usd_type"
 import { TGUSD_CONTRACT } from "../tg_usd_repository"
@@ -43,7 +43,7 @@ export const getExpectedTgUSD = async (walletClient: WalletClient, weiValue: big
 
   const publicClient = await getPublicClient()
   const txData = {
-    abi: stakeSgUSD,
+    abi: yearnV3Vault,
     functionName: "previewRedeem",
     args: params as unknown[],
     address: stakingAddress,
@@ -62,7 +62,7 @@ export const getExpectedSgUSD = async (walletClient: WalletClient, weiValue: big
 
   const publicClient = await getPublicClient()
   const txData = {
-    abi: stakeSgUSD,
+    abi: yearnV3Vault,
     functionName: "previewDeposit",
     args: params as unknown[],
     address: stakingAddress,
@@ -92,7 +92,7 @@ export const doUnstakeTgUSD = async ({ walletClient, stakingAddress, weiValue }:
 
   const publicClient = await getPublicClient()
   const txData = {
-    abi: stakeSgUSD,
+    abi: yearnV3Vault,
     functionName: "redeem",
     args: params as unknown[],
     address: stakingAddress,
@@ -113,7 +113,7 @@ export const doStakeTgUSD = async ({ walletClient, stakingAddress, weiValue }: {
 
   const publicClient = await getPublicClient()
   const txData = {
-    abi: stakeSgUSD,
+    abi: yearnV3Vault,
     functionName: "deposit",
     args: params as unknown[],
     address: stakingAddress,

@@ -55,7 +55,7 @@ export default function TgUsdClaimContent() {
       symbol: "tgUSD",
     }
 
-    const sdAssetInfo = {
+    const sgUSDInfo = {
       address: "0x374039ebeed6a9185b1ccf320daa2301f26246f6",
       decimals: 18,
       displayDecimals: 0,
@@ -65,11 +65,9 @@ export default function TgUsdClaimContent() {
       symbol: "sgUSD",
     }
 
-    if (!sdAssetInfo || !assetInfo) return <></>
-
     let logo = assetInfo?.logo as ExistingAsset
     if (option.value === "sdAsset") {
-      logo = sdAssetInfo.logo as ExistingAsset
+      logo = sgUSDInfo.logo as ExistingAsset
     }
 
     return (

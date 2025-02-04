@@ -45,44 +45,41 @@ export function DepositRecieveInput({
   displayBalance = true,
   ...props
 }: DepositRecieveInputProps) {
-  // Debounce
-
-  const [innerValue, setInnverValue] = useState<number | undefined>(
-    !depositAmount ? undefined : Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals || 0))
+  const [innerValue, setInnerValue] = useState<number | undefined>(
+    depositAmount !== undefined ? Number(formatUnits(depositAmount, depositAsset?.decimals || 0)) : undefined
   )
+
+  const [isUserInput, setIsUserInput] = useState(false)
 
   useEffect(() => {
     if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
-      const updatedValue = Number(formatUnits(depositAmount, depositAsset.decimals))
-      setInnverValue(updatedValue)
+      const updatedValue = Number(Number(formatUnits(depositAmount, depositAsset.decimals)).toFixed(4))
+      setInnerValue(updatedValue)
+      setIsUserInput(false) // Reset user input flag
     }
   }, [depositAmount, depositAsset])
 
   useEffect(() => {
-    if (!depositAsset?.decimals) return
+    if (!depositAsset?.decimals || !isUserInput) return
 
     const handler = setTimeout(() => {
       const val = innerValue ? toBigInt(Number(innerValue), depositAsset.decimals) : undefined
       onValueChange(val)
     }, 500)
 
-    return () => {
-      clearTimeout(handler)
-    }
-  }, [innerValue, depositAsset])
+    return () => clearTimeout(handler)
+  }, [innerValue, depositAsset, isUserInput])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInnverValue(!e.target.value ? undefined : Number(e.target.value))
+    setIsUserInput(true)
+    setInnerValue(e.target.value ? Number(e.target.value) : undefined)
   }
 
   const displayBalanceData = useMemo(() => {
     const formattedBalance = formatBigInt(balance || "0", depositAsset?.decimals || 0, depositAsset?.displayDecimals || 0)
-    return `${formattedBalance} ${depositAsset?.symbol || ""} `
+    return `${formattedBalance} ${depositAsset?.symbol || ""}`
   }, [balance, depositAsset])
 
-  /**
-   * Handle/Format dollar value
-   */
   const dollarDepositDisplay = useMemo(() => {
     const val = Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals || 0)) * (depositAsset?.price || 0)
     return val?.toFixed(2) || "-"
@@ -99,11 +96,12 @@ export function DepositRecieveInput({
               type="number"
               value={innerValue}
               placeholder="Amount"
-              onChange={handleInputChange}
-              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30")}
+              onInput={handleInputChange}
+              className={cn(
+                "min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
+              )}
             />
           </div>
-
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
         <div className="flex justify-between text-xs text-gray-400">

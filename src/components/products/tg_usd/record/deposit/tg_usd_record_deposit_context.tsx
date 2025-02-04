@@ -1,11 +1,19 @@
 "use client"
 
-import { TgUsdMarket, ZapperData, ZapToken } from "../../tg_usd_type"
+import { TgUsdMarket, ZapToken } from "../../tg_usd_type"
 import { AssetDataPriced, FormState } from "@/types"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { computeSwapAssetPrice, doApproveMarketDeposit, doMarketDeposit, getDepositFormState, getEnsoRouteForZap } from "./tg_usd_record_deposit_controller"
+import {
+  computeSwapAssetPrice,
+  doApproveMarketDeposit,
+  doMarketDeposit,
+  getDepositFormState,
+  getTokenInQuote,
+  getTokenOutQuote,
+} from "./tg_usd_record_deposit_controller"
+import { parseEther } from "viem"
 
 type TgUsdDepositContextProps = {
   children: ReactNode
@@ -31,29 +39,84 @@ type TgUsdDepositContextValues = {
   setDepositAsset: (arg: string) => void
   depositAsset: string | undefined
   tokens: ZapToken[]
-  ensoData: ZapperData | null
   isLoading: boolean
   setIsLoading: (arg: boolean) => void
   swapAssetPrice: number | null
+
+  zapValue: bigint | null
+  setZapValue: (arg: bigint) => void
+  handleDepositChange: (arg: bigint | undefined) => void
+  handleZapChange: (arg: string) => void
 }
 
 export const TgUsdDepositContext = createContext<TgUsdDepositContextValues | undefined>(undefined)
 
 export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tokens }: TgUsdDepositContextProps) => {
+  const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
+
+  const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+
   const [isStaking, setIsStaking] = useState<boolean>(false)
   const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(false)
-  const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
-  const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
-  const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
   const [depositAsset, setDepositAsset] = useState<string | undefined>(undefined)
-
-  const [ensoData, setEnsoData] = useState<ZapperData | null>(null)
   const [swapAssetPrice, setSwapAssetPrice] = useState<number | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
+  const [zapValue, setZapValue] = useState<bigint | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleDepositChange = (value: bigint | undefined) => {
+    setDepositWeiValue(value)
+
+    const fetchZapValue = async () => {
+      if (!value || !currentAddress || !depositAsset) return
+
+      setIsLoading(true)
+      try {
+        const data = await getTokenOutQuote(value, currentAddress, collateralInfo, tokens, depositAsset)
+
+        if (data) {
+          setZapValue(data.amountOut)
+        }
+      } catch (error) {
+        console.error("Error fetching zap value:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchZapValue()
+  }
+
+  const handleZapChange = (value: string) => {
+    setZapValue(parseEther(value))
+
+    if (value === "") {
+      setDepositWeiValue(undefined)
+      return
+    }
+
+    const debounceTimeout = setTimeout(async () => {
+      if (!parseEther(value) || !currentAddress || !depositAsset) return
+      setIsLoading(true)
+
+      try {
+        const data = await getTokenInQuote(parseEther(value), currentAddress, collateralInfo, tokens, depositAsset)
+        if (data) {
+          setDepositWeiValue(data.amountOut)
+        }
+      } catch (error) {
+        console.error("Error fetching depositWeiValue:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }, 1000)
+
+    return () => clearTimeout(debounceTimeout)
+  }
 
   useEffect(() => {
-    if (!ensoData || !depositAsset) return
+    if (!depositAsset) return
 
     const fetchSwapAssetData = async () => {
       setIsLoading(true)
@@ -68,25 +131,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
     }
 
     fetchSwapAssetData()
-  }, [ensoData])
-
-  useEffect(() => {
-    if (!depositWeiValue || !currentAddress || !depositAsset) return
-
-    const fetchEnsoData = async () => {
-      setIsLoading(true)
-      try {
-        const data = await getEnsoRouteForZap(depositWeiValue, currentAddress, collateralInfo, tokens, depositAsset)
-        setEnsoData(data)
-      } catch (error) {
-        console.error("Error fetching Enso data:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchEnsoData()
-  }, [depositWeiValue, depositAsset, currentAddress])
+  }, [depositAsset])
 
   useEffect(() => {
     setCurrentAmounts({
@@ -136,9 +181,12 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
     setDepositAsset,
     depositAsset,
     tokens,
-    ensoData,
     isLoading,
     setIsLoading,
+    zapValue,
+    setZapValue,
+    handleDepositChange,
+    handleZapChange,
     swapAssetPrice,
   }
 

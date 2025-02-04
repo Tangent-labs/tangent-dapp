@@ -7,7 +7,7 @@ import AutoSizer from "react-virtualized-auto-sizer"
 import { ExistingAsset, SelectOptionAmount } from "@/types"
 import { ReactNode, useState } from "react"
 
-interface InputSelectProps<T extends { logoURI?: string; logo?: ExistingAsset; value: string; name?: string }> {
+interface InputSelectProps<T extends { logoURI?: string; logo?: ExistingAsset; value: string; name?: string; symbol: string }> {
   options?: T[]
   onChange: (value: string) => void
   placeholder?: string
@@ -25,7 +25,7 @@ export const InputSelectAmountTemplate = (option: SelectOptionAmount) => {
   )
 }
 
-const CustomSelect = <T extends { logoURI?: string; logo?: ExistingAsset; value: string; name?: string }>({
+const CustomSelect = <T extends { logoURI?: string; logo?: ExistingAsset; value: string; name?: string; symbol: string }>({
   options = [],
   onChange,
   placeholder = "Select an option",
@@ -35,7 +35,7 @@ const CustomSelect = <T extends { logoURI?: string; logo?: ExistingAsset; value:
 }: InputSelectProps<T>) => {
   const [search, setSearch] = useState("")
 
-  const filteredOptions = search ? options.filter((option) => option.value.toLowerCase().includes(search.toLowerCase())) : options // When search is empty, show all options
+  const filteredOptions = search ? options.filter((option) => option?.symbol.toLowerCase().includes(search.toLowerCase())) : options // When search is empty, show all options
 
   const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const option = filteredOptions[index]
@@ -56,7 +56,7 @@ const CustomSelect = <T extends { logoURI?: string; logo?: ExistingAsset; value:
             template ? (
               template(options.find((option) => option.value === value) as T)
             ) : (
-              <span className="text-xs">{options.find((option) => option.value === value)?.value}</span>
+              <span className="text-xs">{options.find((option) => option.value === value)?.symbol}</span>
             )
           ) : (
             <SelectValue placeholder={placeholder} />
@@ -65,7 +65,7 @@ const CustomSelect = <T extends { logoURI?: string; logo?: ExistingAsset; value:
         <SelectContent>
           <div className="relative h-56 min-h-56 w-full min-w-72 overflow-hidden pt-14">
             <div className="absolute left-0 top-0 w-full p-2">
-              <Input placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
+              <Input className="rounded-lg focus:outline-none" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
 
             <AutoSizer>

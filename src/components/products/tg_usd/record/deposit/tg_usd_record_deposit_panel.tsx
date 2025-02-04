@@ -9,34 +9,56 @@ import PanelRaw from "@/components/design_system/structure/panel_raw"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import FormButtons from "@/components/design_system/form/form_actions"
-import { formatUnits } from "viem"
 import { formatDollar } from "@/lib/number_formatter"
 import CustomSelect from "@/components/design_system/inputs/custom_select"
-import { ExistingAsset } from "@/types"
+import { AssetDataPriced, ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
+import { formatUnits } from "viem"
+import { useEffect, useMemo, useState } from "react"
 
 export default function TgUsdDepositPanel() {
   const {
-    isDepositAndBorrow,
-    setIsDepositAndBorrow,
-    isStaking,
     setDepositAsset,
-    depositAsset,
+    setIsDepositAndBorrow,
     setIsStaking,
-    depositWeiValue,
     setDepositWeiValue,
     actionApprove,
     actionDeposit,
+    setBorrowWeiValue,
+    handleDepositChange,
+    handleZapChange,
+    swapAssetPrice,
+    isStaking,
+    depositAsset,
+    depositWeiValue,
     formState,
     borrowWeiValue,
-    setBorrowWeiValue,
     tokens,
     isLoading,
-    ensoData,
-    swapAssetPrice,
+    isDepositAndBorrow,
+    zapValue,
   } = useTgUsdDepositContext()
   const { collateralInfo, marketData, tgUSDInfo } = useTgUsdRecordContext()
   const { canInteract } = useWalletConnexionContext()
+
+  const [innerValue, setInnerValue] = useState<number | undefined>(!zapValue ? undefined : Number(formatUnits(zapValue || BigInt(0), 18)))
+
+  const depositAssetInfo = useMemo(() => {
+    const assetInfo = tokens.find((el: ZapToken) => el.name === depositAsset) || undefined
+
+    if (!swapAssetPrice || !assetInfo) return undefined
+
+    const asset: AssetDataPriced = {
+      address: assetInfo?.address,
+      decimals: assetInfo?.decimals,
+      displayDecimals: 2,
+      symbol: assetInfo?.symbol,
+      name: assetInfo?.name,
+      price: swapAssetPrice,
+    }
+
+    return asset
+  }, [depositAsset, swapAssetPrice])
 
   const AssetSelect = () => {
     const tokenOptions = tokens.map((el: ZapToken) => {
@@ -57,11 +79,11 @@ export default function TgUsdDepositPanel() {
     )
   }
 
-  const AssetSelectTemplate = (option: { logoURI?: string; logo?: ExistingAsset; value: string; name?: string }) => {
+  const AssetSelectTemplate = (option: { logoURI?: string; logo?: ExistingAsset; value: string; name?: string; symbol: string }) => {
     return (
       <div className="flex items-center gap-2">
         {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={16} width={16} /> : <TokenImage token={option.logo} size={16} />}
-        <span className="text-sm font-bold">{option.name}</span>
+        <span className="text-sm font-bold">{option.symbol}</span>
       </div>
     )
   }
@@ -91,6 +113,15 @@ export default function TgUsdDepositPanel() {
     )
   }
 
+  useEffect(() => {
+    if (zapValue && zapValue !== undefined) {
+      const updatedValue = Number(Number(formatUnits(zapValue, 18)).toFixed(2))
+      setInnerValue(updatedValue)
+    } else {
+      setInnerValue(0)
+    }
+  }, [zapValue])
+
   return (
     <>
       <div className="flex flex-col gap-2">
@@ -116,14 +147,14 @@ export default function TgUsdDepositPanel() {
           depositSelect={<AssetSelect />}
           disabled={!canInteract}
           recieveAssetDisplay={<DepositAssetDisplay />}
-          depositAsset={collateralInfo}
-          recieveDollarValue={"0"}
+          depositAsset={depositAssetInfo || collateralInfo}
+          recieveDollarValue={(Number(swapAssetPrice) * Number(formatUnits(depositWeiValue || 0n, 18))).toFixed(2)}
           balance={marketData?.collateralBalance}
           recieveAmount={"0"}
           setMaxBalance={() => {
             setDepositWeiValue(marketData?.collateralBalance || 0n)
           }}
-          onValueChange={(value: bigint | undefined) => setDepositWeiValue(value)}
+          onValueChange={handleDepositChange}
         />
 
         {depositAsset && depositAsset !== collateralInfo?.name && (
@@ -135,8 +166,14 @@ export default function TgUsdDepositPanel() {
                 <div className="flex flex-col items-start justify-start">
                   <div className="text-sm text-gray-400">Zap</div>
                   <div className="flex items-center justify-center gap-2">
-                    <div className="text-xl font-bold">{ensoData ? Number(formatUnits(ensoData?.amountOut, 18)).toFixed(2) : "0"} </div>
-                    <div className="text-xs">{ensoData && swapAssetPrice ? `(~${formatDollar(Number(formatUnits(ensoData?.amountOut, 18)))})` : "$0"}</div>
+                    <input
+                      type="number"
+                      className="flex justify-start bg-transparent text-xl font-bold focus:outline-none"
+                      value={innerValue}
+                      onChange={(e) => handleZapChange(e?.target?.value)}
+                    />
+
+                    <div className="text-xs">{zapValue ? `(~${formatDollar(Number(formatUnits(zapValue!, 18)).toFixed(0))})` : "$0"}</div>
                   </div>
                   <div className="flex justify-between text-xs text-gray-400">
                     <div>Minimum receive</div>

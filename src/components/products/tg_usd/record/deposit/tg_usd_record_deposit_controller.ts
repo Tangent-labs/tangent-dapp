@@ -68,8 +68,11 @@ export async function doApproveMarketDeposit(walletClient: WalletClient, collate
   return await waitForTransaction(txHash)
 }
 
-export const getEnsoRouteForZap = async (
-  depositWeiValue: bigint,
+// ! DO NOT PUSH !
+// ENSO API KEY adbdf776-54d8-48b1-bbcc-b18a20a4078d
+
+export const getTokenOutQuote = async (
+  depositWeiValue: bigint | undefined,
   currentAddress: Address,
   collateralInfo: AssetDataPriced,
   tokens: Array<ZapToken>,
@@ -82,22 +85,55 @@ export const getEnsoRouteForZap = async (
       throw new Error("Token address not found")
     }
 
-    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${currentAddress}&receiver=${currentAddress}&spender=${currentAddress}&amountIn=${depositWeiValue}&slippage=300&tokenIn=${tokenAddress}&tokenOut=${collateralInfo?.address}`
+    const url = `https://api.enso.finance/api/v1/shortcuts/quote?chainId=1&fromAddress=${currentAddress}&amountIn=${depositWeiValue}&tokenIn=${tokenAddress}&tokenOut=${collateralInfo?.address}`
 
     const response = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer coucou",
+        Authorization: "Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d",
       },
     })
 
-    // If the response is not ok, throw an error
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`)
     }
 
-    // Return the response JSON
+    return await response.json()
+  } catch (error) {
+    console.error("Failed to fetch Enso data:", error)
+    return null
+  }
+}
+
+export const getTokenInQuote = async (
+  zapValue: bigint | undefined,
+  currentAddress: Address,
+  collateralInfo: AssetDataPriced,
+  tokens: Array<ZapToken>,
+  depositAsset: string
+) => {
+  try {
+    const tokenAddress = tokens.find((el: ZapToken) => el.name === depositAsset)?.address
+
+    if (!tokenAddress) {
+      throw new Error("Token address not found")
+    }
+
+    const url = `https://api.enso.finance/api/v1/shortcuts/quote?chainId=1&fromAddress=${currentAddress}&amountIn=${zapValue}&tokenOut=${tokenAddress}&tokenIn=${collateralInfo?.address}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`)
+    }
+
     return await response.json()
   } catch (error) {
     console.error("Failed to fetch Enso data:", error)

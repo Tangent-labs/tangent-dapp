@@ -251,3 +251,17 @@ export type ZapToken = AssetData & {
   logoURI: string
   price: number
 }
+
+export type BalanceAllowanceData = {
+  token: Address
+  balance: bigint
+  allowances: Array<{ spender: Address; allowance: bigint }>
+}
+
+export type ZapMarketData = {
+  amountIn: bigint
+  market: Address
+  minAmountOut: bigint
+  tokenIn: Address
+  _for: Address
+}

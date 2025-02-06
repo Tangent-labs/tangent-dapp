@@ -8,6 +8,8 @@ import { formatBigInt, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import DisplayReceivePanel from "./display_recieve_panel"
+import { IconCircleHelp } from "@/components/icons/icon_circle_help"
+import { IconThunder } from "@/components/icons/icon_thunder"
 
 type DepositRecieveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
@@ -26,6 +28,8 @@ type DepositRecieveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   setMaxBalance: () => void
   displayRecieve?: boolean
   displayBalance?: boolean
+  isZapping?: boolean
+  isLoading?: boolean
 }
 
 export function DepositRecieveInput({
@@ -35,7 +39,7 @@ export function DepositRecieveInput({
   depositAsset,
   recieveAmount,
   recieveDollarValue,
-  labelDeposit = "You deposit",
+  labelDeposit = "You Deposit",
   labelRecieve = "You Stake",
   setMaxBalance,
   onValueChange,
@@ -43,6 +47,8 @@ export function DepositRecieveInput({
   recieveAssetDisplay = <></>,
   displayRecieve = true,
   displayBalance = true,
+  isZapping = false,
+  isLoading = false,
   ...props
 }: DepositRecieveInputProps) {
   const [innerValue, setInnerValue] = useState<number | undefined>(
@@ -76,7 +82,7 @@ export function DepositRecieveInput({
   }
 
   const displayBalanceData = useMemo(() => {
-    const formattedBalance = formatBigInt(balance || "0", depositAsset?.decimals || 0, depositAsset?.displayDecimals || 0)
+    const formattedBalance = formatBigInt(balance || "0", depositAsset?.decimals || 18, depositAsset?.displayDecimals || 2)
     return `${formattedBalance} ${depositAsset?.symbol || ""}`
   }, [balance, depositAsset])
 
@@ -87,12 +93,22 @@ export function DepositRecieveInput({
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <PanelRaw className="flex flex-col gap-1 p-2">
-        <div className="text-sm text-gray-400">{labelDeposit}</div>
+      <PanelRaw className={`${isLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
+        <div className="flex w-full justify-between">
+          <div className="text-sm text-gray-400">{labelDeposit}</div>
+          {isZapping && (
+            <div className="flex items-center justify-center gap-1">
+              <div className="text-sm text-gray-400">Zap</div>
+              <IconThunder className="h-auto w-[8px] text-row-tonic" />
+              <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
+            </div>
+          )}
+        </div>
         <div className="mb-2 flex flex-col justify-between lg:flex-row">
           <div className="order-2 text-xl lg:order-1">
             <input
               {...props}
+              disabled={isLoading}
               type="number"
               value={innerValue}
               placeholder="Amount"

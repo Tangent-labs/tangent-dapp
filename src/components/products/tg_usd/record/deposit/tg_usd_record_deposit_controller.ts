@@ -1,20 +1,40 @@
-import { Abi, Address, WalletClient, zeroAddress } from "viem"
-import { MarketDetailData, TgUsdtMarketDepositParams, ZapToken } from "../../tg_usd_type"
+import { Abi, Address, EstimateContractGasParameters, Hex, WalletClient, WriteContractParameters, zeroAddress } from "viem"
+import { BalanceAllowanceData, MarketDetailData, TgUsdtMarketDepositParams, ZapMarketData, ZapToken } from "../../tg_usd_type"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
-import { executeAppove, executeContractCall, waitForTransaction } from "@/services/service_rpc"
+import Zapper from "@/abi/tgusd/Zapper.json"
+import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
+import { executeAppove, executeChainViewUnique, executeContractCall, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { getBorrowCommonFormState } from "../tg_usd_record_controller"
 import { AssetDataPriced } from "@/types"
 import { getSwapAssetPrice } from "@/services/service_price"
+import { TGUSD_CONTRACT } from "../../tg_usd_repository"
+
+export const getZapTokenBalanceAllowance = async (walletClient: WalletClient, address: Address | undefined) => {
+  address = address || zeroAddress
+  const [account] = await walletClient.requestAddresses()
+
+  return await executeChainViewUnique<BalanceAllowanceData[]>(GetBalancesAllowances.abi as Abi, GetBalancesAllowances.bytecode as Hex, [
+    account,
+    [{ token: address, spenders: [TGUSD_CONTRACT.ZAPPER] }],
+  ])
+}
 
 export function getDepositFormState(
   marketData?: MarketDetailData,
   depositWeiValue?: bigint,
   borrowWeiValue?: bigint,
   isDepositAndBorrow?: boolean,
-  isWellConnected?: boolean
+  isWellConnected?: boolean,
+  depositAssetInfo?: AssetDataPriced,
+  collateralInfo?: AssetDataPriced,
+  balanceAllowanceData?: BalanceAllowanceData
 ) {
+  const isZapMode = !!depositAssetInfo && !!balanceAllowanceData && depositAssetInfo?.address !== collateralInfo?.address
+
   const reasons: string[] = []
-  const isApproved = (depositWeiValue || 0n) <= (marketData?.collateralAllowance || 0n)
+  const isApproved =
+    (!depositAssetInfo && (depositWeiValue || 0n) <= (marketData?.collateralAllowance || 0n)) ||
+    (isZapMode && (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n))
 
   // check the wallet
   if (!isWellConnected) {
@@ -22,7 +42,9 @@ export function getDepositFormState(
   } else {
     if (depositWeiValue === 0n) {
       reasons.push("No amount.")
-    } else if ((depositWeiValue || 0n) > (marketData?.collateralBalance || 0n)) {
+    } else if (!isZapMode && (depositWeiValue || 0n) > (marketData?.collateralBalance || 0n)) {
+      reasons.push("Not enough balance.")
+    } else if (isZapMode && (depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
       reasons.push("Not enough balance.")
     }
 
@@ -85,7 +107,7 @@ export const getTokenOutQuote = async (
       throw new Error("Token address not found")
     }
 
-    const url = `https://api.enso.finance/api/v1/shortcuts/quote?chainId=1&fromAddress=${currentAddress}&amountIn=${depositWeiValue}&tokenIn=${tokenAddress}&tokenOut=${collateralInfo?.address}`
+    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${currentAddress}&amountIn=${depositWeiValue}&tokenIn=${tokenAddress}&tokenOut=${collateralInfo?.address}`
 
     const response = await fetch(url, {
       method: "GET",
@@ -120,7 +142,7 @@ export const getTokenInQuote = async (
       throw new Error("Token address not found")
     }
 
-    const url = `https://api.enso.finance/api/v1/shortcuts/quote?chainId=1&fromAddress=${currentAddress}&amountIn=${zapValue}&tokenOut=${tokenAddress}&tokenIn=${collateralInfo?.address}`
+    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${currentAddress}&amountIn=${zapValue}&tokenOut=${tokenAddress}&tokenIn=${collateralInfo?.address.trim()}`
 
     const response = await fetch(url, {
       method: "GET",
@@ -141,6 +163,70 @@ export const getTokenInQuote = async (
   }
 }
 
+export const getRouteTxData = async (
+  amountIn: bigint | undefined,
+  collateralInfo: AssetDataPriced,
+  depositAssetInfo: AssetDataPriced,
+  fromAddress: Address,
+  receiver: Address,
+  slippage?: number
+) => {
+  try {
+    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${fromAddress}&receiver=${receiver}&tokenIn=${depositAssetInfo?.address}&tokenOut=${collateralInfo?.address.trim()}&amountIn=${amountIn}&slippage=${slippage}&routingStrategy=router`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Failed to fetch Enso data:", error)
+    return null
+  }
+}
+
+export const doApproveZap = async (walletClient: WalletClient, assetAddress: Address, amount: bigint, marketAddress: Address) => {
+  const publicClient = await getPublicClient()
+
+  const txData = getApproveTx(assetAddress, marketAddress, amount)
+
+  const gas = await publicClient.estimateContractGas(txData as unknown as EstimateContractGasParameters)
+  txData.gas = gas
+
+  const hash = await walletClient.writeContract(txData as unknown as WriteContractParameters)
+  return await waitForTransaction(hash)
+}
+
+export const doZapDeposit = async (walletClient: WalletClient, routerCall: string, zapMarket: ZapMarketData) => {
+  const [account] = await walletClient.requestAddresses()
+
+  const publicClient = await getPublicClient()
+
+  const txData = {
+    abi: Zapper.abi,
+    functionName: "zapDeposit",
+    args: [zapMarket, routerCall, false] as unknown[],
+    address: TGUSD_CONTRACT.ZAPPER,
+    account,
+    gas: undefined as undefined | bigint,
+  }
+
+  const gas = await publicClient.estimateContractGas(txData as unknown as EstimateContractGasParameters)
+
+  txData.gas = gas
+
+  const hash = await walletClient.writeContract(txData as unknown as WriteContractParameters)
+  return hash
+}
+
 export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: string) => {
   try {
     const tokenAddress = tokens.find((el: ZapToken) => el.name === depositAsset) ? tokens.find((el: ZapToken) => el.name === depositAsset)?.address : undefined
@@ -152,4 +238,27 @@ export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: st
     console.error("Failed to compute swap asset price:", error)
     return null
   }
+}
+
+export const prepareZapTransaction = async (
+  depositWeiValue: bigint,
+  collateralInfo: AssetDataPriced,
+  depositAssetInfo: AssetDataPriced,
+  currentAddress: Address,
+  marketInfo: { marketAddress: Address },
+  slippage: number
+) => {
+  const routerCall = await getRouteTxData(depositWeiValue, collateralInfo, depositAssetInfo, TGUSD_CONTRACT.ZAPPER, marketInfo.marketAddress, slippage * 100)
+
+  if (!routerCall?.tx?.data) throw new Error("Failed to fetch routing data")
+
+  const zapMarketData = {
+    market: marketInfo.marketAddress,
+    _for: currentAddress,
+    tokenIn: depositAssetInfo?.address,
+    amountIn: depositWeiValue,
+    minAmountOut: 0n,
+  }
+
+  return { routerCallData: routerCall?.tx?.data, zapMarketData }
 }

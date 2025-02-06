@@ -44,6 +44,7 @@
     --tgt-list-row-hover: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), linear-gradient(90deg, #0075ff 0%, rgba(0, 0, 0, 0) 50%);
     --tgt-panel-title-gradient: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)),
       linear-gradient(90deg, #0075ff 0%, rgba(0, 0, 0, 0) 50%);
+    --tgt-button: linear-gradient(135deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.1) 100%);
   }
 
   /* Variables @web3-onboard   */
@@ -100,4 +101,10 @@
     background: var(--tgt-background);
     font-family: var(--font-sans), sans-serif;
   }
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }

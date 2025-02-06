@@ -11,10 +11,17 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import FormButtons from "@/components/design_system/form/form_actions"
 import { formatDollar } from "@/lib/number_formatter"
 import CustomSelect from "@/components/design_system/inputs/custom_select"
-import { AssetDataPriced, ExistingAsset } from "@/types"
+import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
 import { formatUnits } from "viem"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
+import { IconThunder } from "@/components/icons/icon_thunder"
+import { IconCircleHelp } from "@/components/icons/icon_circle_help"
+import { IconWheel } from "@/components/icons/icon_wheel"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import Panel from "@/components/design_system/structure/panel"
+import ButtonTab from "@/components/design_system/inputs/button_tab"
+import { IconChevron } from "@/components/icons/icon_chevron"
 
 export default function TgUsdDepositPanel() {
   const {
@@ -26,6 +33,9 @@ export default function TgUsdDepositPanel() {
     actionDeposit,
     setBorrowWeiValue,
     handleDepositChange,
+    getRouteAndDeposit,
+    setSlippage,
+    actionApproveZap,
     handleZapChange,
     swapAssetPrice,
     isStaking,
@@ -34,31 +44,21 @@ export default function TgUsdDepositPanel() {
     formState,
     borrowWeiValue,
     tokens,
-    isLoading,
+    isZapLoading,
+    isDepositLoading,
     isDepositAndBorrow,
     zapValue,
+    depositAssetInfo,
+    balanceAllowanceData,
+    slippage,
+    gas,
   } = useTgUsdDepositContext()
+
   const { collateralInfo, marketData, tgUSDInfo } = useTgUsdRecordContext()
+
   const { canInteract } = useWalletConnexionContext()
 
   const [innerValue, setInnerValue] = useState<number | undefined>(!zapValue ? undefined : Number(formatUnits(zapValue || BigInt(0), 18)))
-
-  const depositAssetInfo = useMemo(() => {
-    const assetInfo = tokens.find((el: ZapToken) => el.name === depositAsset) || undefined
-
-    if (!swapAssetPrice || !assetInfo) return undefined
-
-    const asset: AssetDataPriced = {
-      address: assetInfo?.address,
-      decimals: assetInfo?.decimals,
-      displayDecimals: 2,
-      symbol: assetInfo?.symbol,
-      name: assetInfo?.name,
-      price: swapAssetPrice,
-    }
-
-    return asset
-  }, [depositAsset, swapAssetPrice])
 
   const AssetSelect = () => {
     const tokenOptions = tokens.map((el: ZapToken) => {
@@ -123,99 +123,182 @@ export default function TgUsdDepositPanel() {
   }, [zapValue])
 
   return (
-    <>
-      <div className="flex flex-col gap-2">
-        <div className="flex justify-end gap-2">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-400">Save gas</span>
-            <Switch checked={isStaking} onCheckedChange={(v) => setIsStaking(v)} />
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-400">Deposit and borrow</span>
-            <Switch checked={isDepositAndBorrow} onCheckedChange={(v) => setIsDepositAndBorrow(v)} />
-          </div>
+    <div className="flex flex-col gap-2">
+      <div className="flex justify-end gap-2">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-400">Save gas</span>
+          <Switch checked={isStaking} onCheckedChange={(v) => setIsStaking(v)} />
         </div>
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-2xl">Deposit {collateralInfo?.symbol}</span>
-          </div>
-        </div>
-
-        <DepositRecieveInput
-          displayRecieve={false}
-          depositAmount={depositWeiValue}
-          depositSelect={<AssetSelect />}
-          disabled={!canInteract}
-          recieveAssetDisplay={<DepositAssetDisplay />}
-          depositAsset={depositAssetInfo || collateralInfo}
-          recieveDollarValue={(Number(swapAssetPrice) * Number(formatUnits(depositWeiValue || 0n, 18))).toFixed(2)}
-          balance={marketData?.collateralBalance}
-          recieveAmount={"0"}
-          setMaxBalance={() => {
-            setDepositWeiValue(marketData?.collateralBalance || 0n)
-          }}
-          onValueChange={handleDepositChange}
-        />
-
-        {depositAsset && depositAsset !== collateralInfo?.name && (
-          <PanelRaw className="flex flex-col gap-1 !bg-opacity-20 p-2">
-            <div className="flex justify-between">
-              {isLoading ? (
-                <div>Loading...</div>
-              ) : (
-                <div className="flex flex-col items-start justify-start">
-                  <div className="text-sm text-gray-400">Zap</div>
-                  <div className="flex items-center justify-center gap-2">
-                    <input
-                      type="number"
-                      className="flex justify-start bg-transparent text-xl font-bold focus:outline-none"
-                      value={innerValue}
-                      onChange={(e) => handleZapChange(e?.target?.value)}
-                    />
-
-                    <div className="text-xs">{zapValue ? `(~${formatDollar(Number(formatUnits(zapValue!, 18)).toFixed(0))})` : "$0"}</div>
-                  </div>
-                  <div className="flex justify-between text-xs text-gray-400">
-                    <div>Minimum receive</div>
-                  </div>
-                </div>
-              )}
-              <div className="mb-2 mt-auto flex items-center justify-center gap-2 rounded-xl border border-white/30 px-2">
-                <TokenImage token={collateralInfo?.logo} size={32} />
-                <div className="font-bold">{collateralInfo?.symbol}</div>
-              </div>
-            </div>
-          </PanelRaw>
-        )}
-
-        {isDepositAndBorrow && (
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-2xl">Borrow tgUSD</span>
-            </div>
-
-            <div>
-              <DepositRecieveInput
-                displayRecieve={false}
-                depositAmount={borrowWeiValue}
-                labelDeposit="You borrow"
-                depositSelect={<BorrowAssetDisplay />}
-                disabled={!canInteract}
-                depositAsset={tgUSDInfo}
-                balance={0n}
-                setMaxBalance={() => {}}
-                displayBalance={false}
-                onValueChange={(value: bigint | undefined) => {
-                  setBorrowWeiValue(value)
-                }}
-              />
-            </div>
-          </div>
-        )}
-        <div>
-          <FormButtons actions={{ handleApprove: actionApprove, handleProcess: actionDeposit }} formState={formState} labelProcess="Deposit" />
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-400">Deposit and borrow</span>
+          <Switch checked={isDepositAndBorrow} onCheckedChange={(v) => setIsDepositAndBorrow(v)} />
         </div>
       </div>
-    </>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <span className="text-2xl">Deposit {collateralInfo?.symbol}</span>
+        </div>
+      </div>
+
+      <DepositRecieveInput
+        displayRecieve={false}
+        depositAmount={depositWeiValue}
+        depositSelect={<AssetSelect />}
+        disabled={!canInteract}
+        isLoading={isDepositLoading}
+        recieveAssetDisplay={<DepositAssetDisplay />}
+        depositAsset={depositAssetInfo || collateralInfo}
+        recieveDollarValue={(Number(swapAssetPrice) * Number(formatUnits(depositWeiValue || 0n, 18))).toFixed(2)}
+        balance={!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance}
+        recieveAmount={"0"}
+        isZapping={!!depositAsset && depositAsset !== collateralInfo?.name}
+        setMaxBalance={() => {
+          setDepositWeiValue(marketData?.collateralBalance || 0n)
+        }}
+        onValueChange={handleDepositChange}
+      />
+
+      {depositAsset && depositAsset !== collateralInfo?.name && (
+        <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
+          <div className="flex justify-between">
+            <div className="flex flex-col items-start justify-start">
+              <div className="flex items-center justify-center gap-1">
+                <div className="text-sm text-gray-400">Zap</div>
+                <IconThunder className="h-auto w-[8px] text-row-tonic" />
+                <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
+              </div>
+
+              <div className="flex items-center justify-center gap-2">
+                <input
+                  type="number"
+                  disabled={isZapLoading}
+                  className="flex justify-start bg-transparent text-xl font-bold focus:outline-none"
+                  value={innerValue}
+                  onChange={(e) => handleZapChange(e?.target?.value)}
+                />
+
+                <div className="text-xs">{zapValue ? `(~${formatDollar(Number(formatUnits(zapValue!, 18)).toFixed(0))})` : "$0"}</div>
+              </div>
+              <div className="flex justify-between text-xs text-gray-400">
+                <div>Minimum receive</div>
+              </div>
+            </div>
+
+            <div className="mb-2 mt-auto flex items-center justify-center gap-2 rounded-xl border border-white/30 px-2">
+              <TokenImage token={collateralInfo?.logo} size={32} />
+              <div className="font-bold">{collateralInfo?.symbol}</div>
+            </div>
+          </div>
+        </PanelRaw>
+      )}
+
+      {isDepositAndBorrow && (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="text-2xl">Borrow tgUSD</span>
+          </div>
+
+          <div>
+            <DepositRecieveInput
+              displayRecieve={false}
+              depositAmount={borrowWeiValue}
+              labelDeposit="You borrow"
+              depositSelect={<BorrowAssetDisplay />}
+              disabled={!canInteract}
+              depositAsset={tgUSDInfo}
+              balance={0n}
+              setMaxBalance={() => {}}
+              displayBalance={false}
+              onValueChange={(value: bigint | undefined) => {
+                setBorrowWeiValue(value)
+              }}
+            />
+          </div>
+        </div>
+      )}
+      <div>
+        <FormButtons
+          actions={{
+            handleApprove: depositAsset && depositAsset !== collateralInfo?.name ? actionApproveZap : actionApprove,
+            handleProcess: depositAsset && depositAsset !== collateralInfo?.name ? getRouteAndDeposit : actionDeposit,
+          }}
+          formState={formState}
+          labelProcess="Deposit"
+        />
+      </div>
+
+      <div className="flex w-full items-end justify-between gap-2">
+        <Popover>
+          <PopoverTrigger asChild>
+            <button type="button" className="w-full" title="Slippage">
+              <div className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-xl border border-white/30 px-2 text-xs text-primary hover:bg-white/20">
+                Details
+                <IconChevron className="h-auto w-[12px] text-row-tonic" />
+              </div>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="z-20 !m-0 w-96 !border-none bg-black !p-0">
+            <Panel className="!border-none">
+              <div className="flex w-full flex-col items-center justify-center text-primary">
+                <div className="flex w-full items-center justify-between">
+                  <div className="flex justify-start">Fee (0.25%)</div>
+                  <div className="flex justify-end">$0.04</div>
+                </div>
+
+                {gas && gas > 0 ? (
+                  <div className="flex w-full items-center justify-between">
+                    <div className="flex justify-start">Network cost</div>
+                    <div className="flex justify-end">${gas}</div>
+                  </div>
+                ) : null}
+
+                <div className="flex w-full items-center justify-between">
+                  <div className="flex justify-start">Max slippage</div>
+                  <div className="flex justify-end">2%</div>
+                </div>
+                <div className="flex w-full items-center justify-between">
+                  <div className="flex justify-start">Sociabilization fee</div>
+                  <div className="flex justify-end">$0.04</div>
+                </div>
+
+                <div className="flex w-full items-center justify-between">
+                  <div className="flex justify-start">Zapping fee</div>
+                  <div className="flex justify-end">$0.04</div>
+                </div>
+              </div>
+            </Panel>
+          </PopoverContent>
+        </Popover>
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <button type="button" title="Slippage">
+              <div className="h-[30px] cursor-pointer rounded-xl border border-white/30 bg-button-gradient p-2 hover:bg-white/20">
+                <IconWheel className="h-auto w-[12px] text-row-tonic" />
+              </div>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="z-20 !m-0 w-48 !border-none bg-black !p-0">
+            <Panel className="!border-none">
+              <div className="flex w-full flex-col items-center justify-between gap-2">
+                <div className="flex w-full items-center justify-start">Slippage</div>
+                <input
+                  onChange={(e) => setSlippage(Number(e?.target?.value))}
+                  value={slippage || 0}
+                  placeholder="0.5"
+                  type="number"
+                  className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
+                />
+                <div className="mt-2 flex w-full items-center justify-between gap-2">
+                  <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />
+                  <ButtonTab onClick={() => setSlippage(1)} label={"1.0%"} active={slippage === 1} className="rounded-full !px-2 !py-1" />
+                  <ButtonTab onClick={() => setSlippage(2)} label={"2.0%"} active={slippage === 2} className="rounded-full !px-2 !py-1" />
+                </div>
+              </div>
+            </Panel>
+          </PopoverContent>
+        </Popover>
+      </div>
+    </div>
   )
 }

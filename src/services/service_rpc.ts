@@ -157,3 +157,27 @@ export const executeChainView = async <T>(abi: Abi, byteCode: Hex, args?: unknow
     return v?.args as T
   }
 }
+
+export const gasCostToUSD = async (gasUsed: bigint): Promise<number> => {
+  try {
+    const gasPriceResponse = await fetch("https://api.etherscan.io/api?module=gastracker&action=gasoracle")
+    const gasPriceData = await gasPriceResponse.json()
+    const gasPriceInGwei = Number(gasPriceData.result.ProposeGasPrice)
+
+    const ethPriceResponse = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd")
+    const ethPriceData = await ethPriceResponse.json()
+
+    const ethPriceInUSD = ethPriceData.ethereum.usd
+
+    const gasPriceInEth = gasPriceInGwei * 1e-9
+
+    const costInEth = Number(gasUsed) * gasPriceInEth
+
+    const costInUSD = costInEth * ethPriceInUSD
+
+    return parseFloat(costInUSD.toFixed(2))
+  } catch (error) {
+    console.error("Error fetching gas or ETH price:", error)
+    return 0
+  }
+}

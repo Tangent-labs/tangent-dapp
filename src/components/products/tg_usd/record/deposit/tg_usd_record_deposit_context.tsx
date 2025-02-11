@@ -46,13 +46,10 @@ type TgUsdDepositContextValues = {
   setDepositAsset: (arg: string) => void
   depositAsset: string | undefined
   tokens: ZapToken[]
-
   isDepositLoading: boolean
   setIsDepositLoading: (arg: boolean) => void
-
   isZapLoading: boolean
   setIsZapLoading: (arg: boolean) => void
-
   swapAssetPrice: number | null
   getRouteAndDeposit: () => void
   actionApproveZap: () => void
@@ -89,6 +86,17 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
   const [gas, setGas] = useState<number | null>(null)
 
   const depositAssetInfo = useMemo(() => {
+    if (depositAsset === "ETH") {
+      return {
+        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        decimals: 18,
+        displayDecimals: 2,
+        symbol: "ETH",
+        name: "ETH",
+        price: swapAssetPrice,
+      } as AssetDataPriced
+    }
+
     const assetInfo = tokens.find((el: ZapToken) => el.name === depositAsset) || undefined
 
     if (!swapAssetPrice || !assetInfo) return null
@@ -124,11 +132,11 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
     setDepositWeiValue(value)
 
     const fetchZapValue = async () => {
-      if (!value || !currentAddress || !depositAsset) return
+      if (!value || !currentAddress || !depositAssetInfo) return
 
       setIsZapLoading(true)
       try {
-        const data = await getTokenOutQuote(value, currentAddress, collateralInfo, tokens, depositAsset)
+        const data = await getTokenOutQuote(value, currentAddress, collateralInfo, depositAssetInfo)
 
         if (data) {
           setZapValue(data.amountOut)
@@ -152,11 +160,11 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
     }
 
     const debounceTimeout = setTimeout(async () => {
-      if (!parseEther(value) || !currentAddress || !depositAsset) return
+      if (!parseEther(value) || !currentAddress || !depositAssetInfo) return
       setIsDepositLoading(true)
 
       try {
-        const data = await getTokenInQuote(parseEther(value), currentAddress, collateralInfo, tokens, depositAsset)
+        const data = await getTokenInQuote(parseEther(value), currentAddress, collateralInfo, depositAssetInfo)
         if (data) {
           setDepositWeiValue(data.amountOut)
         }
@@ -171,12 +179,12 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
   }
 
   useEffect(() => {
-    if (!depositAsset) return
+    if (!depositAssetInfo) return
 
     const fetchSwapAssetData = async () => {
       setIsZapLoading(true)
       try {
-        const data = await computeSwapAssetPrice(tokens, depositAsset)
+        const data = await computeSwapAssetPrice(depositAssetInfo)
         setSwapAssetPrice(data)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
@@ -269,6 +277,11 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
         address: TGUSD_CONTRACT.ZAPPER,
         account,
         gas: undefined as undefined | bigint,
+        value: 0n,
+      }
+
+      if (zapMarketData?.tokenIn === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
+        txData.value = zapMarketData?.amountIn
       }
 
       const publicClient = await getPublicClient()
@@ -295,6 +308,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
       )
 
       const walletClient = getWalletClient()
+
       await doZapDeposit(walletClient!, routerCallData, zapMarketData)
 
       setDepositWeiValue(0n)

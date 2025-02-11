@@ -8,8 +8,8 @@ export function IconThunder({ className }: IconProps) {
       <path d="M5.5 4.00001L0.5 11L1.5 6.00001L0 6L1 0H5L3 4.00001H5.5Z" fill="url(#paint0_linear_893_1076)" />
       <defs>
         <linearGradient id="paint0_linear_893_1076" x1="0.000100998" y1="0.000201997" x2="8.79978" y2="4.40004" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#FFB800" />
-          <stop offset="1" stop-color="#FFF500" />
+          <stop stopColor="#FFB800" />
+          <stop offset="1" stopColor="#FFF500" />
         </linearGradient>
       </defs>
     </svg>

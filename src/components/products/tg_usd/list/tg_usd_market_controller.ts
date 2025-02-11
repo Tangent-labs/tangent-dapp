@@ -2,18 +2,18 @@ import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
 import { ChainViewMarketList, ChainViewMarketRow, TgUsdGlobalData, TgUsdMarketData, TgUsdMarketDataUser } from "../tg_usd_type"
 import { formatBigInt, formatDollar, formatPercent } from "@/lib/number_formatter"
 import { TGUSD_CONTRACT, tgUsdMarkets } from "../tg_usd_repository"
-import { Abi, Address, Hex, parseUnits, zeroAddress } from "viem"
-
+import { Abi, Address, Hex, parseUnits } from "viem"
 import MarketListUI from "@/abi/tgusd/MarketListUI.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
 
 export const getTgUsdMarketsData = async (address: Address | undefined) => {
   const markets = tgUsdMarkets.map((market) => market.marketAddress)
-  address = address || zeroAddress
+
   return await executeChainViewUnique<ChainViewMarketList>(MarketListUI.abi as Abi, MarketListUI.bytecode as Hex, [
     address,
     TGUSD_CONTRACT.TG_USD_ORACLE,
     TGUSD_CONTRACT.TG_USD,
+    TGUSD_CONTRACT.SG_USD,
     markets,
   ])
 }

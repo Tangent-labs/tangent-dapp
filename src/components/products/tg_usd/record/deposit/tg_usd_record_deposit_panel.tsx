@@ -65,7 +65,18 @@ export default function TgUsdDepositPanel() {
       return { ...el, value: el.name as string }
     })
 
-    const assets = [{ ...collateralInfo, value: collateralInfo.name as string }].concat(tokenOptions)
+    const assets = [
+      { ...collateralInfo, value: collateralInfo.name as string },
+      {
+        symbol: "ETH",
+        name: "Ethereum",
+        value: "ETH",
+        decimals: 18,
+        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        logo: "ETH" as ExistingAsset,
+        displayDecimals: 2,
+      },
+    ].concat(tokenOptions)
 
     return (
       <CustomSelect

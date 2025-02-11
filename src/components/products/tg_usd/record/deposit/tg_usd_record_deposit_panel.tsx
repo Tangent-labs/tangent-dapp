@@ -17,11 +17,11 @@ import { formatUnits } from "viem"
 import { useEffect, useState } from "react"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
-import { IconWheel } from "@/components/icons/icon_wheel"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import Panel from "@/components/design_system/structure/panel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import { IconChevron } from "@/components/icons/icon_chevron"
+import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 
 export default function TgUsdDepositPanel() {
   const {
@@ -74,7 +74,7 @@ export default function TgUsdDepositPanel() {
         decimals: 18,
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         logo: "ETH" as ExistingAsset,
-        displayDecimals: 2,
+        displayDecimals: 5,
       },
     ].concat(tokenOptions)
 
@@ -285,7 +285,7 @@ export default function TgUsdDepositPanel() {
           <PopoverTrigger asChild>
             <button type="button" title="Slippage">
               <div className="h-[30px] cursor-pointer rounded-xl border border-white/30 bg-button-gradient p-2 hover:bg-white/20">
-                <IconWheel className="h-auto w-[12px] text-row-tonic" />
+                <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
               </div>
             </button>
           </PopoverTrigger>

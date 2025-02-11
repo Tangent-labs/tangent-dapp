@@ -90,7 +90,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
       return {
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         decimals: 18,
-        displayDecimals: 2,
+        displayDecimals: 5,
         symbol: "ETH",
         name: "ETH",
         price: swapAssetPrice,
@@ -165,9 +165,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
 
       try {
         const data = await getTokenInQuote(parseEther(value), currentAddress, collateralInfo, depositAssetInfo)
-        if (data) {
-          setDepositWeiValue(data.amountOut)
-        }
+        setDepositWeiValue(data.amountOut)
       } catch (error) {
         console.error("Error fetching depositWeiValue:", error)
       } finally {
@@ -178,13 +176,15 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
     return () => clearTimeout(debounceTimeout)
   }
 
+  //
+
   useEffect(() => {
-    if (!depositAssetInfo) return
+    if (!depositAsset) return
 
     const fetchSwapAssetData = async () => {
       setIsZapLoading(true)
       try {
-        const data = await computeSwapAssetPrice(depositAssetInfo)
+        const data = await computeSwapAssetPrice(tokens, depositAsset)
         setSwapAssetPrice(data)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
@@ -195,6 +195,8 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
 
     fetchSwapAssetData()
   }, [depositAsset])
+
+  //
 
   useEffect(() => {
     setCurrentAmounts({
@@ -309,7 +311,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
 
       const walletClient = getWalletClient()
 
-      await doZapDeposit(walletClient!, routerCallData, zapMarketData)
+      await doZapDeposit(walletClient!, routerCallData, zapMarketData, borrowWeiValue)
 
       setDepositWeiValue(0n)
       setZapValue(null)

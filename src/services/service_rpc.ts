@@ -1,5 +1,6 @@
 import { dappConfig } from "@/dapp_config"
 import { TxContractCallData } from "@/types"
+import { getSwapAssetPrice } from "./service_price"
 import {
   Abi,
   Address,
@@ -164,16 +165,13 @@ export const gasCostToUSD = async (gasUsed: bigint): Promise<number> => {
     const gasPriceData = await gasPriceResponse.json()
     const gasPriceInGwei = Number(gasPriceData.result.ProposeGasPrice)
 
-    const ethPriceResponse = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd")
-    const ethPriceData = await ethPriceResponse.json()
-
-    const ethPriceInUSD = ethPriceData.ethereum.usd
+    const ethPriceData = await getSwapAssetPrice("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE")
 
     const gasPriceInEth = gasPriceInGwei * 1e-9
 
     const costInEth = Number(gasUsed) * gasPriceInEth
 
-    const costInUSD = costInEth * ethPriceInUSD
+    const costInUSD = costInEth * ethPriceData!
 
     return parseFloat(costInUSD.toFixed(2))
   } catch (error) {

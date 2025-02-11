@@ -6,7 +6,7 @@ import { getBorrowCommonFormState } from "../tg_usd_record_controller"
 import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
 import { Abi, Address, EstimateContractGasParameters, Hex, WalletClient, WriteContractParameters, zeroAddress } from "viem"
-import { BalanceAllowanceData, MarketDetailData, TgUsdtMarketDepositParams, ZapMarketData } from "../../tg_usd_type"
+import { BalanceAllowanceData, MarketDetailData, TgUsdtMarketDepositParams, ZapMarketData, ZapToken } from "../../tg_usd_type"
 import { executeAppove, executeChainViewUnique, executeContractCall, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 
 export const getZapTokenBalanceAllowance = async (walletClient: WalletClient, address: Address | undefined) => {
@@ -103,7 +103,7 @@ export const getTokenOutQuote = async (
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d",
+        Authorization: `Bearer ${process.env.NEXT_ENSO_API_KEY}`,
       },
     })
 
@@ -131,7 +131,7 @@ export const getTokenInQuote = async (
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d",
+        Authorization: `Bearer ${process.env.NEXT_ENSO_API_KEY}`,
       },
     })
 
@@ -161,7 +161,7 @@ export const getRouteTxData = async (
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d",
+        Authorization: `Bearer ${process.env.NEXT_ENSO_API_KEY}`,
       },
     })
 
@@ -188,37 +188,67 @@ export const doApproveZap = async (walletClient: WalletClient, assetAddress: Add
   return await waitForTransaction(hash)
 }
 
-export const doZapDeposit = async (walletClient: WalletClient, routerCall: string, zapMarket: ZapMarketData) => {
-  const [account] = await walletClient.requestAddresses()
+export const doZapDeposit = async (walletClient: WalletClient, routerCall: string, zapMarket: ZapMarketData, borrowWeiValue?: bigint) => {
+  if (borrowWeiValue) {
+    const [account] = await walletClient.requestAddresses()
 
-  const publicClient = await getPublicClient()
+    const publicClient = await getPublicClient()
 
-  const txData = {
-    abi: Zapper.abi,
-    functionName: "zapDeposit",
-    args: [zapMarket, routerCall, false] as unknown[],
-    address: TGUSD_CONTRACT.ZAPPER,
-    account,
-    gas: undefined as undefined | bigint,
-    value: 0n,
+    const txData = {
+      abi: Zapper.abi,
+      functionName: "zapDepositAndBorrow",
+      args: [zapMarket, routerCall, borrowWeiValue, false] as unknown[],
+      address: TGUSD_CONTRACT.ZAPPER,
+      account,
+      gas: undefined as undefined | bigint,
+      value: 0n,
+    }
+
+    if (zapMarket?.tokenIn === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
+      txData.value = zapMarket?.amountIn
+    }
+
+    const gas = await publicClient.estimateContractGas(txData as unknown as EstimateContractGasParameters)
+
+    txData.gas = gas
+
+    const hash = await walletClient.writeContract(txData as unknown as WriteContractParameters)
+    return hash
+  } else {
+    const [account] = await walletClient.requestAddresses()
+
+    const publicClient = await getPublicClient()
+
+    const txData = {
+      abi: Zapper.abi,
+      functionName: "zapDeposit",
+      args: [zapMarket, routerCall, false] as unknown[],
+      address: TGUSD_CONTRACT.ZAPPER,
+      account,
+      gas: undefined as undefined | bigint,
+      value: 0n,
+    }
+
+    if (zapMarket?.tokenIn === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
+      txData.value = zapMarket?.amountIn
+    }
+
+    const gas = await publicClient.estimateContractGas(txData as unknown as EstimateContractGasParameters)
+
+    txData.gas = gas
+
+    const hash = await walletClient.writeContract(txData as unknown as WriteContractParameters)
+    return hash
   }
-
-  if (zapMarket?.tokenIn === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
-    txData.value = zapMarket?.amountIn
-  }
-
-  const gas = await publicClient.estimateContractGas(txData as unknown as EstimateContractGasParameters)
-
-  txData.gas = gas
-
-  const hash = await walletClient.writeContract(txData as unknown as WriteContractParameters)
-  return hash
 }
 
-export const computeSwapAssetPrice = async (depositAssetInfo: AssetDataPriced) => {
+export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: string) => {
   try {
-    const data = await getSwapAssetPrice(depositAssetInfo?.address)
-    return data
+    const tokenAddress = tokens.find((el: ZapToken) => el.name === depositAsset) ? tokens.find((el: ZapToken) => el.name === depositAsset)?.address : undefined
+    if (tokenAddress) {
+      const data = await getSwapAssetPrice(tokenAddress)
+      return data
+    } else return null
   } catch (error) {
     console.error("Failed to compute swap asset price:", error)
     return null

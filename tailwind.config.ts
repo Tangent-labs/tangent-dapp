@@ -19,6 +19,7 @@ const config: Config = {
       colors: {
         "row-tonic": "var(--tgt-row-tonic)",
         tonic: "var(--tgt-tonic)",
+        subtitle: "var(--tgt-subtitle)",
         danger: "var(--tgt-danger)",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

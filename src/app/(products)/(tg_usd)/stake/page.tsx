@@ -1,13 +1,10 @@
-import React from "react"
+import TgUsdClaimContent from "@/components/products/tg_usd/stake/tg_usd_stake_content"
+import { TgUsdStakeProvider } from "@/components/products/tg_usd/stake/tg_usd_stake_context"
 
-type TgUsdStakePageProps = React.ButtonHTMLAttributes<HTMLDivElement>
-
-export default async function TgUsdStakePage({ ...props }: TgUsdStakePageProps) {
-  // Fetch data here if needed
+export default async function TgUsdStakePage() {
   return (
-    <div {...props}>
-      <h1>TgUsdStakePage</h1>
-      <p>This is a server-side component.</p>
-    </div>
+    <TgUsdStakeProvider>
+      <TgUsdClaimContent />
+    </TgUsdStakeProvider>
   )
 }

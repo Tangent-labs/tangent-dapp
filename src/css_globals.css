@@ -40,6 +40,7 @@
     --tgt-bg-button-active: linear-gradient(135deg, #0075ff 0%, #00c2ff 100%);
     --tgt-bg-progress: linear-gradient(90deg, #000000 0%, #0075ff 100%);
     --tgt-tonic: #d9fb0b;
+    --tgt-subtitle: #9b9b9b;
     --tgt-danger: #ff0300;
     --tgt-list-row-hover: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), linear-gradient(90deg, #0075ff 0%, rgba(0, 0, 0, 0) 50%);
     --tgt-panel-title-gradient: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)),
@@ -100,4 +101,21 @@
     background: var(--tgt-background);
     font-family: var(--font-sans), sans-serif;
   }
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.recharts-responsive-container {
+  font-size: 13px;
+  max-height: 270px;
+  width: 100%;
+}
+
+.recharts-legend-wrapper {
+  display: none;
+  height: 0px;
 }

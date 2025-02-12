@@ -21,5 +21,6 @@ export const TGUSD_CONTRACT = {
   ZAPPER: addresses.utilities.zapper as Address,
   CONTROL_TOWER: addresses.utilities.controlTower as Address,
   TG_USD: addresses.tokens.tgUSD as Address,
+  SG_USD: addresses.tokens.sgUSD as Address,
   TG_USD_ORACLE: addresses.oracles.tgUSD as Address,
 }

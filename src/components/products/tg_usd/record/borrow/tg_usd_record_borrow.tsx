@@ -3,9 +3,7 @@
 import React from "react"
 import TgUsdRecordLayout from "../tg_usd_record_layout"
 import { AssetDataPriced, TgUsdMarketAsset } from "@/types"
-
 import { TgUsdMarket } from "../../tg_usd_type"
-
 import { TgUsdRecordProvider } from "../tg_usd_record_context"
 import { TgUsdBorrowProvider } from "./tg_usd_record_borrow_context"
 import TgUsdBorrowPanel from "./tg_usd_record_borrow_panel"
@@ -20,7 +18,7 @@ type TgUsdRecordBorrowProps = {
 export default function TgUsdRecordBorrowPage({ collateral, collateralInfo, marketInfo, tgUSDInfo }: TgUsdRecordBorrowProps) {
   return (
     <TgUsdRecordProvider collateral={collateral} collateralInfo={collateralInfo} marketInfo={marketInfo} tgUSDInfo={tgUSDInfo}>
-      <TgUsdRecordLayout>
+      <TgUsdRecordLayout currentFeature="borrow">
         <TgUsdBorrowProvider>
           <TgUsdBorrowPanel />
         </TgUsdBorrowProvider>

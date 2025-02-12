@@ -13,7 +13,7 @@ export default async function Layout({ params, children }: { params: Promise<{ i
   return (
     <>
       <TgUsdRecordProvider collateral={collateral} collateralInfo={collateralInfo} marketInfo={marketInfo} tgUSDInfo={tgUSDInfo}>
-        <TgUsdRecordLayout>
+        <TgUsdRecordLayout currentFeature="">
           <TgUsdLiquidateProvider>{children}</TgUsdLiquidateProvider>
         </TgUsdRecordLayout>
       </TgUsdRecordProvider>

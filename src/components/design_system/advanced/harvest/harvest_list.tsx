@@ -1,9 +1,9 @@
 "use client"
 
-import { HarvesterInfoDisplay } from "@/components/products/booster/booster_type"
 import React from "react"
 import HarvestRow from "./harvest_row"
 import { Address } from "viem"
+import { HarvesterInfoDisplay } from "@/components/products/tg_usd/tg_usd_type"
 
 type HarverListProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
   rows: HarvesterInfoDisplay[]

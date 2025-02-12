@@ -6,12 +6,16 @@ import Panel from "@/components/design_system/structure/panel"
 import RecordPageHeader from "@/components/design_system/structure/record_page_header"
 import TokenImage from "@/components/design_system/structure/token_image"
 import React from "react"
+import { useRouter } from "next/navigation"
 import { useTgUsdRecordContext } from "./tg_usd_record_context"
 
-type TgUsdRecordPageHeaderProps = React.ButtonHTMLAttributes<HTMLDivElement> & { onBackClick: () => void }
+type TgUsdRecordPageHeaderProps = React.ButtonHTMLAttributes<HTMLDivElement>
 
-export default function TgUsdRecordPageHeader({ onBackClick, ...props }: TgUsdRecordPageHeaderProps) {
+export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeaderProps) {
   const { collateralInfo, marketDisplayData, marketData, apr } = useTgUsdRecordContext()
+
+  const router = useRouter()
+
   return (
     <>
       <div className="mt-10 flex justify-between" {...props}>
@@ -44,7 +48,7 @@ export default function TgUsdRecordPageHeader({ onBackClick, ...props }: TgUsdRe
           <IndicatorCards indicators={[{ title: "TVL", value: marketDisplayData.tvl }]} />
           <IndicatorCards indicators={[{ title: "Borrowed", value: marketDisplayData.borrowed }]} />
           <IndicatorCards indicators={[{ title: "Cap", value: marketDisplayData.cap }]} />
-          <ButtonPanel onClick={onBackClick}>Back</ButtonPanel>
+          <ButtonPanel onClick={() => router.push("/")}>Back</ButtonPanel>
         </div>
       </div>
       <div>

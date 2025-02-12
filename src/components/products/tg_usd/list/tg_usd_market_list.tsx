@@ -5,7 +5,6 @@ import { useTgUsdMaketListContext } from "./tg_usd_market_list_context"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { tgUsdListHeaders } from "./tg_usd_market_controller"
 import { ExistingAsset, ListState } from "@/types"
-import { useNavigationContext } from "../../product_nav/navigation_context"
 import ListHeader from "@/components/design_system/list/list_header"
 import ListRow from "@/components/design_system/list/list_row"
 import ListAsset from "@/components/design_system/list/list_asset"
@@ -14,6 +13,7 @@ import ListIndicator from "@/components/design_system/list/list_indicator"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { formatDollar } from "@/lib/number_formatter"
 import TokenImage from "@/components/design_system/structure/token_image"
+import { useRouter } from "next/navigation"
 
 const listeState: ListState = {
   search: undefined,
@@ -65,7 +65,7 @@ export default function TgUsdMarketList() {
 export function TgUsdMarketListInner() {
   const { headers, listState, udpateSort } = useListContext()
   const { displayRows } = useTgUsdMaketListContext()
-  const { navigate } = useNavigationContext()
+  const router = useRouter()
 
   return (
     <>
@@ -74,7 +74,7 @@ export function TgUsdMarketListInner() {
 
       {/* Render the rows of data */}
       {displayRows?.map((item, index) => (
-        <ListRow key={index} navigate={() => navigate({ productTo: "tgUsd", featureTo: "deposit", itemSlug: item.token })}>
+        <ListRow key={index} navigate={() => router.push(item.token)}>
           <ListAsset name={item.name} token={item.token} assetsEarned={[]} />
           <ListAPR apr={item.apr.current} projectedApr={item.apr.projected} />
           <>

@@ -1,6 +1,5 @@
 "use client"
 
-import { HarvesterInfoDisplay } from "@/components/products/booster/booster_type"
 import React from "react"
 import Panel from "../../structure/panel"
 import { cn } from "@/lib/utils"
@@ -11,6 +10,7 @@ import { formatDollar, formatPercent } from "@/lib/number_formatter"
 import { Address } from "viem"
 import HelpPropover from "../../structure/help_popover"
 import { formatDate } from "@/lib/other_formatter"
+import { HarvesterInfoDisplay } from "@/components/products/tg_usd/tg_usd_type"
 
 type HarvestRowProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
   info: HarvesterInfoDisplay

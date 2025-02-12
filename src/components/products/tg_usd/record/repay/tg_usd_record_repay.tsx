@@ -20,7 +20,7 @@ type TgUsdRecordRepayPageProps = {
 export default function TgUsdRecordRepayPage({ collateral, collateralInfo, marketInfo, tgUSDInfo }: TgUsdRecordRepayPageProps) {
   return (
     <TgUsdRecordProvider collateral={collateral} collateralInfo={collateralInfo} marketInfo={marketInfo} tgUSDInfo={tgUSDInfo}>
-      <TgUsdRecordLayout>
+      <TgUsdRecordLayout currentFeature="repay">
         <TgUsdRepayProvider>
           <TgUsdRepayPanel />
         </TgUsdRepayProvider>

@@ -1,6 +1,13 @@
 import { TgUsdMarket } from "./tg_usd_type"
-import addresses from "./addresses.json"
 import { Address } from "viem"
+
+const addresses = process.env.NEXT_PUBLIC_ADDRESSES_JSON
+
+if (!addresses) {
+  throw new Error("ADDRESSES_JSON is not defined in the environment variables.")
+}
+
+const envAddresses = JSON.parse(addresses)
 
 type RawMarket = {
   marketAddress: string
@@ -9,17 +16,17 @@ type RawMarket = {
   marketType: string
 }
 
-export const tgUsdMarkets: TgUsdMarket[] = addresses.markets.map((market: RawMarket) => ({
+export const tgUsdMarkets: TgUsdMarket[] = envAddresses.markets.map((market: RawMarket) => ({
   marketAddress: market.marketAddress as Address,
-  marketName: market.collatName.replace("_", "-") as string,
+  marketName: market.collatName.replace("_", "-"),
   collatAddress: market.collatAddress as Address,
-  marketType: market.marketType as string,
+  marketType: market.marketType,
 })) as TgUsdMarket[]
 
 export const TGUSD_CONTRACT = {
-  REWARD_ACCUMULATOR: addresses.utilities.rewardAccumulator as Address,
-  ZAPPER: addresses.utilities.zapper as Address,
-  CONTROL_TOWER: addresses.utilities.controlTower as Address,
-  TG_USD: addresses.tokens.tgUSD as Address,
-  TG_USD_ORACLE: addresses.oracles.tgUSD as Address,
+  REWARD_ACCUMULATOR: envAddresses.utilities.rewardAccumulator as Address,
+  ZAPPER: envAddresses.utilities.zapper as Address,
+  CONTROL_TOWER: envAddresses.utilities.controlTower as Address,
+  TG_USD: envAddresses.tokens.tgUSD as Address,
+  TG_USD_ORACLE: envAddresses.oracles.tgUSD as Address,
 }

@@ -38,7 +38,7 @@ export function transformHarvestOnChainData(harvesterInfos: HarvesterInfo[], ass
       harvesterFees: (rewards.data.totalDollar * percentage) / 100,
       rewards: rewards?.data,
       isProcessed: info.isSdtProcessed,
-      stakingAddress: stakingInfo.stakingAddress,
+      contractAddress: stakingInfo.stakingAddress,
     } as HarvesterInfoDisplay
   }
   return harvesterInfos?.map(processOne).filter((a) => !!a) || []

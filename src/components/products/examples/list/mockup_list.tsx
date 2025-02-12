@@ -7,6 +7,7 @@ import ListIndicator from "@/components/design_system/list/list_indicator"
 import ListRow from "@/components/design_system/list/list_row"
 import { useListContext } from "@/components/design_system/list/list_context"
 import { useNavigationContext } from "@/components/products/product_nav/navigation_context"
+import { ListRowData } from "@/types"
 
 export default function MockUpList() {
   const { headers, listState, displayRows, udpateSort } = useListContext()
@@ -17,7 +18,7 @@ export default function MockUpList() {
       {/* Render the list header */}
       <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       {/* Render the rows of data */}
-      {displayRows.map((item, index) => (
+      {(displayRows as ListRowData[]).map((item, index) => (
         <ListRow key={index} navigate={() => navigate({ productTo: currentProduct, featureTo: "deposit", itemSlug: item.token })}>
           <ListAsset name={item.name} token={item.token} assetsEarned={[{ token: "WETH" }, { token: "USDC" }]} />
           <ListAPR apr={item.apr.current} projectedApr={item.apr.projected} harvestHelpMessage="Rewards has not been harvested yet." />

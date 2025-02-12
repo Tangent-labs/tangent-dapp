@@ -1,13 +1,11 @@
+import TgUsdHarvestContent from "@/components/products/tg_usd/harvest/tg_usd_harvest_content"
+import { TgUsdHarvestProvider } from "@/components/products/tg_usd/harvest/tg_usd_harvest_context"
 import React from "react"
 
-type TgUsHarvetPageProps = React.ButtonHTMLAttributes<HTMLDivElement>
-
-export default async function TgUsHarvetPage({ ...props }: TgUsHarvetPageProps) {
-  // Fetch data here if needed
+export default async function TgUsdHarvestPage() {
   return (
-    <div {...props}>
-      <h1>TgUsHarvetPage</h1>
-      <p>This is a server-side component.</p>
-    </div>
+    <TgUsdHarvestProvider>
+      <TgUsdHarvestContent />
+    </TgUsdHarvestProvider>
   )
 }

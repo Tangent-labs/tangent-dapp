@@ -1,9 +1,11 @@
 // All existing asset must have an image  in medias/tokens/{name|lowercase}.wepb
 
 type BoosterRewards = "sdBAL" | "sdPENDLE" | "sdCRV" | "sdFXN" | "BAL80"
+export type TgUsdMarketAsset = "crvUSD-USDC" | "crvUSD-USDT" | "USDC-fxUSD"
 
 export type ExistingAsset =
   | BoosterRewards
+  | TgUsdMarketAsset
   | "CRV"
   | "CVX"
   | "BAL"

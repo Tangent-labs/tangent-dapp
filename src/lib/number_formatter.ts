@@ -34,7 +34,6 @@ export function formatPercent(value?: number | string, decimals: number = 2) {
 export function toBigInt(num: number, decimals: number): bigint {
   // Multiply the number by 10^decimals to adjust for the decimal places
   const factor = 10 ** decimals
-
   // Return the result as a BigInt
   return BigInt(Math.round(num * factor))
 }
@@ -56,16 +55,26 @@ export function formatBigInt(value: bigint | string | undefined, decimals: numbe
   }
   return ""
 }
+export function formatDollarBigInt(value: bigint | string | undefined, decimals: number, displayDecimals: number): string {
+  if (value === undefined || value === null) return ""
+  const bigIntValue: bigint = typeof value === "string" ? BigInt(value) : value
+  const reduceNumber = parseFloat(formatUnits(bigIntValue, decimals))
+  if (!isNaN(reduceNumber)) {
+    return formatDollar(reduceNumber, displayDecimals)
+  }
+  return ""
+}
 
 /**
  * Formats a big integer value (as a string) into a human-readable decimal format.
- *
  * @param value - The value .
  * @param displayDecimals - The number of decimal places to show in the formatted output.
  * @returns A string representing the formatted value with thousands separators and limited decimal places.
  */
 export function formatNumber(value: number, displayDecimals: number): string {
   if (value === undefined || value === null) return ""
-  const num = parseFloat(value.toFixed(displayDecimals))
+  let num = parseFloat(value?.toString())
+  if (isNaN(num)) return ""
+  num = Number(num.toFixed(displayDecimals))
   return new Intl.NumberFormat("en-US").format(num)
 }

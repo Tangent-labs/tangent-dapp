@@ -1,0 +1,42 @@
+import { Abi, WalletClient, zeroAddress } from "viem"
+import { MarketDetailData, TgUsdtMarketRepayParams } from "../../tg_usd_type"
+import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
+import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
+import { formatBigInt } from "@/lib/number_formatter"
+
+export function getRepayFormState(marketData?: MarketDetailData, repayWeiValue?: bigint, isWellConnected?: boolean) {
+  const reasons: string[] = []
+  if (!marketData) return { canProcess: false, cantProcessReasons: ["No market data"], haveToApprove: false }
+
+  if (!isWellConnected) {
+    reasons.push("No connected wallet.")
+  } else {
+    if (repayWeiValue === 0n || !repayWeiValue) {
+      reasons.push("Amount must be greater than zero.")
+    }
+
+    if (reasons.length === 0) {
+      const existingDebt = BigInt(marketData.debtInfos.positionDebt)
+      const minimumLoan = BigInt(marketData.constants.minimumLoan)
+      if (repayWeiValue && repayWeiValue > existingDebt) {
+        reasons.push(`Repayment exceeds outstanding debt.`)
+      } else if (existingDebt - repayWeiValue! > 0n && existingDebt - repayWeiValue! < minimumLoan) {
+        reasons.push(`Remaining debt must be at least ${formatBigInt(minimumLoan, 18, 2)}`)
+      }
+    }
+  }
+  return { canProcess: reasons.length === 0, cantProcessReasons: reasons, haveToApprove: false }
+}
+
+export async function doMarketRepay(walletClient: WalletClient, args: TgUsdtMarketRepayParams) {
+  const [account] = await walletClient.requestAddresses()
+  const txData = {
+    abi: MarketExternalActions.abi as Abi,
+    functionName: "repay",
+    address: args.marketAddress,
+    args: [account, args.repayWeiValue, zeroAddress],
+    gas: undefined as undefined | bigint,
+  }
+  const txHash = await executeContractCall(walletClient, txData)
+  return await waitForTransaction(txHash)
+}

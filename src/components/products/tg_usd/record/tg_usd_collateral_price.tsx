@@ -8,6 +8,7 @@ import Title from "@/components/design_system/structure/title"
 import TokenImage from "@/components/design_system/structure/token_image"
 import React from "react"
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, ReferenceLine } from "recharts"
+import { useTgUsdRecordContext } from "./tg_usd_record_context"
 
 const CollateralGraph = () => {
   const data = [
@@ -74,6 +75,7 @@ const CollateralGraph = () => {
 }
 
 export default function TgUsdCollateralPrice() {
+  const { collateralInfo } = useTgUsdRecordContext()
   return (
     <div className="flex flex-col gap-4">
       <div>
@@ -81,8 +83,8 @@ export default function TgUsdCollateralPrice() {
         <Divider />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <TokenImage token={"TRICRV"} size={48} />
-            <span>TRICRV</span>
+            <TokenImage token={collateralInfo?.logo} size={48} />
+            <span>{collateralInfo.symbol}</span>
           </div>
           <div>
             <div className="flex gap-2">

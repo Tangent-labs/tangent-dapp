@@ -7,6 +7,7 @@ import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatBigInt, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
+import DisplayReceivePanel from "./display_recieve_panel"
 
 type DepositRecieveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
@@ -20,9 +21,11 @@ type DepositRecieveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   labelRecieve?: string
   depositSelect: ReactNode
   depositInput?: ReactNode
-  recieveAssetDisplay: ReactNode
+  recieveAssetDisplay?: ReactNode
   onValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
+  displayRecieve?: boolean
+  displayBalance?: boolean
 }
 
 export function DepositRecieveInput({
@@ -38,9 +41,12 @@ export function DepositRecieveInput({
   onValueChange,
   depositSelect = <></>,
   recieveAssetDisplay = <></>,
+  displayRecieve = true,
+  displayBalance = true,
   ...props
 }: DepositRecieveInputProps) {
   // Debounce
+
   const [innerValue, setInnverValue] = useState<number | undefined>(
     !depositAmount ? undefined : Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals || 0))
   )
@@ -69,7 +75,7 @@ export function DepositRecieveInput({
     setInnverValue(!e.target.value ? undefined : Number(e.target.value))
   }
 
-  const displayBalance = useMemo(() => {
+  const displayBalanceData = useMemo(() => {
     const formattedBalance = formatBigInt(balance || "0", depositAsset?.decimals || 0, depositAsset?.displayDecimals || 0)
     return `${formattedBalance} ${depositAsset?.symbol || ""} `
   }, [balance, depositAsset])
@@ -84,10 +90,6 @@ export function DepositRecieveInput({
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      {/* <div className="flex flex-col">
-        <span>depositAsset?.price : {depositAsset?.price}</span>
-        <span>depositAsset?.name : {depositAsset?.name}</span>
-      </div> */}
       <PanelRaw className="flex flex-col gap-1 p-2">
         <div className="text-sm text-gray-400">{labelDeposit}</div>
         <div className="mb-2 flex flex-col justify-between lg:flex-row">
@@ -106,28 +108,28 @@ export function DepositRecieveInput({
         </div>
         <div className="flex justify-between text-xs text-gray-400">
           <div>$({dollarDepositDisplay})</div>
-          <button
-            className="flex cursor-pointer items-center"
-            type="button"
-            onClick={() => {
-              if (setMaxBalance) setMaxBalance()
-            }}
-          >
-            <span>{displayBalance}</span>
-            <IconWallet className="w-6" />
-          </button>
+          {displayBalance && (
+            <button
+              className="flex cursor-pointer items-center"
+              type="button"
+              onClick={() => {
+                if (setMaxBalance) setMaxBalance()
+              }}
+            >
+              <span>{displayBalanceData}</span>
+              <IconWallet className="w-6" />
+            </button>
+          )}
         </div>
       </PanelRaw>
-      <PanelRaw className="flex flex-col gap-1 !bg-opacity-20 p-2">
-        <div className="text-sm text-gray-400">{labelRecieve}</div>
-        <div className="mb-2 flex justify-between">
-          <div className="text-xl font-medium">{recieveAmount || "-"}</div>
-          <div>{recieveAssetDisplay}</div>
-        </div>
-        <div className="flex justify-between text-xs text-gray-400">
-          <div>$({recieveDollarValue || "-"})</div>
-        </div>
-      </PanelRaw>
+      {displayRecieve && (
+        <DisplayReceivePanel
+          labelRecieve={labelRecieve}
+          recieveAmount={recieveAmount}
+          recieveAssetDisplay={recieveAssetDisplay}
+          recieveDollarValue={recieveDollarValue}
+        />
+      )}
     </div>
   )
 }

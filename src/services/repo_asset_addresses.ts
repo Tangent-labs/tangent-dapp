@@ -23,6 +23,9 @@ export const TOKEN_ADDR: Record<ExistingAsset, Address> = {
   TRICRV: "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
   tgUSD: "0x2963ff0196a901ec3F56d7531e7C4Ce8F226462B",
   sgUSD: "0x374039ebeed6a9185b1ccf320daa2301f26246f6",
+  "crvUSD-USDC": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
+  "crvUSD-USDT": "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4 ",
+  "USDC-fxUSD": "0x5018BE882DccE5E3F2f3B0913AE2096B9b3fB61f",
 }
 
 export const ADDR_TOKEN: Record<Address, string> = Object.entries(TOKEN_ADDR).reduce(

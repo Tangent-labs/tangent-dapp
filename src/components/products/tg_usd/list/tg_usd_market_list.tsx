@@ -12,7 +12,7 @@ import ListAsset from "@/components/design_system/list/list_asset"
 import ListAPR from "@/components/design_system/list/list_apr"
 import ListIndicator from "@/components/design_system/list/list_indicator"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
-import { formatDollar, formatNumber, formatPercent } from "@/lib/number_formatter"
+import { formatDollar } from "@/lib/number_formatter"
 import TokenImage from "@/components/design_system/structure/token_image"
 
 const listeState: ListState = {
@@ -32,24 +32,24 @@ export default function TgUsdMarketList() {
           <IndicatorCards
             indicators={[
               { title: "tgUsd ", value: formatDollar(globalData.tgUsdPrice, 5) },
-              { title: "Supply", value: formatNumber(globalData.tgUsdsupply, 0) },
+              { title: "Supply", value: globalData.tgUsdSupply },
             ]}
           >
             <TokenImage token={"tgUSD" as ExistingAsset} className="" size={32} />
           </IndicatorCards>
           <IndicatorCards
             indicators={[
-              { title: "sgUsd ", value: formatDollar(globalData.tgUsdPrice, 5) },
-              { title: "Supply", value: formatNumber(globalData.tgUsdsupply, 0) },
-              { title: "APY", value: formatPercent(globalData.APY, 2) },
+              { title: "sgUsd ", value: globalData.tgUsdPrice },
+              { title: "Supply", value: globalData.tgUsdSupply },
+              { title: "APY", value: globalData.APY },
             ]}
           >
             <TokenImage token={"sgUSD" as ExistingAsset} className="" size={32} />
           </IndicatorCards>
         </div>
         <div className="flex items-center gap-2">
-          <IndicatorCards indicators={[{ title: "Global CR ", value: formatPercent(globalData.globalCr, 2) }]} />
-          <IndicatorCards indicators={[{ title: "Global TVL ", value: formatNumber(globalData.GlobalTvl, 0) }]} />
+          <IndicatorCards indicators={[{ title: "Global CR ", value: globalData.globalCr }]} />
+          <IndicatorCards indicators={[{ title: "Global TVL ", value: globalData.globalTvl }]} />
         </div>
       </div>
 

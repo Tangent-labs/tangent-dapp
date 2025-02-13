@@ -1,4 +1,4 @@
-import { AprEntry, AssetDataPriced, ERC20StaticInfos, ExistingAsset, Network, TokenAmountPriced } from "@/types"
+import { AprEntry, AssetData, AssetDataPriced, ERC20StaticInfos, ExistingAsset, Network, TokenAmountPriced } from "@/types"
 import { Address } from "viem"
 
 export type TgUsdGlobalMarketData = {
@@ -118,6 +118,7 @@ export interface ChainViewMarketRow {
   constants: MarketConstants
   obas: OutputBalanceAllowances[]
   rewardTokens: ERC20StaticInfos[]
+  sociabilization: SociabilizationData
 }
 
 export interface CollateralInfos {
@@ -167,6 +168,11 @@ export type ChainViewMarketList = {
   rowInfos: ChainViewMarketRow[]
 }
 
+export type SociabilizationData = {
+  socFeePending: bigint
+  socFeePercentage: bigint
+}
+
 export type MarketDetailData = {
   marketAddress: Address
   collateralInfo: AssetDataPriced
@@ -176,6 +182,7 @@ export type MarketDetailData = {
   collateralAllowance: bigint
   collateralInfos: CollateralInfos
   marketType?: TgUsdMarketType
+  sociabilization?: SociabilizationData
 }
 
 export type TgUsdtMarketDepositParams = TgUsdtMarketBorrowParams & {
@@ -233,6 +240,30 @@ export type TgUsdMarketAmounts = {
   borrowWeiValue?: bigint
   withdrawWeiValue?: bigint
   repayWeiValue?: bigint
+}
+
+export type ZapperData = {
+  amountOut: bigint
+}
+
+export type ZapToken = AssetData & {
+  chainId?: number
+  logoURI: string
+  price: number
+}
+
+export type BalanceAllowanceData = {
+  token: Address
+  balance: bigint
+  allowances: Array<{ spender: Address; allowance: bigint }>
+}
+
+export type ZapMarketData = {
+  amountIn: bigint
+  market: Address
+  minAmountOut: bigint
+  tokenIn: Address
+  _for: Address
 }
 
 export type TgUsdMarket = {

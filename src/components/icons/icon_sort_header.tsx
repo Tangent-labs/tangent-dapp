@@ -1,4 +1,3 @@
-"use client;"
 interface IconProps {
   className?: string
   sort?: "asc" | "desc" | "none" // Sort state prop

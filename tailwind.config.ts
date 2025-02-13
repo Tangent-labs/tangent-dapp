@@ -14,11 +14,13 @@ const config: Config = {
         "button-active": "var(--tgt-bg-button-active)",
         "list-row-hover": "var(--tgt-list-row-hover)",
         "panel-title-gradient": "var(--tgt-panel-title-gradient)",
+        "button-gradient": "var(--tgt-button)",
         page: "url('/medias/background.svg')",
       },
       colors: {
         "row-tonic": "var(--tgt-row-tonic)",
         tonic: "var(--tgt-tonic)",
+        subtitle: "var(--tgt-subtitle)",
         danger: "var(--tgt-danger)",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

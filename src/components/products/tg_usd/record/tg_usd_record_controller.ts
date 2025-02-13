@@ -28,6 +28,7 @@ export const transformMarketData = (onChainData: ChainViewMarketRow, collateralI
     ),
     collateralInfos: onChainData.collateralInfos,
     marketType: staticMarketData?.marketType,
+    sociabilization: onChainData?.sociabilization,
   }
 }
 
@@ -114,6 +115,13 @@ export async function loadMarketServerData(collateral: ExistingAsset) {
   const collateralInfo = tokenInfos.at(0)
   const tgUSDInfo = tokenInfos.at(1)
   return { collateralInfo, tgUSDInfo, marketInfo }
+}
+
+export async function fetchTokens() {
+  const tokensData = await fetch("https://files.cow.fi/tokens/CowSwap.json")
+  // const tokensData = await fetch("https://curvefi.github.io/curve-assets/ethereum.json")
+  const { tokens } = await tokensData.json()
+  return tokens
 }
 
 export function getMarketDisplayData(marketData?: MarketDetailData, collateralInfo?: AssetDataPriced) {

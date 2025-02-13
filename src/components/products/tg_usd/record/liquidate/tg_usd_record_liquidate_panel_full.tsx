@@ -34,13 +34,13 @@ export default function TgUsdLiquidatePanelFull() {
         <DisplayReceivePanel
           labelRecieve={"you liquidate"}
           recieveAmount={0}
-          recieveAssetDisplay={<AssetDisplay logo={collateralInfo.logo} symbol={collateralInfo.symbol} />}
+          recieveAssetDisplay={<AssetDisplay logo={collateralInfo.logo!} symbol={collateralInfo.symbol} />}
           recieveDollarValue={0}
         />
         <DisplayReceivePanel
           labelRecieve="You recieve"
           recieveAmount={0}
-          recieveAssetDisplay={<AssetDisplay logo={tgUSDInfo.logo} symbol={tgUSDInfo.symbol} />}
+          recieveAssetDisplay={<AssetDisplay logo={tgUSDInfo.logo!} symbol={tgUSDInfo.symbol} />}
           recieveDollarValue={0}
         />
       </div>

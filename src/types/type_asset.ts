@@ -7,7 +7,7 @@ export type AssetData = {
   displayDecimals: number
   symbol: string
   name?: string
-  logo: ExistingAsset
+  logo?: ExistingAsset
   displaySymbol?: string
 }
 

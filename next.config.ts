@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
       fullUrl: true,
     },
   },
+  images: {
+    domains: ["raw.githubusercontent.com"],
+  },
 
   /* config options here */
 }

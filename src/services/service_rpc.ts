@@ -1,5 +1,6 @@
 import { dappConfig } from "@/dapp_config"
 import { TxContractCallData } from "@/types"
+import { getSwapAssetPrice } from "./service_price"
 import {
   Abi,
   Address,
@@ -155,5 +156,26 @@ export const executeChainView = async <T>(abi: Abi, byteCode: Hex, args?: unknow
       data: dataRaw,
     })
     return v?.args as T
+  }
+}
+
+export const gasCostToUSD = async (gasUsed: bigint): Promise<number> => {
+  try {
+    const gasPriceResponse = await fetch("https://api.etherscan.io/api?module=gastracker&action=gasoracle")
+    const gasPriceData = await gasPriceResponse.json()
+    const gasPriceInGwei = Number(gasPriceData.result.ProposeGasPrice)
+
+    const ethPriceData = await getSwapAssetPrice("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE")
+
+    const gasPriceInEth = gasPriceInGwei * 1e-9
+
+    const costInEth = Number(gasUsed) * gasPriceInEth
+
+    const costInUSD = costInEth * ethPriceData!
+
+    return parseFloat(costInUSD.toFixed(2))
+  } catch (error) {
+    console.error("Error fetching gas or ETH price:", error)
+    return 0
   }
 }

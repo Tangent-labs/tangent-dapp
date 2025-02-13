@@ -1,4 +1,4 @@
-import { AprEntry, AssetDataPriced, ERC20StaticInfos, ExistingAsset, Network, TokenAmountPriced } from "@/types"
+import { AprEntry, AssetData, AssetDataPriced, ERC20StaticInfos, ExistingAsset, Network, TokenAmountPriced } from "@/types"
 import { Address } from "viem"
 
 export type TgUsdGlobalMarketData = {
@@ -67,13 +67,6 @@ export type TgUsdGlobalData = {
 
 export type TgUsdMarketType = "Convex_CRV" | "Convex_FXN"
 
-export type TgUsdMarket = {
-  marketAddress: Address
-  marketName: ExistingAsset
-  collatAddress: Address
-  marketType: TgUsdMarketType
-}
-
 export type ClaimerInfoDisplay = {
   asset: ExistingAsset // Address
   stakingAddress: Address
@@ -125,6 +118,7 @@ export interface ChainViewMarketRow {
   constants: MarketConstants
   obas: OutputBalanceAllowances[]
   rewardTokens: ERC20StaticInfos[]
+  sociabilization: SociabilizationData
 }
 
 export interface CollateralInfos {
@@ -174,6 +168,11 @@ export type ChainViewMarketList = {
   rowInfos: ChainViewMarketRow[]
 }
 
+export type SociabilizationData = {
+  socFeePending: bigint
+  socFeePercentage: bigint
+}
+
 export type MarketDetailData = {
   marketAddress: Address
   collateralInfo: AssetDataPriced
@@ -183,6 +182,7 @@ export type MarketDetailData = {
   collateralAllowance: bigint
   collateralInfos: CollateralInfos
   marketType?: TgUsdMarketType
+  sociabilization?: SociabilizationData
 }
 
 export type TgUsdtMarketDepositParams = TgUsdtMarketBorrowParams & {
@@ -240,4 +240,55 @@ export type TgUsdMarketAmounts = {
   borrowWeiValue?: bigint
   withdrawWeiValue?: bigint
   repayWeiValue?: bigint
+}
+
+export type ZapperData = {
+  amountOut: bigint
+}
+
+export type ZapToken = AssetData & {
+  chainId?: number
+  logoURI: string
+  price: number
+}
+
+export type BalanceAllowanceData = {
+  token: Address
+  balance: bigint
+  allowances: Array<{ spender: Address; allowance: bigint }>
+}
+
+export type ZapMarketData = {
+  amountIn: bigint
+  market: Address
+  minAmountOut: bigint
+  tokenIn: Address
+  _for: Address
+}
+
+export type TgUsdMarket = {
+  marketAddress: Address
+  marketName: ExistingAsset
+  collatAddress: Address
+  marketType: "Convex_CRV" | "Convex_FXN"
+}
+
+export type StakingInfo = {
+  sgUSDBalance: bigint
+  sgUSDPrice: bigint
+  sgUSDSupply: bigint
+  tgUSDAllowance: bigint
+  tgUSDBalance: bigint
+  tgUSDPercentageInSgUSD: bigint
+  tgUSDPrice: bigint
+  tgUSDSupply: bigint
+}
+
+export type StakingDepositType = "asset" | "sdAsset"
+
+export type StakingAssetInfo = {
+  balance: bigint | undefined
+  address: Address
+  current: StakingDepositType
+  asset?: AssetDataPriced
 }

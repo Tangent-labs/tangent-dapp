@@ -1,7 +1,6 @@
 // in this example the data request are made server side & injected in the client component.
 
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
-import ExampleTitle from "@/components/products/examples/example_title"
 import { IndicatorData } from "@/types"
 
 const indicators: IndicatorData[] = [
@@ -17,7 +16,6 @@ const Home = async () => {
     <>
       <div className="text-center">Choose your component.</div>
       <hr className="my-10 border-gray-400 border-opacity-25" />
-      <ExampleTitle title="Indicator BAR" />
       <div className="flex justify-between">
         <div>
           <IndicatorCards indicators={indicatorsEpoch} />

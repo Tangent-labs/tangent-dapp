@@ -20,7 +20,7 @@ type TgUsdRecordLiquidateProps = {
 export default function TgUsdRecordLiquidatePage({ collateral, collateralInfo, marketInfo, tgUSDInfo }: TgUsdRecordLiquidateProps) {
   return (
     <TgUsdRecordProvider collateral={collateral} collateralInfo={collateralInfo} marketInfo={marketInfo} tgUSDInfo={tgUSDInfo}>
-      <TgUsdRecordLayout>
+      <TgUsdRecordLayout currentFeature="liquidate">
         <TgUsdLiquidateProvider>
           <TgUsdLiquidatePanel />
         </TgUsdLiquidateProvider>

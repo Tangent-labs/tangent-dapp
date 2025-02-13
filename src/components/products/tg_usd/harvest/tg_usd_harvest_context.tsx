@@ -5,8 +5,7 @@ import { Address } from "viem"
 import { computeAndReturnPrices, doHarvest, getTgUsdHarvestOnChainData, transformHarvestOnChainData } from "./tg_usd_harvest_controller"
 import { AssetDataPriced } from "@/types"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { HarvesterInfoDisplay } from "../../booster/booster_type"
-import { HarvesterInfo } from "../tg_usd_type"
+import { HarvesterInfo, HarvesterInfoDisplay } from "../tg_usd_type"
 
 type TgUsdHarvestContextProps = {
   children: ReactNode

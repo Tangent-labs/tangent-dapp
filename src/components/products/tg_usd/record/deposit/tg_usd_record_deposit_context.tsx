@@ -17,10 +17,9 @@ import {
   doZapDeposit,
   getDepositFormState,
   getZapTokenBalanceAllowance,
-  getTokenInQuote,
-  getTokenOutQuote,
   prepareZapTransaction,
 } from "./tg_usd_record_deposit_controller"
+import { getTokenInQuote, getTokenOutQuote } from "./deposit_actions"
 
 type TgUsdDepositContextProps = {
   children: ReactNode
@@ -173,6 +172,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
 
       try {
         const data = await getTokenInQuote(parseEther(value), currentAddress, collateralInfo, depositAssetInfo)
+
         setDepositWeiValue(data.amountOut)
       } catch (error) {
         console.error("Error fetching depositWeiValue:", error)

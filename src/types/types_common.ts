@@ -8,13 +8,11 @@ export type FeaturesData = {
   isGlobal: boolean
 }
 
-export type ProductKey = "splitter" | "booster" | "wrapper" | "tgUsd"
-
 export type ProductData = {
   name: string
   url: string
   header: ReactNode
-  key: ProductKey
+  key: string
   features: FeaturesData[]
   defaultFeature: FeaturesData["key"]
 }

@@ -2,11 +2,10 @@ import { executeChainViewUnique, executeContractCall } from "@/services/service_
 import { Abi, Address, Hex, WalletClient } from "viem"
 import harvestUI from "../../../../abi/tgusd/HarvestUI.json"
 import market from "../../../../abi/tgusd/Market.json"
-import { HarvesterInfo } from "../tg_usd_type"
+import { HarvesterInfo, HarvesterInfoDisplay } from "../tg_usd_type"
 import { AssetData, AssetDataPriced, ExistingAsset } from "@/types"
 import { tgUsdMarkets } from "../tg_usd_repository"
 import { getPricesFromTokenAmounts } from "@/lib/asset_utils"
-import { HarvesterInfoDisplay } from "../../booster/booster_type"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import { getTokensPrice } from "@/services/service_price"
 

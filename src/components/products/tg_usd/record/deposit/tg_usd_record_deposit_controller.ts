@@ -8,6 +8,7 @@ import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
 import { Abi, Address, EstimateContractGasParameters, Hex, WalletClient, WriteContractParameters, zeroAddress } from "viem"
 import { BalanceAllowanceData, MarketDetailData, TgUsdtMarketDepositParams, ZapMarketData, ZapToken } from "../../tg_usd_type"
 import { executeAppove, executeChainViewUnique, executeContractCall, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { getRouteTxData } from "./deposit_actions"
 
 export const getZapTokenBalanceAllowance = async (walletClient: WalletClient, address: Address | undefined) => {
   address = address || zeroAddress
@@ -87,92 +88,6 @@ export async function doMarketDeposit(walletClient: WalletClient, args: TgUsdtMa
 export async function doApproveMarketDeposit(walletClient: WalletClient, collateralAddress: Address, args: TgUsdtMarketDepositParams) {
   const txHash = await executeAppove(walletClient, collateralAddress, args.marketAddress, args.depositWeiValue)
   return await waitForTransaction(txHash)
-}
-
-export const getTokenOutQuote = async (
-  depositWeiValue: bigint | undefined,
-  currentAddress: Address,
-  collateralInfo: AssetDataPriced,
-  depositAssetInfo: AssetDataPriced
-) => {
-  try {
-    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${currentAddress}&amountIn=${depositWeiValue}&tokenIn=${depositAssetInfo?.address}&tokenOut=${collateralInfo?.address}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d`,
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`)
-    }
-
-    return await response.json()
-  } catch (error) {
-    console.error("Failed to fetch Enso data:", error)
-    return null
-  }
-}
-
-export const getTokenInQuote = async (
-  zapValue: bigint | undefined,
-  currentAddress: Address,
-  collateralInfo: AssetDataPriced,
-  depositAssetInfo: AssetDataPriced
-) => {
-  try {
-    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${currentAddress}&amountIn=${zapValue}&tokenOut=${depositAssetInfo?.address}&tokenIn=${collateralInfo?.address.trim()}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d`,
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`)
-    }
-
-    return await response.json()
-  } catch (error) {
-    console.error("Failed to fetch Enso data:", error)
-    return null
-  }
-}
-
-export const getRouteTxData = async (
-  amountIn: bigint | undefined,
-  collateralInfo: AssetDataPriced,
-  depositAssetInfo: AssetDataPriced,
-  fromAddress: Address,
-  receiver: Address,
-  slippage?: number
-) => {
-  try {
-    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${fromAddress}&receiver=${receiver}&tokenIn=${depositAssetInfo?.address}&tokenOut=${collateralInfo?.address.trim()}&amountIn=${amountIn}&slippage=${slippage}&routingStrategy=router`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d`,
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`)
-    }
-
-    return await response.json()
-  } catch (error) {
-    console.error("Failed to fetch Enso data:", error)
-    return null
-  }
 }
 
 export const doApproveZap = async (walletClient: WalletClient, assetAddress: Address, amount: bigint, marketAddress: Address) => {

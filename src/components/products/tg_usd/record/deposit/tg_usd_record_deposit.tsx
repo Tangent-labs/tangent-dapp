@@ -20,7 +20,7 @@ type TgUsdRecordDepositProps = {
 export default function TgUsdRecordDepositPage({ tokens, collateral, collateralInfo, marketInfo, tgUSDInfo }: TgUsdRecordDepositProps) {
   return (
     <TgUsdRecordProvider collateral={collateral} collateralInfo={collateralInfo} marketInfo={marketInfo} tgUSDInfo={tgUSDInfo}>
-      <TgUsdRecordLayout>
+      <TgUsdRecordLayout currentFeature="deposit">
         <TgUsdDepositProvider tokens={tokens} collateralInfo={collateralInfo} marketInfo={marketInfo}>
           <TgUsdDepositPanel />
         </TgUsdDepositProvider>

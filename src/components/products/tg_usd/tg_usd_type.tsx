@@ -1,4 +1,4 @@
-import { AprEntry, AssetData, AssetDataPriced, ERC20StaticInfos, ExistingAsset, Network, TokenAmountPriced } from "@/types"
+import { AprEntry, AssetData, AssetDataPriced, ERC20StaticInfos, ExistingAsset, Network, PositionData, TokenAmountPriced, TokenAmountPricedRow } from "@/types"
 import { Address } from "viem"
 
 export type TgUsdGlobalMarketData = {
@@ -240,6 +240,41 @@ export type TgUsdMarketAmounts = {
   borrowWeiValue?: bigint
   withdrawWeiValue?: bigint
   repayWeiValue?: bigint
+}
+
+export type HarvesterInfoDisplay = {
+  asset: ExistingAsset // Address
+  contractAddress: Address
+  rewards: TokenAmountPriced
+  isProcessed: boolean
+  percentage: number
+  harvesterFees: number
+  lastHarvestDate: bigint
+}
+
+export type BoosterClaimListRow = {
+  token: ExistingAsset
+  stakingAddress: Address
+  name: string
+  apr: {
+    current: number
+    projected: number
+  }
+  claimableDetail: TokenAmountPricedRow[]
+  claimable: { key: string; label: string; value: string; raw?: number }
+  positionsDetails: PositionData[]
+}
+
+export type ClaimSdtStakingContract = {
+  stakingContract: string
+  tokenIds: number[]
+}
+
+export interface ClaimMultipleStakingArgs {
+  claimContracts: ClaimSdtStakingContract[]
+  minCvgSdtAmountOut: bigint
+  isConvert: boolean
+  sdtRewardCount: number
 }
 
 export type ZapperData = {

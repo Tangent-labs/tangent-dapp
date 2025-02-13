@@ -118,6 +118,7 @@ export interface ChainViewMarketRow {
   constants: MarketConstants
   obas: OutputBalanceAllowances[]
   rewardTokens: ERC20StaticInfos[]
+  sociabilization: SociabilizationData
 }
 
 export interface CollateralInfos {
@@ -167,6 +168,11 @@ export type ChainViewMarketList = {
   rowInfos: ChainViewMarketRow[]
 }
 
+export type SociabilizationData = {
+  socFeePending: bigint
+  socFeePercentage: bigint
+}
+
 export type MarketDetailData = {
   marketAddress: Address
   collateralInfo: AssetDataPriced
@@ -176,6 +182,7 @@ export type MarketDetailData = {
   collateralAllowance: bigint
   collateralInfos: CollateralInfos
   marketType?: TgUsdMarketType
+  sociabilization?: SociabilizationData
 }
 
 export type TgUsdtMarketDepositParams = TgUsdtMarketBorrowParams & {

@@ -102,7 +102,7 @@ export const getTokenOutQuote = async (
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.NEXT_ENSO_API_KEY}`,
+        Authorization: `Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d`,
       },
     })
 
@@ -130,7 +130,7 @@ export const getTokenInQuote = async (
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.NEXT_ENSO_API_KEY}`,
+        Authorization: `Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d`,
       },
     })
 
@@ -160,7 +160,7 @@ export const getRouteTxData = async (
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.NEXT_ENSO_API_KEY}`,
+        Authorization: `Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d`,
       },
     })
 
@@ -187,7 +187,7 @@ export const doApproveZap = async (walletClient: WalletClient, assetAddress: Add
   return await waitForTransaction(hash)
 }
 
-export const doZapDeposit = async (walletClient: WalletClient, routerCall: string, zapMarket: ZapMarketData, borrowWeiValue?: bigint) => {
+export const doZapDeposit = async (walletClient: WalletClient, routerCall: string, zapMarket: ZapMarketData, borrowWeiValue?: bigint, isStaking?: boolean) => {
   const [account] = await walletClient.requestAddresses()
 
   const publicClient = await getPublicClient()
@@ -198,7 +198,7 @@ export const doZapDeposit = async (walletClient: WalletClient, routerCall: strin
     estimateGasData = {
       abi: Zapper.abi,
       functionName: "zapDepositAndBorrow",
-      args: [zapMarket, routerCall, borrowWeiValue, false] as unknown[],
+      args: [zapMarket, routerCall, borrowWeiValue, isStaking] as unknown[],
       address: TGUSD_CONTRACT.ZAPPER,
       account,
       value: 0n,
@@ -207,7 +207,7 @@ export const doZapDeposit = async (walletClient: WalletClient, routerCall: strin
     estimateGasData = {
       abi: Zapper.abi,
       functionName: "zapDeposit",
-      args: [zapMarket, routerCall, false] as unknown[],
+      args: [zapMarket, routerCall, isStaking] as unknown[],
       address: TGUSD_CONTRACT.ZAPPER,
       account,
       value: 0n,

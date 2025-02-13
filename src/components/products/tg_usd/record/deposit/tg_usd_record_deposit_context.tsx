@@ -6,7 +6,7 @@ import Zapper from "@/abi/tgusd/Zapper.json"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { EstimateContractGasParameters, parseEther } from "viem"
+import { EstimateContractGasParameters, formatUnits, parseEther } from "viem"
 import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 import { gasCostToUSD, getPublicClient } from "@/services/service_rpc"
 import {
@@ -63,6 +63,7 @@ type TgUsdDepositContextValues = {
   slippage: number
   setSlippage: (arg: number) => void
   gas: number | null
+  sociabilizationFee: number | null
 }
 
 export const TgUsdDepositContext = createContext<TgUsdDepositContextValues | undefined>(undefined)
@@ -112,6 +113,13 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
 
     return asset
   }, [depositAsset, swapAssetPrice])
+
+  const sociabilizationFee = useMemo(() => {
+    if (marketData?.sociabilization && depositWeiValue && depositAssetInfo) {
+      return Number(formatUnits(marketData?.sociabilization?.socFeePercentage, 7)) * Number(formatUnits(depositWeiValue, depositAssetInfo?.decimals))
+    }
+    return 0
+  }, [marketData, depositWeiValue, depositAssetInfo])
 
   const actionApproveZap = async () => {
     const walletClient = getWalletClient()
@@ -279,7 +287,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
         estimateGasData = {
           abi: Zapper.abi,
           functionName: "zapDepositAndBorrow",
-          args: [zapMarketData, routerCallData, borrowWeiValue, false] as unknown[],
+          args: [zapMarketData, routerCallData, borrowWeiValue, isStaking] as unknown[],
           address: TGUSD_CONTRACT.ZAPPER,
           account,
           value: 0n,
@@ -288,7 +296,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
         estimateGasData = {
           abi: Zapper.abi,
           functionName: "zapDeposit",
-          args: [zapMarketData, routerCallData, false] as unknown[],
+          args: [zapMarketData, routerCallData, isStaking] as unknown[],
           address: TGUSD_CONTRACT.ZAPPER,
           account,
           value: 0n,
@@ -327,7 +335,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
 
       const walletClient = getWalletClient()
 
-      await doZapDeposit(walletClient!, routerCallData, zapMarketData, borrowWeiValue)
+      await doZapDeposit(walletClient!, routerCallData, zapMarketData, borrowWeiValue, isStaking)
 
       setDepositWeiValue(0n)
       setZapValue(null)
@@ -383,6 +391,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
     slippage,
     setSlippage,
     gas,
+    sociabilizationFee,
   }
 
   return <TgUsdDepositContext.Provider value={contextValue}>{children}</TgUsdDepositContext.Provider>

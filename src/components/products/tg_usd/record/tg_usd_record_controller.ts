@@ -28,6 +28,7 @@ export const transformMarketData = (onChainData: ChainViewMarketRow, collateralI
     ),
     collateralInfos: onChainData.collateralInfos,
     marketType: staticMarketData?.marketType,
+    sociabilization: onChainData?.sociabilization,
   }
 }
 

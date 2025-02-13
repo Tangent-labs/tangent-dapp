@@ -52,6 +52,7 @@ export default function TgUsdDepositPanel() {
     balanceAllowanceData,
     slippage,
     gas,
+    sociabilizationFee,
   } = useTgUsdDepositContext()
 
   const { collateralInfo, marketData, tgUSDInfo } = useTgUsdRecordContext()
@@ -251,11 +252,6 @@ export default function TgUsdDepositPanel() {
           <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="z-20 !m-0 w-96 !border-none bg-black !p-0">
             <Panel className="!border-none">
               <div className="flex w-full flex-col items-center justify-center text-primary">
-                <div className="flex w-full items-center justify-between">
-                  <div className="flex justify-start">Fee (0.25%)</div>
-                  <div className="flex justify-end">$0.04</div>
-                </div>
-
                 {gas && gas > 0 ? (
                   <div className="flex w-full items-center justify-between">
                     <div className="flex justify-start">Network cost</div>
@@ -263,18 +259,21 @@ export default function TgUsdDepositPanel() {
                   </div>
                 ) : null}
 
-                <div className="flex w-full items-center justify-between">
-                  <div className="flex justify-start">Max slippage</div>
-                  <div className="flex justify-end">2%</div>
-                </div>
+                {slippage && slippage > 0 ? (
+                  <div className="flex w-full items-center justify-between">
+                    <div className="flex justify-start">Max slippage</div>
+                    <div className="flex justify-end">{slippage}%</div>
+                  </div>
+                ) : null}
+
                 <div className="flex w-full items-center justify-between">
                   <div className="flex justify-start">Sociabilization fee</div>
-                  <div className="flex justify-end">$0.04</div>
+                  <div className="flex justify-end">{isStaking ? "$0" : `$${sociabilizationFee?.toFixed(2)}`}</div>
                 </div>
 
                 <div className="flex w-full items-center justify-between">
                   <div className="flex justify-start">Zapping fee</div>
-                  <div className="flex justify-end">$0.04</div>
+                  <div className="flex justify-end">--</div>
                 </div>
               </div>
             </Panel>

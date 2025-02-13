@@ -270,24 +270,37 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
       )
 
       const walletClient = getWalletClient()
+
       const [account] = await walletClient!.requestAddresses()
 
-      const txData = {
-        abi: Zapper.abi,
-        functionName: "zapDeposit",
-        args: [zapMarketData, routerCallData, false] as unknown[],
-        address: TGUSD_CONTRACT.ZAPPER,
-        account,
-        gas: undefined as undefined | bigint,
-        value: 0n,
+      let estimateGasData
+
+      if (!!borrowWeiValue) {
+        estimateGasData = {
+          abi: Zapper.abi,
+          functionName: "zapDepositAndBorrow",
+          args: [zapMarketData, routerCallData, borrowWeiValue, false] as unknown[],
+          address: TGUSD_CONTRACT.ZAPPER,
+          account,
+          value: 0n,
+        } as EstimateContractGasParameters
+      } else {
+        estimateGasData = {
+          abi: Zapper.abi,
+          functionName: "zapDeposit",
+          args: [zapMarketData, routerCallData, false] as unknown[],
+          address: TGUSD_CONTRACT.ZAPPER,
+          account,
+          value: 0n,
+        } as EstimateContractGasParameters
       }
 
       if (zapMarketData?.tokenIn === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
-        txData.value = zapMarketData?.amountIn
+        estimateGasData.value = zapMarketData?.amountIn
       }
 
       const publicClient = await getPublicClient()
-      const gasData = await publicClient.estimateContractGas(txData as unknown as EstimateContractGasParameters)
+      const gasData = await publicClient.estimateContractGas(estimateGasData)
 
       const gasInUsd = await gasCostToUSD(gasData)
       setGas(gasInUsd)
@@ -298,6 +311,9 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
 
   const getRouteAndDeposit = async () => {
     if (!depositWeiValue || !currentAddress || !depositAssetInfo) return
+
+    setIsZapLoading(true)
+    setIsDepositLoading(true)
 
     try {
       const { routerCallData, zapMarketData } = await prepareZapTransaction(
@@ -318,6 +334,9 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
       fetchBalanceAllowanceData()
     } catch (error) {
       console.error("Error in getRouteAndDeposit:", error)
+    } finally {
+      setIsZapLoading(false)
+      setIsDepositLoading(false)
     }
   }
 

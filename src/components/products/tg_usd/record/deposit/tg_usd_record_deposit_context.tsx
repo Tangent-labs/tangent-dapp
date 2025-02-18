@@ -6,7 +6,7 @@ import Zapper from "@/abi/tgusd/Zapper.json"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { EstimateContractGasParameters, formatUnits, parseEther } from "viem"
+import { Address, EstimateContractGasParameters, formatUnits, parseEther } from "viem"
 import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 import { gasCostToUSD, getPublicClient } from "@/services/service_rpc"
 import {
@@ -15,6 +15,7 @@ import {
   doApproveZap,
   doMarketDeposit,
   doZapDeposit,
+  getBalances,
   getDepositFormState,
   getZapTokenBalanceAllowance,
   prepareZapTransaction,
@@ -63,6 +64,7 @@ type TgUsdDepositContextValues = {
   setSlippage: (arg: number) => void
   gas: number | null
   sociabilizationFee: number | null
+  balances: Record<Address, bigint> | null
 }
 
 export const TgUsdDepositContext = createContext<TgUsdDepositContextValues | undefined>(undefined)
@@ -79,11 +81,13 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
   const [swapAssetPrice, setSwapAssetPrice] = useState<number | null>(null)
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
   const [zapValue, setZapValue] = useState<bigint | null>(null)
-  const [isDepositLoading, setIsDepositLoading] = useState(false)
+  const [isDepositLoading, setIsDepositLoading] = useState(true)
   const [isZapLoading, setIsZapLoading] = useState(false)
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
   const [slippage, setSlippage] = useState<number>(0.1)
   const [gas, setGas] = useState<number | null>(null)
+
+  const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
 
   const depositAssetInfo = useMemo(() => {
     if (depositAsset === "ETH") {
@@ -263,6 +267,26 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
   }
 
   useEffect(() => {
+    const tokenAddresses: Address[] = tokens.map((el) => el.address)
+
+    if (currentAddress && tokenAddresses.length > 0) {
+      getBalances(currentAddress, tokenAddresses).then((data) => {
+        if (data) {
+          const tokenBalances = tokenAddresses.reduce(
+            (acc, address, index) => {
+              acc[address] = data[index] || BigInt(0)
+              return acc
+            },
+            {} as Record<Address, bigint>
+          )
+          setBalances(tokenBalances)
+          setIsDepositLoading(false)
+        }
+      })
+    }
+  }, [currentAddress, tokens])
+
+  useEffect(() => {
     fetchBalanceAllowanceData()
   }, [depositAssetInfo])
 
@@ -392,6 +416,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
     setSlippage,
     gas,
     sociabilizationFee,
+    balances,
   }
 
   return <TgUsdDepositContext.Provider value={contextValue}>{children}</TgUsdDepositContext.Provider>

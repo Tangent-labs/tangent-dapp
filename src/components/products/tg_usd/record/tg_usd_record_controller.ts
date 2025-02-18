@@ -1,5 +1,5 @@
 import { Abi, Address, formatEther, formatUnits, Hex, parseEther, zeroAddress } from "viem"
-import { ChainViewMarketRow, MarketDetailData, TgUsdMarketDisplayData, TgUsdMarketLoanDisplayData } from "../tg_usd_type"
+import { ChainViewMarketRow, MarketDetailData, TgUsdMarketDisplayData, TgUsdMarketLoanDisplayData, ZapToken } from "../tg_usd_type"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import MarketDetailsUI from "@/abi/tgusd/MarketDetailsUI.json"
 import { AssetDataPriced, ExistingAsset } from "@/types"
@@ -119,9 +119,8 @@ export async function loadMarketServerData(collateral: ExistingAsset) {
 
 export async function fetchTokens() {
   const tokensData = await fetch("https://files.cow.fi/tokens/CowSwap.json")
-  // const tokensData = await fetch("https://curvefi.github.io/curve-assets/ethereum.json")
   const { tokens } = await tokensData.json()
-  return tokens
+  return tokens.filter((el: ZapToken) => !!el.chainId && el.chainId === 1)
 }
 
 export function getMarketDisplayData(marketData?: MarketDetailData, collateralInfo?: AssetDataPriced) {

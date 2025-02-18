@@ -21,24 +21,22 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <>
-      <div className="ml-2 flex gap-6">
-        <div className="w-[360px]"></div>
-        <div className="mr-24 w-full">
-          <div className="mb-4 flex content-start">
-            <MenuBar links={links} />
-          </div>
-          <div className="mb-4 flex content-center">
-            <div className="an-page-header flex w-full gap-10 bg-right xl:h-48">
-              <div className="an-bg hidden items-center justify-end bg-[url('/medias/header_bg.png')] bg-right bg-no-repeat lg:w-2/5 xl:flex">
-                <Image height={360} width={360} quality={100} className="an-logo h-[180px] w-[180px]" src={`/medias/product_wrapper.png`} alt="splitter" />
-              </div>
-              <div className="an-text flex w-full flex-col gap-5 xl:w-3/5">wrapper</div>
-            </div>
-          </div>
-          <div>{children}</div>
+    <div className="ml-2 flex gap-2">
+      <div className="w-[360px]"></div>
+      <div className="mr-24 w-full">
+        <div className="mb-4 flex content-start">
+          <MenuBar links={links} />
         </div>
+        <div className="mb-4 flex content-center">
+          <div className="an-page-header flex w-full gap-10 bg-right xl:h-48">
+            <div className="an-bg hidden items-center justify-end bg-[url('/medias/header_bg.png')] bg-right bg-no-repeat lg:w-2/5 xl:flex">
+              <Image height={360} width={360} quality={100} className="an-logo h-[180px] w-[180px]" src={`/medias/product_wrapper.png`} alt="splitter" />
+            </div>
+            <div className="an-text flex w-full flex-col gap-5 xl:w-3/5">wrapper</div>
+          </div>
+        </div>
+        <div>{children}</div>
       </div>
-    </>
+    </div>
   )
 }

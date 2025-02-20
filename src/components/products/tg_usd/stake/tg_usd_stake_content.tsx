@@ -6,7 +6,7 @@ import { useTgUsdStakeContext } from "./tg_usd_stake_context"
 import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
-import { DepositRecieveInput } from "@/components/design_system/inputs/deposit_recieve_input"
+import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
 import InputSelect from "@/components/design_system/inputs/input_select"
 import { ExistingAsset, SelectOption } from "@/types"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -149,18 +149,18 @@ export default function TgUsdClaimContent() {
 
           <Divider className="h-1 w-full"></Divider>
 
-          <DepositRecieveInput
+          <DepositReceiveInput
             labelDeposit={currentFeature === "stake" ? "You deposit" : "You unstake"}
-            labelRecieve={currentFeature === "stake" ? "You stake" : "You receive"}
+            labelReceive={currentFeature === "stake" ? "You stake" : "You receive"}
             className="w-full"
             depositAmount={weiValue}
             depositSelect={<AssetSelect />}
             disabled={false}
-            recieveAssetDisplay={<ReceiveAssetDisplay />}
+            receiveAssetDisplay={<ReceiveAssetDisplay />}
             depositAsset={currentAssetInfo?.asset}
-            recieveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(stakeInfo?.sgUSDPrice || 0n, 18)))?.toFixed(2)}
+            receiveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(stakeInfo?.sgUSDPrice || 0n, 18)))?.toFixed(2)}
             balance={currentAssetInfo?.balance}
-            recieveAmount={formatBigInt(expected, 18, 2)}
+            receiveAmount={formatBigInt(expected, 18, 2)}
             setMaxBalance={() => {}}
             onValueChange={(value: bigint | undefined) => setWeiValue(value)}
           />

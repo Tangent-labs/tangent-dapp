@@ -3,7 +3,7 @@
 import React from "react"
 
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
-import { DepositRecieveInput } from "@/components/design_system/inputs/deposit_recieve_input"
+import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
 
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import FormButtons from "@/components/design_system/form/form_actions"
@@ -37,7 +37,7 @@ export default function TgUsdWithdrawPanel() {
             <span className="text-2xl">Withdraw collateral {collateralInfo.symbol}</span>
           </div>
           <div>
-            <DepositRecieveInput
+            <DepositReceiveInput
               displayRecieve={false}
               depositAmount={withdrawWeiValue}
               labelDeposit="You withdraw"

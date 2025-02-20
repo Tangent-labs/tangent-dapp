@@ -7,78 +7,116 @@ import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatBigInt, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
-import DisplayReceivePanel from "./display_recieve_panel"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { IconThunder } from "@/components/icons/icon_thunder"
+import { IconChevron } from "@/components/icons/icon_chevron"
 
-type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
+  receiveAsset?: AssetDataPriced
   className?: string
   depositAmount?: bigint
   balance?: bigint
   disabled?: boolean
   labelDeposit?: string
-  receiveAmount?: string
+  receiveAmount?: bigint
   receiveDollarValue?: string
   labelReceive?: string
   depositSelect: ReactNode
   depositInput?: ReactNode
   receiveAssetDisplay?: ReactNode
   onValueChange: (value: bigint | undefined) => void
+  onTangentValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
-  displayRecieve?: boolean
   displayBalance?: boolean
   isZapping?: boolean
   isLoading?: boolean
+  isBuying?: boolean
+  setIsBuying: (arg: boolean) => void
 }
 
-export function DepositReceiveInput({
+export function BuySellInput({
   className,
   depositAmount,
   balance,
   depositAsset,
+  receiveAsset,
   receiveAmount,
   receiveDollarValue,
-  labelDeposit = "You Deposit",
-  labelReceive = "You Stake",
+  labelDeposit = "You Sell",
+  labelReceive = "You Buy",
   setMaxBalance,
   onValueChange,
+  onTangentValueChange,
   depositSelect = <></>,
   receiveAssetDisplay = <></>,
-  displayRecieve = true,
   displayBalance = true,
   isZapping = false,
+  isBuying = false,
+  setIsBuying,
   isLoading = false,
   ...props
-}: DepositReceiveInputProps) {
+}: BuySellInputProps) {
+  const [isDepositUserInput, setIsDepositUserInput] = useState(false)
+
+  const [isReceiveUserInput, setIsReceiveUserInput] = useState(false)
+
   const [innerValue, setInnerValue] = useState<number | undefined>(
     depositAmount !== undefined ? Number(formatUnits(depositAmount, depositAsset?.decimals || 0)) : undefined
   )
-
-  const [isUserInput, setIsUserInput] = useState(false)
 
   useEffect(() => {
     if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
       const updatedValue = Number(Number(formatUnits(depositAmount, depositAsset.decimals)).toFixed(4))
       setInnerValue(updatedValue)
-      setIsUserInput(false)
+      setIsDepositUserInput(false)
     }
   }, [depositAmount, depositAsset])
 
   useEffect(() => {
-    if (!depositAsset?.decimals || !isUserInput) return
+    if (!isDepositUserInput) return
 
     const handler = setTimeout(() => {
-      const val = innerValue ? toBigInt(Number(innerValue), depositAsset.decimals) : undefined
+      const val = innerValue ? toBigInt(Number(innerValue), 18) : undefined
       onValueChange(val)
     }, 500)
 
     return () => clearTimeout(handler)
-  }, [innerValue, depositAsset, isUserInput])
+  }, [innerValue, depositAsset, isDepositUserInput])
+
+  //
+  //
+  const [innerTangentValue, setInnerTangentValue] = useState<number | undefined>(
+    receiveAmount !== undefined ? Number(formatUnits(receiveAmount, 18)) : undefined
+  )
+
+  useEffect(() => {
+    if (receiveAmount !== undefined) {
+      const updatedValue = Number(Number(formatUnits(receiveAmount, 18)).toFixed(4))
+      setInnerTangentValue(updatedValue)
+      setIsReceiveUserInput(false)
+    }
+  }, [receiveAmount, receiveAsset])
+
+  useEffect(() => {
+    if (!isReceiveUserInput) return
+
+    const handler = setTimeout(() => {
+      const val = innerTangentValue ? toBigInt(Number(innerTangentValue), 18) : undefined
+      onTangentValueChange(val)
+    }, 500)
+
+    return () => clearTimeout(handler)
+  }, [innerTangentValue, receiveAsset, isReceiveUserInput])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsUserInput(true)
+    setIsDepositUserInput(true)
     setInnerValue(e.target.value ? Number(e.target.value) : undefined)
+  }
+
+  const handleInputTangentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsReceiveUserInput(true)
+    setInnerTangentValue(e.target.value ? Number(e.target.value) : undefined)
   }
 
   const displayBalanceData = useMemo(() => {
@@ -136,14 +174,32 @@ export function DepositReceiveInput({
           )}
         </div>
       </PanelRaw>
-      {displayRecieve && (
-        <DisplayReceivePanel
-          labelReceive={labelReceive}
-          receiveAmount={receiveAmount}
-          receiveAssetDisplay={receiveAssetDisplay}
-          receiveDollarValue={receiveDollarValue}
-        />
-      )}
+
+      <PanelRaw onClick={() => setIsBuying(!isBuying)} className="flex w-full cursor-pointer items-center justify-center border-none">
+        <IconChevron className="h-auto w-8 rounded-lg border border-white/10 p-2 text-row-tonic" />
+      </PanelRaw>
+
+      <PanelRaw className="flex flex-col gap-1 !bg-opacity-20 p-2">
+        <div className="text-sm text-gray-400">{labelReceive}</div>
+        <div className="mb-2 flex justify-between">
+          <div className="text-xl font-medium">
+            <input
+              disabled={isLoading}
+              type="number"
+              value={innerTangentValue}
+              placeholder="Amount"
+              onInput={handleInputTangentChange}
+              className={cn(
+                "min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
+              )}
+            />
+          </div>
+          <div>{receiveAssetDisplay}</div>
+        </div>
+        <div className="flex justify-between text-xs text-gray-400">
+          <div>$({receiveDollarValue})</div>
+        </div>
+      </PanelRaw>
     </div>
   )
 }

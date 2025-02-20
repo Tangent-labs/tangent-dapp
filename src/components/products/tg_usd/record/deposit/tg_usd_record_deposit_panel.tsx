@@ -4,7 +4,7 @@ import Image from "next/image"
 import { useTgUsdDepositContext } from "./tg_usd_record_deposit_context"
 import { Switch } from "@/components/ui/switch"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
-import { DepositRecieveInput } from "@/components/design_system/inputs/deposit_recieve_input"
+import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -83,7 +83,6 @@ export default function TgUsdDepositPanel() {
       <CustomSelect
         className="w-full min-w-48"
         template={AssetSelectTemplate}
-        placeholder="Select an asset"
         value={depositAsset || collateralInfo.name}
         options={assets}
         onChange={(v: string) => setDepositAsset(v)}
@@ -112,6 +111,7 @@ export default function TgUsdDepositPanel() {
       </PanelRaw>
     )
   }
+
   const BorrowAssetDisplay = () => {
     return (
       <PanelRaw className="flex w-48 items-center gap-2 border-white !bg-opacity-0 px-4 py-2 !backdrop-blur-none">
@@ -152,17 +152,17 @@ export default function TgUsdDepositPanel() {
         </div>
       </div>
 
-      <DepositRecieveInput
+      <DepositReceiveInput
         displayRecieve={false}
         depositAmount={depositWeiValue}
         depositSelect={<AssetSelect />}
         disabled={!canInteract}
         isLoading={isDepositLoading}
-        recieveAssetDisplay={<DepositAssetDisplay />}
+        receiveAssetDisplay={<DepositAssetDisplay />}
         depositAsset={depositAssetInfo || collateralInfo}
-        recieveDollarValue={(Number(swapAssetPrice) * Number(formatUnits(depositWeiValue || 0n, 18))).toFixed(2)}
+        receiveDollarValue={(Number(swapAssetPrice) * Number(formatUnits(depositWeiValue || 0n, 18))).toFixed(2)}
         balance={!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance}
-        recieveAmount={"0"}
+        receiveAmount={"0"}
         isZapping={!!depositAsset && depositAsset !== collateralInfo?.name}
         setMaxBalance={() => {
           setDepositWeiValue(marketData?.collateralBalance || 0n)
@@ -211,7 +211,7 @@ export default function TgUsdDepositPanel() {
           </div>
 
           <div>
-            <DepositRecieveInput
+            <DepositReceiveInput
               displayRecieve={false}
               depositAmount={borrowWeiValue}
               labelDeposit="You borrow"

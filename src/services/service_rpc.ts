@@ -9,7 +9,6 @@ import {
   decodeErrorResult,
   encodeDeployData,
   EncodeFunctionDataParameters,
-  EncodeFunctionDataReturnType,
   Hash,
   Hex,
   http,
@@ -84,25 +83,6 @@ export const waitForTransaction = async (hash: Hash) => {
   const publicClient = await getPublicClient()
   const receipt = await publicClient.waitForTransactionReceipt({ hash })
   return receipt.status === "success"
-}
-
-export const executeTransaction = async (client: WalletClient, txData: { data: EncodeFunctionDataReturnType; to?: Address }) => {
-  try {
-    const [address] = await client.getAddresses()
-    const txHash = await client.request({
-      method: "eth_sendTransaction",
-      params: [
-        {
-          ...txData,
-          from: address,
-        },
-      ],
-    })
-    return txHash
-  } catch (e) {
-    console.error(e)
-    throw e
-  }
 }
 
 export const getDeployTx = (abi: Abi, byteCode: Hex, args?: unknown[]) => {

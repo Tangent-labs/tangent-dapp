@@ -16,19 +16,18 @@ type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   receiveAsset?: AssetDataPriced
   className?: string
   depositAmount?: bigint
-  balance?: bigint
+  depositBalance?: bigint
+  receiveBalance?: bigint
   disabled?: boolean
   labelDeposit?: string
   receiveAmount?: bigint
-  receiveDollarValue?: string
   labelReceive?: string
   depositSelect: ReactNode
   depositInput?: ReactNode
-  receiveAssetDisplay?: ReactNode
+  receiveSelect?: ReactNode
   onValueChange: (value: bigint | undefined) => void
   onTangentValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
-  displayBalance?: boolean
   isZapping?: boolean
   isLoading?: boolean
   isBuying?: boolean
@@ -38,19 +37,18 @@ type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 export function BuySellInput({
   className,
   depositAmount,
-  balance,
+  depositBalance,
+  receiveBalance,
   depositAsset,
   receiveAsset,
   receiveAmount,
-  receiveDollarValue,
   labelDeposit = "You Sell",
   labelReceive = "You Buy",
   setMaxBalance,
   onValueChange,
   onTangentValueChange,
   depositSelect = <></>,
-  receiveAssetDisplay = <></>,
-  displayBalance = true,
+  receiveSelect = <></>,
   isZapping = false,
   isBuying = false,
   setIsBuying,
@@ -58,7 +56,6 @@ export function BuySellInput({
   ...props
 }: BuySellInputProps) {
   const [isDepositUserInput, setIsDepositUserInput] = useState(false)
-
   const [isReceiveUserInput, setIsReceiveUserInput] = useState(false)
 
   const [innerValue, setInnerValue] = useState<number | undefined>(
@@ -66,10 +63,15 @@ export function BuySellInput({
   )
 
   useEffect(() => {
-    if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
-      const updatedValue = Number(Number(formatUnits(depositAmount, depositAsset.decimals)).toFixed(4))
-      setInnerValue(updatedValue)
-      setIsDepositUserInput(false)
+    if (!isDepositUserInput) {
+      if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
+        const updatedValue = Number(Number(formatUnits(depositAmount, depositAsset.decimals)).toFixed(4))
+        setInnerValue(updatedValue)
+      } else {
+        setInnerValue(undefined)
+      }
+    } else if (!isDepositUserInput && depositAmount === undefined) {
+      setInnerValue(undefined)
     }
   }, [depositAmount, depositAsset])
 
@@ -77,24 +79,27 @@ export function BuySellInput({
     if (!isDepositUserInput) return
 
     const handler = setTimeout(() => {
-      const val = innerValue ? toBigInt(Number(innerValue), 18) : undefined
+      const val = innerValue !== undefined ? toBigInt(Number(innerValue), depositAsset?.decimals || 18) : undefined
       onValueChange(val)
     }, 500)
 
     return () => clearTimeout(handler)
-  }, [innerValue, depositAsset, isDepositUserInput])
+  }, [innerValue, depositAsset])
 
-  //
-  //
   const [innerTangentValue, setInnerTangentValue] = useState<number | undefined>(
-    receiveAmount !== undefined ? Number(formatUnits(receiveAmount, 18)) : undefined
+    receiveAmount !== undefined ? Number(formatUnits(receiveAmount, receiveAsset?.decimals || 18)) : undefined
   )
 
   useEffect(() => {
-    if (receiveAmount !== undefined) {
-      const updatedValue = Number(Number(formatUnits(receiveAmount, 18)).toFixed(4))
-      setInnerTangentValue(updatedValue)
-      setIsReceiveUserInput(false)
+    if (!isReceiveUserInput) {
+      if (receiveAmount !== undefined && receiveAsset?.decimals !== undefined) {
+        const updatedValue = Number(Number(formatUnits(receiveAmount, receiveAsset.decimals)).toFixed(4))
+        setInnerTangentValue(updatedValue)
+      } else {
+        setInnerTangentValue(undefined)
+      }
+    } else if (!isReceiveUserInput && receiveAmount === undefined) {
+      setInnerTangentValue(undefined)
     }
   }, [receiveAmount, receiveAsset])
 
@@ -102,65 +107,82 @@ export function BuySellInput({
     if (!isReceiveUserInput) return
 
     const handler = setTimeout(() => {
-      const val = innerTangentValue ? toBigInt(Number(innerTangentValue), 18) : undefined
+      const val = innerTangentValue !== undefined ? toBigInt(Number(innerTangentValue), receiveAsset?.decimals || 18) : undefined
       onTangentValueChange(val)
     }, 500)
 
     return () => clearTimeout(handler)
-  }, [innerTangentValue, receiveAsset, isReceiveUserInput])
+  }, [innerTangentValue, receiveAsset])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsDepositUserInput(true)
+    setIsReceiveUserInput(false)
     setInnerValue(e.target.value ? Number(e.target.value) : undefined)
   }
 
   const handleInputTangentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsReceiveUserInput(true)
+    setIsDepositUserInput(false)
+
     setInnerTangentValue(e.target.value ? Number(e.target.value) : undefined)
   }
 
-  const displayBalanceData = useMemo(() => {
-    const formattedBalance = formatBigInt(balance || "0", depositAsset?.decimals || 18, depositAsset?.displayDecimals || 2)
+  const displayDepositBalanceData = useMemo(() => {
+    const formattedBalance = formatBigInt(depositBalance || "0", depositAsset?.decimals || 18, depositAsset?.displayDecimals || 2)
     return `${formattedBalance} ${depositAsset?.symbol || ""}`
-  }, [balance, depositAsset])
+  }, [depositBalance, depositAsset])
 
   const dollarDepositDisplay = useMemo(() => {
     const val = Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals || 0)) * (depositAsset?.price || 0)
     return val?.toFixed(2) || "-"
   }, [depositAmount, depositAsset])
 
+  const displayReceiveBalanceData = useMemo(() => {
+    const formattedBalance = formatBigInt(receiveBalance || "0", receiveAsset?.decimals || 18, receiveAsset?.displayDecimals || 2)
+    return `${formattedBalance} ${receiveAsset?.symbol || ""}`
+  }, [receiveBalance, receiveAsset])
+
+  const dollarReceiveDisplay = useMemo(() => {
+    const val = Number(formatUnits(receiveAmount || BigInt(0), receiveAsset?.decimals || 0)) * (receiveAsset?.price || 0)
+    return val?.toFixed(2) || "-"
+  }, [receiveAmount, receiveAsset])
+
   return (
-    <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <PanelRaw className={`${isLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
-        <div className="flex w-full justify-between">
-          <div className="text-sm text-gray-400">{labelDeposit}</div>
-          {isZapping && (
-            <div className="flex items-center justify-center gap-1">
-              <div className="text-sm text-gray-400">Zap</div>
-              <IconThunder className="h-auto w-[8px] text-row-tonic" />
-              <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
-            </div>
-          )}
-        </div>
-        <div className="mb-2 flex flex-col justify-between lg:flex-row">
-          <div className="order-2 text-xl lg:order-1">
-            <input
-              {...props}
-              disabled={isLoading}
-              type="number"
-              value={innerValue}
-              placeholder="Amount"
-              onInput={handleInputChange}
-              className={cn(
-                "min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
-              )}
-            />
+    <div className="flex flex-col gap-2">
+      <div className="mt-6 flex w-full flex-col items-start justify-start font-bold">
+        {labelDeposit === "You Buy" ? "Sell" : "Buy"} {receiveAsset?.symbol}
+      </div>
+
+      <div className={cn("flex flex-col gap-2", className)} {...props}>
+        <PanelRaw className={`${isLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
+          <div className="flex w-full justify-between">
+            <div className="text-sm text-gray-400">{labelDeposit}</div>
+            {isZapping && (
+              <div className="flex items-center justify-center gap-1">
+                <div className="text-sm text-gray-400">Zap</div>
+                <IconThunder className="h-auto w-[8px] text-row-tonic" />
+                <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
+              </div>
+            )}
           </div>
-          <div className="order-1 lg:order-2">{depositSelect}</div>
-        </div>
-        <div className="flex justify-between text-xs text-gray-400">
-          <div>$({dollarDepositDisplay})</div>
-          {displayBalance && (
+          <div className="mb-2 flex flex-col justify-between lg:flex-row">
+            <div className="order-2 mr-4 text-xl lg:order-1">
+              <input
+                {...props}
+                disabled={isLoading}
+                type="number"
+                value={innerValue ?? ""} // Convert undefined to empty string for input
+                placeholder="Amount"
+                onChange={handleInputChange} // Use onChange instead of onInput for consistency
+                className={cn(
+                  "min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
+                )}
+              />
+            </div>
+            <div className="order-1 lg:order-2">{depositSelect}</div>
+          </div>
+          <div className="flex justify-between text-xs text-gray-400">
+            <div>$({dollarDepositDisplay})</div>
             <button
               className="flex cursor-pointer items-center"
               type="button"
@@ -168,38 +190,48 @@ export function BuySellInput({
                 if (setMaxBalance) setMaxBalance()
               }}
             >
-              <span>{displayBalanceData}</span>
+              <span>{displayDepositBalanceData}</span>
               <IconWallet className="w-6" />
             </button>
-          )}
-        </div>
-      </PanelRaw>
-
-      <PanelRaw onClick={() => setIsBuying(!isBuying)} className="flex w-full cursor-pointer items-center justify-center border-none">
-        <IconChevron className="h-auto w-8 rounded-lg border border-white/10 p-2 text-row-tonic" />
-      </PanelRaw>
-
-      <PanelRaw className="flex flex-col gap-1 !bg-opacity-20 p-2">
-        <div className="text-sm text-gray-400">{labelReceive}</div>
-        <div className="mb-2 flex justify-between">
-          <div className="text-xl font-medium">
-            <input
-              disabled={isLoading}
-              type="number"
-              value={innerTangentValue}
-              placeholder="Amount"
-              onInput={handleInputTangentChange}
-              className={cn(
-                "min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
-              )}
-            />
           </div>
-          <div>{receiveAssetDisplay}</div>
+        </PanelRaw>
+
+        <div onClick={() => setIsBuying(!isBuying)} className="flex w-full cursor-pointer items-center justify-center border-none">
+          <IconChevron className="h-auto w-8 rounded-lg border border-white/10 bg-opacity-[3%] p-2 text-row-tonic backdrop-blur-[30px]" />
         </div>
-        <div className="flex justify-between text-xs text-gray-400">
-          <div>$({receiveDollarValue})</div>
-        </div>
-      </PanelRaw>
+
+        <PanelRaw className={`${isLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
+          <div className="text-sm text-gray-400">{labelReceive}</div>
+          <div className="mb-2 flex justify-between">
+            <div className="mr-4 text-xl font-medium">
+              <input
+                disabled={isLoading}
+                type="number"
+                value={innerTangentValue ?? ""}
+                placeholder="Amount"
+                onChange={handleInputTangentChange}
+                className={cn(
+                  "min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
+                )}
+              />
+            </div>
+            <div>{receiveSelect}</div>
+          </div>
+          <div className="flex justify-between text-xs text-gray-400">
+            <div>$({dollarReceiveDisplay})</div>
+            <button
+              className="flex cursor-pointer items-center"
+              type="button"
+              onClick={() => {
+                if (setMaxBalance) setMaxBalance()
+              }}
+            >
+              <span>{displayReceiveBalanceData}</span>
+              <IconWallet className="w-6" />
+            </button>
+          </div>
+        </PanelRaw>
+      </div>
     </div>
   )
 }

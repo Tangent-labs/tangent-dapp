@@ -31,14 +31,13 @@ export const getTokenInQuote = async (
 
 export const getRouteTxData = async (
   amountIn: bigint | undefined,
-  collateralInfo: AssetDataPriced,
+  user: Address,
+  receiveAssetInfo: AssetDataPriced,
   depositAssetInfo: AssetDataPriced,
-  fromAddress: Address,
-  receiver: Address,
   slippage?: number
 ) => {
   try {
-    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${fromAddress}&receiver=${receiver}&tokenIn=${depositAssetInfo?.address}&tokenOut=${collateralInfo?.address.trim()}&amountIn=${amountIn}&slippage=${slippage}&routingStrategy=router`
+    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${user}&receiver=${user}&tokenIn=${depositAssetInfo?.address}&tokenOut=${receiveAssetInfo?.address.trim()}&amountIn=${amountIn}&slippage=${slippage}&routingStrategy=router`
 
     const response = await fetch(url, {
       method: "GET",

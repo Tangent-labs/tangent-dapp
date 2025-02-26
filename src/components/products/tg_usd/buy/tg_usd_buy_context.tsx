@@ -2,10 +2,24 @@
 
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { BalanceAllowanceData, ZapToken } from "../tg_usd_type"
-import { Address } from "viem"
+import { Abi, Address } from "viem"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { computeSwapAssetPrice, getBalances, getZapTokenBalanceAllowance } from "./tg_usd_buy_controller"
-import { AssetDataPriced } from "@/types"
+import {
+  computeSwapAssetPrice,
+  doApprove,
+  doCustomQuote,
+  doCustomSwap,
+  doSwap,
+  fetchEnsoData,
+  getBalances,
+  getContractToCall,
+  getBuyFormState,
+  getQuoteFunction,
+  getQuoteType,
+  getSwapFunctionName,
+  getZapTokenBalanceAllowance,
+} from "./tg_usd_buy_controller"
+import { AssetDataPriced, FormState } from "@/types"
 import { getTokenInQuote, getTokenOutQuote } from "./buy_actions"
 
 type TgUsdBuyContextProps = {
@@ -49,26 +63,34 @@ type TgUsdBuyContextValues = {
   handleDepositChange: (arg: bigint | undefined) => void
 
   handleReceiveChange: (arg: bigint | undefined) => void
+
+  actionSwap: () => void
+
+  actionApprove: () => void
+
+  formState: FormState
 }
 
 export const TgUsdBuyContext = createContext<TgUsdBuyContextValues | undefined>(undefined)
 
 export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => {
-  const { getWalletClient, currentAddress } = useWalletConnexionContext()
+  const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const [isBuying, setIsBuying] = useState<boolean>(true)
 
-  const [receiveAsset, setReceiveAsset] = useState<string | undefined>(undefined)
+  const [receiveAsset, setReceiveAsset] = useState<string>("tgUSD")
 
-  const [depositAsset, setDepositAsset] = useState<string | undefined>(undefined)
+  const [depositAsset, setDepositAsset] = useState<string>("ETH")
 
   const [isZapLoading, setIsSwapLoading] = useState(false)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
 
   const [receiveWeiValue, setReceiveWeiValue] = useState<bigint | undefined>()
+
+  const [ensoRouterAddress, setEnsoRouterAddress] = useState<Address | undefined>(undefined)
 
   const [swapAssetPrice, setSwapAssetPrice] = useState<number | null>(null)
 
@@ -86,7 +108,25 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
         displayDecimals: 5,
         symbol: "ETH",
         name: "ETH",
-        price: swapedAssetPrice,
+        price: swapAssetPrice,
+      } as AssetDataPriced
+    } else if (receiveAsset === "tgUSD") {
+      return {
+        address: "0x39826E09f8efb9df4C56Aeb9eEC0D2B8164d3B36",
+        decimals: 18,
+        displayDecimals: 5,
+        symbol: "tgUSD",
+        name: "tgUSD",
+        price: 1,
+      } as AssetDataPriced
+    } else if (receiveAsset === "sgUSD") {
+      return {
+        address: "0x24eede899ed11525e2977a9673b3898e7705af3d",
+        decimals: 18,
+        displayDecimals: 5,
+        symbol: "sgUSD",
+        name: "sgUSD",
+        price: 1,
       } as AssetDataPriced
     }
 
@@ -116,6 +156,24 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
         name: "ETH",
         price: swapAssetPrice,
       } as AssetDataPriced
+    } else if (depositAsset === "tgUSD") {
+      return {
+        address: "0x39826E09f8efb9df4C56Aeb9eEC0D2B8164d3B36",
+        decimals: 18,
+        displayDecimals: 5,
+        symbol: "tgUSD",
+        name: "tgUSD",
+        price: 1,
+      } as AssetDataPriced
+    } else if (depositAsset === "sgUSD") {
+      return {
+        address: "0x24eede899ed11525e2977a9673b3898e7705af3d",
+        decimals: 18,
+        displayDecimals: 5,
+        symbol: "sgUSD",
+        name: "sgUSD",
+        price: 1,
+      } as AssetDataPriced
     }
 
     const assetInfo = tokens.find((el: ZapToken) => el.name === depositAsset) || undefined
@@ -135,13 +193,16 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
   }, [depositAsset, swapAssetPrice])
 
   const fetchBalanceAllowanceData = async () => {
-    if (!depositAssetInfo) return
+    if (!depositAssetInfo || !receiveAssetInfo) return
 
     try {
       const walletClient = getWalletClient()
       if (!walletClient) throw new Error("Wallet client not found")
 
-      const data = await getZapTokenBalanceAllowance(walletClient, depositAssetInfo.address)
+      const quoteType = getQuoteType(depositAssetInfo?.address, receiveAssetInfo?.address)
+      const spenderAddress = (!!ensoRouterAddress && quoteType === "enso" ? ensoRouterAddress : receiveAssetInfo?.address) as Address
+
+      const data = await getZapTokenBalanceAllowance(walletClient, depositAssetInfo.address, spenderAddress)
 
       setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
     } catch (error) {
@@ -172,6 +233,15 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
   const handleReceiveChange = (value: bigint | undefined) => {
     setReceiveWeiValue(value)
 
+    if (value === undefined) {
+      setDepositWeiValue(undefined)
+      return
+    }
+
+    if (!depositAssetInfo || !receiveAssetInfo) return
+
+    const quote = getQuoteType(depositAssetInfo?.symbol, receiveAssetInfo?.symbol)
+
     const fetchValue = async () => {
       if (!value || !currentAddress || !depositAssetInfo || !receiveAssetInfo) return
 
@@ -189,11 +259,31 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
       }
     }
 
-    fetchValue()
+    if (quote === "enso") {
+      fetchValue()
+    } else if (quote === "1") {
+      setDepositWeiValue(value)
+    } else {
+      const method = getQuoteFunction(depositAssetInfo?.symbol, receiveAssetInfo?.symbol)
+      if (depositWeiValue && method) {
+        doCustomQuote(method, depositWeiValue, currentAddress, receiveAssetInfo?.address).then((v) => {
+          setDepositWeiValue(v as bigint)
+        })
+      }
+    }
   }
 
   const handleDepositChange = (value: bigint | undefined) => {
     setDepositWeiValue(value)
+
+    if (value === undefined) {
+      setReceiveWeiValue(undefined)
+      return
+    }
+
+    if (!depositAssetInfo || !receiveAssetInfo) return
+
+    const quote = getQuoteType(depositAssetInfo?.symbol, receiveAssetInfo?.symbol)
 
     const fetchSwapValue = async () => {
       if (!value || !currentAddress || !depositAssetInfo || !receiveAssetInfo) return
@@ -204,6 +294,7 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
 
         if (data) {
           setReceiveWeiValue(data.amountOut)
+          setEnsoRouterAddress(data?.tx?.to)
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)
@@ -212,7 +303,18 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
       }
     }
 
-    fetchSwapValue()
+    if (quote === "enso") {
+      fetchSwapValue()
+    } else if (quote === "1") {
+      setReceiveWeiValue(value)
+    } else {
+      const method = getQuoteFunction(depositAssetInfo?.symbol, receiveAssetInfo?.symbol)
+      if (value && method) {
+        doCustomQuote(method, value, currentAddress, receiveAssetInfo?.address).then((v) => {
+          setReceiveWeiValue(v as bigint)
+        })
+      }
+    }
   }
 
   useEffect(() => {
@@ -255,6 +357,78 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
     fetchBalanceAllowanceData()
   }, [depositAssetInfo])
 
+  const actionApprove = async () => {
+    setIsLoading(true)
+    const walletClient = getWalletClient()
+
+    if (walletClient && receiveAssetInfo && depositAssetInfo) {
+      const quoteType = getQuoteType(depositAssetInfo?.address, receiveAssetInfo?.address)
+      const spender = (!!ensoRouterAddress && quoteType === "enso" ? ensoRouterAddress : receiveAssetInfo?.address) as Address
+
+      await doApprove(walletClient, depositAssetInfo?.address, depositWeiValue || 0n, spender)
+        .then(() => {
+          fetchBalanceAllowanceData()
+          setIsLoading(false)
+        })
+        .catch((error) => {
+          console.error("Error during approval:", error)
+        })
+    }
+  }
+
+  const actionSwap = async () => {
+    setIsLoading(true)
+
+    if (!depositAssetInfo || !receiveAssetInfo || !depositWeiValue) return
+
+    const walletClient = getWalletClient()
+
+    const swapFn = getSwapFunctionName(depositAssetInfo?.symbol, receiveAssetInfo?.symbol)
+
+    if (swapFn && walletClient) {
+      const contract = getContractToCall(depositAssetInfo?.symbol, receiveAssetInfo?.symbol)
+
+      await doCustomSwap(walletClient, contract?.abi as Abi, swapFn, depositWeiValue || 0n, receiveAssetInfo?.address)
+        .then(() => {
+          fetchBalanceAllowanceData()
+          setIsLoading(false)
+        })
+        .catch((error) => {
+          console.error("Error during approval:", error)
+          setIsLoading(false)
+        })
+    } else {
+      if (!depositWeiValue || !currentAddress) return
+
+      try {
+        const { routerCallData } = await fetchEnsoData(depositWeiValue, currentAddress, receiveAssetInfo, depositAssetInfo, 1)
+
+        const walletClient = getWalletClient()
+
+        await doSwap(walletClient!, routerCallData)
+
+        setDepositWeiValue(undefined)
+        setReceiveWeiValue(undefined)
+        fetchBalanceAllowanceData()
+        setIsLoading(false)
+      } catch (error) {
+        console.error("Error in actionSwap:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+  }
+
+  useEffect(() => {
+    setDepositWeiValue(undefined)
+    setReceiveWeiValue(undefined)
+  }, [isBuying, depositAsset, receiveAsset])
+
+  const formState = useMemo(
+    () => getBuyFormState(depositWeiValue, receiveWeiValue, isWellConnected, depositAssetInfo!, receiveAssetInfo!, balanceAllowanceData!),
+    [depositWeiValue, receiveWeiValue, isWellConnected, depositAssetInfo, receiveAssetInfo, balanceAllowanceData!]
+  )
+
   const contextValue: TgUsdBuyContextValues = {
     isLoading,
     depositWeiValue,
@@ -277,6 +451,9 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
     receiveWeiValue,
     receiveAssetInfo,
     setReceiveWeiValue,
+    actionApprove,
+    actionSwap,
+    formState,
   }
 
   return <TgUsdBuyContext.Provider value={contextValue}>{children}</TgUsdBuyContext.Provider>

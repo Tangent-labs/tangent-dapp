@@ -9,7 +9,8 @@ import { ZapToken } from "../tg_usd_type"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { tgUsdTokens } from "../tg_usd_repository"
 import { formatBigInt } from "@/lib/number_formatter"
-import { Address, formatUnits } from "viem"
+import { Address } from "viem"
+import FormButtons from "@/components/design_system/form/form_actions"
 
 export default function TgUsdBuyContent() {
   const {
@@ -18,13 +19,15 @@ export default function TgUsdBuyContent() {
     handleReceiveChange,
     setDepositAsset,
     setReceiveAsset,
+    actionSwap,
+    actionApprove,
+    formState,
     depositAssetInfo,
     depositWeiValue,
     depositAsset,
     receiveAsset,
     tokens,
     isBuying,
-    swapAssetPrice,
     balances,
     isLoading,
     balanceAllowanceData,
@@ -34,13 +37,14 @@ export default function TgUsdBuyContent() {
 
   const ReceiveAssetSelect = () => {
     if (!balances) {
-      return null
+      return (
+        <CustomSelect className="w-full min-w-40" template={AssetSelectTemplate} value={"tgUSD"} options={[]} onChange={(v: string) => setReceiveAsset(v)} />
+      )
     }
 
     const tgTokens = Object.entries(tgUsdTokens).flatMap(([, tokens]) => {
       return Object.entries(tokens).map(([name, address]) => ({
         name,
-
         symbol: name,
         value: name,
         address,
@@ -84,7 +88,7 @@ export default function TgUsdBuyContent() {
 
   const DepositAssetSelect = () => {
     if (!balances) {
-      return null
+      return <CustomSelect className="w-full min-w-40" template={AssetSelectTemplate} value={"ETH"} options={[]} onChange={(v: string) => setDepositAsset(v)} />
     }
 
     const tgTokens = Object.entries(tgUsdTokens).flatMap(([, tokens]) =>
@@ -168,27 +172,37 @@ export default function TgUsdBuyContent() {
         </div>
       </div>
 
-      <div className="mt-6 flex w-full items-center justify-center">
+      <div className="mt-2 flex w-full flex-col items-center justify-center">
         <BuySellInput
           className={`${isBuying ? " " : "!flex-col-reverse"}`}
           depositAmount={depositWeiValue}
           depositSelect={<DepositAssetSelect />}
           disabled={false}
           isLoading={isLoading}
-          receiveAssetDisplay={<ReceiveAssetSelect />}
+          receiveSelect={<ReceiveAssetSelect />}
           labelDeposit={isBuying ? "You Sell" : "You Buy"}
           labelReceive={isBuying ? "You Buy" : "You Sell"}
           setIsBuying={setIsBuying}
           isBuying={isBuying}
           depositAsset={depositAssetInfo!}
-          receiveDollarValue={depositWeiValue ? (Number(swapAssetPrice) * Number(formatUnits(depositWeiValue || 0n, 18))).toFixed(2) : "0"}
-          balance={balanceAllowanceData?.balance ?? 0n}
+          depositBalance={balanceAllowanceData?.balance ?? 0n}
           receiveAmount={receiveWeiValue}
           receiveAsset={receiveAssetInfo!}
           setMaxBalance={() => {}}
           onValueChange={handleDepositChange}
           onTangentValueChange={handleReceiveChange}
         />
+
+        <div className="flex w-full max-w-96">
+          <FormButtons
+            actions={{
+              handleApprove: actionApprove,
+              handleProcess: actionSwap,
+            }}
+            formState={formState}
+            labelProcess="Swap"
+          />
+        </div>
       </div>
     </>
   )

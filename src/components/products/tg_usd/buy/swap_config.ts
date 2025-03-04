@@ -1,0 +1,213 @@
+export type SwapConfig = {
+  approval: "approve" | "noApprovalNeeded"
+  quote: "convertToShares" | "convertToAssets" | "1" | "enso"
+  swap: "redeem" | "deposit" | "mint" | "burn" | null
+  isStaked: boolean
+  contract: string
+  quoteContract?: string
+}
+
+export const swapConfig: { [inToken: string]: { [outToken: string]: SwapConfig } } = {
+  wfrxUSD: {
+    frxUSD: {
+      approval: "noApprovalNeeded",
+      quote: "1",
+      swap: "burn",
+      isStaked: false,
+      contract: "wfrxUSD",
+    },
+    sfrxUSD: {
+      approval: "noApprovalNeeded",
+      quote: "convertToShares",
+      quoteContract: "sfrxUSD",
+      swap: "burn",
+      isStaked: true,
+      contract: "wfrxUSD",
+    },
+  },
+  wcrvUSD: {
+    crvUSD: {
+      approval: "noApprovalNeeded",
+      quote: "1",
+      swap: "burn",
+      isStaked: false,
+      contract: "wcrvUSD",
+    },
+    scrvUSD: {
+      approval: "noApprovalNeeded",
+      quote: "convertToShares",
+      quoteContract: "scrvUSD",
+      swap: "burn",
+      isStaked: true,
+      contract: "wcrvUSD",
+    },
+  },
+  wUSDe: {
+    USDe: {
+      approval: "noApprovalNeeded",
+      quote: "1",
+      swap: "burn",
+      isStaked: false,
+      contract: "wUSDe",
+    },
+    sUSDe: {
+      approval: "noApprovalNeeded",
+      quote: "convertToShares",
+      quoteContract: "sUSDe",
+      swap: "burn",
+      isStaked: true,
+      contract: "wUSDe",
+    },
+  },
+  wDOLA: {
+    DOLA: {
+      approval: "noApprovalNeeded",
+      quote: "1",
+      swap: "burn",
+      isStaked: false,
+      contract: "wDOLA",
+    },
+    sDOLA: {
+      approval: "noApprovalNeeded",
+      quote: "convertToShares",
+      quoteContract: "sDOLA",
+      swap: "burn",
+      isStaked: true,
+      contract: "wDOLA",
+    },
+  },
+  wUSR: {
+    USR: {
+      approval: "noApprovalNeeded",
+      quote: "1",
+      swap: "burn",
+      isStaked: false,
+      contract: "wUSR",
+    },
+    wstUSR: {
+      approval: "noApprovalNeeded",
+      quote: "convertToShares",
+      quoteContract: "wstUSR",
+      swap: "burn",
+      isStaked: true,
+      contract: "wUSR",
+    },
+  },
+
+  tgUSD: {
+    sgUSD: {
+      approval: "approve",
+      quote: "convertToShares",
+      quoteContract: "sgUSD",
+      swap: "deposit",
+      isStaked: true,
+      contract: "sgUSD",
+    },
+  },
+  frxUSD: {
+    wfrxUSD: {
+      approval: "approve",
+      quote: "1",
+      swap: "mint",
+      isStaked: false,
+      contract: "wfrxUSD",
+    },
+  },
+  crvUSD: {
+    wcrvUSD: {
+      approval: "approve",
+      quote: "1",
+      swap: "mint",
+      isStaked: false,
+      contract: "wcrvUSD",
+    },
+  },
+  USDe: {
+    wUSDe: {
+      approval: "approve",
+      quote: "1",
+      swap: "mint",
+      isStaked: false,
+      contract: "wUSDe",
+    },
+  },
+  DOLA: {
+    wDOLA: {
+      approval: "approve",
+      quote: "1",
+      swap: "mint",
+      isStaked: false,
+      contract: "wDOLA",
+    },
+  },
+  USR: {
+    wUSR: {
+      approval: "approve",
+      quote: "1",
+      swap: "mint",
+      isStaked: false,
+      contract: "wUSR",
+    },
+  },
+
+  sgUSD: {
+    tgUSD: {
+      approval: "noApprovalNeeded",
+      quote: "convertToAssets",
+      quoteContract: "sgUSD",
+      swap: "redeem",
+      isStaked: true,
+      contract: "sgUSD",
+    },
+  },
+  sfrxUSD: {
+    wfrxUSD: {
+      approval: "approve",
+      quote: "convertToAssets",
+      quoteContract: "sfrxUSD",
+      swap: "mint",
+      isStaked: true,
+      contract: "wfrxUSD",
+    },
+  },
+  scrvUSD: {
+    wcrvUSD: {
+      approval: "approve",
+      quote: "convertToAssets",
+      quoteContract: "scrvUSD",
+      swap: "mint",
+      isStaked: true,
+      contract: "wcrvUSD",
+    },
+  },
+  sUSDe: {
+    wUSDe: {
+      approval: "approve",
+      quote: "convertToAssets",
+      quoteContract: "sUSDe",
+      swap: "mint",
+      isStaked: true,
+      contract: "wUSDe",
+    },
+  },
+  sDOLA: {
+    wDOLA: {
+      approval: "approve",
+      quote: "convertToAssets",
+      quoteContract: "sDOLA",
+      swap: "mint",
+      isStaked: true,
+      contract: "wDOLA",
+    },
+  },
+  wstUSR: {
+    wUSR: {
+      approval: "approve",
+      quote: "convertToAssets",
+      quoteContract: "wstUSR",
+      swap: "mint",
+      isStaked: true,
+      contract: "wUSR",
+    },
+  },
+}

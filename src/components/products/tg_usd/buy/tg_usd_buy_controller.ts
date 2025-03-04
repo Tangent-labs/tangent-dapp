@@ -3,7 +3,8 @@ import { Abi, Address, EstimateContractGasParameters, Hex, SendTransactionParame
 import GetBalances from "@/abi/tgusd/GetBalances.json"
 import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
 import IERC4626 from "@/abi/tgusd/IERC4626.json"
-import { BalanceAllowanceData, ZapToken } from "../tg_usd_type"
+import WStable from "@/abi/tgusd/WStable.json"
+import { BalanceAllowanceData, BuyToken } from "../tg_usd_type"
 import { getSwapAssetPrice } from "@/services/service_price"
 import { AssetDataPriced } from "@/types"
 import { getRouteTxData } from "./buy_actions"
@@ -12,7 +13,7 @@ export const getBalances = async (user: Address, tokens: Address[]) => {
   return await executeChainViewUnique<bigint[]>(GetBalances.abi as Abi, GetBalances.bytecode as Hex, [user, tokens])
 }
 
-export const getZapTokenBalanceAllowance = async (walletClient: WalletClient, address: Address | undefined, spender: Address | undefined) => {
+export const getBuyTokenBalanceAllowance = async (walletClient: WalletClient, address: Address | undefined, spender: Address | undefined) => {
   address = address || zeroAddress
   const [account] = await walletClient.requestAddresses()
 
@@ -22,9 +23,9 @@ export const getZapTokenBalanceAllowance = async (walletClient: WalletClient, ad
   ])
 }
 
-export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: string) => {
+export const computeSwapAssetPrice = async (tokens: BuyToken[], depositAsset: string) => {
   try {
-    const tokenAddress = tokens.find((el: ZapToken) => el.name === depositAsset) ? tokens.find((el: ZapToken) => el.name === depositAsset)?.address : undefined
+    const tokenAddress = tokens.find((el: BuyToken) => el.name === depositAsset) ? tokens.find((el: BuyToken) => el.name === depositAsset)?.address : undefined
     if (tokenAddress) {
       const data = await getSwapAssetPrice(tokenAddress)
       return data
@@ -63,16 +64,17 @@ export const doCustomQuote = async (method: string, depositValue: bigint, addres
   return previewCustomeQuote
 }
 
-export const doCustomSwap = async (walletClient: WalletClient, abi: Abi, method: string, amount: bigint, contractAddress: Address) => {
+export const doCustomSwap = async (walletClient: WalletClient, abi: Abi, method: string, amount: bigint, contractAddress: Address, isStaked?: boolean) => {
   const [account] = await walletClient.requestAddresses()
 
   const publicClient = await getPublicClient()
 
+  const fnArgs = method === "deposit" || method === "redeem" ? [amount, account] : [account, amount, isStaked]
+
   const estimateGasData = {
     abi,
     functionName: method,
-
-    args: [amount, account] as unknown[],
+    args: fnArgs as unknown[],
     address: contractAddress,
     account,
     value: 0n,
@@ -87,6 +89,7 @@ export const doCustomSwap = async (walletClient: WalletClient, abi: Abi, method:
 }
 
 export function getBuyFormState(
+  approveNotNeeded: boolean,
   depositWeiValue?: bigint,
   receiveWeiValue?: bigint,
   isWellConnected?: boolean,
@@ -94,8 +97,16 @@ export function getBuyFormState(
   receiveAssetInfo?: AssetDataPriced,
   balanceAllowanceData?: BalanceAllowanceData
 ) {
+  if (!depositAssetInfo || !receiveAssetInfo)
+    return {
+      canProcess: false,
+      cantProcessReasons: [],
+      haveToApprove: true,
+    }
+
   const reasons: string[] = []
-  const isApproved = !!depositAssetInfo && (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n)
+
+  const isApproved = approveNotNeeded || ((depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n) && !approveNotNeeded)
 
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
@@ -116,10 +127,8 @@ export function getBuyFormState(
   }
 }
 
-export async function doSwap(walletClient: WalletClient, routerCall: SendTransactionParameters) {
-  const tx = await walletClient?.sendTransaction(routerCall)
-
-  return tx
+export async function doSwap(walletClient: WalletClient, data: SendTransactionParameters) {
+  return await walletClient?.sendTransaction(data)
 }
 
 export const fetchEnsoData = async (
@@ -137,152 +146,10 @@ export const fetchEnsoData = async (
 }
 
 //
-//
 
-const tokenRoutingTable = new Map([
-  ["crvUSD-wcrvUSD", "1:1"],
-  ["wcrvUSD-crvUSD", "1:1"],
-  ["frxUSD-wfrxUSD", "1:1"],
-  ["wfrxUSD-frxUSD", "1:1"],
-  ["USDe-wUSDe", "1:1"],
-  ["wUSDe-USDe", "1:1"],
-  ["DOLA-wDOLA", "1:1"],
-  ["wDOLA-DOLA", "1:1"],
-  ["USR-wUSR", "1:1"],
-  ["wUSR-USR", "1:1"],
-  ["sfrxUSD-wfrxUSD", "custom"],
-  ["wfrxUSD-sfrxUSD", "custom"],
-  ["sUSDe-wUSDe", "custom"],
-  ["wUSDe-sUSDe", "custom"],
-  ["scrvUSD-wcrvUSD", "custom"],
-  ["wcrvUSD-scrvUSD", "custom"],
-  ["sDOLA-wDOLA", "custom"],
-  ["wDOLA-sDOLA", "custom"],
-  ["wstUSR-wUSR", "custom"],
-  ["wUSR-wstUSR", "custom"],
-  ["sgUSD-tgUSD", "custom"],
-  ["tgUSD-sgUSD", "custom"],
-])
-
-export const getQuoteType = (depositSymbol: string, receiveSymbol: string) => {
-  const pairKey = `${depositSymbol}-${receiveSymbol}`
-  const quote = tokenRoutingTable.get(pairKey)
-
-  if (quote === "1:1") return "1"
-  if (quote === "custom") return "custom"
-  return "enso"
-}
-
-const tokenQuoteFunctions = new Map([
-  ["tgUSD-sgUSD", "convertToShares"],
-  ["sgUSD-tgUSD", "convertToAssets"],
-  ["sDAI-DAI", "convertToAssets"],
-  ["DAI-sDAI", "convertToShares"],
-  ["sUSDe-USDe", "convertToAssets"],
-  ["USDe-sUSDe", "convertToShares"],
-  ["sfrxUSD-frxUSD", "convertToAssets"],
-  ["frxUSD-sfrxUSD", "convertToShares"],
-  ["sfrxUSD-wfrxUSD", "convertToAssets"],
-  ["wfrxUSD-sfrxUSD", "convertToShares"],
-  ["scrvUSD-wcrvUSD", "convertToAssets"],
-  ["wcrvUSD-scrvUSD", "convertToShares"],
-  ["sDOLA-wDOLA", "convertToAssets"],
-  ["wDOLA-sDOLA", "convertToShares"],
-  ["wstUSR-wUSR", "convertToAssets"],
-  ["wUSR-wstUSR", "convertToShares"],
-])
-
-export const getQuoteFunction = (depositSymbol: string, receiveSymbol: string) => {
-  return tokenQuoteFunctions.get(`${depositSymbol}-${receiveSymbol}`) || undefined
-}
-
-const tokenApprovalTable = new Map([
-  ["tgUSD-sgUSD", "approve"],
-  ["sgUSD-tgUSD", null],
-  ["frxUSD-wfrxUSD", "approve"],
-  ["sfrxUSD-wfrxUSD", "approve"],
-  ["wfrxUSD-frxUSD", null],
-  ["wfrxUSD-sfrxUSD", null],
-  ["crvUSD-wcrvUSD", "approve"],
-  ["scrvUSD-wcrvUSD", "approve"],
-  ["wcrvUSD-crvUSD", null],
-  ["wcrvUSD-scrvUSD", null],
-  ["USDe-wUSDe", "approve"],
-  ["sUSDe-wUSDe", "approve"],
-  ["wUSDe-USDe", null],
-  ["wUSDe-sUSDe", null],
-  ["DOLA-wDOLA", "approve"],
-  ["sDOLA-wDOLA", "approve"],
-  ["wDOLA-DOLA", null],
-  ["wDOLA-sDOLA", null],
-  ["USR-wUSR", "approve"],
-  ["wstUSR-wUSR", "approve"],
-  ["wUSR-USR", null],
-  ["wUSR-wstUSR", null],
-])
-
-export const getApprovalType = (depositSymbol: string, receiveSymbol: string) => {
-  const pairKey = `${depositSymbol}-${receiveSymbol}`
-  return tokenApprovalTable.get(pairKey) || "approve"
-}
-
-const tokenSwapTable = new Map([
-  ["tgUSD-sgUSD", "deposit"],
-  ["sgUSD-tgUSD", "redeem"],
-  ["frxUSD-wfrxUSD", "mint"],
-  ["sfrxUSD-wfrxUSD", "mint"],
-  ["wfrxUSD-frxUSD", "burn"],
-  ["wfrxUSD-sfrxUSD", "burn"],
-  ["crvUSD-wcrvUSD", "mint"],
-  ["scrvUSD-wcrvUSD", "mint"],
-  ["wcrvUSD-crvUSD", "burn"],
-  ["wcrvUSD-scrvUSD", "burn"],
-  ["USDe-wUSDe", "mint"],
-  ["sUSDe-wUSDe", "mint"],
-  ["wUSDe-USDe", "burn"],
-  ["wUSDe-sUSDe", "burn"],
-  ["DOLA-wDOLA", "mint"],
-  ["sDOLA-wDOLA", "mint"],
-  ["wDOLA-DOLA", "burn"],
-  ["wDOLA-sDOLA", "burn"],
-  ["USR-wUSR", "mint"],
-  ["wstUSR-wUSR", "mint"],
-  ["wUSR-USR", "burn"],
-  ["wUSR-wstUSR", "burn"],
-])
-
-export const getSwapFunctionName = (depositSymbol: string, receiveSymbol: string) => {
-  const pairKey = `${depositSymbol}-${receiveSymbol}`
-  return tokenSwapTable.get(pairKey) || null // Returns null if not found
-}
-
-// To update !
-const swapContract = new Map([
-  ["tgUSD-sgUSD", IERC4626],
-  ["sgUSD-tgUSD", IERC4626],
-  ["frxUSD-wfrxUSD", IERC4626],
-  ["sfrxUSD-wfrxUSD", IERC4626],
-  ["wfrxUSD-frxUSD", IERC4626],
-  ["wfrxUSD-sfrxUSD", IERC4626],
-  ["crvUSD-wcrvUSD", IERC4626],
-  ["scrvUSD-wcrvUSD", IERC4626],
-  ["wcrvUSD-crvUSD", IERC4626],
-  ["wcrvUSD-scrvUSD", IERC4626],
-  ["USDe-wUSDe", IERC4626],
-  ["sUSDe-wUSDe", IERC4626],
-  ["wUSDe-USDe", IERC4626],
-  ["wUSDe-sUSDe", IERC4626],
-  ["DOLA-wDOLA", IERC4626],
-  ["sDOLA-wDOLA", IERC4626],
-  ["wDOLA-DOLA", IERC4626],
-  ["wDOLA-sDOLA", IERC4626],
-  ["USR-wUSR", IERC4626],
-  ["wstUSR-wUSR", IERC4626],
-  ["wUSR-USR", IERC4626],
-  ["wUSR-wstUSR", IERC4626],
-])
-
-export const getContractToCall = (depositSymbol: string, receiveSymbol: string) => {
-  const pairKey = `${depositSymbol}-${receiveSymbol}`
-  return swapContract.get(pairKey) || null
+export const getABI = (depositSymbol: string, receiveSymbol: string) => {
+  if (depositSymbol.includes("sgUSD") || receiveSymbol.includes("sgUSD")) {
+    return IERC4626
+  }
+  return WStable
 }

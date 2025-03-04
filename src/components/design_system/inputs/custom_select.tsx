@@ -5,11 +5,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/u
 import { Input } from "@/components/ui/input"
 import { FixedSizeList as List } from "react-window"
 import AutoSizer from "react-virtualized-auto-sizer"
-import { ExistingAsset } from "@/types"
 import { ReactNode, useState } from "react"
 import TokenImage from "../structure/token_image"
+import { DepositReceiveAsset } from "@/components/products/tg_usd/tg_usd_type"
 
-interface InputSelectProps<T extends { logoURI?: string; logo?: ExistingAsset; value: string; name?: string; symbol: string; balance?: bigint }> {
+interface InputSelectProps<T extends DepositReceiveAsset> {
   options?: T[]
   onChange: (value: string) => void
   className?: string
@@ -17,13 +17,7 @@ interface InputSelectProps<T extends { logoURI?: string; logo?: ExistingAsset; v
   template?: (option: T) => ReactNode
 }
 
-const CustomSelect = <T extends { logoURI?: string; logo?: ExistingAsset; value: string; name?: string; symbol: string; balance?: bigint }>({
-  options = [],
-  onChange,
-  className = "",
-  value,
-  template,
-}: InputSelectProps<T>) => {
+const CustomSelect = <T extends DepositReceiveAsset>({ options = [], onChange, className = "", value, template }: InputSelectProps<T>) => {
   const [search, setSearch] = useState("")
 
   const filteredOptions = search ? options.filter((option) => option?.symbol.toLowerCase().includes(search.toLowerCase())) : options
@@ -32,7 +26,7 @@ const CustomSelect = <T extends { logoURI?: string; logo?: ExistingAsset; value:
     const option = filteredOptions[index]
     return (
       <div className="absolute left-0 flex w-full" style={style}>
-        <SelectItem key={option.value} value={option.value}>
+        <SelectItem key={option.value} value={option.symbol}>
           {template ? (
             template(option)
           ) : (

@@ -5,12 +5,14 @@ import { BuySellInput } from "@/components/design_system/inputs/buy_sell_input"
 import { useTgUsdBuyContext } from "./tg_usd_buy_context"
 import CustomSelect from "@/components/design_system/inputs/custom_select"
 import { ExistingAsset } from "@/types"
-import { ZapToken } from "../tg_usd_type"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { tgUsdTokens } from "../tg_usd_repository"
 import { formatBigInt } from "@/lib/number_formatter"
-import { Address } from "viem"
 import FormButtons from "@/components/design_system/form/form_actions"
+import { DepositReceiveAsset } from "../tg_usd_type"
+
+type AssetSelectProps = {
+  options: DepositReceiveAsset[]
+}
 
 export default function TgUsdBuyContent() {
   const {
@@ -22,11 +24,11 @@ export default function TgUsdBuyContent() {
     actionSwap,
     actionApprove,
     formState,
+    computedAssets,
     depositAssetInfo,
     depositWeiValue,
     depositAsset,
     receiveAsset,
-    tokens,
     isBuying,
     balances,
     isLoading,
@@ -35,101 +37,49 @@ export default function TgUsdBuyContent() {
     receiveAssetInfo,
   } = useTgUsdBuyContext()
 
-  const ReceiveAssetSelect = () => {
-    if (!balances) {
+  const ReceiveAssetSelect = ({ options }: AssetSelectProps) => {
+    if (!balances || !options) {
       return (
-        <CustomSelect className="w-full min-w-40" template={AssetSelectTemplate} value={"tgUSD"} options={[]} onChange={(v: string) => setReceiveAsset(v)} />
+        <CustomSelect
+          className="w-full min-w-40"
+          template={AssetSelectTemplate}
+          value={receiveAsset}
+          options={[]}
+          onChange={(v: string) => setReceiveAsset(v)}
+        />
       )
     }
-
-    const tgTokens = Object.entries(tgUsdTokens).flatMap(([, tokens]) => {
-      return Object.entries(tokens).map(([name, address]) => ({
-        name,
-        symbol: name,
-        value: name,
-        address,
-        balance: balances[address as Address] || BigInt(0),
-      }))
-    })
-
-    const tokenOptions = tokens.map((el: ZapToken) => ({
-      ...el,
-      value: el.name as string,
-      balance: balances[el.address] || BigInt(0),
-    }))
-
-    const sortedAssets = [
-      ...tgTokens,
-      ...[
-        {
-          symbol: "ETH",
-          name: "Ethereum",
-          value: "ETH",
-          decimals: 18,
-          address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-          logo: "ETH" as ExistingAsset,
-          displayDecimals: 5,
-          balance: balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] || BigInt(0),
-        },
-        ...tokenOptions,
-      ].sort((a, b) => Number(b.balance - a.balance)),
-    ]
 
     return (
       <CustomSelect
         className="w-full min-w-40"
         template={AssetSelectTemplate}
-        value={receiveAsset || "tgUSD"}
-        options={sortedAssets}
+        value={receiveAsset}
+        options={options}
         onChange={(v: string) => setReceiveAsset(v)}
       />
     )
   }
 
-  const DepositAssetSelect = () => {
+  const DepositAssetSelect = ({ options }: AssetSelectProps) => {
     if (!balances) {
-      return <CustomSelect className="w-full min-w-40" template={AssetSelectTemplate} value={"ETH"} options={[]} onChange={(v: string) => setDepositAsset(v)} />
+      return (
+        <CustomSelect
+          className="w-full min-w-40"
+          template={AssetSelectTemplate}
+          value={depositAsset || ""}
+          options={[]}
+          onChange={(v: string) => setDepositAsset(v)}
+        />
+      )
     }
-
-    const tgTokens = Object.entries(tgUsdTokens).flatMap(([, tokens]) =>
-      Object.entries(tokens).map(([name, address]) => ({
-        name,
-        symbol: name,
-        value: name,
-        address,
-        balance: balances[address as Address] || BigInt(0),
-      }))
-    )
-
-    const tokenOptions = tokens.map((el: ZapToken) => ({
-      ...el,
-      value: el.name as string,
-      balance: balances[el.address] || BigInt(0),
-    }))
-
-    const sortedAssets = [
-      ...[
-        {
-          symbol: "ETH",
-          name: "Ethereum",
-          value: "ETH",
-          decimals: 18,
-          address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-          logo: "ETH" as ExistingAsset,
-          displayDecimals: 5,
-          balance: balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] || BigInt(0),
-        },
-        ...tokenOptions,
-        ...tgTokens,
-      ].sort((a, b) => Number(b.balance - a.balance)),
-    ]
 
     return (
       <CustomSelect
         className="w-full min-w-40"
         template={AssetSelectTemplate}
-        value={depositAsset || "ETH"}
-        options={sortedAssets}
+        value={depositAsset || ""}
+        options={options}
         onChange={(v: string) => setDepositAsset(v)}
       />
     )
@@ -174,14 +124,13 @@ export default function TgUsdBuyContent() {
 
       <div className="mt-2 flex w-full flex-col items-center justify-center">
         <BuySellInput
-          className={`${isBuying ? " " : "!flex-col-reverse"}`}
           depositAmount={depositWeiValue}
-          depositSelect={<DepositAssetSelect />}
+          depositSelect={<DepositAssetSelect options={computedAssets?.depositAssets} />}
           disabled={false}
           isLoading={isLoading}
-          receiveSelect={<ReceiveAssetSelect />}
-          labelDeposit={isBuying ? "You Sell" : "You Buy"}
-          labelReceive={isBuying ? "You Buy" : "You Sell"}
+          receiveSelect={<ReceiveAssetSelect options={computedAssets?.receiveAssets} />}
+          labelDeposit={"You Sell"}
+          labelReceive={"You Buy"}
           setIsBuying={setIsBuying}
           isBuying={isBuying}
           depositAsset={depositAssetInfo!}

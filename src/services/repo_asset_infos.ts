@@ -196,4 +196,29 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     logo: "sgUSD",
     displayDecimals: 2,
   },
+  wcrvUSD: {
+    symbol: "wcrvUSD",
+    name: "wcrvUSD",
+    decimals: 18,
+    address: TOKEN_ADDR["wcrvUSD"],
+    logo: "wcrvUSD",
+    displayDecimals: 2,
+  },
+  scrvUSD: {
+    symbol: "scrvUSD",
+    name: "scrvUSD",
+    decimals: 18,
+    address: TOKEN_ADDR["scrvUSD"],
+
+    logo: "scrvUSD",
+    displayDecimals: 2,
+  },
+  crvUSD: {
+    symbol: "crvUSD",
+    name: "crvUSD",
+    decimals: 18,
+    address: TOKEN_ADDR["crvUSD"],
+    logo: "crvUSD",
+    displayDecimals: 2,
+  },
 }

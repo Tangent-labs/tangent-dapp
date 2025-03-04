@@ -14,7 +14,6 @@ import { IconChevron } from "@/components/icons/icon_chevron"
 type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
   receiveAsset?: AssetDataPriced
-  className?: string
   depositAmount?: bigint
   depositBalance?: bigint
   receiveBalance?: bigint
@@ -35,7 +34,6 @@ type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 }
 
 export function BuySellInput({
-  className,
   depositAmount,
   depositBalance,
   receiveBalance,
@@ -153,7 +151,7 @@ export function BuySellInput({
         {labelDeposit === "You Buy" ? "Sell" : "Buy"} {receiveAsset?.symbol}
       </div>
 
-      <div className={cn("flex flex-col gap-2", className)} {...props}>
+      <div className={cn("flex flex-col gap-2")} {...props}>
         <PanelRaw className={`${isLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
           <div className="flex w-full justify-between">
             <div className="text-sm text-gray-400">{labelDeposit}</div>

@@ -281,6 +281,11 @@ export type ZapperData = {
   amountOut: bigint
 }
 
+export type BuyToken = AssetData & {
+  chainId?: number
+  logoURI: string
+}
+
 export type ZapToken = AssetData & {
   chainId?: number
   logoURI: string
@@ -326,4 +331,13 @@ export type StakingAssetInfo = {
   address: Address
   current: StakingDepositType
   asset?: AssetDataPriced
+}
+
+export type DepositReceiveAsset = {
+  logoURI?: string
+  logo?: ExistingAsset
+  value: string
+  name?: string
+  symbol: string
+  balance?: bigint
 }

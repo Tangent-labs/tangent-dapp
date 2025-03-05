@@ -327,3 +327,14 @@ export type StakingAssetInfo = {
   current: StakingDepositType
   asset?: AssetDataPriced
 }
+
+export type AirdropTask = {
+  name: string
+  asset: string
+  link: string
+  protocolName: string
+  actionLabel: string
+  ptsPerDay: number
+  status: string
+  totalPoints: number
+}

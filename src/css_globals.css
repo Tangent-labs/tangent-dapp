@@ -39,6 +39,7 @@
     --tgt-row-tonic: #0075ff;
     --tgt-bg-button-active: linear-gradient(135deg, #0075ff 0%, #00c2ff 100%);
     --tgt-bg-progress: linear-gradient(90deg, #000000 0%, #0075ff 100%);
+    --tgt-light-tonic: #fbf911;
     --tgt-tonic: #d9fb0b;
     --tgt-subtitle: #9b9b9b;
     --tgt-danger: #ff0300;

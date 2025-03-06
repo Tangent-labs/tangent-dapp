@@ -4,11 +4,10 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { BalanceAllowanceData, BuyToken, DepositReceiveAsset } from "../tg_usd_type"
 import { Abi, Address } from "viem"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
 import { getTokenInQuote, getTokenOutQuote } from "./buy_actions"
 import { SwapConfig, swapConfig } from "./swap_config"
-
+import { tgUsdTokens } from "../tg_usd_repository"
 import {
   computeSwapAssetPrice,
   doApprove,
@@ -21,7 +20,6 @@ import {
   getBuyFormState,
   getBuyTokenBalanceAllowance,
 } from "./tg_usd_buy_controller"
-import { tgUsdTokens } from "../tg_usd_repository"
 
 type TgUsdBuyContextProps = {
   children: ReactNode
@@ -353,8 +351,10 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
 
       const swapContractToken = [depositAssetInfo, receiveAssetInfo].find((el) => el.symbol === contractSymbol)?.address as Address
 
-      await doCustomSwap(walletClient, contract?.abi as Abi, swapFn, depositWeiValue || 0n, swapContractToken, quoteType === "enso")
+      doCustomSwap(walletClient, contract?.abi as Abi, swapFn, depositWeiValue || 0n, swapContractToken, quoteType === "enso")
         .then(() => {
+          setDepositWeiValue(undefined)
+          setReceiveWeiValue(undefined)
           fetchBalanceAllowanceData()
           setIsLoading(false)
         })
@@ -368,14 +368,17 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
       try {
         const { routerCallData } = await fetchEnsoData(depositWeiValue, currentAddress, receiveAssetInfo, depositAssetInfo, 1)
 
-        const walletClient = getWalletClient()
-
-        await doSwap(walletClient!, routerCallData)
-
-        setDepositWeiValue(undefined)
-        setReceiveWeiValue(undefined)
-        fetchBalanceAllowanceData()
-        setIsLoading(false)
+        doSwap(walletClient!, routerCallData)
+          .then(() => {
+            setDepositWeiValue(undefined)
+            setReceiveWeiValue(undefined)
+            fetchBalanceAllowanceData()
+            setIsLoading(false)
+          })
+          .catch((error) => {
+            console.error("Error during swap:", error)
+            setIsLoading(false)
+          })
       } catch (error) {
         console.error("Error in actionSwap:", error)
       } finally {

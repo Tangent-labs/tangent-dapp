@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import { AirdropTask } from "../tg_usd_type"
 import { ExistingAsset, ListState } from "@/types"
 import Loader from "@/components/design_system/structure/loader"
@@ -48,21 +47,6 @@ export default function TgUsdAidropContent() {
 
   return (
     <>
-      <div className="sgusd-card w-7/12">
-        <div className="flex items-center justify-center">
-          <Image height={440} width={440} className="an-logo" src="/medias/product_tgusd.png" alt="token" />
-        </div>
-        <div className="flex flex-col items-start justify-between gap-3">
-          <span className="text-4xl">Airdrop</span>
-
-          <p>
-            Participate in our airdrop to receive free tokens directly to your wallet, boosting your holdings with no upfront cost. You can also earn additional
-            rewards by engaging with select community activities (e.g., governance voting & liquidity provision).
-          </p>
-          <p>Airdrop distributions occur monthly, at the start of each cycle. Claimed tokens are tracked via unique wallet signatures. Learn more</p>
-        </div>
-      </div>
-
       {isLoading ? (
         <div className="flex h-full w-full items-start justify-center">
           <Loader></Loader>

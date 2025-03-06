@@ -74,23 +74,17 @@ function AirdropList() {
           <AirdropRowDisposition>
             {!!headers?.at(0)?.key && (
               <div className="flex-1">
-                <button className="flex w-full justify-center gap-2" type="button" onClick={() => {}}>
-                  <span>{headers?.at(0)?.label} </span>
-                </button>
+                <span>{headers?.at(0)?.label}</span>
               </div>
             )}
             {!!headers?.at(1)?.key && (
               <div className="flex-1">
-                <button className="flex w-full justify-center gap-2" type="button" onClick={() => {}}>
-                  <span>{headers?.at(1)?.label} </span>
-                </button>
+                <span>{headers?.at(1)?.label}</span>
               </div>
             )}
             {!!headers?.at(2)?.key && (
               <div className="flex-1">
-                <button className="flex w-full justify-center gap-2" type="button" onClick={() => {}}>
-                  <span>{headers?.at(2)?.label} </span>
-                </button>
+                <span>{headers?.at(2)?.label}</span>
               </div>
             )}
             <>
@@ -99,7 +93,7 @@ function AirdropList() {
                   <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(header.key)}>
                     <span>{header?.label} </span>
                     <div className="text-row-tonic">
-                      <IconSortHeader sort={(listState?.sort?.key == header?.key && listState?.sort?.direction) || "none"} />
+                      <IconSortHeader sort={(listState?.sort?.key === header?.key && listState?.sort?.direction) || "none"} />
                     </div>
                   </button>
                 </div>
@@ -109,36 +103,38 @@ function AirdropList() {
         </div>
       </div>
 
-      {displayRows &&
-        (displayRows as AirdropTask[])?.map((task: AirdropTask) => (
-          <PanelRaw
-            key={task.actionLabel}
-            className="mb-2 border px-5 py-3 before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
-          >
-            <div className="flex items-center justify-between max-xl:flex-col">
-              <div className="flex w-full items-center justify-evenly xl:w-8/12 xl:justify-start">
-                <div className="xl:w-1/3">
-                  <ListAsset name={task?.name} token={task?.asset as ExistingAsset} assetsEarned={[]} />
-                </div>
-                <div className="flex justify-center xl:w-1/3">
-                  <div onClick={() => window.open(task?.link, "_blank", "noopener,noreferrer")}> {task?.protocolName}</div>
-                </div>
-                <div className="flex justify-center xl:w-1/3">
-                  <Button onClick={() => window.open(task?.link, "_blank", "noopener,noreferrer")}> {task?.actionLabel}</Button>
-                </div>
-              </div>
-              <div className="flex h-full w-full items-center justify-evenly gap-2 xl:w-4/12">
-                <div className="flex w-1/3 items-center justify-center"> {task?.ptsPerDay} </div>
-                <div className="flex w-1/3 items-center justify-center">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 backdrop-blur-lg">
-                    <TaskStatus status={task?.status} />
+      <div className="scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent max-h-[500px] overflow-y-auto">
+        {displayRows &&
+          (displayRows as AirdropTask[])?.map((task: AirdropTask) => (
+            <PanelRaw
+              key={task.actionLabel}
+              className="mb-2 border px-5 py-3 before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
+            >
+              <div className="flex items-center justify-between max-xl:flex-col">
+                <div className="flex w-full items-center justify-evenly xl:w-8/12 xl:justify-start">
+                  <div className="xl:w-1/3">
+                    <ListAsset name={task?.name} token={task?.asset as ExistingAsset} assetsEarned={[]} />
+                  </div>
+                  <div className="flex justify-center xl:w-1/3">
+                    <div onClick={() => window.open(task?.link, "_blank", "noopener,noreferrer")}>{task?.protocolName}</div>
+                  </div>
+                  <div className="flex justify-center xl:w-1/3">
+                    <Button onClick={() => window.open(task?.link, "_blank", "noopener,noreferrer")}>{task?.actionLabel}</Button>
                   </div>
                 </div>
-                <div className="flex w-1/3 items-center justify-center"> {task?.totalPoints} </div>
+                <div className="flex h-full w-full items-center justify-evenly gap-2 xl:w-4/12">
+                  <div className="flex w-1/3 items-center justify-center">{task?.ptsPerDay}</div>
+                  <div className="flex w-1/3 items-center justify-center">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 backdrop-blur-lg">
+                      <TaskStatus status={task?.status} />
+                    </div>
+                  </div>
+                  <div className="flex w-1/3 items-center justify-center">{task?.totalPoints}</div>
+                </div>
               </div>
-            </div>
-          </PanelRaw>
-        ))}
+            </PanelRaw>
+          ))}
+      </div>
     </>
   )
 }

@@ -8,6 +8,7 @@ export type AssetData = {
   symbol: string
   name?: string
   logo?: ExistingAsset
+  balance?: bigint
   displaySymbol?: string
 }
 

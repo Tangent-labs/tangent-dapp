@@ -4,11 +4,16 @@ import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 import { getSwapAssetPrice } from "@/services/service_price"
 import { getBorrowCommonFormState } from "../tg_usd_record_controller"
 import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
+import GetBalances from "@/abi/tgusd/GetBalances.json"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
 import { Abi, Address, EstimateContractGasParameters, Hex, WalletClient, WriteContractParameters, zeroAddress } from "viem"
 import { BalanceAllowanceData, MarketDetailData, TgUsdtMarketDepositParams, ZapMarketData, ZapToken } from "../../tg_usd_type"
 import { executeAppove, executeChainViewUnique, executeContractCall, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { getRouteTxData } from "./deposit_actions"
+
+export const getBalances = async (user: Address, tokens: Address[]) => {
+  return await executeChainViewUnique<bigint[]>(GetBalances.abi as Abi, GetBalances.bytecode as Hex, [user, tokens])
+}
 
 export const getZapTokenBalanceAllowance = async (walletClient: WalletClient, address: Address | undefined) => {
   address = address || zeroAddress

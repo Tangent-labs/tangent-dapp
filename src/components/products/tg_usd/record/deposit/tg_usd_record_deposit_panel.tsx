@@ -9,7 +9,7 @@ import PanelRaw from "@/components/design_system/structure/panel_raw"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import FormButtons from "@/components/design_system/form/form_actions"
-import { formatDollar } from "@/lib/number_formatter"
+import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import CustomSelect from "@/components/design_system/inputs/custom_select"
 import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
@@ -53,6 +53,7 @@ export default function TgUsdDepositPanel() {
     slippage,
     gas,
     sociabilizationFee,
+    balances,
   } = useTgUsdDepositContext()
 
   const { collateralInfo, marketData, tgUSDInfo } = useTgUsdRecordContext()
@@ -62,39 +63,65 @@ export default function TgUsdDepositPanel() {
   const [innerValue, setInnerValue] = useState<number | undefined>(!zapValue ? undefined : Number(formatUnits(zapValue || BigInt(0), 18)))
 
   const AssetSelect = () => {
-    const tokenOptions = tokens.map((el: ZapToken) => {
-      return { ...el, value: el.name as string }
-    })
+    if (!balances) {
+      return null
+    }
 
-    const assets = [
-      { ...collateralInfo, value: collateralInfo.name as string },
+    const tokenOptions = tokens.map((el: ZapToken) => ({
+      ...el,
+      value: el.name as string,
+      balance: balances[el.address] || BigInt(0),
+    }))
+
+    const sortedAssets = [
       {
-        symbol: "ETH",
-        name: "Ethereum",
-        value: "ETH",
-        decimals: 18,
-        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-        logo: "ETH" as ExistingAsset,
-        displayDecimals: 5,
+        ...collateralInfo,
+        value: collateralInfo.name as string,
+        balance: balances[collateralInfo.address] || BigInt(0),
       },
-    ].concat(tokenOptions)
+      ...[
+        {
+          symbol: "ETH",
+          name: "Ethereum",
+          value: "ETH",
+          decimals: 18,
+          address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+          logo: "ETH" as ExistingAsset,
+          displayDecimals: 5,
+          balance: balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] || BigInt(0),
+        },
+        ...tokenOptions,
+      ].sort((a, b) => Number(b.balance - a.balance)),
+    ]
 
     return (
       <CustomSelect
-        className="w-full min-w-48"
+        className="w-full min-w-40"
         template={AssetSelectTemplate}
         value={depositAsset || collateralInfo.name}
-        options={assets}
+        options={sortedAssets}
         onChange={(v: string) => setDepositAsset(v)}
       />
     )
   }
 
-  const AssetSelectTemplate = (option: { logoURI?: string; logo?: ExistingAsset; value: string; name?: string; symbol: string }) => {
+  const AssetSelectTemplate = (option: {
+    logoURI?: string
+    logo?: ExistingAsset
+    value: string
+    name?: string
+    symbol: string
+    balance?: bigint
+    decimals?: number
+  }) => {
     return (
-      <div className="flex items-center gap-2">
-        {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={16} width={16} /> : <TokenImage token={option.logo} size={16} />}
-        <span className="text-sm font-bold">{option.symbol}</span>
+      <div className="flex w-full min-w-48 items-center justify-between">
+        <div className="flex w-full items-center gap-2">
+          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={16} width={16} /> : <TokenImage token={option.logo} size={16} />}
+          <span className="text-sm font-bold">{option.symbol}</span>
+        </div>
+
+        <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
       </div>
     )
   }

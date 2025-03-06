@@ -14,7 +14,7 @@ export const getTokenInQuote = async (
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d`,
+        Authorization: `Bearer ${process.env.NEXT_ENSO_API_KEY}`,
       },
     })
 
@@ -43,7 +43,7 @@ export const getRouteTxData = async (
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d`,
+        Authorization: `Bearer ${process.env.NEXT_ENSO_API_KEY}`,
       },
     })
 
@@ -71,7 +71,7 @@ export const getTokenOutQuote = async (
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d`,
+        Authorization: `Bearer ${process.env.NEXT_ENSO_API_KEY}`,
       },
     })
 

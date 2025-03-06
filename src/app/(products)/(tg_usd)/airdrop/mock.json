@@ -1,0 +1,24 @@
+{
+  "tasks": [
+    {
+      "name": "crvUSD/USDC",
+      "asset": "crvUSD_USDC",
+      "link": "https://curve.fi/dex/#/ethereum/pools/factory-crvusd-0/deposit",
+      "protocolName": "Curve Finance",
+      "actionLabel": "Stake LP tokens on Curve",
+      "ptsPerDay": 3,
+      "status": "ongoing",
+      "totalPoints": 1250
+    },
+    {
+      "name": "tgUSD/tgDAI",
+      "asset": "USDC-frxUSD",
+      "link": "https://curve.convexfinance.com/stake",
+      "protocolName": "Convex",
+      "actionLabel": "Farm 12 tgUSD",
+      "ptsPerDay": 12,
+      "status": "not_started",
+      "totalPoints": 12000
+    }
+  ]
+}

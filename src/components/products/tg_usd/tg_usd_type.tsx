@@ -341,3 +341,14 @@ export type DepositReceiveAsset = {
   symbol: string
   balance?: bigint
 }
+
+export type AirdropTask = {
+  name: string
+  asset: string
+  link: string
+  protocolName: string
+  actionLabel: string
+  ptsPerDay: number
+  status: string
+  totalPoints: number
+}

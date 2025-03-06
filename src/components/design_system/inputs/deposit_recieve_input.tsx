@@ -11,19 +11,19 @@ import DisplayReceivePanel from "./display_recieve_panel"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { IconThunder } from "@/components/icons/icon_thunder"
 
-type DepositRecieveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
   className?: string
   depositAmount?: bigint
   balance?: bigint
   disabled?: boolean
   labelDeposit?: string
-  recieveAmount?: string
-  recieveDollarValue?: string
-  labelRecieve?: string
+  receiveAmount?: string
+  receiveDollarValue?: string
+  labelReceive?: string
   depositSelect: ReactNode
   depositInput?: ReactNode
-  recieveAssetDisplay?: ReactNode
+  receiveAssetDisplay?: ReactNode
   onValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
   displayRecieve?: boolean
@@ -32,25 +32,25 @@ type DepositRecieveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   isLoading?: boolean
 }
 
-export function DepositRecieveInput({
+export function DepositReceiveInput({
   className,
   depositAmount,
   balance,
   depositAsset,
-  recieveAmount,
-  recieveDollarValue,
+  receiveAmount,
+  receiveDollarValue,
   labelDeposit = "You Deposit",
-  labelRecieve = "You Stake",
+  labelReceive = "You Stake",
   setMaxBalance,
   onValueChange,
   depositSelect = <></>,
-  recieveAssetDisplay = <></>,
+  receiveAssetDisplay = <></>,
   displayRecieve = true,
   displayBalance = true,
   isZapping = false,
   isLoading = false,
   ...props
-}: DepositRecieveInputProps) {
+}: DepositReceiveInputProps) {
   const [innerValue, setInnerValue] = useState<number | undefined>(
     depositAmount !== undefined ? Number(formatUnits(depositAmount, depositAsset?.decimals || 0)) : undefined
   )
@@ -61,7 +61,7 @@ export function DepositRecieveInput({
     if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
       const updatedValue = Number(Number(formatUnits(depositAmount, depositAsset.decimals)).toFixed(4))
       setInnerValue(updatedValue)
-      setIsUserInput(false) // Reset user input flag
+      setIsUserInput(false)
     }
   }, [depositAmount, depositAsset])
 
@@ -138,10 +138,10 @@ export function DepositRecieveInput({
       </PanelRaw>
       {displayRecieve && (
         <DisplayReceivePanel
-          labelRecieve={labelRecieve}
-          recieveAmount={recieveAmount}
-          recieveAssetDisplay={recieveAssetDisplay}
-          recieveDollarValue={recieveDollarValue}
+          labelReceive={labelReceive}
+          receiveAmount={receiveAmount}
+          receiveAssetDisplay={receiveAssetDisplay}
+          receiveDollarValue={receiveDollarValue}
         />
       )}
     </div>

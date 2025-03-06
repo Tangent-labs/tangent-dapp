@@ -32,16 +32,16 @@ export default function TgUsdLiquidatePanelFull() {
 
       <div className="flex flex-col gap-2">
         <DisplayReceivePanel
-          labelRecieve={"you liquidate"}
-          recieveAmount={0}
-          recieveAssetDisplay={<AssetDisplay logo={collateralInfo.logo!} symbol={collateralInfo.symbol} />}
-          recieveDollarValue={0}
+          labelReceive={"you liquidate"}
+          receiveAmount={0}
+          receiveAssetDisplay={<AssetDisplay logo={collateralInfo.logo!} symbol={collateralInfo.symbol} />}
+          receiveDollarValue={0}
         />
         <DisplayReceivePanel
-          labelRecieve="You recieve"
-          recieveAmount={0}
-          recieveAssetDisplay={<AssetDisplay logo={tgUSDInfo.logo!} symbol={tgUSDInfo.symbol} />}
-          recieveDollarValue={0}
+          labelReceive="You recieve"
+          receiveAmount={0}
+          receiveAssetDisplay={<AssetDisplay logo={tgUSDInfo.logo!} symbol={tgUSDInfo.symbol} />}
+          receiveDollarValue={0}
         />
       </div>
     </>

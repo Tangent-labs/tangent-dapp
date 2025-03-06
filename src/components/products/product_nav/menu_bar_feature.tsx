@@ -41,8 +41,16 @@ export default function MenuBarFeature() {
 
         <div className="flex cursor-pointer justify-center gap-5 md:gap-10">
           <div className="transition-all duration-700 hover:text-row-tonic data-[active=true]:text-row-tonic">
-            <p onClick={() => router.push("/earn")} className="cursor-pointer text-sm aria-disabled:text-gray-700">
-              Earn
+            <p onClick={() => router.push("/claim")} className="cursor-pointer text-sm aria-disabled:text-gray-700">
+              Claim
+            </p>
+          </div>
+        </div>
+
+        <div className="flex cursor-pointer justify-center gap-5 md:gap-10">
+          <div className="transition-all duration-700 hover:text-row-tonic data-[active=true]:text-row-tonic">
+            <p onClick={() => router.push("/harvest")} className="cursor-pointer text-sm aria-disabled:text-gray-700">
+              Harvest
             </p>
           </div>
         </div>

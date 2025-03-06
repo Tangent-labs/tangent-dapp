@@ -16,6 +16,8 @@ type RawMarket = {
   marketType: string
 }
 
+export const tgUsdTokens = [envAddresses.wStables, envAddresses.lps, envAddresses.tokens]
+
 export const tgUsdMarkets: TgUsdMarket[] = envAddresses.markets.map((market: RawMarket) => ({
   marketAddress: market.marketAddress as Address,
   marketName: market.collatName.replace("_", "-"),

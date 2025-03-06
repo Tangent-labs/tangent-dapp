@@ -1,7 +1,7 @@
 "use client"
 
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
-import { DepositRecieveInput } from "@/components/design_system/inputs/deposit_recieve_input"
+import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { useTgUsdLiquidateContext } from "./tg_usd_record_liquidate_context"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
@@ -31,7 +31,7 @@ export default function TgUsdLiquidatePanelPartial() {
         <span className="text-2xl">Liquidate partail</span>
       </div>
       <div>
-        <DepositRecieveInput
+        <DepositReceiveInput
           displayRecieve={false}
           depositAmount={liquidateWeiValue}
           labelDeposit="You liquidate"

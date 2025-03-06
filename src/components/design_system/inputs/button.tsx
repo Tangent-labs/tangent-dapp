@@ -10,9 +10,8 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 }
 
 export function Button({ label, state = "active", className, disabled, children, ...props }: ButtonProps) {
-  let stateCss = state === "disabled" ? "text-black  " : ""
-  stateCss += state === "active" ? "bg-button-active text-black" : ""
-  stateCss += state === "inactive" ? " cursor-not-allowed" : ""
+  let stateCss = state === "disabled" ? "text-black" : ""
+  stateCss += state === "active" ? "bg-button-active text-white" : ""
 
   return (
     <button

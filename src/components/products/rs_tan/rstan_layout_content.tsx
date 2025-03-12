@@ -1,0 +1,175 @@
+"use client"
+
+import { Button } from "@/components/design_system/inputs/button"
+import Divider from "@/components/design_system/structure/divider"
+import Image from "next/image"
+import { usePathname, useRouter } from "next/navigation"
+import { useRsTanContext } from "./rstan_layout_context"
+import { formatBigInt } from "@/lib/number_formatter"
+import { IconChevron } from "@/components/icons/icon_chevron"
+import { formatDate } from "@/lib/other_formatter"
+import { ListState } from "@/types"
+import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import { lockListHeaders } from "./rstan_layout_controller"
+import ListHeader from "@/components/design_system/list/list_header"
+import ListRow from "@/components/design_system/list/list_row"
+import EvolutionBox from "@/components/design_system/structure/evolution_box"
+import { IconCircleHelp } from "@/components/icons"
+import InputToggle from "@/components/design_system/inputs/input_toogle"
+import ButtonTab from "@/components/design_system/inputs/button_tab"
+import { IconRsTan } from "@/components/icons/icon_rstan"
+import { LockPosition } from "../tg_usd/tg_usd_type"
+
+const listeState: ListState = {
+  search: undefined,
+  sort: {
+    key: "id",
+    direction: "asc",
+  },
+}
+
+const LockRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
+  return (
+    <div className="flex items-center justify-between max-xl:flex-col">
+      <div className="flex w-full items-center justify-evenly xl:w-5/12 xl:justify-start">
+        <div className="xl:w-1/2">{children?.at(0)}</div>
+        <div className="flex justify-center xl:w-1/2">{children?.at(1)}</div>
+      </div>
+      <div className="flex w-full flex-wrap items-center justify-between xl:w-7/12">{children?.at(2)}</div>
+    </div>
+  )
+}
+
+export const RsTanLayoutContent = ({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) => {
+  const router = useRouter()
+
+  const pathname = usePathname()
+
+  return (
+    <>
+      <div className="mb-4 flex w-full items-end justify-end">
+        <div className="sgusd-card w-8/12">
+          <div className="flex items-center justify-center">
+            <Image height={440} width={440} className="an-logo" src="/medias/product_tgusd.png" alt="token" />
+          </div>
+          <div className="flex flex-col items-start justify-between gap-3">
+            <span className="text-4xl">Lock Tan</span>
+
+            <p>
+              Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT
+              stable pool & CVX stable pool).
+            </p>
+            <p>Rewards are distributed weekly, at the beginning of each epoch. Staking positions are represented by NFTs. Learn more</p>
+          </div>
+        </div>
+
+        <div className="flex w-4/12 items-center justify-around rounded-[10px] border border-white/10 bg-white bg-opacity-[5%] p-3 backdrop-blur-[30px]">
+          <IconRsTan></IconRsTan>
+
+          <div className="flex w-20 flex-col items-center justify-center">
+            <div className="text-xs font-bold text-subtitle">Supply</div>
+            <div className="text-md font-bold text-white">10,283,283</div>
+          </div>
+
+          <div className="flex w-20 flex-col items-center justify-center">
+            <div className="text-xs font-bold text-subtitle">rsTan</div>
+            <div className="text-md font-bold text-white">$1.23</div>
+          </div>
+
+          <div className="flex w-20 flex-col items-center justify-center rounded-lg bg-button-active py-2">
+            <div className="text-xs font-bold text-black">APR</div>
+            <div className="text-md font-bold text-white">15.32%</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex w-full items-start justify-start gap-4">
+        <div className="flex w-5/12 flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[30px]">
+          <div className="flex w-full items-center justify-between">
+            <ButtonTab label="Lock" active={pathname === "/tan/lock"} onClick={() => router.push("/tan/lock")} className="flex w-20 justify-center" />
+            <ButtonTab label="Unlock" active={pathname === "/tan/unlock"} onClick={() => router.push("/tan/unlock")} className="flex w-20 justify-center" />
+            <ButtonTab label="Claim" active={pathname === "/tan/claim"} onClick={() => router.push("/tan/claim")} className="flex w-20 justify-center" />
+            <ButtonTab label="Split" active={pathname === "/tan/split"} onClick={() => router.push("/tan/split")} className="flex w-20 justify-center" />
+            <ButtonTab label="Merge" active={pathname === "/tan/merge"} onClick={() => router.push("/tan/merge")} className="flex w-20 justify-center" />
+          </div>
+
+          <Divider className="h-0.5 w-full bg-white/10" />
+
+          {children}
+        </div>
+
+        <div className="flex w-7/12 flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[30px]">
+          <div className="mr-auto text-xl font-bold text-white">Locked Positions</div>
+
+          <Divider className="h-0.5 w-full bg-white/10" />
+
+          <ListProvider customSort={() => {}} _headers={lockListHeaders} _rows={[]} _listState={listeState}>
+            <LockPositionList></LockPositionList>
+          </ListProvider>
+        </div>
+      </div>
+    </>
+  )
+}
+
+function LockPositionList() {
+  const { headers, listState, udpateSort } = useListContext()
+
+  const { lockData, selectedPosition, setSelectedPosition, onClickExtend } = useRsTanContext()
+
+  return (
+    <>
+      <div className="border-none! mb-2 w-full rounded-[10px] bg-white bg-opacity-[1%] backdrop-blur-[30px]">
+        <ListHeader rowDisposition={LockRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
+      </div>
+
+      {lockData?.positions.map((lockPosition: LockPosition) => (
+        <>
+          <ListRow
+            navigate={() => setSelectedPosition(!!selectedPosition && lockPosition === selectedPosition ? undefined : lockPosition)}
+            className="mt-2 w-full"
+            rowDisposition={LockRowDisposition}
+            key={lockPosition?.tokenId}
+            isSelected={lockPosition == selectedPosition}
+          >
+            <div className="flex items-center justify-center rounded-xl bg-white bg-opacity-[1%] px-5 py-3 text-lg font-bold backdrop-blur-[30px]">
+              #{lockPosition?.tokenId}
+            </div>
+            <div className="flex items-center justify-center text-lg font-bold">{formatBigInt(lockPosition?.amount, 18, 2)}</div>
+
+            <>
+              <div className="flex w-4/12 items-center justify-center text-lg font-bold">{formatBigInt(lockPosition?.claimable, 18, 2)}</div>
+              <div className="flex w-4/12 items-center justify-center text-lg font-bold">
+                {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd-MM-yyyy")}
+              </div>
+              <div className="flex w-3/12 items-center justify-center text-lg font-bold">
+                <IconChevron className={`w-4 ${lockPosition == selectedPosition ? "" : "-rotate-90"} `}></IconChevron>
+              </div>
+            </>
+          </ListRow>
+
+          {lockPosition == selectedPosition && (
+            <div className="slide-down-fade-in flex w-full items-center justify-between rounded-b-lg p-3">
+              <div className="flex items-center justify-center gap-1">
+                <div className="w-20 text-sm text-subtitle">Unlock date</div>
+                <EvolutionBox originalValue={"05/10/2025"} label="" newValue={"07/10/2025"} />
+              </div>
+
+              <div className="flex w-full items-center justify-center gap-1">
+                <div className="text-xs font-bold text-subtitle">Perma lock</div>
+                <IconCircleHelp className="w-3"></IconCircleHelp>
+                <InputToggle isOn={false} onToggle={() => {}}></InputToggle>
+              </div>
+
+              <Button onClick={() => onClickExtend(selectedPosition)}> Extend</Button>
+            </div>
+          )}
+        </>
+      ))}
+    </>
+  )
+}

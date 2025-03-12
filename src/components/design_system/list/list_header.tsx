@@ -24,9 +24,7 @@ const HeaderDisplay = ({ label, sort = "none", onSort, field }: HeaderDisplayPro
     <div className="flex-1">
       <button className="flex w-full justify-center gap-2" type="button" onClick={() => onSort && onSort(field)}>
         <span>{label} </span>
-        <div className="text-row-tonic">
-          <IconSortHeader sort={sort} />
-        </div>
+        <div className="text-row-tonic">{label && label !== "" && <IconSortHeader sort={sort} />}</div>
       </button>
     </div>
   )

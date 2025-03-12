@@ -1,6 +1,6 @@
 import { Button } from "@/components/design_system/inputs/button"
 import Divider from "@/components/design_system/structure/divider"
-import { IconTrophy } from "@/components/icons/icon_chevron copy"
+import { IconTrophy } from "@/components/icons/icon_trophy"
 import { IconCompleted } from "@/components/icons/icon_completed"
 import { IconShare } from "@/components/icons/icon_share"
 

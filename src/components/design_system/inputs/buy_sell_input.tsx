@@ -169,9 +169,9 @@ export function BuySellInput({
                 {...props}
                 disabled={isLoading}
                 type="number"
-                value={innerValue ?? ""} // Convert undefined to empty string for input
+                value={innerValue ?? ""}
                 placeholder="Amount"
-                onChange={handleInputChange} // Use onChange instead of onInput for consistency
+                onChange={handleInputChange}
                 className={cn(
                   "min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
                 )}

@@ -15,11 +15,11 @@ export const doApprove = async (depositWeiValue: bigint, walletClient: WalletCli
   return await waitForTransaction(hash)
 }
 
-export const doLock = async (depositWeiValue: bigint, walletClient: WalletClient) => {
+export const doLock = async (depositWeiValue: bigint, walletClient: WalletClient, isPermaLock: boolean) => {
   const txData = {
     abi: RsTan.abi as Abi,
     functionName: "createLock",
-    args: [depositWeiValue, false, "0xCaC60200c1Cb424f2C1e438c7Ee1B98d487f0254"],
+    args: [depositWeiValue, isPermaLock, TGUSD_CONTRACT.ZAPPER],
     address: TGUSD_CONTRACT.RSTAN,
   }
   return await executeContractCall(walletClient, txData)
@@ -29,7 +29,7 @@ export const doIncreaseLockAmount = async (tokenId: bigint, depositWeiValue: big
   const txData = {
     abi: RsTan.abi as Abi,
     functionName: "increaseLockAmount",
-    args: [tokenId, depositWeiValue, "0xCaC60200c1Cb424f2C1e438c7Ee1B98d487f0254"],
+    args: [tokenId, depositWeiValue, TGUSD_CONTRACT.ZAPPER],
     address: TGUSD_CONTRACT.RSTAN,
   }
   return await executeContractCall(walletClient, txData)

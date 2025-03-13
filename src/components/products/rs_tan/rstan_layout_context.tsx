@@ -43,6 +43,7 @@ export const RsTanProvider = ({ children }: RsTanContextProps) => {
     if (currentAddress) {
       getRsTanData(currentAddress).then((d) => {
         setLockData(d)
+        setIsLoading(false)
       })
     }
   }, [currentAddress])

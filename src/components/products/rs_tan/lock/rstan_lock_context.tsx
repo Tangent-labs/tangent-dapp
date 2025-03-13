@@ -16,6 +16,9 @@ type RsTanLockContextValues = {
   isLoading: boolean
   setIsLoading: (arg: boolean) => void
 
+  isPermaLock: boolean
+  seIsPermaLock: (arg: boolean) => void
+
   depositWeiValue?: bigint
   setDepositWeiValue: (arg: bigint | undefined) => void
 
@@ -44,42 +47,55 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
+  const [isPermaLock, seIsPermaLock] = useState<boolean>(false)
+
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
 
-  const [depositPosition, setDepositPosition] = useState<string>("new")
+  const [depositPosition, setDepositPosition] = useState<string>("New")
 
   const depositPositionInfo = useMemo(() => {
-    if (depositPosition === "new") {
+    if (depositPosition === "New") {
       return { amount: 0n, claimable: 0n, endLockTime: "", tokenId: 0n }
     }
 
     const pos = lockData?.positions.find((position) => position?.tokenId.toString() === depositPosition)
+    seIsPermaLock(false)
 
     return pos
   }, [depositPosition])
 
   const actionApprove = async () => {
+    setIsLoading(true)
     const walletClient = getWalletClient()
 
     if (walletClient && depositWeiValue) {
-      await doApprove(depositWeiValue, walletClient).then(loadData)
+      await doApprove(depositWeiValue, walletClient)
+      loadData()
+      setIsLoading(false)
     }
   }
 
   const actionLock = async () => {
+    setIsLoading(true)
     const walletClient = getWalletClient()
 
     if (walletClient && depositWeiValue) {
       if (depositPositionInfo && depositPositionInfo?.tokenId !== 0n) {
-        await doIncreaseLockAmount(depositPositionInfo?.tokenId, depositWeiValue, walletClient).then(loadData)
+        await doIncreaseLockAmount(depositPositionInfo?.tokenId, depositWeiValue, walletClient)
+        loadData()
+        setIsLoading(false)
       } else {
-        await doLock(depositWeiValue, walletClient).then(loadData)
+        await doLock(depositWeiValue, walletClient, isPermaLock)
+        loadData()
+        setIsLoading(false)
       }
+    } else {
+      setIsLoading(false)
     }
   }
 
   const formState = useMemo(() => {
-    if (!lockData || !depositWeiValue) return { canProcess: false, cantProcessReasons: [], haveToApprove: true }
+    if (!lockData || !depositWeiValue) return { canProcess: false, cantProcessReasons: ["No data"], haveToApprove: false }
 
     return getLockFormState(lockData?.allowance, depositWeiValue, isWellConnected)
   }, [depositWeiValue, isWellConnected, lockData])
@@ -118,6 +134,8 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     formState,
     computedNewLockValue,
     computedNewEndLockTime,
+    seIsPermaLock,
+    isPermaLock,
   }
 
   return <RsTanLockContext.Provider value={contextValue}>{children}</RsTanLockContext.Provider>

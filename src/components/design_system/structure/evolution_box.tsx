@@ -1,14 +1,14 @@
 "use client"
 
-import React from "react"
+import React, { ReactNode } from "react"
 import PanelRaw from "./panel_raw"
 import { ExistingAsset } from "@/types"
 import TokenImage from "./token_image"
 
 type EvolutionBoxrops = React.ButtonHTMLAttributes<HTMLDivElement> & {
   label: string
-  originalValue: string
-  newValue?: string
+  originalValue: string | ReactNode
+  newValue?: string | ReactNode
   logo?: ExistingAsset
 }
 

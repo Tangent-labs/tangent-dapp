@@ -19,6 +19,8 @@ import InputToggle from "@/components/design_system/inputs/input_toogle"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import { IconRsTan } from "@/components/icons/icon_rstan"
 import { LockPosition } from "../tg_usd/tg_usd_type"
+import TokenImage from "@/components/design_system/structure/token_image"
+import { InfinityIcon } from "lucide-react"
 
 const listeState: ListState = {
   search: undefined,
@@ -87,7 +89,7 @@ export const RsTanLayoutContent = ({
         </div>
       </div>
 
-      <div className="flex w-full items-start justify-start gap-4">
+      <div className="flex w-full gap-4">
         <div className="flex w-5/12 flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[30px]">
           <div className="flex w-full items-center justify-between">
             <ButtonTab label="Lock" active={pathname === "/tan/lock"} onClick={() => router.push("/tan/lock")} className="flex w-20 justify-center" />
@@ -102,7 +104,7 @@ export const RsTanLayoutContent = ({
           {children}
         </div>
 
-        <div className="flex w-7/12 flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[30px]">
+        <div className="flex w-7/12 flex-col items-start justify-start rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[30px]">
           <div className="mr-auto text-xl font-bold text-white">Locked Positions</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
@@ -139,12 +141,22 @@ function LockPositionList() {
             <div className="flex items-center justify-center rounded-xl bg-white bg-opacity-[1%] px-5 py-3 text-lg font-bold backdrop-blur-[30px]">
               #{lockPosition?.tokenId}
             </div>
-            <div className="flex items-center justify-center text-lg font-bold">{formatBigInt(lockPosition?.amount, 18, 2)}</div>
+            <div className="flex items-center justify-center text-lg font-bold">
+              {formatBigInt(lockPosition?.amount, 18, 2)}
+              <IconRsTan className="ml-1 w-5"></IconRsTan>
+            </div>
 
             <>
-              <div className="flex w-4/12 items-center justify-center text-lg font-bold">{formatBigInt(lockPosition?.claimable, 18, 2)}</div>
               <div className="flex w-4/12 items-center justify-center text-lg font-bold">
-                {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd-MM-yyyy")}
+                {formatBigInt(lockPosition?.claimable, 18, 2)}
+                <TokenImage token="tgUSD" className="ml-1" size={16} />
+              </div>
+              <div className="flex w-4/12 items-center justify-center text-lg font-bold">
+                {lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (
+                  <InfinityIcon className="w-5"></InfinityIcon>
+                ) : (
+                  <> {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd-MM-yyyy")}</>
+                )}
               </div>
               <div className="flex w-3/12 items-center justify-center text-lg font-bold">
                 <IconChevron className={`w-4 ${lockPosition == selectedPosition ? "" : "-rotate-90"} `}></IconChevron>

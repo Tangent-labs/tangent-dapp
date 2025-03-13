@@ -10,6 +10,7 @@ import FormButtons from "@/components/design_system/form/form_actions"
 import { useRsTanLockContext } from "./rstan_lock_context"
 import { LockPositionSelectTeplate } from "../../tg_usd/tg_usd_type"
 import { formatDate } from "@/lib/other_formatter"
+import { InfinityIcon } from "lucide-react"
 
 export default function RsTanLockContent() {
   const { lockData, isLoading } = useRsTanContext()
@@ -25,6 +26,8 @@ export default function RsTanLockContent() {
     setDepositWeiValue,
     setDepositPosition,
     depositPosition,
+    seIsPermaLock,
+    isPermaLock,
   } = useRsTanLockContext()
 
   const AssetSelectTemplate = (option: LockPositionSelectTeplate) => {
@@ -44,7 +47,19 @@ export default function RsTanLockContent() {
   }
 
   const PositionSelect = () => {
-    if (!lockData) return
+    if (!lockData) {
+      return (
+        <InputSelect
+          placeholder="New"
+          label="Select position"
+          className="w-full min-w-32"
+          template={AssetSelectTemplate}
+          value={"New"}
+          options={[{ value: "New", label: "New" }]}
+          onChange={(e) => setDepositPosition(e)}
+        />
+      )
+    }
 
     const selectOptions = lockData?.positions?.map((el) => {
       return { ...el, value: el.tokenId.toString(), label: el.tokenId.toString() }
@@ -80,10 +95,13 @@ export default function RsTanLockContent() {
 
       <div className="mb-1 mt-4 flex w-full items-center justify-between">
         <div className="mb-1 text-lg font-bold text-white">Position recap :</div>
-        <div className="flex gap-2">
-          <div className="mb-1 text-sm text-white/30">Perma lock</div>
-          <InputToggle onToggle={() => {}} isOn={false}></InputToggle>
-        </div>
+
+        {depositPosition === "New" && (
+          <div className="flex gap-2">
+            <div className="mb-1 text-sm text-white/30">Perma lock</div>
+            <InputToggle onToggle={() => seIsPermaLock(!isPermaLock)} isOn={isPermaLock}></InputToggle>
+          </div>
+        )}
       </div>
 
       <div className="flex w-full items-center justify-between gap-4 rounded-[10px] bg-white bg-opacity-[2%] p-3 backdrop-blur-[30px]">
@@ -96,12 +114,25 @@ export default function RsTanLockContent() {
         <EvolutionBox
           className="w-full text-xs"
           originalValue={
-            depositPositionInfo && depositPositionInfo?.endLockTime !== ""
-              ? formatDate(new Date(Number(depositPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")
-              : "-"
+            depositPositionInfo?.endLockTime && depositPositionInfo?.endLockTime == "281474976710655" ? (
+              <InfinityIcon className="w-5"></InfinityIcon>
+            ) : (
+              <>
+                {" "}
+                {depositPositionInfo && depositPositionInfo?.endLockTime !== ""
+                  ? formatDate(new Date(Number(depositPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")
+                  : "-"}
+              </>
+            )
           }
           label="Unlock date"
-          newValue={formatDate(new Date(Number(computedNewEndLockTime) * 1000), "dd/MM/yyyy")}
+          newValue={
+            depositPositionInfo?.endLockTime && depositPositionInfo?.endLockTime == "281474976710655" ? (
+              <InfinityIcon className="w-5"></InfinityIcon>
+            ) : (
+              <>{isPermaLock ? <InfinityIcon className="w-5"></InfinityIcon> : formatDate(new Date(Number(computedNewEndLockTime) * 1000), "dd/MM/yyyy")}</>
+            )
+          }
         />
       </div>
 

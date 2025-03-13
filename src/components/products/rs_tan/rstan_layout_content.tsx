@@ -90,7 +90,7 @@ export const RsTanLayoutContent = ({
       </div>
 
       <div className="flex w-full gap-4">
-        <div className="flex w-5/12 flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[30px]">
+        <div className="flex w-5/12 flex-col items-center justify-start rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[30px]">
           <div className="flex w-full items-center justify-between">
             <ButtonTab label="Lock" active={pathname === "/tan/lock"} onClick={() => router.push("/tan/lock")} className="flex w-20 justify-center" />
             <ButtonTab label="Unlock" active={pathname === "/tan/unlock"} onClick={() => router.push("/tan/unlock")} className="flex w-20 justify-center" />
@@ -121,7 +121,7 @@ export const RsTanLayoutContent = ({
 function LockPositionList() {
   const { headers, listState, udpateSort } = useListContext()
 
-  const { lockData, selectedPosition, setSelectedPosition, onClickExtend } = useRsTanContext()
+  const { lockData, selectedPosition, setSelectedPosition, onClickExtend, setExtendToPermaLock, extendToPermaLock, onClickRemovePermaLock } = useRsTanContext()
 
   return (
     <>
@@ -155,7 +155,7 @@ function LockPositionList() {
                 {lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (
                   <InfinityIcon className="w-5"></InfinityIcon>
                 ) : (
-                  <> {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd-MM-yyyy")}</>
+                  <> {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd/MM/yyyy")}</>
                 )}
               </div>
               <div className="flex w-3/12 items-center justify-center text-lg font-bold">
@@ -168,16 +168,34 @@ function LockPositionList() {
             <div className="slide-down-fade-in flex w-full items-center justify-between rounded-b-lg p-3">
               <div className="flex items-center justify-center gap-1">
                 <div className="w-20 text-sm text-subtitle">Unlock date</div>
-                <EvolutionBox originalValue={"05/10/2025"} label="" newValue={"07/10/2025"} />
+                <EvolutionBox
+                  originalValue={formatDate(new Date(), "dd/MM/yyyy")}
+                  label=""
+                  newValue={
+                    lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (
+                      <InfinityIcon className="w-5"></InfinityIcon>
+                    ) : (
+                      <> {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd/MM/yyyy")}</>
+                    )
+                  }
+                />
               </div>
 
-              <div className="flex w-full items-center justify-center gap-1">
-                <div className="text-xs font-bold text-subtitle">Perma lock</div>
-                <IconCircleHelp className="w-3"></IconCircleHelp>
-                <InputToggle isOn={false} onToggle={() => {}}></InputToggle>
-              </div>
+              {!!lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (
+                <>
+                  <Button onClick={() => onClickRemovePermaLock()}> Remove permalock</Button>
+                </>
+              ) : (
+                <>
+                  <div className="flex w-full items-center justify-center gap-1">
+                    <div className="text-xs font-bold text-subtitle">Perma lock</div>
+                    <IconCircleHelp className="w-3"></IconCircleHelp>
+                    <InputToggle isOn={extendToPermaLock} onToggle={() => setExtendToPermaLock(true)}></InputToggle>
+                  </div>
 
-              <Button onClick={() => onClickExtend(selectedPosition)}> Extend</Button>
+                  <Button onClick={() => onClickExtend(selectedPosition)}> Extend</Button>
+                </>
+              )}
             </div>
           )}
         </>

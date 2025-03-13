@@ -78,9 +78,7 @@ export const InputSelectLockPosition = ({
             value={innerValue}
             placeholder="Amount"
             onInput={handleInputChange}
-            className={cn(
-              "min-h-10 rounded-[10px] border-opacity-20 bg-transparent py-2 font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
-            )}
+            className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent py-2 font-bold focus:outline-none")}
           />
         </div>
 

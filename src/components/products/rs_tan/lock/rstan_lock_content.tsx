@@ -13,7 +13,7 @@ import { formatDate } from "@/lib/other_formatter"
 import { InfinityIcon } from "lucide-react"
 
 export default function RsTanLockContent() {
-  const { lockData, isLoading } = useRsTanContext()
+  const { lockData } = useRsTanContext()
 
   const {
     depositWeiValue,
@@ -26,8 +26,9 @@ export default function RsTanLockContent() {
     setDepositWeiValue,
     setDepositPosition,
     depositPosition,
-    seIsPermaLock,
+    setIsPermaLock,
     isPermaLock,
+    isLoading,
   } = useRsTanLockContext()
 
   const AssetSelectTemplate = (option: LockPositionSelectTeplate) => {
@@ -99,7 +100,7 @@ export default function RsTanLockContent() {
         {depositPosition === "New" && (
           <div className="flex gap-2">
             <div className="mb-1 text-sm text-white/30">Perma lock</div>
-            <InputToggle onToggle={() => seIsPermaLock(!isPermaLock)} isOn={isPermaLock}></InputToggle>
+            <InputToggle onToggle={() => setIsPermaLock(!isPermaLock)} isOn={isPermaLock}></InputToggle>
           </div>
         )}
       </div>

@@ -17,7 +17,7 @@ type RsTanLockContextValues = {
   setIsLoading: (arg: boolean) => void
 
   isPermaLock: boolean
-  seIsPermaLock: (arg: boolean) => void
+  setIsPermaLock: (arg: boolean) => void
 
   depositWeiValue?: bigint
   setDepositWeiValue: (arg: bigint | undefined) => void
@@ -47,7 +47,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [isPermaLock, seIsPermaLock] = useState<boolean>(false)
+  const [isPermaLock, setIsPermaLock] = useState<boolean>(false)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
 
@@ -59,7 +59,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     }
 
     const pos = lockData?.positions.find((position) => position?.tokenId.toString() === depositPosition)
-    seIsPermaLock(false)
+    setIsPermaLock(false)
 
     return pos
   }, [depositPosition])
@@ -134,7 +134,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     formState,
     computedNewLockValue,
     computedNewEndLockTime,
-    seIsPermaLock,
+    setIsPermaLock,
     isPermaLock,
   }
 

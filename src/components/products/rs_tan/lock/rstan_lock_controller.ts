@@ -22,7 +22,9 @@ export const doLock = async (depositWeiValue: bigint, walletClient: WalletClient
     args: [depositWeiValue, isPermaLock, TGUSD_CONTRACT.ZAPPER],
     address: TGUSD_CONTRACT.RSTAN,
   }
-  return await executeContractCall(walletClient, txData)
+
+  const txHash = await executeContractCall(walletClient, txData)
+  return await waitForTransaction(txHash)
 }
 
 export const doIncreaseLockAmount = async (tokenId: bigint, depositWeiValue: bigint, walletClient: WalletClient) => {
@@ -32,7 +34,9 @@ export const doIncreaseLockAmount = async (tokenId: bigint, depositWeiValue: big
     args: [tokenId, depositWeiValue, TGUSD_CONTRACT.ZAPPER],
     address: TGUSD_CONTRACT.RSTAN,
   }
-  return await executeContractCall(walletClient, txData)
+
+  const txHash = await executeContractCall(walletClient, txData)
+  return await waitForTransaction(txHash)
 }
 
 export function getLockFormState(allowance: bigint, depositWeiValue: bigint, isWellConnected: boolean) {

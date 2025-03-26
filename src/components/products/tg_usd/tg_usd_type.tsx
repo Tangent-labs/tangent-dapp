@@ -370,7 +370,7 @@ export type LockData = {
   totalSupply: bigint
 }
 
-export type LockPositionSelectTeplate = {
+export type LockPositionSelectTemplate = {
   amount?: bigint
   claimable?: bigint
   endLockTime?: string

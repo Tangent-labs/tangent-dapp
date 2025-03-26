@@ -110,16 +110,33 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
 
   const computedNewEndLockTime = useMemo(() => {
     const thirteenWeeksInSeconds = BigInt(13 * 7 * 24 * 60 * 60)
+    const nowInSeconds = BigInt(Math.floor(Date.now() / 1000))
 
-    if (depositPositionInfo && depositPositionInfo?.endLockTime !== "") {
-      const result = BigInt(depositPositionInfo.endLockTime) + thirteenWeeksInSeconds
-      return result.toString()
+    if (depositPositionInfo?.endLockTime !== undefined) {
+      const baseTime = nowInSeconds + thirteenWeeksInSeconds
+      const date = new Date(Number(baseTime) * 1000)
+      const dayOfWeek = date.getUTCDay()
+      const daysSinceThursday = (dayOfWeek - 4 + 7) % 7
+      const adjustedTime = baseTime - BigInt(daysSinceThursday * 24 * 60 * 60)
+      return adjustedTime.toString()
     } else {
-      const nowInSeconds = BigInt(Math.floor(Date.now() / 1000))
       const result = nowInSeconds + thirteenWeeksInSeconds
       return result.toString()
     }
   }, [depositPositionInfo, depositWeiValue])
+
+  // const computedNewEndLockTime = useMemo(() => {
+  //   const thirteenWeeksInSeconds = BigInt(13 * 7 * 24 * 60 * 60)
+
+  //   if (depositPositionInfo && depositPositionInfo?.endLockTime !== "") {
+  //     const result = BigInt(depositPositionInfo.endLockTime) + thirteenWeeksInSeconds
+  //     return result.toString()
+  //   } else {
+  //     const nowInSeconds = BigInt(Math.floor(Date.now() / 1000))
+  //     const result = nowInSeconds + thirteenWeeksInSeconds
+  //     return result.toString()
+  //   }
+  // }, [depositPositionInfo, depositWeiValue])
 
   const contextValue: RsTanLockContextValues = {
     isLoading,

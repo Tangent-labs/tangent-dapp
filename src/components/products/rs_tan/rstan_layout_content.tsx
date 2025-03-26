@@ -130,12 +130,11 @@ function LockPositionList() {
       </div>
 
       {lockData?.positions.map((lockPosition: LockPosition) => (
-        <>
+        <div className="flex w-full flex-col" key={lockPosition?.tokenId}>
           <ListRow
             navigate={() => setSelectedPosition(!!selectedPosition && lockPosition === selectedPosition ? undefined : lockPosition)}
             className="mt-2 w-full"
             rowDisposition={LockRowDisposition}
-            key={lockPosition?.tokenId}
             isSelected={lockPosition == selectedPosition}
           >
             <div className="flex items-center justify-center rounded-xl bg-white bg-opacity-[1%] px-5 py-3 text-lg font-bold backdrop-blur-[30px]">
@@ -198,7 +197,7 @@ function LockPositionList() {
               )}
             </div>
           )}
-        </>
+        </div>
       ))}
     </>
   )

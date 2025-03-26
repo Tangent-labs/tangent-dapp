@@ -8,7 +8,7 @@ import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { formatBigInt } from "@/lib/number_formatter"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { useRsTanLockContext } from "./rstan_lock_context"
-import { LockPositionSelectTeplate } from "../../tg_usd/tg_usd_type"
+import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
 import { formatDate } from "@/lib/other_formatter"
 import { InfinityIcon } from "lucide-react"
 
@@ -31,7 +31,7 @@ export default function RsTanLockContent() {
     isLoading,
   } = useRsTanLockContext()
 
-  const AssetSelectTemplate = (option: LockPositionSelectTeplate) => {
+  const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {
     return (
       <>
         {option && option?.tokenId ? (

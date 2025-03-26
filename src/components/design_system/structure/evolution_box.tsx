@@ -1,13 +1,12 @@
 "use client"
 
 import React, { ReactNode } from "react"
-import PanelRaw from "./panel_raw"
 import { ExistingAsset } from "@/types"
 import TokenImage from "./token_image"
 
 type EvolutionBoxrops = React.ButtonHTMLAttributes<HTMLDivElement> & {
-  label: string
   originalValue: string | ReactNode
+  label?: string
   newValue?: string | ReactNode
   logo?: ExistingAsset
 }
@@ -16,7 +15,7 @@ export default function EvolutionBox({ label, originalValue, newValue, logo, ...
   return (
     <div {...props}>
       <div className="text-sm text-gray-400"> {label} </div>
-      <PanelRaw className="flex items-center justify-between gap-2 px-4 py-2">
+      <div className="flex items-center justify-between gap-2 rounded-[10px] bg-white bg-opacity-[3%] px-4 py-2 backdrop-blur-[30px]">
         <div className="flex items-center gap-1">
           <div className="text-lg font-bold">{originalValue} </div>
           {logo && (
@@ -46,7 +45,7 @@ export default function EvolutionBox({ label, originalValue, newValue, logo, ...
         ) : (
           <div className="w-10 text-center">-</div>
         )}
-      </PanelRaw>
+      </div>
     </div>
   )
 }

@@ -11,7 +11,7 @@ import { formatBigInt } from "@/lib/number_formatter"
 export const RsTanUnlockContent = () => {
   const { lockData } = useRsTanContext()
 
-  const { depositPosition, setDepositPosition, actionUnlock, actionRageQuit, tanReceived, depositPositionInfo } = useRsTanUnlockContext()
+  const { depositPosition, tanReceived, depositPositionInfo, setDepositPosition, actionUnlock, actionRageQuit } = useRsTanUnlockContext()
 
   const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {
     return (

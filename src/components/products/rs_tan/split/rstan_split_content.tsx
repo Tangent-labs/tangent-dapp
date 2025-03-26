@@ -1,0 +1,255 @@
+"use client"
+
+import InputSelect from "@/components/design_system/inputs/input_select"
+import { useRsTanContext } from "../rstan_layout_context"
+import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
+import { IconRsTan } from "@/components/icons/icon_rstan"
+import { formatBigInt } from "@/lib/number_formatter"
+import { useRsTanSplitContext } from "./rstan_split_context"
+import PanelRaw from "@/components/design_system/structure/panel_raw"
+import EvolutionBox from "@/components/design_system/structure/evolution_box"
+import { Button } from "@/components/design_system/inputs/button"
+import { formatDate } from "@/lib/other_formatter"
+
+export const RsTanSplitContent = () => {
+  const { lockData } = useRsTanContext()
+
+  const {
+    splitPosition,
+    splitPositionInfo,
+    splitPercentage,
+    computedNewPositionIds,
+    computedSplitAmounts,
+    visualPercentage,
+    setSplitPosition,
+    actionSplit,
+    setSplitPercentage,
+  } = useRsTanSplitContext()
+
+  const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {
+    return (
+      <>
+        {option && option?.tokenId ? (
+          <div className="flex items-center gap-2">
+            <span className="text-md font-bold text-white">#{option.tokenId}</span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <span className="text-md font-bold text-white"></span>
+          </div>
+        )}
+      </>
+    )
+  }
+
+  const PositionSelect = () => {
+    if (!lockData || (!!lockData && lockData?.positions.length === 0)) {
+      return (
+        <InputSelect disabled={true} className="w-full min-w-32" template={AssetSelectTemplate} value={""} options={[]} onChange={(e) => setSplitPosition(e)} />
+      )
+    }
+
+    const selectOptions = lockData?.positions?.map((el) => {
+      return { ...el, value: el.tokenId.toString(), label: el.tokenId.toString() }
+    })
+
+    return (
+      <InputSelect
+        className="w-full min-w-32"
+        template={AssetSelectTemplate}
+        value={splitPosition || ""}
+        options={selectOptions}
+        onChange={(e) => setSplitPosition(e)}
+      />
+    )
+  }
+
+  return (
+    <div className="flex w-full flex-col items-start justify-start">
+      <div className="mb-3 text-lg font-bold text-white">Select position to split:</div>
+
+      <div className="flex h-10 w-full items-center justify-between gap-2">
+        <PositionSelect />
+        <div className="flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-white/10 bg-opacity-[10%] p-3 text-sm text-subtitle backdrop-blur-[30px]">
+          Balance:
+          {splitPositionInfo && splitPositionInfo?.amount && (
+            <span className="flex items-center justify-end font-bold text-white">
+              {formatBigInt(splitPositionInfo?.amount, 18, 2)} <IconRsTan className="ml-auto h-4 w-4"></IconRsTan>
+            </span>
+          )}
+        </div>
+      </div>
+
+      {splitPositionInfo && splitPositionInfo?.amount && (
+        <>
+          <div className="flex w-full flex-col items-start justify-start">
+            <div className="mb-3 mt-6 text-lg font-bold text-white">Choose splitting amount & positions:</div>
+
+            <PanelRaw className="flex h-full w-full items-center justify-between gap-2 px-2 py-3">
+              <div className="flex flex-col">
+                <div className="text-xs font-bold text-subtitle">You split</div>
+                <div className="text-xl">
+                  <input
+                    type="string"
+                    disabled={true}
+                    value={computedSplitAmounts?.firstSplit}
+                    placeholder="Amount"
+                    className="min-h-10 rounded-[10px] border-opacity-20 bg-transparent py-2 font-bold focus:outline-none"
+                  />
+                </div>
+                <div className="text-xs text-subtitle">($1,500)</div>
+              </div>
+              <div className="flex h-full items-center justify-center gap-3">
+                <div className="flex h-full flex-col items-center justify-center">
+                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 font-bold backdrop-blur-[30px]">
+                    <IconRsTan className="h-4 w-4"></IconRsTan>
+                    rsTan
+                  </div>
+                </div>
+                <div className="flex h-full flex-col items-start justify-start">
+                  <div className="mb-0.5 text-xs font-bold text-subtitle">Position</div>
+                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 backdrop-blur-[30px]">
+                    <div className="text-md font-bold">#{computedNewPositionIds?.newPositionId1}</div>
+                    <div className="text-sm">(new)</div>
+                  </div>
+                </div>
+              </div>
+            </PanelRaw>
+
+            <PanelRaw className="mt-2 flex h-full w-full items-center justify-between gap-2 px-2 py-3">
+              <div className="flex flex-col">
+                <div className="text-xs font-bold text-subtitle">You split</div>
+                <div className="text-xl">
+                  <input
+                    type="string"
+                    disabled={true}
+                    value={computedSplitAmounts?.secondSplit}
+                    placeholder="Amount"
+                    className="min-h-10 rounded-[10px] border-opacity-20 bg-transparent py-2 font-bold focus:outline-none"
+                  />
+                </div>
+                <div className="text-xs text-subtitle">($1,500)</div>
+              </div>
+              <div className="flex h-full items-center justify-center gap-3">
+                <div className="flex h-full flex-col items-center justify-center">
+                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 font-bold backdrop-blur-[30px]">
+                    <IconRsTan className="h-4 w-4"></IconRsTan>
+                    rsTan
+                  </div>
+                </div>
+                <div className="flex h-full flex-col items-start justify-start">
+                  <div className="mb-0.5 text-xs font-bold text-subtitle">Position</div>
+                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 backdrop-blur-[30px]">
+                    <div className="text-md font-bold">#{computedNewPositionIds?.newPositionId2}</div>
+                    <div className="text-sm">(new)</div>
+                  </div>
+                </div>
+              </div>
+            </PanelRaw>
+
+            <PanelRaw className="mt-2 flex w-full flex-col p-3">
+              <input
+                type="range"
+                min="10"
+                step={10}
+                max="90"
+                value={splitPercentage}
+                onChange={(e) => setSplitPercentage(Number(e.target.value))}
+                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-black"
+                style={{
+                  background: `linear-gradient(to right, #3b82f6 ${visualPercentage}%, #4b5563 ${visualPercentage}%)`,
+                }}
+              />
+
+              <div className="mt-2 flex w-full items-center justify-center text-sm font-bold text-white">
+                <div className="flex w-full items-center justify-center text-sm font-bold text-white">{splitPercentage}%</div>
+                <div className="flex w-full items-center justify-center text-sm font-bold text-white">{100 - splitPercentage}%</div>{" "}
+              </div>
+
+              <div className="mt-3 flex justify-between gap-4 text-subtitle">
+                <div className="flex w-full items-center justify-between rounded-[10px] bg-white bg-opacity-[3%] pl-2 backdrop-blur-[30px]">
+                  <span className="text-xs">
+                    <span className="mr-2 font-bold">Position</span>
+                    <span className="font-bold text-white"> #{computedNewPositionIds?.newPositionId1}</span>
+                  </span>
+                  <PanelRaw className="text-button-active text-md flex min-w-16 items-center justify-center bg-button-active bg-clip-text font-bold text-transparent">
+                    {splitPercentage}%
+                  </PanelRaw>
+                </div>
+
+                <div className="flex w-full items-center justify-between rounded-[10px] bg-white bg-opacity-[3%] pl-2 backdrop-blur-[30px]">
+                  <span className="text-xs">
+                    <span className="mr-2 font-bold">Position</span>
+                    <span className="font-bold text-white"> #{computedNewPositionIds?.newPositionId2}</span>
+                  </span>{" "}
+                  <PanelRaw className="text-button-active text-md flex min-w-16 items-center justify-center bg-button-active bg-clip-text font-bold text-transparent">
+                    {100 - splitPercentage}%
+                  </PanelRaw>
+                </div>
+              </div>
+            </PanelRaw>
+          </div>
+
+          <div className="mb-3 mt-6 text-lg font-bold text-white">Split recap:</div>
+
+          <div className="flex w-full flex-col items-start justify-start gap-2 rounded-[10px] bg-white bg-opacity-[3%] px-2 py-3 backdrop-blur-[30px]">
+            <div className="flex w-full items-start justify-start gap-2">
+              <div className="w-3/12">Pos. ID</div>
+              <div className="w-6/12">rsTan</div>
+              <div className="w-3/12">Unlock date</div>
+            </div>
+
+            <div className="flex w-full items-center justify-center gap-2">
+              <div className="flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-white bg-opacity-[3%] px-4 font-bold backdrop-blur-[30px]">
+                #{splitPositionInfo?.tokenId}
+              </div>
+              <EvolutionBox
+                className="w-6/12"
+                originalValue={
+                  <div className="flex items-center justify-center gap-2 text-lg">
+                    {formatBigInt(splitPositionInfo?.amount, 18, 2)} <IconRsTan className="h-5 w-5"></IconRsTan>
+                  </div>
+                }
+                newValue={
+                  <div className="flex items-center justify-center gap-2">
+                    {formatBigInt(BigInt(splitPercentage / 10) * splitPositionInfo?.amount, 19, 2)} <IconRsTan className="h-5 w-5"></IconRsTan>
+                  </div>
+                }
+              />
+              <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-white bg-opacity-[3%] px-4 backdrop-blur-[30px]">
+                {formatDate(new Date(Number(splitPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")}
+              </div>{" "}
+            </div>
+
+            <div className="flex w-full items-center justify-center gap-2">
+              <div className="flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-white bg-opacity-[3%] px-4 font-bold backdrop-blur-[30px]">
+                #{computedNewPositionIds?.newPositionId2}
+              </div>
+
+              <EvolutionBox
+                className="w-6/12"
+                originalValue={
+                  <div className="flex items-center justify-center gap-2">
+                    0 <IconRsTan className="h-5 w-5"></IconRsTan>
+                  </div>
+                }
+                newValue={
+                  <div className="flex items-center justify-center gap-2">
+                    {formatBigInt(BigInt((100 - splitPercentage) / 10) * splitPositionInfo?.amount, 19, 2)} <IconRsTan className="h-5 w-5"></IconRsTan>
+                  </div>
+                }
+              />
+              <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-white bg-opacity-[3%] px-4 backdrop-blur-[30px]">
+                {formatDate(new Date(Number(splitPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")}
+              </div>
+            </div>
+          </div>
+
+          <Button className="flex w-full justify-center" onClick={actionSplit}>
+            Split
+          </Button>
+        </>
+      )}
+    </div>
+  )
+}

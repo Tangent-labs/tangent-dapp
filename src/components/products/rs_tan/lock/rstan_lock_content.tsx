@@ -17,18 +17,18 @@ export default function RsTanLockContent() {
 
   const {
     depositWeiValue,
-    actionApprove,
     depositPositionInfo,
-    actionLock,
+    depositPosition,
     computedNewLockValue,
     computedNewEndLockTime,
+    isPermaLock,
+    isLoading,
     formState,
     setDepositWeiValue,
     setDepositPosition,
-    depositPosition,
+    actionLock,
+    actionApprove,
     setIsPermaLock,
-    isPermaLock,
-    isLoading,
   } = useRsTanLockContext()
 
   const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {

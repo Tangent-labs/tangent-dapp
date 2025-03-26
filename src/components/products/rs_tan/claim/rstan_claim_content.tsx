@@ -6,14 +6,14 @@ import { Button } from "@/components/design_system/inputs/button"
 import { useRsTanClaimContext } from "./rstan_claim_context"
 import { formatBigInt } from "@/lib/number_formatter"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { ExistingAsset } from "@/types"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import { MultiPositionSelect } from "@/components/design_system/inputs/input_multiselect"
+import InputToggle from "@/components/design_system/inputs/input_toogle"
 
 export const RsTanClaimContent = () => {
   const { lockData } = useRsTanContext()
 
-  const { actionClaim, selectedPositions, setSelectedPositions, selectedPositionsData } = useRsTanClaimContext()
+  const { claimAsSgUSD, selectedPositions, selectedPositionsData, actionClaim, setClaimAsSgUSD, setSelectedPositions } = useRsTanClaimContext()
 
   const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {
     return (
@@ -33,7 +33,7 @@ export const RsTanClaimContent = () => {
 
   return (
     <div className="flex w-full flex-col items-start justify-start">
-      <div className="my-1 text-lg font-bold text-white">Select position(s) :</div>
+      <div className="mb-1 text-lg font-bold text-white">Select position(s) :</div>
 
       <MultiPositionSelect
         template={AssetSelectTemplate}
@@ -42,7 +42,13 @@ export const RsTanClaimContent = () => {
         setSelectedPositions={setSelectedPositions}
       />
 
-      <div className="mb-1 mt-4 text-lg font-bold text-white">Claimable :</div>
+      <div className="mb-1 mt-4 flex w-full items-center justify-between font-bold">
+        <div className="text-lg text-white">Claimable :</div>
+
+        <div className="flex items-center justify-center gap-2 text-xs text-subtitle">
+          Claim as sgUSD <InputToggle onToggle={() => setClaimAsSgUSD(!claimAsSgUSD)} isOn={claimAsSgUSD}></InputToggle>
+        </div>
+      </div>
 
       <PanelRaw className="flex h-full w-full items-center justify-between gap-2 px-2 py-3">
         <div className="flex flex-col">
@@ -51,6 +57,7 @@ export const RsTanClaimContent = () => {
           <div className="text-xl">
             <input
               type="number"
+              disabled={true}
               value={formatBigInt(
                 selectedPositionsData.reduce((el, acc) => el + acc.claimable, 0n),
                 18,
@@ -66,8 +73,8 @@ export const RsTanClaimContent = () => {
 
         <div className="flex h-full flex-col items-center justify-center">
           <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 font-bold backdrop-blur-[30px]">
-            <TokenImage token={"tgUSD" as ExistingAsset} className="" size={32} />
-            tgUSD
+            <TokenImage token={claimAsSgUSD ? "sgUSD" : "tgUSD"} className="" size={32} />
+            {claimAsSgUSD ? "sgUSD" : "tgUSD"}
           </div>
         </div>
       </PanelRaw>
@@ -78,7 +85,7 @@ export const RsTanClaimContent = () => {
           <div className="flex w-full items-start justify-start">
             <div className="flex w-1/2 items-start justify-start">Position ID</div>
 
-            <div className="flex w-1/2 items-start justify-start">tgUSD received</div>
+            <div className="flex w-1/2 items-start justify-start"> {claimAsSgUSD ? "sgUSD" : "tgUSD"} received</div>
           </div>
 
           {selectedPositionsData.map((position: LockPosition, index: number) => (
@@ -88,7 +95,7 @@ export const RsTanClaimContent = () => {
               </div>
               <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-black bg-opacity-[1%] backdrop-blur-[10px]">
                 {formatBigInt(position.claimable, 18, 2)}
-                <TokenImage token={"tgUSD" as ExistingAsset} className="" size={32} />
+                <TokenImage token={claimAsSgUSD ? "sgUSD" : "tgUSD"} className="" size={32} />
               </div>
             </div>
           ))}

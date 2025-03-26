@@ -14,6 +14,9 @@ type RsTanClaimContextValues = {
   isLoading: boolean
   setIsLoading: (arg: boolean) => void
 
+  claimAsSgUSD: boolean
+  setClaimAsSgUSD: (arg: boolean) => void
+
   selectedPositions: string[]
   setSelectedPositions: (arg: string[]) => void
 
@@ -30,6 +33,8 @@ export const RsTanClaimProvider = ({ children }: RsTanClaimContextProps) => {
   const { loadData, lockData } = useRsTanContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const [claimAsSgUSD, setClaimAsSgUSD] = useState<boolean>(false)
 
   const [selectedPositions, setSelectedPositions] = useState<string[]>([])
 
@@ -62,6 +67,8 @@ export const RsTanClaimProvider = ({ children }: RsTanClaimContextProps) => {
     selectedPositions,
     setSelectedPositions,
     selectedPositionsData,
+    claimAsSgUSD,
+    setClaimAsSgUSD,
   }
 
   return <RsTanClaimContext.Provider value={contextValue}>{children}</RsTanClaimContext.Provider>

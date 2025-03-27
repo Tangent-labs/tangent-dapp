@@ -40,7 +40,6 @@ const CustomSelect = <T extends DepositReceiveAsset>({ options = [], onChange, c
     )
   }
 
-  // Find the selected option, or use a fallback if none exists
   const opt = options.find((option) => option.value === value) || null
 
   return (
@@ -61,8 +60,8 @@ const CustomSelect = <T extends DepositReceiveAsset>({ options = [], onChange, c
           </div>
         </SelectTrigger>
         <SelectContent>
-          <div className="relative h-56 min-h-56 w-full min-w-56 overflow-hidden pt-14">
-            <div className="absolute left-0 top-0 w-full p-2">
+          <div className="flex min-h-44 w-full flex-col overflow-hidden">
+            <div className="w-full p-2">
               <Input className="rounded-lg focus:outline-none" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
             {filteredOptions.length > 0 ? (

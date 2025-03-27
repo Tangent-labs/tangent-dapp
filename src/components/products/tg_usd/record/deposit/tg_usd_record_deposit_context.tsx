@@ -56,7 +56,7 @@ type TgUsdDepositContextValues = {
   zapValue: bigint | null
   setZapValue: (arg: bigint) => void
   handleDepositChange: (arg: bigint | undefined) => void
-  handleZapChange: (arg: string) => void
+  handleZapChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   depositAssetInfo: AssetDataPriced | null
   balanceAllowanceData: BalanceAllowanceData | null
   setBalanceAllowanceData: (arg: BalanceAllowanceData) => void
@@ -65,6 +65,14 @@ type TgUsdDepositContextValues = {
   gas: number | null
   sociabilizationFee: number | null
   balances: Record<Address, bigint> | null
+
+  zapInnerValue: number | undefined
+  setZapInnerValue: (arg: number | undefined) => void
+
+  isZapUserInput: boolean
+  setIsZapUserInput: (arg: boolean) => void
+
+  handleZapInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export const TgUsdDepositContext = createContext<TgUsdDepositContextValues | undefined>(undefined)
@@ -79,10 +87,15 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
   const [depositAsset, setDepositAsset] = useState<string | undefined>(undefined)
   const [swapAssetPrice, setSwapAssetPrice] = useState<number | null>(null)
+
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
-  const [zapValue, setZapValue] = useState<bigint | null>(null)
-  const [isDepositLoading, setIsDepositLoading] = useState(true)
+  const [isDepositLoading, setIsDepositLoading] = useState(false)
+
   const [isZapLoading, setIsZapLoading] = useState(false)
+  const [zapValue, setZapValue] = useState<bigint | null>(null)
+  const [zapInnerValue, setZapInnerValue] = useState<number | undefined>(zapValue !== undefined ? Number(formatUnits(zapValue || BigInt(0), 18)) : undefined)
+  const [isZapUserInput, setIsZapUserInput] = useState<boolean>(false)
+
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
   const [slippage, setSlippage] = useState<number>(0.1)
   const [gas, setGas] = useState<number | null>(null)
@@ -162,20 +175,20 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
     fetchZapValue()
   }
 
-  const handleZapChange = (value: string) => {
-    setZapValue(parseEther(value))
+  const handleZapChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setZapValue(parseEther(e?.target?.value))
 
-    if (value === "") {
+    if (e?.target?.value === "") {
       setDepositWeiValue(undefined)
       return
     }
 
     const debounceTimeout = setTimeout(async () => {
-      if (!parseEther(value) || !currentAddress || !depositAssetInfo) return
+      if (!parseEther(e?.target?.value) || !currentAddress || !depositAssetInfo) return
       setIsDepositLoading(true)
 
       try {
-        const data = await getTokenInQuote(parseEther(value), currentAddress, collateralInfo, depositAssetInfo)
+        const data = await getTokenInQuote(parseEther(e?.target?.value), currentAddress, collateralInfo, depositAssetInfo)
 
         setDepositWeiValue(data.amountOut)
       } catch (error) {
@@ -188,7 +201,37 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
     return () => clearTimeout(debounceTimeout)
   }
 
-  //
+  const handleZapInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value ? Number(e.target.value) : undefined
+    setZapInnerValue(value)
+    setIsZapUserInput(true) // Mark as user input
+  }
+
+  useEffect(() => {
+    if (zapValue !== undefined) {
+      const updatedValue = Number(Number(formatUnits(zapValue || 0n, 18)).toFixed(2))
+      setZapInnerValue(updatedValue)
+      setIsZapUserInput(false)
+    } else {
+      setZapInnerValue(undefined)
+    }
+  }, [zapValue])
+
+  useEffect(() => {
+    if (zapInnerValue === undefined) {
+      setDepositWeiValue(undefined)
+      setZapValue(0n)
+      return
+    }
+
+    if (!isZapUserInput) return
+
+    const handler = setTimeout(() => {
+      handleZapChange({ target: { value: zapInnerValue.toString() } } as React.ChangeEvent<HTMLInputElement>)
+    }, 500)
+
+    return () => clearTimeout(handler)
+  }, [zapInnerValue, isZapUserInput])
 
   useEffect(() => {
     if (!depositAsset) return
@@ -207,8 +250,6 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
 
     fetchSwapAssetData()
   }, [depositAsset])
-
-  //
 
   useEffect(() => {
     setCurrentAmounts({
@@ -404,6 +445,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
 
     zapValue,
     setZapValue,
+
     handleDepositChange,
     handleZapChange,
     swapAssetPrice,
@@ -417,6 +459,14 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
     gas,
     sociabilizationFee,
     balances,
+
+    zapInnerValue,
+    setZapInnerValue,
+
+    isZapUserInput,
+    setIsZapUserInput,
+
+    handleZapInputChange,
   }
 
   return <TgUsdDepositContext.Provider value={contextValue}>{children}</TgUsdDepositContext.Provider>

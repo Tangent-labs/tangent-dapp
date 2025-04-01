@@ -12,6 +12,9 @@ const config: Config = {
       backgroundImage: {
         progress: "var(--tgt-bg-progress)",
         "button-active": "var(--tgt-bg-button-active)",
+        danger: "var(--tgt-bg-danger)",
+        "select-input": "var(--tgt-bg-select-input)",
+        tonic: "var(--tgt-bg-tonic)",
         "list-row-hover": "var(--tgt-list-row-hover)",
         "panel-title-gradient": "var(--tgt-panel-title-gradient)",
         "button-gradient": "var(--tgt-button)",
@@ -19,6 +22,7 @@ const config: Config = {
       },
       colors: {
         "row-tonic": "var(--tgt-row-tonic)",
+        "overlay-panel": "var(--tgt-bg-overlay-panel)",
         tonic: "var(--tgt-tonic)",
         "light-tonic": "var(--tgt-light-tonic)",
         subtitle: "var(--tgt-subtitle)",

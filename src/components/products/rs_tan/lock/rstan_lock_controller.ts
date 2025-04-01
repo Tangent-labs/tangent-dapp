@@ -2,6 +2,7 @@ import { executeContractCall, getApproveTx, getPublicClient, waitForTransaction 
 import { TGUSD_CONTRACT } from "../../tg_usd/tg_usd_repository"
 import { Abi, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import RsTan from "../../../../abi/tgusd/RsTan.json"
+import { LockPosition } from "../../tg_usd/tg_usd_type"
 
 export const doApprove = async (depositWeiValue: bigint, walletClient: WalletClient) => {
   const publicClient = await getPublicClient()
@@ -39,8 +40,12 @@ export const doIncreaseLockAmount = async (tokenId: bigint, depositWeiValue: big
   return await waitForTransaction(txHash)
 }
 
-export function getLockFormState(allowance: bigint, depositWeiValue: bigint, isWellConnected: boolean) {
+export async function getLockFormState(allowance: bigint, depositPositionInfo: LockPosition | undefined, depositWeiValue: bigint, isWellConnected: boolean) {
   const reasons: string[] = []
+
+  const publicClient = await getPublicClient()
+  const currentBlockNumber = await publicClient.getBlockNumber()
+  const block = await publicClient.getBlock({ blockNumber: currentBlockNumber })
 
   const isApproved = (depositWeiValue || 0n) <= (allowance || 0n)
 
@@ -49,6 +54,9 @@ export function getLockFormState(allowance: bigint, depositWeiValue: bigint, isW
   } else {
     if (!depositWeiValue || depositWeiValue === 0n) {
       reasons.push("No amount.")
+    }
+    if (!!depositPositionInfo?.endLockTime && block.timestamp > Number(depositPositionInfo?.endLockTime)) {
+      reasons.push("Lock expired.")
     }
   }
   return { canProcess: reasons.length === 0, cantProcessReasons: reasons, haveToApprove: !isApproved }

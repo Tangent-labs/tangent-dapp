@@ -6,7 +6,6 @@ import { Button } from "@/components/design_system/inputs/button"
 import { useRsTanClaimContext } from "./rstan_claim_context"
 import { formatBigInt } from "@/lib/number_formatter"
 import TokenImage from "@/components/design_system/structure/token_image"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
 import { MultiPositionSelect } from "@/components/design_system/inputs/input_multiselect"
 import InputToggle from "@/components/design_system/inputs/input_toogle"
 
@@ -50,7 +49,7 @@ export const RsTanClaimContent = () => {
         </div>
       </div>
 
-      <PanelRaw className="flex h-full w-full items-center justify-between gap-2 px-2 py-3">
+      <div className="flex h-full w-full items-center justify-between gap-2 rounded-[10px] px-2 py-3 backdrop-blur-[60px]">
         <div className="flex flex-col">
           <div className="text-xs font-bold text-subtitle">You receive</div>
 
@@ -72,15 +71,15 @@ export const RsTanClaimContent = () => {
         </div>
 
         <div className="flex h-full flex-col items-center justify-center">
-          <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 font-bold backdrop-blur-[30px]">
+          <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 font-bold backdrop-blur-[60px]">
             <TokenImage token={claimAsSgUSD ? "sgUSD" : "tgUSD"} className="" size={32} />
             {claimAsSgUSD ? "sgUSD" : "tgUSD"}
           </div>
         </div>
-      </PanelRaw>
+      </div>
 
       <div className="mb-1 mt-4 text-lg font-bold text-white">Claim recap :</div>
-      <div className="flex w-full flex-col items-center justify-around gap-2 rounded-[10px] border border-white/10 bg-white/10 bg-opacity-[1%] p-3 backdrop-blur-[10px]">
+      <div className="flex w-full flex-col items-center justify-around gap-2 rounded-[10px] p-3 backdrop-blur-[10px]">
         <div className="flex w-full flex-col items-start justify-start">
           <div className="flex w-full items-start justify-start">
             <div className="flex w-1/2 items-start justify-start">Position ID</div>
@@ -90,10 +89,10 @@ export const RsTanClaimContent = () => {
 
           {selectedPositionsData.map((position: LockPosition, index: number) => (
             <div key={index} className="my-1 flex w-full items-center gap-2">
-              <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-black bg-opacity-[1%] py-1 backdrop-blur-[10px]">
+              <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[10px]">
                 #{position.tokenId}
               </div>
-              <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-black bg-opacity-[1%] backdrop-blur-[10px]">
+              <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
                 {formatBigInt(position.claimable, 18, 2)}
                 <TokenImage token={claimAsSgUSD ? "sgUSD" : "tgUSD"} className="" size={32} />
               </div>

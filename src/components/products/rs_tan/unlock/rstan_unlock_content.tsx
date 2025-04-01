@@ -70,17 +70,17 @@ export const RsTanUnlockContent = () => {
 
       <div className="mt-3 text-lg font-bold text-white">Unlock recap :</div>
 
-      <div className="flex w-full items-center justify-around gap-2 rounded-[10px] border border-white/10 bg-white bg-opacity-[1%] p-3 backdrop-blur-[30px]">
+      <div className="flex w-full items-center justify-around gap-2 rounded-[10px] p-3 backdrop-blur-[60px]">
         <div className="flex w-full flex-col items-start justify-start">
           <div>TAN received</div>
 
           {depositPositionInfo && depositPositionInfo?.amount ? (
-            <div className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-white/10 bg-opacity-[1%] text-tonic backdrop-blur-[30px]">
-              {formatBigInt(tanReceived, 18, 2)} <IconRsTan className="w-5"></IconRsTan>
+            <div className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 font-bold text-tonic backdrop-blur-[60px]">
+              {formatBigInt(tanReceived, 18, 2)} <IconRsTan className="h-5 w-5" />
             </div>
           ) : (
-            <div className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-white/10 bg-opacity-[1%] backdrop-blur-[30px]">
-              0 <IconRsTan className="w-5"></IconRsTan>
+            <div className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px]">
+              0 <IconRsTan className="h-5 w-5" />
             </div>
           )}
         </div>
@@ -89,12 +89,12 @@ export const RsTanUnlockContent = () => {
           <div>TAN forfeited</div>
 
           {depositPositionInfo && depositPositionInfo?.amount ? (
-            <div className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-white/10 bg-opacity-[1%] backdrop-blur-[30px]">
-              {formatBigInt(depositPositionInfo?.amount - (tanReceived || 0n), 18, 2)} <IconRsTan className="w-5"></IconRsTan>
+            <div className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 font-bold backdrop-blur-[60px]">
+              {formatBigInt(depositPositionInfo?.amount - (tanReceived || 0n), 18, 2)} <IconRsTan className="h-5 w-5" />
             </div>
           ) : (
-            <div className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-white/10 bg-opacity-[1%] backdrop-blur-[30px]">
-              0 <IconRsTan className="w-5"></IconRsTan>
+            <div className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px]">
+              0 <IconRsTan className="h-5 w-5" />
             </div>
           )}
         </div>

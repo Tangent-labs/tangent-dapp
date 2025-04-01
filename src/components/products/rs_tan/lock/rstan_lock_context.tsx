@@ -1,12 +1,13 @@
 "use client"
 
-import { createContext, ReactNode, useContext, useMemo, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useRsTanContext } from "../rstan_layout_context"
 import { doApprove, doIncreaseLockAmount, doLock, getLockFormState } from "./rstan_lock_controller"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { LockPosition } from "../../tg_usd/tg_usd_type"
 import { formatBigInt } from "@/lib/number_formatter"
 import { FormState } from "@/types"
+import { getPublicClient } from "@/services/service_rpc"
 
 type RsTanLockContextProps = {
   children: ReactNode
@@ -35,7 +36,7 @@ type RsTanLockContextValues = {
 
   computedNewLockValue: string
 
-  computedNewEndLockTime: string
+  computedNewEndLockTime: string | null
 }
 
 export const RsTanLockContext = createContext<RsTanLockContextValues | undefined>(undefined)
@@ -47,7 +48,11 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
+  const [formState, setFormState] = useState<FormState>({ canProcess: false, cantProcessReasons: [], haveToApprove: false })
+
   const [isPermaLock, setIsPermaLock] = useState<boolean>(false)
+
+  const [computedNewEndLockTime, setComputedNewEndLockTime] = useState<string | null>(null)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
 
@@ -94,11 +99,21 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     }
   }
 
-  const formState = useMemo(() => {
-    if (!lockData || !depositWeiValue) return { canProcess: false, cantProcessReasons: ["No data"], haveToApprove: false }
+  useEffect(() => {
+    const computeFormState = async () => {
+      if (!lockData || !depositWeiValue) {
+        setFormState({ canProcess: false, cantProcessReasons: ["No data"], haveToApprove: false })
+      } else {
+        getLockFormState(lockData?.allowance, depositPositionInfo, depositWeiValue, isWellConnected).then((d) => {
+          setFormState(d)
+        })
+      }
+    }
 
-    return getLockFormState(lockData?.allowance, depositWeiValue, isWellConnected)
-  }, [depositWeiValue, isWellConnected, lockData])
+    if (depositPositionInfo) {
+      computeFormState()
+    }
+  }, [depositWeiValue, isWellConnected, lockData, depositPositionInfo])
 
   const computedNewLockValue = useMemo(() => {
     const baseValue = depositPositionInfo?.amount ? depositPositionInfo?.amount : 0n
@@ -108,35 +123,31 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     return formatBigInt(addedValue + baseValue, 18, 2)
   }, [depositPositionInfo, depositWeiValue])
 
-  const computedNewEndLockTime = useMemo(() => {
-    const thirteenWeeksInSeconds = BigInt(13 * 7 * 24 * 60 * 60)
-    const nowInSeconds = BigInt(Math.floor(Date.now() / 1000))
+  useEffect(() => {
+    const calculateTanReceived = async () => {
+      const thirteenWeeksInMilliSeconds = BigInt(13 * 7 * 24 * 60 * 60)
 
-    if (depositPositionInfo?.endLockTime !== undefined) {
-      const baseTime = nowInSeconds + thirteenWeeksInSeconds
-      const date = new Date(Number(baseTime) * 1000)
-      const dayOfWeek = date.getUTCDay()
-      const daysSinceThursday = (dayOfWeek - 4 + 7) % 7
-      const adjustedTime = baseTime - BigInt(daysSinceThursday * 24 * 60 * 60)
-      return adjustedTime.toString()
-    } else {
-      const result = nowInSeconds + thirteenWeeksInSeconds
-      return result.toString()
+      const publicClient = await getPublicClient()
+      const currentBlockNumber = await publicClient.getBlockNumber()
+      const block = await publicClient.getBlock({ blockNumber: currentBlockNumber })
+      const baseTime = new Date(Number(block.timestamp + thirteenWeeksInMilliSeconds) * 1000)
+
+      if (depositPositionInfo?.endLockTime !== undefined) {
+        const dayOfWeek = baseTime.getUTCDay()
+        const daysSinceThursday = (dayOfWeek - 4 + 7) % 7
+
+        const adjustedTime = block.timestamp + thirteenWeeksInMilliSeconds - BigInt(daysSinceThursday * 24 * 60 * 60)
+
+        setComputedNewEndLockTime(adjustedTime.toString())
+      } else {
+        setComputedNewEndLockTime(baseTime.toString())
+      }
+    }
+
+    if (depositPositionInfo) {
+      calculateTanReceived()
     }
   }, [depositPositionInfo, depositWeiValue])
-
-  // const computedNewEndLockTime = useMemo(() => {
-  //   const thirteenWeeksInSeconds = BigInt(13 * 7 * 24 * 60 * 60)
-
-  //   if (depositPositionInfo && depositPositionInfo?.endLockTime !== "") {
-  //     const result = BigInt(depositPositionInfo.endLockTime) + thirteenWeeksInSeconds
-  //     return result.toString()
-  //   } else {
-  //     const nowInSeconds = BigInt(Math.floor(Date.now() / 1000))
-  //     const result = nowInSeconds + thirteenWeeksInSeconds
-  //     return result.toString()
-  //   }
-  // }, [depositPositionInfo, depositWeiValue])
 
   const contextValue: RsTanLockContextValues = {
     isLoading,

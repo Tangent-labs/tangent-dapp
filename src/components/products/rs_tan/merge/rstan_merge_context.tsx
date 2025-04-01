@@ -1,0 +1,119 @@
+"use client"
+
+import { createContext, ReactNode, useContext, useMemo, useState } from "react"
+import { useRsTanContext } from "../rstan_layout_context"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { LockPosition } from "../../tg_usd/tg_usd_type"
+import { doMerge } from "./rstan_merge_controller"
+
+type RsTanMergeContextProps = {
+  children: ReactNode
+}
+
+type RsTanMergeContextValues = {
+  isLoading: boolean
+  setIsLoading: (arg: boolean) => void
+
+  firstPositionToMerge: string
+  setFirstPositionToMerge: (arg: string) => void
+
+  secondPositionToMerge: string
+  setSecondPositionToMerge: (arg: string) => void
+
+  actionMerge: () => void
+
+  computedNewPositionId: string
+
+  firstPositionToMergeInfo: LockPosition | undefined
+
+  secondPositionToMergeInfo: LockPosition | undefined
+
+  computedNewUnlockDate: string
+}
+
+export const RsTanMergeContext = createContext<RsTanMergeContextValues | undefined>(undefined)
+
+export const RsTanMergeProvider = ({ children }: RsTanMergeContextProps) => {
+  const { getWalletClient } = useWalletConnexionContext()
+
+  const { loadData, lockData } = useRsTanContext()
+
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const [firstPositionToMerge, setFirstPositionToMerge] = useState<string>("")
+
+  const [secondPositionToMerge, setSecondPositionToMerge] = useState<string>("")
+
+  const firstPositionToMergeInfo = useMemo(() => {
+    const pos = lockData?.positions.find((position) => position?.tokenId.toString() === firstPositionToMerge)
+
+    return pos
+  }, [firstPositionToMerge])
+
+  const secondPositionToMergeInfo = useMemo(() => {
+    const pos = lockData?.positions.find((position) => position?.tokenId.toString() === secondPositionToMerge)
+
+    return pos
+  }, [secondPositionToMerge])
+
+  const computedNewPositionId = useMemo(() => {
+    if (!lockData || !lockData.positions || lockData.positions.length === 0) {
+      return "001"
+    }
+
+    const maxTokenId = lockData.positions.reduce((max, position) => {
+      const tokenIdNumber = Number(position.tokenId)
+      return tokenIdNumber > max ? tokenIdNumber : max
+    }, 0)
+
+    const newPositionId1 = (maxTokenId + 1).toString()
+
+    return newPositionId1
+  }, [lockData, firstPositionToMerge])
+
+  const computedNewUnlockDate = useMemo(() => {
+    const elevenWeeksInSeconds = BigInt(11 * 7 * 24 * 60 * 60)
+    const nowInSeconds = BigInt(Math.floor(Date.now() / 1000))
+
+    const result = nowInSeconds + elevenWeeksInSeconds
+    return result.toString()
+  }, [firstPositionToMergeInfo, secondPositionToMergeInfo])
+
+  const actionMerge = async () => {
+    setIsLoading(true)
+    const walletClient = getWalletClient()
+    if (walletClient && firstPositionToMergeInfo && secondPositionToMergeInfo) {
+      await doMerge(walletClient, firstPositionToMergeInfo?.tokenId, secondPositionToMergeInfo?.tokenId)
+      loadData()
+      setSecondPositionToMerge("")
+      setFirstPositionToMerge("")
+      setIsLoading(false)
+    } else {
+      setIsLoading(false)
+    }
+  }
+
+  const contextValue: RsTanMergeContextValues = {
+    isLoading,
+    setIsLoading,
+    actionMerge,
+    firstPositionToMerge,
+    setFirstPositionToMerge,
+    secondPositionToMerge,
+    setSecondPositionToMerge,
+    firstPositionToMergeInfo,
+    secondPositionToMergeInfo,
+    computedNewPositionId,
+    computedNewUnlockDate,
+  }
+
+  return <RsTanMergeContext.Provider value={contextValue}>{children}</RsTanMergeContext.Provider>
+}
+
+export const useRsTanMergeContext = () => {
+  const context = useContext(RsTanMergeContext)
+  if (!context) {
+    throw new Error("useRsTanMergeContext must be used within a RsTanMergeProvider")
+  }
+  return context
+}

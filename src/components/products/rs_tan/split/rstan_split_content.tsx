@@ -70,7 +70,7 @@ export const RsTanSplitContent = () => {
 
       <div className="flex h-10 w-full items-center justify-between gap-2">
         <PositionSelect />
-        <div className="flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-white/10 bg-opacity-[10%] p-3 text-sm text-subtitle backdrop-blur-[30px]">
+        <div className="flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-3 text-sm text-subtitle backdrop-blur-[60px] backdrop-filter">
           Balance:
           {splitPositionInfo && splitPositionInfo?.amount && (
             <span className="flex items-center justify-end font-bold text-white">
@@ -101,14 +101,14 @@ export const RsTanSplitContent = () => {
               </div>
               <div className="flex h-full items-center justify-center gap-3">
                 <div className="flex h-full flex-col items-center justify-center">
-                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 font-bold backdrop-blur-[30px]">
+                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 font-bold backdrop-blur-[60px]">
                     <IconRsTan className="h-4 w-4"></IconRsTan>
                     rsTan
                   </div>
                 </div>
                 <div className="flex h-full flex-col items-start justify-start">
                   <div className="mb-0.5 text-xs font-bold text-subtitle">Position</div>
-                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 backdrop-blur-[30px]">
+                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 backdrop-blur-[60px]">
                     <div className="text-md font-bold">#{computedNewPositionIds?.newPositionId1}</div>
                     <div className="text-sm">(new)</div>
                   </div>
@@ -132,14 +132,14 @@ export const RsTanSplitContent = () => {
               </div>
               <div className="flex h-full items-center justify-center gap-3">
                 <div className="flex h-full flex-col items-center justify-center">
-                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 font-bold backdrop-blur-[30px]">
+                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 font-bold backdrop-blur-[60px]">
                     <IconRsTan className="h-4 w-4"></IconRsTan>
                     rsTan
                   </div>
                 </div>
                 <div className="flex h-full flex-col items-start justify-start">
                   <div className="mb-0.5 text-xs font-bold text-subtitle">Position</div>
-                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 backdrop-blur-[30px]">
+                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 backdrop-blur-[60px]">
                     <div className="text-md font-bold">#{computedNewPositionIds?.newPositionId2}</div>
                     <div className="text-sm">(new)</div>
                   </div>
@@ -167,7 +167,7 @@ export const RsTanSplitContent = () => {
               </div>
 
               <div className="mt-3 flex justify-between gap-4 text-subtitle">
-                <div className="flex w-full items-center justify-between rounded-[10px] bg-white bg-opacity-[3%] pl-2 backdrop-blur-[30px]">
+                <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel pl-2 backdrop-blur-[60px]">
                   <span className="text-xs">
                     <span className="mr-2 font-bold">Position</span>
                     <span className="font-bold text-white"> #{computedNewPositionIds?.newPositionId1}</span>
@@ -177,7 +177,7 @@ export const RsTanSplitContent = () => {
                   </PanelRaw>
                 </div>
 
-                <div className="flex w-full items-center justify-between rounded-[10px] bg-white bg-opacity-[3%] pl-2 backdrop-blur-[30px]">
+                <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel pl-2 backdrop-blur-[60px]">
                   <span className="text-xs">
                     <span className="mr-2 font-bold">Position</span>
                     <span className="font-bold text-white"> #{computedNewPositionIds?.newPositionId2}</span>
@@ -192,7 +192,7 @@ export const RsTanSplitContent = () => {
 
           <div className="mb-3 mt-6 text-lg font-bold text-white">Split recap:</div>
 
-          <div className="flex w-full flex-col items-start justify-start gap-2 rounded-[10px] bg-white bg-opacity-[3%] px-2 py-3 backdrop-blur-[30px]">
+          <div className="flex w-full flex-col items-start justify-start gap-2 rounded-[10px] bg-overlay-panel px-2 py-3 backdrop-blur-[60px]">
             <div className="flex w-full items-start justify-start gap-2">
               <div className="w-3/12">Pos. ID</div>
               <div className="w-6/12">rsTan</div>
@@ -200,7 +200,7 @@ export const RsTanSplitContent = () => {
             </div>
 
             <div className="flex w-full items-center justify-center gap-2">
-              <div className="flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-white bg-opacity-[3%] px-4 font-bold backdrop-blur-[30px]">
+              <div className="flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-bold backdrop-blur-[60px]">
                 #{splitPositionInfo?.tokenId}
               </div>
               <EvolutionBox
@@ -216,13 +216,13 @@ export const RsTanSplitContent = () => {
                   </div>
                 }
               />
-              <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-white bg-opacity-[3%] px-4 backdrop-blur-[30px]">
+              <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px]">
                 {formatDate(new Date(Number(splitPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")}
               </div>{" "}
             </div>
 
             <div className="flex w-full items-center justify-center gap-2">
-              <div className="flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-white bg-opacity-[3%] px-4 font-bold backdrop-blur-[30px]">
+              <div className="flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-bold backdrop-blur-[60px]">
                 #{computedNewPositionIds?.newPositionId2}
               </div>
 
@@ -239,7 +239,7 @@ export const RsTanSplitContent = () => {
                   </div>
                 }
               />
-              <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-white bg-opacity-[3%] px-4 backdrop-blur-[30px]">
+              <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px]">
                 {formatDate(new Date(Number(splitPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")}
               </div>
             </div>

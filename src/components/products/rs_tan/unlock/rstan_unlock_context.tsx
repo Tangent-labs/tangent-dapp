@@ -46,29 +46,18 @@ export const RsTanUnlockProvider = ({ children }: RsTanUnlockContextProps) => {
     return pos
   }, [depositPosition])
 
-  //
-
   useEffect(() => {
     const calculateTanReceived = async () => {
       try {
         const endLockTime = new Date(Number(depositPositionInfo?.endLockTime) * 1000)
-
         const publicClient = await getPublicClient()
-
         const currentBlockNumber = await publicClient.getBlockNumber()
-
         const block = await publicClient.getBlock({ blockNumber: currentBlockNumber })
-
         const currentTime = new Date(Number(block.timestamp) * 1000)
-
         const totalDurationLeft = endLockTime.getTime() - currentTime.getTime()
-
         const thirteenWeeksInMilliseconds = 13 * 7 * 24 * 60 * 60 * 1000
-
         const penalty = Math.max(0, Math.min(1, totalDurationLeft / thirteenWeeksInMilliseconds))
-
         const maxAmount = depositPositionInfo?.amount || BigInt(0)
-
         const totalTanReceived = (maxAmount * BigInt(Math.round((1 - penalty) * 1000000))) / BigInt(1000000)
 
         setTanReceived(totalTanReceived)
@@ -82,8 +71,6 @@ export const RsTanUnlockProvider = ({ children }: RsTanUnlockContextProps) => {
       calculateTanReceived()
     }
   }, [depositPositionInfo])
-
-  //
 
   const actionUnlock = async () => {
     setIsLoading(true)

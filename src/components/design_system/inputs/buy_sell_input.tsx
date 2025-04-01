@@ -195,7 +195,7 @@ export function BuySellInput({
         </PanelRaw>
 
         <div onClick={() => setIsBuying(!isBuying)} className="flex w-full cursor-pointer items-center justify-center border-none">
-          <IconChevron className="h-auto w-8 rounded-lg border border-white/10 bg-opacity-[3%] p-2 text-row-tonic backdrop-blur-[30px]" />
+          <IconChevron className="h-auto w-8 rounded-lg border border-white/10 p-2 text-row-tonic backdrop-blur-[60px]" />
         </div>
 
         <PanelRaw className={`${isLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>

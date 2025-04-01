@@ -42,20 +42,10 @@ export const MultiPositionSelect = ({ lockData, selectedPositions, setSelectedPo
     setSelectedPositions(newPositions)
   }
 
-  // If no positions are available, show a disabled state
   if (!lockData || allPositions.length === 0) {
     return (
       <div className="flex flex-col gap-2">
-        <InputSelect
-          placeholder="No positions available"
-          label=""
-          disabled={true}
-          className="w-full min-w-32 border-gray-600 bg-gray-800 text-white"
-          template={template}
-          value=""
-          options={[]}
-          onChange={() => {}}
-        />
+        <InputSelect disabled={true} className="shimmer w-full min-w-32 text-white" template={template} value="" options={[]} onChange={() => {}} />
       </div>
     )
   }
@@ -79,11 +69,15 @@ export const MultiPositionSelect = ({ lockData, selectedPositions, setSelectedPo
         </div>
       ))}
 
-      <div className="mt-2 flex gap-2">
-        <Button onClick={handleAddPosition} className="flex h-10 w-10 items-center justify-center rounded-xl text-xl">
+      <div className="mt-2 flex h-[30px] gap-2">
+        <Button onClick={handleAddPosition} className="text-md flex h-full w-[30px] items-center justify-center rounded-xl text-xl">
           +
         </Button>
-        <button onClick={handleSelectAll} disabled={allPositions.length === 0} className="h-10 rounded-lg border border-gray-600 px-4 py-1 text-white">
+        <button
+          onClick={handleSelectAll}
+          disabled={allPositions.length === 0}
+          className="flex h-full items-center justify-center rounded-lg border border-gray-600 px-4 py-1 text-white"
+        >
           Select all
         </button>
       </div>

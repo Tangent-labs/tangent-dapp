@@ -1,7 +1,6 @@
 "use client"
 
 import { IconWallet } from "@/components/icons/icon_wallet"
-import PanelRaw from "../structure/panel_raw"
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatBigInt, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
@@ -66,7 +65,9 @@ export const InputSelectLockPosition = ({
   }, [depositAmount])
 
   return (
-    <PanelRaw className={`${isLoading ? "shimmer" : ""} flex h-full w-full items-center justify-center gap-2 px-2 py-3`}>
+    <div
+      className={`${isLoading ? "shimmer" : ""} flex h-full w-full items-center justify-center gap-2 rounded-[10px] border border-white border-opacity-20 px-2 py-3 backdrop-blur-[60px]`}
+    >
       <div className="flex flex-col">
         <div className="text-xs font-bold text-subtitle">{labelDeposit}</div>
 
@@ -85,9 +86,9 @@ export const InputSelectLockPosition = ({
         <div className="text-xs text-subtitle">$({dollarDepositDisplay})</div>
       </div>
 
-      <div className="flex h-full flex-col items-center justify-center">
-        <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 font-bold backdrop-blur-[30px]">
-          <IconTan></IconTan>
+      <div className="flex h-full flex-col items-center justify-center px-1">
+        <div className="flex items-center justify-center rounded-[10px] bg-overlay-panel px-3 py-2 font-bold backdrop-blur-[60px]">
+          <IconTan className="mr-3"></IconTan>
           TAN
         </div>
       </div>
@@ -110,6 +111,6 @@ export const InputSelectLockPosition = ({
           )}
         </div>
       </div>
-    </PanelRaw>
+    </div>
   )
 }

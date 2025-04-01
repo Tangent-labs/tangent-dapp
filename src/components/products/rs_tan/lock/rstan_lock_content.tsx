@@ -99,13 +99,13 @@ export default function RsTanLockContent() {
 
         {depositPosition === "New" && (
           <div className="flex gap-2">
-            <div className="mb-1 text-sm text-white/30">Perma lock</div>
+            <div className="mb-1 text-sm text-subtitle">Perma Lock</div>
             <InputToggle onToggle={() => setIsPermaLock(!isPermaLock)} isOn={isPermaLock}></InputToggle>
           </div>
         )}
       </div>
 
-      <div className="flex w-full items-center justify-between gap-4 rounded-[10px] bg-white bg-opacity-[2%] p-3 backdrop-blur-[30px]">
+      <div className="flex w-full items-center justify-between gap-4 rounded-[10px] p-3 backdrop-blur-[60px]">
         <EvolutionBox
           className="w-full"
           originalValue={depositPositionInfo ? formatBigInt(depositPositionInfo?.amount, 18, 2) : "0"}
@@ -137,7 +137,7 @@ export default function RsTanLockContent() {
         />
       </div>
 
-      <div className="my-2 flex w-full items-center justify-center gap-4 rounded-[10px] bg-white bg-opacity-[2%] p-3 text-sm text-subtitle backdrop-blur-[30px]">
+      <div className="my-2 flex w-full items-center justify-center gap-4 rounded-[10px] p-3 text-sm text-subtitle backdrop-blur-[60px]">
         Locking more tokens on a existing position will automatically extend the lock duration to its maximum (12weeks).
       </div>
 

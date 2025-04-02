@@ -40,7 +40,13 @@ export const doIncreaseLockAmount = async (tokenId: bigint, depositWeiValue: big
   return await waitForTransaction(txHash)
 }
 
-export async function getLockFormState(allowance: bigint, depositPositionInfo: LockPosition | undefined, depositWeiValue: bigint, isWellConnected: boolean) {
+export async function getLockFormState(
+  balance: bigint,
+  allowance: bigint,
+  depositPositionInfo: LockPosition | undefined,
+  depositWeiValue: bigint,
+  isWellConnected: boolean
+) {
   const reasons: string[] = []
 
   const publicClient = await getPublicClient()
@@ -52,6 +58,9 @@ export async function getLockFormState(allowance: bigint, depositPositionInfo: L
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
   } else {
+    if (balance < depositWeiValue) {
+      reasons.push("Not enough balance.")
+    }
     if (!depositWeiValue || depositWeiValue === 0n) {
       reasons.push("No amount.")
     }

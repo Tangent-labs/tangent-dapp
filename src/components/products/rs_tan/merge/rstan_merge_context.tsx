@@ -4,7 +4,8 @@ import { createContext, ReactNode, useContext, useMemo, useState } from "react"
 import { useRsTanContext } from "../rstan_layout_context"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { LockPosition } from "../../tg_usd/tg_usd_type"
-import { doMerge } from "./rstan_merge_controller"
+import { doMerge, getMergeFormState } from "./rstan_merge_controller"
+import { FormState } from "@/types"
 
 type RsTanMergeContextProps = {
   children: ReactNode
@@ -13,6 +14,8 @@ type RsTanMergeContextProps = {
 type RsTanMergeContextValues = {
   isLoading: boolean
   setIsLoading: (arg: boolean) => void
+
+  formState: FormState
 
   firstPositionToMerge: string
   setFirstPositionToMerge: (arg: string) => void
@@ -71,6 +74,12 @@ export const RsTanMergeProvider = ({ children }: RsTanMergeContextProps) => {
     return newPositionId1
   }, [lockData, firstPositionToMerge])
 
+  const formState = useMemo(() => {
+    if (!firstPositionToMergeInfo || !secondPositionToMergeInfo) return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+
+    return getMergeFormState(firstPositionToMergeInfo, secondPositionToMergeInfo)
+  }, [firstPositionToMergeInfo, secondPositionToMergeInfo])
+
   const computedNewUnlockDate = useMemo(() => {
     const elevenWeeksInSeconds = BigInt(11 * 7 * 24 * 60 * 60)
     const nowInSeconds = BigInt(Math.floor(Date.now() / 1000))
@@ -105,6 +114,7 @@ export const RsTanMergeProvider = ({ children }: RsTanMergeContextProps) => {
     secondPositionToMergeInfo,
     computedNewPositionId,
     computedNewUnlockDate,
+    formState,
   }
 
   return <RsTanMergeContext.Provider value={contextValue}>{children}</RsTanMergeContext.Provider>

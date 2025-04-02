@@ -104,7 +104,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
       if (!lockData || !depositWeiValue) {
         setFormState({ canProcess: false, cantProcessReasons: ["No data"], haveToApprove: false })
       } else {
-        getLockFormState(lockData?.allowance, depositPositionInfo, depositWeiValue, isWellConnected).then((d) => {
+        getLockFormState(lockData?.balance, lockData?.allowance, depositPositionInfo, depositWeiValue, isWellConnected).then((d) => {
           setFormState(d)
         })
       }

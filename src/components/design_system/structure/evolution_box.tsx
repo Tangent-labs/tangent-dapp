@@ -15,9 +15,9 @@ export default function EvolutionBox({ label, originalValue, newValue, logo, ...
   return (
     <div {...props}>
       <div className="text-sm text-gray-400"> {label} </div>
-      <div className="flex items-center justify-between gap-2 rounded-[10px] bg-overlay-panel px-4 py-1.5 backdrop-blur-[60px]">
+      <div className="flex items-center justify-between gap-2 rounded-[10px] bg-overlay-panel px-4 py-1.5 text-[16px] backdrop-blur-[60px]">
         <div className="flex items-center gap-1">
-          <div className="text-lg font-bold">{originalValue} </div>
+          <div className="font-bold">{originalValue} </div>
           {logo && (
             <div className="w-5">
               <TokenImage size={48} token={logo} />
@@ -34,7 +34,7 @@ export default function EvolutionBox({ label, originalValue, newValue, logo, ...
         </div>
         {newValue ? (
           <div className="flex items-center gap-1">
-            <div className="text-lg font-bold text-tonic">{newValue}</div>
+            <div className="font-bold text-tonic">{newValue}</div>
             {logo && (
               <div className="w-5">
                 {" "}

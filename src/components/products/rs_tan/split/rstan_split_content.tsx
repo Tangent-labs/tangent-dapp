@@ -10,6 +10,7 @@ import PanelRaw from "@/components/design_system/structure/panel_raw"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { Button } from "@/components/design_system/inputs/button"
 import { formatDate } from "@/lib/other_formatter"
+import { InfinityIcon } from "lucide-react"
 
 export const RsTanSplitContent = () => {
   const { lockData } = useRsTanContext()
@@ -66,11 +67,11 @@ export const RsTanSplitContent = () => {
 
   return (
     <div className="flex w-full flex-col items-start justify-start">
-      <div className="mb-3 text-lg font-bold text-white">Select position to split:</div>
+      <div className="mb-1 text-lg font-bold text-white">Select position to split:</div>
 
       <div className="flex h-10 w-full items-center justify-between gap-2">
         <PositionSelect />
-        <div className="flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-3 text-sm text-subtitle backdrop-blur-[60px] backdrop-filter">
+        <div className="mt-1 flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-3 text-sm text-subtitle backdrop-blur-[60px] backdrop-filter">
           Balance:
           {splitPositionInfo && splitPositionInfo?.amount && (
             <span className="flex items-center justify-end font-bold text-white">
@@ -108,9 +109,9 @@ export const RsTanSplitContent = () => {
                 </div>
                 <div className="flex h-full flex-col items-start justify-start">
                   <div className="mb-0.5 text-xs font-bold text-subtitle">Position</div>
-                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 backdrop-blur-[60px]">
+                  <div className="flex w-28 items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 backdrop-blur-[60px]">
                     <div className="text-md font-bold">#{computedNewPositionIds?.newPositionId1}</div>
-                    <div className="text-sm">(new)</div>
+                    <div className="text-sm">(updated)</div>
                   </div>
                 </div>
               </div>
@@ -139,7 +140,7 @@ export const RsTanSplitContent = () => {
                 </div>
                 <div className="flex h-full flex-col items-start justify-start">
                   <div className="mb-0.5 text-xs font-bold text-subtitle">Position</div>
-                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 backdrop-blur-[60px]">
+                  <div className="flex w-28 items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 backdrop-blur-[60px]">
                     <div className="text-md font-bold">#{computedNewPositionIds?.newPositionId2}</div>
                     <div className="text-sm">(new)</div>
                   </div>
@@ -202,6 +203,7 @@ export const RsTanSplitContent = () => {
             <div className="flex w-full items-center justify-center gap-2">
               <div className="flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-bold backdrop-blur-[60px]">
                 #{splitPositionInfo?.tokenId}
+                <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-tonic py-0.5 text-xs text-black">Updated</div>
               </div>
               <EvolutionBox
                 className="w-6/12"
@@ -217,13 +219,18 @@ export const RsTanSplitContent = () => {
                 }
               />
               <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px]">
-                {formatDate(new Date(Number(splitPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")}
-              </div>{" "}
+                {splitPositionInfo?.endLockTime && splitPositionInfo?.endLockTime == "281474976710655" ? (
+                  <InfinityIcon className="w-5"></InfinityIcon>
+                ) : (
+                  <> {formatDate(new Date(Number(splitPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")}</>
+                )}
+              </div>
             </div>
 
             <div className="flex w-full items-center justify-center gap-2">
-              <div className="flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-bold backdrop-blur-[60px]">
+              <div className="relative flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-bold backdrop-blur-[60px]">
                 #{computedNewPositionIds?.newPositionId2}
+                <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-button-active py-0.5 text-xs text-black">New</div>
               </div>
 
               <EvolutionBox
@@ -240,7 +247,11 @@ export const RsTanSplitContent = () => {
                 }
               />
               <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px]">
-                {formatDate(new Date(Number(splitPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")}
+                {splitPositionInfo?.endLockTime && splitPositionInfo?.endLockTime == "281474976710655" ? (
+                  <InfinityIcon className="w-5"></InfinityIcon>
+                ) : (
+                  <> {formatDate(new Date(Number(splitPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")}</>
+                )}
               </div>
             </div>
           </div>

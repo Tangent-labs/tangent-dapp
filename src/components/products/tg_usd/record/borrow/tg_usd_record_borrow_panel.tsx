@@ -36,27 +36,23 @@ export default function TgUsdBorrowPanel() {
             <span className="text-2xl">Borrow tgUSD</span>
           </div>
 
-          <div>
-            <DepositReceiveInput
-              displayRecieve={false}
-              depositAmount={borrowWeiValue}
-              labelDeposit="You borrow"
-              depositSelect={<BorrowAssetDisplay />}
-              disabled={!canInteract}
-              depositAsset={tgUSDInfo}
-              balance={0n}
-              setMaxBalance={() => {}}
-              displayBalance={false}
-              onValueChange={(value: bigint | undefined) => {
-                setBorrowWeiValue(value)
-              }}
-            />
-          </div>
+          <DepositReceiveInput
+            displayRecieve={false}
+            depositAmount={borrowWeiValue}
+            labelDeposit="You borrow"
+            depositSelect={<BorrowAssetDisplay />}
+            disabled={!canInteract}
+            depositAsset={tgUSDInfo}
+            balance={0n}
+            setMaxBalance={() => {}}
+            displayBalance={false}
+            onValueChange={(value: bigint | undefined) => {
+              setBorrowWeiValue(value)
+            }}
+          />
         </div>
 
-        <div>
-          <FormButtons actions={{ handleApprove: undefined, handleProcess: actionBorrow }} formState={formState} labelProcess="Borrow" />
-        </div>
+        <FormButtons actions={{ handleApprove: undefined, handleProcess: actionBorrow }} formState={formState} labelProcess="Borrow" />
       </div>
     </>
   )

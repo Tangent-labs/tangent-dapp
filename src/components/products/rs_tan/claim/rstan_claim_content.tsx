@@ -12,7 +12,7 @@ import InputToggle from "@/components/design_system/inputs/input_toogle"
 export const RsTanClaimContent = () => {
   const { lockData } = useRsTanContext()
 
-  const { claimAsSgUSD, selectedPositions, selectedPositionsData, actionClaim, setClaimAsSgUSD, setSelectedPositions } = useRsTanClaimContext()
+  const { claimAsSgUSD, selectedPositions, hasDuplicates, selectedPositionsData, actionClaim, setClaimAsSgUSD, setSelectedPositions } = useRsTanClaimContext()
 
   const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {
     return (
@@ -71,8 +71,8 @@ export const RsTanClaimContent = () => {
         </div>
 
         <div className="flex h-full flex-col items-center justify-center">
-          <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 font-bold backdrop-blur-[60px]">
-            <TokenImage token={claimAsSgUSD ? "sgUSD" : "tgUSD"} className="" size={32} />
+          <div className="flex items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 font-bold backdrop-blur-[60px]">
+            <TokenImage token={claimAsSgUSD ? "sgUSD" : "tgUSD"} className="mr-2" size={16} />
             {claimAsSgUSD ? "sgUSD" : "tgUSD"}
           </div>
         </div>
@@ -94,7 +94,7 @@ export const RsTanClaimContent = () => {
               </div>
               <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
                 {formatBigInt(position.claimable, 18, 2)}
-                <TokenImage token={claimAsSgUSD ? "sgUSD" : "tgUSD"} className="" size={32} />
+                <TokenImage token={claimAsSgUSD ? "sgUSD" : "tgUSD"} className="" size={16} />
               </div>
             </div>
           ))}
@@ -102,7 +102,7 @@ export const RsTanClaimContent = () => {
       </div>
 
       {selectedPositionsData && selectedPositionsData.length > 0 && (
-        <Button className="mt-3 flex w-full justify-center" onClick={actionClaim}>
+        <Button state={hasDuplicates ? "disabled" : "active"} className="mt-3 flex w-full justify-center" onClick={actionClaim}>
           Claim
         </Button>
       )}

@@ -23,6 +23,8 @@ type RsTanClaimContextValues = {
   actionClaim: () => void
 
   selectedPositionsData: LockPosition[]
+
+  hasDuplicates: boolean
 }
 
 export const RsTanClaimContext = createContext<RsTanClaimContextValues | undefined>(undefined)
@@ -38,6 +40,15 @@ export const RsTanClaimProvider = ({ children }: RsTanClaimContextProps) => {
 
   const [selectedPositions, setSelectedPositions] = useState<string[]>([])
 
+  const hasDuplicates = useMemo(() => {
+    const seen = new Set()
+    return selectedPositions.some((tokenId) => {
+      if (seen.has(tokenId.toString())) return true
+      seen.add(tokenId.toString())
+      return false
+    })
+  }, [selectedPositions])
+
   const selectedPositionsData = useMemo(() => {
     return selectedPositions
       .map((tokenId) => {
@@ -52,7 +63,7 @@ export const RsTanClaimProvider = ({ children }: RsTanClaimContextProps) => {
     const walletClient = getWalletClient()
 
     if (walletClient) {
-      await doClaim(12n, walletClient, "Claim")
+      await doClaim(selectedPositionsData, walletClient)
       loadData()
       setIsLoading(false)
     } else {
@@ -69,6 +80,7 @@ export const RsTanClaimProvider = ({ children }: RsTanClaimContextProps) => {
     selectedPositionsData,
     claimAsSgUSD,
     setClaimAsSgUSD,
+    hasDuplicates,
   }
 
   return <RsTanClaimContext.Provider value={contextValue}>{children}</RsTanClaimContext.Provider>

@@ -70,7 +70,7 @@ export const MultiPositionSelect = ({ lockData, selectedPositions, setSelectedPo
       ))}
 
       <div className="mt-2 flex h-[30px] gap-2">
-        <Button onClick={handleAddPosition} className="text-md flex h-full w-[30px] items-center justify-center rounded-xl text-xl">
+        <Button onClick={handleAddPosition} className="text-md flex h-full w-[30px] items-center justify-center rounded-[10px] text-xl">
           +
         </Button>
         <button

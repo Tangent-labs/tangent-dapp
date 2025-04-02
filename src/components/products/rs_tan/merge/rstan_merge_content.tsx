@@ -109,8 +109,8 @@ export const RsTanMergeContent = () => {
         <div className="mt-1 flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-3 text-sm text-subtitle">
           Balance:
           {firstPositionToMerge && firstPositionToMergeInfo?.amount && (
-            <span className="flex items-center justify-end font-bold text-white">
-              {formatBigInt(firstPositionToMergeInfo?.amount, 18, 2)} <IconRsTan className="ml-1 h-5 w-5"></IconRsTan>
+            <span className="flex items-center justify-end text-lg font-bold text-white">
+              {formatBigInt(firstPositionToMergeInfo?.amount, 18, 2)} <IconRsTan className="ml-2 h-5 w-5"></IconRsTan>
             </span>
           )}
         </div>
@@ -121,8 +121,8 @@ export const RsTanMergeContent = () => {
         <div className="mt-1 flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-3 text-sm text-subtitle">
           Balance:
           {secondPositionToMerge && secondPositionToMergeInfo?.amount && (
-            <span className="flex items-center justify-end font-bold text-white">
-              {formatBigInt(secondPositionToMergeInfo?.amount, 18, 2)} <IconRsTan className="ml-1 h-5 w-5"></IconRsTan>
+            <span className="flex items-center justify-end text-lg font-bold text-white">
+              {formatBigInt(secondPositionToMergeInfo?.amount, 18, 2)} <IconRsTan className="ml-2 h-5 w-5"></IconRsTan>
             </span>
           )}
         </div>

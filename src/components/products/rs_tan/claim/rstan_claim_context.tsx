@@ -65,6 +65,7 @@ export const RsTanClaimProvider = ({ children }: RsTanClaimContextProps) => {
     if (walletClient) {
       await doClaim(selectedPositionsData, walletClient)
       loadData()
+      setSelectedPositions([])
       setIsLoading(false)
     } else {
       setIsLoading(false)

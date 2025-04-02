@@ -8,9 +8,9 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { useRsTanSplitContext } from "./rstan_split_context"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
-import { Button } from "@/components/design_system/inputs/button"
 import { formatDate } from "@/lib/other_formatter"
 import { InfinityIcon } from "lucide-react"
+import FormButtons from "@/components/design_system/form/form_actions"
 
 export const RsTanSplitContent = () => {
   const { lockData } = useRsTanContext()
@@ -22,6 +22,7 @@ export const RsTanSplitContent = () => {
     computedNewPositionIds,
     computedSplitAmounts,
     visualPercentage,
+    formState,
     setSplitPosition,
     actionSplit,
     setSplitPercentage,
@@ -71,11 +72,11 @@ export const RsTanSplitContent = () => {
 
       <div className="flex h-10 w-full items-center justify-between gap-2">
         <PositionSelect />
-        <div className="mt-1 flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-3 text-sm text-subtitle backdrop-blur-[60px] backdrop-filter">
+        <div className="mt-1 flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-3 text-[15px] text-sm text-subtitle backdrop-blur-[60px] backdrop-filter">
           Balance:
           {splitPositionInfo && splitPositionInfo?.amount && (
-            <span className="flex items-center justify-end font-bold text-white">
-              {formatBigInt(splitPositionInfo?.amount, 18, 2)} <IconRsTan className="ml-auto h-4 w-4"></IconRsTan>
+            <span className="flex items-center justify-end text-lg font-bold text-white">
+              {formatBigInt(splitPositionInfo?.amount, 18, 2)} <IconRsTan className="ml-2 h-5 w-5"></IconRsTan>
             </span>
           )}
         </div>
@@ -256,9 +257,14 @@ export const RsTanSplitContent = () => {
             </div>
           </div>
 
-          <Button className="flex w-full justify-center" onClick={actionSplit}>
-            Split
-          </Button>
+          <FormButtons
+            actions={{
+              handleApprove: undefined,
+              handleProcess: actionSplit,
+            }}
+            formState={formState}
+            labelProcess="Split"
+          />
         </>
       )}
     </div>

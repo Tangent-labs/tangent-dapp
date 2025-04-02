@@ -126,7 +126,7 @@ export const RsTanLayoutContent = ({
 function LockPositionList() {
   const { headers, listState, udpateSort } = useListContext()
 
-  const { lockData, selectedPosition, setSelectedPosition, onClickExtend, setExtendToPermaLock, extendToPermaLock, onClickRemovePermaLock } = useRsTanContext()
+  const { lockData, selectedPosition, extendToPermaLock, setSelectedPosition, onClickExtend, setExtendToPermaLock, onClickRemovePermaLock } = useRsTanContext()
 
   return (
     <>

@@ -1,11 +1,12 @@
 "use client"
 
-import { createContext, ReactNode, useContext, useMemo, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useRsTanContext } from "../rstan_layout_context"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { LockPosition } from "../../tg_usd/tg_usd_type"
-import { doSplit } from "./rstan_split_controller"
+import { doSplit, getSplitFormState } from "./rstan_split_controller"
 import { formatBigInt } from "@/lib/number_formatter"
+import { FormState } from "@/types"
 
 type RsTanSplitContextProps = {
   children: ReactNode
@@ -16,6 +17,8 @@ type RsTanSplitContextValues = {
   setIsLoading: (arg: boolean) => void
 
   splitPositionInfo: LockPosition | undefined
+
+  formState: FormState
 
   splitPosition: string
   setSplitPosition: (arg: string) => void
@@ -35,11 +38,13 @@ type RsTanSplitContextValues = {
 export const RsTanSplitContext = createContext<RsTanSplitContextValues | undefined>(undefined)
 
 export const RsTanSplitProvider = ({ children }: RsTanSplitContextProps) => {
-  const { getWalletClient } = useWalletConnexionContext()
+  const { getWalletClient, isWellConnected } = useWalletConnexionContext()
 
   const { loadData, lockData } = useRsTanContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const [formState, setFormState] = useState<FormState>({ canProcess: false, cantProcessReasons: [], haveToApprove: false })
 
   const [splitPercentage, setSplitPercentage] = useState<number>(50)
 
@@ -100,6 +105,22 @@ export const RsTanSplitProvider = ({ children }: RsTanSplitContextProps) => {
     }
   }
 
+  useEffect(() => {
+    const computeFormState = async () => {
+      if (!lockData || !splitPositionInfo) {
+        setFormState({ canProcess: false, cantProcessReasons: ["No data"], haveToApprove: false })
+      } else {
+        getSplitFormState(splitPositionInfo, isWellConnected).then((d) => {
+          setFormState(d)
+        })
+      }
+    }
+
+    if (splitPositionInfo) {
+      computeFormState()
+    }
+  }, [splitPositionInfo, lockData])
+
   const contextValue: RsTanSplitContextValues = {
     isLoading,
     setIsLoading,
@@ -112,6 +133,7 @@ export const RsTanSplitProvider = ({ children }: RsTanSplitContextProps) => {
     computedSplitAmounts,
     visualPercentage,
     computedNewPositionIds,
+    formState,
   }
 
   return <RsTanSplitContext.Provider value={contextValue}>{children}</RsTanSplitContext.Provider>

@@ -1,0 +1,14 @@
+import { Address } from "viem"
+
+const addresses = process.env.NEXT_PUBLIC_ADDRESSES_JSON
+
+if (!addresses) {
+  throw new Error("ADDRESSES_JSON is not defined in the environment variables.")
+}
+
+const envAddresses = JSON.parse(addresses)
+
+export const TAN_CONTRACT = {
+  TAN: envAddresses.tokens.tan as Address,
+  STAN: envAddresses.tokens.sTan as Address,
+}

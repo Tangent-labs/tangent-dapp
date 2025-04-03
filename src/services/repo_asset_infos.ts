@@ -221,4 +221,20 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     logo: "crvUSD",
     displayDecimals: 2,
   },
+  tan: {
+    symbol: "tan",
+    name: "tan",
+    decimals: 18,
+    address: TOKEN_ADDR["tan"],
+    logo: "tan",
+    displayDecimals: 2,
+  },
+  sTan: {
+    symbol: "sTan",
+    name: "sTan",
+    decimals: 18,
+    address: TOKEN_ADDR["sTan"],
+    logo: "sTan",
+    displayDecimals: 2,
+  },
 }

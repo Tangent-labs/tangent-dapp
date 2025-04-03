@@ -51,6 +51,8 @@ export const RsTanLayoutContent = ({
 
   const pathname = usePathname()
 
+  const { lockData } = useRsTanContext()
+
   return (
     <>
       <div className="mb-4 flex w-full items-end justify-end">
@@ -74,7 +76,7 @@ export const RsTanLayoutContent = ({
 
           <div className="flex w-20 flex-col items-center justify-center">
             <div className="text-xs font-bold text-subtitle">Supply</div>
-            <div className="text-md font-bold text-white">10,283,283</div>
+            <div className="text-md font-bold text-white">{formatBigInt(lockData?.totalSupply, 18, 2)}</div>
           </div>
 
           <div className="flex w-20 flex-col items-center justify-center">
@@ -84,7 +86,7 @@ export const RsTanLayoutContent = ({
 
           <div className="flex w-20 flex-col items-center justify-center rounded-lg bg-button-active py-2">
             <div className="text-xs font-bold text-black">APR</div>
-            <div className="text-md font-bold text-white">15.32%</div>
+            <div className="text-md font-bold text-white">{formatBigInt(lockData?.tanAPR, 18, 2)}%</div>
           </div>
         </div>
       </div>

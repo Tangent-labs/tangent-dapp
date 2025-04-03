@@ -125,3 +125,20 @@ input[type="number"]::-webkit-outer-spin-button {
   display: none;
   height: 0px;
 }
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 10px;
+  background: white;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 10px;
+  height: 4px;
+  background: white;
+  border-radius: 2px;
+  cursor: pointer;
+}

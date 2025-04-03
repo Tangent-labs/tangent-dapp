@@ -141,7 +141,7 @@ export default function RsTanLockContent() {
         Locking more tokens on a existing position will automatically extend the lock duration to its maximum (12weeks).
       </div>
 
-      <div className="flex w-full max-w-96">
+      <div className="flex w-full justify-center">
         <FormButtons
           actions={{
             handleApprove: actionApprove,

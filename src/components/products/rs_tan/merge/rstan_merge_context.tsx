@@ -81,11 +81,11 @@ export const RsTanMergeProvider = ({ children }: RsTanMergeContextProps) => {
   }, [firstPositionToMergeInfo, secondPositionToMergeInfo])
 
   const computedNewUnlockDate = useMemo(() => {
-    const elevenWeeksInSeconds = BigInt(11 * 7 * 24 * 60 * 60)
-    const nowInSeconds = BigInt(Math.floor(Date.now() / 1000))
+    if (!firstPositionToMergeInfo || !secondPositionToMergeInfo) return "281474976710655"
 
-    const result = nowInSeconds + elevenWeeksInSeconds
-    return result.toString()
+    return firstPositionToMergeInfo?.endLockTime > secondPositionToMergeInfo?.endLockTime
+      ? firstPositionToMergeInfo?.endLockTime
+      : secondPositionToMergeInfo?.endLockTime
   }, [firstPositionToMergeInfo, secondPositionToMergeInfo])
 
   const actionMerge = async () => {

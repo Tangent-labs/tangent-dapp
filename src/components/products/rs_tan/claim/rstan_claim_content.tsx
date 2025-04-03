@@ -55,7 +55,7 @@ export const RsTanClaimContent = () => {
 
           <div className="text-xl">
             <input
-              type="number"
+              type="string"
               disabled={true}
               value={formatBigInt(
                 selectedPositionsData.reduce((el, acc) => el + acc.claimable, 0n),

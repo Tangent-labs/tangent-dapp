@@ -18,6 +18,8 @@ const config: Config = {
         page: "url('/medias/background.svg')",
       },
       colors: {
+        "overlay-panel": "var(--tgt-bg-overlay-panel)",
+        "button-active": "var(--tgt-bg-button-active)",
         "row-tonic": "var(--tgt-row-tonic)",
         tonic: "var(--tgt-tonic)",
         "light-tonic": "var(--tgt-light-tonic)",

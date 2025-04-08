@@ -7,13 +7,17 @@ import { IconChevron } from "@/components/icons/icon_chevron"
 
 type TgHoverCardProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode
+  label: string
 }
 
-export default function DropdownMenu({ children }: TgHoverCardProps) {
+export default function DropdownMenu({ children, label }: TgHoverCardProps) {
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
-        <button type="button">
+        <button className="flex items-center justify-center gap-1" type="button">
+          <div className="transition-all duration-700 hover:text-row-tonic data-[active=true]:text-row-tonic">
+            <p className="cursor-pointer text-sm aria-disabled:text-gray-700">{label}</p>
+          </div>
           <IconChevron className="w-2" />
         </button>
       </HoverCardTrigger>

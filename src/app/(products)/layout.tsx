@@ -20,7 +20,7 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
       <WalletConnexionProvider>
         <div className="ml-2 mt-2 flex bg-repeat">
           <div className="mr-2 w-full lg:mr-24">
-            <div className="flex justify-between max-md:flex-col">
+            <div className="flex items-center justify-between max-md:flex-col">
               <MenuBarFeature />
 
               <div className="order-1 md:order-2">

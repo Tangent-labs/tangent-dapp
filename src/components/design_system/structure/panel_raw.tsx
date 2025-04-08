@@ -7,7 +7,7 @@ interface PanelRawProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export default function PanelRaw({ children, className, ...props }: PanelRawProps) {
   return (
-    <div className={`rounded-[10px] border border-white border-opacity-25 bg-white bg-opacity-[3%] backdrop-blur-[30px] ${className}`} {...props}>
+    <div className={`rounded-[10px] border border-white border-opacity-20 bg-overlay-panel backdrop-blur-[60px] ${className}`} {...props}>
       {children}
     </div>
   )

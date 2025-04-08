@@ -31,7 +31,5 @@ export const TGUSD_CONTRACT = {
   CONTROL_TOWER: envAddresses.utilities.controlTower as Address,
   TG_USD: envAddresses.tokens.tgUSD as Address,
   SG_USD: envAddresses.tokens.sgUSD as Address,
-  TAN: envAddresses.tokens.tan as Address,
-  RSTAN: envAddresses.tokens.rsTan as Address,
   TG_USD_ORACLE: envAddresses.oracles.tgUSD as Address,
 }

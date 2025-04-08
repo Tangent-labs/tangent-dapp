@@ -21,6 +21,7 @@ import { IconRsTan } from "@/components/icons/icon_rstan"
 import { LockPosition } from "../tg_usd/tg_usd_type"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { InfinityIcon } from "lucide-react"
+import rsTan from "../../../../public/medias/tokens/rsTan.png"
 
 const listeState: ListState = {
   search: undefined,
@@ -58,10 +59,10 @@ export const RsTanLayoutContent = ({
       <div className="mb-4 flex w-full items-end justify-end">
         <div className="sgusd-card w-8/12">
           <div className="flex items-center justify-center">
-            <Image height={440} width={440} className="an-logo" src="/medias/product_tgusd.png" alt="token" />
+            <Image height={440} width={440} className="an-logo" src={rsTan} alt="token" />
           </div>
           <div className="flex flex-col items-start justify-between gap-3">
-            <span className="text-4xl">Lock Tan</span>
+            <span className="text-4xl font-bold">Lock TAN</span>
 
             <p>
               Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT
@@ -71,7 +72,7 @@ export const RsTanLayoutContent = ({
           </div>
         </div>
 
-        <div className="flex w-4/12 items-center justify-around rounded-[10px] border border-white/10 bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
+        <div className="flex w-4/12 items-center justify-around rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
           <IconRsTan></IconRsTan>
 
           <div className="flex w-20 flex-col items-center justify-center">
@@ -112,7 +113,7 @@ export const RsTanLayoutContent = ({
         </div>
 
         <div className="flex w-7/12 flex-col items-start justify-start rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
-          <div className="mr-auto text-xl font-bold text-white">Locked Positions</div>
+          <div className="mr-auto text-3xl font-bold text-white">Locked Positions</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
 

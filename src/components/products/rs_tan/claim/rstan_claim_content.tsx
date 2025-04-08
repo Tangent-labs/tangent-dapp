@@ -82,9 +82,9 @@ export const RsTanClaimContent = () => {
       <div className="flex w-full flex-col items-center justify-around gap-2 rounded-[10px] p-3 backdrop-blur-[10px]">
         <div className="flex w-full flex-col items-start justify-start">
           <div className="flex w-full items-start justify-start">
-            <div className="flex w-1/2 items-start justify-start">Position ID</div>
+            <div className="flex w-1/2 items-start justify-start text-subtitle">Position ID</div>
 
-            <div className="flex w-1/2 items-start justify-start"> {claimAsSgUSD ? "sgUSD" : "tgUSD"} received</div>
+            <div className="flex w-1/2 items-start justify-start text-subtitle"> {claimAsSgUSD ? "sgUSD" : "tgUSD"} received</div>
           </div>
 
           {selectedPositionsData.map((position: LockPosition, index: number) => (

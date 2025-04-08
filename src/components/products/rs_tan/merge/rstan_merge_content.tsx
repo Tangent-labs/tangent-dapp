@@ -134,9 +134,9 @@ export const RsTanMergeContent = () => {
 
           <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel px-2 py-3 backdrop-blur-[60px]">
             <div className="flex w-full items-start justify-start gap-2">
-              <div className="w-3/12">Pos. ID</div>
-              <div className="w-6/12">rsTan</div>
-              <div className="w-3/12">Unlock date</div>
+              <div className="w-3/12 text-subtitle">Pos. ID</div>
+              <div className="w-6/12 text-subtitle">rsTan</div>
+              <div className="w-3/12 text-subtitle">Unlock date</div>
             </div>
 
             <div className="my-1 flex w-full items-center justify-center gap-2 text-[16px]">

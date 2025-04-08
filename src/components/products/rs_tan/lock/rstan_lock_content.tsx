@@ -128,11 +128,15 @@ export default function RsTanLockContent() {
           }
           label="Unlock date"
           newValue={
-            depositPositionInfo?.endLockTime && depositPositionInfo?.endLockTime == "281474976710655" ? (
-              <InfinityIcon className="w-5"></InfinityIcon>
-            ) : (
-              <>{isPermaLock ? <InfinityIcon className="w-5"></InfinityIcon> : formatDate(new Date(Number(computedNewEndLockTime) * 1000), "dd/MM/yyyy")}</>
-            )
+            <div className="flex h-6 items-center">
+              {depositPositionInfo?.endLockTime && depositPositionInfo?.endLockTime == "281474976710655" ? (
+                <InfinityIcon className="h-5 w-5"></InfinityIcon>
+              ) : (
+                <>
+                  {isPermaLock ? <InfinityIcon className="h-5 w-5"></InfinityIcon> : formatDate(new Date(Number(computedNewEndLockTime) * 1000), "dd/MM/yyyy")}
+                </>
+              )}
+            </div>
           }
         />
       </div>

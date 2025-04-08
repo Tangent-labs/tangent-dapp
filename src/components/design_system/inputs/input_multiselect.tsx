@@ -63,7 +63,11 @@ export const MultiPositionSelect = ({ lockData, selectedPositions, setSelectedPo
               onChange={(value) => handlePositionChange(index, value)}
             />
           </div>
-          <button onClick={() => handleRemovePosition(index)} className="font-bold text-gray-400 hover:text-red-500" aria-label="Remove position">
+          <button
+            onClick={() => handleRemovePosition(index)}
+            className="flex h-3 w-3 items-center justify-center rounded-full border border-white/10 p-3 text-xs font-bold text-gray-400 hover:border-white hover:text-white"
+            aria-label="Remove position"
+          >
             ✕
           </button>
         </div>

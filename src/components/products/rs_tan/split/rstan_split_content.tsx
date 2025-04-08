@@ -89,7 +89,7 @@ export const RsTanSplitContent = () => {
 
             <PanelRaw className="flex h-full w-full items-center justify-between gap-2 px-2 py-3">
               <div className="flex flex-col">
-                <div className="text-xs font-bold text-subtitle">You split</div>
+                <div className="text-xs font-bold text-subtitle">You Split</div>
                 <div className="text-xl">
                   <input
                     type="string"
@@ -120,7 +120,7 @@ export const RsTanSplitContent = () => {
 
             <PanelRaw className="mt-2 flex h-full w-full items-center justify-between gap-2 px-2 py-3">
               <div className="flex flex-col">
-                <div className="text-xs font-bold text-subtitle">You split</div>
+                <div className="text-xs font-bold text-subtitle">You Split</div>
                 <div className="text-xl">
                   <input
                     type="string"

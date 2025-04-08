@@ -33,8 +33,6 @@ export const RsTanUnlockContent = () => {
     if (!lockData || (!!lockData && lockData?.positions.length === 0)) {
       return (
         <InputSelect
-          placeholder=""
-          label=""
           disabled={true}
           className="w-full min-w-32"
           template={AssetSelectTemplate}
@@ -51,8 +49,6 @@ export const RsTanUnlockContent = () => {
 
     return (
       <InputSelect
-        placeholder=""
-        label="Select position"
         className="w-full min-w-32"
         template={AssetSelectTemplate}
         value={depositPosition || ""}
@@ -68,11 +64,11 @@ export const RsTanUnlockContent = () => {
 
       <PositionSelect />
 
-      <div className="mt-3 text-lg font-bold text-white">Unlock recap :</div>
+      <div className="mb-1 mt-3 text-lg font-bold text-white">Unlock recap :</div>
 
       <div className="flex w-full items-center justify-around gap-2 rounded-[10px] p-3 backdrop-blur-[60px]">
         <div className="flex w-full flex-col items-start justify-start">
-          <div>TAN received</div>
+          <div className="text-subtitle">TAN received</div>
 
           {depositPositionInfo && depositPositionInfo?.amount ? (
             <div className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 font-bold text-tonic backdrop-blur-[60px]">
@@ -86,7 +82,7 @@ export const RsTanUnlockContent = () => {
         </div>
 
         <div className="flex w-full flex-col items-start justify-start">
-          <div>TAN forfeited</div>
+          <div className="text-subtitle">TAN forfeited</div>
 
           {depositPositionInfo && depositPositionInfo?.amount ? (
             <div className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 font-bold backdrop-blur-[60px]">

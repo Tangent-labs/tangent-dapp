@@ -21,7 +21,6 @@ import { IconRsTan } from "@/components/icons/icon_rstan"
 import { LockPosition } from "../tg_usd/tg_usd_type"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { InfinityIcon } from "lucide-react"
-import rsTan from "../../../../public/medias/tokens/rsTan.png"
 
 const listeState: ListState = {
   search: undefined,
@@ -59,7 +58,7 @@ export const RsTanLayoutContent = ({
       <div className="mb-4 flex w-full items-end justify-end">
         <div className="sgusd-card w-8/12">
           <div className="flex items-center justify-center">
-            <Image height={440} width={440} className="an-logo" src={rsTan} alt="token" />
+            <Image height={440} width={440} className="an-logo" src={`/medias/tokens/rsTan.png`} alt="token" />
           </div>
           <div className="flex flex-col items-start justify-between gap-3">
             <span className="text-4xl font-bold">Lock TAN</span>

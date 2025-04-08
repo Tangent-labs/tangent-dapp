@@ -204,11 +204,7 @@ export default function TgUsdDepositPanel() {
                 />
 
                 <div className="text-xs">
-                  {zapValue && collateralInfo?.price !== 0
-                    ? `(~${formatDollar((Number(formatUnits(zapValue, 18)) * collateralInfo?.price).toFixed(2))})`
-                    : !!zapValue
-                      ? `(~${formatDollar(Number(formatUnits(zapValue, 18)).toFixed(2))})`
-                      : "$0"}
+                  {zapValue && collateralInfo?.price !== 0 ? `(~${formatDollar((Number(formatUnits(zapValue, 18)) * collateralInfo?.price).toFixed(2))})` : ""}
                 </div>
               </div>
               <div className="flex justify-between text-xs text-gray-400">

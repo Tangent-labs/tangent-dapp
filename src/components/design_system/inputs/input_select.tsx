@@ -5,12 +5,13 @@ import { SelectOption, SelectOptionAmount } from "@/types"
 import { ReactNode } from "react"
 
 interface InputSelectProps<T extends SelectOption | SelectOptionAmount> {
-  options?: T[] // Generic array based on type T
+  options?: T[]
   onChange: (value: string) => void
   label?: string
   placeholder?: string
   className?: string
   value?: string
+  disabled?: boolean
   template?: (option: T) => ReactNode // Template matches the type of options
 }
 
@@ -31,52 +32,34 @@ const InputSelect = <T extends SelectOption | SelectOptionAmount>({
   className = "",
   value,
   template,
+  disabled,
 }: InputSelectProps<T>) => {
   return (
     <>
       <div className={`flex flex-col gap-1 ${className}`}>
-        <div className="flex justify-between text-xs">{label}</div>
-        <div>
-          <Select value={value} onValueChange={(value) => onChange(value)}>
-            <SelectTrigger className={className}>
-              <SelectValue placeholder={placeholder} />
-            </SelectTrigger>
-            <SelectContent>
-              {options?.map((option: SelectOption) => (
-                <SelectItem value={option.value} key={option.value}>
-                  {template ? (
-                    template(option as T)
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold">{option.label}</span>
-                    </div>
-                  )}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <div className="flex justify-between text-xs font-bold text-subtitle">{label}</div>
+
+        <Select disabled={disabled} value={value} onValueChange={(value) => onChange(value)}>
+          <SelectTrigger disabled={disabled} className={className}>
+            <SelectValue placeholder={placeholder} />
+          </SelectTrigger>
+          <SelectContent>
+            {options?.map((option: SelectOption) => (
+              <SelectItem value={option.value} key={option.value}>
+                {template ? (
+                  template(option as T)
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="text-md font-bold">{option.label}</span>
+                  </div>
+                )}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </>
   )
 }
 
 export default InputSelect
-
-/* 
-
-<>
-      <div className={`flex flex-col  gap-1 ${className}`}>
-        <div className="flex justify-between">
-          <label className={`text-xs  `}>{label}</label>
-          <select className="bg-transparent border border-white border-opacity-20 rounded-[10px] p-2 ">
-            {options.map((option) => (
-              <option key={option} value={option}>
-                <TokenImage token={option} size={10} />
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-    </>
-    */

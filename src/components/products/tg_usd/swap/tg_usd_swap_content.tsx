@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { BuySellInput } from "@/components/design_system/inputs/buy_sell_input"
-import { useTgUsdBuyContext } from "./tg_usd_buy_context"
+import { useTgUsdSwapContext } from "./tg_usd_swap_context"
 import CustomSelect from "@/components/design_system/inputs/custom_select"
 import { ExistingAsset } from "@/types"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -14,7 +14,7 @@ type AssetSelectProps = {
   options: DepositReceiveAsset[]
 }
 
-export default function TgUsdBuyContent() {
+export default function TgUsdSwapContent() {
   const {
     setIsBuying,
     handleDepositChange,
@@ -35,7 +35,7 @@ export default function TgUsdBuyContent() {
     balanceAllowanceData,
     receiveWeiValue,
     receiveAssetInfo,
-  } = useTgUsdBuyContext()
+  } = useTgUsdSwapContext()
 
   const ReceiveAssetSelect = ({ options }: AssetSelectProps) => {
     if (!balances || !options) {
@@ -113,7 +113,7 @@ export default function TgUsdBuyContent() {
           <Image height={440} width={440} className="an-logo" src="/medias/product_tgusd.png" alt="token" />
         </div>
         <div className="flex flex-col items-start justify-between gap-3">
-          <span className="text-4xl">Buy</span>
+          <span className="text-4xl">Swap</span>
           <p>
             Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT
             stable pool & CVX stable pool).

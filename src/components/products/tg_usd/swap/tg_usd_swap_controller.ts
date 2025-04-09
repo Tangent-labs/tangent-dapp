@@ -4,16 +4,16 @@ import GetBalances from "@/abi/tgusd/GetBalances.json"
 import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
 import IERC4626 from "@/abi/tgusd/IERC4626.json"
 import WStable from "@/abi/tgusd/WStable.json"
-import { BalanceAllowanceData, BuyToken } from "../tg_usd_type"
+import { BalanceAllowanceData, SwapToken } from "../tg_usd_type"
 import { getSwapAssetPrice } from "@/services/service_price"
 import { AssetDataPriced } from "@/types"
-import { getRouteTxData } from "./buy_actions"
+import { getRouteTxData } from "./swap_actions"
 
 export const getBalances = async (user: Address, tokens: Address[]) => {
   return await executeChainViewUnique<bigint[]>(GetBalances.abi as Abi, GetBalances.bytecode as Hex, [user, tokens])
 }
 
-export const getBuyTokenBalanceAllowance = async (walletClient: WalletClient, address: Address | undefined, spender: Address | undefined) => {
+export const getSwapTokenBalanceAllowance = async (walletClient: WalletClient, address: Address | undefined, spender: Address | undefined) => {
   address = address || zeroAddress
   const [account] = await walletClient.requestAddresses()
 
@@ -23,9 +23,11 @@ export const getBuyTokenBalanceAllowance = async (walletClient: WalletClient, ad
   ])
 }
 
-export const computeSwapAssetPrice = async (tokens: BuyToken[], depositAsset: string) => {
+export const computeSwapAssetPrice = async (tokens: SwapToken[], depositAsset: string) => {
   try {
-    const tokenAddress = tokens.find((el: BuyToken) => el.name === depositAsset) ? tokens.find((el: BuyToken) => el.name === depositAsset)?.address : undefined
+    const tokenAddress = tokens.find((el: SwapToken) => el.name === depositAsset)
+      ? tokens.find((el: SwapToken) => el.name === depositAsset)?.address
+      : undefined
     if (tokenAddress) {
       const data = await getSwapAssetPrice(tokenAddress)
       return data
@@ -88,7 +90,7 @@ export const doCustomSwap = async (walletClient: WalletClient, abi: Abi, method:
   return hash
 }
 
-export function getBuyFormState(
+export function getSwapFormState(
   approveNotNeeded: boolean,
   depositWeiValue?: bigint,
   receiveWeiValue?: bigint,

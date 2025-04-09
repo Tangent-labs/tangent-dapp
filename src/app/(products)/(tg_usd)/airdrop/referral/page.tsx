@@ -1,6 +1,6 @@
 import { Button } from "@/components/design_system/inputs/button"
 import Divider from "@/components/design_system/structure/divider"
-import { IconTrophy } from "@/components/icons/icon_chevron copy"
+import { IconTrophy } from "@/components/icons/icon_trophy"
 import { IconCompleted } from "@/components/icons/icon_completed"
 import { IconShare } from "@/components/icons/icon_share"
 
@@ -20,7 +20,7 @@ const Ranking = () => {
         { rank: 4, address: "0xc600e7F967a0892A39Fb7FB8AcCb237A2B62af72", pts: 12 },
         { rank: 4, address: "0xAcCb237A2967a02A39Fb7FB8AcCb237A2B62af72", pts: 1 },
       ].map((el) => (
-        <div key={el?.address} className="my-1 flex w-full items-start justify-start rounded-[10px] bg-white bg-opacity-[5%] px-2 py-1 backdrop-blur-[30px]">
+        <div key={el?.address} className="my-1 flex w-full items-start justify-start rounded-[10px] bg-white bg-opacity-[5%] px-2 py-1 backdrop-blur-[60px]">
           <div className="flex w-1/3 items-center justify-start gap-1 font-bold">
             {el?.rank === 1 && <IconTrophy className="w-5 fill-yellow-300"></IconTrophy>}
             {el?.rank === 2 && <IconTrophy className="w-5 fill-gray-500"></IconTrophy>}
@@ -38,7 +38,7 @@ const Ranking = () => {
 export default async function TgUsdReferralPage() {
   return (
     <div className="flex w-full flex-col items-center justify-center">
-      <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[30px]">
+      <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
         <div className="mr-auto text-lg font-bold text-white">Your referral</div>
 
         <Divider className="h-0.5 w-full bg-white/10" />
@@ -62,13 +62,13 @@ export default async function TgUsdReferralPage() {
         </div>
       </div>
 
-      <div className="my-4 flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[30px]">
+      <div className="my-4 flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
         <div className="mr-auto text-lg font-bold text-white">Airdrop referral</div>
 
         <Divider className="h-0.5 w-full bg-white/10" />
 
         <div className="flex w-full items-center justify-between gap-4">
-          <div className="flex w-full flex-col items-center justify-center rounded-[10px] p-3 backdrop-blur-[30px]">
+          <div className="flex w-full flex-col items-center justify-center rounded-[10px] p-3 backdrop-blur-[60px]">
             <IconShare></IconShare>
 
             <span className="text-lg font-bold">Share link</span>
@@ -77,7 +77,7 @@ export default async function TgUsdReferralPage() {
             </span>
           </div>
 
-          <div className="flex w-full flex-col items-center justify-center rounded-[10px] p-3 backdrop-blur-[30px]">
+          <div className="flex w-full flex-col items-center justify-center rounded-[10px] p-3 backdrop-blur-[60px]">
             <IconCompleted></IconCompleted>
             <span className="text-lg font-bold">Complete tasks</span>
             <span className="mt-2 text-center text-sm text-subtitle">
@@ -85,7 +85,7 @@ export default async function TgUsdReferralPage() {
             </span>
           </div>
 
-          <div className="flex w-full flex-col items-center justify-center rounded-[10px] p-3 backdrop-blur-[30px]">
+          <div className="flex w-full flex-col items-center justify-center rounded-[10px] p-3 backdrop-blur-[60px]">
             <IconTrophy className="w-12 fill-row-tonic"></IconTrophy>
             <span className="text-lg font-bold">Earn points</span>
             <span className="mt-2 text-center text-sm text-subtitle">
@@ -96,7 +96,7 @@ export default async function TgUsdReferralPage() {
       </div>
 
       <div className="my-4 flex w-full items-center justify-between gap-4">
-        <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[30px]">
+        <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
           <div className="mr-auto text-lg font-bold text-white">Referral ranking</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
@@ -104,7 +104,7 @@ export default async function TgUsdReferralPage() {
           <Ranking />
         </div>
 
-        <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[30px]">
+        <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
           <div className="mr-auto text-lg font-bold text-white">My referrees ranking</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
@@ -112,7 +112,7 @@ export default async function TgUsdReferralPage() {
           <Ranking />
         </div>
 
-        <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[30px]">
+        <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
           <div className="mr-auto text-lg font-bold text-white">Points ranking</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />

@@ -4,7 +4,7 @@ import { Button } from "@/components/design_system/inputs/button"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 
-export default function TgUsdAirdropLayoutLayout({
+export default function TgUsdAirdropLayout({
   children,
 }: Readonly<{
   children: React.ReactNode

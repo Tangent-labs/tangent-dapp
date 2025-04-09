@@ -1,11 +1,11 @@
 "use client"
 
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { BalanceAllowanceData, BuyToken, DepositReceiveAsset } from "../tg_usd_type"
+import { BalanceAllowanceData, SwapToken, DepositReceiveAsset } from "../tg_usd_type"
 import { Abi, Address } from "viem"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
-import { getTokenInQuote, getTokenOutQuote } from "./buy_actions"
+import { getTokenInQuote, getTokenOutQuote } from "./swap_actions"
 import { SwapConfig, swapConfig } from "./swap_config"
 import { tgUsdTokens } from "../tg_usd_repository"
 import {
@@ -17,16 +17,16 @@ import {
   fetchEnsoData,
   getBalances,
   getABI,
-  getBuyFormState,
-  getBuyTokenBalanceAllowance,
-} from "./tg_usd_buy_controller"
+  getSwapFormState,
+  getSwapTokenBalanceAllowance,
+} from "./tg_usd_swap_controller"
 
-type TgUsdBuyContextProps = {
+type TgUsdSwapContextProps = {
   children: ReactNode
-  tokens: BuyToken[]
+  tokens: SwapToken[]
 }
 
-type TgUsdBuyContextValues = {
+type TgUsdSwapContextValues = {
   isLoading: boolean
 
   depositWeiValue?: bigint
@@ -44,7 +44,7 @@ type TgUsdBuyContextValues = {
   setReceiveAsset: (arg: string) => void
   receiveAsset: string | undefined
 
-  tokens: BuyToken[]
+  tokens: SwapToken[]
 
   isZapLoading: boolean
   setIsSwapLoading: (arg: boolean) => void
@@ -72,9 +72,9 @@ type TgUsdBuyContextValues = {
   computedAssets: { depositAssets: DepositReceiveAsset[]; receiveAssets: DepositReceiveAsset[] }
 }
 
-export const TgUsdBuyContext = createContext<TgUsdBuyContextValues | undefined>(undefined)
+export const TgUsdSwapContext = createContext<TgUsdSwapContextValues | undefined>(undefined)
 
-export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => {
+export const TgUsdSwapProvider = ({ children, tokens }: TgUsdSwapContextProps) => {
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -104,7 +104,7 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
   const [swapData, setSwapData] = useState<SwapConfig | null>(null)
 
   const receiveAssetInfo = useMemo(() => {
-    const assetInfo = tokens.find((el: BuyToken) => el.name === receiveAsset) || undefined
+    const assetInfo = tokens.find((el: SwapToken) => el.name === receiveAsset) || undefined
 
     if (!swapedAssetPrice || !assetInfo) return null
 
@@ -121,7 +121,7 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
   }, [receiveAsset, swapedAssetPrice])
 
   const depositAssetInfo = useMemo(() => {
-    const assetInfo = tokens.find((el: BuyToken) => el.name === depositAsset) || undefined
+    const assetInfo = tokens.find((el: SwapToken) => el.name === depositAsset) || undefined
 
     if (!swapAssetPrice || !assetInfo) return null
 
@@ -148,7 +148,7 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
 
       const spenderAddress = (!!ensoRouterAddress && quoteType === "enso" ? ensoRouterAddress : receiveAssetInfo?.address) as Address
 
-      const data = await getBuyTokenBalanceAllowance(walletClient, depositAssetInfo.address, spenderAddress)
+      const data = await getSwapTokenBalanceAllowance(walletClient, depositAssetInfo.address, spenderAddress)
 
       setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
     } catch (error) {
@@ -420,7 +420,7 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
 
   const formState = useMemo(
     () =>
-      getBuyFormState(
+      getSwapFormState(
         swapData?.approval === "noApprovalNeeded",
         depositWeiValue,
         receiveWeiValue,
@@ -452,7 +452,7 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
       }))
     })
 
-    const tokenOptions = tokens.map((el: BuyToken) => ({
+    const tokenOptions = tokens.map((el: SwapToken) => ({
       ...el,
       value: el.name as string,
       balance: balances[el.address] || BigInt(0),
@@ -529,7 +529,7 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
     return { depositAssets, receiveAssets }
   }, [balances, isBuying])
 
-  const contextValue: TgUsdBuyContextValues = {
+  const contextValue: TgUsdSwapContextValues = {
     isLoading,
     depositWeiValue,
     setDepositWeiValue,
@@ -557,13 +557,13 @@ export const TgUsdBuyProvider = ({ children, tokens }: TgUsdBuyContextProps) => 
     computedAssets,
   }
 
-  return <TgUsdBuyContext.Provider value={contextValue}>{children}</TgUsdBuyContext.Provider>
+  return <TgUsdSwapContext.Provider value={contextValue}>{children}</TgUsdSwapContext.Provider>
 }
 
-export const useTgUsdBuyContext = () => {
-  const context = useContext(TgUsdBuyContext)
+export const useTgUsdSwapContext = () => {
+  const context = useContext(TgUsdSwapContext)
   if (!context) {
-    throw new Error("useTgUsdBuyContext must be used within a TgUsdBuyProvider")
+    throw new Error("useTgUsdSwapContext must be used within a TgUsdSwapProvider")
   }
   return context
 }

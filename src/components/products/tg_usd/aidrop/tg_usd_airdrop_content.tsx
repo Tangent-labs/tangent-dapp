@@ -69,7 +69,7 @@ function AirdropList() {
 
   return (
     <>
-      <div className="mb-1 mt-6 rounded-[10px] bg-white bg-opacity-[3%] backdrop-blur-[30px]">
+      <div className="mb-1 mt-6 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <div className={`hidden p-4 leading-[10px] xl:block`}>
           <AirdropRowDisposition>
             {!!headers?.at(0)?.key && (

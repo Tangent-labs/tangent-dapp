@@ -1,24 +1,23 @@
 "use client"
 
-import React from "react"
-import PanelRaw from "./panel_raw"
+import React, { ReactNode } from "react"
 import { ExistingAsset } from "@/types"
 import TokenImage from "./token_image"
 
-type EvolutionBoxrops = React.ButtonHTMLAttributes<HTMLDivElement> & {
-  label: string
-  originalValue: string
-  newValue?: string
+type EvolutionBoxProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
+  originalValue: string | ReactNode
+  label?: string
+  newValue?: string | ReactNode
   logo?: ExistingAsset
 }
 
-export default function EvolutionBox({ label, originalValue, newValue, logo, ...props }: EvolutionBoxrops) {
+export default function EvolutionBox({ label, originalValue, newValue, logo, ...props }: EvolutionBoxProps) {
   return (
     <div {...props}>
       <div className="text-sm text-gray-400"> {label} </div>
-      <PanelRaw className="flex items-center justify-between gap-2 px-4 py-2">
+      <div className="flex items-center justify-between gap-2 rounded-[10px] bg-overlay-panel px-4 py-1.5 text-[16px] backdrop-blur-[60px]">
         <div className="flex items-center gap-1">
-          <div className="text-lg font-bold">{originalValue} </div>
+          <div className="font-bold">{originalValue} </div>
           {logo && (
             <div className="w-5">
               <TokenImage size={48} token={logo} />
@@ -35,7 +34,7 @@ export default function EvolutionBox({ label, originalValue, newValue, logo, ...
         </div>
         {newValue ? (
           <div className="flex items-center gap-1">
-            <div className="text-lg font-bold text-tonic">{newValue}</div>
+            <div className="font-bold text-tonic">{newValue}</div>
             {logo && (
               <div className="w-5">
                 {" "}
@@ -46,7 +45,7 @@ export default function EvolutionBox({ label, originalValue, newValue, logo, ...
         ) : (
           <div className="w-10 text-center">-</div>
         )}
-      </PanelRaw>
+      </div>
     </div>
   )
 }

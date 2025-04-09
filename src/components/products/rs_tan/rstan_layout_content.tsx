@@ -55,13 +55,13 @@ export const RsTanLayoutContent = ({
 
   return (
     <>
-      <div className="mb-4 flex w-full items-end justify-end">
-        <div className="sgusd-card w-8/12">
+      <div className="mb-3 flex w-full items-end justify-end gap-4">
+        <div className="stan-card w-7/12">
           <div className="flex items-center justify-center">
-            <Image height={440} width={440} className="an-logo" src={`/medias/tokens/rsTan.png`} alt="token" />
+            <Image height={360} width={360} src={`/medias/tokens/rsTan.png`} alt="token" />
           </div>
-          <div className="flex flex-col items-start justify-between gap-3">
-            <span className="text-4xl font-bold">Lock TAN</span>
+          <div className="ml-6 flex flex-col items-start justify-between gap-3">
+            <span className="mt-1 text-4xl font-bold">Lock TAN</span>
 
             <p>
               Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT
@@ -71,7 +71,7 @@ export const RsTanLayoutContent = ({
           </div>
         </div>
 
-        <div className="flex w-4/12 items-center justify-around rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+        <div className="flex w-5/12 items-center justify-around rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
           <IconRsTan></IconRsTan>
 
           <div className="flex w-20 flex-col items-center justify-center">
@@ -91,7 +91,7 @@ export const RsTanLayoutContent = ({
         </div>
       </div>
 
-      <div className="flex w-full gap-4">
+      <div className="mb-4 flex w-full gap-4">
         <div className="flex w-5/12 flex-col items-center justify-start rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
           <div className="flex w-full items-center justify-between">
             <ButtonTab label="Lock" active={pathname === "/tan/lock"} onClick={() => router.push("/tan/lock")} className="h-8! flex w-20 justify-center" />
@@ -132,78 +132,80 @@ function LockPositionList() {
 
   return (
     <>
-      <div className="border-none! mb-2 w-full rounded-[10px] backdrop-blur-[60px]">
+      <div className="mb-2 w-full rounded-[10px] backdrop-blur-[60px]">
         <ListHeader rowDisposition={LockRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 
-      {lockData?.positions.map((lockPosition: LockPosition) => (
-        <div className="flex w-full flex-col" key={lockPosition?.tokenId}>
-          <ListRow
-            navigate={() => setSelectedPosition(!!selectedPosition && lockPosition === selectedPosition ? undefined : lockPosition)}
-            className="mt-2 w-full"
-            rowDisposition={LockRowDisposition}
-            isSelected={lockPosition == selectedPosition}
-          >
-            <div className="flex items-center justify-center rounded-xl px-2 py-1.5 text-lg font-bold backdrop-blur-[60px]">#{lockPosition?.tokenId}</div>
-            <div className="flex items-center justify-center text-lg font-bold">
-              {formatBigInt(lockPosition?.amount, 18, 2)}
-              <IconRsTan className="ml-1 w-5"></IconRsTan>
-            </div>
-
-            <>
-              <div className="flex w-4/12 items-center justify-center text-lg font-bold">
-                {formatBigInt(lockPosition?.claimable, 18, 2)}
-                <TokenImage token="tgUSD" className="ml-1" size={16} />
+      <div className="flex h-full max-h-[400px] w-full flex-col overflow-y-scroll">
+        {lockData?.positions.map((lockPosition: LockPosition) => (
+          <div className="flex w-full flex-col" key={lockPosition?.tokenId}>
+            <ListRow
+              navigate={() => setSelectedPosition(!!selectedPosition && lockPosition === selectedPosition ? undefined : lockPosition)}
+              className="mt-2 w-full"
+              rowDisposition={LockRowDisposition}
+              isSelected={lockPosition == selectedPosition}
+            >
+              <div className="flex items-center justify-center rounded-xl px-2 py-1.5 text-lg font-bold backdrop-blur-[60px]">#{lockPosition?.tokenId}</div>
+              <div className="flex items-center justify-center text-lg font-bold">
+                {formatBigInt(lockPosition?.amount, 18, 2)}
+                <IconRsTan className="ml-1 w-5"></IconRsTan>
               </div>
-              <div className="flex w-4/12 items-center justify-center text-lg font-bold">
-                {lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (
-                  <InfinityIcon className="w-5"></InfinityIcon>
+
+              <>
+                <div className="flex w-4/12 items-center justify-center text-lg font-bold">
+                  {formatBigInt(lockPosition?.claimable, 18, 2)}
+                  <TokenImage token="tgUSD" className="ml-1" size={16} />
+                </div>
+                <div className="flex w-4/12 items-center justify-center text-lg font-bold">
+                  {lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (
+                    <InfinityIcon className="w-5"></InfinityIcon>
+                  ) : (
+                    <> {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd/MM/yyyy")}</>
+                  )}
+                </div>
+                <div className="flex w-3/12 items-center justify-center text-lg font-bold">
+                  <IconChevron className={`w-4 ${lockPosition == selectedPosition ? "" : "-rotate-90"} `}></IconChevron>
+                </div>
+              </>
+            </ListRow>
+
+            {lockPosition == selectedPosition && (
+              <div className="slide-down-fade-in flex w-full items-center justify-between rounded-b-lg bg-overlay-panel p-3">
+                <div className="flex items-center justify-center gap-1">
+                  <div className="w-20 text-sm text-subtitle">Unlock date</div>
+                  <EvolutionBox
+                    originalValue={formatDate(new Date(), "dd/MM/yyyy")}
+                    label=""
+                    newValue={
+                      lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (
+                        <InfinityIcon className="w-5"></InfinityIcon>
+                      ) : (
+                        <> {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd/MM/yyyy")}</>
+                      )
+                    }
+                  />
+                </div>
+
+                {!!lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (
+                  <>
+                    <Button onClick={() => onClickRemovePermaLock()}> Remove permalock</Button>
+                  </>
                 ) : (
-                  <> {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd/MM/yyyy")}</>
+                  <>
+                    <div className="flex w-full items-center justify-center gap-1">
+                      <div className="text-xs font-bold text-subtitle">Perma lock</div>
+                      <IconCircleHelp className="w-3"></IconCircleHelp>
+                      <InputToggle isOn={extendToPermaLock} onToggle={() => setExtendToPermaLock(!extendToPermaLock)}></InputToggle>
+                    </div>
+
+                    <Button onClick={() => onClickExtend(selectedPosition)}> Extend</Button>
+                  </>
                 )}
               </div>
-              <div className="flex w-3/12 items-center justify-center text-lg font-bold">
-                <IconChevron className={`w-4 ${lockPosition == selectedPosition ? "" : "-rotate-90"} `}></IconChevron>
-              </div>
-            </>
-          </ListRow>
-
-          {lockPosition == selectedPosition && (
-            <div className="slide-down-fade-in flex w-full items-center justify-between rounded-b-lg bg-overlay-panel p-3">
-              <div className="flex items-center justify-center gap-1">
-                <div className="w-20 text-sm text-subtitle">Unlock date</div>
-                <EvolutionBox
-                  originalValue={formatDate(new Date(), "dd/MM/yyyy")}
-                  label=""
-                  newValue={
-                    lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (
-                      <InfinityIcon className="w-5"></InfinityIcon>
-                    ) : (
-                      <> {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd/MM/yyyy")}</>
-                    )
-                  }
-                />
-              </div>
-
-              {!!lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (
-                <>
-                  <Button onClick={() => onClickRemovePermaLock()}> Remove permalock</Button>
-                </>
-              ) : (
-                <>
-                  <div className="flex w-full items-center justify-center gap-1">
-                    <div className="text-xs font-bold text-subtitle">Perma lock</div>
-                    <IconCircleHelp className="w-3"></IconCircleHelp>
-                    <InputToggle isOn={extendToPermaLock} onToggle={() => setExtendToPermaLock(!extendToPermaLock)}></InputToggle>
-                  </div>
-
-                  <Button onClick={() => onClickExtend(selectedPosition)}> Extend</Button>
-                </>
-              )}
-            </div>
-          )}
-        </div>
-      ))}
+            )}
+          </div>
+        ))}
+      </div>
     </>
   )
 }

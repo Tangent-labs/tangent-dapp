@@ -11,8 +11,8 @@ export function IconCompleted({ className }: IconProps) {
       />
       <defs>
         <linearGradient id="paint0_linear_2256_357" x1="4.16678" y1="4.16751" x2="45.8319" y2="45.8327" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#0075FF" />
-          <stop offset="1" stop-color="#00C2FF" />
+          <stop stopColor="#0075FF" />
+          <stop offset="1" stopColor="#00C2FF" />
         </linearGradient>
       </defs>
     </svg>

@@ -141,7 +141,7 @@ export default function RsTanLockContent() {
         />
       </div>
 
-      <div className="my-2 flex w-full items-center justify-center gap-4 rounded-[10px] p-3 text-sm text-subtitle backdrop-blur-[60px]">
+      <div className="mt-2 flex w-full items-center justify-center gap-4 rounded-[10px] p-3 text-sm text-subtitle backdrop-blur-[60px]">
         Locking more tokens on a existing position will automatically extend the lock duration to its maximum (12weeks).
       </div>
 

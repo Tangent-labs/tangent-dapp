@@ -108,7 +108,7 @@ export const RsTanSplitProvider = ({ children }: RsTanSplitContextProps) => {
   useEffect(() => {
     const computeFormState = async () => {
       if (!lockData || !splitPositionInfo) {
-        setFormState({ canProcess: false, cantProcessReasons: ["No data"], haveToApprove: false })
+        setFormState({ canProcess: false, cantProcessReasons: ["Form is empty"], haveToApprove: false })
       } else {
         getSplitFormState(splitPositionInfo, isWellConnected).then((d) => {
           setFormState(d)

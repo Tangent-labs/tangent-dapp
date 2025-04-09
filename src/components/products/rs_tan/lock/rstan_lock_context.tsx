@@ -9,7 +9,7 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { FormState } from "@/types"
 import { getPublicClient } from "@/services/service_rpc"
 import { toast } from "react-toastify"
-import { ToastComponent } from "@/components/design_system/notificatons/Toast"
+import { ToastComponent } from "@/components/design_system/toast"
 
 type RsTanLockContextProps = {
   children: ReactNode
@@ -72,13 +72,19 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
   }, [depositPosition])
 
   const actionApprove = async () => {
-    setIsLoading(true)
     const walletClient = getWalletClient()
 
     if (walletClient && depositWeiValue) {
-      await doApprove(depositWeiValue, walletClient)
-      loadData()
-      setIsLoading(false)
+      doApprove(depositWeiValue, walletClient)
+        .then(() => {
+          loadData()
+          setIsLoading(false)
+        })
+        .catch((err) => {
+          const errorMessage = err.message.includes("User denied transaction signature") ? "Transaction aborted" : "Something went wrong"
+          toast.error(ToastComponent, { data: { content: errorMessage, type: "Error" } })
+          setIsLoading(false)
+        })
     }
   }
 

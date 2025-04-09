@@ -4,14 +4,14 @@ import React, { ReactNode } from "react"
 import { ExistingAsset } from "@/types"
 import TokenImage from "./token_image"
 
-type EvolutionBoxrops = React.ButtonHTMLAttributes<HTMLDivElement> & {
+type EvolutionBoxProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
   originalValue: string | ReactNode
   label?: string
   newValue?: string | ReactNode
   logo?: ExistingAsset
 }
 
-export default function EvolutionBox({ label, originalValue, newValue, logo, ...props }: EvolutionBoxrops) {
+export default function EvolutionBox({ label, originalValue, newValue, logo, ...props }: EvolutionBoxProps) {
   return (
     <div {...props}>
       <div className="text-sm text-gray-400"> {label} </div>

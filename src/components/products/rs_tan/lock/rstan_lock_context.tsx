@@ -124,28 +124,19 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
   }, [depositPositionInfo, depositWeiValue])
 
   useEffect(() => {
-    const calculateTanReceived = async () => {
-      const thirteenWeeksInMilliSeconds = BigInt(13 * 7 * 24 * 60 * 60)
-
+    const computeEndLockTime = async () => {
       const publicClient = await getPublicClient()
       const currentBlockNumber = await publicClient.getBlockNumber()
       const block = await publicClient.getBlock({ blockNumber: currentBlockNumber })
-      const baseTime = new Date(Number(block.timestamp + thirteenWeeksInMilliSeconds) * 1000)
 
-      if (depositPositionInfo?.endLockTime !== undefined) {
-        const dayOfWeek = baseTime.getUTCDay()
-        const daysSinceThursday = (dayOfWeek - 4 + 7) % 7
+      const weekId = block.timestamp / 604800n
+      const adjustedTime = (weekId + 13n) * 604800n
 
-        const adjustedTime = block.timestamp + thirteenWeeksInMilliSeconds - BigInt(daysSinceThursday * 24 * 60 * 60)
-
-        setComputedNewEndLockTime(adjustedTime.toString())
-      } else {
-        setComputedNewEndLockTime(baseTime.toString())
-      }
+      setComputedNewEndLockTime(adjustedTime.toString())
     }
 
     if (depositPositionInfo) {
-      calculateTanReceived()
+      computeEndLockTime()
     }
   }, [depositPositionInfo, depositWeiValue])
 

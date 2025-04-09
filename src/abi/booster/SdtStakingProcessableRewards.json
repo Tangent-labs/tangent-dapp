@@ -64,7 +64,5 @@
       "name": "SdtStakingProcessableRewardsErr",
       "type": "error"
     }
-  ],
-  "linkReferences": {},
-  "deployedLinkReferences": {}
+  ]
 }

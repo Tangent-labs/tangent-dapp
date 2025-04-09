@@ -616,7 +616,5 @@
       "type": "function"
     }
   ],
-  "bytecode": "0x",
-  "linkReferences": {},
-  "deployedLinkReferences": {}
+  "bytecode": "0x"
 }

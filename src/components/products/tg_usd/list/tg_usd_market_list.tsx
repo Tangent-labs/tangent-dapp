@@ -34,7 +34,7 @@ export default function TgUsdMarketList() {
       <div className="flex items-end justify-between">
         <div className="tgusd-card w-7/12">
           <div className="flex items-center justify-center">
-            <Image height={320} width={320} src="/medias/tokens/tgUSD_header.png" alt="token" />
+            <Image height={240} width={240} src="/medias/tokens/tgUSD_header.png" alt="token" />
           </div>
           <div className="flex flex-col items-start justify-center gap-3">
             <span className="text-4xl font-bold">tgUSD</span>
@@ -45,25 +45,25 @@ export default function TgUsdMarketList() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="flex min-w-24 flex-col items-center justify-center gap-1 bg-overlay-panel backdrop-blur-[60px]">
+        <div className="flex h-full items-center gap-2 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
+          <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
             <span className="text-xs text-gray-400">Your Debts</span>
             <span className="text-sm font-bold">$0.00 USD</span>
           </div>
 
-          <div className="flex min-w-24 flex-col items-center justify-center gap-1 bg-overlay-panel backdrop-blur-[60px]">
+          <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
             <span className="text-xs text-gray-400">Your Collateral Deposits</span>
             <span className="text-sm font-bold">$0.00 USD</span>
           </div>
 
-          <div className="flex min-w-24 flex-col items-center justify-center gap-1 bg-overlay-panel backdrop-blur-[60px]">
+          <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
             <span className="text-xs text-gray-400">Your Total Points</span>
             <span className="text-sm font-bold">$0.00 USD</span>
           </div>
         </div>
       </div>
 
-      <div className="mt-2 flex items-center justify-between">
+      <div className="mt-10 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <IndicatorCards
             indicators={[
@@ -120,8 +120,9 @@ export function TgUsdMarketListInner() {
 
   return (
     <>
-      <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
-
+      <div className="my-2 w-full rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+        <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
+      </div>
       {displayRows?.map((item, index) => (
         <ListRow key={index} navigate={() => router.push(item.token)}>
           <ListAsset name={item.name} token={item.token} assetsEarned={[]} />

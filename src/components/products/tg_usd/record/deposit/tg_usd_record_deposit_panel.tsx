@@ -14,7 +14,6 @@ import CustomSelect from "@/components/design_system/inputs/custom_select"
 import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
 import { formatUnits } from "viem"
-import { useEffect, useState } from "react"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -36,7 +35,7 @@ export default function TgUsdDepositPanel() {
     getRouteAndDeposit,
     setSlippage,
     actionApproveZap,
-    handleZapChange,
+    handleZapInputChange,
     swapAssetPrice,
     isStaking,
     depositAsset,
@@ -54,13 +53,12 @@ export default function TgUsdDepositPanel() {
     gas,
     sociabilizationFee,
     balances,
+    zapInnerValue,
   } = useTgUsdDepositContext()
 
   const { collateralInfo, marketData, tgUSDInfo } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
-
-  const [innerValue, setInnerValue] = useState<number | undefined>(!zapValue ? undefined : Number(formatUnits(zapValue || BigInt(0), 18)))
 
   const AssetSelect = () => {
     if (!balances) {
@@ -120,7 +118,6 @@ export default function TgUsdDepositPanel() {
           {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={16} width={16} /> : <TokenImage token={option.logo} size={16} />}
           <span className="text-sm font-bold">{option.symbol}</span>
         </div>
-
         <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
       </div>
     )
@@ -151,15 +148,6 @@ export default function TgUsdDepositPanel() {
       </PanelRaw>
     )
   }
-
-  useEffect(() => {
-    if (zapValue && zapValue !== undefined) {
-      const updatedValue = Number(Number(formatUnits(zapValue, 18)).toFixed(2))
-      setInnerValue(updatedValue)
-    } else {
-      setInnerValue(0)
-    }
-  }, [zapValue])
 
   return (
     <div className="flex flex-col gap-2">
@@ -206,23 +194,23 @@ export default function TgUsdDepositPanel() {
                 <IconThunder className="h-auto w-[8px] text-row-tonic" />
                 <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
               </div>
-
               <div className="flex items-center justify-center gap-2">
                 <input
                   type="number"
                   disabled={isZapLoading}
                   className="flex justify-start bg-transparent text-xl font-bold focus:outline-none"
-                  value={innerValue}
-                  onChange={(e) => handleZapChange(e?.target?.value)}
+                  value={zapInnerValue ?? ""}
+                  onChange={handleZapInputChange}
                 />
 
-                <div className="text-xs">{zapValue ? `(~${formatDollar(Number(formatUnits(zapValue!, 18)).toFixed(0))})` : "$0"}</div>
+                <div className="text-xs">
+                  {zapValue && collateralInfo?.price !== 0 ? `(~${formatDollar((Number(formatUnits(zapValue, 18)) * collateralInfo?.price).toFixed(2))})` : ""}
+                </div>
               </div>
               <div className="flex justify-between text-xs text-gray-400">
                 <div>Minimum receive</div>
               </div>
             </div>
-
             <div className="mb-2 mt-auto flex items-center justify-center gap-2 rounded-xl border border-white/30 px-2">
               <TokenImage token={collateralInfo?.logo} size={32} />
               <div className="font-bold">{collateralInfo?.symbol}</div>
@@ -236,23 +224,20 @@ export default function TgUsdDepositPanel() {
           <div className="flex items-center justify-between">
             <span className="text-2xl">Borrow tgUSD</span>
           </div>
-
-          <div>
-            <DepositReceiveInput
-              displayRecieve={false}
-              depositAmount={borrowWeiValue}
-              labelDeposit="You borrow"
-              depositSelect={<BorrowAssetDisplay />}
-              disabled={!canInteract}
-              depositAsset={tgUSDInfo}
-              balance={0n}
-              setMaxBalance={() => {}}
-              displayBalance={false}
-              onValueChange={(value: bigint | undefined) => {
-                setBorrowWeiValue(value)
-              }}
-            />
-          </div>
+          <DepositReceiveInput
+            displayRecieve={false}
+            depositAmount={borrowWeiValue}
+            labelDeposit="You borrow"
+            depositSelect={<BorrowAssetDisplay />}
+            disabled={!canInteract}
+            depositAsset={tgUSDInfo}
+            balance={0n}
+            setMaxBalance={() => {}}
+            displayBalance={false}
+            onValueChange={(value: bigint | undefined) => {
+              setBorrowWeiValue(value)
+            }}
+          />
         </div>
       )}
       <div>
@@ -285,19 +270,16 @@ export default function TgUsdDepositPanel() {
                     <div className="flex justify-end">${gas}</div>
                   </div>
                 ) : null}
-
                 {slippage && slippage > 0 ? (
                   <div className="flex w-full items-center justify-between">
                     <div className="flex justify-start">Max slippage</div>
                     <div className="flex justify-end">{slippage}%</div>
                   </div>
                 ) : null}
-
                 <div className="flex w-full items-center justify-between">
                   <div className="flex justify-start">Sociabilization fee</div>
                   <div className="flex justify-end">{isStaking ? "$0" : `$${sociabilizationFee?.toFixed(2)}`}</div>
                 </div>
-
                 <div className="flex w-full items-center justify-between">
                   <div className="flex justify-start">Zapping fee</div>
                   <div className="flex justify-end">--</div>

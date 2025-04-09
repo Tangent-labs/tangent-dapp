@@ -36,27 +36,23 @@ export default function TgUsdRepayPanel() {
             <span className="text-2xl">Repay tgUSD</span>
           </div>
 
-          <div>
-            <DepositReceiveInput
-              displayRecieve={false}
-              depositAmount={repayWeiValue}
-              labelDeposit="You repay"
-              depositSelect={<BorrowAssetDisplay />}
-              disabled={!canInteract}
-              depositAsset={tgUSDInfo}
-              balance={0n}
-              setMaxBalance={() => {}}
-              displayBalance={false}
-              onValueChange={(value: bigint | undefined) => {
-                setRepayWeiValue(value)
-              }}
-            />
-          </div>
+          <DepositReceiveInput
+            displayRecieve={false}
+            depositAmount={repayWeiValue}
+            labelDeposit="You repay"
+            depositSelect={<BorrowAssetDisplay />}
+            disabled={!canInteract}
+            depositAsset={tgUSDInfo}
+            balance={0n}
+            setMaxBalance={() => {}}
+            displayBalance={false}
+            onValueChange={(value: bigint | undefined) => {
+              setRepayWeiValue(value)
+            }}
+          />
         </div>
 
-        <div>
-          <FormButtons actions={{ handleApprove: undefined, handleProcess: actionRepay }} formState={formState} labelProcess="Repay" />
-        </div>
+        <FormButtons actions={{ handleApprove: undefined, handleProcess: actionRepay }} formState={formState} labelProcess="Repay" />
       </div>
     </>
   )

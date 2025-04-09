@@ -51,15 +51,12 @@ export function DepositReceiveInput({
   isLoading = false,
   ...props
 }: DepositReceiveInputProps) {
-  const [innerValue, setInnerValue] = useState<number | undefined>(
-    depositAmount !== undefined ? Number(formatUnits(depositAmount, depositAsset?.decimals || 0)) : undefined
-  )
-
+  const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
   const [isUserInput, setIsUserInput] = useState(false)
 
   useEffect(() => {
     if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
-      const updatedValue = Number(Number(formatUnits(depositAmount, depositAsset.decimals)).toFixed(4))
+      const updatedValue = Number(formatUnits(depositAmount, depositAsset.decimals)).toFixed(0)
       setInnerValue(updatedValue)
       setIsUserInput(false)
     }
@@ -74,11 +71,11 @@ export function DepositReceiveInput({
     }, 500)
 
     return () => clearTimeout(handler)
-  }, [innerValue, depositAsset, isUserInput])
+  }, [innerValue, depositAsset, isUserInput, onValueChange])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsUserInput(true)
-    setInnerValue(e.target.value ? Number(e.target.value) : undefined)
+    setInnerValue(e.target.value)
   }
 
   const displayBalanceData = useMemo(() => {

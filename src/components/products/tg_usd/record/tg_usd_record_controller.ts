@@ -82,7 +82,11 @@ export function getComputedFutureLoanData(
       maxWithdrawable: "-",
     }
 
-  const collateralValueToNumber = (value: bigint | number) => Number(formatUnits(BigInt(value), collateralInfo?.decimals || 18))
+  const collateralValueToNumber = (value: bigint | number) => {
+    const intValue = typeof value === "number" ? Math.round(value) : value
+    return Number(formatUnits(BigInt(intValue), collateralInfo?.decimals || 18))
+  }
+
   const etherValueToNumber = (value: bigint) => Number(formatEther(value))
   const collateralPriceRaw = BigInt(marketData?.collateralInfos?.collateralUSDPrice || 0n)
   const collateralprice = etherValueToNumber(collateralPriceRaw)

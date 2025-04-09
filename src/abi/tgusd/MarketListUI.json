@@ -365,7 +365,7 @@
               "type": "uint256"
             }
           ],
-          "internalType": "struct ICommonStruct.TokenAmount[]",
+          "internalType": "struct TokenAmount[]",
           "name": "tokenAmounts",
           "type": "tuple[]"
         }
@@ -418,7 +418,7 @@
               "type": "uint256"
             }
           ],
-          "internalType": "struct ICommonStruct.TokenAmount",
+          "internalType": "struct TokenAmount",
           "name": "tokenAmount",
           "type": "tuple"
         }

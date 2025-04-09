@@ -13,6 +13,8 @@ type TgUsdMaketListContextProps = {
 type TgUsdMaketListContextValues = {
   displayRows: ListRowData[]
   globalData: TgUsdGlobalData
+  searchValue: string | null
+  setSearchValue: (value: string | null) => void
 }
 
 export const TgUsdMaketListContext = createContext<TgUsdMaketListContextValues | undefined>(undefined)
@@ -20,10 +22,10 @@ export const TgUsdMaketListContext = createContext<TgUsdMaketListContextValues |
 export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
   const [onChainData, setOnChainData] = useState<ChainViewMarketList | undefined>()
+  const [searchValue, setSearchValue] = useState<string | null>(null)
 
   useEffect(() => {
     loadOnChainData().then((data) => {
-      //console.log("setOnChainData", data)
       setOnChainData(data)
     })
   }, [currentAddress])
@@ -33,8 +35,13 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
   }
 
   const displayRows = useMemo<ListRowData[]>(() => {
-    return transformToRows(getMarketDatas(), onChainData)
-  }, [onChainData])
+    const allRows = transformToRows(getMarketDatas(), onChainData)
+    if (!searchValue || searchValue.trim() === "") {
+      return allRows
+    }
+    const lowered = searchValue.toLowerCase()
+    return allRows.filter((row) => row.name.toLowerCase().includes(lowered) || row.token.toLowerCase().includes(lowered))
+  }, [onChainData, searchValue])
 
   const globalData = useMemo<TgUsdGlobalData>(() => {
     return transformGlobalData(onChainData)
@@ -43,6 +50,8 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
   const contextValue: TgUsdMaketListContextValues = {
     displayRows,
     globalData,
+    searchValue,
+    setSearchValue,
   }
 
   return <TgUsdMaketListContext.Provider value={contextValue}>{children}</TgUsdMaketListContext.Provider>

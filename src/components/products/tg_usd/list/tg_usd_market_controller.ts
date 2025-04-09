@@ -71,17 +71,12 @@ export function transformToRows(datas: (TgUsdMarketData & TgUsdMarketDataUser)[]
 
   datas.forEach((data) => {
     const onChainRow = onChainData?.rowInfos?.find((r) => r.marketAddress === data.marketAddress)
-    // console.log("transformToRows", onChainData?.rowInfos, data)
     list.push(transformMarketDataToRow(data, onChainRow))
   })
   return list
 }
 
 function transformMarketDataToRow(data: TgUsdMarketData & TgUsdMarketDataUser, onChainRow?: ChainViewMarketRow): ListRowData {
-  //console.log("transformMarketDataToRow", data, onChainRow)
-
-  const health = BigInt(onChainRow?.debtInfos?.positionDebt || "0") > 0 ? formatBigInt(onChainRow?.debtInfos?.healthRatio, 18, 2) : "-"
-
   return {
     token: data.collateral as ExistingAsset,
     name: data.collateral,
@@ -99,13 +94,6 @@ function transformMarketDataToRow(data: TgUsdMarketData & TgUsdMarketDataUser, o
       },
       { key: "borrowed", label: "Borrowed", value: formatBigInt(onChainRow?.debtInfos?.totalDebt, 18, 0) || "-", raw: data.borrowed },
       { key: "cap", label: "Cap", value: formatBigInt(onChainRow?.constants?.maxMarketDebt, 18, 0) || "-", raw: data.cap },
-      { key: "debt", label: "Debt", value: formatBigInt(onChainRow?.debtInfos?.positionDebt, 18, 0) || "-", raw: Number(onChainRow?.debtInfos?.totalDebt) },
-      {
-        key: "health",
-        label: "Health",
-        value: health,
-        raw: health === "-" ? 0 : Number(health),
-      },
     ],
   }
 }
@@ -117,6 +105,4 @@ export const tgUsdListHeaders: ListHeaderData[] = [
   { label: "TVL", key: "tvl" },
   { label: "Borrowed", key: "borrowed" },
   { label: "Cap", key: "cap" },
-  { label: "Debt", key: "debt" },
-  { label: "Health", key: "health" },
 ]

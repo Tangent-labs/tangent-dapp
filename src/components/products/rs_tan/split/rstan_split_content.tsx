@@ -174,7 +174,7 @@ export const RsTanSplitContent = () => {
                     <span className="mr-2 font-bold">Position</span>
                     <span className="font-bold text-white"> #{computedNewPositionIds?.newPositionId1}</span>
                   </span>
-                  <PanelRaw className="text-button-active text-md flex min-w-16 items-center justify-center bg-button-active bg-clip-text font-bold text-transparent">
+                  <PanelRaw className="text-md flex min-w-16 items-center justify-center bg-button-active bg-clip-text font-bold text-button-active text-transparent">
                     {splitPercentage}%
                   </PanelRaw>
                 </div>
@@ -184,7 +184,7 @@ export const RsTanSplitContent = () => {
                     <span className="mr-2 font-bold">Position</span>
                     <span className="font-bold text-white"> #{computedNewPositionIds?.newPositionId2}</span>
                   </span>{" "}
-                  <PanelRaw className="text-button-active text-md flex min-w-16 items-center justify-center bg-button-active bg-clip-text font-bold text-transparent">
+                  <PanelRaw className="text-md flex min-w-16 items-center justify-center bg-button-active bg-clip-text font-bold text-button-active text-transparent">
                     {100 - splitPercentage}%
                   </PanelRaw>
                 </div>

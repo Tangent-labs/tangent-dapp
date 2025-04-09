@@ -21,5 +21,5 @@ export const WalletConnexionButton = ({ ...props }: WalletConnexionButtonProps) 
     if (!isChainConnected) return changeNetwork()
   }
 
-  return <Button label={buttonLabel} className="!mb-2 !p-4 !text-sm" onClick={handleClick} {...props} />
+  return <Button label={buttonLabel} className="!mb-2 !px-4 !py-2 !text-sm" onClick={handleClick} {...props} />
 }

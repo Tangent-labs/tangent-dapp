@@ -13,7 +13,7 @@ type IndicatorCardProps = {
 export const IndicatorCard = ({ title, value, className = "" }: IndicatorCardProps) => {
   return (
     <div className={`flex flex-col justify-center lg:items-center ${className}`}>
-      <span className="text-sm">{title}</span>
+      <span className="text-sm font-bold">{title}</span>
       <span className="text-xs text-gray-400">{value}</span>
     </div>
   )
@@ -37,17 +37,3 @@ const IndicatorCards = ({ indicators, className = "", children }: IndicatorCards
 }
 
 export default IndicatorCards
-
-/* 
-
-  const indicators = [
-    { title: 'Total Deposited', value: '$100,000' },
-    { title: 'Total Claimable', value: '$40,000' },
-  ];
-
-  return (
-    <div className="p-8">
-      <IndicatorCards indicators={indicators} />
-    </div>
-  );
-  */

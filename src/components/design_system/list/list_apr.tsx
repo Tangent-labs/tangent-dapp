@@ -13,7 +13,7 @@ const ListAPR = ({ apr, projectedApr, className = "", harvestHelpMessage }: List
   return (
     <div className="flex justify-center gap-2">
       <div className={`flex min-w-16 flex-col text-left ${className}`}>
-        <span className="text-[20px] font-bold leading-4 text-row-tonic">{apr}%</span>
+        <span className="bg-button-active bg-clip-text text-[20px] font-bold leading-4 text-transparent">{apr}%</span>
         {projectedApr && (
           <span className="whitespace-nowrap text-xs">
             Proj: <span>{projectedApr}%</span>

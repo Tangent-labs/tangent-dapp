@@ -18,7 +18,7 @@ import { computeProjection } from "./tg_usd_stake_controller"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import FormButtons from "@/components/design_system/form/form_actions"
 
-export default function TgUsdClaimContent() {
+export default function TgUsdStakeContent() {
   const {
     actionStake,
     actionUnstake,

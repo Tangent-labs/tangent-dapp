@@ -63,11 +63,11 @@ export const RsTanLayoutContent = ({
           <div className="ml-6 flex flex-col items-start justify-between gap-3">
             <span className="mt-1 text-4xl font-bold">Lock TAN</span>
 
-            <p>
+            <span>
               Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT
               stable pool & CVX stable pool).
-            </p>
-            <p>Rewards are distributed weekly, at the beginning of each epoch. Staking positions are represented by NFTs. Learn more</p>
+            </span>
+            <span>Rewards are distributed weekly, at the beginning of each epoch. Staking positions are represented by NFTs. Learn more</span>
           </div>
         </div>
 

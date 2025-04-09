@@ -22,6 +22,7 @@ const config: Config = {
         page: "url('/medias/background.svg')",
       },
       colors: {
+        "button-active": "var(--tgt-bg-button-active)",
         "row-tonic": "var(--tgt-row-tonic)",
         "overlay-panel": "var(--tgt-bg-overlay-panel)",
         tonic: "var(--tgt-tonic)",

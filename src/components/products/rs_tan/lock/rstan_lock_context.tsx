@@ -8,6 +8,8 @@ import { LockPosition } from "../../tg_usd/tg_usd_type"
 import { formatBigInt } from "@/lib/number_formatter"
 import { FormState } from "@/types"
 import { getPublicClient } from "@/services/service_rpc"
+import { toast } from "react-toastify"
+import { ToastComponent } from "@/components/design_system/notificatons/Toast"
 
 type RsTanLockContextProps = {
   children: ReactNode
@@ -89,10 +91,12 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
         await doIncreaseLockAmount(depositPositionInfo?.tokenId, depositWeiValue, walletClient)
         loadData()
         setIsLoading(false)
+        toast.success(ToastComponent, { data: { type: "Success", content: "Successfully increased lock position." } })
       } else {
         await doLock(depositWeiValue, walletClient, isPermaLock)
         loadData()
         setIsLoading(false)
+        toast.success(ToastComponent, { data: { type: "Success", content: "Successfully created lock position." } })
       }
     } else {
       setIsLoading(false)

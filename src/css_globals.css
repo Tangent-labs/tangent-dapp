@@ -5,7 +5,7 @@
 
 @font-face {
   font-family: "Roobert";
-  src: url("/fonts/RoobertTRIALVF.ttf") format("truetype");
+  src: url("/fonts/RoobertTRIAL-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
 }
@@ -39,9 +39,14 @@
     --tgt-row-tonic: #0075ff;
     --tgt-bg-button-active: linear-gradient(135deg, #0075ff 0%, #00c2ff 100%);
     --tgt-bg-progress: linear-gradient(90deg, #000000 0%, #0075ff 100%);
+    --tgt-bg-danger: linear-gradient(135deg, #ff0300 0%, #ff5b5b 100%);
+    --tgt-bg-tonic: linear-gradient(315.15deg, #fbf911 0.08%, #99ff00 100%);
+    --tgt-bg-light-tonic: linear-gradient(135deg, #f7cd61 0%, #fff500 100%);
+    --tgt-bg-select-input: linear-gradient(135deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.1) 100%);
     --tgt-bg-overlay-panel: #ffffff08;
     --tgt-light-tonic: #fbf911;
     --tgt-tonic: #d9fb0b;
+    --tgt-success: #99ff00;
     --tgt-subtitle: #9b9b9b;
     --tgt-danger: #ff0300;
     --tgt-list-row-hover: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), linear-gradient(90deg, #0075ff 0%, rgba(0, 0, 0, 0) 50%);
@@ -115,10 +120,55 @@ input[type="number"]::-webkit-outer-spin-button {
 .recharts-responsive-container {
   font-size: 13px;
   max-height: 270px;
-  width: 100%;
+  width: 290px;
 }
 
 .recharts-legend-wrapper {
   display: none;
   height: 0px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 10px;
+  background: white;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 10px;
+  height: 4px;
+  background: white;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.Toastify__toast-container--top-right {
+  width: 290px;
+  margin-right: 178px;
+  margin-top: 48px;
+  background: none;
+}
+
+.Toastify__toast {
+  width: 290px;
+  background: none;
+}
+.Toastify__toast--rtl {
+  width: 290px;
+  background: none;
+}
+
+.Toastify__toast-icon {
+  display: none;
+}
+
+.Toastify__progress-bar--wrp {
+  display: none;
+}
+
+.Toastify__progress-bar--animated {
+  display: none;
 }

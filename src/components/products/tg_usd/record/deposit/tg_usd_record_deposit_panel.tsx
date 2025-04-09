@@ -202,7 +202,10 @@ export default function TgUsdDepositPanel() {
                   value={zapInnerValue ?? ""}
                   onChange={handleZapInputChange}
                 />
-                <div className="text-xs">{zapValue ? `(~${formatDollar(Number(formatUnits(zapValue!, 18)).toFixed(0))})` : "$0"}</div>
+
+                <div className="text-xs">
+                  {zapValue && collateralInfo?.price !== 0 ? `(~${formatDollar((Number(formatUnits(zapValue, 18)) * collateralInfo?.price).toFixed(2))})` : ""}
+                </div>
               </div>
               <div className="flex justify-between text-xs text-gray-400">
                 <div>Minimum receive</div>

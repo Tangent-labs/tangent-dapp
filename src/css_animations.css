@@ -23,6 +23,11 @@
   border-radius: 16px;
   display: flex;
 }
+.stan-card {
+  background: linear-gradient(85deg, #0075ff 0%, rgba(0, 0, 0, 0) 70%);
+  border-radius: 16px;
+  display: flex;
+}
 
 /* Page header -------------------------------- */
 @keyframes barIn {
@@ -153,4 +158,17 @@
 .scrollable-section {
   scrollbar-width: thin;
   scrollbar-color: white transparent;
+}
+
+.slide-down-fade-in {
+  opacity: 0; /* Start hidden */
+  transform: translateY(-10px); /* Start slightly above */
+  animation: slideDownFadeIn 0.3s ease-out forwards; /* Animation */
+}
+
+@keyframes slideDownFadeIn {
+  to {
+    opacity: 1; /* Fade in */
+    transform: translateY(0); /* Slide to original position */
+  }
 }

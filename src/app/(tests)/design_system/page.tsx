@@ -15,7 +15,7 @@ const Home = async () => {
   return (
     <>
       <div className="text-center">Choose your component.</div>
-      <hr className="my-10 border-gray-400 border-opacity-25" />
+      <hr className="my-10 border-gray-400 border-opacity-20" />
       <div className="flex justify-between">
         <div>
           <IndicatorCards indicators={indicatorsEpoch} />

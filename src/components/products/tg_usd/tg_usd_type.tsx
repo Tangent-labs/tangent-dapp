@@ -281,7 +281,7 @@ export type ZapperData = {
   amountOut: bigint
 }
 
-export type BuyToken = AssetData & {
+export type SwapToken = AssetData & {
   chainId?: number
   logoURI: string
 }
@@ -351,4 +351,30 @@ export type AirdropTask = {
   ptsPerDay: number
   status: string
   totalPoints: number
+}
+
+export type LockPosition = {
+  amount: bigint
+  claimable: bigint
+  endLockTime: string
+  tokenId: bigint
+}
+
+export type LockData = {
+  allowance: bigint
+  balance: bigint
+  percentageLocked: bigint
+  positions: LockPosition[]
+  tanAPR: bigint
+  totalLocked: bigint
+  totalSupply: bigint
+}
+
+export type LockPositionSelectTemplate = {
+  amount?: bigint
+  claimable?: bigint
+  endLockTime?: string
+  tokenId?: bigint
+  label?: string
+  value?: string
 }

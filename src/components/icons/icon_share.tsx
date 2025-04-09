@@ -11,8 +11,8 @@ export function IconShare({ className }: IconProps) {
       />
       <defs>
         <linearGradient id="paint0_linear_2256_350" x1="8.3346" y1="2.08409" x2="51.9366" y2="33.7946" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#0075FF" />
-          <stop offset="1" stop-color="#00C2FF" />
+          <stop stopColor="#0075FF" />
+          <stop offset="1" stopColor="#00C2FF" />
         </linearGradient>
       </defs>
     </svg>

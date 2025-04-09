@@ -306,7 +306,5 @@
       "stateMutability": "nonpayable",
       "type": "function"
     }
-  ],
-  "linkReferences": {},
-  "deployedLinkReferences": {}
+  ]
 }

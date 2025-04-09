@@ -34,7 +34,7 @@ export default function TgUsdMarketList() {
       <div className="flex items-end justify-between">
         <div className="tgusd-card w-7/12">
           <div className="flex items-center justify-center">
-            <Image height={240} width={240} src="/medias/tokens/tgUSD_header.png" alt="token" />
+            <Image height={288} width={288} src="/medias/tokens/tgUSD_header.png" alt="token" />
           </div>
           <div className="flex flex-col items-start justify-center gap-3">
             <span className="text-4xl font-bold">tgUSD</span>
@@ -124,7 +124,7 @@ export function TgUsdMarketListInner() {
         <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
       {displayRows?.map((item, index) => (
-        <ListRow key={index} navigate={() => router.push(item.token)}>
+        <ListRow className="my-2" key={index} navigate={() => router.push(item.token)}>
           <ListAsset name={item.name} token={item.token} assetsEarned={[]} />
           <ListAPR apr={item.apr.current} projectedApr={item.apr.projected} />
           <>

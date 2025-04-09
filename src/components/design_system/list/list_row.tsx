@@ -15,7 +15,7 @@ const ListRow = ({ children, navigate, className = "", rowDisposition: CustomRow
   return (
     <PanelRaw
       onClick={() => navigate && navigate()}
-      className={`mb-2 border px-5 py-3 before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover ${isSelected ? "before:bg-list-row-hover" : ""} // Selected state styling ${className} `}
+      className={`border px-5 py-3 before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover ${isSelected ? "before:bg-list-row-hover" : ""} // Selected state styling ${className} `}
     >
       <CustomRowDisposition>
         <> {children?.at(0)}</>

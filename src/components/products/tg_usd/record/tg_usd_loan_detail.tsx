@@ -2,7 +2,6 @@
 
 import Divider from "@/components/design_system/structure/divider"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
-import Panel from "@/components/design_system/structure/panel"
 import Title from "@/components/design_system/structure/title"
 import React from "react"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
@@ -17,8 +16,8 @@ export default function TgUsdLoanDetail({ ...props }: TgUsdLoanDetailProps) {
   if (!isWellConnected) return <></>
 
   return (
-    <Panel {...props}>
-      <Title label={"Loan details"} size={"normal"} />
+    <div className="rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]" {...props}>
+      <Title label={"Loan details"} size={"small"} />
       <Divider />
       <div className="flex gap-4">
         <EvolutionBox
@@ -44,6 +43,6 @@ export default function TgUsdLoanDetail({ ...props }: TgUsdLoanDetailProps) {
           className="flex-1"
         />
       </div>
-    </Panel>
+    </div>
   )
 }

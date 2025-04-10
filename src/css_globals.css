@@ -43,7 +43,7 @@
     --tgt-bg-tonic: linear-gradient(315.15deg, #fbf911 0.08%, #99ff00 100%);
     --tgt-bg-light-tonic: linear-gradient(135deg, #f7cd61 0%, #fff500 100%);
     --tgt-bg-select-input: linear-gradient(135deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.1) 100%);
-    --tgt-bg-overlay-panel: #ffffff08;
+    --tgt-bg-overlay-panel: #ffffff10;
     --tgt-light-tonic: #fbf911;
     --tgt-tonic: #d9fb0b;
     --tgt-success: #99ff00;

@@ -21,6 +21,7 @@ import Panel from "@/components/design_system/structure/panel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import { IconChevron } from "@/components/icons/icon_chevron"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
+import Tabs from "@/components/design_system/structure/tabs"
 
 export default function TgUsdDepositPanel() {
   const {
@@ -36,6 +37,7 @@ export default function TgUsdDepositPanel() {
     setSlippage,
     actionApproveZap,
     handleZapInputChange,
+    setPercentage,
     swapAssetPrice,
     isStaking,
     depositAsset,
@@ -54,6 +56,7 @@ export default function TgUsdDepositPanel() {
     sociabilizationFee,
     balances,
     zapInnerValue,
+    percentage,
   } = useTgUsdDepositContext()
 
   const { collateralInfo, marketData, tgUSDInfo } = useTgUsdRecordContext()
@@ -151,6 +154,8 @@ export default function TgUsdDepositPanel() {
 
   return (
     <div className="flex flex-col gap-2">
+      <Tabs />
+
       <div className="flex justify-end gap-2">
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-400">Save gas</span>
@@ -163,7 +168,7 @@ export default function TgUsdDepositPanel() {
       </div>
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="text-2xl">Deposit {collateralInfo?.symbol}</span>
+          <span className="text-[20px] font-bold">Deposit {collateralInfo?.symbol}</span>
         </div>
       </div>
 
@@ -183,6 +188,8 @@ export default function TgUsdDepositPanel() {
           setDepositWeiValue(marketData?.collateralBalance || 0n)
         }}
         onValueChange={handleDepositChange}
+        percentage={percentage}
+        setPercentage={setPercentage}
       />
 
       {depositAsset && depositAsset !== collateralInfo?.name && (
@@ -222,7 +229,7 @@ export default function TgUsdDepositPanel() {
       {isDepositAndBorrow && (
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <span className="text-2xl">Borrow tgUSD</span>
+            <span className="text-[20px] font-bold">Borrow tgUSD</span>
           </div>
           <DepositReceiveInput
             displayRecieve={false}

@@ -11,5 +11,5 @@ export default async function tgUsdMarketDetailDepositPage({ params }: { params:
 
   if (!marketInfo || !tgUSDInfo || !collateralInfo) return NotFound()
 
-  return <TgUsdRecordDepositPage tokens={tokens} collateral={collateral} collateralInfo={collateralInfo} marketInfo={marketInfo} tgUSDInfo={tgUSDInfo!} />
+  return <TgUsdRecordDepositPage tokens={tokens} collateralInfo={collateralInfo} marketInfo={marketInfo} />
 }

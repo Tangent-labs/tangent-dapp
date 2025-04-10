@@ -72,6 +72,9 @@ type TgUsdDepositContextValues = {
   isZapUserInput: boolean
   setIsZapUserInput: (arg: boolean) => void
 
+  percentage: number
+  setPercentage: (arg: number) => void
+
   handleZapInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
@@ -87,6 +90,8 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
   const [depositAsset, setDepositAsset] = useState<string | undefined>(undefined)
   const [swapAssetPrice, setSwapAssetPrice] = useState<number | null>(null)
+
+  const [percentage, setPercentage] = useState<number>(0)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
   const [isDepositLoading, setIsDepositLoading] = useState(false)
@@ -467,6 +472,9 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
     setIsZapUserInput,
 
     handleZapInputChange,
+
+    percentage,
+    setPercentage,
   }
 
   return <TgUsdDepositContext.Provider value={contextValue}>{children}</TgUsdDepositContext.Provider>

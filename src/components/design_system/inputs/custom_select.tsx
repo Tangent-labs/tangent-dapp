@@ -60,7 +60,7 @@ const CustomSelect = <T extends DepositReceiveAsset>({ options = [], onChange, c
           </div>
         </SelectTrigger>
         <SelectContent>
-          <div className="flex min-h-44 w-full flex-col overflow-hidden">
+          <div className="flex min-h-56 w-full min-w-56 flex-col overflow-hidden">
             <div className="w-full p-2">
               <Input className="rounded-lg focus:outline-none" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>

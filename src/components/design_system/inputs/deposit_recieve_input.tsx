@@ -1,7 +1,6 @@
 "use client"
 
 import { IconWallet } from "@/components/icons/icon_wallet"
-import PanelRaw from "../structure/panel_raw"
 import { AssetDataPriced } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatBigInt, toBigInt } from "@/lib/number_formatter"
@@ -30,6 +29,8 @@ type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   displayBalance?: boolean
   isZapping?: boolean
   isLoading?: boolean
+  percentage?: number
+  setPercentage?: (value: number) => void
 }
 
 export function DepositReceiveInput({
@@ -49,10 +50,29 @@ export function DepositReceiveInput({
   displayBalance = true,
   isZapping = false,
   isLoading = false,
+  percentage = 0,
+  setPercentage,
   ...props
 }: DepositReceiveInputProps) {
+  const balanceNumber = useMemo(() => {
+    if (balance) {
+      return Number(formatUnits(balance, 18))
+    }
+    return 0
+  }, [balance])
+
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
   const [isUserInput, setIsUserInput] = useState(false)
+
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!!setPercentage) {
+      const newPercentage = Number(e.target.value)
+      setPercentage(newPercentage)
+      const newValue = newPercentage !== 0 ? Number(((newPercentage / 100) * balanceNumber).toFixed(0)) : 0
+      setInnerValue(newValue.toFixed(0))
+      onValueChange(!!newValue ? toBigInt(newValue, 18) : undefined)
+    }
+  }
 
   useEffect(() => {
     if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
@@ -74,8 +94,13 @@ export function DepositReceiveInput({
   }, [innerValue, depositAsset, isUserInput, onValueChange])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value
     setIsUserInput(true)
-    setInnerValue(e.target.value)
+    setInnerValue(newValue)
+
+    if (!!setPercentage) {
+      setPercentage(newValue !== undefined && balanceNumber > 0 ? (Number(newValue) / balanceNumber) * 100 : 0)
+    }
   }
 
   const displayBalanceData = useMemo(() => {
@@ -90,7 +115,7 @@ export function DepositReceiveInput({
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <PanelRaw className={`${isLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
+      <div className={`${isLoading ? "shimmer" : ""} flex flex-col rounded-[10px] border border-white border-opacity-20 bg-select-input p-2`}>
         <div className="flex w-full justify-between">
           <div className="text-sm text-gray-400">{labelDeposit}</div>
           {isZapping && (
@@ -132,7 +157,58 @@ export function DepositReceiveInput({
             </button>
           )}
         </div>
-      </PanelRaw>
+
+        <input
+          type="range"
+          min="0"
+          step="1"
+          max="100"
+          value={percentage}
+          onChange={handleSliderChange}
+          className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-black"
+          style={{
+            background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
+          }}
+        />
+
+        <div className="flex w-full items-center justify-between text-xs text-subtitle">
+          <div className="relative flex w-fit items-center justify-center">
+            0%
+            <div
+              onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+              className="absolute -top-1.5 left-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+            ></div>
+          </div>
+          <div className="relative flex w-fit items-center justify-center">
+            25%
+            <div
+              onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "25" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+              className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+            ></div>
+          </div>
+          <div className="relative flex w-fit items-center justify-center">
+            50%
+            <div
+              onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "50" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+              className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+            ></div>
+          </div>
+          <div className="relative flex w-fit items-center justify-center">
+            75%
+            <div
+              onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "75" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+              className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+            ></div>
+          </div>
+          <div className="relative flex w-fit items-center justify-center">
+            100%
+            <div
+              onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "100" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+              className="absolute -top-1.5 right-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+            ></div>
+          </div>
+        </div>
+      </div>
       {displayRecieve && (
         <DisplayReceivePanel
           labelReceive={labelReceive}

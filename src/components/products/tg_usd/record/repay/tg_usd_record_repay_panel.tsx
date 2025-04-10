@@ -21,9 +21,7 @@ export default function TgUsdRepayPanel() {
         <div className="">
           <TokenImage token={"tgUSD"} size={32} />
         </div>
-        <span className="flex flex-col text-lg leading-3">
-          <span>tgUSD</span>
-        </span>
+        <span className="flex flex-col text-lg leading-3">tgUSD</span>
       </PanelRaw>
     )
   }
@@ -32,9 +30,7 @@ export default function TgUsdRepayPanel() {
     <>
       <div className="flex flex-col gap-2">
         <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-2xl">Repay tgUSD</span>
-          </div>
+          <span className="text-[20px] font-bold">Repay debt</span>
 
           <DepositReceiveInput
             displayRecieve={false}

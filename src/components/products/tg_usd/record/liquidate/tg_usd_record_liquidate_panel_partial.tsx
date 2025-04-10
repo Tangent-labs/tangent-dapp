@@ -28,24 +28,23 @@ export default function TgUsdLiquidatePanelPartial() {
   return (
     <>
       <div className="flex items-center justify-between">
-        <span className="text-2xl">Liquidate partail</span>
+        <span className="text-[20px] font-bold">Liquidate partial</span>
       </div>
-      <div>
-        <DepositReceiveInput
-          displayRecieve={false}
-          depositAmount={liquidateWeiValue}
-          labelDeposit="You liquidate"
-          depositSelect={<WithdrawAssetDisplay />}
-          disabled={!canInteract}
-          depositAsset={tgUSDInfo}
-          balance={0n}
-          setMaxBalance={() => {}}
-          displayBalance={false}
-          onValueChange={(value: bigint | undefined) => {
-            setLiquidateWeiValue(value)
-          }}
-        />
-      </div>
+
+      <DepositReceiveInput
+        displayRecieve={false}
+        depositAmount={liquidateWeiValue}
+        labelDeposit="You liquidate"
+        depositSelect={<WithdrawAssetDisplay />}
+        disabled={!canInteract}
+        depositAsset={tgUSDInfo}
+        balance={0n}
+        setMaxBalance={() => {}}
+        displayBalance={false}
+        onValueChange={(value: bigint | undefined) => {
+          setLiquidateWeiValue(value)
+        }}
+      />
     </>
   )
 }

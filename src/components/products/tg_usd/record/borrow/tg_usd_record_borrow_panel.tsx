@@ -29,31 +29,27 @@ export default function TgUsdBorrowPanel() {
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-2xl">Borrow tgUSD</span>
-          </div>
+        <span className="text-[20px] font-bold">Borrow tgUSD</span>
 
-          <DepositReceiveInput
-            displayRecieve={false}
-            depositAmount={borrowWeiValue}
-            labelDeposit="You borrow"
-            depositSelect={<BorrowAssetDisplay />}
-            disabled={!canInteract}
-            depositAsset={tgUSDInfo}
-            balance={0n}
-            setMaxBalance={() => {}}
-            displayBalance={false}
-            onValueChange={(value: bigint | undefined) => {
-              setBorrowWeiValue(value)
-            }}
-          />
-        </div>
-
-        <FormButtons actions={{ handleApprove: undefined, handleProcess: actionBorrow }} formState={formState} labelProcess="Borrow" />
+        <DepositReceiveInput
+          displayRecieve={false}
+          depositAmount={borrowWeiValue}
+          labelDeposit="You borrow"
+          depositSelect={<BorrowAssetDisplay />}
+          disabled={!canInteract}
+          depositAsset={tgUSDInfo}
+          balance={0n}
+          setMaxBalance={() => {}}
+          displayBalance={false}
+          onValueChange={(value: bigint | undefined) => {
+            setBorrowWeiValue(value)
+          }}
+        />
       </div>
-    </>
+
+      <FormButtons actions={{ handleApprove: undefined, handleProcess: actionBorrow }} formState={formState} labelProcess="Borrow" />
+    </div>
   )
 }

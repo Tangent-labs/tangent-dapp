@@ -31,6 +31,7 @@ type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   isLoading?: boolean
   percentage?: number
   setPercentage?: (value: number) => void
+  displaySliderInput?: boolean
 }
 
 export function DepositReceiveInput({
@@ -51,6 +52,7 @@ export function DepositReceiveInput({
   isZapping = false,
   isLoading = false,
   percentage = 0,
+  displaySliderInput = false,
   setPercentage,
   ...props
 }: DepositReceiveInputProps) {
@@ -158,56 +160,60 @@ export function DepositReceiveInput({
           )}
         </div>
 
-        <input
-          type="range"
-          min="0"
-          step="1"
-          max="100"
-          value={percentage}
-          onChange={handleSliderChange}
-          className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-black"
-          style={{
-            background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
-          }}
-        />
+        {displaySliderInput && (
+          <>
+            <input
+              type="range"
+              min="0"
+              step="1"
+              max="100"
+              value={percentage}
+              onChange={handleSliderChange}
+              className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-black"
+              style={{
+                background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
+              }}
+            />
 
-        <div className="flex w-full items-center justify-between text-xs text-subtitle">
-          <div className="relative flex w-fit items-center justify-center">
-            0%
-            <div
-              onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-              className="absolute -top-1.5 left-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
-            ></div>
-          </div>
-          <div className="relative flex w-fit items-center justify-center">
-            25%
-            <div
-              onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "25" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-              className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
-            ></div>
-          </div>
-          <div className="relative flex w-fit items-center justify-center">
-            50%
-            <div
-              onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "50" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-              className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
-            ></div>
-          </div>
-          <div className="relative flex w-fit items-center justify-center">
-            75%
-            <div
-              onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "75" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-              className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
-            ></div>
-          </div>
-          <div className="relative flex w-fit items-center justify-center">
-            100%
-            <div
-              onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "100" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-              className="absolute -top-1.5 right-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
-            ></div>
-          </div>
-        </div>
+            <div className="flex w-full items-center justify-between text-xs text-subtitle">
+              <div className="relative flex w-fit items-center justify-center">
+                0%
+                <div
+                  onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+                  className="absolute -top-1.5 left-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                ></div>
+              </div>
+              <div className="relative flex w-fit items-center justify-center">
+                25%
+                <div
+                  onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "25" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+                  className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                ></div>
+              </div>
+              <div className="relative flex w-fit items-center justify-center">
+                50%
+                <div
+                  onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "50" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+                  className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                ></div>
+              </div>
+              <div className="relative flex w-fit items-center justify-center">
+                75%
+                <div
+                  onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "75" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+                  className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                ></div>
+              </div>
+              <div className="relative flex w-fit items-center justify-center">
+                100%
+                <div
+                  onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "100" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+                  className="absolute -top-1.5 right-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                ></div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
       {displayRecieve && (
         <DisplayReceivePanel

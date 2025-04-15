@@ -8,9 +8,10 @@ import FormButtons from "@/components/design_system/form/form_actions"
 import { useTgUsdWithdrawContext } from "./tg_usd_record_withdraw_context"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import TokenImage from "@/components/design_system/structure/token_image"
+import { formatBigInt } from "@/lib/number_formatter"
 
 export default function TgUsdWithdrawPanel() {
-  const { actionWithdraw, formState, withdrawWeiValue, setWithdrawWeiValue } = useTgUsdWithdrawContext()
+  const { actionWithdraw, formState, withdrawWeiValue, setWithdrawWeiValue, maxWithdrawable, setPercentage, percentage } = useTgUsdWithdrawContext()
   const { tgUSDInfo, collateralInfo } = useTgUsdRecordContext()
   const { canInteract } = useWalletConnexionContext()
 
@@ -27,7 +28,12 @@ export default function TgUsdWithdrawPanel() {
     <>
       <div className="flex flex-col gap-2">
         <div className="flex flex-col gap-2">
-          <span className="text-[20px] font-bold">Withdraw collateral</span>
+          <div className="flex items-end justify-between">
+            <span className="text-[20px] font-bold">Withdraw collateral</span>
+            <span className="text-xs text-subtitle">
+              Max: {formatBigInt(maxWithdrawable, 18, 2)} {collateralInfo?.symbol}
+            </span>
+          </div>
 
           <DepositReceiveInput
             displayRecieve={false}
@@ -36,12 +42,15 @@ export default function TgUsdWithdrawPanel() {
             depositSelect={<WithdrawAssetDisplay />}
             disabled={!canInteract}
             depositAsset={tgUSDInfo}
-            balance={0n}
+            balance={maxWithdrawable}
+            displaySliderInput={true}
             setMaxBalance={() => {}}
             displayBalance={false}
             onValueChange={(value: bigint | undefined) => {
               setWithdrawWeiValue(value)
             }}
+            percentage={percentage}
+            setPercentage={setPercentage}
           />
         </div>
 

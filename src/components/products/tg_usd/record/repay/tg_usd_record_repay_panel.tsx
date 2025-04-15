@@ -9,11 +9,14 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { useTgUsdRepayContext } from "./tg_usd_record_repay_context"
+import { formatBigInt } from "@/lib/number_formatter"
 
 export default function TgUsdRepayPanel() {
-  const { actionRepay, formState, repayWeiValue, setRepayWeiValue } = useTgUsdRepayContext()
   const { tgUSDInfo } = useTgUsdRecordContext()
+
   const { canInteract } = useWalletConnexionContext()
+
+  const { actionRepay, formState, repayWeiValue, setRepayWeiValue, maxRepayableValue, percentage, setPercentage } = useTgUsdRepayContext()
 
   const BorrowAssetDisplay = () => {
     return (
@@ -30,7 +33,10 @@ export default function TgUsdRepayPanel() {
     <>
       <div className="flex flex-col gap-2">
         <div className="flex flex-col gap-2">
-          <span className="text-[20px] font-bold">Repay debt</span>
+          <div className="flex items-end justify-between">
+            <span className="text-[20px] font-bold">Repay debt</span>
+            <span className="text-xs text-subtitle"> Max: {formatBigInt(maxRepayableValue, 18, 2)} tgUSD</span>
+          </div>
 
           <DepositReceiveInput
             displayRecieve={false}
@@ -39,9 +45,12 @@ export default function TgUsdRepayPanel() {
             depositSelect={<BorrowAssetDisplay />}
             disabled={!canInteract}
             depositAsset={tgUSDInfo}
-            balance={0n}
-            setMaxBalance={() => {}}
+            balance={maxRepayableValue}
             displayBalance={false}
+            setMaxBalance={() => {}}
+            displaySliderInput={true}
+            percentage={percentage}
+            setPercentage={setPercentage}
             onValueChange={(value: bigint | undefined) => {
               setRepayWeiValue(value)
             }}

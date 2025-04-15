@@ -15,14 +15,21 @@ type TgUsdBorrowContextValues = {
   formState: FormState
   borrowWeiValue?: bigint
   setBorrowWeiValue: (arg: bigint | undefined) => void
+  percentage: number
+  setPercentage: (arg: number) => void
+  maxBorrowableValue: bigint
 }
 
 export const TgUsdBorrowContext = createContext<TgUsdBorrowContextValues | undefined>(undefined)
 
 export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
-  const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
-  const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+
+  const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
+
+  const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
+
+  const [percentage, setPercentage] = useState<number>(0)
 
   const actionBorrow = () => {
     const walletClient = getWalletClient()
@@ -35,6 +42,14 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
     })
   }, [borrowWeiValue])
 
+  const maxBorrowableValue = useMemo(() => {
+    const depositedCollateral = BigInt(marketData?.collateralInfos?.positionCollateralUSDValue || 0n)
+    const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 10000n
+    const maxLoan = maxLTV + depositedCollateral
+
+    return maxLoan
+  }, [marketData])
+
   const formState = useMemo(
     () => getBorrowFormState(marketData, borrowWeiValue, isWellConnected),
     [marketData, borrowWeiValue, isWellConnected, currentAddress]
@@ -45,6 +60,9 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
     formState,
     borrowWeiValue,
     setBorrowWeiValue,
+    percentage,
+    setPercentage,
+    maxBorrowableValue,
   }
 
   return <TgUsdBorrowContext.Provider value={contextValue}>{children}</TgUsdBorrowContext.Provider>

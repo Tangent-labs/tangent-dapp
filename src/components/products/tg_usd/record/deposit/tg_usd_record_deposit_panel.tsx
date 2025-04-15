@@ -38,6 +38,7 @@ export default function TgUsdDepositPanel() {
     actionApproveZap,
     handleZapInputChange,
     setPercentage,
+    setBorrowPercentage,
     swapAssetPrice,
     isStaking,
     depositAsset,
@@ -57,6 +58,8 @@ export default function TgUsdDepositPanel() {
     balances,
     zapInnerValue,
     percentage,
+    borrowPercentage,
+    maxBorrowableValue,
   } = useTgUsdDepositContext()
 
   const { collateralInfo, marketData, tgUSDInfo } = useTgUsdRecordContext()
@@ -173,6 +176,7 @@ export default function TgUsdDepositPanel() {
       </div>
 
       <DepositReceiveInput
+        displaySliderInput={true}
         displayRecieve={false}
         depositAmount={depositWeiValue}
         depositSelect={<AssetSelect />}
@@ -227,20 +231,22 @@ export default function TgUsdDepositPanel() {
       )}
 
       {isDepositAndBorrow && (
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-end justify-between">
             <span className="text-[20px] font-bold">Borrow tgUSD</span>
+            <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 2)} tgUSD</span>
           </div>
           <DepositReceiveInput
+            displaySliderInput={true}
             displayRecieve={false}
             depositAmount={borrowWeiValue}
             labelDeposit="You borrow"
             depositSelect={<BorrowAssetDisplay />}
             disabled={!canInteract}
             depositAsset={tgUSDInfo}
-            balance={0n}
             setMaxBalance={() => {}}
-            displayBalance={false}
+            percentage={borrowPercentage}
+            setPercentage={setBorrowPercentage}
             onValueChange={(value: bigint | undefined) => {
               setBorrowWeiValue(value)
             }}

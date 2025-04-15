@@ -9,10 +9,13 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { useTgUsdBorrowContext } from "./tg_usd_record_borrow_context"
+import { formatBigInt } from "@/lib/number_formatter"
 
 export default function TgUsdBorrowPanel() {
-  const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue } = useTgUsdBorrowContext()
+  const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setPercentage, percentage, maxBorrowableValue } = useTgUsdBorrowContext()
+
   const { tgUSDInfo } = useTgUsdRecordContext()
+
   const { canInteract } = useWalletConnexionContext()
 
   const BorrowAssetDisplay = () => {
@@ -31,21 +34,27 @@ export default function TgUsdBorrowPanel() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2">
-        <span className="text-[20px] font-bold">Borrow tgUSD</span>
+        <div className="flex items-end justify-between">
+          <span className="text-[20px] font-bold">Borrow tgUSD</span>
+          <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 2)} tgUSD</span>
+        </div>
 
         <DepositReceiveInput
+          displaySliderInput={true}
           displayRecieve={false}
           depositAmount={borrowWeiValue}
           labelDeposit="You borrow"
           depositSelect={<BorrowAssetDisplay />}
           disabled={!canInteract}
           depositAsset={tgUSDInfo}
-          balance={0n}
           setMaxBalance={() => {}}
+          balance={maxBorrowableValue}
           displayBalance={false}
           onValueChange={(value: bigint | undefined) => {
             setBorrowWeiValue(value)
           }}
+          percentage={percentage}
+          setPercentage={setPercentage}
         />
       </div>
 

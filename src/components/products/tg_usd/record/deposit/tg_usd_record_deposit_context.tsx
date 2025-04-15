@@ -75,7 +75,12 @@ type TgUsdDepositContextValues = {
   percentage: number
   setPercentage: (arg: number) => void
 
+  borrowPercentage: number
+  setBorrowPercentage: (arg: number) => void
+
   handleZapInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+
+  maxBorrowableValue: bigint
 }
 
 export const TgUsdDepositContext = createContext<TgUsdDepositContextValues | undefined>(undefined)
@@ -92,6 +97,8 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
   const [swapAssetPrice, setSwapAssetPrice] = useState<number | null>(null)
 
   const [percentage, setPercentage] = useState<number>(0)
+
+  const [borrowPercentage, setBorrowPercentage] = useState<number>(0)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
   const [isDepositLoading, setIsDepositLoading] = useState(false)
@@ -424,6 +431,14 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
     }
   }, [depositWeiValue, zapValue, formState, isZapLoading, isDepositLoading])
 
+  const maxBorrowableValue = useMemo(() => {
+    const depositedCollateral = BigInt(marketData?.collateralInfos?.positionCollateralUSDValue || 0n)
+    const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 10000n
+    const maxLoan = maxLTV * (depositWeiValue || 0n) + depositedCollateral
+
+    return maxLoan
+  }, [marketData, depositWeiValue])
+
   const contextValue: TgUsdDepositContextValues = {
     marketInfo,
     collateralInfo,
@@ -475,6 +490,11 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
 
     percentage,
     setPercentage,
+
+    borrowPercentage,
+    setBorrowPercentage,
+
+    maxBorrowableValue,
   }
 
   return <TgUsdDepositContext.Provider value={contextValue}>{children}</TgUsdDepositContext.Provider>

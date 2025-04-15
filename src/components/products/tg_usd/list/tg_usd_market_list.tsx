@@ -45,20 +45,27 @@ export default function TgUsdMarketList() {
           </div>
         </div>
 
-        <div className="flex h-full items-center gap-2 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
-          <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
-            <span className="text-xs text-gray-400">Your Debts</span>
-            <span className="text-sm font-bold">$0.00 USD</span>
+        <div className="flex h-full flex-col items-center gap-6 rounded-[10px] bg-overlay-panel p-2 py-1 backdrop-blur-[60px]">
+          <div className="flex h-20 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-bold italic">
+            Points campaign
+            <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-bold !not-italic !text-black">Live</div>
           </div>
 
-          <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
-            <span className="text-xs text-gray-400">Your Collateral Deposits</span>
-            <span className="text-sm font-bold">$0.00 USD</span>
-          </div>
+          <div className="flex w-full items-center justify-center gap-3">
+            <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
+              <span className="text-xs text-gray-400">Your Debts</span>
+              <span className="text-sm font-bold">$0.00 USD</span>
+            </div>
 
-          <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
-            <span className="text-xs text-gray-400">Your Total Points</span>
-            <span className="text-sm font-bold">$0.00 USD</span>
+            <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
+              <span className="text-xs text-gray-400">Your Collateral Deposits</span>
+              <span className="text-sm font-bold">$0.00 USD</span>
+            </div>
+
+            <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
+              <span className="text-xs text-gray-400">Your Total Points</span>
+              <span className="text-sm font-bold">$0.00 USD</span>
+            </div>
           </div>
         </div>
       </div>

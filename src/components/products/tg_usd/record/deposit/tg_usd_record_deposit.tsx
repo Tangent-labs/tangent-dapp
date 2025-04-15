@@ -1,4 +1,3 @@
-import TgUsdRecordLayout from "../tg_usd_record_layout"
 import { AssetDataPriced } from "@/types"
 
 import { TgUsdMarket, ZapToken } from "../../tg_usd_type"
@@ -13,10 +12,8 @@ type TgUsdRecordDepositProps = {
 
 export default function TgUsdRecordDepositPage({ tokens, collateralInfo, marketInfo }: TgUsdRecordDepositProps) {
   return (
-    <TgUsdRecordLayout currentFeature="deposit">
-      <TgUsdDepositProvider tokens={tokens} collateralInfo={collateralInfo} marketInfo={marketInfo}>
-        <TgUsdDepositPanel />
-      </TgUsdDepositProvider>
-    </TgUsdRecordLayout>
+    <TgUsdDepositProvider tokens={tokens} collateralInfo={collateralInfo} marketInfo={marketInfo}>
+      <TgUsdDepositPanel />
+    </TgUsdDepositProvider>
   )
 }

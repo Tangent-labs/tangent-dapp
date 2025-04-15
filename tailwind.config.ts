@@ -10,6 +10,7 @@ const config: Config = {
         serif: "Roobert, serif",
       },
       backgroundImage: {
+        header: "var(--tgt-bg-header)",
         progress: "var(--tgt-bg-progress)",
         "button-active": "var(--tgt-bg-button-active)",
         danger: "var(--tgt-bg-danger)",

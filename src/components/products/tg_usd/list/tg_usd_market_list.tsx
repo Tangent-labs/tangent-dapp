@@ -9,7 +9,6 @@ import ListHeader from "@/components/design_system/list/list_header"
 import ListRow from "@/components/design_system/list/list_row"
 import ListAsset from "@/components/design_system/list/list_asset"
 import ListAPR from "@/components/design_system/list/list_apr"
-import ListIndicator from "@/components/design_system/list/list_indicator"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { formatDollar } from "@/lib/number_formatter"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -136,7 +135,9 @@ export function TgUsdMarketListInner() {
           <ListAPR apr={item.apr.current} projectedApr={item.apr.projected} />
           <>
             {item.indicators.map((i) => (
-              <ListIndicator info={i.label} value={i.value} key={i.key} valueFirst={false} />
+              <div key={i.key} className="flex basis-[48%] flex-col items-center text-[20px] leading-5 md:flex-1">
+                {i?.value}
+              </div>
             ))}
           </>
         </ListRow>

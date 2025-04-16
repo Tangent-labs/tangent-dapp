@@ -3,7 +3,7 @@
 import Divider from "@/components/design_system/structure/divider"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import Title from "@/components/design_system/structure/title"
-import React from "react"
+
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { useTgUsdRecordContext } from "./tg_usd_record_context"
 

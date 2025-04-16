@@ -1,6 +1,5 @@
 "use client"
 
-import React from "react"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { useTgUsdLiquidateContext } from "./tg_usd_record_liquidate_context"
 import { Switch } from "@/components/ui/switch"

@@ -1,17 +1,17 @@
 "use client"
 
-import React from "react"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
-import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { useTgUsdWithdrawContext } from "./tg_usd_record_withdraw_context"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { formatBigInt } from "@/lib/number_formatter"
+import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 
 export default function TgUsdWithdrawPanel() {
-  const { actionWithdraw, formState, withdrawWeiValue, setWithdrawWeiValue, maxWithdrawable, setPercentage, percentage } = useTgUsdWithdrawContext()
+  const { actionWithdraw, formState, withdrawWeiValue, setWithdrawWeiValue, maxWithdrawable, withdrawPercentage, setWithdrawPercentage } =
+    useTgUsdWithdrawContext()
   const { tgUSDInfo, collateralInfo } = useTgUsdRecordContext()
   const { canInteract } = useWalletConnexionContext()
 
@@ -35,8 +35,7 @@ export default function TgUsdWithdrawPanel() {
             </span>
           </div>
 
-          <DepositReceiveInput
-            displayRecieve={false}
+          <DepositInput
             depositAmount={withdrawWeiValue}
             labelDeposit="You withdraw"
             depositSelect={<WithdrawAssetDisplay />}
@@ -49,8 +48,8 @@ export default function TgUsdWithdrawPanel() {
             onValueChange={(value: bigint | undefined) => {
               setWithdrawWeiValue(value)
             }}
-            percentage={percentage}
-            setPercentage={setPercentage}
+            percentage={withdrawPercentage}
+            setPercentage={setWithdrawPercentage}
           />
         </div>
 

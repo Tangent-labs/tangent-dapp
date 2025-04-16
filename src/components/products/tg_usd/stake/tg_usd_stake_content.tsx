@@ -154,6 +154,7 @@ export default function TgUsdStakeContent() {
             labelReceive={currentFeature === "stake" ? "You stake" : "You receive"}
             className="w-full"
             depositAmount={weiValue}
+            displayRecieve={true}
             depositSelect={<AssetSelect />}
             disabled={false}
             receiveAssetDisplay={<ReceiveAssetDisplay />}

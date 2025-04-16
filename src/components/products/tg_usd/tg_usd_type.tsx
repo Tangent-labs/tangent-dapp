@@ -125,15 +125,15 @@ export interface CollateralInfos {
   collateralToken: ERC20StaticInfos
   totalCollateralUSDValue: string
   totalCollateralAmount: string
-  collateralUSDPrice: string
-  positionCollateralAmount: string
-  positionCollateralUSDValue: string
+  collateralUSDPrice: bigint
+  positionCollateralAmount: bigint
+  positionCollateralUSDValue: bigint
   priceOracle: string
 }
 
 export interface DebtInfos {
   totalDebt: string
-  positionDebt: string
+  positionDebt: bigint
   healthRatio: string
   currentBorrowRate: string
   futureBorrowRate: string
@@ -142,7 +142,7 @@ export interface DebtInfos {
 }
 
 export interface MarketConstants {
-  maxLTV: string
+  maxLTV: bigint
   maxMarketDebt: string
   minimumLoan: string
   liquidationThreshold: string

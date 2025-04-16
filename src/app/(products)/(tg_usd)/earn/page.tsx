@@ -1,5 +1,3 @@
-import React from "react"
-
 type TgUsdEarnPageProps = React.ButtonHTMLAttributes<HTMLDivElement>
 
 export default async function TgUsdEarnPage({ ...props }: TgUsdEarnPageProps) {

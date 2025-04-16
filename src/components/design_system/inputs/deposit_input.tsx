@@ -6,26 +6,20 @@ import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatBigInt, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
-import DisplayReceivePanel from "./display_recieve_panel"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { IconThunder } from "@/components/icons/icon_thunder"
 
-type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+type DepositInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
   className?: string
   depositAmount?: bigint
   balance?: bigint
   disabled?: boolean
   labelDeposit?: string
-  receiveAmount?: string
-  receiveDollarValue?: string
-  labelReceive?: string
   depositSelect: ReactNode
   depositInput?: ReactNode
-  receiveAssetDisplay?: ReactNode
   onValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
-  displayRecieve?: boolean
   displayBalance?: boolean
   isZapping?: boolean
   isLoading?: boolean
@@ -34,20 +28,15 @@ type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   displaySliderInput?: boolean
 }
 
-export function DepositReceiveInput({
+export function DepositInput({
   className,
   depositAmount,
   balance,
   depositAsset,
-  receiveAmount,
-  receiveDollarValue,
   labelDeposit = "You Deposit",
-  labelReceive = "You Stake",
   setMaxBalance,
   onValueChange,
   depositSelect = <></>,
-  receiveAssetDisplay = <></>,
-  displayRecieve = true,
   displayBalance = true,
   isZapping = false,
   isLoading = false,
@@ -55,7 +44,7 @@ export function DepositReceiveInput({
   displaySliderInput = false,
   setPercentage,
   ...props
-}: DepositReceiveInputProps) {
+}: DepositInputProps) {
   const balanceNumber = useMemo(() => {
     if (balance) {
       return Number(formatUnits(balance, 18))
@@ -207,14 +196,6 @@ export function DepositReceiveInput({
           </>
         )}
       </div>
-      {displayRecieve && (
-        <DisplayReceivePanel
-          labelReceive={labelReceive}
-          receiveAmount={receiveAmount}
-          receiveAssetDisplay={receiveAssetDisplay}
-          receiveDollarValue={receiveDollarValue}
-        />
-      )}
     </div>
   )
 }

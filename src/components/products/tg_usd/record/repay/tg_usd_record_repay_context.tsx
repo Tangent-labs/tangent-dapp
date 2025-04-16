@@ -40,27 +40,33 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const actionRepay = () => {
     const walletClient = getWalletClient()
-    if (walletClient) doMarketRepay(walletClient, { marketAddress: marketData!.marketAddress, repayWeiValue }).then(() => loadOnChainData())
+    if (walletClient)
+      doMarketRepay(walletClient, { marketAddress: marketData!.marketAddress, repayWeiValue }).then(() => {
+        loadOnChainData()
+        setRepayWeiValue(0n)
+        setPercentage(0)
+      })
   }
 
   const formState = useMemo(() => getRepayFormState(marketData, repayWeiValue, isWellConnected), [marketData, repayWeiValue, isWellConnected, currentAddress])
 
-  const maxRepayableValue = useMemo(() => {
+  const marketValues = useMemo(() => {
     if (marketData) {
-      return BigInt(marketData.debtInfos.positionDebt)
+      const maxRepayableValue = BigInt(marketData.debtInfos.positionDebt)
+
+      const minimumLoan = BigInt(marketData.constants.minimumLoan)
+
+      return { maxRepayableValue, minimumLoan }
     }
 
-    return 0n
+    return { maxRepayableValue: 0n, minimumLoan: 0n }
   }, [marketData])
 
   useEffect(() => {
-    if (marketData && repayWeiValue && maxRepayableValue) {
-      const existingDebt = BigInt(marketData.debtInfos.positionDebt)
-
-      const minimumLoan = BigInt(marketData.constants.minimumLoan)
-      if (existingDebt - repayWeiValue! > 0n && existingDebt - repayWeiValue! < minimumLoan) {
-        const p = Math.round(100 - 300000 / Number(formatUnits(maxRepayableValue, 18)))
-        const newValue = maxRepayableValue - minimumLoan
+    if (repayWeiValue && marketValues) {
+      if (marketValues?.maxRepayableValue - repayWeiValue! > 0n && marketValues?.maxRepayableValue - repayWeiValue! < marketValues?.minimumLoan) {
+        const p = Math.round(100 - 300000 / Number(formatUnits(marketValues?.maxRepayableValue, 18)))
+        const newValue = marketValues?.maxRepayableValue - marketValues?.minimumLoan
 
         setTimeout(() => {
           setPercentage(p)
@@ -68,14 +74,14 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
         }, 500)
       }
     }
-  }, [percentage, marketData, repayWeiValue, maxRepayableValue])
+  }, [percentage, repayWeiValue])
 
   const contextValue: TgUsdRepayContextValues = {
     actionRepay,
     formState,
     repayWeiValue,
     setRepayWeiValue,
-    maxRepayableValue,
+    maxRepayableValue: marketValues?.maxRepayableValue,
     percentage,
     setPercentage,
   }

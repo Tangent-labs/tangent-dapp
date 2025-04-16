@@ -24,6 +24,7 @@ const CustomSelect = <T extends DepositReceiveAsset>({ options = [], onChange, c
 
   const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const option = filteredOptions[index]
+
     return (
       <div className="absolute left-0 flex w-full" style={style}>
         <SelectItem key={option.value} value={option.symbol}>
@@ -40,7 +41,7 @@ const CustomSelect = <T extends DepositReceiveAsset>({ options = [], onChange, c
     )
   }
 
-  const opt = options.find((option) => option.value === value) || null
+  const opt = options.find((option) => option.value === value || option.symbol === value) || null
 
   return (
     <div className={`flex flex-col gap-1 ${className}`}>

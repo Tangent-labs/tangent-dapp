@@ -1,3 +1,5 @@
+"use server"
+
 import { AssetDataPriced } from "@/types"
 import { Address } from "viem"
 

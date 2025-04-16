@@ -4,7 +4,6 @@ import Image from "next/image"
 import { useTgUsdDepositContext } from "./tg_usd_record_deposit_context"
 import { Switch } from "@/components/ui/switch"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
-import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -22,6 +21,7 @@ import ButtonTab from "@/components/design_system/inputs/button_tab"
 import { IconChevron } from "@/components/icons/icon_chevron"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import Tabs from "@/components/design_system/structure/tabs"
+import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 
 export default function TgUsdDepositPanel() {
   const {
@@ -37,9 +37,8 @@ export default function TgUsdDepositPanel() {
     setSlippage,
     actionApproveZap,
     handleZapInputChange,
-    setPercentage,
-    setBorrowPercentage,
-    swapAssetPrice,
+    setDepositSliderPercent,
+    setBorrowSliderPercent,
     isStaking,
     depositAsset,
     depositWeiValue,
@@ -57,8 +56,8 @@ export default function TgUsdDepositPanel() {
     sociabilizationFee,
     balances,
     zapInnerValue,
-    percentage,
-    borrowPercentage,
+    depositSliderPercent,
+    borrowSliderPercent,
     maxBorrowableValue,
   } = useTgUsdDepositContext()
 
@@ -129,19 +128,6 @@ export default function TgUsdDepositPanel() {
     )
   }
 
-  const DepositAssetDisplay = () => {
-    return (
-      <PanelRaw className="flex w-48 items-center gap-2 border-white !bg-opacity-0 px-4 py-2 !backdrop-blur-none">
-        <div className="">
-          <TokenImage token={collateralInfo?.logo} size={32} />
-        </div>
-        <span className="flex flex-col text-lg leading-3">
-          <span>{collateralInfo.symbol}</span>
-        </span>
-      </PanelRaw>
-    )
-  }
-
   const BorrowAssetDisplay = () => {
     return (
       <PanelRaw className="flex w-48 items-center gap-2 border-white !bg-opacity-0 px-4 py-2 !backdrop-blur-none">
@@ -175,28 +161,24 @@ export default function TgUsdDepositPanel() {
         </div>
       </div>
 
-      <DepositReceiveInput
+      <DepositInput
         displaySliderInput={true}
-        displayRecieve={false}
         depositAmount={depositWeiValue}
         depositSelect={<AssetSelect />}
         disabled={!canInteract}
         isLoading={isDepositLoading}
-        receiveAssetDisplay={<DepositAssetDisplay />}
         depositAsset={depositAssetInfo || collateralInfo}
-        receiveDollarValue={(Number(swapAssetPrice) * Number(formatUnits(depositWeiValue || 0n, 18))).toFixed(2)}
         balance={!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance}
-        receiveAmount={"0"}
         isZapping={!!depositAsset && depositAsset !== collateralInfo?.name}
+        onValueChange={handleDepositChange}
+        percentage={depositSliderPercent}
+        setPercentage={setDepositSliderPercent}
         setMaxBalance={() => {
           setDepositWeiValue(marketData?.collateralBalance || 0n)
         }}
-        onValueChange={handleDepositChange}
-        percentage={percentage}
-        setPercentage={setPercentage}
       />
 
-      {depositAsset && depositAsset !== collateralInfo?.name && (
+      {depositAsset && depositAsset !== collateralInfo?.symbol && (
         <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
           <div className="flex justify-between">
             <div className="flex flex-col items-start justify-start">
@@ -236,17 +218,18 @@ export default function TgUsdDepositPanel() {
             <span className="text-[20px] font-bold">Borrow tgUSD</span>
             <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 2)} tgUSD</span>
           </div>
-          <DepositReceiveInput
+          <DepositInput
             displaySliderInput={true}
-            displayRecieve={false}
             depositAmount={borrowWeiValue}
             labelDeposit="You borrow"
             depositSelect={<BorrowAssetDisplay />}
             disabled={!canInteract}
             depositAsset={tgUSDInfo}
             setMaxBalance={() => {}}
-            percentage={borrowPercentage}
-            setPercentage={setBorrowPercentage}
+            displayBalance={false}
+            balance={maxBorrowableValue}
+            percentage={borrowSliderPercent}
+            setPercentage={setBorrowSliderPercent}
             onValueChange={(value: bigint | undefined) => {
               setBorrowWeiValue(value)
             }}

@@ -4,7 +4,7 @@ import Divider from "@/components/design_system/structure/divider"
 import Panel from "@/components/design_system/structure/panel"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import Title from "@/components/design_system/structure/title"
-import React from "react"
+
 import BorrowHistoryGraph from "./tg_usd_borrow_graph"
 import InterestRateGraph from "./tg_usd_interest_rate_graph"
 

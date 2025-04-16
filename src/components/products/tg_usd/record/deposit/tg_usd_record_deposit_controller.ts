@@ -148,7 +148,9 @@ export const doZapDeposit = async (walletClient: WalletClient, routerCall: strin
 
 export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: string) => {
   try {
-    const tokenAddress = tokens.find((el: ZapToken) => el.name === depositAsset) ? tokens.find((el: ZapToken) => el.name === depositAsset)?.address : undefined
+    const tokenAddress = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)
+      ? tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)?.address
+      : undefined
     if (tokenAddress) {
       const data = await getSwapAssetPrice(tokenAddress)
       return data

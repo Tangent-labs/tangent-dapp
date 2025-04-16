@@ -1,6 +1,5 @@
 "use client"
 
-import React from "react"
 import { useTgUsdMaketListContext } from "./tg_usd_market_list_context"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { tgUsdListHeaders } from "./tg_usd_market_controller"

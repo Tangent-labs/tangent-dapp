@@ -1,6 +1,5 @@
 "use client"
 
-import React from "react"
 import { TgUsdBorrowProvider } from "./tg_usd_record_borrow_context"
 import TgUsdBorrowPanel from "./tg_usd_record_borrow_panel"
 

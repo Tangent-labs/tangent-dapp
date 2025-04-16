@@ -1,6 +1,5 @@
 "use client"
 
-import React from "react"
 import { TgUsdWithdrawProvider } from "./tg_usd_record_withdraw_context"
 import TgUsdWithdrawPanel from "./tg_usd_record_withdraw_panel"
 

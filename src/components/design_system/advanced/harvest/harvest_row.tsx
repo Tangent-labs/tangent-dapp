@@ -1,6 +1,5 @@
 "use client"
 
-import React from "react"
 import Panel from "../../structure/panel"
 import { cn } from "@/lib/utils"
 import TokenImage from "../../structure/token_image"

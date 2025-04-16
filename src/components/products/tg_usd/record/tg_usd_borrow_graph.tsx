@@ -1,6 +1,5 @@
 "use client"
 
-import React from "react"
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Legend } from "recharts"
 
 export default function BorrowHistoryGraph() {

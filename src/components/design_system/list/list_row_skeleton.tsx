@@ -1,5 +1,5 @@
 "use client"
-import React from "react"
+
 import ListRowDisposition from "@/components/design_system/list/list_row_disposition"
 import Panel from "@/components/design_system/structure/panel"
 

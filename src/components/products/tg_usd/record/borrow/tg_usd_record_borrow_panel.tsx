@@ -1,18 +1,16 @@
 "use client"
 
-import React from "react"
-
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
-import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { useTgUsdBorrowContext } from "./tg_usd_record_borrow_context"
 import { formatBigInt } from "@/lib/number_formatter"
+import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 
 export default function TgUsdBorrowPanel() {
-  const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setPercentage, percentage, maxBorrowableValue } = useTgUsdBorrowContext()
+  const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, borrowPercentage, maxBorrowableValue } = useTgUsdBorrowContext()
 
   const { tgUSDInfo } = useTgUsdRecordContext()
 
@@ -39,9 +37,8 @@ export default function TgUsdBorrowPanel() {
           <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 2)} tgUSD</span>
         </div>
 
-        <DepositReceiveInput
+        <DepositInput
           displaySliderInput={true}
-          displayRecieve={false}
           depositAmount={borrowWeiValue}
           labelDeposit="You borrow"
           depositSelect={<BorrowAssetDisplay />}
@@ -53,8 +50,8 @@ export default function TgUsdBorrowPanel() {
           onValueChange={(value: bigint | undefined) => {
             setBorrowWeiValue(value)
           }}
-          percentage={percentage}
-          setPercentage={setPercentage}
+          percentage={borrowPercentage}
+          setPercentage={setBorrowPercentage}
         />
       </div>
 

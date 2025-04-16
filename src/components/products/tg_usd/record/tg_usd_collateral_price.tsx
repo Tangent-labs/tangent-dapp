@@ -4,7 +4,7 @@ import ButtonTab from "@/components/design_system/inputs/button_tab"
 import Divider from "@/components/design_system/structure/divider"
 import Title from "@/components/design_system/structure/title"
 import TokenImage from "@/components/design_system/structure/token_image"
-import React from "react"
+
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, ReferenceLine } from "recharts"
 import { useTgUsdRecordContext } from "./tg_usd_record_context"
 

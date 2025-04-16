@@ -1,6 +1,5 @@
 "use client"
 
-import React from "react"
 import HarvestRow from "./harvest_row"
 import { Address } from "viem"
 import { HarvesterInfoDisplay } from "@/components/products/tg_usd/tg_usd_type"

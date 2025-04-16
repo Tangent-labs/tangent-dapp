@@ -1,34 +1,6 @@
 import { AssetDataPriced } from "@/types"
 import { Address } from "viem"
 
-export const getTokenInQuote = async (
-  zapValue: bigint | undefined,
-  currentAddress: Address,
-  collateralInfo: AssetDataPriced,
-  depositAssetInfo: AssetDataPriced
-) => {
-  try {
-    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${currentAddress}&amountIn=${zapValue}&tokenOut=${depositAssetInfo?.address}&tokenIn=${collateralInfo?.address.trim()}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d`,
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`)
-    }
-
-    return await response.json()
-  } catch (error) {
-    console.error("Failed to fetch Enso data:", error)
-    return null
-  }
-}
-
 export const getRouteTxData = async (
   amountIn: bigint | undefined,
   collateralInfo: AssetDataPriced,
@@ -44,7 +16,7 @@ export const getRouteTxData = async (
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d`,
+        Authorization: `Bearer ${process.env.NEXT_ENSO_API_KEY}`,
       },
     })
 
@@ -59,7 +31,7 @@ export const getRouteTxData = async (
   }
 }
 
-export const getTokenOutQuote = async (
+export const getTokenQuote = async (
   depositWeiValue: bigint | undefined,
   currentAddress: Address,
   collateralInfo: AssetDataPriced,
@@ -72,7 +44,7 @@ export const getTokenOutQuote = async (
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer adbdf776-54d8-48b1-bbcc-b18a20a4078d`,
+        Authorization: `Bearer ${process.env.NEXT_ENSO_API_KEY}`,
       },
     })
 

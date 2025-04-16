@@ -5,7 +5,6 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { getMarketDatas, getTgUsdMarketsData, transformToRows, transformGlobalData } from "./tg_usd_market_controller"
 import { ChainViewMarketList, TgUsdGlobalData } from "../tg_usd_type"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { Address } from "viem"
 
 type TgUsdMaketListContextProps = {
   children: ReactNode
@@ -22,18 +21,20 @@ export const TgUsdMaketListContext = createContext<TgUsdMaketListContextValues |
 
 export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
+
   const [onChainData, setOnChainData] = useState<ChainViewMarketList | undefined>()
+
   const [searchValue, setSearchValue] = useState<string | null>(null)
 
   useEffect(() => {
     if (currentAddress) {
-      loadOnChainData(currentAddress).then((data) => {
+      loadOnChainData().then((data) => {
         setOnChainData(data)
       })
     }
   }, [currentAddress])
 
-  const loadOnChainData = async (currentAddress: Address) => {
+  const loadOnChainData = async () => {
     return getTgUsdMarketsData(currentAddress)
   }
 

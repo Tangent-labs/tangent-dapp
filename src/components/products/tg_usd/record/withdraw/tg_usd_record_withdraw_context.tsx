@@ -15,8 +15,8 @@ type TgUsdWithdrawContextValues = {
   formState: FormState
   withdrawWeiValue?: bigint
   setWithdrawWeiValue: (arg: bigint | undefined) => void
-  percentage: number
-  setPercentage: (arg: number) => void
+  withdrawPercentage: number
+  setWithdrawPercentage: (arg: number) => void
   maxWithdrawable: bigint
 }
 
@@ -29,7 +29,7 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
 
   const [withdrawWeiValue, setWithdrawWeiValue] = useState<bigint | undefined>()
 
-  const [percentage, setPercentage] = useState<number>(0)
+  const [withdrawPercentage, setWithdrawPercentage] = useState<number>(0)
 
   useEffect(() => {
     setCurrentAmounts({
@@ -39,7 +39,12 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
 
   const actionWithdraw = () => {
     const walletClient = getWalletClient()
-    if (walletClient) doMarketWithdraw(walletClient, { marketAddress: marketData!.marketAddress, withdrawWeiValue }).then(() => loadOnChainData())
+    if (walletClient)
+      doMarketWithdraw(walletClient, { marketAddress: marketData!.marketAddress, withdrawWeiValue }).then(() => {
+        loadOnChainData()
+        setWithdrawWeiValue(0n)
+        setWithdrawPercentage(0)
+      })
   }
 
   const formState = useMemo(
@@ -68,9 +73,9 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
     formState,
     withdrawWeiValue,
     setWithdrawWeiValue,
-    percentage,
+    withdrawPercentage,
     maxWithdrawable,
-    setPercentage,
+    setWithdrawPercentage,
   }
 
   return <TgUsdWithdrawContext.Provider value={contextValue}>{children}</TgUsdWithdrawContext.Provider>

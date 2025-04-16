@@ -3,7 +3,7 @@
 import { ButtonPanel } from "@/components/design_system/inputs/button_panel"
 import RecordPageHeader from "@/components/design_system/structure/record_page_header"
 import TokenImage from "@/components/design_system/structure/token_image"
-import React from "react"
+
 import { useRouter } from "next/navigation"
 import { useTgUsdRecordContext } from "./tg_usd_record_context"
 import IndicatorV2 from "@/components/design_system/structure/indicators_v2"

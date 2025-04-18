@@ -1,5 +1,6 @@
 "use client"
 
+import { cn } from "@/lib/utils"
 import React, { useState } from "react"
 
 const Tabs = () => {
@@ -14,13 +15,13 @@ const Tabs = () => {
       <div className="relative flex justify-between rounded-lg p-2 text-white">
         <button
           onClick={() => handleTabClick("Deposit")}
-          className={`w-1/2 py-2 text-center text-lg font-semibold ${activeTab === "Deposit" ? "text-white" : "text-gray-400"} z-10`}
+          className={cn(activeTab === "Deposit" ? "text-white" : "text-gray-400", `z-10 w-1/2 py-2 text-center text-lg font-semibold`)}
         >
           Deposit
         </button>
         <button
           onClick={() => handleTabClick("Leverage")}
-          className={`w-1/2 py-2 text-center text-lg font-semibold ${activeTab === "Leverage" ? "text-white" : "text-gray-400"} z-10`}
+          className={cn(activeTab === "Leverage" ? "text-white" : "text-gray-400", `z-10 w-1/2 py-2 text-center text-lg font-semibold`)}
         >
           Leverage
         </button>

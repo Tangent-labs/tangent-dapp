@@ -8,7 +8,7 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 
 export default function TgUsdLiquidatePanelPartial() {
-  const { liquidateWeiValue, setLiquidateWeiValue } = useTgUsdLiquidateContext()
+  const { liquidateWeiValue, setLiquidateWeiValue, maxLiquidable, liquidablePercentage, setLiquidablePercentage } = useTgUsdLiquidateContext()
   const { tgUSDInfo, collateralInfo } = useTgUsdRecordContext()
   const { canInteract } = useWalletConnexionContext()
 
@@ -27,8 +27,11 @@ export default function TgUsdLiquidatePanelPartial() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="flex w-full items-end justify-between">
         <span className="text-[20px] font-bold">Liquidate partial</span>
+        <span className="text-xs text-subtitle">
+          Max: {maxLiquidable} {collateralInfo?.symbol}
+        </span>
       </div>
 
       <DepositInput
@@ -36,8 +39,10 @@ export default function TgUsdLiquidatePanelPartial() {
         labelDeposit="You liquidate"
         depositSelect={<WithdrawAssetDisplay />}
         disabled={!canInteract}
+        displaySliderInput={true}
+        percentage={liquidablePercentage}
+        setPercentage={setLiquidablePercentage}
         depositAsset={tgUSDInfo}
-        balance={0n}
         setMaxBalance={() => {}}
         displayBalance={false}
         onValueChange={(value: bigint | undefined) => {

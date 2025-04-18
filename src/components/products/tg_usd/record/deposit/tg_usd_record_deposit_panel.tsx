@@ -22,6 +22,7 @@ import { IconChevron } from "@/components/icons/icon_chevron"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import Tabs from "@/components/design_system/structure/tabs"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
 
 export default function TgUsdDepositPanel() {
   const {
@@ -38,6 +39,7 @@ export default function TgUsdDepositPanel() {
     actionApproveZap,
     handleZapInputChange,
     setDepositSliderPercent,
+    setActiveTab,
     setBorrowSliderPercent,
     isStaking,
     depositAsset,
@@ -59,6 +61,7 @@ export default function TgUsdDepositPanel() {
     depositSliderPercent,
     borrowSliderPercent,
     maxBorrowableValue,
+    activeTab,
   } = useTgUsdDepositContext()
 
   const { collateralInfo, marketData, tgUSDInfo } = useTgUsdRecordContext()
@@ -130,20 +133,16 @@ export default function TgUsdDepositPanel() {
 
   const BorrowAssetDisplay = () => {
     return (
-      <PanelRaw className="flex w-48 items-center gap-2 border-white !bg-opacity-0 px-4 py-2 !backdrop-blur-none">
-        <div className="">
-          <TokenImage token={"tgUSD"} size={32} />
-        </div>
-        <span className="flex flex-col text-lg leading-3">
-          <span>tgUSD</span>
-        </span>
-      </PanelRaw>
+      <div className="flex w-28 items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+        <TokenImage token={"tgUSD"} size={24} />
+        <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
+      </div>
     )
   }
 
   return (
     <div className="flex flex-col gap-2">
-      <Tabs />
+      <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <div className="flex justify-end gap-2">
         <div className="flex items-center gap-2">
@@ -210,6 +209,23 @@ export default function TgUsdDepositPanel() {
             </div>
           </div>
         </PanelRaw>
+      )}
+
+      {activeTab === "Leverage" && (
+        <>
+          <span className="flex items-end justify-between text-[20px] font-bold">Borrow amount</span>
+
+          <LeverageInput
+            displaySliderInput={true}
+            depositAmount={borrowWeiValue}
+            labelDeposit="You borrow"
+            depositSelect={<BorrowAssetDisplay />}
+            depositAsset={tgUSDInfo}
+            onValueChange={() => {}}
+          />
+
+          <div className="-mt-1 flex w-full items-start justify-end text-xs text-subtitle">Max leverage: x10</div>
+        </>
       )}
 
       {isDepositAndBorrow && (

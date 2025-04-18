@@ -17,15 +17,23 @@ type TgUsdLiquidateContextValues = {
   setLiquidateWeiValue: (arg: bigint | undefined) => void
   isFullLiquidation: boolean
   setIsFullLiquidation: (arg: boolean) => void
+  maxLiquidable: string
+  liquidablePercentage: number
+  setLiquidablePercentage: (arg: number) => void
 }
 
 export const TgUsdLiquidateContext = createContext<TgUsdLiquidateContextValues | undefined>(undefined)
 
 export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps) => {
-  const [isFullLiquidation, setIsFullLiquidation] = useState<boolean>(false)
-  const [liquidateWeiValue, setLiquidateWeiValue] = useState<bigint | undefined>()
-  const { marketData, loadOnChainData } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, marketDisplayData } = useTgUsdRecordContext()
+
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+
+  const [liquidablePercentage, setLiquidablePercentage] = useState<number>(0)
+
+  const [isFullLiquidation, setIsFullLiquidation] = useState<boolean>(false)
+
+  const [liquidateWeiValue, setLiquidateWeiValue] = useState<bigint | undefined>()
 
   const actionLiquidate = () => {
     const walletClient = getWalletClient()
@@ -37,6 +45,13 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
     [marketData, liquidateWeiValue, isWellConnected, currentAddress]
   )
 
+  const maxLiquidable = useMemo(() => {
+    if (!!marketDisplayData.collateralValue && marketDisplayData.collateralValue !== "-") {
+      return marketDisplayData.collateralValue
+    }
+    return ""
+  }, [marketDisplayData])
+
   const contextValue: TgUsdLiquidateContextValues = {
     actionLiquidate,
     formState,
@@ -44,6 +59,9 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
     setLiquidateWeiValue,
     isFullLiquidation,
     setIsFullLiquidation,
+    maxLiquidable,
+    liquidablePercentage,
+    setLiquidablePercentage,
   }
 
   return <TgUsdLiquidateContext.Provider value={contextValue}>{children}</TgUsdLiquidateContext.Provider>

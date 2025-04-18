@@ -83,6 +83,9 @@ type TgUsdDepositContextValues = {
   handleZapInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 
   maxBorrowableValue: bigint
+
+  activeTab: string
+  setActiveTab: (arg: string) => void
 }
 
 export const TgUsdDepositContext = createContext<TgUsdDepositContextValues | undefined>(undefined)
@@ -117,6 +120,8 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
   const [gas, setGas] = useState<number | null>(null)
 
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
+
+  const [activeTab, setActiveTab] = useState("Deposit")
 
   const depositAssetInfo = useMemo(() => {
     if (depositAsset === "ETH") {
@@ -508,6 +513,9 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
     setBorrowSliderPercent,
 
     maxBorrowableValue,
+
+    activeTab,
+    setActiveTab,
   }
 
   return <TgUsdDepositContext.Provider value={contextValue}>{children}</TgUsdDepositContext.Provider>

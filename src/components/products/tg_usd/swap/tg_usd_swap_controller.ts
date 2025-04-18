@@ -25,8 +25,8 @@ export const getSwapTokenBalanceAllowance = async (walletClient: WalletClient, a
 
 export const computeSwapAssetPrice = async (tokens: SwapToken[], depositAsset: string) => {
   try {
-    const tokenAddress = tokens.find((el: SwapToken) => el.name === depositAsset)
-      ? tokens.find((el: SwapToken) => el.name === depositAsset)?.address
+    const tokenAddress = tokens.find((el: SwapToken) => el.name === depositAsset || el.symbol === depositAsset)
+      ? tokens.find((el: SwapToken) => el.name === depositAsset || el.symbol === depositAsset)?.address
       : undefined
     if (tokenAddress) {
       const data = await getSwapAssetPrice(tokenAddress)
@@ -71,7 +71,7 @@ export const doCustomSwap = async (walletClient: WalletClient, abi: Abi, method:
 
   const publicClient = await getPublicClient()
 
-  const fnArgs = method === "deposit" || method === "redeem" ? [amount, account] : [account, amount, isStaked]
+  const fnArgs = method === "deposit" || method === "redeem" ? [amount, account] : [amount, account, isStaked]
 
   const estimateGasData = {
     abi,

@@ -1,15 +1,13 @@
 import NotFound from "../../not-found"
 import { TgUsdMarketAsset } from "@/types"
 import TgUsdRecordDepositPage from "@/components/products/tg_usd/record/deposit/tg_usd_record_deposit"
-import { fetchTokens, loadMarketServerData } from "@/components/products/tg_usd/record/tg_usd_record_controller"
+import { loadMarketServerData } from "@/components/products/tg_usd/record/tg_usd_record_controller"
 
 export default async function tgUsdMarketDetailDepositPage({ params }: { params: Promise<{ id: TgUsdMarketAsset }> }) {
   const collateral = (await params).id
   const { marketInfo, tgUSDInfo, collateralInfo } = await loadMarketServerData(collateral)
 
-  const tokens = await fetchTokens()
-
   if (!marketInfo || !tgUSDInfo || !collateralInfo) return NotFound()
 
-  return <TgUsdRecordDepositPage tokens={tokens} collateralInfo={collateralInfo} marketInfo={marketInfo} />
+  return <TgUsdRecordDepositPage collateralInfo={collateralInfo} marketInfo={marketInfo} />
 }

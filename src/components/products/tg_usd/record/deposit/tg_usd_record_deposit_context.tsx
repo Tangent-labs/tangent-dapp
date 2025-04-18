@@ -21,6 +21,7 @@ import {
   prepareZapTransaction,
 } from "./tg_usd_record_deposit_controller"
 import { getTokenQuote } from "./deposit_actions"
+import { useTgUsdContext } from "../../tg_usd_context"
 
 const DECIMALS = BigInt(10 ** 18)
 
@@ -28,7 +29,6 @@ type TgUsdDepositContextProps = {
   children: ReactNode
   collateralInfo: AssetDataPriced
   marketInfo: TgUsdMarket
-  tokens: ZapToken[]
 }
 
 type TgUsdDepositContextValues = {
@@ -87,7 +87,9 @@ type TgUsdDepositContextValues = {
 
 export const TgUsdDepositContext = createContext<TgUsdDepositContextValues | undefined>(undefined)
 
-export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tokens }: TgUsdDepositContextProps) => {
+export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: TgUsdDepositContextProps) => {
+  const { tokens } = useTgUsdContext()
+
   const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()

@@ -29,6 +29,8 @@ type TgUsdStakeContextValues = {
   hasToApprove: boolean
   computeProjectedValue: number
   formState: FormState
+  stakePercentage: number
+  setStakePercentage: (arg: number) => void
 }
 
 export const TgUsdStakeContext = createContext<TgUsdStakeContextValues | undefined>(undefined)
@@ -39,6 +41,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
   const [currentFeature, setCurrentFeature] = useState<"stake" | "unstake">("stake")
   const [weiValue, setWeiValue] = useState<bigint | undefined>()
   const [expected, setExpected] = useState<bigint | undefined>()
+  const [stakePercentage, setStakePercentage] = useState<number>(0)
 
   const { getWalletClient, currentAddress } = useWalletConnexionContext()
 
@@ -50,7 +53,6 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     if (currentAddress) {
       getTgUsdStakeOnChainData(currentAddress).then((data) => {
         setStakeInfo(data)
-        setWeiValue(undefined)
         setIsLoading(false)
       })
     }
@@ -157,7 +159,8 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     }
     await doUnstakeTgUSD(params)
     loadData()
-    setWeiValue(undefined)
+    setWeiValue(0n)
+    setExpected(0n)
   }
 
   const actionStake = async () => {
@@ -171,7 +174,8 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     }
     await doStakeTgUSD(params)
     loadData()
-    setWeiValue(undefined)
+    setWeiValue(0n)
+    setExpected(0n)
   }
 
   const actionApprove = async () => {
@@ -180,7 +184,6 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
   }
 
   useEffect(() => {
-    if (expected) setExpected(undefined)
     if (!weiValue || weiValue === 0n) return
     ;(async () => {
       if (currentFeature === "stake") {
@@ -226,6 +229,8 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     receivedTokenInfo,
     hasToApprove,
     formState,
+    stakePercentage,
+    setStakePercentage,
   }
 
   return <TgUsdStakeContext.Provider value={contextValue}>{children}</TgUsdStakeContext.Provider>

@@ -61,7 +61,7 @@ export const RsTanLayoutContent = ({
             <Image height={360} width={360} src={`/medias/tokens/rsTan.png`} alt="token" />
           </div>
           <div className="ml-6 flex flex-col items-start justify-between gap-3">
-            <span className="mt-1 text-4xl font-bold">Lock TAN</span>
+            <span className="mt-1 text-5xl font-bold">Lock TAN</span>
 
             <span>
               Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT

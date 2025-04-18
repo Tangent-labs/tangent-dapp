@@ -1,18 +1,22 @@
 "use client"
 
 import { createContext, ReactNode, useContext } from "react"
+import { ZapToken } from "./tg_usd_type"
 
 type TgUsdContextProps = {
   children: ReactNode
+  tokens: ZapToken[]
 }
 
-type TgUsdContextValues = { test: boolean }
+type TgUsdContextValues = {
+  tokens: ZapToken[]
+}
 
 export const TgUsdContext = createContext<TgUsdContextValues | undefined>(undefined)
 
-export const TgUsdProvider = ({ children }: TgUsdContextProps) => {
+export const TgUsdProvider = ({ children, tokens }: TgUsdContextProps) => {
   const contextValue: TgUsdContextValues = {
-    test: true,
+    tokens,
   }
 
   return <TgUsdContext.Provider value={contextValue}>{children}</TgUsdContext.Provider>

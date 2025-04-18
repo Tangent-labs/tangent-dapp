@@ -110,15 +110,11 @@ export default function TgUsdSwapContent() {
     <>
       <div className="sgusd-card w-7/12">
         <div className="flex items-center justify-center">
-          <Image height={440} width={440} className="an-logo" src="/medias/product_tgusd.png" alt="token" />
+          <Image height={320} width={320} src="/medias/product_tgusd.png" alt="token" />
         </div>
-        <div className="flex flex-col items-start justify-between gap-3">
-          <span className="text-4xl">Swap</span>
-          <p>
-            Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT
-            stable pool & CVX stable pool).
-          </p>
-          <p>Rewards are distributed weekly, at the beginning of each epoch. Staking positions are represented by NFTs. Learn more</p>
+        <div className="flex flex-col items-start justify-center gap-3">
+          <span className="text-5xl font-bold">Swap</span>
+          <p>Swap any asset for tgUSD and other Tangent&apos;s assets, including Curve LPs and Wrapped Tangent Stablecoins. Learn more</p>
         </div>
       </div>
 

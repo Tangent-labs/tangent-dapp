@@ -2,7 +2,6 @@
 
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import Panel from "@/components/design_system/structure/panel"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
 import TokenImage from "@/components/design_system/structure/token_image"
 import React, { useMemo, useState } from "react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from "recharts"
@@ -74,12 +73,12 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
     <>
       <div className="flex h-8 w-full items-center justify-between">
         <div className="flex items-center justify-start gap-2">
-          <PanelRaw className="flex w-fit items-center gap-2 border-white !bg-opacity-0 px-4 py-2 !backdrop-blur-none">
+          <div className="flex w-fit items-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
             <TokenImage token="sgUSD" size={16} />
             <span className="text-sm font-bold leading-3">
               <span>sgUSD</span>
             </span>
-          </PanelRaw>
+          </div>
 
           <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-4 py-1">
             <span className="text-lg font-bold">{apr}%</span>

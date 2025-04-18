@@ -1,7 +1,6 @@
 "use client"
 
 import Image from "next/image"
-import Panel from "@/components/design_system/structure/panel"
 import { useTgUsdStakeContext } from "./tg_usd_stake_context"
 import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
@@ -34,6 +33,8 @@ export default function TgUsdStakeContent() {
     receivedTokenInfo,
     formState,
     computeProjectedValue,
+    stakePercentage,
+    setStakePercentage,
   } = useTgUsdStakeContext()
 
   const AssetSelect = () => {
@@ -96,23 +97,17 @@ export default function TgUsdStakeContent() {
       <div className="flex w-full items-end justify-between">
         <div className="sgusd-card w-7/12">
           <div className="flex items-center justify-center">
-            <Image height={440} width={440} className="an-logo" src="/medias/product_tgusd.png" alt="token" />
+            <Image height={320} width={320} src="/medias/product_tgusd.png" alt="token" />
           </div>
-          <div className="flex flex-col items-start justify-between gap-3">
-            <span className="text-4xl">sgUSD</span>
-            <p>
-              Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools
-              <a href="#">(SDT stable pool)</a> &amp; <a href="#">CVX stable pool</a>.
-            </p>
-            <p>
-              Rewards are distributed weekly, at the beginning of each epoch. Staking positions are represented by NFTs. <a href="#">Learn more ↗</a>
-            </p>
+          <div className="flex flex-col items-start justify-center gap-3">
+            <span className="text-5xl font-bold">Savings account</span>
+            <p>Stake tgUSD to receive sgUSD and earn yield passively. sgUSD is an ERC4626 token and can be used further in DeFi. Learn more</p>
           </div>
         </div>
 
         {stakeInfo && (
-          <Panel className="flex w-5/12 items-center justify-between gap-3">
-            <TokenImage token="sgUSD" size={48} />
+          <div className="flex w-5/12 items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
+            <TokenImage token="sgUSD" size={64} />
 
             <div className="flex flex-col items-center justify-center font-bold">
               <span className="text-sm text-subtitle">Supply</span>
@@ -122,16 +117,16 @@ export default function TgUsdStakeContent() {
               <span className="text-sm text-subtitle">sgUSD</span>
               <span className="text-lg font-bold">{formatDollar(formatUnits(stakeInfo.sgUSDPrice, 18), 2)}</span>
             </div>
-            <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-2">
+            <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-1">
               <span className="text-black">APY</span>
               <span className="text-lg font-bold">15.32%</span>
             </div>
-          </Panel>
+          </div>
         )}
       </div>
 
       <div className="my-8 flex w-full items-start justify-start gap-4">
-        <Panel className="flex w-full flex-col items-center justify-center gap-2">
+        <div className="flex w-5/12 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
           <div className="flex w-full items-center justify-between gap-4">
             <ButtonTab
               onClick={() => setCurrentFeature("stake")}
@@ -164,6 +159,9 @@ export default function TgUsdStakeContent() {
             receiveAmount={formatBigInt(expected, 18, 2)}
             setMaxBalance={() => {}}
             onValueChange={(value: bigint | undefined) => setWeiValue(value)}
+            percentage={stakePercentage}
+            setPercentage={setStakePercentage}
+            displaySliderInput={true}
           />
 
           <FormButtons
@@ -174,9 +172,11 @@ export default function TgUsdStakeContent() {
             formState={formState}
             labelProcess={currentFeature === "stake" ? "Deposit & Stake" : "Unstake"}
           />
-        </Panel>
-        <Panel className="flex w-full flex-col items-start justify-start">
-          <span className="text-lg font-bold">Performance</span>
+        </div>
+        <div className="flex w-7/12 flex-col items-start justify-start rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+          <span className="text-2xl font-bold">Performance</span>
+
+          <Divider className="h-1 w-full"></Divider>
 
           <ForecastGraph
             initialInvestment={Number(formatUnits(stakeInfo?.sgUSDBalance || 0n, 18))}
@@ -198,7 +198,7 @@ export default function TgUsdStakeContent() {
               newValue={computeProjection(stakeInfo!, 1, 15, weiValue).toFixed(2)}
             />
           </div>
-        </Panel>
+        </div>
       </div>
     </>
   )

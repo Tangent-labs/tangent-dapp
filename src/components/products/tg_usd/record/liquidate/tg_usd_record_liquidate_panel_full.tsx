@@ -1,7 +1,5 @@
 "use client"
 
-import React from "react"
-
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import TokenImage from "@/components/design_system/structure/token_image"

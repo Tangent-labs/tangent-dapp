@@ -20,10 +20,10 @@ import {
   getSwapFormState,
   getSwapTokenBalanceAllowance,
 } from "./tg_usd_swap_controller"
+import { useTgUsdContext } from "../tg_usd_context"
 
 type TgUsdSwapContextProps = {
   children: ReactNode
-  tokens: SwapToken[]
 }
 
 type TgUsdSwapContextValues = {
@@ -74,7 +74,9 @@ type TgUsdSwapContextValues = {
 
 export const TgUsdSwapContext = createContext<TgUsdSwapContextValues | undefined>(undefined)
 
-export const TgUsdSwapProvider = ({ children, tokens }: TgUsdSwapContextProps) => {
+export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
+  const { tokens } = useTgUsdContext()
+
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -104,7 +106,21 @@ export const TgUsdSwapProvider = ({ children, tokens }: TgUsdSwapContextProps) =
   const [swapData, setSwapData] = useState<SwapConfig | null>(null)
 
   const receiveAssetInfo = useMemo(() => {
-    const assetInfo = tokens.find((el: SwapToken) => el.name === receiveAsset) || undefined
+    const tgTokens: SwapToken[] = Object.entries(tgUsdTokens).flatMap(([, tokens]) => {
+      return Object.entries(tokens).map(([name, address]) => ({
+        name,
+        symbol: name,
+        value: name,
+        address: address as Address,
+        decimals: 18,
+        displayDecimals: 2,
+        logoURI: "null",
+      }))
+    })
+
+    const assetInfo =
+      tokens.find((el: SwapToken) => el.name === receiveAsset || el.symbol === receiveAsset) ||
+      tgTokens.find((el: SwapToken) => el.name === receiveAsset || el.symbol === receiveAsset)
 
     if (!swapedAssetPrice || !assetInfo) return null
 
@@ -121,7 +137,21 @@ export const TgUsdSwapProvider = ({ children, tokens }: TgUsdSwapContextProps) =
   }, [receiveAsset, swapedAssetPrice])
 
   const depositAssetInfo = useMemo(() => {
-    const assetInfo = tokens.find((el: SwapToken) => el.name === depositAsset) || undefined
+    const tgTokens: SwapToken[] = Object.entries(tgUsdTokens).flatMap(([, tokens]) => {
+      return Object.entries(tokens).map(([name, address]) => ({
+        name,
+        symbol: name,
+        value: name,
+        address: address as Address,
+        decimals: 18,
+        displayDecimals: 2,
+        logoURI: "null",
+      }))
+    })
+
+    const assetInfo =
+      tokens.find((el: SwapToken) => el.name === depositAsset || el.symbol === depositAsset) ||
+      tgTokens.find((el: SwapToken) => el.name === depositAsset || el.symbol === depositAsset)
 
     if (!swapAssetPrice || !assetInfo) return null
 
@@ -403,7 +433,7 @@ export const TgUsdSwapProvider = ({ children, tokens }: TgUsdSwapContextProps) =
                 quote: "enso",
                 swap: null,
                 isStaked: false,
-                contract: "0x80EbA3855878739F4710233A8a19d89Bdd2ffB8E",
+                contract: "0xF75584eF6673aD213a685a1B58Cc0330B8eA22Cf",
               }
         )
       } catch {
@@ -412,7 +442,7 @@ export const TgUsdSwapProvider = ({ children, tokens }: TgUsdSwapContextProps) =
           quote: "enso",
           swap: null,
           isStaked: false,
-          contract: "0x80EbA3855878739F4710233A8a19d89Bdd2ffB8E",
+          contract: "0xF75584eF6673aD213a685a1B58Cc0330B8eA22Cf",
         })
       }
     }

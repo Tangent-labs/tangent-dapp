@@ -43,7 +43,9 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
   })
 
   useEffect(() => {
-    loadOnChainData()
+    if (currentAddress) {
+      loadOnChainData()
+    }
   }, [currentAddress])
 
   useEffect(() => {
@@ -51,7 +53,6 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
   }, [])
 
   const loadOnChainData = () => {
-    //  console.log("loadOnChainData")
     setIsLoading(true)
     getTgUsdMarketRecordData(currentAddress, marketInfo.marketAddress).then((data) => {
       setOnChainData(data)

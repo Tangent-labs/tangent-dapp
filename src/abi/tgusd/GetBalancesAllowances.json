@@ -23,7 +23,7 @@
               "type": "address[]"
             }
           ],
-          "internalType": "struct BalancesAllowances.InputBalancesAllowances[]",
+          "internalType": "struct InputBalancesAllowances[]",
           "name": "ibas",
           "type": "tuple[]"
         }
@@ -58,12 +58,12 @@
                   "type": "uint256"
                 }
               ],
-              "internalType": "struct BalancesAllowances.Allowance[]",
+              "internalType": "struct Allowance[]",
               "name": "allowances",
               "type": "tuple[]"
             }
           ],
-          "internalType": "struct BalancesAllowances.OutputBalanceAllowances[]",
+          "internalType": "struct OutputBalanceAllowances[]",
           "name": "obas",
           "type": "tuple[]"
         }
@@ -91,7 +91,7 @@
               "type": "address[]"
             }
           ],
-          "internalType": "struct BalancesAllowances.InputBalancesAllowances[]",
+          "internalType": "struct InputBalancesAllowances[]",
           "name": "ibas",
           "type": "tuple[]"
         }
@@ -123,12 +123,12 @@
                   "type": "uint256"
                 }
               ],
-              "internalType": "struct BalancesAllowances.Allowance[]",
+              "internalType": "struct Allowance[]",
               "name": "allowances",
               "type": "tuple[]"
             }
           ],
-          "internalType": "struct BalancesAllowances.OutputBalanceAllowances[]",
+          "internalType": "struct OutputBalanceAllowances[]",
           "name": "",
           "type": "tuple[]"
         }

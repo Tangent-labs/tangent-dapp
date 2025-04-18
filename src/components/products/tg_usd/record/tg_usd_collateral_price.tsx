@@ -2,11 +2,9 @@
 
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import Divider from "@/components/design_system/structure/divider"
-
-import PanelRaw from "@/components/design_system/structure/panel_raw"
 import Title from "@/components/design_system/structure/title"
 import TokenImage from "@/components/design_system/structure/token_image"
-import React from "react"
+
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, ReferenceLine } from "recharts"
 import { useTgUsdRecordContext } from "./tg_usd_record_context"
 
@@ -62,8 +60,6 @@ const CollateralGraph = () => {
             <stop offset={50} stopColor="rgba(251, 249, 17, 0.05)" stopOpacity={1} />
             <stop offset={100} stopColor="rgba(251, 249, 17, 0.05)" stopOpacity={1} />
           </linearGradient>
-          border: 2px solid;
-          {/* border-image-source: linear-gradient(315.15deg, #FBF911 0.08%, #99FF00 100%); */}
         </defs>
         <XAxis dataKey="name" className="text-xs" axisLine={false} tickLine={false} />
         <YAxis className="text-xs" axisLine={false} tickLine={false} />
@@ -77,30 +73,29 @@ const CollateralGraph = () => {
 export default function TgUsdCollateralPrice() {
   const { collateralInfo } = useTgUsdRecordContext()
   return (
-    <div className="flex flex-col gap-4">
-      <div>
-        <Title label="Collateral price" size={"normal"} />
-        <Divider />
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <TokenImage token={collateralInfo?.logo} size={48} />
-            <span>{collateralInfo.symbol}</span>
-          </div>
-          <div>
-            <div className="flex gap-2">
-              <ButtonTab label={"5m"} active={true} className="rounded-full !py-1" />
-              <ButtonTab label={"15m"} active={false} className="rounded-full !py-1" />
-              <ButtonTab label={"1h"} active={false} className="rounded-full !py-1" />
-              <ButtonTab label={"4h"} active={false} className="rounded-full !py-1" />
-              <ButtonTab label={"1d"} active={false} className="rounded-full !py-1" />
-              <ButtonTab label={"1w"} active={false} className="rounded-full !py-1" />
-            </div>
+    <div className="flex w-full flex-col justify-between rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+      <Title label="Collateral price" size={"normal"} />
+      <Divider />
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1">
+          <TokenImage token={collateralInfo?.logo} size={48} />
+          <span>{collateralInfo.symbol}</span>
+        </div>
+        <div>
+          <div className="flex gap-2">
+            <ButtonTab label={"5m"} active={true} className="rounded-full !py-1" />
+            <ButtonTab label={"15m"} active={false} className="rounded-full !py-1" />
+            <ButtonTab label={"1h"} active={false} className="rounded-full !py-1" />
+            <ButtonTab label={"4h"} active={false} className="rounded-full !py-1" />
+            <ButtonTab label={"1d"} active={false} className="rounded-full !py-1" />
+            <ButtonTab label={"1w"} active={false} className="rounded-full !py-1" />
           </div>
         </div>
       </div>
-      <PanelRaw className="h-[300px] w-full border-0 p-4">
+
+      <div className="h-[300px] w-full">
         <CollateralGraph />
-      </PanelRaw>
+      </div>
     </div>
   )
 }

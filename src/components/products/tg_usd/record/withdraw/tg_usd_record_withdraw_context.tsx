@@ -15,14 +15,21 @@ type TgUsdWithdrawContextValues = {
   formState: FormState
   withdrawWeiValue?: bigint
   setWithdrawWeiValue: (arg: bigint | undefined) => void
+  withdrawPercentage: number
+  setWithdrawPercentage: (arg: number) => void
+  maxWithdrawable: bigint
 }
 
 export const TgUsdWithdrawContext = createContext<TgUsdWithdrawContextValues | undefined>(undefined)
 
 export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) => {
-  const [withdrawWeiValue, setWithdrawWeiValue] = useState<bigint | undefined>()
   const { marketData, loadOnChainData, setCurrentAmounts, collateralInfo } = useTgUsdRecordContext()
+
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+
+  const [withdrawWeiValue, setWithdrawWeiValue] = useState<bigint | undefined>()
+
+  const [withdrawPercentage, setWithdrawPercentage] = useState<number>(0)
 
   useEffect(() => {
     setCurrentAmounts({
@@ -32,7 +39,12 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
 
   const actionWithdraw = () => {
     const walletClient = getWalletClient()
-    if (walletClient) doMarketWithdraw(walletClient, { marketAddress: marketData!.marketAddress, withdrawWeiValue }).then(() => loadOnChainData())
+    if (walletClient)
+      doMarketWithdraw(walletClient, { marketAddress: marketData!.marketAddress, withdrawWeiValue }).then(() => {
+        loadOnChainData()
+        setWithdrawWeiValue(0n)
+        setWithdrawPercentage(0)
+      })
   }
 
   const formState = useMemo(
@@ -40,11 +52,30 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
     [marketData, withdrawWeiValue, isWellConnected, currentAddress]
   )
 
+  const maxWithdrawable = useMemo(() => {
+    if (marketData) {
+      const collateralPriceRaw = BigInt(marketData?.collateralInfos?.collateralUSDPrice || 0n)
+      const futureDebt = BigInt(marketData?.debtInfos?.positionDebt || 0n)
+      const futureDeposited = BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n)
+      const futureDepositedDollarRaw = (futureDeposited * collateralPriceRaw) / BigInt(10 ** 18)
+      const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
+      const maxWithDrawable =
+        collateralPriceRaw !== 0n ? futureDepositedDollarRaw - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
+
+      return maxWithDrawable
+    }
+
+    return 0n
+  }, [marketData])
+
   const contextValue: TgUsdWithdrawContextValues = {
     actionWithdraw,
     formState,
     withdrawWeiValue,
     setWithdrawWeiValue,
+    withdrawPercentage,
+    maxWithdrawable,
+    setWithdrawPercentage,
   }
 
   return <TgUsdWithdrawContext.Provider value={contextValue}>{children}</TgUsdWithdrawContext.Provider>

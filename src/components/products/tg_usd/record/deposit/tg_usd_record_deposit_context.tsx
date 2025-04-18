@@ -20,13 +20,15 @@ import {
   getZapTokenBalanceAllowance,
   prepareZapTransaction,
 } from "./tg_usd_record_deposit_controller"
-import { getTokenInQuote, getTokenOutQuote } from "./deposit_actions"
+import { getTokenQuote } from "./deposit_actions"
+import { useTgUsdContext } from "../../tg_usd_context"
+
+const DECIMALS = BigInt(10 ** 18)
 
 type TgUsdDepositContextProps = {
   children: ReactNode
   collateralInfo: AssetDataPriced
   marketInfo: TgUsdMarket
-  tokens: ZapToken[]
 }
 
 type TgUsdDepositContextValues = {
@@ -72,12 +74,22 @@ type TgUsdDepositContextValues = {
   isZapUserInput: boolean
   setIsZapUserInput: (arg: boolean) => void
 
+  depositSliderPercent: number
+  setDepositSliderPercent: (arg: number) => void
+
+  borrowSliderPercent: number
+  setBorrowSliderPercent: (arg: number) => void
+
   handleZapInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+
+  maxBorrowableValue: bigint
 }
 
 export const TgUsdDepositContext = createContext<TgUsdDepositContextValues | undefined>(undefined)
 
-export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tokens }: TgUsdDepositContextProps) => {
+export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: TgUsdDepositContextProps) => {
+  const { tokens } = useTgUsdContext()
+
   const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
@@ -87,6 +99,10 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
   const [depositAsset, setDepositAsset] = useState<string | undefined>(undefined)
   const [swapAssetPrice, setSwapAssetPrice] = useState<number | null>(null)
+
+  const [borrowSliderPercent, setBorrowSliderPercent] = useState<number>(0)
+
+  const [depositSliderPercent, setDepositSliderPercent] = useState<number>(0)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
   const [isDepositLoading, setIsDepositLoading] = useState(false)
@@ -114,7 +130,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
       } as AssetDataPriced
     }
 
-    const assetInfo = tokens.find((el: ZapToken) => el.name === depositAsset) || undefined
+    const assetInfo = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset) || undefined
 
     if (!swapAssetPrice || !assetInfo) return null
 
@@ -160,7 +176,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
 
       setIsZapLoading(true)
       try {
-        const data = await getTokenOutQuote(value, currentAddress, collateralInfo, depositAssetInfo)
+        const data = await getTokenQuote(value, currentAddress, collateralInfo, depositAssetInfo)
 
         if (data) {
           setZapValue(data.amountOut)
@@ -188,7 +204,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
       setIsDepositLoading(true)
 
       try {
-        const data = await getTokenInQuote(parseEther(e?.target?.value), currentAddress, collateralInfo, depositAssetInfo)
+        const data = await getTokenQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo, collateralInfo)
 
         setDepositWeiValue(data.amountOut)
       } catch (error) {
@@ -272,9 +288,12 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
   const actionDeposit = () => {
     const walletClient = getWalletClient()
     if (walletClient && depositWeiValue)
-      doMarketDeposit(walletClient, { depositWeiValue, isDepositAndBorrow, isStaking, marketAddress: marketInfo?.marketAddress, borrowWeiValue }).then(() =>
+      doMarketDeposit(walletClient, { depositWeiValue, isDepositAndBorrow, isStaking, marketAddress: marketInfo?.marketAddress, borrowWeiValue }).then(() => {
         loadOnChainData()
-      )
+        setDepositWeiValue(0n)
+        setBorrowSliderPercent(0)
+        setDepositSliderPercent(0)
+      })
   }
 
   const formState = useMemo(
@@ -419,6 +438,20 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
     }
   }, [depositWeiValue, zapValue, formState, isZapLoading, isDepositLoading])
 
+  const maxBorrowableValue = useMemo(() => {
+    if (marketData?.collateralInfos) {
+      const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice || 0n
+      const futureDebt = marketData?.debtInfos?.positionDebt || 0n
+      const futureDeposited = (marketData?.collateralInfos?.positionCollateralAmount || 0n) + (depositWeiValue || 0n)
+      const maxLTV = marketData?.constants.maxLTV / BigInt(10 ** 3)
+      const maxBorrowable = (futureDeposited * maxLTV) / 100n - (futureDebt * DECIMALS) / collateralPriceRaw
+
+      return maxBorrowable
+    }
+
+    return 0n
+  }, [marketData, depositWeiValue])
+
   const contextValue: TgUsdDepositContextValues = {
     marketInfo,
     collateralInfo,
@@ -467,6 +500,14 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo, tok
     setIsZapUserInput,
 
     handleZapInputChange,
+
+    depositSliderPercent,
+    setDepositSliderPercent,
+
+    borrowSliderPercent,
+    setBorrowSliderPercent,
+
+    maxBorrowableValue,
   }
 
   return <TgUsdDepositContext.Provider value={contextValue}>{children}</TgUsdDepositContext.Provider>

@@ -1,5 +1,5 @@
-import { Abi, Address, formatEther, formatUnits, Hex, parseEther, zeroAddress } from "viem"
-import { ChainViewMarketRow, MarketDetailData, TgUsdMarketDisplayData, TgUsdMarketLoanDisplayData, ZapToken } from "../tg_usd_type"
+import { Abi, Address, formatEther, formatUnits, Hex, zeroAddress } from "viem"
+import { ChainViewMarketRow, MarketDetailData, TgUsdMarketDisplayData, TgUsdMarketLoanDisplayData } from "../tg_usd_type"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import MarketDetailsUI from "@/abi/tgusd/MarketDetailsUI.json"
 import { AssetDataPriced, ExistingAsset } from "@/types"
@@ -44,13 +44,13 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, depositW
     if (borrowWeiValue + totalDebt < minLoan) {
       reasons.push(`Min debt is ${formatEther(minLoan)}`)
     } else {
-      const depositedCollateral = BigInt(marketData?.collateralInfos?.positionCollateralUSDValue || 0n)
-      const existingDebt = BigInt(marketData?.debtInfos?.positionDebt || 0n)
-      const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 10000n
+      const depositedCollateral = marketData?.collateralInfos?.positionCollateralUSDValue || 0n
+      const existingDebt = marketData?.debtInfos?.positionDebt || 0n
+      const maxLTV = (marketData?.constants.maxLTV || 0n) / 10000n
       const maxMarketDebt = BigInt(marketData?.constants.maxMarketDebt || "0")
       const maxLoan = maxLTV * (depositWeiValue || 0n) + depositedCollateral
       if (maxLoan < borrowWeiValue + existingDebt) {
-        reasons.push(`max debt is ${parseEther(maxLoan.toString())}`)
+        reasons.push(`max debt is ${Number(formatUnits(maxLoan, 18)).toFixed(2)}`)
       }
       if (maxMarketDebt < borrowWeiValue + totalDebt) {
         reasons.push(`max market debt is exceeded`)
@@ -119,12 +119,6 @@ export async function loadMarketServerData(collateral: ExistingAsset) {
   const collateralInfo = tokenInfos.at(0)
   const tgUSDInfo = tokenInfos.at(1)
   return { collateralInfo, tgUSDInfo, marketInfo }
-}
-
-export async function fetchTokens() {
-  const tokensData = await fetch("https://files.cow.fi/tokens/CowSwap.json")
-  const { tokens } = await tokensData.json()
-  return tokens.filter((el: ZapToken) => !!el.chainId && el.chainId === 1)
 }
 
 export function getMarketDisplayData(marketData?: MarketDetailData, collateralInfo?: AssetDataPriced) {

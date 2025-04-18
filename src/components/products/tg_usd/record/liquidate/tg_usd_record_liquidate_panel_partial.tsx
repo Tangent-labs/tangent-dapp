@@ -1,11 +1,11 @@
 "use client"
 
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
-import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { useTgUsdLiquidateContext } from "./tg_usd_record_liquidate_context"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import TokenImage from "@/components/design_system/structure/token_image"
+import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 
 export default function TgUsdLiquidatePanelPartial() {
   const { liquidateWeiValue, setLiquidateWeiValue } = useTgUsdLiquidateContext()
@@ -28,24 +28,22 @@ export default function TgUsdLiquidatePanelPartial() {
   return (
     <>
       <div className="flex items-center justify-between">
-        <span className="text-2xl">Liquidate partail</span>
+        <span className="text-[20px] font-bold">Liquidate partial</span>
       </div>
-      <div>
-        <DepositReceiveInput
-          displayRecieve={false}
-          depositAmount={liquidateWeiValue}
-          labelDeposit="You liquidate"
-          depositSelect={<WithdrawAssetDisplay />}
-          disabled={!canInteract}
-          depositAsset={tgUSDInfo}
-          balance={0n}
-          setMaxBalance={() => {}}
-          displayBalance={false}
-          onValueChange={(value: bigint | undefined) => {
-            setLiquidateWeiValue(value)
-          }}
-        />
-      </div>
+
+      <DepositInput
+        depositAmount={liquidateWeiValue}
+        labelDeposit="You liquidate"
+        depositSelect={<WithdrawAssetDisplay />}
+        disabled={!canInteract}
+        depositAsset={tgUSDInfo}
+        balance={0n}
+        setMaxBalance={() => {}}
+        displayBalance={false}
+        onValueChange={(value: bigint | undefined) => {
+          setLiquidateWeiValue(value)
+        }}
+      />
     </>
   )
 }

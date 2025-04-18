@@ -74,7 +74,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
         }, 500)
       }
     }
-  }, [percentage, repayWeiValue])
+  }, [percentage, repayWeiValue, marketValues])
 
   const contextValue: TgUsdRepayContextValues = {
     actionRepay,

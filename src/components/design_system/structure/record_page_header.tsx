@@ -34,7 +34,7 @@ type RecordPageHeaderIndicatorProps = {
 
 export const RecordPageHeaderIndicator = ({ title, value, subValue, className }: RecordPageHeaderIndicatorProps) => {
   return (
-    <div className={`flex w-full flex-col items-center justify-center ` + `${title === "LT" ? "" : " border-r border-[#3F3F3F]"}`}>
+    <div className={cn(`flex w-full flex-col items-center justify-center`, `${title === "LT" ? "" : "border-r border-[#3F3F3F]"}`)}>
       <span className="mb-1">{title}</span>
       <span className={cn("text-2xl font-semibold", className)}>{value}</span>
       <span className="text-sm text-gray-400">{subValue}</span>

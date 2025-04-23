@@ -10,7 +10,7 @@ const returnQuoteData = async (tokenIn: Address, tokenOut: Address, amount: bigi
     .map((route) => {
       return {
         _route: route.params.routeAddresses,
-        _swap_params: route.params.swapParams,
+        _swap_params: route.params.swapParamsFull,
         _amount: amount,
         _pools: [zeroAddress, zeroAddress, zeroAddress, zeroAddress, zeroAddress],
       }

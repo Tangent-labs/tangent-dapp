@@ -13,18 +13,19 @@ export function getLiquidateFormState(marketData?: MarketDetailData, withdrawWei
 }
 
 export async function doMarketLiquidate(
-  walletClient: WalletClient,
-  market: Address,
-  address: Address,
+  collatAmountToLiquidate: bigint,
   repayWeiValue: bigint,
-  tgUSDReceivedValue: bigint,
-  routerCall: string
+  liquidator: Address,
+  minTgUSDOut: bigint,
+  routerCall: string,
+  walletClient: WalletClient,
+  market: Address
 ) {
   const txData = {
     abi: MarketExternalActions.abi as Abi,
     functionName: "selfLiquidate",
     address: market,
-    args: [address, repayWeiValue, address, tgUSDReceivedValue, routerCall], // uint256 tgUSDToRepay, address liquidator, bytes calldata routerCall
+    args: [collatAmountToLiquidate, repayWeiValue, liquidator, minTgUSDOut, routerCall], // uint256 tgUSDToRepay, address liquidator, bytes calldata routerCall
     gas: undefined as undefined | bigint,
   }
   return await executeContractCall(walletClient, txData)

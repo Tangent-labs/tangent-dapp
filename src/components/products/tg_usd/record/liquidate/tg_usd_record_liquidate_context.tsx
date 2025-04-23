@@ -1,12 +1,15 @@
 "use client"
 
 import { AssetDataPriced, FormState } from "@/types"
-import { createContext, ReactNode, useContext, useMemo, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doMarketLiquidate, getLiquidateFormState } from "./tg_usd_record_liquidate_controller"
 import { TGUSD_CONTRACT } from "../../tg_usd_repository"
-import { returnEnsoQuote } from "../../global_quote_controller"
+import { returnEnsoQuote, returnRoute } from "../../global_quote_controller"
+import { toast } from "react-toastify"
+import { ToastComponent } from "@/components/design_system/toast"
+import { Address } from "viem"
 
 type TgUsdLiquidateContextProps = {
   children: ReactNode
@@ -43,7 +46,7 @@ type TgUsdLiquidateContextValues = {
 export const TgUsdLiquidateContext = createContext<TgUsdLiquidateContextValues | undefined>(undefined)
 
 export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps) => {
-  const { marketData, loadOnChainData, marketDisplayData } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, marketDisplayData, setCurrentAmounts } = useTgUsdRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
@@ -61,17 +64,44 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
 
   const [tgUSDReceivedValue, setTgUSDReceivedValue] = useState<bigint | undefined>()
 
-  const routerCall = "douzee"
+  useEffect(() => {
+    setCurrentAmounts({
+      liquidateValue: liquidateWeiValue || 0n,
+      repayWeiValue: (repayWeiValue || 0n) - (tgUSDReceivedValue || 0n),
+    })
+  }, [liquidateWeiValue, repayWeiValue, tgUSDReceivedValue])
 
-  const actionLiquidate = () => {
+  const actionLiquidate = async () => {
     const walletClient = getWalletClient()
-    if (marketData && walletClient && currentAddress && repayWeiValue && tgUSDReceivedValue) {
-      doMarketLiquidate(walletClient, marketData?.marketAddress, currentAddress, repayWeiValue, tgUSDReceivedValue, routerCall).then(() => {
-        loadOnChainData()
-        setLiquidateWeiValue(0n)
-        setRepayWeiValue(0n)
-        setTgUSDReceivedValue(0n)
-      })
+
+    if (walletClient && liquidateWeiValue && currentAddress && tgUSDReceivedValue && marketData) {
+      const liquidationData = await returnRoute(
+        marketData?.collateralInfo?.address,
+        TGUSD_CONTRACT.TG_USD,
+        liquidateWeiValue,
+        0n,
+        TGUSD_CONTRACT.LIQUIDATOR_PROXY,
+        TGUSD_CONTRACT.LIQUIDATOR_PROXY
+      )
+
+      doMarketLiquidate(
+        liquidateWeiValue,
+        repayWeiValue || 0n,
+        liquidationData?.routerAddress as Address,
+        tgUSDReceivedValue,
+        liquidationData?.data,
+        walletClient,
+        marketData?.marketAddress
+      )
+        .then(() => {
+          loadOnChainData()
+          setLiquidateWeiValue(0n)
+          setRepayWeiValue(0n)
+          setTgUSDReceivedValue(0n)
+        })
+        .catch(() => {
+          toast.error(ToastComponent, { data: { type: "Error", content: "Something wrong happened" } })
+        })
     }
   }
 
@@ -112,10 +142,10 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
 
       setIsQuoteLoading(true)
       try {
-        const data = await returnEnsoQuote(value, currentAddress, assetInfo, marketData?.collateralInfo)
+        const quote = await returnEnsoQuote(value, currentAddress, assetInfo, marketData?.collateralInfo)
 
-        if (data) {
-          setTgUSDReceivedValue(data.amountOut)
+        if (quote) {
+          setTgUSDReceivedValue(quote)
         }
       } catch (error) {
         console.error(error)

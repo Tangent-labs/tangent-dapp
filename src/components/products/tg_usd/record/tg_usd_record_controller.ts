@@ -70,9 +70,10 @@ export function getComputedFutureLoanData(
     withdrawWeiValue?: bigint
     repayWeiValue?: bigint
     zapValue?: bigint
+    liquidateValue?: bigint
   }
 ) {
-  amounts = { ...{ borrowWeiValue: 0n, repayWeiValue: 0n, depositWeiValue: 0n, withdrawWeiValue: 0n }, ...(amounts || {}) }
+  amounts = { ...{ borrowWeiValue: 0n, repayWeiValue: 0n, depositWeiValue: 0n, withdrawWeiValue: 0n, zapValue: 0n, liquidateValue: 0n }, ...(amounts || {}) }
 
   if (!marketData || !collateralInfo)
     return {
@@ -98,8 +99,14 @@ export function getComputedFutureLoanData(
   // const futureDebt = BigInt(marketData?.debtInfos?.positionDebt || 0n) + BigInt(amounts.borrowWeiValue!) - BigInt(amounts.repayWeiValue!)
 
   const futureDeposited = !!amounts?.zapValue
-    ? BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) + BigInt(amounts.zapValue!) - BigInt(amounts.withdrawWeiValue!)
-    : BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) + BigInt(amounts.depositWeiValue!) - BigInt(amounts.withdrawWeiValue!)
+    ? BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) +
+      BigInt(amounts.zapValue!) -
+      BigInt(amounts.withdrawWeiValue!) -
+      BigInt(amounts.liquidateValue!)
+    : BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) +
+      BigInt(amounts.depositWeiValue!) -
+      BigInt(amounts.withdrawWeiValue!) -
+      BigInt(amounts.liquidateValue!)
 
   const futureDepositedDollarRaw = (futureDeposited * collateralPriceRaw) / DECIMALS
   const futureDepositedDollar = collateralValueToNumber(futureDeposited) * collateralprice

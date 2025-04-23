@@ -41,6 +41,7 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     withdrawWeiValue: 0n,
     repayWeiValue: 0n,
     zapValue: 0n,
+    liquidateValue: 0n,
   })
 
   useEffect(() => {

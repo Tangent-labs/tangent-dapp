@@ -77,7 +77,7 @@ export default function TgUsdLiquidatePanelPartial() {
                 placeholder="0"
                 disabled={true}
                 className="flex justify-start bg-transparent text-xl font-bold focus:outline-none"
-                value={formatBigInt(tgUSDReceivedValue, 18, 2) ?? ""}
+                value={Number(formatUnits(tgUSDReceivedValue || 0n, 18)).toFixed(2) ?? ""}
               />
 
               <div className="text-xs">

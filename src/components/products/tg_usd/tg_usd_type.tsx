@@ -242,6 +242,7 @@ export type TgUsdMarketAmounts = {
   withdrawWeiValue?: bigint
   repayWeiValue?: bigint
   zapValue?: bigint
+  liquidateValue?: bigint
 }
 
 export type HarvesterInfoDisplay = {
@@ -379,4 +380,11 @@ export type LockPositionSelectTemplate = {
   tokenId?: bigint
   label?: string
   value?: string
+}
+
+export type CurveQuote = {
+  _route: Address[]
+  _swap_params: bigint[][]
+  _amount: bigint
+  _pools: Address[]
 }

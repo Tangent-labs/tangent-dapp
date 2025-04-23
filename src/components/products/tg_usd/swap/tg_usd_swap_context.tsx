@@ -5,7 +5,6 @@ import { BalanceAllowanceData, SwapToken, DepositReceiveAsset } from "../tg_usd_
 import { Abi, Address } from "viem"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
-import { getTokenInQuote, getTokenOutQuote } from "./swap_actions"
 import { SwapConfig, swapConfig } from "./swap_config"
 import { tgUsdTokens } from "../tg_usd_repository"
 import {
@@ -21,6 +20,7 @@ import {
   getSwapTokenBalanceAllowance,
 } from "./tg_usd_swap_controller"
 import { useTgUsdContext } from "../tg_usd_context"
+import { returnEnsoQuote } from "../global_quote_controller"
 
 type TgUsdSwapContextProps = {
   children: ReactNode
@@ -223,7 +223,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
       setIsSwapLoading(true)
       try {
-        const data = await getTokenInQuote(value, currentAddress, receiveAssetInfo, depositAssetInfo)
+        const data = await returnEnsoQuote(value, currentAddress, depositAssetInfo, receiveAssetInfo)
 
         if (data) {
           setDepositWeiValue(data.amountOut)
@@ -265,7 +265,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
       setIsSwapLoading(true)
       try {
-        const data = await getTokenOutQuote(value, currentAddress, depositAssetInfo, receiveAssetInfo)
+        const data = await returnEnsoQuote(value, currentAddress, receiveAssetInfo, depositAssetInfo)
 
         if (data) {
           setReceiveWeiValue(data.amountOut)

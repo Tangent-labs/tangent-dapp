@@ -52,7 +52,7 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
   const maxBorrowableValue = useMemo(() => {
     if (marketData?.collateralInfos) {
       const collateralPriceRaw = BigInt(marketData?.collateralInfos?.collateralUSDPrice || 0n)
-      const futureDebt = BigInt(marketData?.debtInfos?.positionDebt || 0n)
+      const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n)
       const futureDeposited = BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n)
       const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
       const maxBorrowable = (futureDeposited * maxLTV) / 100n - (futureDebt * DECIMALS) / collateralPriceRaw

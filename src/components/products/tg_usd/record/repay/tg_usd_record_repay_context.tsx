@@ -52,9 +52,8 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const marketValues = useMemo(() => {
     if (marketData) {
-      const maxRepayableValue = BigInt(marketData.debtInfos.positionDebt)
-
-      const minimumLoan = BigInt(marketData.constants.minimumLoan)
+      const maxRepayableValue = marketData.debtInfos?.userDebt || 0n
+      const minimumLoan = marketData.constants.minimumLoan || 0n
 
       return { maxRepayableValue, minimumLoan }
     }

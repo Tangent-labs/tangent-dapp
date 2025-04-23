@@ -20,8 +20,8 @@ import {
   getZapTokenBalanceAllowance,
   prepareZapTransaction,
 } from "./tg_usd_record_deposit_controller"
-import { getTokenQuote } from "./deposit_actions"
 import { useTgUsdContext } from "../../tg_usd_context"
+import { returnEnsoQuote } from "../../global_quote_controller"
 
 const DECIMALS = BigInt(10 ** 18)
 
@@ -116,7 +116,11 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
   const [isZapUserInput, setIsZapUserInput] = useState<boolean>(false)
 
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
-  const [slippage, setSlippage] = useState<number>(0.1)
+
+  //
+  const [slippage, setSlippage] = useState<number>(15)
+  // TODO replace with a lower slippage by default
+
   const [gas, setGas] = useState<number | null>(null)
 
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
@@ -181,7 +185,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
       setIsZapLoading(true)
       try {
-        const data = await getTokenQuote(value, currentAddress, collateralInfo, depositAssetInfo)
+        const data = await returnEnsoQuote(value, currentAddress, collateralInfo, depositAssetInfo)
 
         if (data) {
           setZapValue(data.amountOut)
@@ -209,7 +213,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
       setIsDepositLoading(true)
 
       try {
-        const data = await getTokenQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo, collateralInfo)
+        const data = await returnEnsoQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo, collateralInfo)
 
         setDepositWeiValue(data.amountOut)
       } catch (error) {
@@ -276,8 +280,9 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
     setCurrentAmounts({
       depositWeiValue: depositWeiValue || 0n,
       borrowWeiValue: borrowWeiValue || 0n,
+      zapValue: zapValue || 0n,
     })
-  }, [depositWeiValue, borrowWeiValue])
+  }, [depositWeiValue, borrowWeiValue, zapValue])
 
   const actionApprove = () => {
     const walletClient = getWalletClient()
@@ -296,6 +301,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
       doMarketDeposit(walletClient, { depositWeiValue, isDepositAndBorrow, isStaking, marketAddress: marketInfo?.marketAddress, borrowWeiValue }).then(() => {
         loadOnChainData()
         setDepositWeiValue(0n)
+        setBorrowWeiValue(0n)
         setBorrowSliderPercent(0)
         setDepositSliderPercent(0)
       })
@@ -424,11 +430,12 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
       const walletClient = getWalletClient()
 
-      await doZapDeposit(walletClient!, routerCallData, zapMarketData, borrowWeiValue, isStaking)
-
-      setDepositWeiValue(0n)
-      setZapValue(null)
-      fetchBalanceAllowanceData()
+      doZapDeposit(walletClient!, routerCallData, zapMarketData, borrowWeiValue, isStaking).then(() => {
+        loadOnChainData()
+        setDepositWeiValue(0n)
+        setZapValue(null)
+        fetchBalanceAllowanceData()
+      })
     } catch (error) {
       console.error("Error in getRouteAndDeposit:", error)
     } finally {
@@ -444,14 +451,18 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
   }, [depositWeiValue, zapValue, formState, isZapLoading, isDepositLoading])
 
   const maxBorrowableValue = useMemo(() => {
-    if (marketData?.collateralInfos) {
-      const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice || 0n
-      const futureDebt = marketData?.debtInfos?.positionDebt || 0n
-      const futureDeposited = (marketData?.collateralInfos?.positionCollateralAmount || 0n) + (depositWeiValue || 0n)
-      const maxLTV = marketData?.constants.maxLTV / BigInt(10 ** 3)
-      const maxBorrowable = (futureDeposited * maxLTV) / 100n - (futureDebt * DECIMALS) / collateralPriceRaw
+    try {
+      if (marketData?.collateralInfos) {
+        const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice || 0n
+        const futureDebt = marketData?.debtInfos?.userDebt || 0n
+        const futureDeposited = (marketData?.collateralInfos?.positionCollateralAmount || 0n) + (depositWeiValue || 0n)
+        const maxLTV = marketData?.constants.maxLTV / BigInt(10 ** 3)
+        const maxBorrowable = (futureDeposited * maxLTV) / BigInt(100n) - (futureDebt * DECIMALS) / collateralPriceRaw
 
-      return maxBorrowable
+        return maxBorrowable
+      }
+    } catch {
+      return 0n
     }
 
     return 0n

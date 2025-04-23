@@ -132,8 +132,9 @@ export interface CollateralInfos {
 }
 
 export interface DebtInfos {
-  totalDebt: string
+  totalDebt: bigint
   positionDebt: bigint
+  userDebt: bigint
   healthRatio: string
   currentBorrowRate: string
   futureBorrowRate: string
@@ -144,7 +145,7 @@ export interface DebtInfos {
 export interface MarketConstants {
   maxLTV: bigint
   maxMarketDebt: string
-  minimumLoan: string
+  minimumLoan: bigint
   liquidationThreshold: string
 }
 
@@ -240,6 +241,7 @@ export type TgUsdMarketAmounts = {
   borrowWeiValue?: bigint
   withdrawWeiValue?: bigint
   repayWeiValue?: bigint
+  zapValue?: bigint
 }
 
 export type HarvesterInfoDisplay = {

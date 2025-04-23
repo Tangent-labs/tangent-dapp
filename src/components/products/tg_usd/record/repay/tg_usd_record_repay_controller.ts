@@ -16,8 +16,8 @@ export function getRepayFormState(marketData?: MarketDetailData, repayWeiValue?:
     }
 
     if (reasons.length === 0) {
-      const existingDebt = BigInt(marketData.debtInfos.positionDebt)
-      const minimumLoan = BigInt(marketData.constants.minimumLoan)
+      const existingDebt = marketData.debtInfos?.userDebt || 0n
+      const minimumLoan = marketData.constants?.minimumLoan || 0n
       if (repayWeiValue && repayWeiValue > existingDebt) {
         reasons.push(`Repayment exceeds outstanding debt.`)
       } else if (existingDebt - repayWeiValue! > 0n && existingDebt - repayWeiValue! < minimumLoan) {

@@ -25,8 +25,10 @@ export async function doMarketLiquidate(
     abi: MarketExternalActions.abi as Abi,
     functionName: "selfLiquidate",
     address: market,
-    args: [collatAmountToLiquidate, repayWeiValue, liquidator, minTgUSDOut, routerCall], // uint256 tgUSDToRepay, address liquidator, bytes calldata routerCall
+    args: [collatAmountToLiquidate, repayWeiValue, liquidator, 0n, routerCall],
+    // args: [collatAmountToLiquidate, repayWeiValue, liquidator, minTgUSDOut, routerCall],
     gas: undefined as undefined | bigint,
   }
+
   return await executeContractCall(walletClient, txData)
 }

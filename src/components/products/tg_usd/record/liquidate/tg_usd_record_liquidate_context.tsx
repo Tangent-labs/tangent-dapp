@@ -67,9 +67,9 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
   useEffect(() => {
     setCurrentAmounts({
       liquidateValue: liquidateWeiValue || 0n,
-      repayWeiValue: (repayWeiValue || 0n) - (tgUSDReceivedValue || 0n),
+      repayWeiValue: repayWeiValue || 0n,
     })
-  }, [liquidateWeiValue, repayWeiValue, tgUSDReceivedValue])
+  }, [liquidateWeiValue, repayWeiValue])
 
   const actionLiquidate = async () => {
     const walletClient = getWalletClient()

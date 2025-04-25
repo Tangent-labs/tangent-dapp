@@ -35,6 +35,8 @@ export default function TgUsdSwapContent() {
     balanceAllowanceData,
     receiveWeiValue,
     receiveAssetInfo,
+    depositSliderPercent,
+    setDepositSliderPercent,
   } = useTgUsdSwapContext()
 
   const ReceiveAssetSelect = ({ options }: AssetSelectProps) => {
@@ -119,34 +121,38 @@ export default function TgUsdSwapContent() {
       </div>
 
       <div className="mt-2 flex w-full flex-col items-center justify-center">
-        <BuySellInput
-          depositAmount={depositWeiValue}
-          depositSelect={<DepositAssetSelect options={computedAssets?.depositAssets} />}
-          disabled={false}
-          isLoading={isLoading}
-          receiveSelect={<ReceiveAssetSelect options={computedAssets?.receiveAssets} />}
-          labelDeposit={"You Sell"}
-          labelReceive={"You Buy"}
-          setIsBuying={setIsBuying}
-          isBuying={isBuying}
-          depositAsset={depositAssetInfo!}
-          depositBalance={balanceAllowanceData?.balance ?? 0n}
-          receiveAmount={receiveWeiValue}
-          receiveAsset={receiveAssetInfo!}
-          setMaxBalance={() => {}}
-          onValueChange={handleDepositChange}
-          onTangentValueChange={handleReceiveChange}
-        />
-
-        <div className="flex w-full max-w-96">
-          <FormButtons
-            actions={{
-              handleApprove: actionApprove,
-              handleProcess: actionSwap,
-            }}
-            formState={formState}
-            labelProcess="Swap"
+        <div className="mt-2 flex flex-col items-center justify-center rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+          <BuySellInput
+            depositAmount={depositWeiValue}
+            depositSelect={<DepositAssetSelect options={computedAssets?.depositAssets} />}
+            disabled={false}
+            isLoading={isLoading}
+            receiveSelect={<ReceiveAssetSelect options={computedAssets?.receiveAssets} />}
+            labelDeposit={"You Sell"}
+            labelReceive={"You Buy"}
+            setIsBuying={setIsBuying}
+            isBuying={isBuying}
+            depositAsset={depositAssetInfo!}
+            depositBalance={balanceAllowanceData?.balance ?? 0n}
+            receiveAmount={receiveWeiValue}
+            receiveAsset={receiveAssetInfo!}
+            setMaxBalance={() => {}}
+            onValueChange={handleDepositChange}
+            onTangentValueChange={handleReceiveChange}
+            percentage={depositSliderPercent}
+            setPercentage={setDepositSliderPercent}
           />
+
+          <div className="flex w-full">
+            <FormButtons
+              actions={{
+                handleApprove: actionApprove,
+                handleProcess: actionSwap,
+              }}
+              formState={formState}
+              labelProcess="Swap"
+            />
+          </div>
         </div>
       </div>
     </>

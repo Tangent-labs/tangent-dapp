@@ -147,8 +147,6 @@ export const fetchEnsoData = async (
   return { routerCallData: routerCall?.tx }
 }
 
-//
-
 export const getABI = (depositSymbol: string, receiveSymbol: string) => {
   if (depositSymbol.includes("sgUSD") || receiveSymbol.includes("sgUSD")) {
     return IERC4626

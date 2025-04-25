@@ -7,8 +7,6 @@ import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatBigInt, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
-import { IconCircleHelp } from "@/components/icons/icon_circle_help"
-import { IconThunder } from "@/components/icons/icon_thunder"
 import { IconChevron } from "@/components/icons/icon_chevron"
 
 type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -27,10 +25,11 @@ type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   onValueChange: (value: bigint | undefined) => void
   onTangentValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
-  isZapping?: boolean
   isLoading?: boolean
   isBuying?: boolean
   setIsBuying: (arg: boolean) => void
+  percentage?: number
+  setPercentage?: (value: number) => void
 }
 
 export function BuySellInput({
@@ -47,18 +46,37 @@ export function BuySellInput({
   onTangentValueChange,
   depositSelect = <></>,
   receiveSelect = <></>,
-  isZapping = false,
   isBuying = false,
   setIsBuying,
   isLoading = false,
+  percentage = 0,
+  setPercentage,
+  disabled,
   ...props
 }: BuySellInputProps) {
+  const balanceNumber = useMemo(() => {
+    if (depositBalance) {
+      return Number(formatUnits(depositBalance, 18))
+    }
+    return 0
+  }, [depositBalance])
+
   const [isDepositUserInput, setIsDepositUserInput] = useState(false)
   const [isReceiveUserInput, setIsReceiveUserInput] = useState(false)
 
   const [innerValue, setInnerValue] = useState<number | undefined>(
     depositAmount !== undefined ? Number(formatUnits(depositAmount, depositAsset?.decimals || 0)) : undefined
   )
+
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!!setPercentage) {
+      const newPercentage = Number(e.target.value)
+      setPercentage(newPercentage)
+      const newValue = newPercentage !== 0 ? Number(((newPercentage / 100) * balanceNumber).toFixed(0)) : 0
+      setInnerValue(newValue)
+      onValueChange(!!newValue ? toBigInt(newValue, 18) : undefined)
+    }
+  }
 
   useEffect(() => {
     if (!isDepositUserInput) {
@@ -113,9 +131,15 @@ export function BuySellInput({
   }, [innerTangentValue, receiveAsset])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value
+
     setIsDepositUserInput(true)
     setIsReceiveUserInput(false)
-    setInnerValue(e.target.value ? Number(e.target.value) : undefined)
+    setInnerValue(newValue ? Number(newValue) : undefined)
+
+    if (!!setPercentage) {
+      setPercentage(newValue !== undefined && balanceNumber > 0 ? (Number(newValue) / balanceNumber) * 100 : 0)
+    }
   }
 
   const handleInputTangentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -146,7 +170,7 @@ export function BuySellInput({
   }, [receiveAmount, receiveAsset])
 
   return (
-    <div className="mt-6 flex flex-col gap-2 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+    <div className="flex flex-col gap-2">
       <div className="flex w-full flex-col items-start justify-start font-bold">
         {labelDeposit === "You Buy" ? "Sell" : "Buy"} {receiveAsset?.symbol}
       </div>
@@ -155,19 +179,12 @@ export function BuySellInput({
         <PanelRaw className={`${isLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
           <div className="flex w-full justify-between">
             <div className="text-sm text-gray-400">{labelDeposit}</div>
-            {isZapping && (
-              <div className="flex items-center justify-center gap-1">
-                <div className="text-sm text-gray-400">Zap</div>
-                <IconThunder className="h-auto w-[8px] text-row-tonic" />
-                <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
-              </div>
-            )}
           </div>
           <div className="mb-2 flex flex-col justify-between lg:flex-row">
             <div className="order-2 mr-4 text-xl lg:order-1">
               <input
                 {...props}
-                disabled={isLoading}
+                disabled={isLoading || disabled}
                 type="number"
                 value={innerValue ?? ""}
                 placeholder="Amount"
@@ -191,6 +208,49 @@ export function BuySellInput({
               <span>{displayDepositBalanceData}</span>
               <IconWallet className="w-6" />
             </button>
+          </div>
+
+          <input
+            type="range"
+            min="0"
+            step="1"
+            max="100"
+            value={percentage}
+            onChange={handleSliderChange}
+            className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-black"
+            style={{
+              background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
+            }}
+          />
+
+          <div className="flex w-full items-center justify-between text-xs text-subtitle">
+            <div className="relative flex w-fit items-center justify-center">
+              0%
+              <div
+                onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+                className="absolute -top-2.5 left-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+              ></div>
+            </div>
+
+            {[25, 50, 75].map((el) => (
+              <div key={el} className="relative flex w-fit items-center justify-center">
+                {el}%
+                <div
+                  onClick={
+                    !!handleSliderChange ? () => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>) : () => {}
+                  }
+                  className="absolute -top-2.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                ></div>
+              </div>
+            ))}
+
+            <div className="relative flex w-fit items-center justify-center">
+              100%
+              <div
+                onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "100" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+                className="absolute -top-2.5 right-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+              ></div>
+            </div>
           </div>
         </PanelRaw>
 

@@ -29,7 +29,7 @@ export const getCurveRouterQuote = async (tokenIn: Address, tokenOut: Address, a
   return bestQuote
 }
 
-export const getCurveRouterRoute = async (tokenIn: Address, tokenOut: Address, amount: bigint, minAmountOut: bigint) => {
+export const getCurveRouterRoute = async (tokenIn: Address, tokenOut: Address, amount: bigint, minAmountOut: bigint, user: Address) => {
   const { matchingRoutes, quotes, bestQuote } = await returnQuoteData(tokenIn, tokenOut, amount)
 
   const biggestValueIndex = quotes?.indexOf(bestQuote) as number
@@ -39,6 +39,6 @@ export const getCurveRouterRoute = async (tokenIn: Address, tokenOut: Address, a
   return encodeFunctionData({
     abi: CurveRouterABI,
     functionName: "exchange",
-    args: [matchingRoute._route, matchingRoute._swap_params, amount, minAmountOut, matchingRoute._pools],
+    args: [matchingRoute._route, matchingRoute._swap_params, amount, minAmountOut, matchingRoute._pools, user],
   })
 }

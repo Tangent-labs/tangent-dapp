@@ -68,6 +68,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
 
   useEffect(() => {
     if (isFullLiquidation) {
+      setRepayWeiValue(marketData?.debtInfos?.userDebt)
       handleLiquidateValueChange(marketData?.collateralInfos?.positionCollateralAmount)
     } else {
       setLiquidateWeiValue(0n)
@@ -98,7 +99,8 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
         liquidateWeiValue,
         0n,
         TGUSD_CONTRACT.LIQUIDATOR_PROXY,
-        TGUSD_CONTRACT.LIQUIDATOR_PROXY
+        TGUSD_CONTRACT.LIQUIDATOR_PROXY,
+        currentAddress
       )
 
       doMarketLiquidate(

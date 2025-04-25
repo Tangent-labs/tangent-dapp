@@ -99,6 +99,8 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
   const [swapedAssetPrice, setSwapedAssetPrice] = useState<number | null>(null)
 
+  const [slippage, setSlippage] = useState<number>(2)
+
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
 
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
@@ -207,6 +209,10 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
   }, [currentAddress, tokens])
 
   const handleReceiveChange = (value: bigint | undefined) => {
+    // TODO : REMOVE
+    setSlippage(3)
+    //
+
     setReceiveWeiValue(value)
 
     if (value === undefined) {
@@ -223,7 +229,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
       setIsSwapLoading(true)
       try {
-        const data = await returnEnsoQuote(value, currentAddress, depositAssetInfo, receiveAssetInfo)
+        const data = await returnEnsoQuote(value, currentAddress, depositAssetInfo, receiveAssetInfo, slippage)
 
         if (data) {
           setDepositWeiValue(data.amountOut)
@@ -265,7 +271,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
       setIsSwapLoading(true)
       try {
-        const data = await returnEnsoQuote(value, currentAddress, receiveAssetInfo, depositAssetInfo)
+        const data = await returnEnsoQuote(value, currentAddress, receiveAssetInfo, depositAssetInfo, slippage)
 
         if (data) {
           setReceiveWeiValue(data.amountOut)

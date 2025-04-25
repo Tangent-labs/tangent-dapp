@@ -42,6 +42,7 @@ export function DepositInput({
   isLoading = false,
   percentage = 0,
   displaySliderInput = false,
+  disabled,
   setPercentage,
   ...props
 }: DepositInputProps) {
@@ -121,14 +122,12 @@ export function DepositInput({
           <div className="order-2 text-xl lg:order-1">
             <input
               {...props}
-              disabled={isLoading}
+              disabled={isLoading || disabled}
               type="number"
               value={innerValue}
               placeholder="Amount"
               onInput={handleInputChange}
-              className={cn(
-                "min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
-              )}
+              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 font-bold focus:outline-none")}
             />
           </div>
           <div className="order-1 lg:order-2">{depositSelect}</div>

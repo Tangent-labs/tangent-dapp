@@ -54,6 +54,8 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
 
   const [repayablePercentage, setRepayablePercentage] = useState<number>(0)
 
+  const [slippage, setSlippage] = useState<number>(10)
+
   const [isQuoteLoading, setIsQuoteLoading] = useState<boolean>(false)
 
   const [isFullLiquidation, setIsFullLiquidation] = useState<boolean>(false)
@@ -65,10 +67,25 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
   const [tgUSDReceivedValue, setTgUSDReceivedValue] = useState<bigint | undefined>()
 
   useEffect(() => {
+    if (isFullLiquidation) {
+      handleLiquidateValueChange(marketData?.collateralInfos?.positionCollateralAmount)
+    } else {
+      setLiquidateWeiValue(0n)
+      setRepayWeiValue(0n)
+      setTgUSDReceivedValue(0n)
+      setIsQuoteLoading(false)
+    }
+  }, [isFullLiquidation])
+
+  useEffect(() => {
     setCurrentAmounts({
       liquidateValue: liquidateWeiValue || 0n,
       repayWeiValue: repayWeiValue || 0n,
     })
+
+    // TODO : REMOVE
+    setSlippage(8)
+    //
   }, [liquidateWeiValue, repayWeiValue])
 
   const actionLiquidate = async () => {
@@ -88,7 +105,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
         liquidateWeiValue,
         repayWeiValue || 0n,
         liquidationData?.routerAddress as Address,
-        tgUSDReceivedValue,
+        (tgUSDReceivedValue * BigInt(slippage)) / BigInt(100),
         liquidationData?.data,
         walletClient,
         marketData?.marketAddress
@@ -105,10 +122,12 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
     }
   }
 
-  const formState = useMemo(
-    () => getLiquidateFormState(marketData, liquidateWeiValue, isWellConnected),
-    [marketData, liquidateWeiValue, isWellConnected, currentAddress]
-  )
+  const formState = useMemo(() => {
+    if (marketData && liquidateWeiValue) {
+      return getLiquidateFormState(marketData, liquidateWeiValue, repayWeiValue || 0n, isWellConnected, isQuoteLoading)
+    }
+    return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+  }, [marketData, liquidateWeiValue, isWellConnected, currentAddress, isQuoteLoading, repayWeiValue])
 
   const maxLiquidable = useMemo(() => {
     if (marketData) {
@@ -142,7 +161,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
 
       setIsQuoteLoading(true)
       try {
-        const quote = await returnEnsoQuote(value, currentAddress, assetInfo, marketData?.collateralInfo)
+        const quote = await returnEnsoQuote(value, currentAddress, assetInfo, marketData?.collateralInfo, slippage)
 
         if (quote) {
           setTgUSDReceivedValue(quote)

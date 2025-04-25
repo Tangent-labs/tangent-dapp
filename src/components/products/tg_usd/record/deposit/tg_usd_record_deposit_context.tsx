@@ -118,7 +118,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
 
   //
-  const [slippage, setSlippage] = useState<number>(15)
+  const [slippage, setSlippage] = useState<number>(10)
   // TODO replace with a lower slippage by default
 
   const [gas, setGas] = useState<number | null>(null)
@@ -185,7 +185,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
       setIsZapLoading(true)
       try {
-        const data = await returnEnsoQuote(value, currentAddress, collateralInfo, depositAssetInfo)
+        const data = await returnEnsoQuote(value, currentAddress, collateralInfo, depositAssetInfo, slippage)
 
         if (data) {
           setZapValue(data.amountOut)
@@ -213,7 +213,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
       setIsDepositLoading(true)
 
       try {
-        const data = await returnEnsoQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo, collateralInfo)
+        const data = await returnEnsoQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo, collateralInfo, slippage)
 
         setDepositWeiValue(data.amountOut)
       } catch (error) {

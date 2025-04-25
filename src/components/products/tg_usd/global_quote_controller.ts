@@ -4,8 +4,14 @@ import { TGUSD_CONTRACT } from "./tg_usd_repository"
 import { getCurveRouterQuote, getCurveRouterRoute } from "./curve_routing_controller"
 import { getRouteTxData, getTokenQuote } from "./quote_api"
 
-export const returnEnsoQuote = async (depositWeiValue: bigint, currentAddress: Address, tokenOut: AssetDataPriced, tokenIn: AssetDataPriced) => {
-  const data = await getTokenQuote(depositWeiValue, currentAddress, tokenOut, tokenIn, 1000)
+export const returnEnsoQuote = async (
+  depositWeiValue: bigint,
+  currentAddress: Address,
+  tokenOut: AssetDataPriced,
+  tokenIn: AssetDataPriced,
+  slippage: number
+) => {
+  const data = await getTokenQuote(depositWeiValue, currentAddress, tokenOut, tokenIn, slippage * 100)
 
   if (data) {
     return data

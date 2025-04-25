@@ -77,6 +77,9 @@ type TgUsdDepositContextValues = {
   depositSliderPercent: number
   setDepositSliderPercent: (arg: number) => void
 
+  leveragePercentage: number
+  setLeveragePercentage: (arg: number) => void
+
   borrowSliderPercent: number
   setBorrowSliderPercent: (arg: number) => void
 
@@ -104,6 +107,8 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
   const [swapAssetPrice, setSwapAssetPrice] = useState<number | null>(null)
 
   const [borrowSliderPercent, setBorrowSliderPercent] = useState<number>(0)
+
+  const [leveragePercentage, setLeveragePercentage] = useState<number>(1)
 
   const [depositSliderPercent, setDepositSliderPercent] = useState<number>(0)
 
@@ -468,6 +473,17 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
     return 0n
   }, [marketData, depositWeiValue])
 
+  //
+  // TODO Implement routes
+  useEffect(() => {
+    if (depositWeiValue) {
+      setBorrowWeiValue(depositWeiValue)
+    }
+  }, [depositWeiValue])
+  //
+
+  //
+
   const contextValue: TgUsdDepositContextValues = {
     marketInfo,
     collateralInfo,
@@ -527,6 +543,9 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
     activeTab,
     setActiveTab,
+
+    leveragePercentage,
+    setLeveragePercentage,
   }
 
   return <TgUsdDepositContext.Provider value={contextValue}>{children}</TgUsdDepositContext.Provider>

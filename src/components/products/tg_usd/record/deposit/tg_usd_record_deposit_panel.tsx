@@ -8,7 +8,7 @@ import PanelRaw from "@/components/design_system/structure/panel_raw"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import FormButtons from "@/components/design_system/form/form_actions"
-import { formatBigInt, formatDollar } from "@/lib/number_formatter"
+import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
 import CustomSelect from "@/components/design_system/inputs/custom_select"
 import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
@@ -41,6 +41,7 @@ export default function TgUsdDepositPanel() {
     setDepositSliderPercent,
     setActiveTab,
     setBorrowSliderPercent,
+    setLeveragePercentage,
     isStaking,
     depositAsset,
     depositWeiValue,
@@ -62,6 +63,7 @@ export default function TgUsdDepositPanel() {
     borrowSliderPercent,
     maxBorrowableValue,
     activeTab,
+    leveragePercentage,
   } = useTgUsdDepositContext()
 
   const { collateralInfo, marketData, tgUSDInfo } = useTgUsdRecordContext()
@@ -144,20 +146,21 @@ export default function TgUsdDepositPanel() {
     <div className="flex flex-col gap-2">
       <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <div className="flex justify-end gap-2">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-400">Save gas</span>
-          <Switch checked={isStaking} onCheckedChange={(v) => setIsStaking(v)} />
+      {activeTab === "Deposit" && (
+        <div className="flex justify-end gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-400">Save gas</span>
+            <Switch checked={isStaking} onCheckedChange={(v) => setIsStaking(v)} />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-400">Deposit and borrow</span>
+            <Switch checked={isDepositAndBorrow} onCheckedChange={(v) => setIsDepositAndBorrow(v)} />
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-400">Deposit and borrow</span>
-          <Switch checked={isDepositAndBorrow} onCheckedChange={(v) => setIsDepositAndBorrow(v)} />
-        </div>
-      </div>
+      )}
+
       <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <span className="text-[20px] font-bold">Deposit {collateralInfo?.symbol}</span>
-        </div>
+        <span className="text-[20px] font-bold">Deposit {collateralInfo?.symbol}</span>
       </div>
 
       <DepositInput
@@ -216,15 +219,32 @@ export default function TgUsdDepositPanel() {
           <span className="flex items-end justify-between text-[20px] font-bold">Borrow amount</span>
 
           <LeverageInput
-            displaySliderInput={true}
+            label="You borrow"
             depositAmount={borrowWeiValue}
-            labelDeposit="You borrow"
-            depositSelect={<BorrowAssetDisplay />}
             depositAsset={tgUSDInfo}
-            onValueChange={() => {}}
+            percentage={leveragePercentage}
+            setPercentage={setLeveragePercentage}
           />
 
           <div className="-mt-1 flex w-full items-start justify-end text-xs text-subtitle">Max leverage: x10</div>
+
+          <div className="flex flex-col gap-2">
+            <span className="text-[20px] font-bold">Leverage recap:</span>
+
+            <div className="flex flex-col gap-1 rounded-[10px] bg-overlay-panel p-2 text-xs">
+              <div className="flex w-full items-center justify-between">
+                <span className="text-subtitle">Leverage</span>
+                <span className="text-white">{leveragePercentage}x</span>
+              </div>
+
+              <div className="flex w-full items-center justify-between">
+                <span className="text-subtitle">Expected</span>
+                <span className="text-white">
+                  {formatNumber(Number(formatUnits(borrowWeiValue || 0n, 18)) * leveragePercentage, 0)} {collateralInfo?.symbol}{" "}
+                </span>
+              </div>
+            </div>
+          </div>
         </>
       )}
 
@@ -259,7 +279,7 @@ export default function TgUsdDepositPanel() {
             handleProcess: depositAsset && depositAsset !== collateralInfo?.name ? getRouteAndDeposit : actionDeposit,
           }}
           formState={formState}
-          labelProcess="Deposit"
+          labelProcess={activeTab}
         />
       </div>
 

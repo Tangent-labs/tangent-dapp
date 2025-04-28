@@ -2,13 +2,14 @@
 
 import { BalanceAllowanceData, TgUsdMarket, ZapToken } from "../../tg_usd_type"
 import { AssetDataPriced, FormState } from "@/types"
-import Zapper from "@/abi/tgusd/Zapper.json"
+import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Address, EstimateContractGasParameters, formatUnits, parseEther } from "viem"
-import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 import { gasCostToUSD, getPublicClient } from "@/services/service_rpc"
+import { useTgUsdContext } from "../../tg_usd_context"
+import { returnEnsoQuote } from "../../global_quote_controller"
 import {
   computeSwapAssetPrice,
   doApproveMarketDeposit,
@@ -20,8 +21,6 @@ import {
   getZapTokenBalanceAllowance,
   prepareZapTransaction,
 } from "./tg_usd_record_deposit_controller"
-import { useTgUsdContext } from "../../tg_usd_context"
-import { returnEnsoQuote } from "../../global_quote_controller"
 
 const DECIMALS = BigInt(10 ** 18)
 
@@ -173,7 +172,8 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
       console.error("Wallet client is not available.")
       return
     }
-    await doApproveZap(walletClient, depositAssetInfo?.address, depositWeiValue || 0n, TGUSD_CONTRACT.ZAPPER)
+
+    await doApproveZap(walletClient, depositAssetInfo?.address, depositWeiValue || 0n, marketInfo?.marketAddress)
       .then(() => {
         fetchBalanceAllowanceData()
       })
@@ -332,9 +332,9 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
     try {
       const walletClient = getWalletClient()
-      if (!walletClient) throw new Error("Wallet client not found")
+      if (!walletClient || !marketInfo) throw new Error("Wallet client not found")
 
-      const data = await getZapTokenBalanceAllowance(walletClient, depositAssetInfo.address)
+      const data = await getZapTokenBalanceAllowance(walletClient, depositAssetInfo.address, marketInfo?.marketAddress)
 
       setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
     } catch (error) {
@@ -368,14 +368,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
   const computeGas = async () => {
     try {
-      const { routerCallData, zapMarketData } = await prepareZapTransaction(
-        depositWeiValue!,
-        collateralInfo,
-        depositAssetInfo!,
-        currentAddress!,
-        marketInfo,
-        slippage
-      )
+      const { routerCallData, zapMarketData } = await prepareZapTransaction(depositWeiValue!, collateralInfo, depositAssetInfo!, marketInfo, slippage)
 
       const walletClient = getWalletClient()
 
@@ -385,19 +378,37 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
       if (!!borrowWeiValue) {
         estimateGasData = {
-          abi: Zapper.abi,
+          abi: MarketExternalActions.abi,
           functionName: "zapDepositAndBorrow",
-          args: [zapMarketData, routerCallData, borrowWeiValue, isStaking] as unknown[],
-          address: TGUSD_CONTRACT.ZAPPER,
+          args: [
+            borrowWeiValue,
+            isStaking,
+            {
+              tokenIn: zapMarketData?.tokenIn,
+              amountIn: zapMarketData?.amountIn,
+              minAmountOut: zapMarketData?.minAmountOut,
+              zap: { router: routerCallData?.tx?.to, routerCall: routerCallData?.tx?.data },
+            },
+          ] as unknown[],
+          address: marketInfo?.marketAddress,
           account,
           value: 0n,
         } as EstimateContractGasParameters
       } else {
         estimateGasData = {
-          abi: Zapper.abi,
+          abi: MarketExternalActions.abi,
           functionName: "zapDeposit",
-          args: [zapMarketData, routerCallData, isStaking] as unknown[],
-          address: TGUSD_CONTRACT.ZAPPER,
+          args: [
+            account,
+            isStaking,
+            {
+              tokenIn: zapMarketData?.tokenIn,
+              amountIn: zapMarketData?.amountIn,
+              minAmountOut: zapMarketData?.minAmountOut,
+              zap: { router: routerCallData?.tx?.to, routerCall: routerCallData?.tx?.data },
+            },
+          ] as unknown[],
+          address: marketInfo?.marketAddress,
           account,
           value: 0n,
         } as EstimateContractGasParameters
@@ -409,7 +420,6 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
       const publicClient = await getPublicClient()
       const gasData = await publicClient.estimateContractGas(estimateGasData)
-
       const gasInUsd = await gasCostToUSD(gasData)
       setGas(gasInUsd)
     } catch (error) {
@@ -424,23 +434,18 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
     setIsDepositLoading(true)
 
     try {
-      const { routerCallData, zapMarketData } = await prepareZapTransaction(
-        depositWeiValue,
-        collateralInfo,
-        depositAssetInfo,
-        currentAddress,
-        marketInfo,
-        slippage
-      )
+      const { routerCallData, zapMarketData } = await prepareZapTransaction(depositWeiValue, collateralInfo, depositAssetInfo, marketInfo, slippage)
 
       const walletClient = getWalletClient()
 
-      doZapDeposit(walletClient!, routerCallData, zapMarketData, borrowWeiValue, isStaking).then(() => {
-        loadOnChainData()
-        setDepositWeiValue(0n)
-        setZapValue(null)
-        fetchBalanceAllowanceData()
-      })
+      doZapDeposit(marketInfo?.marketAddress, walletClient!, routerCallData?.tx?.to, routerCallData?.tx?.data, zapMarketData, borrowWeiValue, isStaking).then(
+        () => {
+          loadOnChainData()
+          setDepositWeiValue(0n)
+          setZapValue(null)
+          fetchBalanceAllowanceData()
+        }
+      )
     } catch (error) {
       console.error("Error in getRouteAndDeposit:", error)
     } finally {
@@ -472,17 +477,6 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
     return 0n
   }, [marketData, depositWeiValue])
-
-  //
-  // TODO Implement routes
-  useEffect(() => {
-    if (depositWeiValue) {
-      setBorrowWeiValue(depositWeiValue)
-    }
-  }, [depositWeiValue])
-  //
-
-  //
 
   const contextValue: TgUsdDepositContextValues = {
     marketInfo,

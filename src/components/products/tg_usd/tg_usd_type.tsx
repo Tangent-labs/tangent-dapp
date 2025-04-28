@@ -302,11 +302,9 @@ export type BalanceAllowanceData = {
 }
 
 export type ZapMarketData = {
-  amountIn: bigint
-  market: Address
-  minAmountOut: bigint
   tokenIn: Address
-  _for: Address
+  amountIn: bigint
+  minAmountOut: bigint
 }
 
 export type TgUsdMarket = {

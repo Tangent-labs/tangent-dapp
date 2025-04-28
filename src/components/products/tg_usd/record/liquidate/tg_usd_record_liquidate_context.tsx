@@ -9,7 +9,6 @@ import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 import { returnEnsoQuote, returnRoute } from "../../global_quote_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
-import { Address } from "viem"
 
 type TgUsdLiquidateContextProps = {
   children: ReactNode
@@ -106,9 +105,8 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
       doMarketLiquidate(
         liquidateWeiValue,
         repayWeiValue || 0n,
-        liquidationData?.routerAddress as Address,
         (tgUSDReceivedValue * BigInt(slippage)) / BigInt(100),
-        liquidationData?.data,
+        liquidationData!,
         walletClient,
         marketData?.marketAddress
       )

@@ -1,4 +1,4 @@
-import { Abi, WalletClient, zeroAddress } from "viem"
+import { Abi, WalletClient } from "viem"
 import { MarketDetailData, TgUsdtMarketRepayParams } from "../../tg_usd_type"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
@@ -34,7 +34,7 @@ export async function doMarketRepay(walletClient: WalletClient, args: TgUsdtMark
     abi: MarketExternalActions.abi as Abi,
     functionName: "repay",
     address: args.marketAddress,
-    args: [account, args.repayWeiValue, zeroAddress],
+    args: [account, args.repayWeiValue],
     gas: undefined as undefined | bigint,
   }
   const txHash = await executeContractCall(walletClient, txData)

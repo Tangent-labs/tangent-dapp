@@ -28,7 +28,7 @@ export const tgUsdMarkets: TgUsdMarket[] = envAddresses.markets.map((market: Raw
 export const TGUSD_CONTRACT = {
   REWARD_ACCUMULATOR: envAddresses.utilities.rewardAccumulator as Address,
   LIQUIDATOR_PROXY: envAddresses.utilities.liquidatorProxy as Address,
-  ZAPPER: envAddresses.utilities.zapper as Address,
+  ZAPPER: envAddresses.utilities.zappingProxy as Address,
   CONTROL_TOWER: envAddresses.utilities.controlTower as Address,
   TG_USD: envAddresses.tokens.tgUSD as Address,
   SG_USD: envAddresses.tokens.sgUSD as Address,

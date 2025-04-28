@@ -149,7 +149,7 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "amount",
+          "name": "borrowedAmount",
           "type": "uint256"
         }
       ],
@@ -168,20 +168,8 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "depositedAmount",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
           "name": "stakedAmount",
           "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "bool",
-          "name": "isZapping",
-          "type": "bool"
         }
       ],
       "name": "Deposit",
@@ -199,12 +187,6 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "depositedAmount",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
           "name": "stakedAmount",
           "type": "uint256"
         },
@@ -213,12 +195,6 @@
           "internalType": "uint256",
           "name": "borrowedAmount",
           "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "bool",
-          "name": "isZapping",
-          "type": "bool"
         }
       ],
       "name": "DepositAndBorrow",
@@ -323,17 +299,36 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "amount",
+          "name": "repaidAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Repay",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "withdrawnAmount",
           "type": "uint256"
         },
         {
           "indexed": false,
-          "internalType": "bool",
-          "name": "isZapping",
-          "type": "bool"
+          "internalType": "uint256",
+          "name": "repaidAmount",
+          "type": "uint256"
         }
       ],
-      "name": "Repay",
+      "name": "RepayAndWithdraw",
       "type": "event"
     },
     {
@@ -398,6 +393,111 @@
         {
           "indexed": false,
           "internalType": "uint256",
+          "name": "stakedAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "contract IERC20",
+          "name": "tokenIn",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amountIn",
+          "type": "uint256"
+        }
+      ],
+      "name": "ZapDeposit",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "stakedAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "borrowedAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "contract IERC20",
+          "name": "tokenIn",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amountIn",
+          "type": "uint256"
+        }
+      ],
+      "name": "ZapDepositAndBorrow",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "repayer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "repaidAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "contract IERC20",
+          "name": "tokenIn",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amountIn",
+          "type": "uint256"
+        }
+      ],
+      "name": "ZapRepay",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
           "name": "withdrawnAmount",
           "type": "uint256"
         },
@@ -409,12 +509,18 @@
         },
         {
           "indexed": false,
-          "internalType": "bool",
-          "name": "isZapping",
-          "type": "bool"
+          "internalType": "contract IERC20",
+          "name": "tokenIn",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amountIn",
+          "type": "uint256"
         }
       ],
-      "name": "WithdrawAndRepay",
+      "name": "ZapRepayAndWithdraw",
       "type": "event"
     },
     {
@@ -602,11 +708,6 @@
           "internalType": "bool",
           "name": "isStaked",
           "type": "bool"
-        },
-        {
-          "internalType": "address",
-          "name": "callerZapper",
-          "type": "address"
         }
       ],
       "name": "depositAndBorrow",
@@ -769,13 +870,8 @@
         },
         {
           "internalType": "uint256",
-          "name": "tgUSDToRepay",
+          "name": "collatToLiquidate",
           "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "liquidator",
-          "type": "address"
         },
         {
           "internalType": "uint256",
@@ -783,9 +879,21 @@
           "type": "uint256"
         },
         {
-          "internalType": "bytes",
+          "components": [
+            {
+              "internalType": "address",
+              "name": "router",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "routerCall",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct ZapStruct",
           "name": "liquidationCall",
-          "type": "bytes"
+          "type": "tuple"
         }
       ],
       "name": "liquidate",
@@ -833,19 +941,6 @@
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "liquidatorProxy",
-      "outputs": [
-        {
-          "internalType": "contract ILiquidatorProxy",
-          "name": "",
-          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -972,14 +1067,27 @@
           "internalType": "uint256",
           "name": "tgUSDToRepay",
           "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "callerZapper",
-          "type": "address"
         }
       ],
       "name": "repay",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "withdrawAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tgUSDToRepay",
+          "type": "uint256"
+        }
+      ],
+      "name": "repayAndWithdraw",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -1023,19 +1131,26 @@
           "type": "uint256"
         },
         {
-          "internalType": "address",
-          "name": "liquidator",
-          "type": "address"
-        },
-        {
           "internalType": "uint256",
           "name": "minTgUSDOut",
           "type": "uint256"
         },
         {
-          "internalType": "bytes",
+          "components": [
+            {
+              "internalType": "address",
+              "name": "router",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "routerCall",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct ZapStruct",
           "name": "routerCall",
-          "type": "bytes"
+          "type": "tuple"
         }
       ],
       "name": "selfLiquidate",
@@ -1266,24 +1381,232 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "_for",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "isStaked",
+          "type": "bool"
+        },
+        {
+          "components": [
+            {
+              "internalType": "contract IERC20",
+              "name": "tokenIn",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amountIn",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minAmountOut",
+              "type": "uint256"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "router",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "routerCall",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct ZapStruct",
+              "name": "zap",
+              "type": "tuple"
+            }
+          ],
+          "internalType": "struct ZapStructDeposit",
+          "name": "zapCall",
+          "type": "tuple"
+        }
+      ],
+      "name": "zapDeposit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "debtBorrow",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isStaked",
+          "type": "bool"
+        },
+        {
+          "components": [
+            {
+              "internalType": "contract IERC20",
+              "name": "tokenIn",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amountIn",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minAmountOut",
+              "type": "uint256"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "router",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "routerCall",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct ZapStruct",
+              "name": "zap",
+              "type": "tuple"
+            }
+          ],
+          "internalType": "struct ZapStructDeposit",
+          "name": "zapCall",
+          "type": "tuple"
+        }
+      ],
+      "name": "zapDepositAndBorrow",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "components": [
+            {
+              "internalType": "contract IERC20",
+              "name": "tokenIn",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amountIn",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minAmountOut",
+              "type": "uint256"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "router",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "routerCall",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct ZapStruct",
+              "name": "zap",
+              "type": "tuple"
+            }
+          ],
+          "internalType": "struct ZapStructDeposit",
+          "name": "zapCall",
+          "type": "tuple"
+        }
+      ],
+      "name": "zapRepay",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "uint256",
           "name": "withdrawAmount",
           "type": "uint256"
         },
         {
-          "internalType": "uint256",
-          "name": "debtRepay",
-          "type": "uint256"
-        },
+          "components": [
+            {
+              "internalType": "contract IERC20",
+              "name": "tokenIn",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amountIn",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minAmountOut",
+              "type": "uint256"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "router",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "routerCall",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct ZapStruct",
+              "name": "zap",
+              "type": "tuple"
+            }
+          ],
+          "internalType": "struct ZapStructDeposit",
+          "name": "zapCall",
+          "type": "tuple"
+        }
+      ],
+      "name": "zapRepayAndWithdraw",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "zappingProxy",
+      "outputs": [
         {
-          "internalType": "address",
-          "name": "callerZapper",
+          "internalType": "contract IZappingProxy",
+          "name": "",
           "type": "address"
         }
       ],
-      "name": "withdrawAndRepay",
-      "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "view",
       "type": "function"
     }
   ]

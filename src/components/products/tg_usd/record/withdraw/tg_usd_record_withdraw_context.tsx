@@ -55,7 +55,7 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
   const maxWithdrawable = useMemo(() => {
     if (marketData) {
       const collateralPriceRaw = BigInt(marketData?.collateralInfos?.collateralUSDPrice || 0n)
-      const futureDebt = BigInt(marketData?.debtInfos?.positionDebt || 0n)
+      const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n)
       const futureDeposited = BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n)
       const futureDepositedDollarRaw = (futureDeposited * collateralPriceRaw) / BigInt(10 ** 18)
       const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n

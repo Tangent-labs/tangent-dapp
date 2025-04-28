@@ -1,0 +1,123 @@
+"use client"
+
+import { AssetDataPriced } from "@/types"
+import { ReactNode, useEffect, useMemo, useState } from "react"
+import { formatUnits } from "viem"
+import { cn } from "@/lib/utils"
+import TokenImage from "../structure/token_image"
+
+type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+  depositAsset?: AssetDataPriced
+  className?: string
+  depositAmount?: bigint
+  disabled?: boolean
+  label?: string
+  LeverageInput?: ReactNode
+  isLoading?: boolean
+  percentage?: number
+  setPercentage?: (value: number) => void
+}
+
+export function LeverageInput({
+  className,
+  depositAmount,
+  depositAsset,
+  label,
+  isLoading = false,
+  percentage = 1,
+  setPercentage,
+  ...props
+}: LeverageInputProps) {
+  const depositAmountNumber = useMemo(() => {
+    if (depositAmount) {
+      return Number(formatUnits(depositAmount, 18))
+    }
+    return 0
+  }, [depositAmount])
+
+  const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
+
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!!setPercentage) {
+      const newPercentage = Number(e.target.value)
+      setPercentage(newPercentage)
+      const newValue = newPercentage !== 0 ? Number((newPercentage * depositAmountNumber).toFixed(0)) : 0
+      setInnerValue(newValue.toFixed(0))
+    }
+  }
+
+  useEffect(() => {
+    if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
+      const updatedValue = (Number(formatUnits(depositAmount, depositAsset.decimals)) * percentage).toFixed(0)
+      setInnerValue(updatedValue)
+    }
+  }, [depositAmount, depositAsset])
+
+  return (
+    <div className={cn("flex flex-col gap-2", className)} {...props}>
+      <div className={`${isLoading ? "shimmer" : ""} flex flex-col rounded-[10px] border border-white border-opacity-20 bg-select-input p-2`}>
+        <div className="flex w-full justify-between">
+          <div className="text-sm text-gray-400">{label}</div>
+        </div>
+        <div className="mb-2 flex flex-col justify-between lg:flex-row">
+          <input
+            {...props}
+            disabled={true}
+            type="number"
+            value={innerValue}
+            placeholder="Amount"
+            className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 text-xl font-bold focus:outline-none")}
+          />
+
+          <div className="flex w-28 items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+            <TokenImage token={"tgUSD"} size={24} />
+            <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
+          </div>
+        </div>
+
+        <input
+          type="range"
+          min="1"
+          step="1"
+          max="10"
+          value={percentage}
+          onChange={handleSliderChange}
+          className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-black"
+          style={{
+            background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage * 10}%)`,
+          }}
+        />
+
+        <div className="flex w-full items-center justify-between text-xs text-subtitle">
+          <div className="relative flex w-fit items-center justify-center">
+            x1
+            <div
+              onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+              className="absolute -top-1.5 left-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+            ></div>
+          </div>
+
+          {[2.5, 5, 7.5].map((el) => (
+            <div key={el} className="relative flex w-fit items-center justify-center">
+              x{el}
+              <div
+                onClick={
+                  !!handleSliderChange ? () => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>) : () => {}
+                }
+                className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+              ></div>
+            </div>
+          ))}
+
+          <div className="relative flex w-fit items-center justify-center">
+            x10
+            <div
+              onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "100" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+              className="absolute -top-1.5 right-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

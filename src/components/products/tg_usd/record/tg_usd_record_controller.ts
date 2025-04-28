@@ -39,16 +39,17 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, depositW
     reasons.push("Amount must be greater than zero.")
   } else {
     const minLoan = BigInt(marketData?.constants?.minimumLoan || "0")
-    const totalDebt = BigInt(marketData?.debtInfos?.totalDebt || 0n)
+    const totalDebt = marketData?.debtInfos?.totalDebt || 0n
 
     if (borrowWeiValue + totalDebt < minLoan) {
       reasons.push(`Min debt is ${formatEther(minLoan)}`)
     } else {
       const depositedCollateral = marketData?.collateralInfos?.positionCollateralUSDValue || 0n
-      const existingDebt = marketData?.debtInfos?.positionDebt || 0n
-      const maxLTV = (marketData?.constants.maxLTV || 0n) / 10000n
+      const existingDebt = marketData?.debtInfos?.userDebt || 0n
+
+      const maxLTV = (marketData?.constants.maxLTV || 0n) / BigInt(10000n)
       const maxMarketDebt = BigInt(marketData?.constants.maxMarketDebt || "0")
-      const maxLoan = maxLTV * (depositWeiValue || 0n) + depositedCollateral
+      const maxLoan = maxLTV * BigInt(depositWeiValue || 0n) + depositedCollateral
       if (maxLoan < borrowWeiValue + existingDebt) {
         reasons.push(`max debt is ${Number(formatUnits(maxLoan, 18)).toFixed(2)}`)
       }
@@ -68,9 +69,11 @@ export function getComputedFutureLoanData(
     borrowWeiValue?: bigint
     withdrawWeiValue?: bigint
     repayWeiValue?: bigint
+    zapValue?: bigint
+    liquidateValue?: bigint
   }
 ) {
-  amounts = { ...{ borrowWeiValue: 0n, repayWeiValue: 0n, depositWeiValue: 0n, withdrawWeiValue: 0n }, ...(amounts || {}) }
+  amounts = { ...{ borrowWeiValue: 0n, repayWeiValue: 0n, depositWeiValue: 0n, withdrawWeiValue: 0n, zapValue: 0n, liquidateValue: 0n }, ...(amounts || {}) }
 
   if (!marketData || !collateralInfo)
     return {
@@ -92,9 +95,19 @@ export function getComputedFutureLoanData(
   const collateralprice = etherValueToNumber(collateralPriceRaw)
   const liquidationThresholdRaw = BigInt(marketData?.constants?.liquidationThreshold || 0n)
 
-  const futureDebt = BigInt(marketData?.debtInfos?.positionDebt || 0n) + BigInt(amounts.borrowWeiValue!) - BigInt(amounts.repayWeiValue!)
-  const futureDeposited =
-    BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) + BigInt(amounts.depositWeiValue!) - BigInt(amounts.withdrawWeiValue!)
+  const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n) + BigInt(amounts.borrowWeiValue!) - BigInt(amounts.repayWeiValue!)
+  // const futureDebt = BigInt(marketData?.debtInfos?.positionDebt || 0n) + BigInt(amounts.borrowWeiValue!) - BigInt(amounts.repayWeiValue!)
+
+  const futureDeposited = !!amounts?.zapValue
+    ? BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) +
+      BigInt(amounts.zapValue!) -
+      BigInt(amounts.withdrawWeiValue!) -
+      BigInt(amounts.liquidateValue!)
+    : BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) +
+      BigInt(amounts.depositWeiValue!) -
+      BigInt(amounts.withdrawWeiValue!) -
+      BigInt(amounts.liquidateValue!)
+
   const futureDepositedDollarRaw = (futureDeposited * collateralPriceRaw) / DECIMALS
   const futureDepositedDollar = collateralValueToNumber(futureDeposited) * collateralprice
   const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
@@ -147,6 +160,7 @@ export function getMarketDisplayData(marketData?: MarketDetailData, collateralIn
     } as TgUsdMarketDisplayData
 
   const loanData = getComputedFutureLoanData(marketData, collateralInfo, { borrowWeiValue: 0n, depositWeiValue: 0n })
+
   return {
     ...loanData,
     tvl: formatNumber(Number(formatEther(BigInt(marketData?.collateralInfos?.totalCollateralAmount || 0n))), 0),

@@ -14,7 +14,7 @@ export default function TgUsdLiquidatePanel() {
       <div className="flex flex-col gap-2">
         <div className="flex justify-end gap-2">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-400">Liquidate all position</span>
+            <span className="text-sm text-gray-400">Liquidate all the position</span>
             <Switch checked={isFullLiquidation} onCheckedChange={(v) => setIsFullLiquidation(v)} />
           </div>
         </div>

@@ -7,7 +7,7 @@ import WStable from "@/abi/tgusd/WStable.json"
 import { BalanceAllowanceData, SwapToken } from "../tg_usd_type"
 import { getSwapAssetPrice } from "@/services/service_price"
 import { AssetDataPriced } from "@/types"
-import { getRouteTxData } from "./swap_actions"
+import { getRouteTxData } from "../quote_api"
 
 export const getBalances = async (user: Address, tokens: Address[]) => {
   return await executeChainViewUnique<bigint[]>(GetBalances.abi as Abi, GetBalances.bytecode as Hex, [user, tokens])
@@ -140,14 +140,12 @@ export const fetchEnsoData = async (
   depositAssetInfo: AssetDataPriced,
   slippage: number
 ) => {
-  const routerCall = await getRouteTxData(depositWeiValue, receiver, receiveAssetInfo, depositAssetInfo, slippage * 100)
+  const routerCall = await getRouteTxData(depositWeiValue, depositAssetInfo?.address, receiveAssetInfo?.address, null, receiver, slippage * 100)
 
   if (!routerCall) throw new Error("Failed to fetch routing data")
 
   return { routerCallData: routerCall?.tx }
 }
-
-//
 
 export const getABI = (depositSymbol: string, receiveSymbol: string) => {
   if (depositSymbol.includes("sgUSD") || receiveSymbol.includes("sgUSD")) {

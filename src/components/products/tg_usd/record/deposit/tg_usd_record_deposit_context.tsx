@@ -2,13 +2,14 @@
 
 import { BalanceAllowanceData, TgUsdMarket, ZapToken } from "../../tg_usd_type"
 import { AssetDataPriced, FormState } from "@/types"
-import Zapper from "@/abi/tgusd/Zapper.json"
+import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Address, EstimateContractGasParameters, formatUnits, parseEther } from "viem"
-import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 import { gasCostToUSD, getPublicClient } from "@/services/service_rpc"
+import { useTgUsdContext } from "../../tg_usd_context"
+import { returnEnsoQuote } from "../../global_quote_controller"
 import {
   computeSwapAssetPrice,
   doApproveMarketDeposit,
@@ -20,8 +21,6 @@ import {
   getZapTokenBalanceAllowance,
   prepareZapTransaction,
 } from "./tg_usd_record_deposit_controller"
-import { getTokenQuote } from "./deposit_actions"
-import { useTgUsdContext } from "../../tg_usd_context"
 
 const DECIMALS = BigInt(10 ** 18)
 
@@ -77,12 +76,18 @@ type TgUsdDepositContextValues = {
   depositSliderPercent: number
   setDepositSliderPercent: (arg: number) => void
 
+  leveragePercentage: number
+  setLeveragePercentage: (arg: number) => void
+
   borrowSliderPercent: number
   setBorrowSliderPercent: (arg: number) => void
 
   handleZapInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 
   maxBorrowableValue: bigint
+
+  activeTab: string
+  setActiveTab: (arg: string) => void
 }
 
 export const TgUsdDepositContext = createContext<TgUsdDepositContextValues | undefined>(undefined)
@@ -102,6 +107,8 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
   const [borrowSliderPercent, setBorrowSliderPercent] = useState<number>(0)
 
+  const [leveragePercentage, setLeveragePercentage] = useState<number>(1)
+
   const [depositSliderPercent, setDepositSliderPercent] = useState<number>(0)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
@@ -113,10 +120,16 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
   const [isZapUserInput, setIsZapUserInput] = useState<boolean>(false)
 
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
-  const [slippage, setSlippage] = useState<number>(0.1)
+
+  //
+  const [slippage, setSlippage] = useState<number>(10)
+  // TODO replace with a lower slippage by default
+
   const [gas, setGas] = useState<number | null>(null)
 
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
+
+  const [activeTab, setActiveTab] = useState("Deposit")
 
   const depositAssetInfo = useMemo(() => {
     if (depositAsset === "ETH") {
@@ -159,7 +172,8 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
       console.error("Wallet client is not available.")
       return
     }
-    await doApproveZap(walletClient, depositAssetInfo?.address, depositWeiValue || 0n, TGUSD_CONTRACT.ZAPPER)
+
+    await doApproveZap(walletClient, depositAssetInfo?.address, depositWeiValue || 0n, marketInfo?.marketAddress)
       .then(() => {
         fetchBalanceAllowanceData()
       })
@@ -176,7 +190,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
       setIsZapLoading(true)
       try {
-        const data = await getTokenQuote(value, currentAddress, collateralInfo, depositAssetInfo)
+        const data = await returnEnsoQuote(value, currentAddress, collateralInfo, depositAssetInfo, slippage)
 
         if (data) {
           setZapValue(data.amountOut)
@@ -204,7 +218,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
       setIsDepositLoading(true)
 
       try {
-        const data = await getTokenQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo, collateralInfo)
+        const data = await returnEnsoQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo, collateralInfo, slippage)
 
         setDepositWeiValue(data.amountOut)
       } catch (error) {
@@ -271,8 +285,9 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
     setCurrentAmounts({
       depositWeiValue: depositWeiValue || 0n,
       borrowWeiValue: borrowWeiValue || 0n,
+      zapValue: zapValue || 0n,
     })
-  }, [depositWeiValue, borrowWeiValue])
+  }, [depositWeiValue, borrowWeiValue, zapValue])
 
   const actionApprove = () => {
     const walletClient = getWalletClient()
@@ -291,6 +306,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
       doMarketDeposit(walletClient, { depositWeiValue, isDepositAndBorrow, isStaking, marketAddress: marketInfo?.marketAddress, borrowWeiValue }).then(() => {
         loadOnChainData()
         setDepositWeiValue(0n)
+        setBorrowWeiValue(0n)
         setBorrowSliderPercent(0)
         setDepositSliderPercent(0)
       })
@@ -316,9 +332,9 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
     try {
       const walletClient = getWalletClient()
-      if (!walletClient) throw new Error("Wallet client not found")
+      if (!walletClient || !marketInfo) throw new Error("Wallet client not found")
 
-      const data = await getZapTokenBalanceAllowance(walletClient, depositAssetInfo.address)
+      const data = await getZapTokenBalanceAllowance(walletClient, depositAssetInfo.address, marketInfo?.marketAddress)
 
       setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
     } catch (error) {
@@ -352,14 +368,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
   const computeGas = async () => {
     try {
-      const { routerCallData, zapMarketData } = await prepareZapTransaction(
-        depositWeiValue!,
-        collateralInfo,
-        depositAssetInfo!,
-        currentAddress!,
-        marketInfo,
-        slippage
-      )
+      const { routerCallData, zapMarketData } = await prepareZapTransaction(depositWeiValue!, collateralInfo, depositAssetInfo!, marketInfo, slippage)
 
       const walletClient = getWalletClient()
 
@@ -369,19 +378,37 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
       if (!!borrowWeiValue) {
         estimateGasData = {
-          abi: Zapper.abi,
+          abi: MarketExternalActions.abi,
           functionName: "zapDepositAndBorrow",
-          args: [zapMarketData, routerCallData, borrowWeiValue, isStaking] as unknown[],
-          address: TGUSD_CONTRACT.ZAPPER,
+          args: [
+            borrowWeiValue,
+            isStaking,
+            {
+              tokenIn: zapMarketData?.tokenIn,
+              amountIn: zapMarketData?.amountIn,
+              minAmountOut: zapMarketData?.minAmountOut,
+              zap: { router: routerCallData?.tx?.to, routerCall: routerCallData?.tx?.data },
+            },
+          ] as unknown[],
+          address: marketInfo?.marketAddress,
           account,
           value: 0n,
         } as EstimateContractGasParameters
       } else {
         estimateGasData = {
-          abi: Zapper.abi,
+          abi: MarketExternalActions.abi,
           functionName: "zapDeposit",
-          args: [zapMarketData, routerCallData, isStaking] as unknown[],
-          address: TGUSD_CONTRACT.ZAPPER,
+          args: [
+            account,
+            isStaking,
+            {
+              tokenIn: zapMarketData?.tokenIn,
+              amountIn: zapMarketData?.amountIn,
+              minAmountOut: zapMarketData?.minAmountOut,
+              zap: { router: routerCallData?.tx?.to, routerCall: routerCallData?.tx?.data },
+            },
+          ] as unknown[],
+          address: marketInfo?.marketAddress,
           account,
           value: 0n,
         } as EstimateContractGasParameters
@@ -393,7 +420,6 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
       const publicClient = await getPublicClient()
       const gasData = await publicClient.estimateContractGas(estimateGasData)
-
       const gasInUsd = await gasCostToUSD(gasData)
       setGas(gasInUsd)
     } catch (error) {
@@ -408,22 +434,18 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
     setIsDepositLoading(true)
 
     try {
-      const { routerCallData, zapMarketData } = await prepareZapTransaction(
-        depositWeiValue,
-        collateralInfo,
-        depositAssetInfo,
-        currentAddress,
-        marketInfo,
-        slippage
-      )
+      const { routerCallData, zapMarketData } = await prepareZapTransaction(depositWeiValue, collateralInfo, depositAssetInfo, marketInfo, slippage)
 
       const walletClient = getWalletClient()
 
-      await doZapDeposit(walletClient!, routerCallData, zapMarketData, borrowWeiValue, isStaking)
-
-      setDepositWeiValue(0n)
-      setZapValue(null)
-      fetchBalanceAllowanceData()
+      doZapDeposit(marketInfo?.marketAddress, walletClient!, routerCallData?.tx?.to, routerCallData?.tx?.data, zapMarketData, borrowWeiValue, isStaking).then(
+        () => {
+          loadOnChainData()
+          setDepositWeiValue(0n)
+          setZapValue(null)
+          fetchBalanceAllowanceData()
+        }
+      )
     } catch (error) {
       console.error("Error in getRouteAndDeposit:", error)
     } finally {
@@ -439,14 +461,18 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
   }, [depositWeiValue, zapValue, formState, isZapLoading, isDepositLoading])
 
   const maxBorrowableValue = useMemo(() => {
-    if (marketData?.collateralInfos) {
-      const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice || 0n
-      const futureDebt = marketData?.debtInfos?.positionDebt || 0n
-      const futureDeposited = (marketData?.collateralInfos?.positionCollateralAmount || 0n) + (depositWeiValue || 0n)
-      const maxLTV = marketData?.constants.maxLTV / BigInt(10 ** 3)
-      const maxBorrowable = (futureDeposited * maxLTV) / 100n - (futureDebt * DECIMALS) / collateralPriceRaw
+    try {
+      if (marketData?.collateralInfos) {
+        const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice || 0n
+        const futureDebt = marketData?.debtInfos?.userDebt || 0n
+        const futureDeposited = (marketData?.collateralInfos?.positionCollateralAmount || 0n) + (depositWeiValue || 0n)
+        const maxLTV = marketData?.constants.maxLTV / BigInt(10 ** 3)
+        const maxBorrowable = (futureDeposited * maxLTV) / BigInt(100n) - (futureDebt * DECIMALS) / collateralPriceRaw
 
-      return maxBorrowable
+        return maxBorrowable
+      }
+    } catch {
+      return 0n
     }
 
     return 0n
@@ -508,6 +534,12 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
     setBorrowSliderPercent,
 
     maxBorrowableValue,
+
+    activeTab,
+    setActiveTab,
+
+    leveragePercentage,
+    setLeveragePercentage,
   }
 
   return <TgUsdDepositContext.Provider value={contextValue}>{children}</TgUsdDepositContext.Provider>

@@ -1,27 +1,23 @@
 "use client"
 
-import { cn } from "@/lib/utils"
-import React, { useState } from "react"
+type TabsProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  activeTab: string
+  setActiveTab: (arg: string) => void
+}
 
-const Tabs = () => {
-  const [activeTab, setActiveTab] = useState("Deposit")
-
-  const handleTabClick = (tab: string) => {
-    setActiveTab(tab)
-  }
-
+export default function Tabs({ activeTab, setActiveTab }: TabsProps) {
   return (
     <div className="mx-auto w-full">
       <div className="relative flex justify-between rounded-lg p-2 text-white">
         <button
-          onClick={() => handleTabClick("Deposit")}
-          className={cn(activeTab === "Deposit" ? "text-white" : "text-gray-400", `z-10 w-1/2 py-2 text-center text-lg font-semibold`)}
+          onClick={() => setActiveTab("Deposit")}
+          className={`w-1/2 py-2 text-center text-lg font-semibold ${activeTab === "Deposit" ? "text-white" : "text-gray-400"} z-10`}
         >
           Deposit
         </button>
         <button
-          onClick={() => handleTabClick("Leverage")}
-          className={cn(activeTab === "Leverage" ? "text-white" : "text-gray-400", `z-10 w-1/2 py-2 text-center text-lg font-semibold`)}
+          onClick={() => setActiveTab("Leverage")}
+          className={`w-1/2 py-2 text-center text-lg font-semibold ${activeTab === "Leverage" ? "text-white" : "text-gray-400"} z-10`}
         >
           Leverage
         </button>
@@ -35,5 +31,3 @@ const Tabs = () => {
     </div>
   )
 }
-
-export default Tabs

@@ -53,11 +53,9 @@ export default function TgUsdDepositPanel() {
     isDepositAndBorrow,
     zapValue,
     depositAssetInfo,
-    balanceAllowanceData,
     slippage,
     gas,
     sociabilizationFee,
-    balances,
     zapInnerValue,
     depositSliderPercent,
     borrowSliderPercent,
@@ -66,7 +64,7 @@ export default function TgUsdDepositPanel() {
     leveragePercentage,
   } = useTgUsdDepositContext()
 
-  const { collateralInfo, marketData, tgUSDInfo } = useTgUsdRecordContext()
+  const { collateralInfo, marketData, tgUSDInfo, balances, balanceAllowanceData } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 

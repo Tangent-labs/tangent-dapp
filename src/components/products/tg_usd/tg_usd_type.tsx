@@ -208,8 +208,9 @@ export type TgUsdtMarketLiquidateParams = {
 }
 
 export type TgUsdtMarketRepayParams = {
-  repayWeiValue?: bigint
   marketAddress: Address
+  repayWeiValue?: bigint
+  withdrawWeiValue?: bigint
 }
 
 export type TgUsdMarketLoanDisplayData = {

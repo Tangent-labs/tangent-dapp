@@ -30,11 +30,15 @@ export function getRepayFormState(marketData?: MarketDetailData, repayWeiValue?:
 
 export async function doMarketRepay(walletClient: WalletClient, args: TgUsdtMarketRepayParams) {
   const [account] = await walletClient.requestAddresses()
+
+  const params = !!args.withdrawWeiValue ? [args.withdrawWeiValue, args.repayWeiValue] : [account, args.repayWeiValue]
+  const method = !!args.withdrawWeiValue ? "repayAndWithdraw" : "repay"
+
   const txData = {
     abi: MarketExternalActions.abi as Abi,
-    functionName: "repay",
+    functionName: method,
     address: args.marketAddress,
-    args: [account, args.repayWeiValue],
+    args: params,
     gas: undefined as undefined | bigint,
   }
   const txHash = await executeContractCall(walletClient, txData)

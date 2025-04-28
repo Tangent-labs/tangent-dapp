@@ -1,22 +1,15 @@
-import { AssetDataPriced } from "@/types"
 import { Address } from "viem"
 import { TGUSD_CONTRACT } from "./tg_usd_repository"
 import { getCurveRouterQuote, getCurveRouterRoute } from "./curve_routing_controller"
 import { getRouteTxData, getTokenQuote } from "./quote_api"
 
-export const returnEnsoQuote = async (
-  depositWeiValue: bigint,
-  currentAddress: Address,
-  tokenOut: AssetDataPriced,
-  tokenIn: AssetDataPriced,
-  slippage: number
-) => {
+export const returnEnsoQuote = async (depositWeiValue: bigint, currentAddress: Address, tokenOut: Address, tokenIn: Address, slippage: number) => {
   const data = await getTokenQuote(depositWeiValue, currentAddress, tokenOut, tokenIn, slippage * 100)
 
   if (data) {
     return data
-  } else if (tokenOut?.address === TGUSD_CONTRACT?.TG_USD || tokenIn?.address === TGUSD_CONTRACT?.TG_USD) {
-    return getCurveRouterQuote(tokenIn?.address, tokenOut?.address, depositWeiValue)
+  } else if (tokenOut === TGUSD_CONTRACT?.TG_USD || tokenIn === TGUSD_CONTRACT?.TG_USD) {
+    return getCurveRouterQuote(tokenIn, tokenOut, depositWeiValue)
   } else {
     return undefined
   }

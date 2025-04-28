@@ -234,7 +234,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
       setIsSwapLoading(true)
       try {
-        const data = await returnEnsoQuote(value, currentAddress, depositAssetInfo, receiveAssetInfo, slippage)
+        const data = await returnEnsoQuote(value, currentAddress, depositAssetInfo?.address, receiveAssetInfo?.address, slippage)
 
         if (data) {
           setDepositWeiValue(data.amountOut)
@@ -276,7 +276,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
       setIsSwapLoading(true)
       try {
-        const data = await returnEnsoQuote(value, currentAddress, receiveAssetInfo, depositAssetInfo, slippage)
+        const data = await returnEnsoQuote(value, currentAddress, receiveAssetInfo?.address, depositAssetInfo?.address, slippage)
 
         if (data) {
           setReceiveWeiValue(data.amountOut)

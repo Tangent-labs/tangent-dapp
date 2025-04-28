@@ -1,6 +1,5 @@
 "use server"
 
-import { AssetDataPriced } from "@/types"
 import { Address } from "viem"
 
 export const getRouteTxData = async (
@@ -36,12 +35,12 @@ export const getRouteTxData = async (
 export const getTokenQuote = async (
   depositWeiValue: bigint | undefined,
   currentAddress: Address,
-  collateralInfo: AssetDataPriced,
-  depositAssetInfo: AssetDataPriced,
+  collateralAddress: Address,
+  depositAssetAddress: Address,
   slippage: number
 ) => {
   try {
-    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${currentAddress}&amountIn=${depositWeiValue}&tokenIn=${depositAssetInfo?.address}&tokenOut=${collateralInfo?.address}&slippage=${slippage}`
+    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${currentAddress}&amountIn=${depositWeiValue}&tokenIn=${depositAssetAddress}&tokenOut=${collateralAddress}&slippage=${slippage}`
 
     const response = await fetch(url, {
       method: "GET",

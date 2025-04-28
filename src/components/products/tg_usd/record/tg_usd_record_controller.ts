@@ -1,14 +1,31 @@
-import { Abi, Address, formatEther, formatUnits, Hex, zeroAddress } from "viem"
-import { ChainViewMarketRow, MarketDetailData, TgUsdMarketDisplayData, TgUsdMarketLoanDisplayData } from "../tg_usd_type"
+import { Abi, Address, formatEther, formatUnits, Hex, WalletClient, zeroAddress } from "viem"
+import { BalanceAllowanceData, ChainViewMarketRow, MarketDetailData, TgUsdMarketDisplayData, TgUsdMarketLoanDisplayData, ZapToken } from "../tg_usd_type"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import MarketDetailsUI from "@/abi/tgusd/MarketDetailsUI.json"
+import GetBalances from "@/abi/tgusd/GetBalances.json"
 import { AssetDataPriced, ExistingAsset } from "@/types"
 import { tgUsdMarkets } from "../tg_usd_repository"
 import { getAssetInfo } from "@/services/service_existing_asset"
 import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
+import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
+import { getSwapAssetPrice } from "@/services/service_price"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
+
+export const getZapTokenBalanceAllowance = async (walletClient: WalletClient, address: Address | undefined, marketAddress: Address) => {
+  address = address || zeroAddress
+  const [account] = await walletClient.requestAddresses()
+
+  return await executeChainViewUnique<BalanceAllowanceData[]>(GetBalancesAllowances.abi as Abi, GetBalancesAllowances.bytecode as Hex, [
+    account,
+    [{ token: address, spenders: [marketAddress] }],
+  ])
+}
+
+export const getBalances = async (user: Address, tokens: Address[]) => {
+  return await executeChainViewUnique<bigint[]>(GetBalances.abi as Abi, GetBalances.bytecode as Hex, [user, tokens])
+}
 
 export const getTgUsdMarketRecordData = async (address: Address | undefined, market: Address) => {
   address = address || zeroAddress
@@ -192,5 +209,20 @@ export function getMarketApr(marketAddress: Address) {
     },
     boostsData: {},
     marketAddress,
+  }
+}
+
+export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: string) => {
+  try {
+    const tokenAddress = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)
+      ? tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)?.address
+      : undefined
+    if (tokenAddress) {
+      const data = await getSwapAssetPrice(tokenAddress)
+      return data
+    } else return null
+  } catch (error) {
+    console.error("Failed to compute swap asset price:", error)
+    return null
   }
 }

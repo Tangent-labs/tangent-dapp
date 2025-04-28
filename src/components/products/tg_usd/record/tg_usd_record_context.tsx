@@ -3,8 +3,26 @@
 import { AssetApr, AssetDataPriced, TgUsdMarketAsset } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { ChainViewMarketRow, MarketDetailData, TgUsdMarket, TgUsdMarketAmounts, TgUsdMarketDisplayData, TgUsdMarketLoanDisplayData } from "../tg_usd_type"
-import { getComputedFutureLoanData, getMarketApr, getMarketDisplayData, getTgUsdMarketRecordData, transformMarketData } from "./tg_usd_record_controller"
+import {
+  BalanceAllowanceData,
+  ChainViewMarketRow,
+  MarketDetailData,
+  TgUsdMarket,
+  TgUsdMarketAmounts,
+  TgUsdMarketDisplayData,
+  TgUsdMarketLoanDisplayData,
+} from "../tg_usd_type"
+import {
+  getBalances,
+  getComputedFutureLoanData,
+  getMarketApr,
+  getMarketDisplayData,
+  getTgUsdMarketRecordData,
+  getZapTokenBalanceAllowance,
+  transformMarketData,
+} from "./tg_usd_record_controller"
+import { Address } from "viem"
+import { useTgUsdContext } from "../tg_usd_context"
 
 type TgUsdRecordContextProps = {
   children: ReactNode
@@ -20,21 +38,37 @@ type TgUsdRecordContextValues = {
   isLoading: boolean
   marketData?: MarketDetailData
   loadOnChainData: () => void
+  fetchBalanceAllowanceData: (address: Address) => void
   tgUSDInfo: AssetDataPriced
   futureMarketDisplayData: TgUsdMarketLoanDisplayData
   marketDisplayData: TgUsdMarketDisplayData
   apr?: AssetApr
   currentAmounts: TgUsdMarketAmounts
   setCurrentAmounts: (amounts: TgUsdMarketAmounts) => void
+
+  balances: Record<Address, bigint> | null
+
+  balanceAllowanceData: BalanceAllowanceData | null
+  setBalanceAllowanceData: (arg: BalanceAllowanceData) => void
 }
 
 export const TgUsdRecordContext = createContext<TgUsdRecordContextValues | undefined>(undefined)
 
 export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, children, tgUSDInfo }: TgUsdRecordContextProps) => {
+  const { tokens } = useTgUsdContext()
+
+  const { currentAddress, getWalletClient } = useWalletConnexionContext()
+
+  const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
+
   const [onChainData, setOnChainData] = useState<ChainViewMarketRow | undefined>()
+
   const [isLoading, setIsLoading] = useState<boolean>(false)
+
   const [apr, setApr] = useState<AssetApr | undefined>()
-  const { currentAddress } = useWalletConnexionContext()
+
+  const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
+
   const [currentAmounts, setCurrentAmounts] = useState<TgUsdMarketAmounts>({
     depositWeiValue: 0n,
     borrowWeiValue: 0n,
@@ -78,6 +112,40 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     return getMarketDisplayData(marketData, collateralInfo)
   }, [marketData])
 
+  useEffect(() => {
+    const tokenAddresses: Address[] = tokens.map((el) => el.address)
+
+    if (currentAddress && tokenAddresses.length > 0) {
+      getBalances(currentAddress, tokenAddresses).then((data) => {
+        if (data) {
+          const tokenBalances = tokenAddresses.reduce(
+            (acc, address, index) => {
+              acc[address] = data[index] || BigInt(0)
+              return acc
+            },
+            {} as Record<Address, bigint>
+          )
+          setBalances(tokenBalances)
+        }
+      })
+    }
+  }, [currentAddress, tokens])
+
+  const fetchBalanceAllowanceData = async (depositAssetInfo: Address) => {
+    if (!depositAssetInfo) return
+
+    try {
+      const walletClient = getWalletClient()
+      if (!walletClient || !marketInfo) throw new Error("Wallet client not found")
+
+      const data = await getZapTokenBalanceAllowance(walletClient, depositAssetInfo, marketInfo?.marketAddress)
+
+      setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
+    } catch (error) {
+      console.error("Failed to fetch balance/allowance:", error)
+    }
+  }
+
   const contextValue: TgUsdRecordContextValues = {
     isLoading,
     collateral,
@@ -90,6 +158,10 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     currentAmounts,
     setCurrentAmounts,
     apr,
+    balances,
+    balanceAllowanceData,
+    setBalanceAllowanceData,
+    fetchBalanceAllowanceData,
   }
 
   return <TgUsdRecordContext.Provider value={contextValue}>{children}</TgUsdRecordContext.Provider>

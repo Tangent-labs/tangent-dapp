@@ -1,27 +1,15 @@
 import { AssetDataPriced } from "@/types"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
 import { TGUSD_CONTRACT } from "../../tg_usd_repository"
-import { getSwapAssetPrice } from "@/services/service_price"
 import { getBorrowCommonFormState } from "../tg_usd_record_controller"
-import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
 import GetBalances from "@/abi/tgusd/GetBalances.json"
-import { Abi, Address, EstimateContractGasParameters, Hex, WalletClient, WriteContractParameters, zeroAddress } from "viem"
-import { BalanceAllowanceData, MarketDetailData, TgUsdtMarketDepositParams, ZapMarketData, ZapToken } from "../../tg_usd_type"
+import { Abi, Address, EstimateContractGasParameters, Hex, WalletClient, WriteContractParameters } from "viem"
+import { BalanceAllowanceData, MarketDetailData, TgUsdtMarketDepositParams, ZapMarketData } from "../../tg_usd_type"
 import { executeAppove, executeChainViewUnique, executeContractCall, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { getRouteTxData } from "./deposit_actions"
 
 export const getBalances = async (user: Address, tokens: Address[]) => {
   return await executeChainViewUnique<bigint[]>(GetBalances.abi as Abi, GetBalances.bytecode as Hex, [user, tokens])
-}
-
-export const getZapTokenBalanceAllowance = async (walletClient: WalletClient, address: Address | undefined, marketAddress: Address) => {
-  address = address || zeroAddress
-  const [account] = await walletClient.requestAddresses()
-
-  return await executeChainViewUnique<BalanceAllowanceData[]>(GetBalancesAllowances.abi as Abi, GetBalancesAllowances.bytecode as Hex, [
-    account,
-    [{ token: address, spenders: [marketAddress] }],
-  ])
 }
 
 export function getDepositFormState(
@@ -167,21 +155,6 @@ export const doZapDeposit = async (
   const txData = { ...estimateGasData, gas }
   const hash = await walletClient.writeContract(txData as WriteContractParameters)
   return hash
-}
-
-export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: string) => {
-  try {
-    const tokenAddress = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)
-      ? tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)?.address
-      : undefined
-    if (tokenAddress) {
-      const data = await getSwapAssetPrice(tokenAddress)
-      return data
-    } else return null
-  } catch (error) {
-    console.error("Failed to compute swap asset price:", error)
-    return null
-  }
 }
 
 export const prepareZapTransaction = async (

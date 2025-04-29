@@ -69,8 +69,8 @@ export function LeverageInput({
             className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 text-xl font-bold focus:outline-none")}
           />
 
-          <div className="flex w-28 items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
-            <TokenImage token={"tgUSD"} size={24} />
+          <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+            <TokenImage token="tgUSD" size={24} />
             <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
           </div>
         </div>

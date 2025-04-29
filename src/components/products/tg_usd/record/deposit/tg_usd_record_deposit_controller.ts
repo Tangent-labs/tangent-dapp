@@ -20,7 +20,8 @@ export function getDepositFormState(
   isWellConnected?: boolean,
   depositAssetInfo?: AssetDataPriced,
   collateralInfo?: AssetDataPriced,
-  balanceAllowanceData?: BalanceAllowanceData
+  balanceAllowanceData?: BalanceAllowanceData,
+  isDepositLoading?: boolean
 ) {
   const isZapMode = !!depositAssetInfo && !!balanceAllowanceData && depositAssetInfo?.address !== collateralInfo?.address
 
@@ -29,7 +30,9 @@ export function getDepositFormState(
     (!depositAssetInfo && (depositWeiValue || 0n) <= (marketData?.collateralAllowance || 0n)) ||
     (isZapMode && (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n))
 
-  // check the wallet
+  if (isDepositLoading) {
+    reasons.push("Action in progress.")
+  }
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
   } else {

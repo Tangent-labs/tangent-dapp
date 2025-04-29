@@ -6,9 +6,8 @@ import { useTgUsdLiquidateContext } from "./tg_usd_record_liquidate_context"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
-import { formatBigInt, formatDollar } from "@/lib/number_formatter"
+import { formatBigInt } from "@/lib/number_formatter"
 import Divider from "@/components/design_system/structure/divider"
-import { formatUnits } from "viem"
 
 export default function TgUsdLiquidatePanelPartial() {
   const { tgUSDInfo, collateralInfo } = useTgUsdRecordContext()
@@ -56,7 +55,7 @@ export default function TgUsdLiquidatePanelPartial() {
         depositAmount={liquidateWeiValue}
         labelDeposit="You liquidate"
         depositSelect={<WithdrawAssetDisplay />}
-        disabled={!canInteract}
+        disabled={!canInteract || isQuoteLoading}
         displaySliderInput={true}
         percentage={liquidablePercentage}
         setPercentage={setLiquidablePercentage}
@@ -67,35 +66,23 @@ export default function TgUsdLiquidatePanelPartial() {
         onValueChange={handleLiquidateValueChange}
       />
 
-      <PanelRaw className={`${isQuoteLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
-        <div className="flex justify-between">
-          <div className="flex flex-col items-start justify-start">
-            <div className="flex items-center justify-center text-subtitle">You redeem</div>
-            <div className="flex items-center justify-center gap-2">
-              <input
-                type="string"
-                placeholder="0"
-                disabled={true}
-                className="flex justify-start bg-transparent text-xl font-bold focus:outline-none"
-                value={Number(formatUnits(tgUSDReceivedValue || 0n, 18)).toFixed(2) ?? ""}
-              />
-
-              <div className="text-xs">
-                {tgUSDReceivedValue && tgUSDInfo?.price !== 0
-                  ? `(~${formatDollar((Number(Number(formatUnits(tgUSDReceivedValue || 0n, 18))) * tgUSDInfo?.price).toFixed(2))})`
-                  : ""}
-              </div>
-            </div>
-            <div className="flex justify-between text-xs text-gray-400">
-              <div>Minimum redeemed</div>
-            </div>
+      <DepositInput
+        depositAmount={tgUSDReceivedValue}
+        labelDeposit="For"
+        depositSelect={
+          <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+            <TokenImage token="tgUSD" size={24} />
+            <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
           </div>
-          <div className="mb-2 mt-auto flex items-center justify-center gap-2 rounded-xl border border-white/30 p-2">
-            <TokenImage token={"tgUSD"} size={24} />
-            <div className="font-bold">tgUSD</div>
-          </div>
-        </div>
-      </PanelRaw>
+        }
+        disabled={true}
+        displaySliderInput={false}
+        depositAsset={tgUSDInfo}
+        setMaxBalance={() => {}}
+        displayBalance={false}
+        onValueChange={() => {}}
+        isLoading={isQuoteLoading}
+      />
 
       <Divider />
 
@@ -103,9 +90,9 @@ export default function TgUsdLiquidatePanelPartial() {
         depositAmount={repayWeiValue}
         labelDeposit="You repay"
         depositSelect={
-          <div className="mb-2 mt-auto flex items-center justify-center gap-2 rounded-xl border border-white/30 p-2">
-            <TokenImage token={"tgUSD"} size={24} />
-            <div className="font-bold">tgUSD</div>
+          <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+            <TokenImage token="tgUSD" size={24} />
+            <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
           </div>
         }
         disabled={!canInteract}
@@ -119,6 +106,24 @@ export default function TgUsdLiquidatePanelPartial() {
         onValueChange={(value: bigint | undefined) => {
           setRepayWeiValue(value)
         }}
+      />
+
+      <DepositInput
+        depositAmount={(tgUSDReceivedValue || 0n) - (repayWeiValue || 0n)}
+        labelDeposit="You receive"
+        depositSelect={
+          <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+            <TokenImage token="tgUSD" size={24} />
+            <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
+          </div>
+        }
+        disabled={true}
+        displaySliderInput={false}
+        depositAsset={tgUSDInfo}
+        setMaxBalance={() => {}}
+        displayBalance={false}
+        onValueChange={() => {}}
+        isLoading={isQuoteLoading}
       />
     </>
   )

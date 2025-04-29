@@ -17,9 +17,9 @@ export default function TgUsdBorrowPanel() {
 
   const BorrowAssetDisplay = () => {
     return (
-      <div className="mb-2 mt-auto flex items-center justify-center gap-2 rounded-xl border border-white/30 p-2">
-        <TokenImage token={"tgUSD"} size={24} />
-        <div className="font-bold">tgUSD</div>
+      <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+        <TokenImage token="tgUSD" size={24} />
+        <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
       </div>
     )
   }

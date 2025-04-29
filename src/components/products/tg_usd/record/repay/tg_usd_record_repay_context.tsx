@@ -94,7 +94,9 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
       doMarketRepay(walletClient, { marketAddress: marketData!.marketAddress, repayWeiValue, withdrawWeiValue }).then(() => {
         loadOnChainData()
         setRepayWeiValue(0n)
+        setWithdrawWeiValue(0n)
         setPercentage(0)
+        setWithdrawPercentage(0)
       })
   }
 

@@ -105,7 +105,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
       doMarketLiquidate(
         liquidateWeiValue,
         repayWeiValue || 0n,
-        (tgUSDReceivedValue * BigInt(slippage)) / BigInt(100),
+        (tgUSDReceivedValue * (BigInt(100) - BigInt(slippage))) / BigInt(100),
         liquidationData!,
         walletClient,
         marketData?.marketAddress
@@ -144,6 +144,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
   }, [marketDisplayData])
 
   const handleLiquidateValueChange = (value: bigint | undefined) => {
+    setIsQuoteLoading(true)
     const assetInfo: AssetDataPriced = {
       address: TGUSD_CONTRACT.TG_USD,
       decimals: 18,
@@ -159,7 +160,6 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
     const fetchZapValue = async () => {
       if (!value || !currentAddress || !marketData) return
 
-      setIsQuoteLoading(true)
       try {
         const quote = await returnEnsoQuote(value, currentAddress, assetInfo?.address, marketData?.collateralInfo?.address, slippage)
 

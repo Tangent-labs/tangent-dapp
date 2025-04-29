@@ -10,6 +10,8 @@ import { EstimateContractGasParameters, formatUnits, parseEther } from "viem"
 import { gasCostToUSD, getPublicClient } from "@/services/service_rpc"
 import { useTgUsdContext } from "../../tg_usd_context"
 import { returnEnsoQuote } from "../../global_quote_controller"
+import { toast } from "react-toastify"
+import { ToastComponent } from "@/components/design_system/toast"
 import {
   doApproveMarketDeposit,
   doApproveZap,
@@ -159,6 +161,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
   }, [marketData, depositWeiValue, depositAssetInfo])
 
   const actionApproveZap = async () => {
+    setIsDepositLoading(true)
     const walletClient = getWalletClient()
     if (!walletClient || !depositAssetInfo) {
       console.error("Wallet client is not available.")
@@ -168,9 +171,11 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
     await doApproveZap(walletClient, depositAssetInfo?.address, depositWeiValue || 0n, marketInfo?.marketAddress)
       .then(() => {
         fetchBalanceAllowanceData(depositAssetInfo?.address)
+        setIsDepositLoading(false)
       })
       .catch((error) => {
         console.error("Error during approval:", error)
+        setIsDepositLoading(false)
       })
   }
 
@@ -282,6 +287,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
   }, [depositWeiValue, borrowWeiValue, zapValue])
 
   const actionApprove = () => {
+    setIsDepositLoading(true)
     const walletClient = getWalletClient()
     if (walletClient && depositWeiValue)
       doApproveMarketDeposit(walletClient, collateralInfo?.address, {
@@ -289,10 +295,14 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
         isDepositAndBorrow,
         isStaking,
         marketAddress: marketInfo?.marketAddress,
-      }).then(() => loadOnChainData())
+      }).then(() => {
+        loadOnChainData()
+        setIsDepositLoading(false)
+      })
   }
 
   const actionDeposit = () => {
+    setIsDepositLoading(true)
     const walletClient = getWalletClient()
     if (walletClient && depositWeiValue)
       doMarketDeposit(walletClient, { depositWeiValue, isDepositAndBorrow, isStaking, marketAddress: marketInfo?.marketAddress, borrowWeiValue }).then(() => {
@@ -301,6 +311,8 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
         setBorrowWeiValue(0n)
         setBorrowSliderPercent(0)
         setDepositSliderPercent(0)
+        setIsDepositLoading(false)
+        toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
       })
   }
 
@@ -314,9 +326,10 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
         isWellConnected,
         depositAssetInfo!,
         collateralInfo!,
-        balanceAllowanceData!
+        balanceAllowanceData!,
+        isDepositLoading
       ),
-    [marketData, isDepositAndBorrow, borrowWeiValue, depositWeiValue, isWellConnected, currentAddress, depositAssetInfo, balanceAllowanceData]
+    [marketData, isDepositAndBorrow, borrowWeiValue, depositWeiValue, isWellConnected, currentAddress, depositAssetInfo, balanceAllowanceData, isDepositLoading]
   )
 
   useEffect(() => {
@@ -402,14 +415,14 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
           loadOnChainData()
           setDepositWeiValue(0n)
           setZapValue(null)
+          setIsZapLoading(false)
+          setIsDepositLoading(false)
           fetchBalanceAllowanceData(depositAssetInfo?.address)
+          toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
         }
       )
     } catch (error) {
       console.error("Error in getRouteAndDeposit:", error)
-    } finally {
-      setIsZapLoading(false)
-      setIsDepositLoading(false)
     }
   }
 

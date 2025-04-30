@@ -34,6 +34,8 @@ export default function TgUsdRepayPanel() {
     setWithdrawPercentage,
     setRepayAsset,
     handleRepayValueChange,
+    zapRepay,
+    actionApprove,
     repayWeiValue,
     repayAsset,
     maxRepayableValue,
@@ -158,7 +160,7 @@ export default function TgUsdRepayPanel() {
 
           {repayAsset && repayAsset !== "tgUSD" && (
             <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
-              <div className="flex justify-between">
+              <div className="flex items-center justify-between">
                 <div className="flex flex-col items-start justify-start">
                   <div className="flex items-center justify-center gap-1">
                     <div className="text-sm text-gray-400">Zap</div>
@@ -222,7 +224,10 @@ export default function TgUsdRepayPanel() {
         </div>
 
         <FormButtons
-          actions={{ handleApprove: undefined, handleProcess: actionRepay }}
+          actions={{
+            handleApprove: repayAsset && repayAsset !== "tgUSD" ? actionApprove : undefined,
+            handleProcess: repayAsset && repayAsset !== "tgUSD" ? zapRepay : actionRepay,
+          }}
           formState={formState}
           labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}
         />

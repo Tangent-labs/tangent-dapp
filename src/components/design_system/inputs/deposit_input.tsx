@@ -48,10 +48,10 @@ export function DepositInput({
 }: DepositInputProps) {
   const balanceNumber = useMemo(() => {
     if (balance) {
-      return Number(formatUnits(balance, 18))
+      return Number(formatUnits(balance, depositAsset?.decimals || 18))
     }
     return 0
-  }, [balance])
+  }, [balance, depositAsset])
 
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
   const [isUserInput, setIsUserInput] = useState(false)
@@ -62,7 +62,7 @@ export function DepositInput({
       setPercentage(newPercentage)
       const newValue = newPercentage !== 0 ? Number(((newPercentage / 100) * balanceNumber).toFixed(0)) : 0
       setInnerValue(newValue.toFixed(0))
-      onValueChange(!!newValue ? toBigInt(newValue, 18) : undefined)
+      onValueChange(!!newValue ? toBigInt(newValue, depositAsset?.decimals || 18) : undefined)
     }
   }
 

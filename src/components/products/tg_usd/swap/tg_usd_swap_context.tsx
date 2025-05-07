@@ -17,10 +17,10 @@ import {
   getBalances,
   getABI,
   getSwapFormState,
-  getSwapTokenBalanceAllowance,
 } from "./tg_usd_swap_controller"
 import { useTgUsdContext } from "../tg_usd_context"
 import { returnEnsoQuote } from "../global_quote_controller"
+import { getSwapTokenBalanceAllowance } from "../record/tg_usd_record_controller"
 
 type TgUsdSwapContextProps = {
   children: ReactNode

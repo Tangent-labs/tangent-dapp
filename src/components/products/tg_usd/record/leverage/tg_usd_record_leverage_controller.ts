@@ -5,7 +5,7 @@ import { getBorrowCommonFormState } from "../tg_usd_record_controller"
 import GetBalances from "@/abi/tgusd/GetBalances.json"
 import { Abi, Address, EstimateContractGasParameters, Hex, WalletClient, WriteContractParameters } from "viem"
 import { BalanceAllowanceData, MarketDetailData } from "../../tg_usd_type"
-import { executeAppove, executeChainViewUnique, getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { executeAppove, executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { getRouteTxData } from "./leverage_actions"
 
 export const getBalances = async (user: Address, tokens: Address[]) => {
@@ -64,6 +64,54 @@ export async function doApproveMarketDeposit(
 ) {
   const txHash = await executeAppove(walletClient, collateralAddress, args.marketAddress, args.depositWeiValue)
   return await waitForTransaction(txHash)
+}
+
+export const doZapLeverage = async (
+  tgUSDToFlashMint: bigint,
+  minCollatAmountOut: bigint,
+  isStaked: boolean,
+  leverageData: { data: string; routerAddress: Address },
+  tokenIn: Address,
+  amountIn: bigint,
+  minAmountOut: bigint,
+  zapData: { data: string; routerAddress: Address },
+  walletClient: WalletClient,
+  marketAddress: Address
+) => {
+  const [account] = await walletClient.requestAddresses()
+
+  const publicClient = await getPublicClient()
+
+  const estimateGasData = {
+    abi: MarketExternalActions.abi,
+    functionName: "zapLeverage",
+    args: [
+      tgUSDToFlashMint,
+      minCollatAmountOut,
+      isStaked,
+      { router: leverageData?.routerAddress, routerCall: leverageData?.data },
+      { tokenIn, amountIn, minAmountOut, zap: { router: zapData.routerAddress, routerCall: zapData.data } },
+    ] as unknown[],
+    address: marketAddress,
+    account,
+  } as EstimateContractGasParameters
+
+  const gas = await publicClient.estimateContractGas(estimateGasData)
+  const txData = { ...estimateGasData, gas }
+  const hash = await walletClient.writeContract(txData as WriteContractParameters)
+  return hash
+}
+
+export const doApproveZapLeverage = async (walletClient: WalletClient, assetAddress: Address, amount: bigint, marketAddress: Address) => {
+  const publicClient = await getPublicClient()
+
+  const txData = getApproveTx(assetAddress, marketAddress, amount)
+
+  const gas = await publicClient.estimateContractGas(txData as EstimateContractGasParameters)
+  txData.gas = gas
+
+  const hash = await walletClient.writeContract(txData as WriteContractParameters)
+  return await waitForTransaction(hash)
 }
 
 export const doMarketLeverage = async (

@@ -1,7 +1,6 @@
 import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import { Abi, Address, EstimateContractGasParameters, Hex, SendTransactionParameters, WalletClient, WriteContractParameters, zeroAddress } from "viem"
+import { Abi, Address, EstimateContractGasParameters, Hex, SendTransactionParameters, WalletClient, WriteContractParameters } from "viem"
 import GetBalances from "@/abi/tgusd/GetBalances.json"
-import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
 import IERC4626 from "@/abi/tgusd/IERC4626.json"
 import WStable from "@/abi/tgusd/WStable.json"
 import { BalanceAllowanceData, SwapToken } from "../tg_usd_type"
@@ -11,16 +10,6 @@ import { getRouteTxData } from "../quote_api"
 
 export const getBalances = async (user: Address, tokens: Address[]) => {
   return await executeChainViewUnique<bigint[]>(GetBalances.abi as Abi, GetBalances.bytecode as Hex, [user, tokens])
-}
-
-export const getSwapTokenBalanceAllowance = async (walletClient: WalletClient, address: Address | undefined, spender: Address | undefined) => {
-  address = address || zeroAddress
-  const [account] = await walletClient.requestAddresses()
-
-  return await executeChainViewUnique<BalanceAllowanceData[]>(GetBalancesAllowances.abi as Abi, GetBalancesAllowances.bytecode as Hex, [
-    account,
-    [{ token: address, spenders: [spender] }],
-  ])
 }
 
 export const computeSwapAssetPrice = async (tokens: SwapToken[], depositAsset: string) => {

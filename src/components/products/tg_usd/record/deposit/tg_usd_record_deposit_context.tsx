@@ -152,25 +152,6 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
     return 0
   }, [marketData, depositWeiValue, depositAssetInfo])
 
-  const actionApproveZap = async () => {
-    setIsDepositLoading(true)
-    const walletClient = getWalletClient()
-    if (!walletClient || !depositAssetInfo) {
-      console.error("Wallet client is not available.")
-      return
-    }
-
-    await doApproveZap(walletClient, depositAssetInfo?.address, depositWeiValue || 0n, marketInfo?.marketAddress)
-      .then(() => {
-        fetchBalanceAllowanceData(depositAssetInfo?.address)
-        setIsDepositLoading(false)
-      })
-      .catch((error) => {
-        console.error("Error during approval:", error)
-        setIsDepositLoading(false)
-      })
-  }
-
   const handleDepositChange = (value: bigint | undefined) => {
     setDepositWeiValue(value)
 
@@ -277,6 +258,25 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
       zapValue: zapValue || 0n,
     })
   }, [depositWeiValue, borrowWeiValue, zapValue])
+
+  const actionApproveZap = async () => {
+    setIsDepositLoading(true)
+    const walletClient = getWalletClient()
+    if (!walletClient || !depositAssetInfo) {
+      console.error("Wallet client is not available.")
+      return
+    }
+
+    await doApproveZap(walletClient, depositAssetInfo?.address, depositWeiValue || 0n, marketInfo?.marketAddress)
+      .then(() => {
+        fetchBalanceAllowanceData(depositAssetInfo?.address)
+        setIsDepositLoading(false)
+      })
+      .catch((error) => {
+        console.error("Error during approval:", error)
+        setIsDepositLoading(false)
+      })
+  }
 
   const actionApprove = () => {
     setIsDepositLoading(true)

@@ -34,10 +34,10 @@ export const returnRoute = async (
   const route = await getRouteTxData(amount, tokenIn, tokenOut, fromAddress, receiver, 1000)
 
   if (route) {
-    return { data: route?.tx?.data, routerAddress: "0xF75584eF6673aD213a685a1B58Cc0330B8eA22Cf" as Address }
+    return { data: route?.tx?.data as string, routerAddress: "0xF75584eF6673aD213a685a1B58Cc0330B8eA22Cf" as Address }
   } else if (tokenOut === TGUSD_CONTRACT?.TG_USD || tokenIn === TGUSD_CONTRACT?.TG_USD) {
     const curveRoute = await getCurveRouterRoute(tokenIn, tokenOut, amount, minAmountOut, user ? user : receiver)
-    return { data: curveRoute, routerAddress: "0x45312ea0eff7e09c83cbe249fa1d7598c4c8cd4e" as Address }
+    return { data: curveRoute as string, routerAddress: "0x45312ea0eff7e09c83cbe249fa1d7598c4c8cd4e" as Address }
   } else {
     return undefined
   }

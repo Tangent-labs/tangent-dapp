@@ -18,7 +18,7 @@ import {
   getMarketApr,
   getMarketDisplayData,
   getTgUsdMarketRecordData,
-  getZapTokenBalanceAllowance,
+  getSwapTokenBalanceAllowance,
   transformMarketData,
 } from "./tg_usd_record_controller"
 import { Address } from "viem"
@@ -138,7 +138,7 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
       const walletClient = getWalletClient()
       if (!walletClient || !marketInfo) throw new Error("Wallet client not found")
 
-      const data = await getZapTokenBalanceAllowance(walletClient, depositAssetInfo, marketInfo?.marketAddress)
+      const data = await getSwapTokenBalanceAllowance(walletClient, depositAssetInfo, marketInfo?.marketAddress)
 
       setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
     } catch (error) {

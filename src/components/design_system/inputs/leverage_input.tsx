@@ -62,7 +62,7 @@ export function LeverageInput({
     setInnerValue(newValue)
 
     if (!!setPercentage) {
-      setPercentage(newValue !== undefined && depositAmountNumber > 0 ? Number(newValue) / depositAmountNumber : 0)
+      setPercentage(newValue !== undefined && depositAmountNumber > 0 ? (Number(newValue) + depositAmountNumber) / depositAmountNumber : 0)
     }
   }
 

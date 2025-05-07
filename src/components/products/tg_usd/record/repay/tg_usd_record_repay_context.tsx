@@ -1,7 +1,7 @@
 "use client"
 
 import { AssetDataPriced, FormState } from "@/types"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doApproveZapRepay, doMarketRepay, doZapRepay, getRepayFormState } from "./tg_usd_record_repay_controller"
@@ -87,6 +87,18 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const [tgUdsRepayedValue, setTgUsdRepayedValue] = useState<bigint | undefined>()
 
+  // Store walletClient in useRef
+  const walletClientRef = useRef<ReturnType<typeof getWalletClient> | null>(null)
+
+  // Sync walletClientRef with wallet connection state
+  useEffect(() => {
+    if (isWellConnected && currentAddress) {
+      walletClientRef.current = getWalletClient()
+    } else {
+      walletClientRef.current = null // Clear ref when disconnected
+    }
+  }, [isWellConnected, currentAddress, getWalletClient])
+
   const repayAssetInfo = useMemo(() => {
     if (repayAsset === "ETH") {
       return {
@@ -130,15 +142,13 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     try {
       const repayData = await returnRoute(repayAssetInfo?.address, TGUSD_CONTRACT?.TG_USD, repayWeiValue, 0n, currentAddress!, TGUSD_CONTRACT.ZAPPER)
 
-      const walletClient = getWalletClient()
-
       const zapMarketData = {
         tokenIn: repayAssetInfo?.address,
         amountIn: repayWeiValue,
         minAmountOut: 0n,
       }
 
-      doZapRepay(marketData?.marketAddress, walletClient!, repayData!, zapMarketData, withdrawWeiValue)
+      doZapRepay(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData, withdrawWeiValue)
         .then(() => {
           loadOnChainData()
           setPercentage(0)
@@ -160,11 +170,9 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   }
 
   const actionApprove = async () => {
-    const walletClient = getWalletClient()
+    if (!repayWeiValue || !repayAssetInfo || !marketData) return
 
-    if (!walletClient || !repayWeiValue || !repayAssetInfo || !marketData) return
-
-    doApproveZapRepay(walletClient, repayWeiValue, repayAssetInfo?.address, marketData?.marketAddress)
+    doApproveZapRepay(walletClientRef.current!, repayWeiValue, repayAssetInfo?.address, marketData?.marketAddress)
       .then(() => {
         loadOnChainData()
         fetchBalanceAllowanceData(repayAssetInfo?.address)
@@ -176,15 +184,13 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   }
 
   const actionRepay = () => {
-    const walletClient = getWalletClient()
-    if (walletClient)
-      doMarketRepay(walletClient, { marketAddress: marketData!.marketAddress, repayWeiValue, withdrawWeiValue }).then(() => {
-        loadOnChainData()
-        setRepayWeiValue(0n)
-        setWithdrawWeiValue(0n)
-        setPercentage(0)
-        setWithdrawPercentage(0)
-      })
+    doMarketRepay(walletClientRef.current!, { marketAddress: marketData!.marketAddress, repayWeiValue, withdrawWeiValue }).then(() => {
+      loadOnChainData()
+      setRepayWeiValue(0n)
+      setWithdrawWeiValue(0n)
+      setPercentage(0)
+      setWithdrawPercentage(0)
+    })
   }
 
   const formState = useMemo(
@@ -267,10 +273,11 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   }
 
   useEffect(() => {
-    if (repayAssetInfo) {
-      fetchBalanceAllowanceData(repayAssetInfo?.address)
+    const address = repayAssetInfo?.address || TGUSD_CONTRACT.TG_USD
+    if (walletClientRef) {
+      fetchBalanceAllowanceData(address)
     }
-  }, [repayAssetInfo])
+  }, [repayAssetInfo?.address, walletClientRef])
 
   useEffect(() => {
     if (!repayAsset) return

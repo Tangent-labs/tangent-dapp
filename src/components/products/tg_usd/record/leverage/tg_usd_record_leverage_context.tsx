@@ -12,7 +12,14 @@ import { useTgUsdContext } from "../../tg_usd_context"
 import { returnEnsoQuote, returnRoute } from "../../global_quote_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
-import { doApproveMarketDeposit, doMarketLeverage, getLeverageFormState, prepareZapTransaction } from "./tg_usd_record_leverage_controller"
+import {
+  doApproveMarketDeposit,
+  doApproveZapLeverage,
+  doMarketLeverage,
+  doZapLeverage,
+  getLeverageFormState,
+  prepareZapTransaction,
+} from "./tg_usd_record_leverage_controller"
 import { computeSwapAssetPrice } from "../tg_usd_record_controller"
 import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 
@@ -34,16 +41,20 @@ type TgUsdLeverageContextValues = {
   depositWeiValue?: bigint
   setDepositWeiValue: (arg: bigint | undefined) => void
   actionApprove: () => void
+  actionApproveZap: () => void
   formState: FormState
   borrowWeiValue?: bigint
   setBorrowWeiValue: (arg: bigint | undefined) => void
   setDepositAsset: (arg: string) => void
   depositAsset: string | undefined
   tokens: ZapToken[]
+
   isDepositLoading: boolean
   setIsDepositLoading: (arg: boolean) => void
+
   isZapLoading: boolean
   setIsZapLoading: (arg: boolean) => void
+
   swapAssetPrice: number | null
 
   zapValue: bigint | null
@@ -59,9 +70,6 @@ type TgUsdLeverageContextValues = {
   zapInnerValue: number | undefined
   setZapInnerValue: (arg: number | undefined) => void
 
-  isZapUserInput: boolean
-  setIsZapUserInput: (arg: boolean) => void
-
   depositSliderPercent: number
   setDepositSliderPercent: (arg: number) => void
 
@@ -74,6 +82,8 @@ type TgUsdLeverageContextValues = {
   handleZapInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 
   actionLeverage: () => void
+
+  actionZapLeverage: () => void
 
   leveragedCollateralQuote: bigint | undefined
   setLeveragedCollateralQuote: (arg: bigint) => void
@@ -110,8 +120,6 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
   const [zapValue, setZapValue] = useState<bigint | null>(null)
 
   const [zapInnerValue, setZapInnerValue] = useState<number | undefined>(zapValue !== undefined ? Number(formatUnits(zapValue || BigInt(0), 18)) : undefined)
-
-  const [isZapUserInput, setIsZapUserInput] = useState<boolean>(false)
 
   const [leveragedCollateralQuote, setLeveragedCollateralQuote] = useState<bigint | undefined>()
 
@@ -167,7 +175,7 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
         const { quote } = await returnEnsoQuote(value, currentAddress, collateralInfo?.address, depositAssetInfo?.address, slippage)
 
         if (quote) {
-          setZapValue(quote)
+          setZapValue(quote as bigint)
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)
@@ -182,7 +190,6 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
   const handleZapInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value ? Number(e.target.value) : undefined
     setZapInnerValue(value)
-    setIsZapUserInput(true)
   }
 
   useEffect(() => {
@@ -207,9 +214,28 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
     setCurrentAmounts({
       depositWeiValue: (depositWeiValue || 0n) + (leveragedCollateralQuote || 0n),
       borrowWeiValue: borrowWeiValue || 0n,
-      zapValue: zapValue || 0n,
+      zapValue: !!zapValue ? (BigInt(zapValue) || 0n) + (leveragedCollateralQuote || 0n) : 0n,
     })
   }, [depositWeiValue, borrowWeiValue, zapValue, leveragedCollateralQuote])
+
+  const actionApproveZap = async () => {
+    setIsDepositLoading(true)
+    const walletClient = getWalletClient()
+    if (!walletClient || !depositAssetInfo) {
+      console.error("Wallet client is not available.")
+      return
+    }
+
+    await doApproveZapLeverage(walletClient, depositAssetInfo?.address, depositWeiValue || 0n, marketInfo?.marketAddress)
+      .then(() => {
+        fetchBalanceAllowanceData(depositAssetInfo?.address)
+        setIsDepositLoading(false)
+      })
+      .catch((error) => {
+        console.error("Error during approval:", error)
+        setIsDepositLoading(false)
+      })
+  }
 
   const actionApprove = () => {
     const walletClient = getWalletClient()
@@ -220,6 +246,51 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
       }).then(() => {
         loadOnChainData()
         setIsDepositLoading(false)
+      })
+  }
+
+  const actionZapLeverage = async () => {
+    const walletClient = getWalletClient()
+
+    loadOnChainData()
+    if (!walletClient || !currentAddress || !depositWeiValue || !borrowWeiValue || !depositAssetInfo) return
+
+    const leverageData = await returnRoute(TGUSD_CONTRACT.TG_USD, collateralInfo?.address, borrowWeiValue, 0n, marketInfo?.marketAddress, TGUSD_CONTRACT.ZAPPER)
+
+    const zapData = await returnRoute(
+      depositAssetInfo?.address,
+      collateralInfo?.address,
+      depositWeiValue,
+      0n,
+      marketInfo?.marketAddress,
+      currentAddress!,
+      currentAddress!
+    )
+
+    doZapLeverage(
+      borrowWeiValue,
+      0n,
+      isStaking,
+      leverageData!,
+      depositAssetInfo?.address,
+      depositWeiValue,
+      0n,
+      zapData!,
+      walletClient,
+      marketInfo?.marketAddress
+    )
+      .then(() => {
+        loadOnChainData()
+        setDepositWeiValue(0n)
+        setBorrowWeiValue(0n)
+        setBorrowSliderPercent(0)
+        setDepositSliderPercent(0)
+        setZapValue(0n)
+        setIsDepositLoading(false)
+        toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
+      })
+      .catch((err) => {
+        console.error("ERROR : ", err)
       })
   }
 
@@ -349,6 +420,15 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
     }
   }, [borrowWeiValue])
 
+  useEffect(() => {
+    if (zapValue !== undefined) {
+      const updatedValue = Number(Number(formatUnits(zapValue || 0n, 18)).toFixed(2))
+      setZapInnerValue(updatedValue)
+    } else {
+      setZapInnerValue(undefined)
+    }
+  }, [zapValue])
+
   const contextValue: TgUsdLeverageContextValues = {
     marketInfo,
     collateralInfo,
@@ -387,9 +467,6 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
     gas,
     sociabilizationFee,
 
-    isZapUserInput,
-    setIsZapUserInput,
-
     depositSliderPercent,
     setDepositSliderPercent,
 
@@ -406,6 +483,10 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
 
     zapInnerValue,
     setZapInnerValue,
+
+    actionZapLeverage,
+
+    actionApproveZap,
   }
 
   return <TgUsdLeverageContext.Provider value={contextValue}>{children}</TgUsdLeverageContext.Provider>

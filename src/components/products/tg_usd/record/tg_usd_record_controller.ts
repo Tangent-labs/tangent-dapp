@@ -13,13 +13,13 @@ import { getSwapAssetPrice } from "@/services/service_price"
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
 
-export const getZapTokenBalanceAllowance = async (walletClient: WalletClient, address: Address | undefined, marketAddress: Address) => {
+export const getSwapTokenBalanceAllowance = async (walletClient: WalletClient, address: Address | undefined, spender: Address | undefined) => {
   address = address || zeroAddress
   const [account] = await walletClient.requestAddresses()
 
   return await executeChainViewUnique<BalanceAllowanceData[]>(GetBalancesAllowances.abi as Abi, GetBalancesAllowances.bytecode as Hex, [
     account,
-    [{ token: address, spenders: [marketAddress] }],
+    [{ token: address, spenders: [spender] }],
   ])
 }
 
@@ -113,7 +113,6 @@ export function getComputedFutureLoanData(
   const liquidationThresholdRaw = BigInt(marketData?.constants?.liquidationThreshold || 0n)
 
   const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n) + BigInt(amounts.borrowWeiValue!) - BigInt(amounts.repayWeiValue!)
-  // const futureDebt = BigInt(marketData?.debtInfos?.positionDebt || 0n) + BigInt(amounts.borrowWeiValue!) - BigInt(amounts.repayWeiValue!)
 
   const futureDeposited = !!amounts?.zapValue
     ? BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) +

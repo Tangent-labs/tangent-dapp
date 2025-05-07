@@ -181,7 +181,7 @@ export default function TgUsdDepositPanel() {
                 <input
                   type="number"
                   disabled={isZapLoading}
-                  className="flex max-w-24 justify-start bg-transparent text-xl font-bold focus:outline-none"
+                  className="flex w-fit max-w-28 justify-start bg-transparent text-xl font-bold focus:outline-none"
                   value={zapInnerValue ?? ""}
                   onChange={handleZapInputChange}
                 />

@@ -149,7 +149,7 @@ export default function TgUsdRepayPanel() {
             disabled={!canInteract}
             isZapping={!!repayAsset && repayAsset !== "tgUSD"}
             depositAsset={repayAssetInfo || tgUSDInfo}
-            balance={repayAsset === "tgUSD" ? maxRepayableValue : balanceAllowanceData?.balance}
+            balance={balanceAllowanceData?.balance}
             displayBalance={!!repayAsset && repayAsset !== "tgUSD"}
             setMaxBalance={() => {}}
             displaySliderInput={true}

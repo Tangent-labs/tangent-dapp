@@ -20,6 +20,11 @@
     },
     {
       "inputs": [],
+      "name": "InvalidZapValue",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "LeveragePaused",
       "type": "error"
     },
@@ -98,7 +103,23 @@
     },
     {
       "inputs": [],
+      "name": "ReentrancyGuardReentrantCall",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "RepayMoreThanBadDebt",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "SafeERC20FailedOperation",
       "type": "error"
     },
     {
@@ -212,7 +233,7 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "depositedAmount",
+          "name": "stakedAmount",
           "type": "uint256"
         },
         {
@@ -447,6 +468,55 @@
         }
       ],
       "name": "ZapDepositAndBorrow",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "stakedAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "collatZapDeposit",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "collatLeverage",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "borrowedAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "contract IERC20",
+          "name": "tokenIn",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amountIn",
+          "type": "uint256"
+        }
+      ],
+      "name": "ZapLeverage",
       "type": "event"
     },
     {
@@ -837,13 +907,8 @@
         },
         {
           "internalType": "uint256",
-          "name": "minCollatAmountReceived",
+          "name": "minCollatAmountOut",
           "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "zapper",
-          "type": "address"
         },
         {
           "internalType": "bool",
@@ -851,14 +916,26 @@
           "type": "bool"
         },
         {
-          "internalType": "bytes",
-          "name": "routerCall",
-          "type": "bytes"
+          "components": [
+            {
+              "internalType": "address",
+              "name": "router",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "routerCall",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct ZapStruct",
+          "name": "dumpTgUSDCall",
+          "type": "tuple"
         }
       ],
       "name": "leverage",
       "outputs": [],
-      "stateMutability": "payable",
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -1432,7 +1509,7 @@
       ],
       "name": "zapDeposit",
       "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -1495,6 +1572,85 @@
     {
       "inputs": [
         {
+          "internalType": "uint256",
+          "name": "tgUSDToFlashMint",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "minCollatAmountOut",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isStaked",
+          "type": "bool"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "router",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "routerCall",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct ZapStruct",
+          "name": "dumpTgUSDCall",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "contract IERC20",
+              "name": "tokenIn",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amountIn",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minAmountOut",
+              "type": "uint256"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "router",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "routerCall",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct ZapStruct",
+              "name": "zap",
+              "type": "tuple"
+            }
+          ],
+          "internalType": "struct ZapStructDeposit",
+          "name": "zapDepositCall",
+          "type": "tuple"
+        }
+      ],
+      "name": "zapLeverage",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "address",
           "name": "account",
           "type": "address"
@@ -1541,7 +1697,7 @@
       ],
       "name": "zapRepay",
       "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {

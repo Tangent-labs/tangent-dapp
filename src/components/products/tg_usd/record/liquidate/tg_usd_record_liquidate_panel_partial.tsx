@@ -55,7 +55,7 @@ export default function TgUsdLiquidatePanelPartial() {
         depositAmount={liquidateWeiValue}
         labelDeposit="You liquidate"
         depositSelect={<WithdrawAssetDisplay />}
-        disabled={!canInteract || isQuoteLoading}
+        disabled={!canInteract}
         displaySliderInput={true}
         percentage={liquidablePercentage}
         setPercentage={setLiquidablePercentage}

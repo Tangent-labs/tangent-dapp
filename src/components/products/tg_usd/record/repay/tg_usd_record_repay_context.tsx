@@ -128,15 +128,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     setIsZapLoading(true)
 
     try {
-      const repayData = await returnRoute(
-        repayAssetInfo?.address,
-        TGUSD_CONTRACT?.TG_USD,
-        repayWeiValue,
-        0n,
-        currentAddress!,
-        TGUSD_CONTRACT.ZAPPER,
-        currentAddress!
-      )
+      const repayData = await returnRoute(repayAssetInfo?.address, TGUSD_CONTRACT?.TG_USD, repayWeiValue, 0n, currentAddress!, TGUSD_CONTRACT.ZAPPER)
 
       const walletClient = getWalletClient()
 
@@ -259,7 +251,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
       setIsZapLoading(true)
       try {
-        const quote = await returnEnsoQuote(value, currentAddress, assetInfo?.address, repayAssetInfo?.address, 10)
+        const { quote } = await returnEnsoQuote(value, currentAddress, assetInfo?.address, repayAssetInfo?.address, 10)
 
         if (quote) {
           setTgUsdRepayedValue(quote)

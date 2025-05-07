@@ -161,7 +161,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
       if (!value || !currentAddress || !marketData) return
 
       try {
-        const quote = await returnEnsoQuote(value, currentAddress, assetInfo?.address, marketData?.collateralInfo?.address, slippage)
+        const { quote } = await returnEnsoQuote(value, currentAddress, assetInfo?.address, marketData?.collateralInfo?.address, slippage)
 
         if (quote) {
           setTgUSDReceivedValue(quote)

@@ -234,10 +234,10 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
       setIsSwapLoading(true)
       try {
-        const data = await returnEnsoQuote(value, currentAddress, depositAssetInfo?.address, receiveAssetInfo?.address, slippage)
+        const { quote } = await returnEnsoQuote(value, currentAddress, depositAssetInfo?.address, receiveAssetInfo?.address, slippage)
 
-        if (data) {
-          setDepositWeiValue(data.amountOut)
+        if (quote) {
+          setDepositWeiValue(quote)
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)
@@ -276,11 +276,11 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
       setIsSwapLoading(true)
       try {
-        const data = await returnEnsoQuote(value, currentAddress, receiveAssetInfo?.address, depositAssetInfo?.address, slippage)
+        const { quote } = await returnEnsoQuote(value, currentAddress, receiveAssetInfo?.address, depositAssetInfo?.address, slippage)
 
-        if (data) {
-          setReceiveWeiValue(data.amountOut)
-          setEnsoRouterAddress(data?.tx?.to)
+        if (quote) {
+          setReceiveWeiValue(quote)
+          setEnsoRouterAddress("0xF75584eF6673aD213a685a1B58Cc0330B8eA22Cf")
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)

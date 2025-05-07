@@ -23,6 +23,9 @@ type RsTanMergeContextValues = {
   secondPositionToMerge: string
   setSecondPositionToMerge: (arg: string) => void
 
+  claimAsSgUSD: boolean
+  setClaimAsSgUSD: (arg: boolean) => void
+
   actionMerge: () => void
 
   computedNewPositionId: string
@@ -42,6 +45,8 @@ export const RsTanMergeProvider = ({ children }: RsTanMergeContextProps) => {
   const { loadData, lockData } = useRsTanContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const [claimAsSgUSD, setClaimAsSgUSD] = useState<boolean>(false)
 
   const [firstPositionToMerge, setFirstPositionToMerge] = useState<string>("")
 
@@ -92,7 +97,7 @@ export const RsTanMergeProvider = ({ children }: RsTanMergeContextProps) => {
     setIsLoading(true)
     const walletClient = getWalletClient()
     if (walletClient && firstPositionToMergeInfo && secondPositionToMergeInfo) {
-      await doMerge(walletClient, firstPositionToMergeInfo?.tokenId, secondPositionToMergeInfo?.tokenId)
+      await doMerge(walletClient, firstPositionToMergeInfo?.tokenId, secondPositionToMergeInfo?.tokenId, claimAsSgUSD)
       loadData()
       setSecondPositionToMerge("")
       setFirstPositionToMerge("")
@@ -115,6 +120,8 @@ export const RsTanMergeProvider = ({ children }: RsTanMergeContextProps) => {
     computedNewPositionId,
     computedNewUnlockDate,
     formState,
+    claimAsSgUSD,
+    setClaimAsSgUSD,
   }
 
   return <RsTanMergeContext.Provider value={contextValue}>{children}</RsTanMergeContext.Provider>

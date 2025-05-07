@@ -15,16 +15,19 @@ type RsTanUnlockContextValues = {
   isLoading: boolean
   setIsLoading: (arg: boolean) => void
 
-  depositPositionInfo: LockPosition | undefined
+  unlockPositionInfo: LockPosition | undefined
 
-  depositPosition: string
-  setDepositPosition: (arg: string) => void
+  unlockPosition: string
+  setUnlockPosition: (arg: string) => void
 
   actionUnlock: () => void
 
   actionRageQuit: () => void
 
   tanReceived: bigint | undefined
+
+  claimAsSgUSD: boolean
+  setClaimAsSgUSD: (arg: boolean) => void
 }
 
 export const RsTanUnlockContext = createContext<RsTanUnlockContextValues | undefined>(undefined)
@@ -36,20 +39,22 @@ export const RsTanUnlockProvider = ({ children }: RsTanUnlockContextProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
+  const [claimAsSgUSD, setClaimAsSgUSD] = useState<boolean>(false)
+
   const [tanReceived, setTanReceived] = useState<bigint | undefined>(undefined)
 
-  const [depositPosition, setDepositPosition] = useState<string>("")
+  const [unlockPosition, setUnlockPosition] = useState<string>("")
 
-  const depositPositionInfo = useMemo(() => {
-    const pos = lockData?.positions.find((position) => position?.tokenId.toString() === depositPosition)
+  const unlockPositionInfo = useMemo(() => {
+    const pos = lockData?.positions.find((position) => position?.tokenId.toString() === unlockPosition)
 
     return pos
-  }, [depositPosition])
+  }, [unlockPosition])
 
   useEffect(() => {
     const calculateTanReceived = async () => {
       try {
-        const endLockTime = new Date(Number(depositPositionInfo?.endLockTime) * 1000)
+        const endLockTime = new Date(Number(unlockPositionInfo?.endLockTime) * 1000)
         const publicClient = await getPublicClient()
         const currentBlockNumber = await publicClient.getBlockNumber()
         const block = await publicClient.getBlock({ blockNumber: currentBlockNumber })
@@ -57,7 +62,7 @@ export const RsTanUnlockProvider = ({ children }: RsTanUnlockContextProps) => {
         const totalDurationLeft = endLockTime.getTime() - currentTime.getTime()
         const thirteenWeeksInMilliseconds = 13 * 7 * 24 * 60 * 60 * 1000
         const penalty = Math.max(0, Math.min(1, totalDurationLeft / thirteenWeeksInMilliseconds))
-        const maxAmount = depositPositionInfo?.amount || BigInt(0)
+        const maxAmount = unlockPositionInfo?.amount || BigInt(0)
         const totalTanReceived = (maxAmount * BigInt(Math.round((1 - penalty) * 1000000))) / BigInt(1000000)
 
         setTanReceived(totalTanReceived)
@@ -67,20 +72,20 @@ export const RsTanUnlockProvider = ({ children }: RsTanUnlockContextProps) => {
       }
     }
 
-    if (depositPositionInfo) {
+    if (unlockPositionInfo) {
       calculateTanReceived()
     }
-  }, [depositPositionInfo])
+  }, [unlockPositionInfo])
 
   const actionUnlock = async () => {
     setIsLoading(true)
     const walletClient = getWalletClient()
 
-    if (walletClient && depositPositionInfo) {
-      await doUnlock(depositPositionInfo?.tokenId, walletClient, "unlock")
+    if (walletClient && unlockPositionInfo) {
+      await doUnlock(unlockPositionInfo?.tokenId, walletClient, "unlock", claimAsSgUSD)
       loadData()
       setIsLoading(false)
-      setDepositPosition("")
+      setUnlockPosition("")
     } else {
       setIsLoading(false)
     }
@@ -90,11 +95,11 @@ export const RsTanUnlockProvider = ({ children }: RsTanUnlockContextProps) => {
     setIsLoading(true)
     const walletClient = getWalletClient()
 
-    if (walletClient && depositPositionInfo) {
-      await doUnlock(depositPositionInfo?.tokenId, walletClient, "rageQuit")
+    if (walletClient && unlockPositionInfo) {
+      await doUnlock(unlockPositionInfo?.tokenId, walletClient, "rageQuit", claimAsSgUSD)
       loadData()
       setIsLoading(false)
-      setDepositPosition("")
+      setUnlockPosition("")
     } else {
       setIsLoading(false)
     }
@@ -103,12 +108,14 @@ export const RsTanUnlockProvider = ({ children }: RsTanUnlockContextProps) => {
   const contextValue: RsTanUnlockContextValues = {
     isLoading,
     setIsLoading,
-    depositPosition,
-    setDepositPosition,
-    depositPositionInfo,
+    unlockPosition,
+    setUnlockPosition,
+    unlockPositionInfo,
     actionUnlock,
     actionRageQuit,
     tanReceived,
+    claimAsSgUSD,
+    setClaimAsSgUSD,
   }
 
   return <RsTanUnlockContext.Provider value={contextValue}>{children}</RsTanUnlockContext.Provider>

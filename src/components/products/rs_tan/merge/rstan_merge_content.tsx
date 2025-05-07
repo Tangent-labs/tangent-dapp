@@ -10,6 +10,8 @@ import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { formatDate } from "@/lib/other_formatter"
 import { InfinityIcon } from "lucide-react"
 import FormButtons from "@/components/design_system/form/form_actions"
+import TokenImage from "@/components/design_system/structure/token_image"
+import InputToggle from "@/components/design_system/inputs/input_toogle"
 
 export const RsTanMergeContent = () => {
   const { lockData } = useRsTanContext()
@@ -18,8 +20,10 @@ export const RsTanMergeContent = () => {
     actionMerge,
     setSecondPositionToMerge,
     setFirstPositionToMerge,
+    setClaimAsSgUSD,
     firstPositionToMerge,
     formState,
+    claimAsSgUSD,
     secondPositionToMerge,
     firstPositionToMergeInfo,
     secondPositionToMergeInfo,
@@ -187,6 +191,33 @@ export const RsTanMergeContent = () => {
                 }
               />
               <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px]">-</div>
+            </div>
+          </div>
+
+          <div className="mb-1 mt-4 flex w-full items-center justify-between font-bold">
+            <div className="my-3 font-bold text-white">Claim recap:</div>
+
+            <div className="flex items-center justify-center gap-2 text-xs text-subtitle">
+              Claim as sgUSD <InputToggle onToggle={() => setClaimAsSgUSD(!claimAsSgUSD)} isOn={claimAsSgUSD}></InputToggle>
+            </div>
+          </div>
+          <div className="flex w-full flex-col items-center justify-around gap-2 rounded-[10px] p-3 backdrop-blur-[10px]">
+            <div className="flex w-full flex-col items-start justify-start">
+              <div className="flex w-full items-start justify-start">
+                <div className="flex w-1/2 items-start justify-start text-subtitle">Position ID</div>
+
+                <div className="flex w-1/2 items-start justify-start text-subtitle"> {claimAsSgUSD ? "sgUSD" : "tgUSD"} received</div>
+              </div>
+
+              <div className="my-1 flex w-full items-center gap-2">
+                <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[10px]">
+                  #{secondPositionToMergeInfo.tokenId}
+                </div>
+                <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
+                  {formatBigInt(secondPositionToMergeInfo.claimable, 18, 2)}
+                  <TokenImage token={claimAsSgUSD ? "sgUSD" : "tgUSD"} className="" size={16} />
+                </div>
+              </div>
             </div>
           </div>
 

@@ -1,13 +1,13 @@
 import { executeContractCall, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
-import RsTan from "../../../../abi/tgusd/RsTanService.json"
+import RsTan from "../../../../abi/tgusd/RsTan.json"
 import { LockPosition } from "../../tg_usd/tg_usd_type"
 import { RSTAN_CONTRACT } from "../rs_tan_repository"
 
 export const doApprove = async (depositWeiValue: bigint, walletClient: WalletClient) => {
   const publicClient = await getPublicClient()
 
-  const txData = getApproveTx(RSTAN_CONTRACT.TAN, RSTAN_CONTRACT.RSTAN_SERVICE, depositWeiValue)
+  const txData = getApproveTx(RSTAN_CONTRACT.TAN, RSTAN_CONTRACT.RSTAN, depositWeiValue)
 
   const gas = await publicClient.estimateContractGas(txData as EstimateContractGasParameters)
   txData.gas = gas
@@ -20,8 +20,8 @@ export const doLock = async (depositWeiValue: bigint, walletClient: WalletClient
   const txData = {
     abi: RsTan.abi as Abi,
     functionName: "createLock",
-    args: [depositWeiValue, isPermaLock, RSTAN_CONTRACT.ZAPPER],
-    address: RSTAN_CONTRACT.RSTAN_SERVICE,
+    args: [depositWeiValue, isPermaLock],
+    address: RSTAN_CONTRACT.RSTAN,
   }
 
   const txHash = await executeContractCall(walletClient, txData)
@@ -32,8 +32,8 @@ export const doIncreaseLockAmount = async (tokenId: bigint, depositWeiValue: big
   const txData = {
     abi: RsTan.abi as Abi,
     functionName: "increaseLockAmount",
-    args: [tokenId, depositWeiValue, RSTAN_CONTRACT.ZAPPER],
-    address: RSTAN_CONTRACT.RSTAN_SERVICE,
+    args: [tokenId, depositWeiValue],
+    address: RSTAN_CONTRACT.RSTAN,
   }
 
   const txHash = await executeContractCall(walletClient, txData)

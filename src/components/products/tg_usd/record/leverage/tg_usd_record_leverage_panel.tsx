@@ -52,7 +52,6 @@ export default function TgUsdLeveragePanel() {
     zapValue,
     depositAssetInfo,
     slippage,
-    gas,
     sociabilizationFee,
     leveragedCollateralQuote,
     zapInnerValue,
@@ -259,12 +258,6 @@ export default function TgUsdLeveragePanel() {
           <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="z-20 !m-0 w-96 !border-none bg-black !p-0">
             <Panel className="!border-none">
               <div className="flex w-full flex-col items-center justify-center text-primary">
-                {gas && gas > 0 ? (
-                  <div className="flex w-full items-center justify-between">
-                    <div className="flex justify-start">Network cost</div>
-                    <div className="flex justify-end">${gas}</div>
-                  </div>
-                ) : null}
                 {slippage && slippage > 0 ? (
                   <div className="flex w-full items-center justify-between">
                     <div className="flex justify-start">Max slippage</div>

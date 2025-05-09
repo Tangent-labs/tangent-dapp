@@ -67,17 +67,6 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "zapper",
-          "type": "address"
-        }
-      ],
-      "name": "NotZapper",
-      "type": "error"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
           "name": "owner",
           "type": "address"
         }

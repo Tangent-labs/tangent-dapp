@@ -1,16 +1,11 @@
-import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import { Abi, Address, EstimateContractGasParameters, Hex, SendTransactionParameters, WalletClient, WriteContractParameters } from "viem"
-import GetBalances from "@/abi/tgusd/GetBalances.json"
+import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { Abi, Address, EstimateContractGasParameters, SendTransactionParameters, WalletClient, WriteContractParameters } from "viem"
 import IERC4626 from "@/abi/tgusd/IERC4626.json"
 import WStable from "@/abi/tgusd/WStable.json"
 import { BalanceAllowanceData, SwapToken } from "../tg_usd_type"
 import { getSwapAssetPrice } from "@/services/service_price"
 import { AssetDataPriced } from "@/types"
-import { getRouteTxData } from "../quote_api"
-
-export const getBalances = async (user: Address, tokens: Address[]) => {
-  return await executeChainViewUnique<bigint[]>(GetBalances.abi as Abi, GetBalances.bytecode as Hex, [user, tokens])
-}
+import { getEnsoRoute } from "../quote_api"
 
 export const computeSwapAssetPrice = async (tokens: SwapToken[], depositAsset: string) => {
   try {
@@ -127,9 +122,9 @@ export const fetchEnsoData = async (
   receiver: Address,
   receiveAssetInfo: AssetDataPriced,
   depositAssetInfo: AssetDataPriced,
-  slippage: number
+  minAmountOut: bigint
 ) => {
-  const routerCall = await getRouteTxData(depositWeiValue, depositAssetInfo?.address, receiveAssetInfo?.address, null, receiver, slippage * 100)
+  const routerCall = await getEnsoRoute(depositWeiValue, depositAssetInfo?.address, receiveAssetInfo?.address, null, receiver, minAmountOut)
 
   if (!routerCall) throw new Error("Failed to fetch routing data")
 

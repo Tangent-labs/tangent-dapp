@@ -2,16 +2,16 @@
 
 import { Address } from "viem"
 
-export const getRouteTxData = async (
+export const getEnsoRoute = async (
   amountIn: bigint,
   tokenIn: Address,
   tokenOut: Address,
   fromAddress: Address | null,
   receiver: Address,
-  slippage?: number
+  minAmountOut: bigint
 ) => {
   try {
-    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${!!fromAddress ? fromAddress : receiver}&receiver=${receiver}&tokenIn=${tokenIn}&tokenOut=${tokenOut}&amountIn=${amountIn}&slippage=${slippage}&routingStrategy=router`
+    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${!!fromAddress ? fromAddress : receiver}&receiver=${receiver}&tokenIn=${tokenIn}&tokenOut=${tokenOut}&amountIn=${amountIn}&minAmountOut=${minAmountOut}&routingStrategy=router`
 
     const response = await fetch(url, {
       method: "GET",
@@ -32,15 +32,15 @@ export const getRouteTxData = async (
   }
 }
 
-export const getTokenQuote = async (
+export const getEnsoTokenQuote = async (
   depositWeiValue: bigint | undefined,
   currentAddress: Address,
-  collateralAddress: Address,
-  depositAssetAddress: Address,
-  slippage: number
+  tokenOut: Address,
+  tokenIn: Address,
+  minAmountOut: bigint
 ) => {
   try {
-    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${currentAddress}&amountIn=${depositWeiValue}&tokenIn=${depositAssetAddress}&tokenOut=${collateralAddress}&slippage=${slippage}`
+    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${currentAddress}&amountIn=${depositWeiValue}&tokenIn=${tokenIn}&tokenOut=${tokenOut}&minAmountOut=${minAmountOut}`
 
     const response = await fetch(url, {
       method: "GET",
@@ -56,7 +56,7 @@ export const getTokenQuote = async (
 
     return await response.json()
   } catch (error) {
-    console.error("Failed to fetch Enso data in getTokenQuote:", error)
+    console.error("Failed to fetch Enso data in getEnsoTokenQuote:", error)
     return null
   }
 }

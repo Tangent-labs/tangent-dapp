@@ -1,19 +1,20 @@
 import { Abi, Address, formatEther, formatUnits, Hex, WalletClient, zeroAddress } from "viem"
 import { BalanceAllowanceData, ChainViewMarketRow, MarketDetailData, TgUsdMarketDisplayData, TgUsdMarketLoanDisplayData, ZapToken } from "../tg_usd_type"
-import { executeChainViewUnique } from "@/services/service_rpc"
+import { executeAppove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
 import MarketDetailsUI from "@/abi/tgusd/MarketDetailsUI.json"
 import GetBalances from "@/abi/tgusd/GetBalances.json"
 import { AssetDataPriced, ExistingAsset } from "@/types"
-import { tgUsdMarkets } from "../tg_usd_repository"
+import { TGUSD_CONTRACT, tgUsdMarkets } from "../tg_usd_repository"
 import { getAssetInfo } from "@/services/service_existing_asset"
-import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
+import { formatDollar, formatDollarBigInt, formatNumber, toBigInt } from "@/lib/number_formatter"
 import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
 import { getSwapAssetPrice } from "@/services/service_price"
+import { getEnsoRoute } from "../quote_api"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
 
-export const getSwapTokenBalanceAllowance = async (walletClient: WalletClient, address: Address | undefined, spender: Address | undefined) => {
+export const getBalancesAndAllowances = async (walletClient: WalletClient, address: Address | undefined, spender: Address | undefined) => {
   address = address || zeroAddress
   const [account] = await walletClient.requestAddresses()
 
@@ -25,6 +26,11 @@ export const getSwapTokenBalanceAllowance = async (walletClient: WalletClient, a
 
 export const getBalances = async (user: Address, tokens: Address[]) => {
   return await executeChainViewUnique<bigint[]>(GetBalances.abi as Abi, GetBalances.bytecode as Hex, [user, tokens])
+}
+
+export async function doApprove(walletClient: WalletClient, contract: Address, spender: Address, amount: bigint) {
+  const txHash = await executeAppove(walletClient, contract, spender, amount)
+  return await waitForTransaction(txHash)
 }
 
 export const getTgUsdMarketRecordData = async (address: Address | undefined, market: Address) => {
@@ -224,4 +230,42 @@ export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: st
     console.error("Failed to compute swap asset price:", error)
     return null
   }
+}
+
+export const prepareZapTransaction = async (
+  amount: bigint,
+  tokenIn: AssetDataPriced,
+  tokenOut: AssetDataPriced,
+  marketInfo: { marketAddress: Address },
+  minAmountOut: bigint
+) => {
+  const routerCall = await getEnsoRoute(amount, tokenIn?.address, tokenOut?.address, TGUSD_CONTRACT.ZAPPER, marketInfo.marketAddress, minAmountOut)
+
+  if (!routerCall?.tx?.data) throw new Error("Failed to fetch routing data")
+
+  const zapMarketData = {
+    tokenIn: tokenIn?.address,
+    amountIn: amount,
+    minAmountOut: 0n,
+  }
+
+  return { routerCallData: routerCall, zapMarketData }
+}
+
+export const computeMinAmountOut = (valueIn: bigint, tokenIn: AssetDataPriced, tokenOut: AssetDataPriced): bigint => {
+  if (!valueIn || !tokenOut?.price || !tokenIn?.price) {
+    console.info("Returned minAmountOut 0n")
+    return 0n
+  }
+
+  if (valueIn <= 0n) {
+    console.info("Returned minAmountOut 0n")
+    return 0n
+  }
+
+  const inputValueInUSD = valueIn * toBigInt(tokenOut.price, tokenOut?.decimals || 18)
+  const expectedOutputAmount = inputValueInUSD / toBigInt(tokenIn.price, tokenIn?.decimals || 18)
+
+  console.info("Returned minAmountOut : ", expectedOutputAmount)
+  return expectedOutputAmount
 }

@@ -1,20 +1,8 @@
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { BalanceAllowanceData, MarketDetailData, TgUsdtMarketRepayParams, ZapMarketData } from "../../tg_usd_type"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
-import { executeContractCall, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { formatBigInt } from "@/lib/number_formatter"
-
-export const doApproveZapRepay = async (walletClient: WalletClient, depositWeiValue: bigint, repayAsset: Address, marketAddress: Address) => {
-  const publicClient = await getPublicClient()
-
-  const txData = getApproveTx(repayAsset, marketAddress, depositWeiValue)
-
-  const gas = await publicClient.estimateContractGas(txData as EstimateContractGasParameters)
-  txData.gas = gas
-
-  const hash = await walletClient.writeContract(txData as WriteContractParameters)
-  return await waitForTransaction(hash)
-}
 
 export function getRepayFormState(
   marketData?: MarketDetailData,
@@ -54,71 +42,91 @@ export function getRepayFormState(
   }
 }
 
-export async function doMarketRepay(walletClient: WalletClient, args: TgUsdtMarketRepayParams) {
+export async function doRepay(walletClient: WalletClient, args: TgUsdtMarketRepayParams) {
   const [account] = await walletClient.requestAddresses()
-
-  const params = !!args.withdrawWeiValue ? [args.withdrawWeiValue, args.repayWeiValue] : [account, args.repayWeiValue]
-  const method = !!args.withdrawWeiValue ? "repayAndWithdraw" : "repay"
 
   const txData = {
     abi: MarketExternalActions.abi as Abi,
-    functionName: method,
+    functionName: "repay",
     address: args.marketAddress,
-    args: params,
+    args: [account, args.repayWeiValue],
+    gas: undefined as undefined | bigint,
+  }
+  const txHash = await executeContractCall(walletClient, txData)
+  return await waitForTransaction(txHash)
+}
+export async function doRepayAndWithdraw(walletClient: WalletClient, args: TgUsdtMarketRepayParams) {
+  const txData = {
+    abi: MarketExternalActions.abi as Abi,
+    functionName: "repayAndWithdraw",
+    address: args.marketAddress,
+    args: [args.withdrawWeiValue, args.repayWeiValue],
     gas: undefined as undefined | bigint,
   }
   const txHash = await executeContractCall(walletClient, txData)
   return await waitForTransaction(txHash)
 }
 
-export const doZapRepay = async (
+export const doZapRepayAndWithdraw = async (
   marketAddress: Address,
   walletClient: WalletClient,
   repayData: { routerAddress: string; data: string },
   zapMarket: ZapMarketData,
-  withdrawWeiValue?: bigint
+  withdrawWeiValue: bigint
 ) => {
   const [account] = await walletClient.requestAddresses()
 
   const publicClient = await getPublicClient()
 
-  let estimateGasData
+  const estimateGasData = {
+    abi: MarketExternalActions.abi,
+    functionName: "zapRepayAndWithdraw",
+    args: [
+      withdrawWeiValue,
+      {
+        tokenIn: zapMarket?.tokenIn,
+        amountIn: zapMarket?.amountIn,
+        minAmountOut: zapMarket?.minAmountOut,
+        zap: { router: repayData?.routerAddress, routerCall: repayData?.data },
+      },
+    ] as unknown[],
+    address: marketAddress,
+    account,
+    value: 0n,
+  } as EstimateContractGasParameters
 
-  if (withdrawWeiValue) {
-    estimateGasData = {
-      abi: MarketExternalActions.abi,
-      functionName: "zapRepayAndWithdraw",
-      args: [
-        withdrawWeiValue,
-        {
-          tokenIn: zapMarket?.tokenIn,
-          amountIn: zapMarket?.amountIn,
-          minAmountOut: zapMarket?.minAmountOut,
-          zap: { router: repayData?.routerAddress, routerCall: repayData?.data },
-        },
-      ] as unknown[],
-      address: marketAddress,
+  const gas = await publicClient.estimateContractGas(estimateGasData)
+  const txData = { ...estimateGasData, gas }
+  const hash = await walletClient.writeContract(txData as WriteContractParameters)
+  return hash
+}
+
+export const doZapRepay = async (
+  marketAddress: Address,
+  walletClient: WalletClient,
+  repayData: { routerAddress: string; data: string },
+  zapMarket: ZapMarketData
+) => {
+  const [account] = await walletClient.requestAddresses()
+
+  const publicClient = await getPublicClient()
+
+  const estimateGasData = {
+    abi: MarketExternalActions.abi,
+    functionName: "zapRepay",
+    args: [
       account,
-      value: 0n,
-    } as EstimateContractGasParameters
-  } else {
-    estimateGasData = {
-      abi: MarketExternalActions.abi,
-      functionName: "zapRepay",
-      args: [
-        account,
-        {
-          tokenIn: zapMarket?.tokenIn,
-          amountIn: zapMarket?.amountIn,
-          minAmountOut: zapMarket?.minAmountOut,
-          zap: { router: repayData?.routerAddress, routerCall: repayData?.data },
-        },
-      ] as unknown[],
-      address: marketAddress,
-      account,
-      value: 0n,
-    } as EstimateContractGasParameters
-  }
+      {
+        tokenIn: zapMarket?.tokenIn,
+        amountIn: zapMarket?.amountIn,
+        minAmountOut: zapMarket?.minAmountOut,
+        zap: { router: repayData?.routerAddress, routerCall: repayData?.data },
+      },
+    ] as unknown[],
+    address: marketAddress,
+    account,
+    value: 0n,
+  } as EstimateContractGasParameters
 
   const gas = await publicClient.estimateContractGas(estimateGasData)
   const txData = { ...estimateGasData, gas }

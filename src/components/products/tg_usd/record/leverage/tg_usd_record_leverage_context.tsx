@@ -2,25 +2,16 @@
 
 import { TgUsdMarket, ZapToken } from "../../tg_usd_type"
 import { AssetDataPriced, FormState } from "@/types"
-import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { EstimateContractGasParameters, formatUnits } from "viem"
-import { gasCostToUSD, getPublicClient } from "@/services/service_rpc"
+import { formatUnits } from "viem"
 import { useTgUsdContext } from "../../tg_usd_context"
-import { returnEnsoQuote, returnRoute } from "../../global_quote_controller"
+import { getQuote, returnRoute } from "../../global_quote_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
-import {
-  doApproveMarketDeposit,
-  doApproveZapLeverage,
-  doMarketLeverage,
-  doZapLeverage,
-  getLeverageFormState,
-  prepareZapTransaction,
-} from "./tg_usd_record_leverage_controller"
-import { computeSwapAssetPrice } from "../tg_usd_record_controller"
+import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./tg_usd_record_leverage_controller"
+import { computeMinAmountOut, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 
 type TgUsdLeverageContextProps = {
@@ -64,7 +55,7 @@ type TgUsdLeverageContextValues = {
 
   slippage: number
   setSlippage: (arg: number) => void
-  gas: number | null
+
   sociabilizationFee: number | null
 
   zapInnerValue: number | undefined
@@ -94,7 +85,7 @@ export const TgUsdLeverageContext = createContext<TgUsdLeverageContextValues | u
 export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: TgUsdLeverageContextProps) => {
   const { tokens } = useTgUsdContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, tgUSDInfo } = useTgUsdRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
@@ -105,7 +96,7 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
 
   const [depositAsset, setDepositAsset] = useState<string | undefined>(undefined)
-  const [swapAssetPrice, setSwapAssetPrice] = useState<number | null>(null)
+  const [swapAssetPrice, setSwapAssetPrice] = useState<number>(0)
 
   const [borrowSliderPercent, setBorrowSliderPercent] = useState<number>(0)
 
@@ -127,9 +118,7 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
   const [slippage, setSlippage] = useState<number>(10)
   // TODO replace with a lower slippage by default
 
-  const [gas, setGas] = useState<number | null>(null)
-
-  const depositAssetInfo = useMemo(() => {
+  const depositAssetInfo = useMemo<AssetDataPriced | null>(() => {
     if (depositAsset === "ETH") {
       return {
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
@@ -138,7 +127,7 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
         symbol: "ETH",
         name: "ETH",
         price: swapAssetPrice,
-      } as AssetDataPriced
+      }
     }
 
     const assetInfo = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset) || undefined
@@ -172,7 +161,8 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
 
       setIsZapLoading(true)
       try {
-        const { quote } = await returnEnsoQuote(value, currentAddress, collateralInfo?.address, depositAssetInfo?.address, slippage)
+        const minAmountOut = computeMinAmountOut(value, depositAssetInfo, collateralInfo)
+        const { quote } = await getQuote(value, currentAddress, collateralInfo?.address, depositAssetInfo?.address, minAmountOut)
 
         if (quote) {
           setZapValue(quote as bigint)
@@ -199,7 +189,7 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
       setIsZapLoading(true)
       try {
         const data = await computeSwapAssetPrice(tokens, depositAsset)
-        setSwapAssetPrice(data)
+        setSwapAssetPrice(data || 0)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
       } finally {
@@ -226,7 +216,7 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
       return
     }
 
-    await doApproveZapLeverage(walletClient, depositAssetInfo?.address, depositWeiValue || 0n, marketInfo?.marketAddress)
+    await doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue || 0n)
       .then(() => {
         fetchBalanceAllowanceData(depositAssetInfo?.address)
         setIsDepositLoading(false)
@@ -240,10 +230,7 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
   const actionApprove = () => {
     const walletClient = getWalletClient()
     if (walletClient && depositWeiValue)
-      doApproveMarketDeposit(walletClient, collateralInfo?.address, {
-        marketAddress: marketInfo?.marketAddress,
-        depositWeiValue,
-      }).then(() => {
+      doApprove(walletClient, collateralInfo?.address, marketInfo?.marketAddress, depositWeiValue).then(() => {
         loadOnChainData()
         setIsDepositLoading(false)
       })
@@ -339,76 +326,10 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
     }
   }, [depositAssetInfo])
 
-  const computeGas = async () => {
-    try {
-      const { routerCallData, zapMarketData } = await prepareZapTransaction(depositWeiValue!, collateralInfo, depositAssetInfo!, marketInfo, slippage)
-
-      const walletClient = getWalletClient()
-
-      const [account] = await walletClient!.requestAddresses()
-
-      let estimateGasData
-
-      if (!!borrowWeiValue) {
-        estimateGasData = {
-          abi: MarketExternalActions.abi,
-          functionName: "zapDepositAndBorrow",
-          args: [
-            borrowWeiValue,
-            isStaking,
-            {
-              tokenIn: zapMarketData?.tokenIn,
-              amountIn: zapMarketData?.amountIn,
-              minAmountOut: zapMarketData?.minAmountOut,
-              zap: { router: routerCallData?.tx?.to, routerCall: routerCallData?.tx?.data },
-            },
-          ] as unknown[],
-          address: marketInfo?.marketAddress,
-          account,
-          value: 0n,
-        } as EstimateContractGasParameters
-      } else {
-        estimateGasData = {
-          abi: MarketExternalActions.abi,
-          functionName: "zapDeposit",
-          args: [
-            account,
-            isStaking,
-            {
-              tokenIn: zapMarketData?.tokenIn,
-              amountIn: zapMarketData?.amountIn,
-              minAmountOut: zapMarketData?.minAmountOut,
-              zap: { router: routerCallData?.tx?.to, routerCall: routerCallData?.tx?.data },
-            },
-          ] as unknown[],
-          address: marketInfo?.marketAddress,
-          account,
-          value: 0n,
-        } as EstimateContractGasParameters
-      }
-
-      if (zapMarketData?.tokenIn === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
-        estimateGasData.value = zapMarketData?.amountIn
-      }
-
-      const publicClient = await getPublicClient()
-      const gasData = await publicClient.estimateContractGas(estimateGasData)
-      const gasInUsd = await gasCostToUSD(gasData)
-      setGas(gasInUsd)
-    } catch (error) {
-      console.error("Error in computeGas:", error)
-    }
-  }
-
-  useEffect(() => {
-    if (!!depositWeiValue && !!zapValue && !!depositAssetInfo && !!currentAddress && !formState?.haveToApprove && !isZapLoading && !isDepositLoading) {
-      computeGas()
-    }
-  }, [depositWeiValue, zapValue, formState, isZapLoading, isDepositLoading])
-
   useEffect(() => {
     const computeQuote = async (value: bigint) => {
-      const { quote } = await returnEnsoQuote(value, currentAddress!, collateralInfo?.address, TGUSD_CONTRACT.TG_USD, slippage)
+      const minAmountOut = computeMinAmountOut(value, tgUSDInfo, collateralInfo)
+      const { quote } = await getQuote(value, currentAddress!, collateralInfo?.address, TGUSD_CONTRACT.TG_USD, minAmountOut)
 
       setIsDepositLoading(false)
       setLeveragedCollateralQuote(quote)
@@ -464,7 +385,7 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
 
     slippage,
     setSlippage,
-    gas,
+
     sociabilizationFee,
 
     depositSliderPercent,

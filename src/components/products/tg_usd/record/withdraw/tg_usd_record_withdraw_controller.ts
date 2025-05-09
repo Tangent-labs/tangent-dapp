@@ -2,7 +2,6 @@ import { Abi, WalletClient } from "viem"
 import { MarketDetailData, TgUsdtMarketWitrhdrawParams } from "../../tg_usd_type"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
-
 import { AssetDataPriced } from "@/types"
 import { getComputedFutureLoanData } from "../tg_usd_record_controller"
 

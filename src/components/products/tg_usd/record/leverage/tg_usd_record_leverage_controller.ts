@@ -1,16 +1,9 @@
 import { AssetDataPriced } from "@/types"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
-import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 import { getBorrowCommonFormState } from "../tg_usd_record_controller"
-import GetBalances from "@/abi/tgusd/GetBalances.json"
-import { Abi, Address, EstimateContractGasParameters, Hex, WalletClient, WriteContractParameters } from "viem"
+import { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { BalanceAllowanceData, MarketDetailData } from "../../tg_usd_type"
-import { executeAppove, executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import { getRouteTxData } from "./leverage_actions"
-
-export const getBalances = async (user: Address, tokens: Address[]) => {
-  return await executeChainViewUnique<bigint[]>(GetBalances.abi as Abi, GetBalances.bytecode as Hex, [user, tokens])
-}
+import { getPublicClient } from "@/services/service_rpc"
 
 export function getLeverageFormState(
   marketData?: MarketDetailData,
@@ -57,15 +50,6 @@ export function getLeverageFormState(
   }
 }
 
-export async function doApproveMarketDeposit(
-  walletClient: WalletClient,
-  collateralAddress: Address,
-  args: { marketAddress: Address; depositWeiValue: bigint }
-) {
-  const txHash = await executeAppove(walletClient, collateralAddress, args.marketAddress, args.depositWeiValue)
-  return await waitForTransaction(txHash)
-}
-
 export const doZapLeverage = async (
   tgUSDToFlashMint: bigint,
   minCollatAmountOut: bigint,
@@ -102,18 +86,6 @@ export const doZapLeverage = async (
   return hash
 }
 
-export const doApproveZapLeverage = async (walletClient: WalletClient, assetAddress: Address, amount: bigint, marketAddress: Address) => {
-  const publicClient = await getPublicClient()
-
-  const txData = getApproveTx(assetAddress, marketAddress, amount)
-
-  const gas = await publicClient.estimateContractGas(txData as EstimateContractGasParameters)
-  txData.gas = gas
-
-  const hash = await walletClient.writeContract(txData as WriteContractParameters)
-  return await waitForTransaction(hash)
-}
-
 export const doMarketLeverage = async (
   marketAddress: Address,
   walletClient: WalletClient,
@@ -145,24 +117,4 @@ export const doMarketLeverage = async (
   const txData = { ...estimateGasData, gas }
   const hash = await walletClient.writeContract(txData as WriteContractParameters)
   return hash
-}
-
-export const prepareZapTransaction = async (
-  depositWeiValue: bigint,
-  collateralInfo: AssetDataPriced,
-  depositAssetInfo: AssetDataPriced,
-  marketInfo: { marketAddress: Address },
-  slippage: number
-) => {
-  const routerCall = await getRouteTxData(depositWeiValue, collateralInfo, depositAssetInfo, TGUSD_CONTRACT.ZAPPER, marketInfo.marketAddress, slippage * 100)
-
-  if (!routerCall?.tx?.data) throw new Error("Failed to fetch routing data")
-
-  const zapMarketData = {
-    tokenIn: depositAssetInfo?.address,
-    amountIn: depositWeiValue,
-    minAmountOut: 0n,
-  }
-
-  return { routerCallData: routerCall, zapMarketData }
 }

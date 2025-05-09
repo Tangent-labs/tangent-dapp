@@ -22,7 +22,7 @@ import { formatUnits } from "viem"
 export default function TgUsdRepayPanel() {
   const { tokens } = useTgUsdContext()
 
-  const { tgUSDInfo, collateralInfo, balances, balanceAllowanceData } = useTgUsdRecordContext()
+  const { tgUSDInfo, collateralInfo, balances } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -34,7 +34,7 @@ export default function TgUsdRepayPanel() {
     setWithdrawPercentage,
     setRepayAsset,
     handleRepayValueChange,
-    zapRepay,
+    actionZapRepay,
     actionApprove,
     repayWeiValue,
     repayAsset,
@@ -149,7 +149,7 @@ export default function TgUsdRepayPanel() {
             disabled={!canInteract}
             isZapping={!!repayAsset && repayAsset !== "tgUSD"}
             depositAsset={repayAssetInfo || tgUSDInfo}
-            balance={balanceAllowanceData?.balance}
+            balance={maxRepayableValue}
             displayBalance={!!repayAsset && repayAsset !== "tgUSD"}
             setMaxBalance={() => {}}
             displaySliderInput={true}
@@ -226,7 +226,7 @@ export default function TgUsdRepayPanel() {
         <FormButtons
           actions={{
             handleApprove: repayAsset && repayAsset !== "tgUSD" ? actionApprove : undefined,
-            handleProcess: repayAsset && repayAsset !== "tgUSD" ? zapRepay : actionRepay,
+            handleProcess: repayAsset && repayAsset !== "tgUSD" ? actionZapRepay : actionRepay,
           }}
           formState={formState}
           labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}

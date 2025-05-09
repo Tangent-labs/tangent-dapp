@@ -12,7 +12,9 @@ import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 export default function TgUsdWithdrawPanel() {
   const { actionWithdraw, formState, withdrawWeiValue, setWithdrawWeiValue, maxWithdrawable, withdrawPercentage, setWithdrawPercentage } =
     useTgUsdWithdrawContext()
+
   const { tgUSDInfo, collateralInfo } = useTgUsdRecordContext()
+
   const { canInteract } = useWalletConnexionContext()
 
   const WithdrawAssetDisplay = () => {

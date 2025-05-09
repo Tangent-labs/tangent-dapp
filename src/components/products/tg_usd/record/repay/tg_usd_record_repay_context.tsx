@@ -4,13 +4,13 @@ import { AssetDataPriced, FormState } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doApproveZapRepay, doMarketRepay, doZapRepay, getRepayFormState } from "./tg_usd_record_repay_controller"
+import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./tg_usd_record_repay_controller"
 import { formatUnits } from "viem"
-import { returnEnsoQuote, returnRoute } from "../../global_quote_controller"
+import { getQuote, returnRoute } from "../../global_quote_controller"
 import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 import { useTgUsdContext } from "../../tg_usd_context"
 import { ZapToken } from "../../tg_usd_type"
-import { computeSwapAssetPrice } from "../tg_usd_record_controller"
+import { computeMinAmountOut, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 
@@ -58,6 +58,8 @@ type TgUsdRepayContextValues = {
   zapRepay: () => void
 
   actionApprove: () => void
+
+  actionZapRepay: () => void
 }
 
 export const TgUsdRepayContext = createContext<TgUsdRepayContextValues | undefined>(undefined)
@@ -73,7 +75,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const [repayWeiValue, setRepayWeiValue] = useState<bigint | undefined>()
 
-  const [swapAssetPrice, setSwapAssetPrice] = useState<number | null>(null)
+  const [swapAssetPrice, setSwapAssetPrice] = useState<number>(0)
 
   const [withdrawWeiValue, setWithdrawWeiValue] = useState<bigint | undefined>()
 
@@ -87,19 +89,17 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const [tgUdsRepayedValue, setTgUsdRepayedValue] = useState<bigint | undefined>()
 
-  // Store walletClient in useRef
   const walletClientRef = useRef<ReturnType<typeof getWalletClient> | null>(null)
 
-  // Sync walletClientRef with wallet connection state
   useEffect(() => {
     if (isWellConnected && currentAddress) {
       walletClientRef.current = getWalletClient()
     } else {
-      walletClientRef.current = null // Clear ref when disconnected
+      walletClientRef.current = null
     }
   }, [isWellConnected, currentAddress, getWalletClient])
 
-  const repayAssetInfo = useMemo(() => {
+  const repayAssetInfo = useMemo<AssetDataPriced | null>(() => {
     if (repayAsset === "ETH") {
       return {
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
@@ -108,7 +108,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
         symbol: "ETH",
         name: "ETH",
         price: swapAssetPrice,
-      } as AssetDataPriced
+      }
     }
 
     const assetInfo = tokens.find((el: ZapToken) => el.name === repayAsset || el.symbol === repayAsset) || undefined
@@ -134,6 +134,49 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     })
   }, [repayWeiValue, withdrawWeiValue, tgUdsRepayedValue])
 
+  const actionZapRepay = () => {
+    if (!!withdrawWeiValue && withdrawWeiValue > 0) {
+      zapRepayAndWithdraw()
+    } else {
+      zapRepay()
+    }
+  }
+
+  const zapRepayAndWithdraw = async () => {
+    if (!repayWeiValue || !repayAssetInfo || !marketData || !withdrawWeiValue) return
+
+    setIsZapLoading(true)
+
+    try {
+      const repayData = await returnRoute(repayAssetInfo?.address, TGUSD_CONTRACT?.TG_USD, repayWeiValue, 0n, currentAddress!, TGUSD_CONTRACT.ZAPPER)
+
+      const zapMarketData = {
+        tokenIn: repayAssetInfo?.address,
+        amountIn: repayWeiValue,
+        minAmountOut: 0n,
+      }
+
+      doZapRepayAndWithdraw(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData, withdrawWeiValue)
+        .then(() => {
+          loadOnChainData()
+          setPercentage(0)
+          setWithdrawPercentage(0)
+          setIsZapLoading(false)
+          setRepayWeiValue(0n)
+          setWithdrawWeiValue(0n)
+          setTgUsdRepayedValue(0n)
+          toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
+        })
+        .catch(() => {
+          toast.error(ToastComponent, { data: { type: "Error", content: "Transaction failed." } })
+          setIsZapLoading(false)
+        })
+    } catch (error) {
+      setIsZapLoading(false)
+      console.error("Error in getRouteAndDeposit:", error)
+    }
+  }
+
   const zapRepay = async () => {
     if (!repayWeiValue || !repayAssetInfo || !marketData) return
 
@@ -148,7 +191,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
         minAmountOut: 0n,
       }
 
-      doZapRepay(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData, withdrawWeiValue)
+      doZapRepay(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData)
         .then(() => {
           loadOnChainData()
           setPercentage(0)
@@ -157,7 +200,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
           setRepayWeiValue(0n)
           setWithdrawWeiValue(0n)
           setTgUsdRepayedValue(0n)
-          toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
+          toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
         })
         .catch(() => {
           toast.error(ToastComponent, { data: { type: "Error", content: "Transaction failed." } })
@@ -172,7 +215,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   const actionApprove = async () => {
     if (!repayWeiValue || !repayAssetInfo || !marketData) return
 
-    doApproveZapRepay(walletClientRef.current!, repayWeiValue, repayAssetInfo?.address, marketData?.marketAddress)
+    doApprove(walletClientRef.current!, repayAssetInfo?.address, marketData?.marketAddress, repayWeiValue)
       .then(() => {
         loadOnChainData()
         fetchBalanceAllowanceData(repayAssetInfo?.address)
@@ -184,7 +227,25 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   }
 
   const actionRepay = () => {
-    doMarketRepay(walletClientRef.current!, { marketAddress: marketData!.marketAddress, repayWeiValue, withdrawWeiValue }).then(() => {
+    if (!!withdrawWeiValue && withdrawWeiValue > 0) {
+      marketRepay()
+    } else {
+      marketRepayAndWithdraw()
+    }
+  }
+
+  const marketRepay = () => {
+    doRepay(walletClientRef.current!, { marketAddress: marketData!.marketAddress, repayWeiValue }).then(() => {
+      loadOnChainData()
+      setRepayWeiValue(0n)
+      setWithdrawWeiValue(0n)
+      setPercentage(0)
+      setWithdrawPercentage(0)
+    })
+  }
+
+  const marketRepayAndWithdraw = () => {
+    doRepayAndWithdraw(walletClientRef.current!, { marketAddress: marketData!.marketAddress, repayWeiValue, withdrawWeiValue }).then(() => {
       loadOnChainData()
       setRepayWeiValue(0n)
       setWithdrawWeiValue(0n)
@@ -257,7 +318,8 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
       setIsZapLoading(true)
       try {
-        const { quote } = await returnEnsoQuote(value, currentAddress, assetInfo?.address, repayAssetInfo?.address, 10)
+        const minAmountOut = computeMinAmountOut(value, repayAssetInfo, assetInfo)
+        const { quote } = await getQuote(value, currentAddress, assetInfo?.address, repayAssetInfo?.address, minAmountOut)
 
         if (quote) {
           setTgUsdRepayedValue(quote)
@@ -286,7 +348,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
       setIsZapLoading(true)
       try {
         const data = await computeSwapAssetPrice(tokens, repayAsset)
-        setSwapAssetPrice(data)
+        setSwapAssetPrice(data || 0)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
       } finally {
@@ -323,6 +385,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     swapAssetPrice,
     zapRepay,
     actionApprove,
+    actionZapRepay,
   }
 
   return <TgUsdRepayContext.Provider value={contextValue}>{children}</TgUsdRepayContext.Provider>

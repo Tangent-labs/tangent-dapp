@@ -6,7 +6,7 @@ import GetBalances from "@/abi/tgusd/GetBalances.json"
 import { AssetDataPriced, ExistingAsset } from "@/types"
 import { TGUSD_CONTRACT, tgUsdMarkets } from "../tg_usd_repository"
 import { getAssetInfo } from "@/services/service_existing_asset"
-import { formatDollar, formatDollarBigInt, formatNumber, toBigInt } from "@/lib/number_formatter"
+import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
 import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
 import { getSwapAssetPrice } from "@/services/service_price"
 import { getEnsoRoute } from "../quote_api"
@@ -250,22 +250,4 @@ export const prepareZapTransaction = async (
   }
 
   return { routerCallData: routerCall, zapMarketData }
-}
-
-export const computeMinAmountOut = (valueIn: bigint, tokenIn: AssetDataPriced, tokenOut: AssetDataPriced): bigint => {
-  if (!valueIn || !tokenOut?.price || !tokenIn?.price) {
-    console.info("Returned minAmountOut 0n")
-    return 0n
-  }
-
-  if (valueIn <= 0n) {
-    console.info("Returned minAmountOut 0n")
-    return 0n
-  }
-
-  const inputValueInUSD = valueIn * toBigInt(tokenOut.price, tokenOut?.decimals || 18)
-  const expectedOutputAmount = inputValueInUSD / toBigInt(tokenIn.price, tokenIn?.decimals || 18)
-
-  console.info("Returned minAmountOut : ", expectedOutputAmount)
-  return expectedOutputAmount
 }

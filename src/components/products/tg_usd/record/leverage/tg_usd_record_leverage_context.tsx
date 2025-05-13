@@ -11,7 +11,7 @@ import { getQuote, returnRoute } from "../../global_quote_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./tg_usd_record_leverage_controller"
-import { computeMinAmountOut, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
+import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 
 type TgUsdLeverageContextProps = {
@@ -85,7 +85,7 @@ export const TgUsdLeverageContext = createContext<TgUsdLeverageContextValues | u
 export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: TgUsdLeverageContextProps) => {
   const { tokens } = useTgUsdContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, tgUSDInfo } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData } = useTgUsdRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
@@ -96,6 +96,7 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
 
   const [depositAsset, setDepositAsset] = useState<string | undefined>(undefined)
+
   const [swapAssetPrice, setSwapAssetPrice] = useState<number>(0)
 
   const [borrowSliderPercent, setBorrowSliderPercent] = useState<number>(0)
@@ -105,18 +106,18 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
   const [depositSliderPercent, setDepositSliderPercent] = useState<number>(0)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
+
   const [isDepositLoading, setIsDepositLoading] = useState(false)
 
   const [isZapLoading, setIsZapLoading] = useState(false)
+
   const [zapValue, setZapValue] = useState<bigint | null>(null)
 
   const [zapInnerValue, setZapInnerValue] = useState<number | undefined>(zapValue !== undefined ? Number(formatUnits(zapValue || BigInt(0), 18)) : undefined)
 
   const [leveragedCollateralQuote, setLeveragedCollateralQuote] = useState<bigint | undefined>()
 
-  //
   const [slippage, setSlippage] = useState<number>(10)
-  // TODO replace with a lower slippage by default
 
   const depositAssetInfo = useMemo<AssetDataPriced | null>(() => {
     if (depositAsset === "ETH") {
@@ -161,8 +162,7 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
 
       setIsZapLoading(true)
       try {
-        const minAmountOut = computeMinAmountOut(value, depositAssetInfo, collateralInfo)
-        const { quote } = await getQuote(value, currentAddress, collateralInfo?.address, depositAssetInfo?.address, minAmountOut)
+        const { quote } = await getQuote(value, currentAddress, collateralInfo?.address, depositAssetInfo?.address, 0n)
 
         if (quote) {
           setZapValue(quote as bigint)
@@ -242,13 +242,20 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
     loadOnChainData()
     if (!walletClient || !currentAddress || !depositWeiValue || !borrowWeiValue || !depositAssetInfo) return
 
-    const leverageData = await returnRoute(TGUSD_CONTRACT.TG_USD, collateralInfo?.address, borrowWeiValue, 0n, marketInfo?.marketAddress, TGUSD_CONTRACT.ZAPPER)
+    const leverageData = await returnRoute(
+      TGUSD_CONTRACT.TG_USD,
+      collateralInfo?.address,
+      borrowWeiValue,
+      (BigInt(leveragedCollateralQuote!) * BigInt(100 - slippage)) / BigInt(100),
+      marketInfo?.marketAddress,
+      TGUSD_CONTRACT.ZAPPER
+    )
 
     const zapData = await returnRoute(
       depositAssetInfo?.address,
       collateralInfo?.address,
       depositWeiValue,
-      0n,
+      (BigInt(zapValue!) * BigInt(100 - slippage)) / BigInt(100),
       marketInfo?.marketAddress,
       currentAddress!,
       currentAddress!
@@ -256,12 +263,12 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
 
     doZapLeverage(
       borrowWeiValue,
-      0n,
+      (BigInt(leveragedCollateralQuote!) * BigInt(100 - slippage)) / BigInt(100),
       isStaking,
       leverageData!,
       depositAssetInfo?.address,
       depositWeiValue,
-      0n,
+      (BigInt(zapValue!) * BigInt(100 - slippage)) / BigInt(100),
       zapData!,
       walletClient,
       marketInfo?.marketAddress
@@ -271,8 +278,8 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
         setDepositWeiValue(0n)
         setBorrowWeiValue(0n)
         setBorrowSliderPercent(0)
+        setLeveragedCollateralQuote(0n)
         setDepositSliderPercent(0)
-        setZapValue(0n)
         setIsDepositLoading(false)
         toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
       })
@@ -287,14 +294,22 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
     loadOnChainData()
     if (!walletClient || !currentAddress || !leveragedCollateralQuote || !borrowWeiValue) return
 
-    const leverageData = await returnRoute(TGUSD_CONTRACT.TG_USD, collateralInfo?.address, borrowWeiValue, 0n, marketInfo?.marketAddress, TGUSD_CONTRACT.ZAPPER)
+    const leverageData = await returnRoute(
+      TGUSD_CONTRACT.TG_USD,
+      collateralInfo?.address,
+      borrowWeiValue,
+      leveragedCollateralQuote,
+      marketInfo?.marketAddress,
+      TGUSD_CONTRACT.ZAPPER
+    )
 
-    doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, 0n, isStaking, leverageData!)
+    doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, isStaking, leverageData!)
       .then(() => {
         loadOnChainData()
         setDepositWeiValue(0n)
         setBorrowWeiValue(0n)
         setBorrowSliderPercent(0)
+        setLeveragedCollateralQuote(0n)
         setDepositSliderPercent(0)
         setIsDepositLoading(false)
         toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
@@ -328,8 +343,7 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
 
   useEffect(() => {
     const computeQuote = async (value: bigint) => {
-      const minAmountOut = computeMinAmountOut(value, tgUSDInfo, collateralInfo)
-      const { quote } = await getQuote(value, currentAddress!, collateralInfo?.address, TGUSD_CONTRACT.TG_USD, minAmountOut)
+      const { quote } = await getQuote(value, currentAddress!, collateralInfo?.address, TGUSD_CONTRACT.TG_USD, 0n)
 
       setIsDepositLoading(false)
       setLeveragedCollateralQuote(quote)

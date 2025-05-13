@@ -1,7 +1,7 @@
 import { Address } from "viem"
 import { TGUSD_CONTRACT } from "./tg_usd_repository"
 import { getCurveRouterQuote, getCurveRouterRoute } from "./curve_routing_controller"
-import { getEnsoRoute, getEnsoTokenQuote } from "./quote_api"
+import { getEnsoRoute } from "./quote_api"
 
 export const getQuote = async (
   depositWeiValue: bigint,
@@ -10,7 +10,7 @@ export const getQuote = async (
   tokenIn: Address,
   minAmountOut: bigint
 ): Promise<{ quote: bigint }> => {
-  const data = await getEnsoTokenQuote(depositWeiValue, currentAddress, tokenOut, tokenIn, minAmountOut)
+  const data = await getEnsoRoute(depositWeiValue, tokenIn, tokenOut, currentAddress, currentAddress, minAmountOut)
 
   if (data) {
     return { quote: data?.amountOut }

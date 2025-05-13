@@ -10,7 +10,7 @@ import { tgUsdTokens } from "../tg_usd_repository"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, fetchEnsoData, getABI, getSwapFormState } from "./tg_usd_swap_controller"
 import { useTgUsdContext } from "../tg_usd_context"
 import { getQuote } from "../global_quote_controller"
-import { computeMinAmountOut, getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_controller"
+import { getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_controller"
 
 type TgUsdSwapContextProps = {
   children: ReactNode
@@ -218,8 +218,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
       setIsSwapLoading(true)
       try {
-        const minAmountOut = computeMinAmountOut(value, receiveAssetInfo, depositAssetInfo)
-        const { quote } = await getQuote(value, currentAddress, depositAssetInfo?.address, receiveAssetInfo?.address, minAmountOut)
+        const { quote } = await getQuote(value, currentAddress, depositAssetInfo?.address, receiveAssetInfo?.address, 0n)
 
         if (quote) {
           setDepositWeiValue(quote)
@@ -261,8 +260,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
       setIsSwapLoading(true)
       try {
-        const minAmountOut = computeMinAmountOut(value, depositAssetInfo, receiveAssetInfo)
-        const { quote } = await getQuote(value, currentAddress, receiveAssetInfo?.address, depositAssetInfo?.address, minAmountOut)
+        const { quote } = await getQuote(value, currentAddress, receiveAssetInfo?.address, depositAssetInfo?.address, 0n)
 
         if (quote) {
           setReceiveWeiValue(quote)

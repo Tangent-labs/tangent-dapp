@@ -13,7 +13,7 @@ import { getQuote } from "../../global_quote_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 import { doMarketDeposit, doZapDeposit, doZapDepositAndBorrow, getDepositFormState } from "./tg_usd_record_deposit_controller"
-import { computeMinAmountOut, computeSwapAssetPrice, doApprove, prepareZapTransaction } from "../tg_usd_record_controller"
+import { computeSwapAssetPrice, doApprove, prepareZapTransaction } from "../tg_usd_record_controller"
 
 const DECIMALS = BigInt(10 ** 18)
 
@@ -85,9 +85,13 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
   const [isStaking, setIsStaking] = useState<boolean>(false)
+
   const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(false)
+
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
+
   const [depositAsset, setDepositAsset] = useState<string | undefined>(undefined)
+
   const [swapAssetPrice, setSwapAssetPrice] = useState<number>(0)
 
   const [borrowSliderPercent, setBorrowSliderPercent] = useState<number>(0)
@@ -95,18 +99,18 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
   const [depositSliderPercent, setDepositSliderPercent] = useState<number>(0)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
+
   const [isDepositLoading, setIsDepositLoading] = useState(false)
 
   const [isZapLoading, setIsZapLoading] = useState(false)
+
   const [zapValue, setZapValue] = useState<bigint | null>(null)
 
   const [zapInnerValue, setZapInnerValue] = useState<number | undefined>(zapValue !== undefined ? Number(formatUnits(zapValue || BigInt(0), 18)) : undefined)
 
   const [isZapUserInput, setIsZapUserInput] = useState<boolean>(false)
 
-  //
   const [slippage, setSlippage] = useState<number>(10)
-  // TODO replace with a lower slippage by default
 
   const [gas, setGas] = useState<number | null>(null)
 
@@ -153,8 +157,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
       setIsZapLoading(true)
       try {
-        const minAmountOut = computeMinAmountOut(value, depositAssetInfo, collateralInfo)
-        const { quote } = await getQuote(value, currentAddress, collateralInfo?.address, depositAssetInfo?.address, minAmountOut)
+        const { quote } = await getQuote(value, currentAddress, collateralInfo?.address, depositAssetInfo?.address, 0n)
 
         if (quote) {
           setZapValue(quote)
@@ -182,8 +185,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
       setIsDepositLoading(true)
 
       try {
-        const minAmountOut = computeMinAmountOut(parseEther(e?.target?.value), collateralInfo, depositAssetInfo)
-        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, collateralInfo?.address, minAmountOut)
+        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, collateralInfo?.address, 0n)
 
         setDepositWeiValue(quote)
       } catch (error) {
@@ -322,7 +324,13 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
   const computeGas = async () => {
     try {
-      const { routerCallData, zapMarketData } = await prepareZapTransaction(depositWeiValue!, depositAssetInfo!, collateralInfo, marketInfo, zapValue!)
+      const { routerCallData, zapMarketData } = await prepareZapTransaction(
+        depositWeiValue!,
+        depositAssetInfo!,
+        collateralInfo,
+        marketInfo,
+        (BigInt(zapValue || 0n) * BigInt(100 - slippage)) / BigInt(100)
+      )
 
       const walletClient = getWalletClient()
 
@@ -398,7 +406,13 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
     setIsDepositLoading(true)
 
     try {
-      const { routerCallData, zapMarketData } = await prepareZapTransaction(depositWeiValue, depositAssetInfo, collateralInfo, marketInfo, zapValue!)
+      const { routerCallData, zapMarketData } = await prepareZapTransaction(
+        depositWeiValue,
+        depositAssetInfo,
+        collateralInfo,
+        marketInfo,
+        (BigInt(zapValue || 0n) * BigInt(100 - slippage)) / BigInt(100)
+      )
 
       const walletClient = getWalletClient()
 
@@ -431,7 +445,13 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
     setIsDepositLoading(true)
 
     try {
-      const { routerCallData, zapMarketData } = await prepareZapTransaction(depositWeiValue, depositAssetInfo, collateralInfo, marketInfo, zapValue!)
+      const { routerCallData, zapMarketData } = await prepareZapTransaction(
+        depositWeiValue,
+        depositAssetInfo,
+        collateralInfo,
+        marketInfo,
+        (BigInt(zapValue || 0n) * BigInt(100 - slippage)) / BigInt(100)
+      )
 
       const walletClient = getWalletClient()
 

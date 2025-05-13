@@ -9,7 +9,6 @@ import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 import { getQuote, returnRoute } from "../../global_quote_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
-import { computeMinAmountOut } from "../tg_usd_record_controller"
 
 type TgUsdLiquidateContextProps = {
   children: ReactNode
@@ -162,8 +161,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
       if (!value || !currentAddress || !marketData) return
 
       try {
-        const minAmountOut = computeMinAmountOut(value, marketData?.collateralInfo, assetInfo)
-        const { quote } = await getQuote(value, currentAddress, assetInfo?.address, marketData?.collateralInfo?.address, minAmountOut)
+        const { quote } = await getQuote(value, currentAddress, assetInfo?.address, marketData?.collateralInfo?.address, 0n)
 
         if (quote) {
           setTgUSDReceivedValue(quote)

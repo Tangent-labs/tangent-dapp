@@ -10,7 +10,7 @@ import { getQuote, returnRoute } from "../../global_quote_controller"
 import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 import { useTgUsdContext } from "../../tg_usd_context"
 import { ZapToken } from "../../tg_usd_type"
-import { computeMinAmountOut, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
+import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 
@@ -148,12 +148,19 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     setIsZapLoading(true)
 
     try {
-      const repayData = await returnRoute(repayAssetInfo?.address, TGUSD_CONTRACT?.TG_USD, repayWeiValue, 0n, currentAddress!, TGUSD_CONTRACT.ZAPPER)
+      const repayData = await returnRoute(
+        repayAssetInfo?.address,
+        TGUSD_CONTRACT?.TG_USD,
+        repayWeiValue,
+        tgUdsRepayedValue!,
+        currentAddress!,
+        TGUSD_CONTRACT.ZAPPER
+      )
 
       const zapMarketData = {
         tokenIn: repayAssetInfo?.address,
         amountIn: repayWeiValue,
-        minAmountOut: 0n,
+        minAmountOut: tgUdsRepayedValue!,
       }
 
       doZapRepayAndWithdraw(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData, withdrawWeiValue)
@@ -228,9 +235,9 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const actionRepay = () => {
     if (!!withdrawWeiValue && withdrawWeiValue > 0) {
-      marketRepay()
-    } else {
       marketRepayAndWithdraw()
+    } else {
+      marketRepay()
     }
   }
 
@@ -318,8 +325,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
       setIsZapLoading(true)
       try {
-        const minAmountOut = computeMinAmountOut(value, repayAssetInfo, assetInfo)
-        const { quote } = await getQuote(value, currentAddress, assetInfo?.address, repayAssetInfo?.address, minAmountOut)
+        const { quote } = await getQuote(value, currentAddress, assetInfo?.address, repayAssetInfo?.address, 0n)
 
         if (quote) {
           setTgUsdRepayedValue(quote)

@@ -5,27 +5,32 @@ import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import TokenImage from "../structure/token_image"
+import { toBigInt } from "@/lib/number_formatter"
 
 type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
   className?: string
   depositAmount?: bigint
+  borrowAmount?: bigint
   disabled?: boolean
   label?: string
   LeverageInput?: ReactNode
   isLoading?: boolean
   percentage?: number
+  onValueChange: (value: bigint | undefined) => void
   setPercentage?: (value: number) => void
 }
 
 export function LeverageInput({
   className,
   depositAmount,
+  borrowAmount,
   depositAsset,
   label,
   isLoading = false,
   percentage = 1,
   setPercentage,
+  onValueChange,
   ...props
 }: LeverageInputProps) {
   const depositAmountNumber = useMemo(() => {
@@ -35,7 +40,7 @@ export function LeverageInput({
     return 0
   }, [depositAmount])
 
-  const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
+  const [innerValue, setInnerValue] = useState<string>(borrowAmount !== undefined ? formatUnits(borrowAmount, depositAsset?.decimals || 0) : "")
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!!setPercentage) {
@@ -47,11 +52,30 @@ export function LeverageInput({
   }
 
   useEffect(() => {
-    if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
-      const updatedValue = (Number(formatUnits(depositAmount, depositAsset.decimals)) * percentage).toFixed(0)
-      setInnerValue(updatedValue)
+    if (!!setPercentage) {
+      setPercentage(innerValue !== undefined && depositAmountNumber > 0 ? Number(innerValue) / depositAmountNumber : 0)
     }
-  }, [depositAmount, depositAsset])
+  }, [depositAmountNumber])
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value
+    setInnerValue(newValue)
+
+    if (!!setPercentage) {
+      setPercentage(newValue !== undefined && depositAmountNumber > 0 ? (Number(newValue) + depositAmountNumber) / depositAmountNumber : 0)
+    }
+  }
+
+  useEffect(() => {
+    if (!depositAsset?.decimals) return
+
+    const handler = setTimeout(() => {
+      const val = innerValue ? toBigInt(Number(innerValue), depositAsset.decimals) : undefined
+      onValueChange(val)
+    }, 500)
+
+    return () => clearTimeout(handler)
+  }, [innerValue, depositAsset, onValueChange])
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
@@ -62,15 +86,15 @@ export function LeverageInput({
         <div className="mb-2 flex flex-col justify-between lg:flex-row">
           <input
             {...props}
-            disabled={true}
             type="number"
             value={innerValue}
+            onInput={handleInputChange}
             placeholder="Amount"
             className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 text-xl font-bold focus:outline-none")}
           />
 
-          <div className="flex w-28 items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
-            <TokenImage token={"tgUSD"} size={24} />
+          <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+            <TokenImage token="tgUSD" size={24} />
             <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
           </div>
         </div>
@@ -78,7 +102,7 @@ export function LeverageInput({
         <input
           type="range"
           min="1"
-          step="1"
+          step="0.1"
           max="10"
           value={percentage}
           onChange={handleSliderChange}

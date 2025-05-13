@@ -48,10 +48,10 @@ export function DepositInput({
 }: DepositInputProps) {
   const balanceNumber = useMemo(() => {
     if (balance) {
-      return Number(formatUnits(balance, 18))
+      return Number(formatUnits(balance, depositAsset?.decimals || 18))
     }
     return 0
-  }, [balance])
+  }, [balance, depositAsset])
 
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
   const [isUserInput, setIsUserInput] = useState(false)
@@ -62,7 +62,7 @@ export function DepositInput({
       setPercentage(newPercentage)
       const newValue = newPercentage !== 0 ? Number(((newPercentage / 100) * balanceNumber).toFixed(0)) : 0
       setInnerValue(newValue.toFixed(0))
-      onValueChange(!!newValue ? toBigInt(newValue, 18) : undefined)
+      onValueChange(!!newValue ? toBigInt(newValue, depositAsset?.decimals || 18) : undefined)
     }
   }
 
@@ -107,7 +107,13 @@ export function DepositInput({
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <div className={`${isLoading ? "shimmer" : ""} flex flex-col rounded-[10px] border border-white border-opacity-20 bg-select-input p-2`}>
+      <div
+        className={cn(
+          isLoading ? "shimmer" : "",
+          disabled ? "bg-panel-disabled" : "bg-select-input",
+          "flex flex-col rounded-[10px] border border-white border-opacity-20 p-2"
+        )}
+      >
         <div className="flex w-full justify-between">
           <div className="text-sm text-gray-400">{labelDeposit}</div>
           {isZapping && (
@@ -118,7 +124,7 @@ export function DepositInput({
             </div>
           )}
         </div>
-        <div className="mb-2 flex flex-col justify-between lg:flex-row">
+        <div className="flex flex-col justify-between lg:flex-row">
           <div className="order-2 text-xl lg:order-1">
             <input
               {...props}
@@ -127,12 +133,12 @@ export function DepositInput({
               value={innerValue}
               placeholder="Amount"
               onInput={handleInputChange}
-              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 font-bold focus:outline-none")}
+              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent pl-1 font-bold focus:outline-none")}
             />
           </div>
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
-        <div className="flex justify-between text-xs text-gray-400">
+        <div className="mt-1 flex justify-between text-xs text-gray-400">
           <div>$({dollarDepositDisplay})</div>
           {displayBalance && (
             <button

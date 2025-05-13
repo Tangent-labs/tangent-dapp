@@ -1,26 +1,19 @@
 "use client"
 
-import { BalanceAllowanceData, TgUsdMarket, ZapToken } from "../../tg_usd_type"
+import { TgUsdMarket, ZapToken } from "../../tg_usd_type"
 import { AssetDataPriced, FormState } from "@/types"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { Address, EstimateContractGasParameters, formatUnits, parseEther } from "viem"
+import { EstimateContractGasParameters, formatUnits, parseEther } from "viem"
 import { gasCostToUSD, getPublicClient } from "@/services/service_rpc"
 import { useTgUsdContext } from "../../tg_usd_context"
-import { returnEnsoQuote } from "../../global_quote_controller"
-import {
-  computeSwapAssetPrice,
-  doApproveMarketDeposit,
-  doApproveZap,
-  doMarketDeposit,
-  doZapDeposit,
-  getBalances,
-  getDepositFormState,
-  getZapTokenBalanceAllowance,
-  prepareZapTransaction,
-} from "./tg_usd_record_deposit_controller"
+import { getQuote } from "../../global_quote_controller"
+import { toast } from "react-toastify"
+import { ToastComponent } from "@/components/design_system/toast"
+import { doMarketDeposit, doZapDeposit, doZapDepositAndBorrow, getDepositFormState } from "./tg_usd_record_deposit_controller"
+import { computeSwapAssetPrice, doApprove, prepareZapTransaction } from "../tg_usd_record_controller"
 
 const DECIMALS = BigInt(10 ** 18)
 
@@ -59,13 +52,11 @@ type TgUsdDepositContextValues = {
   handleDepositChange: (arg: bigint | undefined) => void
   handleZapChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   depositAssetInfo: AssetDataPriced | null
-  balanceAllowanceData: BalanceAllowanceData | null
-  setBalanceAllowanceData: (arg: BalanceAllowanceData) => void
+
   slippage: number
   setSlippage: (arg: number) => void
   gas: number | null
   sociabilizationFee: number | null
-  balances: Record<Address, bigint> | null
 
   zapInnerValue: number | undefined
   setZapInnerValue: (arg: number | undefined) => void
@@ -76,18 +67,12 @@ type TgUsdDepositContextValues = {
   depositSliderPercent: number
   setDepositSliderPercent: (arg: number) => void
 
-  leveragePercentage: number
-  setLeveragePercentage: (arg: number) => void
-
   borrowSliderPercent: number
   setBorrowSliderPercent: (arg: number) => void
 
   handleZapInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 
   maxBorrowableValue: bigint
-
-  activeTab: string
-  setActiveTab: (arg: string) => void
 }
 
 export const TgUsdDepositContext = createContext<TgUsdDepositContextValues | undefined>(undefined)
@@ -95,43 +80,41 @@ export const TgUsdDepositContext = createContext<TgUsdDepositContextValues | und
 export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: TgUsdDepositContextProps) => {
   const { tokens } = useTgUsdContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData } = useTgUsdRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
   const [isStaking, setIsStaking] = useState<boolean>(false)
+
   const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(false)
+
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
+
   const [depositAsset, setDepositAsset] = useState<string | undefined>(undefined)
-  const [swapAssetPrice, setSwapAssetPrice] = useState<number | null>(null)
+
+  const [swapAssetPrice, setSwapAssetPrice] = useState<number>(0)
 
   const [borrowSliderPercent, setBorrowSliderPercent] = useState<number>(0)
-
-  const [leveragePercentage, setLeveragePercentage] = useState<number>(1)
 
   const [depositSliderPercent, setDepositSliderPercent] = useState<number>(0)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
+
   const [isDepositLoading, setIsDepositLoading] = useState(false)
 
   const [isZapLoading, setIsZapLoading] = useState(false)
+
   const [zapValue, setZapValue] = useState<bigint | null>(null)
+
   const [zapInnerValue, setZapInnerValue] = useState<number | undefined>(zapValue !== undefined ? Number(formatUnits(zapValue || BigInt(0), 18)) : undefined)
+
   const [isZapUserInput, setIsZapUserInput] = useState<boolean>(false)
 
-  const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
-
-  //
   const [slippage, setSlippage] = useState<number>(10)
-  // TODO replace with a lower slippage by default
 
   const [gas, setGas] = useState<number | null>(null)
 
-  const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
-
-  const [activeTab, setActiveTab] = useState("Deposit")
-
-  const depositAssetInfo = useMemo(() => {
+  const depositAssetInfo = useMemo<AssetDataPriced | null>(() => {
     if (depositAsset === "ETH") {
       return {
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
@@ -140,7 +123,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
         symbol: "ETH",
         name: "ETH",
         price: swapAssetPrice,
-      } as AssetDataPriced
+      }
     }
 
     const assetInfo = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset) || undefined
@@ -166,22 +149,6 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
     return 0
   }, [marketData, depositWeiValue, depositAssetInfo])
 
-  const actionApproveZap = async () => {
-    const walletClient = getWalletClient()
-    if (!walletClient || !depositAssetInfo) {
-      console.error("Wallet client is not available.")
-      return
-    }
-
-    await doApproveZap(walletClient, depositAssetInfo?.address, depositWeiValue || 0n, marketInfo?.marketAddress)
-      .then(() => {
-        fetchBalanceAllowanceData()
-      })
-      .catch((error) => {
-        console.error("Error during approval:", error)
-      })
-  }
-
   const handleDepositChange = (value: bigint | undefined) => {
     setDepositWeiValue(value)
 
@@ -190,10 +157,10 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
       setIsZapLoading(true)
       try {
-        const data = await returnEnsoQuote(value, currentAddress, collateralInfo, depositAssetInfo, slippage)
+        const { quote } = await getQuote(value, currentAddress, collateralInfo?.address, depositAssetInfo?.address)
 
-        if (data) {
-          setZapValue(data.amountOut)
+        if (quote) {
+          setZapValue(quote)
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)
@@ -218,9 +185,9 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
       setIsDepositLoading(true)
 
       try {
-        const data = await returnEnsoQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo, collateralInfo, slippage)
+        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, collateralInfo?.address)
 
-        setDepositWeiValue(data.amountOut)
+        setDepositWeiValue(quote)
       } catch (error) {
         console.error("Error fetching depositWeiValue:", error)
       } finally {
@@ -270,7 +237,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
       setIsZapLoading(true)
       try {
         const data = await computeSwapAssetPrice(tokens, depositAsset)
-        setSwapAssetPrice(data)
+        setSwapAssetPrice(data || 0)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
       } finally {
@@ -289,18 +256,37 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
     })
   }, [depositWeiValue, borrowWeiValue, zapValue])
 
+  const actionApproveZap = async () => {
+    setIsDepositLoading(true)
+    const walletClient = getWalletClient()
+    if (!walletClient || !depositAssetInfo) {
+      console.error("Wallet client is not available.")
+      return
+    }
+
+    await doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue || 0n)
+      .then(() => {
+        fetchBalanceAllowanceData(depositAssetInfo?.address)
+        setIsDepositLoading(false)
+      })
+      .catch((error) => {
+        console.error("Error during approval:", error)
+        setIsDepositLoading(false)
+      })
+  }
+
   const actionApprove = () => {
+    setIsDepositLoading(true)
     const walletClient = getWalletClient()
     if (walletClient && depositWeiValue)
-      doApproveMarketDeposit(walletClient, collateralInfo?.address, {
-        depositWeiValue,
-        isDepositAndBorrow,
-        isStaking,
-        marketAddress: marketInfo?.marketAddress,
-      }).then(() => loadOnChainData())
+      doApprove(walletClient, collateralInfo?.address, marketInfo?.marketAddress, depositWeiValue).then(() => {
+        loadOnChainData()
+        setIsDepositLoading(false)
+      })
   }
 
   const actionDeposit = () => {
+    setIsDepositLoading(true)
     const walletClient = getWalletClient()
     if (walletClient && depositWeiValue)
       doMarketDeposit(walletClient, { depositWeiValue, isDepositAndBorrow, isStaking, marketAddress: marketInfo?.marketAddress, borrowWeiValue }).then(() => {
@@ -309,6 +295,8 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
         setBorrowWeiValue(0n)
         setBorrowSliderPercent(0)
         setDepositSliderPercent(0)
+        setIsDepositLoading(false)
+        toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
       })
   }
 
@@ -322,53 +310,27 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
         isWellConnected,
         depositAssetInfo!,
         collateralInfo!,
-        balanceAllowanceData!
+        balanceAllowanceData!,
+        isDepositLoading
       ),
-    [marketData, isDepositAndBorrow, borrowWeiValue, depositWeiValue, isWellConnected, currentAddress, depositAssetInfo, balanceAllowanceData]
+    [marketData, isDepositAndBorrow, borrowWeiValue, depositWeiValue, isWellConnected, currentAddress, depositAssetInfo, balanceAllowanceData, isDepositLoading]
   )
 
-  const fetchBalanceAllowanceData = async () => {
-    if (!depositAssetInfo) return
-
-    try {
-      const walletClient = getWalletClient()
-      if (!walletClient || !marketInfo) throw new Error("Wallet client not found")
-
-      const data = await getZapTokenBalanceAllowance(walletClient, depositAssetInfo.address, marketInfo?.marketAddress)
-
-      setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
-    } catch (error) {
-      console.error("Failed to fetch balance/allowance:", error)
-    }
-  }
-
   useEffect(() => {
-    const tokenAddresses: Address[] = tokens.map((el) => el.address)
-
-    if (currentAddress && tokenAddresses.length > 0) {
-      getBalances(currentAddress, tokenAddresses).then((data) => {
-        if (data) {
-          const tokenBalances = tokenAddresses.reduce(
-            (acc, address, index) => {
-              acc[address] = data[index] || BigInt(0)
-              return acc
-            },
-            {} as Record<Address, bigint>
-          )
-          setBalances(tokenBalances)
-          setIsDepositLoading(false)
-        }
-      })
+    if (depositAssetInfo) {
+      fetchBalanceAllowanceData(depositAssetInfo?.address)
     }
-  }, [currentAddress, tokens])
-
-  useEffect(() => {
-    fetchBalanceAllowanceData()
   }, [depositAssetInfo])
 
   const computeGas = async () => {
     try {
-      const { routerCallData, zapMarketData } = await prepareZapTransaction(depositWeiValue!, collateralInfo, depositAssetInfo!, marketInfo, slippage)
+      const { routerCallData, zapMarketData } = await prepareZapTransaction(
+        depositWeiValue!,
+        depositAssetInfo!,
+        collateralInfo,
+        marketInfo,
+        (BigInt(zapValue || 0n) * BigInt(100 - slippage)) / BigInt(100)
+      )
 
       const walletClient = getWalletClient()
 
@@ -430,27 +392,80 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
   const getRouteAndDeposit = async () => {
     if (!depositWeiValue || !currentAddress || !depositAssetInfo) return
 
+    if (!!borrowWeiValue) {
+      zapAndDepositAndBorrow()
+    } else {
+      zapAndDeposit()
+    }
+  }
+
+  const zapAndDepositAndBorrow = async () => {
+    if (!depositWeiValue || !currentAddress || !depositAssetInfo) return
+
     setIsZapLoading(true)
     setIsDepositLoading(true)
 
     try {
-      const { routerCallData, zapMarketData } = await prepareZapTransaction(depositWeiValue, collateralInfo, depositAssetInfo, marketInfo, slippage)
+      const { routerCallData, zapMarketData } = await prepareZapTransaction(
+        depositWeiValue,
+        depositAssetInfo,
+        collateralInfo,
+        marketInfo,
+        (BigInt(zapValue || 0n) * BigInt(100 - slippage)) / BigInt(100)
+      )
 
       const walletClient = getWalletClient()
 
-      doZapDeposit(marketInfo?.marketAddress, walletClient!, routerCallData?.tx?.to, routerCallData?.tx?.data, zapMarketData, borrowWeiValue, isStaking).then(
-        () => {
-          loadOnChainData()
-          setDepositWeiValue(0n)
-          setZapValue(null)
-          fetchBalanceAllowanceData()
-        }
-      )
+      doZapDepositAndBorrow(
+        marketInfo?.marketAddress,
+        walletClient!,
+        routerCallData?.tx?.to,
+        routerCallData?.tx?.data,
+        zapMarketData,
+        borrowWeiValue,
+        isStaking
+      ).then(() => {
+        loadOnChainData()
+        setDepositWeiValue(0n)
+        setZapValue(null)
+        setIsZapLoading(false)
+        setIsDepositLoading(false)
+        fetchBalanceAllowanceData(depositAssetInfo?.address)
+        toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
+      })
     } catch (error) {
       console.error("Error in getRouteAndDeposit:", error)
-    } finally {
-      setIsZapLoading(false)
-      setIsDepositLoading(false)
+    }
+  }
+
+  const zapAndDeposit = async () => {
+    if (!depositWeiValue || !currentAddress || !depositAssetInfo) return
+
+    setIsZapLoading(true)
+    setIsDepositLoading(true)
+
+    try {
+      const { routerCallData, zapMarketData } = await prepareZapTransaction(
+        depositWeiValue,
+        depositAssetInfo,
+        collateralInfo,
+        marketInfo,
+        (BigInt(zapValue || 0n) * BigInt(100 - slippage)) / BigInt(100)
+      )
+
+      const walletClient = getWalletClient()
+
+      doZapDeposit(marketInfo?.marketAddress, walletClient!, routerCallData?.tx?.to, routerCallData?.tx?.data, zapMarketData, isStaking).then(() => {
+        loadOnChainData()
+        setDepositWeiValue(0n)
+        setZapValue(null)
+        setIsZapLoading(false)
+        setIsDepositLoading(false)
+        fetchBalanceAllowanceData(depositAssetInfo?.address)
+        toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
+      })
+    } catch (error) {
+      console.error("Error in getRouteAndDeposit:", error)
     }
   }
 
@@ -511,13 +526,11 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
     getRouteAndDeposit,
     actionApproveZap,
     depositAssetInfo,
-    balanceAllowanceData,
-    setBalanceAllowanceData,
+
     slippage,
     setSlippage,
     gas,
     sociabilizationFee,
-    balances,
 
     zapInnerValue,
     setZapInnerValue,
@@ -534,12 +547,6 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
     setBorrowSliderPercent,
 
     maxBorrowableValue,
-
-    activeTab,
-    setActiveTab,
-
-    leveragePercentage,
-    setLeveragePercentage,
   }
 
   return <TgUsdDepositContext.Provider value={contextValue}>{children}</TgUsdDepositContext.Provider>

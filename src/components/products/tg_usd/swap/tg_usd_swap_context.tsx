@@ -6,21 +6,11 @@ import { Abi, Address } from "viem"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
 import { SwapConfig, swapConfig } from "./swap_config"
-import { tgUsdTokens } from "../tg_usd_repository"
-import {
-  computeSwapAssetPrice,
-  doApprove,
-  doCustomQuote,
-  doCustomSwap,
-  doSwap,
-  fetchEnsoData,
-  getBalances,
-  getABI,
-  getSwapFormState,
-  getSwapTokenBalanceAllowance,
-} from "./tg_usd_swap_controller"
+import { TGUSD_CONTRACT, tgUsdTokens } from "../tg_usd_repository"
+import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, fetchEnsoData, getABI, getSwapFormState } from "./tg_usd_swap_controller"
 import { useTgUsdContext } from "../tg_usd_context"
-import { returnEnsoQuote } from "../global_quote_controller"
+import { getQuote } from "../global_quote_controller"
+import { getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_controller"
 
 type TgUsdSwapContextProps = {
   children: ReactNode
@@ -104,8 +94,6 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
   const [swapedAssetPrice, setSwapedAssetPrice] = useState<number | null>(null)
 
-  const [slippage, setSlippage] = useState<number>(5)
-
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
 
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
@@ -185,7 +173,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
       const spenderAddress = (!!ensoRouterAddress && quoteType === "enso" ? ensoRouterAddress : receiveAssetInfo?.address) as Address
 
-      const data = await getSwapTokenBalanceAllowance(walletClient, depositAssetInfo.address, spenderAddress)
+      const data = await getBalancesAndAllowances(walletClient, depositAssetInfo.address, spenderAddress)
 
       setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
     } catch (error) {
@@ -214,10 +202,6 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
   }, [currentAddress, tokens])
 
   const handleReceiveChange = (value: bigint | undefined) => {
-    // TODO : REMOVE
-    setSlippage(10)
-    //
-
     setReceiveWeiValue(value)
 
     if (value === undefined) {
@@ -234,10 +218,10 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
       setIsSwapLoading(true)
       try {
-        const data = await returnEnsoQuote(value, currentAddress, depositAssetInfo, receiveAssetInfo, slippage)
+        const { quote } = await getQuote(value, currentAddress, depositAssetInfo?.address, receiveAssetInfo?.address)
 
-        if (data) {
-          setDepositWeiValue(data.amountOut)
+        if (quote) {
+          setDepositWeiValue(quote)
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)
@@ -276,11 +260,11 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
       setIsSwapLoading(true)
       try {
-        const data = await returnEnsoQuote(value, currentAddress, receiveAssetInfo, depositAssetInfo, slippage)
+        const { quote } = await getQuote(value, currentAddress, receiveAssetInfo?.address, depositAssetInfo?.address)
 
-        if (data) {
-          setReceiveWeiValue(data.amountOut)
-          setEnsoRouterAddress(data?.tx?.to)
+        if (quote) {
+          setReceiveWeiValue(quote)
+          setEnsoRouterAddress(TGUSD_CONTRACT.ENSO_ROUTER as Address)
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)
@@ -407,7 +391,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
       if (!depositWeiValue || !currentAddress) return
 
       try {
-        const { routerCallData } = await fetchEnsoData(depositWeiValue, currentAddress, receiveAssetInfo, depositAssetInfo, slippage)
+        const { routerCallData } = await fetchEnsoData(depositWeiValue, currentAddress, receiveAssetInfo, depositAssetInfo, receiveWeiValue!)
 
         doSwap(walletClient!, routerCallData)
           .then(() => {
@@ -444,7 +428,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
                 quote: "enso",
                 swap: null,
                 isStaked: false,
-                contract: "0xF75584eF6673aD213a685a1B58Cc0330B8eA22Cf",
+                contract: TGUSD_CONTRACT.ENSO_ROUTER,
               }
         )
       } catch {
@@ -453,7 +437,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
           quote: "enso",
           swap: null,
           isStaked: false,
-          contract: "0xF75584eF6673aD213a685a1B58Cc0330B8eA22Cf",
+          contract: TGUSD_CONTRACT.ENSO_ROUTER,
         })
       }
     }

@@ -45,18 +45,22 @@ export default function TgUsdRecordLayout({ children, ...props }: TgUsdRecordLay
       </div>
       <div className="mt-4 flex h-full flex-col gap-4">
         <div className="flex gap-4 max-xl:flex-col">
-          <div className="rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] xl:w-1/2">
-            <div className="mb-4 flex w-full justify-between">
-              <ButtonTab active={feature === collateral} label={"Deposit"} onClick={() => onTabClick("deposit")} />
-              <ButtonTab active={feature === "borrow"} label={"Borrow"} onClick={() => onTabClick("borrow")} />
-              <ButtonTab active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />
-              <ButtonTab active={feature === "withdraw"} label={"Withdraw"} onClick={() => onTabClick("withdraw")} />
-              <ButtonTab active={feature === "liquidate"} label={"Liquidate"} onClick={() => onTabClick("liquidate")} />
+          <div className="rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] xl:w-5/12">
+            <div className="mb-2 flex w-full justify-between">
+              <ButtonTab className="w-32" active={feature === collateral} label={"Deposit"} onClick={() => onTabClick("deposit")} />
+              <ButtonTab className="w-32" active={feature === "borrow"} label={"Borrow"} onClick={() => onTabClick("borrow")} />
+              <ButtonTab className="w-32" active={feature === "leverage"} label={"Leverage"} onClick={() => onTabClick("leverage")} />
             </div>
+            <div className="mb-4 flex w-full justify-between">
+              <ButtonTab className="w-32" active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />
+              <ButtonTab className="w-32" active={feature === "withdraw"} label={"Withdraw"} onClick={() => onTabClick("withdraw")} />
+              <ButtonTab className="w-32" active={feature === "liquidate"} label={"Liquidate"} onClick={() => onTabClick("liquidate")} />
+            </div>
+
             <Divider />
             <div className="mt-5">{children}</div>
           </div>
-          <div className="flex w-full flex-col gap-2 xl:w-1/2">
+          <div className="flex w-full flex-col gap-2 xl:w-7/12">
             <TgUsdCollateralPrice />
           </div>
         </div>

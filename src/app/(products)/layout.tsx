@@ -22,7 +22,7 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
   return (
     <TgUsdProvider tokens={tokens}>
       <WalletConnexionProvider>
-        <ToastContainer position="top-right" autoClose={5000} closeOnClick={true} pauseOnFocusLoss closeButton={true} draggable />
+        <ToastContainer position="top-right" autoClose={5000} closeOnClick={true} />
         <div className="ml-2 mt-2 flex bg-repeat">
           <div className="mr-2 w-full lg:mr-24">
             <div className="flex justify-between max-md:flex-col">

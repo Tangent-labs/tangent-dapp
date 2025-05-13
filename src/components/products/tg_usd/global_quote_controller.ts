@@ -1,24 +1,18 @@
-import { AssetDataPriced } from "@/types"
 import { Address } from "viem"
 import { TGUSD_CONTRACT } from "./tg_usd_repository"
 import { getCurveRouterQuote, getCurveRouterRoute } from "./curve_routing_controller"
-import { getRouteTxData, getTokenQuote } from "./quote_api"
+import { getEnsoData } from "./quote_api"
 
-export const returnEnsoQuote = async (
-  depositWeiValue: bigint,
-  currentAddress: Address,
-  tokenOut: AssetDataPriced,
-  tokenIn: AssetDataPriced,
-  slippage: number
-) => {
-  const data = await getTokenQuote(depositWeiValue, currentAddress, tokenOut, tokenIn, slippage * 100)
+export const getQuote = async (depositWeiValue: bigint, currentAddress: Address, tokenOut: Address, tokenIn: Address): Promise<{ quote: bigint }> => {
+  const data = await getEnsoData(depositWeiValue, tokenIn, tokenOut, currentAddress, currentAddress, 0n)
 
   if (data) {
-    return data
-  } else if (tokenOut?.address === TGUSD_CONTRACT?.TG_USD || tokenIn?.address === TGUSD_CONTRACT?.TG_USD) {
-    return getCurveRouterQuote(tokenIn?.address, tokenOut?.address, depositWeiValue)
+    return { quote: data?.amountOut }
+  } else if (tokenOut === TGUSD_CONTRACT?.TG_USD || tokenIn === TGUSD_CONTRACT?.TG_USD) {
+    const quote = await getCurveRouterQuote(tokenIn, tokenOut, depositWeiValue)
+    return { quote }
   } else {
-    return undefined
+    return { quote: 0n }
   }
 }
 
@@ -29,15 +23,15 @@ export const returnRoute = async (
   minAmountOut: bigint,
   receiver: Address,
   fromAddress: Address,
-  user: Address
+  user?: Address
 ) => {
-  const route = await getRouteTxData(amount, tokenIn, tokenOut, fromAddress, receiver, 1000)
+  const route = await getEnsoData(amount, tokenIn, tokenOut, fromAddress, receiver, minAmountOut)
 
   if (route) {
-    return { data: route?.tx?.data, routerAddress: "0xF75584eF6673aD213a685a1B58Cc0330B8eA22Cf" as Address }
+    return { data: route?.tx?.data as string, routerAddress: TGUSD_CONTRACT.ENSO_ROUTER as Address }
   } else if (tokenOut === TGUSD_CONTRACT?.TG_USD || tokenIn === TGUSD_CONTRACT?.TG_USD) {
-    const curveRoute = await getCurveRouterRoute(tokenIn, tokenOut, amount, 0n, user)
-    return { data: curveRoute, routerAddress: "0x45312ea0eff7e09c83cbe249fa1d7598c4c8cd4e" as Address }
+    const curveRoute = await getCurveRouterRoute(tokenIn, tokenOut, amount, minAmountOut, user ? user : receiver)
+    return { data: curveRoute as string, routerAddress: TGUSD_CONTRACT.CURVE_ROUTER as Address }
   } else {
     return undefined
   }

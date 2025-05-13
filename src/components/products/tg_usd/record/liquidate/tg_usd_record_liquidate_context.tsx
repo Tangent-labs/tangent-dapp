@@ -6,7 +6,7 @@ import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doMarketLiquidate, getLiquidateFormState } from "./tg_usd_record_liquidate_controller"
 import { TGUSD_CONTRACT } from "../../tg_usd_repository"
-import { returnEnsoQuote, returnRoute } from "../../global_quote_controller"
+import { getQuote, returnRoute } from "../../global_quote_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 
@@ -105,7 +105,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
       doMarketLiquidate(
         liquidateWeiValue,
         repayWeiValue || 0n,
-        (tgUSDReceivedValue * BigInt(slippage)) / BigInt(100),
+        (tgUSDReceivedValue * (BigInt(100) - BigInt(slippage))) / BigInt(100),
         liquidationData!,
         walletClient,
         marketData?.marketAddress
@@ -144,6 +144,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
   }, [marketDisplayData])
 
   const handleLiquidateValueChange = (value: bigint | undefined) => {
+    setIsQuoteLoading(true)
     const assetInfo: AssetDataPriced = {
       address: TGUSD_CONTRACT.TG_USD,
       decimals: 18,
@@ -159,9 +160,8 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
     const fetchZapValue = async () => {
       if (!value || !currentAddress || !marketData) return
 
-      setIsQuoteLoading(true)
       try {
-        const quote = await returnEnsoQuote(value, currentAddress, assetInfo, marketData?.collateralInfo, slippage)
+        const { quote } = await getQuote(value, currentAddress, assetInfo?.address, marketData?.collateralInfo?.address)
 
         if (quote) {
           setTgUSDReceivedValue(quote)

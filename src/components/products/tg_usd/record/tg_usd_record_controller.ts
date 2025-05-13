@@ -1,14 +1,37 @@
-import { Abi, Address, formatEther, formatUnits, Hex, zeroAddress } from "viem"
-import { ChainViewMarketRow, MarketDetailData, TgUsdMarketDisplayData, TgUsdMarketLoanDisplayData } from "../tg_usd_type"
-import { executeChainViewUnique } from "@/services/service_rpc"
+import { Abi, Address, formatEther, formatUnits, Hex, WalletClient, zeroAddress } from "viem"
+import { BalanceAllowanceData, ChainViewMarketRow, MarketDetailData, TgUsdMarketDisplayData, TgUsdMarketLoanDisplayData, ZapToken } from "../tg_usd_type"
+import { executeAppove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
 import MarketDetailsUI from "@/abi/tgusd/MarketDetailsUI.json"
+import GetBalances from "@/abi/tgusd/GetBalances.json"
 import { AssetDataPriced, ExistingAsset } from "@/types"
-import { tgUsdMarkets } from "../tg_usd_repository"
+import { TGUSD_CONTRACT, tgUsdMarkets } from "../tg_usd_repository"
 import { getAssetInfo } from "@/services/service_existing_asset"
 import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
+import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
+import { getSwapAssetPrice } from "@/services/service_price"
+import { getEnsoData } from "../quote_api"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
+
+export const getBalancesAndAllowances = async (walletClient: WalletClient, address: Address | undefined, spender: Address | undefined) => {
+  address = address || zeroAddress
+  const [account] = await walletClient.requestAddresses()
+
+  return await executeChainViewUnique<BalanceAllowanceData[]>(GetBalancesAllowances.abi as Abi, GetBalancesAllowances.bytecode as Hex, [
+    account,
+    [{ token: address, spenders: [spender] }],
+  ])
+}
+
+export const getBalances = async (user: Address, tokens: Address[]) => {
+  return await executeChainViewUnique<bigint[]>(GetBalances.abi as Abi, GetBalances.bytecode as Hex, [user, tokens])
+}
+
+export async function doApprove(walletClient: WalletClient, contract: Address, spender: Address, amount: bigint) {
+  const txHash = await executeAppove(walletClient, contract, spender, amount)
+  return await waitForTransaction(txHash)
+}
 
 export const getTgUsdMarketRecordData = async (address: Address | undefined, market: Address) => {
   address = address || zeroAddress
@@ -96,7 +119,6 @@ export function getComputedFutureLoanData(
   const liquidationThresholdRaw = BigInt(marketData?.constants?.liquidationThreshold || 0n)
 
   const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n) + BigInt(amounts.borrowWeiValue!) - BigInt(amounts.repayWeiValue!)
-  // const futureDebt = BigInt(marketData?.debtInfos?.positionDebt || 0n) + BigInt(amounts.borrowWeiValue!) - BigInt(amounts.repayWeiValue!)
 
   const futureDeposited = !!amounts?.zapValue
     ? BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) +
@@ -193,4 +215,39 @@ export function getMarketApr(marketAddress: Address) {
     boostsData: {},
     marketAddress,
   }
+}
+
+export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: string) => {
+  try {
+    const tokenAddress = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)
+      ? tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)?.address
+      : undefined
+    if (tokenAddress) {
+      const data = await getSwapAssetPrice(tokenAddress)
+      return data
+    } else return null
+  } catch (error) {
+    console.error("Failed to compute swap asset price:", error)
+    return null
+  }
+}
+
+export const prepareZapTransaction = async (
+  amount: bigint,
+  tokenIn: AssetDataPriced,
+  tokenOut: AssetDataPriced,
+  marketInfo: { marketAddress: Address },
+  minAmountOut: bigint
+) => {
+  const routerCall = await getEnsoData(amount, tokenIn?.address, tokenOut?.address, TGUSD_CONTRACT.ZAPPER, marketInfo.marketAddress, minAmountOut)
+
+  if (!routerCall?.tx?.data) throw new Error("Failed to fetch routing data")
+
+  const zapMarketData = {
+    tokenIn: tokenIn?.address,
+    amountIn: amount,
+    minAmountOut: 0n,
+  }
+
+  return { routerCallData: routerCall, zapMarketData }
 }

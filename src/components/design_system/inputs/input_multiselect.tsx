@@ -42,7 +42,7 @@ export const MultiPositionSelect = ({ lockData, selectedPositions, setSelectedPo
     setSelectedPositions(newPositions)
   }
 
-  if (!lockData || allPositions.length === 0) {
+  if (!lockData) {
     return (
       <div className="flex flex-col gap-2">
         <InputSelect disabled={true} className="shimmer w-full min-w-32 text-white" template={template} value="" options={[]} onChange={() => {}} />

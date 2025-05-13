@@ -110,10 +110,13 @@ export default function TgUsdSwapContent() {
 
   return (
     <>
-      <div className="sgusd-card w-7/12">
-        <div className="flex items-center justify-center">
-          <Image height={320} width={320} src="/medias/product_tgusd.png" alt="token" />
+      <div className="sgusd-card relative w-7/12">
+        <div className="absolute -top-2 left-20 h-full min-h-24">
+          <Image height={140} width={140} src="/medias/tokens/swapLogo.png" alt="token" />
         </div>
+
+        <Image className="mr-24 mt-12" height={140} width={140} src="/medias/tokens/tgUSD_header.png" alt="token" />
+
         <div className="flex flex-col items-start justify-center gap-3">
           <span className="text-5xl font-bold">Swap</span>
           <p>Swap any asset for tgUSD and other Tangent&apos;s assets, including Curve LPs and Wrapped Tangent Stablecoins. Learn more</p>

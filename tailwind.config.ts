@@ -26,6 +26,7 @@ const config: Config = {
         "button-active": "var(--tgt-bg-button-active)",
         "row-tonic": "var(--tgt-row-tonic)",
         "overlay-panel": "var(--tgt-bg-overlay-panel)",
+        "panel-disabled": "var(--tgt-bg-panel-disabled)",
         tonic: "var(--tgt-tonic)",
         success: "var(--tgt-success)",
         "light-tonic": "var(--tgt-light-tonic)",

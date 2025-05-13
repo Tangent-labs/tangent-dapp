@@ -5,8 +5,8 @@ import { executeChainViewUnique } from "@/services/service_rpc"
 import CurveRouterABI from "../../../abi/tgusd/CurveRouter.json"
 
 const returnQuoteData = async (tokenIn: Address, tokenOut: Address, amount: bigint) => {
-  const matchingRoutes = routes
-    .filter((el) => el.start.toLowerCase() === tokenIn.toLowerCase() && el.end.toLowerCase() === tokenOut.toLowerCase())
+  const matchingRoutes = routes.success
+    .filter((el) => el.in.toLowerCase() === tokenIn.toLowerCase() && el.out.toLowerCase() === tokenOut.toLowerCase())
     .map((route) => {
       return {
         _route: route.params.routeAddresses,
@@ -29,7 +29,7 @@ export const getCurveRouterQuote = async (tokenIn: Address, tokenOut: Address, a
   return bestQuote
 }
 
-export const getCurveRouterRoute = async (tokenIn: Address, tokenOut: Address, amount: bigint, minAmountOut: bigint, user: Address) => {
+export const getCurveRouterRoute = async (tokenIn: Address, tokenOut: Address, amount: bigint, minAmountOut: bigint, receiver: Address) => {
   const { matchingRoutes, quotes, bestQuote } = await returnQuoteData(tokenIn, tokenOut, amount)
 
   const biggestValueIndex = quotes?.indexOf(bestQuote) as number
@@ -39,6 +39,6 @@ export const getCurveRouterRoute = async (tokenIn: Address, tokenOut: Address, a
   return encodeFunctionData({
     abi: CurveRouterABI,
     functionName: "exchange",
-    args: [matchingRoute._route, matchingRoute._swap_params, amount, minAmountOut, matchingRoute._pools, user],
+    args: [matchingRoute._route, matchingRoute._swap_params, amount, minAmountOut, matchingRoute._pools, receiver],
   })
 }

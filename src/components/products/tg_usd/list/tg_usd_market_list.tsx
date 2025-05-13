@@ -32,7 +32,7 @@ export default function TgUsdMarketList() {
       <div className="flex items-end justify-between">
         <div className="tgusd-card w-7/12">
           <div className="flex items-center justify-center">
-            <Image height={288} width={288} src="/medias/tokens/tgUSD_header.png" alt="token" />
+            <Image height={320} width={320} src="/medias/tokens/tgUSD_header.png" alt="token" />
           </div>
           <div className="flex flex-col items-start justify-center gap-3">
             <span className="text-4xl font-bold">tgUSD</span>

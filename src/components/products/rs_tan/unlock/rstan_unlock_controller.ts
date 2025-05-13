@@ -1,14 +1,14 @@
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
-import RsTan from "../../../../abi/tgusd/RsTanService.json"
+import RsTan from "../../../../abi/tgusd/RsTan.json"
 import { Abi, WalletClient } from "viem"
 import { RSTAN_CONTRACT } from "../rs_tan_repository"
 
-export const doUnlock = async (tokenId: bigint, walletClient: WalletClient, method: string) => {
+export const doUnlock = async (tokenId: bigint, walletClient: WalletClient, method: string, claimAsSgUSD: boolean) => {
   const txData = {
     abi: RsTan.abi as Abi,
     functionName: method,
-    args: [tokenId],
-    address: RSTAN_CONTRACT.RSTAN_SERVICE,
+    args: [tokenId, claimAsSgUSD],
+    address: RSTAN_CONTRACT.RSTAN,
   }
 
   const txHash = await executeContractCall(walletClient, txData)

@@ -1,18 +1,13 @@
 import { Abi, Address, Hex, WalletClient } from "viem"
 import LockUI from "../../../abi/tgusd/LockUI.json"
-import RsTan from "../../../abi/tgusd/RsTanService.json"
+import RsTan from "../../../abi/tgusd/RsTan.json"
 import { executeChainViewUnique, executeContractCall, waitForTransaction } from "@/services/service_rpc"
 import { ListHeaderData } from "@/types"
 import { LockData } from "../tg_usd/tg_usd_type"
 import { RSTAN_CONTRACT } from "./rs_tan_repository"
 
 export async function getRsTanData(user: Address) {
-  return await executeChainViewUnique<LockData>(LockUI.abi as Abi, LockUI.bytecode as Hex, [
-    user,
-    RSTAN_CONTRACT.RSTAN_SERVICE,
-    RSTAN_CONTRACT.RSTAN_ERC_721,
-    RSTAN_CONTRACT.TAN,
-  ])
+  return await executeChainViewUnique<LockData>(LockUI.abi as Abi, LockUI.bytecode as Hex, [user, RSTAN_CONTRACT.RSTAN, RSTAN_CONTRACT.TAN])
 }
 
 export const lockListHeaders: ListHeaderData[] = [
@@ -28,7 +23,7 @@ export const doIncreaseLockTime = async (tokenId: bigint, walletClient: WalletCl
     abi: RsTan.abi as Abi,
     functionName: "increaseLockTime",
     args: [tokenId],
-    address: RSTAN_CONTRACT.RSTAN_SERVICE,
+    address: RSTAN_CONTRACT.RSTAN,
   }
 
   const txHash = await executeContractCall(walletClient, txData)
@@ -40,7 +35,7 @@ export const doTogglePermaLock = async (tokenId: bigint, walletClient: WalletCli
     abi: RsTan.abi as Abi,
     functionName: "togglePermaLock",
     args: [tokenId],
-    address: RSTAN_CONTRACT.RSTAN_SERVICE,
+    address: RSTAN_CONTRACT.RSTAN,
   }
 
   const txHash = await executeContractCall(walletClient, txData)

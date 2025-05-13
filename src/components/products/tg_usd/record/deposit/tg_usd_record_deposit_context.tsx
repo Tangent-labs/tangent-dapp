@@ -157,7 +157,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
       setIsZapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, collateralInfo?.address, depositAssetInfo?.address, 0n)
+        const { quote } = await getQuote(value, currentAddress, collateralInfo?.address, depositAssetInfo?.address)
 
         if (quote) {
           setZapValue(quote)
@@ -185,7 +185,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
       setIsDepositLoading(true)
 
       try {
-        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, collateralInfo?.address, 0n)
+        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, collateralInfo?.address)
 
         setDepositWeiValue(quote)
       } catch (error) {

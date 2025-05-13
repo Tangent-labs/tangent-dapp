@@ -57,7 +57,7 @@ export default function TgUsdStakeContent() {
     }
 
     const sgUSDInfo = {
-      address: "0x374039ebeed6a9185b1ccf320daa2301f26246f6",
+      address: TGUSD_CONTRACT?.SG_USD,
       decimals: 18,
       displayDecimals: 0,
       logo: "sgUSD",

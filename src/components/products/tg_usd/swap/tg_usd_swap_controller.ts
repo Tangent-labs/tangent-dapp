@@ -5,7 +5,7 @@ import WStable from "@/abi/tgusd/WStable.json"
 import { BalanceAllowanceData, SwapToken } from "../tg_usd_type"
 import { getSwapAssetPrice } from "@/services/service_price"
 import { AssetDataPriced } from "@/types"
-import { getEnsoRoute } from "../quote_api"
+import { getEnsoData } from "../quote_api"
 
 export const computeSwapAssetPrice = async (tokens: SwapToken[], depositAsset: string) => {
   try {
@@ -124,7 +124,7 @@ export const fetchEnsoData = async (
   depositAssetInfo: AssetDataPriced,
   minAmountOut: bigint
 ) => {
-  const routerCall = await getEnsoRoute(depositWeiValue, depositAssetInfo?.address, receiveAssetInfo?.address, null, receiver, minAmountOut)
+  const routerCall = await getEnsoData(depositWeiValue, depositAssetInfo?.address, receiveAssetInfo?.address, null, receiver, minAmountOut)
 
   if (!routerCall) throw new Error("Failed to fetch routing data")
 

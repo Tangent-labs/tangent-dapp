@@ -9,7 +9,7 @@ import { getAssetInfo } from "@/services/service_existing_asset"
 import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
 import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
 import { getSwapAssetPrice } from "@/services/service_price"
-import { getEnsoRoute } from "../quote_api"
+import { getEnsoData } from "../quote_api"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
@@ -239,7 +239,7 @@ export const prepareZapTransaction = async (
   marketInfo: { marketAddress: Address },
   minAmountOut: bigint
 ) => {
-  const routerCall = await getEnsoRoute(amount, tokenIn?.address, tokenOut?.address, TGUSD_CONTRACT.ZAPPER, marketInfo.marketAddress, minAmountOut)
+  const routerCall = await getEnsoData(amount, tokenIn?.address, tokenOut?.address, TGUSD_CONTRACT.ZAPPER, marketInfo.marketAddress, minAmountOut)
 
   if (!routerCall?.tx?.data) throw new Error("Failed to fetch routing data")
 

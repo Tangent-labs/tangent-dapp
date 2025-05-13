@@ -325,7 +325,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
       setIsZapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, assetInfo?.address, repayAssetInfo?.address, 0n)
+        const { quote } = await getQuote(value, currentAddress, assetInfo?.address, repayAssetInfo?.address)
 
         if (quote) {
           setTgUsdRepayedValue(quote)

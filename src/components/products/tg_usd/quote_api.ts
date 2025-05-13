@@ -2,7 +2,7 @@
 
 import { Address } from "viem"
 
-export const getEnsoRoute = async (
+export const getEnsoData = async (
   amountIn: bigint,
   tokenIn: Address,
   tokenOut: Address,

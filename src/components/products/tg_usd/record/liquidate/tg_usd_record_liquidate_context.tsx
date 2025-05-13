@@ -161,7 +161,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
       if (!value || !currentAddress || !marketData) return
 
       try {
-        const { quote } = await getQuote(value, currentAddress, assetInfo?.address, marketData?.collateralInfo?.address, 0n)
+        const { quote } = await getQuote(value, currentAddress, assetInfo?.address, marketData?.collateralInfo?.address)
 
         if (quote) {
           setTgUSDReceivedValue(quote)

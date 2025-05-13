@@ -162,7 +162,7 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
 
       setIsZapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, collateralInfo?.address, depositAssetInfo?.address, 0n)
+        const { quote } = await getQuote(value, currentAddress, collateralInfo?.address, depositAssetInfo?.address)
 
         if (quote) {
           setZapValue(quote as bigint)
@@ -343,7 +343,7 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
 
   useEffect(() => {
     const computeQuote = async (value: bigint) => {
-      const { quote } = await getQuote(value, currentAddress!, collateralInfo?.address, TGUSD_CONTRACT.TG_USD, 0n)
+      const { quote } = await getQuote(value, currentAddress!, collateralInfo?.address, TGUSD_CONTRACT.TG_USD)
 
       setIsDepositLoading(false)
       setLeveragedCollateralQuote(quote)

@@ -6,7 +6,7 @@ import { Abi, Address } from "viem"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
 import { SwapConfig, swapConfig } from "./swap_config"
-import { tgUsdTokens } from "../tg_usd_repository"
+import { TGUSD_CONTRACT, tgUsdTokens } from "../tg_usd_repository"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, fetchEnsoData, getABI, getSwapFormState } from "./tg_usd_swap_controller"
 import { useTgUsdContext } from "../tg_usd_context"
 import { getQuote } from "../global_quote_controller"
@@ -218,7 +218,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
       setIsSwapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, depositAssetInfo?.address, receiveAssetInfo?.address, 0n)
+        const { quote } = await getQuote(value, currentAddress, depositAssetInfo?.address, receiveAssetInfo?.address)
 
         if (quote) {
           setDepositWeiValue(quote)
@@ -260,11 +260,11 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
       setIsSwapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, receiveAssetInfo?.address, depositAssetInfo?.address, 0n)
+        const { quote } = await getQuote(value, currentAddress, receiveAssetInfo?.address, depositAssetInfo?.address)
 
         if (quote) {
           setReceiveWeiValue(quote)
-          setEnsoRouterAddress("0xF75584eF6673aD213a685a1B58Cc0330B8eA22Cf")
+          setEnsoRouterAddress(TGUSD_CONTRACT.ENSO_ROUTER as Address)
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)
@@ -428,7 +428,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
                 quote: "enso",
                 swap: null,
                 isStaked: false,
-                contract: "0xF75584eF6673aD213a685a1B58Cc0330B8eA22Cf",
+                contract: TGUSD_CONTRACT.ENSO_ROUTER,
               }
         )
       } catch {
@@ -437,7 +437,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
           quote: "enso",
           swap: null,
           isStaked: false,
-          contract: "0xF75584eF6673aD213a685a1B58Cc0330B8eA22Cf",
+          contract: TGUSD_CONTRACT.ENSO_ROUTER,
         })
       }
     }

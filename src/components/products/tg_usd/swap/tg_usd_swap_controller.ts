@@ -5,7 +5,7 @@ import WStable from "@/abi/tgusd/WStable.json"
 import { BalanceAllowanceData, SwapToken } from "../tg_usd_type"
 import { getSwapAssetPrice } from "@/services/service_price"
 import { AssetDataPriced } from "@/types"
-import { getEnsoData } from "../quote_api"
+import { getEnsoData } from "../api"
 
 export const computeSwapAssetPrice = async (tokens: SwapToken[], depositAsset: string) => {
   try {

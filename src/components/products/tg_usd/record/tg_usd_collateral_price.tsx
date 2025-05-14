@@ -1,77 +1,117 @@
 "use client"
 
+import { useTransition, useEffect, useState } from "react"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import Divider from "@/components/design_system/structure/divider"
 import Title from "@/components/design_system/structure/title"
 import TokenImage from "@/components/design_system/structure/token_image"
-
-import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, ReferenceLine } from "recharts"
 import { useTgUsdRecordContext } from "./tg_usd_record_context"
+import { CandlestickData, CandlestickSeries, createChart, DeepPartial, Time, TimeChartOptions } from "lightweight-charts"
+import { fetchGraphData } from "../api"
+import { getPublicClient } from "@/services/service_rpc"
+import { Address } from "viem"
+import { cn } from "@/lib/utils"
 
-const CollateralGraph = () => {
-  const data = [
-    {
-      name: "date 1",
-      uv: 1.002,
-    },
-    {
-      name: "date 2",
-      uv: 0.965,
-    },
-    {
-      name: "date 3",
-      uv: 0.975,
-    },
-    {
-      name: "date 4",
-      uv: 0.995,
-    },
-    {
-      name: "date 5",
-      uv: 0.997,
-    },
-    {
-      name: "date 6",
-      uv: 0.9999,
-    },
-    {
-      name: "date 7",
-      uv: 1.0245,
-    },
-  ]
+export type GraphData = {
+  chain: string
+  address: string
+  data: CandlestickData<Time>[]
+}
 
-  return (
-    <ResponsiveContainer width="100%" height="100%">
-      <AreaChart
-        className=""
-        width={500}
-        height={400}
-        data={data}
-        margin={{
-          top: 10,
-          right: 30,
-          left: 0,
-          bottom: 0,
-        }}
-      >
-        <defs>
-          <linearGradient id="gradiant" x1="0" y1="0" x2="0" y2="1">
-            <stop offset={0} stopColor="rgba(251, 249, 17, .2)" stopOpacity={1} />
-            <stop offset={50} stopColor="rgba(251, 249, 17, 0.05)" stopOpacity={1} />
-            <stop offset={100} stopColor="rgba(251, 249, 17, 0.05)" stopOpacity={1} />
-          </linearGradient>
-        </defs>
-        <XAxis dataKey="name" className="text-xs" axisLine={false} tickLine={false} />
-        <YAxis className="text-xs" axisLine={false} tickLine={false} />
-        <ReferenceLine y={0.9} stroke="#FF0300" strokeDasharray="3 3" label={{ position: "insideTopRight", value: "Liquidation price", fontSize: 14 }} />
-        <Area strokeWidth={2} type="monotone" dataKey="uv" stroke="#FBF911" fill="url(#gradiant)" />
-      </AreaChart>
-    </ResponsiveContainer>
-  )
+type CollateralGraphParams = {
+  graphData: GraphData
+  isPending: boolean
+}
+
+const CollateralGraph = ({ graphData, isPending }: CollateralGraphParams) => {
+  useEffect(() => {
+    const el = document.getElementById("graphContainer")
+
+    if (el) {
+      const chartOptions = { layout: { textColor: "black", background: { type: "solid", color: "black" } } }
+      const chart = createChart(el, chartOptions as DeepPartial<TimeChartOptions>)
+
+      const candlestickSeries = chart.addSeries(CandlestickSeries, {
+        upColor: "#26a69a",
+        downColor: "#ef5350",
+        borderVisible: false,
+        wickUpColor: "#26a69a",
+        wickDownColor: "#ef5350",
+      })
+
+      candlestickSeries.setData(graphData.data)
+
+      chart.timeScale().fitContent()
+    }
+  }, [])
+
+  return <div className={cn(isPending ? "shimmer" : "", "flex min-h-80 w-full")} id="graphContainer"></div>
 }
 
 export default function TgUsdCollateralPrice() {
   const { collateralInfo } = useTgUsdRecordContext()
+
+  const [graphData, setGraphData] = useState<GraphData | null>(null)
+
+  const [isPending, startTransition] = useTransition()
+
+  const [timeWindow, setTimeWindow] = useState<string>("1w")
+
+  const computeTimeDiff = (customStartTime: string) => {
+    switch (customStartTime) {
+      case "15m":
+        return 15 * 60
+      case "1h":
+        return 60 * 60
+      case "4h":
+        return 4 * 60 * 60
+      case "1d":
+        return 24 * 60 * 60
+      case "1w":
+        return 7 * 24 * 60 * 60
+      case "1mo":
+        return 30 * 24 * 60 * 60
+      default:
+        return 7 * 24 * 60 * 60
+    }
+  }
+
+  const selectTab = (nextTab: string) => {
+    startTransition(() => {
+      setGraphData(null)
+      setTimeWindow(nextTab)
+    })
+  }
+
+  const fetchGraphDataForCollat = async (address?: Address, customStartTime?: string) => {
+    if (!address) return
+
+    try {
+      const publicClient = await getPublicClient()
+      const currentBlockNumber = await publicClient.getBlockNumber()
+      const block = await publicClient.getBlock({ blockNumber: currentBlockNumber })
+      const currentTime = new Date(Number(block.timestamp))
+
+      let startTime: number
+
+      if (customStartTime) {
+        const timeDiff = computeTimeDiff(customStartTime)
+        startTime = currentTime.getTime() - timeDiff
+      } else {
+        startTime = currentTime.getTime() - 7 * 24 * 60 * 60
+      }
+
+      const resp = await fetchGraphData(address, startTime, currentTime.getTime())
+      setGraphData(resp)
+    } catch (error) {
+      console.error("Error fetching graph data:", error)
+    }
+  }
+
+  useEffect(() => {
+    fetchGraphDataForCollat(collateralInfo?.address, timeWindow)
+  }, [collateralInfo?.address, timeWindow])
+
   return (
     <div className="flex w-full flex-col justify-between rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
       <Title label="Collateral price" size={"normal"} />
@@ -83,19 +123,21 @@ export default function TgUsdCollateralPrice() {
         </div>
         <div>
           <div className="flex gap-2">
-            <ButtonTab label={"5m"} active={true} className="rounded-full !py-1" />
-            <ButtonTab label={"15m"} active={false} className="rounded-full !py-1" />
-            <ButtonTab label={"1h"} active={false} className="rounded-full !py-1" />
-            <ButtonTab label={"4h"} active={false} className="rounded-full !py-1" />
-            <ButtonTab label={"1d"} active={false} className="rounded-full !py-1" />
-            <ButtonTab label={"1w"} active={false} className="rounded-full !py-1" />
+            <ButtonTab onClick={() => selectTab("15m")} label={"15m"} active={timeWindow === "15m"} className="rounded-full !py-1" />
+            <ButtonTab onClick={() => selectTab("1h")} label={"1h"} active={timeWindow === "1h"} className="rounded-full !py-1" />
+            <ButtonTab onClick={() => selectTab("4h")} label={"4h"} active={timeWindow === "4h"} className="rounded-full !py-1" />
+            <ButtonTab onClick={() => selectTab("1d")} label={"1d"} active={timeWindow === "1d"} className="rounded-full !py-1" />
+            <ButtonTab onClick={() => selectTab("1w")} label={"1w"} active={timeWindow === "1w"} className="rounded-full !py-1" />
+            <ButtonTab onClick={() => selectTab("1mo")} label={"1mo"} active={timeWindow === "1mo"} className="rounded-full !py-1" />
           </div>
         </div>
       </div>
 
-      <div className="h-[300px] w-full">
-        <CollateralGraph />
-      </div>
+      {graphData && (
+        <div className="h-[300px] w-full">
+          <CollateralGraph isPending={isPending} graphData={graphData} />
+        </div>
+      )}
     </div>
   )
 }

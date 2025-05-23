@@ -220,14 +220,14 @@ export default function TgUsdLeveragePanel() {
             {!isDepositDisabled && (
               <div className="flex w-full items-center justify-between">
                 <span className="text-subtitle">Leverage</span>
-                <span className="text-white">{leveragePercentage.toFixed(0)}x</span>
+                <span className="text-white">~{leveragePercentage.toFixed(2)}x</span>
               </div>
             )}
 
-            <div className="flex w-full items-center justify-between font-bold">
+            <div className="flex w-full items-center justify-between">
               <span className="text-subtitle">Expected</span>
               <span className="text-white">
-                {formatNumber(Number(formatUnits(leveragedCollateralQuote || 0n, 18)), 0)} {collateralInfo?.symbol}{" "}
+                {formatNumber(Number(formatUnits((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18)), 0)} {collateralInfo?.symbol}{" "}
               </span>
             </div>
           </div>

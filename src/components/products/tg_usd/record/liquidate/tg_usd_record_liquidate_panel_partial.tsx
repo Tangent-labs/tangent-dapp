@@ -1,13 +1,13 @@
 "use client"
 
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { useTgUsdLiquidateContext } from "./tg_usd_record_liquidate_context"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
-import TokenImage from "@/components/design_system/structure/token_image"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
-import { formatBigInt } from "@/lib/number_formatter"
+import { useTgUsdLiquidateContext } from "./tg_usd_record_liquidate_context"
+import TokenImage from "@/components/design_system/structure/token_image"
+import PanelRaw from "@/components/design_system/structure/panel_raw"
 import Divider from "@/components/design_system/structure/divider"
+import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { formatBigInt } from "@/lib/number_formatter"
 
 export default function TgUsdLiquidatePanelPartial() {
   const { tgUSDInfo, collateralInfo } = useTgUsdRecordContext()
@@ -35,7 +35,7 @@ export default function TgUsdLiquidatePanelPartial() {
         <div className="">
           <TokenImage token={collateralInfo?.logo} size={32} />
         </div>
-        <span className="flex flex-col text-lg leading-3">
+        <span className="flex flex-col leading-3">
           <span>{collateralInfo.symbol}</span>
         </span>
       </PanelRaw>

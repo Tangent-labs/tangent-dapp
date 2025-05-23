@@ -6,8 +6,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: "Roobert, serif",
-        serif: "Roobert, serif",
+        roobert: ["Roobert", "sans-serif"], // Define Roobert as a custom font family
       },
       backgroundImage: {
         header: "var(--tgt-bg-header)",

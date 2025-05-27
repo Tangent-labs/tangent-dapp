@@ -22,6 +22,7 @@ type TgUsdRepayContextValues = {
   actionRepay: () => void
   formState: FormState
 
+  onClickMax: () => void
   repayWeiValue?: bigint
   setRepayWeiValue: (arg: bigint | undefined) => void
 
@@ -307,6 +308,11 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     return 0n
   }, [marketData])
 
+  const onClickMax = () => {
+    setRepayWeiValue(marketValues?.maxRepayableValue)
+    setPercentage(100)
+  }
+
   const handleRepayValueChange = (value: bigint | undefined) => {
     const assetInfo: AssetDataPriced = {
       address: TGUSD_CONTRACT.TG_USD,
@@ -391,6 +397,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     swapAssetPrice,
     zapRepay,
     actionApprove,
+    onClickMax,
     actionZapRepay,
   }
 

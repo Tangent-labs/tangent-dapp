@@ -18,6 +18,7 @@ import Image from "next/image"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { formatUnits } from "viem"
+import { Button } from "@/components/design_system/inputs/button"
 
 export default function TgUsdRepayPanel() {
   const { tokens } = useTgUsdContext()
@@ -36,6 +37,7 @@ export default function TgUsdRepayPanel() {
     handleRepayValueChange,
     actionZapRepay,
     actionApprove,
+    onClickMax,
     repayWeiValue,
     repayAsset,
     maxRepayableValue,
@@ -223,14 +225,18 @@ export default function TgUsdRepayPanel() {
           )}
         </div>
 
-        <FormButtons
-          actions={{
-            handleApprove: repayAsset && repayAsset !== "tgUSD" ? actionApprove : undefined,
-            handleProcess: repayAsset && repayAsset !== "tgUSD" ? actionZapRepay : actionRepay,
-          }}
-          formState={formState}
-          labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}
-        />
+        <div className="flex w-full items-center justify-center">
+          <FormButtons
+            actions={{
+              handleApprove: repayAsset && repayAsset !== "tgUSD" ? actionApprove : undefined,
+              handleProcess: repayAsset && repayAsset !== "tgUSD" ? actionZapRepay : actionRepay,
+            }}
+            formState={formState}
+            labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}
+          />
+
+          <Button onClick={() => onClickMax()}> MAX</Button>
+        </div>
       </div>
     </>
   )

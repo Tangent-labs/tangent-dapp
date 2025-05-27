@@ -23,16 +23,15 @@ export default function TgUsdLiquidatePanelFull() {
     )
   }
 
-  const WithdrawAssetDisplay = () => {
+  const LiquidateAssetDisplay = () => {
     return (
-      <PanelRaw className="flex w-48 items-center gap-2 border-white !bg-opacity-0 px-4 py-2 !backdrop-blur-none">
-        <div className="">
-          <TokenImage token={collateralInfo?.logo} size={32} />
-        </div>
-        <span className="flex flex-col text-lg leading-3">
+      <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+        <TokenImage token={collateralInfo?.logo} size={32} />
+
+        <span className="flex flex-col text-sm font-bold">
           <span>{collateralInfo.symbol}</span>
         </span>
-      </PanelRaw>
+      </div>
     )
   }
 
@@ -46,7 +45,7 @@ export default function TgUsdLiquidatePanelFull() {
         <DepositInput
           depositAmount={marketData?.collateralInfos?.positionCollateralAmount}
           labelDeposit="You liquidate"
-          depositSelect={<WithdrawAssetDisplay />}
+          depositSelect={<LiquidateAssetDisplay />}
           disabled={true}
           displaySliderInput={false}
           depositAsset={collateralInfo}
@@ -57,7 +56,7 @@ export default function TgUsdLiquidatePanelFull() {
         />
 
         <PanelRaw className={`${isQuoteLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
-          <div className="flex justify-between">
+          <div className="flex items-center justify-between">
             <div className="flex flex-col items-start justify-start">
               <div className="flex items-center justify-center text-subtitle">You redeem</div>
               <div className="flex items-center justify-center gap-2">
@@ -75,7 +74,7 @@ export default function TgUsdLiquidatePanelFull() {
                     : ""}
                 </div>
               </div>
-              <div className="flex justify-between text-xs text-gray-400">
+              <div className="flex items-center justify-between text-xs text-gray-400">
                 <div>Minimum redeemed</div>
               </div>
             </div>

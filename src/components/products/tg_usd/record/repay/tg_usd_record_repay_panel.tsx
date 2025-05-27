@@ -18,7 +18,6 @@ import Image from "next/image"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { formatUnits } from "viem"
-import { Button } from "@/components/design_system/inputs/button"
 
 export default function TgUsdRepayPanel() {
   const { tokens } = useTgUsdContext()
@@ -44,6 +43,7 @@ export default function TgUsdRepayPanel() {
     formState,
     percentage,
     isRepayAndWithdraw,
+    isRepayMax,
     withdrawWeiValue,
     maxWithdrawable,
     withdrawPercentage,
@@ -133,9 +133,16 @@ export default function TgUsdRepayPanel() {
   return (
     <>
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2 self-end">
-          <span className="text-sm text-gray-400">Repay and withdraw</span>
-          <Switch checked={isRepayAndWithdraw} onCheckedChange={(v) => setIsRepayAndWithdraw(v)} />
+        <div className="flex w-full items-end justify-end gap-2">
+          <div className="flex items-center gap-2 self-end">
+            <span className="text-sm text-gray-400">Repay and withdraw</span>
+            <Switch checked={isRepayAndWithdraw} onCheckedChange={(v) => setIsRepayAndWithdraw(v)} />
+          </div>
+
+          <div className="flex items-center gap-2 self-end">
+            <span className="text-sm text-gray-400">Repay MAX</span>
+            <Switch checked={isRepayMax} onCheckedChange={(v) => onClickMax(v)} />
+          </div>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -234,8 +241,6 @@ export default function TgUsdRepayPanel() {
             formState={formState}
             labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}
           />
-
-          <Button onClick={() => onClickMax()}> MAX</Button>
         </div>
       </div>
     </>

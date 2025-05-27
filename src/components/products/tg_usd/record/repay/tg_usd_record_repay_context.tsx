@@ -22,7 +22,7 @@ type TgUsdRepayContextValues = {
   actionRepay: () => void
   formState: FormState
 
-  onClickMax: () => void
+  onClickMax: (e: boolean) => void
   repayWeiValue?: bigint
   setRepayWeiValue: (arg: bigint | undefined) => void
 
@@ -61,6 +61,9 @@ type TgUsdRepayContextValues = {
   actionApprove: () => void
 
   actionZapRepay: () => void
+
+  isRepayMax: boolean
+  setIsRepayMax: (arg: boolean) => void
 }
 
 export const TgUsdRepayContext = createContext<TgUsdRepayContextValues | undefined>(undefined)
@@ -83,6 +86,8 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   const [repayAsset, setRepayAsset] = useState<string>("tgUSD")
 
   const [percentage, setPercentage] = useState<number>(0)
+
+  const [isRepayMax, setIsRepayMax] = useState<boolean>(false)
 
   const [isRepayAndWithdraw, setIsRepayAndWithdraw] = useState<boolean>(false)
 
@@ -308,9 +313,16 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     return 0n
   }, [marketData])
 
-  const onClickMax = () => {
-    setRepayWeiValue(marketValues?.maxRepayableValue)
-    setPercentage(100)
+  const onClickMax = (isChecked: boolean) => {
+    if (isChecked) {
+      setIsRepayMax(true)
+      setRepayWeiValue(marketValues?.maxRepayableValue)
+      setPercentage(100)
+    } else {
+      setIsRepayMax(false)
+      setRepayWeiValue(0n)
+      setPercentage(0)
+    }
   }
 
   const handleRepayValueChange = (value: bigint | undefined) => {
@@ -399,6 +411,8 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     actionApprove,
     onClickMax,
     actionZapRepay,
+    isRepayMax,
+    setIsRepayMax,
   }
 
   return <TgUsdRepayContext.Provider value={contextValue}>{children}</TgUsdRepayContext.Provider>

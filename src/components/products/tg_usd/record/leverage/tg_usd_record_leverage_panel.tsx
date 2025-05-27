@@ -225,7 +225,7 @@ export default function TgUsdLeveragePanel() {
             )}
 
             <div className="flex w-full items-center justify-between">
-              <span className="text-subtitle">Expected</span>
+              <span className="text-subtitle">Expected : depositedAmount +~ quote </span>
               <span className="text-white">
                 {formatNumber(Number(formatUnits((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18)), 0)} {collateralInfo?.symbol}{" "}
               </span>

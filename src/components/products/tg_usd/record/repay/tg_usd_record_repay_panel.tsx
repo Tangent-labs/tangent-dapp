@@ -140,7 +140,7 @@ export default function TgUsdRepayPanel() {
           </div>
 
           <div className="flex items-center gap-2 self-end">
-            <span className="text-sm text-gray-400">Repay MAX</span>
+            <span className="text-sm text-gray-400">Repay All</span>
             <Switch checked={isRepayMax} onCheckedChange={(v) => onClickMax(v)} />
           </div>
         </div>
@@ -155,7 +155,7 @@ export default function TgUsdRepayPanel() {
             depositAmount={repayWeiValue}
             labelDeposit="You repay"
             depositSelect={<AssetSelect />}
-            disabled={!canInteract}
+            disabled={!canInteract || isRepayMax}
             isZapping={!!repayAsset && repayAsset !== "tgUSD"}
             depositAsset={repayAssetInfo || tgUSDInfo}
             balance={maxRepayableValue}

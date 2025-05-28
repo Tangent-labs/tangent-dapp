@@ -5,7 +5,7 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useSt
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./tg_usd_record_repay_controller"
-import { formatUnits } from "viem"
+import { formatUnits, maxUint256 } from "viem"
 import { getQuote, returnRoute } from "../../global_quote_controller"
 import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 import { useTgUsdContext } from "../../tg_usd_context"
@@ -248,7 +248,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   }
 
   const marketRepay = () => {
-    doRepay(walletClientRef.current!, { marketAddress: marketData!.marketAddress, repayWeiValue }).then(() => {
+    doRepay(walletClientRef.current!, { marketAddress: marketData!.marketAddress, repayWeiValue: isRepayMax ? maxUint256 : repayWeiValue }).then(() => {
       loadOnChainData()
       setRepayWeiValue(0n)
       setWithdrawWeiValue(0n)
@@ -258,7 +258,11 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   }
 
   const marketRepayAndWithdraw = () => {
-    doRepayAndWithdraw(walletClientRef.current!, { marketAddress: marketData!.marketAddress, repayWeiValue, withdrawWeiValue }).then(() => {
+    doRepayAndWithdraw(walletClientRef.current!, {
+      marketAddress: marketData!.marketAddress,
+      repayWeiValue: isRepayMax ? maxUint256 : repayWeiValue,
+      withdrawWeiValue,
+    }).then(() => {
       loadOnChainData()
       setRepayWeiValue(0n)
       setWithdrawWeiValue(0n)

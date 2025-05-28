@@ -84,7 +84,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  const [isStaking, setIsStaking] = useState<boolean>(false)
+  const [isStaking, setIsStaking] = useState<boolean>(true)
 
   const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(false)
 
@@ -288,7 +288,7 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
   const actionDeposit = () => {
     setIsDepositLoading(true)
     const walletClient = getWalletClient()
-    if (walletClient && depositWeiValue)
+    if (walletClient && depositWeiValue) {
       doMarketDeposit(walletClient, { depositWeiValue, isDepositAndBorrow, isStaking, marketAddress: marketInfo?.marketAddress, borrowWeiValue }).then(() => {
         loadOnChainData()
         setDepositWeiValue(0n)
@@ -298,6 +298,10 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
         setIsDepositLoading(false)
         toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
       })
+    } else {
+      setIsDepositLoading(false)
+      toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
+    }
   }
 
   const formState = useMemo(

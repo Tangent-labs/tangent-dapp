@@ -17,7 +17,7 @@ export default function TgUsdLoanDetail({ ...props }: TgUsdLoanDetailProps) {
 
   return (
     <div className="rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]" {...props}>
-      <Title label={"Loan details"} size={"small"} />
+      <Title label={"Loan details"} size={"normal"} />
       <Divider />
       <div className="flex gap-4">
         <EvolutionBox
@@ -29,19 +29,8 @@ export default function TgUsdLoanDetail({ ...props }: TgUsdLoanDetailProps) {
         <EvolutionBox originalValue={marketDisplayData.debt} label={"Debt"} newValue={futureMarketDisplayData.debt} className="flex-1" logo="tgUSD" />
         <EvolutionBox originalValue={marketDisplayData.health} label={"Health"} newValue={futureMarketDisplayData.health} className="flex-1" />
         <EvolutionBox originalValue={marketDisplayData.ltv} label={"LTV"} newValue={futureMarketDisplayData.ltv} className="flex-1" />
-        <EvolutionBox
-          originalValue={marketDisplayData.maxBorrowable}
-          label={"Max borrowable"}
-          newValue={futureMarketDisplayData.maxBorrowable}
-          className="flex-1"
-          logo="tgUSD"
-        />
-        <EvolutionBox
-          originalValue={marketDisplayData.maxWithdrawable}
-          label={"Max withdrawable"}
-          newValue={futureMarketDisplayData.maxWithdrawable}
-          className="flex-1"
-        />
+
+        <EvolutionBox originalValue={"XXX"} label={"Position APR"} newValue={"YYY"} className="flex-1" />
       </div>
     </div>
   )

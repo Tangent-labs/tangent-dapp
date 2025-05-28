@@ -1,12 +1,12 @@
 "use client"
 
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { useTgUsdLiquidateContext } from "./tg_usd_record_liquidate_context"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
-import { formatBigInt } from "@/lib/number_formatter"
 import Divider from "@/components/design_system/structure/divider"
+import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { formatBigInt } from "@/lib/number_formatter"
 
 export default function TgUsdLiquidatePanelPartial() {
   const { tgUSDInfo, collateralInfo } = useTgUsdRecordContext()

@@ -46,7 +46,7 @@ export function LeverageInput({
     if (!!setPercentage) {
       const newPercentage = Number(e.target.value)
       setPercentage(newPercentage)
-      const newValue = newPercentage !== 0 ? Number((newPercentage * depositAmountNumber).toFixed(0)) : 0
+      const newValue = newPercentage !== 0 ? Number((newPercentage * depositAmountNumber - depositAmountNumber).toFixed(0)) : 0
       setInnerValue(newValue.toFixed(0))
     }
   }
@@ -121,7 +121,7 @@ export function LeverageInput({
             ></div>
           </div>
 
-          {[2.5, 5, 7.5].map((el) => (
+          {[2, 3, 4, 5, 6, 7, 8, 9].map((el) => (
             <div key={el} className="relative flex w-fit items-center justify-center">
               x{el}
               <div

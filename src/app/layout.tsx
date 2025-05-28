@@ -16,7 +16,7 @@ export default function RootLayout({
         <link rel="preload" href="/fonts/RoobertTRIALVF.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
       </head>
       <body className="dark relative bg-page antialiased" id="body" suppressHydrationWarning>
-        <main className="container mx-auto min-h-[80vh] w-full">{children}</main>
+        <main className="container mx-auto min-h-[80vh] w-full font-roobert">{children}</main>
       </body>
     </html>
   )

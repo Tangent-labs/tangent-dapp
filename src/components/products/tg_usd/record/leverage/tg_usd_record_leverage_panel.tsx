@@ -220,30 +220,32 @@ export default function TgUsdLeveragePanel() {
             {!isDepositDisabled && (
               <div className="flex w-full items-center justify-between">
                 <span className="text-subtitle">Leverage</span>
-                <span className="text-white">{leveragePercentage.toFixed(0)}x</span>
+                <span className="text-white">~{leveragePercentage.toFixed(2)}x</span>
               </div>
             )}
 
-            <div className="flex w-full items-center justify-between font-bold">
-              <span className="text-subtitle">Expected</span>
+            <div className="flex w-full items-center justify-between">
+              <span className="text-subtitle">Expected : </span>
               <span className="text-white">
-                {formatNumber(Number(formatUnits(leveragedCollateralQuote || 0n, 18)), 0)} {collateralInfo?.symbol}{" "}
+                {formatNumber(Number(formatUnits(depositWeiValue || 0n, 18)), 0)} + {formatNumber(Number(formatUnits(leveragedCollateralQuote || 0n, 18)), 0)}{" "}
+                ~={" "}
+                <span className="font-bold text-white">
+                  {formatNumber(Number(formatUnits((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18)), 0)} {collateralInfo?.symbol}{" "}
+                </span>
               </span>
             </div>
           </div>
         </div>
       </>
 
-      <div>
-        <FormButtons
-          actions={{
-            handleApprove: depositAsset && depositAsset !== collateralInfo?.name ? actionApproveZap : actionApprove,
-            handleProcess: depositAsset && depositAsset !== collateralInfo?.name ? actionZapLeverage : actionLeverage,
-          }}
-          formState={formState}
-          labelProcess={depositAsset && depositAsset !== collateralInfo?.name ? "Zap and leverage" : "Leverage"}
-        />
-      </div>
+      <FormButtons
+        actions={{
+          handleApprove: depositAsset && depositAsset !== collateralInfo?.name ? actionApproveZap : actionApprove,
+          handleProcess: depositAsset && depositAsset !== collateralInfo?.name ? actionZapLeverage : actionLeverage,
+        }}
+        formState={formState}
+        labelProcess={depositAsset && depositAsset !== collateralInfo?.name ? "Zap and leverage" : "Leverage"}
+      />
 
       <div className="flex w-full items-end justify-between gap-2">
         <Popover>

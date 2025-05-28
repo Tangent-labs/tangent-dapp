@@ -131,118 +131,116 @@ export default function TgUsdRepayPanel() {
   }
 
   return (
-    <>
-      <div className="flex flex-col gap-2">
-        <div className="flex w-full items-end justify-end gap-2">
-          <div className="flex items-center gap-2 self-end">
-            <span className="text-sm text-gray-400">Repay and withdraw</span>
-            <Switch checked={isRepayAndWithdraw} onCheckedChange={(v) => setIsRepayAndWithdraw(v)} />
-          </div>
-
-          <div className="flex items-center gap-2 self-end">
-            <span className="text-sm text-gray-400">Repay All</span>
-            <Switch checked={isRepayMax} onCheckedChange={(v) => onClickMax(v)} />
-          </div>
+    <div className="flex flex-col gap-2">
+      <div className="flex w-full items-end justify-end gap-2">
+        <div className="flex items-center gap-2 self-end">
+          <span className="text-sm text-gray-400">Repay and withdraw</span>
+          <Switch checked={isRepayAndWithdraw} onCheckedChange={(v) => setIsRepayAndWithdraw(v)} />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <div className="flex items-end justify-between">
-            <span className="text-[20px] font-bold">Repay debt</span>
-            <span className="text-xs text-subtitle"> Max: {formatBigInt(maxRepayableValue, 18, 2)} tgUSD</span>
-          </div>
-
-          <DepositInput
-            depositAmount={repayWeiValue}
-            labelDeposit="You repay"
-            depositSelect={<AssetSelect />}
-            disabled={!canInteract || isRepayMax}
-            isZapping={!!repayAsset && repayAsset !== "tgUSD"}
-            depositAsset={repayAssetInfo || tgUSDInfo}
-            balance={maxRepayableValue}
-            displayBalance={!!repayAsset && repayAsset !== "tgUSD"}
-            setMaxBalance={() => {}}
-            displaySliderInput={true}
-            percentage={percentage}
-            setPercentage={setPercentage}
-            onValueChange={handleRepayValueChange}
-          />
-
-          {repayAsset && repayAsset !== "tgUSD" && (
-            <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
-              <div className="flex items-center justify-between">
-                <div className="flex flex-col items-start justify-start">
-                  <div className="flex items-center justify-center gap-1">
-                    <div className="text-sm text-gray-400">Zap</div>
-                    <IconThunder className="h-auto w-[8px] text-row-tonic" />
-                    <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
-                  </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <input
-                      type="string"
-                      placeholder="0"
-                      disabled={true}
-                      className="flex justify-start bg-transparent text-xl font-bold focus:outline-none"
-                      value={Number(formatUnits(tgUdsRepayedValue || 0n, 18)).toFixed(2) ?? ""}
-                    />
-
-                    <div className="text-xs">
-                      {tgUdsRepayedValue && tgUSDInfo?.price !== 0
-                        ? `(~${formatDollar((Number(Number(formatUnits(tgUdsRepayedValue || 0n, 18))) * tgUSDInfo?.price).toFixed(2))})`
-                        : ""}
-                    </div>
-                  </div>
-                  <div className="flex justify-between text-xs text-gray-400">
-                    <div>Minimum receive</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
-                  <TokenImage token="tgUSD" size={24} />
-                  <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
-                </div>
-              </div>
-            </PanelRaw>
-          )}
-
-          {isRepayAndWithdraw && (
-            <>
-              <div className="flex items-end justify-between">
-                <span className="text-[20px] font-bold">Withdraw collateral</span>
-                <span className="text-xs text-subtitle">
-                  Max: {formatBigInt(maxWithdrawable, 18, 2)} {collateralInfo?.symbol}
-                </span>
-              </div>
-
-              <DepositInput
-                depositAmount={withdrawWeiValue}
-                labelDeposit="You withdraw"
-                depositSelect={<WithdrawAssetDisplay />}
-                disabled={!canInteract}
-                depositAsset={tgUSDInfo}
-                balance={maxWithdrawable}
-                displaySliderInput={true}
-                setMaxBalance={() => {}}
-                displayBalance={false}
-                onValueChange={(value: bigint | undefined) => {
-                  setWithdrawWeiValue(value)
-                }}
-                percentage={withdrawPercentage}
-                setPercentage={setWithdrawPercentage}
-              />
-            </>
-          )}
-        </div>
-
-        <div className="flex w-full items-center justify-center">
-          <FormButtons
-            actions={{
-              handleApprove: repayAsset && repayAsset !== "tgUSD" ? actionApprove : undefined,
-              handleProcess: repayAsset && repayAsset !== "tgUSD" ? actionZapRepay : actionRepay,
-            }}
-            formState={formState}
-            labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}
-          />
+        <div className="flex items-center gap-2 self-end">
+          <span className="text-sm text-gray-400">Repay All</span>
+          <Switch checked={isRepayMax} onCheckedChange={(v) => onClickMax(v)} />
         </div>
       </div>
-    </>
+
+      <div className="flex flex-col gap-2">
+        <div className="flex items-end justify-between">
+          <span className="text-[20px] font-bold">Repay debt</span>
+          <span className="text-xs text-subtitle"> Max: {formatBigInt(maxRepayableValue, repayAssetInfo?.decimals || 18, 2)} tgUSD</span>
+        </div>
+
+        <DepositInput
+          depositAmount={repayWeiValue}
+          labelDeposit="You repay"
+          depositSelect={<AssetSelect />}
+          disabled={!canInteract || isRepayMax}
+          isZapping={!!repayAsset && repayAsset !== "tgUSD"}
+          depositAsset={repayAssetInfo || tgUSDInfo}
+          balance={maxRepayableValue}
+          displayBalance={false}
+          setMaxBalance={() => {}}
+          displaySliderInput={true}
+          percentage={percentage}
+          setPercentage={setPercentage}
+          onValueChange={handleRepayValueChange}
+        />
+
+        {repayAsset && repayAsset !== "tgUSD" && (
+          <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col items-start justify-start">
+                <div className="flex items-center justify-center gap-1">
+                  <div className="text-sm text-gray-400">Zap</div>
+                  <IconThunder className="h-auto w-[8px] text-row-tonic" />
+                  <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
+                </div>
+                <div className="flex items-center justify-center gap-2">
+                  <input
+                    type="string"
+                    placeholder="0"
+                    disabled={true}
+                    className="flex justify-start bg-transparent text-xl font-bold focus:outline-none"
+                    value={Number(formatUnits(tgUdsRepayedValue || 0n, 18)).toFixed(2) ?? ""}
+                  />
+
+                  <div className="text-xs">
+                    {tgUdsRepayedValue && tgUSDInfo?.price !== 0
+                      ? `(~${formatDollar((Number(Number(formatUnits(tgUdsRepayedValue || 0n, 18))) * tgUSDInfo?.price).toFixed(2))})`
+                      : ""}
+                  </div>
+                </div>
+                <div className="flex justify-between text-xs text-gray-400">
+                  <div>Minimum receive</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+                <TokenImage token="tgUSD" size={24} />
+                <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
+              </div>
+            </div>
+          </PanelRaw>
+        )}
+
+        {isRepayAndWithdraw && (
+          <>
+            <div className="flex items-end justify-between">
+              <span className="text-[20px] font-bold">Withdraw collateral</span>
+              <span className="text-xs text-subtitle">
+                Max: {formatBigInt(maxWithdrawable, 18, 2)} {collateralInfo?.symbol}
+              </span>
+            </div>
+
+            <DepositInput
+              depositAmount={withdrawWeiValue}
+              labelDeposit="You withdraw"
+              depositSelect={<WithdrawAssetDisplay />}
+              disabled={!canInteract}
+              depositAsset={tgUSDInfo}
+              balance={maxWithdrawable}
+              displaySliderInput={true}
+              setMaxBalance={() => {}}
+              displayBalance={false}
+              onValueChange={(value: bigint | undefined) => {
+                setWithdrawWeiValue(value)
+              }}
+              percentage={withdrawPercentage}
+              setPercentage={setWithdrawPercentage}
+            />
+          </>
+        )}
+      </div>
+
+      <div className="flex w-full items-center justify-center">
+        <FormButtons
+          actions={{
+            handleApprove: repayAsset && repayAsset !== "tgUSD" ? actionApprove : undefined,
+            handleProcess: repayAsset && repayAsset !== "tgUSD" ? actionZapRepay : actionRepay,
+          }}
+          formState={formState}
+          labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}
+        />
+      </div>
+    </div>
   )
 }

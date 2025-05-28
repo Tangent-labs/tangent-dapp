@@ -13,6 +13,7 @@ import { ZapToken } from "../../tg_usd_type"
 import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
+import { toBigInt } from "@/lib/number_formatter"
 
 type TgUsdRepayContextProps = {
   children: ReactNode
@@ -73,7 +74,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, fetchBalanceAllowanceData, balanceAllowanceData } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts, fetchBalanceAllowanceData, balanceAllowanceData, tgUSDInfo } = useTgUsdRecordContext()
 
   const [isZapLoading, setIsZapLoading] = useState(false)
 
@@ -288,9 +289,9 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   }, [marketData])
 
   useEffect(() => {
-    if (repayWeiValue && marketValues) {
+    if (repayWeiValue && marketValues && repayAssetInfo) {
       if (marketValues?.maxRepayableValue - repayWeiValue! > 0n && marketValues?.maxRepayableValue - repayWeiValue! < marketValues?.minimumLoan) {
-        const p = Math.round(100 - 300000 / Number(formatUnits(marketValues?.maxRepayableValue, 18)))
+        const p = Math.round(100 - 300000 / Number(formatUnits(marketValues?.maxRepayableValue, repayAssetInfo?.decimals)))
         const newValue = marketValues?.maxRepayableValue - marketValues?.minimumLoan
 
         setTimeout(() => {
@@ -319,9 +320,18 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const onClickMax = (isChecked: boolean) => {
     if (isChecked) {
-      setIsRepayMax(true)
-      setRepayWeiValue(marketValues?.maxRepayableValue)
-      setPercentage(100)
+      if (repayAsset !== "tgUSD" && repayAssetInfo && marketData) {
+        setIsRepayMax(true)
+        setPercentage(100)
+
+        const formattedMaxRepayableAmount = formatUnits(marketData?.debtInfos?.userDebt, 18)
+        const repayAssetAmount = ((tgUSDInfo?.price || 1.1) * Number(formattedMaxRepayableAmount)) / (repayAssetInfo?.price || 1)
+        handleRepayValueChange(toBigInt(repayAssetAmount, repayAssetInfo?.decimals))
+      } else {
+        setIsRepayMax(true)
+        setPercentage(100)
+        setRepayWeiValue(marketValues?.maxRepayableValue)
+      }
     } else {
       setIsRepayMax(false)
       setRepayWeiValue(0n)

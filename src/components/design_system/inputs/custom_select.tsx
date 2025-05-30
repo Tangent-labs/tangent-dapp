@@ -32,7 +32,7 @@ const CustomSelect = <T extends DepositReceiveAsset>({ options = [], onChange, c
             template(option)
           ) : (
             <div className="flex items-center gap-2">
-              {option.logoURI ? <Image src={option.logoURI} alt={option.symbol} height={16} width={16} /> : <TokenImage token={option.logo} size={16} />}
+              {option.logoURI ? <Image src={option.logoURI} alt={option.symbol} height={24} width={24} /> : <TokenImage token={option.logo} size={32} />}
               <span>{option.symbol}</span>
             </div>
           )}
@@ -51,7 +51,7 @@ const CustomSelect = <T extends DepositReceiveAsset>({ options = [], onChange, c
             <div className="flex w-full items-center gap-2">
               {opt ? (
                 <>
-                  {opt.logoURI ? <Image src={opt.logoURI} alt={opt.symbol} height={16} width={16} /> : <TokenImage token={opt.logo} size={16} />}
+                  {opt.logoURI ? <Image src={opt.logoURI} alt={opt.symbol} height={24} width={24} /> : <TokenImage token={opt.logo} size={32} />}
                   <span className="text-sm font-bold">{opt.symbol}</span>
                 </>
               ) : (

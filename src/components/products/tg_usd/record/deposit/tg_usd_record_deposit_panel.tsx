@@ -117,7 +117,7 @@ export default function TgUsdDepositPanel() {
     return (
       <div className="flex w-full min-w-48 items-center justify-between">
         <div className="flex w-full items-center gap-2">
-          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={16} width={16} /> : <TokenImage token={option.logo} size={16} />}
+          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={16} width={16} /> : <TokenImage token={option.logo} size={32} />}
           <span className="text-sm font-bold">{option.symbol}</span>
         </div>
         <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
@@ -170,7 +170,7 @@ export default function TgUsdDepositPanel() {
 
       {depositAsset && depositAsset !== collateralInfo?.symbol && (
         <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
-          <div className="flex justify-between">
+          <div className="flex items-center justify-between">
             <div className="flex flex-col items-start justify-start">
               <div className="flex items-center justify-center gap-1">
                 <div className="text-sm text-gray-400">Zap</div>
@@ -194,7 +194,7 @@ export default function TgUsdDepositPanel() {
                 <div>Minimum receive</div>
               </div>
             </div>
-            <div className="mb-2 mt-auto flex items-center justify-center gap-2 rounded-xl border border-white/30 px-2">
+            <div className="flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-select-input px-2 py-1">
               <TokenImage token={collateralInfo?.logo} size={32} />
               <div className="font-bold">{collateralInfo?.symbol}</div>
             </div>

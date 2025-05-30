@@ -32,12 +32,12 @@ export default function TgUsdMarketList() {
       <div className="flex items-end justify-between">
         <div className="tgusd-card w-7/12">
           <div className="flex items-center justify-center">
-            <Image height={320} width={320} src="/medias/tokens/tgUSD_header.png" alt="token" />
+            <Image height={180} width={180} src="/medias/tokens/tgUSD_header.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3">
-            <span className="text-4xl font-bold">tgUSD</span>
+            <span className="text-4xl font-bold">USG</span>
             <p>
-              Borrow tgUSD against accepted LP tokens. Tangent features two kinds of markets.{" "}
+              Borrow USG against accepted LP tokens. Tangent features two kinds of markets.{" "}
               <span className="inline-block cursor-pointer underline hover:text-white/40">Learn more</span>
             </p>
           </div>

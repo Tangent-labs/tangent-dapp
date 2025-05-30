@@ -15,7 +15,7 @@ export default function DropdownMenu({ children, label }: TgHoverCardProps) {
     <HoverCard>
       <HoverCardTrigger asChild>
         <button className="flex items-center justify-center gap-1" type="button">
-          <div className="transition-all duration-700 hover:text-row-tonic data-[active=true]:text-row-tonic">
+          <div className="transition-all duration-100 hover:text-row-tonic data-[active=true]:text-row-tonic">
             <p className="cursor-pointer text-sm aria-disabled:text-gray-700">{label}</p>
           </div>
           <IconChevron className="w-2" />

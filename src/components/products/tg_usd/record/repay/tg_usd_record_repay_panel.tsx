@@ -18,11 +18,12 @@ import Image from "next/image"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { formatUnits } from "viem"
+import { RepayInput } from "@/components/design_system/inputs/repay_input"
 
 export default function TgUsdRepayPanel() {
   const { tokens } = useTgUsdContext()
 
-  const { tgUSDInfo, collateralInfo, balances } = useTgUsdRecordContext()
+  const { tgUSDInfo, collateralInfo, balances, marketData } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -150,7 +151,7 @@ export default function TgUsdRepayPanel() {
           <span className="text-xs text-subtitle"> Max: {formatBigInt(maxRepayableValue, repayAssetInfo?.decimals || 18, 2)} tgUSD</span>
         </div>
 
-        <DepositInput
+        <RepayInput
           depositAmount={repayWeiValue}
           labelDeposit="You repay"
           depositSelect={<AssetSelect />}
@@ -164,6 +165,8 @@ export default function TgUsdRepayPanel() {
           percentage={percentage}
           setPercentage={setPercentage}
           onValueChange={handleRepayValueChange}
+          userDebt={maxRepayableValue}
+          minimumLoan={marketData?.constants.minimumLoan || 0n}
         />
 
         {repayAsset && repayAsset !== "tgUSD" && (

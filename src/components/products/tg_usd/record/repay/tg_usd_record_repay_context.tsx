@@ -291,7 +291,9 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   useEffect(() => {
     if (repayWeiValue && marketValues && repayAssetInfo) {
       if (marketValues?.maxRepayableValue - repayWeiValue! > 0n && marketValues?.maxRepayableValue - repayWeiValue! < marketValues?.minimumLoan) {
-        const p = Math.round(100 - 300000 / Number(formatUnits(marketValues?.maxRepayableValue, repayAssetInfo?.decimals)))
+        const p = Math.round(
+          100 - Number(formatUnits(marketValues?.minimumLoan, 18)) / Number(formatUnits(marketValues?.maxRepayableValue, repayAssetInfo?.decimals))
+        )
         const newValue = marketValues?.maxRepayableValue - marketValues?.minimumLoan
 
         setTimeout(() => {

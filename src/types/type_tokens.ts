@@ -101,6 +101,7 @@ export type AllExistingAsset =
   | "SDANGLE"
   | "SDAPW"
   | "SDBAL"
+  | "sdBAL"
   | "SDCRV-CRV"
   | "SDCRV"
   | "SDFRAX3CRV"

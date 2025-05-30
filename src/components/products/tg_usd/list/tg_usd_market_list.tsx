@@ -68,46 +68,50 @@ export default function TgUsdMarketList() {
         </div>
       </div>
 
-      <div className="mt-10 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <IndicatorCards
-            indicators={[
-              { title: "tgUsd ", value: formatDollar(globalData.tgUsdPrice, 5) },
-              { title: "Supply", value: globalData.tgUsdSupply },
-            ]}
-          >
-            <TokenImage token={"tgUSD" as ExistingAsset} className="h-8 w-8" size={32} />
-          </IndicatorCards>
-          <IndicatorCards
-            indicators={[
-              { title: "sgUsd ", value: globalData.tgUsdPrice },
-              { title: "Supply", value: globalData.tgUsdSupply },
-              { title: "APY", value: globalData.APY },
-            ]}
-          >
-            <TokenImage token={"sgUSD" as ExistingAsset} className="h-8 w-8" size={32} />
-          </IndicatorCards>
+      <div className="mt-10 flex items-start justify-between">
+        <div className="flex flex-col items-start justify-between">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <IndicatorCards
+                indicators={[
+                  { title: "tgUsd ", value: formatDollar(globalData.tgUsdPrice, 5) },
+                  { title: "Supply", value: globalData.tgUsdSupply },
+                ]}
+              >
+                <TokenImage token={"tgUSD" as ExistingAsset} className="h-8 w-8" size={32} />
+              </IndicatorCards>
+              <IndicatorCards
+                indicators={[
+                  { title: "sgUsd ", value: globalData.tgUsdPrice },
+                  { title: "Supply", value: globalData.tgUsdSupply },
+                  { title: "APY", value: globalData.APY },
+                ]}
+              >
+                <TokenImage token={"sgUSD" as ExistingAsset} className="h-8 w-8" size={32} />
+              </IndicatorCards>
+            </div>
+          </div>
+
+          <div className="flex w-full items-end justify-between">
+            <div className="flex w-full items-end justify-start gap-2">
+              <div className="flex w-full flex-col items-center justify-center">
+                <div className="mb-1 text-xs text-subtitle"> Search </div>
+                <InputSearch
+                  placeholder=""
+                  className="flex w-full flex-col items-center justify-center"
+                  value={searchValue ?? ""}
+                  onChange={(e) => setSearchValue(e as string)}
+                />
+              </div>
+
+              <ButtonTab className="px-4 py-2.5" active={true} label="All"></ButtonTab>
+              <ButtonTab className="px-4 py-2.5" active={false} label="Deposits"></ButtonTab>
+            </div>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <IndicatorCards indicators={[{ title: "Global CR ", value: globalData.globalCr }]} />
           <IndicatorCards indicators={[{ title: "Global TVL ", value: globalData.globalTvl }]} />
-        </div>
-      </div>
-
-      <div className="flex w-full items-end justify-between">
-        <div className="flex w-full items-end justify-start gap-2">
-          <div className="flex w-full max-w-80 flex-col items-center justify-center">
-            <div className="mb-1 text-xs text-subtitle"> Search </div>
-            <InputSearch
-              placeholder=""
-              className="flex w-full flex-col items-center justify-center"
-              value={searchValue ?? ""}
-              onChange={(e) => setSearchValue(e as string)}
-            />
-          </div>
-
-          <ButtonTab active={true} label="All"></ButtonTab>
-          <ButtonTab active={false} label="Deposits"></ButtonTab>
         </div>
       </div>
 

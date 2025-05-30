@@ -18,9 +18,9 @@ import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import Panel from "@/components/design_system/structure/panel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
-import { IconChevron } from "@/components/icons/icon_chevron"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function TgUsdDepositPanel() {
   const {
@@ -237,18 +237,15 @@ export default function TgUsdDepositPanel() {
         />
       </div>
 
-      <div className="flex w-full items-end justify-between gap-2">
-        <Popover>
-          <PopoverTrigger asChild>
-            <button type="button" className="w-full" title="Slippage">
-              <div className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-xl border border-white/30 px-2 text-xs text-primary hover:bg-white/20">
-                Details
-                <IconChevron className="h-auto w-[12px] text-row-tonic" />
-              </div>
-            </button>
-          </PopoverTrigger>
-          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="z-20 !m-0 w-96 !border-none bg-black !p-0">
-            <Panel className="!border-none">
+      <div className="flex w-full items-start justify-between gap-2">
+        <Accordion className="w-full" type="single" collapsible>
+          <AccordionItem value="item-1">
+            <div className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-xl border border-white/30 bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px] hover:bg-white/20">
+              <AccordionTrigger>
+                <span className="text-md">Details</span>
+              </AccordionTrigger>
+            </div>
+            <AccordionContent>
               <div className="flex w-full flex-col items-center justify-center text-primary">
                 {gas && gas > 0 ? (
                   <div className="flex w-full items-center justify-between">
@@ -271,9 +268,9 @@ export default function TgUsdDepositPanel() {
                   <div className="flex justify-end">--</div>
                 </div>
               </div>
-            </Panel>
-          </PopoverContent>
-        </Popover>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
         <Popover>
           <PopoverTrigger asChild>

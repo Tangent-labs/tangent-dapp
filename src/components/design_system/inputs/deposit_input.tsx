@@ -110,7 +110,7 @@ export function DepositInput({
       <div
         className={cn(
           isLoading ? "shimmer" : "",
-          disabled ? "bg-panel-disabled" : "bg-select-input",
+          disabled ? "bg-panel-disabled" : "bg-white bg-opacity-[3%]",
           "flex flex-col rounded-[10px] border border-white border-opacity-20 p-2"
         )}
       >

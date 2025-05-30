@@ -1,12 +1,11 @@
 "use client"
 
-import { ButtonPanel } from "@/components/design_system/inputs/button_panel"
 import RecordPageHeader from "@/components/design_system/structure/record_page_header"
-import TokenImage from "@/components/design_system/structure/token_image"
-
-import { useRouter } from "next/navigation"
-import { useTgUsdRecordContext } from "./tg_usd_record_context"
 import IndicatorV2 from "@/components/design_system/structure/indicators_v2"
+import { ButtonPanel } from "@/components/design_system/inputs/button_panel"
+import TokenImage from "@/components/design_system/structure/token_image"
+import { useTgUsdRecordContext } from "./tg_usd_record_context"
+import { useRouter } from "next/navigation"
 
 type TgUsdRecordPageHeaderProps = React.ButtonHTMLAttributes<HTMLDivElement>
 
@@ -23,19 +22,27 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
             <TokenImage token={collateralInfo.logo} size={32} />
             <span className="text-[24px] font-bold">{collateralInfo.symbol}</span>
           </div>
-          {marketData?.marketType?.includes("CRV") && (
-            <div className="flex items-center gap-2 rounded-full bg-overlay-panel px-4 py-1">
-              <TokenImage token={"CRV"} size={16} />
-              <span className="text-sm">Curve</span>
-            </div>
-          )}
-          {marketData?.marketType?.startsWith("Convex_") && (
-            <div className="flex items-center gap-2 rounded-full bg-overlay-panel px-4 py-1">
-              <TokenImage token={"CVX"} size={16} />
-              <span className="text-sm">Convex</span>
-            </div>
-          )}
 
+          {marketData && (
+            <>
+              {marketData?.marketType?.includes("CRV") && (
+                <div className="flex items-center gap-2 rounded-full bg-overlay-panel px-4 py-1">
+                  <TokenImage token={"CRV"} size={16} />
+                  <span className="text-sm">Curve</span>
+                </div>
+              )}
+              {marketData?.marketType?.startsWith("Convex_") && (
+                <div className="flex items-center gap-2 rounded-full bg-overlay-panel px-4 py-1">
+                  <TokenImage token={"CVX"} size={16} />
+                  <span className="text-sm">Convex</span>
+                </div>
+              )}
+
+              <div className="flex items-center justify-center rounded-full border border-white border-opacity-20 bg-button-active px-2 py-0.5 text-xs">
+                {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
+              </div>
+            </>
+          )}
           <TokenImage token={"ETH"} size={32} />
         </div>
 

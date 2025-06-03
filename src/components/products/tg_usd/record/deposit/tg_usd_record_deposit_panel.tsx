@@ -115,7 +115,7 @@ export default function TgUsdDepositPanel() {
     decimals?: number
   }) => {
     return (
-      <div className="flex w-full min-w-48 items-center justify-between">
+      <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
         <div className="flex w-full items-center gap-2">
           {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={16} width={16} /> : <TokenImage token={option.logo} size={32} />}
           <span className="text-sm font-bold">{option.symbol}</span>

@@ -29,27 +29,27 @@ export default function TgUsdMarketList() {
 
   return (
     <>
-      <div className="flex items-end justify-between">
+      <div className="flex items-center justify-between gap-6">
         <div className="tgusd-card w-7/12">
           <div className="flex items-center justify-center">
-            <Image height={320} width={320} src="/medias/tokens/tgUSD_header.png" alt="token" />
+            <Image height={160} width={160} src="/medias/tokens/tgUSD_header.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3">
-            <span className="text-4xl font-bold">tgUSD</span>
+            <span className="text-4xl font-bold">USG</span>
             <p>
-              Borrow tgUSD against accepted LP tokens. Tangent features two kinds of markets.{" "}
+              Borrow USG against accepted LP tokens. Tangent features two kinds of markets.{" "}
               <span className="inline-block cursor-pointer underline hover:text-white/40">Learn more</span>
             </p>
           </div>
         </div>
 
-        <div className="flex h-full flex-col items-center gap-6 rounded-[10px] bg-overlay-panel p-2 py-1 backdrop-blur-[60px]">
+        <div className="flex h-full flex-col items-center gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
           <div className="flex h-20 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-bold italic">
             Points campaign
             <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-bold !not-italic !text-black">Live</div>
           </div>
 
-          <div className="flex w-full items-center justify-center gap-3">
+          <div className="mt-auto flex w-full items-center justify-center gap-3">
             <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
               <span className="text-xs text-gray-400">Your Debts</span>
               <span className="text-sm font-bold">$0.00 USD</span>
@@ -68,46 +68,50 @@ export default function TgUsdMarketList() {
         </div>
       </div>
 
-      <div className="mt-10 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <IndicatorCards
-            indicators={[
-              { title: "tgUsd ", value: formatDollar(globalData.tgUsdPrice, 5) },
-              { title: "Supply", value: globalData.tgUsdSupply },
-            ]}
-          >
-            <TokenImage token={"tgUSD" as ExistingAsset} className="h-8 w-8" size={32} />
-          </IndicatorCards>
-          <IndicatorCards
-            indicators={[
-              { title: "sgUsd ", value: globalData.tgUsdPrice },
-              { title: "Supply", value: globalData.tgUsdSupply },
-              { title: "APY", value: globalData.APY },
-            ]}
-          >
-            <TokenImage token={"sgUSD" as ExistingAsset} className="h-8 w-8" size={32} />
-          </IndicatorCards>
+      <div className="mt-10 flex items-start justify-between">
+        <div className="flex flex-col items-start justify-between">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <IndicatorCards
+                indicators={[
+                  { title: "tgUsd ", value: formatDollar(globalData.tgUsdPrice, 5) },
+                  { title: "Supply", value: globalData.tgUsdSupply },
+                ]}
+              >
+                <TokenImage token={"tgUSD" as ExistingAsset} className="h-8 w-8" size={32} />
+              </IndicatorCards>
+              <IndicatorCards
+                indicators={[
+                  { title: "sgUsd ", value: globalData.tgUsdPrice },
+                  { title: "Supply", value: globalData.tgUsdSupply },
+                  { title: "APY", value: globalData.APY },
+                ]}
+              >
+                <TokenImage token={"sgUSD" as ExistingAsset} className="h-8 w-8" size={32} />
+              </IndicatorCards>
+            </div>
+          </div>
+
+          <div className="flex w-full items-end justify-between">
+            <div className="flex w-full items-end justify-start gap-2">
+              <div className="flex w-full flex-col items-center justify-center">
+                <div className="mb-1 text-xs text-subtitle"> Search </div>
+                <InputSearch
+                  placeholder=""
+                  className="flex w-full flex-col items-center justify-center"
+                  value={searchValue ?? ""}
+                  onChange={(e) => setSearchValue(e as string)}
+                />
+              </div>
+
+              <ButtonTab className="h-10 px-4" active={true} label="All"></ButtonTab>
+              <ButtonTab className="h-10 px-4" active={false} label="Deposits"></ButtonTab>
+            </div>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <IndicatorCards indicators={[{ title: "Global CR ", value: globalData.globalCr }]} />
           <IndicatorCards indicators={[{ title: "Global TVL ", value: globalData.globalTvl }]} />
-        </div>
-      </div>
-
-      <div className="flex w-full items-end justify-between">
-        <div className="flex w-full items-end justify-start gap-2">
-          <div className="flex w-full max-w-80 flex-col items-center justify-center">
-            <div className="mb-1 text-xs text-subtitle"> Search </div>
-            <InputSearch
-              placeholder=""
-              className="flex w-full flex-col items-center justify-center"
-              value={searchValue ?? ""}
-              onChange={(e) => setSearchValue(e as string)}
-            />
-          </div>
-
-          <ButtonTab active={true} label="All"></ButtonTab>
-          <ButtonTab active={false} label="Deposits"></ButtonTab>
         </div>
       </div>
 

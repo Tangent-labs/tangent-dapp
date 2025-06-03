@@ -6,7 +6,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        roobert: ["Roobert", "sans-serif"], // Define Roobert as a custom font family
+        roobert: ["Roobert", "sans-serif"],
       },
       backgroundImage: {
         header: "var(--tgt-bg-header)",
@@ -19,7 +19,6 @@ const config: Config = {
         "list-row-hover": "var(--tgt-list-row-hover)",
         "panel-title-gradient": "var(--tgt-panel-title-gradient)",
         "button-gradient": "var(--tgt-button)",
-        page: "url('/medias/background.svg')",
       },
       colors: {
         "button-active": "var(--tgt-bg-button-active)",
@@ -76,6 +75,28 @@ const config: Config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: {
+            height: "0",
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)",
+          },
+        },
+        "accordion-up": {
+          from: {
+            height: "var(--radix-accordion-content-height)",
+          },
+          to: {
+            height: "0",
+          },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
   },

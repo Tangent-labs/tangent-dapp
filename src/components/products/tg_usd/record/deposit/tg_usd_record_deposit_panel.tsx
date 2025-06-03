@@ -18,9 +18,9 @@ import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import Panel from "@/components/design_system/structure/panel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
-import { IconChevron } from "@/components/icons/icon_chevron"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function TgUsdDepositPanel() {
   const {
@@ -117,7 +117,7 @@ export default function TgUsdDepositPanel() {
     return (
       <div className="flex w-full min-w-48 items-center justify-between">
         <div className="flex w-full items-center gap-2">
-          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={16} width={16} /> : <TokenImage token={option.logo} size={16} />}
+          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={16} width={16} /> : <TokenImage token={option.logo} size={32} />}
           <span className="text-sm font-bold">{option.symbol}</span>
         </div>
         <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
@@ -170,7 +170,7 @@ export default function TgUsdDepositPanel() {
 
       {depositAsset && depositAsset !== collateralInfo?.symbol && (
         <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
-          <div className="flex justify-between">
+          <div className="flex items-center justify-between">
             <div className="flex flex-col items-start justify-start">
               <div className="flex items-center justify-center gap-1">
                 <div className="text-sm text-gray-400">Zap</div>
@@ -194,7 +194,7 @@ export default function TgUsdDepositPanel() {
                 <div>Minimum receive</div>
               </div>
             </div>
-            <div className="mb-2 mt-auto flex items-center justify-center gap-2 rounded-xl border border-white/30 px-2">
+            <div className="flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-select-input px-2 py-1">
               <TokenImage token={collateralInfo?.logo} size={32} />
               <div className="font-bold">{collateralInfo?.symbol}</div>
             </div>
@@ -237,18 +237,15 @@ export default function TgUsdDepositPanel() {
         />
       </div>
 
-      <div className="flex w-full items-end justify-between gap-2">
-        <Popover>
-          <PopoverTrigger asChild>
-            <button type="button" className="w-full" title="Slippage">
-              <div className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-xl border border-white/30 px-2 text-xs text-primary hover:bg-white/20">
-                Details
-                <IconChevron className="h-auto w-[12px] text-row-tonic" />
-              </div>
-            </button>
-          </PopoverTrigger>
-          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="z-20 !m-0 w-96 !border-none bg-black !p-0">
-            <Panel className="!border-none">
+      <div className="flex w-full items-start justify-between gap-2">
+        <Accordion className="w-full" type="single" collapsible>
+          <AccordionItem value="item-1">
+            <div className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-xl border border-white/30 bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px] hover:bg-white/20">
+              <AccordionTrigger>
+                <span className="text-md">Details</span>
+              </AccordionTrigger>
+            </div>
+            <AccordionContent>
               <div className="flex w-full flex-col items-center justify-center text-primary">
                 {gas && gas > 0 ? (
                   <div className="flex w-full items-center justify-between">
@@ -271,9 +268,9 @@ export default function TgUsdDepositPanel() {
                   <div className="flex justify-end">--</div>
                 </div>
               </div>
-            </Panel>
-          </PopoverContent>
-        </Popover>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
         <Popover>
           <PopoverTrigger asChild>

@@ -5,7 +5,7 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useSt
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./tg_usd_record_repay_controller"
-import { formatUnits } from "viem"
+import { formatUnits, maxUint256 } from "viem"
 import { getQuote, returnRoute } from "../../global_quote_controller"
 import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 import { useTgUsdContext } from "../../tg_usd_context"
@@ -13,6 +13,7 @@ import { ZapToken } from "../../tg_usd_type"
 import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
+import { toBigInt } from "@/lib/number_formatter"
 
 type TgUsdRepayContextProps = {
   children: ReactNode
@@ -22,6 +23,7 @@ type TgUsdRepayContextValues = {
   actionRepay: () => void
   formState: FormState
 
+  onClickMax: (e: boolean) => void
   repayWeiValue?: bigint
   setRepayWeiValue: (arg: bigint | undefined) => void
 
@@ -60,6 +62,9 @@ type TgUsdRepayContextValues = {
   actionApprove: () => void
 
   actionZapRepay: () => void
+
+  isRepayMax: boolean
+  setIsRepayMax: (arg: boolean) => void
 }
 
 export const TgUsdRepayContext = createContext<TgUsdRepayContextValues | undefined>(undefined)
@@ -69,7 +74,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, fetchBalanceAllowanceData, balanceAllowanceData } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts, fetchBalanceAllowanceData, balanceAllowanceData, tgUSDInfo } = useTgUsdRecordContext()
 
   const [isZapLoading, setIsZapLoading] = useState(false)
 
@@ -82,6 +87,8 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   const [repayAsset, setRepayAsset] = useState<string>("tgUSD")
 
   const [percentage, setPercentage] = useState<number>(0)
+
+  const [isRepayMax, setIsRepayMax] = useState<boolean>(false)
 
   const [isRepayAndWithdraw, setIsRepayAndWithdraw] = useState<boolean>(false)
 
@@ -242,7 +249,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   }
 
   const marketRepay = () => {
-    doRepay(walletClientRef.current!, { marketAddress: marketData!.marketAddress, repayWeiValue }).then(() => {
+    doRepay(walletClientRef.current!, { marketAddress: marketData!.marketAddress, repayWeiValue: isRepayMax ? maxUint256 : repayWeiValue }).then(() => {
       loadOnChainData()
       setRepayWeiValue(0n)
       setWithdrawWeiValue(0n)
@@ -252,7 +259,11 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   }
 
   const marketRepayAndWithdraw = () => {
-    doRepayAndWithdraw(walletClientRef.current!, { marketAddress: marketData!.marketAddress, repayWeiValue, withdrawWeiValue }).then(() => {
+    doRepayAndWithdraw(walletClientRef.current!, {
+      marketAddress: marketData!.marketAddress,
+      repayWeiValue: isRepayMax ? maxUint256 : repayWeiValue,
+      withdrawWeiValue,
+    }).then(() => {
       loadOnChainData()
       setRepayWeiValue(0n)
       setWithdrawWeiValue(0n)
@@ -278,9 +289,11 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   }, [marketData])
 
   useEffect(() => {
-    if (repayWeiValue && marketValues) {
+    if (repayWeiValue && marketValues && repayAssetInfo) {
       if (marketValues?.maxRepayableValue - repayWeiValue! > 0n && marketValues?.maxRepayableValue - repayWeiValue! < marketValues?.minimumLoan) {
-        const p = Math.round(100 - 300000 / Number(formatUnits(marketValues?.maxRepayableValue, 18)))
+        const p = Math.round(
+          100 - Number(formatUnits(marketValues?.minimumLoan, 18)) / Number(formatUnits(marketValues?.maxRepayableValue, repayAssetInfo?.decimals))
+        )
         const newValue = marketValues?.maxRepayableValue - marketValues?.minimumLoan
 
         setTimeout(() => {
@@ -306,6 +319,27 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
     return 0n
   }, [marketData])
+
+  const onClickMax = (isChecked: boolean) => {
+    if (isChecked) {
+      if (repayAsset !== "tgUSD" && repayAssetInfo && marketData) {
+        setIsRepayMax(true)
+        setPercentage(100)
+
+        const formattedMaxRepayableAmount = formatUnits(marketData?.debtInfos?.userDebt, 18)
+        const repayAssetAmount = ((tgUSDInfo?.price || 1.1) * Number(formattedMaxRepayableAmount)) / (repayAssetInfo?.price || 1)
+        handleRepayValueChange(toBigInt(repayAssetAmount, repayAssetInfo?.decimals))
+      } else {
+        setIsRepayMax(true)
+        setPercentage(100)
+        setRepayWeiValue(marketValues?.maxRepayableValue)
+      }
+    } else {
+      setIsRepayMax(false)
+      setRepayWeiValue(0n)
+      setPercentage(0)
+    }
+  }
 
   const handleRepayValueChange = (value: bigint | undefined) => {
     const assetInfo: AssetDataPriced = {
@@ -391,7 +425,10 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     swapAssetPrice,
     zapRepay,
     actionApprove,
+    onClickMax,
     actionZapRepay,
+    isRepayMax,
+    setIsRepayMax,
   }
 
   return <TgUsdRepayContext.Provider value={contextValue}>{children}</TgUsdRepayContext.Provider>

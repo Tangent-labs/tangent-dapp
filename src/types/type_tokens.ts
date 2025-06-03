@@ -1,7 +1,23 @@
 // All existing asset must have an image  in medias/tokens/{name|lowercase}.wepb
 
 type BoosterRewards = "sdBAL" | "sdPENDLE" | "sdCRV" | "sdFXN" | "BAL80"
-export type TgUsdMarketAsset = "crvUSD-USDC" | "crvUSD-USDT" | "USDC-fxUSD"
+export type TgUsdMarketAsset =
+  | "crvUSD-USDC"
+  | "crvUSD-USDT"
+  | "USDC-fxUSD"
+  | "USDC-USDT"
+  | "frxUSD-USDe"
+  | "frxETH-WETH"
+  | "pxETH-WETH"
+  | "cbBTC-WBTC"
+  | "crvUSD-ETH-CRV"
+  | "GHO-cbBTC-WETH"
+  | "USDC-WBTC-WETH"
+  | "USDT-WBTC-WETH"
+  | "USR-RLP"
+  | "CVX-ETH"
+  | "crvUSD-ETH-CRV"
+  | "pxETH-stETH"
 
 export type ExistingAsset =
   | BoosterRewards
@@ -85,6 +101,7 @@ export type AllExistingAsset =
   | "SDANGLE"
   | "SDAPW"
   | "SDBAL"
+  | "sdBAL"
   | "SDCRV-CRV"
   | "SDCRV"
   | "SDFRAX3CRV"

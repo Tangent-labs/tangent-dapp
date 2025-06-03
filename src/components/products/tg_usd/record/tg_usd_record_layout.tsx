@@ -46,15 +46,15 @@ export default function TgUsdRecordLayout({ children, ...props }: TgUsdRecordLay
       <div className="mt-4 flex h-full flex-col gap-4">
         <div className="flex gap-4 max-xl:flex-col">
           <div className="rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] xl:w-5/12">
-            <div className="mb-2 flex w-full justify-between">
-              <ButtonTab className="w-32" active={feature === collateral} label={"Deposit"} onClick={() => onTabClick("deposit")} />
-              <ButtonTab className="w-32" active={feature === "borrow"} label={"Borrow"} onClick={() => onTabClick("borrow")} />
-              <ButtonTab className="w-32" active={feature === "leverage"} label={"Leverage"} onClick={() => onTabClick("leverage")} />
+            <div className="mb-2 flex w-full justify-between gap-2">
+              <ButtonTab className="w-full" active={feature === collateral} label={"Deposit"} onClick={() => onTabClick("deposit")} />
+              <ButtonTab className="w-full" active={feature === "borrow"} label={"Borrow"} onClick={() => onTabClick("borrow")} />
+              <ButtonTab className="w-full" active={feature === "leverage"} label={"Leverage"} onClick={() => onTabClick("leverage")} />
             </div>
-            <div className="mb-4 flex w-full justify-between">
-              <ButtonTab className="w-32" active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />
-              <ButtonTab className="w-32" active={feature === "withdraw"} label={"Withdraw"} onClick={() => onTabClick("withdraw")} />
-              <ButtonTab className="w-32" active={feature === "liquidate"} label={"Liquidate"} onClick={() => onTabClick("liquidate")} />
+            <div className="mb-4 flex w-full justify-between gap-2">
+              <ButtonTab className="w-full" active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />
+              <ButtonTab className="w-full" active={feature === "withdraw"} label={"Withdraw"} onClick={() => onTabClick("withdraw")} />
+              <ButtonTab className="w-full" active={feature === "liquidate"} label={"Liquidate"} onClick={() => onTabClick("liquidate")} />
             </div>
 
             <Divider />
@@ -64,6 +64,8 @@ export default function TgUsdRecordLayout({ children, ...props }: TgUsdRecordLay
             <TgUsdCollateralPrice />
           </div>
         </div>
+        <Divider />
+
         <TgUsdMarketInfo />
       </div>
     </>

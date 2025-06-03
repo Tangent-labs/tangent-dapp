@@ -2,7 +2,6 @@
 
 import RecordPageHeader from "@/components/design_system/structure/record_page_header"
 import IndicatorV2 from "@/components/design_system/structure/indicators_v2"
-import { ButtonPanel } from "@/components/design_system/inputs/button_panel"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { useTgUsdRecordContext } from "./tg_usd_record_context"
 import { useRouter } from "next/navigation"
@@ -16,7 +15,7 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
 
   return (
     <>
-      <div className="mt-10 flex justify-between" {...props}>
+      <div className="mt-4 flex justify-between" {...props}>
         <div className="flex items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
           <div className="flex items-center gap-2">
             <TokenImage token={collateralInfo.logo} size={32} />
@@ -26,31 +25,37 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
           {marketData && (
             <>
               {marketData?.marketType?.includes("CRV") && (
-                <div className="flex items-center gap-2 rounded-full bg-overlay-panel px-4 py-1">
+                <div className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-4 py-1 text-xs">
                   <TokenImage token={"CRV"} size={16} />
                   <span className="text-sm">Curve</span>
                 </div>
               )}
               {marketData?.marketType?.startsWith("Convex_") && (
-                <div className="flex items-center gap-2 rounded-full bg-overlay-panel px-4 py-1">
+                <div className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-4 py-1 text-xs">
                   <TokenImage token={"CVX"} size={16} />
                   <span className="text-sm">Convex</span>
                 </div>
               )}
 
-              <div className="flex items-center justify-center rounded-full border border-white border-opacity-20 bg-button-active px-2 py-0.5 text-xs">
+              <div className="flex items-center justify-center rounded-full border border-white border-opacity-20 bg-button-active px-2 py-1 text-xs">
                 {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
               </div>
             </>
           )}
-          <TokenImage token={"ETH"} size={32} />
+          <TokenImage token={"ETH"} size={24} />
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex items-end gap-4">
           <IndicatorV2 indicators={[{ title: "TVL", value: marketDisplayData.tvl }]} />
           <IndicatorV2 indicators={[{ title: "Borrowed", value: marketDisplayData.borrowed }]} />
           <IndicatorV2 indicators={[{ title: "Cap", value: marketDisplayData.cap }]} />
-          <ButtonPanel onClick={() => router.push("/")}>Back</ButtonPanel>
+
+          <button
+            onClick={() => router.push("/")}
+            className="h-10 rounded-[10px] border border-white border-opacity-20 bg-overlay-panel px-9 text-xs font-bold backdrop-blur-[60px] hover:bg-white/10"
+          >
+            Back
+          </button>
         </div>
       </div>
 

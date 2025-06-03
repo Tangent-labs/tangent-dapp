@@ -97,7 +97,7 @@ export function DepositInput({
 
   const displayBalanceData = useMemo(() => {
     const formattedBalance = formatBigInt(balance || "0", depositAsset?.decimals || 18, depositAsset?.displayDecimals || 2)
-    return `${formattedBalance} ${depositAsset?.symbol || ""}`
+    return formattedBalance
   }, [balance, depositAsset])
 
   const dollarDepositDisplay = useMemo(() => {
@@ -141,16 +141,20 @@ export function DepositInput({
         <div className="mt-1 flex justify-between text-xs text-gray-400">
           <div>$({dollarDepositDisplay})</div>
           {displayBalance && (
-            <button
-              className="flex cursor-pointer items-center"
-              type="button"
-              onClick={() => {
-                if (setMaxBalance) setMaxBalance()
-              }}
-            >
+            <div className="flex cursor-pointer items-center">
               <span>{displayBalanceData}</span>
               <IconWallet className="w-6" />
-            </button>
+
+              <button
+                className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
+                type="button"
+                onClick={() => {
+                  if (setMaxBalance) setMaxBalance()
+                }}
+              >
+                Max.
+              </button>
+            </div>
           )}
         </div>
 

@@ -90,7 +90,9 @@ export default function RsTanLockContent() {
         disabled={isLoading}
         isLoading={isLoading}
         balance={lockData?.balance}
-        setMaxBalance={() => {}}
+        setMaxBalance={() => {
+          setDepositWeiValue(lockData?.balance)
+        }}
         onValueChange={(e) => setDepositWeiValue(e)}
       />
 

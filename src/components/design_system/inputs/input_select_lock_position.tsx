@@ -62,7 +62,7 @@ export const InputSelectLockPosition = ({
   }
 
   const displayBalanceData = useMemo(() => {
-    return formatBigInt(balance || "0", 18, 2) + " TAN"
+    return formatBigInt(balance || "0", 18, 2)
   }, [balance])
 
   const dollarDepositDisplay = useMemo(() => {
@@ -104,16 +104,20 @@ export const InputSelectLockPosition = ({
 
           <div className="mt-1 text-xs text-gray-400">
             {displayBalance && (
-              <button
-                className="flex cursor-pointer items-center"
-                type="button"
-                onClick={() => {
-                  if (setMaxBalance) setMaxBalance()
-                }}
-              >
+              <div className="flex cursor-pointer items-center">
                 <span>{displayBalanceData}</span>
                 <IconWallet className="w-6" />
-              </button>
+
+                <button
+                  className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
+                  type="button"
+                  onClick={() => {
+                    if (setMaxBalance) setMaxBalance()
+                  }}
+                >
+                  Max.
+                </button>
+              </div>
             )}
           </div>
         </div>

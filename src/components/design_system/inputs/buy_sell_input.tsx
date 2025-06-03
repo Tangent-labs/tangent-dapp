@@ -151,7 +151,7 @@ export function BuySellInput({
 
   const displayDepositBalanceData = useMemo(() => {
     const formattedBalance = formatBigInt(depositBalance || "0", depositAsset?.decimals || 18, depositAsset?.displayDecimals || 2)
-    return `${formattedBalance} ${depositAsset?.symbol || ""}`
+    return formattedBalance
   }, [depositBalance, depositAsset])
 
   const dollarDepositDisplay = useMemo(() => {
@@ -198,16 +198,19 @@ export function BuySellInput({
           </div>
           <div className="flex justify-between text-xs text-gray-400">
             <div>$({dollarDepositDisplay})</div>
-            <button
-              className="flex cursor-pointer items-center"
-              type="button"
-              onClick={() => {
-                if (setMaxBalance) setMaxBalance()
-              }}
-            >
+
+            <div className="flex cursor-pointer items-center">
               <span>{displayDepositBalanceData}</span>
               <IconWallet className="w-6" />
-            </button>
+
+              <div
+                onClick={() => {
+                  if (setMaxBalance) setMaxBalance()
+                }}
+              >
+                Max.
+              </div>
+            </div>
           </div>
 
           <input

@@ -133,7 +133,7 @@ export function DepositInput({
               value={innerValue}
               placeholder="Amount"
               onInput={handleInputChange}
-              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent pl-1 font-bold focus:outline-none")}
+              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-bold focus:outline-none")}
             />
           </div>
           <div className="order-1 lg:order-2">{depositSelect}</div>

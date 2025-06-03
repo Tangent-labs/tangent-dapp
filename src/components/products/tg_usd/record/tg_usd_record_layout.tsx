@@ -64,6 +64,8 @@ export default function TgUsdRecordLayout({ children, ...props }: TgUsdRecordLay
             <TgUsdCollateralPrice />
           </div>
         </div>
+        <Divider />
+
         <TgUsdMarketInfo />
       </div>
     </>

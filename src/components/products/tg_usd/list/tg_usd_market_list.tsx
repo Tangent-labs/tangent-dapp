@@ -29,27 +29,27 @@ export default function TgUsdMarketList() {
 
   return (
     <>
-      <div className="flex items-end justify-between">
+      <div className="flex items-center justify-between gap-6">
         <div className="tgusd-card w-7/12">
           <div className="flex items-center justify-center">
-            <Image height={320} width={320} src="/medias/tokens/tgUSD_header.png" alt="token" />
+            <Image height={160} width={160} src="/medias/tokens/tgUSD_header.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3">
-            <span className="text-4xl font-bold">tgUSD</span>
+            <span className="text-4xl font-bold">USG</span>
             <p>
-              Borrow tgUSD against accepted LP tokens. Tangent features two kinds of markets.{" "}
+              Borrow USG against accepted LP tokens. Tangent features two kinds of markets.{" "}
               <span className="inline-block cursor-pointer underline hover:text-white/40">Learn more</span>
             </p>
           </div>
         </div>
 
-        <div className="flex h-full flex-col items-center gap-6 rounded-[10px] bg-overlay-panel p-2 py-1 backdrop-blur-[60px]">
+        <div className="flex h-full flex-col items-center gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
           <div className="flex h-20 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-bold italic">
             Points campaign
             <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-bold !not-italic !text-black">Live</div>
           </div>
 
-          <div className="flex w-full items-center justify-center gap-3">
+          <div className="mt-auto flex w-full items-center justify-center gap-3">
             <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
               <span className="text-xs text-gray-400">Your Debts</span>
               <span className="text-sm font-bold">$0.00 USD</span>

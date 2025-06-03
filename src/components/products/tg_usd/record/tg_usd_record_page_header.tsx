@@ -2,7 +2,6 @@
 
 import RecordPageHeader from "@/components/design_system/structure/record_page_header"
 import IndicatorV2 from "@/components/design_system/structure/indicators_v2"
-import { ButtonPanel } from "@/components/design_system/inputs/button_panel"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { useTgUsdRecordContext } from "./tg_usd_record_context"
 import { useRouter } from "next/navigation"
@@ -16,7 +15,7 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
 
   return (
     <>
-      <div className="mt-10 flex justify-between" {...props}>
+      <div className="mt-4 flex justify-between" {...props}>
         <div className="flex items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
           <div className="flex items-center gap-2">
             <TokenImage token={collateralInfo.logo} size={32} />
@@ -46,11 +45,17 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
           <TokenImage token={"ETH"} size={32} />
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex items-end gap-4">
           <IndicatorV2 indicators={[{ title: "TVL", value: marketDisplayData.tvl }]} />
           <IndicatorV2 indicators={[{ title: "Borrowed", value: marketDisplayData.borrowed }]} />
           <IndicatorV2 indicators={[{ title: "Cap", value: marketDisplayData.cap }]} />
-          <ButtonPanel onClick={() => router.push("/")}>Back</ButtonPanel>
+
+          <button
+            onClick={() => router.push("/")}
+            className="h-10 rounded-[10px] border border-white border-opacity-20 bg-overlay-panel px-9 text-xs font-bold backdrop-blur-[60px] hover:bg-white/10"
+          >
+            Back
+          </button>
         </div>
       </div>
 

@@ -97,7 +97,7 @@ export default function TgUsdStakeContent() {
       <div className="flex w-full items-end justify-between">
         <div className="sgusd-card w-7/12">
           <div className="flex items-center justify-center">
-            <Image height={330} width={330} src="/medias/product_tgusd.png" alt="token" />
+            <Image height={248} width={248} src="/medias/product_tgusd.png" alt="token" />
           </div>
           <div className="flex flex-col items-start justify-center gap-3">
             <span className="text-5xl font-bold">Savings account</span>

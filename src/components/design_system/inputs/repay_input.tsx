@@ -52,21 +52,28 @@ export function RepayInput({
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
   const [isUserInput, setIsUserInput] = useState(false)
 
+  const isDebtBelowThreshold = useMemo(() => {
+    if (!depositAsset?.decimals || !userDebt || innerValue === "") return false
+    if (userDebt === toBigInt(Number(innerValue), depositAsset.decimals)) return false
+    const repayAmount = innerValue === "MAX" ? balance || BigInt(0) : toBigInt(Number(innerValue), depositAsset.decimals)
+    const threshold = minimumLoan
+    return userDebt - repayAmount < threshold
+  }, [innerValue, userDebt, depositAsset, balance])
+
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!setPercentage || !depositAsset?.decimals) return
+    if (!setPercentage || !depositAsset?.decimals || !balance) return
 
     const newPercentage = Number(e.target.value)
     setPercentage(newPercentage)
 
-    let repayAmount: bigint | string | undefined
+    let repayAmount: bigint
     if (newPercentage === 100) {
-      repayAmount = userDebt
+      repayAmount = balance
     } else {
-      const maxRepay = userDebt - minimumLoan
-      repayAmount = (BigInt(newPercentage) * maxRepay) / BigInt(99)
+      repayAmount = (BigInt(newPercentage) * balance) / BigInt(100)
     }
 
-    const newValue = repayAmount === userDebt ? formatUnits(userDebt, depositAsset?.decimals) : formatUnits(repayAmount as bigint, depositAsset.decimals)
+    const newValue = formatUnits(repayAmount, depositAsset.decimals)
     setInnerValue(newValue)
     onValueChange(repayAmount)
   }
@@ -80,38 +87,37 @@ export function RepayInput({
   }, [depositAmount, depositAsset])
 
   useEffect(() => {
-    if (!depositAsset?.decimals || !isUserInput) return
+    if (!depositAsset?.decimals || !isUserInput || !balance) return
 
     const handler = setTimeout(() => {
       let val: bigint | string | undefined
       if (innerValue === "MAX") {
-        val = userDebt
+        val = balance
+        if (setPercentage) setPercentage(100)
       } else {
         val = innerValue ? toBigInt(Number(innerValue), depositAsset.decimals) : undefined
-        if (setPercentage && val !== undefined && userDebt > minimumLoan) {
-          const maxRepay = userDebt - minimumLoan
-          const percentageCalc = (Number(val) * 99) / Number(maxRepay)
-          setPercentage(Math.min(Math.round(percentageCalc), 99)) // Limiter à 99% sauf si MAX_UINT
+        if (setPercentage && val !== undefined) {
+          const percentageCalc = (Number(val) * 100) / Number(balance)
+          setPercentage(Math.min(Math.round(percentageCalc), 100))
         }
       }
       onValueChange(val)
     }, 500)
 
     return () => clearTimeout(handler)
-  }, [innerValue, depositAsset, isUserInput, onValueChange, setPercentage, userDebt, minimumLoan])
+  }, [innerValue, depositAsset, isUserInput, onValueChange, setPercentage, balance])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
     setIsUserInput(true)
     setInnerValue(newValue)
 
-    if (newValue === "MAX") {
-      if (setPercentage) setPercentage(100)
-    } else if (setPercentage && newValue !== "" && userDebt > minimumLoan) {
+    if (newValue === "MAX" && setPercentage) {
+      setPercentage(100)
+    } else if (setPercentage && newValue !== "" && balance) {
       const val = toBigInt(Number(newValue), depositAsset?.decimals || 18)
-      const maxRepay = userDebt - minimumLoan
-      const percentageCalc = (Number(val) * 99) / Number(maxRepay)
-      setPercentage(Math.min(Math.round(percentageCalc), 99))
+      const percentageCalc = (Number(val) * 100) / Number(balance)
+      setPercentage(Math.min(Math.round(percentageCalc), 100))
     }
   }
 
@@ -150,7 +156,7 @@ export function RepayInput({
             <input
               {...props}
               disabled={isLoading || disabled}
-              type="text" // Changé en text pour permettre "MAX"
+              type="text"
               value={innerValue}
               placeholder="Amount"
               onInput={handleInputChange}
@@ -187,7 +193,7 @@ export function RepayInput({
               onChange={handleSliderChange}
               className={cn("mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-black", disabled ? "cursor-default" : "cursor-pointer")}
               style={{
-                background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
+                background: `linear-gradient(to right, ${isDebtBelowThreshold ? "#ef4444" : "#3b82f6"} ${percentage}%, #4b5563 ${percentage}%)`,
               }}
             />
 

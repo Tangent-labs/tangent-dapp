@@ -3,7 +3,6 @@
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { useTgUsdLiquidateContext } from "./tg_usd_record_liquidate_context"
 import TokenImage from "@/components/design_system/structure/token_image"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
 import Divider from "@/components/design_system/structure/divider"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 
@@ -12,16 +11,15 @@ export default function TgUsdLiquidatePanelFull() {
 
   const { isQuoteLoading, tgUSDReceivedValue, repayWeiValue } = useTgUsdLiquidateContext()
 
-  const WithdrawAssetDisplay = () => {
+  const LiquidateAssetDisplay = () => {
     return (
-      <PanelRaw className="flex w-48 items-center gap-2 border-white !bg-opacity-0 px-4 py-2 !backdrop-blur-none">
-        <div className="">
-          <TokenImage token={collateralInfo?.logo} size={32} />
-        </div>
-        <span className="flex flex-col leading-3">
+      <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+        <TokenImage token={collateralInfo?.logo} size={32} />
+
+        <span className="flex flex-col text-sm font-bold">
           <span>{collateralInfo.symbol}</span>
         </span>
-      </PanelRaw>
+      </div>
     )
   }
 
@@ -35,7 +33,7 @@ export default function TgUsdLiquidatePanelFull() {
         <DepositInput
           depositAmount={marketData?.collateralInfos?.positionCollateralAmount}
           labelDeposit="You liquidate"
-          depositSelect={<WithdrawAssetDisplay />}
+          depositSelect={<LiquidateAssetDisplay />}
           disabled={true}
           displaySliderInput={false}
           depositAsset={collateralInfo}

@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { IconThunder } from "@/components/icons/icon_thunder"
 
-type DepositInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+type RepayInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
   className?: string
   depositAmount?: bigint
@@ -17,7 +17,6 @@ type DepositInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   disabled?: boolean
   labelDeposit?: string
   depositSelect: ReactNode
-  depositInput?: ReactNode
   onValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
   displayBalance?: boolean
@@ -26,9 +25,11 @@ type DepositInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   percentage?: number
   setPercentage?: (value: number) => void
   displaySliderInput?: boolean
+  userDebt: bigint
+  minimumLoan: bigint
 }
 
-export function DepositInput({
+export function RepayInput({
   className,
   depositAmount,
   balance,
@@ -44,26 +45,37 @@ export function DepositInput({
   displaySliderInput = false,
   disabled,
   setPercentage,
+  userDebt,
+  minimumLoan,
   ...props
-}: DepositInputProps) {
-  const balanceNumber = useMemo(() => {
-    if (balance) {
-      return Number(formatUnits(balance, depositAsset?.decimals || 18))
-    }
-    return 0
-  }, [balance, depositAsset])
-
+}: RepayInputProps) {
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
   const [isUserInput, setIsUserInput] = useState(false)
 
+  const isDebtBelowThreshold = useMemo(() => {
+    if (!depositAsset?.decimals || !userDebt || innerValue === "") return false
+    if (userDebt === toBigInt(Number(innerValue), depositAsset.decimals)) return false
+    const repayAmount = innerValue === "MAX" ? balance || BigInt(0) : toBigInt(Number(innerValue), depositAsset.decimals)
+    const threshold = minimumLoan
+    return userDebt - repayAmount < threshold
+  }, [innerValue, userDebt, depositAsset, balance])
+
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!!setPercentage) {
-      const newPercentage = Number(e.target.value)
-      setPercentage(newPercentage)
-      const newValue = newPercentage !== 0 ? Number(((newPercentage / 100) * balanceNumber).toFixed(0)) : 0
-      setInnerValue(newValue.toFixed(0))
-      onValueChange(!!newValue ? toBigInt(newValue, depositAsset?.decimals || 18) : undefined)
+    if (!setPercentage || !depositAsset?.decimals || !balance) return
+
+    const newPercentage = Number(e.target.value)
+    setPercentage(newPercentage)
+
+    let repayAmount: bigint
+    if (newPercentage === 100) {
+      repayAmount = balance
+    } else {
+      repayAmount = (BigInt(newPercentage) * balance) / BigInt(100)
     }
+
+    const newValue = formatUnits(repayAmount, depositAsset.decimals)
+    setInnerValue(newValue)
+    onValueChange(repayAmount)
   }
 
   useEffect(() => {
@@ -75,23 +87,37 @@ export function DepositInput({
   }, [depositAmount, depositAsset])
 
   useEffect(() => {
-    if (!depositAsset?.decimals || !isUserInput) return
+    if (!depositAsset?.decimals || !isUserInput || !balance) return
 
     const handler = setTimeout(() => {
-      const val = innerValue ? toBigInt(Number(innerValue), depositAsset.decimals) : undefined
+      let val: bigint | string | undefined
+      if (innerValue === "MAX") {
+        val = balance
+        if (setPercentage) setPercentage(100)
+      } else {
+        val = innerValue ? toBigInt(Number(innerValue), depositAsset.decimals) : undefined
+        if (setPercentage && val !== undefined) {
+          const percentageCalc = (Number(val) * 100) / Number(balance)
+          setPercentage(Math.min(Math.round(percentageCalc), 100))
+        }
+      }
       onValueChange(val)
     }, 500)
 
     return () => clearTimeout(handler)
-  }, [innerValue, depositAsset, isUserInput, onValueChange])
+  }, [innerValue, depositAsset, isUserInput, onValueChange, setPercentage, balance])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
     setIsUserInput(true)
     setInnerValue(newValue)
 
-    if (!!setPercentage) {
-      setPercentage(newValue !== undefined && balanceNumber > 0 ? (Number(newValue) / balanceNumber) * 100 : 0)
+    if (newValue === "MAX" && setPercentage) {
+      setPercentage(100)
+    } else if (setPercentage && newValue !== "" && balance) {
+      const val = toBigInt(Number(newValue), depositAsset?.decimals || 18)
+      const percentageCalc = (Number(val) * 100) / Number(balance)
+      setPercentage(Math.min(Math.round(percentageCalc), 100))
     }
   }
 
@@ -101,16 +127,17 @@ export function DepositInput({
   }, [balance, depositAsset])
 
   const dollarDepositDisplay = useMemo(() => {
-    const val = Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals || 0)) * (depositAsset?.price || 0)
+    if (innerValue === "MAX") return "MAX"
+    const val = Number(innerValue || 0) * (depositAsset?.price || 0)
     return val?.toFixed(2) || "-"
-  }, [depositAmount, depositAsset])
+  }, [innerValue, depositAsset])
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
       <div
         className={cn(
           isLoading ? "shimmer" : "",
-          disabled ? "bg-panel-disabled" : "bg-white bg-opacity-[3%]",
+          disabled ? "bg-panel-disabled" : "bg-select-input",
           "flex flex-col rounded-[10px] border border-white border-opacity-20 p-2"
         )}
       >
@@ -129,11 +156,11 @@ export function DepositInput({
             <input
               {...props}
               disabled={isLoading || disabled}
-              type="number"
+              type="text"
               value={innerValue}
               placeholder="Amount"
               onInput={handleInputChange}
-              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-bold focus:outline-none")}
+              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent pl-1 font-bold focus:outline-none")}
             />
           </div>
           <div className="order-1 lg:order-2">{depositSelect}</div>
@@ -166,7 +193,7 @@ export function DepositInput({
               onChange={handleSliderChange}
               className={cn("mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-black", disabled ? "cursor-default" : "cursor-pointer")}
               style={{
-                background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
+                background: `linear-gradient(to right, ${isDebtBelowThreshold ? "#ef4444" : "#3b82f6"} ${percentage}%, #4b5563 ${percentage}%)`,
               }}
             />
 
@@ -174,7 +201,7 @@ export function DepositInput({
               <div className="relative flex w-fit items-center justify-center">
                 0%
                 <div
-                  onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+                  onClick={() => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>)}
                   className="absolute -top-1.5 left-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
                 ></div>
               </div>
@@ -183,9 +210,7 @@ export function DepositInput({
                 <div key={el} className="relative flex w-fit items-center justify-center">
                   {el}%
                   <div
-                    onClick={
-                      !!handleSliderChange ? () => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>) : () => {}
-                    }
+                    onClick={() => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>)}
                     className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
                   ></div>
                 </div>
@@ -194,7 +219,7 @@ export function DepositInput({
               <div className="relative flex w-fit items-center justify-center">
                 100%
                 <div
-                  onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "100" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+                  onClick={() => handleSliderChange({ target: { value: "100" } } as React.ChangeEvent<HTMLInputElement>)}
                   className="absolute -top-1.5 right-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
                 ></div>
               </div>

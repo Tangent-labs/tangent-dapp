@@ -104,8 +104,8 @@ export default function TgUsdMarketList() {
                 />
               </div>
 
-              <ButtonTab className="px-4 py-2.5" active={true} label="All"></ButtonTab>
-              <ButtonTab className="px-4 py-2.5" active={false} label="Deposits"></ButtonTab>
+              <ButtonTab className="h-10 px-4" active={true} label="All"></ButtonTab>
+              <ButtonTab className="h-10 px-4" active={false} label="Deposits"></ButtonTab>
             </div>
           </div>
         </div>

@@ -26,24 +26,24 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
           {marketData && (
             <>
               {marketData?.marketType?.includes("CRV") && (
-                <div className="flex items-center gap-2 rounded-full bg-overlay-panel px-4 py-1">
+                <div className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-4 py-1 text-xs">
                   <TokenImage token={"CRV"} size={16} />
                   <span className="text-sm">Curve</span>
                 </div>
               )}
               {marketData?.marketType?.startsWith("Convex_") && (
-                <div className="flex items-center gap-2 rounded-full bg-overlay-panel px-4 py-1">
+                <div className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-4 py-1 text-xs">
                   <TokenImage token={"CVX"} size={16} />
                   <span className="text-sm">Convex</span>
                 </div>
               )}
 
-              <div className="flex items-center justify-center rounded-full border border-white border-opacity-20 bg-button-active px-2 py-0.5 text-xs">
+              <div className="flex items-center justify-center rounded-full border border-white border-opacity-20 bg-button-active px-2 py-1 text-xs">
                 {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
               </div>
             </>
           )}
-          <TokenImage token={"ETH"} size={32} />
+          <TokenImage token={"ETH"} size={24} />
         </div>
 
         <div className="flex gap-4">

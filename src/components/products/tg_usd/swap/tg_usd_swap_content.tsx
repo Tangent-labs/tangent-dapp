@@ -115,7 +115,7 @@ export default function TgUsdSwapContent() {
           <Image height={140} width={140} src="/medias/tokens/swapLogo.png" alt="token" />
         </div>
 
-        <Image className="mr-24 mt-12" height={140} width={140} src="/medias/tokens/tgUSD_header.png" alt="token" />
+        <Image className="mr-24 mt-5" height={140} width={140} src="/medias/tokens/tgUSD_header.png" alt="token" />
 
         <div className="flex flex-col items-start justify-center gap-3">
           <span className="text-5xl font-bold">Swap</span>

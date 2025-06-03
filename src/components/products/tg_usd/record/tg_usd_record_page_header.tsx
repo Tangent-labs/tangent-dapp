@@ -15,7 +15,7 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
 
   return (
     <>
-      <div className="mt-10 flex justify-between" {...props}>
+      <div className="mt-4 flex justify-between" {...props}>
         <div className="flex items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
           <div className="flex items-center gap-2">
             <TokenImage token={collateralInfo.logo} size={32} />
@@ -52,7 +52,7 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
 
           <button
             onClick={() => router.push("/")}
-            className="rounded-[10px] border border-white border-opacity-20 bg-overlay-panel px-6 py-1 text-sm font-bold backdrop-blur-[60px] hover:bg-white/10"
+            className="h-10 rounded-[10px] border border-white border-opacity-20 bg-overlay-panel px-9 text-xs font-bold backdrop-blur-[60px] hover:bg-white/10"
           >
             Back
           </button>

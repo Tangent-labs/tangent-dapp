@@ -46,7 +46,7 @@ export function LeverageInput({
     if (!!setPercentage) {
       const newPercentage = Number(e.target.value)
       setPercentage(newPercentage)
-      const newValue = newPercentage !== 0 ? Number((newPercentage * depositAmountNumber).toFixed(0)) : 0
+      const newValue = newPercentage !== 0 ? Number((newPercentage * depositAmountNumber - depositAmountNumber).toFixed(0)) : 0
       setInnerValue(newValue.toFixed(0))
     }
   }
@@ -79,7 +79,7 @@ export function LeverageInput({
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <div className={`${isLoading ? "shimmer" : ""} flex flex-col rounded-[10px] border border-white border-opacity-20 bg-select-input p-2`}>
+      <div className={`${isLoading ? "shimmer" : ""} flex flex-col rounded-[10px] border border-white border-opacity-20 bg-white bg-opacity-[3%] p-2`}>
         <div className="flex w-full justify-between">
           <div className="text-sm text-gray-400">{label}</div>
         </div>
@@ -94,7 +94,7 @@ export function LeverageInput({
           />
 
           <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
-            <TokenImage token="tgUSD" size={24} />
+            <TokenImage token="tgUSD" size={20} />
             <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
           </div>
         </div>
@@ -121,7 +121,7 @@ export function LeverageInput({
             ></div>
           </div>
 
-          {[2.5, 5, 7.5].map((el) => (
+          {[2, 3, 4, 5, 6, 7, 8, 9].map((el) => (
             <div key={el} className="relative flex w-fit items-center justify-center">
               x{el}
               <div

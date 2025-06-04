@@ -147,6 +147,17 @@ export interface MarketConstants {
   maxMarketDebt: string
   minimumLoan: bigint
   liquidationThreshold: string
+  irParams: {
+    a1: number
+    a2: number
+    k: number
+    isHEC: boolean
+    rMin: number
+    rMax: number
+    pMin: number
+    pMax: number
+    pInf: number
+  }
 }
 
 export interface OutputBalanceAllowances {

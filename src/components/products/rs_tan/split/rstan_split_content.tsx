@@ -194,7 +194,7 @@ export const RsTanSplitContent = () => {
 
           <div className="mb-3 mt-6 text-lg font-bold text-white">Split recap:</div>
 
-          <div className="flex w-full flex-col items-start justify-start gap-2 rounded-[10px] bg-overlay-panel px-2 py-3 backdrop-blur-[60px]">
+          <div className="mb-2 flex w-full flex-col items-start justify-start gap-2 rounded-[10px] bg-overlay-panel px-2 py-3 backdrop-blur-[60px]">
             <div className="flex w-full items-start justify-start gap-2">
               <div className="w-3/12">Pos. ID</div>
               <div className="w-6/12">rsTan</div>

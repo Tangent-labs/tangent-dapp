@@ -21,23 +21,47 @@ export const getAssetInfoUnique = async (key: AssetConfigKey): Promise<AssetData
   return data?.at(0)
 }
 
-export const getAssetInfo = async (keys: AssetConfigKey[]): Promise<AssetDataPriced[]> => {
-  const list: Record<AssetConfigKey, AssetData> = assetConfig
-  const prices = await getPrices()
+interface Market {
+  marketAddress: Address
+  collatName: ExistingAsset
+  collatAddress: Address
+  marketType: string
+}
 
-  return (
-    Object.entries(list)
-      // Filter only the keys that are in the `keys` array
-      .filter(([k]) => keys.indexOf(k as AssetConfigKey) !== -1)
-      .map(([k, v]) => {
+const addressesJson = process.env.NEXT_PUBLIC_ADDRESSES_JSON
+
+if (!addressesJson) {
+  throw new Error("NEXT_PUBLIC_ADDRESSES_JSON is not defined in the environment variables.")
+}
+
+const envAddresses: { markets: Market[] } = JSON.parse(addressesJson)
+
+export const getAssetInfo = async (keys: AssetConfigKey[]): Promise<AssetDataPriced[]> => {
+  const prices = await getPrices()
+  const list: Record<AssetConfigKey, AssetData> = assetConfig
+
+  return Object.entries(list)
+    .filter(([k]) => keys.indexOf(k as AssetConfigKey) !== -1)
+    .map(([k, config]) => {
+      if (k === "tgUSD") {
         return {
-          ...v,
+          ...config,
           price: (prices ? prices[k as AssetConfigKey] : 0) || 0,
         }
-      })
-      .sort((a, b) => {
-        // we sort by the  index of the input array
-        return (a?.logo ? keys.indexOf(a.logo) : -1) - (b?.logo ? keys.indexOf(b.logo) : -1)
-      })
-  )
+      } else {
+        const market = envAddresses.markets.find((m) => m.collatName.replaceAll("_", "-") === k)
+        if (!market) {
+          throw new Error(`Market not found for collatName: ${k}`)
+        }
+        return {
+          ...config,
+          address: market.collatAddress,
+          marketAddress: market.marketAddress,
+          collatName: market.collatName,
+          collatAddress: market.collatAddress,
+          marketType: market.marketType,
+          price: prices ? prices[k as ExistingAsset] || 0 : 0,
+        }
+      }
+    })
 }

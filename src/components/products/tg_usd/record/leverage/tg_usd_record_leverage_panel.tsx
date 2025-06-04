@@ -118,7 +118,7 @@ export default function TgUsdLeveragePanel() {
     return (
       <div className="flex w-full min-w-48 items-center justify-between">
         <div className="flex w-full items-center gap-2">
-          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={16} width={16} /> : <TokenImage token={option.logo} size={16} />}
+          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={32} />}
           <span className="text-sm font-bold">{option.symbol}</span>
         </div>
         <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
@@ -166,7 +166,7 @@ export default function TgUsdLeveragePanel() {
 
       {depositAsset && depositAsset !== collateralInfo?.symbol && (
         <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
-          <div className="flex justify-between">
+          <div className="flex items-center justify-between">
             <div className="flex flex-col items-start justify-start">
               <div className="flex items-center justify-center gap-1">
                 <div className="text-sm text-gray-400">Zap</div>
@@ -190,8 +190,8 @@ export default function TgUsdLeveragePanel() {
                 <div>Minimum receive</div>
               </div>
             </div>
-            <div className="mb-2 mt-auto flex items-center justify-center gap-2 rounded-xl border border-white/30 px-2">
-              <TokenImage token={collateralInfo?.logo} size={32} />
+            <div className="flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-select-input px-2 py-1">
+              <TokenImage token={collateralInfo?.logo} size={20} />
               <div className="font-bold">{collateralInfo?.symbol}</div>
             </div>
           </div>
@@ -220,30 +220,32 @@ export default function TgUsdLeveragePanel() {
             {!isDepositDisabled && (
               <div className="flex w-full items-center justify-between">
                 <span className="text-subtitle">Leverage</span>
-                <span className="text-white">{leveragePercentage.toFixed(0)}x</span>
+                <span className="text-white">~{leveragePercentage.toFixed(2)}x</span>
               </div>
             )}
 
-            <div className="flex w-full items-center justify-between font-bold">
-              <span className="text-subtitle">Expected</span>
+            <div className="flex w-full items-center justify-between">
+              <span className="text-subtitle">Expected : </span>
               <span className="text-white">
-                {formatNumber(Number(formatUnits(leveragedCollateralQuote || 0n, 18)), 0)} {collateralInfo?.symbol}{" "}
+                {formatNumber(Number(formatUnits(depositWeiValue || 0n, 18)), 0)} + {formatNumber(Number(formatUnits(leveragedCollateralQuote || 0n, 18)), 0)}{" "}
+                ~={" "}
+                <span className="font-bold text-white">
+                  {formatNumber(Number(formatUnits((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18)), 0)} {collateralInfo?.symbol}{" "}
+                </span>
               </span>
             </div>
           </div>
         </div>
       </>
 
-      <div>
-        <FormButtons
-          actions={{
-            handleApprove: depositAsset && depositAsset !== collateralInfo?.name ? actionApproveZap : actionApprove,
-            handleProcess: depositAsset && depositAsset !== collateralInfo?.name ? actionZapLeverage : actionLeverage,
-          }}
-          formState={formState}
-          labelProcess={depositAsset && depositAsset !== collateralInfo?.name ? "Zap and leverage" : "Leverage"}
-        />
-      </div>
+      <FormButtons
+        actions={{
+          handleApprove: depositAsset && depositAsset !== collateralInfo?.name ? actionApproveZap : actionApprove,
+          handleProcess: depositAsset && depositAsset !== collateralInfo?.name ? actionZapLeverage : actionLeverage,
+        }}
+        formState={formState}
+        labelProcess={depositAsset && depositAsset !== collateralInfo?.name ? "Zap and leverage" : "Leverage"}
+      />
 
       <div className="flex w-full items-end justify-between gap-2">
         <Popover>

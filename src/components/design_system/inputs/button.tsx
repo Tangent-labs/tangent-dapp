@@ -10,23 +10,23 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 }
 
 export function Button({ label, state = "active", className, disabled, children, ...props }: ButtonProps) {
-  let stateCss = state === "disabled" ? "text-white bg-button-inactive" : ""
-  stateCss += state === "active" ? " bg-button-active " : " bg-button-inactive "
-
   return (
     <button
       {...props}
       onClick={props?.onClick}
       disabled={state === "inactive" || disabled}
+      data-state={state}
       className={cn(
         "flex items-center rounded-[10px] p-2 px-4 font-sans text-[15px] font-semibold transition-all duration-300 disabled:cursor-not-allowed",
-        state === "active" ? "hover:bg-button-active-hover" : "",
-        state === "inactive" ? "cursor-not-allowed" : "",
-        stateCss,
-        className || ""
+        {
+          "bg-button-active hover:bg-button-active-hover": state === "active",
+          "bg-button-inactive": state === "inactive",
+          "cursor-not-allowed bg-button-inactive": state === "disabled",
+        },
+        className
       )}
     >
-      {children ? children : <span className="">{label}</span>}
+      {children || <span>{label}</span>}
     </button>
   )
 }

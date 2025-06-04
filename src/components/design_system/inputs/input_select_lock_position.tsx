@@ -71,9 +71,9 @@ export const InputSelectLockPosition = ({
 
   return (
     <div
-      className={`${isLoading ? "shimmer" : ""} flex h-full w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 px-2 py-3 backdrop-blur-[60px]`}
+      className={`${isLoading ? "shimmer" : ""} flex h-full w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 p-2 backdrop-blur-[60px]`}
     >
-      <div className="mb-3 flex h-full w-full items-center justify-center gap-2">
+      <div className="mb-3 flex h-full w-full items-center justify-between gap-2">
         <div className="flex flex-col">
           <div className="text-xs font-bold text-subtitle">{labelDeposit}</div>
 

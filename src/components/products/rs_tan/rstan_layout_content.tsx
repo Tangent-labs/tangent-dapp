@@ -15,12 +15,12 @@ import ListHeader from "@/components/design_system/list/list_header"
 import ListRow from "@/components/design_system/list/list_row"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { IconCircleHelp } from "@/components/icons"
-import InputToggle from "@/components/design_system/inputs/input_toogle"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import { IconRsTan } from "@/components/icons/icon_rstan"
 import { LockPosition } from "../tg_usd/tg_usd_type"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { InfinityIcon } from "lucide-react"
+import { Switch } from "@/components/ui/switch"
 
 const listeState: ListState = {
   search: undefined,
@@ -55,7 +55,7 @@ export const RsTanLayoutContent = ({
 
   return (
     <>
-      <div className="mb-3 flex w-full items-end justify-end gap-4">
+      <div className="mb-3 flex w-full items-end justify-end gap-6">
         <div className="stan-card w-7/12">
           <div className="flex items-center justify-center">
             <Image height={360} width={360} src={`/medias/tokens/rsTan.png`} alt="token" />
@@ -74,17 +74,17 @@ export const RsTanLayoutContent = ({
         <div className="flex w-5/12 items-center justify-around rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
           <IconRsTan></IconRsTan>
 
-          <div className="flex w-20 flex-col items-center justify-center">
+          <div className="flex w-full flex-col items-center justify-center">
             <div className="text-xs font-bold text-subtitle">Supply</div>
             <div className="text-md font-bold text-white">{formatBigInt(lockData?.totalSupply, 18, 2)}</div>
           </div>
 
-          <div className="flex w-20 flex-col items-center justify-center">
+          <div className="flex w-full flex-col items-center justify-center">
             <div className="text-xs font-bold text-subtitle">rsTan</div>
             <div className="text-md font-bold text-white">$1.23</div>
           </div>
 
-          <div className="flex w-20 flex-col items-center justify-center rounded-lg bg-button-active py-2">
+          <div className="flex w-full flex-col items-center justify-center rounded-lg bg-button-active py-2">
             <div className="text-xs font-bold text-black">APR</div>
             <div className="text-md font-bold text-white">{formatBigInt(lockData?.tanAPR, 18, 2)}%</div>
           </div>
@@ -93,17 +93,17 @@ export const RsTanLayoutContent = ({
 
       <div className="mb-4 flex w-full gap-4">
         <div className="flex w-5/12 flex-col items-center justify-start rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
-          <div className="flex w-full items-center justify-between">
-            <ButtonTab label="Lock" active={pathname === "/tan/lock"} onClick={() => router.push("/tan/lock")} className="h-8! flex w-20 justify-center" />
+          <div className="flex w-full items-center justify-between gap-2">
+            <ButtonTab label="Lock" active={pathname === "/tan/lock"} onClick={() => router.push("/tan/lock")} className="h-8! flex w-full justify-center" />
             <ButtonTab
               label="Unlock"
               active={pathname === "/tan/unlock"}
               onClick={() => router.push("/tan/unlock")}
-              className="h-8! flex w-20 justify-center"
+              className="h-8! flex w-full justify-center"
             />
-            <ButtonTab label="Claim" active={pathname === "/tan/claim"} onClick={() => router.push("/tan/claim")} className="h-8! flex w-20 justify-center" />
-            <ButtonTab label="Split" active={pathname === "/tan/split"} onClick={() => router.push("/tan/split")} className="h-8! flex w-20 justify-center" />
-            <ButtonTab label="Merge" active={pathname === "/tan/merge"} onClick={() => router.push("/tan/merge")} className="h-8! flex w-20 justify-center" />
+            <ButtonTab label="Claim" active={pathname === "/tan/claim"} onClick={() => router.push("/tan/claim")} className="h-8! flex w-full justify-center" />
+            <ButtonTab label="Split" active={pathname === "/tan/split"} onClick={() => router.push("/tan/split")} className="h-8! flex w-full justify-center" />
+            <ButtonTab label="Merge" active={pathname === "/tan/merge"} onClick={() => router.push("/tan/merge")} className="h-8! flex w-full justify-center" />
           </div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
@@ -171,8 +171,8 @@ function LockPositionList() {
 
             {lockPosition == selectedPosition && (
               <div className="slide-down-fade-in flex w-full items-center justify-between rounded-b-lg bg-overlay-panel p-3">
-                <div className="flex items-center justify-center gap-1">
-                  <div className="w-20 text-sm text-subtitle">Unlock date</div>
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-full text-sm text-subtitle">Unlock date</div>
                   <EvolutionBox
                     originalValue={formatDate(new Date(), "dd/MM/yyyy")}
                     label=""
@@ -192,10 +192,10 @@ function LockPositionList() {
                   </>
                 ) : (
                   <>
-                    <div className="flex w-full items-center justify-center gap-1">
+                    <div className="flex w-fit items-center justify-center gap-1">
                       <div className="text-xs font-bold text-subtitle">Perma lock</div>
                       <IconCircleHelp className="w-3"></IconCircleHelp>
-                      <InputToggle isOn={extendToPermaLock} onToggle={() => setExtendToPermaLock(!extendToPermaLock)}></InputToggle>
+                      <Switch checked={extendToPermaLock} onCheckedChange={() => setExtendToPermaLock(!extendToPermaLock)} />
                     </div>
 
                     <Button onClick={() => onClickExtend(selectedPosition)}> Extend</Button>

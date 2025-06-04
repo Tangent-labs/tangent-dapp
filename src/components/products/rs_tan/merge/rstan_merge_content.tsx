@@ -11,7 +11,7 @@ import { formatDate } from "@/lib/other_formatter"
 import { InfinityIcon } from "lucide-react"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
-import InputToggle from "@/components/design_system/inputs/input_toogle"
+import { Switch } from "@/components/ui/switch"
 
 export const RsTanMergeContent = () => {
   const { lockData } = useRsTanContext()
@@ -198,7 +198,7 @@ export const RsTanMergeContent = () => {
             <div className="my-3 font-bold text-white">Claim recap:</div>
 
             <div className="flex items-center justify-center gap-2 text-xs text-subtitle">
-              Claim as sgUSD <InputToggle onToggle={() => setClaimAsSgUSD(!claimAsSgUSD)} isOn={claimAsSgUSD}></InputToggle>
+              Claim as sgUSD <Switch checked={claimAsSgUSD} onCheckedChange={() => setClaimAsSgUSD(!claimAsSgUSD)} />
             </div>
           </div>
           <div className="flex w-full flex-col items-center justify-around gap-2 rounded-[10px] p-3 backdrop-blur-[10px]">

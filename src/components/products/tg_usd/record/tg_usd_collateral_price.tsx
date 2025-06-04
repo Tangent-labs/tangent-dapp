@@ -78,7 +78,7 @@ export default function TgUsdCollateralPrice() {
       <Divider />
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1">
-          <TokenImage token={collateralInfo?.logo} size={48} />
+          <TokenImage token={collateralInfo?.logo} size={32} />
           <span>{collateralInfo.symbol}</span>
         </div>
         <div>

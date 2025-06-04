@@ -39,7 +39,7 @@ type TgUsdSwapContextValues = {
   depositSliderPercent: number
   setDepositSliderPercent: (arg: number) => void
 
-  isZapLoading: boolean
+  isSwapLoading: boolean
   setIsSwapLoading: (arg: boolean) => void
 
   balances: Record<Address, bigint> | null
@@ -80,7 +80,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
   const [depositAsset, setDepositAsset] = useState<string | null>(null)
 
-  const [isZapLoading, setIsSwapLoading] = useState(false)
+  const [isSwapLoading, setIsSwapLoading] = useState(false)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
 
@@ -244,6 +244,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
   }
 
   const handleDepositChange = (value: bigint | undefined) => {
+    setIsSwapLoading(true)
     setDepositWeiValue(value)
 
     if (value === undefined) {
@@ -265,10 +266,10 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
         if (quote) {
           setReceiveWeiValue(quote)
           setEnsoRouterAddress(TGUSD_CONTRACT.ENSO_ROUTER as Address)
+          setIsSwapLoading(false)
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)
-      } finally {
         setIsSwapLoading(false)
       }
     }
@@ -561,7 +562,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
     depositAsset,
     setDepositAsset,
     tokens,
-    isZapLoading,
+    isSwapLoading,
     setIsSwapLoading,
     receiveAsset,
     setReceiveAsset,

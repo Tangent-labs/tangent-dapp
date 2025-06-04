@@ -9,7 +9,6 @@ import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_r
 import InputSelect from "@/components/design_system/inputs/input_select"
 import { ExistingAsset, SelectOption } from "@/types"
 import TokenImage from "@/components/design_system/structure/token_image"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
 import { TGUSD_CONTRACT } from "../tg_usd_repository"
 import { ForecastGraph } from "./tg_usd_staking_forecast"
 import Divider from "@/components/design_system/structure/divider"
@@ -38,11 +37,7 @@ export default function TgUsdStakeContent() {
   } = useTgUsdStakeContext()
 
   const AssetSelect = () => {
-    return (
-      <div className="min-w-48">
-        <InputSelect className="w-full" template={AssetSelectTemplate} value={currentAssetInfo?.current} options={depositAssetOptions} onChange={() => {}} />
-      </div>
-    )
+    return <InputSelect className="w-full" template={AssetSelectTemplate} value={currentAssetInfo?.current} options={depositAssetOptions} onChange={() => {}} />
   }
 
   const AssetSelectTemplate = (option: SelectOption) => {
@@ -73,7 +68,7 @@ export default function TgUsdStakeContent() {
 
     return (
       <div className="flex items-center gap-2">
-        <TokenImage token={logo} size={32} />
+        <TokenImage token={logo} size={20} />
         <span className="text-sm font-bold">{option.label}</span>
       </div>
     )
@@ -83,12 +78,12 @@ export default function TgUsdStakeContent() {
     if (!receivedTokenInfo) return <></>
 
     return (
-      <PanelRaw className="flex w-48 items-center gap-2 border-white !bg-opacity-0 px-4 py-2 !backdrop-blur-none">
-        <TokenImage token={receivedTokenInfo.logo as ExistingAsset} size={32} />
-        <span className="text-sm font-bold leading-3">
+      <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+        <TokenImage token={receivedTokenInfo.logo as ExistingAsset} size={20} />
+        <span className="text-sm font-bold">
           <span>{receivedTokenInfo.symbol}</span>
         </span>
-      </PanelRaw>
+      </div>
     )
   }
 
@@ -157,7 +152,7 @@ export default function TgUsdStakeContent() {
             receiveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(stakeInfo?.sgUSDPrice || 0n, 18)))?.toFixed(2)}
             balance={currentAssetInfo?.balance}
             receiveAmount={formatBigInt(expected, 18, 2)}
-            setMaxBalance={() => {}}
+            setMaxBalance={() => setWeiValue(currentAssetInfo?.balance)}
             onValueChange={(value: bigint | undefined) => setWeiValue(value)}
             percentage={stakePercentage}
             setPercentage={setStakePercentage}

@@ -14,7 +14,7 @@ export default function TgUsdLiquidatePanelFull() {
   const LiquidateAssetDisplay = () => {
     return (
       <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
-        <TokenImage token={collateralInfo?.logo} size={32} />
+        <TokenImage token={collateralInfo?.logo} size={20} />
 
         <span className="flex flex-col text-sm font-bold">
           <span>{collateralInfo.symbol}</span>
@@ -48,7 +48,7 @@ export default function TgUsdLiquidatePanelFull() {
           labelDeposit="For"
           depositSelect={
             <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
-              <TokenImage token="tgUSD" size={24} />
+              <TokenImage token="tgUSD" size={20} />
               <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
             </div>
           }
@@ -68,7 +68,7 @@ export default function TgUsdLiquidatePanelFull() {
           labelDeposit="You repay"
           depositSelect={
             <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
-              <TokenImage token="tgUSD" size={24} />
+              <TokenImage token="tgUSD" size={20} />
               <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
             </div>
           }
@@ -85,7 +85,7 @@ export default function TgUsdLiquidatePanelFull() {
           labelDeposit="You receive"
           depositSelect={
             <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
-              <TokenImage token="tgUSD" size={24} />
+              <TokenImage token="tgUSD" size={20} />
               <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
             </div>
           }

@@ -25,6 +25,7 @@ export default function TgUsdSwapContent() {
     actionApprove,
     formState,
     computedAssets,
+    isSwapLoading,
     depositAssetInfo,
     depositWeiValue,
     depositAsset,
@@ -99,7 +100,7 @@ export default function TgUsdSwapContent() {
     return (
       <div className="flex w-full min-w-48 items-center justify-between">
         <div className="flex w-full items-center gap-2">
-          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={16} width={16} /> : <TokenImage token={option.logo} size={32} />}
+          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={32} />}
           <span className="text-sm font-bold">{option.symbol}</span>
         </div>
 
@@ -129,7 +130,7 @@ export default function TgUsdSwapContent() {
             depositAmount={depositWeiValue}
             depositSelect={<DepositAssetSelect options={computedAssets?.depositAssets} />}
             disabled={false}
-            isLoading={isLoading}
+            isLoading={isLoading || isSwapLoading}
             receiveSelect={<ReceiveAssetSelect options={computedAssets?.receiveAssets} />}
             labelDeposit={"You Sell"}
             labelReceive={"You Buy"}
@@ -146,7 +147,7 @@ export default function TgUsdSwapContent() {
             setPercentage={setDepositSliderPercent}
           />
 
-          <div className="flex w-full">
+          <div className="mt-2 flex w-full">
             <FormButtons
               actions={{
                 handleApprove: actionApprove,

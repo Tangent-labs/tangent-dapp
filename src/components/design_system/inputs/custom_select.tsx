@@ -31,8 +31,8 @@ const CustomSelect = <T extends DepositReceiveAsset>({ options = [], onChange, c
           {template ? (
             template(option)
           ) : (
-            <div className="flex items-center gap-2">
-              {option.logoURI ? <Image src={option.logoURI} alt={option.symbol} height={24} width={24} /> : <TokenImage token={option.logo} size={32} />}
+            <div className="flex cursor-pointer items-center gap-2">
+              {option.logoURI ? <Image src={option.logoURI} alt={option.symbol} height={24} width={24} /> : <TokenImage token={option.logo} size={20} />}
               <span>{option.symbol}</span>
             </div>
           )}
@@ -51,7 +51,7 @@ const CustomSelect = <T extends DepositReceiveAsset>({ options = [], onChange, c
             <div className="flex w-full items-center gap-2">
               {opt ? (
                 <>
-                  {opt.logoURI ? <Image src={opt.logoURI} alt={opt.symbol} height={24} width={24} /> : <TokenImage token={opt.logo} size={32} />}
+                  {opt.logoURI ? <Image src={opt.logoURI} alt={opt.symbol} height={24} width={24} /> : <TokenImage token={opt.logo} size={24} />}
                   <span className="text-sm font-bold">{opt.symbol}</span>
                 </>
               ) : (
@@ -61,9 +61,9 @@ const CustomSelect = <T extends DepositReceiveAsset>({ options = [], onChange, c
           </div>
         </SelectTrigger>
         <SelectContent>
-          <div className="flex min-h-56 w-full min-w-56 flex-col overflow-hidden">
+          <div className="flex min-h-56 w-full min-w-56 flex-col overflow-hidden bg-input">
             <div className="w-full p-2">
-              <Input className="rounded-lg focus:outline-none" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
+              <Input className="rounded-lg focus:outline-none" placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
             {filteredOptions.length > 0 ? (
               <AutoSizer>

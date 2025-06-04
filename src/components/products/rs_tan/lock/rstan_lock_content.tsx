@@ -3,7 +3,6 @@
 import { InputSelectLockPosition } from "@/components/design_system/inputs/input_select_lock_position"
 import InputSelect from "@/components/design_system/inputs/input_select"
 import { useRsTanContext } from "../rstan_layout_context"
-import InputToggle from "@/components/design_system/inputs/input_toogle"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { formatBigInt } from "@/lib/number_formatter"
 import FormButtons from "@/components/design_system/form/form_actions"
@@ -11,6 +10,7 @@ import { useRsTanLockContext } from "./rstan_lock_context"
 import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
 import { formatDate } from "@/lib/other_formatter"
 import { InfinityIcon } from "lucide-react"
+import { Switch } from "@/components/ui/switch"
 
 export default function RsTanLockContent() {
   const { lockData } = useRsTanContext()
@@ -90,7 +90,9 @@ export default function RsTanLockContent() {
         disabled={isLoading}
         isLoading={isLoading}
         balance={lockData?.balance}
-        setMaxBalance={() => {}}
+        setMaxBalance={() => {
+          setDepositWeiValue(lockData?.balance)
+        }}
         onValueChange={(e) => setDepositWeiValue(e)}
       />
 
@@ -100,7 +102,7 @@ export default function RsTanLockContent() {
         {depositPosition === "New" && (
           <div className="flex gap-2">
             <div className="mb-1 text-sm text-subtitle">Perma Lock</div>
-            <InputToggle onToggle={() => setIsPermaLock(!isPermaLock)} isOn={isPermaLock}></InputToggle>
+            <Switch checked={isPermaLock} onCheckedChange={() => setIsPermaLock(!isPermaLock)} />
           </div>
         )}
       </div>
@@ -145,7 +147,7 @@ export default function RsTanLockContent() {
         Locking more tokens on a existing position will automatically extend the lock duration to its maximum (12weeks).
       </div>
 
-      <div className="flex w-full justify-center">
+      <div className="mt-2 flex w-full justify-center">
         <FormButtons
           actions={{
             handleApprove: actionApprove,

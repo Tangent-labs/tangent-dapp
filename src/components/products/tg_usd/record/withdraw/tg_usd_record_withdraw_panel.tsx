@@ -4,7 +4,6 @@ import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { useTgUsdWithdrawContext } from "./tg_usd_record_withdraw_context"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { formatBigInt } from "@/lib/number_formatter"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
@@ -19,10 +18,10 @@ export default function TgUsdWithdrawPanel() {
 
   const WithdrawAssetDisplay = () => {
     return (
-      <PanelRaw className="flex w-48 items-center gap-2 border-white !bg-opacity-0 px-4 py-2 !backdrop-blur-none">
-        <TokenImage token={collateralInfo?.logo} size={32} />
-        <span className="flex flex-col text-lg leading-3">{collateralInfo.symbol}</span>
-      </PanelRaw>
+      <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+        <TokenImage token={collateralInfo?.logo} size={20} />
+        <span className="flex flex-col text-sm font-bold">{collateralInfo.symbol}</span>
+      </div>
     )
   }
 

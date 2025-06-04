@@ -63,9 +63,9 @@ export default function TgUsdRepayPanel() {
     decimals?: number
   }) => {
     return (
-      <div className="flex w-full min-w-48 items-center justify-between">
+      <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
         <div className="flex w-full items-center gap-2">
-          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={16} width={16} /> : <TokenImage token={option.logo} size={32} />}
+          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={20} />}
           <span className="text-sm font-bold">{option.symbol}</span>
         </div>
         <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
@@ -124,10 +124,13 @@ export default function TgUsdRepayPanel() {
 
   const WithdrawAssetDisplay = () => {
     return (
-      <PanelRaw className="flex w-48 items-center gap-2 border-white !bg-opacity-0 px-4 py-2 !backdrop-blur-none">
-        <TokenImage token={collateralInfo?.logo} size={32} />
-        <span className="flex flex-col text-lg leading-3">{collateralInfo.symbol}</span>
-      </PanelRaw>
+      <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+        <TokenImage token={collateralInfo?.logo} size={20} />
+
+        <span className="flex flex-col text-sm font-bold">
+          <span>{collateralInfo.symbol}</span>
+        </span>
+      </div>
     )
   }
 
@@ -198,7 +201,7 @@ export default function TgUsdRepayPanel() {
                 </div>
               </div>
               <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
-                <TokenImage token="tgUSD" size={24} />
+                <TokenImage token="tgUSD" size={20} />
                 <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
               </div>
             </div>

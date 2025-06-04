@@ -151,7 +151,7 @@ export function BuySellInput({
 
   const displayDepositBalanceData = useMemo(() => {
     const formattedBalance = formatBigInt(depositBalance || "0", depositAsset?.decimals || 18, depositAsset?.displayDecimals || 2)
-    return `${formattedBalance} ${depositAsset?.symbol || ""}`
+    return formattedBalance
   }, [depositBalance, depositAsset])
 
   const dollarDepositDisplay = useMemo(() => {
@@ -184,13 +184,13 @@ export function BuySellInput({
             <div className="order-2 mr-4 text-xl lg:order-1">
               <input
                 {...props}
-                disabled={isLoading || disabled}
+                disabled={disabled}
                 type="number"
                 value={innerValue ?? ""}
                 placeholder="Amount"
                 onChange={handleInputChange}
                 className={cn(
-                  "min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
+                  "min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
                 )}
               />
             </div>
@@ -198,16 +198,21 @@ export function BuySellInput({
           </div>
           <div className="flex justify-between text-xs text-gray-400">
             <div>$({dollarDepositDisplay})</div>
-            <button
-              className="flex cursor-pointer items-center"
-              type="button"
-              onClick={() => {
-                if (setMaxBalance) setMaxBalance()
-              }}
-            >
+
+            <div className="flex cursor-pointer items-center">
               <span>{displayDepositBalanceData}</span>
               <IconWallet className="w-6" />
-            </button>
+
+              <button
+                className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
+                type="button"
+                onClick={() => {
+                  if (setMaxBalance) setMaxBalance()
+                }}
+              >
+                Max.
+              </button>
+            </div>
           </div>
 
           <input
@@ -263,13 +268,12 @@ export function BuySellInput({
           <div className="mb-2 flex justify-between">
             <div className="mr-4 text-xl font-medium">
               <input
-                disabled={isLoading}
                 type="number"
                 value={innerTangentValue ?? ""}
                 placeholder="Amount"
                 onChange={handleInputTangentChange}
                 className={cn(
-                  "min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
+                  "min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
                 )}
               />
             </div>

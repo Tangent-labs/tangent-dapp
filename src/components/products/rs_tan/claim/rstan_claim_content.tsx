@@ -7,7 +7,7 @@ import { useRsTanClaimContext } from "./rstan_claim_context"
 import { formatBigInt } from "@/lib/number_formatter"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { MultiPositionSelect } from "@/components/design_system/inputs/input_multiselect"
-import InputToggle from "@/components/design_system/inputs/input_toogle"
+import { Switch } from "@/components/ui/switch"
 
 export const RsTanClaimContent = () => {
   const { lockData } = useRsTanContext()
@@ -45,7 +45,7 @@ export const RsTanClaimContent = () => {
         <div className="text-lg text-white">Claimable :</div>
 
         <div className="flex items-center justify-center gap-2 text-xs text-subtitle">
-          Claim as sgUSD <InputToggle onToggle={() => setClaimAsSgUSD(!claimAsSgUSD)} isOn={claimAsSgUSD}></InputToggle>
+          Claim as sgUSD <Switch checked={claimAsSgUSD} onCheckedChange={() => setClaimAsSgUSD(!claimAsSgUSD)} />
         </div>
       </div>
 

@@ -63,7 +63,10 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
     return data
   }, [filter, initialInvestment, apr, additionalLiquidity])
 
-  const allData = [...forecastData.map((d) => parseFloat(d.baseAmount)), ...forecastData.map((d) => parseFloat(d.amountWithLiquidity))]
+  const allData = useMemo(() => {
+    return [...forecastData.map((d) => parseFloat(d.baseAmount)), ...forecastData.map((d) => parseFloat(d.amountWithLiquidity))]
+  }, [forecastData])
+
   const minAmount = Math.min(...allData)
   const maxAmount = Math.max(...allData)
 

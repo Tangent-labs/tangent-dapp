@@ -41,6 +41,8 @@ export default function TgUsdLiquidatePanelFull() {
           onValueChange={() => {}}
           displayBalance={false}
           isLoading={isQuoteLoading}
+          percentage={0}
+          setPercentage={() => {}}
         />
 
         <DepositInput
@@ -59,6 +61,8 @@ export default function TgUsdLiquidatePanelFull() {
           displayBalance={false}
           onValueChange={() => {}}
           isLoading={isQuoteLoading}
+          percentage={0}
+          setPercentage={() => {}}
         />
 
         <Divider />
@@ -78,6 +82,8 @@ export default function TgUsdLiquidatePanelFull() {
           setMaxBalance={() => {}}
           displayBalance={false}
           onValueChange={() => {}}
+          percentage={0}
+          setPercentage={() => {}}
         />
 
         <DepositInput
@@ -96,6 +102,8 @@ export default function TgUsdLiquidatePanelFull() {
           displayBalance={false}
           onValueChange={() => {}}
           isLoading={isQuoteLoading}
+          percentage={0}
+          setPercentage={() => {}}
         />
       </div>
     </>

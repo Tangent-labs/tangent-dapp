@@ -23,8 +23,8 @@ type DepositInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   displayBalance?: boolean
   isZapping?: boolean
   isLoading?: boolean
-  percentage?: number
-  setPercentage?: (value: number) => void
+  percentage: number
+  setPercentage: (value: number) => void
   displaySliderInput?: boolean
 }
 
@@ -149,7 +149,10 @@ export function DepositInput({
                 className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
                 type="button"
                 onClick={() => {
-                  if (setMaxBalance) setMaxBalance()
+                  if (setMaxBalance) {
+                    setPercentage(100)
+                    setMaxBalance()
+                  }
                 }}
               >
                 Max.

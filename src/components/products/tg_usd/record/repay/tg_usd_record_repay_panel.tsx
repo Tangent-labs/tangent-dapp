@@ -23,7 +23,7 @@ import { RepayInput } from "@/components/design_system/inputs/repay_input"
 export default function TgUsdRepayPanel() {
   const { tokens } = useTgUsdContext()
 
-  const { tgUSDInfo, collateralInfo, balances, marketData } = useTgUsdRecordContext()
+  const { tgUSDInfo, collateralInfo, balances } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -38,6 +38,7 @@ export default function TgUsdRepayPanel() {
     actionZapRepay,
     actionApprove,
     onClickMax,
+    setRepayWeiValue,
     repayWeiValue,
     repayAsset,
     maxRepayableValue,
@@ -50,6 +51,7 @@ export default function TgUsdRepayPanel() {
     withdrawPercentage,
     isZapLoading,
     tgUdsRepayedValue,
+    isDebtBelowThreshold,
     repayAssetInfo,
   } = useTgUsdRepayContext()
 
@@ -162,14 +164,12 @@ export default function TgUsdRepayPanel() {
           isZapping={!!repayAsset && repayAsset !== "tgUSD"}
           depositAsset={repayAssetInfo || tgUSDInfo}
           balance={maxRepayableValue}
-          displayBalance={false}
-          setMaxBalance={() => {}}
+          displayBalance={true}
+          setMaxBalance={() => setRepayWeiValue(maxRepayableValue)}
           displaySliderInput={true}
           percentage={percentage}
           setPercentage={setPercentage}
           onValueChange={handleRepayValueChange}
-          userDebt={maxRepayableValue}
-          minimumLoan={marketData?.constants.minimumLoan || 0n}
         />
 
         {repayAsset && repayAsset !== "tgUSD" && (
@@ -225,8 +225,8 @@ export default function TgUsdRepayPanel() {
               depositAsset={tgUSDInfo}
               balance={maxWithdrawable}
               displaySliderInput={true}
-              setMaxBalance={() => {}}
-              displayBalance={false}
+              setMaxBalance={() => setWithdrawWeiValue(maxWithdrawable)}
+              displayBalance={true}
               onValueChange={(value: bigint | undefined) => {
                 setWithdrawWeiValue(value)
               }}
@@ -236,6 +236,12 @@ export default function TgUsdRepayPanel() {
           </>
         )}
       </div>
+
+      <>
+        {isDebtBelowThreshold && (
+          <div className="flex w-full items-center justify-center text-xs text-red-500">Remaining debt can not be lower than $3,000</div>
+        )}
+      </>
 
       <div className="flex w-full items-center justify-center">
         <FormButtons

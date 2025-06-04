@@ -126,6 +126,7 @@
     --tgt-background: #000;
     --tgt-foreground: #fff;
     --tgt-row-tonic: #0075ff;
+    --tgt-bg-button-linear: linear-gradient(135deg, #0075ff 0%, #00c2ff 100%);
     --tgt-bg-button-inactive: radial-gradient(77.27% 104.46% at 50% 100%, #8c8c8c 0%, #444444 100%);
     --tgt-bg-button-active: radial-gradient(77.27% 104.46% at 50% 100%, #00c2ff 0%, rgba(0, 117, 255, 0.5) 100%);
     --tgt-bg-button-active-hover: radial-gradient(90.14% 121.85% at 50% 100%, #0086b2 0%, #084377 100%);
@@ -156,16 +157,6 @@
     --w3o-border-color: #33394b;
     --w3o-action-color: #929bed;
     --w3o-border-radius: 16px;
-  }
-
-  onboard-account-center::part(.ac-container) {
-    position: absolute;
-    top: 0;
-    right: 0;
-  }
-
-  :root {
-    --account-center-position-top: -10px;
   }
 
   /* Variables add by ShadCn  */

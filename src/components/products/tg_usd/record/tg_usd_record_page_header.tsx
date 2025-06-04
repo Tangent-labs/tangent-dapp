@@ -37,7 +37,7 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
                 </div>
               )}
 
-              <div className="flex items-center justify-center rounded-full border border-white border-opacity-20 bg-button-active px-2 py-1 text-xs">
+              <div className="flex items-center justify-center rounded-full border border-white border-opacity-20 bg-button-linear px-2 py-1 text-xs">
                 {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
               </div>
             </>

@@ -1,25 +1,43 @@
 "use client"
+
 import { useMemo } from "react"
+import { formatAddress } from "@/lib/other_formatter"
 import { Button } from "@/components/design_system/inputs/button"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { formatAddress } from "@/lib/other_formatter"
 
 type WalletConnexionButtonProps = React.HTMLAttributes<HTMLButtonElement>
 
 export const WalletConnexionButton = ({ ...props }: WalletConnexionButtonProps) => {
-  const { isConnecting, connect, changeNetwork, isConnected, isChainConnected, currentAccount } = useWalletConnexionContext()
+  const { isConnecting, connect, disconnect, changeNetwork, isConnected, isChainConnected, currentAccount } = useWalletConnexionContext()
 
   const buttonLabel = useMemo(() => {
     if (isConnecting) return "..."
-    if (!isConnected) return "Connect wallet"
-    if (!isChainConnected) return "Change network"
-    return formatAddress(currentAccount?.address) || " - "
+    if (!isConnected) return "Connect Wallet"
+    if (!isChainConnected) return "Switch Network"
+    return formatAddress(currentAccount?.address) || "Unknown Address"
   }, [isConnected, isChainConnected, currentAccount, isConnecting])
 
-  const handleClick = () => {
-    if (!isConnected) return connect()
-    if (!isChainConnected) return changeNetwork()
+  const handleConnect = async () => {
+    await connect()
   }
 
-  return <Button label={buttonLabel} className="h-10 !px-4 !py-2 !text-sm" onClick={handleClick} {...props} />
+  const handleDisconnect = async () => {
+    await disconnect()
+  }
+
+  const handleSwitchNetwork = async () => {
+    await changeNetwork()
+  }
+
+  const handleButtonClick = () => {
+    if (!isConnected) {
+      handleConnect()
+    } else if (!isChainConnected) {
+      handleSwitchNetwork()
+    } else if (isConnected) {
+      handleDisconnect()
+    }
+  }
+
+  return <Button label={buttonLabel} className="h-10 !px-4 !py-2 !text-sm" onClick={() => handleButtonClick()} disabled={isConnecting} {...props} />
 }

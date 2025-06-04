@@ -32,10 +32,8 @@ interface WalletConnexionProviderProps {
   children: ReactNode
 }
 
-// Create the context
 const WalletConnexionContext = createContext<WalletConnexionContextValues | undefined>(undefined)
 
-// Create a provider component
 export const WalletConnexionProvider = ({ children }: WalletConnexionProviderProps) => {
   const [currentWallet, setCurrentWallet] = useState<WalletState | undefined>(undefined)
   const [currentAccount, setCurrentAccount] = useState<Account | undefined>(undefined)

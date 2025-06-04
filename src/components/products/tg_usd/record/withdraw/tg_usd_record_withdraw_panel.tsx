@@ -44,8 +44,8 @@ export default function TgUsdWithdrawPanel() {
             depositAsset={tgUSDInfo}
             balance={maxWithdrawable}
             displaySliderInput={true}
-            setMaxBalance={() => {}}
-            displayBalance={false}
+            setMaxBalance={() => setWithdrawWeiValue(maxWithdrawable)}
+            displayBalance={true}
             onValueChange={(value: bigint | undefined) => {
               setWithdrawWeiValue(value)
             }}

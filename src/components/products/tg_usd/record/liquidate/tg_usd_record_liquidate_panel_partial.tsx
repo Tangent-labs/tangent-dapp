@@ -80,6 +80,8 @@ export default function TgUsdLiquidatePanelPartial() {
         displayBalance={false}
         onValueChange={() => {}}
         isLoading={isQuoteLoading}
+        percentage={0}
+        setPercentage={() => {}}
       />
 
       <Divider />
@@ -122,6 +124,8 @@ export default function TgUsdLiquidatePanelPartial() {
         displayBalance={false}
         onValueChange={() => {}}
         isLoading={isQuoteLoading}
+        percentage={0}
+        setPercentage={() => {}}
       />
     </>
   )

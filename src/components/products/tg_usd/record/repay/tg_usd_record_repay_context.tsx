@@ -65,6 +65,8 @@ type TgUsdRepayContextValues = {
 
   isRepayMax: boolean
   setIsRepayMax: (arg: boolean) => void
+
+  isDebtBelowThreshold: boolean
 }
 
 export const TgUsdRepayContext = createContext<TgUsdRepayContextValues | undefined>(undefined)
@@ -306,13 +308,11 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const maxWithdrawable = useMemo(() => {
     if (marketData) {
-      const collateralPriceRaw = BigInt(marketData?.collateralInfos?.collateralUSDPrice || 0n)
+      const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice
       const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n)
       const futureDeposited = BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n)
-      const futureDepositedDollarRaw = (futureDeposited * collateralPriceRaw) / BigInt(10 ** 18)
       const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
-      const maxWithDrawable =
-        collateralPriceRaw !== 0n ? futureDepositedDollarRaw - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
+      const maxWithDrawable = collateralPriceRaw !== 0n ? futureDeposited - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
 
       return maxWithDrawable
     }
@@ -399,6 +399,14 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     fetchSwapAssetData()
   }, [repayAsset])
 
+  const isDebtBelowThreshold = useMemo(() => {
+    if (!repayWeiValue || !marketValues?.maxRepayableValue || repayWeiValue === 0n) return false
+    if (marketValues?.maxRepayableValue === repayWeiValue) return false
+
+    const threshold = marketValues?.minimumLoan
+    return marketValues?.maxRepayableValue - repayWeiValue < threshold
+  }, [repayWeiValue, marketValues])
+
   const contextValue: TgUsdRepayContextValues = {
     actionRepay,
     formState,
@@ -429,6 +437,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     actionZapRepay,
     isRepayMax,
     setIsRepayMax,
+    isDebtBelowThreshold,
   }
 
   return <TgUsdRepayContext.Provider value={contextValue}>{children}</TgUsdRepayContext.Provider>

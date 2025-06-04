@@ -22,11 +22,9 @@ type RepayInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   displayBalance?: boolean
   isZapping?: boolean
   isLoading?: boolean
-  percentage?: number
-  setPercentage?: (value: number) => void
+  percentage: number
+  setPercentage: (value: number) => void
   displaySliderInput?: boolean
-  userDebt: bigint
-  minimumLoan: bigint
 }
 
 export function RepayInput({
@@ -45,20 +43,10 @@ export function RepayInput({
   displaySliderInput = false,
   disabled,
   setPercentage,
-  userDebt,
-  minimumLoan,
   ...props
 }: RepayInputProps) {
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
   const [isUserInput, setIsUserInput] = useState(false)
-
-  const isDebtBelowThreshold = useMemo(() => {
-    if (!depositAsset?.decimals || !userDebt || innerValue === "") return false
-    if (userDebt === toBigInt(Number(innerValue), depositAsset.decimals)) return false
-    const repayAmount = innerValue === "MAX" ? balance || BigInt(0) : toBigInt(Number(innerValue), depositAsset.decimals)
-    const threshold = minimumLoan
-    return userDebt - repayAmount < threshold
-  }, [innerValue, userDebt, depositAsset, balance])
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!setPercentage || !depositAsset?.decimals || !balance) return
@@ -168,16 +156,23 @@ export function RepayInput({
         <div className="mt-1 flex justify-between text-xs text-gray-400">
           <div>$({dollarDepositDisplay})</div>
           {displayBalance && (
-            <button
-              className="flex cursor-pointer items-center"
-              type="button"
-              onClick={() => {
-                if (setMaxBalance) setMaxBalance()
-              }}
-            >
+            <div className="flex cursor-pointer items-center">
               <span>{displayBalanceData}</span>
               <IconWallet className="w-6" />
-            </button>
+
+              <button
+                className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
+                type="button"
+                onClick={() => {
+                  if (setMaxBalance) {
+                    setMaxBalance()
+                    setPercentage(100)
+                  }
+                }}
+              >
+                Max.
+              </button>
+            </div>
           )}
         </div>
 
@@ -193,7 +188,7 @@ export function RepayInput({
               onChange={handleSliderChange}
               className={cn("mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-black", disabled ? "cursor-default" : "cursor-pointer")}
               style={{
-                background: `linear-gradient(to right, ${isDebtBelowThreshold ? "#ef4444" : "#3b82f6"} ${percentage}%, #4b5563 ${percentage}%)`,
+                background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
               }}
             />
 

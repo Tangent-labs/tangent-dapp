@@ -134,7 +134,7 @@ export default function TgUsdCollateralPrice() {
       </div>
 
       {graphData && (
-        <div className="h-[300px] w-full">
+        <div className="w-full rounded-[10px]">
           <CollateralGraph isPending={isPending} graphData={graphData} />
         </div>
       )}

@@ -7,9 +7,7 @@ import { toHex } from "viem"
 import init, { OnboardAPI } from "@web3-onboard/core"
 
 const appMetadata = {
-  name: "Convergence ",
-  // icon: logo,
-  // logo: logo,
+  name: "Tangent",
   description: "Governance Aggregator",
   recommendedInjectedWallets: [
     { name: "Coinbase", url: "https://wallet.coinbase.com/" },
@@ -18,7 +16,7 @@ const appMetadata = {
 }
 
 const chain = {
-  id: toHex(dappConfig.chain.id),
+  id: typeof dappConfig.chain.id === "number" ? toHex(dappConfig.chain.id) : dappConfig.chain.id,
   token: "ETH",
   label: dappConfig.chain.name,
   rpcUrl: dappConfig.chain.rpc,
@@ -27,32 +25,28 @@ const chain = {
 const chains = [chain]
 
 const wcV2InitOptions: Partial<LedgerOptionsWCv2> = {
-  /** Project ID associated with [WalletConnect account](https://cloud.walletconnect.com)  */
   projectId: dappConfig.chain.walletConnectId,
   requiredChains: [dappConfig.chain.id],
 }
 
-const walletConnect = walletConnectModule({ ...wcV2InitOptions, dappUrl: dappConfig.dappUrl })
+const walletConnect = walletConnectModule({
+  ...wcV2InitOptions,
+  dappUrl: dappConfig.dappUrl || window.location.origin,
+})
 const safe = safeModule()
 const ledger = ledgerModule(wcV2InitOptions as unknown as LedgerOptionsWCv2)
 
 const wallets = [injectedModule(), walletConnect, safe, ledger]
+
 const web3Onboard = init({
-  // containerElements: { accountCenter: "#body" },
   wallets,
   chains,
   appMetadata,
-  notify: { enabled: true },
+  notify: { enabled: false },
   theme: "dark",
   accountCenter: {
-    desktop: {
-      enabled: true,
-      position: "topRight",
-    },
-    mobile: {
-      enabled: true,
-      position: "topRight",
-    },
+    desktop: { enabled: false },
+    mobile: { enabled: false },
   },
   connect: {
     autoConnectAllPreviousWallet: true,

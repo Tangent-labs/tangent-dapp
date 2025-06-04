@@ -11,6 +11,7 @@ const config: Config = {
       backgroundImage: {
         header: "var(--tgt-bg-header)",
         progress: "var(--tgt-bg-progress)",
+        "button-linear": "var(--tgt-bg-button-linear)",
         "button-inactive": "var(--tgt-bg-button-inactive)",
         "button-active-hover": "var(--tgt-bg-button-active-hover)",
         "button-active": "var(--tgt-bg-button-active)",

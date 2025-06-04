@@ -41,6 +41,8 @@ export type ExistingAsset =
   | "wcrvUSD"
   | "crvUSD"
   | "scrvUSD"
+  | "sTAN"
+  | "TAN"
 
 // Based on  image folder parsing. ps: see _utils\create_tokens_ts_type.js
 export type AllExistingAsset =

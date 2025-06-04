@@ -459,17 +459,26 @@ export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: T
 
       const walletClient = getWalletClient()
 
-      doZapDeposit(marketInfo?.marketAddress, walletClient!, routerCallData?.tx?.to, routerCallData?.tx?.data, zapMarketData, isStaking).then(() => {
-        loadOnChainData()
-        setDepositWeiValue(0n)
-        setZapValue(null)
-        setIsZapLoading(false)
-        setIsDepositLoading(false)
-        fetchBalanceAllowanceData(depositAssetInfo?.address)
-        toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
-      })
+      doZapDeposit(marketInfo?.marketAddress, walletClient!, routerCallData?.tx?.to, routerCallData?.tx?.data, zapMarketData, isStaking)
+        .then(() => {
+          loadOnChainData()
+          setDepositWeiValue(0n)
+          setZapValue(null)
+          setIsZapLoading(false)
+          setIsDepositLoading(false)
+          fetchBalanceAllowanceData(depositAssetInfo?.address)
+          toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
+        })
+        .catch(() => {
+          setIsZapLoading(false)
+          setIsDepositLoading(false)
+          toast.error(ToastComponent, { data: { type: "Error", content: "Transation failed." } })
+        })
     } catch (error) {
-      console.error("Error in getRouteAndDeposit:", error)
+      console.error("Error in zapAndDeposit:", error)
+      setIsZapLoading(false)
+      setIsDepositLoading(false)
+      toast.error(ToastComponent, { data: { type: "Error", content: "Transation failed." } })
     }
   }
 

@@ -28,8 +28,6 @@ export default function BorrowHistoryGraph() {
             <stop offset={50} stopColor="rgba(0,117,255, 0.05)" stopOpacity={1} />
             <stop offset={100} stopColor="rgba(0,117,255, 0.05)" stopOpacity={1} />
           </linearGradient>
-          border: 2px solid;
-          {/* border-image-source: linear-gradient(315.15deg, #FBF911 0.08%, #99FF00 100%); */}
         </defs>
         <XAxis dataKey="name" className="text-xs" axisLine={false} tickLine={false} />
         <YAxis className="text-xs" axisLine={false} tickLine={false} />
@@ -41,8 +39,3 @@ export default function BorrowHistoryGraph() {
     </ResponsiveContainer>
   )
 }
-
-/*
-background: linear-gradient(180deg, rgba(0, 117, 255, 0.3) 0%, rgba(0, 117, 255, 0) 100%);
-
-*/

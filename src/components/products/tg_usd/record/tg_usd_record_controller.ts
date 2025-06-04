@@ -9,7 +9,7 @@ import { getAssetInfo } from "@/services/service_existing_asset"
 import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
 import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
 import { getSwapAssetPrice } from "@/services/service_price"
-import { getEnsoData } from "../quote_api"
+import { getEnsoData } from "../api"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)

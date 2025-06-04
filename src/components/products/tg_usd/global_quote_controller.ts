@@ -1,7 +1,7 @@
 import { Address } from "viem"
 import { TGUSD_CONTRACT } from "./tg_usd_repository"
 import { getCurveRouterQuote, getCurveRouterRoute } from "./curve_routing_controller"
-import { getEnsoData } from "./quote_api"
+import { getEnsoData } from "./api"
 
 export const getQuote = async (depositWeiValue: bigint, currentAddress: Address, tokenOut: Address, tokenIn: Address): Promise<{ quote: bigint }> => {
   const data = await getEnsoData(depositWeiValue, tokenIn, tokenOut, currentAddress, currentAddress, 0n)

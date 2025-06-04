@@ -46,6 +46,8 @@ type TgUsdRecordContextValues = {
   currentAmounts: TgUsdMarketAmounts
   setCurrentAmounts: (amounts: TgUsdMarketAmounts) => void
 
+  marketInfo: TgUsdMarket
+
   balances: Record<Address, bigint> | null
 
   balanceAllowanceData: BalanceAllowanceData | null
@@ -162,6 +164,7 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     balanceAllowanceData,
     setBalanceAllowanceData,
     fetchBalanceAllowanceData,
+    marketInfo,
   }
 
   return <TgUsdRecordContext.Provider value={contextValue}>{children}</TgUsdRecordContext.Provider>

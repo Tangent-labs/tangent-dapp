@@ -19,8 +19,6 @@ const DECIMALS = BigInt(10 ** 18)
 
 type TgUsdDepositContextProps = {
   children: ReactNode
-  collateralInfo: AssetDataPriced
-  marketInfo: TgUsdMarket
 }
 
 type TgUsdDepositContextValues = {
@@ -77,10 +75,11 @@ type TgUsdDepositContextValues = {
 
 export const TgUsdDepositContext = createContext<TgUsdDepositContextValues | undefined>(undefined)
 
-export const TgUsdDepositProvider = ({ children, collateralInfo, marketInfo }: TgUsdDepositContextProps) => {
+export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => {
   const { tokens } = useTgUsdContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo } =
+    useTgUsdRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 

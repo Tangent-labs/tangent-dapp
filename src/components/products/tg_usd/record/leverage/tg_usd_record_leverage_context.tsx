@@ -1,6 +1,6 @@
 "use client"
 
-import { TgUsdMarket, ZapToken } from "../../tg_usd_type"
+import { ZapToken } from "../../tg_usd_type"
 import { AssetDataPriced, FormState } from "@/types"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
@@ -16,12 +16,9 @@ import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 
 type TgUsdLeverageContextProps = {
   children: ReactNode
-  collateralInfo: AssetDataPriced
-  marketInfo: TgUsdMarket
 }
 
 type TgUsdLeverageContextValues = {
-  marketInfo: TgUsdMarket
   collateralInfo: AssetDataPriced
   isStaking: boolean
   setIsStaking: (arg: boolean) => void
@@ -82,10 +79,11 @@ type TgUsdLeverageContextValues = {
 
 export const TgUsdLeverageContext = createContext<TgUsdLeverageContextValues | undefined>(undefined)
 
-export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: TgUsdLeverageContextProps) => {
+export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) => {
   const { tokens } = useTgUsdContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo } =
+    useTgUsdRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
@@ -365,7 +363,6 @@ export const TgUsdLeverageProvider = ({ children, collateralInfo, marketInfo }: 
   }, [zapValue])
 
   const contextValue: TgUsdLeverageContextValues = {
-    marketInfo,
     collateralInfo,
     isStaking,
     setIsStaking,

@@ -53,8 +53,16 @@ export function DepositInput({
     return 0
   }, [balance, depositAsset])
 
-  const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
+  const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 18) : "")
   const [isUserInput, setIsUserInput] = useState(false)
+
+  const formatDisplayValue = (value: string | number): string => {
+    const num = Number(value)
+    if (isNaN(num)) return ""
+    if (Number.isInteger(num)) return num.toString()
+    const formatted = num.toFixed(6).replace(/\.?0+$/, "")
+    return formatted
+  }
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!!setPercentage) {
@@ -68,8 +76,8 @@ export function DepositInput({
 
   useEffect(() => {
     if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
-      const updatedValue = Number(formatUnits(depositAmount, depositAsset.decimals)).toFixed(0)
-      setInnerValue(updatedValue)
+      const updatedValue = formatUnits(depositAmount, depositAsset.decimals)
+      setInnerValue(formatDisplayValue(updatedValue))
       setIsUserInput(false)
     }
   }, [depositAmount, depositAsset])
@@ -91,7 +99,7 @@ export function DepositInput({
     setInnerValue(newValue)
 
     if (!!setPercentage) {
-      setPercentage(newValue !== undefined && balanceNumber > 0 ? (Number(newValue) / balanceNumber) * 100 : 0)
+      setPercentage(newValue !== "" && balanceNumber > 0 ? (Number(newValue) / balanceNumber) * 100 : 0)
     }
   }
 
@@ -132,8 +140,9 @@ export function DepositInput({
               type="number"
               value={innerValue}
               placeholder="Amount"
-              onInput={handleInputChange}
+              onChange={handleInputChange}
               className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-bold focus:outline-none")}
+              step="any"
             />
           </div>
           <div className="order-1 lg:order-2">{depositSelect}</div>
@@ -144,7 +153,6 @@ export function DepositInput({
             <div className="flex cursor-pointer items-center">
               <span>{displayBalanceData}</span>
               <IconWallet className="w-6" />
-
               <button
                 className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
                 type="button"
@@ -176,7 +184,6 @@ export function DepositInput({
                 background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
               }}
             />
-
             <div className="flex w-full items-center justify-between text-xs text-subtitle">
               <div className="relative flex w-fit items-center justify-center">
                 0%
@@ -185,7 +192,6 @@ export function DepositInput({
                   className="absolute -top-1.5 left-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
                 ></div>
               </div>
-
               {[25, 50, 75].map((el) => (
                 <div key={el} className="relative flex w-fit items-center justify-center">
                   {el}%
@@ -197,7 +203,6 @@ export function DepositInput({
                   ></div>
                 </div>
               ))}
-
               <div className="relative flex w-fit items-center justify-center">
                 100%
                 <div

@@ -220,7 +220,6 @@ export default function TgUsdDepositPanel() {
             disabled={!canInteract}
             borrowAsset={tgUSDInfo}
             setMaxBalance={() => setBorrowWeiValue(maxBorrowableValue)}
-            displayBalance={true}
             balance={maxBorrowableValue}
             percentage={borrowSliderPercent}
             setPercentage={setBorrowSliderPercent}

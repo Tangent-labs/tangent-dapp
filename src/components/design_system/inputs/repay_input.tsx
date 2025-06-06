@@ -18,7 +18,6 @@ type RepayInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositSelect: ReactNode
   onValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
-  displayBalance?: boolean
   isZapping?: boolean
   isLoading?: boolean
   percentage: number
@@ -35,7 +34,6 @@ export function RepayInput({
   setMaxBalance,
   onValueChange,
   depositSelect = <></>,
-  displayBalance = true,
   isZapping = false,
   isLoading = false,
   percentage = 0,
@@ -149,22 +147,21 @@ export function RepayInput({
         </div>
         <div className="mt-1 flex justify-between text-xs text-gray-400">
           <div>$({dollarDepositDisplay})</div>
-          {displayBalance && (
-            <div className="flex cursor-pointer items-center">
-              <button
-                className="ml-1 flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
-                type="button"
-                onClick={() => {
-                  if (setMaxBalance) {
-                    setMaxBalance()
-                    setPercentage(100)
-                  }
-                }}
-              >
-                Max.
-              </button>
-            </div>
-          )}
+
+          <div className="flex cursor-pointer items-center">
+            <button
+              className="ml-1 flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
+              type="button"
+              onClick={() => {
+                if (setMaxBalance) {
+                  setMaxBalance()
+                  setPercentage(100)
+                }
+              }}
+            >
+              Max.
+            </button>
+          </div>
         </div>
 
         {displaySliderInput && (

@@ -16,8 +16,6 @@ import { doMarketDeposit, doZapDeposit, doZapDepositAndBorrow, getDepositFormSta
 import { computeSwapAssetPrice, doApprove, prepareZapTransaction } from "../tg_usd_record_controller"
 import { toBigInt } from "@/lib/number_formatter"
 
-const DECIMALS = BigInt(10 ** 18)
-
 type TgUsdDepositContextProps = {
   children: ReactNode
 }
@@ -326,6 +324,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
     if (depositAssetInfo) {
       setBorrowWeiValue(0n)
       setBorrowSliderPercent(0)
+      setDepositWeiValue(0n)
       fetchBalanceAllowanceData(depositAssetInfo?.address)
     }
   }, [depositAssetInfo])
@@ -505,13 +504,13 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
       if (marketData?.collateralInfos) {
         const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice || 0n
         const futureDebt = marketData?.debtInfos?.userDebt || 0n
-        const futureDepositedInDollar =
-          (marketData?.collateralInfos?.positionCollateralAmount * collateralPriceRaw) / DECIMALS +
-          ((depositWeiValue || 0n) * toBigInt(depositAssetInfo?.price || 0, depositAssetInfo?.decimals || 18)) / DECIMALS
+        const futureDeposited =
+          marketData?.collateralInfos?.positionCollateralAmount +
+          ((depositWeiValue || 0n) * toBigInt(depositAssetInfo?.price || 1, depositAssetInfo?.decimals || 18)) / collateralPriceRaw
 
         const maxLTV = marketData?.constants.maxLTV / BigInt(10 ** 3)
 
-        const maxBorrowable = (futureDepositedInDollar * maxLTV) / BigInt(100n) - (futureDebt / collateralPriceRaw) * BigInt(10n ** 18n)
+        const maxBorrowable = (futureDeposited * maxLTV) / BigInt(100n) - (futureDebt * BigInt(10n ** 18n)) / collateralPriceRaw
 
         return maxBorrowable
       }

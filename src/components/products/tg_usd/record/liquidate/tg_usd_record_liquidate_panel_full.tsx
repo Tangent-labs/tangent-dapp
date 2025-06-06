@@ -39,7 +39,6 @@ export default function TgUsdLiquidatePanelFull() {
           depositAsset={collateralInfo}
           setMaxBalance={() => {}}
           onValueChange={() => {}}
-          displayBalance={false}
           isLoading={isQuoteLoading}
           percentage={0}
           setPercentage={() => {}}
@@ -58,7 +57,6 @@ export default function TgUsdLiquidatePanelFull() {
           displaySliderInput={false}
           depositAsset={tgUSDInfo}
           setMaxBalance={() => {}}
-          displayBalance={false}
           onValueChange={() => {}}
           isLoading={isQuoteLoading}
           percentage={0}
@@ -80,7 +78,6 @@ export default function TgUsdLiquidatePanelFull() {
           displaySliderInput={false}
           depositAsset={tgUSDInfo}
           setMaxBalance={() => {}}
-          displayBalance={false}
           onValueChange={() => {}}
           percentage={0}
           setPercentage={() => {}}
@@ -99,7 +96,6 @@ export default function TgUsdLiquidatePanelFull() {
           displaySliderInput={false}
           depositAsset={tgUSDInfo}
           setMaxBalance={() => {}}
-          displayBalance={false}
           onValueChange={() => {}}
           isLoading={isQuoteLoading}
           percentage={0}

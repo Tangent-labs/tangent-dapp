@@ -19,7 +19,6 @@ type DepositInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositInput?: ReactNode
   onValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
-  displayBalance?: boolean
   isZapping?: boolean
   isLoading?: boolean
   percentage: number
@@ -36,7 +35,6 @@ export function DepositInput({
   setMaxBalance,
   onValueChange,
   depositSelect = <></>,
-  displayBalance = true,
   isZapping = false,
   isLoading = false,
   percentage = 0,
@@ -143,8 +141,9 @@ export function DepositInput({
         </div>
         <div className="mt-1 flex justify-between text-xs text-gray-400">
           <div>$({dollarDepositDisplay})</div>
-          {displayBalance && (
-            <div className="flex cursor-pointer items-center">
+
+          <div className="flex cursor-pointer items-center">
+            {!disabled && (
               <button
                 className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
                 type="button"
@@ -157,8 +156,8 @@ export function DepositInput({
               >
                 Max.
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {displaySliderInput && (

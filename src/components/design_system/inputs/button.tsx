@@ -13,7 +13,7 @@ export function Button({ label, state = "active", className, disabled, children,
   return (
     <button
       {...props}
-      onClick={props?.onClick}
+      onClick={state === "active" ? props?.onClick : () => {}}
       disabled={state === "inactive" || disabled}
       data-state={state}
       className={cn(

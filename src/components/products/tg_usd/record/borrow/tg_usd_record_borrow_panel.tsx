@@ -41,7 +41,6 @@ export default function TgUsdBorrowPanel() {
           borrowAsset={tgUSDInfo}
           setMaxBalance={() => setBorrowWeiValue(maxBorrowableValue)}
           balance={maxBorrowableValue}
-          displayBalance={true}
           onValueChange={(value: bigint | undefined) => {
             setBorrowWeiValue(value)
           }}

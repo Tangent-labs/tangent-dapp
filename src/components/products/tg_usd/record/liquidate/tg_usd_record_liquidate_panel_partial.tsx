@@ -60,7 +60,6 @@ export default function TgUsdLiquidatePanelPartial() {
         depositAsset={collateralInfo}
         setMaxBalance={() => {}}
         balance={maxLiquidable}
-        displayBalance={false}
         onValueChange={handleLiquidateValueChange}
       />
 
@@ -77,7 +76,6 @@ export default function TgUsdLiquidatePanelPartial() {
         displaySliderInput={false}
         depositAsset={tgUSDInfo}
         setMaxBalance={() => {}}
-        displayBalance={false}
         onValueChange={() => {}}
         isLoading={isQuoteLoading}
         percentage={0}
@@ -85,6 +83,10 @@ export default function TgUsdLiquidatePanelPartial() {
       />
 
       <Divider />
+
+      <div className="flex w-full items-end justify-end">
+        <span className="text-xs text-subtitle">Max: {formatBigInt(maxRepayable, 18, 2)} tgUSD</span>
+      </div>
 
       <DepositInput
         depositAmount={repayWeiValue}
@@ -100,9 +102,8 @@ export default function TgUsdLiquidatePanelPartial() {
         percentage={repayablePercentage}
         setPercentage={setRepayablePercentage}
         depositAsset={tgUSDInfo}
-        setMaxBalance={() => {}}
+        setMaxBalance={() => setRepayWeiValue(maxRepayable)}
         balance={maxRepayable}
-        displayBalance={false}
         onValueChange={(value: bigint | undefined) => {
           setRepayWeiValue(value)
         }}
@@ -121,7 +122,6 @@ export default function TgUsdLiquidatePanelPartial() {
         displaySliderInput={false}
         depositAsset={tgUSDInfo}
         setMaxBalance={() => {}}
-        displayBalance={false}
         onValueChange={() => {}}
         isLoading={isQuoteLoading}
         percentage={0}

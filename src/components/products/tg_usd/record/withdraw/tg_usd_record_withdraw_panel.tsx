@@ -45,7 +45,6 @@ export default function TgUsdWithdrawPanel() {
             balance={maxWithdrawable}
             displaySliderInput={true}
             setMaxBalance={() => setWithdrawWeiValue(maxWithdrawable)}
-            displayBalance={true}
             onValueChange={(value: bigint | undefined) => {
               setWithdrawWeiValue(value)
             }}

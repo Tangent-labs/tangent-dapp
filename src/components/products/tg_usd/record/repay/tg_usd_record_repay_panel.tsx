@@ -164,7 +164,6 @@ export default function TgUsdRepayPanel() {
           isZapping={!!repayAsset && repayAsset !== "tgUSD"}
           depositAsset={repayAssetInfo || tgUSDInfo}
           balance={maxRepayableValue}
-          displayBalance={true}
           setMaxBalance={() => handleRepayValueChange(maxRepayableValue)}
           displaySliderInput={true}
           percentage={percentage}
@@ -226,7 +225,6 @@ export default function TgUsdRepayPanel() {
               balance={maxWithdrawable}
               displaySliderInput={true}
               setMaxBalance={() => setWithdrawWeiValue(maxWithdrawable)}
-              displayBalance={true}
               onValueChange={(value: bigint | undefined) => {
                 setWithdrawWeiValue(value)
               }}

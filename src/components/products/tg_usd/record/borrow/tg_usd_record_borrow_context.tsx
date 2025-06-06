@@ -6,8 +6,6 @@ import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doMarketBorrow, getBorrowFormState } from "./tg_usd_record_borrow_controller"
 
-const DECIMALS = BigInt(10 ** 18)
-
 type TgUsdBorrowContextProps = {
   children: ReactNode
 }
@@ -53,10 +51,10 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
     if (marketData?.collateralInfos) {
       const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice || 0n
       const futureDebt = marketData?.debtInfos?.userDebt || 0n
-      const futureDepositedInDollar = (marketData?.collateralInfos?.positionCollateralAmount * collateralPriceRaw) / DECIMALS
+      const futureDeposited = marketData?.collateralInfos?.positionCollateralAmount
       const maxLTV = marketData?.constants.maxLTV / BigInt(10 ** 3)
 
-      const maxBorrowable = (futureDepositedInDollar * maxLTV) / BigInt(100n) - (futureDebt / collateralPriceRaw) * BigInt(10n ** 18n)
+      const maxBorrowable = (futureDeposited * maxLTV) / BigInt(100n) - (futureDebt * BigInt(10n ** 18n)) / collateralPriceRaw
 
       return maxBorrowable
     }

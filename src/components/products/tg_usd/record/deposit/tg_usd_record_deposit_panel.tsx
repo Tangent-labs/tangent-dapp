@@ -151,7 +151,6 @@ export default function TgUsdDepositPanel() {
       <div className="flex w-full items-end justify-between gap-2">
         <span className="text-[20px] font-bold">Deposit {collateralInfo?.symbol}</span>
         <span className="text-xs text-subtitle">
-          {" "}
           Max: {formatBigInt(marketData?.collateralBalance, 18, 2)} {collateralInfo?.symbol}
         </span>
       </div>

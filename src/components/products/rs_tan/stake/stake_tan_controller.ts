@@ -5,7 +5,7 @@ import stakeUI from "../../../../abi/tgusd/sgUSDUI.json"
 import { RSTAN_CONTRACT } from "../rs_tan_repository"
 import { StakingInfo } from "../rstan_types"
 
-export async function getTgUsdStakeOnChainData(currentAddress: Address | undefined) {
+export async function getTanStakeOnChainData(currentAddress: Address | undefined) {
   return await executeChainViewUnique<StakingInfo>(stakeUI.abi as Abi, stakeUI.bytecode as Hex, [
     currentAddress,
     RSTAN_CONTRACT.TAN,

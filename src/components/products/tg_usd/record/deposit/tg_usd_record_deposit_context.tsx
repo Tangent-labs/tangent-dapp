@@ -505,13 +505,13 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
       if (marketData?.collateralInfos) {
         const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice || 0n
         const futureDebt = marketData?.debtInfos?.userDebt || 0n
-
         const futureDepositedInDollar =
           (marketData?.collateralInfos?.positionCollateralAmount * collateralPriceRaw) / DECIMALS +
           ((depositWeiValue || 0n) * toBigInt(depositAssetInfo?.price || 0, depositAssetInfo?.decimals || 18)) / DECIMALS
 
         const maxLTV = marketData?.constants.maxLTV / BigInt(10 ** 3)
-        const maxBorrowable = (futureDepositedInDollar * maxLTV) / BigInt(100n) - futureDebt / collateralPriceRaw
+
+        const maxBorrowable = (futureDepositedInDollar * maxLTV) / BigInt(100n) - (futureDebt / collateralPriceRaw) * BigInt(10n ** 18n)
 
         return maxBorrowable
       }

@@ -38,7 +38,6 @@ export default function TgUsdRepayPanel() {
     actionZapRepay,
     actionApprove,
     onClickMax,
-    setRepayWeiValue,
     repayWeiValue,
     repayAsset,
     maxRepayableValue,
@@ -53,6 +52,7 @@ export default function TgUsdRepayPanel() {
     tgUdsRepayedValue,
     isDebtBelowThreshold,
     repayAssetInfo,
+    marketData,
   } = useTgUsdRepayContext()
 
   const AssetSelectTemplate = (option: {
@@ -153,7 +153,7 @@ export default function TgUsdRepayPanel() {
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
           <span className="text-[20px] font-bold">Repay debt</span>
-          <span className="text-xs text-subtitle"> Max: {formatBigInt(maxRepayableValue, repayAssetInfo?.decimals || 18, 2)} tgUSD</span>
+          <span className="text-xs text-subtitle"> Max: {formatBigInt(marketData?.debtInfos?.userDebt, 18, 2)} tgUSD</span>
         </div>
 
         <RepayInput
@@ -165,7 +165,7 @@ export default function TgUsdRepayPanel() {
           depositAsset={repayAssetInfo || tgUSDInfo}
           balance={maxRepayableValue}
           displayBalance={true}
-          setMaxBalance={() => setRepayWeiValue(maxRepayableValue)}
+          setMaxBalance={() => handleRepayValueChange(maxRepayableValue)}
           displaySliderInput={true}
           percentage={percentage}
           setPercentage={setPercentage}

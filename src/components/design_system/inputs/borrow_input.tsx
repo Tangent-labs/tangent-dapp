@@ -8,15 +8,15 @@ import { cn } from "@/lib/utils"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { IconThunder } from "@/components/icons/icon_thunder"
 
-type DepositInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  depositAsset?: AssetDataPriced
+type BorrowInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+  borrowAsset?: AssetDataPriced
   className?: string
-  depositAmount?: bigint
+  borrowAmount?: bigint
   balance?: bigint
   disabled?: boolean
   labelDeposit?: string
   depositSelect: ReactNode
-  depositInput?: ReactNode
+  borrowInput?: ReactNode
   onValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
   displayBalance?: boolean
@@ -27,11 +27,11 @@ type DepositInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   displaySliderInput?: boolean
 }
 
-export function DepositInput({
+export function BorrowInput({
   className,
-  depositAmount,
+  borrowAmount,
   balance,
-  depositAsset,
+  borrowAsset,
   labelDeposit = "You Deposit",
   setMaxBalance,
   onValueChange,
@@ -44,15 +44,15 @@ export function DepositInput({
   disabled,
   setPercentage,
   ...props
-}: DepositInputProps) {
+}: BorrowInputProps) {
   const balanceNumber = useMemo(() => {
     if (balance) {
-      return Number(formatUnits(balance, depositAsset?.decimals || 18))
+      return Number(formatUnits(balance, borrowAsset?.decimals || 18))
     }
     return 0
-  }, [balance, depositAsset])
+  }, [balance, borrowAsset])
 
-  const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 18) : "")
+  const [innerValue, setInnerValue] = useState<string>(borrowAmount !== undefined ? formatUnits(borrowAmount, borrowAsset?.decimals || 18) : "")
   const [isUserInput, setIsUserInput] = useState(false)
 
   const formatDisplayValue = (value: string | number): string => {
@@ -69,28 +69,28 @@ export function DepositInput({
       setPercentage(newPercentage)
       const newValue = newPercentage !== 0 ? Number(((newPercentage / 100) * balanceNumber).toFixed(0)) : 0
       setInnerValue(newValue.toFixed(0))
-      onValueChange(!!newValue ? toBigInt(newValue, depositAsset?.decimals || 18) : undefined)
+      onValueChange(!!newValue ? toBigInt(newValue, borrowAsset?.decimals || 18) : undefined)
     }
   }
 
   useEffect(() => {
-    if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
-      const updatedValue = formatUnits(depositAmount, depositAsset.decimals)
+    if (borrowAmount !== undefined && borrowAsset?.decimals !== undefined) {
+      const updatedValue = formatUnits(borrowAmount, borrowAsset.decimals)
       setInnerValue(formatDisplayValue(updatedValue))
       setIsUserInput(false)
     }
-  }, [depositAmount, depositAsset])
+  }, [borrowAmount, borrowAsset])
 
   useEffect(() => {
-    if (!depositAsset?.decimals || !isUserInput) return
+    if (!borrowAsset?.decimals || !isUserInput) return
 
     const handler = setTimeout(() => {
-      const val = innerValue ? toBigInt(Number(innerValue), depositAsset.decimals) : undefined
+      const val = innerValue ? toBigInt(Number(innerValue), borrowAsset.decimals) : undefined
       onValueChange(val)
     }, 500)
 
     return () => clearTimeout(handler)
-  }, [innerValue, depositAsset, isUserInput, onValueChange])
+  }, [innerValue, borrowAsset, isUserInput, onValueChange])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
@@ -103,9 +103,9 @@ export function DepositInput({
   }
 
   const dollarDepositDisplay = useMemo(() => {
-    const val = Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals || 0)) * (depositAsset?.price || 0)
+    const val = Number(formatUnits(borrowAmount || BigInt(0), borrowAsset?.decimals || 0)) * (borrowAsset?.price || 0)
     return val?.toFixed(2) || "-"
-  }, [depositAmount, depositAsset])
+  }, [borrowAmount, borrowAsset])
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
@@ -146,7 +146,7 @@ export function DepositInput({
           {displayBalance && (
             <div className="flex cursor-pointer items-center">
               <button
-                className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
+                className="ml-1 flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
                 type="button"
                 onClick={() => {
                   if (setMaxBalance) {

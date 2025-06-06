@@ -6,7 +6,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import FormButtons from "@/components/design_system/form/form_actions"
 import { useTgUsdBorrowContext } from "./tg_usd_record_borrow_context"
 import { formatBigInt } from "@/lib/number_formatter"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
 
 export default function TgUsdBorrowPanel() {
   const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, borrowPercentage, maxBorrowableValue } = useTgUsdBorrowContext()
@@ -32,16 +32,16 @@ export default function TgUsdBorrowPanel() {
           <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 2)} tgUSD</span>
         </div>
 
-        <DepositInput
+        <BorrowInput
           displaySliderInput={true}
-          depositAmount={borrowWeiValue}
+          borrowAmount={borrowWeiValue}
           labelDeposit="You borrow"
           depositSelect={<BorrowAssetDisplay />}
           disabled={!canInteract}
-          depositAsset={tgUSDInfo}
-          setMaxBalance={() => {}}
+          borrowAsset={tgUSDInfo}
+          setMaxBalance={() => setBorrowWeiValue(maxBorrowableValue)}
           balance={maxBorrowableValue}
-          displayBalance={false}
+          displayBalance={true}
           onValueChange={(value: bigint | undefined) => {
             setBorrowWeiValue(value)
           }}

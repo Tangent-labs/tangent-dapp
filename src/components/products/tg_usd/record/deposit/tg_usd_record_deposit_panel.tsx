@@ -21,6 +21,7 @@ import ButtonTab from "@/components/design_system/inputs/button_tab"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
 
 export default function TgUsdDepositPanel() {
   const {
@@ -147,8 +148,12 @@ export default function TgUsdDepositPanel() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex w-full items-end justify-between gap-2">
         <span className="text-[20px] font-bold">Deposit {collateralInfo?.symbol}</span>
+        <span className="text-xs text-subtitle">
+          {" "}
+          Max: {formatBigInt(marketData?.collateralBalance, 18, 2)} {collateralInfo?.symbol}
+        </span>
       </div>
 
       <DepositInput
@@ -158,7 +163,7 @@ export default function TgUsdDepositPanel() {
         disabled={!canInteract}
         isLoading={isDepositLoading}
         depositAsset={depositAssetInfo || collateralInfo}
-        balance={!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance}
+        balance={balanceAllowanceData?.balance || marketData?.collateralBalance}
         isZapping={!!depositAsset && depositAsset !== collateralInfo?.name}
         onValueChange={handleDepositChange}
         percentage={depositSliderPercent}
@@ -208,15 +213,15 @@ export default function TgUsdDepositPanel() {
             <span className="text-[20px] font-bold">Borrow tgUSD</span>
             <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 2)} tgUSD</span>
           </div>
-          <DepositInput
+          <BorrowInput
             displaySliderInput={true}
-            depositAmount={borrowWeiValue}
+            borrowAmount={borrowWeiValue}
             labelDeposit="You borrow"
             depositSelect={<BorrowAssetDisplay />}
             disabled={!canInteract}
-            depositAsset={tgUSDInfo}
-            setMaxBalance={() => {}}
-            displayBalance={false}
+            borrowAsset={tgUSDInfo}
+            setMaxBalance={() => setBorrowWeiValue(maxBorrowableValue)}
+            displayBalance={true}
             balance={maxBorrowableValue}
             percentage={borrowSliderPercent}
             setPercentage={setBorrowSliderPercent}

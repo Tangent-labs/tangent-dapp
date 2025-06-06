@@ -16,11 +16,11 @@ export function getDepositFormState(
   balanceAllowanceData?: BalanceAllowanceData,
   isDepositLoading?: boolean
 ) {
-  const isZapMode = !!depositAssetInfo && !!balanceAllowanceData && depositAssetInfo?.address !== collateralInfo?.address
+  const isZapMode = !!depositAssetInfo && depositAssetInfo?.address !== collateralInfo?.address
 
   const reasons: string[] = []
   const isApproved =
-    (!depositAssetInfo && (depositWeiValue || 0n) <= (marketData?.collateralAllowance || 0n)) ||
+    (!isZapMode && (depositWeiValue || 0n) <= (marketData?.collateralAllowance || 0n)) ||
     (isZapMode && (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n))
 
   if (isDepositLoading) {

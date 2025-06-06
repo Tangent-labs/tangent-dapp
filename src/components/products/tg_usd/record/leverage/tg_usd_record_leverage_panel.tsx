@@ -131,7 +131,7 @@ export default function TgUsdLeveragePanel() {
       <div className="flex justify-end gap-2">
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-400">Save gas</span>
-          <Switch checked={isStaking} onCheckedChange={(v) => setIsStaking(v)} />
+          <Switch checked={!isStaking} onCheckedChange={() => setIsStaking(!isStaking)} />
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-400">Leverage only</span>

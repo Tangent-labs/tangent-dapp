@@ -87,7 +87,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  const [isStaking, setIsStaking] = useState<boolean>(false)
+  const [isStaking, setIsStaking] = useState<boolean>(true)
 
   const [isDepositDisabled, setIsDepositDisabled] = useState<boolean>(false)
 

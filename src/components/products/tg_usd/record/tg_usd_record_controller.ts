@@ -140,9 +140,9 @@ export function getComputedFutureLoanData(
 
   return {
     collateralValue: formatDollar(futureDepositedDollar, 0),
-    debt: formatDollarBigInt(futureDebt, collateralInfo.decimals, collateralInfo.displayDecimals),
-    health: formatNumber(etherValueToNumber(health), 2),
-    ltv: formatNumber(collateralValueToNumber(ltv || 0), 2) + "%",
+    debt: futureDebt > 0n ? formatDollarBigInt(futureDebt, collateralInfo.decimals, collateralInfo.displayDecimals) : "$0",
+    health: health > 0n ? formatNumber(etherValueToNumber(health), 2) : "0",
+    ltv: ltv > 0 ? formatNumber(collateralValueToNumber(ltv || 0), 2) + "%" : "0%",
     maxBorrowable: formatDollarBigInt(maxBorrowable, collateralInfo.decimals, 0),
     maxWithdrawable: formatDollarBigInt(maxWithDrawable, collateralInfo.decimals, 0),
   } as TgUsdMarketLoanDisplayData
@@ -218,10 +218,17 @@ export function getMarketApr(marketAddress: Address) {
 }
 
 export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: string) => {
+  let tokenAddress
+
   try {
-    const tokenAddress = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)
-      ? tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)?.address
-      : undefined
+    if (depositAsset === "ETH") {
+      tokenAddress = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address
+    } else {
+      tokenAddress = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)
+        ? tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)?.address
+        : undefined
+    }
+
     if (tokenAddress) {
       const data = await getSwapAssetPrice(tokenAddress)
       return data

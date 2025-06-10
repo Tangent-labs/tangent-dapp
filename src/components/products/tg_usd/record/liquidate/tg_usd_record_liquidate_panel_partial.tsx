@@ -58,7 +58,7 @@ export default function TgUsdLiquidatePanelPartial() {
         percentage={liquidablePercentage}
         setPercentage={setLiquidablePercentage}
         depositAsset={collateralInfo}
-        setMaxBalance={() => {}}
+        setMaxBalance={() => handleLiquidateValueChange(maxLiquidable)}
         balance={maxLiquidable}
         onValueChange={handleLiquidateValueChange}
       />

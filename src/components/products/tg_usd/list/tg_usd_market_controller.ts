@@ -2,7 +2,7 @@ import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
 import { ChainViewMarketList, ChainViewMarketRow, TgUsdGlobalData, TgUsdMarketData, TgUsdMarketDataUser } from "../tg_usd_type"
 import { formatBigInt, formatDollar, formatPercent } from "@/lib/number_formatter"
 import { TGUSD_CONTRACT, tgUsdMarkets } from "../tg_usd_repository"
-import { Abi, Address, Hex, parseUnits } from "viem"
+import { Abi, Address, formatUnits, Hex, parseUnits } from "viem"
 import MarketListUI from "@/abi/tgusd/MarketListUI.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
 
@@ -18,6 +18,16 @@ export const getTgUsdMarketsData = async (address: Address | undefined) => {
   ])
 }
 
+export const transformMarketData = (data: ChainViewMarketList) => {
+  const filteredData = data.rowInfos.map((el: ChainViewMarketRow) => {
+    const staticMarketData = tgUsdMarkets.find((m) => m.marketAddress === el.marketAddress)
+
+    return { ...el, marketType: staticMarketData?.marketType }
+  })
+
+  return filteredData
+}
+
 export function getMarketDatas() {
   return tgUsdMarkets.map((market) => ({
     network: "mainnet",
@@ -26,7 +36,7 @@ export function getMarketDatas() {
     collateral: market.marketName,
     apr: {
       details: {
-        baseApr: 0.03,
+        baseApr: 0.3,
         boostApr: 0.02,
         type: "variable",
       },
@@ -89,10 +99,10 @@ function transformMarketDataToRow(data: TgUsdMarketData & TgUsdMarketDataUser, o
       {
         key: "tvl",
         label: "Tvl",
-        value: formatDollar(formatBigInt(onChainRow?.collateralInfos?.totalCollateralUSDValue, 18, 2)),
+        value: formatDollar(formatUnits(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0n, 18)),
         raw: Number(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0),
       },
-      { key: "borrowed", label: "Borrowed", value: formatBigInt(onChainRow?.debtInfos?.totalDebt, 18, 0) || "-", raw: data.borrowed },
+      { key: "borrowed", label: "Borrowed", value: formatDollar(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18)) || "-", raw: data.borrowed },
       { key: "cap", label: "Cap", value: formatBigInt(onChainRow?.constants?.maxMarketDebt, 18, 0) || "-", raw: data.cap },
     ],
   }
@@ -100,8 +110,18 @@ function transformMarketDataToRow(data: TgUsdMarketData & TgUsdMarketDataUser, o
 
 export const tgUsdListHeaders: ListHeaderData[] = [
   { label: "Collateral", key: "collateral" },
-  { label: "APR", key: "apr" },
-  { label: "Borrow Rate", key: "borrowRate" },
+  {
+    label: "APR",
+    key: "apr",
+    indicator:
+      "Annualized cost of borrowing, expressed as a percentage, which includes the interest rate and any additional fees or costs associated with the loan",
+  },
+  {
+    label: "Borrow Rate",
+    key: "borrowRate",
+    indicator:
+      "Interest rate charged by a lender to a borrower for the use of borrowed funds, typically expressed as a percentage of the principal loan amount.",
+  },
   { label: "TVL", key: "tvl" },
   { label: "Borrowed", key: "borrowed" },
   { label: "Cap", key: "cap" },

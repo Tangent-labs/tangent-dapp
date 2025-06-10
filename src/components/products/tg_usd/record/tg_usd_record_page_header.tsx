@@ -10,7 +10,6 @@ type TgUsdRecordPageHeaderProps = React.ButtonHTMLAttributes<HTMLDivElement>
 
 export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeaderProps) {
   const { collateralInfo, marketDisplayData, marketData, apr } = useTgUsdRecordContext()
-
   const router = useRouter()
 
   return (

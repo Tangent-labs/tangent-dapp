@@ -2,8 +2,8 @@
 
 import { ListRowData } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { getMarketDatas, getTgUsdMarketsData, transformToRows, transformGlobalData } from "./tg_usd_market_controller"
-import { ChainViewMarketList, TgUsdGlobalData } from "../tg_usd_type"
+import { getMarketDatas, getTgUsdMarketsData, transformToRows, transformGlobalData, transformMarketData } from "./tg_usd_market_controller"
+import { ChainViewMarketList, ChainViewMarketRow, TgUsdGlobalData } from "../tg_usd_type"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
 type TgUsdMaketListContextProps = {
@@ -15,6 +15,7 @@ type TgUsdMaketListContextValues = {
   globalData: TgUsdGlobalData
   searchValue: string | null
   setSearchValue: (value: string | null) => void
+  marketData: ChainViewMarketRow[]
 }
 
 export const TgUsdMaketListContext = createContext<TgUsdMaketListContextValues | undefined>(undefined)
@@ -51,11 +52,20 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
     return transformGlobalData(onChainData)
   }, [onChainData])
 
+  const marketData = useMemo<ChainViewMarketRow[]>(() => {
+    if (onChainData) {
+      return transformMarketData(onChainData)
+    }
+
+    return []
+  }, [onChainData])
+
   const contextValue: TgUsdMaketListContextValues = {
     displayRows,
     globalData,
     searchValue,
     setSearchValue,
+    marketData,
   }
 
   return <TgUsdMaketListContext.Provider value={contextValue}>{children}</TgUsdMaketListContext.Provider>

@@ -21,6 +21,7 @@ type TgUsdLiquidateContextValues = {
   setLiquidateWeiValue: (arg: bigint | undefined) => void
   isFullLiquidation: boolean
   setIsFullLiquidation: (arg: boolean) => void
+  onChangeIsFullLiquidation: (arg: boolean) => void
   maxLiquidable: bigint
   liquidablePercentage: number
   setLiquidablePercentage: (arg: number) => void
@@ -64,6 +65,15 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
   const [repayWeiValue, setRepayWeiValue] = useState<bigint | undefined>()
 
   const [tgUSDReceivedValue, setTgUSDReceivedValue] = useState<bigint | undefined>()
+
+  const onChangeIsFullLiquidation = (liquidateFull: boolean) => {
+    setIsFullLiquidation(liquidateFull)
+
+    if (!liquidateFull) {
+      setLiquidateWeiValue(0n)
+      setLiquidablePercentage(0)
+    }
+  }
 
   useEffect(() => {
     if (isFullLiquidation) {
@@ -131,10 +141,16 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
 
   const maxLiquidable = useMemo(() => {
     if (marketData) {
-      return marketData?.collateralInfos?.positionCollateralAmount
+      const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice
+      const futureDebt = marketData?.debtInfos?.userDebt - (repayWeiValue || 0n)
+      const futureDeposited = BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n)
+      const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
+      const maxWithDrawable = collateralPriceRaw !== 0n ? futureDeposited - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
+
+      return maxWithDrawable
     }
     return 0n
-  }, [marketDisplayData])
+  }, [marketDisplayData, repayWeiValue])
 
   const maxRepayable = useMemo(() => {
     if (marketData) {
@@ -196,6 +212,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
     setRepayablePercentage,
     maxRepayable,
     handleLiquidateValueChange,
+    onChangeIsFullLiquidation,
   }
 
   return <TgUsdLiquidateContext.Provider value={contextValue}>{children}</TgUsdLiquidateContext.Provider>

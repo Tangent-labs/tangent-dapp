@@ -7,7 +7,7 @@ import TgUsdLiquidatePanelFull from "./tg_usd_record_liquidate_panel_full"
 import TgUsdLiquidatePanelPartial from "./tg_usd_record_liquidate_panel_partial"
 
 export default function TgUsdLiquidatePanel() {
-  const { actionLiquidate, formState, isFullLiquidation, setIsFullLiquidation } = useTgUsdLiquidateContext()
+  const { actionLiquidate, formState, isFullLiquidation, onChangeIsFullLiquidation } = useTgUsdLiquidateContext()
 
   return (
     <div className="flex flex-col gap-2">
@@ -15,7 +15,7 @@ export default function TgUsdLiquidatePanel() {
         <div className="flex justify-end gap-2">
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-400">Liquidate all the position</span>
-            <Switch checked={isFullLiquidation} onCheckedChange={(v) => setIsFullLiquidation(v)} />
+            <Switch checked={isFullLiquidation} onCheckedChange={(v) => onChangeIsFullLiquidation(v)} />
           </div>
         </div>
         {isFullLiquidation ? <TgUsdLiquidatePanelFull /> : <TgUsdLiquidatePanelPartial />}

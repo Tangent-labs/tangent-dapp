@@ -304,7 +304,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   const maxWithdrawable = useMemo(() => {
     if (marketData) {
       const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice
-      const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n)
+      const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n) - (repayWeiValue || 0n)
       const futureDeposited = BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n)
       const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
       const maxWithDrawable = collateralPriceRaw !== 0n ? futureDeposited - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
@@ -313,7 +313,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     }
 
     return 0n
-  }, [marketData])
+  }, [marketData, repayWeiValue])
 
   const onClickMax = (isChecked: boolean) => {
     if (isChecked) {

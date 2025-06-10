@@ -6,7 +6,7 @@ import { ExistingAsset } from "@/types"
 
 interface TokenImageProps extends React.HTMLAttributes<HTMLImageElement> {
   token?: ExistingAsset
-  size: 16 | 20 | 24 | 32 | 48 | 64 | 96 | 128 | 256 | 384
+  size: 12 | 16 | 20 | 24 | 32 | 48 | 64 | 96 | 128 | 256 | 384
 }
 
 interface ImageWithFallbackProps extends Omit<ImageProps, "src"> {
@@ -38,8 +38,8 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
 }
 
 export default function TokenImage({ token, size, ...props }: TokenImageProps) {
-  const fallbackSrc = "/medias/fallback_token_image.webp"
-  const url = token ? `/medias/tokens/${token}.webp` : fallbackSrc
+  const fallbackSrc = "/medias/tokens/crvUSD-USDC.webp"
+  const url = token ? `/medias/tokens/${token}.webp` : "/medias/tokens/crvUSD-USDC.webp"
 
   return <ImageWithFallback {...props} fallback={fallbackSrc} src={url} alt={token || "Token image"} width={size} height={size} />
 }

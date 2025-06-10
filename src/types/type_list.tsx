@@ -15,6 +15,7 @@ export type ListState = {
 export type ListHeaderData = {
   label?: string
   key: string
+  indicator?: string
 }
 
 export type ListRowData = {

@@ -56,13 +56,13 @@ export type TgUsdAirdropData = {
 }
 
 export type TgUsdGlobalData = {
-  tgUsdPrice: string // $
+  tgUsdPrice: string
   tgUsdSupply: string
-  sgUsdPrice: string // $
+  sgUsdPrice: string
   sgUsdSupply: string
-  APY: string // %
-  globalCr: string // %
-  globalTvl: string // $
+  APY: string
+  globalCr: string
+  globalTvl: string
 }
 
 export type TgUsdMarketType = "Convex_CRV" | "Convex_FXN"
@@ -119,11 +119,12 @@ export interface ChainViewMarketRow {
   obas: OutputBalanceAllowances[]
   rewardTokens: ERC20StaticInfos[]
   sociabilization: SociabilizationData
+  marketType?: TgUsdMarketType
 }
 
 export interface CollateralInfos {
   collateralToken: ERC20StaticInfos
-  totalCollateralUSDValue: string
+  totalCollateralUSDValue: bigint
   totalCollateralAmount: string
   collateralUSDPrice: bigint
   positionCollateralAmount: bigint
@@ -136,7 +137,7 @@ export interface DebtInfos {
   positionDebt: bigint
   userDebt: bigint
   healthRatio: string
-  currentBorrowRate: string
+  currentBorrowRate: bigint
   futureBorrowRate: string
   currentRewardCut: string
   futureRewardCut: string

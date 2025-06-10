@@ -3,12 +3,14 @@
 import { ListHeaderData, ListSort, SortedState } from "@/types"
 import ListRowDisposition from "@/components/design_system/list/list_row_disposition"
 import { IconSortHeader } from "@/components/icons/icon_sort_header"
+import TgHoverCard from "../structure/tg_hover_card"
 
 interface ListHeaderProps {
   headers: ListHeaderData[]
   className?: string
   activeSort?: ListSort
   onSort?: (key: string) => void
+  indicator?: string
   rowDisposition?: React.ComponentType<{ children: React.ReactNode[] }> // Simplified custom disposition component
 }
 
@@ -17,16 +19,16 @@ interface HeaderDisplayProps {
   sort: SortedState
   onSort?: (key: string) => void
   field: string
+  indicator?: string
 }
 
-const HeaderDisplay = ({ label, sort = "none", onSort, field }: HeaderDisplayProps) => {
+const HeaderDisplay = ({ label, sort = "none", onSort, field, indicator }: HeaderDisplayProps) => {
   return (
-    <div className="flex-1">
-      <button className="flex w-full justify-center gap-2" type="button" onClick={() => onSort && onSort(field)}>
-        <span>{label} </span>
-        <div className="text-row-tonic">{label && label !== "" && <IconSortHeader sort={sort} />}</div>
-      </button>
-    </div>
+    <button className="flex w-full flex-1 items-center justify-center gap-2" onClick={() => onSort && onSort(field)}>
+      <span>{label} </span>
+      <TgHoverCard title={label as string}>{indicator}</TgHoverCard>
+      <div className="text-row-tonic">{label && label !== "" && <IconSortHeader sort={sort} />}</div>
+    </button>
   )
 }
 
@@ -41,6 +43,7 @@ const ListHeader = ({ headers, className = "", activeSort, onSort, rowDispositio
             sort={(activeSort?.key == headers?.at(0)?.key && activeSort?.direction) || "none"}
             field={headers?.at(0)?.key || ""}
             onSort={onSort}
+            indicator={headers?.at(0)?.indicator}
           />
         )}
         {!!headers?.at(1)?.key && (
@@ -50,6 +53,7 @@ const ListHeader = ({ headers, className = "", activeSort, onSort, rowDispositio
             sort={(activeSort?.key == headers?.at(1)?.key && activeSort?.direction) || "none"}
             field={headers?.at(1)?.key || ""}
             onSort={onSort}
+            indicator={headers?.at(1)?.indicator}
           />
         )}
         <>
@@ -62,6 +66,7 @@ const ListHeader = ({ headers, className = "", activeSort, onSort, rowDispositio
                 sort={(activeSort?.key == header.key && activeSort?.direction) || "none"}
                 field={header.key}
                 onSort={onSort}
+                indicator={header.indicator}
               />
             ))}
         </>

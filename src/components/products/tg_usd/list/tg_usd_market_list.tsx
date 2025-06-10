@@ -7,7 +7,6 @@ import { ExistingAsset, ListState } from "@/types"
 import ListHeader from "@/components/design_system/list/list_header"
 import ListRow from "@/components/design_system/list/list_row"
 import ListAsset from "@/components/design_system/list/list_asset"
-import ListAPR from "@/components/design_system/list/list_apr"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { formatDollar } from "@/lib/number_formatter"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -15,6 +14,8 @@ import { useRouter } from "next/navigation"
 import Image from "next/image"
 import InputSearch from "@/components/design_system/inputs/input_search"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
+import MarketListAPR from "@/components/design_system/list/market_list_apr"
+import { cn } from "@/lib/utils"
 
 const listeState: ListState = {
   search: undefined,
@@ -124,7 +125,7 @@ export default function TgUsdMarketList() {
 
 export function TgUsdMarketListInner() {
   const { headers, listState, udpateSort } = useListContext()
-  const { displayRows } = useTgUsdMaketListContext()
+  const { displayRows, marketData } = useTgUsdMaketListContext()
   const router = useRouter()
 
   return (
@@ -133,9 +134,18 @@ export function TgUsdMarketListInner() {
         <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
       {displayRows?.map((item, index) => (
-        <ListRow className="my-2" key={index} navigate={() => router.push(item.token)}>
-          <ListAsset name={item.name} token={item.token} assetsEarned={[]} />
-          <ListAPR apr={item.apr.current} projectedApr={item.apr.projected} />
+        <ListRow className={cn("my-2", !!marketData.length && !!displayRows ? "" : "shimmer")} key={index} navigate={() => router.push(item.token)}>
+          <ListAsset
+            name={item.name}
+            token={item.token}
+            marketData={marketData.find(
+              (el) =>
+                el.collateralInfos.collateralToken.symbol.replace("-f", "").replace("-", "").replace("_", "").toUpperCase() ===
+                item.token.replace("-f", "").replace("-", "").replace("_", "").toUpperCase()
+            )}
+            assetsEarned={[]}
+          />
+          <MarketListAPR apr={item.apr.current} projectedApr={item.apr.projected} />
           <>
             {item.indicators.map((i) => (
               <div key={i.key} className="flex basis-[48%] flex-col items-center text-[20px] leading-5 md:flex-1">

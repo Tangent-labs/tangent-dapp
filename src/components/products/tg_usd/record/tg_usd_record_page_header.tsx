@@ -62,7 +62,7 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
         apr={apr}
         indicators={[
           {
-            title: "APR",
+            title: "vAPR",
             value: marketDisplayData.rewardsCutCurrent,
             subValue: marketDisplayData.rewardsCutNext,
           },

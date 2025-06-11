@@ -138,7 +138,7 @@ export function DepositReceiveInput({
               placeholder="Amount"
               onInput={handleInputChange}
               className={cn(
-                "min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
+                "min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
               )}
             />
           </div>
@@ -152,7 +152,7 @@ export function DepositReceiveInput({
               <IconWallet className="w-6" />
 
               <button
-                className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
+                className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
                 type="button"
                 onClick={() => {
                   if (setMaxBalance) setMaxBalance()

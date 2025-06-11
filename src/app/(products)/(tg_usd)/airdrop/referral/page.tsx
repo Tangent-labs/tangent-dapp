@@ -21,14 +21,14 @@ const Ranking = () => {
         { rank: 4, address: "0xAcCb237A2967a02A39Fb7FB8AcCb237A2B62af72", pts: 1 },
       ].map((el) => (
         <div key={el?.address} className="my-1 flex w-full items-start justify-start rounded-[10px] bg-white bg-opacity-[5%] px-2 py-1 backdrop-blur-[60px]">
-          <div className="flex w-1/3 items-center justify-start gap-1 font-bold">
+          <div className="flex w-1/3 items-center justify-start gap-1 font-semibold">
             {el?.rank === 1 && <IconTrophy className="w-5 fill-yellow-300"></IconTrophy>}
             {el?.rank === 2 && <IconTrophy className="w-5 fill-gray-500"></IconTrophy>}
             {el?.rank === 3 && <IconTrophy className="w-5 fill-amber-800"></IconTrophy>}
             {el.rank}
           </div>
-          <div className="flex w-1/3 items-start justify-start font-bold">{el.address.substring(0, 5) + "..."}</div>
-          <div className="flex w-1/3 items-start justify-start font-bold">{el.pts}</div>
+          <div className="flex w-1/3 items-start justify-start font-semibold">{el.address.substring(0, 5) + "..."}</div>
+          <div className="flex w-1/3 items-start justify-start font-semibold">{el.pts}</div>
         </div>
       ))}
     </>
@@ -39,31 +39,31 @@ export default async function TgUsdReferralPage() {
   return (
     <div className="flex w-full flex-col items-center justify-center">
       <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
-        <div className="mr-auto text-lg font-bold text-white">Your referral</div>
+        <div className="mr-auto text-lg font-semibold text-white">Your referral</div>
 
         <Divider className="h-0.5 w-full bg-white/10" />
 
         <div className="flex w-full items-center justify-between">
           <div className="flex w-full flex-col items-center justify-center">
             <span className="text-sm text-subtitle">Referees points</span>
-            <span className="text-lg font-bold">10,500</span>
+            <span className="text-lg font-semibold">10,500</span>
           </div>
           <div className="flex w-full flex-col items-center justify-center">
             <span className="text-sm text-subtitle">Your Referees</span>
-            <span className="text-lg font-bold">12</span>
+            <span className="text-lg font-semibold">12</span>
           </div>
           <div className="flex w-full flex-col items-center justify-center">
             <span className="text-sm text-subtitle">Your code</span>
-            <span className="text-lg font-bold">YHD6D87E</span>
+            <span className="text-lg font-semibold">YHD6D87E</span>
           </div>
           <div className="flex w-full flex-col items-center justify-center">
-            <Button className="flex w-32 justify-center font-bold">Share</Button>
+            <Button className="flex w-32 justify-center font-semibold">Share</Button>
           </div>
         </div>
       </div>
 
       <div className="my-4 flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
-        <div className="mr-auto text-lg font-bold text-white">Airdrop referral</div>
+        <div className="mr-auto text-lg font-semibold text-white">Airdrop referral</div>
 
         <Divider className="h-0.5 w-full bg-white/10" />
 
@@ -71,7 +71,7 @@ export default async function TgUsdReferralPage() {
           <div className="flex w-full flex-col items-center justify-center rounded-[10px] p-3 backdrop-blur-[60px]">
             <IconShare></IconShare>
 
-            <span className="text-lg font-bold">Share link</span>
+            <span className="text-lg font-semibold">Share link</span>
             <span className="mt-2 text-center text-sm text-subtitle">
               Connect a wallet to generate a referral link. Invite your friends to register via your referral link.
             </span>
@@ -79,7 +79,7 @@ export default async function TgUsdReferralPage() {
 
           <div className="flex w-full flex-col items-center justify-center rounded-[10px] p-3 backdrop-blur-[60px]">
             <IconCompleted></IconCompleted>
-            <span className="text-lg font-bold">Complete tasks</span>
+            <span className="text-lg font-semibold">Complete tasks</span>
             <span className="mt-2 text-center text-sm text-subtitle">
               Ask your friends to complete tasks so that they earn points to be eligible for the airdrop.
             </span>
@@ -87,7 +87,7 @@ export default async function TgUsdReferralPage() {
 
           <div className="flex w-full flex-col items-center justify-center rounded-[10px] p-3 backdrop-blur-[60px]">
             <IconTrophy className="w-12 fill-row-tonic"></IconTrophy>
-            <span className="text-lg font-bold">Earn points</span>
+            <span className="text-lg font-semibold">Earn points</span>
             <span className="mt-2 text-center text-sm text-subtitle">
               Referrer will earn 10% of referees points, referees will have a x1.2 boost on all tasks points.
             </span>
@@ -97,7 +97,7 @@ export default async function TgUsdReferralPage() {
 
       <div className="my-4 flex w-full items-center justify-between gap-4">
         <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
-          <div className="mr-auto text-lg font-bold text-white">Referral ranking</div>
+          <div className="mr-auto text-lg font-semibold text-white">Referral ranking</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
 
@@ -105,7 +105,7 @@ export default async function TgUsdReferralPage() {
         </div>
 
         <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
-          <div className="mr-auto text-lg font-bold text-white">My referrees ranking</div>
+          <div className="mr-auto text-lg font-semibold text-white">My referrees ranking</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
 
@@ -113,7 +113,7 @@ export default async function TgUsdReferralPage() {
         </div>
 
         <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
-          <div className="mr-auto text-lg font-bold text-white">Points ranking</div>
+          <div className="mr-auto text-lg font-semibold text-white">Points ranking</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
 

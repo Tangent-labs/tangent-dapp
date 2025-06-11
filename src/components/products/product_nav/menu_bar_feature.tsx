@@ -10,14 +10,14 @@ export default function MenuBarFeature() {
   const router = useRouter()
 
   return (
-    <header className="sticky top-0 z-50 flex h-16 w-full backdrop-blur-[60px]">
+    <header className="sticky top-0 z-50 flex h-[80px] w-full font-roobert backdrop-blur-[60px]">
       <div className="container mx-auto flex w-full items-center justify-between">
         <div onClick={() => router.push("/")} className="flex cursor-pointer items-center gap-2 text-[20px] text-white">
           <Logo />
           Tangent
         </div>
 
-        <div className="flex items-center gap-4 md:gap-6">
+        <div className="flex items-center gap-4 font-roobert md:gap-6">
           <nav className="flex items-center gap-4 md:gap-10">
             <div className="flex cursor-pointer items-center">
               <DropdownMenu label="Dashboard">
@@ -113,12 +113,10 @@ export default function MenuBarFeature() {
               </DropdownMenu>
             </div>
           </nav>
-          <Button className="h-10 font-bold text-white">Buy tgUSD</Button>
+          <Button className="h-10 font-roobert font-semibold text-white">Buy tgUSD</Button>
         </div>
 
-        <div className="flex items-center gap-3">
-          <WalletConnexionButton />
-        </div>
+        <WalletConnexionButton />
       </div>
     </header>
   )

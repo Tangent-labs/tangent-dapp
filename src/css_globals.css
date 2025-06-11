@@ -86,7 +86,7 @@
 @font-face {
   font-family: "Roobert";
   src: url("/fonts/RoobertTRIAL-SemiBold-BF67243fd54213d.otf") format("opentype");
-  font-weight: 600;
+  font-weight: 650;
   font-style: normal;
   font-display: swap;
 }
@@ -192,7 +192,6 @@
   body {
     color: var(--tgt-foreground);
     background: var(--tgt-background);
-    font-family: var(--font-sans), sans-serif;
   }
 }
 

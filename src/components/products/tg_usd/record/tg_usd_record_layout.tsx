@@ -9,6 +9,7 @@ import TgUsdCollateralPrice from "./tg_usd_collateral_price"
 import TgUsdMarketInfo from "./tg_usd_market_info"
 import { usePathname, useRouter } from "next/navigation"
 import { useMemo } from "react"
+import TgUsdPositionHistory from "./position_history/tg_usd_position_history"
 
 type TgUsdRecordLayoutProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
   children: React.ReactNode
@@ -67,6 +68,8 @@ export default function TgUsdRecordLayout({ children, ...props }: TgUsdRecordLay
         <Divider />
 
         <TgUsdMarketInfo />
+
+        <TgUsdPositionHistory />
       </div>
     </>
   )

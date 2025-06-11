@@ -1,8 +1,14 @@
 "use client"
 
-import { AssetApr, AssetDataPriced, TgUsdMarketAsset } from "@/types"
+import { AssetApr, AssetDataPriced, ListState, TgUsdMarketAsset } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+
+import { Address } from "viem"
+import { useTgUsdContext } from "../tg_usd_context"
+import { getUserPositions } from "../api"
+import { mapUserData } from "./position_history/tg_usd_position_history_controller"
+
 import {
   BalanceAllowanceData,
   ChainViewMarketRow,
@@ -11,6 +17,7 @@ import {
   TgUsdMarketAmounts,
   TgUsdMarketDisplayData,
   TgUsdMarketLoanDisplayData,
+  UserPosition,
 } from "../tg_usd_type"
 import {
   getBalances,
@@ -21,8 +28,6 @@ import {
   getBalancesAndAllowances,
   transformMarketData,
 } from "./tg_usd_record_controller"
-import { Address } from "viem"
-import { useTgUsdContext } from "../tg_usd_context"
 
 type TgUsdRecordContextProps = {
   children: ReactNode
@@ -52,6 +57,13 @@ type TgUsdRecordContextValues = {
 
   balanceAllowanceData: BalanceAllowanceData | null
   setBalanceAllowanceData: (arg: BalanceAllowanceData) => void
+
+  displayRows: UserPosition[]
+
+  isUserHistoryLoading: boolean
+  setIsUserHistoryLoading: (v: boolean) => void
+
+  customSort: (arg: ListState) => void
 }
 
 export const TgUsdRecordContext = createContext<TgUsdRecordContextValues | undefined>(undefined)
@@ -65,7 +77,11 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
 
   const [onChainData, setOnChainData] = useState<ChainViewMarketRow | undefined>()
 
+  const [userPositions, setUserPositions] = useState<UserPosition[] | null>(null)
+
   const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const [isUserHistoryLoading, setIsUserHistoryLoading] = useState<boolean>(true)
 
   const [apr, setApr] = useState<AssetApr | undefined>()
 
@@ -80,9 +96,16 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     liquidateValue: 0n,
   })
 
+  const fetchUserPositions = () => {
+    getUserPositions(currentAddress!, marketInfo.marketAddress).then((pos) => {
+      setUserPositions(pos)
+    })
+  }
+
   useEffect(() => {
     if (currentAddress) {
       loadOnChainData()
+      fetchUserPositions()
     }
   }, [currentAddress])
 
@@ -148,6 +171,49 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     }
   }
 
+  //
+  // USER POSITION CONTEXT
+
+  const displayRows = useMemo(() => {
+    if (!userPositions) {
+      setIsUserHistoryLoading(true)
+      return []
+    }
+    if (!!userPositions && userPositions.length === 0) {
+      setIsUserHistoryLoading(false)
+      return []
+    }
+
+    const rows = mapUserData(userPositions)
+    setIsUserHistoryLoading(false)
+
+    return rows
+  }, [userPositions])
+
+  const customSort = (listState: ListState) => {
+    const { key, direction } = listState.sort!
+
+    displayRows.sort((elementA: UserPosition, elementB: UserPosition) => {
+      if (key === "usgAmount") {
+        const aValue = elementA[key as keyof UserPosition]
+        const bValue = elementB[key as keyof UserPosition]
+
+        if (Number(aValue) < Number(bValue)) return direction === "asc" ? -1 : 1
+        if (Number(aValue) > Number(bValue)) return direction === "asc" ? 1 : -1
+
+        return 0
+      } else {
+        const aValue = elementA[key as keyof UserPosition]
+        const bValue = elementB[key as keyof UserPosition]
+
+        if (aValue < bValue) return direction === "asc" ? -1 : 1
+        if (aValue > bValue) return direction === "asc" ? 1 : -1
+
+        return 0
+      }
+    })
+  }
+
   const contextValue: TgUsdRecordContextValues = {
     isLoading,
     collateral,
@@ -165,6 +231,11 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     setBalanceAllowanceData,
     fetchBalanceAllowanceData,
     marketInfo,
+    //
+    displayRows,
+    customSort,
+    isUserHistoryLoading,
+    setIsUserHistoryLoading,
   }
 
   return <TgUsdRecordContext.Provider value={contextValue}>{children}</TgUsdRecordContext.Provider>

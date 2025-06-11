@@ -75,7 +75,7 @@ export default function TgUsdRepayPanel() {
       <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
         <div className="flex w-full items-center gap-2">
           {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={20} />}
-          <span className="text-sm font-bold">{option.symbol}</span>
+          <span className="text-sm font-semibold">{option.symbol}</span>
         </div>
         <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
       </div>
@@ -136,7 +136,7 @@ export default function TgUsdRepayPanel() {
       <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
         <TokenImage token={collateralInfo?.logo} size={20} />
 
-        <span className="flex flex-col text-sm font-bold">
+        <span className="flex flex-col text-sm font-semibold">
           <span>{collateralInfo.symbol}</span>
         </span>
       </div>
@@ -159,7 +159,7 @@ export default function TgUsdRepayPanel() {
 
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
-          <span className="text-[20px] font-bold">Repay debt</span>
+          <span className="text-[20px] font-semibold">Repay debt</span>
           <span className="text-xs text-subtitle"> Max: {formatBigInt(marketData?.debtInfos?.userDebt, 18, 2)} tgUSD</span>
         </div>
 
@@ -192,7 +192,7 @@ export default function TgUsdRepayPanel() {
                     type="string"
                     placeholder="0"
                     disabled={true}
-                    className="flex justify-start bg-transparent text-xl font-bold focus:outline-none"
+                    className="flex justify-start bg-transparent text-xl font-semibold focus:outline-none"
                     value={Number(formatUnits(tgUdsRepayedValue || 0n, 18)).toFixed(2) ?? ""}
                   />
 
@@ -208,7 +208,7 @@ export default function TgUsdRepayPanel() {
               </div>
               <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
                 <TokenImage token="tgUSD" size={20} />
-                <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
+                <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
               </div>
             </div>
           </PanelRaw>
@@ -217,7 +217,7 @@ export default function TgUsdRepayPanel() {
         {isRepayAndWithdraw && (
           <>
             <div className="flex items-end justify-between">
-              <span className="text-[20px] font-bold">Withdraw collateral</span>
+              <span className="text-[20px] font-semibold">Withdraw collateral</span>
               <span className="text-xs text-subtitle">
                 Max: {formatBigInt(maxWithdrawable, 18, 2)} {collateralInfo?.symbol}
               </span>

@@ -17,8 +17,8 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
       <div className="mt-4 flex justify-between" {...props}>
         <div className="flex items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
           <div className="flex items-center gap-2">
-            <TokenImage token={collateralInfo.logo} size={32} />
-            <span className="text-[24px] font-bold">{collateralInfo.symbol}</span>
+            <TokenImage token={collateralInfo.logo} size={64} />
+            <span className="text-[24px] font-semibold">{collateralInfo.symbol}</span>
           </div>
 
           {marketData && (
@@ -36,7 +36,7 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
                 </div>
               )}
 
-              <div className="flex items-center justify-center rounded-full border border-white border-opacity-20 bg-button-linear px-2 py-1 text-xs">
+              <div className="flex items-center justify-center rounded-full border border-white border-opacity-20 bg-button-linear px-3 py-1 text-xs">
                 {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
               </div>
             </>
@@ -51,7 +51,7 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
 
           <button
             onClick={() => router.push("/")}
-            className="h-10 rounded-[10px] border border-white border-opacity-20 bg-overlay-panel px-9 text-xs font-bold backdrop-blur-[60px] hover:bg-white/10"
+            className="h-10 rounded-[10px] border border-white border-opacity-20 bg-overlay-panel px-9 text-xs font-semibold backdrop-blur-[60px] hover:bg-white/10"
           >
             Back
           </button>

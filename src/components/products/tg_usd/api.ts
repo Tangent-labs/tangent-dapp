@@ -53,3 +53,25 @@ export const fetchGraphData = async (tokenIn: Address, start: number, end: numbe
     return null
   }
 }
+
+export const getUserPositions = async (user: Address, market: Address) => {
+  try {
+    const url = `http://127.0.0.1:3100/events/${user}/${market}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`getUserPositions API request failed with status ${response.status}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Failed to fetch user positions:", error)
+    return null
+  }
+}

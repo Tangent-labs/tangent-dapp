@@ -119,7 +119,7 @@ export default function TgUsdLeveragePanel() {
       <div className="flex w-full min-w-48 items-center justify-between">
         <div className="flex w-full items-center gap-2">
           {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={32} />}
-          <span className="text-sm font-bold">{option.symbol}</span>
+          <span className="text-sm font-semibold">{option.symbol}</span>
         </div>
         <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
       </div>
@@ -142,7 +142,7 @@ export default function TgUsdLeveragePanel() {
       {!isDepositDisabled && (
         <>
           <div className="flex w-full items-end justify-between gap-2">
-            <span className="text-[20px] font-bold">Deposit {collateralInfo?.symbol}</span>
+            <span className="text-[20px] font-semibold">Deposit {collateralInfo?.symbol}</span>
             <span className="text-xs text-subtitle">
               Max: {formatBigInt(marketData?.collateralBalance, 18, 2)} {collateralInfo?.symbol}
             </span>
@@ -180,7 +180,7 @@ export default function TgUsdLeveragePanel() {
                 <input
                   type="number"
                   disabled={isZapLoading}
-                  className="flex w-fit max-w-28 justify-start bg-transparent text-xl font-bold focus:outline-none"
+                  className="flex w-fit max-w-28 justify-start bg-transparent text-xl font-semibold focus:outline-none"
                   value={zapInnerValue ?? ""}
                   onChange={handleZapInputChange}
                 />
@@ -194,15 +194,15 @@ export default function TgUsdLeveragePanel() {
               </div>
             </div>
             <div className="flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-select-input px-2 py-1">
-              <TokenImage token={collateralInfo?.logo} size={20} />
-              <div className="font-bold">{collateralInfo?.symbol}</div>
+              <TokenImage token={collateralInfo?.logo} size={32} />
+              <div className="font-semibold">{collateralInfo?.symbol}</div>
             </div>
           </div>
         </PanelRaw>
       )}
 
       <>
-        <span className="flex items-end justify-between text-[20px] font-bold">Borrow amount</span>
+        <span className="flex items-end justify-between text-[20px] font-semibold">Borrow amount</span>
 
         <LeverageInput
           label="You borrow"
@@ -217,7 +217,7 @@ export default function TgUsdLeveragePanel() {
         <div className="-mt-1 flex w-full items-start justify-end text-xs text-subtitle">Max leverage: x10</div>
 
         <div className="flex flex-col gap-2">
-          <span className="text-[20px] font-bold">Recap</span>
+          <span className="text-[20px] font-semibold">Recap</span>
 
           <div className={cn("flex flex-col gap-1 rounded-[10px] bg-overlay-panel p-2 text-xs", isDepositLoading ? "shimmer" : "")}>
             {!isDepositDisabled && (
@@ -232,7 +232,7 @@ export default function TgUsdLeveragePanel() {
               <span className="text-white">
                 {formatNumber(Number(formatUnits(depositWeiValue || 0n, 18)), 0)} + {formatNumber(Number(formatUnits(leveragedCollateralQuote || 0n, 18)), 0)}{" "}
                 ~={" "}
-                <span className="font-bold text-white">
+                <span className="font-semibold text-white">
                   {formatNumber(Number(formatUnits((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18)), 0)} {collateralInfo?.symbol}{" "}
                 </span>
               </span>
@@ -253,14 +253,14 @@ export default function TgUsdLeveragePanel() {
       <div className="flex w-full items-end justify-between gap-2">
         <Popover>
           <PopoverTrigger asChild>
-            <button type="button" className="w-full" title="Slippage">
+            <button type="button" className="w-full font-roobert" title="Slippage">
               <div className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-xl border border-white/30 px-2 text-xs text-primary hover:bg-white/20">
                 Details
                 <IconChevron className="h-auto w-[12px] text-row-tonic" />
               </div>
             </button>
           </PopoverTrigger>
-          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="z-20 !m-0 w-96 !border-none bg-black !p-0">
+          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="z-20 !m-0 w-96 !border-none bg-black !p-0 font-roobert">
             <Panel className="!border-none">
               <div className="flex w-full flex-col items-center justify-center text-primary">
                 {slippage && slippage > 0 ? (

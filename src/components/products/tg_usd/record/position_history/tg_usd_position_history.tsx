@@ -1,0 +1,141 @@
+"use client"
+
+import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import Divider from "@/components/design_system/structure/divider"
+import Title from "@/components/design_system/structure/title"
+import { IconSortHeader } from "@/components/icons/icon_sort_header"
+import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { formatActionLabel, userPositionListHeaders } from "./tg_usd_position_history_controller"
+import { ListState } from "@/types"
+import { UserPosition } from "../../tg_usd_type"
+import Loader from "@/components/design_system/structure/loader"
+import { formatBigInt, formatDollar } from "@/lib/number_formatter"
+import moment from "moment"
+import TokenImage from "@/components/design_system/structure/token_image"
+import { formatUnits } from "viem"
+
+const listeState: ListState = {
+  search: undefined,
+  sort: {
+    key: "time",
+    direction: "asc",
+  },
+}
+
+const HistoryRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
+  return (
+    <div className="flex items-center justify-between max-xl:flex-col">
+      <div className="flex w-full items-center justify-evenly px-2">
+        <div className="flex w-2/12 items-center justify-center">{children?.at(0)} </div>
+        <div className="flex w-3/12 items-center justify-center">{children?.at(1)} </div>
+        <div className="flex w-3/12 items-center justify-center">{children?.at(2)} </div>
+        <div className="flex w-3/12 items-center justify-center">{children?.at(3)} </div>
+        <div className="flex w-1/12 items-center justify-center">{children?.at(4)} </div>
+      </div>
+    </div>
+  )
+}
+
+export default function TgUsdPositionHistory() {
+  const { displayRows, customSort, isUserHistoryLoading } = useTgUsdRecordContext()
+
+  return (
+    <div className="rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
+      <Title label={"Position history"} size={"normal"} />
+      <Divider />
+
+      <>
+        {isUserHistoryLoading ? (
+          <div className="flex h-full w-full items-start justify-center">
+            <Loader></Loader>
+          </div>
+        ) : (
+          <div className="flex w-full items-start justify-start gap-4">
+            <div className="flex w-full flex-col">
+              <ListProvider customSort={customSort} _headers={userPositionListHeaders} _rows={displayRows} _listState={listeState}>
+                <PositionList></PositionList>
+              </ListProvider>
+            </div>
+          </div>
+        )}
+      </>
+    </div>
+  )
+}
+
+function PositionList() {
+  const { headers, listState, udpateSort, displayRows } = useListContext()
+
+  const { collateralInfo } = useTgUsdRecordContext()
+
+  return (
+    <>
+      <div className="mt-6 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+        <div className={`hidden p-4 leading-[10px] xl:block`}>
+          <HistoryRowDisposition>
+            {!!headers?.at(0)?.key && (
+              <div className="flex-1">
+                <span>{headers?.at(0)?.label}</span>
+              </div>
+            )}
+            {!!headers?.at(1)?.key && (
+              <div key={headers?.at(1)?.label} className="flex-1">
+                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(headers?.at(1)?.key as string)}>
+                  <span>{headers?.at(1)?.label} </span>
+                  <div className="text-row-tonic">
+                    <IconSortHeader sort={(listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction) || "none"} />
+                  </div>
+                </button>
+              </div>
+            )}
+            {!!headers?.at(2)?.key && (
+              <div key={headers?.at(2)?.label} className="flex-1">
+                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(headers?.at(2)?.key as string)}>
+                  <span>{headers?.at(2)?.label} </span>
+                  <div className="text-row-tonic">
+                    <IconSortHeader sort={(listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction) || "none"} />
+                  </div>
+                </button>
+              </div>
+            )}
+            {!!headers?.at(3)?.key && (
+              <div key={headers?.at(3)?.label} className="flex-1">
+                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(headers?.at(3)?.key as string)}>
+                  <span>{headers?.at(3)?.label} </span>
+                  <div className="text-row-tonic">
+                    <IconSortHeader sort={(listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction) || "none"} />
+                  </div>
+                </button>
+              </div>
+            )}
+            {!!headers?.at(4)?.key && <span>{headers?.at(4)?.label}</span>}
+          </HistoryRowDisposition>
+        </div>
+      </div>
+
+      <div className="scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent mt-2 max-h-[500px] overflow-y-auto rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+        {displayRows &&
+          (displayRows as UserPosition[])?.map((pos: UserPosition) => (
+            <div key={pos.txHash} className="px-5 py-2 text-[15px] hover:cursor-pointer hover:before:bg-list-row-hover">
+              <div className="flex w-full items-center justify-between">
+                <div className="w-2/12">{formatActionLabel(pos.label)} </div>
+                <div className="flex w-3/12 items-center justify-center gap-1">
+                  {formatBigInt(pos.collatAmount, 18, 2)} <TokenImage token={collateralInfo.logo} size={24} /> {collateralInfo?.symbol}{" "}
+                  <span className="text-xs text-subtitle"> {formatDollar(formatUnits(pos.collatAmount, 18), 0)}</span>
+                </div>
+                <div className="flex w-3/12 items-center justify-center gap-1">
+                  {formatBigInt(pos.usgAmount, 18, 2)} <TokenImage token="tgUSD" size={16} /> USG
+                </div>
+                <div className="flex w-3/12 items-center justify-center">
+                  {moment(pos.date).format("MM-DD-YYYY")} {" - "} {moment(pos.date).format("hh:mm")}
+                </div>
+                <div className="flex w-1/12 items-center justify-center">
+                  {pos.txHash.substring(0, 4) + "..." + pos.txHash.substring(pos.txHash.length - 4, pos.txHash.length)}
+                </div>
+              </div>
+            </div>
+          ))}
+      </div>
+    </>
+  )
+}

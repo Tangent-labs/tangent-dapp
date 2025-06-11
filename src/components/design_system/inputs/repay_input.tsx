@@ -45,6 +45,14 @@ export function RepayInput({
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
   const [isUserInput, setIsUserInput] = useState(false)
 
+  const formatDisplayValue = (value: string | number): string => {
+    const num = Number(value)
+    if (isNaN(num)) return ""
+    if (Number.isInteger(num)) return num.toString()
+    const formatted = num.toFixed(3).replace(/\.?0+$/, "")
+    return formatted
+  }
+
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!setPercentage || !depositAsset?.decimals || !balance) return
 
@@ -59,14 +67,14 @@ export function RepayInput({
     }
 
     const newValue = formatUnits(repayAmount, depositAsset.decimals)
-    setInnerValue(newValue)
+    setInnerValue(formatDisplayValue(newValue))
     onValueChange(repayAmount)
   }
 
   useEffect(() => {
     if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
       const updatedValue = Number(formatUnits(depositAmount, depositAsset.decimals)).toFixed(0)
-      setInnerValue(updatedValue)
+      setInnerValue(formatDisplayValue(updatedValue))
       setIsUserInput(false)
     }
   }, [depositAmount, depositAsset])
@@ -140,7 +148,7 @@ export function RepayInput({
               value={innerValue}
               placeholder="Amount"
               onInput={handleInputChange}
-              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent pl-1 font-bold focus:outline-none")}
+              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent pl-1 font-semibold focus:outline-none")}
             />
           </div>
           <div className="order-1 lg:order-2">{depositSelect}</div>
@@ -150,7 +158,7 @@ export function RepayInput({
 
           <div className="flex cursor-pointer items-center">
             <button
-              className="ml-1 flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
+              className="ml-1 flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
               type="button"
               onClick={() => {
                 if (setMaxBalance) {

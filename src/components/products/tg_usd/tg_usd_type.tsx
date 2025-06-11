@@ -399,3 +399,11 @@ export type CurveQuote = {
   _amount: bigint
   _pools: Address[]
 }
+
+export type UserPosition = {
+  label: string
+  collatAmount: bigint
+  usgAmount: bigint
+  date: Date
+  txHash: string
+}

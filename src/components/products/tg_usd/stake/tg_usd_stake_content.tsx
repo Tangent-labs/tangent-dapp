@@ -69,7 +69,7 @@ export default function TgUsdStakeContent() {
     return (
       <div className="flex items-center gap-2">
         <TokenImage token={logo} size={20} />
-        <span className="text-sm font-bold">{option.label}</span>
+        <span className="text-sm font-semibold">{option.label}</span>
       </div>
     )
   }
@@ -80,7 +80,7 @@ export default function TgUsdStakeContent() {
     return (
       <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
         <TokenImage token={receivedTokenInfo.logo as ExistingAsset} size={20} />
-        <span className="text-sm font-bold">
+        <span className="text-sm font-semibold">
           <span>{receivedTokenInfo.symbol}</span>
         </span>
       </div>
@@ -95,7 +95,7 @@ export default function TgUsdStakeContent() {
             <Image height={248} width={248} src="/medias/product_tgusd.png" alt="token" />
           </div>
           <div className="flex flex-col items-start justify-center gap-3">
-            <span className="text-5xl font-bold">Savings account</span>
+            <span className="text-5xl font-semibold">Savings account</span>
             <p>Stake tgUSD to receive sgUSD and earn yield passively. sgUSD is an ERC4626 token and can be used further in DeFi. Learn more</p>
           </div>
         </div>
@@ -104,17 +104,17 @@ export default function TgUsdStakeContent() {
           <div className="flex w-5/12 items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
             <TokenImage token="sgUSD" size={64} />
 
-            <div className="flex flex-col items-center justify-center font-bold">
+            <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">Supply</span>
-              <span className="text-lg font-bold">10,225,145 (7,4%)</span>
+              <span className="text-lg font-semibold">10,225,145 (7,4%)</span>
             </div>
-            <div className="flex flex-col items-center justify-center font-bold">
+            <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">sgUSD</span>
-              <span className="text-lg font-bold">{formatDollar(formatUnits(stakeInfo.sgUSDPrice, 18), 2)}</span>
+              <span className="text-lg font-semibold">{formatDollar(formatUnits(stakeInfo.sgUSDPrice, 18), 2)}</span>
             </div>
             <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-1">
               <span className="text-black">APY</span>
-              <span className="text-lg font-bold">15.32%</span>
+              <span className="text-lg font-semibold">15.32%</span>
             </div>
           </div>
         )}
@@ -169,7 +169,7 @@ export default function TgUsdStakeContent() {
           />
         </div>
         <div className="flex w-7/12 flex-col items-start justify-start rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
-          <span className="text-2xl font-bold">Performance</span>
+          <span className="text-2xl font-semibold">Performance</span>
 
           <Divider className="h-1 w-full"></Divider>
 

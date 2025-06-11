@@ -12,7 +12,7 @@ const MarketListAPR = ({ apr, projectedApr, className = "" }: ListAPRProps) => {
   return (
     <div className="flex justify-center gap-2">
       <div className={`flex min-w-16 flex-col items-center justify-center text-center ${className}`}>
-        <span className="flex items-center justify-center bg-button-active bg-clip-text text-[20px] font-bold leading-4 text-transparent">
+        <span className="flex items-center justify-center bg-button-active bg-clip-text text-[20px] font-semibold leading-4 text-transparent">
           {apr}% <ListAprIndicator helpMessage="This is the APR" className="w-[45px]" />
         </span>
         {projectedApr && (

@@ -19,7 +19,7 @@ export default function TgUsdBorrowPanel() {
     return (
       <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
         <TokenImage token="tgUSD" size={20} />
-        <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
+        <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
       </div>
     )
   }
@@ -28,7 +28,7 @@ export default function TgUsdBorrowPanel() {
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
-          <span className="text-[20px] font-bold">Borrow tgUSD</span>
+          <span className="text-[20px] font-semibold">Borrow tgUSD</span>
           <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 2)} tgUSD</span>
         </div>
 

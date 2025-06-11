@@ -171,7 +171,7 @@ export function BuySellInput({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex w-full flex-col items-start justify-start font-bold">
+      <div className="flex w-full flex-col items-start justify-start font-semibold">
         {labelDeposit === "You Buy" ? "Sell" : "Buy"} {receiveAsset?.symbol}
       </div>
 
@@ -190,7 +190,7 @@ export function BuySellInput({
                 placeholder="Amount"
                 onChange={handleInputChange}
                 className={cn(
-                  "min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
+                  "min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
                 )}
               />
             </div>
@@ -204,7 +204,7 @@ export function BuySellInput({
               <IconWallet className="w-6" />
 
               <button
-                className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
+                className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
                 type="button"
                 onClick={() => {
                   if (setMaxBalance) setMaxBalance()
@@ -273,7 +273,7 @@ export function BuySellInput({
                 placeholder="Amount"
                 onChange={handleInputTangentChange}
                 className={cn(
-                  "min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
+                  "min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
                 )}
               />
             </div>

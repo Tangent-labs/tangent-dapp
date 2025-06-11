@@ -133,7 +133,7 @@ export function DepositInput({
               value={innerValue}
               placeholder="Amount"
               onChange={handleInputChange}
-              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-bold focus:outline-none")}
+              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none")}
               step="any"
             />
           </div>
@@ -145,7 +145,7 @@ export function DepositInput({
           <div className="flex cursor-pointer items-center">
             {!disabled && (
               <button
-                className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
+                className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
                 type="button"
                 onClick={() => {
                   if (setMaxBalance) {

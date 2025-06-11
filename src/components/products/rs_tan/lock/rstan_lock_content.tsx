@@ -36,11 +36,11 @@ export default function RsTanLockContent() {
       <>
         {option && option?.tokenId ? (
           <div className="flex items-center gap-2">
-            <span className="text-md font-bold text-white">#{option.tokenId}</span>
+            <span className="text-md font-semibold text-white">#{option.tokenId}</span>
           </div>
         ) : (
           <div className="flex items-center gap-2">
-            <span className="text-md font-bold text-white">New</span>
+            <span className="text-md font-semibold text-white">New</span>
           </div>
         )}
       </>
@@ -81,7 +81,7 @@ export default function RsTanLockContent() {
 
   return (
     <div className="flex w-full flex-col items-start justify-start">
-      <div className="mb-1 text-lg font-bold text-white">Deposit Tan :</div>
+      <div className="mb-1 text-lg font-semibold text-white">Deposit Tan :</div>
 
       <InputSelectLockPosition
         className="w-full"
@@ -97,7 +97,7 @@ export default function RsTanLockContent() {
       />
 
       <div className="mb-1 mt-4 flex w-full items-center justify-between">
-        <div className="mb-1 text-lg font-bold text-white">Position recap :</div>
+        <div className="mb-1 text-lg font-semibold text-white">Position recap :</div>
 
         {depositPosition === "New" && (
           <div className="flex gap-2">

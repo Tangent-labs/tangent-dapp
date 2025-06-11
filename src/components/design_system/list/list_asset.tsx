@@ -42,7 +42,7 @@ const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: Li
               </div>
             )}
 
-            <div className="flex items-center justify-center rounded-full border border-white border-opacity-20 bg-button-linear px-2 py-1 text-xs">
+            <div className="flex items-center justify-center rounded-full border border-white border-opacity-20 bg-button-linear px-3 py-1 text-xs">
               {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
             </div>
             <TokenImage token={"ETH"} size={24} />

@@ -19,8 +19,8 @@ export default function TgUsdWithdrawPanel() {
   const WithdrawAssetDisplay = () => {
     return (
       <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
-        <TokenImage token={collateralInfo?.logo} size={20} />
-        <span className="flex flex-col text-sm font-bold">{collateralInfo.symbol}</span>
+        <TokenImage token={collateralInfo?.logo} size={32} />
+        <span className="flex flex-col text-sm font-semibold">{collateralInfo.symbol}</span>
       </div>
     )
   }
@@ -30,7 +30,7 @@ export default function TgUsdWithdrawPanel() {
       <div className="flex flex-col gap-2">
         <div className="flex flex-col gap-2">
           <div className="flex items-end justify-between">
-            <span className="text-[20px] font-bold">Withdraw collateral</span>
+            <span className="text-[20px] font-semibold">Withdraw collateral</span>
             <span className="text-xs text-subtitle">
               Max: {formatBigInt(maxWithdrawable, 18, 2)} {collateralInfo?.symbol}
             </span>

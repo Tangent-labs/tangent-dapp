@@ -16,7 +16,7 @@ export default function TgUsdLiquidatePanelFull() {
       <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
         <TokenImage token={collateralInfo?.logo} size={20} />
 
-        <span className="flex flex-col text-sm font-bold">
+        <span className="flex flex-col text-sm font-semibold">
           <span>{collateralInfo.symbol}</span>
         </span>
       </div>
@@ -26,7 +26,7 @@ export default function TgUsdLiquidatePanelFull() {
   return (
     <>
       <div className="flex w-full items-end justify-between">
-        <span className="text-[20px] font-bold">Liquidate all</span>
+        <span className="text-[20px] font-semibold">Liquidate all</span>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -50,7 +50,7 @@ export default function TgUsdLiquidatePanelFull() {
           depositSelect={
             <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
               <TokenImage token="tgUSD" size={20} />
-              <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
+              <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
             </div>
           }
           disabled={true}
@@ -71,7 +71,7 @@ export default function TgUsdLiquidatePanelFull() {
           depositSelect={
             <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
               <TokenImage token="tgUSD" size={20} />
-              <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
+              <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
             </div>
           }
           disabled={true}
@@ -89,7 +89,7 @@ export default function TgUsdLiquidatePanelFull() {
           depositSelect={
             <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
               <TokenImage token="tgUSD" size={20} />
-              <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
+              <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
             </div>
           }
           disabled={true}

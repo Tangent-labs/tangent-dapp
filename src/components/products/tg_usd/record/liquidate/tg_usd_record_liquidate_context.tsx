@@ -38,6 +38,9 @@ type TgUsdLiquidateContextValues = {
   repayablePercentage: number
   setRepayablePercentage: (arg: number) => void
 
+  slippage: number
+  setSlippage: (arg: number) => void
+
   maxRepayable: bigint
 
   handleLiquidateValueChange: (arg: bigint | undefined) => void
@@ -92,10 +95,6 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
       liquidateValue: liquidateWeiValue || 0n,
       repayWeiValue: repayWeiValue || 0n,
     })
-
-    // TODO : REMOVE
-    setSlippage(8)
-    //
   }, [liquidateWeiValue, repayWeiValue])
 
   const actionLiquidate = async () => {
@@ -213,6 +212,8 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
     maxRepayable,
     handleLiquidateValueChange,
     onChangeIsFullLiquidation,
+    slippage,
+    setSlippage,
   }
 
   return <TgUsdLiquidateContext.Provider value={contextValue}>{children}</TgUsdLiquidateContext.Provider>

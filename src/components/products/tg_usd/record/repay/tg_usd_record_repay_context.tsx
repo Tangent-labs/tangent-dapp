@@ -47,6 +47,9 @@ type TgUsdRepayContextValues = {
   setRepayAsset: (arg: string) => void
   repayAsset: string
 
+  slippage: number
+  setSlippage: (arg: number) => void
+
   isZapLoading: boolean
   setIsZapLoading: (arg: boolean) => void
 
@@ -91,6 +94,8 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   const [repayAsset, setRepayAsset] = useState<string>("tgUSD")
 
   const [percentage, setPercentage] = useState<number>(0)
+
+  const [slippage, setSlippage] = useState<number>(10)
 
   const [isRepayMax, setIsRepayMax] = useState<boolean>(false)
 
@@ -201,12 +206,19 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     setIsZapLoading(true)
 
     try {
-      const repayData = await returnRoute(repayAssetInfo?.address, TGUSD_CONTRACT?.TG_USD, repayWeiValue, 0n, currentAddress!, TGUSD_CONTRACT.ZAPPER)
+      const repayData = await returnRoute(
+        repayAssetInfo?.address,
+        TGUSD_CONTRACT?.TG_USD,
+        repayWeiValue,
+        (BigInt(tgUdsRepayedValue || 0n) * BigInt(100 - slippage)) / BigInt(100),
+        currentAddress!,
+        TGUSD_CONTRACT.ZAPPER
+      )
 
       const zapMarketData = {
         tokenIn: repayAssetInfo?.address,
         amountIn: repayWeiValue,
-        minAmountOut: 0n,
+        minAmountOut: (BigInt(tgUdsRepayedValue || 0n) * BigInt(100 - slippage)) / BigInt(100),
       }
 
       doZapRepay(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData)
@@ -441,6 +453,8 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     setIsRepayMax,
     isDebtBelowThreshold,
     marketData,
+    slippage,
+    setSlippage,
   }
 
   return <TgUsdRepayContext.Provider value={contextValue}>{children}</TgUsdRepayContext.Provider>

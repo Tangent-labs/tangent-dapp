@@ -235,55 +235,61 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
   }
 
   const actionZapLeverage = async () => {
-    const walletClient = getWalletClient()
+    try {
+      const walletClient = getWalletClient()
 
-    loadOnChainData()
-    if (!walletClient || !currentAddress || !depositWeiValue || !borrowWeiValue || !depositAssetInfo) return
+      loadOnChainData()
+      if (!walletClient || !currentAddress || !depositWeiValue || !borrowWeiValue || !depositAssetInfo) return
 
-    const leverageData = await returnRoute(
-      TGUSD_CONTRACT.TG_USD,
-      collateralInfo?.address,
-      borrowWeiValue,
-      (BigInt(leveragedCollateralQuote!) * BigInt(100 - slippage)) / BigInt(100),
-      marketInfo?.marketAddress,
-      TGUSD_CONTRACT.ZAPPER
-    )
+      const leverageData = await returnRoute(
+        TGUSD_CONTRACT.TG_USD,
+        collateralInfo?.address,
+        borrowWeiValue,
+        (BigInt(leveragedCollateralQuote!) * BigInt(100 - slippage)) / BigInt(100),
+        marketInfo?.marketAddress,
+        TGUSD_CONTRACT.ZAPPER
+      )
 
-    const zapData = await returnRoute(
-      depositAssetInfo?.address,
-      collateralInfo?.address,
-      depositWeiValue,
-      (BigInt(zapValue!) * BigInt(100 - slippage)) / BigInt(100),
-      marketInfo?.marketAddress,
-      currentAddress!,
-      currentAddress!
-    )
+      const zapData = await returnRoute(
+        depositAssetInfo?.address,
+        collateralInfo?.address,
+        depositWeiValue,
+        (BigInt(zapValue!) * BigInt(100 - slippage)) / BigInt(100),
+        marketInfo?.marketAddress,
+        currentAddress!,
+        currentAddress!
+      )
 
-    doZapLeverage(
-      borrowWeiValue,
-      (BigInt(leveragedCollateralQuote!) * BigInt(100 - slippage)) / BigInt(100),
-      isStaking,
-      leverageData!,
-      depositAssetInfo?.address,
-      depositWeiValue,
-      (BigInt(zapValue!) * BigInt(100 - slippage)) / BigInt(100),
-      zapData!,
-      walletClient,
-      marketInfo?.marketAddress
-    )
-      .then(() => {
-        loadOnChainData()
-        setDepositWeiValue(0n)
-        setBorrowWeiValue(0n)
-        setBorrowSliderPercent(0)
-        setLeveragedCollateralQuote(0n)
-        setDepositSliderPercent(0)
-        setIsDepositLoading(false)
-        toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
-      })
-      .catch((err) => {
-        console.error("ERROR : ", err)
-      })
+      doZapLeverage(
+        borrowWeiValue,
+        (BigInt(leveragedCollateralQuote!) * BigInt(100 - slippage)) / BigInt(100),
+        isStaking,
+        leverageData!,
+        depositAssetInfo?.address,
+        depositWeiValue,
+        (BigInt(zapValue!) * BigInt(100 - slippage)) / BigInt(100),
+        zapData!,
+        walletClient,
+        marketInfo?.marketAddress
+      )
+        .then(() => {
+          loadOnChainData()
+          setDepositWeiValue(0n)
+          setZapValue(0n)
+          setBorrowWeiValue(0n)
+          setBorrowSliderPercent(0)
+          setLeveragedCollateralQuote(0n)
+          setDepositSliderPercent(0)
+          setIsDepositLoading(false)
+          toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
+        })
+        .catch((err) => {
+          console.error("ERROR : ", err)
+          toast.error(ToastComponent, { data: { type: "Error", content: "Something went wrong." } })
+        })
+    } catch {
+      toast.error(ToastComponent, { data: { type: "Error", content: "Something went wrong." } })
+    }
   }
 
   const actionLeverage = async () => {

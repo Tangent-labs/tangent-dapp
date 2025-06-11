@@ -284,14 +284,17 @@ export default function TgUsdLeveragePanel() {
 
         <Popover>
           <PopoverTrigger asChild>
-            <button type="button" title="Slippage">
-              <div className="h-[30px] cursor-pointer rounded-xl border border-white/30 bg-button-gradient p-2 hover:bg-white/20">
-                <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
-              </div>
-            </button>
+            <div className="flex h-[30px] cursor-pointer items-center justify-between rounded-xl border border-white/30 bg-button-gradient py-2">
+              <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
+              <button type="button" title="Slippage">
+                <div className="h-[30px] cursor-pointer rounded-xl border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
+                  <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
+                </div>
+              </button>
+            </div>
           </PopoverTrigger>
-          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="z-20 !m-0 w-48 !border-none bg-black !p-0">
-            <Panel className="!border-none">
+          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none">
+            <div className="rounded-[10px] border-none p-3 backdrop-blur-[60px] backdrop-filter">
               <div className="flex w-full flex-col items-center justify-between gap-2">
                 <div className="flex w-full items-center justify-start">Slippage</div>
                 <input
@@ -307,7 +310,7 @@ export default function TgUsdLeveragePanel() {
                   <ButtonTab onClick={() => setSlippage(2)} label={"2.0%"} active={slippage === 2} className="rounded-full !px-2 !py-1" />
                 </div>
               </div>
-            </Panel>
+            </div>
           </PopoverContent>
         </Popover>
       </div>

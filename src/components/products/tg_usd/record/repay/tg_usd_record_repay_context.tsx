@@ -321,7 +321,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
       const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
       const maxWithDrawable = collateralPriceRaw !== 0n ? futureDeposited - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
 
-      return maxWithDrawable
+      return maxWithDrawable > 0n ? maxWithDrawable : 0n
     }
 
     return 0n

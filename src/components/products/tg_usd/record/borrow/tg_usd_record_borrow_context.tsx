@@ -18,6 +18,9 @@ type TgUsdBorrowContextValues = {
   borrowPercentage: number
   setBorrowPercentage: (arg: number) => void
   maxBorrowableValue: bigint
+
+  exceedsMaxLTV: boolean
+  setExceedsMaxLTV: (arg: boolean) => void
 }
 
 export const TgUsdBorrowContext = createContext<TgUsdBorrowContextValues | undefined>(undefined)
@@ -28,6 +31,8 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
   const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
 
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
+
+  const [exceedsMaxLTV, setExceedsMaxLTV] = useState<boolean>(false)
 
   const [borrowPercentage, setBorrowPercentage] = useState<number>(0)
 
@@ -49,22 +54,23 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
 
   const maxBorrowableValue = useMemo(() => {
     if (marketData?.collateralInfos) {
-      const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice || 0n
-      const futureDebt = marketData?.debtInfos?.userDebt || 0n
-      const futureDeposited = marketData?.collateralInfos?.positionCollateralAmount
-      const maxLTV = marketData?.constants.maxLTV / BigInt(10 ** 3)
+      const futureDebt = marketData?.debtInfos?.userDebt
 
-      const maxBorrowable = (futureDeposited * maxLTV) / BigInt(100n) - (futureDebt * BigInt(10n ** 18n)) / collateralPriceRaw
+      const maxBorrowable = (marketData?.collateralInfos?.positionCollateralUSDValue * marketData?.constants.maxLTV) / BigInt(100000n) - futureDebt
 
-      return maxBorrowable
+      return maxBorrowable > 0n ? maxBorrowable : 0n
     }
 
     return 0n
   }, [marketData])
 
+  useEffect(() => {
+    setExceedsMaxLTV((borrowWeiValue || 0n) > maxBorrowableValue)
+  }, [borrowWeiValue])
+
   const formState = useMemo(
-    () => getBorrowFormState(marketData, borrowWeiValue, isWellConnected),
-    [marketData, borrowWeiValue, isWellConnected, currentAddress]
+    () => getBorrowFormState(marketData, borrowWeiValue, isWellConnected, maxBorrowableValue),
+    [marketData, borrowWeiValue, isWellConnected, currentAddress, maxBorrowableValue]
   )
 
   const contextValue: TgUsdBorrowContextValues = {
@@ -75,6 +81,8 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
     borrowPercentage,
     setBorrowPercentage,
     maxBorrowableValue,
+    exceedsMaxLTV,
+    setExceedsMaxLTV,
   }
 
   return <TgUsdBorrowContext.Provider value={contextValue}>{children}</TgUsdBorrowContext.Provider>

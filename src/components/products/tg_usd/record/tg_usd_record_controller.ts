@@ -3,9 +3,8 @@ import { BalanceAllowanceData, ChainViewMarketRow, MarketDetailData, TgUsdMarket
 import { executeAppove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
 import MarketDetailsUI from "@/abi/tgusd/MarketDetailsUI.json"
 import GetBalances from "@/abi/tgusd/GetBalances.json"
-import { AssetDataPriced, ExistingAsset } from "@/types"
+import { CollateralInfo, ExistingAsset } from "@/types"
 import { TGUSD_CONTRACT, tgUsdMarkets } from "../tg_usd_repository"
-import { getAssetInfo } from "@/services/service_existing_asset"
 import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
 import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
 import { getSwapAssetPrice } from "@/services/service_price"
@@ -38,7 +37,7 @@ export const getTgUsdMarketRecordData = async (address: Address | undefined, mar
   return await executeChainViewUnique<ChainViewMarketRow>(MarketDetailsUI.abi as Abi, MarketDetailsUI.bytecode as Hex, [address, market])
 }
 
-export const transformMarketData = (onChainData: ChainViewMarketRow, collateralInfo: AssetDataPriced): MarketDetailData => {
+export const transformMarketData = (onChainData: ChainViewMarketRow, collateralInfo: CollateralInfo): MarketDetailData => {
   const staticMarketData = tgUsdMarkets.find((m) => m.marketAddress === onChainData.marketAddress)
   return {
     marketAddress: onChainData.marketAddress as Address,
@@ -86,7 +85,7 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, depositW
 
 export function getComputedFutureLoanData(
   marketData?: MarketDetailData,
-  collateralInfo?: AssetDataPriced,
+  collateralInfo?: CollateralInfo,
   amounts?: {
     depositWeiValue?: bigint
     borrowWeiValue?: bigint
@@ -149,14 +148,31 @@ export function getComputedFutureLoanData(
 }
 
 export async function loadMarketServerData(collateral: ExistingAsset) {
-  const tokenInfos = await getAssetInfo([collateral, "tgUSD"])
+  const tgUSDInfo = {
+    address: tgUsdMarkets.find((market) => market.marketName === "tgUSD")?.collatAddress as Address,
+    decimals: 18,
+    displayDecimals: 2,
+    symbol: "tgUSD",
+    name: "tgUSD",
+    logo: "tgUSD" as ExistingAsset,
+    price: 1,
+  }
+
   const marketInfo = tgUsdMarkets.find((market) => market.marketName === collateral)
-  const collateralInfo = tokenInfos.at(0)
-  const tgUSDInfo = tokenInfos.at(1)
+  const collateralInfo = {
+    address: tgUsdMarkets.find((market) => market.marketName === collateral)?.collatAddress as Address,
+    decimals: 18,
+    displayDecimals: 2,
+    symbol: collateral,
+    name: collateral,
+    logo: collateral as ExistingAsset,
+    price: 0,
+  }
+
   return { collateralInfo, tgUSDInfo, marketInfo }
 }
 
-export function getMarketDisplayData(marketData?: MarketDetailData, collateralInfo?: AssetDataPriced) {
+export function getMarketDisplayData(marketData?: MarketDetailData, collateralInfo?: CollateralInfo) {
   if (!marketData || !collateralInfo)
     return {
       tvl: "-",
@@ -241,17 +257,17 @@ export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: st
 
 export const prepareZapTransaction = async (
   amount: bigint,
-  tokenIn: AssetDataPriced,
-  tokenOut: AssetDataPriced,
+  tokenIn: Address,
+  tokenOut: Address,
   marketInfo: { marketAddress: Address },
   minAmountOut: bigint
 ) => {
-  const routerCall = await getEnsoData(amount, tokenIn?.address, tokenOut?.address, TGUSD_CONTRACT.ZAPPER, marketInfo.marketAddress, minAmountOut)
+  const routerCall = await getEnsoData(amount, tokenIn, tokenOut, TGUSD_CONTRACT.ZAPPER, marketInfo.marketAddress, minAmountOut)
 
   if (!routerCall?.tx?.data) throw new Error("Failed to fetch routing data")
 
   const zapMarketData = {
-    tokenIn: tokenIn?.address,
+    tokenIn: tokenIn,
     amountIn: amount,
     minAmountOut: 0n,
   }

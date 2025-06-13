@@ -69,7 +69,7 @@ export default function TgUsdLiquidatePanel() {
             </div>
           </PopoverTrigger>
           <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none">
-            <div className="rounded-[10px] border-none p-3 backdrop-blur-[60px] backdrop-filter">
+            <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
               <div className="flex w-full flex-col items-center justify-between gap-2">
                 <div className="flex w-full items-center justify-start">Slippage</div>
                 <input

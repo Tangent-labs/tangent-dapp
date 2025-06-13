@@ -4,6 +4,7 @@ import { useMemo } from "react"
 import { formatAddress } from "@/lib/other_formatter"
 import { Button } from "@/components/design_system/inputs/button"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { IconWallet } from "@/components/icons/icon_wallet"
 
 type WalletConnexionButtonProps = React.HTMLAttributes<HTMLButtonElement>
 
@@ -39,5 +40,9 @@ export const WalletConnexionButton = ({ ...props }: WalletConnexionButtonProps) 
     }
   }
 
-  return <Button label={buttonLabel} className="h-10" onClick={() => handleButtonClick()} disabled={isConnecting} {...props} />
+  return (
+    <Button className="flex h-10 items-center justify-center" onClick={() => handleButtonClick()} disabled={isConnecting} {...props}>
+      {buttonLabel} {isConnected && <IconWallet className="ml-2 mt-0.5 w-3"></IconWallet>}
+    </Button>
+  )
 }

@@ -23,7 +23,7 @@ type TgUsdWithdrawContextValues = {
 export const TgUsdWithdrawContext = createContext<TgUsdWithdrawContextValues | undefined>(undefined)
 
 export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) => {
-  const { marketData, loadOnChainData, setCurrentAmounts, collateralInfo } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
@@ -48,7 +48,7 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
   }
 
   const formState = useMemo(
-    () => getWithdrawFormState(marketData, withdrawWeiValue, collateralInfo, isWellConnected),
+    () => getWithdrawFormState(marketData, withdrawWeiValue, isWellConnected),
     [marketData, withdrawWeiValue, isWellConnected, currentAddress]
   )
 
@@ -60,7 +60,7 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
       const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
       const maxWithDrawable = collateralPriceRaw !== 0n ? futureDeposited - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
 
-      return maxWithDrawable
+      return maxWithDrawable > 0n ? maxWithDrawable : 0n
     }
 
     return 0n

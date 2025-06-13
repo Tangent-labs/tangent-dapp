@@ -1,4 +1,4 @@
-import { AssetDataPriced } from "@/types"
+import { CollateralInfo } from "@/types"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
 import { getBorrowCommonFormState } from "../tg_usd_record_controller"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
@@ -11,12 +11,12 @@ export function getDepositFormState(
   borrowWeiValue?: bigint,
   isDepositAndBorrow?: boolean,
   isWellConnected?: boolean,
-  depositAssetInfo?: AssetDataPriced,
-  collateralInfo?: AssetDataPriced,
+  depositAssetInfo?: Address,
+  collateralInfo?: CollateralInfo,
   balanceAllowanceData?: BalanceAllowanceData,
   isDepositLoading?: boolean
 ) {
-  const isZapMode = !!depositAssetInfo && depositAssetInfo?.address !== collateralInfo?.address
+  const isZapMode = !!depositAssetInfo && depositAssetInfo !== collateralInfo?.address
 
   const reasons: string[] = []
   const isApproved =

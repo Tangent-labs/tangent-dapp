@@ -59,7 +59,7 @@ export default function TgUsdLeveragePanel() {
     leveragePercentage,
   } = useTgUsdLeverageContext()
 
-  const { collateralInfo, marketData, balances, balanceAllowanceData } = useTgUsdRecordContext()
+  const { collateralInfo, marketData, balances, balanceAllowanceData, marketInfo } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -78,7 +78,7 @@ export default function TgUsdLeveragePanel() {
       {
         ...collateralInfo,
         value: collateralInfo.name as string,
-        balance: balances[collateralInfo.address] || BigInt(0),
+        balance: balances[marketInfo?.collatAddress] || BigInt(0),
       },
       ...[
         {
@@ -186,9 +186,12 @@ export default function TgUsdLeveragePanel() {
                 />
 
                 <div className="text-xs">
-                  {zapValue && collateralInfo?.price !== 0 ? `(~${formatDollar((Number(formatUnits(zapValue, 18)) * collateralInfo?.price).toFixed(2))})` : ""}
+                  {zapValue && !!marketData?.collateralInfos
+                    ? `(~${formatDollar(formatUnits((BigInt(zapValue) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), depositAssetInfo?.decimals || 18))})`
+                    : ""}
                 </div>
               </div>
+
               <div className="flex justify-between text-xs text-gray-400">
                 <div>Minimum receive</div>
               </div>
@@ -294,7 +297,7 @@ export default function TgUsdLeveragePanel() {
             </div>
           </PopoverTrigger>
           <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none">
-            <div className="rounded-[10px] border-none p-3 backdrop-blur-[60px] backdrop-filter">
+            <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
               <div className="flex w-full flex-col items-center justify-between gap-2">
                 <div className="flex w-full items-center justify-start">Slippage</div>
                 <input

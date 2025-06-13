@@ -49,7 +49,7 @@ type TgUsdLiquidateContextValues = {
 export const TgUsdLiquidateContext = createContext<TgUsdLiquidateContextValues | undefined>(undefined)
 
 export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps) => {
-  const { marketData, loadOnChainData, marketDisplayData, setCurrentAmounts } = useTgUsdRecordContext()
+  const { marketData, marketInfo, loadOnChainData, marketDisplayData, setCurrentAmounts } = useTgUsdRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
@@ -102,7 +102,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
 
     if (walletClient && liquidateWeiValue && currentAddress && tgUSDReceivedValue && marketData) {
       const liquidationData = await returnRoute(
-        marketData?.collateralInfo?.address,
+        marketInfo?.collatAddress,
         TGUSD_CONTRACT.TG_USD,
         liquidateWeiValue,
         0n,

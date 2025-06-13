@@ -1,6 +1,6 @@
 "use client"
 
-import { AssetApr, AssetDataPriced, ListState, TgUsdMarketAsset } from "@/types"
+import { AssetApr, AssetDataPriced, CollateralInfo, ListState, TgUsdMarketAsset } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
@@ -32,14 +32,14 @@ import {
 type TgUsdRecordContextProps = {
   children: ReactNode
   collateral: TgUsdMarketAsset
-  collateralInfo: AssetDataPriced
+  collateralInfo: CollateralInfo
   marketInfo: TgUsdMarket
   tgUSDInfo: AssetDataPriced
 }
 
 type TgUsdRecordContextValues = {
   collateral: TgUsdMarketAsset
-  collateralInfo: AssetDataPriced
+  collateralInfo: CollateralInfo
   isLoading: boolean
   marketData?: MarketDetailData
   loadOnChainData: () => void
@@ -98,7 +98,11 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
 
   const fetchUserPositions = () => {
     getUserPositions(currentAddress!, marketInfo.marketAddress).then((pos) => {
-      setUserPositions(pos)
+      if (pos) {
+        setUserPositions(pos)
+      } else {
+        setUserPositions([])
+      }
     })
   }
 
@@ -161,9 +165,8 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
 
     try {
       const walletClient = getWalletClient()
-      if (!walletClient || !marketInfo) throw new Error("Wallet client not found")
 
-      const data = await getBalancesAndAllowances(walletClient, depositAssetInfo, marketInfo?.marketAddress)
+      const data = await getBalancesAndAllowances(walletClient!, depositAssetInfo, marketInfo?.marketAddress)
 
       setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
     } catch (error) {

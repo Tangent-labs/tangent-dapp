@@ -1,15 +1,15 @@
 "use client"
 
-import { AssetDataPriced } from "@/types"
+import { AssetDataPriced, CollateralInfo } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
-import { toBigInt } from "@/lib/number_formatter"
+import { formatDisplayValue, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { IconThunder } from "@/components/icons/icon_thunder"
 
 type DepositInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  depositAsset?: AssetDataPriced
+  depositAsset?: AssetDataPriced | CollateralInfo
   className?: string
   depositAmount?: bigint
   balance?: bigint
@@ -53,20 +53,12 @@ export function DepositInput({
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 18) : "")
   const [isUserInput, setIsUserInput] = useState(false)
 
-  const formatDisplayValue = (value: string | number): string => {
-    const num = Number(value)
-    if (isNaN(num)) return ""
-    if (Number.isInteger(num)) return num.toString()
-    const formatted = num.toFixed(6).replace(/\.?0+$/, "")
-    return formatted
-  }
-
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!!setPercentage) {
       const newPercentage = Number(e.target.value)
       setPercentage(newPercentage)
       const newValue = newPercentage !== 0 ? Number(((newPercentage / 100) * balanceNumber).toFixed(0)) : 0
-      setInnerValue(newValue.toFixed(0))
+      setInnerValue(formatDisplayValue(newValue))
       onValueChange(!!newValue ? toBigInt(newValue, depositAsset?.decimals || 18) : undefined)
     }
   }
@@ -93,7 +85,7 @@ export function DepositInput({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
     setIsUserInput(true)
-    setInnerValue(newValue)
+    setInnerValue(formatDisplayValue(newValue))
 
     if (!!setPercentage) {
       setPercentage(newValue !== "" && balanceNumber > 0 ? (Number(newValue) / balanceNumber) * 100 : 0)

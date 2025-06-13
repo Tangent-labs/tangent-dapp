@@ -1,4 +1,4 @@
-import { AssetDataPriced } from "@/types"
+import { AssetDataPriced, CollateralInfo } from "@/types"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
 import { getBorrowCommonFormState } from "../tg_usd_record_controller"
 import { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
@@ -12,7 +12,7 @@ export function getLeverageFormState(
   isDepositAndBorrow?: boolean,
   isWellConnected?: boolean,
   depositAssetInfo?: AssetDataPriced,
-  collateralInfo?: AssetDataPriced,
+  collateralInfo?: CollateralInfo,
   balanceAllowanceData?: BalanceAllowanceData,
   isDepositLoading?: boolean
 ) {

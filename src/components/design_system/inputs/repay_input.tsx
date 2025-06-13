@@ -2,7 +2,7 @@
 
 import { AssetDataPriced } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
-import { toBigInt } from "@/lib/number_formatter"
+import { formatDisplayValue, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
@@ -45,14 +45,6 @@ export function RepayInput({
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
   const [isUserInput, setIsUserInput] = useState(false)
 
-  const formatDisplayValue = (value: string | number): string => {
-    const num = Number(value)
-    if (isNaN(num)) return ""
-    if (Number.isInteger(num)) return num.toString()
-    const formatted = num.toFixed(3).replace(/\.?0+$/, "")
-    return formatted
-  }
-
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!setPercentage || !depositAsset?.decimals || !balance) return
 
@@ -73,7 +65,7 @@ export function RepayInput({
 
   useEffect(() => {
     if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
-      const updatedValue = Number(formatUnits(depositAmount, depositAsset.decimals)).toFixed(0)
+      const updatedValue = Number(formatUnits(depositAmount, depositAsset.decimals)).toFixed(3)
       setInnerValue(formatDisplayValue(updatedValue))
       setIsUserInput(false)
     }
@@ -103,7 +95,7 @@ export function RepayInput({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
     setIsUserInput(true)
-    setInnerValue(newValue)
+    setInnerValue(formatDisplayValue(newValue))
 
     if (newValue === "MAX" && setPercentage) {
       setPercentage(100)

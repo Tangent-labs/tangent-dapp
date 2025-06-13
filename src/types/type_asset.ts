@@ -16,6 +16,16 @@ export type AssetDataPriced = AssetData & {
   price: number
 }
 
+export type CollateralInfo = {
+  address: Address
+  decimals: number
+  displayDecimals: number
+  symbol: string
+  name: string
+  logo: ExistingAsset
+  price: number
+}
+
 export type TokenizedPosition = {
   tknId: number
   balance?: bigint

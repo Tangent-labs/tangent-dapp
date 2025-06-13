@@ -28,7 +28,7 @@ import ButtonTab from "@/components/design_system/inputs/button_tab"
 export default function TgUsdRepayPanel() {
   const { tokens } = useTgUsdContext()
 
-  const { tgUSDInfo, collateralInfo, balances } = useTgUsdRecordContext()
+  const { tgUSDInfo, collateralInfo, balances, marketInfo } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -103,7 +103,7 @@ export default function TgUsdRepayPanel() {
         price: 1,
         symbol: "tgUSD",
         value: collateralInfo.name as string,
-        balance: balances[collateralInfo.address] || BigInt(0),
+        balance: balances[marketInfo?.collatAddress] || BigInt(0),
       },
       ...[
         {
@@ -160,7 +160,7 @@ export default function TgUsdRepayPanel() {
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
           <span className="text-[20px] font-semibold">Repay debt</span>
-          <span className="text-xs text-subtitle"> Max: {formatBigInt(marketData?.debtInfos?.userDebt, 18, 2)} tgUSD</span>
+          <span className="text-xs text-subtitle"> Max: {formatBigInt(marketData?.debtInfos?.userDebt, 18, 3)} tgUSD</span>
         </div>
 
         <RepayInput
@@ -300,7 +300,7 @@ export default function TgUsdRepayPanel() {
             </div>
           </PopoverTrigger>
           <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none">
-            <div className="rounded-[10px] border-none p-3 backdrop-blur-[60px] backdrop-filter">
+            <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
               <div className="flex w-full flex-col items-center justify-between gap-2">
                 <div className="flex w-full items-center justify-start">Slippage</div>
                 <input

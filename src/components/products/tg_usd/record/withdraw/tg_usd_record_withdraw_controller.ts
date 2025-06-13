@@ -2,9 +2,8 @@ import { Abi, WalletClient } from "viem"
 import { MarketDetailData, TgUsdtMarketWitrhdrawParams } from "../../tg_usd_type"
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
-import { AssetDataPriced } from "@/types"
 
-export function getWithdrawFormState(marketData?: MarketDetailData, withdrawWeiValue?: bigint, collateralInfo?: AssetDataPriced, isWellConnected?: boolean) {
+export function getWithdrawFormState(marketData?: MarketDetailData, withdrawWeiValue?: bigint, isWellConnected?: boolean) {
   const reasons: string[] = []
 
   if (!marketData) return { canProcess: false, cantProcessReasons: ["No market data"], haveToApprove: false }

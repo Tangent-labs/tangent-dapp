@@ -28,14 +28,7 @@ const CustomSelect = <T extends DepositReceiveAsset>({ options = [], onChange, c
     return (
       <div className="absolute left-0 flex w-full" style={style}>
         <SelectItem key={option.value} value={option.symbol}>
-          {template ? (
-            template(option)
-          ) : (
-            <div className="flex cursor-pointer items-center gap-2">
-              {option.logoURI ? <Image src={option.logoURI} alt={option.symbol} height={32} width={32} /> : <TokenImage token={option.logo} size={32} />}
-              <span>{option.symbol}</span>
-            </div>
-          )}
+          {template && template(option)}
         </SelectItem>
       </div>
     )
@@ -61,7 +54,7 @@ const CustomSelect = <T extends DepositReceiveAsset>({ options = [], onChange, c
           </div>
         </SelectTrigger>
         <SelectContent>
-          <div className="flex min-h-56 w-full min-w-56 flex-col overflow-hidden bg-input">
+          <div className="flex min-h-56 w-full min-w-56 flex-col overflow-hidden">
             <div className="w-full p-2">
               <Input className="rounded-lg focus:outline-none" placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>

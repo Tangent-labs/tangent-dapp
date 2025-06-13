@@ -58,7 +58,7 @@ export default function TgUsdDepositPanel() {
     maxBorrowableValue,
   } = useTgUsdDepositContext()
 
-  const { collateralInfo, marketData, tgUSDInfo, balances, balanceAllowanceData } = useTgUsdRecordContext()
+  const { collateralInfo, marketData, tgUSDInfo, balances, balanceAllowanceData, marketInfo } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -77,7 +77,7 @@ export default function TgUsdDepositPanel() {
       {
         ...collateralInfo,
         value: collateralInfo.name as string,
-        balance: balances[collateralInfo.address] || BigInt(0),
+        balance: balances[marketInfo?.collatAddress] || BigInt(0),
       },
       ...[
         {
@@ -150,7 +150,7 @@ export default function TgUsdDepositPanel() {
       <div className="flex w-full items-end justify-between gap-2">
         <span className="text-[20px] font-semibold">Deposit {collateralInfo?.symbol}</span>
         <span className="text-xs text-subtitle">
-          Max: {formatBigInt(marketData?.collateralBalance, 18, 2)} {collateralInfo?.symbol}
+          Max: {formatBigInt(balanceAllowanceData?.balance || marketData?.collateralBalance, depositAssetInfo?.decimals || 18, 2)} {depositAssetInfo?.symbol}
         </span>
       </div>
 
@@ -190,7 +190,9 @@ export default function TgUsdDepositPanel() {
                 />
 
                 <div className="text-xs">
-                  {zapValue && collateralInfo?.price !== 0 ? `(~${formatDollar((Number(formatUnits(zapValue, 18)) * collateralInfo?.price).toFixed(2))})` : ""}
+                  {zapValue && !!marketData?.collateralInfos
+                    ? `(~${formatDollar(formatUnits((BigInt(zapValue) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), depositAssetInfo?.decimals || 18))})`
+                    : ""}
                 </div>
               </div>
               <div className="flex justify-between text-xs text-gray-400">
@@ -198,7 +200,7 @@ export default function TgUsdDepositPanel() {
               </div>
             </div>
             <div className="flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-select-input px-2 py-1">
-              <TokenImage token={collateralInfo?.logo} size={32} />
+              <TokenImage token={collateralInfo?.logo as ExistingAsset} size={32} />
               <div className="font-semibold">{collateralInfo?.symbol}</div>
             </div>
           </div>
@@ -209,7 +211,7 @@ export default function TgUsdDepositPanel() {
         <div className="flex flex-col gap-1">
           <div className="flex items-end justify-between">
             <span className="text-[20px] font-semibold">Borrow tgUSD</span>
-            <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 2)} tgUSD</span>
+            <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} tgUSD</span>
           </div>
           <BorrowInput
             displaySliderInput={true}
@@ -286,7 +288,7 @@ export default function TgUsdDepositPanel() {
             </div>
           </PopoverTrigger>
           <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none font-roobert">
-            <div className="rounded-[10px] border-none p-3 backdrop-blur-[60px] backdrop-filter">
+            <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
               <div className="flex w-full flex-col items-center justify-between gap-2">
                 <div className="flex w-full items-center justify-start">Slippage</div>
                 <input

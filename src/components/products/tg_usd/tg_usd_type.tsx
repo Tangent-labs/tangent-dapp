@@ -1,4 +1,15 @@
-import { AprEntry, AssetData, AssetDataPriced, ERC20StaticInfos, ExistingAsset, Network, PositionData, TokenAmountPriced, TokenAmountPricedRow } from "@/types"
+import {
+  AprEntry,
+  AssetData,
+  AssetDataPriced,
+  CollateralInfo,
+  ERC20StaticInfos,
+  ExistingAsset,
+  Network,
+  PositionData,
+  TokenAmountPriced,
+  TokenAmountPricedRow,
+} from "@/types"
 import { Address } from "viem"
 
 export type TgUsdGlobalMarketData = {
@@ -188,7 +199,7 @@ export type SociabilizationData = {
 
 export type MarketDetailData = {
   marketAddress: Address
-  collateralInfo: AssetDataPriced
+  collateralInfo: CollateralInfo
   debtInfos: DebtInfos
   constants: MarketConstants
   collateralBalance: bigint

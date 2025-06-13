@@ -32,7 +32,7 @@ export default function TgUsdWithdrawPanel() {
           <div className="flex items-end justify-between">
             <span className="text-[20px] font-semibold">Withdraw collateral</span>
             <span className="text-xs text-subtitle">
-              Max: {formatBigInt(maxWithdrawable, 18, 2)} {collateralInfo?.symbol}
+              Max: {formatBigInt(maxWithdrawable, 18, 3)} {collateralInfo?.symbol}
             </span>
           </div>
 

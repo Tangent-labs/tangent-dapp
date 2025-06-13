@@ -9,7 +9,8 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
 
 export default function TgUsdBorrowPanel() {
-  const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, borrowPercentage, maxBorrowableValue } = useTgUsdBorrowContext()
+  const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, exceedsMaxLTV, borrowPercentage, maxBorrowableValue } =
+    useTgUsdBorrowContext()
 
   const { tgUSDInfo } = useTgUsdRecordContext()
 
@@ -29,7 +30,7 @@ export default function TgUsdBorrowPanel() {
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
           <span className="text-[20px] font-semibold">Borrow tgUSD</span>
-          <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 2)} tgUSD</span>
+          <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} tgUSD</span>
         </div>
 
         <BorrowInput
@@ -48,6 +49,8 @@ export default function TgUsdBorrowPanel() {
           setPercentage={setBorrowPercentage}
         />
       </div>
+
+      <>{exceedsMaxLTV && <div className="flex w-full items-center justify-center text-xs text-red-500">Position exceeds maxLTV</div>}</>
 
       <FormButtons actions={{ handleApprove: undefined, handleProcess: actionBorrow }} formState={formState} labelProcess="Borrow" />
     </div>

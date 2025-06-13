@@ -80,7 +80,7 @@ export function transformGlobalData(data?: ChainViewMarketList): TgUsdGlobalData
     tgUsdSupply: formatBigInt(data?.tgUSDSupply || "0", 18, 0),
     sgUsdPrice: formatDollar(formatBigInt(data?.sgUSDPrice || "0", 18, 2), 2),
     sgUsdSupply: formatBigInt(data?.sgUSDSupply || "0", 18, 0),
-    globalCr: ((Number(totalTVL) / Number(totalDebt)) * 100).toFixed(2) + "%",
+    globalCr: totalDebt !== 0n ? ((Number(totalTVL) / Number(totalDebt)) * 100).toFixed(2) + "%" : "N/A",
     globalTvl: formatDollar(formatUnits(totalTVL, 18)),
     globalDebt: formatDollar(formatUnits(totalDebt, 18)),
     APY: formatPercent(Number(formatBigInt(data?.tgUSDPercentageInSgUSD || "0", 18, 2)) * 100, 2),

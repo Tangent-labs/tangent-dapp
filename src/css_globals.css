@@ -138,6 +138,7 @@
     --tgt-bg-header: linear-gradient(135deg, #070707 0%, #101010 100%);
     --tgt-bg-overlay-panel: #ffffff09;
     --tgt-bg-panel-disabled: #ffffff26;
+    --tgt-bg-tab: linear-gradient(135deg, #0075ff 0%, #00c2ff 100%);
     --tgt-bg-lec: linear-gradient(135deg, #ff8800 0%, #f79f61 100%);
     --tgt-light-tonic: #fbf911;
     --tgt-tonic: #d9fb0b;

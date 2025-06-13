@@ -55,21 +55,21 @@ export default function TgUsdMarketList() {
             <div
               className={cn(
                 "flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]",
-                !!userData?.totalMarketDebt ? "" : "shimmer"
+                !!userData ? "" : "shimmer"
               )}
             >
-              <span className="text-xs text-gray-400">Your Debts</span>
-              <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalMarketDebt, 18))} USD</span>
+              <span className="text-xs text-gray-400">Your Debt</span>
+              <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalMarketDebt || 0n, 18))} USD</span>
             </div>
 
             <div
               className={cn(
                 "flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]",
-                !!userData?.totalDeposit ? "" : "shimmer"
+                !!userData ? "" : "shimmer"
               )}
             >
               <span className="text-xs text-gray-400">Your Collateral Deposits</span>
-              <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalDeposit, 18))} USD</span>
+              <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalDeposit || 0n, 18))} USD</span>
             </div>
 
             <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">

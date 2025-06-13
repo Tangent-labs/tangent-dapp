@@ -16,7 +16,7 @@ type TgUsdMaketListContextValues = {
   searchValue: string | null
   setSearchValue: (value: string | null) => void
   marketData: ChainViewMarketRow[]
-  userData: { totalMarketDebt: bigint; totalDeposit: bigint }
+  userData: { totalMarketDebt: bigint; totalDeposit: bigint } | null
 }
 
 export const TgUsdMaketListContext = createContext<TgUsdMaketListContextValues | undefined>(undefined)
@@ -62,15 +62,18 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
   }, [onChainData])
 
   const userData = useMemo(() => {
-    let totalMarketDebt = 0n
-    let totalDeposit = 0n
+    if (onChainData) {
+      let totalMarketDebt = 0n
+      let totalDeposit = 0n
 
-    onChainData?.rowInfos.forEach((market) => {
-      totalMarketDebt += market.debtInfos.userDebt
-      totalDeposit += market.collateralInfos?.positionCollateralUSDValue
-    })
+      onChainData?.rowInfos.forEach((market) => {
+        totalMarketDebt += market.debtInfos.userDebt
+        totalDeposit += market.collateralInfos?.positionCollateralUSDValue
+      })
 
-    return { totalMarketDebt, totalDeposit }
+      return { totalMarketDebt, totalDeposit }
+    }
+    return null
   }, [onChainData])
 
   const contextValue: TgUsdMaketListContextValues = {

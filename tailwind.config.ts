@@ -16,6 +16,7 @@ const config: Config = {
         "button-active-hover": "var(--tgt-bg-button-active-hover)",
         "button-active": "var(--tgt-bg-button-active)",
         danger: "var(--tgt-bg-danger)",
+        tab: "var(--tgt-bg-tab)",
         "select-input": "var(--tgt-bg-select-input)",
         tonic: "var(--tgt-bg-tonic)",
         "light-tonic": "var(--tgt-bg-light-tonic)",

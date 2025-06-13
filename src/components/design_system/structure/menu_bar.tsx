@@ -25,7 +25,7 @@ export default function MenuBar({ className, links, ...props }: MenuBarProps) {
           <li
             key={l.href}
             data-active={pathname === l.href || (l.href === dappConfig.dappUrl && pathname === "/") ? "true" : "false"}
-            className="transition-all duration-700 hover:text-row-tonic data-[active=true]:text-row-tonic"
+            className="transition-all duration-200 hover:text-row-tonic data-[active=true]:text-row-tonic"
           >
             <Link className="text-sm aria-disabled:text-gray-700" href={l.href} aria-disabled={l.disabled}>
               {l.label}

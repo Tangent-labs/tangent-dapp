@@ -103,7 +103,7 @@ export function DepositInput({
         className={cn(
           isLoading ? "shimmer" : "",
           disabled ? "bg-panel-disabled" : "bg-white bg-opacity-[3%]",
-          "flex flex-col rounded-[10px] border border-white border-opacity-20 p-2"
+          "flex flex-col rounded-[10px] border-2 border-white border-opacity-20 p-2 transition-colors duration-200 hover:bg-white/10"
         )}
       >
         <div className="flex w-full justify-between">

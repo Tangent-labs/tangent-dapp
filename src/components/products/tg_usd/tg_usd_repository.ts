@@ -18,6 +18,8 @@ type RawMarket = {
 
 export const tgUsdTokens = [envAddresses.wStables, envAddresses.lps, envAddresses.tokens]
 
+export const tgUsdPegKeepers: Address[] = Object.values(envAddresses.pegKeepers)
+
 export const tgUsdMarkets: TgUsdMarket[] = envAddresses.markets.map((market: RawMarket) => ({
   marketAddress: market.marketAddress as Address,
   marketName: market.collatName.replace("_", "-"),

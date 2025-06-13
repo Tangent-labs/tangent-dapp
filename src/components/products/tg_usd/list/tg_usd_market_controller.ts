@@ -1,8 +1,8 @@
 import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
 import { ChainViewMarketList, ChainViewMarketRow, TgUsdGlobalData, TgUsdMarketData, TgUsdMarketDataUser } from "../tg_usd_type"
 import { formatBigInt, formatDollar, formatPercent } from "@/lib/number_formatter"
-import { TGUSD_CONTRACT, tgUsdMarkets } from "../tg_usd_repository"
-import { Abi, Address, formatUnits, Hex, parseUnits } from "viem"
+import { TGUSD_CONTRACT, tgUsdMarkets, tgUsdPegKeepers } from "../tg_usd_repository"
+import { Abi, Address, formatUnits, Hex } from "viem"
 import MarketListUI from "@/abi/tgusd/MarketListUI.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
 
@@ -15,6 +15,7 @@ export const getTgUsdMarketsData = async (address: Address | undefined) => {
     TGUSD_CONTRACT.TG_USD,
     TGUSD_CONTRACT.SG_USD,
     markets,
+    tgUsdPegKeepers,
   ])
 }
 
@@ -60,18 +61,28 @@ export function transformGlobalData(data?: ChainViewMarketList): TgUsdGlobalData
       sgUsdSupply: "-",
       globalCr: "-",
       globalTvl: "-",
+      globalDebt: "-",
       APY: "-",
     }
 
   const tgUsdPrice = Number(formatBigInt(data?.tgUSDPrice || "0", 18, 5))
 
+  let totalTVL = 0n
+  let totalDebt = 0n
+
+  data?.rowInfos.forEach((market) => {
+    totalTVL += market.collateralInfos?.positionCollateralUSDValue
+    totalDebt += market?.debtInfos.totalDebt
+  })
+
   return {
-    tgUsdPrice: formatDollar(tgUsdPrice, 2),
+    tgUsdPrice: tgUsdPrice.toFixed(3),
     tgUsdSupply: formatBigInt(data?.tgUSDSupply || "0", 18, 0),
     sgUsdPrice: formatDollar(formatBigInt(data?.sgUSDPrice || "0", 18, 2), 2),
     sgUsdSupply: formatBigInt(data?.sgUSDSupply || "0", 18, 0),
-    globalCr: formatBigInt(data?.tgUSDPercentageInSgUSD || "0", 18, 2),
-    globalTvl: formatDollar(Number(parseUnits(data?.sgUSDSupply?.toString() || "0", 18)) * tgUsdPrice) || "-",
+    globalCr: ((Number(totalTVL) / Number(totalDebt)) * 100).toFixed(2) + "%",
+    globalTvl: formatDollar(formatUnits(totalTVL, 18)),
+    globalDebt: formatDollar(formatUnits(totalDebt, 18)),
     APY: formatPercent(Number(formatBigInt(data?.tgUSDPercentageInSgUSD || "0", 18, 2)) * 100, 2),
   }
 }
@@ -90,6 +101,7 @@ function transformMarketDataToRow(data: TgUsdMarketData & TgUsdMarketDataUser, o
   return {
     token: data.collateral as ExistingAsset,
     name: data.collateral,
+    address: onChainRow?.marketAddress as Address,
     apr: {
       current: Number(data.apr.details.baseApr),
       projected: Number(data.apr.details.baseApr),

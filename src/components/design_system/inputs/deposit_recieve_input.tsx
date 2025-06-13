@@ -117,7 +117,7 @@ export function DepositReceiveInput({
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <div className={`${isLoading ? "shimmer" : ""} flex flex-col rounded-[10px] border border-white border-opacity-20 bg-white bg-opacity-[3%] p-2`}>
+      <div className={`${isLoading ? "shimmer" : ""} flex flex-col rounded-[10px] border-2 border-white border-opacity-20 bg-white bg-opacity-[3%] p-2`}>
         <div className="flex w-full justify-between">
           <div className="text-sm text-gray-400">{labelDeposit}</div>
           {isZapping && (

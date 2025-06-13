@@ -16,6 +16,7 @@ import InputSearch from "@/components/design_system/inputs/input_search"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import MarketListAPR from "@/components/design_system/list/market_list_apr"
 import { cn } from "@/lib/utils"
+import { formatUnits } from "viem"
 
 const listeState: ListState = {
   search: undefined,
@@ -26,7 +27,7 @@ const listeState: ListState = {
 }
 
 export default function TgUsdMarketList() {
-  const { displayRows, globalData, searchValue, setSearchValue } = useTgUsdMaketListContext()
+  const { displayRows, globalData, searchValue, setSearchValue, userData } = useTgUsdMaketListContext()
 
   return (
     <>
@@ -51,19 +52,29 @@ export default function TgUsdMarketList() {
           </div>
 
           <div className="mt-auto flex w-full items-center justify-center gap-3">
-            <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
+            <div
+              className={cn(
+                "flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]",
+                !!userData?.totalMarketDebt ? "" : "shimmer"
+              )}
+            >
               <span className="text-xs text-gray-400">Your Debts</span>
-              <span className="text-sm font-semibold">$0.00 USD</span>
+              <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalMarketDebt, 18))} USD</span>
             </div>
 
-            <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
+            <div
+              className={cn(
+                "flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]",
+                !!userData?.totalDeposit ? "" : "shimmer"
+              )}
+            >
               <span className="text-xs text-gray-400">Your Collateral Deposits</span>
-              <span className="text-sm font-semibold">$0.00 USD</span>
+              <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalDeposit, 18))} USD</span>
             </div>
 
             <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
               <span className="text-xs text-gray-400">Your Total Points</span>
-              <span className="text-sm font-semibold">$0.00 USD</span>
+              <span className="text-sm font-semibold">0</span>
             </div>
           </div>
         </div>
@@ -74,17 +85,19 @@ export default function TgUsdMarketList() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <IndicatorCards
+                className={cn(globalData.tgUsdPrice === "-" ? "shimmer" : "")}
                 indicators={[
-                  { title: "tgUsd ", value: formatDollar(globalData.tgUsdPrice, 5) },
+                  { title: "USG", value: formatDollar(globalData.tgUsdPrice, 5) },
                   { title: "Supply", value: globalData.tgUsdSupply },
                 ]}
               >
                 <TokenImage token={"tgUSD" as ExistingAsset} className="h-8 w-8" size={32} />
               </IndicatorCards>
               <IndicatorCards
+                className={cn(globalData.sgUsdPrice === "-" ? "shimmer" : "")}
                 indicators={[
-                  { title: "sgUsd ", value: globalData.tgUsdPrice },
-                  { title: "Supply", value: globalData.tgUsdSupply },
+                  { title: "sUSG ", value: globalData.sgUsdPrice },
+                  { title: "Supply", value: globalData.sgUsdSupply },
                   { title: "APY", value: globalData.APY },
                 ]}
               >
@@ -111,8 +124,12 @@ export default function TgUsdMarketList() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <IndicatorCards indicators={[{ title: "Global CR ", value: globalData.globalCr }]} />
-          <IndicatorCards indicators={[{ title: "Global TVL ", value: globalData.globalTvl }]} />
+          <IndicatorCards className={cn(globalData.globalTvl === "-" ? "shimmer" : "")} indicators={[{ title: "Global TVL ", value: globalData.globalTvl }]} />
+          <IndicatorCards
+            className={cn(globalData.globalDebt === "-" ? "shimmer" : "")}
+            indicators={[{ title: "Global Debt ", value: globalData.globalDebt }]}
+          />
+          <IndicatorCards className={cn(globalData.globalCr === "-" ? "shimmer" : "")} indicators={[{ title: "Global CR ", value: globalData.globalCr }]} />
         </div>
       </div>
 
@@ -135,20 +152,11 @@ export function TgUsdMarketListInner() {
       </div>
       {displayRows?.map((item, index) => (
         <ListRow className={cn("my-2", !!marketData.length && !!displayRows ? "" : "shimmer")} key={index} navigate={() => router.push(item.token)}>
-          <ListAsset
-            name={item.name}
-            token={item.token}
-            marketData={marketData.find(
-              (el) =>
-                el.collateralInfos.collateralToken.symbol.replace("-f", "").replace("-", "").replace("_", "").toUpperCase() ===
-                item.token.replace("-f", "").replace("-", "").replace("_", "").toUpperCase()
-            )}
-            assetsEarned={[]}
-          />
+          <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
           <MarketListAPR apr={item.apr.current} projectedApr={item.apr.projected} />
           <>
             {item.indicators.map((i) => (
-              <div key={i.key} className="flex basis-[48%] flex-col items-center text-[20px] leading-5 md:flex-1">
+              <div key={i.key} style={{ fontWeight: 300 }} className="flex basis-[48%] flex-col items-center text-[20px] leading-5 md:flex-1">
                 {i?.value}
               </div>
             ))}

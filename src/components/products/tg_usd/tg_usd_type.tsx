@@ -73,6 +73,7 @@ export type TgUsdGlobalData = {
   sgUsdSupply: string
   APY: string
   globalCr: string
+  globalDebt: string
   globalTvl: string
 }
 

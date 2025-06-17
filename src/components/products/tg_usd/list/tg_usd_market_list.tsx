@@ -51,7 +51,7 @@ export default function TgUsdMarketList() {
             <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
           </div>
 
-          <div className="mt-auto flex w-full items-center justify-center gap-3">
+          <div className="mt-auto flex w-full items-center justify-center gap-3 p-2">
             <div
               className={cn(
                 "flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]",

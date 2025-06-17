@@ -114,7 +114,7 @@ function PositionList() {
         </div>
       </div>
 
-      <div className="scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent mt-2 max-h-[500px] overflow-y-auto rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="scrollbar-thin mt-2 h-full max-h-[200px] overflow-y-auto rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
         {displayRows &&
           (displayRows as UserPosition[])?.map((pos: UserPosition) => (
             <div key={pos.txHash} className="px-5 py-2 text-[15px] hover:cursor-pointer hover:before:bg-list-row-hover">

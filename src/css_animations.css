@@ -172,3 +172,16 @@
     transform: translateY(0); /* Slide to original position */
   }
 }
+
+.scrollbar-thin {
+  overflow-y: auto;
+  scrollbar-width: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #ffffff;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1); /* White with 10% opacity */
+}

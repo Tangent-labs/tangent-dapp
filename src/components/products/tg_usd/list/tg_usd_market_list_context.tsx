@@ -29,11 +29,9 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
   const [searchValue, setSearchValue] = useState<string | null>(null)
 
   useEffect(() => {
-    if (currentAddress) {
-      loadOnChainData().then((data) => {
-        setOnChainData(data)
-      })
-    }
+    loadOnChainData().then((data) => {
+      setOnChainData(data)
+    })
   }, [currentAddress])
 
   const loadOnChainData = async () => {

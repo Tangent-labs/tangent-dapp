@@ -117,6 +117,7 @@ function transformMarketDataToRow(data: TgUsdMarketData & TgUsdMarketDataUser, o
       { key: "borrowed", label: "Borrowed", value: formatDollar(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18)) || "-", raw: data.borrowed },
       { key: "cap", label: "Cap", value: formatBigInt(onChainRow?.constants?.maxMarketDebt, 18, 0) || "-", raw: data.cap },
     ],
+    userHasDeposited: !!onChainRow?.collateralInfos?.positionCollateralUSDValue && onChainRow?.collateralInfos?.positionCollateralUSDValue > 0n,
   }
 }
 

@@ -160,6 +160,7 @@ export function TgUsdMarketListInner() {
                 {i?.value}
               </div>
             ))}
+            {item.userHasDeposited && <div className="absolute -right-4 top-5 h-10 w-2 rounded-full bg-tonic"></div>}
           </>
         </ListRow>
       ))}

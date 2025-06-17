@@ -191,7 +191,7 @@ export default function TgUsdDepositPanel() {
 
                 <div className="text-xs">
                   {zapValue && !!marketData?.collateralInfos
-                    ? `(~${formatDollar(formatUnits((BigInt(zapValue) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), depositAssetInfo?.decimals || 18))})`
+                    ? `(~${formatDollar(formatUnits((BigInt(zapValue) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), 18))})`
                     : ""}
                 </div>
               </div>

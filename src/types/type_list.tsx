@@ -33,4 +33,5 @@ export type ListRowData = {
     value: string
     raw?: number // Raw numerical value for calculations
   }[]
+  userHasDeposited: boolean
 }

@@ -13,6 +13,7 @@ import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import moment from "moment"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { formatUnits } from "viem"
+import { cn } from "@/lib/utils"
 
 const listeState: ListState = {
   search: undefined,
@@ -118,7 +119,14 @@ function PositionList() {
           (displayRows as UserPosition[])?.map((pos: UserPosition) => (
             <div key={pos.txHash} className="px-5 py-2 text-[15px] hover:cursor-pointer hover:before:bg-list-row-hover">
               <div className="flex w-full items-center justify-between">
-                <div className="w-2/12">{formatActionLabel(pos.label)} </div>
+                <div
+                  className={cn(
+                    "w-2/12",
+                    formatActionLabel(pos.label) === "Self Liquidation" || formatActionLabel(pos.label) === "Liquidation" ? "text-red-600" : "text-white"
+                  )}
+                >
+                  {formatActionLabel(pos.label)}
+                </div>
                 <div className="flex w-3/12 items-center justify-center gap-1">
                   {formatBigInt(pos.collatAmount, 18, 2)} <TokenImage token={collateralInfo.logo} size={24} /> {collateralInfo?.symbol}{" "}
                   <span className="text-xs text-subtitle"> {formatDollar(formatUnits(pos.collatAmount, 18), 0)}</span>

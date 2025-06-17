@@ -6,7 +6,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        roobert: ["Roobert", "sans-serif"],
+        roobert: ["Roobert"],
       },
       backgroundImage: {
         header: "var(--tgt-bg-header)",

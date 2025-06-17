@@ -38,6 +38,8 @@ export type ExistingAsset =
   | "TRICRV"
   | "tgUSD"
   | "sgUSD"
+  | "USG"
+  | "sUSG"
   | "wcrvUSD"
   | "crvUSD"
   | "scrvUSD"

@@ -46,6 +46,10 @@ export const formatActionLabel = (event: string) => {
       return "Leverage"
     case "market_zap_leverage":
       return "Zap Leverage"
+    case "market_liquidate":
+      return "Liquidation"
+    case "market_self_liquidate":
+      return "Self Liquidation"
     default:
       return "UnknownEvent"
   }

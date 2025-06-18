@@ -27,7 +27,7 @@ interface IndicatorCardsProps {
 
 const IndicatorCards = ({ indicators, className = "", children }: IndicatorCardsProps) => {
   return (
-    <Panel className={`inline-flex w-auto gap-2 !border-none ${className}`}>
+    <Panel className={`inline-flex w-auto gap-4 !border-none ${className}`}>
       {children}
       {indicators.map((indicator, index) => (
         <IndicatorCard key={index} title={indicator.title} value={indicator.value} />

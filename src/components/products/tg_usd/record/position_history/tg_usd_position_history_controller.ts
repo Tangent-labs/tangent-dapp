@@ -9,7 +9,7 @@ export const userPositionListHeaders: ListHeaderData[] = [
   { label: "Tx", key: "txHash" },
 ]
 
-export const mapUserData = (pos: UserPosition[]) => {
+export const sortUserData = (pos: UserPosition[]) => {
   if (!pos || pos.length === 0) return []
 
   return [...pos].sort((a: UserPosition, b: UserPosition) => {

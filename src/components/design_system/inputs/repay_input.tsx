@@ -3,7 +3,7 @@
 import { AssetDataPriced } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatDisplayValue, toBigInt } from "@/lib/number_formatter"
-import { formatUnits } from "viem"
+import { formatUnits, maxUint256 } from "viem"
 import { cn } from "@/lib/utils"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { IconThunder } from "@/components/icons/icon_thunder"
@@ -53,7 +53,7 @@ export function RepayInput({
 
     let repayAmount: bigint
     if (newPercentage === 100) {
-      repayAmount = balance
+      repayAmount = maxUint256
     } else {
       repayAmount = (BigInt(newPercentage) * balance) / BigInt(100)
     }
@@ -150,7 +150,7 @@ export function RepayInput({
 
           <div className="flex cursor-pointer items-center">
             <button
-              className="ml-1 flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
+              className="ml-1 flex w-10 cursor-pointer items-center rounded-full border-2 border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
               type="button"
               onClick={() => {
                 if (setMaxBalance) {

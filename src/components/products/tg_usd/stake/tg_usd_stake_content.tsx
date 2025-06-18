@@ -78,7 +78,7 @@ export default function TgUsdStakeContent() {
     if (!receivedTokenInfo) return <></>
 
     return (
-      <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+      <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
         <TokenImage token={receivedTokenInfo.logo as ExistingAsset} size={20} />
         <span className="text-sm font-semibold">
           <span>{receivedTokenInfo.symbol}</span>

@@ -7,7 +7,6 @@ import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context
 import { Address } from "viem"
 import { useTgUsdContext } from "../tg_usd_context"
 import { getUserPositions } from "../api"
-import { mapUserData } from "./position_history/tg_usd_position_history_controller"
 
 import {
   BalanceAllowanceData,
@@ -28,6 +27,7 @@ import {
   getBalancesAndAllowances,
   transformMarketData,
 } from "./tg_usd_record_controller"
+import { sortUserData } from "./position_history/tg_usd_position_history_controller"
 
 type TgUsdRecordContextProps = {
   children: ReactNode
@@ -187,7 +187,7 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
       return []
     }
 
-    const rows = mapUserData(userPositions)
+    const rows = sortUserData(userPositions)
     setIsUserHistoryLoading(false)
 
     return rows

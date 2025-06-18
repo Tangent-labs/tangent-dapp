@@ -38,7 +38,7 @@ export function getDepositFormState(
     }
 
     if (isDepositAndBorrow) {
-      const borrowReasons = getBorrowCommonFormState(marketData, depositWeiValue, borrowWeiValue)
+      const borrowReasons = getBorrowCommonFormState(marketData, borrowWeiValue)
       reasons.push(...borrowReasons)
     }
   }

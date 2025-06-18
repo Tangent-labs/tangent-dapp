@@ -36,7 +36,7 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
                 </div>
               )}
 
-              <div className="flex items-center justify-center rounded-full border border-white border-opacity-20 bg-button-linear px-3 py-0.5 text-xs">
+              <div className="flex items-center justify-center rounded-full border-2 border-white border-opacity-20 bg-button-linear px-3 py-0.5 text-xs">
                 {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
               </div>
             </>
@@ -51,7 +51,7 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
 
           <button
             onClick={() => router.push("/")}
-            className="h-10 rounded-[10px] border border-white border-opacity-20 bg-overlay-panel px-9 text-xs font-semibold backdrop-blur-[60px] transition-colors duration-200 ease-in-out hover:bg-white/10"
+            className="h-10 rounded-[10px] border-2 border-white border-opacity-20 bg-overlay-panel px-9 text-xs font-semibold backdrop-blur-[60px] transition-colors duration-200 ease-in-out hover:bg-white/10"
           >
             Back
           </button>

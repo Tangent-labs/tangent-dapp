@@ -89,7 +89,7 @@ const InputAssetValue = ({ value, balance, asset, onChange, options, className, 
         value={innerValue}
         onChange={handleInputChange}
         className={cn(
-          "min-h-10 rounded-[10px] border border-white border-opacity-20 bg-transparent p-2 disabled:bg-gray-400 disabled:bg-opacity-30",
+          "min-h-10 rounded-[10px] border-2 border-white border-opacity-20 bg-transparent p-2 disabled:bg-gray-400 disabled:bg-opacity-30",
           inputClassName
         )}
       />

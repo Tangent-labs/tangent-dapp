@@ -2,6 +2,8 @@
 
 import { Address } from "viem"
 
+const baseUrl = process.env.BASE_URL || ""
+
 export const getEnsoData = async (
   amountIn: bigint,
   tokenIn: Address,
@@ -56,7 +58,7 @@ export const fetchGraphData = async (tokenIn: Address, start: number, end: numbe
 
 export const getUserPositions = async (user: Address, market: Address) => {
   try {
-    const url = `http://127.0.0.1:3100/events/${user}/${market}`
+    const url = `${baseUrl}/events/${user}/${market}`
 
     const response = await fetch(url, {
       method: "GET",

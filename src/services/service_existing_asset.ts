@@ -1,25 +1,7 @@
-import { ADDR_TOKEN, TOKEN_ADDR } from "@/services/repo_asset_addresses"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import { AssetDataPriced, AssetData, ExistingAsset } from "@/types"
 import { Address } from "viem"
 import { getPrices } from "@/services/service_price"
-
-export const getAssetInfoByAddress = (address: Address): AssetData | undefined => {
-  const key = ADDR_TOKEN[address]
-  if (key) return getAssetInfoByKey(key as ExistingAsset)
-}
-
-export const getAssetInfoByKey = (key: ExistingAsset): AssetData | undefined => {
-  if (TOKEN_ADDR[key]) {
-    return assetConfig[key]
-  }
-  // Handle dev time token here
-}
-
-export const getAssetInfoUnique = async (key: AssetConfigKey): Promise<AssetDataPriced | undefined> => {
-  const data = await getAssetInfo([key])
-  return data?.at(0)
-}
 
 interface Market {
   marketAddress: Address

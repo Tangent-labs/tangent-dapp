@@ -32,7 +32,7 @@ export default function TgUsdLiquidatePanel() {
         <Popover>
           <PopoverTrigger asChild>
             <button type="button" className="w-full" title="Slippage">
-              <div className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-xl border border-white/30 px-2 text-xs text-primary hover:bg-white/20">
+              <div className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-xl border-2 border-white/30 px-2 text-xs text-primary hover:bg-white/20">
                 Details
                 <IconChevron className="h-auto w-[12px] text-row-tonic" />
               </div>
@@ -59,10 +59,10 @@ export default function TgUsdLiquidatePanel() {
 
         <Popover>
           <PopoverTrigger asChild>
-            <div className="flex h-[30px] cursor-pointer items-center justify-between rounded-xl border border-white/30 bg-button-gradient py-2">
+            <div className="flex h-[30px] cursor-pointer items-center justify-between rounded-xl border-2 border-white/30 bg-button-gradient py-2">
               <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
               <button type="button" title="Slippage">
-                <div className="h-[30px] cursor-pointer rounded-xl border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
+                <div className="h-[30px] cursor-pointer rounded-xl border-l-2 border-white/30 bg-button-gradient p-2 hover:bg-white/20">
                   <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
                 </div>
               </button>
@@ -77,7 +77,7 @@ export default function TgUsdLiquidatePanel() {
                   value={slippage || 0}
                   placeholder="0.5"
                   type="number"
-                  className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
+                  className="w-full rounded-lg border-2 border-white/30 bg-transparent pl-2 focus:outline-none"
                 />
                 <div className="mt-2 flex w-full items-center justify-between gap-2">
                   <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />

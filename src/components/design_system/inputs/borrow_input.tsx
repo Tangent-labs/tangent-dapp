@@ -93,8 +93,11 @@ export function BorrowInput({
   }
 
   const dollarDepositDisplay = useMemo(() => {
-    const val = Number(formatUnits(borrowAmount || BigInt(0), borrowAsset?.decimals || 0)) * (borrowAsset?.price || 0)
-    return val?.toFixed(2) || "-"
+    if (borrowAmount && borrowAsset?.decimals && borrowAsset?.price) {
+      const val = Number(formatUnits(borrowAmount, borrowAsset.decimals)) * borrowAsset.price
+      return `($${val.toFixed(2)})`
+    }
+    return "($0)"
   }, [borrowAmount, borrowAsset])
 
   return (
@@ -132,11 +135,11 @@ export function BorrowInput({
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
         <div className="mt-1 flex justify-between text-xs text-gray-400">
-          <div>$({dollarDepositDisplay})</div>
+          <div>{dollarDepositDisplay}</div>
 
           <div className="flex cursor-pointer items-center">
             <button
-              className="ml-1 flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
+              className="ml-1 flex w-10 cursor-pointer items-center rounded-full border-2 border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
               type="button"
               onClick={() => {
                 if (setMaxBalance) {

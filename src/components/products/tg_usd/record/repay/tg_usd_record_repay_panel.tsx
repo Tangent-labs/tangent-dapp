@@ -74,7 +74,7 @@ export default function TgUsdRepayPanel() {
     return (
       <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
         <div className="flex w-full items-center gap-2">
-          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={20} />}
+          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={32} />}
           <span className="text-sm font-semibold">{option.symbol}</span>
         </div>
         <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
@@ -133,7 +133,7 @@ export default function TgUsdRepayPanel() {
 
   const WithdrawAssetDisplay = () => {
     return (
-      <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+      <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
         <TokenImage token={collateralInfo?.logo} size={20} />
 
         <span className="flex flex-col text-sm font-semibold">
@@ -203,10 +203,10 @@ export default function TgUsdRepayPanel() {
                   </div>
                 </div>
                 <div className="flex justify-between text-xs text-gray-400">
-                  <div>Minimum receive</div>
+                  <div>Minimum received</div>
                 </div>
               </div>
-              <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+              <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
                 <TokenImage token="tgUSD" size={20} />
                 <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
               </div>
@@ -263,7 +263,7 @@ export default function TgUsdRepayPanel() {
         <Popover>
           <PopoverTrigger asChild>
             <button type="button" className="w-full" title="Slippage">
-              <div className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-xl border border-white/30 px-2 text-xs text-primary hover:bg-white/20">
+              <div className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-xl border-2 border-white/30 px-2 text-xs text-primary hover:bg-white/20">
                 Details
                 <IconChevron className="h-auto w-[12px] text-row-tonic" />
               </div>
@@ -290,10 +290,10 @@ export default function TgUsdRepayPanel() {
 
         <Popover>
           <PopoverTrigger asChild>
-            <div className="flex h-[30px] cursor-pointer items-center justify-between rounded-xl border border-white/30 bg-button-gradient py-2">
+            <div className="flex h-[30px] cursor-pointer items-center justify-between rounded-xl border-2 border-white/30 bg-button-gradient py-2">
               <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
               <button type="button" title="Slippage">
-                <div className="h-[30px] cursor-pointer rounded-xl border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
+                <div className="h-[30px] cursor-pointer rounded-xl border-l-2 border-white/30 bg-button-gradient p-2 hover:bg-white/20">
                   <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
                 </div>
               </button>
@@ -308,7 +308,7 @@ export default function TgUsdRepayPanel() {
                   value={slippage || 0}
                   placeholder="0.5"
                   type="number"
-                  className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
+                  className="w-full rounded-lg border-2 border-white/30 bg-transparent pl-2 focus:outline-none"
                 />
                 <div className="mt-2 flex w-full items-center justify-between gap-2">
                   <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />

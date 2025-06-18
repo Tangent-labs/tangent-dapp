@@ -30,7 +30,7 @@ export default function TgUsdLiquidatePanelPartial() {
 
   const LiquidateAssetDisplay = () => {
     return (
-      <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+      <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
         <TokenImage token={collateralInfo?.logo} size={20} />
 
         <span className="flex flex-col text-sm font-semibold">
@@ -67,7 +67,7 @@ export default function TgUsdLiquidatePanelPartial() {
         depositAmount={tgUSDReceivedValue}
         labelDeposit="For"
         depositSelect={
-          <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+          <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
             <TokenImage token="tgUSD" size={20} />
             <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
           </div>
@@ -92,7 +92,7 @@ export default function TgUsdLiquidatePanelPartial() {
         depositAmount={repayWeiValue}
         labelDeposit="You repay"
         depositSelect={
-          <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+          <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
             <TokenImage token="tgUSD" size={20} />
             <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
           </div>
@@ -113,7 +113,7 @@ export default function TgUsdLiquidatePanelPartial() {
         depositAmount={(tgUSDReceivedValue || 0n) - (repayWeiValue || 0n)}
         labelDeposit="You receive"
         depositSelect={
-          <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+          <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
             <TokenImage token="tgUSD" size={20} />
             <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
           </div>

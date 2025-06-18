@@ -79,7 +79,7 @@ export function LeverageInput({
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <div className={`${isLoading ? "shimmer" : ""} flex flex-col rounded-[10px] border border-white border-opacity-20 bg-white bg-opacity-[3%] p-2`}>
+      <div className={`${isLoading ? "shimmer" : ""} flex flex-col rounded-[10px] border-2 border-white border-opacity-20 bg-white bg-opacity-[3%] p-2`}>
         <div className="flex w-full justify-between">
           <div className="text-sm text-gray-400">{label}</div>
         </div>
@@ -90,10 +90,10 @@ export function LeverageInput({
             value={innerValue}
             onInput={handleInputChange}
             placeholder="Amount"
-            className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent p-2 text-xl font-semibold focus:outline-none")}
+            className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent text-xl font-semibold focus:outline-none")}
           />
 
-          <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+          <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
             <TokenImage token="tgUSD" size={20} />
             <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
           </div>

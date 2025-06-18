@@ -9,8 +9,7 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
 
 export default function TgUsdBorrowPanel() {
-  const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, exceedsMaxLTV, borrowPercentage, maxBorrowableValue } =
-    useTgUsdBorrowContext()
+  const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, borrowPercentage, maxBorrowableValue } = useTgUsdBorrowContext()
 
   const { tgUSDInfo } = useTgUsdRecordContext()
 
@@ -18,7 +17,7 @@ export default function TgUsdBorrowPanel() {
 
   const BorrowAssetDisplay = () => {
     return (
-      <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+      <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
         <TokenImage token="tgUSD" size={20} />
         <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
       </div>
@@ -50,7 +49,11 @@ export default function TgUsdBorrowPanel() {
         />
       </div>
 
-      <>{exceedsMaxLTV && <div className="flex w-full items-center justify-center text-xs text-red-500">Position exceeds maxLTV</div>}</>
+      <>
+        {!!borrowWeiValue && formState?.cantProcessReasons.length > 0 && (
+          <div className="flex w-full items-center justify-center text-xs text-red-500">{formState?.cantProcessReasons[0]}</div>
+        )}
+      </>
 
       <FormButtons actions={{ handleApprove: undefined, handleProcess: actionBorrow }} formState={formState} labelProcess="Borrow" />
     </div>

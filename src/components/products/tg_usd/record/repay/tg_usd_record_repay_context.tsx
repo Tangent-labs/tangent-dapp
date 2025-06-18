@@ -294,17 +294,15 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   )
 
   const marketValues = useMemo(() => {
-    if (marketData) {
+    if (marketData && repayAssetInfo) {
       if (repayAsset === "tgUSD") {
         const maxRepayableValue = marketData.debtInfos?.userDebt || 0n
         const minimumLoan = marketData.constants.minimumLoan || 0n
         return { maxRepayableValue, minimumLoan }
       } else {
-        const maxRepayableInZapAsset =
-          (marketData.debtInfos?.userDebt / toBigInt(repayAssetInfo?.price || 1, 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
+        const maxRepayableInZapAsset = (marketData.debtInfos?.userDebt / toBigInt(repayAssetInfo?.price, 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
         const minimumLoanInZapAsset =
-          (marketData.constants.minimumLoan / toBigInt(repayAssetInfo?.price || 1, repayAssetInfo?.decimals || 18)) *
-          BigInt(10 ** (repayAssetInfo?.decimals || 18))
+          (marketData.constants.minimumLoan / toBigInt(repayAssetInfo?.price, repayAssetInfo?.decimals || 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
 
         return { maxRepayableValue: maxRepayableInZapAsset, minimumLoan: minimumLoanInZapAsset }
       }
@@ -415,10 +413,9 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
       adjustedRepayValue = tgUdsRepayedValue || 0n
     }
 
-    return (
-      marketValues?.maxRepayableValue / BigInt(10 ** (repayAssetInfo?.decimals || 18)) - adjustedRepayValue / BigInt(10 ** 18) < threshold / BigInt(10 ** 18) &&
-      marketValues?.maxRepayableValue / BigInt(10 ** (repayAssetInfo?.decimals || 18)) - adjustedRepayValue / BigInt(10 ** 18) > 0n
-    )
+    const value = marketValues?.maxRepayableValue / BigInt(10 ** (repayAssetInfo?.decimals || 18)) - adjustedRepayValue / BigInt(10 ** 18)
+
+    return value < threshold / BigInt(10 ** 18) && value > 0n
   }, [repayWeiValue, marketValues, repayAsset, tgUdsRepayedValue])
 
   const contextValue: TgUsdRepayContextValues = {

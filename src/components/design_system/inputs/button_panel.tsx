@@ -9,7 +9,7 @@ export function ButtonPanel({ children, className, ...props }: ButtonPanelProps)
     <button
       className={cn(
         className,
-        "rounded-[10px] border border-white border-opacity-20 bg-overlay-panel px-6 py-4 backdrop-blur-[60px] transition-colors duration-200 ease-in-out hover:bg-white/10"
+        "rounded-[10px] border-2 border-white border-opacity-20 bg-overlay-panel px-6 py-4 backdrop-blur-[60px] transition-colors duration-200 ease-in-out hover:bg-white/10"
       )}
       {...props}
     >

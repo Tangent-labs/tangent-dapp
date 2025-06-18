@@ -1,5 +1,3 @@
-// All existing asset must have an image  in medias/tokens/{name|lowercase}.wepb
-
 type BoosterRewards = "sdBAL" | "sdPENDLE" | "sdCRV" | "sdFXN" | "BAL80"
 export type TgUsdMarketAsset =
   | "crvUSD-USDC"
@@ -46,7 +44,6 @@ export type ExistingAsset =
   | "sTAN"
   | "TAN"
 
-// Based on  image folder parsing. ps: see _utils\create_tokens_ts_type.js
 export type AllExistingAsset =
   | "3CRV"
   | "AGEUR"

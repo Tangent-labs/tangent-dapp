@@ -83,7 +83,7 @@ export default function TgUsdMarketList() {
       <div className="mt-10 flex items-start justify-between">
         <div className="flex flex-col items-start justify-between">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               <IndicatorCards
                 className={cn(globalData.tgUsdPrice === "-" ? "shimmer" : "")}
                 indicators={[

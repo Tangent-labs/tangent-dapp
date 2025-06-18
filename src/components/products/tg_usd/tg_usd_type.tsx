@@ -171,6 +171,14 @@ export interface MarketConstants {
     pMax: number
     pInf: number
   }
+  rcParams: {
+    endCutPercentage: bigint
+    endCutPrice: bigint
+    harvestFeePercentage: bigint
+    startCutPercentage: bigint
+    startCutPrice: bigint
+    stepAmount: number
+  }
 }
 
 export interface OutputBalanceAllowances {

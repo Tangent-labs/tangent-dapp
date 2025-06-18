@@ -142,7 +142,7 @@ export function DepositReceiveInput({
           <div>$({dollarDepositDisplay})</div>
 
           <button
-            className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
+            className="flex w-10 cursor-pointer items-center rounded-full border-2 border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
             type="button"
             onClick={() => {
               if (setMaxBalance) setMaxBalance()

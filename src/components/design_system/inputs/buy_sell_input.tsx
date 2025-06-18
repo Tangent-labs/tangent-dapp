@@ -204,7 +204,7 @@ export function BuySellInput({
               <IconWallet className="w-6" />
 
               <button
-                className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
+                className="flex w-10 cursor-pointer items-center rounded-full border-2 border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
                 type="button"
                 onClick={() => {
                   if (setMaxBalance) setMaxBalance()
@@ -260,7 +260,7 @@ export function BuySellInput({
         </PanelRaw>
 
         <div onClick={() => setIsBuying(!isBuying)} className="flex w-full cursor-pointer items-center justify-center border-none">
-          <IconChevron className="h-auto w-8 rounded-lg border border-white/10 p-2 backdrop-blur-[60px] hover:border-white hover:stroke-black" />
+          <IconChevron className="h-auto w-8 rounded-lg border-2 border-white/10 p-2 backdrop-blur-[60px] hover:border-white hover:stroke-black" />
         </div>
 
         <PanelRaw className={`${isLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>

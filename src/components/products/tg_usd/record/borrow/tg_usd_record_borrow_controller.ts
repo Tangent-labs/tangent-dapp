@@ -6,11 +6,11 @@ import { getBorrowCommonFormState } from "../tg_usd_record_controller"
 
 export function getBorrowFormState(marketData?: MarketDetailData, borrowWeiValue?: bigint, isWellConnected?: boolean, maxBorrowableValue?: bigint) {
   const reasons: string[] = []
-  // check the wallet
+
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
   } else {
-    const borrowReasons = getBorrowCommonFormState(marketData, 0n, borrowWeiValue)
+    const borrowReasons = getBorrowCommonFormState(marketData, borrowWeiValue)
     reasons.push(...borrowReasons)
   }
 

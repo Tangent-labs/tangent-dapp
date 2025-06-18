@@ -54,7 +54,7 @@ export const transformMarketData = (onChainData: ChainViewMarketRow, collateralI
   }
 }
 
-export function getBorrowCommonFormState(marketData?: MarketDetailData, depositWeiValue?: bigint, borrowWeiValue?: bigint) {
+export function getBorrowCommonFormState(marketData?: MarketDetailData, borrowWeiValue?: bigint) {
   const reasons: string[] = []
 
   if (!borrowWeiValue || borrowWeiValue === 0n) {
@@ -65,19 +65,6 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, depositW
 
     if (borrowWeiValue + totalDebt < minLoan) {
       reasons.push(`Min debt is ${formatEther(minLoan)}`)
-    } else {
-      const depositedCollateral = marketData?.collateralInfos?.positionCollateralUSDValue || 0n
-      const existingDebt = marketData?.debtInfos?.userDebt || 0n
-
-      const maxLTV = (marketData?.constants.maxLTV || 0n) / BigInt(10000n)
-      const maxMarketDebt = BigInt(marketData?.constants.maxMarketDebt || "0")
-      const maxLoan = maxLTV * BigInt(depositWeiValue || 0n) + depositedCollateral
-      if (maxLoan < borrowWeiValue + existingDebt) {
-        reasons.push(`max debt is ${Number(formatUnits(maxLoan, 18)).toFixed(2)}`)
-      }
-      if (maxMarketDebt < borrowWeiValue + totalDebt) {
-        reasons.push(`max market debt is exceeded`)
-      }
     }
   }
   return reasons

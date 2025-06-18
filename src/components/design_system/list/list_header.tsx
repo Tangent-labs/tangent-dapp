@@ -26,7 +26,7 @@ const HeaderDisplay = ({ label, sort = "none", onSort, field, indicator }: Heade
   return (
     <div className="flex w-full flex-1 items-center justify-center gap-2" onClick={() => onSort && onSort(field)}>
       <span>{label} </span>
-      <TgHoverCard title={label as string}>{indicator}</TgHoverCard>
+      {indicator && <TgHoverCard title={label as string}>{indicator}</TgHoverCard>}
       <div className="text-row-tonic">{label && label !== "" && <IconSortHeader sort={sort} />}</div>
     </div>
   )

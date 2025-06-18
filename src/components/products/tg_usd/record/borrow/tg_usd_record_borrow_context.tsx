@@ -18,9 +18,6 @@ type TgUsdBorrowContextValues = {
   borrowPercentage: number
   setBorrowPercentage: (arg: number) => void
   maxBorrowableValue: bigint
-
-  exceedsMaxLTV: boolean
-  setExceedsMaxLTV: (arg: boolean) => void
 }
 
 export const TgUsdBorrowContext = createContext<TgUsdBorrowContextValues | undefined>(undefined)
@@ -31,8 +28,6 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
   const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
 
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
-
-  const [exceedsMaxLTV, setExceedsMaxLTV] = useState<boolean>(false)
 
   const [borrowPercentage, setBorrowPercentage] = useState<number>(0)
 
@@ -64,10 +59,6 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
     return 0n
   }, [marketData])
 
-  useEffect(() => {
-    setExceedsMaxLTV((borrowWeiValue || 0n) > maxBorrowableValue)
-  }, [borrowWeiValue])
-
   const formState = useMemo(
     () => getBorrowFormState(marketData, borrowWeiValue, isWellConnected, maxBorrowableValue),
     [marketData, borrowWeiValue, isWellConnected, currentAddress, maxBorrowableValue]
@@ -81,8 +72,6 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
     borrowPercentage,
     setBorrowPercentage,
     maxBorrowableValue,
-    exceedsMaxLTV,
-    setExceedsMaxLTV,
   }
 
   return <TgUsdBorrowContext.Provider value={contextValue}>{children}</TgUsdBorrowContext.Provider>

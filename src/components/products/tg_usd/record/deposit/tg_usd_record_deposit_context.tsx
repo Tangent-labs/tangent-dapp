@@ -14,6 +14,7 @@ import { TgUsdMarket, ZapToken } from "../../tg_usd_type"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { computeSwapAssetPrice, doApprove, prepareZapTransaction } from "../tg_usd_record_controller"
 import { doMarketDeposit, doZapDeposit, doZapDepositAndBorrow, getDepositFormState } from "./tg_usd_record_deposit_controller"
+import { formatDollar } from "@/lib/number_formatter"
 
 type TgUsdDepositContextProps = {
   children: ReactNode
@@ -69,6 +70,8 @@ type TgUsdDepositContextValues = {
   handleZapInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 
   maxBorrowableValue: bigint
+
+  estimatedZapDollarValue: string
 }
 
 export const TgUsdDepositContext = createContext<TgUsdDepositContextValues | undefined>(undefined)
@@ -510,30 +513,33 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
     const deposit = depositWeiValue || 0n
 
     if (marketData) {
-      if (depositAsset && depositAsset !== collateralInfo?.symbol) {
-        const futureDebt = marketData?.debtInfos?.userDebt
+      const futureDebt = marketData?.debtInfos?.userDebt
+      let futureDeposited
 
-        const futureDeposited =
+      if (depositAsset && depositAsset !== collateralInfo?.symbol) {
+        futureDeposited =
           marketData?.collateralInfos?.positionCollateralUSDValue +
           (BigInt(zapValue || 0n) * BigInt(100 - slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 20)
-
-        const maxBorrowable = (futureDeposited * marketData?.constants.maxLTV) / BigInt(100000n) - futureDebt
-
-        return maxBorrowable >= 0n ? maxBorrowable : 0n
       } else {
-        const futureDebt = marketData?.debtInfos?.userDebt
-
-        const futureDeposited =
+        futureDeposited =
           marketData?.collateralInfos?.positionCollateralUSDValue + (deposit * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18)
-
-        const maxBorrowable = (futureDeposited * marketData?.constants.maxLTV) / BigInt(100000n) - futureDebt
-
-        return maxBorrowable >= 0n ? maxBorrowable : 0n
       }
+      const maxBorrowable = (futureDeposited * marketData?.constants.maxLTV) / 100000n - futureDebt
+
+      return maxBorrowable >= 0n ? maxBorrowable : 0n
     }
 
     return 0n
   }, [marketData, depositWeiValue, depositAsset, depositAssetInfo, zapValue])
+
+  const estimatedZapDollarValue = useMemo(() => {
+    if (zapValue && marketData) {
+      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), depositAssetInfo?.decimals || 18))})`
+      return result
+    }
+
+    return ""
+  }, [zapValue])
 
   const contextValue: TgUsdDepositContextValues = {
     marketInfo,
@@ -589,6 +595,8 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
     setBorrowSliderPercent,
 
     maxBorrowableValue,
+
+    estimatedZapDollarValue,
   }
 
   return <TgUsdDepositContext.Provider value={contextValue}>{children}</TgUsdDepositContext.Provider>

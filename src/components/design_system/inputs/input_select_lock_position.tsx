@@ -71,7 +71,7 @@ export const InputSelectLockPosition = ({
 
   return (
     <div
-      className={`${isLoading ? "shimmer" : ""} flex h-full w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 p-2 backdrop-blur-[60px]`}
+      className={`${isLoading ? "shimmer" : ""} flex h-full w-full flex-col items-center justify-center rounded-[10px] border-2 border-white border-opacity-20 p-2 backdrop-blur-[60px]`}
     >
       <div className="mb-3 flex h-full w-full items-center justify-between gap-2">
         <div className="flex flex-col">
@@ -109,7 +109,7 @@ export const InputSelectLockPosition = ({
                 <IconWallet className="w-6" />
 
                 <button
-                  className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
+                  className="flex w-10 cursor-pointer items-center rounded-full border-2 border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
                   type="button"
                   onClick={() => {
                     if (setMaxBalance) setMaxBalance()

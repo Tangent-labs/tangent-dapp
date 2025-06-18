@@ -9,6 +9,7 @@ import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 import { getQuote, returnRoute } from "../../global_quote_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
+import { maxUint256 } from "viem"
 
 type TgUsdLiquidateContextProps = {
   children: ReactNode
@@ -101,6 +102,10 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
     const walletClient = getWalletClient()
 
     if (walletClient && liquidateWeiValue && currentAddress && tgUSDReceivedValue && marketData) {
+      let repayValue = repayWeiValue || 0n
+      if (repayWeiValue === maxRepayable) {
+        repayValue = maxUint256
+      }
       const liquidationData = await returnRoute(
         marketInfo?.collatAddress,
         TGUSD_CONTRACT.TG_USD,
@@ -113,7 +118,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
 
       doMarketLiquidate(
         liquidateWeiValue,
-        repayWeiValue || 0n,
+        repayValue,
         (tgUSDReceivedValue * (BigInt(100) - BigInt(slippage))) / BigInt(100),
         liquidationData!,
         walletClient,
@@ -140,20 +145,14 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
 
   const maxLiquidable = useMemo(() => {
     if (marketData) {
-      const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice
-      const futureDebt = marketData?.debtInfos?.userDebt - (repayWeiValue || 0n)
-      const futureDeposited = BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n)
-      const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
-      const maxWithDrawable = collateralPriceRaw !== 0n ? futureDeposited - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
-
-      return maxWithDrawable
+      return marketData.collateralInfos.positionCollateralAmount
     }
     return 0n
   }, [marketDisplayData, repayWeiValue])
 
   const maxRepayable = useMemo(() => {
     if (marketData) {
-      return marketData?.debtInfos?.totalDebt
+      return marketData.debtInfos.userDebt
     }
     return 0n
   }, [marketDisplayData])

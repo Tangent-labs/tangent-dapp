@@ -80,7 +80,7 @@ export const executeAppove = async (client: WalletClient, contract: Address, spe
 }
 
 export const waitForTransaction = async (hash: Hash) => {
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
   const receipt = await publicClient.waitForTransactionReceipt({ hash })
   return receipt.status === "success"
 }
@@ -96,7 +96,7 @@ export const getDeployTx = (abi: Abi, byteCode: Hex, args?: unknown[]) => {
 
 export const executeContractCall = async (walletClient: WalletClient, txData: TxContractCallData) => {
   const [account] = await walletClient.requestAddresses()
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
   txData.account = account
   const gas = await publicClient.estimateContractGas(txData)
   txData.gas = gas

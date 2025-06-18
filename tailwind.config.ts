@@ -6,7 +6,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        roobert: ["Roobert", "sans-serif"],
+        roobert: ["Roobert"],
       },
       backgroundImage: {
         header: "var(--tgt-bg-header)",
@@ -16,12 +16,14 @@ const config: Config = {
         "button-active-hover": "var(--tgt-bg-button-active-hover)",
         "button-active": "var(--tgt-bg-button-active)",
         danger: "var(--tgt-bg-danger)",
+        tab: "var(--tgt-bg-tab)",
         "select-input": "var(--tgt-bg-select-input)",
         tonic: "var(--tgt-bg-tonic)",
         "light-tonic": "var(--tgt-bg-light-tonic)",
         "list-row-hover": "var(--tgt-list-row-hover)",
         "panel-title-gradient": "var(--tgt-panel-title-gradient)",
         "button-gradient": "var(--tgt-button)",
+        lec: "var(--tgt-lec)",
       },
       colors: {
         "button-active": "var(--tgt-bg-button-active)",

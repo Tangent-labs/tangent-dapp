@@ -86,7 +86,7 @@
 @font-face {
   font-family: "Roobert";
   src: url("/fonts/RoobertTRIAL-SemiBold-BF67243fd54213d.otf") format("opentype");
-  font-weight: 600;
+  font-weight: 650;
   font-style: normal;
   font-display: swap;
 }
@@ -94,7 +94,7 @@
 @font-face {
   font-family: "Roobert";
   src: url("/fonts/RoobertTRIAL-SemiBoldItalic-BF67243fd5409dc.otf") format("opentype");
-  font-weight: 600;
+  font-weight: 650;
   font-style: italic;
   font-display: swap;
 }
@@ -138,6 +138,8 @@
     --tgt-bg-header: linear-gradient(135deg, #070707 0%, #101010 100%);
     --tgt-bg-overlay-panel: #ffffff09;
     --tgt-bg-panel-disabled: #ffffff26;
+    --tgt-bg-tab: linear-gradient(135deg, #0075ff 0%, #00c2ff 100%);
+    --tgt-bg-lec: linear-gradient(135deg, #ff8800 0%, #f79f61 100%);
     --tgt-light-tonic: #fbf911;
     --tgt-tonic: #d9fb0b;
     --tgt-success: #99ff00;
@@ -191,7 +193,6 @@
   body {
     color: var(--tgt-foreground);
     background: var(--tgt-background);
-    font-family: var(--font-sans), sans-serif;
   }
 }
 

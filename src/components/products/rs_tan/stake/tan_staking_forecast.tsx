@@ -78,13 +78,13 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
         <div className="flex items-center justify-start gap-2">
           <div className="flex w-fit items-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
             <TokenImage token="sgUSD" size={16} />
-            <span className="text-sm font-bold leading-3">
+            <span className="text-sm font-semibold leading-3">
               <span>sgUSD</span>
             </span>
           </div>
 
           <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-4 py-1">
-            <span className="text-lg font-bold">{apr}%</span>
+            <span className="text-lg font-semibold">{apr}%</span>
           </div>
         </div>
 
@@ -93,25 +93,25 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
             onClick={() => setFilter(timeFilters.week)}
             label={"1w"}
             active={false}
-            className={`cursor-pointer rounded-xl border border-white/30 px-4 py-1 text-xs ${filter === timeFilters.week ? "bg-white text-black" : ""}`}
+            className={`cursor-pointer rounded-xl border-2 border-white/30 px-4 py-1 text-xs ${filter === timeFilters.week ? "bg-white text-black" : ""}`}
           />
           <ButtonTab
             onClick={() => setFilter(timeFilters.month)}
             label={"1m"}
             active={false}
-            className={`cursor-pointer rounded-xl border border-white/30 px-4 py-1 text-xs ${filter === timeFilters.month ? "bg-white text-black" : ""}`}
+            className={`cursor-pointer rounded-xl border-2 border-white/30 px-4 py-1 text-xs ${filter === timeFilters.month ? "bg-white text-black" : ""}`}
           />
           <ButtonTab
             onClick={() => setFilter(timeFilters.year)}
             label={"1y"}
             active={false}
-            className={`cursor-pointer rounded-xl border border-white/30 px-4 py-1 text-xs ${filter === timeFilters.year ? "bg-white text-black" : ""}`}
+            className={`cursor-pointer rounded-xl border-2 border-white/30 px-4 py-1 text-xs ${filter === timeFilters.year ? "bg-white text-black" : ""}`}
           />
           <ButtonTab
             onClick={() => setFilter(timeFilters.twoYears)}
             label={"2y"}
             active={false}
-            className={`cursor-pointer rounded-xl border border-white/30 px-4 py-1 text-xs ${filter === timeFilters.twoYears ? "bg-white text-black" : ""}`}
+            className={`cursor-pointer rounded-xl border-2 border-white/30 px-4 py-1 text-xs ${filter === timeFilters.twoYears ? "bg-white text-black" : ""}`}
           />
         </div>
       </div>

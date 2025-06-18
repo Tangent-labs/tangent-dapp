@@ -4,7 +4,7 @@ import harvestUI from "../../../../abi/tgusd/HarvestUI.json"
 import market from "../../../../abi/tgusd/Market.json"
 import { HarvesterInfo, HarvesterInfoDisplay } from "../tg_usd_type"
 import { AssetData, AssetDataPriced, ExistingAsset } from "@/types"
-import { tgUsdMarkets } from "../tg_usd_repository"
+import { TGUSD_CONTRACT, tgUsdMarkets } from "../tg_usd_repository"
 import { getPricesFromTokenAmounts } from "@/lib/asset_utils"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import { getTokensPrice } from "@/services/service_price"
@@ -24,7 +24,8 @@ export async function doHarvest(stakingAddress: Address, walletClient: WalletCli
 
 export async function getTgUsdHarvestOnChainData() {
   const addresses: Address[] = tgUsdMarkets.map((m) => m.marketAddress)
-  return await executeChainViewUnique<HarvesterInfo[]>(harvestUI.abi as Abi, harvestUI.bytecode as Hex, [addresses])
+
+  return await executeChainViewUnique<HarvesterInfo[]>(harvestUI.abi as Abi, harvestUI.bytecode as Hex, [addresses, TGUSD_CONTRACT.REWARD_ACCUMULATOR])
 }
 
 export function transformHarvestOnChainData(harvesterInfos: HarvesterInfo[], assetInfos: AssetDataPriced[]) {

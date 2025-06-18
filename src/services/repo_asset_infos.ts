@@ -281,7 +281,22 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     logo: "CVX-ETH",
     displayDecimals: 2,
   },
-
+  sUSG: {
+    symbol: "sUSG",
+    name: "sUSG",
+    decimals: 18,
+    address: TOKEN_ADDR.sUSG,
+    logo: "sUSG",
+    displayDecimals: 2,
+  },
+  USG: {
+    symbol: "USG",
+    name: "USG",
+    decimals: 18,
+    address: TOKEN_ADDR.USG,
+    logo: "USG",
+    displayDecimals: 2,
+  },
   tgUSD: {
     symbol: "tgUSD",
     name: "tgUSD",

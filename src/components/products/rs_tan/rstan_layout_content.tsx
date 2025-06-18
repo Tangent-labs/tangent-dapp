@@ -61,7 +61,7 @@ export const RsTanLayoutContent = ({
             <Image height={360} width={360} src={`/medias/tokens/rsTan.png`} alt="token" />
           </div>
           <div className="ml-6 flex flex-col items-start justify-between gap-3">
-            <span className="mt-1 text-5xl font-bold">Lock TAN</span>
+            <span className="mt-1 text-5xl font-semibold">Lock TAN</span>
 
             <span>
               Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT
@@ -75,18 +75,18 @@ export const RsTanLayoutContent = ({
           <IconRsTan></IconRsTan>
 
           <div className="flex w-full flex-col items-center justify-center">
-            <div className="text-xs font-bold text-subtitle">Supply</div>
-            <div className="text-md font-bold text-white">{formatBigInt(lockData?.totalSupply, 18, 2)}</div>
+            <div className="text-xs font-semibold text-subtitle">Supply</div>
+            <div className="text-md font-semibold text-white">{formatBigInt(lockData?.totalSupply, 18, 2)}</div>
           </div>
 
           <div className="flex w-full flex-col items-center justify-center">
-            <div className="text-xs font-bold text-subtitle">rsTan</div>
-            <div className="text-md font-bold text-white">$1.23</div>
+            <div className="text-xs font-semibold text-subtitle">rsTan</div>
+            <div className="text-md font-semibold text-white">$1.23</div>
           </div>
 
           <div className="flex w-full flex-col items-center justify-center rounded-lg bg-button-active py-2">
-            <div className="text-xs font-bold text-black">APR</div>
-            <div className="text-md font-bold text-white">{formatBigInt(lockData?.tanAPR, 18, 2)}%</div>
+            <div className="text-xs font-semibold text-black">APR</div>
+            <div className="text-md font-semibold text-white">{formatBigInt(lockData?.tanAPR, 18, 2)}%</div>
           </div>
         </div>
       </div>
@@ -112,7 +112,7 @@ export const RsTanLayoutContent = ({
         </div>
 
         <div className="flex w-7/12 flex-col items-start justify-start rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
-          <div className="mr-auto text-3xl font-bold text-white">Locked Positions</div>
+          <div className="mr-auto text-3xl font-semibold text-white">Locked Positions</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
 
@@ -145,25 +145,25 @@ function LockPositionList() {
               rowDisposition={LockRowDisposition}
               isSelected={lockPosition == selectedPosition}
             >
-              <div className="flex items-center justify-center rounded-xl px-2 py-1.5 text-lg font-bold backdrop-blur-[60px]">#{lockPosition?.tokenId}</div>
-              <div className="flex items-center justify-center text-lg font-bold">
+              <div className="flex items-center justify-center rounded-xl px-2 py-1.5 text-lg font-semibold backdrop-blur-[60px]">#{lockPosition?.tokenId}</div>
+              <div className="flex items-center justify-center text-lg font-semibold">
                 {formatBigInt(lockPosition?.amount, 18, 2)}
                 <IconRsTan className="ml-1 w-5"></IconRsTan>
               </div>
 
               <>
-                <div className="flex w-4/12 items-center justify-center text-lg font-bold">
+                <div className="flex w-4/12 items-center justify-center text-lg font-semibold">
                   {formatBigInt(lockPosition?.claimable, 18, 2)}
                   <TokenImage token="tgUSD" className="ml-1" size={16} />
                 </div>
-                <div className="flex w-4/12 items-center justify-center text-lg font-bold">
+                <div className="flex w-4/12 items-center justify-center text-lg font-semibold">
                   {lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (
                     <InfinityIcon className="w-5"></InfinityIcon>
                   ) : (
                     <> {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd/MM/yyyy")}</>
                   )}
                 </div>
-                <div className="flex w-3/12 items-center justify-center text-lg font-bold">
+                <div className="flex w-3/12 items-center justify-center text-lg font-semibold">
                   <IconChevron className={`w-4 ${lockPosition == selectedPosition ? "" : "-rotate-90"} `}></IconChevron>
                 </div>
               </>
@@ -193,7 +193,7 @@ function LockPositionList() {
                 ) : (
                   <>
                     <div className="flex w-fit items-center justify-center gap-1">
-                      <div className="text-xs font-bold text-subtitle">Perma lock</div>
+                      <div className="text-xs font-semibold text-subtitle">Perma lock</div>
                       <IconCircleHelp className="w-3"></IconCircleHelp>
                       <Switch checked={extendToPermaLock} onCheckedChange={() => setExtendToPermaLock(!extendToPermaLock)} />
                     </div>

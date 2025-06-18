@@ -20,10 +20,10 @@ type HarvestRowProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
 export default function HarvestRow({ info, onHarvest, canInteract, className, ...props }: HarvestRowProps) {
   return (
     <Panel {...props} className={cn(className, "flex items-center justify-between gap-2 max-md:flex-col")}>
-      <div className={`relative flex min-w-[180px] items-center gap-4`}>
-        <TokenImage token={info.asset} size={48} className="w-18" />
+      <div className={`relative flex min-w-[300px] items-center gap-4`}>
+        <TokenImage token={info.asset} size={48} className="w-24" />
         <div className="flex flex-col leading-8">
-          <span className="text-[32px] font-semibold">{info.asset}</span>
+          <span className="text-[20px] font-semibold">{info.asset}</span>
         </div>
       </div>
       <div className="flex grow items-center justify-between gap-2 md:justify-evenly">

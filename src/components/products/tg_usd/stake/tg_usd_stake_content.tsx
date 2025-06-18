@@ -45,20 +45,20 @@ export default function TgUsdStakeContent() {
       address: TGUSD_CONTRACT.TG_USD,
       decimals: 18,
       displayDecimals: 2,
-      logo: "tgUSD",
-      name: "tgUSD",
+      logo: "USG",
+      name: "USG",
       price: stakeInfo?.tgUSDPrice,
-      symbol: "tgUSD",
+      symbol: "USG",
     }
 
     const sgUSDInfo = {
       address: TGUSD_CONTRACT?.SG_USD,
       decimals: 18,
       displayDecimals: 0,
-      logo: "sgUSD",
-      name: "sgUSD",
+      logo: "USG",
+      name: "USG",
       price: stakeInfo?.sgUSDPrice,
-      symbol: "sgUSD",
+      symbol: "USG",
     }
 
     let logo = assetInfo?.logo as ExistingAsset
@@ -69,7 +69,7 @@ export default function TgUsdStakeContent() {
     return (
       <div className="flex items-center gap-2">
         <TokenImage token={logo} size={20} />
-        <span className="text-sm font-bold">{option.label}</span>
+        <span className="text-sm font-semibold">{option.label}</span>
       </div>
     )
   }
@@ -78,9 +78,9 @@ export default function TgUsdStakeContent() {
     if (!receivedTokenInfo) return <></>
 
     return (
-      <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+      <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
         <TokenImage token={receivedTokenInfo.logo as ExistingAsset} size={20} />
-        <span className="text-sm font-bold">
+        <span className="text-sm font-semibold">
           <span>{receivedTokenInfo.symbol}</span>
         </span>
       </div>
@@ -89,39 +89,39 @@ export default function TgUsdStakeContent() {
 
   return (
     <>
-      <div className="flex w-full items-end justify-between">
+      <div className="flex w-full items-end justify-between gap-4">
         <div className="sgusd-card w-7/12">
           <div className="flex items-center justify-center">
             <Image height={248} width={248} src="/medias/product_tgusd.png" alt="token" />
           </div>
           <div className="flex flex-col items-start justify-center gap-3">
-            <span className="text-5xl font-bold">Savings account</span>
-            <p>Stake tgUSD to receive sgUSD and earn yield passively. sgUSD is an ERC4626 token and can be used further in DeFi. Learn more</p>
+            <span className="text-5xl font-semibold">Savings account</span>
+            <p>Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi. Learn more</p>
           </div>
         </div>
 
         {stakeInfo && (
           <div className="flex w-5/12 items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
-            <TokenImage token="sgUSD" size={64} />
+            <TokenImage token="sUSG" size={64} />
 
-            <div className="flex flex-col items-center justify-center font-bold">
+            <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">Supply</span>
-              <span className="text-lg font-bold">10,225,145 (7,4%)</span>
+              <span className="text-lg font-semibold">10,225,145 (7,4%)</span>
             </div>
-            <div className="flex flex-col items-center justify-center font-bold">
-              <span className="text-sm text-subtitle">sgUSD</span>
-              <span className="text-lg font-bold">{formatDollar(formatUnits(stakeInfo.sgUSDPrice, 18), 2)}</span>
+            <div className="flex flex-col items-center justify-center font-semibold">
+              <span className="text-sm text-subtitle">sUSG</span>
+              <span className="text-lg font-semibold">{formatDollar(formatUnits(stakeInfo.sgUSDPrice, 18), 2)}</span>
             </div>
             <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-1">
               <span className="text-black">APY</span>
-              <span className="text-lg font-bold">15.32%</span>
+              <span className="text-lg font-semibold">15.32%</span>
             </div>
           </div>
         )}
       </div>
 
       <div className="my-8 flex w-full items-start justify-start gap-4">
-        <div className="flex w-5/12 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+        <div className="flex w-5/12 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px]">
           <div className="flex w-full items-center justify-between gap-4">
             <ButtonTab
               onClick={() => setCurrentFeature("stake")}
@@ -138,6 +138,12 @@ export default function TgUsdStakeContent() {
           </div>
 
           <Divider className="h-1 w-full"></Divider>
+
+          <div className="flex w-full items-end justify-end">
+            <span className="text-xs text-subtitle">
+              Max: {formatBigInt(currentAssetInfo?.balance, 18, 3)} {currentFeature === "stake" ? "USG" : "sUSG"}{" "}
+            </span>
+          </div>
 
           <DepositReceiveInput
             labelDeposit={currentFeature === "stake" ? "You deposit" : "You unstake"}
@@ -168,8 +174,8 @@ export default function TgUsdStakeContent() {
             labelProcess={currentFeature === "stake" ? "Deposit & Stake" : "Unstake"}
           />
         </div>
-        <div className="flex w-7/12 flex-col items-start justify-start rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
-          <span className="text-2xl font-bold">Performance</span>
+        <div className="flex w-7/12 flex-col items-start justify-start rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
+          <span className="text-2xl font-semibold">Performance</span>
 
           <Divider className="h-1 w-full"></Divider>
 
@@ -180,14 +186,21 @@ export default function TgUsdStakeContent() {
           ></ForecastGraph>
 
           <div className="flex w-full items-center justify-between gap-2">
-            <EvolutionBox originalValue={formatUnits(stakeInfo?.sgUSDBalance || 0n, 18)} label="sgUSD balance" newValue={computeProjectedValue.toString()} />
+            <EvolutionBox
+              className="w-full"
+              originalValue={formatUnits(stakeInfo?.sgUSDBalance || 0n, 18)}
+              label="sUSG balance"
+              newValue={computeProjectedValue.toString()}
+            />
 
             <EvolutionBox
+              className="w-full"
               originalValue={computeProjection(stakeInfo!, 1 / 12, 15).toFixed(2)}
               label="30 days projection"
               newValue={computeProjection(stakeInfo!, 1 / 12, 15, weiValue).toFixed(2)}
             />
             <EvolutionBox
+              className="w-full"
               originalValue={computeProjection(stakeInfo!, 1, 15).toFixed(2)}
               label="1 year projection"
               newValue={computeProjection(stakeInfo!, 1, 15, weiValue).toFixed(2)}

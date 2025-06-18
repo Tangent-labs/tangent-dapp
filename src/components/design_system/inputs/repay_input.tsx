@@ -1,10 +1,9 @@
 "use client"
 
-import { IconWallet } from "@/components/icons/icon_wallet"
 import { AssetDataPriced } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
-import { formatBigInt, toBigInt } from "@/lib/number_formatter"
-import { formatUnits } from "viem"
+import { formatDisplayValue, toBigInt } from "@/lib/number_formatter"
+import { formatUnits, maxUint256 } from "viem"
 import { cn } from "@/lib/utils"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { IconThunder } from "@/components/icons/icon_thunder"
@@ -19,7 +18,6 @@ type RepayInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositSelect: ReactNode
   onValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
-  displayBalance?: boolean
   isZapping?: boolean
   isLoading?: boolean
   percentage: number
@@ -36,7 +34,6 @@ export function RepayInput({
   setMaxBalance,
   onValueChange,
   depositSelect = <></>,
-  displayBalance = true,
   isZapping = false,
   isLoading = false,
   percentage = 0,
@@ -56,20 +53,20 @@ export function RepayInput({
 
     let repayAmount: bigint
     if (newPercentage === 100) {
-      repayAmount = balance
+      repayAmount = maxUint256
     } else {
       repayAmount = (BigInt(newPercentage) * balance) / BigInt(100)
     }
 
     const newValue = formatUnits(repayAmount, depositAsset.decimals)
-    setInnerValue(newValue)
+    setInnerValue(formatDisplayValue(newValue))
     onValueChange(repayAmount)
   }
 
   useEffect(() => {
     if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
-      const updatedValue = Number(formatUnits(depositAmount, depositAsset.decimals)).toFixed(0)
-      setInnerValue(updatedValue)
+      const updatedValue = Number(formatUnits(depositAmount, depositAsset.decimals)).toFixed(3)
+      setInnerValue(formatDisplayValue(updatedValue))
       setIsUserInput(false)
     }
   }, [depositAmount, depositAsset])
@@ -98,7 +95,7 @@ export function RepayInput({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
     setIsUserInput(true)
-    setInnerValue(newValue)
+    setInnerValue(formatDisplayValue(newValue))
 
     if (newValue === "MAX" && setPercentage) {
       setPercentage(100)
@@ -108,11 +105,6 @@ export function RepayInput({
       setPercentage(Math.min(Math.round(percentageCalc), 100))
     }
   }
-
-  const displayBalanceData = useMemo(() => {
-    const formattedBalance = formatBigInt(balance || "0", depositAsset?.decimals || 18, depositAsset?.displayDecimals || 2)
-    return `${formattedBalance} ${depositAsset?.symbol || ""}`
-  }, [balance, depositAsset])
 
   const dollarDepositDisplay = useMemo(() => {
     if (innerValue === "MAX") return "MAX"
@@ -126,7 +118,7 @@ export function RepayInput({
         className={cn(
           isLoading ? "shimmer" : "",
           disabled ? "bg-panel-disabled" : "bg-select-input",
-          "flex flex-col rounded-[10px] border border-white border-opacity-20 p-2"
+          "flex flex-col rounded-[10px] border-2 border-white border-opacity-20 p-2 transition-colors duration-200 hover:bg-white/10"
         )}
       >
         <div className="flex w-full justify-between">
@@ -148,32 +140,28 @@ export function RepayInput({
               value={innerValue}
               placeholder="Amount"
               onInput={handleInputChange}
-              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent pl-1 font-bold focus:outline-none")}
+              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent pl-1 font-semibold focus:outline-none")}
             />
           </div>
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
         <div className="mt-1 flex justify-between text-xs text-gray-400">
           <div>$({dollarDepositDisplay})</div>
-          {displayBalance && (
-            <div className="flex cursor-pointer items-center">
-              <span>{displayBalanceData}</span>
-              <IconWallet className="w-6" />
 
-              <button
-                className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
-                type="button"
-                onClick={() => {
-                  if (setMaxBalance) {
-                    setMaxBalance()
-                    setPercentage(100)
-                  }
-                }}
-              >
-                Max.
-              </button>
-            </div>
-          )}
+          <div className="flex cursor-pointer items-center">
+            <button
+              className="ml-1 flex w-10 cursor-pointer items-center rounded-full border-2 border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
+              type="button"
+              onClick={() => {
+                if (setMaxBalance) {
+                  setMaxBalance()
+                  setPercentage(100)
+                }
+              }}
+            >
+              Max.
+            </button>
+          </div>
         </div>
 
         {displaySliderInput && (

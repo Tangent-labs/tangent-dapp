@@ -30,27 +30,32 @@
     },
     {
       "inputs": [],
-      "name": "NewLiquidationThresholdTooHigh",
+      "name": "LiquidationFeeTooHigh",
       "type": "error"
     },
     {
       "inputs": [],
-      "name": "NewLiquidationThresholdTooLow",
+      "name": "LiquidationThresholdTooHigh",
       "type": "error"
     },
     {
       "inputs": [],
-      "name": "NewMaxLTVTooHigh",
+      "name": "LiquidationThresholdTooLow",
       "type": "error"
     },
     {
       "inputs": [],
-      "name": "NewMaxLTVTooLow",
+      "name": "MaxLTVBiggerThanLiquidationThreshold",
       "type": "error"
     },
     {
       "inputs": [],
-      "name": "NotIRMinter",
+      "name": "MaxLTVTooHigh",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MaxLTVTooLow",
       "type": "error"
     },
     {
@@ -259,6 +264,12 @@
         {
           "indexed": false,
           "internalType": "uint256",
+          "name": "fee",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
           "name": "collateralLiquidated",
           "type": "uint256"
         },
@@ -339,6 +350,31 @@
         }
       ],
       "name": "RepayAndWithdraw",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newBadDebt",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "collateralSeized",
+          "type": "uint256"
+        }
+      ],
+      "name": "SeizeCollateral",
       "type": "event"
     },
     {
@@ -918,7 +954,7 @@
             }
           ],
           "internalType": "struct ZapStruct",
-          "name": "dumpTgUSDCall",
+          "name": "leverageCall",
           "type": "tuple"
         }
       ],
@@ -968,16 +1004,16 @@
       "type": "function"
     },
     {
-      "inputs": [
+      "inputs": [],
+      "name": "liquidationFee",
+      "outputs": [
         {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
-      "name": "liquidateBadDebt",
-      "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -1116,13 +1152,6 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "renounceOwnership",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "address",
@@ -1187,6 +1216,19 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "seizeCollateral",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "uint256",
           "name": "collatAmountToLiquidate",
           "type": "uint256"
@@ -1215,7 +1257,7 @@
             }
           ],
           "internalType": "struct ZapStruct",
-          "name": "routerCall",
+          "name": "liquidationCall",
           "type": "tuple"
         }
       ],
@@ -1272,6 +1314,19 @@
         }
       ],
       "name": "setIsLeveragePaused",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_liquidationFee",
+          "type": "uint256"
+        }
+      ],
+      "name": "setLiquidationFee",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -1555,7 +1610,7 @@
       ],
       "name": "zapDepositAndBorrow",
       "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -1589,7 +1644,7 @@
             }
           ],
           "internalType": "struct ZapStruct",
-          "name": "dumpTgUSDCall",
+          "name": "leverageCall",
           "type": "tuple"
         },
         {
@@ -1738,7 +1793,7 @@
       ],
       "name": "zapRepayAndWithdraw",
       "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {

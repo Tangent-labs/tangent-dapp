@@ -1,3 +1,4 @@
+import { Address } from "viem"
 import { ExistingAsset } from "."
 
 export type SortedState = "asc" | "desc" | "none"
@@ -15,11 +16,13 @@ export type ListState = {
 export type ListHeaderData = {
   label?: string
   key: string
+  indicator?: string
 }
 
 export type ListRowData = {
   token: ExistingAsset
   name: string
+  address: Address
   apr: {
     current?: number
     projected?: number
@@ -30,4 +33,5 @@ export type ListRowData = {
     value: string
     raw?: number // Raw numerical value for calculations
   }[]
+  userHasDeposited: boolean
 }

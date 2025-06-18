@@ -13,7 +13,7 @@ type IndicatorCardProps = {
 export const IndicatorCard = ({ title, value, className = "" }: IndicatorCardProps) => {
   return (
     <div className={`flex flex-col justify-center lg:items-center ${className}`}>
-      <span className="text-sm font-bold">{title}</span>
+      <span className="text-sm font-semibold">{title}</span>
       <span className="text-xs text-gray-400">{value}</span>
     </div>
   )
@@ -27,7 +27,7 @@ interface IndicatorCardsProps {
 
 const IndicatorCards = ({ indicators, className = "", children }: IndicatorCardsProps) => {
   return (
-    <Panel className={`inline-flex w-auto gap-2 !border-none lg:gap-6 ${className}`}>
+    <Panel className={`inline-flex w-auto gap-4 !border-none ${className}`}>
       {children}
       {indicators.map((indicator, index) => (
         <IndicatorCard key={index} title={indicator.title} value={indicator.value} />

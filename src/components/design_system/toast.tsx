@@ -34,9 +34,9 @@ export const ToastComponent = ({ data }: ToastContentProps) => {
   }
 
   return (
-    <div className="flex w-full flex-col rounded-[10px] border border-white border-opacity-20 bg-overlay-panel backdrop-blur-[60px]">
+    <div className="flex w-full flex-col rounded-[10px] border-2 border-white border-opacity-20 bg-overlay-panel backdrop-blur-[60px]">
       <div className="flex items-center justify-between border-b border-b-white border-opacity-20">
-        <div className={`flex items-center justify-start bg-clip-text px-2 py-1 text-lg font-bold text-transparent ` + ` ${computedTitleClass()}`}>
+        <div className={`flex items-center justify-start bg-clip-text px-2 py-1 text-lg font-semibold text-transparent ` + ` ${computedTitleClass()}`}>
           {computedIcon()}
           {data?.type}
         </div>

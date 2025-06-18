@@ -13,7 +13,7 @@ export default function Title({ label, size = "normal", className, ...props }: T
   }
 
   return (
-    <span className={cn(cssSizeClass[size], className, "font-bold")} {...props}>
+    <span className={cn(cssSizeClass[size], className, "font-semibold")} {...props}>
       {label}
     </span>
   )

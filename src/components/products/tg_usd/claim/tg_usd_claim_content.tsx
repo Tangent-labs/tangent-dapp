@@ -74,7 +74,7 @@ export default function TgUsdClaimContent() {
             </ListProvider>
           </div>
 
-          <Panel className="flex h-full min-h-52 w-3/12 flex-col items-start justify-start rounded-xl border border-white p-5">
+          <Panel className="flex h-full min-h-52 w-3/12 flex-col items-start justify-start rounded-xl border-2 border-white p-5">
             <div className="flex w-full items-center justify-between">
               <div className="flex flex-col items-start justify-start">Market</div>
 

@@ -8,19 +8,18 @@ import PanelRaw from "@/components/design_system/structure/panel_raw"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import FormButtons from "@/components/design_system/form/form_actions"
-import { formatBigInt, formatDollar } from "@/lib/number_formatter"
+import { formatBigInt } from "@/lib/number_formatter"
 import CustomSelect from "@/components/design_system/inputs/custom_select"
 import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
-import { formatUnits } from "viem"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import Panel from "@/components/design_system/structure/panel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
 
 export default function TgUsdDepositPanel() {
   const {
@@ -42,6 +41,7 @@ export default function TgUsdDepositPanel() {
     depositAsset,
     depositWeiValue,
     formState,
+    estimatedZapDollarValue,
     borrowWeiValue,
     tokens,
     isZapLoading,
@@ -58,7 +58,7 @@ export default function TgUsdDepositPanel() {
     maxBorrowableValue,
   } = useTgUsdDepositContext()
 
-  const { collateralInfo, marketData, tgUSDInfo, balances, balanceAllowanceData } = useTgUsdRecordContext()
+  const { collateralInfo, marketData, tgUSDInfo, balances, balanceAllowanceData, marketInfo } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -77,7 +77,7 @@ export default function TgUsdDepositPanel() {
       {
         ...collateralInfo,
         value: collateralInfo.name as string,
-        balance: balances[collateralInfo.address] || BigInt(0),
+        balance: balances[marketInfo?.collatAddress] || BigInt(0),
       },
       ...[
         {
@@ -117,8 +117,8 @@ export default function TgUsdDepositPanel() {
     return (
       <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
         <div className="flex w-full items-center gap-2">
-          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={20} />}
-          <span className="text-sm font-bold">{option.symbol}</span>
+          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={32} />}
+          <span className="text-sm font-semibold">{option.symbol}</span>
         </div>
         <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
       </div>
@@ -127,9 +127,9 @@ export default function TgUsdDepositPanel() {
 
   const BorrowAssetDisplay = () => {
     return (
-      <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+      <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
         <TokenImage token="tgUSD" size={20} />
-        <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
+        <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
       </div>
     )
   }
@@ -147,8 +147,11 @@ export default function TgUsdDepositPanel() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <span className="text-[20px] font-bold">Deposit {collateralInfo?.symbol}</span>
+      <div className="flex w-full items-end justify-between gap-2">
+        <span className="text-[20px] font-semibold">Deposit {collateralInfo?.symbol}</span>
+        <span className="text-xs text-subtitle">
+          Max: {formatBigInt(balanceAllowanceData?.balance || marketData?.collateralBalance, depositAssetInfo?.decimals || 18, 2)} {depositAssetInfo?.symbol}
+        </span>
       </div>
 
       <DepositInput
@@ -158,7 +161,7 @@ export default function TgUsdDepositPanel() {
         disabled={!canInteract}
         isLoading={isDepositLoading}
         depositAsset={depositAssetInfo || collateralInfo}
-        balance={!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance}
+        balance={balanceAllowanceData?.balance || marketData?.collateralBalance}
         isZapping={!!depositAsset && depositAsset !== collateralInfo?.name}
         onValueChange={handleDepositChange}
         percentage={depositSliderPercent}
@@ -181,22 +184,20 @@ export default function TgUsdDepositPanel() {
                 <input
                   type="number"
                   disabled={isZapLoading}
-                  className="flex w-fit max-w-28 justify-start bg-transparent text-xl font-bold focus:outline-none"
+                  className="flex w-fit max-w-28 justify-start bg-transparent text-xl font-semibold focus:outline-none"
                   value={zapInnerValue ?? ""}
                   onChange={handleZapInputChange}
                 />
 
-                <div className="text-xs">
-                  {zapValue && collateralInfo?.price !== 0 ? `(~${formatDollar((Number(formatUnits(zapValue, 18)) * collateralInfo?.price).toFixed(2))})` : ""}
-                </div>
+                <div className="text-xs">{zapValue && !!marketData?.collateralInfos ? estimatedZapDollarValue : ""}</div>
               </div>
               <div className="flex justify-between text-xs text-gray-400">
-                <div>Minimum receive</div>
+                <div>Minimum received</div>
               </div>
             </div>
-            <div className="flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-select-input px-2 py-1">
-              <TokenImage token={collateralInfo?.logo} size={20} />
-              <div className="font-bold">{collateralInfo?.symbol}</div>
+            <div className="flex items-center justify-center gap-2 rounded-xl border-2 border-white/30 bg-select-input px-2 py-1">
+              <TokenImage token={collateralInfo?.logo as ExistingAsset} size={32} />
+              <div className="font-semibold">{collateralInfo?.symbol}</div>
             </div>
           </div>
         </PanelRaw>
@@ -205,18 +206,17 @@ export default function TgUsdDepositPanel() {
       {isDepositAndBorrow && (
         <div className="flex flex-col gap-1">
           <div className="flex items-end justify-between">
-            <span className="text-[20px] font-bold">Borrow tgUSD</span>
-            <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 2)} tgUSD</span>
+            <span className="text-[20px] font-semibold">Borrow tgUSD</span>
+            <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} tgUSD</span>
           </div>
-          <DepositInput
+          <BorrowInput
             displaySliderInput={true}
-            depositAmount={borrowWeiValue}
+            borrowAmount={borrowWeiValue}
             labelDeposit="You borrow"
             depositSelect={<BorrowAssetDisplay />}
             disabled={!canInteract}
-            depositAsset={tgUSDInfo}
-            setMaxBalance={() => {}}
-            displayBalance={false}
+            borrowAsset={tgUSDInfo}
+            setMaxBalance={() => setBorrowWeiValue(maxBorrowableValue)}
             balance={maxBorrowableValue}
             percentage={borrowSliderPercent}
             setPercentage={setBorrowSliderPercent}
@@ -229,7 +229,7 @@ export default function TgUsdDepositPanel() {
       <div>
         <FormButtons
           actions={{
-            handleApprove: depositAsset && depositAsset !== collateralInfo?.symbol ? actionApproveZap : actionApprove,
+            handleApprove: depositAsset === "ETH" ? undefined : depositAsset && depositAsset !== collateralInfo?.symbol ? actionApproveZap : actionApprove,
             handleProcess: depositAsset && depositAsset !== collateralInfo?.symbol ? getRouteAndDeposit : actionDeposit,
           }}
           formState={formState}
@@ -240,7 +240,7 @@ export default function TgUsdDepositPanel() {
       <div className="flex w-full items-start justify-between gap-2">
         <Accordion className="w-full" type="single" collapsible>
           <AccordionItem value="item-1">
-            <div className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-xl border border-white/30 bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px] hover:bg-white/20">
+            <div className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-xl border-2 border-white/30 bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px] hover:bg-white/20">
               <AccordionTrigger>
                 <span className="text-md">Details</span>
               </AccordionTrigger>
@@ -274,14 +274,17 @@ export default function TgUsdDepositPanel() {
 
         <Popover>
           <PopoverTrigger asChild>
-            <button type="button" title="Slippage">
-              <div className="h-[30px] cursor-pointer rounded-xl border border-white/30 bg-button-gradient p-2 hover:bg-white/20">
-                <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
-              </div>
-            </button>
+            <div className="flex h-[30px] cursor-pointer items-center justify-between rounded-xl border-2 border-white/30 bg-button-gradient py-2 font-roobert">
+              <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
+              <button type="button" title="Slippage">
+                <div className="h-[30px] cursor-pointer rounded-xl border-l-2 border-white/30 bg-button-gradient p-2 hover:bg-white/20">
+                  <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
+                </div>
+              </button>
+            </div>
           </PopoverTrigger>
-          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="z-20 !m-0 w-48 !border-none bg-black !p-0">
-            <Panel className="!border-none">
+          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none font-roobert">
+            <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
               <div className="flex w-full flex-col items-center justify-between gap-2">
                 <div className="flex w-full items-center justify-start">Slippage</div>
                 <input
@@ -289,7 +292,7 @@ export default function TgUsdDepositPanel() {
                   value={slippage || 0}
                   placeholder="0.5"
                   type="number"
-                  className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
+                  className="w-full rounded-lg border-2 border-white/30 bg-transparent pl-2 focus:outline-none"
                 />
                 <div className="mt-2 flex w-full items-center justify-between gap-2">
                   <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />
@@ -297,7 +300,7 @@ export default function TgUsdDepositPanel() {
                   <ButtonTab onClick={() => setSlippage(2)} label={"2.0%"} active={slippage === 2} className="rounded-full !px-2 !py-1" />
                 </div>
               </div>
-            </Panel>
+            </div>
           </PopoverContent>
         </Popover>
       </div>

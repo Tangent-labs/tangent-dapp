@@ -1,31 +1,34 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Logo } from "@/components/design_system/structure/logo"
 import DropdownMenu from "@/components/design_system/structure/dropdown_menu"
 import { Button } from "@/components/design_system/inputs/button"
 import { WalletConnexionButton } from "@/components/products/wallet/Wallet_connexion_button"
+import { cn } from "@/lib/utils"
 
 export default function MenuBarFeature() {
   const router = useRouter()
 
+  const pathname = usePathname()
+
   return (
-    <header className="sticky top-0 z-50 flex h-16 w-full backdrop-blur-[60px]">
+    <header className="sticky top-0 z-50 flex h-[80px] w-full font-roobert backdrop-blur-[60px]">
       <div className="container mx-auto flex w-full items-center justify-between">
         <div onClick={() => router.push("/")} className="flex cursor-pointer items-center gap-2 text-[20px] text-white">
           <Logo />
           Tangent
         </div>
 
-        <div className="flex items-center gap-4 md:gap-6">
-          <nav className="flex items-center gap-4 md:gap-10">
+        <div className="flex items-center gap-4 font-roobert md:gap-6">
+          <nav className="flex items-center gap-10">
             <div className="flex cursor-pointer items-center">
               <DropdownMenu label="Dashboard">
                 <div className="flex flex-col items-start gap-2 p-2">
-                  <div className="transition-colors duration-300 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/protocol")}>
+                  <div className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/protocol")}>
                     Protocol
                   </div>
-                  <div className="transition-colors duration-300 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/user")}>
+                  <div className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/user")}>
                     User
                   </div>
                 </div>
@@ -33,7 +36,13 @@ export default function MenuBarFeature() {
             </div>
 
             <div className="flex cursor-pointer items-center">
-              <p onClick={() => router.push("/")} className="text-sm text-white transition-colors duration-300 hover:text-blue-400 aria-disabled:text-gray-500">
+              <p
+                onClick={() => router.push("/")}
+                className={cn(
+                  "text-sm text-white transition-colors duration-200 hover:text-blue-400 aria-disabled:text-gray-500",
+                  pathname === "/" ? "bg-tab bg-clip-text font-bold text-transparent" : ""
+                )}
+              >
                 Market
               </p>
             </div>
@@ -41,7 +50,10 @@ export default function MenuBarFeature() {
             <div className="flex cursor-pointer items-center">
               <p
                 onClick={() => router.push("/stake")}
-                className="text-sm text-white transition-colors duration-300 hover:text-blue-400 aria-disabled:text-gray-500"
+                className={cn(
+                  "text-sm text-white transition-colors duration-200 hover:text-blue-400 aria-disabled:text-gray-500",
+                  pathname === "/stake" ? "bg-tab bg-clip-text font-bold text-transparent" : ""
+                )}
               >
                 Stake
               </p>
@@ -50,7 +62,10 @@ export default function MenuBarFeature() {
             <div className="flex cursor-pointer items-center">
               <p
                 onClick={() => router.push("/swap")}
-                className="text-sm text-white transition-colors duration-300 hover:text-blue-400 aria-disabled:text-gray-500"
+                className={cn(
+                  "text-sm text-white transition-colors duration-200 hover:text-blue-400 aria-disabled:text-gray-500",
+                  pathname === "/swap" ? "bg-tab bg-clip-text font-bold text-transparent" : ""
+                )}
               >
                 Swap
               </p>
@@ -59,7 +74,10 @@ export default function MenuBarFeature() {
             <div className="flex cursor-pointer items-center">
               <p
                 onClick={() => router.push("/earn")}
-                className="text-sm text-white transition-colors duration-300 hover:text-blue-400 aria-disabled:text-gray-500"
+                className={cn(
+                  "text-sm text-white transition-colors duration-200 hover:text-blue-400 aria-disabled:text-gray-500",
+                  pathname === "/earn" ? "bg-tab bg-clip-text font-bold text-transparent" : ""
+                )}
               >
                 Earn
               </p>
@@ -68,10 +86,10 @@ export default function MenuBarFeature() {
             <div className="flex cursor-pointer items-center">
               <DropdownMenu label="Manage">
                 <div className="flex flex-col items-start gap-2 p-2">
-                  <div className="transition-colors duration-300 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/claim")}>
+                  <div className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/claim")}>
                     Claim
                   </div>
-                  <div className="transition-colors duration-300 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/harvest")}>
+                  <div className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/harvest")}>
                     Harvest
                   </div>
                 </div>
@@ -79,12 +97,12 @@ export default function MenuBarFeature() {
             </div>
 
             <div className="flex cursor-pointer items-center">
-              <DropdownMenu label="Tan">
+              <DropdownMenu pathname={pathname} label="Tan">
                 <div className="flex flex-col items-start gap-2 p-2">
-                  <div className="transition-colors duration-300 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/tan/lock")}>
+                  <div className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/tan/lock")}>
                     Lock
                   </div>
-                  <div className="transition-colors duration-300 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/stan")}>
+                  <div className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/stan")}>
                     Stake
                   </div>
                 </div>
@@ -94,17 +112,17 @@ export default function MenuBarFeature() {
             <div className="flex cursor-pointer items-center">
               <DropdownMenu label="Airdrop">
                 <div className="flex flex-col items-start gap-2 p-2">
-                  <div className="transition-colors duration-300 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/airdrop")}>
+                  <div className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/airdrop")}>
                     Task
                   </div>
                   <div
-                    className="transition-colors duration-300 hover:text-blue-400 data-[active=true]:text-blue-400"
+                    className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400"
                     onClick={() => router.push("/airdrop/referral")}
                   >
                     Referral
                   </div>
                   <div
-                    className="transition-colors duration-300 hover:text-blue-400 data-[active=true]:text-blue-400"
+                    className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400"
                     onClick={() => router.push("/airdrop/pass")}
                   >
                     Tangium pass
@@ -113,12 +131,10 @@ export default function MenuBarFeature() {
               </DropdownMenu>
             </div>
           </nav>
-          <Button className="h-10 font-bold text-white">Buy tgUSD</Button>
+          <Button className="h-10 font-roobert font-semibold text-white">Buy tgUSD</Button>
         </div>
 
-        <div className="flex items-center gap-3">
-          <WalletConnexionButton />
-        </div>
+        <WalletConnexionButton />
       </div>
     </header>
   )

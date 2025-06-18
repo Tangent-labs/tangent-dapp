@@ -1,6 +1,6 @@
 "use client"
 
-import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSgUSD, getExpectedTgUSD, getFormState, getTgUsdStakeOnChainData } from "./stake_tan_controller"
+import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSgUSD, getExpectedTgUSD, getFormState, getTanStakeOnChainData } from "./stake_tan_controller"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
@@ -51,7 +51,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
 
   const loadData = useCallback(() => {
     if (currentAddress) {
-      getTgUsdStakeOnChainData(currentAddress).then((data) => {
+      getTanStakeOnChainData(currentAddress).then((data) => {
         setStakeInfo(data)
         setIsLoading(false)
       })

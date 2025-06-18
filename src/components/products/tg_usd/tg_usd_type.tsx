@@ -1,4 +1,15 @@
-import { AprEntry, AssetData, AssetDataPriced, ERC20StaticInfos, ExistingAsset, Network, PositionData, TokenAmountPriced, TokenAmountPricedRow } from "@/types"
+import {
+  AprEntry,
+  AssetData,
+  AssetDataPriced,
+  CollateralInfo,
+  ERC20StaticInfos,
+  ExistingAsset,
+  Network,
+  PositionData,
+  TokenAmountPriced,
+  TokenAmountPricedRow,
+} from "@/types"
 import { Address } from "viem"
 
 export type TgUsdGlobalMarketData = {
@@ -56,13 +67,14 @@ export type TgUsdAirdropData = {
 }
 
 export type TgUsdGlobalData = {
-  tgUsdPrice: string // $
+  tgUsdPrice: string
   tgUsdSupply: string
-  sgUsdPrice: string // $
+  sgUsdPrice: string
   sgUsdSupply: string
-  APY: string // %
-  globalCr: string // %
-  globalTvl: string // $
+  APY: string
+  globalCr: string
+  globalDebt: string
+  globalTvl: string
 }
 
 export type TgUsdMarketType = "Convex_CRV" | "Convex_FXN"
@@ -119,11 +131,12 @@ export interface ChainViewMarketRow {
   obas: OutputBalanceAllowances[]
   rewardTokens: ERC20StaticInfos[]
   sociabilization: SociabilizationData
+  marketType?: TgUsdMarketType
 }
 
 export interface CollateralInfos {
   collateralToken: ERC20StaticInfos
-  totalCollateralUSDValue: string
+  totalCollateralUSDValue: bigint
   totalCollateralAmount: string
   collateralUSDPrice: bigint
   positionCollateralAmount: bigint
@@ -136,7 +149,7 @@ export interface DebtInfos {
   positionDebt: bigint
   userDebt: bigint
   healthRatio: string
-  currentBorrowRate: string
+  currentBorrowRate: bigint
   futureBorrowRate: string
   currentRewardCut: string
   futureRewardCut: string
@@ -157,6 +170,14 @@ export interface MarketConstants {
     pMin: number
     pMax: number
     pInf: number
+  }
+  rcParams: {
+    endCutPercentage: bigint
+    endCutPrice: bigint
+    harvestFeePercentage: bigint
+    startCutPercentage: bigint
+    startCutPrice: bigint
+    stepAmount: number
   }
 }
 
@@ -187,7 +208,7 @@ export type SociabilizationData = {
 
 export type MarketDetailData = {
   marketAddress: Address
-  collateralInfo: AssetDataPriced
+  collateralInfo: CollateralInfo
   debtInfos: DebtInfos
   constants: MarketConstants
   collateralBalance: bigint
@@ -397,4 +418,12 @@ export type CurveQuote = {
   _swap_params: bigint[][]
   _amount: bigint
   _pools: Address[]
+}
+
+export type UserPosition = {
+  label: string
+  collatAmount: bigint
+  usgAmount: bigint
+  date: Date
+  txHash: string
 }

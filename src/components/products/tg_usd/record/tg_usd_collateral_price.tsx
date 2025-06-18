@@ -49,7 +49,7 @@ const CollateralGraph = ({ graphData, isPending }: CollateralGraphParams) => {
 }
 
 export default function TgUsdCollateralPrice() {
-  const { collateralInfo } = useTgUsdRecordContext()
+  const { collateralInfo, marketInfo } = useTgUsdRecordContext()
 
   const [graphData, setGraphData] = useState<GraphData | null>(null)
 
@@ -109,8 +109,8 @@ export default function TgUsdCollateralPrice() {
   }
 
   useEffect(() => {
-    fetchGraphDataForCollat(collateralInfo?.address, timeWindow)
-  }, [collateralInfo?.address, timeWindow])
+    fetchGraphDataForCollat(marketInfo?.collatAddress, timeWindow)
+  }, [marketInfo?.collatAddress, timeWindow])
 
   return (
     <div className="flex w-full flex-col justify-between rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">

@@ -12,7 +12,7 @@ export default function RecordPageHeader({ apr, indicators }: RecordPageHeaderPr
     <div className="flex min-h-20 items-center justify-evenly gap-4 rounded-[10px] bg-overlay-panel py-5 backdrop-blur-[60px]">
       {apr && (
         <RecordPageHeaderIndicator
-          title="APR"
+          title="vAPR"
           value={`${apr?.actualsApr?.totalApr ? `${apr?.actualsApr?.totalApr?.toFixed(2)}%` : "-"}`}
           subValue={`Proj:${apr?.projectedApr?.totalApr ? `${apr?.projectedApr?.totalApr?.toFixed(2)}%` : "-"}`}
           className="text-row-tonic"

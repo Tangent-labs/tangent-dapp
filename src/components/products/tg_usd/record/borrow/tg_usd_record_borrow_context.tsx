@@ -6,8 +6,6 @@ import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doMarketBorrow, getBorrowFormState } from "./tg_usd_record_borrow_controller"
 
-const DECIMALS = BigInt(10 ** 18)
-
 type TgUsdBorrowContextProps = {
   children: ReactNode
 }
@@ -51,21 +49,19 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
 
   const maxBorrowableValue = useMemo(() => {
     if (marketData?.collateralInfos) {
-      const collateralPriceRaw = BigInt(marketData?.collateralInfos?.collateralUSDPrice || 0n)
-      const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n)
-      const futureDeposited = BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n)
-      const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
-      const maxBorrowable = (futureDeposited * maxLTV) / 100n - (futureDebt * DECIMALS) / collateralPriceRaw
+      const futureDebt = marketData?.debtInfos?.userDebt
 
-      return maxBorrowable
+      const maxBorrowable = (marketData?.collateralInfos?.positionCollateralUSDValue * marketData?.constants.maxLTV) / BigInt(100000n) - futureDebt
+
+      return maxBorrowable > 0n ? maxBorrowable : 0n
     }
 
     return 0n
   }, [marketData])
 
   const formState = useMemo(
-    () => getBorrowFormState(marketData, borrowWeiValue, isWellConnected),
-    [marketData, borrowWeiValue, isWellConnected, currentAddress]
+    () => getBorrowFormState(marketData, borrowWeiValue, isWellConnected, maxBorrowableValue),
+    [marketData, borrowWeiValue, isWellConnected, currentAddress, maxBorrowableValue]
   )
 
   const contextValue: TgUsdBorrowContextValues = {

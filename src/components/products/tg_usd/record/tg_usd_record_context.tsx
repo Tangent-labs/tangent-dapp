@@ -1,8 +1,13 @@
 "use client"
 
-import { AssetApr, AssetDataPriced, TgUsdMarketAsset } from "@/types"
+import { AssetApr, AssetDataPriced, CollateralInfo, ListState, TgUsdMarketAsset } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+
+import { Address } from "viem"
+import { useTgUsdContext } from "../tg_usd_context"
+import { getUserPositions } from "../api"
+
 import {
   BalanceAllowanceData,
   ChainViewMarketRow,
@@ -11,6 +16,7 @@ import {
   TgUsdMarketAmounts,
   TgUsdMarketDisplayData,
   TgUsdMarketLoanDisplayData,
+  UserPosition,
 } from "../tg_usd_type"
 import {
   getBalances,
@@ -21,20 +27,19 @@ import {
   getBalancesAndAllowances,
   transformMarketData,
 } from "./tg_usd_record_controller"
-import { Address } from "viem"
-import { useTgUsdContext } from "../tg_usd_context"
+import { sortUserData } from "./position_history/tg_usd_position_history_controller"
 
 type TgUsdRecordContextProps = {
   children: ReactNode
   collateral: TgUsdMarketAsset
-  collateralInfo: AssetDataPriced
+  collateralInfo: CollateralInfo
   marketInfo: TgUsdMarket
   tgUSDInfo: AssetDataPriced
 }
 
 type TgUsdRecordContextValues = {
   collateral: TgUsdMarketAsset
-  collateralInfo: AssetDataPriced
+  collateralInfo: CollateralInfo
   isLoading: boolean
   marketData?: MarketDetailData
   loadOnChainData: () => void
@@ -46,10 +51,19 @@ type TgUsdRecordContextValues = {
   currentAmounts: TgUsdMarketAmounts
   setCurrentAmounts: (amounts: TgUsdMarketAmounts) => void
 
+  marketInfo: TgUsdMarket
+
   balances: Record<Address, bigint> | null
 
   balanceAllowanceData: BalanceAllowanceData | null
   setBalanceAllowanceData: (arg: BalanceAllowanceData) => void
+
+  displayRows: UserPosition[]
+
+  isUserHistoryLoading: boolean
+  setIsUserHistoryLoading: (v: boolean) => void
+
+  customSort: (arg: ListState) => void
 }
 
 export const TgUsdRecordContext = createContext<TgUsdRecordContextValues | undefined>(undefined)
@@ -63,7 +77,11 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
 
   const [onChainData, setOnChainData] = useState<ChainViewMarketRow | undefined>()
 
+  const [userPositions, setUserPositions] = useState<UserPosition[] | null>(null)
+
   const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const [isUserHistoryLoading, setIsUserHistoryLoading] = useState<boolean>(true)
 
   const [apr, setApr] = useState<AssetApr | undefined>()
 
@@ -78,9 +96,20 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     liquidateValue: 0n,
   })
 
+  const fetchUserPositions = () => {
+    getUserPositions(currentAddress!, marketInfo.marketAddress).then((pos) => {
+      if (pos) {
+        setUserPositions(pos)
+      } else {
+        setUserPositions([])
+      }
+    })
+  }
+
   useEffect(() => {
     if (currentAddress) {
       loadOnChainData()
+      fetchUserPositions()
     }
   }, [currentAddress])
 
@@ -136,14 +165,56 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
 
     try {
       const walletClient = getWalletClient()
-      if (!walletClient || !marketInfo) throw new Error("Wallet client not found")
 
-      const data = await getBalancesAndAllowances(walletClient, depositAssetInfo, marketInfo?.marketAddress)
+      const data = await getBalancesAndAllowances(walletClient!, depositAssetInfo, marketInfo?.marketAddress)
 
       setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
     } catch (error) {
       console.error("Failed to fetch balance/allowance:", error)
     }
+  }
+
+  //
+  // USER POSITION CONTEXT
+
+  const displayRows = useMemo(() => {
+    if (!userPositions) {
+      setIsUserHistoryLoading(true)
+      return []
+    }
+    if (!!userPositions && userPositions.length === 0) {
+      setIsUserHistoryLoading(false)
+      return []
+    }
+
+    const rows = sortUserData(userPositions)
+    setIsUserHistoryLoading(false)
+
+    return rows
+  }, [userPositions])
+
+  const customSort = (listState: ListState) => {
+    const { key, direction } = listState.sort!
+
+    displayRows.sort((elementA: UserPosition, elementB: UserPosition) => {
+      if (key === "usgAmount") {
+        const aValue = elementA[key as keyof UserPosition]
+        const bValue = elementB[key as keyof UserPosition]
+
+        if (Number(aValue) < Number(bValue)) return direction === "asc" ? -1 : 1
+        if (Number(aValue) > Number(bValue)) return direction === "asc" ? 1 : -1
+
+        return 0
+      } else {
+        const aValue = elementA[key as keyof UserPosition]
+        const bValue = elementB[key as keyof UserPosition]
+
+        if (aValue < bValue) return direction === "asc" ? -1 : 1
+        if (aValue > bValue) return direction === "asc" ? 1 : -1
+
+        return 0
+      }
+    })
   }
 
   const contextValue: TgUsdRecordContextValues = {
@@ -162,6 +233,12 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     balanceAllowanceData,
     setBalanceAllowanceData,
     fetchBalanceAllowanceData,
+    marketInfo,
+    //
+    displayRows,
+    customSort,
+    isUserHistoryLoading,
+    setIsUserHistoryLoading,
   }
 
   return <TgUsdRecordContext.Provider value={contextValue}>{children}</TgUsdRecordContext.Provider>

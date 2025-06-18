@@ -5,14 +5,14 @@ import { LockPosition } from "../../tg_usd/tg_usd_type"
 import { RSTAN_CONTRACT } from "../rs_tan_repository"
 
 export const doApprove = async (depositWeiValue: bigint, walletClient: WalletClient) => {
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
 
   const txData = getApproveTx(RSTAN_CONTRACT.TAN, RSTAN_CONTRACT.RSTAN, depositWeiValue)
 
   const gas = await publicClient.estimateContractGas(txData as EstimateContractGasParameters)
   txData.gas = gas
-
   const hash = await walletClient.writeContract(txData as WriteContractParameters)
+
   return await waitForTransaction(hash)
 }
 

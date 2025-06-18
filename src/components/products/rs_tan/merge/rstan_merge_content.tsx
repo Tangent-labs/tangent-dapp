@@ -35,11 +35,11 @@ export const RsTanMergeContent = () => {
       <>
         {option && option?.tokenId ? (
           <div className="flex items-center gap-2">
-            <span className="font-bold text-white">#{option.tokenId}</span>
+            <span className="font-semibold text-white">#{option.tokenId}</span>
           </div>
         ) : (
           <div className="flex items-center gap-2">
-            <span className="font-bold text-white"></span>
+            <span className="font-semibold text-white"></span>
           </div>
         )}
       </>
@@ -106,14 +106,14 @@ export const RsTanMergeContent = () => {
 
   return (
     <div className="flex w-full flex-col items-start justify-start">
-      <div className="mb-1 text-lg font-bold text-white">Select positions to merge :</div>
+      <div className="mb-1 text-lg font-semibold text-white">Select positions to merge :</div>
 
       <div className="mt-2 flex h-10 w-full items-center justify-between gap-2">
         <PositionSelect />
         <div className="mt-1 flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-3 text-sm text-subtitle">
           Balance:
           {firstPositionToMerge && firstPositionToMergeInfo?.amount && (
-            <span className="flex items-center justify-end text-lg font-bold text-white">
+            <span className="flex items-center justify-end text-lg font-semibold text-white">
               {formatBigInt(firstPositionToMergeInfo?.amount, 18, 2)} <IconRsTan className="ml-2 h-5 w-5"></IconRsTan>
             </span>
           )}
@@ -125,7 +125,7 @@ export const RsTanMergeContent = () => {
         <div className="mt-1 flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-3 text-sm text-subtitle">
           Balance:
           {secondPositionToMerge && secondPositionToMergeInfo?.amount && (
-            <span className="flex items-center justify-end text-lg font-bold text-white">
+            <span className="flex items-center justify-end text-lg font-semibold text-white">
               {formatBigInt(secondPositionToMergeInfo?.amount, 18, 2)} <IconRsTan className="ml-2 h-5 w-5"></IconRsTan>
             </span>
           )}
@@ -134,7 +134,7 @@ export const RsTanMergeContent = () => {
 
       {secondPositionToMergeInfo && firstPositionToMergeInfo && (
         <>
-          <div className="my-3 font-bold text-white">Merge recap:</div>
+          <div className="my-3 font-semibold text-white">Merge recap:</div>
 
           <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel px-2 py-3 backdrop-blur-[60px]">
             <div className="flex w-full items-start justify-start gap-2">
@@ -144,19 +144,19 @@ export const RsTanMergeContent = () => {
             </div>
 
             <div className="my-1 flex w-full items-center justify-center gap-2 text-[16px]">
-              <div className="relative flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-bold backdrop-blur-[60px]">
+              <div className="relative flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px]">
                 #{firstPositionToMergeInfo?.tokenId}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-tonic py-0.5 text-xs text-black">Updated</div>
               </div>
               <EvolutionBox
                 className="w-6/12"
                 originalValue={
-                  <div className="flex items-center justify-center font-bold">
+                  <div className="flex items-center justify-center font-semibold">
                     {formatBigInt(firstPositionToMergeInfo?.amount, 18, 2)} <IconRsTan className="ml-1 h-5 w-5"></IconRsTan>
                   </div>
                 }
                 newValue={
-                  <div className="flex h-full items-center justify-center font-bold">
+                  <div className="flex h-full items-center justify-center font-semibold">
                     {formatBigInt(secondPositionToMergeInfo?.amount + firstPositionToMergeInfo?.amount, 18, 2)}
                     <IconRsTan className="ml-1 h-5 w-5"></IconRsTan>
                   </div>
@@ -173,19 +173,19 @@ export const RsTanMergeContent = () => {
             </div>
 
             <div className="my-1 flex w-full items-center justify-center gap-2 text-[16px]">
-              <div className="relative flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-bold backdrop-blur-[60px]">
+              <div className="relative flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px]">
                 #{secondPositionToMergeInfo?.tokenId}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-danger py-0.5 text-xs text-black">Deleted</div>
               </div>
               <EvolutionBox
                 className="w-6/12"
                 originalValue={
-                  <div className="flex items-center justify-center font-bold">
+                  <div className="flex items-center justify-center font-semibold">
                     {formatBigInt(secondPositionToMergeInfo?.amount, 18, 2)} <IconRsTan className="ml-1 h-5 w-5"></IconRsTan>
                   </div>
                 }
                 newValue={
-                  <div className="flex h-full items-center justify-center font-bold">
+                  <div className="flex h-full items-center justify-center font-semibold">
                     - <IconRsTan className="ml-4 h-5 w-5"></IconRsTan>
                   </div>
                 }
@@ -194,8 +194,8 @@ export const RsTanMergeContent = () => {
             </div>
           </div>
 
-          <div className="mb-1 mt-4 flex w-full items-center justify-between font-bold">
-            <div className="my-3 font-bold text-white">Claim recap:</div>
+          <div className="mb-1 mt-4 flex w-full items-center justify-between font-semibold">
+            <div className="my-3 font-semibold text-white">Claim recap:</div>
 
             <div className="flex items-center justify-center gap-2 text-xs text-subtitle">
               Claim as sgUSD <Switch checked={claimAsSgUSD} onCheckedChange={() => setClaimAsSgUSD(!claimAsSgUSD)} />

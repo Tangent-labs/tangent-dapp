@@ -13,11 +13,11 @@ export function Button({ label, state = "active", className, disabled, children,
   return (
     <button
       {...props}
-      onClick={props?.onClick}
+      onClick={state === "active" ? props?.onClick : () => {}}
       disabled={state === "inactive" || disabled}
       data-state={state}
       className={cn(
-        "flex items-center rounded-[10px] p-2 px-4 font-sans text-[15px] font-semibold transition-all duration-300 disabled:cursor-not-allowed",
+        "flex items-center rounded-[10px] p-2 px-4 font-roobert text-[15px] font-semibold transition-all duration-200 disabled:cursor-not-allowed",
         {
           "bg-button-active hover:bg-button-active-hover": state === "active",
           "bg-button-inactive": state === "inactive",

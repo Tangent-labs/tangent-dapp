@@ -5,11 +5,11 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useSt
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./tg_usd_record_repay_controller"
-import { formatUnits, maxUint256 } from "viem"
+import { maxUint256 } from "viem"
 import { getQuote, returnRoute } from "../../global_quote_controller"
 import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 import { useTgUsdContext } from "../../tg_usd_context"
-import { ZapToken } from "../../tg_usd_type"
+import { MarketDetailData, ZapToken } from "../../tg_usd_type"
 import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
@@ -39,11 +39,16 @@ type TgUsdRepayContextValues = {
 
   maxWithdrawable: bigint
 
+  marketData?: MarketDetailData
+
   withdrawPercentage: number
   setWithdrawPercentage: (arg: number) => void
 
   setRepayAsset: (arg: string) => void
   repayAsset: string
+
+  slippage: number
+  setSlippage: (arg: number) => void
 
   isZapLoading: boolean
   setIsZapLoading: (arg: boolean) => void
@@ -76,7 +81,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, fetchBalanceAllowanceData, balanceAllowanceData, tgUSDInfo } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts, fetchBalanceAllowanceData, balanceAllowanceData } = useTgUsdRecordContext()
 
   const [isZapLoading, setIsZapLoading] = useState(false)
 
@@ -89,6 +94,8 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   const [repayAsset, setRepayAsset] = useState<string>("tgUSD")
 
   const [percentage, setPercentage] = useState<number>(0)
+
+  const [slippage, setSlippage] = useState<number>(10)
 
   const [isRepayMax, setIsRepayMax] = useState<boolean>(false)
 
@@ -199,12 +206,19 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     setIsZapLoading(true)
 
     try {
-      const repayData = await returnRoute(repayAssetInfo?.address, TGUSD_CONTRACT?.TG_USD, repayWeiValue, 0n, currentAddress!, TGUSD_CONTRACT.ZAPPER)
+      const repayData = await returnRoute(
+        repayAssetInfo?.address,
+        TGUSD_CONTRACT?.TG_USD,
+        repayWeiValue,
+        (BigInt(tgUdsRepayedValue || 0n) * BigInt(100 - slippage)) / BigInt(100),
+        currentAddress!,
+        TGUSD_CONTRACT.ZAPPER
+      )
 
       const zapMarketData = {
         tokenIn: repayAssetInfo?.address,
         amountIn: repayWeiValue,
-        minAmountOut: 0n,
+        minAmountOut: (BigInt(tgUdsRepayedValue || 0n) * BigInt(100 - slippage)) / BigInt(100),
       }
 
       doZapRepay(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData)
@@ -280,45 +294,36 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   )
 
   const marketValues = useMemo(() => {
-    if (marketData) {
-      const maxRepayableValue = marketData.debtInfos?.userDebt || 0n
-      const minimumLoan = marketData.constants.minimumLoan || 0n
+    if (marketData && repayAssetInfo) {
+      if (repayAsset === "tgUSD") {
+        const maxRepayableValue = marketData.debtInfos?.userDebt || 0n
+        const minimumLoan = marketData.constants.minimumLoan || 0n
+        return { maxRepayableValue, minimumLoan }
+      } else {
+        const maxRepayableInZapAsset = (marketData.debtInfos?.userDebt / toBigInt(repayAssetInfo?.price, 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
+        const minimumLoanInZapAsset =
+          (marketData.constants.minimumLoan / toBigInt(repayAssetInfo?.price, repayAssetInfo?.decimals || 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
 
-      return { maxRepayableValue, minimumLoan }
+        return { maxRepayableValue: maxRepayableInZapAsset, minimumLoan: minimumLoanInZapAsset }
+      }
     }
 
     return { maxRepayableValue: 0n, minimumLoan: 0n }
-  }, [marketData])
-
-  useEffect(() => {
-    if (repayWeiValue && marketValues && repayAssetInfo) {
-      if (marketValues?.maxRepayableValue - repayWeiValue! > 0n && marketValues?.maxRepayableValue - repayWeiValue! < marketValues?.minimumLoan) {
-        const p = Math.round(
-          100 - Number(formatUnits(marketValues?.minimumLoan, 18)) / Number(formatUnits(marketValues?.maxRepayableValue, repayAssetInfo?.decimals))
-        )
-        const newValue = marketValues?.maxRepayableValue - marketValues?.minimumLoan
-
-        setTimeout(() => {
-          setPercentage(p)
-          setRepayWeiValue(newValue)
-        }, 500)
-      }
-    }
-  }, [percentage, repayWeiValue, marketValues])
+  }, [marketData, repayAssetInfo])
 
   const maxWithdrawable = useMemo(() => {
     if (marketData) {
       const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice
-      const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n)
+      const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n) - (repayWeiValue || 0n)
       const futureDeposited = BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n)
       const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
       const maxWithDrawable = collateralPriceRaw !== 0n ? futureDeposited - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
 
-      return maxWithDrawable
+      return maxWithDrawable > 0n ? maxWithDrawable : 0n
     }
 
     return 0n
-  }, [marketData])
+  }, [marketData, repayWeiValue])
 
   const onClickMax = (isChecked: boolean) => {
     if (isChecked) {
@@ -326,9 +331,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
         setIsRepayMax(true)
         setPercentage(100)
 
-        const formattedMaxRepayableAmount = formatUnits(marketData?.debtInfos?.userDebt, 18)
-        const repayAssetAmount = ((tgUSDInfo?.price || 1.1) * Number(formattedMaxRepayableAmount)) / (repayAssetInfo?.price || 1)
-        handleRepayValueChange(toBigInt(repayAssetAmount, repayAssetInfo?.decimals))
+        handleRepayValueChange(marketValues?.maxRepayableValue)
       } else {
         setIsRepayMax(true)
         setPercentage(100)
@@ -401,11 +404,19 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const isDebtBelowThreshold = useMemo(() => {
     if (!repayWeiValue || !marketValues?.maxRepayableValue || repayWeiValue === 0n) return false
-    if (marketValues?.maxRepayableValue === repayWeiValue) return false
+    if (repayAsset === "tgUSD" && marketValues?.maxRepayableValue === repayWeiValue) return false
 
     const threshold = marketValues?.minimumLoan
-    return marketValues?.maxRepayableValue - repayWeiValue < threshold
-  }, [repayWeiValue, marketValues])
+    let adjustedRepayValue = repayWeiValue
+
+    if (repayAsset !== "tgUSD") {
+      adjustedRepayValue = tgUdsRepayedValue || 0n
+    }
+
+    const value = marketValues?.maxRepayableValue / BigInt(10 ** (repayAssetInfo?.decimals || 18)) - adjustedRepayValue / BigInt(10 ** 18)
+
+    return value < threshold / BigInt(10 ** 18) && value > 0n
+  }, [repayWeiValue, marketValues, repayAsset, tgUdsRepayedValue])
 
   const contextValue: TgUsdRepayContextValues = {
     actionRepay,
@@ -438,6 +449,9 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     isRepayMax,
     setIsRepayMax,
     isDebtBelowThreshold,
+    marketData,
+    slippage,
+    setSlippage,
   }
 
   return <TgUsdRepayContext.Provider value={contextValue}>{children}</TgUsdRepayContext.Provider>

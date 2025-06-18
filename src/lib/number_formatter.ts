@@ -78,3 +78,11 @@ export function formatNumber(value: number, displayDecimals: number): string {
   num = Number(num.toFixed(displayDecimals))
   return new Intl.NumberFormat("en-US").format(num)
 }
+
+export const formatDisplayValue = (value: string | number): string => {
+  const num = Number(value)
+  if (isNaN(num)) return ""
+  if (Number.isInteger(num)) return num.toString()
+  const formatted = num.toFixed(3).replace(/\.?0+$/, "")
+  return formatted
+}

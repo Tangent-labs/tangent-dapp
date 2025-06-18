@@ -13,7 +13,6 @@ interface ListHarvestIndicatorProps {
 export default function ListHarvestIndicator({ isHarvested, helpMessage, className = "" }: ListHarvestIndicatorProps) {
   return (
     <div className={`flex items-center gap-1 ${className}`}>
-      {/* Popover for IconCircleHelp */}
       <Popover>
         <PopoverTrigger asChild>
           <button aria-label="Help" type="button">
@@ -26,7 +25,6 @@ export default function ListHarvestIndicator({ isHarvested, helpMessage, classNa
         </PopoverContent>
       </Popover>
 
-      {/* IconHourGlass */}
       <IconHourGlass className={`h-auto w-[20px] ${isHarvested ? "text-row-tonic" : "text-gray-400"}`} />
     </div>
   )

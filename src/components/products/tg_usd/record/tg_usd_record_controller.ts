@@ -3,9 +3,8 @@ import { BalanceAllowanceData, ChainViewMarketRow, MarketDetailData, TgUsdMarket
 import { executeAppove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
 import MarketDetailsUI from "@/abi/tgusd/MarketDetailsUI.json"
 import GetBalances from "@/abi/tgusd/GetBalances.json"
-import { AssetDataPriced, ExistingAsset } from "@/types"
+import { CollateralInfo, ExistingAsset } from "@/types"
 import { TGUSD_CONTRACT, tgUsdMarkets } from "../tg_usd_repository"
-import { getAssetInfo } from "@/services/service_existing_asset"
 import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
 import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
 import { getSwapAssetPrice } from "@/services/service_price"
@@ -38,7 +37,7 @@ export const getTgUsdMarketRecordData = async (address: Address | undefined, mar
   return await executeChainViewUnique<ChainViewMarketRow>(MarketDetailsUI.abi as Abi, MarketDetailsUI.bytecode as Hex, [address, market])
 }
 
-export const transformMarketData = (onChainData: ChainViewMarketRow, collateralInfo: AssetDataPriced): MarketDetailData => {
+export const transformMarketData = (onChainData: ChainViewMarketRow, collateralInfo: CollateralInfo): MarketDetailData => {
   const staticMarketData = tgUsdMarkets.find((m) => m.marketAddress === onChainData.marketAddress)
   return {
     marketAddress: onChainData.marketAddress as Address,
@@ -55,7 +54,7 @@ export const transformMarketData = (onChainData: ChainViewMarketRow, collateralI
   }
 }
 
-export function getBorrowCommonFormState(marketData?: MarketDetailData, depositWeiValue?: bigint, borrowWeiValue?: bigint) {
+export function getBorrowCommonFormState(marketData?: MarketDetailData, borrowWeiValue?: bigint) {
   const reasons: string[] = []
 
   if (!borrowWeiValue || borrowWeiValue === 0n) {
@@ -66,19 +65,6 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, depositW
 
     if (borrowWeiValue + totalDebt < minLoan) {
       reasons.push(`Min debt is ${formatEther(minLoan)}`)
-    } else {
-      const depositedCollateral = marketData?.collateralInfos?.positionCollateralUSDValue || 0n
-      const existingDebt = marketData?.debtInfos?.userDebt || 0n
-
-      const maxLTV = (marketData?.constants.maxLTV || 0n) / BigInt(10000n)
-      const maxMarketDebt = BigInt(marketData?.constants.maxMarketDebt || "0")
-      const maxLoan = maxLTV * BigInt(depositWeiValue || 0n) + depositedCollateral
-      if (maxLoan < borrowWeiValue + existingDebt) {
-        reasons.push(`max debt is ${Number(formatUnits(maxLoan, 18)).toFixed(2)}`)
-      }
-      if (maxMarketDebt < borrowWeiValue + totalDebt) {
-        reasons.push(`max market debt is exceeded`)
-      }
     }
   }
   return reasons
@@ -86,7 +72,7 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, depositW
 
 export function getComputedFutureLoanData(
   marketData?: MarketDetailData,
-  collateralInfo?: AssetDataPriced,
+  collateralInfo?: CollateralInfo,
   amounts?: {
     depositWeiValue?: bigint
     borrowWeiValue?: bigint
@@ -140,23 +126,40 @@ export function getComputedFutureLoanData(
 
   return {
     collateralValue: formatDollar(futureDepositedDollar, 0),
-    debt: formatDollarBigInt(futureDebt, collateralInfo.decimals, collateralInfo.displayDecimals),
-    health: formatNumber(etherValueToNumber(health), 2),
-    ltv: formatNumber(collateralValueToNumber(ltv || 0), 2) + "%",
+    debt: futureDebt > 0n ? formatDollarBigInt(futureDebt, collateralInfo.decimals, collateralInfo.displayDecimals) : "$0",
+    health: health > 0n ? formatNumber(etherValueToNumber(health), 2) : "0",
+    ltv: ltv > 0 ? formatNumber(collateralValueToNumber(ltv || 0), 2) + "%" : "0%",
     maxBorrowable: formatDollarBigInt(maxBorrowable, collateralInfo.decimals, 0),
     maxWithdrawable: formatDollarBigInt(maxWithDrawable, collateralInfo.decimals, 0),
   } as TgUsdMarketLoanDisplayData
 }
 
 export async function loadMarketServerData(collateral: ExistingAsset) {
-  const tokenInfos = await getAssetInfo([collateral, "tgUSD"])
+  const tgUSDInfo = {
+    address: tgUsdMarkets.find((market) => market.marketName === "tgUSD")?.collatAddress as Address,
+    decimals: 18,
+    displayDecimals: 2,
+    symbol: "tgUSD",
+    name: "tgUSD",
+    logo: "tgUSD" as ExistingAsset,
+    price: 1,
+  }
+
   const marketInfo = tgUsdMarkets.find((market) => market.marketName === collateral)
-  const collateralInfo = tokenInfos.at(0)
-  const tgUSDInfo = tokenInfos.at(1)
+  const collateralInfo = {
+    address: tgUsdMarkets.find((market) => market.marketName === collateral)?.collatAddress as Address,
+    decimals: 18,
+    displayDecimals: 2,
+    symbol: collateral,
+    name: collateral,
+    logo: collateral as ExistingAsset,
+    price: 0,
+  }
+
   return { collateralInfo, tgUSDInfo, marketInfo }
 }
 
-export function getMarketDisplayData(marketData?: MarketDetailData, collateralInfo?: AssetDataPriced) {
+export function getMarketDisplayData(marketData?: MarketDetailData, collateralInfo?: CollateralInfo) {
   if (!marketData || !collateralInfo)
     return {
       tvl: "-",
@@ -195,7 +198,7 @@ export function getMarketDisplayData(marketData?: MarketDetailData, collateralIn
     borrowRateNext: formatNumber(Number(formatEther(BigInt(marketData?.debtInfos.futureBorrowRate || 0n))), 2) + "%",
     lt: formatNumber(Number(formatEther(BigInt(marketData?.constants.liquidationThreshold || 0n))), 2) + "%",
     ltDollar: "-",
-    maxLtv: formatNumber(Number(BigInt(marketData?.constants.maxLTV || 0n)), 2) + "%",
+    maxLtv: formatNumber(Number(BigInt(marketData?.constants.maxLTV || 0n)) / 1000, 2) + "%",
     maxLtvDollar: formatDollar(Number(formatEther(BigInt(marketData?.constants.maxMarketDebt || 0n))), 2),
     rewardsCutCurrent: formatNumber(Number(formatEther(BigInt(marketData?.debtInfos.currentRewardCut || 0n))), 2) + "%",
     rewardsCutNext: formatNumber(Number(formatEther(BigInt(marketData?.debtInfos.futureRewardCut || 0n))), 2) + "%",
@@ -218,10 +221,17 @@ export function getMarketApr(marketAddress: Address) {
 }
 
 export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: string) => {
+  let tokenAddress
+
   try {
-    const tokenAddress = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)
-      ? tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)?.address
-      : undefined
+    if (depositAsset === "ETH") {
+      tokenAddress = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address
+    } else {
+      tokenAddress = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)
+        ? tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)?.address
+        : undefined
+    }
+
     if (tokenAddress) {
       const data = await getSwapAssetPrice(tokenAddress)
       return data
@@ -234,17 +244,17 @@ export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: st
 
 export const prepareZapTransaction = async (
   amount: bigint,
-  tokenIn: AssetDataPriced,
-  tokenOut: AssetDataPriced,
+  tokenIn: Address,
+  tokenOut: Address,
   marketInfo: { marketAddress: Address },
   minAmountOut: bigint
 ) => {
-  const routerCall = await getEnsoData(amount, tokenIn?.address, tokenOut?.address, TGUSD_CONTRACT.ZAPPER, marketInfo.marketAddress, minAmountOut)
+  const routerCall = await getEnsoData(amount, tokenIn, tokenOut, TGUSD_CONTRACT.ZAPPER, marketInfo.marketAddress, minAmountOut)
 
   if (!routerCall?.tx?.data) throw new Error("Failed to fetch routing data")
 
   const zapMarketData = {
-    tokenIn: tokenIn?.address,
+    tokenIn: tokenIn,
     amountIn: amount,
     minAmountOut: 0n,
   }

@@ -1,12 +1,12 @@
 "use client"
 import React, { createContext, useContext, useState, ReactNode, useMemo } from "react"
 import { ListHeaderData, ListRowData, ListSort, ListState } from "@/types"
-import { AirdropTask, ClaimData } from "@/components/products/tg_usd/tg_usd_type"
+import { AirdropTask, ClaimData, UserPosition } from "@/components/products/tg_usd/tg_usd_type"
 
 //  Defined what is injected into the Provider ( mosty via server execution)
 interface ListProviderProps {
   _listState: ListState
-  _rows: ListRowData[] | ClaimData[] | AirdropTask[]
+  _rows: ListRowData[] | ClaimData[] | AirdropTask[] | UserPosition[]
   _headers: ListHeaderData[]
   children: ReactNode
   customSort?: (arg: ListState) => void
@@ -15,7 +15,7 @@ interface ListProviderProps {
 // Define what is returned by the provider
 interface ListContextValues {
   listState: ListState
-  displayRows: ListRowData[] | ClaimData[] | AirdropTask[]
+  displayRows: ListRowData[] | ClaimData[] | AirdropTask[] | UserPosition[]
   headers: ListHeaderData[]
   udpateSort: (field: string) => void
   udpateSearch: (search: string) => void
@@ -31,6 +31,7 @@ export const ListProvider = ({ children, _listState, _rows, _headers, customSort
 
   const displayRows = useMemo(() => {
     const activeRows = _rows ? JSON.parse(JSON.stringify(_rows)) : []
+
     if (listState?.search) {
       // Implement search
       // activeRows = activeRows.filter((r) => r.name.toLowerCase().includes(listState.search!.toLowerCase()))

@@ -9,6 +9,7 @@ import TgUsdCollateralPrice from "./tg_usd_collateral_price"
 import TgUsdMarketInfo from "./tg_usd_market_info"
 import { usePathname, useRouter } from "next/navigation"
 import { useMemo } from "react"
+import TgUsdPositionHistory from "./position_history/tg_usd_position_history"
 
 type TgUsdRecordLayoutProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
   children: React.ReactNode
@@ -43,7 +44,7 @@ export default function TgUsdRecordLayout({ children, ...props }: TgUsdRecordLay
         <Divider />
         <TgUsdLoanDetail />
       </div>
-      <div className="mt-4 flex h-full flex-col gap-4">
+      <div className="my-4 flex flex-col gap-4">
         <div className="flex gap-4 max-xl:flex-col">
           <div className="rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] xl:w-5/12">
             <div className="mb-2 flex w-full justify-between gap-2">
@@ -67,6 +68,8 @@ export default function TgUsdRecordLayout({ children, ...props }: TgUsdRecordLay
         <Divider />
 
         <TgUsdMarketInfo />
+
+        <TgUsdPositionHistory />
       </div>
     </>
   )

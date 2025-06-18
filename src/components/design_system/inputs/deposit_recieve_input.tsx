@@ -1,9 +1,8 @@
 "use client"
 
-import { IconWallet } from "@/components/icons/icon_wallet"
 import { AssetDataPriced } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
-import { formatBigInt, toBigInt } from "@/lib/number_formatter"
+import { toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import DisplayReceivePanel from "./display_recieve_panel"
@@ -26,7 +25,6 @@ type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   onValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
   displayRecieve?: boolean
-  displayBalance?: boolean
   isZapping?: boolean
   isLoading?: boolean
   percentage?: number
@@ -48,7 +46,6 @@ export function DepositReceiveInput({
   depositSelect = <></>,
   receiveAssetDisplay = <></>,
   displayRecieve = true,
-  displayBalance = true,
   isZapping = false,
   isLoading = false,
   percentage = 0,
@@ -105,11 +102,6 @@ export function DepositReceiveInput({
     }
   }
 
-  const displayBalanceData = useMemo(() => {
-    const formattedBalance = formatBigInt(balance || "0", depositAsset?.decimals || 18, depositAsset?.displayDecimals || 2)
-    return formattedBalance
-  }, [balance, depositAsset])
-
   const dollarDepositDisplay = useMemo(() => {
     const val = Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals || 0)) * (depositAsset?.price || 0)
     return val?.toFixed(2) || "-"
@@ -117,7 +109,9 @@ export function DepositReceiveInput({
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <div className={`${isLoading ? "shimmer" : ""} flex flex-col rounded-[10px] border border-white border-opacity-20 bg-white bg-opacity-[3%] p-2`}>
+      <div
+        className={`${isLoading ? "shimmer" : ""} flex flex-col rounded-[10px] border-2 border-white border-opacity-20 bg-white bg-opacity-[3%] p-2 transition-colors duration-200 ease-in-out hover:bg-white/10`}
+      >
         <div className="flex w-full justify-between">
           <div className="text-sm text-gray-400">{labelDeposit}</div>
           {isZapping && (
@@ -138,7 +132,7 @@ export function DepositReceiveInput({
               placeholder="Amount"
               onInput={handleInputChange}
               className={cn(
-                "min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-bold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
+                "min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
               )}
             />
           </div>
@@ -146,22 +140,16 @@ export function DepositReceiveInput({
         </div>
         <div className="flex justify-between text-xs text-gray-400">
           <div>$({dollarDepositDisplay})</div>
-          {displayBalance && (
-            <div className="flex cursor-pointer items-center">
-              <span>{displayBalanceData}</span>
-              <IconWallet className="w-6" />
 
-              <button
-                className="flex w-10 cursor-pointer items-center rounded-full border border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-bold"
-                type="button"
-                onClick={() => {
-                  if (setMaxBalance) setMaxBalance()
-                }}
-              >
-                Max.
-              </button>
-            </div>
-          )}
+          <button
+            className="flex w-10 cursor-pointer items-center rounded-full border-2 border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
+            type="button"
+            onClick={() => {
+              if (setMaxBalance) setMaxBalance()
+            }}
+          >
+            Max.
+          </button>
         </div>
 
         {displaySliderInput && (

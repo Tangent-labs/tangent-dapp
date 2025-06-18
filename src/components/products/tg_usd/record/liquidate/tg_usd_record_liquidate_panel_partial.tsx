@@ -30,10 +30,10 @@ export default function TgUsdLiquidatePanelPartial() {
 
   const LiquidateAssetDisplay = () => {
     return (
-      <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+      <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
         <TokenImage token={collateralInfo?.logo} size={20} />
 
-        <span className="flex flex-col text-sm font-bold">
+        <span className="flex flex-col text-sm font-semibold">
           <span>{collateralInfo.symbol}</span>
         </span>
       </div>
@@ -43,7 +43,7 @@ export default function TgUsdLiquidatePanelPartial() {
   return (
     <>
       <div className="flex w-full items-end justify-between">
-        <span className="text-[20px] font-bold">Liquidate partial</span>
+        <span className="text-[20px] font-semibold">Liquidate partial</span>
         <span className="text-xs text-subtitle">
           Max: {formatBigInt(maxLiquidable, 18, 2)} {collateralInfo?.symbol}
         </span>
@@ -58,9 +58,8 @@ export default function TgUsdLiquidatePanelPartial() {
         percentage={liquidablePercentage}
         setPercentage={setLiquidablePercentage}
         depositAsset={collateralInfo}
-        setMaxBalance={() => {}}
+        setMaxBalance={() => handleLiquidateValueChange(maxLiquidable)}
         balance={maxLiquidable}
-        displayBalance={false}
         onValueChange={handleLiquidateValueChange}
       />
 
@@ -68,16 +67,15 @@ export default function TgUsdLiquidatePanelPartial() {
         depositAmount={tgUSDReceivedValue}
         labelDeposit="For"
         depositSelect={
-          <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+          <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
             <TokenImage token="tgUSD" size={20} />
-            <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
+            <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
           </div>
         }
         disabled={true}
         displaySliderInput={false}
         depositAsset={tgUSDInfo}
         setMaxBalance={() => {}}
-        displayBalance={false}
         onValueChange={() => {}}
         isLoading={isQuoteLoading}
         percentage={0}
@@ -86,13 +84,17 @@ export default function TgUsdLiquidatePanelPartial() {
 
       <Divider />
 
+      <div className="flex w-full items-end justify-end">
+        <span className="text-xs text-subtitle">Max: {formatBigInt(maxRepayable, 18, 2)} tgUSD</span>
+      </div>
+
       <DepositInput
         depositAmount={repayWeiValue}
         labelDeposit="You repay"
         depositSelect={
-          <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+          <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
             <TokenImage token="tgUSD" size={20} />
-            <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
+            <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
           </div>
         }
         disabled={!canInteract}
@@ -100,9 +102,8 @@ export default function TgUsdLiquidatePanelPartial() {
         percentage={repayablePercentage}
         setPercentage={setRepayablePercentage}
         depositAsset={tgUSDInfo}
-        setMaxBalance={() => {}}
+        setMaxBalance={() => setRepayWeiValue(maxRepayable)}
         balance={maxRepayable}
-        displayBalance={false}
         onValueChange={(value: bigint | undefined) => {
           setRepayWeiValue(value)
         }}
@@ -112,16 +113,15 @@ export default function TgUsdLiquidatePanelPartial() {
         depositAmount={(tgUSDReceivedValue || 0n) - (repayWeiValue || 0n)}
         labelDeposit="You receive"
         depositSelect={
-          <div className="flex items-center gap-2 rounded-[10px] border border-white border-opacity-20 bg-select-input px-3 py-2">
+          <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
             <TokenImage token="tgUSD" size={20} />
-            <span className="flex flex-col text-[15px] font-bold">tgUSD</span>
+            <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
           </div>
         }
         disabled={true}
         displaySliderInput={false}
         depositAsset={tgUSDInfo}
         setMaxBalance={() => {}}
-        displayBalance={false}
         onValueChange={() => {}}
         isLoading={isQuoteLoading}
         percentage={0}

@@ -65,7 +65,7 @@ export const MultiPositionSelect = ({ lockData, selectedPositions, setSelectedPo
           </div>
           <button
             onClick={() => handleRemovePosition(index)}
-            className="flex h-3 w-3 items-center justify-center rounded-full border border-white/10 p-3 text-xs font-bold text-gray-400 hover:border-white hover:text-white"
+            className="flex h-3 w-3 items-center justify-center rounded-full border-2 border-white/10 p-3 text-xs font-semibold text-gray-400 hover:border-white hover:text-white"
             aria-label="Remove position"
           >
             ✕
@@ -80,7 +80,7 @@ export const MultiPositionSelect = ({ lockData, selectedPositions, setSelectedPo
         <button
           onClick={handleSelectAll}
           disabled={allPositions.length === 0}
-          className="flex h-full items-center justify-center rounded-lg border border-gray-600 px-4 py-1 text-white"
+          className="flex h-full items-center justify-center rounded-lg border-2 border-gray-600 px-4 py-1 text-white"
         >
           Select all
         </button>

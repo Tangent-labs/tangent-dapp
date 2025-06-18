@@ -101,7 +101,7 @@ export default function TgUsdSwapContent() {
       <div className="flex w-full min-w-48 items-center justify-between">
         <div className="flex w-full items-center gap-2">
           {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={32} />}
-          <span className="text-sm font-bold">{option.symbol}</span>
+          <span className="text-sm font-semibold">{option.symbol}</span>
         </div>
 
         <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
@@ -119,7 +119,7 @@ export default function TgUsdSwapContent() {
         <Image className="mr-24 mt-5" height={140} width={140} src="/medias/tokens/tgUSD_header.png" alt="token" />
 
         <div className="flex flex-col items-start justify-center gap-3">
-          <span className="text-5xl font-bold">Swap</span>
+          <span className="text-5xl font-semibold">Swap</span>
           <p>Swap any asset for tgUSD and other Tangent&apos;s assets, including Curve LPs and Wrapped Tangent Stablecoins. Learn more</p>
         </div>
       </div>

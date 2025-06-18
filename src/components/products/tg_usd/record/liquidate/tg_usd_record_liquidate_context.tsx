@@ -9,6 +9,7 @@ import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 import { getQuote, returnRoute } from "../../global_quote_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
+import { maxUint256 } from "viem"
 
 type TgUsdLiquidateContextProps = {
   children: ReactNode
@@ -21,6 +22,7 @@ type TgUsdLiquidateContextValues = {
   setLiquidateWeiValue: (arg: bigint | undefined) => void
   isFullLiquidation: boolean
   setIsFullLiquidation: (arg: boolean) => void
+  onChangeIsFullLiquidation: (arg: boolean) => void
   maxLiquidable: bigint
   liquidablePercentage: number
   setLiquidablePercentage: (arg: number) => void
@@ -37,6 +39,9 @@ type TgUsdLiquidateContextValues = {
   repayablePercentage: number
   setRepayablePercentage: (arg: number) => void
 
+  slippage: number
+  setSlippage: (arg: number) => void
+
   maxRepayable: bigint
 
   handleLiquidateValueChange: (arg: bigint | undefined) => void
@@ -45,7 +50,7 @@ type TgUsdLiquidateContextValues = {
 export const TgUsdLiquidateContext = createContext<TgUsdLiquidateContextValues | undefined>(undefined)
 
 export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps) => {
-  const { marketData, loadOnChainData, marketDisplayData, setCurrentAmounts } = useTgUsdRecordContext()
+  const { marketData, marketInfo, loadOnChainData, marketDisplayData, setCurrentAmounts } = useTgUsdRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
@@ -65,6 +70,15 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
 
   const [tgUSDReceivedValue, setTgUSDReceivedValue] = useState<bigint | undefined>()
 
+  const onChangeIsFullLiquidation = (liquidateFull: boolean) => {
+    setIsFullLiquidation(liquidateFull)
+
+    if (!liquidateFull) {
+      setLiquidateWeiValue(0n)
+      setLiquidablePercentage(0)
+    }
+  }
+
   useEffect(() => {
     if (isFullLiquidation) {
       setRepayWeiValue(marketData?.debtInfos?.userDebt)
@@ -82,18 +96,18 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
       liquidateValue: liquidateWeiValue || 0n,
       repayWeiValue: repayWeiValue || 0n,
     })
-
-    // TODO : REMOVE
-    setSlippage(8)
-    //
   }, [liquidateWeiValue, repayWeiValue])
 
   const actionLiquidate = async () => {
     const walletClient = getWalletClient()
 
     if (walletClient && liquidateWeiValue && currentAddress && tgUSDReceivedValue && marketData) {
+      let repayValue = repayWeiValue || 0n
+      if (repayWeiValue === maxRepayable) {
+        repayValue = maxUint256
+      }
       const liquidationData = await returnRoute(
-        marketData?.collateralInfo?.address,
+        marketInfo?.collatAddress,
         TGUSD_CONTRACT.TG_USD,
         liquidateWeiValue,
         0n,
@@ -104,7 +118,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
 
       doMarketLiquidate(
         liquidateWeiValue,
-        repayWeiValue || 0n,
+        repayValue,
         (tgUSDReceivedValue * (BigInt(100) - BigInt(slippage))) / BigInt(100),
         liquidationData!,
         walletClient,
@@ -131,14 +145,14 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
 
   const maxLiquidable = useMemo(() => {
     if (marketData) {
-      return marketData?.collateralInfos?.positionCollateralAmount
+      return marketData.collateralInfos.positionCollateralAmount
     }
     return 0n
-  }, [marketDisplayData])
+  }, [marketDisplayData, repayWeiValue])
 
   const maxRepayable = useMemo(() => {
     if (marketData) {
-      return marketData?.debtInfos?.totalDebt
+      return marketData.debtInfos.userDebt
     }
     return 0n
   }, [marketDisplayData])
@@ -196,6 +210,9 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
     setRepayablePercentage,
     maxRepayable,
     handleLiquidateValueChange,
+    onChangeIsFullLiquidation,
+    slippage,
+    setSlippage,
   }
 
   return <TgUsdLiquidateContext.Provider value={contextValue}>{children}</TgUsdLiquidateContext.Provider>

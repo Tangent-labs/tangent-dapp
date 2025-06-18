@@ -4,7 +4,7 @@ import ListHarvestIndicator from "@/components/design_system/list/list_harvest_i
 
 interface ListAPRProps {
   apr?: number
-  projectedApr?: number // Optional, in case the projected APR isn't always present
+  projectedApr?: number
   className?: string
   harvestHelpMessage?: string
 }
@@ -13,14 +13,14 @@ const ListAPR = ({ apr, projectedApr, className = "", harvestHelpMessage }: List
   return (
     <div className="flex justify-center gap-2">
       <div className={`flex min-w-16 flex-col text-left ${className}`}>
-        <span className="bg-button-active bg-clip-text text-[20px] font-bold leading-4 text-transparent">{apr}%</span>
+        <span className="bg-button-active bg-clip-text text-[20px] font-semibold leading-4 text-transparent">{apr}%</span>
         {projectedApr && (
           <span className="whitespace-nowrap text-xs">
             Proj: <span>{projectedApr}%</span>
           </span>
         )}
       </div>
-      <ListHarvestIndicator helpMessage={harvestHelpMessage} isHarvested={Math.random() > 0.5} className="w-[45px]" />
+      <ListHarvestIndicator helpMessage={harvestHelpMessage} isHarvested={true} className="w-[45px]" />
     </div>
   )
 }

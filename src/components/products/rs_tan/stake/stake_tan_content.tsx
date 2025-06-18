@@ -74,7 +74,7 @@ export default function StakeTanContent() {
     return (
       <div className="flex items-center gap-2">
         <TokenImage token={logo} size={32} />
-        <span className="text-sm font-bold">{option.label}</span>
+        <span className="text-sm font-semibold">{option.label}</span>
       </div>
     )
   }
@@ -86,7 +86,7 @@ export default function StakeTanContent() {
       <PanelRaw className="flex w-48 items-center gap-2 border-white !bg-opacity-0 px-4 py-2 !backdrop-blur-none">
         <TokenImage token={receivedTokenInfo.logo as ExistingAsset} size={32} />
 
-        <span className="text-sm font-bold leading-3">
+        <span className="text-sm font-semibold leading-3">
           <span>{receivedTokenInfo.symbol}</span>
         </span>
       </PanelRaw>
@@ -101,7 +101,7 @@ export default function StakeTanContent() {
             <Image height={360} width={360} src="/medias/tokens/TAN.png" alt="token" />
           </div>
           <div className="flex flex-col items-start justify-center gap-3">
-            <span className="text-5xl font-bold">Stake TAN</span>
+            <span className="text-5xl font-semibold">Stake TAN</span>
             <p>
               Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT
               stable pool & CVX stable pool).
@@ -114,17 +114,17 @@ export default function StakeTanContent() {
           <div className="flex w-5/12 items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
             <TokenImage token="sTAN" size={64} />
 
-            <div className="flex flex-col items-center justify-center font-bold">
+            <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">Supply</span>
-              <span className="text-lg font-bold">10,225,145 (7,4%)</span>
+              <span className="text-lg font-semibold">10,225,145 (7,4%)</span>
             </div>
-            <div className="flex flex-col items-center justify-center font-bold">
+            <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">sTan</span>
-              <span className="text-lg font-bold">{formatDollar(formatUnits(stakeInfo.sTanPrice, 18), 2)}</span>
+              <span className="text-lg font-semibold">{formatDollar(formatUnits(stakeInfo.sTanPrice, 18), 2)}</span>
             </div>
             <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-1">
               <span className="text-black">APY</span>
-              <span className="text-lg font-bold">15.32%</span>
+              <span className="text-lg font-semibold">15.32%</span>
             </div>
           </div>
         )}
@@ -179,7 +179,7 @@ export default function StakeTanContent() {
           />
         </div>
         <div className="flex w-7/12 flex-col items-start justify-start rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
-          <span className="text-2xl font-bold">Performance</span>
+          <span className="text-2xl font-semibold">Performance</span>
 
           <Divider className="h-1 w-full"></Divider>
 

@@ -128,7 +128,7 @@ export default function TgUsdLeveragePanel() {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex justify-end gap-2">
+      <div className="flex items-center justify-end gap-2">
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-400">Save gas</span>
           <Switch checked={!isStaking} onCheckedChange={() => setIsStaking(!isStaking)} />
@@ -184,12 +184,11 @@ export default function TgUsdLeveragePanel() {
                   value={zapInnerValue ?? ""}
                   onChange={handleZapInputChange}
                 />
-
-                <div className="text-xs text-subtitle">{zapValue && !!marketData?.collateralInfos ? estimatedZapDollarValue : ""}</div>
               </div>
 
-              <div className="flex justify-between text-xs text-gray-400">
-                <div>Minimum receive</div>
+              <div className="flex justify-between gap-2 text-xs text-subtitle">
+                <div>Minimum received</div>
+                <div>{zapValue && !!marketData?.collateralInfos ? estimatedZapDollarValue : ""}</div>
               </div>
             </div>
             <div className="flex items-center justify-center gap-2 rounded-xl border-2 border-white/30 bg-select-input px-2 py-1">

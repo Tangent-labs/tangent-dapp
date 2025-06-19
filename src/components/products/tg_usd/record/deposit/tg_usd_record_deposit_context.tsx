@@ -90,7 +90,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
 
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
 
-  const [depositAsset, setDepositAsset] = useState<string | undefined>(undefined)
+  const [depositAsset, setDepositAsset] = useState<string | undefined>()
 
   const [swapAssetPrice, setSwapAssetPrice] = useState<number>(0)
 
@@ -126,9 +126,11 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
       }
     }
 
-    const assetInfo = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset) || undefined
+    if (!!marketData && (depositAsset === undefined || depositAsset === collateralInfo?.name)) {
+      return { ...collateralInfo, price: Number(formatUnits(marketData?.collateralInfos.collateralUSDPrice, 18)) }
+    }
 
-    if (!swapAssetPrice || !assetInfo) return collateralInfo
+    const assetInfo = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset) as ZapToken
 
     const asset: AssetDataPriced = {
       address: assetInfo?.address,
@@ -140,7 +142,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
     }
 
     return asset
-  }, [depositAsset, swapAssetPrice])
+  }, [depositAsset, swapAssetPrice, marketData])
 
   const sociabilizationFee = useMemo(() => {
     if (marketData?.sociabilization && depositWeiValue && depositAssetInfo) {
@@ -333,6 +335,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
       setBorrowWeiValue(0n)
       setBorrowSliderPercent(0)
       setDepositWeiValue(0n)
+      setZapValue(0n)
       fetchBalanceAllowanceData(depositAssetInfo?.address)
     }
   }, [depositAssetInfo])

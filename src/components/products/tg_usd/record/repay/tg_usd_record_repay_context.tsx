@@ -5,7 +5,7 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useSt
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./tg_usd_record_repay_controller"
-import { maxUint256 } from "viem"
+import { formatUnits, maxUint256 } from "viem"
 import { getQuote, returnRoute } from "../../global_quote_controller"
 import { TGUSD_CONTRACT } from "../../tg_usd_repository"
 import { useTgUsdContext } from "../../tg_usd_context"
@@ -13,7 +13,7 @@ import { MarketDetailData, ZapToken } from "../../tg_usd_type"
 import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
-import { toBigInt } from "@/lib/number_formatter"
+import { formatDollar, toBigInt } from "@/lib/number_formatter"
 
 type TgUsdRepayContextProps = {
   children: ReactNode
@@ -72,6 +72,8 @@ type TgUsdRepayContextValues = {
   setIsRepayMax: (arg: boolean) => void
 
   isDebtBelowThreshold: boolean
+
+  tgUsdDollarRepayedValue: string
 }
 
 export const TgUsdRepayContext = createContext<TgUsdRepayContextValues | undefined>(undefined)
@@ -81,7 +83,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, fetchBalanceAllowanceData, balanceAllowanceData } = useTgUsdRecordContext()
+  const { marketData, tgUSDInfo, loadOnChainData, setCurrentAmounts, fetchBalanceAllowanceData, balanceAllowanceData } = useTgUsdRecordContext()
 
   const [isZapLoading, setIsZapLoading] = useState(false)
 
@@ -418,6 +420,10 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     return value < threshold / BigInt(10 ** 18) && value > 0n
   }, [repayWeiValue, marketValues, repayAsset, tgUdsRepayedValue])
 
+  const tgUsdDollarRepayedValue = useMemo(() => {
+    return `(~${formatDollar((Number(Number(formatUnits(tgUdsRepayedValue || 0n, 18))) * tgUSDInfo?.price).toFixed(2))})`
+  }, [tgUdsRepayedValue, tgUSDInfo])
+
   const contextValue: TgUsdRepayContextValues = {
     actionRepay,
     formState,
@@ -452,6 +458,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     marketData,
     slippage,
     setSlippage,
+    tgUsdDollarRepayedValue,
   }
 
   return <TgUsdRepayContext.Provider value={contextValue}>{children}</TgUsdRepayContext.Provider>

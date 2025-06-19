@@ -136,7 +136,7 @@ export function LeverageInput({
           <div className="relative flex w-fit items-center justify-center">
             x10
             <div
-              onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "100" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+              onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "10" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
               className="absolute -top-1.5 right-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
             ></div>
           </div>

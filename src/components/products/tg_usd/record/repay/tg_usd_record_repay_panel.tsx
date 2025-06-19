@@ -6,7 +6,7 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { useTgUsdRepayContext } from "./tg_usd_record_repay_context"
-import { formatBigInt, formatDollar } from "@/lib/number_formatter"
+import { formatBigInt } from "@/lib/number_formatter"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { Switch } from "@/components/ui/switch"
 import { useTgUsdContext } from "../../tg_usd_context"
@@ -55,6 +55,7 @@ export default function TgUsdRepayPanel() {
     withdrawWeiValue,
     maxWithdrawable,
     withdrawPercentage,
+    tgUsdDollarRepayedValue,
     isZapLoading,
     tgUdsRepayedValue,
     isDebtBelowThreshold,
@@ -195,15 +196,10 @@ export default function TgUsdRepayPanel() {
                     className="flex justify-start bg-transparent text-xl font-semibold focus:outline-none"
                     value={Number(formatUnits(tgUdsRepayedValue || 0n, 18)).toFixed(2) ?? ""}
                   />
-
-                  <div className="text-xs">
-                    {tgUdsRepayedValue && tgUSDInfo?.price !== 0
-                      ? `(~${formatDollar((Number(Number(formatUnits(tgUdsRepayedValue || 0n, 18))) * tgUSDInfo?.price).toFixed(2))})`
-                      : ""}
-                  </div>
                 </div>
-                <div className="flex justify-between text-xs text-gray-400">
+                <div className="flex justify-between gap-2 text-xs text-subtitle">
                   <div>Minimum received</div>
+                  <div>{tgUdsRepayedValue && tgUSDInfo?.price !== 0 ? tgUsdDollarRepayedValue : ""}</div>
                 </div>
               </div>
               <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">

@@ -267,7 +267,10 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   }
 
   const marketRepay = () => {
-    doRepay(walletClientRef.current!, { marketAddress: marketData!.marketAddress, repayWeiValue: isRepayMax ? maxUint256 : repayWeiValue }).then(() => {
+    doRepay(walletClientRef.current!, {
+      marketAddress: marketData!.marketAddress,
+      repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
+    }).then(() => {
       loadOnChainData()
       setRepayWeiValue(0n)
       setWithdrawWeiValue(0n)
@@ -279,7 +282,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   const marketRepayAndWithdraw = () => {
     doRepayAndWithdraw(walletClientRef.current!, {
       marketAddress: marketData!.marketAddress,
-      repayWeiValue: isRepayMax ? maxUint256 : repayWeiValue,
+      repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
       withdrawWeiValue,
     }).then(() => {
       loadOnChainData()
@@ -296,12 +299,12 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   )
 
   const marketValues = useMemo(() => {
-    if (marketData && repayAssetInfo) {
+    if (marketData) {
       if (repayAsset === "tgUSD") {
         const maxRepayableValue = marketData.debtInfos?.userDebt || 0n
         const minimumLoan = marketData.constants.minimumLoan || 0n
         return { maxRepayableValue, minimumLoan }
-      } else {
+      } else if (marketData && repayAssetInfo) {
         const maxRepayableInZapAsset = (marketData.debtInfos?.userDebt / toBigInt(repayAssetInfo?.price, 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
         const minimumLoanInZapAsset =
           (marketData.constants.minimumLoan / toBigInt(repayAssetInfo?.price, repayAssetInfo?.decimals || 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))

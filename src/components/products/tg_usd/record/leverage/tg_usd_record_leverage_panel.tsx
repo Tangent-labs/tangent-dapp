@@ -144,7 +144,8 @@ export default function TgUsdLeveragePanel() {
           <div className="flex w-full items-end justify-between gap-2">
             <span className="text-[20px] font-semibold">Deposit {collateralInfo?.symbol}</span>
             <span className="text-xs text-subtitle">
-              Max: {formatBigInt(marketData?.collateralBalance, 18, 2)} {collateralInfo?.symbol}
+              Max: {formatBigInt(balanceAllowanceData?.balance || marketData?.collateralBalance, depositAssetInfo?.decimals || 18, 2)}{" "}
+              {depositAssetInfo?.symbol}
             </span>
           </div>
 
@@ -154,7 +155,7 @@ export default function TgUsdLeveragePanel() {
             depositSelect={<AssetSelect />}
             disabled={!canInteract}
             isLoading={isZapLoading}
-            depositAsset={depositAssetInfo || collateralInfo}
+            depositAsset={depositAssetInfo}
             balance={!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance}
             isZapping={!!depositAsset && depositAsset !== collateralInfo?.name}
             onValueChange={handleDepositChange}

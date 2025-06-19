@@ -2,7 +2,7 @@
 
 import { AssetDataPriced } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
-import { formatDisplayValue, toBigInt } from "@/lib/number_formatter"
+import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
@@ -95,7 +95,7 @@ export function BorrowInput({
   const dollarDepositDisplay = useMemo(() => {
     if (borrowAmount && borrowAsset?.decimals && borrowAsset?.price) {
       const val = Number(formatUnits(borrowAmount, borrowAsset.decimals)) * borrowAsset.price
-      return `($${val.toFixed(2)})`
+      return `(${formatDollar(val)})`
     }
     return "($0)"
   }, [borrowAmount, borrowAsset])

@@ -130,7 +130,9 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
       return { ...collateralInfo, price: Number(formatUnits(marketData?.collateralInfos.collateralUSDPrice, 18)) }
     }
 
-    const assetInfo = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset) as ZapToken
+    const assetInfo = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset) || undefined
+
+    if (!swapAssetPrice || !assetInfo) return collateralInfo
 
     const asset: AssetDataPriced = {
       address: assetInfo?.address,
@@ -332,13 +334,18 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
 
   useEffect(() => {
     if (depositAssetInfo) {
+      fetchBalanceAllowanceData(depositAssetInfo?.address)
+    }
+  }, [depositAssetInfo])
+
+  useEffect(() => {
+    if (depositAsset) {
       setBorrowWeiValue(0n)
       setBorrowSliderPercent(0)
       setDepositWeiValue(0n)
       setZapValue(0n)
-      fetchBalanceAllowanceData(depositAssetInfo?.address)
     }
-  }, [depositAssetInfo])
+  }, [depositAsset])
 
   useEffect(() => {
     if (!isDepositAndBorrow) {
@@ -537,7 +544,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
 
   const estimatedZapDollarValue = useMemo(() => {
     if (zapValue && marketData) {
-      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), depositAssetInfo?.decimals || 18))})`
+      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), 18))})`
       return result
     }
 

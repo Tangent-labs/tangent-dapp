@@ -2,7 +2,7 @@
 
 import { AssetDataPriced } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
-import { toBigInt } from "@/lib/number_formatter"
+import { formatDollar, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import DisplayReceivePanel from "./display_recieve_panel"
@@ -104,7 +104,7 @@ export function DepositReceiveInput({
 
   const dollarDepositDisplay = useMemo(() => {
     const val = Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals || 0)) * (depositAsset?.price || 0)
-    return val?.toFixed(2) || "-"
+    return `(${formatDollar(val)})` || ""
   }, [depositAmount, depositAsset])
 
   return (
@@ -139,7 +139,7 @@ export function DepositReceiveInput({
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
         <div className="flex justify-between text-xs text-gray-400">
-          <div>$({dollarDepositDisplay})</div>
+          <div>{dollarDepositDisplay}</div>
 
           <button
             className="flex w-10 cursor-pointer items-center rounded-full border-2 border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"

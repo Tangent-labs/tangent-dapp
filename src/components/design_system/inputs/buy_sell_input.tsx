@@ -4,7 +4,7 @@ import { IconWallet } from "@/components/icons/icon_wallet"
 import PanelRaw from "../structure/panel_raw"
 import { AssetDataPriced } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
-import { formatBigInt, toBigInt } from "@/lib/number_formatter"
+import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import { IconChevron } from "@/components/icons/icon_chevron"
@@ -156,7 +156,7 @@ export function BuySellInput({
 
   const dollarDepositDisplay = useMemo(() => {
     const val = Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals || 0)) * (depositAsset?.price || 0)
-    return val?.toFixed(2) || "-"
+    return `(${formatDollar(val)})`
   }, [depositAmount, depositAsset])
 
   const displayReceiveBalanceData = useMemo(() => {
@@ -197,7 +197,7 @@ export function BuySellInput({
             <div className="order-1 lg:order-2">{depositSelect}</div>
           </div>
           <div className="flex justify-between text-xs text-gray-400">
-            <div>$({dollarDepositDisplay})</div>
+            <div>{dollarDepositDisplay}</div>
 
             <div className="flex cursor-pointer items-center">
               <span>{displayDepositBalanceData}</span>

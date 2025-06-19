@@ -427,3 +427,14 @@ export type UserPosition = {
   date: Date
   txHash: string
 }
+
+export type MarketDebtData = {
+  id: number
+  value: number
+  name: string
+}
+
+export type TgUsdCollateralData = {
+  name: string
+  value: number
+}

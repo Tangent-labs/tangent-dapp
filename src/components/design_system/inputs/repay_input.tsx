@@ -2,8 +2,8 @@
 
 import { AssetDataPriced } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
-import { formatDisplayValue, toBigInt } from "@/lib/number_formatter"
-import { formatUnits, maxUint256 } from "viem"
+import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
+import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { IconThunder } from "@/components/icons/icon_thunder"
@@ -53,7 +53,7 @@ export function RepayInput({
 
     let repayAmount: bigint
     if (newPercentage === 100) {
-      repayAmount = maxUint256
+      repayAmount = balance
     } else {
       repayAmount = (BigInt(newPercentage) * balance) / BigInt(100)
     }
@@ -109,7 +109,7 @@ export function RepayInput({
   const dollarDepositDisplay = useMemo(() => {
     if (innerValue === "MAX") return "MAX"
     const val = Number(innerValue || 0) * (depositAsset?.price || 0)
-    return val?.toFixed(2) || "-"
+    return formatDollar(val) || "-"
   }, [innerValue, depositAsset])
 
   return (
@@ -146,7 +146,7 @@ export function RepayInput({
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
         <div className="mt-1 flex justify-between text-xs text-gray-400">
-          <div>$({dollarDepositDisplay})</div>
+          <div>{dollarDepositDisplay}</div>
 
           <div className="flex cursor-pointer items-center">
             <button

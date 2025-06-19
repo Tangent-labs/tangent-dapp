@@ -1,7 +1,7 @@
 "use client"
 
 import { ZapToken } from "../../tg_usd_type"
-import { AssetDataPriced, FormState } from "@/types"
+import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -49,7 +49,7 @@ type TgUsdLeverageContextValues = {
   zapValue: bigint | null
   setZapValue: (arg: bigint) => void
   handleDepositChange: (arg: bigint | undefined) => void
-  depositAssetInfo: AssetDataPriced | null
+  depositAssetInfo: AssetDataPriced | CollateralInfo
 
   slippage: number
   setSlippage: (arg: number) => void
@@ -124,7 +124,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
   const [slippage, setSlippage] = useState<number>(10)
 
-  const depositAssetInfo = useMemo<AssetDataPriced | null>(() => {
+  const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
     if (depositAsset === "ETH") {
       return {
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
@@ -136,9 +136,13 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
       }
     }
 
+    if (!!marketData && (depositAsset === undefined || depositAsset === collateralInfo?.name)) {
+      return { ...collateralInfo, price: Number(formatUnits(marketData?.collateralInfos.collateralUSDPrice, 18)) }
+    }
+
     const assetInfo = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset) || undefined
 
-    if (!swapAssetPrice || !assetInfo) return null
+    if (!swapAssetPrice || !assetInfo) return collateralInfo
 
     const asset: AssetDataPriced = {
       address: assetInfo?.address,
@@ -150,7 +154,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
     }
 
     return asset
-  }, [depositAsset, swapAssetPrice])
+  }, [depositAsset, swapAssetPrice, marketData])
 
   const sociabilizationFee = useMemo(() => {
     if (marketData?.sociabilization && depositWeiValue && depositAssetInfo) {

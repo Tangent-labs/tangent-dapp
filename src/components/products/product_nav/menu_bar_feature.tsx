@@ -23,16 +23,15 @@ export default function MenuBarFeature() {
         <div className="flex items-center gap-4 font-roobert md:gap-6">
           <nav className="flex items-center gap-10">
             <div className="flex cursor-pointer items-center">
-              <DropdownMenu label="Dashboard">
-                <div className="flex flex-col items-start gap-2 p-2">
-                  <div className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/protocol")}>
-                    Protocol
-                  </div>
-                  <div className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/user")}>
-                    User
-                  </div>
-                </div>
-              </DropdownMenu>
+              <p
+                onClick={() => router.push("/dashboard")}
+                className={cn(
+                  "text-sm text-white transition-colors duration-200 hover:text-blue-400 aria-disabled:text-gray-500",
+                  pathname === "/dashboard" ? "bg-tab bg-clip-text font-bold text-transparent" : ""
+                )}
+              >
+                Dashboard
+              </p>
             </div>
 
             <div className="flex cursor-pointer items-center">
@@ -43,7 +42,7 @@ export default function MenuBarFeature() {
                   pathname === "/" ? "bg-tab bg-clip-text font-bold text-transparent" : ""
                 )}
               >
-                Market
+                Markets
               </p>
             </div>
 

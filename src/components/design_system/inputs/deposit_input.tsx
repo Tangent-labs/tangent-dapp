@@ -2,7 +2,7 @@
 
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
-import { formatDisplayValue, toBigInt } from "@/lib/number_formatter"
+import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
@@ -94,7 +94,7 @@ export function DepositInput({
 
   const dollarDepositDisplay = useMemo(() => {
     const val = Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals || 0)) * (depositAsset?.price || 0)
-    return val?.toFixed(2) || "-"
+    return `(${formatDollar(val)})`
   }, [depositAmount, depositAsset])
 
   return (
@@ -132,7 +132,7 @@ export function DepositInput({
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
         <div className="mt-1 flex justify-between text-xs text-gray-400">
-          <div>$({dollarDepositDisplay})</div>
+          <div>{dollarDepositDisplay}</div>
 
           <div className="flex cursor-pointer items-center">
             {!disabled && (

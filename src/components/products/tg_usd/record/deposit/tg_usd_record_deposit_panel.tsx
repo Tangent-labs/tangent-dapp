@@ -20,6 +20,7 @@ import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
+import BorderPanel from "@/components/design_system/structure/border_panel"
 
 export default function TgUsdDepositPanel() {
   const {
@@ -117,7 +118,14 @@ export default function TgUsdDepositPanel() {
     return (
       <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
         <div className="flex w-full items-center gap-2">
-          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={32} />}
+          <>
+            {option.symbol === "ETH" ? (
+              <TokenImage token={option.logo} size={20} />
+            ) : (
+              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={32} />}</>
+            )}
+          </>
+
           <span className="text-sm font-semibold">{option.symbol}</span>
         </div>
         <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
@@ -127,10 +135,10 @@ export default function TgUsdDepositPanel() {
 
   const BorrowAssetDisplay = () => {
     return (
-      <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
+      <BorderPanel className="flex items-center gap-2 bg-select-input px-3 py-2">
         <TokenImage token="tgUSD" size={20} />
         <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
-      </div>
+      </BorderPanel>
     )
   }
 
@@ -194,10 +202,10 @@ export default function TgUsdDepositPanel() {
                 <div> {zapValue && !!marketData?.collateralInfos ? estimatedZapDollarValue : ""}</div>
               </div>
             </div>
-            <div className="flex items-center justify-center gap-2 rounded-xl border-2 border-white/30 bg-select-input px-2 py-1">
+            <BorderPanel className="flex items-center justify-center bg-select-input px-2 py-1">
               <TokenImage token={collateralInfo?.logo as ExistingAsset} size={32} />
               <div className="font-semibold">{collateralInfo?.symbol}</div>
-            </div>
+            </BorderPanel>
           </div>
         </PanelRaw>
       )}
@@ -239,11 +247,11 @@ export default function TgUsdDepositPanel() {
       <div className="flex w-full items-start justify-between gap-2">
         <Accordion className="w-full" type="single" collapsible>
           <AccordionItem value="item-1">
-            <div className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-xl border-2 border-white/30 bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px] hover:bg-white/20">
+            <BorderPanel className="flex h-[30px] w-full cursor-pointer items-center justify-between bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px] hover:bg-white/20">
               <AccordionTrigger>
                 <span className="text-md">Details</span>
               </AccordionTrigger>
-            </div>
+            </BorderPanel>
             <AccordionContent>
               <div className="flex w-full flex-col items-center justify-center text-primary">
                 {gas && gas > 0 ? (
@@ -273,14 +281,14 @@ export default function TgUsdDepositPanel() {
 
         <Popover>
           <PopoverTrigger asChild>
-            <div className="flex h-[30px] cursor-pointer items-center justify-between rounded-xl border-2 border-white/30 bg-button-gradient py-2 font-roobert">
+            <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2 font-roobert">
               <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
               <button type="button" title="Slippage">
-                <div className="h-[30px] cursor-pointer rounded-xl border-l-2 border-white/30 bg-button-gradient p-2 hover:bg-white/20">
+                <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
                   <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
                 </div>
               </button>
-            </div>
+            </BorderPanel>
           </PopoverTrigger>
           <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none font-roobert">
             <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
@@ -291,7 +299,7 @@ export default function TgUsdDepositPanel() {
                   value={slippage || 0}
                   placeholder="0.5"
                   type="number"
-                  className="w-full rounded-lg border-2 border-white/30 bg-transparent pl-2 focus:outline-none"
+                  className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
                 />
                 <div className="mt-2 flex w-full items-center justify-between gap-2">
                   <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />

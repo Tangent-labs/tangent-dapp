@@ -6,6 +6,7 @@ import { formatBigInt, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import { IconTan } from "@/components/icons/icon_tan"
+import BorderPanel from "../structure/border_panel"
 
 type InputSelectLockPositionProps = React.InputHTMLAttributes<HTMLInputElement> & {
   className?: string
@@ -70,9 +71,7 @@ export const InputSelectLockPosition = ({
   }, [innerValue])
 
   return (
-    <div
-      className={`${isLoading ? "shimmer" : ""} flex h-full w-full flex-col items-center justify-center rounded-[10px] border-2 border-white border-opacity-20 p-2 backdrop-blur-[60px]`}
-    >
+    <BorderPanel className={`${isLoading ? "shimmer" : ""} flex h-full w-full flex-col items-center justify-center p-2 backdrop-blur-[60px]`}>
       <div className="mb-3 flex h-full w-full items-center justify-between gap-2">
         <div className="flex flex-col">
           <div className="text-xs font-semibold text-subtitle">{labelDeposit}</div>
@@ -108,15 +107,14 @@ export const InputSelectLockPosition = ({
                 <span>{displayBalanceData}</span>
                 <IconWallet className="w-6" />
 
-                <button
-                  className="flex w-10 cursor-pointer items-center rounded-full border-2 border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
-                  type="button"
+                <BorderPanel
+                  className="flex w-10 cursor-pointer items-center bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
                   onClick={() => {
                     if (setMaxBalance) setMaxBalance()
                   }}
                 >
                   Max.
-                </button>
+                </BorderPanel>
               </div>
             )}
           </div>
@@ -173,6 +171,6 @@ export const InputSelectLockPosition = ({
           ></div>
         </div>
       </div>
-    </div>
+    </BorderPanel>
   )
 }

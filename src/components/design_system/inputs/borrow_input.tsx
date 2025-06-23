@@ -7,6 +7,7 @@ import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { IconThunder } from "@/components/icons/icon_thunder"
+import BorderPanel from "../structure/border_panel"
 
 type BorrowInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   borrowAsset?: AssetDataPriced
@@ -102,11 +103,11 @@ export function BorrowInput({
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <div
+      <BorderPanel
         className={cn(
           isLoading ? "shimmer" : "",
           disabled ? "bg-panel-disabled" : "bg-white bg-opacity-[3%]",
-          "flex flex-col rounded-[10px] border-2 border-white border-opacity-20 p-2 transition-colors duration-200 hover:bg-white/10"
+          "flex flex-col p-2 transition-colors duration-200 hover:bg-white/10"
         )}
       >
         <div className="flex w-full justify-between">
@@ -138,9 +139,8 @@ export function BorrowInput({
           <div>{dollarDepositDisplay}</div>
 
           <div className="flex cursor-pointer items-center">
-            <button
-              className="ml-1 flex w-10 cursor-pointer items-center rounded-full border-2 border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
-              type="button"
+            <BorderPanel
+              className="rounded-full! ml-1 flex w-10 cursor-pointer items-center bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
               onClick={() => {
                 if (setMaxBalance) {
                   setPercentage(100)
@@ -149,7 +149,7 @@ export function BorrowInput({
               }}
             >
               Max.
-            </button>
+            </BorderPanel>
           </div>
         </div>
 
@@ -197,7 +197,7 @@ export function BorrowInput({
             </div>
           </>
         )}
-      </div>
+      </BorderPanel>
     </div>
   )
 }

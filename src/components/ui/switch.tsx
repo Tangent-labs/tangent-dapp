@@ -9,9 +9,10 @@ const Switch = React.forwardRef<React.ElementRef<typeof SwitchPrimitives.Root>, 
   ({ className, ...props }, ref) => (
     <SwitchPrimitives.Root
       className={cn(
-        "inline-flex h-5 w-[38px] cursor-pointer items-center rounded-full border-2 border-white border-opacity-20 transition-colors focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:rounded-full data-[state=checked]:border-subtitle data-[state=checked]:bg-button-active data-[state=unchecked]:bg-black data-[state=unchecked]:hover:bg-input",
+        "inline-flex h-5 w-[38px] cursor-pointer items-center rounded-full border border-white border-opacity-20 transition-colors focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:rounded-full data-[state=checked]:border-subtitle data-[state=checked]:bg-button-active data-[state=unchecked]:bg-black data-[state=unchecked]:hover:bg-input",
         className
       )}
+      style={{ borderWidth: 1.5 }}
       {...props}
       ref={ref}
     >

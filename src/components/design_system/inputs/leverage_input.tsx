@@ -6,6 +6,7 @@ import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import TokenImage from "../structure/token_image"
 import { toBigInt } from "@/lib/number_formatter"
+import BorderPanel from "../structure/border_panel"
 
 type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
@@ -79,7 +80,7 @@ export function LeverageInput({
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <div className={`${isLoading ? "shimmer" : ""} flex flex-col rounded-[10px] border-2 border-white border-opacity-20 bg-white bg-opacity-[3%] p-2`}>
+      <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col bg-white bg-opacity-[3%] p-2`}>
         <div className="flex w-full justify-between">
           <div className="text-sm text-gray-400">{label}</div>
         </div>
@@ -93,10 +94,10 @@ export function LeverageInput({
             className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent text-xl font-semibold focus:outline-none")}
           />
 
-          <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
+          <BorderPanel className="flex items-center gap-2 bg-select-input px-3 py-2">
             <TokenImage token="tgUSD" size={20} />
             <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
-          </div>
+          </BorderPanel>
         </div>
 
         <input
@@ -141,7 +142,7 @@ export function LeverageInput({
             ></div>
           </div>
         </div>
-      </div>
+      </BorderPanel>
     </div>
   )
 }

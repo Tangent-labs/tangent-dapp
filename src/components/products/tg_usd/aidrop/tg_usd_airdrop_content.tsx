@@ -8,8 +8,8 @@ import { airdropListHeaders } from "./tg_usd_airdrop_controller"
 import { Button } from "@/components/design_system/inputs/button"
 import ListAsset from "@/components/design_system/list/list_asset"
 import { IconSortHeader } from "@/components/icons/icon_sort_header"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import BorderPanel from "@/components/design_system/structure/border_panel"
 
 const listeState: ListState = {
   search: undefined,
@@ -106,9 +106,9 @@ function AirdropList() {
       <div className="scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent max-h-[500px] overflow-y-auto">
         {displayRows &&
           (displayRows as AirdropTask[])?.map((task: AirdropTask) => (
-            <PanelRaw
+            <BorderPanel
               key={task.actionLabel}
-              className="border-2px-5 mb-2 py-3 before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
+              className="mb-2 px-5 py-3 before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
             >
               <div className="flex items-center justify-between max-xl:flex-col">
                 <div className="flex w-full items-center justify-evenly xl:w-8/12 xl:justify-start">
@@ -125,14 +125,14 @@ function AirdropList() {
                 <div className="flex h-full w-full items-center justify-evenly gap-2 xl:w-4/12">
                   <div className="flex w-1/3 items-center justify-center">{task?.ptsPerDay}</div>
                   <div className="flex w-1/3 items-center justify-center">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 backdrop-blur-lg">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
                       <TaskStatus status={task?.status} />
                     </div>
                   </div>
                   <div className="flex w-1/3 items-center justify-center">{task?.totalPoints}</div>
                 </div>
               </div>
-            </PanelRaw>
+            </BorderPanel>
           ))}
       </div>
     </>

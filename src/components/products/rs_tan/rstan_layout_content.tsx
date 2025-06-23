@@ -145,7 +145,9 @@ function LockPositionList() {
               rowDisposition={LockRowDisposition}
               isSelected={lockPosition == selectedPosition}
             >
-              <div className="flex items-center justify-center rounded-xl px-2 py-1.5 text-lg font-semibold backdrop-blur-[60px]">#{lockPosition?.tokenId}</div>
+              <div className="flex items-center justify-center rounded-[10px] px-2 py-1.5 text-lg font-semibold backdrop-blur-[60px]">
+                #{lockPosition?.tokenId}
+              </div>
               <div className="flex items-center justify-center text-lg font-semibold">
                 {formatBigInt(lockPosition?.amount, 18, 2)}
                 <IconRsTan className="ml-1 w-5"></IconRsTan>

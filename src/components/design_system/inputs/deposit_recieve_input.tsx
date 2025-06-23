@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils"
 import DisplayReceivePanel from "./display_recieve_panel"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { IconThunder } from "@/components/icons/icon_thunder"
+import BorderPanel from "../structure/border_panel"
 
 type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
@@ -109,8 +110,8 @@ export function DepositReceiveInput({
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <div
-        className={`${isLoading ? "shimmer" : ""} flex flex-col rounded-[10px] border-2 border-white border-opacity-20 bg-white bg-opacity-[3%] p-2 transition-colors duration-200 ease-in-out hover:bg-white/10`}
+      <BorderPanel
+        className={`${isLoading ? "shimmer" : ""} flex flex-col bg-white bg-opacity-[3%] p-2 transition-colors duration-200 ease-in-out hover:bg-white/10`}
       >
         <div className="flex w-full justify-between">
           <div className="text-sm text-gray-400">{labelDeposit}</div>
@@ -141,15 +142,14 @@ export function DepositReceiveInput({
         <div className="flex justify-between text-xs text-gray-400">
           <div>{dollarDepositDisplay}</div>
 
-          <button
-            className="flex w-10 cursor-pointer items-center rounded-full border-2 border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
-            type="button"
+          <BorderPanel
+            className="flex w-10 cursor-pointer items-center bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
             onClick={() => {
               if (setMaxBalance) setMaxBalance()
             }}
           >
             Max.
-          </button>
+          </BorderPanel>
         </div>
 
         {displaySliderInput && (
@@ -198,7 +198,7 @@ export function DepositReceiveInput({
             </div>
           </>
         )}
-      </div>
+      </BorderPanel>
       {displayRecieve && (
         <DisplayReceivePanel
           labelReceive={labelReceive}

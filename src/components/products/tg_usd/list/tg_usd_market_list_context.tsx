@@ -75,7 +75,7 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
       let totalProtocolDebt = 0n
 
       onChainData?.rowInfos.forEach((market) => {
-        totalUserDebt += market.debtInfos.totalDebt
+        totalUserDebt += market.debtInfos.userDebt
         totalUserDeposit += market.collateralInfos.positionCollateralUSDValue
         totalProtocolDeposit += market.collateralInfos?.totalCollateralUSDValue
         totalProtocolDebt += market.debtInfos.totalDebt

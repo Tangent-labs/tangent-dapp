@@ -15,6 +15,7 @@ import Divider from "@/components/design_system/structure/divider"
 import { computeProjection } from "./tg_usd_stake_controller"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import FormButtons from "@/components/design_system/form/form_actions"
+import BorderPanel from "@/components/design_system/structure/border_panel"
 
 export default function TgUsdStakeContent() {
   const {
@@ -78,12 +79,12 @@ export default function TgUsdStakeContent() {
     if (!receivedTokenInfo) return <></>
 
     return (
-      <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
+      <BorderPanel className="flex items-center gap-2 bg-select-input px-3 py-2">
         <TokenImage token={receivedTokenInfo.logo as ExistingAsset} size={20} />
         <span className="text-sm font-semibold">
           <span>{receivedTokenInfo.symbol}</span>
         </span>
-      </div>
+      </BorderPanel>
     )
   }
 

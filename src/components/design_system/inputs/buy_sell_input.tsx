@@ -1,13 +1,13 @@
 "use client"
 
 import { IconWallet } from "@/components/icons/icon_wallet"
-import PanelRaw from "../structure/panel_raw"
 import { AssetDataPriced } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import { IconChevron } from "@/components/icons/icon_chevron"
+import BorderPanel from "../structure/border_panel"
 
 type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
@@ -149,11 +149,6 @@ export function BuySellInput({
     setInnerTangentValue(e.target.value ? Number(e.target.value) : undefined)
   }
 
-  const displayDepositBalanceData = useMemo(() => {
-    const formattedBalance = formatBigInt(depositBalance || "0", depositAsset?.decimals || 18, depositAsset?.displayDecimals || 2)
-    return formattedBalance
-  }, [depositBalance, depositAsset])
-
   const dollarDepositDisplay = useMemo(() => {
     const val = Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals || 0)) * (depositAsset?.price || 0)
     return `(${formatDollar(val)})`
@@ -170,13 +165,19 @@ export function BuySellInput({
   }, [receiveAmount, receiveAsset])
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex w-full flex-col items-start justify-start font-semibold">
-        {labelDeposit === "You Buy" ? "Sell" : "Buy"} {receiveAsset?.symbol}
+    <div className="flex flex-col">
+      <div className="mb-3 flex w-full items-end justify-between">
+        <div className="font-semibold">
+          {labelDeposit === "You Buy" ? "Sell" : "Buy"} {receiveAsset?.symbol}
+        </div>
+
+        <span className="text-xs text-subtitle">
+          Max: {formatBigInt(depositBalance, depositAsset?.decimals || 18, 2)} {depositAsset?.symbol}
+        </span>
       </div>
 
-      <div className={cn("flex flex-col gap-2")} {...props}>
-        <PanelRaw className={`${isLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
+      <div className={cn("flex flex-col")} {...props}>
+        <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2`}>
           <div className="flex w-full justify-between">
             <div className="text-sm text-gray-400">{labelDeposit}</div>
           </div>
@@ -200,18 +201,14 @@ export function BuySellInput({
             <div>{dollarDepositDisplay}</div>
 
             <div className="flex cursor-pointer items-center">
-              <span>{displayDepositBalanceData}</span>
-              <IconWallet className="w-6" />
-
-              <button
-                className="flex w-10 cursor-pointer items-center rounded-full border-2 border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
-                type="button"
+              <BorderPanel
+                className="flex w-10 cursor-pointer items-center rounded-full bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
                 onClick={() => {
                   if (setMaxBalance) setMaxBalance()
                 }}
               >
                 Max.
-              </button>
+              </BorderPanel>
             </div>
           </div>
 
@@ -233,7 +230,7 @@ export function BuySellInput({
               0%
               <div
                 onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-                className="absolute -top-2.5 left-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                className="absolute -top-1.5 left-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
               ></div>
             </div>
 
@@ -244,7 +241,7 @@ export function BuySellInput({
                   onClick={
                     !!handleSliderChange ? () => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>) : () => {}
                   }
-                  className="absolute -top-2.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                  className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
                 ></div>
               </div>
             ))}
@@ -253,17 +250,17 @@ export function BuySellInput({
               100%
               <div
                 onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "100" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-                className="absolute -top-2.5 right-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                className="absolute -top-1.5 right-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
               ></div>
             </div>
           </div>
-        </PanelRaw>
+        </BorderPanel>
 
-        <div onClick={() => setIsBuying(!isBuying)} className="flex w-full cursor-pointer items-center justify-center border-none">
-          <IconChevron className="h-auto w-8 rounded-lg border-2 border-white/10 p-2 backdrop-blur-[60px] hover:border-white hover:stroke-black" />
+        <div onClick={() => setIsBuying(!isBuying)} className="my-2 flex w-full cursor-pointer items-center justify-center border-none">
+          <IconChevron className="h-auto w-8 rounded-lg border border-white/10 p-2 backdrop-blur-[60px] hover:border-white hover:stroke-black" />
         </div>
 
-        <PanelRaw className={`${isLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
+        <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2`}>
           <div className="text-sm text-gray-400">{labelReceive}</div>
           <div className="mb-2 flex justify-between">
             <div className="mr-4 text-xl font-medium">
@@ -292,7 +289,7 @@ export function BuySellInput({
               <IconWallet className="w-6" />
             </button>
           </div>
-        </PanelRaw>
+        </BorderPanel>
       </div>
     </div>
   )

@@ -278,6 +278,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
       fetchSwapValue()
     } else if (quote === "1") {
       setReceiveWeiValue(value)
+      setIsSwapLoading(false)
     } else {
       const quote = swapData?.quote
 
@@ -286,6 +287,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
       if (value && quote) {
         doCustomQuote(quote, value, currentAddress, quoteContractAddress).then((v) => {
           setReceiveWeiValue(v as bigint)
+          setIsSwapLoading(false)
         })
       }
     }

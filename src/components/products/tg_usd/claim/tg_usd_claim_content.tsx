@@ -5,7 +5,6 @@ import { useTgUsdClaimContext } from "./tg_usd_claim_context"
 import ListAsset from "@/components/design_system/list/list_asset"
 import { formatDollar } from "@/lib/number_formatter"
 import ListIndicator from "@/components/design_system/list/list_indicator"
-import Panel from "@/components/design_system/structure/panel"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { ClaimableMarket, ClaimAsset, ClaimData } from "../tg_usd_type"
 import Divider from "@/components/design_system/structure/divider"
@@ -20,6 +19,7 @@ import { ListState } from "@/types"
 import ListRow from "@/components/design_system/list/list_row"
 import ListAPR from "@/components/design_system/list/list_apr"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
+import BorderPanel from "@/components/design_system/structure/border_panel"
 
 const listeState: ListState = {
   search: undefined,
@@ -74,7 +74,7 @@ export default function TgUsdClaimContent() {
             </ListProvider>
           </div>
 
-          <Panel className="flex h-full min-h-52 w-3/12 flex-col items-start justify-start rounded-xl border-2 border-white p-5">
+          <BorderPanel className="flex h-full min-h-52 w-3/12 flex-col items-start justify-start p-5">
             <div className="flex w-full items-center justify-between">
               <div className="flex flex-col items-start justify-start">Market</div>
 
@@ -101,7 +101,7 @@ export default function TgUsdClaimContent() {
                 <Button label="CLAIM" className="flex w-full items-center justify-center" onClick={() => onClickClaim(marketsToClaim)} />
               )}
             </div>
-          </Panel>
+          </BorderPanel>
         </div>
       )}
     </>

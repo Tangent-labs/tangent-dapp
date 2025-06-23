@@ -100,7 +100,13 @@ export default function TgUsdSwapContent() {
     return (
       <div className="flex w-full min-w-48 items-center justify-between">
         <div className="flex w-full items-center gap-2">
-          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={32} />}
+          <>
+            {option.symbol === "ETH" ? (
+              <TokenImage token={option.logo} size={20} />
+            ) : (
+              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={20} />}</>
+            )}
+          </>
           <span className="text-sm font-semibold">{option.symbol}</span>
         </div>
 
@@ -140,7 +146,7 @@ export default function TgUsdSwapContent() {
             depositBalance={balanceAllowanceData?.balance ?? 0n}
             receiveAmount={receiveWeiValue}
             receiveAsset={receiveAssetInfo!}
-            setMaxBalance={() => {}}
+            setMaxBalance={() => handleDepositChange(balanceAllowanceData?.balance)}
             onValueChange={handleDepositChange}
             onTangentValueChange={handleReceiveChange}
             percentage={depositSliderPercent}

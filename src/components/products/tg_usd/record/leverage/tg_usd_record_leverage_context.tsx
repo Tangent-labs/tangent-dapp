@@ -431,7 +431,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
   const estimatedZapDollarValue = useMemo(() => {
     if (zapValue && marketData) {
-      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), depositAssetInfo?.decimals || 18))})`
+      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), 18))})`
       return result
     }
 

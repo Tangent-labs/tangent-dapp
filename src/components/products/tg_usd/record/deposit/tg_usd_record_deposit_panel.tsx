@@ -167,7 +167,7 @@ export default function TgUsdDepositPanel() {
         percentage={depositSliderPercent}
         setPercentage={setDepositSliderPercent}
         setMaxBalance={() => {
-          setDepositWeiValue(marketData?.collateralBalance || 0n)
+          setDepositWeiValue(balanceAllowanceData?.balance || marketData?.collateralBalance)
         }}
       />
 

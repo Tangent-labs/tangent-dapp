@@ -26,7 +26,7 @@ export default function MenuBarFeature() {
               <p
                 onClick={() => router.push("/dashboard")}
                 className={cn(
-                  "text-sm text-white transition-colors duration-200 hover:text-blue-400 aria-disabled:text-gray-500",
+                  "text-sm font-semibold text-white transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-transparent aria-disabled:text-gray-500",
                   pathname === "/dashboard" ? "bg-tab bg-clip-text font-bold text-transparent" : ""
                 )}
               >
@@ -38,7 +38,7 @@ export default function MenuBarFeature() {
               <p
                 onClick={() => router.push("/")}
                 className={cn(
-                  "text-sm text-white transition-colors duration-200 hover:text-blue-400 aria-disabled:text-gray-500",
+                  "text-sm font-semibold text-white transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-transparent aria-disabled:text-gray-500",
                   pathname === "/" ? "bg-tab bg-clip-text font-bold text-transparent" : ""
                 )}
               >
@@ -50,7 +50,7 @@ export default function MenuBarFeature() {
               <p
                 onClick={() => router.push("/stake")}
                 className={cn(
-                  "text-sm text-white transition-colors duration-200 hover:text-blue-400 aria-disabled:text-gray-500",
+                  "text-sm font-semibold text-white transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-transparent aria-disabled:text-gray-500",
                   pathname === "/stake" ? "bg-tab bg-clip-text font-bold text-transparent" : ""
                 )}
               >
@@ -62,7 +62,7 @@ export default function MenuBarFeature() {
               <p
                 onClick={() => router.push("/swap")}
                 className={cn(
-                  "text-sm text-white transition-colors duration-200 hover:text-blue-400 aria-disabled:text-gray-500",
+                  "text-sm font-semibold text-white transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-transparent aria-disabled:text-gray-500",
                   pathname === "/swap" ? "bg-tab bg-clip-text font-bold text-transparent" : ""
                 )}
               >
@@ -74,7 +74,7 @@ export default function MenuBarFeature() {
               <p
                 onClick={() => router.push("/earn")}
                 className={cn(
-                  "text-sm text-white transition-colors duration-200 hover:text-blue-400 aria-disabled:text-gray-500",
+                  "text-sm font-semibold text-white transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-transparent aria-disabled:text-gray-500",
                   pathname === "/earn" ? "bg-tab bg-clip-text font-bold text-transparent" : ""
                 )}
               >
@@ -85,10 +85,16 @@ export default function MenuBarFeature() {
             <div className="flex cursor-pointer items-center">
               <DropdownMenu label="Manage">
                 <div className="flex flex-col items-start gap-2 p-2">
-                  <div className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/claim")}>
+                  <div
+                    className="font-semibold transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-blue-400 hover:text-transparent data-[active=true]:text-blue-400"
+                    onClick={() => router.push("/claim")}
+                  >
                     Claim
                   </div>
-                  <div className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/harvest")}>
+                  <div
+                    className="font-semibold transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-blue-400 hover:text-transparent data-[active=true]:text-blue-400"
+                    onClick={() => router.push("/harvest")}
+                  >
                     Harvest
                   </div>
                 </div>
@@ -98,10 +104,16 @@ export default function MenuBarFeature() {
             <div className="flex cursor-pointer items-center">
               <DropdownMenu pathname={pathname} label="Tan">
                 <div className="flex flex-col items-start gap-2 p-2">
-                  <div className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/tan/lock")}>
+                  <div
+                    className="font-semibold transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-blue-400 hover:text-transparent data-[active=true]:text-blue-400"
+                    onClick={() => router.push("/tan/lock")}
+                  >
                     Lock
                   </div>
-                  <div className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/stan")}>
+                  <div
+                    className="font-semibold transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-blue-400 hover:text-transparent data-[active=true]:text-blue-400"
+                    onClick={() => router.push("/stan")}
+                  >
                     Stake
                   </div>
                 </div>
@@ -111,17 +123,20 @@ export default function MenuBarFeature() {
             <div className="flex cursor-pointer items-center">
               <DropdownMenu label="Airdrop">
                 <div className="flex flex-col items-start gap-2 p-2">
-                  <div className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400" onClick={() => router.push("/airdrop")}>
+                  <div
+                    className="font-semibold transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-blue-400 hover:text-transparent data-[active=true]:text-blue-400"
+                    onClick={() => router.push("/airdrop")}
+                  >
                     Task
                   </div>
                   <div
-                    className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400"
+                    className="font-semibold transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-blue-400 hover:text-transparent data-[active=true]:text-blue-400"
                     onClick={() => router.push("/airdrop/referral")}
                   >
                     Referral
                   </div>
                   <div
-                    className="transition-colors duration-200 hover:text-blue-400 data-[active=true]:text-blue-400"
+                    className="font-semibold transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-blue-400 hover:text-transparent data-[active=true]:text-blue-400"
                     onClick={() => router.push("/airdrop/pass")}
                   >
                     Tangium pass

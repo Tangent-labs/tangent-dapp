@@ -15,6 +15,7 @@ const config: Config = {
         "button-inactive": "var(--tgt-bg-button-inactive)",
         "button-active-hover": "var(--tgt-bg-button-active-hover)",
         "button-active": "var(--tgt-bg-button-active)",
+        "top-performing-lps": "var(--tgt-bg-top-performing-lps)",
         danger: "var(--tgt-bg-danger)",
         tab: "var(--tgt-bg-tab)",
         "select-input": "var(--tgt-bg-select-input)",

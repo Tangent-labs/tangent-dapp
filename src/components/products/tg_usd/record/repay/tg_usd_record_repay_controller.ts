@@ -16,7 +16,7 @@ export function getRepayFormState(
   const isApproved = repayAsset === "tgUSD" || (isZapMode && (repayWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n))
 
   const reasons: string[] = []
-  if (!marketData) return { canProcess: false, cantProcessReasons: ["No market data"], haveToApprove: false }
+  if (!marketData) return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
 
   if (!isWellConnected) {
     reasons.push("No connected wallet.")

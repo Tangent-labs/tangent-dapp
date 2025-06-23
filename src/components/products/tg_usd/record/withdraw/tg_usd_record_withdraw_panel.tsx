@@ -51,9 +51,13 @@ export default function TgUsdWithdrawPanel() {
           />
         </div>
 
-        <div>
-          <FormButtons actions={{ handleApprove: undefined, handleProcess: actionWithdraw }} formState={formState} labelProcess="Withdraw" />
-        </div>
+        <>
+          {!!withdrawWeiValue && formState.cantProcessReasons.length > 0 && (
+            <div className="flex w-full items-center justify-center text-xs text-red-500"> {formState.cantProcessReasons[0]}</div>
+          )}
+        </>
+
+        <FormButtons actions={{ handleApprove: undefined, handleProcess: actionWithdraw }} formState={formState} labelProcess="Withdraw" />
       </div>
     </>
   )

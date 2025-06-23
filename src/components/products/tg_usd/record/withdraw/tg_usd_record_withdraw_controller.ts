@@ -3,7 +3,7 @@ import { MarketDetailData, TgUsdtMarketWitrhdrawParams } from "../../tg_usd_type
 import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
 
-export function getWithdrawFormState(marketData?: MarketDetailData, withdrawWeiValue?: bigint, isWellConnected?: boolean) {
+export function getWithdrawFormState(marketData: MarketDetailData, withdrawWeiValue: bigint, maxWithdrawable: bigint, isWellConnected?: boolean) {
   const reasons: string[] = []
 
   if (!marketData) return { canProcess: false, cantProcessReasons: ["No market data"], haveToApprove: false }
@@ -13,6 +13,9 @@ export function getWithdrawFormState(marketData?: MarketDetailData, withdrawWeiV
   } else {
     if (withdrawWeiValue === 0n || !withdrawWeiValue) {
       reasons.push("Amount must be greater than zero.")
+    }
+    if (maxWithdrawable < withdrawWeiValue) {
+      reasons.push("Value is greater than maxWithdrawable.")
     }
   }
   return { canProcess: reasons.length === 0, cantProcessReasons: reasons, haveToApprove: false }

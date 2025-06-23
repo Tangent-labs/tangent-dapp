@@ -51,11 +51,6 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
       })
   }
 
-  const formState = useMemo(
-    () => getWithdrawFormState(marketData, withdrawWeiValue, isWellConnected),
-    [marketData, withdrawWeiValue, isWellConnected, currentAddress]
-  )
-
   const maxWithdrawable = useMemo(() => {
     if (marketData) {
       const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice
@@ -69,6 +64,13 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
 
     return 0n
   }, [marketData])
+
+  const formState = useMemo(() => {
+    if (marketData) {
+      return getWithdrawFormState(marketData, withdrawWeiValue!, maxWithdrawable, isWellConnected)
+    }
+    return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+  }, [marketData, withdrawWeiValue, isWellConnected, currentAddress, maxWithdrawable])
 
   const contextValue: TgUsdWithdrawContextValues = {
     actionWithdraw,

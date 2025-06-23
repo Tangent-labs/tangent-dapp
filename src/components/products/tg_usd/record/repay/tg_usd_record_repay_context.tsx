@@ -293,10 +293,13 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     })
   }
 
-  const formState = useMemo(
-    () => getRepayFormState(marketData, repayWeiValue, isWellConnected, balanceAllowanceData!, repayAsset),
-    [marketData, repayWeiValue, isWellConnected, currentAddress, balanceAllowanceData, repayAsset]
-  )
+  const formState = useMemo(() => {
+    if (marketData) {
+      return getRepayFormState(marketData, repayWeiValue, isWellConnected, balanceAllowanceData!, repayAsset)
+    }
+
+    return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+  }, [marketData, repayWeiValue, isWellConnected, currentAddress, balanceAllowanceData, repayAsset])
 
   const marketValues = useMemo(() => {
     if (marketData) {

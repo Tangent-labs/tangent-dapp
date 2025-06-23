@@ -244,6 +244,12 @@ export default function TgUsdRepayPanel() {
         )}
       </>
 
+      <>
+        {!isDebtBelowThreshold && !!repayWeiValue && formState.cantProcessReasons.length > 0 && (
+          <div className="flex w-full items-center justify-center text-xs text-red-500"> {formState.cantProcessReasons[0]}</div>
+        )}
+      </>
+
       <div className="flex w-full items-center justify-center">
         <FormButtons
           actions={{

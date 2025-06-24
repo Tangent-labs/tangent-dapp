@@ -376,6 +376,17 @@ export type DepositReceiveAsset = {
   balance?: bigint
 }
 
+export type EarnTask = {
+  name: string
+  asset: string
+  link: string
+  protocolName: string
+  actionLabel: string
+  currentAPR: number
+  projectedAPR: number
+  bonusPts: number
+}
+
 export type AirdropTask = {
   name: string
   asset: string

@@ -15,7 +15,7 @@ export default function TgUsdLiquidatePanelFull() {
 
   const LiquidateAssetDisplay = () => {
     return (
-      <BorderPanel className="flex items-center gap-2 bg-select-input px-3 py-2">
+      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2.5">
         <TokenImage token={collateralInfo?.logo} size={20} />
 
         <span className="flex flex-col text-sm font-semibold">

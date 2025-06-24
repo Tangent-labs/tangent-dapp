@@ -1,0 +1,24 @@
+{
+  "tasks": [
+    {
+      "name": "tgUSD/USDC",
+      "asset": "tgUSD-USDC",
+      "link": "https://curve.fi/dex/#/ethereum/pools/factory-crvusd-0/deposit",
+      "protocolName": "Convex",
+      "actionLabel": "Get tgUSD/USDC LP",
+      "currentAPR": 60.5,
+      "projectedAPR": 70.2,
+      "bonusPts": 1.5
+    },
+    {
+      "name": "tgUSD/tgDAI",
+      "asset": "tgUSD-tgDAI",
+      "link": "https://curve.fi/dex/#/ethereum/pools/factory-crvusd-0/deposit",
+      "protocolName": "Convex",
+      "actionLabel": "Get tgUSD/USDC LP",
+      "currentAPR": 60.5,
+      "projectedAPR": 70.2,
+      "bonusPts": 4
+    }
+  ]
+}

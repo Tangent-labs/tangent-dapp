@@ -131,7 +131,9 @@
     --tgt-bg-button-active: radial-gradient(81.44% 110.1% at 50% 100%, #00c2ff 0%, #0075ff 100%);
     --tgt-bg-button-active-hover: radial-gradient(90.14% 121.85% at 50% 100%, #0086b2 0%, #084377 100%);
     --tgt-bg-top-performing-lps: radial-gradient(139.72% 99.23% at 50% 100%, #0075ff 0%, rgba(0, 0, 0, 0) 100%);
+    --tgt-bg-earn-action: linear-gradient(135deg, rgba(0, 117, 255, 0.5) 0%, rgba(0, 194, 255, 0.5) 100%);
     --tgt-bg-progress: linear-gradient(90deg, #000000 0%, #0075ff 100%);
+    --tgt-bg-pink: linear-gradient(135deg, #bd00ff 0%, #fa00ff 100%);
     --tgt-bg-danger: linear-gradient(135deg, #ff0300 0%, #ff5b5b 100%);
     --tgt-bg-tonic: linear-gradient(315.15deg, #fbf911 0.08%, #99ff00 100%);
     --tgt-bg-light-tonic: linear-gradient(135deg, #f7cd61 0%, #fff500 100%);

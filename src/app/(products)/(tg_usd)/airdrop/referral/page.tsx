@@ -38,7 +38,7 @@ const Ranking = () => {
 export default async function TgUsdReferralPage() {
   return (
     <div className="flex w-full flex-col items-center justify-center">
-      <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
+      <div className="mt-6 flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
         <div className="mr-auto text-lg font-semibold text-white">Your referral</div>
 
         <Divider className="h-0.5 w-full bg-white/10" />

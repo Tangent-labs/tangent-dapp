@@ -1,11 +1,12 @@
-type TgUsdEarnPageProps = React.ButtonHTMLAttributes<HTMLDivElement>
+import { TgUsdEarnContent } from "@/components/products/tg_usd/earn/tg_usd_earn_content"
+import { TgUsdEarnProvider } from "@/components/products/tg_usd/earn/tg_usd_earn_context"
 
-export default async function TgUsdEarnPage({ ...props }: TgUsdEarnPageProps) {
-  // Fetch data here if needed
+import mockJson from "./earnMock.json"
+
+export default async function TgUsdEarnPage() {
   return (
-    <div {...props}>
-      <h1>TgUsdEarnPage</h1>
-      <p>This is a server-side component.</p>
-    </div>
+    <TgUsdEarnProvider tasks={mockJson?.tasks}>
+      <TgUsdEarnContent />
+    </TgUsdEarnProvider>
   )
 }

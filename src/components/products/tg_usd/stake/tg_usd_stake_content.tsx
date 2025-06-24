@@ -79,7 +79,7 @@ export default function TgUsdStakeContent() {
     if (!receivedTokenInfo) return <></>
 
     return (
-      <BorderPanel className="flex items-center gap-2 bg-select-input px-3 py-2">
+      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2.5">
         <TokenImage token={receivedTokenInfo.logo as ExistingAsset} size={20} />
         <span className="text-sm font-semibold">
           <span>{receivedTokenInfo.symbol}</span>

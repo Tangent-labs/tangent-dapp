@@ -145,7 +145,7 @@ export default function MenuBarFeature() {
               </DropdownMenu>
             </div>
           </nav>
-          <Button className="h-10 !px-6 font-roobert font-semibold text-white">Buy USG</Button>
+          <Button className="h-10 !px-8 font-roobert font-semibold text-white">Buy USG</Button>
         </div>
 
         <WalletConnexionButton />

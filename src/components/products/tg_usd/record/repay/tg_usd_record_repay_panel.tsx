@@ -303,10 +303,10 @@ export default function TgUsdRepayPanel() {
 
         <Popover>
           <PopoverTrigger asChild>
-            <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2 hover:bg-white/20">
+            <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2">
               <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
               <button type="button" title="Slippage">
-                <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2">
+                <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
                   <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
                 </div>
               </button>

@@ -1,6 +1,6 @@
 "use client"
 
-import { AssetDataPriced } from "@/types"
+import { AssetDataPriced, CollateralInfo } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
@@ -9,10 +9,9 @@ import { toBigInt } from "@/lib/number_formatter"
 import BorderPanel from "../structure/border_panel"
 
 type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  depositAsset?: AssetDataPriced
+  depositAsset?: AssetDataPriced | CollateralInfo
   className?: string
   depositAmount?: bigint
-  borrowAmount?: bigint
   disabled?: boolean
   label?: string
   LeverageInput?: ReactNode
@@ -25,7 +24,6 @@ type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 export function LeverageInput({
   className,
   depositAmount,
-  borrowAmount,
   depositAsset,
   label,
   isLoading = false,
@@ -41,13 +39,16 @@ export function LeverageInput({
     return 0
   }, [depositAmount])
 
-  const [innerValue, setInnerValue] = useState<string>(borrowAmount !== undefined ? formatUnits(borrowAmount, depositAsset?.decimals || 0) : "")
+  const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!!setPercentage) {
+    if (!!setPercentage && depositAsset) {
       const newPercentage = Number(e.target.value)
       setPercentage(newPercentage)
-      const newValue = newPercentage !== 0 ? Number((newPercentage * depositAmountNumber - depositAmountNumber).toFixed(0)) : 0
+
+      const inputValueToUSD = depositAmountNumber * depositAsset?.price
+      const newValue = newPercentage !== 0 ? Number((newPercentage * inputValueToUSD - inputValueToUSD).toFixed(0)) : 0
+
       setInnerValue(newValue.toFixed(0))
     }
   }

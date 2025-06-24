@@ -65,9 +65,6 @@ type TgUsdLeverageContextValues = {
   leveragePercentage: number
   setLeveragePercentage: (arg: number) => void
 
-  borrowSliderPercent: number
-  setBorrowSliderPercent: (arg: number) => void
-
   handleZapInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 
   actionLeverage: () => void
@@ -103,8 +100,6 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
   const [isZapUserInput, setIsZapUserInput] = useState<boolean>(false)
 
   const [swapAssetPrice, setSwapAssetPrice] = useState<number>(0)
-
-  const [borrowSliderPercent, setBorrowSliderPercent] = useState<number>(0)
 
   const [leveragePercentage, setLeveragePercentage] = useState<number>(1)
 
@@ -234,6 +229,11 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
     }
 
     fetchSwapAssetData()
+    setBorrowWeiValue(0n)
+    setDepositWeiValue(0n)
+    setDepositSliderPercent(0)
+    setLeveragePercentage(0)
+    setZapValue(0n)
   }, [depositAsset])
 
   useEffect(() => {
@@ -269,6 +269,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
       doApprove(walletClient, marketInfo?.collatAddress, marketInfo?.marketAddress, depositWeiValue).then(() => {
         loadOnChainData()
         setIsDepositLoading(false)
+        fetchBalanceAllowanceData(depositAssetInfo?.address)
       })
   }
 
@@ -312,14 +313,15 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
       )
         .then(() => {
           loadOnChainData()
-          setDepositWeiValue(0n)
-          setZapValue(0n)
-          setBorrowWeiValue(0n)
-          setBorrowSliderPercent(0)
           setLeveragedCollateralQuote(0n)
+          setBorrowWeiValue(0n)
+          setDepositWeiValue(undefined)
           setDepositSliderPercent(0)
-          setIsDepositLoading(false)
+          setLeveragePercentage(0)
+          setZapValue(null)
+
           toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
+          setIsDepositLoading(false)
         })
         .catch((err) => {
           console.error("ERROR : ", err)
@@ -350,7 +352,6 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
         loadOnChainData()
         setDepositWeiValue(0n)
         setBorrowWeiValue(0n)
-        setBorrowSliderPercent(0)
         setLeveragedCollateralQuote(0n)
         setDepositSliderPercent(0)
         setIsDepositLoading(false)
@@ -423,11 +424,20 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
   }, [zapInnerValue, isZapUserInput])
 
   const quoteDetail = useMemo(() => {
-    const sum = ` ${formatNumber(Number(formatUnits(depositWeiValue || 0n, 18)), 0)} + ${formatNumber(Number(formatUnits(leveragedCollateralQuote || 0n, 18)), 0)}  ~= `
-    const result = `${formatNumber(Number(formatUnits((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18)), 0)}  ${collateralInfo?.symbol}`
+    if (!!zapValue) {
+      const sum = ` ${formatNumber(Number(formatUnits(zapValue || 0n, 18)), 0)} + ${formatNumber(Number(formatUnits(leveragedCollateralQuote || 0n, 18)), 0)}  ~= `
+      const result = `${formatNumber(Number(formatUnits((leveragedCollateralQuote || 0n) + BigInt(zapValue || 0n), 18)), 0)}  ${collateralInfo?.symbol}`
 
-    return { sum, result }
-  }, [depositWeiValue, leveragedCollateralQuote])
+      return { sum, result }
+    } else if (!zapValue && !!depositWeiValue) {
+      const sum = ` ${formatNumber(Number(formatUnits(depositWeiValue || 0n, 18)), 0)} + ${formatNumber(Number(formatUnits(leveragedCollateralQuote || 0n, 18)), 0)}  ~= `
+      const result = `${formatNumber(Number(formatUnits((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18)), 0)}  ${collateralInfo?.symbol}`
+
+      return { sum, result }
+    } else {
+      return { sum: "", result: `0 ${collateralInfo?.symbol}` }
+    }
+  }, [depositWeiValue, leveragedCollateralQuote, zapValue])
 
   const estimatedZapDollarValue = useMemo(() => {
     if (zapValue && marketData) {
@@ -477,9 +487,6 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
     depositSliderPercent,
     setDepositSliderPercent,
-
-    borrowSliderPercent,
-    setBorrowSliderPercent,
 
     leveragePercentage,
     setLeveragePercentage,

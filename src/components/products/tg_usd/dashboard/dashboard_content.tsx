@@ -1,16 +1,16 @@
 "use client"
 
-import IndicatorCards from "@/components/design_system/structure/indicators_card"
-import TokenImage from "@/components/design_system/structure/token_image"
-import { formatDollar } from "@/lib/number_formatter"
-import { useTgUsdMaketListContext } from "../list/tg_usd_market_list_context"
 import { cn } from "@/lib/utils"
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, XAxis, Tooltip, YAxis, Bar, Area, AreaChart } from "recharts"
-import Divider from "@/components/design_system/structure/divider"
-import { mockBarChartData, COLORS, formatXAxis, formatYAxis, mockTotalSupplyData } from "./dashboard_controller"
-import { MarketDebtData, TgUsdCollateralData } from "../tg_usd_type"
 import { ExistingAsset } from "@/types"
+import { formatDollar } from "@/lib/number_formatter"
 import { IconArrow } from "@/components/icons/icon_arrow"
+import Divider from "@/components/design_system/structure/divider"
+import { MarketDebtData, TgUsdCollateralData } from "../tg_usd_type"
+import TokenImage from "@/components/design_system/structure/token_image"
+import { useTgUsdMaketListContext } from "../list/tg_usd_market_list_context"
+import IndicatorCards from "@/components/design_system/structure/indicators_card"
+import { mockBarChartData, COLORS, formatXAxis, formatYAxis, mockTotalSupplyData } from "./dashboard_controller"
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, XAxis, Tooltip, YAxis, Bar, Area, AreaChart } from "recharts"
 
 export const TgUsdDashboardContent = () => {
   const { globalData, userData } = useTgUsdMaketListContext()
@@ -232,6 +232,7 @@ export const TgUsdDashboardContent = () => {
           <div className="flex w-full items-center justify-between gap-2">
             <div
               style={{ borderWidth: 1.5 }}
+              onClick={() => window.open("https://youtu.be/5Hplx-geZHo?t=5")}
               className="flex cursor-pointer items-center justify-between gap-2 rounded-[10px] border-white border-opacity-20 px-4 py-2 hover:border-none hover:bg-top-performing-lps"
             >
               <span>
@@ -245,12 +246,13 @@ export const TgUsdDashboardContent = () => {
             </div>
             <div
               style={{ borderWidth: 1.5 }}
+              onClick={() => window.open("https://youtu.be/5Hplx-geZHo?t=5")}
               className="flex cursor-pointer items-center justify-between gap-2 rounded-[10px] border-white border-opacity-20 px-4 py-2 hover:border-none hover:bg-top-performing-lps"
             >
               <span>
-                <TokenImage token={"crvUSD-USDC"} size={24} />
+                <TokenImage token={"crvUSD-USDT"} size={24} />
               </span>
-              <span>crvUSD-USDC</span>
+              <span>crvUSD-USDT</span>
               <div className="rounded-[10px] bg-overlay-panel px-2 py-1 font-semibold backdrop-blur-[60px]">60%</div>
               <div className="mt-2 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
                 <IconArrow className="w-3"></IconArrow>

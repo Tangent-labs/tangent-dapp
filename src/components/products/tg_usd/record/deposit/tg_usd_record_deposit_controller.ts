@@ -16,7 +16,7 @@ export function getDepositFormState(
   balanceAllowanceData?: BalanceAllowanceData,
   isDepositLoading?: boolean
 ) {
-  const isZapMode = !!depositAssetInfo && depositAssetInfo !== collateralInfo?.address
+  const isZapMode = depositAssetInfo !== collateralInfo?.address
 
   const reasons: string[] = []
   const isApproved =

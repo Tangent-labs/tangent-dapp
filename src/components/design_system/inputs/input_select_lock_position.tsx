@@ -72,8 +72,8 @@ export const InputSelectLockPosition = ({
 
   return (
     <BorderPanel className={`${isLoading ? "shimmer" : ""} flex h-full w-full flex-col items-center justify-center p-2 backdrop-blur-[60px]`}>
-      <div className="mb-3 flex h-full w-full items-center justify-between gap-2">
-        <div className="flex flex-col">
+      <div className="mb-3 flex h-full w-full justify-between gap-2">
+        <div className="flex flex-col items-start justify-between">
           <div className="text-xs font-semibold text-subtitle">{labelDeposit}</div>
 
           <div className="text-xl">

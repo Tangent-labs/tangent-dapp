@@ -92,7 +92,7 @@ export const RsTanLayoutContent = ({
       </div>
 
       <div className="mb-4 flex w-full gap-4">
-        <div className="flex w-5/12 flex-col items-center justify-start rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
+        <div className="flex w-5/12 flex-col items-center justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
           <div className="flex w-full items-center justify-between gap-2">
             <ButtonTab label="Lock" active={pathname === "/tan/lock"} onClick={() => router.push("/tan/lock")} className="h-8! flex w-full justify-center" />
             <ButtonTab
@@ -111,7 +111,7 @@ export const RsTanLayoutContent = ({
           {children}
         </div>
 
-        <div className="flex w-7/12 flex-col items-start justify-start rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
+        <div className="flex w-7/12 flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
           <div className="mr-auto text-3xl font-semibold text-white">Locked Positions</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />

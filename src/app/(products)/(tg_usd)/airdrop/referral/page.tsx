@@ -1,4 +1,5 @@
 import { Button } from "@/components/design_system/inputs/button"
+import BorderPanel from "@/components/design_system/structure/border_panel"
 import Divider from "@/components/design_system/structure/divider"
 import { IconCompleted } from "@/components/icons/icon_completed"
 import { IconShare } from "@/components/icons/icon_share"
@@ -20,7 +21,7 @@ const Ranking = () => {
         { rank: 4, address: "0xc600e7F967a0892A39Fb7FB8AcCb237A2B62af72", pts: 12 },
         { rank: 4, address: "0xAcCb237A2967a02A39Fb7FB8AcCb237A2B62af72", pts: 1 },
       ].map((el) => (
-        <div key={el?.address} className="my-1 flex w-full items-start justify-start rounded-[10px] bg-white bg-opacity-[5%] px-2 py-1 backdrop-blur-[60px]">
+        <BorderPanel key={el?.address} className="my-1 flex w-full items-start justify-start bg-overlay-panel px-2 py-1 backdrop-blur-[60px]">
           <div className="flex w-1/3 items-center justify-start gap-1 font-semibold">
             {el?.rank === 1 && <IconTrophy className="w-5 fill-yellow-300"></IconTrophy>}
             {el?.rank === 2 && <IconTrophy className="w-5 fill-gray-500"></IconTrophy>}
@@ -29,7 +30,7 @@ const Ranking = () => {
           </div>
           <div className="flex w-1/3 items-start justify-start font-semibold">{el.address.substring(0, 5) + "..."}</div>
           <div className="flex w-1/3 items-start justify-start font-semibold">{el.pts}</div>
-        </div>
+        </BorderPanel>
       ))}
     </>
   )
@@ -38,7 +39,7 @@ const Ranking = () => {
 export default async function TgUsdReferralPage() {
   return (
     <div className="flex w-full flex-col items-center justify-center">
-      <div className="mt-6 flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
+      <BorderPanel className="mt-6 flex w-full flex-col items-center justify-center rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
         <div className="mr-auto text-lg font-semibold text-white">Your referral</div>
 
         <Divider className="h-0.5 w-full bg-white/10" />
@@ -60,7 +61,7 @@ export default async function TgUsdReferralPage() {
             <Button className="flex w-32 justify-center font-semibold">Share</Button>
           </div>
         </div>
-      </div>
+      </BorderPanel>
 
       <div className="my-4 flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
         <div className="mr-auto text-lg font-semibold text-white">Airdrop referral</div>

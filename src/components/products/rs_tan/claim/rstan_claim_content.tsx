@@ -71,7 +71,7 @@ export const RsTanClaimContent = () => {
         </div>
 
         <div className="flex h-full flex-col items-center justify-center">
-          <div className="flex items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 font-semibold backdrop-blur-[60px]">
+          <div className="flex items-center justify-center rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
             <TokenImage token={claimAsSgUSD ? "sgUSD" : "tgUSD"} className="mr-2" size={16} />
             {claimAsSgUSD ? "sgUSD" : "tgUSD"}
           </div>

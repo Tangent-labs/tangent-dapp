@@ -32,11 +32,11 @@ export const RsTanSplitContent = () => {
     return (
       <>
         {option && option?.tokenId ? (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center">
             <span className="text-md font-semibold text-white">#{option.tokenId}</span>
           </div>
         ) : (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center">
             <span className="text-md font-semibold text-white"></span>
           </div>
         )}
@@ -103,14 +103,14 @@ export const RsTanSplitContent = () => {
               </div>
               <div className="flex h-full items-center justify-center gap-3">
                 <div className="flex h-full flex-col items-center justify-center">
-                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 font-semibold backdrop-blur-[60px]">
+                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
                     <IconRsTan className="h-4 w-4"></IconRsTan>
                     rsTan
                   </div>
                 </div>
                 <div className="flex h-full flex-col items-start justify-start">
                   <div className="mb-0.5 text-xs font-semibold text-subtitle">Position</div>
-                  <div className="flex w-28 items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 backdrop-blur-[60px]">
+                  <div className="flex w-28 items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-3 py-2 backdrop-blur-[60px]">
                     <div className="text-md font-semibold">#{computedNewPositionIds?.newPositionId1}</div>
                     <div className="text-sm">(updated)</div>
                   </div>
@@ -134,14 +134,14 @@ export const RsTanSplitContent = () => {
               </div>
               <div className="flex h-full items-center justify-center gap-3">
                 <div className="flex h-full flex-col items-center justify-center">
-                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 font-semibold backdrop-blur-[60px]">
+                  <div className="flex items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
                     <IconRsTan className="h-4 w-4"></IconRsTan>
                     rsTan
                   </div>
                 </div>
                 <div className="flex h-full flex-col items-start justify-start">
                   <div className="mb-0.5 text-xs font-semibold text-subtitle">Position</div>
-                  <div className="flex w-28 items-center justify-center gap-1 rounded-[10px] bg-white bg-opacity-[5%] px-3 py-2 backdrop-blur-[60px]">
+                  <div className="flex w-28 items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-3 py-2 backdrop-blur-[60px]">
                     <div className="text-md font-semibold">#{computedNewPositionIds?.newPositionId2}</div>
                     <div className="text-sm">(new)</div>
                   </div>

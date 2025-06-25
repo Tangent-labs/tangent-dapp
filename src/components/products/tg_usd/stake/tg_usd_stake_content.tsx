@@ -189,9 +189,9 @@ export default function TgUsdStakeContent() {
           <div className="flex w-full items-center justify-between gap-2">
             <EvolutionBox
               className="w-full"
-              originalValue={formatUnits(stakeInfo?.sgUSDBalance || 0n, 18)}
+              originalValue={Number(formatUnits(stakeInfo?.sgUSDBalance || 0n, 18)).toFixed(2)}
               label="sUSG balance"
-              newValue={computeProjectedValue.toString()}
+              newValue={computeProjectedValue.toFixed(2)}
             />
 
             <EvolutionBox

@@ -108,7 +108,7 @@ function AirdropList() {
           (displayRows as AirdropTask[])?.map((task: AirdropTask) => (
             <BorderPanel
               key={task.actionLabel}
-              className="mb-2 px-5 py-3 before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
+              className="mb-2 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
             >
               <div className="flex items-center justify-between max-xl:flex-col">
                 <div className="flex w-full items-center justify-evenly xl:w-8/12 xl:justify-start">

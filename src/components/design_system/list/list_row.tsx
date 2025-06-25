@@ -15,7 +15,7 @@ const ListRow = ({ children, navigate, className = "", rowDisposition: CustomRow
   return (
     <BorderPanel
       onClick={() => navigate && navigate()}
-      className={`relative px-4 py-2.5 before:absolute before:inset-0 before:-z-10 before:rounded-[8px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover ${isSelected ? "before:bg-list-row-hover" : ""} // Selected state styling ${className} `}
+      className={`relative bg-overlay-panel px-4 py-2.5 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:rounded-[8px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover ${isSelected ? "before:bg-list-row-hover" : ""} // Selected state styling ${className} `}
     >
       <CustomRowDisposition>
         <> {children?.at(0)}</>

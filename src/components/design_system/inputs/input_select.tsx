@@ -36,7 +36,7 @@ const InputSelect = <T extends SelectOption | SelectOptionAmount>({
 }: InputSelectProps<T>) => {
   return (
     <>
-      <div className={`flex flex-col gap-1 ${className}`}>
+      <div className={`flex flex-col ${className}`}>
         <div className="flex justify-between text-xs font-semibold text-subtitle">{label}</div>
 
         <Select disabled={disabled} value={value} onValueChange={(value) => onChange(value)}>
@@ -49,8 +49,8 @@ const InputSelect = <T extends SelectOption | SelectOptionAmount>({
                 {template ? (
                   template(option as T)
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <span className="text-md font-semibold">{option.label}</span>
+                  <div className="flex items-center">
+                    <span className="text-[14px] font-semibold">{option.label}</span>
                   </div>
                 )}
               </SelectItem>

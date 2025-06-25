@@ -20,8 +20,8 @@ export const RsTanUnlockContent = () => {
     return (
       <>
         {option && option?.tokenId ? (
-          <div className="flex items-center gap-2">
-            <span className="text-md font-semibold text-white">#{option.tokenId}</span>
+          <div className="flex w-full cursor-pointer items-center rounded-[10px] hover:bg-white/10">
+            <span className="text-md w-full font-semibold text-white">#{option.tokenId}</span>
           </div>
         ) : (
           <div className="flex items-center gap-2">

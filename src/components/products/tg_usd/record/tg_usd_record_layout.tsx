@@ -10,6 +10,8 @@ import TgUsdMarketInfo from "./tg_usd_market_info"
 import { usePathname, useRouter } from "next/navigation"
 import { useMemo } from "react"
 import TgUsdPositionHistory from "./position_history/tg_usd_position_history"
+import BorderPanel from "@/components/design_system/structure/border_panel"
+import { IconChevron } from "@/components/icons/icon_chevron"
 
 type TgUsdRecordLayoutProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
   children: React.ReactNode
@@ -67,6 +69,12 @@ export default function TgUsdRecordLayout({ children, ...props }: TgUsdRecordLay
         </div>
         <Divider />
 
+        <BorderPanel className="flex w-full cursor-pointer items-center justify-between bg-overlay-panel p-3 backdrop-blur-[60px] hover:bg-white/20">
+          <span>vAPR Calculator</span>
+          <IconChevron className="w-5"></IconChevron>
+        </BorderPanel>
+
+        <Divider />
         <TgUsdMarketInfo />
 
         <TgUsdPositionHistory />

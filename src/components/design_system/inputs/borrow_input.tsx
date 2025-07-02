@@ -58,7 +58,7 @@ export function BorrowInput({
     if (!!setPercentage) {
       const newPercentage = Number(e.target.value)
       setPercentage(newPercentage)
-      const newValue = newPercentage !== 0 ? Number(((newPercentage / 100) * balanceNumber).toFixed(0)) : 0
+      const newValue = newPercentage === 100 ? balanceNumber : Number(((newPercentage / 100) * balanceNumber).toFixed(0))
       setInnerValue(formatDisplayValue(newValue))
       onValueChange(!!newValue ? toBigInt(newValue, borrowAsset?.decimals || 18) : undefined)
     }

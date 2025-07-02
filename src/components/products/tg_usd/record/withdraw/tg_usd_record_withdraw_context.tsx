@@ -5,7 +5,6 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doMarketWithdraw, getWithdrawFormState } from "./tg_usd_record_withdraw_controller"
-import { maxUint256 } from "viem"
 
 type TgUsdWithdrawContextProps = {
   children: ReactNode
@@ -43,7 +42,7 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
     if (walletClient)
       doMarketWithdraw(walletClient, {
         marketAddress: marketData!.marketAddress,
-        withdrawWeiValue: withdrawPercentage === 100 ? maxUint256 : withdrawWeiValue,
+        withdrawWeiValue,
       }).then(() => {
         loadOnChainData()
         setWithdrawWeiValue(0n)

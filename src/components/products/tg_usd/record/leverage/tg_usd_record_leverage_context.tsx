@@ -284,7 +284,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
         TGUSD_CONTRACT.TG_USD,
         marketInfo?.collatAddress,
         borrowWeiValue,
-        (BigInt(leveragedCollateralQuote!) * BigInt(100 - slippage)) / BigInt(100),
+        (BigInt(leveragedCollateralQuote!) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         marketInfo?.marketAddress,
         TGUSD_CONTRACT.ZAPPER
       )
@@ -293,7 +293,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
         depositAssetInfo?.address,
         marketInfo?.collatAddress,
         depositWeiValue,
-        (BigInt(zapValue!) * BigInt(100 - slippage)) / BigInt(100),
+        (BigInt(zapValue!) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         marketInfo?.marketAddress,
         currentAddress!,
         currentAddress!
@@ -301,12 +301,12 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
       doZapLeverage(
         borrowWeiValue,
-        (BigInt(leveragedCollateralQuote!) * BigInt(100 - slippage)) / BigInt(100),
+        (BigInt(leveragedCollateralQuote!) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         isStaking,
         leverageData!,
         depositAssetInfo?.address,
         depositWeiValue,
-        (BigInt(zapValue!) * BigInt(100 - slippage)) / BigInt(100),
+        (BigInt(zapValue!) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         zapData!,
         walletClient,
         marketInfo?.marketAddress

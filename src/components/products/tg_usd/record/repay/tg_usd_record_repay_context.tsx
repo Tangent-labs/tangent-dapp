@@ -212,7 +212,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
         repayAssetInfo?.address,
         TGUSD_CONTRACT?.TG_USD,
         repayWeiValue,
-        (BigInt(tgUdsRepayedValue || 0n) * BigInt(100 - slippage)) / BigInt(100),
+        (BigInt(tgUdsRepayedValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         currentAddress!,
         TGUSD_CONTRACT.ZAPPER
       )
@@ -220,7 +220,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
       const zapMarketData = {
         tokenIn: repayAssetInfo?.address,
         amountIn: repayWeiValue,
-        minAmountOut: (BigInt(tgUdsRepayedValue || 0n) * BigInt(100 - slippage)) / BigInt(100),
+        minAmountOut: (BigInt(tgUdsRepayedValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
       }
 
       doZapRepay(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData)

@@ -179,8 +179,8 @@ function LockPositionList() {
                     originalValue={formatDate(new Date(), "dd/MM/yyyy")}
                     label=""
                     newValue={
-                      lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (
-                        <InfinityIcon className="w-5"></InfinityIcon>
+                      (lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655") || extendToPermaLock ? (
+                        <InfinityIcon className="mx-8 w-5"></InfinityIcon>
                       ) : (
                         <> {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd/MM/yyyy")}</>
                       )

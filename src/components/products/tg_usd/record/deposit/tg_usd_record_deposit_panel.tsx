@@ -202,7 +202,7 @@ export default function TgUsdDepositPanel() {
                 <div> {zapValue && !!marketData?.collateralInfos ? estimatedZapDollarValue : ""}</div>
               </div>
             </div>
-            <BorderPanel className="flex items-center justify-center bg-select-input px-2 py-1">
+            <BorderPanel className="flex items-center justify-center gap-1 bg-select-input px-2 py-1">
               <TokenImage token={collateralInfo?.logo as ExistingAsset} size={32} />
               <div className="font-semibold">{collateralInfo?.symbol}</div>
             </BorderPanel>

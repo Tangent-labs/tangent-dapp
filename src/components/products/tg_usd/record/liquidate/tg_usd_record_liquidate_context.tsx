@@ -119,7 +119,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
       doMarketLiquidate(
         liquidateWeiValue,
         repayValue,
-        (tgUSDReceivedValue * (BigInt(100) - BigInt(slippage))) / BigInt(100),
+        (tgUSDReceivedValue * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         liquidationData!,
         walletClient,
         marketData?.marketAddress

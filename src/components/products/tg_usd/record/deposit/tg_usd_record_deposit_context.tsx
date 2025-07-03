@@ -361,7 +361,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
         depositAssetInfo?.address,
         collateralInfo?.address,
         marketInfo,
-        (BigInt(zapValue || 0n) * BigInt(100 - slippage)) / BigInt(100)
+        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
       )
 
       const walletClient = getWalletClient()
@@ -443,7 +443,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
         depositAssetInfo?.address,
         collateralInfo?.address,
         marketInfo,
-        (BigInt(zapValue || 0n) * BigInt(100 - slippage)) / BigInt(100)
+        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
       )
 
       const walletClient = getWalletClient()
@@ -485,7 +485,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
         depositAssetInfo?.address,
         collateralInfo?.address,
         marketInfo,
-        (BigInt(zapValue || 0n) * BigInt(100 - slippage)) / BigInt(100)
+        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
       )
 
       const walletClient = getWalletClient()
@@ -529,7 +529,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
       if (depositAsset && depositAsset !== collateralInfo?.symbol) {
         futureDeposited =
           marketData?.collateralInfos?.positionCollateralUSDValue +
-          (BigInt(zapValue || 0n) * BigInt(100 - slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 20)
+          (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 20)
       } else {
         futureDeposited =
           marketData?.collateralInfos?.positionCollateralUSDValue + (deposit * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18)
@@ -540,7 +540,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
     }
 
     return 0n
-  }, [marketData, depositWeiValue, depositAsset, depositAssetInfo, zapValue])
+  }, [marketData, depositWeiValue, depositAsset, depositAssetInfo, zapValue, slippage])
 
   const estimatedZapDollarValue = useMemo(() => {
     if (zapValue && marketData) {

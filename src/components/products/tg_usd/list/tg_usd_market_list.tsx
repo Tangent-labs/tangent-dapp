@@ -91,7 +91,7 @@ export default function TgUsdMarketList() {
                   { title: "Supply", value: globalData.tgUsdSupply },
                 ]}
               >
-                <TokenImage token={"tgUSD" as ExistingAsset} className="h-8 w-8" size={32} />
+                <TokenImage token={"USG" as ExistingAsset} className="h-8 w-8" size={32} />
               </IndicatorCards>
               <IndicatorCards
                 className={cn(globalData.sgUsdPrice === "-" ? "shimmer" : "")}
@@ -101,7 +101,7 @@ export default function TgUsdMarketList() {
                   { title: "APY", value: globalData.APY },
                 ]}
               >
-                <TokenImage token={"sgUSD" as ExistingAsset} className="h-8 w-8" size={32} />
+                <TokenImage token={"sUSG" as ExistingAsset} className="h-8 w-8" size={32} />
               </IndicatorCards>
             </div>
           </div>

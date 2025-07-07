@@ -58,7 +58,7 @@ export default function TgUsdRepayPanel() {
     withdrawPercentage,
     tgUsdDollarRepayedValue,
     isZapLoading,
-    tgUdsRepayedValue,
+    usgRepayedValue,
     isDebtBelowThreshold,
     repayAssetInfo,
     marketData,
@@ -104,14 +104,14 @@ export default function TgUsdRepayPanel() {
 
     const sortedAssets = [
       {
-        address: TGUSD_CONTRACT.TG_USD,
+        address: TGUSD_CONTRACT.USG,
         decimals: 18,
         displayDecimals: 2,
-        logo: "tgUSD" as ExistingAsset,
-        name: "tgUSD",
+        logo: "USG" as ExistingAsset,
+        name: "USG",
         price: 1,
-        symbol: "tgUSD",
-        value: "tgUSD",
+        symbol: "USG",
+        value: "USG",
         balance: balances[marketInfo?.collatAddress] || BigInt(0),
       },
       ...[
@@ -133,7 +133,7 @@ export default function TgUsdRepayPanel() {
       <CustomSelect
         className="w-full min-w-40"
         template={AssetSelectTemplate}
-        value={repayAsset || "tgUSD"}
+        value={repayAsset || "USG"}
         options={sortedAssets}
         onChange={(v: string) => setRepayAsset(v)}
       />
@@ -143,7 +143,7 @@ export default function TgUsdRepayPanel() {
   const WithdrawAssetDisplay = () => {
     return (
       <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2.5">
-        <TokenImage token={collateralInfo?.logo} size={20} />
+        <TokenImage token={collateralInfo?.logo} size={32} />
 
         <span className="flex flex-col text-sm font-semibold">
           <span>{collateralInfo.symbol}</span>
@@ -169,7 +169,15 @@ export default function TgUsdRepayPanel() {
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
           <span className="text-[20px] font-semibold">Repay debt</span>
-          <span className="text-xs text-subtitle"> Max: {formatBigInt(marketData?.debtInfos?.userDebt, 18, 3)} tgUSD</span>
+
+          {repayAsset === "USG" ? (
+            <span className="text-xs text-subtitle"> Max: {formatBigInt(marketData?.debtInfos?.userDebt, 18, 3)} USG</span>
+          ) : (
+            <span className="text-xs text-subtitle">
+              {" "}
+              Max: {formatBigInt(maxRepayableValue, repayAssetInfo?.decimals || 18, 3)} {repayAssetInfo?.symbol}
+            </span>
+          )}
         </div>
 
         <RepayInput
@@ -177,7 +185,7 @@ export default function TgUsdRepayPanel() {
           labelDeposit="You repay"
           depositSelect={<AssetSelect />}
           disabled={!canInteract || isRepayMax}
-          isZapping={!!repayAsset && repayAsset !== "tgUSD"}
+          isZapping={!!repayAsset && repayAsset !== "USG"}
           depositAsset={repayAssetInfo || tgUSDInfo}
           balance={maxRepayableValue}
           setMaxBalance={() => handleRepayValueChange(maxRepayableValue)}
@@ -187,7 +195,7 @@ export default function TgUsdRepayPanel() {
           onValueChange={handleRepayValueChange}
         />
 
-        {repayAsset && repayAsset !== "tgUSD" && (
+        {repayAsset && repayAsset !== "USG" && (
           <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
             <div className="flex items-center justify-between">
               <div className="flex flex-col items-start justify-start">
@@ -202,17 +210,17 @@ export default function TgUsdRepayPanel() {
                     placeholder="0"
                     disabled={true}
                     className="flex justify-start bg-transparent text-xl font-semibold focus:outline-none"
-                    value={Number(formatUnits(tgUdsRepayedValue || 0n, 18)).toFixed(2) ?? ""}
+                    value={Number(formatUnits(usgRepayedValue || 0n, 18)).toFixed(2) ?? ""}
                   />
                 </div>
                 <div className="flex justify-between gap-2 text-xs text-subtitle">
                   <div>Minimum received</div>
-                  <div>{tgUdsRepayedValue && tgUSDInfo?.price !== 0 ? tgUsdDollarRepayedValue : ""}</div>
+                  <div>{usgRepayedValue && tgUSDInfo?.price !== 0 ? tgUsdDollarRepayedValue : ""}</div>
                 </div>
               </div>
               <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2.5">
-                <TokenImage token="tgUSD" size={20} />
-                <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
+                <TokenImage token="USG" size={20} />
+                <span className="flex flex-col text-[15px] font-semibold">USG</span>
               </BorderPanel>
             </div>
           </PanelRaw>
@@ -261,8 +269,8 @@ export default function TgUsdRepayPanel() {
       <div className="flex w-full items-center justify-center">
         <FormButtons
           actions={{
-            handleApprove: repayAsset && repayAsset !== "tgUSD" ? actionApprove : undefined,
-            handleProcess: repayAsset && repayAsset !== "tgUSD" ? actionZapRepay : actionRepay,
+            handleApprove: repayAsset && repayAsset !== "USG" ? actionApprove : undefined,
+            handleProcess: repayAsset && repayAsset !== "USG" ? actionZapRepay : actionRepay,
           }}
           formState={formState}
           labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}

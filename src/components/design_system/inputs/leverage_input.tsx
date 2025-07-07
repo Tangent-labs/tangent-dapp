@@ -96,7 +96,7 @@ export function LeverageInput({
           />
 
           <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2.5">
-            <TokenImage token="tgUSD" size={20} />
+            <TokenImage token="USG" size={20} />
             <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
           </BorderPanel>
         </div>

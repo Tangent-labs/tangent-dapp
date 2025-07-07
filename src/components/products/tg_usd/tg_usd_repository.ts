@@ -32,9 +32,9 @@ export const TGUSD_CONTRACT = {
   LIQUIDATOR_PROXY: envAddresses.utilities.liquidatorProxy as Address,
   ZAPPER: envAddresses.utilities.zappingProxy as Address,
   CONTROL_TOWER: envAddresses.utilities.controlTower as Address,
-  TG_USD: envAddresses.tokens.tgUSD as Address,
-  SG_USD: envAddresses.tokens.sgUSD as Address,
-  TG_USD_ORACLE: envAddresses.oracles.tgUSD as Address,
+  USG: envAddresses.tokens.USG as Address,
+  SUSG: envAddresses.tokens.sUSG as Address,
+  USG_ORACLE: envAddresses.oracles.USG as Address,
   ENSO_ROUTER: "0xF75584eF6673aD213a685a1B58Cc0330B8eA22Cf",
   CURVE_ROUTER: "0x45312ea0eff7e09c83cbe249fa1d7598c4c8cd4e",
 }

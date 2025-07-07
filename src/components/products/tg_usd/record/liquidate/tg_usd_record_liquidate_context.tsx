@@ -108,7 +108,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
       }
       const liquidationData = await returnRoute(
         marketInfo?.collatAddress,
-        TGUSD_CONTRACT.TG_USD,
+        TGUSD_CONTRACT.USG,
         liquidateWeiValue,
         0n,
         TGUSD_CONTRACT.LIQUIDATOR_PROXY,
@@ -160,13 +160,13 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
   const handleLiquidateValueChange = (value: bigint | undefined) => {
     setIsQuoteLoading(true)
     const assetInfo: AssetDataPriced = {
-      address: TGUSD_CONTRACT.TG_USD,
+      address: TGUSD_CONTRACT.USG,
       decimals: 18,
       displayDecimals: 2,
-      logo: "tgUSD",
-      name: "tgUSD",
+      logo: "USG",
+      name: "USG",
       price: 1,
-      symbol: "tgUSD",
+      symbol: "USG",
     }
 
     setLiquidateWeiValue(value)

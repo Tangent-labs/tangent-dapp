@@ -43,7 +43,7 @@ const CustomSelect = <T extends DepositReceiveAsset>({ options = [], onChange, c
           <div className="flex w-full items-center justify-between">
             <div className="flex w-full items-center gap-2">
               <>
-                {opt?.symbol === "tgUSD" ? (
+                {opt?.symbol === "USG" ? (
                   <TokenImage token={opt?.symbol} size={20} />
                 ) : opt?.logoURI ? (
                   <Image src={opt?.logoURI} alt={opt.symbol} height={20} width={20} />

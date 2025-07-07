@@ -55,8 +55,8 @@ type TgUsdRepayContextValues = {
 
   handleRepayValueChange: (arg: bigint | undefined) => void
 
-  tgUdsRepayedValue: bigint | undefined
-  setTgUsdRepayedValue: (arg: bigint | undefined) => void
+  usgRepayedValue: bigint | undefined
+  setUsgRepayedValue: (arg: bigint | undefined) => void
 
   repayAssetInfo: AssetDataPriced | null
 
@@ -93,7 +93,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const [withdrawWeiValue, setWithdrawWeiValue] = useState<bigint | undefined>()
 
-  const [repayAsset, setRepayAsset] = useState<string>("tgUSD")
+  const [repayAsset, setRepayAsset] = useState<string>("USG")
 
   const [percentage, setPercentage] = useState<number>(0)
 
@@ -105,7 +105,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const [withdrawPercentage, setWithdrawPercentage] = useState<number>(0)
 
-  const [tgUdsRepayedValue, setTgUsdRepayedValue] = useState<bigint | undefined>()
+  const [usgRepayedValue, setUsgRepayedValue] = useState<bigint | undefined>()
 
   const walletClientRef = useRef<ReturnType<typeof getWalletClient> | null>(null)
 
@@ -147,10 +147,10 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   useEffect(() => {
     setCurrentAmounts({
-      repayWeiValue: !!repayAsset && repayAsset === "tgUSD" ? repayWeiValue || 0n : tgUdsRepayedValue || 0n,
+      repayWeiValue: !!repayAsset && repayAsset === "USG" ? repayWeiValue || 0n : usgRepayedValue || 0n,
       withdrawWeiValue: withdrawWeiValue || 0n,
     })
-  }, [repayWeiValue, withdrawWeiValue, tgUdsRepayedValue])
+  }, [repayWeiValue, withdrawWeiValue, usgRepayedValue])
 
   const actionZapRepay = () => {
     if (!!withdrawWeiValue && withdrawWeiValue > 0) {
@@ -166,19 +166,12 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     setIsZapLoading(true)
 
     try {
-      const repayData = await returnRoute(
-        repayAssetInfo?.address,
-        TGUSD_CONTRACT?.TG_USD,
-        repayWeiValue,
-        tgUdsRepayedValue!,
-        currentAddress!,
-        TGUSD_CONTRACT.ZAPPER
-      )
+      const repayData = await returnRoute(repayAssetInfo?.address, TGUSD_CONTRACT?.USG, repayWeiValue, usgRepayedValue!, currentAddress!, TGUSD_CONTRACT.ZAPPER)
 
       const zapMarketData = {
         tokenIn: repayAssetInfo?.address,
         amountIn: repayWeiValue,
-        minAmountOut: tgUdsRepayedValue!,
+        minAmountOut: usgRepayedValue!,
       }
 
       doZapRepayAndWithdraw(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData, withdrawWeiValue)
@@ -189,7 +182,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
           setIsZapLoading(false)
           setRepayWeiValue(0n)
           setWithdrawWeiValue(0n)
-          setTgUsdRepayedValue(0n)
+          setUsgRepayedValue(0n)
           toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
         })
         .catch(() => {
@@ -210,9 +203,9 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     try {
       const repayData = await returnRoute(
         repayAssetInfo?.address,
-        TGUSD_CONTRACT?.TG_USD,
+        TGUSD_CONTRACT?.USG,
         repayWeiValue,
-        (BigInt(tgUdsRepayedValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        (BigInt(usgRepayedValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         currentAddress!,
         TGUSD_CONTRACT.ZAPPER
       )
@@ -220,7 +213,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
       const zapMarketData = {
         tokenIn: repayAssetInfo?.address,
         amountIn: repayWeiValue,
-        minAmountOut: (BigInt(tgUdsRepayedValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        minAmountOut: (BigInt(usgRepayedValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
       }
 
       doZapRepay(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData)
@@ -231,7 +224,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
           setIsZapLoading(false)
           setRepayWeiValue(0n)
           setWithdrawWeiValue(0n)
-          setTgUsdRepayedValue(0n)
+          setUsgRepayedValue(0n)
           toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
         })
         .catch(() => {
@@ -303,7 +296,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const marketValues = useMemo(() => {
     if (marketData) {
-      if (repayAsset === "tgUSD") {
+      if (repayAsset === "USG") {
         const maxRepayableValue = marketData.debtInfos?.userDebt || 0n
         const minimumLoan = marketData.constants.minimumLoan || 0n
         return { maxRepayableValue, minimumLoan }
@@ -322,7 +315,11 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   const maxWithdrawable = useMemo(() => {
     if (marketData) {
       const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice
-      const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n) - (repayWeiValue || 0n)
+
+      const computedRepayWeiValue = !!repayAsset && repayAsset === "USG" ? repayWeiValue : usgRepayedValue
+
+      const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n) - (computedRepayWeiValue || 0n)
+
       const futureDeposited = BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n)
       const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
       const maxWithDrawable = collateralPriceRaw !== 0n ? futureDeposited - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
@@ -331,11 +328,11 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     }
 
     return 0n
-  }, [marketData, repayWeiValue])
+  }, [marketData, repayWeiValue, usgRepayedValue])
 
   const onClickMax = (isChecked: boolean) => {
     if (isChecked) {
-      if (repayAsset !== "tgUSD" && repayAssetInfo && marketData) {
+      if (repayAsset !== "USG" && repayAssetInfo && marketData) {
         setIsRepayMax(true)
         setPercentage(100)
 
@@ -354,13 +351,13 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const handleRepayValueChange = (value: bigint | undefined) => {
     const assetInfo: AssetDataPriced = {
-      address: TGUSD_CONTRACT.TG_USD,
+      address: TGUSD_CONTRACT.USG,
       decimals: 18,
       displayDecimals: 2,
-      logo: "tgUSD",
-      name: "tgUSD",
+      logo: "USG",
+      name: "USG",
       price: 1,
-      symbol: "tgUSD",
+      symbol: "USG",
     }
 
     setRepayWeiValue(value)
@@ -373,7 +370,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
         const { quote } = await getQuote(value, currentAddress, assetInfo?.address, repayAssetInfo?.address)
 
         if (quote) {
-          setTgUsdRepayedValue(quote)
+          setUsgRepayedValue(quote)
         }
       } catch (error) {
         console.error(error)
@@ -386,7 +383,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   }
 
   useEffect(() => {
-    const address = repayAssetInfo?.address || TGUSD_CONTRACT.TG_USD
+    const address = repayAssetInfo?.address || TGUSD_CONTRACT.USG
     if (walletClientRef) {
       fetchBalanceAllowanceData(address)
     }
@@ -412,23 +409,23 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const isDebtBelowThreshold = useMemo(() => {
     if (!repayWeiValue || !marketValues?.maxRepayableValue || repayWeiValue === 0n) return false
-    if (repayAsset === "tgUSD" && marketValues?.maxRepayableValue === repayWeiValue) return false
+    if (repayAsset === "USG" && marketValues?.maxRepayableValue === repayWeiValue) return false
 
     const threshold = marketValues?.minimumLoan
     let adjustedRepayValue = repayWeiValue
 
-    if (repayAsset !== "tgUSD") {
-      adjustedRepayValue = tgUdsRepayedValue || 0n
+    if (repayAsset !== "USG") {
+      adjustedRepayValue = usgRepayedValue || 0n
     }
 
     const value = marketValues?.maxRepayableValue / BigInt(10 ** (repayAssetInfo?.decimals || 18)) - adjustedRepayValue / BigInt(10 ** 18)
 
     return value < threshold / BigInt(10 ** 18) && value > 0n
-  }, [repayWeiValue, marketValues, repayAsset, tgUdsRepayedValue])
+  }, [repayWeiValue, marketValues, repayAsset, usgRepayedValue])
 
   const tgUsdDollarRepayedValue = useMemo(() => {
-    return `(~${formatDollar((Number(Number(formatUnits(tgUdsRepayedValue || 0n, 18))) * tgUSDInfo?.price).toFixed(2))})`
-  }, [tgUdsRepayedValue, tgUSDInfo])
+    return `(~${formatDollar((Number(Number(formatUnits(usgRepayedValue || 0n, 18))) * tgUSDInfo?.price).toFixed(2))})`
+  }, [usgRepayedValue, tgUSDInfo])
 
   const contextValue: TgUsdRepayContextValues = {
     actionRepay,
@@ -450,8 +447,8 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     isZapLoading,
     setIsZapLoading,
     handleRepayValueChange,
-    tgUdsRepayedValue,
-    setTgUsdRepayedValue,
+    usgRepayedValue,
+    setUsgRepayedValue,
     repayAssetInfo,
     swapAssetPrice,
     zapRepay,

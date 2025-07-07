@@ -1,11 +1,11 @@
 "use client"
 
-import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSgUSD, getExpectedTgUSD, getFormState, getTgUsdStakeOnChainData } from "./tg_usd_stake_controller"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { StakingAssetInfo, StakingDepositType, StakingInfo } from "../tg_usd_type"
 import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { formatUnits } from "viem"
+import { StakingAssetInfo, StakingDepositType, StakingInfo } from "../tg_usd_type"
+import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSgUSD, getExpectedTgUSD, getFormState, getTgUsdStakeOnChainData } from "./tg_usd_stake_controller"
 import { TGUSD_CONTRACT } from "../tg_usd_repository"
 
 type TgUsdStakeContextProps = {
@@ -62,9 +62,9 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     return currentFeature === "stake"
       ? ([
           {
-            label: "tgUSD",
+            label: "USG",
             value: "asset",
-            logo: "tgUSD",
+            logo: "USG",
           },
         ] as SelectAssetLogoOption[])
       : ([
@@ -79,7 +79,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
   const receivedTokenInfo = useMemo(() => {
     if (currentFeature === "stake") {
       return {
-        address: TGUSD_CONTRACT.SG_USD,
+        address: TGUSD_CONTRACT.SUSG,
         decimals: 18,
         displayDecimals: 2,
         logo: "sgUSD" as ExistingAsset,
@@ -91,13 +91,13 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     }
 
     return {
-      address: TGUSD_CONTRACT.TG_USD,
+      address: TGUSD_CONTRACT.USG,
       decimals: 18,
       displayDecimals: 2,
-      logo: "tgUSD" as ExistingAsset,
-      name: "tgUSD",
+      logo: "USG" as ExistingAsset,
+      name: "USG",
       price: 0,
-      symbol: "tgUSD",
+      symbol: "USG",
       balance: stakeInfo?.tgUSDBalance,
     }
   }, [currentFeature, stakeInfo])
@@ -106,28 +106,28 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     if (currentFeature === "stake") {
       return {
         current: "asset" as StakingDepositType,
-        address: TGUSD_CONTRACT.TG_USD,
+        address: TGUSD_CONTRACT.USG,
         balance: stakeInfo?.tgUSDBalance,
         asset: {
           price: Number(stakeInfo?.tgUSDPrice) / 10 ** 18,
           decimals: 18,
-          address: TGUSD_CONTRACT.TG_USD,
+          address: TGUSD_CONTRACT.USG,
           displayDecimals: 2,
-          symbol: "tgUSD",
-          name: "tgUSD",
-          logo: "tgUSD" as ExistingAsset,
+          symbol: "USG",
+          name: "USG",
+          logo: "USG" as ExistingAsset,
         },
       }
     }
 
     return {
       current: "sdAsset" as StakingDepositType,
-      address: TGUSD_CONTRACT.SG_USD,
+      address: TGUSD_CONTRACT.SUSG,
       balance: stakeInfo?.sgUSDBalance,
       asset: {
         price: Number(stakeInfo?.sgUSDPrice) / 10 ** 18,
         decimals: 18,
-        address: TGUSD_CONTRACT.SG_USD,
+        address: TGUSD_CONTRACT.SUSG,
         displayDecimals: 2,
         symbol: "sgUSD",
         name: "sgUSD",
@@ -154,7 +154,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
 
     const params = {
       walletClient: getWalletClient()!,
-      stakingAddress: TGUSD_CONTRACT.SG_USD,
+      stakingAddress: TGUSD_CONTRACT.SUSG,
       weiValue,
     }
     await doUnstakeTgUSD(params)
@@ -169,7 +169,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
 
     const params = {
       walletClient: getWalletClient()!,
-      stakingAddress: TGUSD_CONTRACT.SG_USD,
+      stakingAddress: TGUSD_CONTRACT.SUSG,
       weiValue,
     }
     await doStakeTgUSD(params)
@@ -180,7 +180,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
 
   const actionApprove = async () => {
     if (!currentAssetInfo?.address) return
-    await doApprove(getWalletClient()!, TGUSD_CONTRACT.TG_USD, weiValue || 0n, TGUSD_CONTRACT.SG_USD).then(loadData)
+    await doApprove(getWalletClient()!, TGUSD_CONTRACT.USG, weiValue || 0n, TGUSD_CONTRACT.SUSG).then(loadData)
   }
 
   useEffect(() => {
@@ -188,14 +188,14 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     ;(async () => {
       if (currentFeature === "stake") {
         try {
-          const sdAssetAmountOut = await getExpectedSgUSD(getWalletClient()!, weiValue, TGUSD_CONTRACT?.SG_USD)
+          const sdAssetAmountOut = await getExpectedSgUSD(getWalletClient()!, weiValue, TGUSD_CONTRACT?.SUSG)
           setExpected(sdAssetAmountOut)
         } catch (error) {
           console.error("Error while estimating deposit preview :", error)
         }
       } else {
         try {
-          const assetAmountOut = await getExpectedTgUSD(getWalletClient()!, weiValue, TGUSD_CONTRACT?.SG_USD)
+          const assetAmountOut = await getExpectedTgUSD(getWalletClient()!, weiValue, TGUSD_CONTRACT?.SUSG)
           setExpected(assetAmountOut)
         } catch (error) {
           console.error("Error while estimating redeem preview :", error)

@@ -76,7 +76,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
   const [isBuying, setIsBuying] = useState<boolean>(true)
 
-  const [receiveAsset, setReceiveAsset] = useState<string>("tgUSD")
+  const [receiveAsset, setReceiveAsset] = useState<string>("USG")
 
   const [depositAsset, setDepositAsset] = useState<string | null>(null)
 

@@ -43,7 +43,7 @@ export default function TgUsdStakeContent() {
 
   const AssetSelectTemplate = (option: SelectOption) => {
     const assetInfo = {
-      address: TGUSD_CONTRACT.TG_USD,
+      address: TGUSD_CONTRACT.USG,
       decimals: 18,
       displayDecimals: 2,
       logo: "USG",
@@ -53,7 +53,7 @@ export default function TgUsdStakeContent() {
     }
 
     const sgUSDInfo = {
-      address: TGUSD_CONTRACT?.SG_USD,
+      address: TGUSD_CONTRACT?.SUSG,
       decimals: 18,
       displayDecimals: 0,
       logo: "USG",

@@ -11,9 +11,9 @@ export const getTgUsdMarketsData = async (address: Address | undefined) => {
 
   return await executeChainViewUnique<ChainViewMarketList>(MarketListUI.abi as Abi, MarketListUI.bytecode as Hex, [
     address,
-    TGUSD_CONTRACT.TG_USD_ORACLE,
-    TGUSD_CONTRACT.TG_USD,
-    TGUSD_CONTRACT.SG_USD,
+    TGUSD_CONTRACT.USG_ORACLE,
+    TGUSD_CONTRACT.USG,
+    TGUSD_CONTRACT.SUSG,
     markets,
     tgUsdPegKeepers,
   ])

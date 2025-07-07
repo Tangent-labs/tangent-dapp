@@ -281,7 +281,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
       if (!walletClient || !currentAddress || !depositWeiValue || !borrowWeiValue || !depositAssetInfo) return
 
       const leverageData = await returnRoute(
-        TGUSD_CONTRACT.TG_USD,
+        TGUSD_CONTRACT.USG,
         marketInfo?.collatAddress,
         borrowWeiValue,
         (BigInt(leveragedCollateralQuote!) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
@@ -339,7 +339,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
     if (!walletClient || !currentAddress || !leveragedCollateralQuote || !borrowWeiValue) return
 
     const leverageData = await returnRoute(
-      TGUSD_CONTRACT.TG_USD,
+      TGUSD_CONTRACT.USG,
       marketInfo?.collatAddress,
       borrowWeiValue,
       leveragedCollateralQuote,
@@ -386,7 +386,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
   useEffect(() => {
     const computeQuote = async (value: bigint) => {
-      const { quote } = await getQuote(value, currentAddress!, marketInfo?.collatAddress, TGUSD_CONTRACT.TG_USD)
+      const { quote } = await getQuote(value, currentAddress!, marketInfo?.collatAddress, TGUSD_CONTRACT.USG)
 
       setIsDepositLoading(false)
       setLeveragedCollateralQuote(quote)

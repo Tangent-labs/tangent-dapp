@@ -69,9 +69,9 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
         ] as SelectAssetLogoOption[])
       : ([
           {
-            label: "sgUSD",
+            label: "sUSG",
             value: "sdAsset",
-            logo: "sgUSD",
+            logo: "sUSG",
           },
         ] as SelectAssetLogoOption[])
   }, [currentFeature])
@@ -82,10 +82,10 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
         address: TGUSD_CONTRACT.SUSG,
         decimals: 18,
         displayDecimals: 2,
-        logo: "sgUSD" as ExistingAsset,
-        name: "sgUSD",
+        logo: "sUSG" as ExistingAsset,
+        name: "sUSG",
         price: 0,
-        symbol: "sgUSD",
+        symbol: "sUSG",
         balance: stakeInfo?.sgUSDBalance,
       }
     }
@@ -129,9 +129,9 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
         decimals: 18,
         address: TGUSD_CONTRACT.SUSG,
         displayDecimals: 2,
-        symbol: "sgUSD",
-        name: "sgUSD",
-        logo: "sgUSD" as ExistingAsset,
+        symbol: "sUSG",
+        name: "sUSG",
+        logo: "sUSG" as ExistingAsset,
       },
     }
   }, [currentFeature, stakeInfo])

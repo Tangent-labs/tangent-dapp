@@ -94,7 +94,7 @@ export const RsTanClaimContent = () => {
               </div>
               <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
                 {formatBigInt(position.claimable, 18, 2)}
-                <TokenImage token={claimAsSgUSD ? "sgUSD" : "USG"} className="" size={16} />
+                <TokenImage token={claimAsSgUSD ? "sUSG" : "USG"} className="" size={16} />
               </div>
             </div>
           ))}

@@ -94,14 +94,14 @@ export const swapConfig: { [inToken: string]: { [outToken: string]: SwapConfig }
     },
   },
 
-  tgUSD: {
-    sgUSD: {
+  USG: {
+    sUSG: {
       approval: "approve",
       quote: "convertToShares",
-      quoteContract: "sgUSD",
+      quoteContract: "sUSG",
       swap: "deposit",
       isStaked: true,
-      contract: "sgUSD",
+      contract: "sUSG",
     },
   },
   frxUSD: {
@@ -150,14 +150,14 @@ export const swapConfig: { [inToken: string]: { [outToken: string]: SwapConfig }
     },
   },
 
-  sgUSD: {
-    tgUSD: {
+  sUSG: {
+    USG: {
       approval: "noApprovalNeeded",
       quote: "convertToAssets",
-      quoteContract: "sgUSD",
+      quoteContract: "sUSG",
       swap: "redeem",
       isStaked: true,
-      contract: "sgUSD",
+      contract: "sUSG",
     },
   },
   sfrxUSD: {

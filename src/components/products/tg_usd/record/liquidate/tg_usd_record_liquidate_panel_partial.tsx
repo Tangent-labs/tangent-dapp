@@ -82,7 +82,7 @@ export default function TgUsdLiquidatePanelPartial() {
       <Divider />
 
       <div className="flex w-full items-end justify-end">
-        <span className="text-xs text-subtitle">Max: {formatBigInt(maxRepayable, 18, 2)} tgUSD</span>
+        <span className="text-xs text-subtitle">Max: {formatBigInt(maxRepayable, 18, 2)} USG</span>
       </div>
 
       <DepositInput

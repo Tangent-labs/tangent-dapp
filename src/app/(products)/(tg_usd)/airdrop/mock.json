@@ -11,11 +11,11 @@
       "totalPoints": 1250
     },
     {
-      "name": "tgUSD/tgDAI",
+      "name": "USG/tgDAI",
       "asset": "USDC-frxUSD",
       "link": "https://curve.convexfinance.com/stake",
       "protocolName": "Convex",
-      "actionLabel": "Farm 12 tgUSD",
+      "actionLabel": "Farm 12 USG",
       "ptsPerDay": 12,
       "status": "not_started",
       "totalPoints": 12000
@@ -32,7 +32,7 @@
     },
     {
       "name": "USDT/wBTC",
-      "asset": "sgUSD",
+      "asset": "sUSG",
       "link": "https://aave.com/",
       "protocolName": "Aave",
       "actionLabel": "Supply liquidity",

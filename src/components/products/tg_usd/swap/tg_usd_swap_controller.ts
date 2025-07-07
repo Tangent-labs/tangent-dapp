@@ -132,7 +132,7 @@ export const fetchEnsoData = async (
 }
 
 export const getABI = (depositSymbol: string, receiveSymbol: string) => {
-  if (depositSymbol.includes("sgUSD") || receiveSymbol.includes("sgUSD")) {
+  if (depositSymbol.includes("sUSG") || receiveSymbol.includes("sUSG")) {
     return IERC4626
   }
   return WStable

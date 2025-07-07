@@ -34,8 +34,8 @@ export const TgUsdEarnContent = () => {
           <div className="flex flex-col items-start justify-center gap-3">
             <span className="text-4xl font-semibold">Earn</span>
             <p>
-              Use tgUSD and sgUSD in DeFi protocols to earn yield. Below is the list of known integrations accross DEXs, yield boosters, lending markets, and
-              yield trading markets.
+              Use USG and sUSG in DeFi protocols to earn yield. Below is the list of known integrations accross DEXs, yield boosters, lending markets, and yield
+              trading markets.
             </p>
           </div>
         </div>

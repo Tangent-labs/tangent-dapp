@@ -29,8 +29,8 @@ export default function TgUsdBorrowPanel() {
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
-          <span className="text-[20px] font-semibold">Borrow tgUSD</span>
-          <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} tgUSD</span>
+          <span className="text-[20px] font-semibold">Borrow USG</span>
+          <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} USG</span>
         </div>
 
         <BorrowInput

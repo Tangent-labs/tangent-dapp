@@ -137,7 +137,7 @@ export default function TgUsdDepositPanel() {
     return (
       <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2.5">
         <TokenImage token="USG" size={20} />
-        <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
+        <span className="flex flex-col text-[15px] font-semibold">USG</span>
       </BorderPanel>
     )
   }
@@ -213,8 +213,8 @@ export default function TgUsdDepositPanel() {
       {isDepositAndBorrow && (
         <div className="flex flex-col gap-1">
           <div className="flex items-end justify-between">
-            <span className="text-[20px] font-semibold">Borrow tgUSD</span>
-            <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} tgUSD</span>
+            <span className="text-[20px] font-semibold">Borrow USG</span>
+            <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} USG</span>
           </div>
           <BorrowInput
             displaySliderInput={true}

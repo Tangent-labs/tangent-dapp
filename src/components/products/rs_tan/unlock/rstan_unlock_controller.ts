@@ -8,7 +8,7 @@ export const doUnlock = async (tokenId: bigint, walletClient: WalletClient, meth
     abi: RsTan.abi as Abi,
     functionName: method,
     args: [tokenId, claimAsSgUSD],
-    address: RSTAN_CONTRACT.RSTAN,
+    address: RSTAN_CONTRACT.VSTAN,
   }
 
   const txHash = await executeContractCall(walletClient, txData)

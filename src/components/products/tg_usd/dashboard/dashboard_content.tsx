@@ -67,7 +67,7 @@ export const TgUsdDashboardContent = () => {
         </div>
 
         <div className="mt-3 flex h-full max-h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
-          <div className="text-xl font-semibold">tgUSD collaterals</div>
+          <div className="text-xl font-semibold">USG collaterals</div>
           <Divider className="h-0.5 w-full bg-white/10" />
 
           <div className="flex h-[calc(100%-2.5rem)] w-full items-start justify-between">

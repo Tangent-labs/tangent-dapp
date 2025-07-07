@@ -9,7 +9,7 @@ export const doMerge = async (walletClient: WalletClient, tokenIdA: bigint, toke
     abi: RsTan.abi as Abi,
     functionName: "merge",
     args: [tokenIdA, tokenIdB, claimAsSgUSD],
-    address: RSTAN_CONTRACT.RSTAN,
+    address: RSTAN_CONTRACT.VSTAN,
   }
 
   const txHash = await executeContractCall(walletClient, txData)

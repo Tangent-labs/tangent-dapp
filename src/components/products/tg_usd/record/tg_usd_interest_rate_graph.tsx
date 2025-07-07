@@ -103,7 +103,7 @@ export default function InterestRateGraph() {
         return rcParams.endCutPercentage
       }
 
-      // Compute the actual step regarding the current price of tgUSD
+      // Compute the actual step regarding the current price of USG
       const actualStep = BigInt(1) + (BigInt(stepAmount - 2) * (startCutPrice - tgUSDPriceScaled)) / (startCutPrice - endCutPrice)
 
       // Compute the percentage amount increased by one step

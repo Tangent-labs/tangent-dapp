@@ -126,7 +126,7 @@ export default function TgUsdSwapContent() {
 
         <div className="flex flex-col items-start justify-center gap-3">
           <span className="text-5xl font-semibold">Swap</span>
-          <p>Swap any asset for tgUSD and other Tangent&apos;s assets, including Curve LPs and Wrapped Tangent Stablecoins. Learn more</p>
+          <p>Swap any asset for USG and other Tangent&apos;s assets, including Curve LPs and Wrapped Tangent Stablecoins. Learn more</p>
         </div>
       </div>
 

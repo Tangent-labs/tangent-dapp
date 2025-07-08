@@ -53,7 +53,6 @@ export function getLeverageFormState(
 export const doZapLeverage = async (
   tgUSDToFlashMint: bigint,
   minCollatAmountOut: bigint,
-  isStaked: boolean,
   leverageData: { data: string; routerAddress: Address },
   tokenIn: Address,
   amountIn: bigint,
@@ -72,7 +71,6 @@ export const doZapLeverage = async (
     args: [
       tgUSDToFlashMint,
       minCollatAmountOut,
-      isStaked,
       { router: leverageData?.routerAddress, routerCall: leverageData?.data },
       { tokenIn, amountIn, minAmountOut, zap: { router: zapData.routerAddress, routerCall: zapData.data } },
     ] as unknown[],
@@ -92,7 +90,6 @@ export const doMarketLeverage = async (
   collatToDeposit: bigint,
   tgUSDToFlashMint: bigint,
   minCollatAmountOut: bigint,
-  isStaked: boolean,
   leverageData: { routerAddress: string; data: string }
 ) => {
   const [account] = await walletClient.requestAddresses()
@@ -102,13 +99,7 @@ export const doMarketLeverage = async (
   const estimateGasData = {
     abi: MarketExternalActions.abi,
     functionName: "leverage",
-    args: [
-      collatToDeposit,
-      tgUSDToFlashMint,
-      minCollatAmountOut,
-      isStaked,
-      { router: leverageData?.routerAddress, routerCall: leverageData?.data },
-    ] as unknown[],
+    args: [collatToDeposit, tgUSDToFlashMint, minCollatAmountOut, { router: leverageData?.routerAddress, routerCall: leverageData?.data }] as unknown[],
     address: marketAddress,
     account,
   } as EstimateContractGasParameters

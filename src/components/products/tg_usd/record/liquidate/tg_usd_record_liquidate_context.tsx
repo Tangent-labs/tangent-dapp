@@ -58,7 +58,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
 
   const [repayablePercentage, setRepayablePercentage] = useState<number>(0)
 
-  const [slippage, setSlippage] = useState<number>(10)
+  const [slippage, setSlippage] = useState<number>(1)
 
   const [isQuoteLoading, setIsQuoteLoading] = useState<boolean>(false)
 

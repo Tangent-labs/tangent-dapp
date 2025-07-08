@@ -57,7 +57,7 @@ export async function doMarketDeposit(walletClient: WalletClient, args: TgUsdtMa
       abi: MarketExternalActions.abi as Abi,
       functionName: "deposit",
       address: args.marketAddress,
-      args: [account, args.depositWeiValue, args.isStaking],
+      args: [account, args.depositWeiValue],
     }
     const txHash = await executeContractCall(walletClient, txData)
     return await waitForTransaction(txHash)
@@ -66,7 +66,7 @@ export async function doMarketDeposit(walletClient: WalletClient, args: TgUsdtMa
       abi: MarketExternalActions.abi as Abi,
       functionName: "depositAndBorrow",
       address: args.marketAddress,
-      args: [args.depositWeiValue, args.borrowWeiValue, args.isStaking],
+      args: [args.depositWeiValue, args.borrowWeiValue],
     }
     const txHash = await executeContractCall(walletClient, txData)
     return await waitForTransaction(txHash)
@@ -79,8 +79,7 @@ export const doZapDepositAndBorrow = async (
   router: string,
   routerCall: string,
   zapMarket: ZapMarketData,
-  borrowWeiValue?: bigint,
-  isStaking?: boolean
+  borrowWeiValue?: bigint
 ) => {
   const [account] = await walletClient.requestAddresses()
 
@@ -91,7 +90,6 @@ export const doZapDepositAndBorrow = async (
     functionName: "zapDepositAndBorrow",
     args: [
       borrowWeiValue,
-      isStaking,
       {
         tokenIn: zapMarket?.tokenIn,
         amountIn: zapMarket?.amountIn,
@@ -114,14 +112,7 @@ export const doZapDepositAndBorrow = async (
   return hash
 }
 
-export const doZapDeposit = async (
-  marketAddress: Address,
-  walletClient: WalletClient,
-  router: string,
-  routerCall: string,
-  zapMarket: ZapMarketData,
-  isStaking?: boolean
-) => {
+export const doZapDeposit = async (marketAddress: Address, walletClient: WalletClient, router: string, routerCall: string, zapMarket: ZapMarketData) => {
   const [account] = await walletClient.requestAddresses()
 
   const publicClient = await getPublicClient()
@@ -131,7 +122,6 @@ export const doZapDeposit = async (
     functionName: "zapDeposit",
     args: [
       account,
-      isStaking,
       {
         tokenIn: zapMarket?.tokenIn,
         amountIn: zapMarket?.amountIn,

@@ -21,8 +21,6 @@ type TgUsdLeverageContextProps = {
 
 type TgUsdLeverageContextValues = {
   collateralInfo: AssetDataPriced
-  isStaking: boolean
-  setIsStaking: (arg: boolean) => void
 
   isDepositDisabled: boolean
   setIsDepositDisabled: (arg: boolean) => void
@@ -53,8 +51,6 @@ type TgUsdLeverageContextValues = {
 
   slippage: number
   setSlippage: (arg: number) => void
-
-  sociabilizationFee: number | null
 
   zapInnerValue: number | undefined
   setZapInnerValue: (arg: number | undefined) => void
@@ -89,8 +85,6 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  const [isStaking, setIsStaking] = useState<boolean>(true)
-
   const [isDepositDisabled, setIsDepositDisabled] = useState<boolean>(false)
 
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
@@ -117,7 +111,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
   const [leveragedCollateralQuote, setLeveragedCollateralQuote] = useState<bigint | undefined>()
 
-  const [slippage, setSlippage] = useState<number>(10)
+  const [slippage, setSlippage] = useState<number>(1)
 
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
     if (depositAsset === "ETH") {
@@ -150,13 +144,6 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
     return asset
   }, [depositAsset, swapAssetPrice, marketData])
-
-  const sociabilizationFee = useMemo(() => {
-    if (marketData?.sociabilization && depositWeiValue && depositAssetInfo) {
-      return Number(formatUnits(marketData?.sociabilization?.socFeePercentage, 7)) * Number(formatUnits(depositWeiValue, depositAssetInfo?.decimals))
-    }
-    return 0
-  }, [marketData, depositWeiValue, depositAssetInfo])
 
   const handleDepositChange = (value: bigint | undefined) => {
     setDepositWeiValue(value)
@@ -302,7 +289,6 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
       doZapLeverage(
         borrowWeiValue,
         (BigInt(leveragedCollateralQuote!) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
-        isStaking,
         leverageData!,
         depositAssetInfo?.address,
         depositWeiValue,
@@ -347,7 +333,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
       TGUSD_CONTRACT.ZAPPER
     )
 
-    doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, isStaking, leverageData!)
+    doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, leverageData!)
       .then(() => {
         loadOnChainData()
         setDepositWeiValue(0n)
@@ -450,8 +436,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
   const contextValue: TgUsdLeverageContextValues = {
     collateralInfo,
-    isStaking,
-    setIsStaking,
+
     isDepositDisabled,
 
     setIsDepositDisabled,
@@ -482,8 +467,6 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
     slippage,
     setSlippage,
-
-    sociabilizationFee,
 
     depositSliderPercent,
     setDepositSliderPercent,

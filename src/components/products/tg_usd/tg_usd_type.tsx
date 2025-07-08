@@ -219,7 +219,6 @@ export type MarketDetailData = {
 }
 
 export type TgUsdtMarketDepositParams = TgUsdtMarketBorrowParams & {
-  isStaking: boolean
   isDepositAndBorrow: boolean
   depositWeiValue: bigint
 }

@@ -97,7 +97,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const [percentage, setPercentage] = useState<number>(0)
 
-  const [slippage, setSlippage] = useState<number>(10)
+  const [slippage, setSlippage] = useState<number>(1)
 
   const [isRepayMax, setIsRepayMax] = useState<boolean>(false)
 

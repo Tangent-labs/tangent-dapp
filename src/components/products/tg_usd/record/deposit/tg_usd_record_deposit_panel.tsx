@@ -26,7 +26,6 @@ export default function TgUsdDepositPanel() {
   const {
     setDepositAsset,
     setIsDepositAndBorrow,
-    setIsStaking,
     setDepositWeiValue,
     actionApprove,
     actionDeposit,
@@ -38,7 +37,6 @@ export default function TgUsdDepositPanel() {
     handleZapInputChange,
     setDepositSliderPercent,
     setBorrowSliderPercent,
-    isStaking,
     depositAsset,
     depositWeiValue,
     formState,
@@ -52,7 +50,6 @@ export default function TgUsdDepositPanel() {
     depositAssetInfo,
     slippage,
     gas,
-    sociabilizationFee,
     zapInnerValue,
     depositSliderPercent,
     borrowSliderPercent,
@@ -145,10 +142,6 @@ export default function TgUsdDepositPanel() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-end gap-2">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-400">Save gas</span>
-          <Switch checked={!isStaking} onCheckedChange={() => setIsStaking(!isStaking)} />
-        </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-400">Deposit and borrow</span>
           <Switch checked={isDepositAndBorrow} onCheckedChange={(v) => setIsDepositAndBorrow(v)} />
@@ -266,10 +259,7 @@ export default function TgUsdDepositPanel() {
                     <div className="flex justify-end">{slippage}%</div>
                   </div>
                 ) : null}
-                <div className="flex w-full items-center justify-between">
-                  <div className="flex justify-start">Sociabilization fee</div>
-                  <div className="flex justify-end">{isStaking ? "$0" : `$${sociabilizationFee?.toFixed(2)}`}</div>
-                </div>
+
                 <div className="flex w-full items-center justify-between">
                   <div className="flex justify-start">Zapping fee</div>
                   <div className="flex justify-end">--</div>

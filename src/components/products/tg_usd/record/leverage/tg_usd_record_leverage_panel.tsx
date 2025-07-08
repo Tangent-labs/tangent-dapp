@@ -29,7 +29,6 @@ export default function TgUsdLeveragePanel() {
   const {
     setDepositAsset,
     setIsDepositDisabled,
-    setIsStaking,
     setDepositWeiValue,
     actionApprove,
     handleDepositChange,
@@ -41,7 +40,6 @@ export default function TgUsdLeveragePanel() {
     setBorrowWeiValue,
     actionZapLeverage,
     actionApproveZap,
-    isStaking,
     depositAsset,
     depositWeiValue,
     formState,
@@ -53,7 +51,6 @@ export default function TgUsdLeveragePanel() {
     depositAssetInfo,
     slippage,
     estimatedZapDollarValue,
-    sociabilizationFee,
     quoteDetail,
     zapInnerValue,
     depositSliderPercent,
@@ -136,10 +133,6 @@ export default function TgUsdLeveragePanel() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-end gap-2">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-400">Save gas</span>
-          <Switch checked={!isStaking} onCheckedChange={() => setIsStaking(!isStaking)} />
-        </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-400">Leverage only</span>
           <Switch checked={isDepositDisabled} onCheckedChange={(v) => setIsDepositDisabled(v)} />
@@ -271,10 +264,7 @@ export default function TgUsdLeveragePanel() {
                     <div className="flex justify-end">{slippage}%</div>
                   </div>
                 ) : null}
-                <div className="flex w-full items-center justify-between">
-                  <div className="flex justify-start">Sociabilization fee</div>
-                  <div className="flex justify-end">{isStaking ? "$0" : `$${sociabilizationFee?.toFixed(2)}`}</div>
-                </div>
+
                 <div className="flex w-full items-center justify-between">
                   <div className="flex justify-start">Zapping fee</div>
                   <div className="flex justify-end">--</div>

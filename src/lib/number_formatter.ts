@@ -86,3 +86,7 @@ export const formatDisplayValue = (value: string | number): string => {
   const formatted = num.toFixed(3).replace(/\.?0+$/, "")
   return formatted
 }
+
+export const formatBigIntAsNumber = (value: bigint, decimals: number, displayDecimals: number) => {
+  return formatNumber(Number(formatUnits(value || 0n, decimals)), displayDecimals)
+}

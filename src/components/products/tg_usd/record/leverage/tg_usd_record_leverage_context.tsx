@@ -13,7 +13,7 @@ import { ToastComponent } from "@/components/design_system/toast"
 import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./tg_usd_record_leverage_controller"
 import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { TGUSD_CONTRACT } from "../../tg_usd_repository"
-import { formatDollar, formatNumber } from "@/lib/number_formatter"
+import { formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 
 type TgUsdLeverageContextProps = {
   children: ReactNode
@@ -411,13 +411,13 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
   const quoteDetail = useMemo(() => {
     if (!!zapValue) {
-      const sum = ` ${formatNumber(Number(formatUnits(zapValue || 0n, 18)), 0)} + ${formatNumber(Number(formatUnits(leveragedCollateralQuote || 0n, 18)), 0)}  ~= `
-      const result = `${formatNumber(Number(formatUnits((leveragedCollateralQuote || 0n) + BigInt(zapValue || 0n), 18)), 0)}  ${collateralInfo?.symbol}`
+      const sum = ` ${formatBigIntAsNumber(zapValue || 0n, 18, 0)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 0)}  ~= `
+      const result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + BigInt(zapValue || 0n), 18, 0)}  ${collateralInfo?.symbol}`
 
       return { sum, result }
     } else if (!zapValue && !!depositWeiValue) {
-      const sum = ` ${formatNumber(Number(formatUnits(depositWeiValue || 0n, 18)), 0)} + ${formatNumber(Number(formatUnits(leveragedCollateralQuote || 0n, 18)), 0)}  ~= `
-      const result = `${formatNumber(Number(formatUnits((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18)), 0)}  ${collateralInfo?.symbol}`
+      const sum = ` ${formatBigIntAsNumber(depositWeiValue || 0n, 18, 0)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 0)}  ~= `
+      const result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18, 0)}  ${collateralInfo?.symbol}`
 
       return { sum, result }
     } else {

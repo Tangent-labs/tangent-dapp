@@ -22,12 +22,13 @@ import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { useTgUsdLeverageContext } from "./tg_usd_record_leverage_context"
 import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
 import { cn } from "@/lib/utils"
+import BorderPanel from "@/components/design_system/structure/border_panel"
+import { formatUnits } from "viem"
 
 export default function TgUsdLeveragePanel() {
   const {
     setDepositAsset,
     setIsDepositDisabled,
-    setIsStaking,
     setDepositWeiValue,
     actionApprove,
     handleDepositChange,
@@ -39,11 +40,9 @@ export default function TgUsdLeveragePanel() {
     setBorrowWeiValue,
     actionZapLeverage,
     actionApproveZap,
-    isStaking,
     depositAsset,
     depositWeiValue,
     formState,
-    borrowWeiValue,
     tokens,
     isZapLoading,
     isDepositLoading,
@@ -52,7 +51,6 @@ export default function TgUsdLeveragePanel() {
     depositAssetInfo,
     slippage,
     estimatedZapDollarValue,
-    sociabilizationFee,
     quoteDetail,
     zapInnerValue,
     depositSliderPercent,
@@ -118,7 +116,13 @@ export default function TgUsdLeveragePanel() {
     return (
       <div className="flex w-full min-w-48 items-center justify-between">
         <div className="flex w-full items-center gap-2">
-          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={32} />}
+          <>
+            {option.symbol === "ETH" ? (
+              <TokenImage token={option.logo} size={20} />
+            ) : (
+              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={32} />}</>
+            )}
+          </>
           <span className="text-sm font-semibold">{option.symbol}</span>
         </div>
         <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
@@ -130,10 +134,6 @@ export default function TgUsdLeveragePanel() {
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-end gap-2">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-400">Save gas</span>
-          <Switch checked={!isStaking} onCheckedChange={() => setIsStaking(!isStaking)} />
-        </div>
-        <div className="flex items-center gap-2">
           <span className="text-sm text-gray-400">Leverage only</span>
           <Switch checked={isDepositDisabled} onCheckedChange={(v) => setIsDepositDisabled(v)} />
         </div>
@@ -144,7 +144,8 @@ export default function TgUsdLeveragePanel() {
           <div className="flex w-full items-end justify-between gap-2">
             <span className="text-[20px] font-semibold">Deposit {collateralInfo?.symbol}</span>
             <span className="text-xs text-subtitle">
-              Max: {formatBigInt(marketData?.collateralBalance, 18, 2)} {collateralInfo?.symbol}
+              Max: {formatBigInt(balanceAllowanceData?.balance || marketData?.collateralBalance, depositAssetInfo?.decimals || 18, 2)}{" "}
+              {depositAssetInfo?.symbol}
             </span>
           </div>
 
@@ -154,7 +155,7 @@ export default function TgUsdLeveragePanel() {
             depositSelect={<AssetSelect />}
             disabled={!canInteract}
             isLoading={isZapLoading}
-            depositAsset={depositAssetInfo || collateralInfo}
+            depositAsset={depositAssetInfo}
             balance={!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance}
             isZapping={!!depositAsset && depositAsset !== collateralInfo?.name}
             onValueChange={handleDepositChange}
@@ -191,10 +192,10 @@ export default function TgUsdLeveragePanel() {
                 <div>{zapValue && !!marketData?.collateralInfos ? estimatedZapDollarValue : ""}</div>
               </div>
             </div>
-            <div className="flex items-center justify-center gap-2 rounded-xl border-2 border-white/30 bg-select-input px-2 py-1">
+            <BorderPanel className="flex items-center justify-center gap-2 bg-select-input px-2 py-1">
               <TokenImage token={collateralInfo?.logo} size={32} />
               <div className="font-semibold">{collateralInfo?.symbol}</div>
-            </div>
+            </BorderPanel>
           </div>
         </PanelRaw>
       )}
@@ -205,8 +206,7 @@ export default function TgUsdLeveragePanel() {
         <LeverageInput
           label="You borrow"
           depositAmount={!!zapValue ? zapValue : depositWeiValue}
-          depositAsset={collateralInfo}
-          borrowAmount={borrowWeiValue}
+          depositAsset={!!marketData ? { ...collateralInfo, price: Number(formatUnits(marketData?.collateralInfos?.collateralUSDPrice, 18)) } : collateralInfo}
           percentage={isDepositDisabled ? 0 : leveragePercentage}
           setPercentage={isDepositDisabled ? undefined : setLeveragePercentage}
           onValueChange={setBorrowWeiValue}
@@ -249,10 +249,10 @@ export default function TgUsdLeveragePanel() {
         <Popover>
           <PopoverTrigger asChild>
             <button type="button" className="w-full font-roobert" title="Slippage">
-              <div className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-xl border-2 border-white/30 px-2 text-xs text-primary hover:bg-white/20">
+              <BorderPanel className="flex h-[30px] w-full cursor-pointer items-center justify-between px-2 text-xs text-primary hover:bg-white/20">
                 Details
                 <IconChevron className="h-auto w-[12px] text-row-tonic" />
-              </div>
+              </BorderPanel>
             </button>
           </PopoverTrigger>
           <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="z-20 !m-0 w-96 !border-none bg-black !p-0 font-roobert">
@@ -264,10 +264,7 @@ export default function TgUsdLeveragePanel() {
                     <div className="flex justify-end">{slippage}%</div>
                   </div>
                 ) : null}
-                <div className="flex w-full items-center justify-between">
-                  <div className="flex justify-start">Sociabilization fee</div>
-                  <div className="flex justify-end">{isStaking ? "$0" : `$${sociabilizationFee?.toFixed(2)}`}</div>
-                </div>
+
                 <div className="flex w-full items-center justify-between">
                   <div className="flex justify-start">Zapping fee</div>
                   <div className="flex justify-end">--</div>
@@ -279,14 +276,14 @@ export default function TgUsdLeveragePanel() {
 
         <Popover>
           <PopoverTrigger asChild>
-            <div className="flex h-[30px] cursor-pointer items-center justify-between rounded-xl border-2 border-white/30 bg-button-gradient py-2">
+            <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2">
               <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
               <button type="button" title="Slippage">
-                <div className="h-[30px] cursor-pointer rounded-xl border-l-2 border-white/30 bg-button-gradient p-2 hover:bg-white/20">
+                <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
                   <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
                 </div>
               </button>
-            </div>
+            </BorderPanel>
           </PopoverTrigger>
           <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none">
             <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
@@ -297,7 +294,7 @@ export default function TgUsdLeveragePanel() {
                   value={slippage || 0}
                   placeholder="0.5"
                   type="number"
-                  className="w-full rounded-lg border-2 border-white/30 bg-transparent pl-2 focus:outline-none"
+                  className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
                 />
                 <div className="mt-2 flex w-full items-center justify-between gap-2">
                   <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />

@@ -20,8 +20,8 @@ export const RsTanUnlockContent = () => {
     return (
       <>
         {option && option?.tokenId ? (
-          <div className="flex items-center gap-2">
-            <span className="text-md font-semibold text-white">#{option.tokenId}</span>
+          <div className="flex w-full cursor-pointer items-center rounded-[10px] hover:bg-white/10">
+            <span className="text-md w-full font-semibold text-white">#{option.tokenId}</span>
           </div>
         ) : (
           <div className="flex items-center gap-2">
@@ -114,7 +114,7 @@ export const RsTanUnlockContent = () => {
               <div className="flex w-full items-start justify-start">
                 <div className="flex w-1/2 items-start justify-start text-subtitle">Position ID</div>
 
-                <div className="flex w-1/2 items-start justify-start text-subtitle"> {claimAsSgUSD ? "sgUSD" : "tgUSD"} received</div>
+                <div className="flex w-1/2 items-start justify-start text-subtitle"> {claimAsSgUSD ? "sUSG" : "USG"} received</div>
               </div>
 
               <div className="my-1 flex w-full items-center gap-2">
@@ -123,7 +123,7 @@ export const RsTanUnlockContent = () => {
                 </div>
                 <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
                   {formatBigInt(unlockPositionInfo.claimable, 18, 2)}
-                  <TokenImage token={claimAsSgUSD ? "sgUSD" : "tgUSD"} className="" size={16} />
+                  <TokenImage token={claimAsSgUSD ? "sUSG" : "USG"} className="" size={16} />
                 </div>
               </div>
             </div>

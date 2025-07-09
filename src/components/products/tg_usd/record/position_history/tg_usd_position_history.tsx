@@ -132,7 +132,7 @@ function PositionList() {
                   <span className="text-xs text-subtitle"> {formatDollar(formatUnits(pos.collatAmount, 18), 0)}</span>
                 </div>
                 <div className="flex w-3/12 items-center justify-center gap-1">
-                  {formatBigInt(pos.usgAmount, 18, 2)} <TokenImage token="tgUSD" size={16} /> USG
+                  {formatBigInt(pos.usgAmount, 18, 2)} <TokenImage token="USG" size={16} /> USG
                 </div>
                 <div className="flex w-3/12 items-center justify-center">
                   {moment(pos.date).format("MM-DD-YYYY")} {" - "} {moment(pos.date).format("hh:mm")}

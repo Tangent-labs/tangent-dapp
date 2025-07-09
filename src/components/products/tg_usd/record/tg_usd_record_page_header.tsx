@@ -5,6 +5,7 @@ import IndicatorV2 from "@/components/design_system/structure/indicators_v2"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { useTgUsdRecordContext } from "./tg_usd_record_context"
 import { useRouter } from "next/navigation"
+import BorderPanel from "@/components/design_system/structure/border_panel"
 
 type TgUsdRecordPageHeaderProps = React.ButtonHTMLAttributes<HTMLDivElement>
 
@@ -36,9 +37,9 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
                 </div>
               )}
 
-              <div className="flex items-center justify-center rounded-full border-2 border-white border-opacity-20 bg-button-linear px-3 py-0.5 text-xs">
+              <BorderPanel className="flex items-center justify-center !rounded-full bg-button-linear px-3 py-0.5 text-xs">
                 {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
-              </div>
+              </BorderPanel>
             </>
           )}
           <TokenImage token={"ETH"} size={20} />
@@ -49,12 +50,12 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
           <IndicatorV2 indicators={[{ title: "Borrowed", value: marketDisplayData.borrowed }]} />
           <IndicatorV2 indicators={[{ title: "Cap", value: marketDisplayData.cap }]} />
 
-          <button
+          <BorderPanel
             onClick={() => router.push("/")}
-            className="h-10 rounded-[10px] border-2 border-white border-opacity-20 bg-overlay-panel px-9 text-xs font-semibold backdrop-blur-[60px] transition-colors duration-200 ease-in-out hover:bg-white/10"
+            className="flex h-10 cursor-pointer items-center rounded-[10px] bg-overlay-panel px-9 text-xs font-semibold backdrop-blur-[60px] transition-colors duration-200 ease-in-out hover:bg-white/10"
           >
             Back
-          </button>
+          </BorderPanel>
         </div>
       </div>
 
@@ -62,7 +63,7 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
         apr={apr}
         indicators={[
           {
-            title: "vAPR",
+            title: "APR",
             value: marketDisplayData.rewardsCutCurrent,
             subValue: marketDisplayData.rewardsCutNext,
           },
@@ -85,14 +86,14 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
             subValue: marketDisplayData.rewardsCutNext,
           },
           {
-            title: "max. LTV",
+            title: "LTV",
             value: marketDisplayData.maxLtv,
-            subValue: marketDisplayData.maxLtvDollar,
+            subValue: null,
           },
           {
             title: "LT",
             value: marketDisplayData.lt,
-            subValue: marketDisplayData.ltDollar,
+            subValue: null,
           },
         ]}
       />

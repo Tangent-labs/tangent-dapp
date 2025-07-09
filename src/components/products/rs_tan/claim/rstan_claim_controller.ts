@@ -13,7 +13,7 @@ export const doClaim = async (positions: LockPosition[], walletClient: WalletCli
     abi: RsTan.abi as Abi,
     functionName: method,
     args: [params, claimAsSgUSD],
-    address: RSTAN_CONTRACT.RSTAN,
+    address: RSTAN_CONTRACT.VSTAN,
   }
 
   const txHash = await executeContractCall(walletClient, txData)

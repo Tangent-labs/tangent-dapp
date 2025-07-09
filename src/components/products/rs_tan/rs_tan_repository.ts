@@ -11,6 +11,6 @@ const envAddresses = JSON.parse(addresses)
 export const RSTAN_CONTRACT = {
   ZAPPER: envAddresses.utilities.zappingProxy as Address,
   TAN: envAddresses.tokens.tan as Address,
-  RSTAN: envAddresses.tokens.rsTan as Address,
+  VSTAN: envAddresses.tokens.vsTan as Address,
   STAN: envAddresses.tokens.sTan as Address,
 }

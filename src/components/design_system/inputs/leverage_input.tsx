@@ -1,17 +1,17 @@
 "use client"
 
-import { AssetDataPriced } from "@/types"
+import { AssetDataPriced, CollateralInfo } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import TokenImage from "../structure/token_image"
 import { toBigInt } from "@/lib/number_formatter"
+import BorderPanel from "../structure/border_panel"
 
 type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  depositAsset?: AssetDataPriced
+  depositAsset?: AssetDataPriced | CollateralInfo
   className?: string
   depositAmount?: bigint
-  borrowAmount?: bigint
   disabled?: boolean
   label?: string
   LeverageInput?: ReactNode
@@ -24,7 +24,6 @@ type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 export function LeverageInput({
   className,
   depositAmount,
-  borrowAmount,
   depositAsset,
   label,
   isLoading = false,
@@ -40,13 +39,16 @@ export function LeverageInput({
     return 0
   }, [depositAmount])
 
-  const [innerValue, setInnerValue] = useState<string>(borrowAmount !== undefined ? formatUnits(borrowAmount, depositAsset?.decimals || 0) : "")
+  const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!!setPercentage) {
+    if (!!setPercentage && depositAsset) {
       const newPercentage = Number(e.target.value)
       setPercentage(newPercentage)
-      const newValue = newPercentage !== 0 ? Number((newPercentage * depositAmountNumber - depositAmountNumber).toFixed(0)) : 0
+
+      const inputValueToUSD = depositAmountNumber * depositAsset?.price
+      const newValue = newPercentage !== 0 ? Number((newPercentage * inputValueToUSD - inputValueToUSD).toFixed(0)) : 0
+
       setInnerValue(newValue.toFixed(0))
     }
   }
@@ -79,7 +81,7 @@ export function LeverageInput({
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <div className={`${isLoading ? "shimmer" : ""} flex flex-col rounded-[10px] border-2 border-white border-opacity-20 bg-white bg-opacity-[3%] p-2`}>
+      <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col bg-white bg-opacity-[3%] p-2`}>
         <div className="flex w-full justify-between">
           <div className="text-sm text-gray-400">{label}</div>
         </div>
@@ -93,10 +95,10 @@ export function LeverageInput({
             className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent text-xl font-semibold focus:outline-none")}
           />
 
-          <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
-            <TokenImage token="tgUSD" size={20} />
-            <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
-          </div>
+          <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2.5">
+            <TokenImage token="USG" size={20} />
+            <span className="flex flex-col text-[15px] font-semibold">USG</span>
+          </BorderPanel>
         </div>
 
         <input
@@ -141,7 +143,7 @@ export function LeverageInput({
             ></div>
           </div>
         </div>
-      </div>
+      </BorderPanel>
     </div>
   )
 }

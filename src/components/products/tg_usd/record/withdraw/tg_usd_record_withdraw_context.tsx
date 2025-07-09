@@ -40,17 +40,15 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
   const actionWithdraw = () => {
     const walletClient = getWalletClient()
     if (walletClient)
-      doMarketWithdraw(walletClient, { marketAddress: marketData!.marketAddress, withdrawWeiValue }).then(() => {
+      doMarketWithdraw(walletClient, {
+        marketAddress: marketData!.marketAddress,
+        withdrawWeiValue,
+      }).then(() => {
         loadOnChainData()
         setWithdrawWeiValue(0n)
         setWithdrawPercentage(0)
       })
   }
-
-  const formState = useMemo(
-    () => getWithdrawFormState(marketData, withdrawWeiValue, isWellConnected),
-    [marketData, withdrawWeiValue, isWellConnected, currentAddress]
-  )
 
   const maxWithdrawable = useMemo(() => {
     if (marketData) {
@@ -65,6 +63,13 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
 
     return 0n
   }, [marketData])
+
+  const formState = useMemo(() => {
+    if (marketData) {
+      return getWithdrawFormState(marketData, withdrawWeiValue!, maxWithdrawable, isWellConnected)
+    }
+    return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+  }, [marketData, withdrawWeiValue, isWellConnected, currentAddress, maxWithdrawable])
 
   const contextValue: TgUsdWithdrawContextValues = {
     actionWithdraw,

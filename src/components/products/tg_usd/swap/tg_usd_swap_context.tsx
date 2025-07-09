@@ -76,7 +76,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
   const [isBuying, setIsBuying] = useState<boolean>(true)
 
-  const [receiveAsset, setReceiveAsset] = useState<string>("tgUSD")
+  const [receiveAsset, setReceiveAsset] = useState<string>("USG")
 
   const [depositAsset, setDepositAsset] = useState<string | null>(null)
 
@@ -278,6 +278,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
       fetchSwapValue()
     } else if (quote === "1") {
       setReceiveWeiValue(value)
+      setIsSwapLoading(false)
     } else {
       const quote = swapData?.quote
 
@@ -286,6 +287,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
       if (value && quote) {
         doCustomQuote(quote, value, currentAddress, quoteContractAddress).then((v) => {
           setReceiveWeiValue(v as bigint)
+          setIsSwapLoading(false)
         })
       }
     }

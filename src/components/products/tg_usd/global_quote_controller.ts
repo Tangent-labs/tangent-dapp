@@ -8,7 +8,7 @@ export const getQuote = async (depositWeiValue: bigint, currentAddress: Address,
 
   if (data) {
     return { quote: data?.amountOut }
-  } else if (tokenOut === TGUSD_CONTRACT?.TG_USD || tokenIn === TGUSD_CONTRACT?.TG_USD) {
+  } else if (tokenOut === TGUSD_CONTRACT?.USG || tokenIn === TGUSD_CONTRACT?.USG) {
     const quote = await getCurveRouterQuote(tokenIn, tokenOut, depositWeiValue)
     return { quote }
   } else {
@@ -29,7 +29,7 @@ export const returnRoute = async (
 
   if (route) {
     return { data: route?.tx?.data as string, routerAddress: TGUSD_CONTRACT.ENSO_ROUTER as Address }
-  } else if (tokenOut === TGUSD_CONTRACT?.TG_USD || tokenIn === TGUSD_CONTRACT?.TG_USD) {
+  } else if (tokenOut === TGUSD_CONTRACT?.USG || tokenIn === TGUSD_CONTRACT?.USG) {
     const curveRoute = await getCurveRouterRoute(tokenIn, tokenOut, amount, minAmountOut, user ? user : receiver)
     return { data: curveRoute as string, routerAddress: TGUSD_CONTRACT.CURVE_ROUTER as Address }
   } else {

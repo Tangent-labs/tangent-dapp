@@ -3,8 +3,9 @@
 import { ListRowData } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { getMarketDatas, getTgUsdMarketsData, transformToRows, transformGlobalData, transformMarketData } from "./tg_usd_market_controller"
-import { ChainViewMarketList, ChainViewMarketRow, TgUsdGlobalData } from "../tg_usd_type"
+import { ChainViewMarketList, ChainViewMarketRow, MarketDebtData, TgUsdCollateralData, TgUsdGlobalData } from "../tg_usd_type"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { formatUnits } from "viem"
 
 type TgUsdMaketListContextProps = {
   children: ReactNode
@@ -16,7 +17,14 @@ type TgUsdMaketListContextValues = {
   searchValue: string | null
   setSearchValue: (value: string | null) => void
   marketData: ChainViewMarketRow[]
-  userData: { totalMarketDebt: bigint; totalDeposit: bigint } | null
+  userData: {
+    totalUserDebt: bigint
+    totalUserDeposit: bigint
+    totalProtocolDeposit: bigint
+    totalProtocolDebt: bigint
+    tgUsdCollateralsData: TgUsdCollateralData[]
+    marketDebtData: MarketDebtData[]
+  } | null
 }
 
 export const TgUsdMaketListContext = createContext<TgUsdMaketListContextValues | undefined>(undefined)
@@ -61,15 +69,46 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
 
   const userData = useMemo(() => {
     if (onChainData) {
-      let totalMarketDebt = 0n
-      let totalDeposit = 0n
+      let totalUserDebt = 0n
+      let totalUserDeposit = 0n
+      let totalProtocolDeposit = 0n
+      let totalProtocolDebt = 0n
 
       onChainData?.rowInfos.forEach((market) => {
-        totalMarketDebt += market.debtInfos.userDebt
-        totalDeposit += market.collateralInfos?.positionCollateralUSDValue
+        totalUserDebt += market.debtInfos.userDebt
+        totalUserDeposit += market.collateralInfos.positionCollateralUSDValue
+        totalProtocolDeposit += market.collateralInfos?.totalCollateralUSDValue
+        totalProtocolDebt += market.debtInfos.totalDebt
       })
 
-      return { totalMarketDebt, totalDeposit }
+      const tgUsdCollateralsData = marketData.map((market) => {
+        const value = market.collateralInfos.totalCollateralUSDValue
+
+        const percentage = totalProtocolDeposit > 0n ? (Number(formatUnits(value, 18)) / Number(formatUnits(totalProtocolDeposit, 18))) * 100 : 0
+
+        return {
+          name: market.collateralInfos.collateralToken.symbol,
+          value: Number(percentage.toFixed(2)),
+        }
+      })
+
+      const marketDebtData = marketData
+        .map((market, index) => {
+          const debtValue = market.debtInfos.totalDebt
+
+          const percentage = totalProtocolDebt > 0 ? (Number(formatUnits(debtValue, 18)) / Number(formatUnits(totalProtocolDebt, 18))) * 100 : 0
+
+          return {
+            id: index + 1,
+            value: Number(percentage.toFixed(2)),
+            name: market?.collateralInfos?.collateralToken?.symbol,
+          }
+        })
+        .sort((a, b) => {
+          return a.value > b.value ? -1 : 1
+        })
+
+      return { totalUserDebt, totalUserDeposit, totalProtocolDeposit, totalProtocolDebt, tgUsdCollateralsData, marketDebtData }
     }
     return null
   }, [onChainData])

@@ -2,11 +2,12 @@
 
 import { AssetDataPriced } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
-import { formatDisplayValue, toBigInt } from "@/lib/number_formatter"
-import { formatUnits, maxUint256 } from "viem"
+import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
+import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { IconThunder } from "@/components/icons/icon_thunder"
+import BorderPanel from "../structure/border_panel"
 
 type RepayInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
@@ -53,7 +54,7 @@ export function RepayInput({
 
     let repayAmount: bigint
     if (newPercentage === 100) {
-      repayAmount = maxUint256
+      repayAmount = balance
     } else {
       repayAmount = (BigInt(newPercentage) * balance) / BigInt(100)
     }
@@ -109,16 +110,16 @@ export function RepayInput({
   const dollarDepositDisplay = useMemo(() => {
     if (innerValue === "MAX") return "MAX"
     const val = Number(innerValue || 0) * (depositAsset?.price || 0)
-    return val?.toFixed(2) || "-"
+    return formatDollar(val) || "-"
   }, [innerValue, depositAsset])
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <div
+      <BorderPanel
         className={cn(
           isLoading ? "shimmer" : "",
           disabled ? "bg-panel-disabled" : "bg-select-input",
-          "flex flex-col rounded-[10px] border-2 border-white border-opacity-20 p-2 transition-colors duration-200 hover:bg-white/10"
+          "flex flex-col p-2 transition-colors duration-200 hover:bg-white/10"
         )}
       >
         <div className="flex w-full justify-between">
@@ -146,12 +147,11 @@ export function RepayInput({
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
         <div className="mt-1 flex justify-between text-xs text-gray-400">
-          <div>$({dollarDepositDisplay})</div>
+          <div>{dollarDepositDisplay}</div>
 
           <div className="flex cursor-pointer items-center">
-            <button
-              className="ml-1 flex w-10 cursor-pointer items-center rounded-full border-2 border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
-              type="button"
+            <BorderPanel
+              className="ml-1 flex w-10 cursor-pointer items-center bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
               onClick={() => {
                 if (setMaxBalance) {
                   setMaxBalance()
@@ -160,7 +160,7 @@ export function RepayInput({
               }}
             >
               Max.
-            </button>
+            </BorderPanel>
           </div>
         </div>
 
@@ -209,7 +209,7 @@ export function RepayInput({
             </div>
           </>
         )}
-      </div>
+      </BorderPanel>
     </div>
   )
 }

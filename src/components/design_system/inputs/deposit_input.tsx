@@ -2,11 +2,12 @@
 
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
-import { formatDisplayValue, toBigInt } from "@/lib/number_formatter"
+import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { IconThunder } from "@/components/icons/icon_thunder"
+import BorderPanel from "../structure/border_panel"
 
 type DepositInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced | CollateralInfo
@@ -57,7 +58,7 @@ export function DepositInput({
     if (!!setPercentage) {
       const newPercentage = Number(e.target.value)
       setPercentage(newPercentage)
-      const newValue = newPercentage !== 0 ? Number(((newPercentage / 100) * balanceNumber).toFixed(0)) : 0
+      const newValue = newPercentage === 100 ? balanceNumber : Number(((newPercentage / 100) * balanceNumber).toFixed(0))
       setInnerValue(formatDisplayValue(newValue))
       onValueChange(!!newValue ? toBigInt(newValue, depositAsset?.decimals || 18) : undefined)
     }
@@ -94,16 +95,16 @@ export function DepositInput({
 
   const dollarDepositDisplay = useMemo(() => {
     const val = Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals || 0)) * (depositAsset?.price || 0)
-    return val?.toFixed(2) || "-"
+    return `(${formatDollar(val)})`
   }, [depositAmount, depositAsset])
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <div
+      <BorderPanel
         className={cn(
           isLoading ? "shimmer" : "",
           disabled ? "bg-panel-disabled" : "bg-white bg-opacity-[3%]",
-          "flex flex-col rounded-[10px] border-2 border-white border-opacity-20 p-2 transition-colors duration-200 hover:bg-white/10"
+          "flex flex-col p-2 transition-colors duration-200 hover:bg-white/10"
         )}
       >
         <div className="flex w-full justify-between">
@@ -132,13 +133,12 @@ export function DepositInput({
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
         <div className="mt-1 flex justify-between text-xs text-gray-400">
-          <div>$({dollarDepositDisplay})</div>
+          <div>{dollarDepositDisplay}</div>
 
           <div className="flex cursor-pointer items-center">
             {!disabled && (
-              <button
-                className="flex w-10 cursor-pointer items-center rounded-full border-2 border-white/50 bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
-                type="button"
+              <BorderPanel
+                className="flex w-10 cursor-pointer items-center bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
                 onClick={() => {
                   if (setMaxBalance) {
                     setPercentage(100)
@@ -147,7 +147,7 @@ export function DepositInput({
                 }}
               >
                 Max.
-              </button>
+              </BorderPanel>
             )}
           </div>
         </div>
@@ -196,7 +196,7 @@ export function DepositInput({
             </div>
           </>
         )}
-      </div>
+      </BorderPanel>
     </div>
   )
 }

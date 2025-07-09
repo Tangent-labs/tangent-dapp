@@ -58,7 +58,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
 
   const [repayablePercentage, setRepayablePercentage] = useState<number>(0)
 
-  const [slippage, setSlippage] = useState<number>(10)
+  const [slippage, setSlippage] = useState<number>(1)
 
   const [isQuoteLoading, setIsQuoteLoading] = useState<boolean>(false)
 
@@ -108,7 +108,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
       }
       const liquidationData = await returnRoute(
         marketInfo?.collatAddress,
-        TGUSD_CONTRACT.TG_USD,
+        TGUSD_CONTRACT.USG,
         liquidateWeiValue,
         0n,
         TGUSD_CONTRACT.LIQUIDATOR_PROXY,
@@ -119,7 +119,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
       doMarketLiquidate(
         liquidateWeiValue,
         repayValue,
-        (tgUSDReceivedValue * (BigInt(100) - BigInt(slippage))) / BigInt(100),
+        (tgUSDReceivedValue * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         liquidationData!,
         walletClient,
         marketData?.marketAddress
@@ -160,13 +160,13 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
   const handleLiquidateValueChange = (value: bigint | undefined) => {
     setIsQuoteLoading(true)
     const assetInfo: AssetDataPriced = {
-      address: TGUSD_CONTRACT.TG_USD,
+      address: TGUSD_CONTRACT.USG,
       decimals: 18,
       displayDecimals: 2,
-      logo: "tgUSD",
-      name: "tgUSD",
+      logo: "USG",
+      name: "USG",
       price: 1,
-      symbol: "tgUSD",
+      symbol: "USG",
     }
 
     setLiquidateWeiValue(value)

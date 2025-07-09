@@ -100,7 +100,13 @@ export default function TgUsdSwapContent() {
     return (
       <div className="flex w-full min-w-48 items-center justify-between">
         <div className="flex w-full items-center gap-2">
-          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={32} />}
+          <>
+            {option.symbol === "ETH" ? (
+              <TokenImage token={option.logo} size={20} />
+            ) : (
+              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={20} />}</>
+            )}
+          </>
           <span className="text-sm font-semibold">{option.symbol}</span>
         </div>
 
@@ -120,7 +126,7 @@ export default function TgUsdSwapContent() {
 
         <div className="flex flex-col items-start justify-center gap-3">
           <span className="text-5xl font-semibold">Swap</span>
-          <p>Swap any asset for tgUSD and other Tangent&apos;s assets, including Curve LPs and Wrapped Tangent Stablecoins. Learn more</p>
+          <p>Swap any asset for USG and other Tangent&apos;s assets, including Curve LPs and Wrapped Tangent Stablecoins. Learn more</p>
         </div>
       </div>
 
@@ -140,7 +146,7 @@ export default function TgUsdSwapContent() {
             depositBalance={balanceAllowanceData?.balance ?? 0n}
             receiveAmount={receiveWeiValue}
             receiveAsset={receiveAssetInfo!}
-            setMaxBalance={() => {}}
+            setMaxBalance={() => handleDepositChange(balanceAllowanceData?.balance)}
             onValueChange={handleDepositChange}
             onTangentValueChange={handleReceiveChange}
             percentage={depositSliderPercent}

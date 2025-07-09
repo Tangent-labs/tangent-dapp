@@ -7,7 +7,7 @@ import { RSTAN_CONTRACT } from "../rs_tan_repository"
 export const doApprove = async (depositWeiValue: bigint, walletClient: WalletClient) => {
   const publicClient = getPublicClient()
 
-  const txData = getApproveTx(RSTAN_CONTRACT.TAN, RSTAN_CONTRACT.RSTAN, depositWeiValue)
+  const txData = getApproveTx(RSTAN_CONTRACT.TAN, RSTAN_CONTRACT.VSTAN, depositWeiValue)
 
   const gas = await publicClient.estimateContractGas(txData as EstimateContractGasParameters)
   txData.gas = gas
@@ -21,7 +21,7 @@ export const doLock = async (depositWeiValue: bigint, walletClient: WalletClient
     abi: RsTan.abi as Abi,
     functionName: "createLock",
     args: [depositWeiValue, isPermaLock],
-    address: RSTAN_CONTRACT.RSTAN,
+    address: RSTAN_CONTRACT.VSTAN,
   }
 
   const txHash = await executeContractCall(walletClient, txData)
@@ -33,7 +33,7 @@ export const doIncreaseLockAmount = async (tokenId: bigint, depositWeiValue: big
     abi: RsTan.abi as Abi,
     functionName: "increaseLockAmount",
     args: [tokenId, depositWeiValue],
-    address: RSTAN_CONTRACT.RSTAN,
+    address: RSTAN_CONTRACT.VSTAN,
   }
 
   const txHash = await executeContractCall(walletClient, txData)

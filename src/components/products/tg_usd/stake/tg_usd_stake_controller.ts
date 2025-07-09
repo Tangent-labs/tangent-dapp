@@ -8,9 +8,9 @@ import { TGUSD_CONTRACT } from "../tg_usd_repository"
 export async function getTgUsdStakeOnChainData(currentAddress: Address | undefined) {
   return await executeChainViewUnique<StakingInfo>(stakeUI.abi as Abi, stakeUI.bytecode as Hex, [
     currentAddress,
-    TGUSD_CONTRACT.TG_USD_ORACLE,
-    TGUSD_CONTRACT.TG_USD,
-    TGUSD_CONTRACT.SG_USD,
+    TGUSD_CONTRACT.USG_ORACLE,
+    TGUSD_CONTRACT.USG,
+    TGUSD_CONTRACT.SUSG,
   ])
 }
 

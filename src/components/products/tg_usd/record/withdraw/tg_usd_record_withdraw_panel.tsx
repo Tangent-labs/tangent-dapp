@@ -7,6 +7,7 @@ import { useTgUsdWithdrawContext } from "./tg_usd_record_withdraw_context"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { formatBigInt } from "@/lib/number_formatter"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import BorderPanel from "@/components/design_system/structure/border_panel"
 
 export default function TgUsdWithdrawPanel() {
   const { actionWithdraw, formState, withdrawWeiValue, setWithdrawWeiValue, maxWithdrawable, withdrawPercentage, setWithdrawPercentage } =
@@ -18,10 +19,10 @@ export default function TgUsdWithdrawPanel() {
 
   const WithdrawAssetDisplay = () => {
     return (
-      <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
+      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2.5">
         <TokenImage token={collateralInfo?.logo} size={32} />
         <span className="flex flex-col text-sm font-semibold">{collateralInfo.symbol}</span>
-      </div>
+      </BorderPanel>
     )
   }
 
@@ -45,17 +46,19 @@ export default function TgUsdWithdrawPanel() {
             balance={maxWithdrawable}
             displaySliderInput={true}
             setMaxBalance={() => setWithdrawWeiValue(maxWithdrawable)}
-            onValueChange={(value: bigint | undefined) => {
-              setWithdrawWeiValue(value)
-            }}
+            onValueChange={setWithdrawWeiValue}
             percentage={withdrawPercentage}
             setPercentage={setWithdrawPercentage}
           />
         </div>
 
-        <div>
-          <FormButtons actions={{ handleApprove: undefined, handleProcess: actionWithdraw }} formState={formState} labelProcess="Withdraw" />
-        </div>
+        <>
+          {!!withdrawWeiValue && formState.cantProcessReasons.length > 0 && (
+            <div className="flex w-full items-center justify-center text-xs text-red-500"> {formState.cantProcessReasons[0]}</div>
+          )}
+        </>
+
+        <FormButtons actions={{ handleApprove: undefined, handleProcess: actionWithdraw }} formState={formState} labelProcess="Withdraw" />
       </div>
     </>
   )

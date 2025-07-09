@@ -25,7 +25,7 @@ export const getAssetInfo = async (keys: AssetConfigKey[]): Promise<AssetDataPri
   return Object.entries(list)
     .filter(([k]) => keys.indexOf(k as AssetConfigKey) !== -1)
     .map(([k, config]) => {
-      if (k === "tgUSD") {
+      if (k === "USG") {
         return {
           ...config,
           price: (prices ? prices[k as AssetConfigKey] : 0) || 0,

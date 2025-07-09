@@ -24,6 +24,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import { IconChevron } from "@/components/icons/icon_chevron"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
+import BorderPanel from "@/components/design_system/structure/border_panel"
 
 export default function TgUsdRepayPanel() {
   const { tokens } = useTgUsdContext()
@@ -57,7 +58,7 @@ export default function TgUsdRepayPanel() {
     withdrawPercentage,
     tgUsdDollarRepayedValue,
     isZapLoading,
-    tgUdsRepayedValue,
+    usgRepayedValue,
     isDebtBelowThreshold,
     repayAssetInfo,
     marketData,
@@ -75,7 +76,14 @@ export default function TgUsdRepayPanel() {
     return (
       <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
         <div className="flex w-full items-center gap-2">
-          {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={32} />}
+          <>
+            {option.symbol === "ETH" ? (
+              <TokenImage token={option.logo} size={20} />
+            ) : (
+              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={20} />}</>
+            )}
+          </>
+
           <span className="text-sm font-semibold">{option.symbol}</span>
         </div>
         <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
@@ -96,14 +104,14 @@ export default function TgUsdRepayPanel() {
 
     const sortedAssets = [
       {
-        address: TGUSD_CONTRACT.TG_USD,
+        address: TGUSD_CONTRACT.USG,
         decimals: 18,
         displayDecimals: 2,
-        logo: "tgUSD" as ExistingAsset,
-        name: "tgUSD",
+        logo: "USG" as ExistingAsset,
+        name: "USG",
         price: 1,
-        symbol: "tgUSD",
-        value: collateralInfo.name as string,
+        symbol: "USG",
+        value: "USG",
         balance: balances[marketInfo?.collatAddress] || BigInt(0),
       },
       ...[
@@ -125,7 +133,7 @@ export default function TgUsdRepayPanel() {
       <CustomSelect
         className="w-full min-w-40"
         template={AssetSelectTemplate}
-        value={repayAsset || "tgUSD"}
+        value={repayAsset || "USG"}
         options={sortedAssets}
         onChange={(v: string) => setRepayAsset(v)}
       />
@@ -134,13 +142,13 @@ export default function TgUsdRepayPanel() {
 
   const WithdrawAssetDisplay = () => {
     return (
-      <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
-        <TokenImage token={collateralInfo?.logo} size={20} />
+      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2.5">
+        <TokenImage token={collateralInfo?.logo} size={32} />
 
         <span className="flex flex-col text-sm font-semibold">
           <span>{collateralInfo.symbol}</span>
         </span>
-      </div>
+      </BorderPanel>
     )
   }
 
@@ -161,7 +169,15 @@ export default function TgUsdRepayPanel() {
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
           <span className="text-[20px] font-semibold">Repay debt</span>
-          <span className="text-xs text-subtitle"> Max: {formatBigInt(marketData?.debtInfos?.userDebt, 18, 3)} tgUSD</span>
+
+          {repayAsset === "USG" ? (
+            <span className="text-xs text-subtitle"> Max: {formatBigInt(marketData?.debtInfos?.userDebt, 18, 3)} USG</span>
+          ) : (
+            <span className="text-xs text-subtitle">
+              {" "}
+              Max: {formatBigInt(maxRepayableValue, repayAssetInfo?.decimals || 18, 3)} {repayAssetInfo?.symbol}
+            </span>
+          )}
         </div>
 
         <RepayInput
@@ -169,7 +185,7 @@ export default function TgUsdRepayPanel() {
           labelDeposit="You repay"
           depositSelect={<AssetSelect />}
           disabled={!canInteract || isRepayMax}
-          isZapping={!!repayAsset && repayAsset !== "tgUSD"}
+          isZapping={!!repayAsset && repayAsset !== "USG"}
           depositAsset={repayAssetInfo || tgUSDInfo}
           balance={maxRepayableValue}
           setMaxBalance={() => handleRepayValueChange(maxRepayableValue)}
@@ -179,7 +195,7 @@ export default function TgUsdRepayPanel() {
           onValueChange={handleRepayValueChange}
         />
 
-        {repayAsset && repayAsset !== "tgUSD" && (
+        {repayAsset && repayAsset !== "USG" && (
           <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
             <div className="flex items-center justify-between">
               <div className="flex flex-col items-start justify-start">
@@ -194,18 +210,18 @@ export default function TgUsdRepayPanel() {
                     placeholder="0"
                     disabled={true}
                     className="flex justify-start bg-transparent text-xl font-semibold focus:outline-none"
-                    value={Number(formatUnits(tgUdsRepayedValue || 0n, 18)).toFixed(2) ?? ""}
+                    value={Number(formatUnits(usgRepayedValue || 0n, 18)).toFixed(2) ?? ""}
                   />
                 </div>
                 <div className="flex justify-between gap-2 text-xs text-subtitle">
                   <div>Minimum received</div>
-                  <div>{tgUdsRepayedValue && tgUSDInfo?.price !== 0 ? tgUsdDollarRepayedValue : ""}</div>
+                  <div>{usgRepayedValue && tgUSDInfo?.price !== 0 ? tgUsdDollarRepayedValue : ""}</div>
                 </div>
               </div>
-              <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
-                <TokenImage token="tgUSD" size={20} />
-                <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
-              </div>
+              <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2.5">
+                <TokenImage token="USG" size={20} />
+                <span className="flex flex-col text-[15px] font-semibold">USG</span>
+              </BorderPanel>
             </div>
           </PanelRaw>
         )}
@@ -244,11 +260,17 @@ export default function TgUsdRepayPanel() {
         )}
       </>
 
+      <>
+        {!isDebtBelowThreshold && !!repayWeiValue && formState.cantProcessReasons.length > 0 && (
+          <div className="flex w-full items-center justify-center text-xs text-red-500"> {formState.cantProcessReasons[0]}</div>
+        )}
+      </>
+
       <div className="flex w-full items-center justify-center">
         <FormButtons
           actions={{
-            handleApprove: repayAsset && repayAsset !== "tgUSD" ? actionApprove : undefined,
-            handleProcess: repayAsset && repayAsset !== "tgUSD" ? actionZapRepay : actionRepay,
+            handleApprove: repayAsset && repayAsset !== "USG" ? actionApprove : undefined,
+            handleProcess: repayAsset && repayAsset !== "USG" ? actionZapRepay : actionRepay,
           }}
           formState={formState}
           labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}
@@ -259,7 +281,10 @@ export default function TgUsdRepayPanel() {
         <Popover>
           <PopoverTrigger asChild>
             <button type="button" className="w-full" title="Slippage">
-              <div className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-xl border-2 border-white/30 px-2 text-xs text-primary hover:bg-white/20">
+              <div
+                style={{ borderWidth: 1.5 }}
+                className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-[10px] border-white/30 px-2 text-xs text-primary hover:bg-white/20"
+              >
                 Details
                 <IconChevron className="h-auto w-[12px] text-row-tonic" />
               </div>
@@ -286,14 +311,14 @@ export default function TgUsdRepayPanel() {
 
         <Popover>
           <PopoverTrigger asChild>
-            <div className="flex h-[30px] cursor-pointer items-center justify-between rounded-xl border-2 border-white/30 bg-button-gradient py-2">
+            <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2">
               <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
               <button type="button" title="Slippage">
-                <div className="h-[30px] cursor-pointer rounded-xl border-l-2 border-white/30 bg-button-gradient p-2 hover:bg-white/20">
+                <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
                   <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
                 </div>
               </button>
-            </div>
+            </BorderPanel>
           </PopoverTrigger>
           <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none">
             <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
@@ -304,7 +329,7 @@ export default function TgUsdRepayPanel() {
                   value={slippage || 0}
                   placeholder="0.5"
                   type="number"
-                  className="w-full rounded-lg border-2 border-white/30 bg-transparent pl-2 focus:outline-none"
+                  className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
                 />
                 <div className="mt-2 flex w-full items-center justify-between gap-2">
                   <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />

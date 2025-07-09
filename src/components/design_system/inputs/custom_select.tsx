@@ -42,14 +42,16 @@ const CustomSelect = <T extends DepositReceiveAsset>({ options = [], onChange, c
         <SelectTrigger className={className}>
           <div className="flex w-full items-center justify-between">
             <div className="flex w-full items-center gap-2">
-              {opt ? (
-                <>
-                  {opt.logoURI ? <Image src={opt.logoURI} alt={opt.symbol} height={20} width={20} /> : <TokenImage token={opt.logo} size={32} />}
-                  <span className="text-sm font-semibold">{opt.symbol}</span>
-                </>
-              ) : (
-                <></>
-              )}
+              <>
+                {opt?.symbol === "USG" ? (
+                  <TokenImage token={opt?.symbol} size={20} />
+                ) : opt?.logoURI ? (
+                  <Image src={opt?.logoURI} alt={opt.symbol} height={20} width={20} />
+                ) : (
+                  <TokenImage token={opt?.logo} size={32} />
+                )}
+                <span className="text-sm font-semibold">{opt?.symbol}</span>
+              </>
             </div>
           </div>
         </SelectTrigger>

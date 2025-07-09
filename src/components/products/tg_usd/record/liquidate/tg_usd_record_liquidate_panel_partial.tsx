@@ -7,6 +7,8 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import Divider from "@/components/design_system/structure/divider"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { formatBigInt } from "@/lib/number_formatter"
+import BorderPanel from "@/components/design_system/structure/border_panel"
+import { TgUsdStaticAssetSelector } from "./tg_usd_record_liquidate_panel"
 
 export default function TgUsdLiquidatePanelPartial() {
   const { tgUSDInfo, collateralInfo } = useTgUsdRecordContext()
@@ -30,13 +32,13 @@ export default function TgUsdLiquidatePanelPartial() {
 
   const LiquidateAssetDisplay = () => {
     return (
-      <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
-        <TokenImage token={collateralInfo?.logo} size={20} />
+      <BorderPanel className="flex items-center gap-2 bg-select-input p-2">
+        <TokenImage token={collateralInfo?.logo} size={32} />
 
         <span className="flex flex-col text-sm font-semibold">
           <span>{collateralInfo.symbol}</span>
         </span>
-      </div>
+      </BorderPanel>
     )
   }
 
@@ -66,12 +68,7 @@ export default function TgUsdLiquidatePanelPartial() {
       <DepositInput
         depositAmount={tgUSDReceivedValue}
         labelDeposit="For"
-        depositSelect={
-          <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
-            <TokenImage token="tgUSD" size={20} />
-            <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
-          </div>
-        }
+        depositSelect={<TgUsdStaticAssetSelector />}
         disabled={true}
         displaySliderInput={false}
         depositAsset={tgUSDInfo}
@@ -85,18 +82,13 @@ export default function TgUsdLiquidatePanelPartial() {
       <Divider />
 
       <div className="flex w-full items-end justify-end">
-        <span className="text-xs text-subtitle">Max: {formatBigInt(maxRepayable, 18, 2)} tgUSD</span>
+        <span className="text-xs text-subtitle">Max: {formatBigInt(maxRepayable, 18, 2)} USG</span>
       </div>
 
       <DepositInput
         depositAmount={repayWeiValue}
         labelDeposit="You repay"
-        depositSelect={
-          <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
-            <TokenImage token="tgUSD" size={20} />
-            <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
-          </div>
-        }
+        depositSelect={<TgUsdStaticAssetSelector />}
         disabled={!canInteract}
         displaySliderInput={true}
         percentage={repayablePercentage}
@@ -112,12 +104,7 @@ export default function TgUsdLiquidatePanelPartial() {
       <DepositInput
         depositAmount={(tgUSDReceivedValue || 0n) - (repayWeiValue || 0n)}
         labelDeposit="You receive"
-        depositSelect={
-          <div className="flex items-center gap-2 rounded-[10px] border-2 border-white border-opacity-20 bg-select-input px-3 py-2">
-            <TokenImage token="tgUSD" size={20} />
-            <span className="flex flex-col text-[15px] font-semibold">tgUSD</span>
-          </div>
-        }
+        depositSelect={<TgUsdStaticAssetSelector />}
         disabled={true}
         displaySliderInput={false}
         depositAsset={tgUSDInfo}

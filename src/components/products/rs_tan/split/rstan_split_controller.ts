@@ -9,7 +9,7 @@ export const doSplit = async (tokenId: bigint, walletClient: WalletClient, amoun
     abi: RsTan.abi as Abi,
     functionName: "split",
     args: [tokenId, amountToRemove],
-    address: RSTAN_CONTRACT.RSTAN,
+    address: RSTAN_CONTRACT.VSTAN,
   }
 
   const txHash = await executeContractCall(walletClient, txData)

@@ -95,7 +95,7 @@ export function LeverageInput({
             className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent text-xl font-semibold focus:outline-none")}
           />
 
-          <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2.5">
+          <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
             <TokenImage token="USG" size={20} />
             <span className="flex flex-col text-[15px] font-semibold">USG</span>
           </BorderPanel>

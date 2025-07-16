@@ -32,7 +32,7 @@ export default function TgUsdLiquidatePanelPartial() {
 
   const LiquidateAssetDisplay = () => {
     return (
-      <BorderPanel className="flex items-center gap-2 bg-select-input p-2">
+      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
         <TokenImage token={collateralInfo?.logo} size={32} />
 
         <span className="flex flex-col text-sm font-semibold">

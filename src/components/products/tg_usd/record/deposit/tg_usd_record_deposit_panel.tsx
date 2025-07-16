@@ -132,7 +132,7 @@ export default function TgUsdDepositPanel() {
 
   const BorrowAssetDisplay = () => {
     return (
-      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2.5">
+      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
         <TokenImage token="USG" size={20} />
         <span className="flex flex-col text-[15px] font-semibold">USG</span>
       </BorderPanel>
@@ -151,7 +151,11 @@ export default function TgUsdDepositPanel() {
       <div className="flex w-full items-end justify-between gap-2">
         <span className="text-[20px] font-semibold">Deposit {collateralInfo?.symbol}</span>
         <span className="text-xs text-subtitle">
-          Max: {formatBigInt(balanceAllowanceData?.balance || marketData?.collateralBalance, depositAssetInfo?.decimals || 18, 2)} {depositAssetInfo?.symbol}
+          Max:{" "}
+          {depositAsset !== collateralInfo?.name
+            ? `${formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)} `
+            : `${formatBigInt(marketData?.collateralBalance, depositAssetInfo?.decimals, 2)} `}{" "}
+          {depositAssetInfo?.symbol}
         </span>
       </div>
 
@@ -195,7 +199,7 @@ export default function TgUsdDepositPanel() {
                 <div> {zapValue && !!marketData?.collateralInfos ? estimatedZapDollarValue : ""}</div>
               </div>
             </div>
-            <BorderPanel className="flex items-center justify-center gap-1 bg-select-input px-2 py-1">
+            <BorderPanel className="flex items-center justify-center gap-2 bg-select-input px-2.5 py-2">
               <TokenImage token={collateralInfo?.logo as ExistingAsset} size={32} />
               <div className="font-semibold">{collateralInfo?.symbol}</div>
             </BorderPanel>

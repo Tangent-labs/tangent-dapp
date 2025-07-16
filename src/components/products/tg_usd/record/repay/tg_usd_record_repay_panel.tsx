@@ -142,7 +142,7 @@ export default function TgUsdRepayPanel() {
 
   const WithdrawAssetDisplay = () => {
     return (
-      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2.5">
+      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
         <TokenImage token={collateralInfo?.logo} size={32} />
 
         <span className="flex flex-col text-sm font-semibold">
@@ -218,7 +218,7 @@ export default function TgUsdRepayPanel() {
                   <div>{usgRepayedValue && tgUSDInfo?.price !== 0 ? tgUsdDollarRepayedValue : ""}</div>
                 </div>
               </div>
-              <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2.5">
+              <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
                 <TokenImage token="USG" size={20} />
                 <span className="flex flex-col text-[15px] font-semibold">USG</span>
               </BorderPanel>

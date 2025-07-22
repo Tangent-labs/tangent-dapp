@@ -157,7 +157,7 @@ export interface DebtInfos {
 
 export interface MarketConstants {
   maxLTV: bigint
-  maxMarketDebt: string
+  maxMarketDebt: bigint
   minimumLoan: bigint
   liquidationThreshold: string
   irParams: {

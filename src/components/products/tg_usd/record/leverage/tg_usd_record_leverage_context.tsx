@@ -73,6 +73,8 @@ type TgUsdLeverageContextValues = {
   quoteDetail: { sum: string; result: string }
 
   estimatedZapDollarValue: string
+
+  leverageExceedsMaxLtv: boolean
 }
 
 export const TgUsdLeverageContext = createContext<TgUsdLeverageContextValues | undefined>(undefined)
@@ -80,8 +82,16 @@ export const TgUsdLeverageContext = createContext<TgUsdLeverageContextValues | u
 export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) => {
   const { tokens } = useTgUsdContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo } =
-    useTgUsdRecordContext()
+  const {
+    marketData,
+    loadOnChainData,
+    setCurrentAmounts,
+    balanceAllowanceData,
+    futureMarketDisplayData,
+    fetchBalanceAllowanceData,
+    collateralInfo,
+    marketInfo,
+  } = useTgUsdRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
@@ -299,13 +309,13 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
       )
         .then(() => {
           loadOnChainData()
-          setLeveragedCollateralQuote(0n)
+          setZapValue(0n)
+          setDepositWeiValue(0n)
           setBorrowWeiValue(0n)
-          setDepositWeiValue(undefined)
+          setLeveragedCollateralQuote(0n)
           setDepositSliderPercent(0)
+          setIsDepositLoading(false)
           setLeveragePercentage(0)
-          setZapValue(null)
-
           toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
           setIsDepositLoading(false)
         })
@@ -336,11 +346,13 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
     doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, leverageData!)
       .then(() => {
         loadOnChainData()
+        setZapValue(0n)
         setDepositWeiValue(0n)
         setBorrowWeiValue(0n)
         setLeveragedCollateralQuote(0n)
         setDepositSliderPercent(0)
         setIsDepositLoading(false)
+        setLeveragePercentage(0)
         toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
       })
       .catch((err) => {
@@ -348,10 +360,44 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
       })
   }
 
+  const quoteDetail = useMemo(() => {
+    if (!!zapValue) {
+      const sum = ` ${formatBigIntAsNumber(zapValue || 0n, 18, 0)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 0)}  ~= `
+      const result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + BigInt(zapValue || 0n), 18, 0)}  ${collateralInfo?.symbol}`
+
+      return { sum, result }
+    } else if (!zapValue && !!depositWeiValue) {
+      const sum = ` ${formatBigIntAsNumber(depositWeiValue || 0n, 18, 0)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 0)}  ~= `
+      const result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18, 0)}  ${collateralInfo?.symbol}`
+
+      return { sum, result }
+    } else {
+      return { sum: "", result: `0 ${collateralInfo?.symbol}` }
+    }
+  }, [depositWeiValue, leveragedCollateralQuote, zapValue])
+
+  const estimatedZapDollarValue = useMemo(() => {
+    if (zapValue && marketData) {
+      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), 18))})`
+      return result
+    }
+
+    return ""
+  }, [zapValue])
+
+  const leverageExceedsMaxLtv = useMemo(() => {
+    const computedLtv = futureMarketDisplayData.ltv.substring(0, futureMarketDisplayData.ltv.length - 1)
+
+    const ltvAsNumber = Number(computedLtv)
+
+    return !!quoteDetail && !!futureMarketDisplayData && ltvAsNumber > 90
+  }, [quoteDetail, futureMarketDisplayData])
+
   const formState = useMemo(
     () =>
       getLeverageFormState(
         marketData,
+        leverageExceedsMaxLtv,
         depositWeiValue,
         borrowWeiValue,
         isDepositDisabled,
@@ -361,7 +407,18 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
         balanceAllowanceData!,
         isDepositLoading
       ),
-    [marketData, isDepositDisabled, borrowWeiValue, depositWeiValue, isWellConnected, currentAddress, depositAssetInfo, balanceAllowanceData, isDepositLoading]
+    [
+      marketData,
+      isDepositDisabled,
+      borrowWeiValue,
+      depositWeiValue,
+      isWellConnected,
+      currentAddress,
+      depositAssetInfo,
+      balanceAllowanceData,
+      isDepositLoading,
+      leverageExceedsMaxLtv,
+    ]
   )
 
   useEffect(() => {
@@ -408,31 +465,6 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
     return () => clearTimeout(handler)
   }, [zapInnerValue, isZapUserInput])
-
-  const quoteDetail = useMemo(() => {
-    if (!!zapValue) {
-      const sum = ` ${formatBigIntAsNumber(zapValue || 0n, 18, 0)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 0)}  ~= `
-      const result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + BigInt(zapValue || 0n), 18, 0)}  ${collateralInfo?.symbol}`
-
-      return { sum, result }
-    } else if (!zapValue && !!depositWeiValue) {
-      const sum = ` ${formatBigIntAsNumber(depositWeiValue || 0n, 18, 0)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 0)}  ~= `
-      const result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18, 0)}  ${collateralInfo?.symbol}`
-
-      return { sum, result }
-    } else {
-      return { sum: "", result: `0 ${collateralInfo?.symbol}` }
-    }
-  }, [depositWeiValue, leveragedCollateralQuote, zapValue])
-
-  const estimatedZapDollarValue = useMemo(() => {
-    if (zapValue && marketData) {
-      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), 18))})`
-      return result
-    }
-
-    return ""
-  }, [zapValue])
 
   const contextValue: TgUsdLeverageContextValues = {
     collateralInfo,
@@ -489,6 +521,8 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
     estimatedZapDollarValue,
 
     quoteDetail,
+
+    leverageExceedsMaxLtv,
   }
 
   return <TgUsdLeverageContext.Provider value={contextValue}>{children}</TgUsdLeverageContext.Provider>

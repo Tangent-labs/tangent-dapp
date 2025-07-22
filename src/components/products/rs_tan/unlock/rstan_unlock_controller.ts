@@ -3,11 +3,11 @@ import RsTan from "../../../../abi/tgusd/RsTan.json"
 import { Abi, WalletClient } from "viem"
 import { RSTAN_CONTRACT } from "../rs_tan_repository"
 
-export const doUnlock = async (tokenId: bigint, walletClient: WalletClient, method: string, claimAsSgUSD: boolean) => {
+export const doUnlock = async (tokenId: bigint, walletClient: WalletClient, method: string, claimAsSUSG: boolean) => {
   const txData = {
     abi: RsTan.abi as Abi,
     functionName: method,
-    args: [tokenId, claimAsSgUSD],
+    args: [tokenId, claimAsSUSG],
     address: RSTAN_CONTRACT.VSTAN,
   }
 

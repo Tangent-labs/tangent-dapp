@@ -26,8 +26,8 @@ type RsTanUnlockContextValues = {
 
   tanReceived: bigint | undefined
 
-  claimAsSgUSD: boolean
-  setClaimAsSgUSD: (arg: boolean) => void
+  claimAsSUSG: boolean
+  setClaimAsSUSG: (arg: boolean) => void
 }
 
 export const RsTanUnlockContext = createContext<RsTanUnlockContextValues | undefined>(undefined)
@@ -39,7 +39,7 @@ export const RsTanUnlockProvider = ({ children }: RsTanUnlockContextProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [claimAsSgUSD, setClaimAsSgUSD] = useState<boolean>(false)
+  const [claimAsSUSG, setClaimAsSUSG] = useState<boolean>(false)
 
   const [tanReceived, setTanReceived] = useState<bigint | undefined>(undefined)
 
@@ -82,7 +82,7 @@ export const RsTanUnlockProvider = ({ children }: RsTanUnlockContextProps) => {
     const walletClient = getWalletClient()
 
     if (walletClient && unlockPositionInfo) {
-      await doUnlock(unlockPositionInfo?.tokenId, walletClient, "unlock", claimAsSgUSD)
+      await doUnlock(unlockPositionInfo?.tokenId, walletClient, "unlock", claimAsSUSG)
       loadData()
       setIsLoading(false)
       setUnlockPosition("")
@@ -96,7 +96,7 @@ export const RsTanUnlockProvider = ({ children }: RsTanUnlockContextProps) => {
     const walletClient = getWalletClient()
 
     if (walletClient && unlockPositionInfo) {
-      await doUnlock(unlockPositionInfo?.tokenId, walletClient, "rageQuit", claimAsSgUSD)
+      await doUnlock(unlockPositionInfo?.tokenId, walletClient, "rageQuit", claimAsSUSG)
       loadData()
       setIsLoading(false)
       setUnlockPosition("")
@@ -114,8 +114,8 @@ export const RsTanUnlockProvider = ({ children }: RsTanUnlockContextProps) => {
     actionUnlock,
     actionRageQuit,
     tanReceived,
-    claimAsSgUSD,
-    setClaimAsSgUSD,
+    claimAsSUSG,
+    setClaimAsSUSG,
   }
 
   return <RsTanUnlockContext.Provider value={contextValue}>{children}</RsTanUnlockContext.Provider>

@@ -110,6 +110,13 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   const walletClientRef = useRef<ReturnType<typeof getWalletClient> | null>(null)
 
   useEffect(() => {
+    if (!isRepayAndWithdraw) {
+      setWithdrawWeiValue(0n)
+      setWithdrawPercentage(0)
+    }
+  }, [isRepayAndWithdraw])
+
+  useEffect(() => {
     if (isWellConnected && currentAddress) {
       walletClientRef.current = getWalletClient()
     } else {

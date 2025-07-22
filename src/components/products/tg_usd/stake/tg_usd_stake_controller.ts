@@ -55,7 +55,7 @@ export const getExpectedTgUSD = async (walletClient: WalletClient, weiValue: big
   return previewRedeem
 }
 
-export const getExpectedSgUSD = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
+export const getExpectedSUSG = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
   const [account] = await walletClient.requestAddresses()
 
   const params = [weiValue]

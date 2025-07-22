@@ -29,7 +29,7 @@ import BorderPanel from "@/components/design_system/structure/border_panel"
 export default function TgUsdRepayPanel() {
   const { tokens } = useTgUsdContext()
 
-  const { tgUSDInfo, collateralInfo, balances, marketInfo } = useTgUsdRecordContext()
+  const { tgUSDInfo, pricedCollateralInfo, collateralInfo, balances, marketInfo } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -240,7 +240,7 @@ export default function TgUsdRepayPanel() {
               labelDeposit="You withdraw"
               depositSelect={<WithdrawAssetDisplay />}
               disabled={!canInteract}
-              depositAsset={tgUSDInfo}
+              depositAsset={pricedCollateralInfo}
               balance={maxWithdrawable}
               displaySliderInput={true}
               setMaxBalance={() => setWithdrawWeiValue(maxWithdrawable)}

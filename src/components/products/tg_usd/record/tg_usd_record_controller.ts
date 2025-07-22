@@ -261,3 +261,10 @@ export const prepareZapTransaction = async (
 
   return { routerCallData: routerCall, zapMarketData }
 }
+
+export const computeMaxBorrowable = (maxBorrowable: bigint, maxMarketDebt: bigint, totalDebt: bigint) => {
+  if (maxBorrowable < maxMarketDebt - totalDebt) {
+    return maxBorrowable > 0n ? maxBorrowable : 0n
+  }
+  return maxMarketDebt - totalDebt
+}

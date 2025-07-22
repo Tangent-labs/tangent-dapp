@@ -5,7 +5,7 @@ import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context
 import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { formatUnits } from "viem"
 import { StakingAssetInfo, StakingDepositType, StakingInfo } from "../tg_usd_type"
-import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSgUSD, getExpectedTgUSD, getFormState, getTgUsdStakeOnChainData } from "./tg_usd_stake_controller"
+import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedTgUSD, getFormState, getTgUsdStakeOnChainData } from "./tg_usd_stake_controller"
 import { TGUSD_CONTRACT } from "../tg_usd_repository"
 
 type TgUsdStakeContextProps = {
@@ -188,7 +188,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     ;(async () => {
       if (currentFeature === "stake") {
         try {
-          const sdAssetAmountOut = await getExpectedSgUSD(getWalletClient()!, weiValue, TGUSD_CONTRACT?.SUSG)
+          const sdAssetAmountOut = await getExpectedSUSG(getWalletClient()!, weiValue, TGUSD_CONTRACT?.SUSG)
           setExpected(sdAssetAmountOut)
         } catch (error) {
           console.error("Error while estimating deposit preview :", error)

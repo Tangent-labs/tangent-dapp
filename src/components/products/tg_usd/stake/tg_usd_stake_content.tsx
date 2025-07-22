@@ -52,19 +52,19 @@ export default function TgUsdStakeContent() {
       symbol: "USG",
     }
 
-    const sgUSDInfo = {
+    const sUSGInfo = {
       address: TGUSD_CONTRACT?.SUSG,
       decimals: 18,
       displayDecimals: 0,
-      logo: "USG",
-      name: "USG",
+      logo: "sUSG",
+      name: "sUSG",
       price: stakeInfo?.sgUSDPrice,
-      symbol: "USG",
+      symbol: "sUSG",
     }
 
     let logo = assetInfo?.logo as ExistingAsset
     if (option.value === "sdAsset") {
-      logo = sgUSDInfo.logo as ExistingAsset
+      logo = sUSGInfo.logo as ExistingAsset
     }
 
     return (
@@ -97,13 +97,15 @@ export default function TgUsdStakeContent() {
           </div>
           <div className="flex flex-col items-start justify-center gap-3">
             <span className="text-5xl font-semibold">Savings account</span>
-            <p>Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi. Learn more</p>
+            <p className="max-w-[480px]">
+              Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi. Learn more
+            </p>
           </div>
         </div>
 
         {stakeInfo && (
           <div className="flex w-5/12 items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
-            <TokenImage token="sUSG" size={64} />
+            <TokenImage token="sUSG" size={48} />
 
             <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">Supply</span>

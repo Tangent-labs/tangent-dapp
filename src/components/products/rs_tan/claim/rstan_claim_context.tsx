@@ -14,8 +14,8 @@ type RsTanClaimContextValues = {
   isLoading: boolean
   setIsLoading: (arg: boolean) => void
 
-  claimAsSgUSD: boolean
-  setClaimAsSgUSD: (arg: boolean) => void
+  claimAsSUSG: boolean
+  setClaimAsSUSG: (arg: boolean) => void
 
   selectedPositions: string[]
   setSelectedPositions: (arg: string[]) => void
@@ -36,7 +36,7 @@ export const RsTanClaimProvider = ({ children }: RsTanClaimContextProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [claimAsSgUSD, setClaimAsSgUSD] = useState<boolean>(false)
+  const [claimAsSUSG, setClaimAsSUSG] = useState<boolean>(false)
 
   const [selectedPositions, setSelectedPositions] = useState<string[]>([])
 
@@ -65,7 +65,7 @@ export const RsTanClaimProvider = ({ children }: RsTanClaimContextProps) => {
     if (walletClient) {
       const positionsToClaim = selectedPositionsData?.filter((pos) => pos.claimable !== 0n)
 
-      await doClaim(positionsToClaim, walletClient, claimAsSgUSD)
+      await doClaim(positionsToClaim, walletClient, claimAsSUSG)
       loadData()
       setSelectedPositions([])
       setIsLoading(false)
@@ -81,8 +81,8 @@ export const RsTanClaimProvider = ({ children }: RsTanClaimContextProps) => {
     selectedPositions,
     setSelectedPositions,
     selectedPositionsData,
-    claimAsSgUSD,
-    setClaimAsSgUSD,
+    claimAsSUSG,
+    setClaimAsSUSG,
     hasDuplicates,
   }
 

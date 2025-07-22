@@ -7,6 +7,7 @@ import { getPublicClient } from "@/services/service_rpc"
 
 export function getLeverageFormState(
   marketData?: MarketDetailData,
+  leverageExceedsMaxLtv?: boolean,
   depositWeiValue?: bigint,
   borrowWeiValue?: bigint,
   isDepositAndBorrow?: boolean,
@@ -35,6 +36,10 @@ export function getLeverageFormState(
       reasons.push("Not enough balance.")
     } else if (isZapMode && (depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
       reasons.push("Not enough balance.")
+    }
+
+    if (leverageExceedsMaxLtv) {
+      reasons.push("Max LTV reached")
     }
 
     if (isDepositAndBorrow) {

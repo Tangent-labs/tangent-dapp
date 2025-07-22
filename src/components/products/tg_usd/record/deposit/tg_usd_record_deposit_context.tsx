@@ -12,7 +12,7 @@ import { getQuote } from "../../global_quote_controller"
 import { useTgUsdContext } from "../../tg_usd_context"
 import { TgUsdMarket, ZapToken } from "../../tg_usd_type"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
-import { computeSwapAssetPrice, doApprove, prepareZapTransaction } from "../tg_usd_record_controller"
+import { computeMaxBorrowable, computeSwapAssetPrice, doApprove, prepareZapTransaction } from "../tg_usd_record_controller"
 import { doMarketDeposit, doZapDeposit, doZapDepositAndBorrow, getDepositFormState } from "./tg_usd_record_deposit_controller"
 import { formatDollar } from "@/lib/number_formatter"
 
@@ -509,14 +509,16 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
       if (depositAsset && depositAsset !== collateralInfo?.symbol) {
         futureDeposited =
           marketData?.collateralInfos?.positionCollateralUSDValue +
-          (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 20)
+          (BigInt(zapValue || 0n) * BigInt(1000000 - Math.round(slippage * 10000)) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 24)
       } else {
         futureDeposited =
           marketData?.collateralInfos?.positionCollateralUSDValue + (deposit * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18)
       }
       const maxBorrowable = (futureDeposited * marketData?.constants.maxLTV) / 100000n - futureDebt
 
-      return maxBorrowable >= 0n ? maxBorrowable : 0n
+      const computedMaxBorrowable = computeMaxBorrowable(maxBorrowable, marketData?.constants?.maxMarketDebt, marketData?.debtInfos?.totalDebt)
+
+      return computedMaxBorrowable
     }
 
     return 0n

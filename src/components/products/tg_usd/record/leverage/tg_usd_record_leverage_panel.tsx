@@ -45,6 +45,7 @@ export default function TgUsdLeveragePanel() {
     formState,
     tokens,
     isZapLoading,
+    leverageExceedsMaxLtv,
     isDepositLoading,
     isDepositDisabled,
     zapValue,
@@ -237,6 +238,14 @@ export default function TgUsdLeveragePanel() {
             </div>
           </div>
         </div>
+      </>
+
+      <>
+        {leverageExceedsMaxLtv && (
+          <div className="flex w-full items-center justify-center text-xs text-red-500">
+            Price impact too high. Reduce your leverage or add more collateral.
+          </div>
+        )}
       </>
 
       <FormButtons

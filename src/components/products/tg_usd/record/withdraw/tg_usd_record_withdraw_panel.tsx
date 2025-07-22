@@ -13,7 +13,7 @@ export default function TgUsdWithdrawPanel() {
   const { actionWithdraw, formState, withdrawWeiValue, setWithdrawWeiValue, maxWithdrawable, withdrawPercentage, setWithdrawPercentage } =
     useTgUsdWithdrawContext()
 
-  const { tgUSDInfo, collateralInfo } = useTgUsdRecordContext()
+  const { pricedCollateralInfo, collateralInfo } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -42,7 +42,7 @@ export default function TgUsdWithdrawPanel() {
             labelDeposit="You withdraw"
             depositSelect={<WithdrawAssetDisplay />}
             disabled={!canInteract}
-            depositAsset={tgUSDInfo}
+            depositAsset={pricedCollateralInfo}
             balance={maxWithdrawable}
             displaySliderInput={true}
             setMaxBalance={() => setWithdrawWeiValue(maxWithdrawable)}

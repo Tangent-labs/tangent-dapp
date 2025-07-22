@@ -11,14 +11,15 @@ import { usePathname, useRouter } from "next/navigation"
 import { useMemo } from "react"
 import TgUsdPositionHistory from "./position_history/tg_usd_position_history"
 import BorderPanel from "@/components/design_system/structure/border_panel"
-import { IconChevron } from "@/components/icons/icon_chevron"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Switch } from "@/components/ui/switch"
 
 type TgUsdRecordLayoutProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
   children: React.ReactNode
 }
 
 export default function TgUsdRecordLayout({ children, ...props }: TgUsdRecordLayoutProps) {
-  const { collateral } = useTgUsdRecordContext()
+  const { collateral, isLeveraged, setIsLeveraged } = useTgUsdRecordContext()
 
   const router = useRouter()
 
@@ -69,10 +70,41 @@ export default function TgUsdRecordLayout({ children, ...props }: TgUsdRecordLay
         </div>
         <Divider />
 
-        <BorderPanel className="flex w-full cursor-pointer items-center justify-between bg-overlay-panel p-3 backdrop-blur-[60px] hover:bg-white/20">
-          <span>vAPR Calculator</span>
-          <IconChevron className="w-5"></IconChevron>
-        </BorderPanel>
+        <Accordion className="w-full" type="single" collapsible>
+          <BorderPanel className="flex w-full cursor-pointer items-center justify-between bg-overlay-panel px-2 backdrop-blur-[60px]">
+            <AccordionItem value="item-1">
+              <AccordionTrigger>
+                <span className="text-md">vAPR Calculator</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="flex w-full flex-col items-center justify-center text-primary">
+                  <div className="flex w-full items-start justify-start">
+                    This calculator allows you to compute your position&lsquo;s net vAPR depending on USG&lsquo;s price. Note that the result will always be
+                    accurate only for leveraged positions where all the debt has been converted to collateral. If you&lsquo;re using your debt to farm
+                    elsewhere, you will need to regurlaly update your debt info (amount used to farm and vAPR) so the calculator display a correct result.
+                  </div>
+
+                  <div className="flex w-full">
+                    <div className="mt-3 flex w-2/12 flex-col items-center justify-center">
+                      <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel px-2 py-1 backdrop-blur-[60px]">
+                        <span> Current vAPR</span>
+                        <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">60.5%</span>
+                      </div>
+
+                      <div className="my-2 flex w-full items-center justify-end gap-1">
+                        Leverage <Switch checked={isLeveraged} onCheckedChange={(v) => setIsLeveraged(v)} />
+                      </div>
+
+                      <div></div>
+                    </div>
+
+                    <div className="flex w-10/12"></div>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </BorderPanel>
+        </Accordion>
 
         <Divider />
         <TgUsdMarketInfo />

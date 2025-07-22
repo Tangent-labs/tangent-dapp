@@ -5,6 +5,9 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doMarketBorrow, getBorrowFormState } from "./tg_usd_record_borrow_controller"
+import { toast } from "react-toastify"
+import { ToastComponent } from "@/components/design_system/toast"
+import { computeMaxBorrowable } from "../tg_usd_record_controller"
 
 type TgUsdBorrowContextProps = {
   children: ReactNode
@@ -34,11 +37,15 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
   const actionBorrow = () => {
     const walletClient = getWalletClient()
     if (walletClient)
-      doMarketBorrow(walletClient, { marketAddress: marketData!.marketAddress, borrowWeiValue }).then(() => {
-        setBorrowWeiValue(0n)
-        loadOnChainData()
-        setBorrowPercentage(0)
-      })
+      doMarketBorrow(walletClient, { marketAddress: marketData!.marketAddress, borrowWeiValue })
+        .then(() => {
+          setBorrowWeiValue(0n)
+          loadOnChainData()
+          setBorrowPercentage(0)
+        })
+        .catch(() => {
+          toast.error(ToastComponent, { data: { type: "Error", content: "Borrow failed." } })
+        })
   }
 
   useEffect(() => {
@@ -53,7 +60,9 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
 
       const maxBorrowable = (marketData?.collateralInfos?.positionCollateralUSDValue * marketData?.constants.maxLTV) / BigInt(100000n) - futureDebt
 
-      return maxBorrowable > 0n ? maxBorrowable : 0n
+      const computedMaxBorrowable = computeMaxBorrowable(maxBorrowable, marketData?.constants?.maxMarketDebt, marketData?.debtInfos?.totalDebt)
+
+      return computedMaxBorrowable
     }
 
     return 0n

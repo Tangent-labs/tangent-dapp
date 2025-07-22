@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch"
 export const RsTanClaimContent = () => {
   const { lockData } = useRsTanContext()
 
-  const { claimAsSgUSD, selectedPositions, hasDuplicates, selectedPositionsData, actionClaim, setClaimAsSgUSD, setSelectedPositions } = useRsTanClaimContext()
+  const { claimAsSUSG, selectedPositions, hasDuplicates, selectedPositionsData, actionClaim, setClaimAsSUSG, setSelectedPositions } = useRsTanClaimContext()
 
   const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {
     return (
@@ -45,7 +45,7 @@ export const RsTanClaimContent = () => {
         <div className="text-lg text-white">Claimable :</div>
 
         <div className="flex items-center justify-center gap-2 text-xs text-subtitle">
-          Claim as sgUSD <Switch checked={claimAsSgUSD} onCheckedChange={() => setClaimAsSgUSD(!claimAsSgUSD)} />
+          Claim as sUSG <Switch checked={claimAsSUSG} onCheckedChange={() => setClaimAsSUSG(!claimAsSUSG)} />
         </div>
       </div>
 
@@ -72,8 +72,8 @@ export const RsTanClaimContent = () => {
 
         <div className="flex h-full flex-col items-center justify-center">
           <div className="flex items-center justify-center rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
-            <TokenImage token={claimAsSgUSD ? "sUSG" : "USG"} className="mr-2" size={16} />
-            {claimAsSgUSD ? "sUSG" : "USG"}
+            <TokenImage token={claimAsSUSG ? "sUSG" : "USG"} className="mr-2" size={16} />
+            {claimAsSUSG ? "sUSG" : "USG"}
           </div>
         </div>
       </div>
@@ -84,7 +84,7 @@ export const RsTanClaimContent = () => {
           <div className="flex w-full items-start justify-start">
             <div className="flex w-1/2 items-start justify-start text-subtitle">Position ID</div>
 
-            <div className="flex w-1/2 items-start justify-start text-subtitle"> {claimAsSgUSD ? "sUSG" : "USG"} received</div>
+            <div className="flex w-1/2 items-start justify-start text-subtitle"> {claimAsSUSG ? "sUSG" : "USG"} received</div>
           </div>
 
           {selectedPositionsData.map((position: LockPosition, index: number) => (
@@ -94,7 +94,7 @@ export const RsTanClaimContent = () => {
               </div>
               <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
                 {formatBigInt(position.claimable, 18, 2)}
-                <TokenImage token={claimAsSgUSD ? "sUSG" : "USG"} className="" size={16} />
+                <TokenImage token={claimAsSUSG ? "sUSG" : "USG"} className="" size={16} />
               </div>
             </div>
           ))}

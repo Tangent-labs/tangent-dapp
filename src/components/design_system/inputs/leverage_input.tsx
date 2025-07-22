@@ -39,7 +39,13 @@ export function LeverageInput({
     return 0
   }, [depositAmount])
 
-  const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
+  const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "0")
+
+  useEffect(() => {
+    if (depositAmount === 0n) {
+      setInnerValue("0")
+    }
+  }, [depositAmount])
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!!setPercentage && depositAsset) {
@@ -88,7 +94,7 @@ export function LeverageInput({
         <div className="mb-2 flex flex-col justify-between lg:flex-row">
           <input
             {...props}
-            type="number"
+            type="string"
             value={innerValue}
             onInput={handleInputChange}
             placeholder="Amount"

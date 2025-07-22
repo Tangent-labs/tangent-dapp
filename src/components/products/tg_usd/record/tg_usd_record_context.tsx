@@ -4,7 +4,7 @@ import { AssetApr, AssetDataPriced, CollateralInfo, ListState, TgUsdMarketAsset 
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
-import { Address } from "viem"
+import { Address, formatUnits } from "viem"
 import { useTgUsdContext } from "../tg_usd_context"
 import { getUserPositions } from "../api"
 
@@ -64,6 +64,11 @@ type TgUsdRecordContextValues = {
   setIsUserHistoryLoading: (v: boolean) => void
 
   customSort: (arg: ListState) => void
+
+  isLeveraged: boolean
+  setIsLeveraged: (v: boolean) => void
+
+  pricedCollateralInfo: CollateralInfo
 }
 
 export const TgUsdRecordContext = createContext<TgUsdRecordContextValues | undefined>(undefined)
@@ -80,6 +85,8 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
   const [userPositions, setUserPositions] = useState<UserPosition[] | null>(null)
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const [isLeveraged, setIsLeveraged] = useState<boolean>(false)
 
   const [isUserHistoryLoading, setIsUserHistoryLoading] = useState<boolean>(true)
 
@@ -140,6 +147,11 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
   const marketDisplayData = useMemo(() => {
     return getMarketDisplayData(marketData, collateralInfo)
   }, [marketData])
+
+  const pricedCollateralInfo = useMemo(() => {
+    if (marketData) return { ...collateralInfo, price: Number(formatUnits(marketData?.collateralInfos.collateralUSDPrice, 18)) }
+    return collateralInfo
+  }, [marketData, collateralInfo])
 
   useEffect(() => {
     const tokenAddresses: Address[] = tokens.map((el) => el.address)
@@ -239,6 +251,9 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     customSort,
     isUserHistoryLoading,
     setIsUserHistoryLoading,
+    isLeveraged,
+    setIsLeveraged,
+    pricedCollateralInfo,
   }
 
   return <TgUsdRecordContext.Provider value={contextValue}>{children}</TgUsdRecordContext.Provider>

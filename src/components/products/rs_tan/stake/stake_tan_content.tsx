@@ -56,7 +56,7 @@ export default function StakeTanContent() {
       symbol: "TAN",
     }
 
-    const sgUSDInfo = {
+    const sTANInfo = {
       address: RSTAN_CONTRACT?.STAN,
       decimals: 18,
       displayDecimals: 0,
@@ -68,7 +68,7 @@ export default function StakeTanContent() {
 
     let logo = assetInfo?.logo as ExistingAsset
     if (option.value === "sdAsset") {
-      logo = sgUSDInfo.logo as ExistingAsset
+      logo = sTANInfo.logo as ExistingAsset
     }
 
     return (

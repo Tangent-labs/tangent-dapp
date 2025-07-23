@@ -22,7 +22,7 @@ const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: Li
         <span className="text-[20px] font-semibold">{name}</span>
 
         {marketData && (
-          <div className="flex items-center justify-between gap-2">
+          <div className="hidden items-center justify-between gap-2 md:flex">
             {marketData?.marketType?.includes("CRV") && (
               <BorderPanel className="flex items-center justify-center gap-2 !rounded-full bg-overlay-panel px-4 py-0.5 text-xs">
                 <TokenImage token={"CRV"} size={12} />

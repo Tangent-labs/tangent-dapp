@@ -23,7 +23,6 @@ import { useTgUsdLeverageContext } from "./tg_usd_record_leverage_context"
 import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
 import { cn } from "@/lib/utils"
 import BorderPanel from "@/components/design_system/structure/border_panel"
-import { formatUnits } from "viem"
 
 export default function TgUsdLeveragePanel() {
   const {
@@ -58,7 +57,7 @@ export default function TgUsdLeveragePanel() {
     leveragePercentage,
   } = useTgUsdLeverageContext()
 
-  const { collateralInfo, marketData, balances, balanceAllowanceData, marketInfo } = useTgUsdRecordContext()
+  const { collateralInfo, marketData, balances, balanceAllowanceData, marketInfo, pricedCollateralInfo, tgUSDInfo } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -210,7 +209,8 @@ export default function TgUsdLeveragePanel() {
         <LeverageInput
           label="You borrow"
           depositAmount={!!zapValue ? zapValue : depositWeiValue}
-          depositAsset={!!marketData ? { ...collateralInfo, price: Number(formatUnits(marketData?.collateralInfos?.collateralUSDPrice, 18)) } : collateralInfo}
+          borrowAsset={tgUSDInfo}
+          depositAsset={pricedCollateralInfo}
           percentage={isDepositDisabled ? 0 : leveragePercentage}
           setPercentage={isDepositDisabled ? undefined : setLeveragePercentage}
           onValueChange={setBorrowWeiValue}

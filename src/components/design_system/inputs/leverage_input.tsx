@@ -5,11 +5,12 @@ import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import TokenImage from "../structure/token_image"
-import { toBigInt } from "@/lib/number_formatter"
+import { formatDollar, toBigInt } from "@/lib/number_formatter"
 import BorderPanel from "../structure/border_panel"
 
 type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced | CollateralInfo
+  borrowAsset?: AssetDataPriced | CollateralInfo
   className?: string
   depositAmount?: bigint
   disabled?: boolean
@@ -24,6 +25,7 @@ type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 export function LeverageInput({
   className,
   depositAmount,
+  borrowAsset,
   depositAsset,
   label,
   isLoading = false,
@@ -85,13 +87,21 @@ export function LeverageInput({
     return () => clearTimeout(handler)
   }, [innerValue, depositAsset, onValueChange])
 
+  const dollarDepositDisplay = useMemo(() => {
+    if (innerValue && borrowAsset?.decimals && borrowAsset?.price) {
+      const val = Number(formatUnits(toBigInt(Number(innerValue), 18), borrowAsset.decimals)) * borrowAsset.price
+      return `(${formatDollar(val)})`
+    }
+    return "($0)"
+  }, [innerValue, borrowAsset])
+
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
       <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col bg-white bg-opacity-[3%] p-2`}>
         <div className="flex w-full justify-between">
           <div className="text-sm text-gray-400">{label}</div>
         </div>
-        <div className="mb-2 flex flex-col justify-between lg:flex-row">
+        <div className="mb-1 flex flex-col justify-between lg:flex-row">
           <input
             {...props}
             type="string"
@@ -104,6 +114,17 @@ export function LeverageInput({
           <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
             <TokenImage token="USG" size={20} />
             <span className="flex flex-col text-[15px] font-semibold">USG</span>
+          </BorderPanel>
+        </div>
+
+        <div className="flex w-full items-center justify-between">
+          <div className="text-xs text-gray-400">{dollarDepositDisplay}</div>
+
+          <BorderPanel
+            className="rounded-full! flex w-10 cursor-pointer items-center bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
+            onClick={() => handleSliderChange({ target: { value: "10" } } as React.ChangeEvent<HTMLInputElement>)}
+          >
+            Max.
           </BorderPanel>
         </div>
 

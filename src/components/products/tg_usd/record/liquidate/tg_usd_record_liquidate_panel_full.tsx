@@ -28,7 +28,7 @@ export default function TgUsdLiquidatePanelFull() {
   return (
     <>
       <div className="flex w-full items-end justify-between">
-        <span className="text-[20px] font-semibold">Liquidate all</span>
+        <span className="text-[14px] font-semibold md:text-[20px]">Liquidate all</span>
       </div>
 
       <div className="flex flex-col gap-2">

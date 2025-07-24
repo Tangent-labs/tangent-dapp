@@ -131,7 +131,7 @@ export default function TgUsdRepayPanel() {
 
     return (
       <CustomSelect
-        className="w-full min-w-40"
+        className="w-full"
         template={AssetSelectTemplate}
         value={repayAsset || "USG"}
         options={sortedAssets}
@@ -168,7 +168,7 @@ export default function TgUsdRepayPanel() {
 
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
-          <span className="text-[20px] font-semibold">Repay debt</span>
+          <span className="text-[14px] font-semibold md:text-[20px]">Repay debt</span>
 
           {repayAsset === "USG" ? (
             <span className="text-xs text-subtitle"> Max: {formatBigInt(marketData?.debtInfos?.userDebt, 18, 3)} USG</span>
@@ -229,7 +229,7 @@ export default function TgUsdRepayPanel() {
         {isRepayAndWithdraw && (
           <>
             <div className="flex items-end justify-between">
-              <span className="text-[20px] font-semibold">Withdraw collateral</span>
+              <span className="text-[14px] font-semibold md:text-[20px]">Withdraw collateral</span>
               <span className="text-xs text-subtitle">
                 Max: {formatBigInt(maxWithdrawable, 18, 2)} {collateralInfo?.symbol}
               </span>

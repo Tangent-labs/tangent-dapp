@@ -113,7 +113,7 @@ export default function TgUsdCollateralPrice() {
   }, [marketInfo?.collatAddress, timeWindow])
 
   return (
-    <div className="flex w-full flex-col justify-between rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+    <div className="hidden w-full flex-col justify-between rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:flex">
       <Title label="Collateral price" size={"normal"} />
       <Divider />
       <div className="mb-3 flex items-center justify-between">

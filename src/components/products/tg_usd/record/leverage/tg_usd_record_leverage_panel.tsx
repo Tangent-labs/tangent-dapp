@@ -95,7 +95,7 @@ export default function TgUsdLeveragePanel() {
 
     return (
       <CustomSelect
-        className="w-full min-w-40"
+        className="w-full"
         template={AssetSelectTemplate}
         value={depositAsset || collateralInfo.name}
         options={sortedAssets}
@@ -142,7 +142,7 @@ export default function TgUsdLeveragePanel() {
       {!isDepositDisabled && (
         <>
           <div className="flex w-full items-end justify-between gap-2">
-            <span className="text-[20px] font-semibold">Deposit {collateralInfo?.symbol}</span>
+            <span className="text-[14px] font-semibold md:text-[20px]">Deposit {collateralInfo?.symbol}</span>
             <span className="text-xs text-subtitle">
               Max:{" "}
               {depositAsset !== collateralInfo?.name
@@ -219,7 +219,7 @@ export default function TgUsdLeveragePanel() {
         <div className="-mt-1 flex w-full items-start justify-end text-xs text-subtitle">Max leverage: x10</div>
 
         <div className="flex flex-col gap-2">
-          <span className="text-[20px] font-semibold">Recap</span>
+          <span className="text-[14px] font-semibold md:text-[20px]">Recap</span>
 
           <div className={cn("flex flex-col gap-1 rounded-[10px] bg-overlay-panel p-2 text-xs", isDepositLoading ? "shimmer" : "")}>
             {!isDepositDisabled && (

@@ -91,7 +91,7 @@ export default function TgUsdStakeContent() {
   return (
     <>
       <div className="flex w-full items-end justify-between gap-4">
-        <div className="sgusd-card w-7/12">
+        <div className="sgusd-card hidden lg:flex lg:w-7/12">
           <div className="flex items-center justify-center">
             <Image height={248} width={248} src="/medias/product_tgusd.png" alt="token" />
           </div>
@@ -104,8 +104,8 @@ export default function TgUsdStakeContent() {
         </div>
 
         {stakeInfo && (
-          <div className="flex w-5/12 items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
-            <TokenImage token="sUSG" size={48} />
+          <div className="flex w-full items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px] lg:w-5/12">
+            <TokenImage className="hidden sm:flex" token="sUSG" size={48} />
 
             <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">Supply</span>
@@ -123,8 +123,8 @@ export default function TgUsdStakeContent() {
         )}
       </div>
 
-      <div className="my-8 flex w-full items-start justify-start gap-4">
-        <div className="flex w-5/12 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px]">
+      <div className="my-8 flex w-full flex-col items-start justify-start gap-4 lg:flex-row">
+        <div className="flex w-full flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] lg:w-5/12">
           <div className="flex w-full items-center justify-between gap-4">
             <ButtonTab
               onClick={() => setCurrentFeature("stake")}
@@ -177,7 +177,7 @@ export default function TgUsdStakeContent() {
             labelProcess={currentFeature === "stake" ? "Deposit & Stake" : "Unstake"}
           />
         </div>
-        <div className="flex w-7/12 flex-col items-start justify-start rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
+        <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px] lg:w-7/12">
           <span className="text-2xl font-semibold">Performance</span>
 
           <Divider className="h-1 w-full"></Divider>
@@ -188,7 +188,7 @@ export default function TgUsdStakeContent() {
             additionalLiquidity={currentFeature === "stake" ? (weiValue ? Number(formatUnits(weiValue!, 18)) : 0) : 0}
           ></ForecastGraph>
 
-          <div className="flex w-full items-center justify-between gap-2">
+          <div className="flex w-full flex-col items-center justify-between gap-2 sm:flex-row">
             <EvolutionBox
               className="w-full"
               originalValue={Number(formatUnits(stakeInfo?.sgUSDBalance || 0n, 18)).toFixed(2)}

@@ -94,7 +94,7 @@ export default function TgUsdDepositPanel() {
 
     return (
       <CustomSelect
-        className="w-full min-w-40"
+        className="w-full min-w-24"
         template={AssetSelectTemplate}
         value={depositAsset || collateralInfo.name}
         options={sortedAssets}
@@ -149,7 +149,7 @@ export default function TgUsdDepositPanel() {
       </div>
 
       <div className="flex w-full items-end justify-between gap-2">
-        <span className="text-[20px] font-semibold">Deposit {collateralInfo?.symbol}</span>
+        <span className="text-[14px] font-semibold md:text-[20px]">Deposit {collateralInfo?.symbol}</span>
         <span className="text-xs text-subtitle">
           Max:{" "}
           {depositAsset !== collateralInfo?.name
@@ -195,7 +195,7 @@ export default function TgUsdDepositPanel() {
                 />
               </div>
               <div className="flex items-center justify-start gap-2 text-xs text-subtitle">
-                <div>Minimum received </div>
+                <div className="hidden md:flex">Minimum received </div>
                 <div> {zapValue && !!marketData?.collateralInfos ? estimatedZapDollarValue : ""}</div>
               </div>
             </div>
@@ -210,7 +210,7 @@ export default function TgUsdDepositPanel() {
       {isDepositAndBorrow && (
         <div className="flex flex-col gap-1">
           <div className="flex items-end justify-between">
-            <span className="text-[20px] font-semibold">Borrow USG</span>
+            <span className="text-[14px] font-semibold md:text-[20px]">Borrow USG</span>
             <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} USG</span>
           </div>
           <BorrowInput

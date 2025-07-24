@@ -16,7 +16,7 @@ export const MenuModal = () => {
       return "Markets"
     }
 
-    return feat
+    return feat.substring(0, 1).toUpperCase() + feat.substring(1, feat.length).toLowerCase()
   }, [pathname])
 
   return (
@@ -32,8 +32,8 @@ export const MenuModal = () => {
           <DialogClose asChild>
             <button
               className={cn(
-                "text-sm font-semibold text-white transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-transparent aria-disabled:text-gray-500",
-                pathname === "/" ? "bg-tab bg-clip-text font-bold text-transparent" : ""
+                "flex items-center justify-center rounded-[10px] border border-white border-opacity-20 px-4 py-2 font-roobert text-[15px] font-semibold",
+                pathname === "/" ? "bg-button-active text-black" : "text-white"
               )}
               onClick={() => router.push("/")}
             >
@@ -43,8 +43,8 @@ export const MenuModal = () => {
           <DialogClose asChild>
             <button
               className={cn(
-                "text-sm font-semibold text-white transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-transparent aria-disabled:text-gray-500",
-                pathname === "/stake" ? "bg-tab bg-clip-text font-bold text-transparent" : ""
+                "flex items-center justify-center rounded-[10px] border border-white border-opacity-20 px-4 py-2 font-roobert text-[15px] font-semibold",
+                pathname === "/stake" ? "bg-button-active text-black" : "text-white"
               )}
               onClick={() => router.push("/stake")}
             >
@@ -54,8 +54,8 @@ export const MenuModal = () => {
           <DialogClose asChild>
             <button
               className={cn(
-                "text-sm font-semibold text-white transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-transparent aria-disabled:text-gray-500",
-                pathname === "/earn" ? "bg-tab bg-clip-text font-bold text-transparent" : ""
+                "flex items-center justify-center rounded-[10px] border border-white border-opacity-20 px-4 py-2 font-roobert text-[15px] font-semibold",
+                pathname === "/earn" ? "bg-button-active text-black" : "text-white"
               )}
               onClick={() => router.push("/earn")}
             >
@@ -65,8 +65,8 @@ export const MenuModal = () => {
           <DialogClose asChild>
             <button
               className={cn(
-                "text-sm font-semibold text-white transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-transparent aria-disabled:text-gray-500",
-                pathname === "/swap" ? "bg-tab bg-clip-text font-bold text-transparent" : ""
+                "flex items-center justify-center rounded-[10px] border border-white border-opacity-20 px-4 py-2 font-roobert text-[15px] font-semibold",
+                pathname === "/swap" ? "bg-button-active text-black" : "text-white"
               )}
               onClick={() => router.push("/swap")}
             >

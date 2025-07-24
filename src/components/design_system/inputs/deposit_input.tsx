@@ -117,8 +117,8 @@ export function DepositInput({
             </div>
           )}
         </div>
-        <div className="flex flex-col justify-between lg:flex-row">
-          <div className="order-2 text-xl lg:order-1">
+        <div className="flex justify-between">
+          <div className="text-xl">
             <input
               {...props}
               disabled={isLoading || disabled}
@@ -126,7 +126,7 @@ export function DepositInput({
               value={innerValue}
               placeholder="Amount"
               onChange={handleInputChange}
-              className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none")}
+              className={cn("min-h-10 max-w-36 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none")}
               step="any"
             />
           </div>

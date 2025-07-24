@@ -27,7 +27,7 @@ export const TgUsdEarnContent = () => {
   return (
     <>
       <div className="flex items-center justify-between gap-6">
-        <div className="tgusd-card w-7/12">
+        <div className="tgusd-card hidden w-7/12 xl:flex">
           <div className="flex items-center justify-center">
             <Image height={160} width={160} src="/medias/tokens/tgUSD_header.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
@@ -40,24 +40,32 @@ export const TgUsdEarnContent = () => {
           </div>
         </div>
 
-        <div className="flex h-full flex-col items-center gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+        <div className="flex h-full w-full flex-col items-center gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] xl:w-fit">
           <div className="flex h-20 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-semibold italic">
             Points campaign
             <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
           </div>
 
           <div className="mt-auto flex w-full items-center justify-center gap-3 p-2">
-            <div className={cn("flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]")}>
+            <div
+              className={cn(
+                "flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48"
+              )}
+            >
               <span className="text-xs text-gray-400">USG Balance</span>
               <span className="text-sm font-semibold">15,000.00</span>
             </div>
 
-            <div className={cn("flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]")}>
+            <div
+              className={cn(
+                "flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48"
+              )}
+            >
               <span className="text-xs text-gray-400">sUSG Balance</span>
               <span className="text-sm font-semibold">10,000.00</span>
             </div>
 
-            <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
+            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48">
               <span className="text-xs text-gray-400">Your Total Points</span>
               <span className="text-sm font-semibold">1385 pts</span>
             </div>
@@ -102,7 +110,7 @@ export function TgUsdMarketListInner() {
             <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-20" />
 
             <div className="flex flex-col leading-8">
-              <span className="text-[20px] font-semibold">{item?.asset}</span>
+              <span className="text-[14px] font-semibold md:text-[20px]">{item?.asset}</span>
               <BorderPanel className="flex items-center justify-center gap-2 !rounded-full bg-earn-action px-4 py-0.5 text-xs">
                 <span>{item?.actionLabel}</span>
               </BorderPanel>
@@ -130,7 +138,11 @@ export function TgUsdMarketListInner() {
               </div>
             </div>
 
-            <div className="flex w-1/2 items-center justify-center text-[20px]"> x{item?.bonusPts} </div>
+            <div className="flex w-1/2 items-center justify-center text-[20px]">
+              <div className="hidden xl:flex"> x{item?.bonusPts} </div>
+
+              <div className="flex xl:hidden"> x{item?.bonusPts} Points </div>
+            </div>
           </div>
         </ListRow>
       ))}

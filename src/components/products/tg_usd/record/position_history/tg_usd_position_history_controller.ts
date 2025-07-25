@@ -22,33 +22,33 @@ export const sortUserData = (pos: UserPosition[]) => {
 
 export const formatActionLabel = (event: string) => {
   switch (event.toLowerCase()) {
-    case "market_borrow":
+    case "borrow":
       return "Borrow"
-    case "market_deposit":
+    case "deposit":
       return "Deposit"
-    case "market_zap_deposit":
+    case "zap_deposit":
       return "Zap Deposit"
-    case "market_deposit_and_borrow":
+    case "deposit_and_borrow":
       return "Deposit and Borrow"
-    case "market_zap_deposit_and_borrow":
+    case "zap_deposit_and_borrow":
       return "Zap Deposit and Borrow"
-    case "market_withdraw":
+    case "withdraw":
       return "Withdraw"
-    case "market_repay":
+    case "repay":
       return "Repay"
-    case "market_repay_and_withdraw":
+    case "repay_and_withdraw":
       return "Repay and Withdraw"
-    case "market_zap_repay":
+    case "zap_repay":
       return "ZapRepay"
-    case "market_zap_repay_and_withdraw":
+    case "zap_repay_and_withdraw":
       return "Zap Repay and Withdraw"
-    case "market_leverage":
+    case "leverage":
       return "Leverage"
-    case "market_zap_leverage":
+    case "zap_leverage":
       return "Zap Leverage"
-    case "market_liquidate":
+    case "liquidate":
       return "Liquidation"
-    case "market_self_liquidate":
+    case "self_liquidate":
       return "Self Liquidation"
     default:
       return "UnknownEvent"

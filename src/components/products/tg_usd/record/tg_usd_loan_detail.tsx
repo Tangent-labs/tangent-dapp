@@ -14,10 +14,10 @@ export default function TgUsdLoanDetail() {
   if (!isWellConnected) return <></>
 
   return (
-    <div className="hidden rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] lg:flex lg:flex-col">
+    <div className="flex flex-col rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
       <Title label={"Loan details"} size={"normal"} />
       <Divider />
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-4">
         <EvolutionBox
           originalValue={marketDisplayData.collateralValue}
           label={"Collateral value"}

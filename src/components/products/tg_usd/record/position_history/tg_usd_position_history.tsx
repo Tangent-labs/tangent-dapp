@@ -28,10 +28,10 @@ const HistoryRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
     <div className="flex items-center justify-between max-xl:flex-col">
       <div className="flex w-full items-center justify-evenly px-2">
         <div className="flex w-2/12 items-center justify-center">{children?.at(0)} </div>
-        <div className="flex w-3/12 items-center justify-center">{children?.at(1)} </div>
-        <div className="flex w-3/12 items-center justify-center">{children?.at(2)} </div>
-        <div className="flex w-3/12 items-center justify-center">{children?.at(3)} </div>
-        <div className="flex w-1/12 items-center justify-center">{children?.at(4)} </div>
+        <div className="flex w-4/12 items-center justify-center">{children?.at(1)} </div>
+        <div className="flex w-2/12 items-center justify-center">{children?.at(2)} </div>
+        <div className="flex w-3/12 items-center justify-center md:w-4/12 lg:w-3/12">{children?.at(3)} </div>
+        <div className="hidden w-1/12 items-center justify-center lg:flex">{children?.at(4)} </div>
       </div>
     </div>
   )
@@ -114,30 +114,34 @@ function PositionList() {
         </div>
       </div>
 
-      <div className="scrollbar-thin mt-2 h-full max-h-[200px] overflow-y-auto rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="scrollbar-thin mt-0 h-full max-h-[200px] overflow-y-auto rounded-[10px] bg-overlay-panel backdrop-blur-[60px] lg:mt-2">
         {displayRows &&
           (displayRows as UserPosition[])?.map((pos: UserPosition) => (
             <div key={pos.txHash} className="px-5 py-2 text-[15px] hover:cursor-pointer hover:before:bg-list-row-hover">
               <div className="flex w-full items-center justify-between">
                 <div
                   className={cn(
-                    "w-2/12",
+                    "hidden w-2/12 md:flex",
                     formatActionLabel(pos.label) === "Self Liquidation" || formatActionLabel(pos.label) === "Liquidation" ? "text-red-600" : "text-white"
                   )}
                 >
                   {formatActionLabel(pos.label)}
                 </div>
-                <div className="flex w-3/12 items-center justify-center gap-1">
-                  {formatBigInt(pos.collatAmount, 18, 2)} <TokenImage token={collateralInfo.logo} size={24} /> {collateralInfo?.symbol}{" "}
-                  <span className="text-xs text-subtitle"> {formatDollar(formatUnits(pos.collatAmount, 18), 0)}</span>
+                <div className="flex w-3/12 items-center justify-center gap-1 lg:w-4/12">
+                  {formatBigInt(pos.collatAmount, 18, 2)} <TokenImage token={collateralInfo.logo} size={24} />{" "}
+                  <span className="hidden lg:flex"> {collateralInfo?.symbol} </span>
+                  <span className="hidden text-xs text-subtitle md:flex"> {formatDollar(formatUnits(pos.collatAmount, 18), 0)}</span>
                 </div>
-                <div className="flex w-3/12 items-center justify-center gap-1">
-                  {formatBigInt(pos.usgAmount, 18, 2)} <TokenImage token="USG" size={16} /> USG
+                <div className="flex w-2/12 items-center justify-center gap-1 md:w-1/12 lg:w-2/12">
+                  {formatBigInt(pos.usgAmount, 18, 2)} <TokenImage token="USG" size={16} /> <span className="hidden md:flex">USG</span>
                 </div>
-                <div className="flex w-3/12 items-center justify-center">
-                  {moment(pos.date).format("MM-DD-YYYY")} {" - "} {moment(pos.date).format("hh:mm")}
+                <div className="flex w-4/12 items-center justify-center lg:w-3/12">
+                  <span className="hidden sm:flex">
+                    {moment(pos.date).format("MM-DD-YYYY")} {" - "} {moment(pos.date).format("hh:mm")}
+                  </span>
+                  <span className="flex sm:hidden"> {moment(pos.date).format("MM-DD-YYYY")}</span>
                 </div>
-                <div className="flex w-1/12 items-center justify-center">
+                <div className="hidden w-1/12 items-center justify-center lg:flex">
                   {pos.txHash.substring(0, 4) + "..." + pos.txHash.substring(pos.txHash.length - 4, pos.txHash.length)}
                 </div>
               </div>

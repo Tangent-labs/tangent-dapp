@@ -132,7 +132,7 @@ export const TgUsdDashboardContent = () => {
             <Divider className="h-0.5 w-full bg-white/10" />
 
             <div className="flex h-[calc(100%-2.5rem)] w-full items-start justify-between">
-              <div className="mt-6 flex w-full items-center justify-center sm:w-7/12 md:w-full xl:w-7/12">
+              <div className="mt-6 flex w-full items-center justify-center sm:w-6/12 md:w-full xl:w-6/12">
                 <div className="relative flex h-48 w-full items-center justify-center">
                   <div className="absolute left-0 top-0 flex h-48 w-full">
                     <div className="flex h-full w-full flex-col items-center justify-center gap-1">
@@ -164,7 +164,7 @@ export const TgUsdDashboardContent = () => {
                 </div>
               </div>
 
-              <div className="hidden max-h-48 w-full flex-col items-start justify-start gap-1 sm:flex sm:w-5/12 md:hidden xl:flex xl:w-5/12">
+              <div className="hidden max-h-48 w-full flex-col items-start justify-start gap-1 sm:flex sm:w-6/12 md:hidden xl:flex xl:w-6/12">
                 <div className="scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent my-4 flex max-h-full w-full flex-col gap-1 overflow-y-auto">
                   {userData?.tgUsdCollateralsData
                     .filter((el: TgUsdCollateralData) => el.value > 0)

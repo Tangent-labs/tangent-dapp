@@ -9,7 +9,7 @@ type RecordPageHeaderProps = {
 
 export default function RecordPageHeader({ apr, indicators }: RecordPageHeaderProps) {
   return (
-    <div className="hidden min-h-20 items-center justify-evenly gap-4 rounded-[10px] bg-overlay-panel py-5 backdrop-blur-[60px] md:flex">
+    <div className="flex min-h-20 flex-wrap items-center justify-evenly gap-4 rounded-[10px] bg-overlay-panel py-5 backdrop-blur-[60px] md:flex-nowrap">
       {apr && (
         <RecordPageHeaderIndicator
           title="APR"
@@ -33,7 +33,9 @@ type RecordPageHeaderIndicatorProps = {
 
 export const RecordPageHeaderIndicator = ({ title, value, subValue, className }: RecordPageHeaderIndicatorProps) => {
   return (
-    <div className={cn(`flex w-full flex-col items-center justify-center`, `${title === "LT" ? "" : "border-r border-[#3F3F3F]"}`)}>
+    <div
+      className={cn(`flex w-full max-w-32 flex-col items-center justify-center xl:max-w-none`, `${title === "LT" ? "" : "xl:border-r xl:border-[#3F3F3F]"}`)}
+    >
       <span className="mb-1">{title}</span>
       <span className={cn("text-2xl font-semibold", className, title === "APR" ? "text-row-tonic" : "")}>{value}</span>
       <span className="text-sm text-gray-400">{subValue}</span>

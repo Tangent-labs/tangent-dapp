@@ -77,3 +77,27 @@ export const getUserPositions = async (user: Address, market: Address) => {
     return null
   }
 }
+
+export const validateReferralCode = async (referralCode: string, signature: Address, currentAddress: Address) => {
+  try {
+    const url = `${baseUrl}/referral`
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ referralCode, signature, account: currentAddress }),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error || `Referral validation failed with status ${response.status}`)
+    }
+
+    return data
+  } catch {
+    return { error: "Failed to validate referral code" }
+  }
+}

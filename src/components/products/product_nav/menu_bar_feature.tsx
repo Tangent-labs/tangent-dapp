@@ -137,7 +137,7 @@ export default function MenuBarFeature() {
                     </div>
                     <div
                       className="font-semibold transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-blue-400 hover:text-transparent data-[active=true]:text-blue-400"
-                      onClick={() => router.push("/airdrop/referral")}
+                      onClick={() => router.push("/referral")}
                     >
                       Referral
                     </div>

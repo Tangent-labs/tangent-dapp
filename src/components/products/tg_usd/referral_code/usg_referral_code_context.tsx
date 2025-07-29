@@ -1,10 +1,17 @@
 "use client"
 
-import { createContext, ReactNode, useContext, useState } from "react"
-import { validateReferralCode } from "../api"
+import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { generateCode, getReferralStatus, validateReferralCode } from "../api"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
+
+export type UserStatus = {
+  generatedCode: string | null
+  hasUsedCode: boolean
+  referralCode: string | null
+  friends: number
+}
 
 type UsgReferralCodeContextProps = {
   children: ReactNode
@@ -14,15 +21,15 @@ type UsgReferralCodeContextValues = {
   isLoading: boolean
   setIsLoading: (arg: boolean) => void
 
-  referralCode: string
-  setReferralCode: (arg: string) => void
-
   message: string
   setMessage: (arg: string) => void
 
   signMessage: () => void
 
-  hasBeenReferred: boolean
+  generateReferralCode: () => void
+
+  referralStatus: UserStatus
+  setReferralStatus: (arg: UserStatus) => void
 }
 
 export const UsgReferralCodeContext = createContext<UsgReferralCodeContextValues | undefined>(undefined)
@@ -32,12 +39,28 @@ export const UsgReferralCodeProvider = ({ children }: UsgReferralCodeContextProp
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [referralCode, setReferralCode] = useState<string>("")
-  const [hasBeenReferred, setHasBeenReferred] = useState<boolean>(false)
+  const [referralStatus, setReferralStatus] = useState<UserStatus>({ generatedCode: null, hasUsedCode: false, referralCode: "", friends: 0 })
+
   const [message, setMessage] = useState<string>("")
 
+  useEffect(() => {
+    if (currentAddress) {
+      getReferralStatus(currentAddress).then((status) => {
+        if (status) {
+          setReferralStatus({ ...referralStatus, generatedCode: status?.referralCode, hasUsedCode: status?.hasUsedCode, friends: status?.friends })
+        }
+      })
+    }
+  }, [currentAddress])
+
+  const generateReferralCode = async () => {
+    generateCode(currentAddress!).then((code) => {
+      setReferralStatus({ ...referralStatus, generatedCode: code })
+    })
+  }
+
   const signMessage = async () => {
-    if (!referralCode) {
+    if (!referralStatus?.referralCode) {
       return
     }
 
@@ -53,7 +76,7 @@ export const UsgReferralCodeProvider = ({ children }: UsgReferralCodeContextProp
           message,
         })
 
-        validateReferralCode(referralCode, signature, currentAddress)
+        validateReferralCode(referralStatus?.referralCode, signature, currentAddress)
           .then((resp) => {
             if (resp?.error) {
               toast.error(ToastComponent, { data: { type: "Error", content: "Referral process failed." } })
@@ -61,7 +84,7 @@ export const UsgReferralCodeProvider = ({ children }: UsgReferralCodeContextProp
 
             if (resp?.message === "Referral successfully processed") {
               toast.success(ToastComponent, { data: { type: "Success", content: resp?.message } })
-              setHasBeenReferred(true)
+              setReferralStatus({ ...referralStatus, hasUsedCode: true })
             }
           })
           .catch((error) => {
@@ -78,12 +101,12 @@ export const UsgReferralCodeProvider = ({ children }: UsgReferralCodeContextProp
   const contextValue: UsgReferralCodeContextValues = {
     isLoading,
     setIsLoading,
-    referralCode,
-    setReferralCode,
     message,
     setMessage,
     signMessage,
-    hasBeenReferred,
+    generateReferralCode,
+    referralStatus,
+    setReferralStatus,
   }
 
   return <UsgReferralCodeContext.Provider value={contextValue}>{children}</UsgReferralCodeContext.Provider>

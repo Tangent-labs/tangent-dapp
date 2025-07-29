@@ -14,11 +14,11 @@ type UsgReferralCodeParams = {
 }
 
 export const UsgReferralCode = ({ code }: UsgReferralCodeParams) => {
-  const { isLoading, referralCode, hasBeenReferred, setReferralCode, setMessage, signMessage } = useUsgReferralCodeContext()
+  const { isLoading, referralStatus, setReferralStatus, setMessage, signMessage, generateReferralCode } = useUsgReferralCodeContext()
 
   useEffect(() => {
     if (code) {
-      setReferralCode(code)
+      setReferralStatus({ ...referralStatus, referralCode: code })
       setMessage(`I am using the following referral code ${code}`)
     }
   }, [code])
@@ -87,13 +87,13 @@ export const UsgReferralCode = ({ code }: UsgReferralCodeParams) => {
           </div>
         </div>
 
-        {hasBeenReferred ? (
+        {referralStatus?.hasUsedCode ? (
           <div className="flex w-full max-w-96 items-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px]">
             Enjoy a x1.2 boost on all your points thanks to your friend referral link !{" "}
             <div className="rounded-full bg-tonic px-6 text-sm font-semibold text-black">x1.2</div>
           </div>
         ) : (
-          <div className="flex w-full items-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px]">
+          <div className="flex items-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px]">
             <div className="flex items-start justify-start border-r border-white/10 pr-3 text-xs text-subtitle">
               Enter a code to get a x1.2 boost on all your points
             </div>
@@ -103,8 +103,8 @@ export const UsgReferralCode = ({ code }: UsgReferralCodeParams) => {
               <Input
                 placeholder="Type a referral code"
                 className="px-auto mx-auto flex max-w-36 items-center justify-center"
-                onChange={(e) => setReferralCode(e?.target?.value)}
-                value={referralCode}
+                onChange={(e) => setReferralStatus({ ...referralStatus, referralCode: e?.target?.value })}
+                value={referralStatus?.referralCode as string}
               />
               <Button onClick={signMessage} disabled={isLoading} className="flex w-full max-w-24 justify-center">
                 Enter
@@ -130,15 +130,27 @@ export const UsgReferralCode = ({ code }: UsgReferralCodeParams) => {
           </div>
           <div className="flex w-full flex-col items-center justify-center">
             <span className="text-sm text-subtitle">Your Referees</span>
-            <span className="text-lg font-semibold">12</span>
+            <span className="text-lg font-semibold">{referralStatus?.friends}</span>
           </div>
-          <div className="flex w-full flex-col items-center justify-center">
-            <span className="text-sm text-subtitle">Your code</span>
-            <span className="text-lg font-semibold">YHD6D87E</span>
-          </div>
-          <div className="flex w-full flex-col items-center justify-center">
-            <Button className="flex w-32 justify-center font-semibold">Share</Button>
-          </div>
+
+          {referralStatus?.generatedCode ? (
+            <>
+              <div className="flex w-full flex-col items-center justify-center">
+                <span className="text-sm text-subtitle">Your code</span>
+                <span className="text-lg font-semibold">{referralStatus?.generatedCode}</span>
+              </div>
+              <div className="flex w-full flex-col items-center justify-center">
+                <Button className="flex w-32 justify-center font-semibold">Share</Button>
+              </div>
+            </>
+          ) : (
+            <div className="flex w-full items-center justify-center gap-2">
+              <div className="flex w-full items-center justify-center text-center text-xs text-subtitle">Get a referral code for a friend</div>
+              <Button onClick={generateReferralCode} className="flex w-full max-w-24 justify-center font-semibold">
+                Generate
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

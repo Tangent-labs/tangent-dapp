@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect } from "react"
 import { Button } from "@/components/design_system/inputs/button"
 import Divider from "@/components/design_system/structure/divider"
 import { IconTrophy } from "@/components/icons/icon_trophy"
@@ -9,18 +8,8 @@ import { IconShare } from "@/components/icons/icon_share"
 import { Input } from "@/components/ui/input"
 import { useUsgReferralCodeContext } from "./usg_referral_code_context"
 
-type UsgReferralCodeParams = {
-  code: string | undefined
-}
-
-export const UsgReferralCode = ({ code }: UsgReferralCodeParams) => {
+export const UsgReferralCode = () => {
   const { isLoading, referralStatus, setReferralStatus, signMessage, generateReferralCode } = useUsgReferralCodeContext()
-
-  useEffect(() => {
-    if (code) {
-      setReferralStatus({ ...referralStatus, referralCode: code })
-    }
-  }, [code])
 
   const Ranking = () => {
     return (
@@ -59,7 +48,7 @@ export const UsgReferralCode = ({ code }: UsgReferralCodeParams) => {
         <div className="relative flex w-full max-w-80 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
           <div className="absolute -top-2 left-0 flex w-full">
             <div className="mx-4 flex w-full items-center justify-between rounded-full bg-black">
-              <div className="px-2 text-xs italic">boost x1.2</div>
+              <div className="px-2 text-xs italic">boost x1.1</div>
               <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Vote</div>
             </div>
           </div>
@@ -88,13 +77,13 @@ export const UsgReferralCode = ({ code }: UsgReferralCodeParams) => {
 
         {referralStatus?.hasUsedCode ? (
           <div className="flex w-full max-w-96 items-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px]">
-            Enjoy a x1.2 boost on all your points thanks to your friend referral link !{" "}
-            <div className="rounded-full bg-tonic px-6 text-sm font-semibold text-black">x1.2</div>
+            Enjoy a x1.1 boost on all your points thanks to your friend referral link !{" "}
+            <div className="rounded-full bg-tonic px-6 text-sm font-semibold text-black">x1.1</div>
           </div>
         ) : (
           <div className="flex items-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px]">
             <div className="flex items-start justify-start border-r border-white/10 pr-3 text-xs text-subtitle">
-              Enter a code to get a x1.2 boost on all your points
+              Enter a code to get a x1.1 boost on all your points
             </div>
 
             <div className="flex w-full items-center justify-between gap-2 pl-3">
@@ -180,7 +169,7 @@ export const UsgReferralCode = ({ code }: UsgReferralCodeParams) => {
             <IconTrophy className="w-12 fill-row-tonic"></IconTrophy>
             <span className="text-lg font-semibold">Earn points</span>
             <span className="mt-2 text-center text-sm text-subtitle">
-              Referrer will earn 10% of referees points, referees will have a x1.2 boost on all tasks points.
+              Referrer will earn 10% of referees points, referees will have a x1.1 boost on all tasks points.
             </span>
           </div>
         </div>

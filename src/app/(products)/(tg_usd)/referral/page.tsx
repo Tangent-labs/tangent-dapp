@@ -5,8 +5,8 @@ export default async function UsgReferralCodePage({ searchParams }: { searchPara
   const { code } = await searchParams
 
   return (
-    <UsgReferralCodeProvider>
-      <UsgReferralCode code={code} />
+    <UsgReferralCodeProvider code={code}>
+      <UsgReferralCode />
     </UsgReferralCodeProvider>
   )
 }

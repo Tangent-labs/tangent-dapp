@@ -15,6 +15,7 @@ export type UserStatus = {
 
 type UsgReferralCodeContextProps = {
   children: ReactNode
+  code: string | undefined
 }
 
 type UsgReferralCodeContextValues = {
@@ -27,16 +28,24 @@ type UsgReferralCodeContextValues = {
 
   referralStatus: UserStatus
   setReferralStatus: (arg: UserStatus) => void
+
+  code: string | undefined
 }
 
 export const UsgReferralCodeContext = createContext<UsgReferralCodeContextValues | undefined>(undefined)
 
-export const UsgReferralCodeProvider = ({ children }: UsgReferralCodeContextProps) => {
+export const UsgReferralCodeProvider = ({ children, code }: UsgReferralCodeContextProps) => {
   const { currentAddress, getWalletClient } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [referralStatus, setReferralStatus] = useState<UserStatus>({ generatedCode: null, hasUsedCode: false, referralCode: "", friends: 0 })
+
+  useEffect(() => {
+    if (code) {
+      setReferralStatus({ ...referralStatus, referralCode: code })
+    }
+  }, [code])
 
   useEffect(() => {
     if (currentAddress) {
@@ -102,6 +111,7 @@ export const UsgReferralCodeProvider = ({ children }: UsgReferralCodeContextProp
     generateReferralCode,
     referralStatus,
     setReferralStatus,
+    code,
   }
 
   return <UsgReferralCodeContext.Provider value={contextValue}>{children}</UsgReferralCodeContext.Provider>

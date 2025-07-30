@@ -42,7 +42,7 @@ export default function TgUsdPositionHistory() {
 
   return (
     <div className="rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
-      <Title label={"Position history"} size={"normal"} />
+      <Title label={"Transaction history"} size={"normal"} />
       <Divider />
 
       <>

@@ -34,7 +34,7 @@ export default function TgUsdAirdropLayout({
             <div className="relative flex flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
               <div className="absolute -top-2 left-0 flex w-full">
                 <div className="mx-4 flex w-full items-center justify-between rounded-full bg-black">
-                  <div className="px-2 text-xs italic">boost x1.2</div>
+                  <div className="px-2 text-xs italic">boost x1.1</div>
                   <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Vote</div>
                 </div>
               </div>

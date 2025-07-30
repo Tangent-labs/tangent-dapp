@@ -120,8 +120,8 @@ export function BorrowInput({
             </div>
           )}
         </div>
-        <div className="flex flex-col justify-between lg:flex-row">
-          <div className="order-2 text-xl lg:order-1">
+        <div className="flex justify-between">
+          <div className="text-xl">
             <input
               {...props}
               disabled={isLoading || disabled}

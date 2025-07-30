@@ -42,44 +42,24 @@ export default function TgUsdSwapContent() {
 
   const ReceiveAssetSelect = ({ options }: AssetSelectProps) => {
     if (!balances || !options) {
-      return (
-        <CustomSelect
-          className="w-full min-w-40"
-          template={AssetSelectTemplate}
-          value={receiveAsset}
-          options={[]}
-          onChange={(v: string) => setReceiveAsset(v)}
-        />
-      )
+      return <CustomSelect className="w-full" template={AssetSelectTemplate} value={receiveAsset} options={[]} onChange={(v: string) => setReceiveAsset(v)} />
     }
 
     return (
-      <CustomSelect
-        className="w-full min-w-40"
-        template={AssetSelectTemplate}
-        value={receiveAsset}
-        options={options}
-        onChange={(v: string) => setReceiveAsset(v)}
-      />
+      <CustomSelect className="w-full" template={AssetSelectTemplate} value={receiveAsset} options={options} onChange={(v: string) => setReceiveAsset(v)} />
     )
   }
 
   const DepositAssetSelect = ({ options }: AssetSelectProps) => {
     if (!balances) {
       return (
-        <CustomSelect
-          className="w-full min-w-40"
-          template={AssetSelectTemplate}
-          value={depositAsset || ""}
-          options={[]}
-          onChange={(v: string) => setDepositAsset(v)}
-        />
+        <CustomSelect className="w-full" template={AssetSelectTemplate} value={depositAsset || ""} options={[]} onChange={(v: string) => setDepositAsset(v)} />
       )
     }
 
     return (
       <CustomSelect
-        className="w-full min-w-40"
+        className="w-full"
         template={AssetSelectTemplate}
         value={depositAsset || ""}
         options={options}
@@ -117,7 +97,7 @@ export default function TgUsdSwapContent() {
 
   return (
     <>
-      <div className="sgusd-card relative w-7/12">
+      <div className="sgusd-card relative hidden w-7/12 lg:flex">
         <div className="absolute -top-2 left-20 h-full min-h-24">
           <Image height={140} width={140} src="/medias/tokens/swapLogo.png" alt="token" />
         </div>

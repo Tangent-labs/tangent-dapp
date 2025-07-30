@@ -123,8 +123,8 @@ export function DepositReceiveInput({
             </div>
           )}
         </div>
-        <div className="mb-2 flex flex-col justify-between lg:flex-row">
-          <div className="order-2 text-xl lg:order-1">
+        <div className="mb-2 flex justify-between">
+          <div className="text-xl">
             <input
               {...props}
               disabled={isLoading}

@@ -1,22 +1,22 @@
 "use client"
 
-import { useTgUsdMaketListContext } from "./tg_usd_market_list_context"
-import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { tgUsdListHeaders } from "./tg_usd_market_controller"
+import { cn } from "@/lib/utils"
+import { formatUnits } from "viem"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { ExistingAsset, ListState } from "@/types"
+import { formatDollar } from "@/lib/number_formatter"
+import { tgUsdListHeaders } from "./tg_usd_market_controller"
 import ListHeader from "@/components/design_system/list/list_header"
 import ListRow from "@/components/design_system/list/list_row"
 import ListAsset from "@/components/design_system/list/list_asset"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
-import { formatDollar } from "@/lib/number_formatter"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { useRouter } from "next/navigation"
-import Image from "next/image"
+import { useTgUsdMaketListContext } from "./tg_usd_market_list_context"
 import InputSearch from "@/components/design_system/inputs/input_search"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import MarketListAPR from "@/components/design_system/list/market_list_apr"
-import { cn } from "@/lib/utils"
-import { formatUnits } from "viem"
+import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 
 const listeState: ListState = {
   search: undefined,
@@ -32,7 +32,7 @@ export default function TgUsdMarketList() {
   return (
     <>
       <div className="flex items-center justify-between gap-6">
-        <div className="tgusd-card w-7/12">
+        <div className="tgusd-card hidden w-7/12 xl:flex">
           <div className="flex items-center justify-center">
             <Image height={160} width={160} src="/medias/tokens/tgUSD_header.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
@@ -45,13 +45,13 @@ export default function TgUsdMarketList() {
           </div>
         </div>
 
-        <div className="flex h-full flex-col items-center gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+        <div className="hidden h-full w-full flex-col items-center gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] md:flex xl:w-fit">
           <div className="flex h-20 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-semibold italic">
             Points campaign
             <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
           </div>
 
-          <div className="mt-auto flex w-full items-center justify-center gap-3 p-2">
+          <div className="mt-auto flex w-full items-center justify-between gap-3 p-2">
             <div
               className={cn(
                 "flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]",
@@ -80,7 +80,24 @@ export default function TgUsdMarketList() {
         </div>
       </div>
 
-      <div className="mt-10 flex items-start justify-between">
+      <div className="mt-3 flex w-full items-end justify-between xl:hidden">
+        <div className="flex w-full items-end justify-start gap-2">
+          <div className="flex w-full flex-col items-center justify-center">
+            <div className="mb-1 text-xs text-subtitle"> Search </div>
+            <InputSearch
+              placeholder=""
+              className="flex w-full flex-col items-center justify-center"
+              value={searchValue ?? ""}
+              onChange={(e) => setSearchValue(e as string)}
+            />
+          </div>
+
+          <ButtonTab className="h-10 px-4" active={true} label="All"></ButtonTab>
+          <ButtonTab className="h-10 px-4" active={false} label="Deposits"></ButtonTab>
+        </div>
+      </div>
+
+      <div className="mt-10 hidden items-start justify-between xl:flex">
         <div className="flex flex-col items-start justify-between">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -155,12 +172,24 @@ export function TgUsdMarketListInner() {
           <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
           <MarketListAPR apr={item.apr.current} projectedApr={item.apr.projected} />
           <>
-            {item.indicators.map((i) => (
-              <div key={i.key} style={{ fontWeight: 300 }} className="flex basis-[48%] flex-col items-center text-[20px] leading-5 md:flex-1">
-                {i?.value}
+            {item.indicators.map((indicator, index) => (
+              <div
+                key={indicator.key}
+                style={{ fontWeight: 300 }}
+                className={cn("flex basis-[48%] flex-col items-center text-[20px] leading-5 md:flex-1", index >= 2 ? "hidden xl:block" : "")}
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <span className={cn("flex text-subtitle xl:hidden", indicator?.key === "tvl" ? "uppercase" : "")}>{indicator?.label}</span>
+                  <span>{indicator?.value}</span>
+                </span>
               </div>
             ))}
-            {item.userHasDeposited && <div className="absolute -right-4 top-5 h-10 w-2 rounded-full bg-tonic"></div>}
+
+            {item.userHasDeposited && (
+              <div className="absolute -right-4 top-0 flex h-full w-2 items-center justify-center">
+                <div className="h-10 w-2 rounded-full bg-tonic"></div>
+              </div>
+            )}
           </>
         </ListRow>
       ))}

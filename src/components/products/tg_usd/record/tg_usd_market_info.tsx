@@ -12,7 +12,7 @@ export default function TgUsdMarketInfo({ ...props }: TgUsdMarketInfoProps) {
     <div className="rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]" {...props}>
       <Title label={"Markets info"} size={"normal"} />
       <Divider />
-      <div className="flex justify-between gap-4">
+      <div className="flex flex-col justify-between gap-4 xl:flex-row">
         <div className="flex flex-1 items-center justify-between">
           <div className="flex w-full flex-col">
             <div className="flex w-full gap-2">

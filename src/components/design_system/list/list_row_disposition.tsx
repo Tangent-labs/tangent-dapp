@@ -7,7 +7,7 @@ interface ListRowDispositionProps {
 const ListRowDisposition = ({ children }: ListRowDispositionProps) => {
   return (
     <div className="flex items-center justify-between max-xl:flex-col">
-      <div className="flex w-full items-center justify-evenly xl:w-5/12 xl:justify-start">
+      <div className="flex w-full items-center justify-between xl:w-5/12 xl:justify-start">
         <div className="xl:w-9/12">{children?.at(0)}</div>
         <div className="xl:w-3/12">{children?.at(1)}</div>
       </div>

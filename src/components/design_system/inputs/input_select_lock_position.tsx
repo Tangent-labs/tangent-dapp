@@ -72,7 +72,7 @@ export const InputSelectLockPosition = ({
 
   return (
     <BorderPanel className={`${isLoading ? "shimmer" : ""} flex h-full w-full flex-col items-center justify-center p-2 backdrop-blur-[60px]`}>
-      <div className="mb-3 flex h-full w-full justify-between gap-2">
+      <div className="mb-3 flex h-full w-full justify-between">
         <div className="flex flex-col items-start justify-between">
           <div className="text-xs font-semibold text-subtitle">{labelDeposit}</div>
 
@@ -91,7 +91,7 @@ export const InputSelectLockPosition = ({
           <div className="text-xs text-subtitle">$({dollarDepositDisplay})</div>
         </div>
 
-        <div className="flex h-full flex-col items-center justify-center px-1">
+        <div className="hidden h-full flex-col items-center justify-center px-1 xl:flex">
           <div className="flex items-center justify-center rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
             <IconTan className="mr-3"></IconTan>
             TAN

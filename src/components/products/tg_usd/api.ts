@@ -2,7 +2,13 @@
 
 import { Address } from "viem"
 
-const baseUrl = process.env.BASE_URL || ""
+export interface UserStatus {
+  hasUsedCode: boolean
+  referralCode: string | null
+  friends: number
+}
+
+const baseUrl = process.env.BASE_URL || "http://localhost:3100"
 
 export const getEnsoData = async (
   amountIn: bigint,
@@ -75,5 +81,77 @@ export const getUserPositions = async (user: Address, market: Address) => {
   } catch (error) {
     console.error("Failed to fetch user positions:", error)
     return null
+  }
+}
+
+export const validateReferralCode = async (referralCode: string, signature: Address, currentAddress: Address) => {
+  try {
+    const url = `${baseUrl}/referral`
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ referralCode, signature, account: currentAddress }),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error || `Referral validation failed with status ${response.status}`)
+    }
+
+    return data
+  } catch {
+    return { error: "Failed to validate referral code" }
+  }
+}
+
+export const generateCode = async (account: Address): Promise<string> => {
+  try {
+    const url = `${baseUrl}/referral/generate`
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ account }),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error || `Referral code creation failed with status ${response.status}`)
+    }
+
+    return data.message as string
+  } catch {
+    throw new Error("Referral code creation failed with status")
+  }
+}
+
+export const getReferralStatus = async (account: Address): Promise<UserStatus> => {
+  try {
+    const url = `${baseUrl}/referral/status?account=${account}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    const data: UserStatus = await response.json()
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch referral status with status")
+    }
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch referral status:", error)
+    return { hasUsedCode: false, referralCode: null, friends: 0 }
   }
 }

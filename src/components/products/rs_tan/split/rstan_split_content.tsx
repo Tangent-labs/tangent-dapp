@@ -70,9 +70,9 @@ export const RsTanSplitContent = () => {
     <div className="flex w-full flex-col items-start justify-start">
       <div className="mb-1 text-lg font-semibold text-white">Select position to split:</div>
 
-      <div className="flex h-10 w-full items-center justify-between gap-2">
+      <div className="flex w-full flex-col items-center justify-between gap-2 sm:flex-row">
         <PositionSelect />
-        <div className="mt-1 flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-3 text-[15px] text-sm text-subtitle backdrop-blur-[60px] backdrop-filter">
+        <div className="flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel px-3 py-1.5 text-[15px] text-sm text-subtitle backdrop-blur-[60px] backdrop-filter">
           Balance:
           {splitPositionInfo && splitPositionInfo?.amount && (
             <span className="flex items-center justify-end text-lg font-semibold text-white">
@@ -101,8 +101,8 @@ export const RsTanSplitContent = () => {
                 </div>
                 <div className="text-xs text-subtitle">($1,500)</div>
               </div>
-              <div className="flex h-full items-center justify-center gap-3">
-                <div className="flex h-full flex-col items-center justify-center">
+              <div className="flex h-full items-end justify-end gap-3 xl:items-center xl:justify-center">
+                <div className="hidden h-full flex-col items-center justify-center md:flex">
                   <div className="flex items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
                     <IconRsTan className="h-4 w-4"></IconRsTan>
                     rsTan
@@ -132,8 +132,8 @@ export const RsTanSplitContent = () => {
                 </div>
                 <div className="text-xs text-subtitle">($1,500)</div>
               </div>
-              <div className="flex h-full items-center justify-center gap-3">
-                <div className="flex h-full flex-col items-center justify-center">
+              <div className="flex h-full items-end justify-end gap-3 xl:items-center xl:justify-center">
+                <div className="hidden h-full flex-col items-center justify-center md:flex">
                   <div className="flex items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
                     <IconRsTan className="h-4 w-4"></IconRsTan>
                     rsTan

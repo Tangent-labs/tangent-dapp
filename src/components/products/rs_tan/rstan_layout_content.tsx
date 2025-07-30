@@ -32,12 +32,12 @@ const listeState: ListState = {
 
 const LockRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
-    <div className="flex items-center justify-between max-xl:flex-col">
+    <div className="flex items-center justify-between">
       <div className="flex w-full items-center justify-evenly xl:w-5/12 xl:justify-start">
         <div className="xl:w-1/2">{children?.at(0)}</div>
         <div className="flex justify-center xl:w-1/2">{children?.at(1)}</div>
       </div>
-      <div className="flex w-full flex-wrap items-center justify-between xl:w-7/12">{children?.at(2)}</div>
+      <div className="flex w-full items-center justify-between">{children?.at(2)}</div>
     </div>
   )
 }
@@ -56,7 +56,7 @@ export const RsTanLayoutContent = ({
   return (
     <>
       <div className="mb-3 flex w-full items-end justify-end gap-6">
-        <div className="stan-card w-7/12">
+        <div className="stan-card hidden w-7/12 xl:flex">
           <div className="flex items-center justify-center">
             <Image height={360} width={360} src={`/medias/tokens/rsTan.png`} alt="token" />
           </div>
@@ -71,8 +71,8 @@ export const RsTanLayoutContent = ({
           </div>
         </div>
 
-        <div className="flex w-5/12 items-center justify-around rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
-          <IconRsTan></IconRsTan>
+        <div className="flex w-full items-center justify-around rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
+          <IconRsTan className="w-32"></IconRsTan>
 
           <div className="flex w-full flex-col items-center justify-center">
             <div className="text-xs font-semibold text-subtitle">Supply</div>
@@ -91,8 +91,8 @@ export const RsTanLayoutContent = ({
         </div>
       </div>
 
-      <div className="mb-4 flex w-full gap-4">
-        <div className="flex w-5/12 flex-col items-center justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+      <div className="mb-4 flex w-full flex-col gap-4 xl:flex-row">
+        <div className="flex w-full flex-col items-center justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
           <div className="flex w-full items-center justify-between gap-2">
             <ButtonTab label="Lock" active={pathname === "/tan/lock"} onClick={() => router.push("/tan/lock")} className="h-8! flex w-full justify-center" />
             <ButtonTab
@@ -111,7 +111,7 @@ export const RsTanLayoutContent = ({
           {children}
         </div>
 
-        <div className="flex w-7/12 flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+        <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-7/12">
           <div className="mr-auto text-3xl font-semibold text-white">Locked Positions</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
@@ -154,27 +154,27 @@ function LockPositionList() {
               </div>
 
               <>
-                <div className="flex w-4/12 items-center justify-center text-lg font-semibold">
+                <div className="flex w-1/3 items-center justify-center text-lg font-semibold">
                   {formatBigInt(lockPosition?.claimable, 18, 2)}
                   <TokenImage token="USG" className="ml-1" size={16} />
                 </div>
-                <div className="flex w-4/12 items-center justify-center text-lg font-semibold">
+                <div className="flex w-1/3 items-center justify-center text-lg font-semibold">
                   {lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (
                     <InfinityIcon className="w-5"></InfinityIcon>
                   ) : (
                     <> {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd/MM/yyyy")}</>
                   )}
                 </div>
-                <div className="flex w-3/12 items-center justify-center text-lg font-semibold">
+                <div className="hidden w-3/12 items-center justify-center text-lg font-semibold xl:flex">
                   <IconChevron className={`w-4 ${lockPosition == selectedPosition ? "" : "-rotate-90"} `}></IconChevron>
                 </div>
               </>
             </ListRow>
 
             {lockPosition == selectedPosition && (
-              <div className="slide-down-fade-in flex w-full items-center justify-between rounded-b-lg bg-overlay-panel p-3">
+              <div className="slide-down-fade-in flex w-full flex-wrap items-center justify-between gap-3 rounded-b-lg bg-overlay-panel p-3 md:flex-row">
                 <div className="flex items-center justify-center gap-2">
-                  <div className="w-full text-sm text-subtitle">Unlock date</div>
+                  <div className="hidden w-full text-sm text-subtitle md:flex">Unlock date</div>
                   <EvolutionBox
                     originalValue={formatDate(new Date(), "dd/MM/yyyy")}
                     label=""

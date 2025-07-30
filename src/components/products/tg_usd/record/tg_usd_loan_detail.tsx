@@ -7,19 +7,17 @@ import Title from "@/components/design_system/structure/title"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { useTgUsdRecordContext } from "./tg_usd_record_context"
 
-type TgUsdLoanDetailProps = React.ButtonHTMLAttributes<HTMLDivElement>
-
-export default function TgUsdLoanDetail({ ...props }: TgUsdLoanDetailProps) {
+export default function TgUsdLoanDetail() {
   const { isWellConnected } = useWalletConnexionContext()
   const { marketDisplayData, futureMarketDisplayData } = useTgUsdRecordContext()
 
   if (!isWellConnected) return <></>
 
   return (
-    <div className="rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]" {...props}>
+    <div className="flex flex-col rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
       <Title label={"Loan details"} size={"normal"} />
       <Divider />
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-4">
         <EvolutionBox
           originalValue={marketDisplayData.collateralValue}
           label={"Collateral value"}

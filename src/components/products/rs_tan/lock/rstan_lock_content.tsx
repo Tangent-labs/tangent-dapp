@@ -53,7 +53,7 @@ export default function RsTanLockContent() {
         <InputSelect
           placeholder="New"
           label="Select position"
-          className="w-full min-w-32"
+          className="w-full min-w-12 xl:min-w-32"
           template={AssetSelectTemplate}
           value={"New"}
           options={[{ value: "New", label: "New" }]}
@@ -70,7 +70,7 @@ export default function RsTanLockContent() {
       <InputSelect
         placeholder="New"
         label="Select position"
-        className="w-full min-w-32"
+        className="w-full min-w-24"
         template={AssetSelectTemplate}
         value={depositPosition || "New"}
         options={[{ value: "New", label: "New" }].concat(selectOptions)}

@@ -101,7 +101,7 @@ export function LeverageInput({
         <div className="flex w-full justify-between">
           <div className="text-sm text-gray-400">{label}</div>
         </div>
-        <div className="mb-1 flex flex-col justify-between lg:flex-row">
+        <div className="mb-1 flex justify-between">
           <input
             {...props}
             type="string"

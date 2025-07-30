@@ -57,18 +57,16 @@ const ListHeader = ({ headers, className = "", activeSort, onSort, rowDispositio
           />
         )}
         <>
-          {headers
-            ?.slice(2)
-            ?.map((header) => (
-              <HeaderDisplay
-                key={header.key}
-                label={header.label}
-                sort={(activeSort?.key == header.key && activeSort?.direction) || "none"}
-                field={header.key}
-                onSort={onSort}
-                indicator={header.indicator}
-              />
-            ))}
+          {headers?.slice(2)?.map((header) => (
+            <HeaderDisplay
+              key={header.key}
+              label={header.label}
+              sort={(activeSort?.key == header.key && activeSort?.direction) || "none"}
+              field={header.key}
+              onSort={onSort}
+              indicator={header.indicator}
+            />
+          ))}
         </>
       </CustomRowDisposition>
     </div>

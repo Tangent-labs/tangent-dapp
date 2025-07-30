@@ -138,18 +138,18 @@ export const RsTanMergeContent = () => {
 
           <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel px-2 py-3 backdrop-blur-[60px]">
             <div className="flex w-full items-start justify-start gap-2">
-              <div className="w-4/12 text-subtitle sm:w-3/12">Pos. ID</div>
+              <div className="w-1/3 text-subtitle sm:w-3/12">Pos. ID</div>
               <div className="w-8/12 text-subtitle sm:w-6/12">rsTan</div>
               <div className="hidden w-3/12 text-subtitle sm:flex">Unlock date</div>
             </div>
 
             <div className="my-1 flex w-full items-center justify-center gap-2 text-[16px]">
-              <div className="relative flex h-10 w-4/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px] sm:w-3/12">
+              <div className="relative flex h-10 w-1/3 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px] sm:w-3/12">
                 #{firstPositionToMergeInfo?.tokenId}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-tonic py-0.5 text-xs text-black">Updated</div>
               </div>
               <EvolutionBox
-                className="w-8/12 sm:w-6/12"
+                className="w-4/6 sm:w-1/2"
                 originalValue={
                   <div className="flex items-center justify-center font-semibold">
                     {formatBigInt(firstPositionToMergeInfo?.amount, 18, 2)} <IconRsTan className="ml-1 h-5 w-5"></IconRsTan>
@@ -173,12 +173,12 @@ export const RsTanMergeContent = () => {
             </div>
 
             <div className="my-1 flex w-full items-center justify-center gap-2 text-[16px]">
-              <div className="relative flex h-10 w-4/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px] sm:w-3/12">
+              <div className="relative flex h-10 w-1/3 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px] sm:w-3/12">
                 #{secondPositionToMergeInfo?.tokenId}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-danger py-0.5 text-xs text-black">Deleted</div>
               </div>
               <EvolutionBox
-                className="w-8/12 sm:w-6/12"
+                className="w-4/6 sm:w-1/2"
                 originalValue={
                   <div className="flex items-center justify-center font-semibold">
                     {formatBigInt(secondPositionToMergeInfo?.amount, 18, 2)} <IconRsTan className="ml-1 h-5 w-5"></IconRsTan>

@@ -154,11 +154,11 @@ function LockPositionList() {
               </div>
 
               <>
-                <div className="flex w-4/12 items-center justify-center text-lg font-semibold">
+                <div className="flex w-1/3 items-center justify-center text-lg font-semibold">
                   {formatBigInt(lockPosition?.claimable, 18, 2)}
                   <TokenImage token="USG" className="ml-1" size={16} />
                 </div>
-                <div className="flex w-4/12 items-center justify-center text-lg font-semibold">
+                <div className="flex w-1/3 items-center justify-center text-lg font-semibold">
                   {lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (
                     <InfinityIcon className="w-5"></InfinityIcon>
                   ) : (

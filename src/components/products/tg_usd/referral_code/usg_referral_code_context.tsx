@@ -21,9 +21,6 @@ type UsgReferralCodeContextValues = {
   isLoading: boolean
   setIsLoading: (arg: boolean) => void
 
-  message: string
-  setMessage: (arg: string) => void
-
   signMessage: () => void
 
   generateReferralCode: () => void
@@ -40,8 +37,6 @@ export const UsgReferralCodeProvider = ({ children }: UsgReferralCodeContextProp
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [referralStatus, setReferralStatus] = useState<UserStatus>({ generatedCode: null, hasUsedCode: false, referralCode: "", friends: 0 })
-
-  const [message, setMessage] = useState<string>("")
 
   useEffect(() => {
     if (currentAddress) {
@@ -68,6 +63,8 @@ export const UsgReferralCodeProvider = ({ children }: UsgReferralCodeContextProp
 
     try {
       const walletClient = getWalletClient()
+
+      const message = `I am using the following referral code ${referralStatus?.referralCode}`
 
       if (walletClient && currentAddress) {
         // Sign the message
@@ -101,8 +98,6 @@ export const UsgReferralCodeProvider = ({ children }: UsgReferralCodeContextProp
   const contextValue: UsgReferralCodeContextValues = {
     isLoading,
     setIsLoading,
-    message,
-    setMessage,
     signMessage,
     generateReferralCode,
     referralStatus,

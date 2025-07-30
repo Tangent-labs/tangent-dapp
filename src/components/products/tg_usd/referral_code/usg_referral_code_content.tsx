@@ -14,12 +14,11 @@ type UsgReferralCodeParams = {
 }
 
 export const UsgReferralCode = ({ code }: UsgReferralCodeParams) => {
-  const { isLoading, referralStatus, setReferralStatus, setMessage, signMessage, generateReferralCode } = useUsgReferralCodeContext()
+  const { isLoading, referralStatus, setReferralStatus, signMessage, generateReferralCode } = useUsgReferralCodeContext()
 
   useEffect(() => {
     if (code) {
       setReferralStatus({ ...referralStatus, referralCode: code })
-      setMessage(`I am using the following referral code ${code}`)
     }
   }, [code])
 

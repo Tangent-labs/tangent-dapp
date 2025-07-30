@@ -157,7 +157,9 @@ export const TgUsdDashboardContent = () => {
                         dataKey="value"
                         stroke="none"
                       >
-                        {userData?.tgUsdCollateralsData.map((_, index: number) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                        {userData?.tgUsdCollateralsData.map((_, index: number) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
                       </Pie>
                     </PieChart>
                   </ResponsiveContainer>

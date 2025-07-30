@@ -37,7 +37,7 @@ const AirdropRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
         <div className="flex justify-center xl:w-1/3">{children?.at(2)}</div>
       </div>
       <hr className="my-4 w-full opacity-20 xl:hidden" />
-      <div className="flex h-full w-full flex-wrap items-center justify-evenly gap-2 xl:w-4/12">{children?.at(3)}</div>
+      <div className="flex h-full w-full flex-wrap items-center justify-evenly gap-2 xl:w-1/3">{children?.at(3)}</div>
     </div>
   )
 }
@@ -122,7 +122,7 @@ function AirdropList() {
                     <Button onClick={() => window.open(task?.link, "_blank", "noopener,noreferrer")}>{task?.actionLabel}</Button>
                   </div>
                 </div>
-                <div className="flex h-full w-full items-center justify-evenly gap-2 xl:w-4/12">
+                <div className="flex h-full w-full items-center justify-evenly gap-2 xl:w-1/3">
                   <div className="flex w-1/3 items-center justify-center">{task?.ptsPerDay}</div>
                   <div className="flex w-1/3 items-center justify-center">
                     <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">

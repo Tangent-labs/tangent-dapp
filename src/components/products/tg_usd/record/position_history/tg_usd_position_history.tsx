@@ -28,9 +28,9 @@ const HistoryRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
     <div className="flex items-center justify-between max-xl:flex-col">
       <div className="flex w-full items-center justify-evenly px-2">
         <div className="flex w-2/12 items-center justify-center">{children?.at(0)} </div>
-        <div className="flex w-4/12 items-center justify-center">{children?.at(1)} </div>
+        <div className="flex w-1/3 items-center justify-center">{children?.at(1)} </div>
         <div className="flex w-2/12 items-center justify-center">{children?.at(2)} </div>
-        <div className="flex w-3/12 items-center justify-center md:w-4/12 lg:w-3/12">{children?.at(3)} </div>
+        <div className="flex w-3/12 items-center justify-center md:w-1/3 lg:w-3/12">{children?.at(3)} </div>
         <div className="hidden w-1/12 items-center justify-center lg:flex">{children?.at(4)} </div>
       </div>
     </div>
@@ -127,7 +127,7 @@ function PositionList() {
                 >
                   {formatActionLabel(pos.label)}
                 </div>
-                <div className="flex w-3/12 items-center justify-center gap-1 lg:w-4/12">
+                <div className="flex w-3/12 items-center justify-center gap-1 lg:w-1/3">
                   {formatBigInt(pos.collatAmount, 18, 2)} <TokenImage token={collateralInfo.logo} size={24} />{" "}
                   <span className="hidden lg:flex"> {collateralInfo?.symbol} </span>
                   <span className="hidden text-xs text-subtitle md:flex"> {formatDollar(formatUnits(pos.collatAmount, 18), 0)}</span>
@@ -135,7 +135,7 @@ function PositionList() {
                 <div className="flex w-2/12 items-center justify-center gap-1 md:w-1/12 lg:w-2/12">
                   {formatBigInt(pos.usgAmount, 18, 2)} <TokenImage token="USG" size={16} /> <span className="hidden md:flex">USG</span>
                 </div>
-                <div className="flex w-4/12 items-center justify-center lg:w-3/12">
+                <div className="flex w-1/3 items-center justify-center lg:w-3/12">
                   <span className="hidden sm:flex">
                     {moment(pos.date).format("MM-DD-YYYY")} {" - "} {moment(pos.date).format("hh:mm")}
                   </span>

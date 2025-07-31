@@ -80,7 +80,7 @@ export const RsTanLayoutContent = ({
           </div>
 
           <div className="flex w-full flex-col items-center justify-center">
-            <div className="text-xs font-semibold text-subtitle">rsTan</div>
+            <div className="text-xs font-semibold text-subtitle">vsTan</div>
             <div className="text-md font-semibold text-white">$1.23</div>
           </div>
 

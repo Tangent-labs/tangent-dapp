@@ -105,7 +105,7 @@ export const RsTanSplitContent = () => {
                 <div className="hidden h-full flex-col items-center justify-center md:flex">
                   <div className="flex items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
                     <IconRsTan className="h-4 w-4"></IconRsTan>
-                    rsTan
+                    vsTan
                   </div>
                 </div>
                 <div className="flex h-full flex-col items-start justify-start">
@@ -136,7 +136,7 @@ export const RsTanSplitContent = () => {
                 <div className="hidden h-full flex-col items-center justify-center md:flex">
                   <div className="flex items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
                     <IconRsTan className="h-4 w-4"></IconRsTan>
-                    rsTan
+                    vsTan
                   </div>
                 </div>
                 <div className="flex h-full flex-col items-start justify-start">
@@ -197,7 +197,7 @@ export const RsTanSplitContent = () => {
           <div className="mb-2 flex w-full flex-col items-start justify-start gap-2 rounded-[10px] bg-overlay-panel px-2 py-3 backdrop-blur-[60px]">
             <div className="flex w-full items-start justify-start gap-2">
               <div className="w-3/12">Pos. ID</div>
-              <div className="w-6/12">rsTan</div>
+              <div className="w-6/12">vsTan</div>
               <div className="w-3/12">Unlock date</div>
             </div>
 

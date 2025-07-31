@@ -1,5 +1,5 @@
-import { RsTanLayoutContent } from "@/components/products/rs_tan/rstan_layout_content"
-import { RsTanProvider } from "@/components/products/rs_tan/rstan_layout_context"
+import { RsTanLayoutContent } from "@/components/products/vs_tan/rstan_layout_content"
+import { RsTanProvider } from "@/components/products/vs_tan/rstan_layout_context"
 
 export default async function RsTanLayout({
   children,

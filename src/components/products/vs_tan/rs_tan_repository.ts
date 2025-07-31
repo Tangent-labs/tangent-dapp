@@ -8,7 +8,7 @@ if (!addresses) {
 
 const envAddresses = JSON.parse(addresses)
 
-export const RSTAN_CONTRACT = {
+export const VSTAN_CONTRACT = {
   ZAPPER: envAddresses.utilities.zappingProxy as Address,
   TAN: envAddresses.tokens.tan as Address,
   VSTAN: envAddresses.tokens.vsTan as Address,

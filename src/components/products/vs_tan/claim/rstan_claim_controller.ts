@@ -2,7 +2,7 @@ import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
 import RsTan from "../../../../abi/tgusd/RsTan.json"
 import { Abi, WalletClient } from "viem"
 import { LockPosition } from "../../tg_usd/tg_usd_type"
-import { RSTAN_CONTRACT } from "../rs_tan_repository"
+import { VSTAN_CONTRACT } from "../rs_tan_repository"
 
 export const doClaim = async (positions: LockPosition[], walletClient: WalletClient, claimAsSUSG: boolean) => {
   const method = positions?.length === 1 ? "claimSimple" : "claimMultiple"
@@ -13,7 +13,7 @@ export const doClaim = async (positions: LockPosition[], walletClient: WalletCli
     abi: RsTan.abi as Abi,
     functionName: method,
     args: [params, claimAsSUSG],
-    address: RSTAN_CONTRACT.VSTAN,
+    address: VSTAN_CONTRACT.VSTAN,
   }
 
   const txHash = await executeContractCall(walletClient, txData)

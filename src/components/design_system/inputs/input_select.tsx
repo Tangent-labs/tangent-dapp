@@ -37,7 +37,7 @@ const InputSelect = <T extends SelectOption | SelectOptionAmount>({
   return (
     <>
       <div className={`flex flex-col ${className}`}>
-        <div className="flex justify-between text-xs font-semibold text-subtitle">{label}</div>
+        <div className="mb-1 flex justify-between text-xs font-semibold text-subtitle">{label}</div>
 
         <Select disabled={disabled} value={value} onValueChange={(value) => onChange(value)}>
           <SelectTrigger disabled={disabled} className={className}>

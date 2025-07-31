@@ -5,7 +5,7 @@ import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, 
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { formatUnits } from "viem"
-import { RSTAN_CONTRACT } from "../rs_tan_repository"
+import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { StakingAssetInfo, StakingDepositType, StakingInfo } from "../rstan_types"
 
 type StakeTanContextProps = {
@@ -79,7 +79,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
   const receivedTokenInfo = useMemo(() => {
     if (currentFeature === "stake") {
       return {
-        address: RSTAN_CONTRACT.STAN,
+        address: VSTAN_CONTRACT.STAN,
         decimals: 18,
         displayDecimals: 2,
         logo: "sTAN" as ExistingAsset,
@@ -91,7 +91,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
     }
 
     return {
-      address: RSTAN_CONTRACT.TAN,
+      address: VSTAN_CONTRACT.TAN,
       decimals: 18,
       displayDecimals: 2,
       logo: "TAN" as ExistingAsset,
@@ -106,12 +106,12 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
     if (currentFeature === "stake") {
       return {
         current: "asset" as StakingDepositType,
-        address: RSTAN_CONTRACT.TAN,
+        address: VSTAN_CONTRACT.TAN,
         balance: stakeInfo?.tanBalance,
         asset: {
           price: Number(stakeInfo?.tanPrice) / 10 ** 18,
           decimals: 18,
-          address: RSTAN_CONTRACT.TAN,
+          address: VSTAN_CONTRACT.TAN,
           displayDecimals: 2,
           symbol: "TAN",
           name: "TAN",
@@ -122,12 +122,12 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
 
     return {
       current: "sdAsset" as StakingDepositType,
-      address: RSTAN_CONTRACT.STAN,
+      address: VSTAN_CONTRACT.STAN,
       balance: stakeInfo?.sTanBalance,
       asset: {
         price: Number(stakeInfo?.sTanPrice) / 10 ** 18,
         decimals: 18,
-        address: RSTAN_CONTRACT.STAN,
+        address: VSTAN_CONTRACT.STAN,
         displayDecimals: 2,
         symbol: "sTAN",
         name: "sTAN",
@@ -154,7 +154,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
 
     const params = {
       walletClient: getWalletClient()!,
-      stakingAddress: RSTAN_CONTRACT.STAN,
+      stakingAddress: VSTAN_CONTRACT.STAN,
       weiValue,
     }
     await doUnstakeTgUSD(params)
@@ -169,7 +169,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
 
     const params = {
       walletClient: getWalletClient()!,
-      stakingAddress: RSTAN_CONTRACT.STAN,
+      stakingAddress: VSTAN_CONTRACT.STAN,
       weiValue,
     }
     await doStakeTgUSD(params)
@@ -180,7 +180,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
 
   const actionApprove = async () => {
     if (!currentAssetInfo?.address) return
-    await doApprove(getWalletClient()!, RSTAN_CONTRACT.TAN, weiValue || 0n, RSTAN_CONTRACT.STAN).then(loadData)
+    await doApprove(getWalletClient()!, VSTAN_CONTRACT.TAN, weiValue || 0n, VSTAN_CONTRACT.STAN).then(loadData)
   }
 
   useEffect(() => {
@@ -188,14 +188,14 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
     ;(async () => {
       if (currentFeature === "stake") {
         try {
-          const sdAssetAmountOut = await getExpectedSUSG(getWalletClient()!, weiValue, RSTAN_CONTRACT?.TAN)
+          const sdAssetAmountOut = await getExpectedSUSG(getWalletClient()!, weiValue, VSTAN_CONTRACT?.TAN)
           setExpected(sdAssetAmountOut)
         } catch (error) {
           console.error("Error while estimating deposit preview :", error)
         }
       } else {
         try {
-          const assetAmountOut = await getExpectedTgUSD(getWalletClient()!, weiValue, RSTAN_CONTRACT?.TAN)
+          const assetAmountOut = await getExpectedTgUSD(getWalletClient()!, weiValue, VSTAN_CONTRACT?.TAN)
           setExpected(assetAmountOut)
         } catch (error) {
           console.error("Error while estimating redeem preview :", error)

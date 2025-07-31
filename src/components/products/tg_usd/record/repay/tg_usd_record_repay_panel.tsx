@@ -27,9 +27,9 @@ import ButtonTab from "@/components/design_system/inputs/button_tab"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 
 export default function TgUsdRepayPanel() {
-  const { tokens } = useTgUsdContext()
+  const { tokens, balances } = useTgUsdContext()
 
-  const { tgUSDInfo, pricedCollateralInfo, collateralInfo, balances, marketInfo } = useTgUsdRecordContext()
+  const { tgUSDInfo, pricedCollateralInfo, collateralInfo, marketInfo } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 

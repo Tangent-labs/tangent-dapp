@@ -1,13 +1,13 @@
 "use client"
 
 import Image from "next/image"
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { FixedSizeList as List } from "react-window"
-import AutoSizer from "react-virtualized-auto-sizer"
 import { ReactNode, useState } from "react"
+import { Input } from "@/components/ui/input"
 import TokenImage from "../structure/token_image"
+import AutoSizer from "react-virtualized-auto-sizer"
+import { FixedSizeList as List } from "react-window"
 import { DepositReceiveAsset } from "@/components/products/tg_usd/tg_usd_type"
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
 
 interface InputSelectProps<T extends DepositReceiveAsset> {
   options?: T[]
@@ -43,7 +43,7 @@ const CustomSelect = <T extends DepositReceiveAsset>({ options = [], onChange, c
           <div className="flex w-full items-center justify-between">
             <div className="flex w-full items-center gap-2">
               <>
-                {opt?.symbol === "USG" || opt?.symbol === "ETH" ? (
+                {opt?.symbol === "USG" || opt?.symbol === "ETH" || opt?.symbol === "TAN" ? (
                   <TokenImage token={opt?.symbol} size={20} />
                 ) : opt?.logoURI ? (
                   <Image src={opt?.logoURI} alt={opt.symbol} height={20} width={20} />

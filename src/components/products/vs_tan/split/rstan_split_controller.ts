@@ -2,14 +2,14 @@ import { executeContractCall, getPublicClient, waitForTransaction } from "@/serv
 import RsTan from "../../../../abi/tgusd/RsTan.json"
 import { Abi, WalletClient } from "viem"
 import { LockPosition } from "../../tg_usd/tg_usd_type"
-import { RSTAN_CONTRACT } from "../rs_tan_repository"
+import { VSTAN_CONTRACT } from "../rs_tan_repository"
 
 export const doSplit = async (tokenId: bigint, walletClient: WalletClient, amountToRemove: bigint) => {
   const txData = {
     abi: RsTan.abi as Abi,
     functionName: "split",
     args: [tokenId, amountToRemove],
-    address: RSTAN_CONTRACT.VSTAN,
+    address: VSTAN_CONTRACT.VSTAN,
   }
 
   const txHash = await executeContractCall(walletClient, txData)

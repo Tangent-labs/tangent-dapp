@@ -21,6 +21,7 @@ import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
 import BorderPanel from "@/components/design_system/structure/border_panel"
+import { useTgUsdContext } from "../../tg_usd_context"
 
 export default function TgUsdDepositPanel() {
   const {
@@ -56,7 +57,9 @@ export default function TgUsdDepositPanel() {
     maxBorrowableValue,
   } = useTgUsdDepositContext()
 
-  const { collateralInfo, marketData, tgUSDInfo, balances, balanceAllowanceData, marketInfo } = useTgUsdRecordContext()
+  const { balances } = useTgUsdContext()
+
+  const { collateralInfo, marketData, tgUSDInfo, balanceAllowanceData, marketInfo } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 

@@ -14,7 +14,7 @@ import Divider from "@/components/design_system/structure/divider"
 import { computeProjection } from "./stake_tan_controller"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import FormButtons from "@/components/design_system/form/form_actions"
-import { RSTAN_CONTRACT } from "../rs_tan_repository"
+import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { useStakeTanContext } from "./stake_tan_context"
 
 export default function StakeTanContent() {
@@ -47,7 +47,7 @@ export default function StakeTanContent() {
 
   const AssetSelectTemplate = (option: SelectOption) => {
     const assetInfo = {
-      address: RSTAN_CONTRACT.TAN,
+      address: VSTAN_CONTRACT.TAN,
       decimals: 18,
       displayDecimals: 2,
       logo: "TAN",
@@ -57,7 +57,7 @@ export default function StakeTanContent() {
     }
 
     const sTANInfo = {
-      address: RSTAN_CONTRACT?.STAN,
+      address: VSTAN_CONTRACT?.STAN,
       decimals: 18,
       displayDecimals: 0,
       logo: "sTAN",

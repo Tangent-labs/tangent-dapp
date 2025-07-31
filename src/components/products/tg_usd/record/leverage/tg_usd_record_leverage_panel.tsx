@@ -23,6 +23,7 @@ import { useTgUsdLeverageContext } from "./tg_usd_record_leverage_context"
 import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
 import { cn } from "@/lib/utils"
 import BorderPanel from "@/components/design_system/structure/border_panel"
+import { useTgUsdContext } from "../../tg_usd_context"
 
 export default function TgUsdLeveragePanel() {
   const {
@@ -57,7 +58,9 @@ export default function TgUsdLeveragePanel() {
     leveragePercentage,
   } = useTgUsdLeverageContext()
 
-  const { collateralInfo, marketData, balances, balanceAllowanceData, marketInfo, pricedCollateralInfo, tgUSDInfo } = useTgUsdRecordContext()
+  const { collateralInfo, marketData, balanceAllowanceData, marketInfo, pricedCollateralInfo, tgUSDInfo } = useTgUsdRecordContext()
+
+  const { balances } = useTgUsdContext()
 
   const { canInteract } = useWalletConnexionContext()
 

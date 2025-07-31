@@ -2,15 +2,15 @@ import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint2
 import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import yearnV3Vault from "../../../../abi/tgusd/YearnV3Vault.json"
 import stakeUI from "../../../../abi/tgusd/sgUSDUI.json"
-import { RSTAN_CONTRACT } from "../rs_tan_repository"
+import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { StakingInfo } from "../rstan_types"
 
 export async function getTanStakeOnChainData(currentAddress: Address | undefined) {
   return await executeChainViewUnique<StakingInfo>(stakeUI.abi as Abi, stakeUI.bytecode as Hex, [
     currentAddress,
-    RSTAN_CONTRACT.TAN,
-    RSTAN_CONTRACT.TAN,
-    RSTAN_CONTRACT.STAN,
+    VSTAN_CONTRACT.TAN,
+    VSTAN_CONTRACT.TAN,
+    VSTAN_CONTRACT.STAN,
   ])
 }
 

@@ -5,7 +5,6 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
 import { Address, formatUnits } from "viem"
-import { useTgUsdContext } from "../tg_usd_context"
 import { getUserPositions } from "../api"
 
 import {
@@ -18,8 +17,8 @@ import {
   TgUsdMarketLoanDisplayData,
   UserPosition,
 } from "../tg_usd_type"
+
 import {
-  getBalances,
   getComputedFutureLoanData,
   getMarketApr,
   getMarketDisplayData,
@@ -27,6 +26,7 @@ import {
   getBalancesAndAllowances,
   transformMarketData,
 } from "./tg_usd_record_controller"
+
 import { sortUserData } from "./position_history/tg_usd_position_history_controller"
 
 type TgUsdRecordContextProps = {
@@ -53,8 +53,6 @@ type TgUsdRecordContextValues = {
 
   marketInfo: TgUsdMarket
 
-  balances: Record<Address, bigint> | null
-
   balanceAllowanceData: BalanceAllowanceData | null
   setBalanceAllowanceData: (arg: BalanceAllowanceData) => void
 
@@ -74,11 +72,7 @@ type TgUsdRecordContextValues = {
 export const TgUsdRecordContext = createContext<TgUsdRecordContextValues | undefined>(undefined)
 
 export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, children, tgUSDInfo }: TgUsdRecordContextProps) => {
-  const { tokens } = useTgUsdContext()
-
   const { currentAddress, getWalletClient } = useWalletConnexionContext()
-
-  const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
 
   const [onChainData, setOnChainData] = useState<ChainViewMarketRow | undefined>()
 
@@ -153,25 +147,6 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     return collateralInfo
   }, [marketData, collateralInfo])
 
-  useEffect(() => {
-    const tokenAddresses: Address[] = tokens.map((el) => el.address)
-
-    if (currentAddress && tokenAddresses.length > 0) {
-      getBalances(currentAddress, tokenAddresses).then((data) => {
-        if (data) {
-          const tokenBalances = tokenAddresses.reduce(
-            (acc, address, index) => {
-              acc[address] = data[index] || BigInt(0)
-              return acc
-            },
-            {} as Record<Address, bigint>
-          )
-          setBalances(tokenBalances)
-        }
-      })
-    }
-  }, [currentAddress, tokens])
-
   const fetchBalanceAllowanceData = async (depositAssetInfo: Address) => {
     if (!depositAssetInfo) return
 
@@ -241,7 +216,6 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     currentAmounts,
     setCurrentAmounts,
     apr,
-    balances,
     balanceAllowanceData,
     setBalanceAllowanceData,
     fetchBalanceAllowanceData,

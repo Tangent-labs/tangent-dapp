@@ -139,7 +139,7 @@ export const RsTanMergeContent = () => {
           <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel px-2 py-3 backdrop-blur-[60px]">
             <div className="flex w-full items-start justify-start gap-2">
               <div className="w-1/3 text-subtitle sm:w-3/12">Pos. ID</div>
-              <div className="w-8/12 text-subtitle sm:w-6/12">rsTan</div>
+              <div className="w-8/12 text-subtitle sm:w-6/12">vsTan</div>
               <div className="hidden w-3/12 text-subtitle sm:flex">Unlock date</div>
             </div>
 

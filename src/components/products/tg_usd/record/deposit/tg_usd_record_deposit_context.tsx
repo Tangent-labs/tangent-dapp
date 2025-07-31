@@ -161,7 +161,9 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
       }
     }
 
-    fetchZapValue()
+    if (depositAsset !== collateralInfo?.symbol) {
+      fetchZapValue()
+    }
   }
 
   const handleZapChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -6,15 +6,15 @@ import { useRsTanContext } from "../rstan_layout_context"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { getPublicClient } from "@/services/service_rpc"
 import { useTgUsdContext } from "../../tg_usd/tg_usd_context"
-import { getQuote } from "../../tg_usd/global_quote_controller"
+import { getQuote, returnRoute } from "../../tg_usd/global_quote_controller"
 import { LockPosition, ZapToken } from "../../tg_usd/tg_usd_type"
 import { ToastComponent } from "@/components/design_system/toast"
 import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { AssetDataPriced, CollateralInfo, ExistingAsset, FormState } from "@/types"
 import { computeSwapAssetPrice } from "../../tg_usd/record/tg_usd_record_controller"
-import { doApprove, doIncreaseLockAmount, doLock, getLockFormState } from "./rstan_lock_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { doApprove, doIncreaseLockAmount, doLock, doZapAndIncreaseLock, doZapAndLock, getLockFormState } from "./rstan_lock_controller"
 
 type RsTanLockContextProps = {
   children: ReactNode
@@ -37,7 +37,11 @@ type RsTanLockContextValues = {
 
   actionApprove: () => void
 
+  actionApproveZap: () => void
+
   actionLock: () => void
+
+  actionZapAndLock: () => void
 
   formState: FormState
 
@@ -66,6 +70,11 @@ type RsTanLockContextValues = {
   estimatedZapDollarValue: string
 
   depositAssetInfo: AssetDataPriced | CollateralInfo
+
+  maxAmountToDeposit: string
+
+  slippage: number
+  setSlippage: (arg: number) => void
 }
 
 export const RsTanLockContext = createContext<RsTanLockContextValues | undefined>(undefined)
@@ -75,7 +84,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
 
   const { tokens } = useTgUsdContext()
 
-  const { loadData, lockData } = useRsTanContext()
+  const { loadData, lockData, fetchBalanceAllowanceData, balanceAllowanceData } = useRsTanContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -88,6 +97,8 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
 
   const [swapAssetPrice, setSwapAssetPrice] = useState<number>(0)
+
+  const [slippage, setSlippage] = useState<number>(1)
 
   const [depositPosition, setDepositPosition] = useState<string>("New")
 
@@ -133,7 +144,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
         address: VSTAN_CONTRACT?.TAN,
         logo: "TAN" as ExistingAsset,
         displayDecimals: 5,
-        price: 0.3,
+        price: 0.21,
       }
     }
 
@@ -148,7 +159,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
         address: VSTAN_CONTRACT?.TAN,
         logo: "TAN" as ExistingAsset,
         displayDecimals: 5,
-        price: 0.3,
+        price: 0.21,
       }
 
     const asset: AssetDataPriced = {
@@ -163,20 +174,87 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     return asset
   }, [depositAsset, swapAssetPrice])
 
-  const actionApprove = async () => {
+  const actionApproveZap = async () => {
+    setIsLoading(true)
     const walletClient = getWalletClient()
-
     if (walletClient && depositWeiValue) {
-      doApprove(depositWeiValue, walletClient)
+      await doApprove(walletClient, depositAssetInfo?.address, VSTAN_CONTRACT.VSTAN, depositWeiValue)
+        .then(() => {
+          fetchBalanceAllowanceData(depositAssetInfo?.address)
+          setIsLoading(false)
+          loadData()
+        })
+        .catch((error) => {
+          console.error("Error during approval:", error)
+          setIsLoading(false)
+        })
+    }
+  }
+
+  const actionApprove = () => {
+    setIsLoading(true)
+    const walletClient = getWalletClient()
+    if (walletClient && depositWeiValue)
+      doApprove(walletClient, VSTAN_CONTRACT.TAN, VSTAN_CONTRACT.VSTAN, depositWeiValue)
         .then(() => {
           loadData()
           setIsLoading(false)
         })
-        .catch((err) => {
-          const errorMessage = err.message.includes("User denied transaction signature") ? "Transaction aborted" : "Something went wrong"
-          toast.error(ToastComponent, { data: { content: errorMessage, type: "Error" } })
+        .catch((error) => {
+          console.error("Error during approval:", error)
           setIsLoading(false)
         })
+  }
+
+  const actionZapAndLock = async () => {
+    setIsLoading(true)
+    const walletClient = getWalletClient()
+
+    if (walletClient && depositWeiValue) {
+      const zapMarketData = {
+        tokenIn: depositAssetInfo?.address,
+        amountIn: depositWeiValue,
+        minAmountOut: (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+      }
+
+      const zapAndLockData = await returnRoute(
+        depositAssetInfo?.address,
+        VSTAN_CONTRACT.TAN,
+        depositWeiValue,
+        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        VSTAN_CONTRACT.VSTAN,
+        currentAddress!
+      )
+
+      if (depositPositionInfo && depositPositionInfo?.tokenId !== 0n) {
+        doZapAndIncreaseLock(VSTAN_CONTRACT?.VSTAN, walletClient!, zapMarketData, zapAndLockData!, depositPositionInfo?.tokenId)
+          .then(() => {
+            loadData()
+            setIsLoading(false)
+            setDepositWeiValue(0n)
+            setZapValue(null)
+            setZapInnerValue(0)
+            toast.success(ToastComponent, { data: { type: "Success", content: "Successfully increased lock position." } })
+          })
+          .catch(() => {
+            setIsLoading(false)
+          })
+      } else {
+        doZapAndLock(VSTAN_CONTRACT?.VSTAN, walletClient!, zapMarketData, zapAndLockData!, isPermaLock)
+          .then(() => {
+            loadData()
+            setIsLoading(false)
+            setDepositWeiValue(0n)
+            setZapValue(null)
+            setZapInnerValue(0)
+            toast.success(ToastComponent, { data: { type: "Success", content: "Successfully created lock position." } })
+          })
+          .catch(() => {
+            setIsLoading(false)
+          })
+      }
+    } else {
+      setIsLoading(false)
     }
   }
 
@@ -195,6 +273,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
         loadData()
         setIsLoading(false)
         toast.success(ToastComponent, { data: { type: "Success", content: "Successfully created lock position." } })
+        setDepositWeiValue(0n)
       }
     } else {
       setIsLoading(false)
@@ -206,7 +285,15 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
       if (!lockData || !depositWeiValue) {
         setFormState({ canProcess: false, cantProcessReasons: ["No data"], haveToApprove: false })
       } else {
-        getLockFormState(lockData?.balance, lockData?.allowance, depositPositionInfo, depositWeiValue, isWellConnected).then((d) => {
+        getLockFormState(
+          lockData?.balance,
+          lockData?.allowance,
+          balanceAllowanceData!,
+          depositPositionInfo,
+          depositWeiValue,
+          depositAsset,
+          isWellConnected
+        ).then((d) => {
           setFormState(d)
         })
       }
@@ -215,15 +302,15 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     if (depositPositionInfo) {
       computeFormState()
     }
-  }, [depositWeiValue, isWellConnected, lockData, depositPositionInfo])
+  }, [depositWeiValue, isWellConnected, lockData, depositPositionInfo, balanceAllowanceData])
 
   const computedNewLockValue = useMemo(() => {
     const baseValue = depositPositionInfo?.amount ? depositPositionInfo?.amount : 0n
 
-    const addedValue = depositWeiValue || 0n
+    const addedValue = depositAsset !== "TAN" && !!zapValue ? zapValue : depositWeiValue || 0n
 
     return formatBigInt(addedValue + baseValue, 18, 2)
-  }, [depositPositionInfo, depositWeiValue])
+  }, [depositPositionInfo, depositWeiValue, depositAsset, zapValue])
 
   const handleDepositChange = (value: bigint | undefined) => {
     setDepositWeiValue(value)
@@ -233,12 +320,11 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
 
       setIsZapLoading(true)
       try {
-        setZapValue(value)
-        // const { quote } = await getQuote(value, currentAddress, "0xDOUZE", VSTAN_CONTRACT?.TAN)
+        const { quote } = await getQuote(value, currentAddress, VSTAN_CONTRACT?.TAN, depositAssetInfo?.address)
 
-        // if (quote) {
-        //   setZapValue(quote)
-        // }
+        if (quote) {
+          setZapValue(quote)
+        }
       } catch (error) {
         console.error("Error fetching zap value:", error)
       } finally {
@@ -264,7 +350,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
       setIsZapLoading(true)
 
       try {
-        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, VSTAN_CONTRACT?.TAN, "0xDOUZE")
+        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, VSTAN_CONTRACT?.TAN)
 
         setDepositWeiValue(quote)
       } catch (error) {
@@ -347,12 +433,24 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
 
   const estimatedZapDollarValue = useMemo(() => {
     if (zapValue) {
-      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * BigInt(10 ** 18)) / BigInt(10 ** 18), 18))})`
+      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * BigInt(0.22 * 10 ** 18)) / BigInt(10 ** 18), 18))})`
       return result
     }
 
     return ""
   }, [zapValue])
+
+  const maxAmountToDeposit = useMemo(() => {
+    const amount = depositAsset === "TAN" ? lockData?.balance : balanceAllowanceData?.balance
+
+    return `Max : ${formatBigInt(amount, depositAssetInfo?.decimals, 2)} ${depositAssetInfo?.symbol}`
+  }, [depositAssetInfo, lockData, balanceAllowanceData])
+
+  useEffect(() => {
+    if (depositAssetInfo) {
+      fetchBalanceAllowanceData(depositAssetInfo?.address)
+    }
+  }, [depositAssetInfo])
 
   const contextValue: RsTanLockContextValues = {
     isLoading,
@@ -363,7 +461,9 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     depositPosition,
     setDepositPosition,
     actionApprove,
+    actionApproveZap,
     actionLock,
+    actionZapAndLock,
     formState,
     computedNewLockValue,
     computedNewEndLockTime,
@@ -382,6 +482,9 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     estimatedZapDollarValue,
     handleDepositChange,
     depositAssetInfo,
+    maxAmountToDeposit,
+    slippage,
+    setSlippage,
   }
 
   return <RsTanLockContext.Provider value={contextValue}>{children}</RsTanLockContext.Provider>

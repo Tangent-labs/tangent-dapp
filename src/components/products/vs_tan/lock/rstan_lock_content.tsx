@@ -42,11 +42,14 @@ export default function RsTanLockContent() {
     estimatedZapDollarValue,
     isZapLoading,
     depositAssetInfo,
+    maxAmountToDeposit,
     setDepositAsset,
     setDepositWeiValue,
     setDepositPosition,
     actionLock,
+    actionZapAndLock,
     actionApprove,
+    actionApproveZap,
     setIsPermaLock,
     handleZapInputChange,
     handleDepositChange,
@@ -177,7 +180,10 @@ export default function RsTanLockContent() {
 
   return (
     <div className="flex w-full flex-col items-start justify-start">
-      <div className="mb-1 text-lg font-semibold text-white">Deposit Tan :</div>
+      <div className="mb-1 flex w-full items-end justify-between gap-2">
+        <span className="text-lg font-semibold text-white">Deposit Tan</span>
+        <span className="text-xs text-subtitle">{maxAmountToDeposit}</span>
+      </div>
 
       <InputSelectLockPosition
         className="w-full"
@@ -214,7 +220,7 @@ export default function RsTanLockContent() {
               </div>
               <div className="flex items-center justify-start gap-2 text-xs text-subtitle">
                 <div className="hidden md:flex">Minimum received </div>
-                <div> ({!!zapValue ? estimatedZapDollarValue : ""})</div>
+                <div> {!!zapValue ? estimatedZapDollarValue : ""}</div>
               </div>
             </div>
             <BorderPanel className="flex items-center justify-center gap-2 bg-select-input px-2.5 py-2">
@@ -279,8 +285,8 @@ export default function RsTanLockContent() {
       <div className="mt-2 flex w-full justify-center">
         <FormButtons
           actions={{
-            handleApprove: actionApprove,
-            handleProcess: actionLock,
+            handleApprove: depositAsset === "TAN" ? actionApprove : actionApproveZap,
+            handleProcess: depositAsset === "TAN" ? actionLock : actionZapAndLock,
           }}
           formState={formState}
           labelProcess="Lock"

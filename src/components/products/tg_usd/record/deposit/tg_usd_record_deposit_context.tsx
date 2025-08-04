@@ -350,7 +350,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
         depositWeiValue!,
         depositAssetInfo?.address,
         collateralInfo?.address,
-        marketInfo,
+        marketInfo.marketAddress,
         (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
       )
 
@@ -430,7 +430,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
         depositWeiValue,
         depositAssetInfo?.address,
         collateralInfo?.address,
-        marketInfo,
+        marketInfo.marketAddress,
         (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
       )
 
@@ -466,7 +466,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
         depositWeiValue,
         depositAssetInfo?.address,
         collateralInfo?.address,
-        marketInfo,
+        marketInfo.marketAddress,
         (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
       )
 

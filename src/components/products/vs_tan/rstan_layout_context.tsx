@@ -3,7 +3,10 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 import { doIncreaseLockTime, doTogglePermaLock, getRsTanData } from "./rstan_layout_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
-import { LockData, LockPosition } from "../tg_usd/tg_usd_type"
+import { BalanceAllowanceData, LockData, LockPosition } from "../tg_usd/tg_usd_type"
+import { getBalancesAndAllowances } from "../tg_usd/record/tg_usd_record_controller"
+import { Address } from "viem"
+import { VSTAN_CONTRACT } from "./rs_tan_repository"
 
 type RsTanContextProps = {
   children: ReactNode
@@ -24,7 +27,12 @@ type RsTanContextValues = {
   selectedPosition: LockPosition | undefined
   setSelectedPosition: (arg: LockPosition | undefined) => void
 
+  balanceAllowanceData: BalanceAllowanceData | null
+  setBalanceAllowanceData: (arg: BalanceAllowanceData) => void
+
   onClickExtend: (pos: LockPosition) => void
+
+  fetchBalanceAllowanceData: (address: Address) => void
 
   onClickRemovePermaLock: () => void
 }
@@ -41,6 +49,8 @@ export const RsTanProvider = ({ children }: RsTanContextProps) => {
   const [selectedPosition, setSelectedPosition] = useState<LockPosition | undefined>(undefined)
 
   const [lockData, setLockData] = useState<LockData | undefined>(undefined)
+
+  const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
 
   useEffect(() => {
     loadData()
@@ -87,6 +97,20 @@ export const RsTanProvider = ({ children }: RsTanContextProps) => {
     }
   }
 
+  const fetchBalanceAllowanceData = async (depositAssetInfo: Address) => {
+    if (!depositAssetInfo) return
+
+    try {
+      const walletClient = getWalletClient()
+
+      const data = await getBalancesAndAllowances(walletClient!, depositAssetInfo, VSTAN_CONTRACT?.VSTAN)
+
+      setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
+    } catch (error) {
+      console.error("Failed to fetch balance/allowance:", error)
+    }
+  }
+
   const contextValue: RsTanContextValues = {
     loadData,
     isLoading,
@@ -99,6 +123,9 @@ export const RsTanProvider = ({ children }: RsTanContextProps) => {
     extendToPermaLock,
     setExtendToPermaLock,
     onClickRemovePermaLock,
+    balanceAllowanceData,
+    setBalanceAllowanceData,
+    fetchBalanceAllowanceData,
   }
 
   return <RsTanContext.Provider value={contextValue}>{children}</RsTanContext.Provider>

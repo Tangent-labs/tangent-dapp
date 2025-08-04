@@ -74,7 +74,7 @@ export default function MenuBarFeature() {
                   <NavigationMenuContent>
                     <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-black p-2">
                       <NavigationMenuLink onClick={() => router.push("/tan/lock")}>Lock</NavigationMenuLink>
-                      <NavigationMenuLink onClick={() => router.push("/tan/stan")}>Stake</NavigationMenuLink>
+                      <NavigationMenuLink onClick={() => router.push("/stan")}>Stake</NavigationMenuLink>
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuDropdown>

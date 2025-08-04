@@ -1,12 +1,12 @@
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
-import RsTan from "../../../../abi/tgusd/RsTan.json"
+import VsTan from "../../../../abi/tgusd/VsTAN.json"
 import { Abi, WalletClient } from "viem"
 import { LockPosition } from "../../tg_usd/tg_usd_type"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 
 export const doMerge = async (walletClient: WalletClient, tokenIdA: bigint, tokenIdB: bigint, claimAsSUSG: boolean) => {
   const txData = {
-    abi: RsTan.abi as Abi,
+    abi: VsTan.abi as Abi,
     functionName: "merge",
     args: [tokenIdA, tokenIdB, claimAsSUSG],
     address: VSTAN_CONTRACT.VSTAN,

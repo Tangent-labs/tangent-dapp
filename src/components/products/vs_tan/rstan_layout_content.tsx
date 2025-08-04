@@ -33,11 +33,11 @@ const listeState: ListState = {
 const LockRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
     <div className="flex items-center justify-between">
-      <div className="flex w-full items-center justify-evenly xl:w-5/12 xl:justify-start">
+      <div className="flex w-5/12 items-center justify-evenly xl:justify-start">
         <div className="xl:w-1/2">{children?.at(0)}</div>
         <div className="flex justify-center xl:w-1/2">{children?.at(1)}</div>
       </div>
-      <div className="flex w-full items-center justify-between">{children?.at(2)}</div>
+      <div className="flex w-7/12 items-center justify-between">{children?.at(2)}</div>
     </div>
   )
 }

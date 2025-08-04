@@ -2,13 +2,14 @@ import { Address } from "viem"
 import { TGUSD_CONTRACT } from "./tg_usd_repository"
 import { getCurveRouterQuote, getCurveRouterRoute } from "./curve_routing_controller"
 import { getEnsoData } from "./api"
+import { VSTAN_CONTRACT } from "../vs_tan/rs_tan_repository"
 
 export const getQuote = async (depositWeiValue: bigint, currentAddress: Address, tokenOut: Address, tokenIn: Address): Promise<{ quote: bigint }> => {
   const data = await getEnsoData(depositWeiValue, tokenIn, tokenOut, currentAddress, currentAddress, 0n)
 
   if (data) {
     return { quote: data?.amountOut }
-  } else if (tokenOut === TGUSD_CONTRACT?.USG || tokenIn === TGUSD_CONTRACT?.USG) {
+  } else if (tokenOut === TGUSD_CONTRACT?.USG || tokenIn === TGUSD_CONTRACT?.USG || tokenOut === VSTAN_CONTRACT?.TAN || tokenIn === VSTAN_CONTRACT?.TAN) {
     const quote = await getCurveRouterQuote(tokenIn, tokenOut, depositWeiValue)
     return { quote }
   } else {
@@ -29,7 +30,7 @@ export const returnRoute = async (
 
   if (route) {
     return { data: route?.tx?.data as string, routerAddress: TGUSD_CONTRACT.ENSO_ROUTER as Address }
-  } else if (tokenOut === TGUSD_CONTRACT?.USG || tokenIn === TGUSD_CONTRACT?.USG) {
+  } else if (tokenOut === TGUSD_CONTRACT?.USG || tokenIn === TGUSD_CONTRACT?.USG || tokenOut === VSTAN_CONTRACT?.TAN || tokenIn === VSTAN_CONTRACT?.TAN) {
     const curveRoute = await getCurveRouterRoute(tokenIn, tokenOut, amount, minAmountOut, user ? user : receiver)
     return { data: curveRoute as string, routerAddress: TGUSD_CONTRACT.CURVE_ROUTER as Address }
   } else {

@@ -1,6 +1,6 @@
 import { Abi, Address, formatEther, formatUnits, Hex, WalletClient, zeroAddress } from "viem"
 import { BalanceAllowanceData, ChainViewMarketRow, MarketDetailData, TgUsdMarketDisplayData, TgUsdMarketLoanDisplayData, ZapToken } from "../tg_usd_type"
-import { executeAppove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
+import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
 import MarketDetailsUI from "@/abi/tgusd/MarketDetailsUI.json"
 import GetBalances from "@/abi/tgusd/GetBalances.json"
 import { CollateralInfo, ExistingAsset } from "@/types"
@@ -28,7 +28,7 @@ export const getBalances = async (user: Address, tokens: Address[]) => {
 }
 
 export async function doApprove(walletClient: WalletClient, contract: Address, spender: Address, amount: bigint) {
-  const txHash = await executeAppove(walletClient, contract, spender, amount)
+  const txHash = await executeApprove(walletClient, contract, spender, amount)
   return await waitForTransaction(txHash)
 }
 
@@ -242,14 +242,8 @@ export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: st
   }
 }
 
-export const prepareZapTransaction = async (
-  amount: bigint,
-  tokenIn: Address,
-  tokenOut: Address,
-  marketInfo: { marketAddress: Address },
-  minAmountOut: bigint
-) => {
-  const routerCall = await getEnsoData(amount, tokenIn, tokenOut, TGUSD_CONTRACT.ZAPPER, marketInfo.marketAddress, minAmountOut)
+export const prepareZapTransaction = async (amount: bigint, tokenIn: Address, tokenOut: Address, marketAddress: Address, minAmountOut: bigint) => {
+  const routerCall = await getEnsoData(amount, tokenIn, tokenOut, TGUSD_CONTRACT.ZAPPER, marketAddress, minAmountOut)
 
   if (!routerCall?.tx?.data) throw new Error("Failed to fetch routing data")
 

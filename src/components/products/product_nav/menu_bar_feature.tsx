@@ -3,7 +3,6 @@
 import { usePathname, useRouter } from "next/navigation"
 import { Logo } from "@/components/design_system/structure/logo"
 import { WalletConnexionButton } from "@/components/products/wallet/Wallet_connexion_button"
-import { MenuModal } from "@/components/design_system/structure/menu_modal"
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -27,10 +26,6 @@ export default function MenuBarFeature() {
           <div onClick={() => router.push("/")} className="flex cursor-pointer items-center gap-2 text-[20px] text-white">
             <Logo />
             Tangent
-          </div>
-
-          <div className="flex w-full items-center justify-center xl:hidden">
-            <MenuModal></MenuModal>
           </div>
 
           <NavigationMenu>
@@ -93,7 +88,7 @@ export default function MenuBarFeature() {
               </NavigationMenu>
             </NavigationMenuList>
 
-            <Button onClick={() => router.push("/swap")} className="ml-4 h-10 !px-8 font-roobert font-semibold text-white">
+            <Button onClick={() => router.push("/swap")} className="ml-4 hidden h-10 !px-8 font-roobert font-semibold text-white xl:flex">
               Buy USG
             </Button>
           </NavigationMenu>

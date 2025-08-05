@@ -65,7 +65,7 @@ export default function TgUsdRecordLayout({ children, ...props }: TgUsdRecordLay
           <BorderPanel className="flex w-full cursor-pointer items-center justify-between bg-overlay-panel px-2 backdrop-blur-[60px]">
             <AccordionItem value="item-1">
               <AccordionTrigger>
-                <span className="text-md">vAPR Calculator</span>
+                <span className="text-md py-3">vAPR Calculator</span>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="flex w-full flex-col items-center justify-center text-primary">

@@ -247,32 +247,33 @@ export default function TgUsdDepositPanel() {
       <div className="flex w-full items-start justify-between gap-2">
         <Accordion className="w-full" type="single" collapsible>
           <AccordionItem value="item-1">
-            <BorderPanel className="flex h-[30px] w-full cursor-pointer items-center justify-between bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px] hover:bg-white/20">
+            <BorderPanel className="flex w-full cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
               <AccordionTrigger>
-                <span className="text-md">Details</span>
+                <span className="py-1.5">Details</span>
               </AccordionTrigger>
-            </BorderPanel>
-            <AccordionContent>
-              <div className="flex w-full flex-col items-center justify-center text-primary">
-                {gas && gas > 0 ? (
-                  <div className="flex w-full items-center justify-between">
-                    <div className="flex justify-start">Network cost</div>
-                    <div className="flex justify-end">${gas}</div>
-                  </div>
-                ) : null}
-                {slippage && slippage > 0 ? (
-                  <div className="flex w-full items-center justify-between">
-                    <div className="flex justify-start">Max slippage</div>
-                    <div className="flex justify-end">{slippage}%</div>
-                  </div>
-                ) : null}
+              <AccordionContent className="w-full">
+                <div className="flex w-full flex-col items-center justify-center text-xs text-primary">
+                  {gas && gas > 0 ? (
+                    <div className="flex w-full items-center justify-between">
+                      <div className="flex justify-start">Network cost</div>
+                      <div className="flex justify-end">${gas}</div>
+                    </div>
+                  ) : null}
 
-                <div className="flex w-full items-center justify-between">
-                  <div className="flex justify-start">Zapping fee</div>
-                  <div className="flex justify-end">--</div>
+                  {slippage && slippage > 0 ? (
+                    <div className="flex w-full items-center justify-between">
+                      <div className="ﬂflex w-full justify-start">Max slippage</div>
+                      <div className="flex justify-end">{slippage}%</div>
+                    </div>
+                  ) : null}
+
+                  <div className="flex w-full items-center justify-between">
+                    <div className="flex justify-start">Zapping fee</div>
+                    <div className="flex justify-end">--</div>
+                  </div>
                 </div>
-              </div>
-            </AccordionContent>
+              </AccordionContent>
+            </BorderPanel>
           </AccordionItem>
         </Accordion>
 

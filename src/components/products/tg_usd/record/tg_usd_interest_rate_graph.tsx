@@ -3,22 +3,11 @@
 import { useEffect, useState } from "react"
 import { ResponsiveContainer, AreaChart, XAxis, YAxis, CartesianGrid, Legend, Area, Tooltip } from "recharts"
 import { useTgUsdRecordContext } from "./tg_usd_record_context"
-import { formatUnits, parseEther, parseUnits } from "viem"
+import { formatUnits, parseUnits } from "viem"
+import { computeIR } from "./tg_usd_record_controller"
 
 export default function InterestRateGraph() {
   const { marketData } = useTgUsdRecordContext()
-
-  interface IrParams {
-    a1: number
-    a2: number
-    isHEC: boolean
-    k: number
-    pInf: number
-    pMax: number
-    pMin: number
-    rMax: number
-    rMin: number
-  }
 
   interface RCParams {
     endCutPercentage: bigint
@@ -36,50 +25,6 @@ export default function InterestRateGraph() {
   }
 
   const [chartData, setChartData] = useState<ChartData[]>([])
-
-  const computeIR = (tgUSDPrice: bigint, irParams: IrParams) => {
-    const tgUSDPriceNumber = Number(formatUnits(tgUSDPrice, 18))
-    const normalizedPMin = Number(formatUnits(BigInt(irParams.pMin), 6))
-    const normalizedPMax = Number(formatUnits(BigInt(irParams.pMax), 6))
-
-    if (tgUSDPriceNumber <= normalizedPMin) {
-      const ir = Number(formatUnits(BigInt(irParams.rMax), 5))
-      const adjustedIR = Math.exp(ir) - 1
-      return parseEther(adjustedIR.toFixed(18))
-    }
-    if (tgUSDPriceNumber >= normalizedPMax) {
-      if (irParams.isHEC) {
-        const ir = 0
-        const adjustedIR = Math.exp(ir) - 1
-        return parseEther(adjustedIR.toFixed(18))
-      }
-      const ir = Number(formatUnits(BigInt(irParams.rMin), 5))
-      const adjustedIR = Math.exp(ir) - 1
-      return parseEther(adjustedIR.toFixed(18))
-    }
-    const priceDelta = tgUSDPriceNumber - Number(formatUnits(BigInt(irParams.pInf), 6))
-
-    const sigmaX = Number(irParams.k) * priceDelta
-
-    const exp = Math.exp(-sigmaX)
-
-    const sigma = 1 / (1 + exp)
-
-    const alpha1 = Number(irParams.a1) / 1_000
-    const alpha = alpha1 + (Number(irParams.a2) / 1_000 - alpha1) * sigma
-
-    const quotient = (normalizedPMax - tgUSDPriceNumber) / (normalizedPMax - normalizedPMin)
-
-    const priceRatio = quotient ** alpha
-
-    const irIncrement = Number(formatUnits(BigInt(irParams.rMax) - BigInt(irParams.rMin), 5)) * priceRatio
-
-    const ir = Number(formatUnits(BigInt(irParams.rMin), 5)) + irIncrement
-
-    const adjustedIR = Math.exp(ir) - 1
-
-    return parseEther(adjustedIR.toFixed(18))
-  }
 
   const computeRewardsCut = (tgUSDPrice: bigint, rcParams: RCParams) => {
     const stepAmount = rcParams.stepAmount

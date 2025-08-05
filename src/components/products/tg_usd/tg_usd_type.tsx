@@ -448,3 +448,15 @@ export type TgUsdCollateralData = {
   name: string
   value: number
 }
+
+export interface IrParams {
+  a1: number
+  a2: number
+  isHEC: boolean
+  k: number
+  pInf: number
+  pMax: number
+  pMin: number
+  rMax: number
+  rMin: number
+}

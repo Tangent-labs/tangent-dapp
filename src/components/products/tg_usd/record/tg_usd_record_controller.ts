@@ -1,14 +1,22 @@
-import { Abi, Address, formatEther, formatUnits, Hex, WalletClient, zeroAddress } from "viem"
-import { BalanceAllowanceData, ChainViewMarketRow, MarketDetailData, TgUsdMarketDisplayData, TgUsdMarketLoanDisplayData, ZapToken } from "../tg_usd_type"
-import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
-import MarketDetailsUI from "@/abi/tgusd/MarketDetailsUI.json"
+import { getEnsoData } from "../api"
 import GetBalances from "@/abi/tgusd/GetBalances.json"
 import { CollateralInfo, ExistingAsset } from "@/types"
-import { TGUSD_CONTRACT, tgUsdMarkets } from "../tg_usd_repository"
-import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
-import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
 import { getSwapAssetPrice } from "@/services/service_price"
-import { getEnsoData } from "../api"
+import MarketDetailsUI from "@/abi/tgusd/MarketDetailsUI.json"
+import { TGUSD_CONTRACT, tgUsdMarkets } from "../tg_usd_repository"
+import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
+import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
+import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
+import { Abi, Address, formatEther, formatUnits, Hex, parseEther, WalletClient, zeroAddress } from "viem"
+import {
+  BalanceAllowanceData,
+  ChainViewMarketRow,
+  IrParams,
+  MarketDetailData,
+  TgUsdMarketDisplayData,
+  TgUsdMarketLoanDisplayData,
+  ZapToken,
+} from "../tg_usd_type"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
@@ -261,4 +269,79 @@ export const computeMaxBorrowable = (maxBorrowable: bigint, maxMarketDebt: bigin
     return maxBorrowable > 0n ? maxBorrowable : 0n
   }
   return maxMarketDebt - totalDebt
+}
+
+export const computeIR = (tgUSDPrice: bigint, irParams: IrParams) => {
+  const tgUSDPriceNumber = Number(formatUnits(tgUSDPrice, 18))
+  const normalizedPMin = Number(formatUnits(BigInt(irParams.pMin), 6))
+  const normalizedPMax = Number(formatUnits(BigInt(irParams.pMax), 6))
+
+  if (tgUSDPriceNumber <= normalizedPMin) {
+    const ir = Number(formatUnits(BigInt(irParams.rMax), 5))
+    const adjustedIR = Math.exp(ir) - 1
+    return parseEther(adjustedIR.toFixed(18))
+  }
+  if (tgUSDPriceNumber >= normalizedPMax) {
+    if (irParams.isHEC) {
+      const ir = 0
+      const adjustedIR = Math.exp(ir) - 1
+      return parseEther(adjustedIR.toFixed(18))
+    }
+    const ir = Number(formatUnits(BigInt(irParams.rMin), 5))
+    const adjustedIR = Math.exp(ir) - 1
+    return parseEther(adjustedIR.toFixed(18))
+  }
+  const priceDelta = tgUSDPriceNumber - Number(formatUnits(BigInt(irParams.pInf), 6))
+
+  const sigmaX = Number(irParams.k) * priceDelta
+
+  const exp = Math.exp(-sigmaX)
+
+  const sigma = 1 / (1 + exp)
+
+  const alpha1 = Number(irParams.a1) / 1_000
+  const alpha = alpha1 + (Number(irParams.a2) / 1_000 - alpha1) * sigma
+
+  const quotient = (normalizedPMax - tgUSDPriceNumber) / (normalizedPMax - normalizedPMin)
+
+  const priceRatio = quotient ** alpha
+
+  const irIncrement = Number(formatUnits(BigInt(irParams.rMax) - BigInt(irParams.rMin), 5)) * priceRatio
+
+  const ir = Number(formatUnits(BigInt(irParams.rMin), 5)) + irIncrement
+
+  const adjustedIR = Math.exp(ir) - 1
+
+  return parseEther(adjustedIR.toFixed(18))
+}
+
+export const computeVAPR = (
+  collatVApr: bigint,
+  collatAmount: bigint,
+  userDebt: bigint,
+  debtRate: bigint,
+  debtFarmingAmount: number,
+  debtFarmingVApr: number,
+  totalCollateralAmount: bigint,
+  isLeveraged: boolean
+) => {
+  try {
+    const debtFarmingBigInt = BigInt(debtFarmingAmount * 10 ** 18)
+    const debtVAPRBigInt = BigInt(debtFarmingVApr * 10 ** 18)
+
+    let result: bigint
+    if (isLeveraged) {
+      result = ((totalCollateralAmount * collatVApr - userDebt * debtRate) * BigInt(10000)) / collatAmount
+    } else {
+      result = ((collatVApr * collatAmount - userDebt * debtRate + debtFarmingBigInt * debtVAPRBigInt) * BigInt(10000)) / collatAmount
+    }
+
+    const vAPR = Number(result) / 100
+    if (!isFinite(vAPR)) {
+      return 0
+    }
+    return vAPR
+  } catch {
+    return 0
+  }
 }

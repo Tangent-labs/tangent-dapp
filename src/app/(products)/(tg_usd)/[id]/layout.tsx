@@ -4,6 +4,7 @@ import { ReactNode } from "react"
 import NotFound from "../../not-found"
 import { TgUsdRecordProvider } from "@/components/products/tg_usd/record/tg_usd_record_context"
 import TgUsdRecordLayout from "@/components/products/tg_usd/record/tg_usd_record_layout"
+import { TgUsdMaketListProvider } from "@/components/products/tg_usd/list/tg_usd_market_list_context"
 
 export default async function Layout({ params, children }: { params: Promise<{ id: TgUsdMarketAsset }>; children: ReactNode }) {
   const collateral = (await params).id
@@ -11,8 +12,10 @@ export default async function Layout({ params, children }: { params: Promise<{ i
   if (!marketInfo || !tgUSDInfo || !collateralInfo) return NotFound()
 
   return (
-    <TgUsdRecordProvider collateral={collateral} collateralInfo={collateralInfo} marketInfo={marketInfo} tgUSDInfo={tgUSDInfo}>
-      <TgUsdRecordLayout>{children}</TgUsdRecordLayout>
-    </TgUsdRecordProvider>
+    <TgUsdMaketListProvider>
+      <TgUsdRecordProvider collateral={collateral} collateralInfo={collateralInfo} marketInfo={marketInfo} tgUSDInfo={tgUSDInfo}>
+        <TgUsdRecordLayout>{children}</TgUsdRecordLayout>
+      </TgUsdRecordProvider>
+    </TgUsdMaketListProvider>
   )
 }

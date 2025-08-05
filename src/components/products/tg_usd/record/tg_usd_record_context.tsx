@@ -25,9 +25,13 @@ import {
   getTgUsdMarketRecordData,
   getBalancesAndAllowances,
   transformMarketData,
+  computeIR,
+  computeVAPR,
 } from "./tg_usd_record_controller"
 
 import { sortUserData } from "./position_history/tg_usd_position_history_controller"
+import { useTgUsdMaketListContext } from "../list/tg_usd_market_list_context"
+import { usePathname } from "next/navigation"
 
 type TgUsdRecordContextProps = {
   children: ReactNode
@@ -67,12 +71,31 @@ type TgUsdRecordContextValues = {
   setIsLeveraged: (v: boolean) => void
 
   pricedCollateralInfo: CollateralInfo
+
+  debtFarming: number
+  setDebtFarming: (v: number) => void
+
+  debtVAPR: number
+  setDebtVAPR: (v: number) => void
+
+  chartData: Array<{ price: string; vAPR: number }>
+  setChartData: (v: Array<{ price: string; vAPR: number }>) => void
+
+  feature: string
+
+  yAxisSettings: { min: number; max: number; stepSize: number }
 }
 
 export const TgUsdRecordContext = createContext<TgUsdRecordContextValues | undefined>(undefined)
 
 export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, children, tgUSDInfo }: TgUsdRecordContextProps) => {
   const { currentAddress, getWalletClient } = useWalletConnexionContext()
+
+  const path = usePathname()
+
+  const { userData } = useTgUsdMaketListContext()
+
+  const [chartData, setChartData] = useState<Array<{ price: string; vAPR: number }>>([])
 
   const [onChainData, setOnChainData] = useState<ChainViewMarketRow | undefined>()
 
@@ -81,6 +104,10 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [isLeveraged, setIsLeveraged] = useState<boolean>(false)
+
+  const [debtFarming, setDebtFarming] = useState<number>(0)
+
+  const [debtVAPR, setDebtVAPR] = useState<number>(0)
 
   const [isUserHistoryLoading, setIsUserHistoryLoading] = useState<boolean>(true)
 
@@ -204,6 +231,53 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     })
   }
 
+  // Generate chart data
+  useEffect(() => {
+    if (marketData && userData && userData.totalUserDeposit && userData.totalUserDebt) {
+      const { irParams } = marketData.constants
+      const priceRange = 1 - 0.9887
+      const prices = Array.from({ length: 100 }, (_, i) => 0.9887 + (i * priceRange) / 99)
+
+      const data = prices
+        .map((price) => {
+          const vAPR = computeVAPR(
+            BigInt(Math.round(10 * 10 ** 18)) / BigInt(100),
+            userData.totalUserDeposit,
+            userData.totalUserDebt,
+            computeIR(BigInt(Math.round(price * 10 ** 18)), irParams),
+            debtFarming,
+            debtVAPR / 100,
+            userData.totalUserDeposit,
+            isLeveraged
+          )
+          return { price: price.toFixed(4), vAPR }
+        })
+        .filter((d) => isFinite(d.vAPR))
+
+      setChartData(data)
+    }
+  }, [isLeveraged, debtFarming, debtVAPR, marketData, userData])
+
+  const feature = useMemo(() => {
+    const lastIndexOfSlash = path.lastIndexOf("/") + 1
+    const currentFeature = path.substring(lastIndexOfSlash, path.length)
+    return currentFeature
+  }, [path])
+
+  const yAxisSettings = useMemo(() => {
+    return {
+      min:
+        chartData.length > 0 && chartData.some((d: { price: string; vAPR: number }) => isFinite(d.vAPR))
+          ? Math.min(...chartData.map((d: { price: string; vAPR: number }) => d.vAPR)) * 0.95
+          : 0,
+      max:
+        chartData.length > 0 && chartData.some((d: { price: string; vAPR: number }) => isFinite(d.vAPR))
+          ? Math.max(...chartData.map((d: { price: string; vAPR: number }) => d.vAPR)) * 1.1
+          : 100,
+      stepSize: 5,
+    }
+  }, [chartData])
+
   const contextValue: TgUsdRecordContextValues = {
     isLoading,
     collateral,
@@ -228,6 +302,14 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     isLeveraged,
     setIsLeveraged,
     pricedCollateralInfo,
+    debtFarming,
+    setDebtFarming,
+    debtVAPR,
+    setDebtVAPR,
+    chartData,
+    setChartData,
+    feature,
+    yAxisSettings,
   }
 
   return <TgUsdRecordContext.Provider value={contextValue}>{children}</TgUsdRecordContext.Provider>

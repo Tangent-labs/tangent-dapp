@@ -2,14 +2,12 @@
 
 import Divider from "@/components/design_system/structure/divider"
 import Title from "@/components/design_system/structure/title"
-import BorrowHistoryGraph from "./tg_usd_borrow_graph"
+import UsgTotalBorrow from "./usg_total_borrow"
 import InterestRateGraph from "./tg_usd_interest_rate_graph"
 
-type TgUsdMarketInfoProps = React.ButtonHTMLAttributes<HTMLDivElement>
-
-export default function TgUsdMarketInfo({ ...props }: TgUsdMarketInfoProps) {
+export default function TgUsdMarketInfo() {
   return (
-    <div className="rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]" {...props}>
+    <div className="rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
       <Title label={"Markets info"} size={"normal"} />
       <Divider />
       <div className="flex flex-col justify-between gap-4 xl:flex-row">
@@ -20,7 +18,7 @@ export default function TgUsdMarketInfo({ ...props }: TgUsdMarketInfoProps) {
               <span className="text-lg text-row-tonic">$230,99M</span>
             </div>
             <div className="flex h-[300px] w-full border-0 p-4">
-              <BorrowHistoryGraph />
+              <UsgTotalBorrow />
             </div>
           </div>
         </div>

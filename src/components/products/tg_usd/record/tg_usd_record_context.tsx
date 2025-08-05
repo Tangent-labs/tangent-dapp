@@ -5,7 +5,7 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
 import { Address, formatUnits } from "viem"
-import { getUserPositions } from "../api"
+import { getTotalBorrow, getUserPositions } from "../api"
 
 import {
   BalanceAllowanceData,
@@ -15,6 +15,7 @@ import {
   TgUsdMarketAmounts,
   TgUsdMarketDisplayData,
   TgUsdMarketLoanDisplayData,
+  TotalBorrow,
   UserPosition,
 } from "../tg_usd_type"
 
@@ -84,6 +85,9 @@ type TgUsdRecordContextValues = {
   feature: string
 
   yAxisSettings: { min: number; max: number; stepSize: number }
+
+  totalBorrow: TotalBorrow[]
+  setTotalBorrow: (v: TotalBorrow[]) => void
 }
 
 export const TgUsdRecordContext = createContext<TgUsdRecordContextValues | undefined>(undefined)
@@ -113,6 +117,8 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
 
   const [apr, setApr] = useState<AssetApr | undefined>()
 
+  const [totalBorrow, setTotalBorrow] = useState<TotalBorrow[]>([])
+
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
 
   const [currentAmounts, setCurrentAmounts] = useState<TgUsdMarketAmounts>({
@@ -125,20 +131,20 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
   })
 
   const fetchUserPositions = () => {
-    getUserPositions(currentAddress!, marketInfo.marketAddress).then((pos) => {
-      if (pos) {
-        setUserPositions(pos)
-      } else {
-        setUserPositions([])
-      }
-    })
+    if (currentAddress) {
+      getUserPositions(currentAddress, marketInfo.marketAddress).then((pos) => {
+        if (pos) {
+          setUserPositions(pos)
+        } else {
+          setUserPositions([])
+        }
+      })
+    }
   }
 
   useEffect(() => {
-    if (currentAddress) {
-      loadOnChainData()
-      fetchUserPositions()
-    }
+    loadOnChainData()
+    fetchUserPositions()
   }, [currentAddress])
 
   useEffect(() => {
@@ -192,19 +198,15 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
   // USER POSITION CONTEXT
 
   const displayRows = useMemo(() => {
-    if (!userPositions) {
-      setIsUserHistoryLoading(true)
-      return []
-    }
-    if (!!userPositions && userPositions.length === 0) {
+    if (userPositions) {
+      const rows = sortUserData(userPositions)
+
       setIsUserHistoryLoading(false)
+
+      return rows
+    } else {
       return []
     }
-
-    const rows = sortUserData(userPositions)
-    setIsUserHistoryLoading(false)
-
-    return rows
   }, [userPositions])
 
   const customSort = (listState: ListState) => {
@@ -278,6 +280,12 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     }
   }, [chartData])
 
+  useEffect(() => {
+    getTotalBorrow().then((totalBorrowData) => {
+      setTotalBorrow(totalBorrowData)
+    })
+  }, [])
+
   const contextValue: TgUsdRecordContextValues = {
     isLoading,
     collateral,
@@ -310,6 +318,8 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     setChartData,
     feature,
     yAxisSettings,
+    totalBorrow,
+    setTotalBorrow,
   }
 
   return <TgUsdRecordContext.Provider value={contextValue}>{children}</TgUsdRecordContext.Provider>

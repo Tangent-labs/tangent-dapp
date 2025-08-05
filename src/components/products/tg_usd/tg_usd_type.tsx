@@ -460,3 +460,8 @@ export interface IrParams {
   rMax: number
   rMin: number
 }
+
+export type TotalBorrow = {
+  timestamp: string
+  value: string
+}

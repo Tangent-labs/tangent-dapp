@@ -1,6 +1,7 @@
 "use server"
 
 import { Address } from "viem"
+import { TotalBorrow } from "./tg_usd_type"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -153,5 +154,29 @@ export const getReferralStatus = async (account: Address): Promise<UserStatus> =
   } catch (error) {
     console.error("Failed to fetch referral status:", error)
     return { hasUsedCode: false, referralCode: null, friends: 0 }
+  }
+}
+
+export const getTotalBorrow = async (): Promise<Array<TotalBorrow>> => {
+  try {
+    const url = `${baseUrl}/total-borrow`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    const data: Array<TotalBorrow> = await response.json()
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch referral status with status")
+    }
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch total borrow data :", error)
+    return []
   }
 }

@@ -1,25 +1,45 @@
 "use client"
 
-import { formatDollar } from "@/lib/number_formatter"
-import { useTgUsdRecordContext } from "./tg_usd_record_context"
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts"
+import { formatCompactDollar, formatDollar } from "@/lib/number_formatter"
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 
-export default function UsgTotalBorrow() {
-  const { totalBorrow } = useTgUsdRecordContext()
+type UsgTotalBorrowProps = {
+  totalBorrow: Array<{
+    timestamp: string
+    value: string
+  }>
+}
 
+export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
   return (
     <div className="flex h-full w-full items-center justify-center">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={totalBorrow}>
+        <AreaChart data={totalBorrow} margin={{ top: 20 }}>
+          <defs>
+            <linearGradient id="borrowGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.4} />
+              <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
 
-          <XAxis dataKey="timestamp" tickFormatter={(str) => new Date(str).toLocaleDateString()} />
-          <YAxis tickFormatter={(value) => `$${Number(value).toLocaleString()}`} />
+          <XAxis
+            dataKey="timestamp"
+            tickFormatter={(str) =>
+              new Date(str).toLocaleString(undefined, {
+                month: "short",
+                day: "numeric",
+              })
+            }
+          />
+
+          <YAxis orientation="right" tickFormatter={(value) => formatCompactDollar(value)} />
 
           <Tooltip
             content={({ active, payload, label }) => {
               if (active && payload && payload.length) {
-                const formattedValue = `${formatDollar(payload[0]?.value?.toString())}`
+                const formattedValue = formatDollar(payload[0]?.value?.toString())
                 const formattedDate = new Date(label).toLocaleString(undefined, {
                   year: "numeric",
                   month: "short",
@@ -29,13 +49,13 @@ export default function UsgTotalBorrow() {
                 })
 
                 return (
-                  <div className="flex min-w-40 flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-input p-2 text-white backdrop-blur-[60px]">
+                  <div className="flex flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-input p-2 text-white backdrop-blur-[60px]">
                     <div className="flex w-full items-center justify-between">
-                      <p className="font-semibold">Total Borrow:</p>
+                      <p className="min-w-24 font-semibold">Total Borrow:</p>
                       <p>{formattedValue}</p>
                     </div>
                     <div className="flex w-full items-center justify-between">
-                      <p className="font-semibold">Date:</p>
+                      <p className="min-w-24 font-semibold">Date:</p>
                       <p>{formattedDate}</p>
                     </div>
                   </div>
@@ -46,8 +66,8 @@ export default function UsgTotalBorrow() {
             }}
           />
 
-          <Line type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={2} dot={false} />
-        </LineChart>
+          <Area type="monotone" dataKey="value" stroke="#1568ed" strokeWidth={3} fill="url(#borrowGradient)" dot={false} />
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   )

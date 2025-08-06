@@ -157,9 +157,9 @@ export const getReferralStatus = async (account: Address): Promise<UserStatus> =
   }
 }
 
-export const getTotalBorrow = async (): Promise<Array<TotalBorrow>> => {
+export const getTotalBorrow = async (range: string): Promise<TotalBorrow> => {
   try {
-    const url = `${baseUrl}/total-borrow`
+    const url = `${baseUrl}/total-borrow?range=${range}`
 
     const response = await fetch(url, {
       method: "GET",
@@ -168,7 +168,7 @@ export const getTotalBorrow = async (): Promise<Array<TotalBorrow>> => {
       },
     })
 
-    const data: Array<TotalBorrow> = await response.json()
+    const data: TotalBorrow = await response.json()
 
     if (!response.ok) {
       throw new Error("Failed to fetch referral status with status")
@@ -177,6 +177,6 @@ export const getTotalBorrow = async (): Promise<Array<TotalBorrow>> => {
     return data
   } catch (error) {
     console.error("Failed to fetch total borrow data :", error)
-    return []
+    return { latestTotalDebt: "0", data: [] }
   }
 }

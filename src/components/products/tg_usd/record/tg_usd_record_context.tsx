@@ -86,8 +86,11 @@ type TgUsdRecordContextValues = {
 
   yAxisSettings: { min: number; max: number; stepSize: number }
 
-  totalBorrow: TotalBorrow[]
-  setTotalBorrow: (v: TotalBorrow[]) => void
+  totalBorrow: TotalBorrow
+  setTotalBorrow: (v: TotalBorrow) => void
+
+  totalBorrowTimeWindow: string
+  setTotalBorrowTimeWindow: (v: string) => void
 }
 
 export const TgUsdRecordContext = createContext<TgUsdRecordContextValues | undefined>(undefined)
@@ -109,6 +112,8 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
 
   const [isLeveraged, setIsLeveraged] = useState<boolean>(false)
 
+  const [totalBorrowTimeWindow, setTotalBorrowTimeWindow] = useState<string>("1m")
+
   const [debtFarming, setDebtFarming] = useState<number>(0)
 
   const [debtVAPR, setDebtVAPR] = useState<number>(0)
@@ -117,7 +122,7 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
 
   const [apr, setApr] = useState<AssetApr | undefined>()
 
-  const [totalBorrow, setTotalBorrow] = useState<TotalBorrow[]>([])
+  const [totalBorrow, setTotalBorrow] = useState<TotalBorrow>({ latestTotalDebt: "0", data: [] })
 
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
 
@@ -281,10 +286,10 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
   }, [chartData])
 
   useEffect(() => {
-    getTotalBorrow().then((totalBorrowData) => {
+    getTotalBorrow(totalBorrowTimeWindow).then((totalBorrowData) => {
       setTotalBorrow(totalBorrowData)
     })
-  }, [])
+  }, [totalBorrowTimeWindow])
 
   const contextValue: TgUsdRecordContextValues = {
     isLoading,
@@ -320,6 +325,8 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     yAxisSettings,
     totalBorrow,
     setTotalBorrow,
+    totalBorrowTimeWindow,
+    setTotalBorrowTimeWindow,
   }
 
   return <TgUsdRecordContext.Provider value={contextValue}>{children}</TgUsdRecordContext.Provider>

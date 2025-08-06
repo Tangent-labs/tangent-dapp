@@ -462,6 +462,9 @@ export interface IrParams {
 }
 
 export type TotalBorrow = {
-  timestamp: string
-  value: string
+  latestTotalDebt: string
+  data: Array<{
+    timestamp: string
+    value: string
+  }>
 }

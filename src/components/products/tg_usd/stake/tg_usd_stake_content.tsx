@@ -48,7 +48,7 @@ export default function TgUsdStakeContent() {
       displayDecimals: 2,
       logo: "USG",
       name: "USG",
-      price: stakeInfo?.tgUSDPrice,
+      price: stakeInfo?.USGPrice,
       symbol: "USG",
     }
 
@@ -58,7 +58,7 @@ export default function TgUsdStakeContent() {
       displayDecimals: 0,
       logo: "sUSG",
       name: "sUSG",
-      price: stakeInfo?.sgUSDPrice,
+      price: stakeInfo?.sUSGPrice,
       symbol: "sUSG",
     }
 
@@ -113,7 +113,7 @@ export default function TgUsdStakeContent() {
             </div>
             <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">sUSG</span>
-              <span className="text-lg font-semibold">{formatDollar(formatUnits(stakeInfo.sgUSDPrice, 18), 2)}</span>
+              <span className="text-lg font-semibold">{formatDollar(formatUnits(stakeInfo.sUSGPrice, 18), 2)}</span>
             </div>
             <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-1">
               <span className="text-black">APY</span>
@@ -158,7 +158,7 @@ export default function TgUsdStakeContent() {
             disabled={false}
             receiveAssetDisplay={<ReceiveAssetDisplay />}
             depositAsset={currentAssetInfo?.asset}
-            receiveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(stakeInfo?.sgUSDPrice || 0n, 18)))?.toFixed(2)}
+            receiveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(stakeInfo?.sUSGPrice || 0n, 18)))?.toFixed(2)}
             balance={currentAssetInfo?.balance}
             receiveAmount={formatBigInt(expected, 18, 2)}
             setMaxBalance={() => setWeiValue(currentAssetInfo?.balance)}
@@ -183,7 +183,7 @@ export default function TgUsdStakeContent() {
           <Divider className="h-1 w-full"></Divider>
 
           <ForecastGraph
-            initialInvestment={Number(formatUnits(stakeInfo?.sgUSDBalance || 0n, 18))}
+            initialInvestment={Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18))}
             apr={15}
             additionalLiquidity={currentFeature === "stake" ? (weiValue ? Number(formatUnits(weiValue!, 18)) : 0) : 0}
           ></ForecastGraph>
@@ -191,7 +191,7 @@ export default function TgUsdStakeContent() {
           <div className="flex w-full flex-col items-center justify-between gap-2 sm:flex-row">
             <EvolutionBox
               className="w-full"
-              originalValue={Number(formatUnits(stakeInfo?.sgUSDBalance || 0n, 18)).toFixed(2)}
+              originalValue={Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)).toFixed(2)}
               label="sUSG balance"
               newValue={computeProjectedValue.toFixed(2)}
             />

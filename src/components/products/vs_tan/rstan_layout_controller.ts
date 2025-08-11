@@ -1,6 +1,6 @@
 import { Abi, Address, Hex, WalletClient } from "viem"
-import LockUI from "../../../abi/tgusd/LockUI.json"
-import VsTAN from "../../../abi/tgusd/VsTAN.json"
+import LockUI from "../../../abi/USG/LockUI.json"
+import VsTAN from "../../../abi/USG/VsTAN.json"
 import { executeChainViewUnique, executeContractCall, waitForTransaction } from "@/services/service_rpc"
 import { ListHeaderData } from "@/types"
 import { LockData } from "../tg_usd/tg_usd_type"

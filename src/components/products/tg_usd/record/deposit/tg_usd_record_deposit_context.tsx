@@ -1,6 +1,6 @@
 "use client"
 
-import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
+import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { ToastComponent } from "@/components/design_system/toast"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { gasCostToUSD, getPublicClient } from "@/services/service_rpc"
@@ -140,6 +140,18 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
 
     return asset
   }, [depositAsset, swapAssetPrice, marketData])
+
+  const resetAfterDepositSuccess = () => {
+    loadOnChainData()
+    setDepositWeiValue(0n)
+    setBorrowWeiValue(0n)
+    setZapValue(null)
+    setIsZapLoading(false)
+    setBorrowSliderPercent(0)
+    setDepositSliderPercent(0)
+    setIsDepositLoading(false)
+    fetchBalanceAllowanceData(depositAssetInfo?.address)
+  }
 
   const handleDepositChange = (value: bigint | undefined) => {
     setDepositWeiValue(value)
@@ -287,13 +299,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
     if (walletClient && depositWeiValue) {
       doMarketDeposit(walletClient, { depositWeiValue, isDepositAndBorrow, marketAddress: marketInfo?.marketAddress, borrowWeiValue })
         .then(() => {
-          loadOnChainData()
-          setDepositWeiValue(0n)
-          setBorrowWeiValue(0n)
-          setBorrowSliderPercent(0)
-          setDepositSliderPercent(0)
-          setIsDepositLoading(false)
-          fetchBalanceAllowanceData(depositAssetInfo?.address)
+          resetAfterDepositSuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
         })
         .catch(() => {
@@ -436,20 +442,16 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
 
       const walletClient = getWalletClient()
 
-      doZapDepositAndBorrow(marketInfo?.marketAddress, walletClient!, routerCallData?.tx?.to, routerCallData?.tx?.data, zapMarketData, borrowWeiValue).then(
-        () => {
-          loadOnChainData()
-          setDepositWeiValue(0n)
-          setBorrowWeiValue(0n)
-          setZapValue(null)
-          setIsZapLoading(false)
-          setBorrowSliderPercent(0)
-          setDepositSliderPercent(0)
-          setIsDepositLoading(false)
-          fetchBalanceAllowanceData(depositAssetInfo?.address)
+      doZapDepositAndBorrow(marketInfo?.marketAddress, walletClient!, routerCallData?.tx?.to, routerCallData?.tx?.data, zapMarketData, borrowWeiValue)
+        .then(() => {
+          resetAfterDepositSuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
-        }
-      )
+        })
+        .catch(() => {
+          setIsZapLoading(false)
+          setIsDepositLoading(false)
+          toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
+        })
     } catch (error) {
       console.error("Error in getRouteAndDeposit:", error)
     }
@@ -474,18 +476,13 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
 
       doZapDeposit(marketInfo?.marketAddress, walletClient!, routerCallData?.tx?.to, routerCallData?.tx?.data, zapMarketData)
         .then(() => {
-          loadOnChainData()
-          setDepositWeiValue(0n)
-          setZapValue(null)
-          setIsZapLoading(false)
-          setIsDepositLoading(false)
-          fetchBalanceAllowanceData(depositAssetInfo?.address)
+          resetAfterDepositSuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
         })
         .catch(() => {
           setIsZapLoading(false)
           setIsDepositLoading(false)
-          toast.error(ToastComponent, { data: { type: "Error", content: "Transation failed." } })
+          toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
         })
     } catch (error) {
       console.error("Error in zapAndDeposit:", error)

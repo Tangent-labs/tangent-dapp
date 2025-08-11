@@ -1,6 +1,6 @@
 import { Abi, Address, WalletClient } from "viem"
 import { MarketDetailData } from "../../tg_usd_type"
-import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
+import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall } from "@/services/service_rpc"
 import { formatBigInt } from "@/lib/number_formatter"
 

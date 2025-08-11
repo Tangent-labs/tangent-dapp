@@ -1,5 +1,5 @@
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
-import VsTAN from "../../../../abi/tgusd/VsTAN.json"
+import VsTAN from "../../../../abi/USG/VsTAN.json"
 import { Abi, WalletClient } from "viem"
 import { LockPosition } from "../../tg_usd/tg_usd_type"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"

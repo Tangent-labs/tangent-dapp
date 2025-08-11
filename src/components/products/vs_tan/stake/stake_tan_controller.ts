@@ -1,7 +1,7 @@
 import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
 import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import yearnV3Vault from "../../../../abi/tgusd/YearnV3Vault.json"
-import stakeUI from "../../../../abi/tgusd/sgUSDUI.json"
+import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
+import stakeUI from "../../../../abi/USG/sUSGUI.json"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { StakingInfo } from "../rstan_types"
 

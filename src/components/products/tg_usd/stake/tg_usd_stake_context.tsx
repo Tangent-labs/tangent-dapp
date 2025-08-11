@@ -86,7 +86,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
         name: "sUSG",
         price: 0,
         symbol: "sUSG",
-        balance: stakeInfo?.sgUSDBalance,
+        balance: stakeInfo?.sUSGBalance,
       }
     }
 
@@ -98,7 +98,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
       name: "USG",
       price: 0,
       symbol: "USG",
-      balance: stakeInfo?.tgUSDBalance,
+      balance: stakeInfo?.USGBalance,
     }
   }, [currentFeature, stakeInfo])
 
@@ -107,9 +107,9 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
       return {
         current: "asset" as StakingDepositType,
         address: TGUSD_CONTRACT.USG,
-        balance: stakeInfo?.tgUSDBalance,
+        balance: stakeInfo?.USGBalance,
         asset: {
-          price: Number(stakeInfo?.tgUSDPrice) / 10 ** 18,
+          price: Number(stakeInfo?.USGPrice) / 10 ** 18,
           decimals: 18,
           address: TGUSD_CONTRACT.USG,
           displayDecimals: 2,
@@ -123,9 +123,9 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     return {
       current: "sdAsset" as StakingDepositType,
       address: TGUSD_CONTRACT.SUSG,
-      balance: stakeInfo?.sgUSDBalance,
+      balance: stakeInfo?.sUSGBalance,
       asset: {
-        price: Number(stakeInfo?.sgUSDPrice) / 10 ** 18,
+        price: Number(stakeInfo?.sUSGPrice) / 10 ** 18,
         decimals: 18,
         address: TGUSD_CONTRACT.SUSG,
         displayDecimals: 2,
@@ -142,7 +142,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     if (!weiValue) return true
 
     if (currentFeature === "stake" && weiValue && stakeInfo) {
-      return weiValue > stakeInfo?.tgUSDAllowance
+      return weiValue > stakeInfo?.USGAllowance
     }
 
     return false
@@ -206,9 +206,9 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
 
   const computeProjectedValue = useMemo(() => {
     if (currentFeature === "stake") {
-      return Number(formatUnits(stakeInfo?.sgUSDBalance || 0n, 18)) + Number(formatUnits(weiValue || 0n, 18))
+      return Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)) + Number(formatUnits(weiValue || 0n, 18))
     } else {
-      return Number(formatUnits(stakeInfo?.sgUSDBalance || 0n, 18)) - Number(formatUnits(weiValue || 0n, 18))
+      return Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)) - Number(formatUnits(weiValue || 0n, 18))
     }
   }, [currentFeature, weiValue])
 

@@ -148,8 +148,10 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
   }
 
   useEffect(() => {
-    loadOnChainData()
-    fetchUserPositions()
+    if (currentAddress) {
+      loadOnChainData()
+      fetchUserPositions()
+    }
   }, [currentAddress])
 
   useEffect(() => {

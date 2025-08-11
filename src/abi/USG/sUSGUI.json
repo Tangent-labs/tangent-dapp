@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "SgUSDUI",
-  "sourceName": "src/chainview/tgUSD/ui/SgUSDUI.cv.sol",
+  "contractName": "sUSGUI",
+  "sourceName": "src/chainview/USG/ui/sUSGUI.cv.sol",
   "abi": [
     {
       "inputs": [
@@ -12,17 +12,17 @@
         },
         {
           "internalType": "contract IAggregatorStablePriceV3",
-          "name": "tgUSDOracle",
+          "name": "USGOracle",
           "type": "address"
         },
         {
           "internalType": "contract IERC20Metadata",
-          "name": "tgUSD",
+          "name": "USG",
           "type": "address"
         },
         {
           "internalType": "contract IYearnV3Vault",
-          "name": "sgUSD",
+          "name": "sUSG",
           "type": "address"
         }
       ],
@@ -35,51 +35,51 @@
           "components": [
             {
               "internalType": "uint256",
-              "name": "tgUSDPrice",
+              "name": "USGPrice",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "tgUSDSupply",
+              "name": "USGSupply",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "sgUSDPrice",
+              "name": "sUSGPrice",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "sgUSDSupply",
+              "name": "sUSGSupply",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "tgUSDPercentageInSgUSD",
+              "name": "USGPercentageInsUSG",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "tgUSDBalance",
+              "name": "USGBalance",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "sgUSDBalance",
+              "name": "sUSGBalance",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "tgUSDAllowance",
+              "name": "USGAllowance",
               "type": "uint256"
             }
           ],
-          "internalType": "struct SgUSDUI.SgUSDUIOut",
+          "internalType": "struct sUSGUI.sUSGUIOut",
           "name": "output",
           "type": "tuple"
         }
       ],
-      "name": "SgUSDUIOutError",
+      "name": "sUSGUIOutError",
       "type": "error"
     },
     {
@@ -102,7 +102,7 @@
               "type": "address[]"
             }
           ],
-          "internalType": "struct BalancesAllowances.InputBalancesAllowances[]",
+          "internalType": "struct InputBalancesAllowances[]",
           "name": "ibas",
           "type": "tuple[]"
         }
@@ -134,12 +134,12 @@
                   "type": "uint256"
                 }
               ],
-              "internalType": "struct BalancesAllowances.Allowance[]",
+              "internalType": "struct Allowance[]",
               "name": "allowances",
               "type": "tuple[]"
             }
           ],
-          "internalType": "struct BalancesAllowances.OutputBalanceAllowances[]",
+          "internalType": "struct OutputBalanceAllowances[]",
           "name": "",
           "type": "tuple[]"
         }
@@ -192,7 +192,7 @@
               "type": "string"
             }
           ],
-          "internalType": "struct ERC20Infos.ERC20AmountInfos[]",
+          "internalType": "struct ERC20AmountInfos[]",
           "name": "",
           "type": "tuple[]"
         }
@@ -245,7 +245,7 @@
               "type": "string"
             }
           ],
-          "internalType": "struct ERC20Infos.ERC20AmountInfos",
+          "internalType": "struct ERC20AmountInfos",
           "name": "",
           "type": "tuple"
         }
@@ -281,7 +281,7 @@
               "type": "string"
             }
           ],
-          "internalType": "struct ERC20Infos.ERC20StaticInfos",
+          "internalType": "struct ERC20StaticInfos",
           "name": "",
           "type": "tuple"
         }
@@ -317,7 +317,7 @@
               "type": "string"
             }
           ],
-          "internalType": "struct ERC20Infos.ERC20StaticInfos[]",
+          "internalType": "struct ERC20StaticInfos[]",
           "name": "",
           "type": "tuple[]"
         }
@@ -367,7 +367,7 @@
                       "type": "string"
                     }
                   ],
-                  "internalType": "struct ERC20Infos.ERC20StaticInfos",
+                  "internalType": "struct ERC20StaticInfos",
                   "name": "collateralToken",
                   "type": "tuple"
                 },
@@ -415,7 +415,7 @@
                 },
                 {
                   "internalType": "uint256",
-                  "name": "positionDebt",
+                  "name": "userDebt",
                   "type": "uint256"
                 },
                 {
@@ -469,27 +469,99 @@
                   "internalType": "uint256",
                   "name": "liquidationThreshold",
                   "type": "uint256"
+                },
+                {
+                  "components": [
+                    {
+                      "internalType": "bool",
+                      "name": "isHEC",
+                      "type": "bool"
+                    },
+                    {
+                      "internalType": "uint24",
+                      "name": "rMin",
+                      "type": "uint24"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "rMax",
+                      "type": "uint32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "pMin",
+                      "type": "uint32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "pInf",
+                      "type": "uint32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "pMax",
+                      "type": "uint32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "a1",
+                      "type": "uint32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "a2",
+                      "type": "uint32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "k",
+                      "type": "uint32"
+                    }
+                  ],
+                  "internalType": "struct IRParams",
+                  "name": "irParams",
+                  "type": "tuple"
+                },
+                {
+                  "components": [
+                    {
+                      "internalType": "uint16",
+                      "name": "harvestFeePercentage",
+                      "type": "uint16"
+                    },
+                    {
+                      "internalType": "uint16",
+                      "name": "stepAmount",
+                      "type": "uint16"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "startCutPercentage",
+                      "type": "uint32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "endCutPercentage",
+                      "type": "uint32"
+                    },
+                    {
+                      "internalType": "uint80",
+                      "name": "startCutPrice",
+                      "type": "uint80"
+                    },
+                    {
+                      "internalType": "uint80",
+                      "name": "endCutPrice",
+                      "type": "uint80"
+                    }
+                  ],
+                  "internalType": "struct RCParams",
+                  "name": "rcParams",
+                  "type": "tuple"
                 }
               ],
               "internalType": "struct GetMarketDetails.MarketConstants",
               "name": "constants",
-              "type": "tuple"
-            },
-            {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "socFeePercentage",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "socFeePending",
-                  "type": "uint256"
-                }
-              ],
-              "internalType": "struct GetMarketDetails.Sociabilization",
-              "name": "sociabilization",
               "type": "tuple"
             },
             {
@@ -517,35 +589,69 @@
                       "type": "uint256"
                     }
                   ],
-                  "internalType": "struct BalancesAllowances.Allowance[]",
+                  "internalType": "struct Allowance[]",
                   "name": "allowances",
                   "type": "tuple[]"
                 }
               ],
-              "internalType": "struct BalancesAllowances.OutputBalanceAllowances[]",
+              "internalType": "struct OutputBalanceAllowances[]",
               "name": "obas",
               "type": "tuple[]"
             },
             {
               "components": [
                 {
-                  "internalType": "contract IERC20Metadata",
-                  "name": "token",
-                  "type": "address"
+                  "components": [
+                    {
+                      "internalType": "contract IERC20Metadata",
+                      "name": "token",
+                      "type": "address"
+                    },
+                    {
+                      "internalType": "uint256",
+                      "name": "decimals",
+                      "type": "uint256"
+                    },
+                    {
+                      "internalType": "string",
+                      "name": "symbol",
+                      "type": "string"
+                    }
+                  ],
+                  "internalType": "struct ERC20StaticInfos",
+                  "name": "erc20Info",
+                  "type": "tuple"
                 },
                 {
-                  "internalType": "uint256",
-                  "name": "decimals",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "string",
-                  "name": "symbol",
-                  "type": "string"
+                  "components": [
+                    {
+                      "internalType": "uint128",
+                      "name": "lastUpdateTime",
+                      "type": "uint128"
+                    },
+                    {
+                      "internalType": "uint128",
+                      "name": "periodFinish",
+                      "type": "uint128"
+                    },
+                    {
+                      "internalType": "uint256",
+                      "name": "rewardRate",
+                      "type": "uint256"
+                    },
+                    {
+                      "internalType": "uint256",
+                      "name": "rewardPerTokenStored",
+                      "type": "uint256"
+                    }
+                  ],
+                  "internalType": "struct Reward",
+                  "name": "streamingData",
+                  "type": "tuple"
                 }
               ],
-              "internalType": "struct ERC20Infos.ERC20StaticInfos[]",
-              "name": "rewardTokens",
+              "internalType": "struct GetMarketDetails.MarketRewards[]",
+              "name": "rewardData",
               "type": "tuple[]"
             }
           ],
@@ -558,5 +664,5 @@
       "type": "function"
     }
   ],
-  "bytecode": "0x60806040525f195f55348015610013575f5ffd5b5060405161052038038061052083398101604081905261003291610464565b5f826001600160a01b03166318160ddd6040518163ffffffff1660e01b8152600401602060405180830381865afa15801561006f573d5f5f3e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061009391906104c0565b90505f846001600160a01b031663a035b1fe6040518163ffffffff1660e01b8152600401602060405180830381865afa1580156100d2573d5f5f3e3d5ffd5b505050506040513d601f19601f820116820180604052508101906100f691906104c0565b9050604051806101000160405280828152602001838152602001670de0b6b3a7640000856001600160a01b03166399530b066040518163ffffffff1660e01b8152600401602060405180830381865afa158015610155573d5f5f3e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061017991906104c0565b61018390856104d7565b61018d9190610500565b8152602001846001600160a01b03166318160ddd6040518163ffffffff1660e01b8152600401602060405180830381865afa1580156101ce573d5f5f3e3d5ffd5b505050506040513d601f19601f820116820180604052508101906101f291906104c0565b81526020018315610289576040516370a0823160e01b81526001600160a01b0386811660048301528591908816906370a0823190602401602060405180830381865afa158015610244573d5f5f3e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061026891906104c0565b61027a90670de0b6b3a76400006104d7565b6102849190610500565b61028b565b5f5b81526040516370a0823160e01b81526001600160a01b0389811660048301526020909201918716906370a0823190602401602060405180830381865afa1580156102d7573d5f5f3e3d5ffd5b505050506040513d601f19601f820116820180604052508101906102fb91906104c0565b81526040516370a0823160e01b81526001600160a01b0389811660048301526020909201918616906370a0823190602401602060405180830381865afa158015610347573d5f5f3e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061036b91906104c0565b8152604051636eb1769f60e11b81526001600160a01b038981166004830152868116602483015260209092019187169063dd62ed3e90604401602060405180830381865afa1580156103bf573d5f5f3e3d5ffd5b505050506040513d601f19601f820116820180604052508101906103e391906104c0565b90526040805163c2d4646360e01b81528251600482015260208301516024820152908201516044820152606082015160648201526080820151608482015260a082015160a482015260c082015160c482015260e09091015160e48201526101040160405180910390fd5b6001600160a01b0381168114610461575f5ffd5b50565b5f5f5f5f60808587031215610477575f5ffd5b84516104828161044d565b60208601519094506104938161044d565b60408601519093506104a48161044d565b60608601519092506104b58161044d565b939692955090935050565b5f602082840312156104d0575f5ffd5b5051919050565b80820281158282048414176104fa57634e487b7160e01b5f52601160045260245ffd5b92915050565b5f8261051a57634e487b7160e01b5f52601260045260245ffd5b50049056fe"
+  "bytecode": "0x60806040525f195f55348015610013575f5ffd5b5060405161052038038061052083398101604081905261003291610464565b5f826001600160a01b03166318160ddd6040518163ffffffff1660e01b8152600401602060405180830381865afa15801561006f573d5f5f3e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061009391906104c0565b90505f846001600160a01b031663a035b1fe6040518163ffffffff1660e01b8152600401602060405180830381865afa1580156100d2573d5f5f3e3d5ffd5b505050506040513d601f19601f820116820180604052508101906100f691906104c0565b9050604051806101000160405280828152602001838152602001670de0b6b3a7640000856001600160a01b03166399530b066040518163ffffffff1660e01b8152600401602060405180830381865afa158015610155573d5f5f3e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061017991906104c0565b61018390856104d7565b61018d9190610500565b8152602001846001600160a01b03166318160ddd6040518163ffffffff1660e01b8152600401602060405180830381865afa1580156101ce573d5f5f3e3d5ffd5b505050506040513d601f19601f820116820180604052508101906101f291906104c0565b81526020018315610289576040516370a0823160e01b81526001600160a01b0386811660048301528591908816906370a0823190602401602060405180830381865afa158015610244573d5f5f3e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061026891906104c0565b61027a90670de0b6b3a76400006104d7565b6102849190610500565b61028b565b5f5b81526040516370a0823160e01b81526001600160a01b0389811660048301526020909201918716906370a0823190602401602060405180830381865afa1580156102d7573d5f5f3e3d5ffd5b505050506040513d601f19601f820116820180604052508101906102fb91906104c0565b81526040516370a0823160e01b81526001600160a01b0389811660048301526020909201918616906370a0823190602401602060405180830381865afa158015610347573d5f5f3e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061036b91906104c0565b8152604051636eb1769f60e11b81526001600160a01b038981166004830152868116602483015260209092019187169063dd62ed3e90604401602060405180830381865afa1580156103bf573d5f5f3e3d5ffd5b505050506040513d601f19601f820116820180604052508101906103e391906104c0565b905260408051634ccb62e960e11b81528251600482015260208301516024820152908201516044820152606082015160648201526080820151608482015260a082015160a482015260c082015160c482015260e09091015160e48201526101040160405180910390fd5b6001600160a01b0381168114610461575f5ffd5b50565b5f5f5f5f60808587031215610477575f5ffd5b84516104828161044d565b60208601519094506104938161044d565b60408601519093506104a48161044d565b60608601519092506104b58161044d565b939692955090935050565b5f602082840312156104d0575f5ffd5b5051919050565b80820281158282048414176104fa57634e487b7160e01b5f52601160045260245ffd5b92915050565b5f8261051a57634e487b7160e01b5f52601260045260245ffd5b50049056fe"
 }

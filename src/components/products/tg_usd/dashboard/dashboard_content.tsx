@@ -22,10 +22,10 @@ export const TgUsdDashboardContent = () => {
       <div className="flex w-full justify-between gap-2 md:justify-start">
         <div className="flex w-fit justify-start md:w-1/2">
           <IndicatorCards
-            className={cn(globalData.tgUsdPrice === "-" ? "shimmer" : "")}
+            className={cn(globalData.USGPrice === "-" ? "shimmer" : "")}
             indicators={[
-              { title: "USG", value: formatDollar(globalData.tgUsdPrice, 5) },
-              { title: "Supply", value: globalData.tgUsdSupply },
+              { title: "USG", value: formatDollar(globalData.USGPrice, 5) },
+              { title: "Supply", value: globalData.USGSupply },
             ]}
           >
             <TokenImage token="USG" className="h-8 w-8" size={32} />
@@ -34,10 +34,10 @@ export const TgUsdDashboardContent = () => {
 
         <div className="flex w-fit justify-end md:w-1/2 md:justify-start">
           <IndicatorCards
-            className={cn(globalData.sgUsdPrice === "-" ? "shimmer" : "")}
+            className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "")}
             indicators={[
-              { title: "sUSG ", value: globalData.sgUsdPrice },
-              { title: "Supply", value: globalData.sgUsdSupply },
+              { title: "sUSG ", value: globalData.sUSGPrice },
+              { title: "Supply", value: globalData.sUSGSupply },
               { title: "APY", value: globalData.APY },
             ]}
           >

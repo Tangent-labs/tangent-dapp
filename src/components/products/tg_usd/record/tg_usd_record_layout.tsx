@@ -15,11 +15,11 @@ import TgUsdPositionHistory from "./position_history/tg_usd_position_history"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
-type TgUsdRecordLayoutProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
+type TgUsdRecordLayoutProps = {
   children: React.ReactNode
 }
 
-export default function TgUsdRecordLayout({ children, ...props }: TgUsdRecordLayoutProps) {
+export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) {
   const { collateral, isLeveraged, debtFarming, debtVAPR, chartData, feature, yAxisSettings, setDebtVAPR, setDebtFarming, setIsLeveraged } =
     useTgUsdRecordContext()
 
@@ -35,7 +35,7 @@ export default function TgUsdRecordLayout({ children, ...props }: TgUsdRecordLay
 
   return (
     <>
-      <div className="flex flex-col gap-4" {...props}>
+      <div className="flex flex-col gap-4">
         <TgUsdRecordPageHeader />
         <Divider />
         <TgUsdLoanDetail />

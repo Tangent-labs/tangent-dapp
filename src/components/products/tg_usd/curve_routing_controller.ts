@@ -1,8 +1,8 @@
 import { Abi, Address, encodeFunctionData, Hex, zeroAddress } from "viem"
 import routes from "./swapRoutes.json"
-import QuoteLiquidationRouter from "../../../abi/tgusd/QuoteLiquidationRouter.json"
+import QuoteLiquidationRouter from "../../../abi/USG/QuoteLiquidationRouter.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
-import CurveRouterABI from "../../../abi/tgusd/CurveRouter.json"
+import CurveRouterABI from "../../../abi/USG/CurveRouter.json"
 
 const returnQuoteData = async (tokenIn: Address, tokenOut: Address, amount: bigint) => {
   const matchingRoutes = routes.success

@@ -13,10 +13,10 @@ import {
 import { Address } from "viem"
 
 export type TgUsdGlobalMarketData = {
-  tgUsdPrice: number
+  USGPrice: number
   tgUsdsupply: number
-  sgUsdprice: number
-  sgUsdsupply: number
+  sUSGPrice: number
+  sUSGSupply: number
   globalCr: number
   GlobalTvl: number
 }
@@ -67,10 +67,10 @@ export type TgUsdAirdropData = {
 }
 
 export type TgUsdGlobalData = {
-  tgUsdPrice: string
-  tgUsdSupply: string
-  sgUsdPrice: string
-  sgUsdSupply: string
+  USGPrice: string
+  USGSupply: string
+  sUSGPrice: string
+  sUSGSupply: string
   APY: string
   globalCr: string
   globalDebt: string
@@ -193,10 +193,10 @@ export interface Allowance {
 }
 
 export type ChainViewMarketList = {
-  tgUSDPrice: bigint // uint256
-  tgUSDSupply: bigint // uint256
-  sgUSDPrice: bigint // uint256
-  sgUSDSupply: bigint // uint256
+  USGPrice: bigint // uint256
+  USGSupply: bigint // uint256
+  sUSGPrice: bigint // uint256
+  sUSGSupply: bigint // uint256
   tgUSDPercentageInSgUSD: bigint // uint256
   rowInfos: ChainViewMarketRow[]
 }
@@ -347,14 +347,14 @@ export type TgUsdMarket = {
 }
 
 export type StakingInfo = {
-  sgUSDBalance: bigint
-  sgUSDPrice: bigint
-  sgUSDSupply: bigint
-  tgUSDAllowance: bigint
-  tgUSDBalance: bigint
-  tgUSDPercentageInSgUSD: bigint
-  tgUSDPrice: bigint
-  tgUSDSupply: bigint
+  USGAllowance: bigint
+  USGBalance: bigint
+  USGPercentageInsUSG: bigint
+  USGPrice: bigint
+  USGSupply: bigint
+  sUSGBalance: bigint
+  sUSGPrice: bigint
+  sUSGSupply: bigint
 }
 
 export type StakingDepositType = "asset" | "sdAsset"

@@ -102,19 +102,19 @@ export default function TgUsdMarketList() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <IndicatorCards
-                className={cn(globalData.tgUsdPrice === "-" ? "shimmer" : "")}
+                className={cn(globalData.USGPrice === "-" ? "shimmer" : "")}
                 indicators={[
-                  { title: "USG", value: formatDollar(globalData.tgUsdPrice, 5) },
-                  { title: "Supply", value: globalData.tgUsdSupply },
+                  { title: "USG", value: formatDollar(globalData.USGPrice, 5) },
+                  { title: "Supply", value: globalData.USGSupply },
                 ]}
               >
                 <TokenImage token={"USG" as ExistingAsset} className="h-8 w-8" size={32} />
               </IndicatorCards>
               <IndicatorCards
-                className={cn(globalData.sgUsdPrice === "-" ? "shimmer" : "")}
+                className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "")}
                 indicators={[
-                  { title: "sUSG ", value: globalData.sgUsdPrice },
-                  { title: "Supply", value: globalData.sgUsdSupply },
+                  { title: "sUSG ", value: globalData.sUSGPrice },
+                  { title: "Supply", value: globalData.sUSGSupply },
                   { title: "APY", value: globalData.APY },
                 ]}
               >

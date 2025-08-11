@@ -1,5 +1,5 @@
 import { AssetDataPriced, CollateralInfo } from "@/types"
-import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
+import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getBorrowCommonFormState } from "../tg_usd_record_controller"
 import { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { BalanceAllowanceData, MarketDetailData } from "../../tg_usd_type"

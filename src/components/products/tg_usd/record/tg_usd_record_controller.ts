@@ -1,10 +1,10 @@
 import { getEnsoData } from "../api"
-import GetBalances from "@/abi/tgusd/GetBalances.json"
+import GetBalances from "@/abi/USG/GetBalances.json"
 import { CollateralInfo, ExistingAsset } from "@/types"
 import { getSwapAssetPrice } from "@/services/service_price"
-import MarketDetailsUI from "@/abi/tgusd/MarketDetailsUI.json"
+import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
 import { TGUSD_CONTRACT, tgUsdMarkets } from "../tg_usd_repository"
-import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
+import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
 import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
 import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, formatEther, formatUnits, Hex, parseEther, WalletClient, zeroAddress } from "viem"
@@ -208,8 +208,8 @@ export function getMarketDisplayData(marketData?: MarketDetailData, collateralIn
     ltDollar: "-",
     maxLtv: formatNumber(Number(BigInt(marketData?.constants.maxLTV || 0n)) / 1000, 2) + "%",
     maxLtvDollar: formatDollar(Number(formatEther(BigInt(marketData?.constants.maxMarketDebt || 0n))), 2),
-    rewardsCutCurrent: formatNumber(Number(formatEther(BigInt(marketData?.debtInfos.currentRewardCut || 0n))), 2) + "%",
-    rewardsCutNext: formatNumber(Number(formatEther(BigInt(marketData?.debtInfos.futureRewardCut || 0n))), 2) + "%",
+    rewardsCutCurrent: formatNumber(Number(marketData?.debtInfos.currentRewardCut || 0n) / 1000, 0) + "%",
+    rewardsCutNext: formatNumber(Number(marketData?.debtInfos.futureRewardCut || 0n) / 1000, 0) + "%",
   } as TgUsdMarketDisplayData
 }
 
@@ -271,17 +271,17 @@ export const computeMaxBorrowable = (maxBorrowable: bigint, maxMarketDebt: bigin
   return maxMarketDebt - totalDebt
 }
 
-export const computeIR = (tgUSDPrice: bigint, irParams: IrParams) => {
-  const tgUSDPriceNumber = Number(formatUnits(tgUSDPrice, 18))
+export const computeIR = (USGPrice: bigint, irParams: IrParams) => {
+  const USGPriceNumber = Number(formatUnits(USGPrice, 18))
   const normalizedPMin = Number(formatUnits(BigInt(irParams.pMin), 6))
   const normalizedPMax = Number(formatUnits(BigInt(irParams.pMax), 6))
 
-  if (tgUSDPriceNumber <= normalizedPMin) {
+  if (USGPriceNumber <= normalizedPMin) {
     const ir = Number(formatUnits(BigInt(irParams.rMax), 5))
     const adjustedIR = Math.exp(ir) - 1
     return parseEther(adjustedIR.toFixed(18))
   }
-  if (tgUSDPriceNumber >= normalizedPMax) {
+  if (USGPriceNumber >= normalizedPMax) {
     if (irParams.isHEC) {
       const ir = 0
       const adjustedIR = Math.exp(ir) - 1
@@ -291,7 +291,7 @@ export const computeIR = (tgUSDPrice: bigint, irParams: IrParams) => {
     const adjustedIR = Math.exp(ir) - 1
     return parseEther(adjustedIR.toFixed(18))
   }
-  const priceDelta = tgUSDPriceNumber - Number(formatUnits(BigInt(irParams.pInf), 6))
+  const priceDelta = USGPriceNumber - Number(formatUnits(BigInt(irParams.pInf), 6))
 
   const sigmaX = Number(irParams.k) * priceDelta
 
@@ -302,7 +302,7 @@ export const computeIR = (tgUSDPrice: bigint, irParams: IrParams) => {
   const alpha1 = Number(irParams.a1) / 1_000
   const alpha = alpha1 + (Number(irParams.a2) / 1_000 - alpha1) * sigma
 
-  const quotient = (normalizedPMax - tgUSDPriceNumber) / (normalizedPMax - normalizedPMin)
+  const quotient = (normalizedPMax - USGPriceNumber) / (normalizedPMax - normalizedPMin)
 
   const priceRatio = quotient ** alpha
 

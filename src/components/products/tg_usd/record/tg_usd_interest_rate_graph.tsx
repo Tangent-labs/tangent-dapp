@@ -26,30 +26,30 @@ export default function InterestRateGraph() {
 
   const [chartData, setChartData] = useState<ChartData[]>([])
 
-  const computeRewardsCut = (tgUSDPrice: bigint, rcParams: RCParams) => {
+  const computeRewardsCut = (USGPrice: bigint, rcParams: RCParams) => {
     const stepAmount = rcParams.stepAmount
     const startCutPrice = rcParams.startCutPrice * BigInt(10 ** 12)
     const endCutPrice = rcParams.endCutPrice * BigInt(10 ** 12)
-    const tgUSDPriceScaled = tgUSDPrice as bigint
+    const USGPriceScaled = USGPrice as bigint
 
     if (stepAmount === 1) {
       return rcParams.startCutPercentage
     } else if (stepAmount === 2) {
-      if (tgUSDPriceScaled >= startCutPrice) {
+      if (USGPriceScaled >= startCutPrice) {
         return rcParams.startCutPercentage
       } else {
         return rcParams.endCutPercentage
       }
     } else {
-      if (tgUSDPriceScaled >= startCutPrice) {
+      if (USGPriceScaled >= startCutPrice) {
         return rcParams.startCutPercentage
       }
-      if (tgUSDPriceScaled <= endCutPrice) {
+      if (USGPriceScaled <= endCutPrice) {
         return rcParams.endCutPercentage
       }
 
       // Compute the actual step regarding the current price of USG
-      const actualStep = BigInt(1) + (BigInt(stepAmount - 2) * (startCutPrice - tgUSDPriceScaled)) / (startCutPrice - endCutPrice)
+      const actualStep = BigInt(1) + (BigInt(stepAmount - 2) * (startCutPrice - USGPriceScaled)) / (startCutPrice - endCutPrice)
 
       // Compute the percentage amount increased by one step
 

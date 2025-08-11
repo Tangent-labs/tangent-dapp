@@ -4,7 +4,7 @@ import harvestUI from "../../../../abi/USG/HarvestUI.json"
 import market from "../../../../abi/USG/Market.json"
 import { HarvesterInfo, HarvesterInfoDisplay } from "../tg_usd_type"
 import { AssetData, AssetDataPriced, ExistingAsset } from "@/types"
-import { TGUSD_CONTRACT, tgUsdMarkets } from "../tg_usd_repository"
+import { USG_CONTRACT, USGMarkets } from "../tg_usd_repository"
 import { getPricesFromTokenAmounts } from "@/lib/asset_utils"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import { getTokensPrice } from "@/services/service_price"
@@ -23,14 +23,14 @@ export async function doHarvest(stakingAddress: Address, walletClient: WalletCli
 }
 
 export async function getTgUsdHarvestOnChainData() {
-  const addresses: Address[] = tgUsdMarkets.map((m) => m.marketAddress)
+  const addresses: Address[] = USGMarkets.map((m) => m.marketAddress)
 
-  return await executeChainViewUnique<HarvesterInfo[]>(harvestUI.abi as Abi, harvestUI.bytecode as Hex, [addresses, TGUSD_CONTRACT.REWARD_ACCUMULATOR])
+  return await executeChainViewUnique<HarvesterInfo[]>(harvestUI.abi as Abi, harvestUI.bytecode as Hex, [addresses, USG_CONTRACT.REWARD_ACCUMULATOR])
 }
 
 export function transformHarvestOnChainData(harvesterInfos: HarvesterInfo[], assetInfos: AssetDataPriced[]) {
   const processOne = (info: HarvesterInfo) => {
-    const stakingInfo = Object.values(tgUsdMarkets).find((i) => i.marketAddress === info.marketAddress)
+    const stakingInfo = Object.values(USGMarkets).find((i) => i.marketAddress === info.marketAddress)
     if (!stakingInfo) return
 
     const rewards = getPricesFromTokenAmounts(info.tokenAmounts, assetInfos)

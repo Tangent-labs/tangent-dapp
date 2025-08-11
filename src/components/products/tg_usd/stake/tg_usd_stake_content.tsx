@@ -9,7 +9,7 @@ import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_r
 import InputSelect from "@/components/design_system/inputs/input_select"
 import { ExistingAsset, SelectOption } from "@/types"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { TGUSD_CONTRACT } from "../tg_usd_repository"
+import { USG_CONTRACT } from "../tg_usd_repository"
 import { ForecastGraph } from "./tg_usd_staking_forecast"
 import Divider from "@/components/design_system/structure/divider"
 import { computeProjection } from "./tg_usd_stake_controller"
@@ -43,7 +43,7 @@ export default function TgUsdStakeContent() {
 
   const AssetSelectTemplate = (option: SelectOption) => {
     const assetInfo = {
-      address: TGUSD_CONTRACT.USG,
+      address: USG_CONTRACT.USG,
       decimals: 18,
       displayDecimals: 2,
       logo: "USG",
@@ -53,7 +53,7 @@ export default function TgUsdStakeContent() {
     }
 
     const sUSGInfo = {
-      address: TGUSD_CONTRACT?.SUSG,
+      address: USG_CONTRACT?.SUSG,
       decimals: 18,
       displayDecimals: 0,
       logo: "sUSG",

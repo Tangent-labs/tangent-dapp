@@ -20,14 +20,14 @@ export const tgUsdTokens = [envAddresses.wStables, envAddresses.lps, envAddresse
 
 export const tgUsdPegKeepers: Address[] = Object.values(envAddresses.pegKeepers)
 
-export const tgUsdMarkets: TgUsdMarket[] = envAddresses.markets.map((market: RawMarket) => ({
+export const USGMarkets: TgUsdMarket[] = envAddresses.markets.map((market: RawMarket) => ({
   marketAddress: market.marketAddress as Address,
   marketName: market.collatName.replace("_", "-"),
   collatAddress: market.collatAddress as Address,
   marketType: market.marketType,
 })) as TgUsdMarket[]
 
-export const TGUSD_CONTRACT = {
+export const USG_CONTRACT = {
   REWARD_ACCUMULATOR: envAddresses.utilities.rewardAccumulator as Address,
   LIQUIDATOR_PROXY: envAddresses.utilities.liquidatorProxy as Address,
   ZAPPER: envAddresses.utilities.zappingProxy as Address,

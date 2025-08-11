@@ -34,8 +34,6 @@ export type ExistingAsset =
   | "PENDLE"
   | "wstETH"
   | "TRICRV"
-  | "tgUSD"
-  | "sgUSD"
   | "USG"
   | "sUSG"
   | "wcrvUSD"

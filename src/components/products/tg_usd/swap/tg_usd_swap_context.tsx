@@ -6,7 +6,7 @@ import { Abi, Address } from "viem"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
 import { SwapConfig, swapConfig } from "./swap_config"
-import { TGUSD_CONTRACT, tgUsdTokens } from "../tg_usd_repository"
+import { USG_CONTRACT, tgUsdTokens } from "../tg_usd_repository"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, fetchEnsoData, getABI, getSwapFormState } from "./tg_usd_swap_controller"
 import { useTgUsdContext } from "../tg_usd_context"
 import { getQuote } from "../global_quote_controller"
@@ -265,7 +265,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
         if (quote) {
           setReceiveWeiValue(quote)
-          setEnsoRouterAddress(TGUSD_CONTRACT.ENSO_ROUTER as Address)
+          setEnsoRouterAddress(USG_CONTRACT.ENSO_ROUTER as Address)
           setIsSwapLoading(false)
         }
       } catch (error) {
@@ -431,7 +431,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
                 quote: "enso",
                 swap: null,
                 isStaked: false,
-                contract: TGUSD_CONTRACT.ENSO_ROUTER,
+                contract: USG_CONTRACT.ENSO_ROUTER,
               }
         )
       } catch {
@@ -440,7 +440,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
           quote: "enso",
           swap: null,
           isStaked: false,
-          contract: TGUSD_CONTRACT.ENSO_ROUTER,
+          contract: USG_CONTRACT.ENSO_ROUTER,
         })
       }
     }

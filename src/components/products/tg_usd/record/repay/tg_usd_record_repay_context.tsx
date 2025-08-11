@@ -7,7 +7,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./tg_usd_record_repay_controller"
 import { formatUnits, maxUint256 } from "viem"
 import { getQuote, returnRoute } from "../../global_quote_controller"
-import { TGUSD_CONTRACT } from "../../tg_usd_repository"
+import { USG_CONTRACT } from "../../tg_usd_repository"
 import { useTgUsdContext } from "../../tg_usd_context"
 import { MarketDetailData, ZapToken } from "../../tg_usd_type"
 import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
@@ -173,7 +173,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     setIsZapLoading(true)
 
     try {
-      const repayData = await returnRoute(repayAssetInfo?.address, TGUSD_CONTRACT?.USG, repayWeiValue, usgRepayedValue!, currentAddress!, TGUSD_CONTRACT.ZAPPER)
+      const repayData = await returnRoute(repayAssetInfo?.address, USG_CONTRACT?.USG, repayWeiValue, usgRepayedValue!, currentAddress!, USG_CONTRACT.ZAPPER)
 
       const zapMarketData = {
         tokenIn: repayAssetInfo?.address,
@@ -210,11 +210,11 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     try {
       const repayData = await returnRoute(
         repayAssetInfo?.address,
-        TGUSD_CONTRACT?.USG,
+        USG_CONTRACT?.USG,
         repayWeiValue,
         (BigInt(usgRepayedValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         currentAddress!,
-        TGUSD_CONTRACT.ZAPPER
+        USG_CONTRACT.ZAPPER
       )
 
       const zapMarketData = {
@@ -358,7 +358,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const handleRepayValueChange = (value: bigint | undefined) => {
     const assetInfo: AssetDataPriced = {
-      address: TGUSD_CONTRACT.USG,
+      address: USG_CONTRACT.USG,
       decimals: 18,
       displayDecimals: 2,
       logo: "USG",
@@ -390,7 +390,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   }
 
   useEffect(() => {
-    const address = repayAssetInfo?.address || TGUSD_CONTRACT.USG
+    const address = repayAssetInfo?.address || USG_CONTRACT.USG
     if (walletClientRef) {
       fetchBalanceAllowanceData(address)
     }

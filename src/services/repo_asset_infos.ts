@@ -297,22 +297,6 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     logo: "USG",
     displayDecimals: 2,
   },
-  tgUSD: {
-    symbol: "tgUSD",
-    name: "tgUSD",
-    decimals: 18,
-    address: TOKEN_ADDR.tgUSD,
-    logo: "tgUSD",
-    displayDecimals: 2,
-  },
-  sgUSD: {
-    symbol: "sgUSD",
-    name: "sgUSD",
-    decimals: 18,
-    address: TOKEN_ADDR.sgUSD,
-    logo: "sgUSD",
-    displayDecimals: 2,
-  },
   wcrvUSD: {
     symbol: "wcrvUSD",
     name: "wcrvUSD",

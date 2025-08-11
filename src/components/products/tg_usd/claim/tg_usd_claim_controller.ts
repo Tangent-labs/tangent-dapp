@@ -1,6 +1,6 @@
 import { executeChainViewUnique, executeContractCall } from "@/services/service_rpc"
 import { Abi, Address, formatUnits, Hex, WalletClient } from "viem"
-import { tgUsdMarkets } from "../tg_usd_repository"
+import { USGMarkets } from "../tg_usd_repository"
 import { ClaimerInfo } from "../tg_usd_type"
 import claimUI from "../../../../abi/USG/ClaimUI.json"
 import claimContract from "../../../../abi/USG/RewardAccumulator.json"
@@ -20,7 +20,7 @@ export async function doClaim(contractAddress: Address, markets: Address[], rewa
 }
 
 export async function getTgUsdClaimOnChainData(currentAddress: Address | undefined) {
-  const addresses: Address[] = tgUsdMarkets.map((m) => m.marketAddress)
+  const addresses: Address[] = USGMarkets.map((m) => m.marketAddress)
   return await executeChainViewUnique<ClaimerInfo[]>(claimUI.abi as Abi, claimUI.bytecode as Hex, [currentAddress, addresses])
 }
 

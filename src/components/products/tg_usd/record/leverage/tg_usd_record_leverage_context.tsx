@@ -12,7 +12,7 @@ import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./tg_usd_record_leverage_controller"
 import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
-import { TGUSD_CONTRACT } from "../../tg_usd_repository"
+import { USG_CONTRACT } from "../../tg_usd_repository"
 import { formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 
 type TgUsdLeverageContextProps = {
@@ -278,12 +278,12 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
       if (!walletClient || !currentAddress || !depositWeiValue || !borrowWeiValue || !depositAssetInfo) return
 
       const leverageData = await returnRoute(
-        TGUSD_CONTRACT.USG,
+        USG_CONTRACT.USG,
         marketInfo?.collatAddress,
         borrowWeiValue,
         (BigInt(leveragedCollateralQuote!) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         marketInfo?.marketAddress,
-        TGUSD_CONTRACT.ZAPPER
+        USG_CONTRACT.ZAPPER
       )
 
       const zapData = await returnRoute(
@@ -335,12 +335,12 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
     if (!walletClient || !currentAddress || !leveragedCollateralQuote || !borrowWeiValue) return
 
     const leverageData = await returnRoute(
-      TGUSD_CONTRACT.USG,
+      USG_CONTRACT.USG,
       marketInfo?.collatAddress,
       borrowWeiValue,
       leveragedCollateralQuote,
       marketInfo?.marketAddress,
-      TGUSD_CONTRACT.ZAPPER
+      USG_CONTRACT.ZAPPER
     )
 
     doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, leverageData!)
@@ -429,7 +429,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
   useEffect(() => {
     const computeQuote = async (value: bigint) => {
-      const { quote } = await getQuote(value, currentAddress!, marketInfo?.collatAddress, TGUSD_CONTRACT.USG)
+      const { quote } = await getQuote(value, currentAddress!, marketInfo?.collatAddress, USG_CONTRACT.USG)
 
       setIsDepositLoading(false)
       setLeveragedCollateralQuote(quote)

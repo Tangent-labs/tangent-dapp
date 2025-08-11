@@ -197,7 +197,7 @@ export type ChainViewMarketList = {
   USGSupply: bigint // uint256
   sUSGPrice: bigint // uint256
   sUSGSupply: bigint // uint256
-  tgUSDPercentageInSgUSD: bigint // uint256
+  USGPercentageInSUSG: bigint // uint256
   rowInfos: ChainViewMarketRow[]
 }
 

@@ -6,7 +6,7 @@ import { AssetDataPriced, ListState } from "@/types"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { ClaimableMarket, ClaimData, ClaimerInfo } from "../tg_usd_type"
 import { computeAndReturnPrices, doClaim, getTgUsdClaimOnChainData, transformClaimOnChainData } from "./tg_usd_claim_controller"
-import { TGUSD_CONTRACT } from "../tg_usd_repository"
+import { USG_CONTRACT } from "../tg_usd_repository"
 
 type TgUsdClaimContextProps = {
   children: ReactNode
@@ -89,7 +89,7 @@ export const TgUsdClaimProvider = ({ children }: TgUsdClaimContextProps) => {
 
   const onClickClaim = (marketsToClaim: ClaimableMarket[]) => {
     const marketAddressesToClaim = marketsToClaim.map((el) => el.marketAddress)
-    actionClaim(TGUSD_CONTRACT.REWARD_ACCUMULATOR, marketAddressesToClaim)
+    actionClaim(USG_CONTRACT.REWARD_ACCUMULATOR, marketAddressesToClaim)
   }
 
   const addToClaimableMarkets = (rowData: ClaimableMarket) => {

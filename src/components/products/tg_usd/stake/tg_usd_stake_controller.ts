@@ -3,14 +3,14 @@ import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransacti
 import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import sUSGUI from "../../../../abi/USG/sUSGUI.json"
 import { StakingInfo } from "../tg_usd_type"
-import { TGUSD_CONTRACT } from "../tg_usd_repository"
+import { USG_CONTRACT } from "../tg_usd_repository"
 
 export async function getTgUsdStakeOnChainData(currentAddress: Address | undefined) {
   return await executeChainViewUnique<StakingInfo>(sUSGUI.abi as Abi, sUSGUI.bytecode as Hex, [
     currentAddress,
-    TGUSD_CONTRACT.USG_ORACLE,
-    TGUSD_CONTRACT.USG,
-    TGUSD_CONTRACT.SUSG,
+    USG_CONTRACT.USG_ORACLE,
+    USG_CONTRACT.USG,
+    USG_CONTRACT.SUSG,
   ])
 }
 

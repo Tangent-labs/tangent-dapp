@@ -11,7 +11,7 @@ import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { Switch } from "@/components/ui/switch"
 import { useTgUsdContext } from "../../tg_usd_context"
 import { ZapToken } from "../../tg_usd_type"
-import { TGUSD_CONTRACT } from "../../tg_usd_repository"
+import { USG_CONTRACT } from "../../tg_usd_repository"
 import CustomSelect from "@/components/design_system/inputs/custom_select"
 import { ExistingAsset } from "@/types"
 import Image from "next/image"
@@ -104,7 +104,7 @@ export default function TgUsdRepayPanel() {
 
     const sortedAssets = [
       {
-        address: TGUSD_CONTRACT.USG,
+        address: USG_CONTRACT.USG,
         decimals: 18,
         displayDecimals: 2,
         logo: "USG" as ExistingAsset,

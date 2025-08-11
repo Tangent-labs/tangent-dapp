@@ -83,7 +83,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  const { marketData, tgUSDInfo, loadOnChainData, setCurrentAmounts, fetchBalanceAllowanceData, balanceAllowanceData } = useTgUsdRecordContext()
+  const { marketData, USGInfo, balanceAllowanceData, loadOnChainData, setCurrentAmounts, fetchBalanceAllowanceData } = useTgUsdRecordContext()
 
   const [isZapLoading, setIsZapLoading] = useState(false)
 
@@ -431,8 +431,8 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
   }, [repayWeiValue, marketValues, repayAsset, usgRepayedValue])
 
   const tgUsdDollarRepayedValue = useMemo(() => {
-    return `(~${formatDollar((Number(Number(formatUnits(usgRepayedValue || 0n, 18))) * tgUSDInfo?.price).toFixed(2))})`
-  }, [usgRepayedValue, tgUSDInfo])
+    return `(~${formatDollar((Number(Number(formatUnits(usgRepayedValue || 0n, 18))) * USGInfo?.price).toFixed(2))})`
+  }, [usgRepayedValue, USGInfo])
 
   const contextValue: TgUsdRepayContextValues = {
     actionRepay,

@@ -143,16 +143,6 @@ export function getComputedFutureLoanData(
 }
 
 export async function loadMarketServerData(collateral: ExistingAsset) {
-  const tgUSDInfo = {
-    address: USGMarkets.find((market) => market.marketName === "USG")?.collatAddress as Address,
-    decimals: 18,
-    displayDecimals: 2,
-    symbol: "USG",
-    name: "USG",
-    logo: "USG" as ExistingAsset,
-    price: 1,
-  }
-
   const marketInfo = USGMarkets.find((market) => market.marketName === collateral)
   const collateralInfo = {
     address: USGMarkets.find((market) => market.marketName === collateral)?.collatAddress as Address,
@@ -164,7 +154,7 @@ export async function loadMarketServerData(collateral: ExistingAsset) {
     price: 0,
   }
 
-  return { collateralInfo, tgUSDInfo, marketInfo }
+  return { collateralInfo, marketInfo }
 }
 
 export function getMarketDisplayData(marketData?: MarketDetailData, collateralInfo?: CollateralInfo) {

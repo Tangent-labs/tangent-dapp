@@ -29,7 +29,7 @@ import BorderPanel from "@/components/design_system/structure/border_panel"
 export default function TgUsdRepayPanel() {
   const { tokens, balances } = useTgUsdContext()
 
-  const { tgUSDInfo, pricedCollateralInfo, collateralInfo, marketInfo } = useTgUsdRecordContext()
+  const { USGInfo, pricedCollateralInfo, collateralInfo, marketInfo } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -186,7 +186,7 @@ export default function TgUsdRepayPanel() {
           depositSelect={<AssetSelect />}
           disabled={!canInteract || isRepayMax}
           isZapping={!!repayAsset && repayAsset !== "USG"}
-          depositAsset={repayAssetInfo || tgUSDInfo}
+          depositAsset={repayAssetInfo || USGInfo}
           balance={maxRepayableValue}
           setMaxBalance={() => handleRepayValueChange(maxRepayableValue)}
           displaySliderInput={true}
@@ -215,7 +215,7 @@ export default function TgUsdRepayPanel() {
                 </div>
                 <div className="flex justify-between gap-2 text-xs text-subtitle">
                   <div>Minimum received</div>
-                  <div>{usgRepayedValue && tgUSDInfo?.price !== 0 ? tgUsdDollarRepayedValue : ""}</div>
+                  <div>{usgRepayedValue && USGInfo?.price !== 0 ? tgUsdDollarRepayedValue : ""}</div>
                 </div>
               </div>
               <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">

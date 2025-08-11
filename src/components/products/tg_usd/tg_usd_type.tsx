@@ -12,15 +12,6 @@ import {
 } from "@/types"
 import { Address } from "viem"
 
-export type TgUsdGlobalMarketData = {
-  USGPrice: number
-  tgUsdsupply: number
-  sUSGPrice: number
-  sUSGSupply: number
-  globalCr: number
-  GlobalTvl: number
-}
-
 export type TgUsdCampaignData = {
   debts: number
   deposists: number

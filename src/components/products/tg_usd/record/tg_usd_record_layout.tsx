@@ -13,14 +13,14 @@ import ButtonTab from "@/components/design_system/inputs/button_tab"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import TgUsdPositionHistory from "./position_history/tg_usd_position_history"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 type TgUsdRecordLayoutProps = {
   children: React.ReactNode
 }
 
 export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) {
-  const { collateral, isLeveraged, debtFarming, debtVAPR, chartData, feature, yAxisSettings, setDebtVAPR, setDebtFarming, setIsLeveraged } =
+  const { collateral, isLeveraged, debtFarming, debtVAPR, chartData, feature, yAxisSettings, USGInfo, setDebtVAPR, setDebtFarming, setIsLeveraged } =
     useTgUsdRecordContext()
 
   const router = useRouter()
@@ -116,6 +116,7 @@ export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) 
                           <ResponsiveContainer className="relative" width="100%" height={300}>
                             <LineChart data={chartData}>
                               <CartesianGrid horizontal={true} vertical={false} />
+
                               <XAxis
                                 dataKey="price"
                                 name="Price"
@@ -123,35 +124,54 @@ export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) 
                                 interval={Math.max(1, Math.floor(chartData.length / 12) - 1)}
                                 reversed={true}
                               />
-                              <YAxis
-                                orientation="left"
-                                name="vAPR"
-                                tickFormatter={(value) => `${formatBigInt(value, 18, 2)}%`}
-                                domain={[Math.max(yAxisSettings.min, 0), yAxisSettings.max]}
-                              />
-                              <Legend formatter={(value) => (value === "vAPR" ? "vAPR (%)" : value)} />
+
+                              <YAxis name="vAPR" tickFormatter={(v) => `${formatBigInt(v, 18, 2)}%`} type="number" domain={[0, yAxisSettings.max * 1.2]} />
+
+                              <Legend formatter={(v) => (v === "vAPR" ? "vAPR (%)" : v)} />
                               <Tooltip
-                                content={({ active, payload, label }) => {
-                                  if (active && payload && payload.length) {
-                                    return (
-                                      <div className="flex min-w-28 flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-input p-2 text-white backdrop-blur-[60px]">
-                                        <div className="flex w-full items-center justify-between">
-                                          <p className="font-semibold">vAPR:</p>
-                                          <p> {formatBigInt(payload[0]?.value?.toString(), 18, 2)}%</p>
-                                        </div>
-                                        <div className="flex w-full items-center justify-between">
-                                          <p className="font-semibold">Price:</p>
-                                          <p> ${label}</p>
-                                        </div>
+                                content={({ active, payload, label }) =>
+                                  active && payload?.length ? (
+                                    <div className="flex min-w-28 flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-input p-2 text-white backdrop-blur-[60px]">
+                                      <div className="flex w-full items-center justify-between">
+                                        <p className="font-semibold">vAPR:</p>
+                                        <p>{formatBigInt(payload[0]?.value?.toString(), 18, 2)}%</p>
                                       </div>
-                                    )
-                                  }
-                                  return null
+                                      <div className="flex w-full items-center justify-between">
+                                        <p className="font-semibold">Price:</p>
+                                        <p>${label}</p>
+                                      </div>
+                                    </div>
+                                  ) : null
+                                }
+                              />
+
+                              <Line strokeWidth="3px" type="monotone" dataKey="vAPR" stroke="url(#gradientColor)" name="vAPR (%)" dot={false} />
+
+                              <ReferenceLine
+                                x={String(Number(USGInfo?.price) + 1e-4)}
+                                stroke="white"
+                                strokeDasharray="4 4"
+                                strokeWidth={2}
+                                ifOverflow="hidden"
+                                label={({ viewBox }) => {
+                                  return (
+                                    <text
+                                      x={Number(viewBox?.x)}
+                                      y={(viewBox?.y ?? 0) + 8}
+                                      dx={6}
+                                      fill="white"
+                                      fontSize={14}
+                                      textAnchor="start"
+                                      dominantBaseline="hanging"
+                                    >
+                                      ${USGInfo?.price} (USG Price)
+                                    </text>
+                                  )
                                 }}
                               />
-                              <Line strokeWidth="3px" type="monotone" dataKey="vAPR" stroke="url(#gradientColor)" name="vAPR (%)" dot={false} />
                             </LineChart>
                           </ResponsiveContainer>
+
                           <svg width="0" height="0">
                             <defs>
                               <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">

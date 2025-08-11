@@ -8,12 +8,12 @@ import { TgUsdMaketListProvider } from "@/components/products/tg_usd/list/tg_usd
 
 export default async function Layout({ params, children }: { params: Promise<{ id: TgUsdMarketAsset }>; children: ReactNode }) {
   const collateral = (await params).id
-  const { marketInfo, tgUSDInfo, collateralInfo } = await loadMarketServerData(collateral)
-  if (!marketInfo || !tgUSDInfo || !collateralInfo) return NotFound()
+  const { marketInfo, collateralInfo } = await loadMarketServerData(collateral)
+  if (!marketInfo || !collateralInfo) return NotFound()
 
   return (
     <TgUsdMaketListProvider>
-      <TgUsdRecordProvider collateral={collateral} collateralInfo={collateralInfo} marketInfo={marketInfo} tgUSDInfo={tgUSDInfo}>
+      <TgUsdRecordProvider collateral={collateral} collateralInfo={collateralInfo} marketInfo={marketInfo}>
         <TgUsdRecordLayout>{children}</TgUsdRecordLayout>
       </TgUsdRecordProvider>
     </TgUsdMaketListProvider>

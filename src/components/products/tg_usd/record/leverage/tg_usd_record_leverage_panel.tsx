@@ -58,7 +58,7 @@ export default function TgUsdLeveragePanel() {
     leveragePercentage,
   } = useTgUsdLeverageContext()
 
-  const { collateralInfo, marketData, balanceAllowanceData, marketInfo, pricedCollateralInfo, tgUSDInfo } = useTgUsdRecordContext()
+  const { collateralInfo, marketData, balanceAllowanceData, marketInfo, pricedCollateralInfo, USGInfo } = useTgUsdRecordContext()
 
   const { balances } = useTgUsdContext()
 
@@ -212,7 +212,7 @@ export default function TgUsdLeveragePanel() {
         <LeverageInput
           label="You borrow"
           depositAmount={!!zapValue ? zapValue : depositWeiValue}
-          borrowAsset={tgUSDInfo}
+          borrowAsset={USGInfo}
           depositAsset={pricedCollateralInfo}
           percentage={isDepositDisabled ? 0 : leveragePercentage}
           setPercentage={isDepositDisabled ? undefined : setLeveragePercentage}

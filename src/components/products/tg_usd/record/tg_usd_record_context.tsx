@@ -33,13 +33,13 @@ import {
 import { sortUserData } from "./position_history/tg_usd_position_history_controller"
 import { useTgUsdMaketListContext } from "../list/tg_usd_market_list_context"
 import { usePathname } from "next/navigation"
+import { USG_CONTRACT } from "../tg_usd_repository"
 
 type TgUsdRecordContextProps = {
   children: ReactNode
   collateral: TgUsdMarketAsset
   collateralInfo: CollateralInfo
   marketInfo: TgUsdMarket
-  tgUSDInfo: AssetDataPriced
 }
 
 type TgUsdRecordContextValues = {
@@ -49,7 +49,7 @@ type TgUsdRecordContextValues = {
   marketData?: MarketDetailData
   loadOnChainData: () => void
   fetchBalanceAllowanceData: (address: Address) => void
-  tgUSDInfo: AssetDataPriced
+  USGInfo: AssetDataPriced
   futureMarketDisplayData: TgUsdMarketLoanDisplayData
   marketDisplayData: TgUsdMarketDisplayData
   apr?: AssetApr
@@ -95,12 +95,12 @@ type TgUsdRecordContextValues = {
 
 export const TgUsdRecordContext = createContext<TgUsdRecordContextValues | undefined>(undefined)
 
-export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, children, tgUSDInfo }: TgUsdRecordContextProps) => {
+export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, children }: TgUsdRecordContextProps) => {
   const { currentAddress, getWalletClient } = useWalletConnexionContext()
 
   const path = usePathname()
 
-  const { userData } = useTgUsdMaketListContext()
+  const { userData, globalData } = useTgUsdMaketListContext()
 
   const [chartData, setChartData] = useState<Array<{ price: string; vAPR: number }>>([])
 
@@ -244,7 +244,7 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
   useEffect(() => {
     if (marketData && userData && userData.totalUserDeposit && userData.totalUserDebt) {
       const { irParams } = marketData.constants
-      const priceRange = 1 - 0.9887
+      const priceRange = 1.001 - 0.9887
       const prices = Array.from({ length: 100 }, (_, i) => 0.9887 + (i * priceRange) / 99)
 
       const data = prices
@@ -293,13 +293,20 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     })
   }, [totalBorrowTimeWindow])
 
+  const USGInfo = useMemo(() => {
+    if (globalData && globalData.USGPrice) {
+      return { address: USG_CONTRACT.USG, decimals: 18, displayDecimals: 2, symbol: "USG", price: Number(globalData.USGPrice) }
+    }
+    return { address: USG_CONTRACT.USG, decimals: 18, displayDecimals: 2, symbol: "USG", price: 1 }
+  }, [globalData])
+
   const contextValue: TgUsdRecordContextValues = {
     isLoading,
     collateral,
     collateralInfo,
     marketData,
     loadOnChainData,
-    tgUSDInfo,
+    USGInfo,
     marketDisplayData,
     futureMarketDisplayData,
     currentAmounts,

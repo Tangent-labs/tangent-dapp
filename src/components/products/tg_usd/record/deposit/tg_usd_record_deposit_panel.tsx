@@ -59,7 +59,7 @@ export default function TgUsdDepositPanel() {
 
   const { balances } = useTgUsdContext()
 
-  const { collateralInfo, marketData, tgUSDInfo, balanceAllowanceData, marketInfo } = useTgUsdRecordContext()
+  const { collateralInfo, marketData, USGInfo, balanceAllowanceData, marketInfo } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -222,7 +222,7 @@ export default function TgUsdDepositPanel() {
             labelDeposit="You borrow"
             depositSelect={<BorrowAssetDisplay />}
             disabled={!canInteract}
-            borrowAsset={tgUSDInfo}
+            borrowAsset={USGInfo}
             setMaxBalance={() => setBorrowWeiValue(maxBorrowableValue)}
             balance={maxBorrowableValue}
             percentage={borrowSliderPercent}

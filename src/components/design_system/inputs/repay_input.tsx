@@ -109,7 +109,7 @@ export function RepayInput({
 
   const dollarDepositDisplay = useMemo(() => {
     if (innerValue === "MAX") return "MAX"
-    const val = Number(innerValue || 0) * (depositAsset?.price || 0)
+    const val = Number(innerValue || 0) * (Number(depositAsset?.price) || 0)
     return formatDollar(val) || "-"
   }, [innerValue, depositAsset])
 

@@ -4,7 +4,7 @@ import { toast } from "react-toastify"
 import { formatUnits, parseEther } from "viem"
 import { useRsTanContext } from "../rstan_layout_context"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { getPublicClient } from "@/services/service_rpc"
+import { getCurrentBlock } from "@/services/service_rpc"
 import { useTgUsdContext } from "../../tg_usd/tg_usd_context"
 import { getQuote, returnRoute } from "../../tg_usd/global_quote_controller"
 import { LockPosition, ZapToken } from "../../tg_usd/tg_usd_type"
@@ -365,11 +365,9 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
 
   useEffect(() => {
     const computeEndLockTime = async () => {
-      const publicClient = await getPublicClient()
-      const currentBlockNumber = await publicClient.getBlockNumber()
-      const block = await publicClient.getBlock({ blockNumber: currentBlockNumber })
+      const currentBlock = await getCurrentBlock()
 
-      const weekId = block.timestamp / 604800n
+      const weekId = currentBlock.timestamp / 604800n
       const adjustedTime = (weekId + 13n) * 604800n
 
       setComputedNewEndLockTime(adjustedTime.toString())

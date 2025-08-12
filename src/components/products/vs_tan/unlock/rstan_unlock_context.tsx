@@ -5,7 +5,7 @@ import { useRsTanContext } from "../rstan_layout_context"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { LockPosition } from "../../tg_usd/tg_usd_type"
 import { doUnlock } from "./rstan_unlock_controller"
-import { getPublicClient } from "@/services/service_rpc"
+import { getCurrentBlock } from "@/services/service_rpc"
 
 type RsTanUnlockContextProps = {
   children: ReactNode
@@ -55,10 +55,10 @@ export const RsTanUnlockProvider = ({ children }: RsTanUnlockContextProps) => {
     const calculateTanReceived = async () => {
       try {
         const endLockTime = new Date(Number(unlockPositionInfo?.endLockTime) * 1000)
-        const publicClient = await getPublicClient()
-        const currentBlockNumber = await publicClient.getBlockNumber()
-        const block = await publicClient.getBlock({ blockNumber: currentBlockNumber })
-        const currentTime = new Date(Number(block.timestamp) * 1000)
+
+        const currentBlock = await getCurrentBlock()
+
+        const currentTime = new Date(Number(currentBlock.timestamp) * 1000)
         const totalDurationLeft = endLockTime.getTime() - currentTime.getTime()
         const thirteenWeeksInMilliseconds = 13 * 7 * 24 * 60 * 60 * 1000
         const penalty = Math.max(0, Math.min(1, totalDurationLeft / thirteenWeeksInMilliseconds))

@@ -35,6 +35,7 @@ import { sortUserData } from "./position_history/tg_usd_position_history_control
 import { useTgUsdMaketListContext } from "../list/tg_usd_market_list_context"
 import { usePathname } from "next/navigation"
 import { USG_CONTRACT } from "../tg_usd_repository"
+import { getCurrentBlock } from "@/services/service_rpc"
 
 type TgUsdRecordContextProps = {
   children: ReactNode
@@ -273,11 +274,20 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
   }, [path])
 
   useEffect(() => {
+    const fetchHistoricalMarketData = async (marketData: MarketDetailData) => {
+      const currentBlock = await getCurrentBlock()
+
+      const isoEndDate = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
+      const dateFrom = encodeURIComponent(isoEndDate)
+
+      const data = await getHistoricalMarketData(marketData?.marketAddress, totalBorrowTimeWindow, dateFrom)
+
+      const mappedTotalBorrowData = mapToTotalBorrow(data)
+      setTotalBorrow(mappedTotalBorrowData)
+    }
+
     if (marketData) {
-      getHistoricalMarketData(marketData?.marketAddress, totalBorrowTimeWindow).then((marketInfo) => {
-        const mappedTotalBorrowData = mapToTotalBorrow(marketInfo)
-        setTotalBorrow(mappedTotalBorrowData)
-      })
+      fetchHistoricalMarketData(marketData)
     }
   }, [totalBorrowTimeWindow, marketData])
 

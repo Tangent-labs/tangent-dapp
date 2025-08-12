@@ -1,4 +1,4 @@
-import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { executeContractCall, getCurrentBlock, waitForTransaction } from "@/services/service_rpc"
 import VsTan from "../../../../abi/USG/VsTAN.json"
 import { Abi, WalletClient } from "viem"
 import { LockPosition } from "../../tg_usd/tg_usd_type"
@@ -19,14 +19,12 @@ export const doSplit = async (tokenId: bigint, walletClient: WalletClient, amoun
 export async function getSplitFormState(splitPositionInfo: LockPosition, isWellConnected: boolean) {
   const reasons: string[] = []
 
-  const publicClient = await getPublicClient()
-  const currentBlockNumber = await publicClient.getBlockNumber()
-  const block = await publicClient.getBlock({ blockNumber: currentBlockNumber })
+  const currentBlock = await getCurrentBlock()
 
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
   } else {
-    if (!!splitPositionInfo?.endLockTime && block.timestamp > Number(splitPositionInfo?.endLockTime)) {
+    if (!!splitPositionInfo?.endLockTime && currentBlock.timestamp > Number(splitPositionInfo?.endLockTime)) {
       reasons.push("Lock expired.")
     }
   }

@@ -27,6 +27,14 @@ export const chain: Chain = {
   name: dappConfig.chain.name,
 }
 
+export const getCurrentBlock = async () => {
+  const publicClient = await getPublicClient()
+  const currentBlockNumber = await publicClient.getBlockNumber()
+  const block = await publicClient.getBlock({ blockNumber: currentBlockNumber })
+
+  return block
+}
+
 export const getPublicClient = () => {
   const publicClient = createPublicClient({
     chain,

@@ -1,4 +1,4 @@
-import { executeApprove, executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { executeApprove, executeContractCall, getCurrentBlock, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import VsTan from "../../../../abi/USG/VsTAN.json"
 import { BalanceAllowanceData, LockPosition, ZapMarketData } from "../../tg_usd/tg_usd_type"
@@ -122,9 +122,7 @@ export async function getLockFormState(
 
   const reasons: string[] = []
 
-  const publicClient = await getPublicClient()
-  const currentBlockNumber = await publicClient.getBlockNumber()
-  const block = await publicClient.getBlock({ blockNumber: currentBlockNumber })
+  const currentBlock = await getCurrentBlock()
 
   const isApproved =
     (!isZapMode && (depositWeiValue || 0n) <= (allowance || 0n)) ||
@@ -139,7 +137,7 @@ export async function getLockFormState(
     if (!depositWeiValue || depositWeiValue === 0n) {
       reasons.push("No amount.")
     }
-    if (!!depositPositionInfo?.endLockTime && block.timestamp > Number(depositPositionInfo?.endLockTime)) {
+    if (!!depositPositionInfo?.endLockTime && currentBlock.timestamp > Number(depositPositionInfo?.endLockTime)) {
       reasons.push("Lock expired.")
     }
   }

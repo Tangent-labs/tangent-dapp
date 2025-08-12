@@ -157,9 +157,9 @@ export const getReferralStatus = async (account: Address): Promise<UserStatus> =
   }
 }
 
-export const getHistoricalMarketData = async (marketAddress: string, range: string): Promise<Array<MarketHistoricalData>> => {
+export const getHistoricalMarketData = async (marketAddress: string, range: string, currentTime: string): Promise<Array<MarketHistoricalData>> => {
   try {
-    const url = `${baseUrl}/markets/${marketAddress.toLowerCase()}/dateFrom/${range}`
+    const url = `${baseUrl}/markets/${marketAddress.toLowerCase()}/dateFrom/${currentTime}?range=${range}`
 
     const response = await fetch(url, {
       method: "GET",

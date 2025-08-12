@@ -1,6 +1,6 @@
 "use client"
 
-import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedTgUSD, getFormState, getTanStakeOnChainData } from "./stake_tan_controller"
+import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedUSG, getFormState, getTanStakeOnChainData } from "./stake_tan_controller"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
@@ -188,15 +188,15 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
     ;(async () => {
       if (currentFeature === "stake") {
         try {
-          const sdAssetAmountOut = await getExpectedSUSG(getWalletClient()!, weiValue, VSTAN_CONTRACT?.TAN)
-          setExpected(sdAssetAmountOut)
+          const sTanAmountOut = await getExpectedSUSG(getWalletClient()!, weiValue, VSTAN_CONTRACT?.TAN)
+          setExpected(sTanAmountOut)
         } catch (error) {
           console.error("Error while estimating deposit preview :", error)
         }
       } else {
         try {
-          const assetAmountOut = await getExpectedTgUSD(getWalletClient()!, weiValue, VSTAN_CONTRACT?.TAN)
-          setExpected(assetAmountOut)
+          const tanAmountOut = await getExpectedUSG(getWalletClient()!, weiValue, VSTAN_CONTRACT?.TAN)
+          setExpected(tanAmountOut)
         } catch (error) {
           console.error("Error while estimating redeem preview :", error)
         }

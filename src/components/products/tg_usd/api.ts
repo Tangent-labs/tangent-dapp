@@ -1,7 +1,7 @@
 "use server"
 
 import { Address } from "viem"
-import { TotalBorrow } from "./tg_usd_type"
+import { MarketHistoricalData } from "./tg_usd_type"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -157,9 +157,9 @@ export const getReferralStatus = async (account: Address): Promise<UserStatus> =
   }
 }
 
-export const getTotalBorrow = async (range: string): Promise<TotalBorrow> => {
+export const getHistoricalMarketData = async (marketAddress: string, range: string): Promise<Array<MarketHistoricalData>> => {
   try {
-    const url = `${baseUrl}/total-borrow?range=${range}`
+    const url = `${baseUrl}/markets/${marketAddress.toLowerCase()}/dateFrom/${range}`
 
     const response = await fetch(url, {
       method: "GET",
@@ -168,15 +168,15 @@ export const getTotalBorrow = async (range: string): Promise<TotalBorrow> => {
       },
     })
 
-    const data: TotalBorrow = await response.json()
+    const data: Array<MarketHistoricalData> = await response.json()
 
     if (!response.ok) {
-      throw new Error("Failed to fetch referral status with status")
+      throw new Error("Failed to fetch historical market data")
     }
 
     return data
   } catch (error) {
-    console.error("Failed to fetch total borrow data :", error)
-    return { latestTotalDebt: "0", data: [] }
+    console.error("Failed to fetch historical market data :", error)
+    return []
   }
 }

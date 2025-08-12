@@ -20,8 +20,7 @@ type TgUsdRecordLayoutProps = {
 }
 
 export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) {
-  const { collateral, isLeveraged, debtFarming, debtVAPR, chartData, feature, yAxisSettings, USGInfo, setDebtVAPR, setDebtFarming, setIsLeveraged } =
-    useTgUsdRecordContext()
+  const { collateral, isLeveraged, debtFarming, debtVAPR, chartData, feature, USGInfo, setDebtVAPR, setDebtFarming, setIsLeveraged } = useTgUsdRecordContext()
 
   const router = useRouter()
 
@@ -125,7 +124,12 @@ export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) 
                                 reversed={true}
                               />
 
-                              <YAxis name="vAPR" tickFormatter={(v) => `${formatBigInt(v, 18, 2)}%`} type="number" domain={[0, yAxisSettings.max * 1.2]} />
+                              <YAxis
+                                name="vAPR"
+                                tickFormatter={(v) => `${formatBigInt(v, 18, 2)}%`}
+                                type="number"
+                                domain={[0, Number(Math.max(...chartData.map((d) => d.vAPR))) * 1.2]}
+                              />
 
                               <Legend formatter={(v) => (v === "vAPR" ? "vAPR (%)" : v)} />
                               <Tooltip

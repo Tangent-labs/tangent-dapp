@@ -97,11 +97,11 @@ export const formatCompactDollar = (value: string | number): string => {
   if (isNaN(number)) return "$0"
 
   if (number >= 1_000_000_000) {
-    return `$${(number / 1_000_000_000).toFixed(1)}B`
+    return `$${(number / 1_000_000_000).toFixed(2)}B`
   } else if (number >= 1_000_000) {
-    return `$${(number / 1_000_000).toFixed(1)}M`
+    return `$${(number / 1_000_000).toFixed(2)}M`
   } else if (number >= 1_000) {
-    return `$${(number / 1_000).toFixed(1)}K`
+    return `$${(number / 1_000).toFixed(2)}K`
   } else {
     return `$${number.toFixed(0)}`
   }

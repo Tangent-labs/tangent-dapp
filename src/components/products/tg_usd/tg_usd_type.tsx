@@ -452,6 +452,14 @@ export interface IrParams {
   rMin: number
 }
 
+export type MarketHistoricalData = {
+  timestamp: string
+  tvl_usd: number
+  total_debt: number
+  ir_apy: number
+  apr_current: string
+}
+
 export type TotalBorrow = {
   latestTotalDebt: string
   data: Array<{

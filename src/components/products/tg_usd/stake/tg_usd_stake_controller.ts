@@ -36,7 +36,7 @@ export function getFormState(stakeInfo: StakingInfo, currentFeature: "stake" | "
   return { canProcess: isApproved && reasons.length === 0, cantProcessReasons: reasons, haveToApprove: !isApproved }
 }
 
-export const getExpectedTgUSD = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
+export const getExpectedUSG = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
   const [account] = await walletClient.requestAddresses()
 
   const params = [weiValue]

@@ -13,8 +13,10 @@ import {
   ChainViewMarketRow,
   IrParams,
   MarketDetailData,
+  MarketHistoricalData,
   TgUsdMarketDisplayData,
   TgUsdMarketLoanDisplayData,
+  TotalBorrow,
   ZapToken,
 } from "../tg_usd_type"
 
@@ -333,5 +335,26 @@ export const computeVAPR = (
     return vAPR
   } catch {
     return 0
+  }
+}
+
+export const mapToTotalBorrow = (rows: MarketHistoricalData[]): TotalBorrow => {
+  if (!rows || rows.length === 0) {
+    return { latestTotalDebt: "0", data: [] }
+  }
+
+  const latest = rows.reduce((acc, cur) => (Date.parse(cur.timestamp) > Date.parse(acc.timestamp) ? cur : acc))
+
+  const data = rows
+    .slice()
+    .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp))
+    .map((r) => ({
+      timestamp: r.timestamp,
+      value: r.total_debt.toFixed(0),
+    }))
+
+  return {
+    latestTotalDebt: latest.total_debt.toFixed(0),
+    data,
   }
 }

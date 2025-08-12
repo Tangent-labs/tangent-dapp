@@ -5,7 +5,7 @@ import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context
 import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { formatUnits } from "viem"
 import { StakingAssetInfo, StakingDepositType, StakingInfo } from "../tg_usd_type"
-import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedTgUSD, getFormState, getTgUsdStakeOnChainData } from "./tg_usd_stake_controller"
+import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedUSG, getFormState, getTgUsdStakeOnChainData } from "./tg_usd_stake_controller"
 import { USG_CONTRACT } from "../tg_usd_repository"
 
 type TgUsdStakeContextProps = {
@@ -195,7 +195,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
         }
       } else {
         try {
-          const assetAmountOut = await getExpectedTgUSD(getWalletClient()!, weiValue, USG_CONTRACT?.SUSG)
+          const assetAmountOut = await getExpectedUSG(getWalletClient()!, weiValue, USG_CONTRACT?.SUSG)
           setExpected(assetAmountOut)
         } catch (error) {
           console.error("Error while estimating redeem preview :", error)

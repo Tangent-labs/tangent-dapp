@@ -5,7 +5,7 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
 import { Address, formatUnits } from "viem"
-import { getTotalBorrow, getUserPositions } from "../api"
+import { getHistoricalMarketData, getUserPositions } from "../api"
 
 import {
   BalanceAllowanceData,
@@ -28,6 +28,7 @@ import {
   transformMarketData,
   computeIR,
   computeVAPR,
+  mapToTotalBorrow,
 } from "./tg_usd_record_controller"
 
 import { sortUserData } from "./position_history/tg_usd_position_history_controller"
@@ -83,8 +84,6 @@ type TgUsdRecordContextValues = {
   setChartData: (v: Array<{ price: string; vAPR: number }>) => void
 
   feature: string
-
-  yAxisSettings: { min: number; max: number; stepSize: number }
 
   totalBorrow: TotalBorrow
   setTotalBorrow: (v: TotalBorrow) => void
@@ -245,7 +244,7 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     if (marketData && userData && userData.totalUserDeposit && userData.totalUserDebt) {
       const { irParams } = marketData.constants
       const priceRange = 1.001 - 0.9887
-      const prices = Array.from({ length: 100 }, (_, i) => 0.9887 + (i * priceRange) / 99)
+      const prices = Array.from({ length: 40 }, (_, i) => 0.9887 + (i * priceRange) / 39)
 
       const data = prices
         .map((price) => {
@@ -273,25 +272,14 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     return currentFeature
   }, [path])
 
-  const yAxisSettings = useMemo(() => {
-    return {
-      min:
-        chartData.length > 0 && chartData.some((d: { price: string; vAPR: number }) => isFinite(d.vAPR))
-          ? Math.min(...chartData.map((d: { price: string; vAPR: number }) => d.vAPR)) * 0.95
-          : 0,
-      max:
-        chartData.length > 0 && chartData.some((d: { price: string; vAPR: number }) => isFinite(d.vAPR))
-          ? Math.max(...chartData.map((d: { price: string; vAPR: number }) => d.vAPR)) * 1.1
-          : 100,
-      stepSize: 5,
-    }
-  }, [chartData])
-
   useEffect(() => {
-    getTotalBorrow(totalBorrowTimeWindow).then((totalBorrowData) => {
-      setTotalBorrow(totalBorrowData)
-    })
-  }, [totalBorrowTimeWindow])
+    if (marketData) {
+      getHistoricalMarketData(marketData?.marketAddress, totalBorrowTimeWindow).then((marketInfo) => {
+        const mappedTotalBorrowData = mapToTotalBorrow(marketInfo)
+        setTotalBorrow(mappedTotalBorrowData)
+      })
+    }
+  }, [totalBorrowTimeWindow, marketData])
 
   const USGInfo = useMemo(() => {
     if (globalData && globalData.USGPrice) {
@@ -331,7 +319,6 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     chartData,
     setChartData,
     feature,
-    yAxisSettings,
     totalBorrow,
     setTotalBorrow,
     totalBorrowTimeWindow,

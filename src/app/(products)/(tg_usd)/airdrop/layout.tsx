@@ -10,7 +10,7 @@ export default function TgUsdAirdropLayout({
   return (
     <div className="flex w-full flex-col items-center justify-between">
       <div className="flex w-full items-start justify-between gap-4">
-        <div className="sgusd-card w-1/2">
+        <div className="sgusd-card hidden w-1/2 lg:flex">
           <div className="flex items-center justify-center">
             <Image height={320} width={320} className="an-logo" src="/medias/product_tgusd.png" alt="token" />
           </div>
@@ -23,7 +23,7 @@ export default function TgUsdAirdropLayout({
           </div>
         </div>
 
-        <div className="flex w-1/2 flex-col items-stretch justify-between gap-6">
+        <div className="flex w-full flex-col items-stretch justify-between gap-6 lg:w-1/2">
           <div className="flex h-full w-full flex-col items-start justify-start gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
             <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-semibold italic">
               Points campaign
@@ -31,34 +31,34 @@ export default function TgUsdAirdropLayout({
             </div>
           </div>
 
-          <div className="w-ful flex items-center justify-between gap-4">
+          <div className="w-ful flex items-center justify-between gap-1 lg:gap-4">
             <div className="relative flex flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
               <div className="absolute -top-2 left-0 flex w-full">
                 <div className="mx-4 flex w-full items-center justify-between rounded-full bg-black">
-                  <div className="px-2 text-xs italic">boost x1.1</div>
+                  <div className="text-xs italic">boost x1.1</div>
                   <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Vote</div>
                 </div>
               </div>
 
               <span className="text-[14px] text-subtitle">Voting points</span>
-              <div className="flex items-center justify-center gap-1 text-[20px]">
-                <span className="font-semibold text-white">1385 pts</span>
-                <span className="text-sm text-tonic">(30pts/day)</span>
+              <div className="flex items-center justify-center gap-1">
+                <span className="text-[14px] font-semibold text-white lg:text-[20px]">1385 pts</span>
+                <span className="text-xs text-tonic lg:text-sm">(30pts/day)</span>
               </div>
             </div>
 
             <div className="relative flex flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
               <div className="absolute -top-2 left-0 flex w-full">
                 <div className="mx-4 flex w-full items-center justify-between rounded-full bg-black">
-                  <div className="px-2 text-xs italic">boost x1.5</div>
+                  <div className="text-xs italic">boost x1.5</div>
                   <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Liquidity</div>
                 </div>
               </div>
 
               <span className="text-[14px] text-subtitle">Liquidity points</span>
-              <div className="flex items-center justify-center gap-1 text-[20px]">
-                <span className="font-semibold text-white">9,385 pts</span>
-                <span className="text-sm text-tonic">(30pts/day)</span>
+              <div className="flex items-center justify-center gap-1">
+                <span className="text-[14px] font-semibold text-white lg:text-[20px]">9,385 pts</span>
+                <span className="text-xs text-tonic lg:text-sm">(30pts/day)</span>
               </div>
             </div>
           </div>

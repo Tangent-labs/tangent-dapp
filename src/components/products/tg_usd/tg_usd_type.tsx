@@ -377,17 +377,6 @@ export type EarnTask = {
   bonusPts: number
 }
 
-export type AirdropTask = {
-  name: string
-  asset: string
-  link: string
-  protocolName: string
-  actionLabel: string
-  ptsPerDay: number
-  status: string
-  totalPoints: number
-}
-
 export type LockPosition = {
   amount: bigint
   claimable: bigint
@@ -466,4 +455,15 @@ export type TotalBorrow = {
     timestamp: string
     value: string
   }>
+}
+
+export type UserTask = {
+  taskId: number
+  asset: string
+  protocol: string
+  url: string
+  description: string
+  pointRate: number
+  status: boolean
+  points: number
 }

@@ -168,7 +168,12 @@ export function TgUsdMarketListInner() {
         <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
       {displayRows?.map((item, index) => (
-        <ListRow className={cn("my-2", !!marketData.length && !!displayRows ? "" : "shimmer")} key={index} navigate={() => router.push(item.token)}>
+        <ListRow
+          className={cn("my-2", !!marketData.length && !!displayRows ? "" : "shimmer")}
+          key={index}
+          // Hack for Pendle markets
+          navigate={() => router.push(item.token.trim().replaceAll("/", "~").replaceAll(" ", "_"))}
+        >
           <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
           <MarketListAPR apr={item.apr.current} projectedApr={item.apr.projected} />
           <>

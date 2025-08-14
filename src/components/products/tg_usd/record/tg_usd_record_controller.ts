@@ -1,13 +1,3 @@
-import { getEnsoData } from "../api"
-import GetBalances from "@/abi/USG/GetBalances.json"
-import { CollateralInfo, ExistingAsset } from "@/types"
-import { getSwapAssetPrice } from "@/services/service_price"
-import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
-import { USG_CONTRACT, USGMarkets } from "../tg_usd_repository"
-import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
-import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
-import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
-import { Abi, Address, formatEther, formatUnits, Hex, parseEther, WalletClient, zeroAddress } from "viem"
 import {
   BalanceAllowanceData,
   ChainViewMarketRow,
@@ -19,6 +9,16 @@ import {
   TotalBorrow,
   ZapToken,
 } from "../tg_usd_type"
+
+import GetBalances from "@/abi/USG/GetBalances.json"
+import { CollateralInfo, ExistingAsset } from "@/types"
+import { getSwapAssetPrice } from "@/services/service_price"
+import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
+import { USGMarkets } from "../tg_usd_repository"
+import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
+import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
+import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
+import { Abi, Address, formatEther, formatUnits, Hex, parseEther, WalletClient, zeroAddress } from "viem"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
@@ -144,7 +144,7 @@ export function getComputedFutureLoanData(
   } as TgUsdMarketLoanDisplayData
 }
 
-export async function loadMarketServerData(collateral: ExistingAsset) {
+export async function loadMarketServerData(collateral: string) {
   const marketInfo = USGMarkets.find((market) => market.marketName === collateral)
   const collateralInfo = {
     address: USGMarkets.find((market) => market.marketName === collateral)?.collatAddress as Address,
@@ -240,20 +240,6 @@ export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: st
     console.error("Failed to compute swap asset price:", error)
     return null
   }
-}
-
-export const prepareZapTransaction = async (amount: bigint, tokenIn: Address, tokenOut: Address, marketAddress: Address, minAmountOut: bigint) => {
-  const routerCall = await getEnsoData(amount, tokenIn, tokenOut, USG_CONTRACT.ZAPPER, marketAddress, minAmountOut)
-
-  if (!routerCall?.tx?.data) throw new Error("Failed to fetch routing data")
-
-  const zapMarketData = {
-    tokenIn: tokenIn,
-    amountIn: amount,
-    minAmountOut: 0n,
-  }
-
-  return { routerCallData: routerCall, zapMarketData }
 }
 
 export const computeMaxBorrowable = (maxBorrowable: bigint, maxMarketDebt: bigint, totalDebt: bigint) => {

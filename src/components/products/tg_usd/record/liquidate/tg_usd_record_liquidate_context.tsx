@@ -6,7 +6,7 @@ import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doMarketLiquidate, getLiquidateFormState } from "./tg_usd_record_liquidate_controller"
 import { USG_CONTRACT } from "../../tg_usd_repository"
-import { getQuote, returnRoute } from "../../global_quote_controller"
+import { getQuote, getRoute } from "../../global_quote_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 import { maxUint256 } from "viem"
@@ -106,7 +106,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
       if (repayWeiValue === maxRepayable) {
         repayValue = maxUint256
       }
-      const liquidationData = await returnRoute(
+      const liquidationData = await getRoute(
         marketInfo?.collatAddress,
         USG_CONTRACT.USG,
         liquidateWeiValue,

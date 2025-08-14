@@ -7,7 +7,7 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { formatUnits, parseEther } from "viem"
 import { useTgUsdContext } from "../../tg_usd_context"
-import { getQuote, returnRoute } from "../../global_quote_controller"
+import { getQuote, getRoute } from "../../global_quote_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./tg_usd_record_leverage_controller"
@@ -277,7 +277,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
       loadOnChainData()
       if (!walletClient || !currentAddress || !depositWeiValue || !borrowWeiValue || !depositAssetInfo) return
 
-      const leverageData = await returnRoute(
+      const leverageData = await getRoute(
         USG_CONTRACT.USG,
         marketInfo?.collatAddress,
         borrowWeiValue,
@@ -286,7 +286,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
         USG_CONTRACT.ZAPPER
       )
 
-      const zapData = await returnRoute(
+      const zapData = await getRoute(
         depositAssetInfo?.address,
         marketInfo?.collatAddress,
         depositWeiValue,
@@ -334,7 +334,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
     loadOnChainData()
     if (!walletClient || !currentAddress || !leveragedCollateralQuote || !borrowWeiValue) return
 
-    const leverageData = await returnRoute(
+    const leverageData = await getRoute(
       USG_CONTRACT.USG,
       marketInfo?.collatAddress,
       borrowWeiValue,

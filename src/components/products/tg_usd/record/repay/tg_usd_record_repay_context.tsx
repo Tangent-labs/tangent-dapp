@@ -6,7 +6,7 @@ import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./tg_usd_record_repay_controller"
 import { formatUnits, maxUint256 } from "viem"
-import { getQuote, returnRoute } from "../../global_quote_controller"
+import { getQuote, getRoute } from "../../global_quote_controller"
 import { USG_CONTRACT } from "../../tg_usd_repository"
 import { useTgUsdContext } from "../../tg_usd_context"
 import { MarketDetailData, ZapToken } from "../../tg_usd_type"
@@ -173,7 +173,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     setIsZapLoading(true)
 
     try {
-      const repayData = await returnRoute(repayAssetInfo?.address, USG_CONTRACT?.USG, repayWeiValue, usgRepayedValue!, currentAddress!, USG_CONTRACT.ZAPPER)
+      const repayData = await getRoute(repayAssetInfo?.address, USG_CONTRACT?.USG, repayWeiValue, usgRepayedValue!, currentAddress!, USG_CONTRACT.ZAPPER)
 
       const zapMarketData = {
         tokenIn: repayAssetInfo?.address,
@@ -208,7 +208,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     setIsZapLoading(true)
 
     try {
-      const repayData = await returnRoute(
+      const repayData = await getRoute(
         repayAssetInfo?.address,
         USG_CONTRACT?.USG,
         repayWeiValue,

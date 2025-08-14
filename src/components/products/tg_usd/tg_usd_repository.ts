@@ -27,6 +27,10 @@ export const USGMarkets: TgUsdMarket[] = envAddresses.markets.map((market: RawMa
   marketType: market.marketType,
 })) as TgUsdMarket[]
 
+export const PendleCollaterals: Array<Address> = envAddresses.markets
+  .filter((m: RawMarket) => m.marketType.includes("Pendle_PT"))
+  .map((market: RawMarket) => market.collatAddress as Address)
+
 export const USG_CONTRACT = {
   REWARD_ACCUMULATOR: envAddresses.utilities.rewardAccumulator as Address,
   LIQUIDATOR_PROXY: envAddresses.utilities.liquidatorProxy as Address,
@@ -37,4 +41,5 @@ export const USG_CONTRACT = {
   USG_ORACLE: envAddresses.oracles.USG as Address,
   ENSO_ROUTER: "0xF75584eF6673aD213a685a1B58Cc0330B8eA22Cf",
   CURVE_ROUTER: "0x45312ea0eff7e09c83cbe249fa1d7598c4c8cd4e",
+  PENDLE_ROUTER: "0x1234567890",
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { AssetApr, AssetDataPriced, CollateralInfo, ListState, TgUsdMarketAsset } from "@/types"
+import { AssetApr, AssetDataPriced, CollateralInfo, ListState } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
@@ -39,13 +39,13 @@ import { getCurrentBlock } from "@/services/service_rpc"
 
 type TgUsdRecordContextProps = {
   children: ReactNode
-  collateral: TgUsdMarketAsset
+  collateral: string
   collateralInfo: CollateralInfo
   marketInfo: TgUsdMarket
 }
 
 type TgUsdRecordContextValues = {
-  collateral: TgUsdMarketAsset
+  collateral: string
   collateralInfo: CollateralInfo
   isLoading: boolean
   marketData?: MarketDetailData

@@ -71,7 +71,7 @@ export function transformGlobalData(data?: ChainViewMarketList): TgUsdGlobalData
   let totalDebt = 0n
 
   data?.rowInfos.forEach((market) => {
-    totalTVL += market.collateralInfos?.positionCollateralUSDValue
+    totalTVL += market.collateralInfos?.totalCollateralUSDValue
     totalDebt += market?.debtInfos.totalDebt
   })
 

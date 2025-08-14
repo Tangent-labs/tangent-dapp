@@ -1,20 +1,20 @@
 "use client"
 
-import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
-import { ToastComponent } from "@/components/design_system/toast"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { gasCostToUSD, getPublicClient } from "@/services/service_rpc"
-import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
-import { EstimateContractGasParameters, formatUnits, parseEther } from "viem"
-import { getQuote } from "../../global_quote_controller"
+import { formatDollar } from "@/lib/number_formatter"
 import { useTgUsdContext } from "../../tg_usd_context"
 import { TgUsdMarket, ZapToken } from "../../tg_usd_type"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
-import { computeMaxBorrowable, computeSwapAssetPrice, doApprove, prepareZapTransaction } from "../tg_usd_record_controller"
+import { ToastComponent } from "@/components/design_system/toast"
+import { getQuote, getRoute } from "../../global_quote_controller"
+import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
+import { gasCostToUSD, getPublicClient } from "@/services/service_rpc"
+import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
+import { EstimateContractGasParameters, formatUnits, parseEther } from "viem"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { doMarketDeposit, doZapDeposit, doZapDepositAndBorrow, getDepositFormState } from "./tg_usd_record_deposit_controller"
-import { formatDollar } from "@/lib/number_formatter"
 
 type TgUsdDepositContextProps = {
   children: ReactNode
@@ -352,13 +352,20 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
 
   const computeGas = async () => {
     try {
-      const { routerCallData, zapMarketData } = await prepareZapTransaction(
-        depositWeiValue!,
+      const zapData = await getRoute(
         depositAssetInfo?.address,
         collateralInfo?.address,
+        depositWeiValue!,
+        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         marketInfo.marketAddress,
-        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
+        currentAddress!
       )
+
+      const zapMarketData = {
+        tokenIn: depositAssetInfo?.address,
+        amountIn: depositWeiValue!,
+        minAmountOut: (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+      }
 
       const walletClient = getWalletClient()
 
@@ -376,7 +383,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
               tokenIn: zapMarketData?.tokenIn,
               amountIn: zapMarketData?.amountIn,
               minAmountOut: zapMarketData?.minAmountOut,
-              zap: { router: routerCallData?.tx?.to, routerCall: routerCallData?.tx?.data },
+              zap: { router: zapData?.routerAddress, routerCall: zapData?.data },
             },
           ] as unknown[],
           address: marketInfo?.marketAddress,
@@ -393,7 +400,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
               tokenIn: zapMarketData?.tokenIn,
               amountIn: zapMarketData?.amountIn,
               minAmountOut: zapMarketData?.minAmountOut,
-              zap: { router: routerCallData?.tx?.to, routerCall: routerCallData?.tx?.data },
+              zap: { router: zapData?.routerAddress, routerCall: zapData?.data },
             },
           ] as unknown[],
           address: marketInfo?.marketAddress,
@@ -432,17 +439,24 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
     setIsDepositLoading(true)
 
     try {
-      const { routerCallData, zapMarketData } = await prepareZapTransaction(
-        depositWeiValue,
+      const zapData = await getRoute(
         depositAssetInfo?.address,
         collateralInfo?.address,
-        marketInfo.marketAddress,
-        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
+        depositWeiValue,
+        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        marketInfo?.marketAddress,
+        currentAddress
       )
+
+      const zapMarketData = {
+        tokenIn: depositAssetInfo?.address,
+        amountIn: depositWeiValue,
+        minAmountOut: (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+      }
 
       const walletClient = getWalletClient()
 
-      doZapDepositAndBorrow(marketInfo?.marketAddress, walletClient!, routerCallData?.tx?.to, routerCallData?.tx?.data, zapMarketData, borrowWeiValue)
+      doZapDepositAndBorrow(marketInfo?.marketAddress, walletClient!, zapData?.routerAddress, zapData?.data as string, zapMarketData, borrowWeiValue)
         .then(() => {
           resetAfterDepositSuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
@@ -464,17 +478,24 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
     setIsDepositLoading(true)
 
     try {
-      const { routerCallData, zapMarketData } = await prepareZapTransaction(
-        depositWeiValue,
+      const zapData = await getRoute(
         depositAssetInfo?.address,
         collateralInfo?.address,
-        marketInfo.marketAddress,
-        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
+        depositWeiValue,
+        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        marketInfo?.marketAddress,
+        currentAddress
       )
+
+      const zapMarketData = {
+        tokenIn: depositAssetInfo?.address,
+        amountIn: depositWeiValue,
+        minAmountOut: (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+      }
 
       const walletClient = getWalletClient()
 
-      doZapDeposit(marketInfo?.marketAddress, walletClient!, routerCallData?.tx?.to, routerCallData?.tx?.data, zapMarketData)
+      doZapDeposit(marketInfo?.marketAddress, walletClient!, zapData?.routerAddress, zapData?.data as string, zapMarketData)
         .then(() => {
           resetAfterDepositSuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })

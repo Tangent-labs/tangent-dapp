@@ -1,23 +1,36 @@
 import { Address } from "viem"
-import { USG_CONTRACT } from "./tg_usd_repository"
-import { getCurveRouterQuote, getCurveRouterRoute } from "./curve_routing_controller"
 import { getEnsoData } from "./api"
 import { VSTAN_CONTRACT } from "../vs_tan/rs_tan_repository"
+import { PendleCollaterals, USG_CONTRACT } from "./tg_usd_repository"
+import { getCustomQuote, getCustomRouterRoute } from "./curve_routing_controller"
+
+const curveRouterTokens = [USG_CONTRACT?.USG, USG_CONTRACT?.USG, VSTAN_CONTRACT?.TAN, VSTAN_CONTRACT?.STAN]
+
+const isCurveRouter = (tokenIn: Address, tokenOut: Address) => {
+  return curveRouterTokens.includes(tokenIn) || curveRouterTokens.includes(tokenOut)
+}
+
+const isPendleRouter = (tokenIn: Address, tokenOut: Address) => {
+  return PendleCollaterals.includes(tokenIn) || PendleCollaterals.includes(tokenOut)
+}
 
 export const getQuote = async (depositWeiValue: bigint, currentAddress: Address, tokenOut: Address, tokenIn: Address): Promise<{ quote: bigint }> => {
   const data = await getEnsoData(depositWeiValue, tokenIn, tokenOut, currentAddress, currentAddress, 0n)
 
   if (data) {
     return { quote: data?.amountOut }
-  } else if (tokenOut === USG_CONTRACT?.USG || tokenIn === USG_CONTRACT?.USG || tokenOut === VSTAN_CONTRACT?.TAN || tokenIn === VSTAN_CONTRACT?.TAN) {
-    const quote = await getCurveRouterQuote(tokenIn, tokenOut, depositWeiValue)
+  } else if (isCurveRouter(tokenIn, tokenOut)) {
+    const quote = await getCustomQuote(tokenIn, tokenOut, depositWeiValue, "curve")
+    return { quote }
+  } else if (isPendleRouter(tokenIn, tokenOut)) {
+    const quote = await getCustomQuote(tokenIn, tokenOut, depositWeiValue, "pendle")
     return { quote }
   } else {
     return { quote: 0n }
   }
 }
 
-export const returnRoute = async (
+export const getRoute = async (
   tokenIn: Address,
   tokenOut: Address,
   amount: bigint,
@@ -29,10 +42,13 @@ export const returnRoute = async (
   const route = await getEnsoData(amount, tokenIn, tokenOut, fromAddress, receiver, minAmountOut)
 
   if (route) {
-    return { data: route?.tx?.data as string, routerAddress: USG_CONTRACT.ENSO_ROUTER as Address }
-  } else if (tokenOut === USG_CONTRACT?.USG || tokenIn === USG_CONTRACT?.USG || tokenOut === VSTAN_CONTRACT?.TAN || tokenIn === VSTAN_CONTRACT?.TAN) {
-    const curveRoute = await getCurveRouterRoute(tokenIn, tokenOut, amount, minAmountOut, user ? user : receiver)
-    return { data: curveRoute as string, routerAddress: USG_CONTRACT.CURVE_ROUTER as Address }
+    return { data: route?.tx?.data as string, routerAddress: route?.tx?.to }
+  } else if (isCurveRouter(tokenIn, tokenOut)) {
+    const { data, routerAddress } = await getCustomRouterRoute(tokenIn, tokenOut, amount, minAmountOut, user ? user : receiver, "curve")
+    return { data, routerAddress }
+  } else if (isPendleRouter(tokenIn, tokenOut)) {
+    const { data, routerAddress } = await getCustomRouterRoute(tokenIn, tokenOut, amount, minAmountOut, user ? user : receiver, "pendle")
+    return { data, routerAddress }
   } else {
     return undefined
   }

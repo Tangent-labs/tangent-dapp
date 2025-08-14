@@ -1,44 +1,82 @@
 import { Abi, Address, encodeFunctionData, Hex, zeroAddress } from "viem"
 import routes from "./swapRoutes.json"
-import QuoteLiquidationRouter from "../../../abi/USG/QuoteLiquidationRouter.json"
+import QuotesCurveRouter from "../../../abi/USG/QuotesCurveRouter.json"
+import QuotesPendleRouter from "../../../abi/USG/QuotesPendleRouter.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import CurveRouterABI from "../../../abi/USG/CurveRouter.json"
+import PendleRouterABI from "../../../abi/USG/PendleRouter.json"
+import { USG_CONTRACT } from "./tg_usd_repository"
 
-const returnQuoteData = async (tokenIn: Address, tokenOut: Address, amount: bigint) => {
-  const matchingRoutes = routes.success
-    .filter((el) => el.in.toLowerCase() === tokenIn.toLowerCase() && el.out.toLowerCase() === tokenOut.toLowerCase())
-    .map((route) => {
-      return {
-        _route: route.params.routeAddresses,
-        _swap_params: route.params.swapParamsFull,
-        _amount: amount,
-        _pools: [zeroAddress, zeroAddress, zeroAddress, zeroAddress, zeroAddress],
-      }
-    })
+type RawRoute = {
+  params: {
+    routeAddresses: string[]
+    swapParamsFull: number[][]
+  }
+  display: string
+}
 
-  const quotes = await executeChainViewUnique<bigint[]>(QuoteLiquidationRouter.abi as Abi, QuoteLiquidationRouter.bytecode as Hex, [matchingRoutes])
+const returnCustomQuoteData = async (tokenIn: Address, tokenOut: Address, amount: bigint, protocol: string) => {
+  type RoutesMap = Record<string, Record<string, RawRoute[]>>
+
+  const matchingRoutes =
+    (routes.success as RoutesMap)?.[tokenIn.toLowerCase()]?.[tokenOut.toLowerCase()]?.map((route) => ({
+      _route: route.params.routeAddresses,
+      _swap_params: route.params.swapParamsFull,
+      _amount: amount,
+      _pools: [zeroAddress, zeroAddress, zeroAddress, zeroAddress, zeroAddress],
+    })) ?? []
+
+  let abi
+  let bytecode
+
+  if (protocol === "curve") {
+    abi = QuotesCurveRouter.abi
+    bytecode = QuotesCurveRouter.bytecode
+  }
+
+  if (protocol === "pendle") {
+    abi = QuotesPendleRouter.abi
+    bytecode = QuotesPendleRouter.bytecode
+  }
+
+  const quotes = await executeChainViewUnique<bigint[]>(abi as Abi, bytecode as Hex, [matchingRoutes])
 
   const bestQuote: bigint = quotes!.reduce((a, b) => (a > b ? a : b))
 
   return { matchingRoutes, quotes, bestQuote }
 }
 
-export const getCurveRouterQuote = async (tokenIn: Address, tokenOut: Address, amount: bigint) => {
-  const { bestQuote } = await returnQuoteData(tokenIn, tokenOut, amount)
+export const getCustomQuote = async (tokenIn: Address, tokenOut: Address, amount: bigint, protocol: string) => {
+  const { bestQuote } = await returnCustomQuoteData(tokenIn, tokenOut, amount, protocol)
 
   return bestQuote
 }
 
-export const getCurveRouterRoute = async (tokenIn: Address, tokenOut: Address, amount: bigint, minAmountOut: bigint, receiver: Address) => {
-  const { matchingRoutes, quotes, bestQuote } = await returnQuoteData(tokenIn, tokenOut, amount)
+export const getCustomRouterRoute = async (tokenIn: Address, tokenOut: Address, amount: bigint, minAmountOut: bigint, receiver: Address, protocol: string) => {
+  const { matchingRoutes, quotes, bestQuote } = await returnCustomQuoteData(tokenIn, tokenOut, amount, protocol)
 
   const biggestValueIndex = quotes?.indexOf(bestQuote) as number
 
   const matchingRoute = matchingRoutes[biggestValueIndex]
 
-  return encodeFunctionData({
-    abi: CurveRouterABI,
+  let abi
+  let routerAddress
+
+  if (protocol === "curve") {
+    abi = CurveRouterABI
+    routerAddress = USG_CONTRACT.CURVE_ROUTER
+  }
+
+  if (protocol === "pendle") {
+    abi = PendleRouterABI
+    routerAddress = USG_CONTRACT.PENDLE_ROUTER
+  }
+
+  const data = encodeFunctionData({
+    abi: abi as Abi,
     functionName: "exchange",
     args: [matchingRoute._route, matchingRoute._swap_params, amount, minAmountOut, matchingRoute._pools, receiver],
   })
+
+  return { data, routerAddress }
 }

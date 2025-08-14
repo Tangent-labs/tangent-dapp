@@ -6,7 +6,7 @@ import { useRsTanContext } from "../rstan_layout_context"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { getCurrentBlock } from "@/services/service_rpc"
 import { useTgUsdContext } from "../../tg_usd/tg_usd_context"
-import { getQuote, returnRoute } from "../../tg_usd/global_quote_controller"
+import { getQuote, getRoute } from "../../tg_usd/global_quote_controller"
 import { LockPosition, ZapToken } from "../../tg_usd/tg_usd_type"
 import { ToastComponent } from "@/components/design_system/toast"
 import { formatBigInt, formatDollar } from "@/lib/number_formatter"
@@ -217,7 +217,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
         minAmountOut: (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
       }
 
-      const zapAndLockData = await returnRoute(
+      const zapAndLockData = await getRoute(
         depositAssetInfo?.address,
         VSTAN_CONTRACT.TAN,
         depositWeiValue,

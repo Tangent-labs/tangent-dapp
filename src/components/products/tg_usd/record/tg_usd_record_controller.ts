@@ -301,15 +301,17 @@ export const computeVAPR = (
   debtFarmingAmount: number,
   debtFarmingVApr: number,
   totalCollateralAmount: bigint,
-  isLeveraged: boolean
+  isLeveraged: boolean,
+  initialCollatAmount?: number
 ) => {
   try {
     const debtFarmingBigInt = BigInt(debtFarmingAmount * 10 ** 18)
     const debtVAPRBigInt = BigInt(debtFarmingVApr * 10 ** 18)
+    const initialCollatAmountBigInt = BigInt((initialCollatAmount || 1) * 10 ** 18)
 
     let result: bigint
-    if (isLeveraged) {
-      result = ((totalCollateralAmount * collatVApr - userDebt * debtRate) * BigInt(10000)) / collatAmount
+    if (isLeveraged && initialCollatAmountBigInt) {
+      result = (totalCollateralAmount * collatVApr - userDebt * debtRate) / initialCollatAmountBigInt
     } else {
       result = ((collatVApr * collatAmount - userDebt * debtRate + debtFarmingBigInt * debtVAPRBigInt) * BigInt(10000)) / collatAmount
     }

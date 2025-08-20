@@ -1,29 +1,29 @@
 "use client"
 
 import Image from "next/image"
-import { Switch } from "@/components/ui/switch"
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
-import TokenImage from "@/components/design_system/structure/token_image"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import FormButtons from "@/components/design_system/form/form_actions"
-import { formatBigInt } from "@/lib/number_formatter"
-import CustomSelect from "@/components/design_system/inputs/custom_select"
+import { cn } from "@/lib/utils"
 import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
-import { IconThunder } from "@/components/icons/icon_thunder"
-import { IconCircleHelp } from "@/components/icons/icon_circle_help"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import Panel from "@/components/design_system/structure/panel"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
-import { IconChevron } from "@/components/icons/icon_chevron"
-import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
-import { useTgUsdLeverageContext } from "./tg_usd_record_leverage_context"
-import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
-import { cn } from "@/lib/utils"
-import BorderPanel from "@/components/design_system/structure/border_panel"
+import { Switch } from "@/components/ui/switch"
+import { formatBigInt } from "@/lib/number_formatter"
 import { useTgUsdContext } from "../../tg_usd_context"
+import { IconChevron } from "@/components/icons/icon_chevron"
+import { IconThunder } from "@/components/icons/icon_thunder"
+import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
+import Panel from "@/components/design_system/structure/panel"
+import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
+import { IconCircleHelp } from "@/components/icons/icon_circle_help"
+import ButtonTab from "@/components/design_system/inputs/button_tab"
+import PanelRaw from "@/components/design_system/structure/panel_raw"
+import FormButtons from "@/components/design_system/form/form_actions"
+import TokenImage from "@/components/design_system/structure/token_image"
+import { useTgUsdLeverageContext } from "./tg_usd_record_leverage_context"
+import BorderPanel from "@/components/design_system/structure/border_panel"
+import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export default function TgUsdLeveragePanel() {
   const {
@@ -97,7 +97,7 @@ export default function TgUsdLeveragePanel() {
     ]
 
     return (
-      <CustomSelect
+      <PopoverCombobox
         className="w-full"
         template={AssetSelectTemplate}
         value={depositAsset || collateralInfo.name}
@@ -117,7 +117,7 @@ export default function TgUsdLeveragePanel() {
     decimals?: number
   }) => {
     return (
-      <div className="flex w-full min-w-48 items-center justify-between">
+      <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
         <div className="flex w-full items-center gap-2">
           <>
             {option.symbol === "ETH" ? (

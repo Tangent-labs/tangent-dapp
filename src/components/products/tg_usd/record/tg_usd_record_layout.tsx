@@ -20,7 +20,20 @@ type TgUsdRecordLayoutProps = {
 }
 
 export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) {
-  const { collateral, isLeveraged, debtFarming, debtVAPR, chartData, feature, USGInfo, setDebtVAPR, setDebtFarming, setIsLeveraged } = useTgUsdRecordContext()
+  const {
+    collateral,
+    isLeveraged,
+    debtFarming,
+    debtVAPR,
+    chartData,
+    feature,
+    USGInfo,
+    initialCollatAmount,
+    setInitialCollatAmount,
+    setDebtVAPR,
+    setDebtFarming,
+    setIsLeveraged,
+  } = useTgUsdRecordContext()
 
   const router = useRouter()
 
@@ -83,28 +96,44 @@ export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) 
                         Leverage <Switch checked={isLeveraged} onCheckedChange={(v) => setIsLeveraged(v)} />
                       </div>
 
-                      <div className="flex w-full flex-col items-center justify-center lg:items-start">
-                        <div className="mb-1 text-xs font-semibold text-subtitle">Debt Farming (USD)</div>
-                        <input
-                          placeholder=""
-                          type="number"
-                          step={1}
-                          className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                          value={debtFarming}
-                          onChange={(e) => setDebtFarming(Number(e?.target?.value))}
-                        />
-                      </div>
-                      <div className="ml-2 mt-0 flex w-full flex-col items-center justify-center lg:ml-0 lg:mt-3 lg:items-start">
-                        <div className="mb-1 text-xs font-semibold text-subtitle">Debt vAPR (%)</div>
-                        <input
-                          placeholder=""
-                          type="number"
-                          step={0.1}
-                          className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                          value={debtVAPR}
-                          onChange={(e) => setDebtVAPR(Number(e?.target?.value))}
-                        />
-                      </div>
+                      {isLeveraged ? (
+                        <div className="flex w-full flex-col items-center justify-center lg:items-start">
+                          <div className="mb-1 text-xs font-semibold text-subtitle">Initial Collateral (USD)</div>
+                          <input
+                            placeholder=""
+                            type="number"
+                            step={1}
+                            className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                            value={initialCollatAmount}
+                            onChange={(e) => setInitialCollatAmount(Number(e?.target?.value))}
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex w-full flex-col items-center justify-center lg:items-start">
+                            <div className="mb-1 text-xs font-semibold text-subtitle">Debt Farming (USD)</div>
+                            <input
+                              placeholder=""
+                              type="number"
+                              step={1}
+                              className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                              value={debtFarming}
+                              onChange={(e) => setDebtFarming(Number(e?.target?.value))}
+                            />
+                          </div>
+                          <div className="ml-2 mt-0 flex w-full flex-col items-center justify-center lg:ml-0 lg:mt-3 lg:items-start">
+                            <div className="mb-1 text-xs font-semibold text-subtitle">Debt vAPR (%)</div>
+                            <input
+                              placeholder=""
+                              type="number"
+                              step={0.1}
+                              className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                              value={debtVAPR}
+                              onChange={(e) => setDebtVAPR(Number(e?.target?.value))}
+                            />
+                          </div>
+                        </>
+                      )}
                     </div>
                     <div className="mt-8 flex w-full pr-6 lg:w-10/12">
                       <div className="relative hidden h-full items-start justify-start lg:flex">
@@ -128,7 +157,7 @@ export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) 
                                 name="vAPR"
                                 tickFormatter={(v) => `${formatBigInt(v, 18, 2)}%`}
                                 type="number"
-                                domain={[0, Number(Math.max(...chartData.map((d) => d.vAPR))) * 1.2]}
+                                domain={[0, Number(Math.max(...chartData.map((d) => d.vAPR))) * 1.5]}
                               />
 
                               <Legend formatter={(v) => (v === "vAPR" ? "vAPR (%)" : v)} />

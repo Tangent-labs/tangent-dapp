@@ -10,9 +10,9 @@ type HarverListProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
   canInteract: boolean
 }
 
-export default function HarvestList({ rows, canInteract, onHarvest, ...props }: HarverListProps) {
+export default function HarvestList({ rows, canInteract, onHarvest }: HarverListProps) {
   return (
-    <div {...props}>
+    <div className="mt-12 flex w-full flex-col">
       {rows.map((info, index) => (
         <HarvestRow info={info} key={index} onHarvest={onHarvest} canInteract={canInteract} />
       ))}

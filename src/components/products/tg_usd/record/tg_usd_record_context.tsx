@@ -1,12 +1,5 @@
 "use client"
 
-import { AssetApr, AssetDataPriced, CollateralInfo, ListState } from "@/types"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-
-import { Address, formatUnits } from "viem"
-import { getHistoricalMarketData, getUserPositions } from "../api"
-
 import {
   BalanceAllowanceData,
   ChainViewMarketRow,
@@ -31,11 +24,16 @@ import {
   mapToTotalBorrow,
 } from "./tg_usd_record_controller"
 
-import { sortUserData } from "./position_history/tg_usd_position_history_controller"
-import { useTgUsdMaketListContext } from "../list/tg_usd_market_list_context"
+import { Address, formatUnits } from "viem"
 import { usePathname } from "next/navigation"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { getCurrentBlock } from "@/services/service_rpc"
+import { getHistoricalMarketData, getUserPositions } from "../api"
+import { useTgUsdMaketListContext } from "../list/tg_usd_market_list_context"
+import { AssetApr, AssetDataPriced, CollateralInfo, ListState } from "@/types"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { sortUserData } from "./position_history/tg_usd_position_history_controller"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 
 type TgUsdRecordContextProps = {
   children: ReactNode
@@ -81,6 +79,9 @@ type TgUsdRecordContextValues = {
   debtVAPR: number
   setDebtVAPR: (v: number) => void
 
+  initialCollatAmount: number
+  setInitialCollatAmount: (v: number) => void
+
   chartData: Array<{ price: string; vAPR: number }>
   setChartData: (v: Array<{ price: string; vAPR: number }>) => void
 
@@ -117,6 +118,8 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
   const [debtFarming, setDebtFarming] = useState<number>(0)
 
   const [debtVAPR, setDebtVAPR] = useState<number>(0)
+
+  const [initialCollatAmount, setInitialCollatAmount] = useState<number>(0)
 
   const [isUserHistoryLoading, setIsUserHistoryLoading] = useState<boolean>(true)
 
@@ -202,7 +205,7 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
   }
 
   //
-  // USER POSITION CONTEXT
+  // USER TRANSACTION HISTORY CONTEXT
 
   const displayRows = useMemo(() => {
     if (userPositions) {
@@ -257,7 +260,8 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
             debtFarming,
             debtVAPR / 100,
             userData.totalUserDeposit,
-            isLeveraged
+            isLeveraged,
+            initialCollatAmount
           )
           return { price: price.toFixed(4), vAPR }
         })
@@ -265,7 +269,16 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
 
       setChartData(data)
     }
-  }, [isLeveraged, debtFarming, debtVAPR, marketData, userData])
+  }, [isLeveraged, debtFarming, debtVAPR, marketData, userData, initialCollatAmount])
+
+  useEffect(() => {
+    if (isLeveraged) {
+      setDebtFarming(0)
+      setDebtVAPR(0)
+    } else {
+      setInitialCollatAmount(0)
+    }
+  }, [isLeveraged])
 
   const feature = useMemo(() => {
     const lastIndexOfSlash = path.lastIndexOf("/") + 1
@@ -322,10 +335,16 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     isLeveraged,
     setIsLeveraged,
     pricedCollateralInfo,
+
     debtFarming,
     setDebtFarming,
+
     debtVAPR,
     setDebtVAPR,
+
+    initialCollatAmount,
+    setInitialCollatAmount,
+
     chartData,
     setChartData,
     feature,

@@ -1,14 +1,14 @@
 "use client"
 
 import Image from "next/image"
-import { BuySellInput } from "@/components/design_system/inputs/buy_sell_input"
-import { useTgUsdSwapContext } from "./tg_usd_swap_context"
-import CustomSelect from "@/components/design_system/inputs/custom_select"
 import { ExistingAsset } from "@/types"
-import TokenImage from "@/components/design_system/structure/token_image"
-import { formatBigInt } from "@/lib/number_formatter"
-import FormButtons from "@/components/design_system/form/form_actions"
 import { DepositReceiveAsset } from "../tg_usd_type"
+import { formatBigInt } from "@/lib/number_formatter"
+import { useTgUsdSwapContext } from "./tg_usd_swap_context"
+import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
+import FormButtons from "@/components/design_system/form/form_actions"
+import TokenImage from "@/components/design_system/structure/token_image"
+import { BuySellInput } from "@/components/design_system/inputs/buy_sell_input"
 
 type AssetSelectProps = {
   options: DepositReceiveAsset[]
@@ -42,23 +42,31 @@ export default function TgUsdSwapContent() {
 
   const ReceiveAssetSelect = ({ options }: AssetSelectProps) => {
     if (!balances || !options) {
-      return <CustomSelect className="w-full" template={AssetSelectTemplate} value={receiveAsset} options={[]} onChange={(v: string) => setReceiveAsset(v)} />
+      return (
+        <PopoverCombobox className="w-full" template={AssetSelectTemplate} value={receiveAsset} options={[]} onChange={(v: string) => setReceiveAsset(v)} />
+      )
     }
 
     return (
-      <CustomSelect className="w-full" template={AssetSelectTemplate} value={receiveAsset} options={options} onChange={(v: string) => setReceiveAsset(v)} />
+      <PopoverCombobox className="w-full" template={AssetSelectTemplate} value={receiveAsset} options={options} onChange={(v: string) => setReceiveAsset(v)} />
     )
   }
 
   const DepositAssetSelect = ({ options }: AssetSelectProps) => {
     if (!balances) {
       return (
-        <CustomSelect className="w-full" template={AssetSelectTemplate} value={depositAsset || ""} options={[]} onChange={(v: string) => setDepositAsset(v)} />
+        <PopoverCombobox
+          className="w-full"
+          template={AssetSelectTemplate}
+          value={depositAsset || ""}
+          options={[]}
+          onChange={(v: string) => setDepositAsset(v)}
+        />
       )
     }
 
     return (
-      <CustomSelect
+      <PopoverCombobox
         className="w-full"
         template={AssetSelectTemplate}
         value={depositAsset || ""}

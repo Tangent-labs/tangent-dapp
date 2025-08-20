@@ -1,30 +1,30 @@
 "use client"
 
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
-import TokenImage from "@/components/design_system/structure/token_image"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import FormButtons from "@/components/design_system/form/form_actions"
-import { useTgUsdRepayContext } from "./tg_usd_record_repay_context"
-import { formatBigInt } from "@/lib/number_formatter"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
-import { Switch } from "@/components/ui/switch"
-import { useTgUsdContext } from "../../tg_usd_context"
-import { ZapToken } from "../../tg_usd_type"
-import { USG_CONTRACT } from "../../tg_usd_repository"
-import CustomSelect from "@/components/design_system/inputs/custom_select"
-import { ExistingAsset } from "@/types"
 import Image from "next/image"
-import { IconThunder } from "@/components/icons/icon_thunder"
-import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { formatUnits } from "viem"
-import { RepayInput } from "@/components/design_system/inputs/repay_input"
-import Panel from "@/components/design_system/structure/panel"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
+import { ExistingAsset } from "@/types"
+import { ZapToken } from "../../tg_usd_type"
+import { Switch } from "@/components/ui/switch"
+import { formatBigInt } from "@/lib/number_formatter"
+import { useTgUsdContext } from "../../tg_usd_context"
+import { USG_CONTRACT } from "../../tg_usd_repository"
+import { IconThunder } from "@/components/icons/icon_thunder"
 import { IconChevron } from "@/components/icons/icon_chevron"
+import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
+import Panel from "@/components/design_system/structure/panel"
+import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
+import { useTgUsdRepayContext } from "./tg_usd_record_repay_context"
+import { IconCircleHelp } from "@/components/icons/icon_circle_help"
+import PanelRaw from "@/components/design_system/structure/panel_raw"
+import FormButtons from "@/components/design_system/form/form_actions"
+import TokenImage from "@/components/design_system/structure/token_image"
+import { RepayInput } from "@/components/design_system/inputs/repay_input"
 import BorderPanel from "@/components/design_system/structure/border_panel"
+import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export default function TgUsdRepayPanel() {
   const { tokens, balances } = useTgUsdContext()
@@ -130,7 +130,7 @@ export default function TgUsdRepayPanel() {
     ]
 
     return (
-      <CustomSelect
+      <PopoverCombobox
         className="w-full"
         template={AssetSelectTemplate}
         value={repayAsset || "USG"}

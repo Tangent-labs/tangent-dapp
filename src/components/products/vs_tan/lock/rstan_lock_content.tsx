@@ -6,25 +6,25 @@ import { InfinityIcon } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
 import { formatDate } from "@/lib/other_formatter"
 import { IconCircleHelp } from "@/components/icons"
+import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useRsTanContext } from "../rstan_layout_context"
 import { useRsTanLockContext } from "./rstan_lock_context"
 import { useTgUsdContext } from "../../tg_usd/tg_usd_context"
 import { IconThunder } from "@/components/icons/icon_thunder"
+import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
+import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
+import ButtonTab from "@/components/design_system/inputs/button_tab"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import FormButtons from "@/components/design_system/form/form_actions"
 import InputSelect from "@/components/design_system/inputs/input_select"
-import CustomSelect from "@/components/design_system/inputs/custom_select"
 import TokenImage from "@/components/design_system/structure/token_image"
+import BorderPanel from "@/components/design_system/structure/border_panel"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { LockPositionSelectTemplate, ZapToken } from "../../tg_usd/tg_usd_type"
-import BorderPanel from "@/components/design_system/structure/border_panel"
-import { InputSelectLockPosition } from "@/components/design_system/inputs/input_select_lock_position"
-import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
+import { InputSelectLockPosition } from "@/components/design_system/inputs/input_select_lock_position"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function RsTanLockContent() {
   const { lockData } = useRsTanContext()
@@ -174,7 +174,7 @@ export default function RsTanLockContent() {
     ]
 
     return (
-      <CustomSelect
+      <PopoverCombobox
         className="w-full min-w-24"
         template={AssetSelectTemplate}
         value={depositAsset}

@@ -1,27 +1,27 @@
 "use client"
 
 import Image from "next/image"
-import { useTgUsdDepositContext } from "./tg_usd_record_deposit_context"
-import { Switch } from "@/components/ui/switch"
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
-import TokenImage from "@/components/design_system/structure/token_image"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import FormButtons from "@/components/design_system/form/form_actions"
-import { formatBigInt } from "@/lib/number_formatter"
-import CustomSelect from "@/components/design_system/inputs/custom_select"
 import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
-import { IconThunder } from "@/components/icons/icon_thunder"
-import { IconCircleHelp } from "@/components/icons/icon_circle_help"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
-import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
-import BorderPanel from "@/components/design_system/structure/border_panel"
+import { Switch } from "@/components/ui/switch"
+import { formatBigInt } from "@/lib/number_formatter"
 import { useTgUsdContext } from "../../tg_usd_context"
+import { IconThunder } from "@/components/icons/icon_thunder"
+import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
+import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
+import ButtonTab from "@/components/design_system/inputs/button_tab"
+import { IconCircleHelp } from "@/components/icons/icon_circle_help"
+import PanelRaw from "@/components/design_system/structure/panel_raw"
+import FormButtons from "@/components/design_system/form/form_actions"
+import { useTgUsdDepositContext } from "./tg_usd_record_deposit_context"
+import TokenImage from "@/components/design_system/structure/token_image"
+import BorderPanel from "@/components/design_system/structure/border_panel"
+import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
+import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function TgUsdDepositPanel() {
   const {
@@ -96,7 +96,7 @@ export default function TgUsdDepositPanel() {
     ]
 
     return (
-      <CustomSelect
+      <PopoverCombobox
         className="w-full min-w-24"
         template={AssetSelectTemplate}
         value={depositAsset || collateralInfo.name}

@@ -1,14 +1,14 @@
 "use client"
 
-import Panel from "../../structure/panel"
+import { Address } from "viem"
 import { cn } from "@/lib/utils"
+import Panel from "../../structure/panel"
+import { Button } from "../../inputs/button"
+import { formatDate } from "@/lib/other_formatter"
 import TokenImage from "../../structure/token_image"
 import ListIndicator from "../../list/list_indicator"
-import { Button } from "../../inputs/button"
+import USGHoverCard from "../../structure/usg_hover_card"
 import { formatDollar, formatPercent } from "@/lib/number_formatter"
-import { Address } from "viem"
-import HelpPropover from "../../structure/help_popover"
-import { formatDate } from "@/lib/other_formatter"
 import { HarvesterInfoDisplay } from "@/components/products/tg_usd/tg_usd_type"
 
 type HarvestRowProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
@@ -29,23 +29,20 @@ export default function HarvestRow({ info, onHarvest, canInteract, className, ..
       <div className="flex grow items-center justify-between gap-2 md:justify-evenly">
         <div className="flex items-center gap-4">
           <ListIndicator info="Total Rewards" value={formatDollar(info?.rewards?.totalDollar || 0)} valueFirst={false} />
-          <div>
-            <HelpPropover title={`${info?.asset} Rewards Breakdown`}>
-              <>
-                <div className="flex flex-col gap-1 text-sm">
-                  {info?.rewards?.details?.map((reward, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="w-10">
-                        <TokenImage token={reward.logo} size={16} />
-                      </div>
-                      <span className="w-20"> {reward.logo}</span>
-                      <span className=""> {formatDollar(reward.dollarValue)}</span>
-                    </div>
-                  ))}
+
+          <USGHoverCard title={`${info?.asset} Rewards Breakdown`}>
+            <div className="flex flex-col gap-1 text-sm">
+              {info?.rewards?.details?.map((reward, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <div className="w-10">
+                    <TokenImage token={reward.logo} size={16} />
+                  </div>
+                  <span className="w-20"> {reward.logo}</span>
+                  <span className=""> {formatDollar(reward.dollarValue)}</span>
                 </div>
-              </>
-            </HelpPropover>
-          </div>
+              ))}
+            </div>
+          </USGHoverCard>
         </div>
         <div>
           <ListIndicator info="Harvester Fees" value={formatPercent(info?.percentage)} valueFirst={false} />

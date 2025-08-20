@@ -1,17 +1,17 @@
 "use client"
 
-import React, { ReactNode } from "react"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
-import { IconChevron } from "@/components/icons/icon_chevron"
 import { cn } from "@/lib/utils"
+import React, { ReactNode } from "react"
+import { IconChevron } from "@/components/icons/icon_chevron"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
-type TgHoverCardProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+type DropdownMenuProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode
   label: string
   pathname?: string
 }
 
-export default function DropdownMenu({ children, label, pathname }: TgHoverCardProps) {
+export default function DropdownMenu({ children, label, pathname }: DropdownMenuProps) {
   return (
     <HoverCard>
       <HoverCardTrigger asChild>

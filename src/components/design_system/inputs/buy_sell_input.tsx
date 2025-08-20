@@ -1,20 +1,18 @@
 "use client"
 
-import { IconWallet } from "@/components/icons/icon_wallet"
+import { cn } from "@/lib/utils"
+import { formatUnits } from "viem"
 import { AssetDataPriced } from "@/types"
+import BorderPanel from "../structure/border_panel"
+import { IconChevron } from "@/components/icons/icon_chevron"
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
-import { formatUnits } from "viem"
-import { cn } from "@/lib/utils"
-import { IconChevron } from "@/components/icons/icon_chevron"
-import BorderPanel from "../structure/border_panel"
 
 type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
   receiveAsset?: AssetDataPriced
   depositAmount?: bigint
   depositBalance?: bigint
-  receiveBalance?: bigint
   disabled?: boolean
   labelDeposit?: string
   receiveAmount?: bigint
@@ -35,7 +33,6 @@ type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 export function BuySellInput({
   depositAmount,
   depositBalance,
-  receiveBalance,
   depositAsset,
   receiveAsset,
   receiveAmount,
@@ -153,11 +150,6 @@ export function BuySellInput({
     const val = Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals || 0)) * (depositAsset?.price || 0)
     return `(${formatDollar(val)})`
   }, [depositAmount, depositAsset])
-
-  const displayReceiveBalanceData = useMemo(() => {
-    const formattedBalance = formatBigInt(receiveBalance || "0", receiveAsset?.decimals || 18, receiveAsset?.displayDecimals || 2)
-    return `${formattedBalance} ${receiveAsset?.symbol || ""}`
-  }, [receiveBalance, receiveAsset])
 
   const dollarReceiveDisplay = useMemo(() => {
     const val = Number(formatUnits(receiveAmount || BigInt(0), receiveAsset?.decimals || 0)) * (receiveAsset?.price || 0)
@@ -278,16 +270,6 @@ export function BuySellInput({
           </div>
           <div className="flex justify-between text-xs text-gray-400">
             <div>$({dollarReceiveDisplay})</div>
-            <button
-              className="flex cursor-pointer items-center"
-              type="button"
-              onClick={() => {
-                if (setMaxBalance) setMaxBalance()
-              }}
-            >
-              <span>{displayReceiveBalanceData}</span>
-              <IconWallet className="w-6" />
-            </button>
           </div>
         </BorderPanel>
       </div>

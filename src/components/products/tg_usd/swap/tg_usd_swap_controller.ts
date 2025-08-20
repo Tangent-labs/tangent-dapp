@@ -5,7 +5,6 @@ import WStable from "@/abi/USG/WStable.json"
 import { BalanceAllowanceData, SwapToken } from "../tg_usd_type"
 import { getSwapAssetPrice } from "@/services/service_price"
 import { AssetDataPriced } from "@/types"
-import { getEnsoData } from "../api"
 
 export const computeSwapAssetPrice = async (tokens: SwapToken[], depositAsset: string) => {
   try {
@@ -115,20 +114,6 @@ export function getSwapFormState(
 
 export async function doSwap(walletClient: WalletClient, data: SendTransactionParameters) {
   return await walletClient?.sendTransaction(data)
-}
-
-export const fetchEnsoData = async (
-  depositWeiValue: bigint,
-  receiver: Address,
-  receiveAssetInfo: AssetDataPriced,
-  depositAssetInfo: AssetDataPriced,
-  minAmountOut: bigint
-) => {
-  const routerCall = await getEnsoData(depositWeiValue, depositAssetInfo?.address, receiveAssetInfo?.address, null, receiver, minAmountOut)
-
-  if (!routerCall) throw new Error("Failed to fetch routing data")
-
-  return { routerCallData: routerCall?.tx }
 }
 
 export const getABI = (depositSymbol: string, receiveSymbol: string) => {

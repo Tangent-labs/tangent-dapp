@@ -1,16 +1,17 @@
 "use client"
 
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { BalanceAllowanceData, SwapToken, DepositReceiveAsset } from "../tg_usd_type"
 import { Abi, Address } from "viem"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
-import { SwapConfig, swapConfig } from "./swap_config"
-import { USG_CONTRACT, tgUsdTokens } from "../tg_usd_repository"
-import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, fetchEnsoData, getABI, getSwapFormState } from "./tg_usd_swap_controller"
 import { useTgUsdContext } from "../tg_usd_context"
 import { getQuote } from "../global_quote_controller"
+import { SwapConfig, swapConfig } from "./swap_config"
+import { USG_CONTRACT, tgUsdTokens } from "../tg_usd_repository"
+import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { BalanceAllowanceData, SwapToken, DepositReceiveAsset } from "../tg_usd_type"
 import { getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_controller"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./tg_usd_swap_controller"
+import { getEnsoData } from "../api"
 
 type TgUsdSwapContextProps = {
   children: ReactNode
@@ -41,6 +42,9 @@ type TgUsdSwapContextValues = {
 
   isSwapLoading: boolean
   setIsSwapLoading: (arg: boolean) => void
+
+  slippage: number
+  setSlippage: (arg: number) => void
 
   balances: Record<Address, bigint> | null
 
@@ -81,6 +85,8 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
   const [depositAsset, setDepositAsset] = useState<string | null>(null)
 
   const [isSwapLoading, setIsSwapLoading] = useState(false)
+
+  const [slippage, setSlippage] = useState<number>(1)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
 
@@ -394,9 +400,16 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
       if (!depositWeiValue || !currentAddress) return
 
       try {
-        const { routerCallData } = await fetchEnsoData(depositWeiValue, currentAddress, receiveAssetInfo, depositAssetInfo, receiveWeiValue!)
+        const { tx } = await getEnsoData(
+          depositWeiValue,
+          depositAssetInfo?.address,
+          receiveAssetInfo?.address,
+          currentAddress,
+          currentAddress,
+          (BigInt(receiveWeiValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
+        )
 
-        doSwap(walletClient!, routerCallData)
+        doSwap(walletClient!, tx)
           .then(() => {
             setDepositWeiValue(undefined)
             setReceiveWeiValue(undefined)
@@ -409,7 +422,6 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
           })
       } catch (error) {
         console.error("Error in actionSwap:", error)
-      } finally {
         setIsLoading(false)
       }
     }
@@ -585,6 +597,8 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
     computedAssets,
     depositSliderPercent,
     setDepositSliderPercent,
+    slippage,
+    setSlippage,
   }
 
   return <TgUsdSwapContext.Provider value={contextValue}>{children}</TgUsdSwapContext.Provider>

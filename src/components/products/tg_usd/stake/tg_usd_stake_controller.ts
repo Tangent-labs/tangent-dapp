@@ -4,6 +4,7 @@ import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import sUSGUI from "../../../../abi/USG/sUSGUI.json"
 import { StakingInfo } from "../tg_usd_type"
 import { USG_CONTRACT } from "../tg_usd_repository"
+import { formatNumber } from "@/lib/number_formatter"
 
 export async function getTgUsdStakeOnChainData(currentAddress: Address | undefined) {
   return await executeChainViewUnique<StakingInfo>(sUSGUI.abi as Abi, sUSGUI.bytecode as Hex, [
@@ -136,5 +137,5 @@ export const computeProjection = (stakeInfo: StakingInfo, timeFrame: number, apr
   } else {
     projection = Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
   }
-  return projection
+  return formatNumber(projection, 0)
 }

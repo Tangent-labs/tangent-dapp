@@ -169,7 +169,7 @@ export function BuySellInput({
       </div>
 
       <div className={cn("flex flex-col")} {...props}>
-        <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2`}>
+        <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2 hover:bg-white/10`}>
           <div className="flex w-full justify-between">
             <div className="text-sm text-gray-400">{labelDeposit}</div>
           </div>
@@ -252,7 +252,7 @@ export function BuySellInput({
           <IconChevron className="h-auto w-8 rounded-lg border border-white/10 p-2 backdrop-blur-[60px] hover:border-white hover:stroke-black" />
         </div>
 
-        <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2`}>
+        <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2 hover:bg-white/10`}>
           <div className="text-sm text-gray-400">{labelReceive}</div>
           <div className="mb-2 flex justify-between">
             <div className="mr-4 text-xl font-medium">

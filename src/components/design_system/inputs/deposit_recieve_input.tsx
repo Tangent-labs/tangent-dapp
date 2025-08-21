@@ -25,7 +25,6 @@ type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   receiveAssetDisplay?: ReactNode
   onValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
-  displayRecieve?: boolean
   isZapping?: boolean
   isLoading?: boolean
   percentage?: number
@@ -46,7 +45,6 @@ export function DepositReceiveInput({
   onValueChange,
   depositSelect = <></>,
   receiveAssetDisplay = <></>,
-  displayRecieve = true,
   isZapping = false,
   isLoading = false,
   percentage = 0,
@@ -199,14 +197,12 @@ export function DepositReceiveInput({
           </>
         )}
       </BorderPanel>
-      {displayRecieve && (
-        <DisplayReceivePanel
-          labelReceive={labelReceive}
-          receiveAmount={receiveAmount}
-          receiveAssetDisplay={receiveAssetDisplay}
-          receiveDollarValue={receiveDollarValue}
-        />
-      )}
+      <DisplayReceivePanel
+        labelReceive={labelReceive}
+        receiveAmount={receiveAmount}
+        receiveAssetDisplay={receiveAssetDisplay}
+        receiveDollarValue={receiveDollarValue}
+      />
     </div>
   )
 }

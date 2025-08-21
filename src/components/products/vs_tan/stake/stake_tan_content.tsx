@@ -154,7 +154,6 @@ export default function StakeTanContent() {
             labelReceive={currentFeature === "stake" ? "You stake" : "You receive"}
             className="w-full"
             depositAmount={weiValue}
-            displayRecieve={true}
             depositSelect={<AssetSelect />}
             disabled={false}
             receiveAssetDisplay={<ReceiveAssetDisplay />}

@@ -245,7 +245,7 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
 
   // Generate chart data
   useEffect(() => {
-    if (marketData && userData && userData.totalUserDeposit && userData.totalUserDebt) {
+    if (marketData && userData) {
       const { irParams } = marketData.constants
       const priceRange = 1.001 - 0.9887
       const prices = Array.from({ length: 40 }, (_, i) => 0.9887 + (i * priceRange) / 39)

@@ -12,6 +12,7 @@ import Divider from "@/components/design_system/structure/divider"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import TgUsdPositionHistory from "./position_history/tg_usd_position_history"
+import { useTgUsdMaketListContext } from "../list/tg_usd_market_list_context"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
@@ -20,6 +21,8 @@ type TgUsdRecordLayoutProps = {
 }
 
 export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) {
+  const { userData } = useTgUsdMaketListContext()
+
   const {
     collateral,
     isLeveraged,
@@ -135,90 +138,119 @@ export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) 
                         </>
                       )}
                     </div>
-                    <div className="mt-8 flex w-full pr-6 lg:w-10/12">
-                      <div className="relative hidden h-full items-start justify-start lg:flex">
-                        <div className="absolute -top-6 left-16 text-lg font-semibold text-white">vAPR</div>
-                      </div>
-                      {chartData && (
-                        <>
-                          <ResponsiveContainer className="relative" width="100%" height={300}>
-                            <LineChart data={chartData}>
-                              <CartesianGrid horizontal={true} vertical={false} />
+                    {!!chartData && !!userData && !!userData.totalUserDebt && !!userData.totalUserDeposit ? (
+                      <div className="mt-8 flex w-full pr-6 lg:w-10/12">
+                        <div className="relative hidden h-full items-start justify-start lg:flex">
+                          <div className="absolute -top-6 left-16 text-lg font-semibold text-white">vAPR</div>
+                        </div>
+                        {chartData && (
+                          <>
+                            <ResponsiveContainer className="relative" width="100%" height={300}>
+                              <LineChart data={chartData}>
+                                <CartesianGrid horizontal={true} vertical={false} />
 
-                              <XAxis
-                                dataKey="price"
-                                name="Price"
-                                tickFormatter={(value) => `$${value}`}
-                                interval={Math.max(1, Math.floor(chartData.length / 12) - 1)}
-                                reversed={true}
-                              />
+                                <XAxis
+                                  dataKey="price"
+                                  name="Price"
+                                  tickFormatter={(value) => `$${value}`}
+                                  interval={Math.max(1, Math.floor(chartData.length / 12) - 1)}
+                                  reversed={true}
+                                />
 
-                              <YAxis
-                                name="vAPR"
-                                tickFormatter={(v) => `${formatBigInt(v, 18, 2)}%`}
-                                type="number"
-                                domain={[0, Number(Math.max(...chartData.map((d) => d.vAPR))) * 1.5]}
-                              />
+                                <YAxis
+                                  name="vAPR"
+                                  tickFormatter={(v) => `${formatBigInt(v, 18, 2)}%`}
+                                  type="number"
+                                  domain={[0, Number(Math.max(...chartData.map((d) => d.vAPR))) * 1.5]}
+                                />
 
-                              <Legend formatter={(v) => (v === "vAPR" ? "vAPR (%)" : v)} />
-                              <Tooltip
-                                content={({ active, payload, label }) =>
-                                  active && payload?.length ? (
-                                    <div className="flex min-w-28 flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-input p-2 text-white backdrop-blur-[60px]">
-                                      <div className="flex w-full items-center justify-between">
-                                        <p className="font-semibold">vAPR:</p>
-                                        <p>{formatBigInt(payload[0]?.value?.toString(), 18, 2)}%</p>
+                                <Legend formatter={(v) => (v === "vAPR" ? "vAPR (%)" : v)} />
+                                <Tooltip
+                                  content={({ active, payload, label }) =>
+                                    active && payload?.length ? (
+                                      <div className="flex min-w-28 flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-input p-2 text-white backdrop-blur-[60px]">
+                                        <div className="flex w-full items-center justify-between">
+                                          <p className="font-semibold">vAPR:</p>
+                                          <p>{formatBigInt(payload[0]?.value?.toString(), 18, 2)}%</p>
+                                        </div>
+                                        <div className="flex w-full items-center justify-between">
+                                          <p className="font-semibold">Price:</p>
+                                          <p>${label}</p>
+                                        </div>
                                       </div>
-                                      <div className="flex w-full items-center justify-between">
-                                        <p className="font-semibold">Price:</p>
-                                        <p>${label}</p>
-                                      </div>
-                                    </div>
-                                  ) : null
-                                }
-                              />
+                                    ) : null
+                                  }
+                                />
 
-                              <Line strokeWidth="3px" type="monotone" dataKey="vAPR" stroke="url(#gradientColor)" name="vAPR (%)" dot={false} />
+                                <Line strokeWidth="3px" type="monotone" dataKey="vAPR" stroke="url(#gradientColor)" name="vAPR (%)" dot={false} />
 
-                              <ReferenceLine
-                                x={String(Number(USGInfo?.price) + 1e-4)}
-                                stroke="white"
-                                strokeDasharray="4 4"
-                                strokeWidth={2}
-                                ifOverflow="hidden"
-                                label={({ viewBox }) => {
-                                  return (
-                                    <text
-                                      x={Number(viewBox?.x)}
-                                      y={(viewBox?.y ?? 0) + 8}
-                                      dx={6}
-                                      fill="white"
-                                      fontSize={14}
-                                      textAnchor="start"
-                                      dominantBaseline="hanging"
-                                    >
-                                      ${USGInfo?.price} (USG Price)
-                                    </text>
-                                  )
-                                }}
-                              />
-                            </LineChart>
-                          </ResponsiveContainer>
+                                <ReferenceLine
+                                  y={"0"}
+                                  stroke="red"
+                                  strokeDasharray="4 4"
+                                  strokeWidth={2}
+                                  ifOverflow="hidden"
+                                  label={({ viewBox }) => {
+                                    return (
+                                      <text
+                                        x={Number(viewBox?.x)}
+                                        y={viewBox?.y + 4}
+                                        dx={6}
+                                        fill="red"
+                                        fontSize={14}
+                                        textAnchor="start"
+                                        dominantBaseline="hanging"
+                                      >
+                                        0%
+                                      </text>
+                                    )
+                                  }}
+                                />
 
-                          <svg width="0" height="0">
-                            <defs>
-                              <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stopColor="#0075ff" />
-                                <stop offset="100%" stopColor="#00c2ff" />
-                              </linearGradient>
-                            </defs>
-                          </svg>
-                        </>
-                      )}
-                      <div className="hidden h-full items-end justify-end lg:relative lg:flex">
-                        <div className="absolute -right-4 bottom-0 text-lg font-semibold text-white">Price</div>
+                                <ReferenceLine
+                                  x={String(Number(USGInfo?.price))}
+                                  stroke="white"
+                                  strokeDasharray="4 4"
+                                  strokeWidth={2}
+                                  ifOverflow="hidden"
+                                  label={({ viewBox }) => {
+                                    return (
+                                      <text
+                                        x={Number(viewBox?.x)}
+                                        y={(viewBox?.y ?? 0) + 8}
+                                        dx={6}
+                                        fill="white"
+                                        fontSize={14}
+                                        textAnchor="start"
+                                        dominantBaseline="hanging"
+                                      >
+                                        ${USGInfo?.price} (USG Price)
+                                      </text>
+                                    )
+                                  }}
+                                />
+                              </LineChart>
+                            </ResponsiveContainer>
+
+                            <svg width="0" height="0">
+                              <defs>
+                                <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
+                                  <stop offset="0%" stopColor="#0075ff" />
+                                  <stop offset="100%" stopColor="#00c2ff" />
+                                </linearGradient>
+                              </defs>
+                            </svg>
+                          </>
+                        )}
+                        <div className="hidden h-full items-end justify-end lg:relative lg:flex">
+                          <div className="absolute -right-4 bottom-0 text-lg font-semibold text-white">Price</div>
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className="mt-8 flex w-full pr-6 lg:w-10/12">
+                        <div className="flex w-full items-center justify-center">You need active positions to be able to compute your vAPR</div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </AccordionContent>

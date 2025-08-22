@@ -1,10 +1,11 @@
 "use client"
 
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { ZapToken } from "./tg_usd_type"
+import { UserPoints, ZapToken } from "./tg_usd_type"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { Address } from "viem"
 import { getBalances } from "./record/tg_usd_record_controller"
+import { getUserPoints } from "./api"
 
 type TgUsdContextProps = {
   children: ReactNode
@@ -14,6 +15,7 @@ type TgUsdContextProps = {
 type TgUsdContextValues = {
   tokens: ZapToken[]
   balances: Record<Address, bigint> | null
+  userPoints: UserPoints
 }
 
 export const TgUsdContext = createContext<TgUsdContextValues | undefined>(undefined)
@@ -22,6 +24,16 @@ export const TgUsdProvider = ({ children, tokens }: TgUsdContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
 
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
+
+  const [userPoints, setUserPoints] = useState<UserPoints>({ basePoints: 0, referralPoints: 0, totalPoints: 0 })
+
+  useEffect(() => {
+    if (currentAddress) {
+      getUserPoints(currentAddress).then((p) => {
+        setUserPoints(p)
+      })
+    }
+  }, [currentAddress])
 
   useEffect(() => {
     const tokenAddresses: Address[] = tokens.map((el) => el.address)
@@ -45,6 +57,7 @@ export const TgUsdProvider = ({ children, tokens }: TgUsdContextProps) => {
   const contextValue: TgUsdContextValues = {
     tokens,
     balances,
+    userPoints,
   }
 
   return <TgUsdContext.Provider value={contextValue}>{children}</TgUsdContext.Provider>

@@ -107,7 +107,7 @@ function AirdropList() {
 
             {!!headers?.at(2)?.key && (
               <div className="flex w-full items-center justify-center">
-                <span>{headers?.at(0)?.label}</span>
+                <span>{headers?.at(2)?.label}</span>
               </div>
             )}
             {!!headers?.at(3)?.key && (

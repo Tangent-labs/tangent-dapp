@@ -3,6 +3,7 @@
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { ExistingAsset, ListState } from "@/types"
+import { useTgUsdContext } from "../tg_usd_context"
 import { useTgUsdEarnContext } from "./tg_usd_earn_context"
 import ListRow from "@/components/design_system/list/list_row"
 import { tgUsdEarnListHeaders } from "./tg_usd_earn_controller"
@@ -12,6 +13,7 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import ListAprIndicator from "@/components/design_system/list/list_apr_indicator"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import { formatNumber } from "@/lib/number_formatter"
 
 const listeState: ListState = {
   search: undefined,
@@ -23,6 +25,8 @@ const listeState: ListState = {
 
 export const TgUsdEarnContent = () => {
   const { searchValue, setSearchValue, displayRows } = useTgUsdEarnContext()
+
+  const { userPoints } = useTgUsdContext()
 
   return (
     <>
@@ -67,7 +71,7 @@ export const TgUsdEarnContent = () => {
 
             <div className="flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48">
               <span className="text-xs text-gray-400">Your Total Points</span>
-              <span className="text-sm font-semibold">1385 pts</span>
+              <span className="text-sm font-semibold">{formatNumber(userPoints.totalPoints, 0)}</span>
             </div>
           </div>
         </div>

@@ -1,15 +1,18 @@
 "use client"
 
-import { Button } from "@/components/design_system/inputs/button"
-import Divider from "@/components/design_system/structure/divider"
-import { IconTrophy } from "@/components/icons/icon_trophy"
-import { IconCompleted } from "@/components/icons/icon_completed"
-import { IconShare } from "@/components/icons/icon_share"
 import { Input } from "@/components/ui/input"
+import { useTgUsdContext } from "../tg_usd_context"
+import { IconShare } from "@/components/icons/icon_share"
+import { IconTrophy } from "@/components/icons/icon_trophy"
+import { Button } from "@/components/design_system/inputs/button"
+import { IconCompleted } from "@/components/icons/icon_completed"
+import Divider from "@/components/design_system/structure/divider"
 import { useUsgReferralCodeContext } from "./usg_referral_code_context"
 
 export const UsgReferralCode = () => {
   const { isLoading, referralStatus, setReferralStatus, signMessage, generateReferralCode } = useUsgReferralCodeContext()
+
+  const { userPoints } = useTgUsdContext()
 
   const Ranking = () => {
     return (
@@ -70,7 +73,7 @@ export const UsgReferralCode = () => {
 
           <span className="text-[14px] text-subtitle">Liquidity points</span>
           <div className="flex items-center justify-center gap-1 text-[20px]">
-            <span className="font-semibold text-white">9,385 pts</span>
+            <span className="font-semibold text-white">{userPoints?.totalPoints} pts</span>
             <span className="text-tonic">(30pts/day)</span>
           </div>
         </div>

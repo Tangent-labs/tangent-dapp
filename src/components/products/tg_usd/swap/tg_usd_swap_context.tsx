@@ -12,6 +12,8 @@ import { getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_c
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./tg_usd_swap_controller"
 import { getEnsoData } from "../api"
+import { toast } from "react-toastify"
+import { ToastComponent } from "@/components/design_system/toast"
 
 type TgUsdSwapContextProps = {
   children: ReactNode
@@ -392,8 +394,8 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
           fetchBalanceAllowanceData()
           setIsLoading(false)
         })
-        .catch((error) => {
-          console.error("Error during doCustomSwap:", error)
+        .catch(() => {
+          toast.error(ToastComponent, { data: { type: "Error", content: "Swap failed." } })
           setIsLoading(false)
         })
     } else {
@@ -416,8 +418,8 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
             fetchBalanceAllowanceData()
             setIsLoading(false)
           })
-          .catch((error) => {
-            console.error("Error during swap:", error)
+          .catch(() => {
+            toast.error(ToastComponent, { data: { type: "Error", content: "Swap failed." } })
             setIsLoading(false)
           })
       } catch (error) {

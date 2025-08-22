@@ -467,3 +467,9 @@ export type UserTask = {
   status: boolean
   points: number
 }
+
+export type UserPoints = {
+  totalPoints: number
+  basePoints: number
+  referralPoints: number
+}

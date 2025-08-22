@@ -1,5 +1,6 @@
 "use client"
 
+import { useTgUsdContext } from "@/components/products/tg_usd/tg_usd_context"
 import Image from "next/image"
 
 export default function TgUsdAirdropLayout({
@@ -7,6 +8,8 @@ export default function TgUsdAirdropLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const { userPoints } = useTgUsdContext()
+
   return (
     <div className="flex w-full flex-col items-center justify-between">
       <div className="flex w-full items-start justify-between gap-4">
@@ -57,7 +60,7 @@ export default function TgUsdAirdropLayout({
 
               <span className="text-[14px] text-subtitle">Liquidity points</span>
               <div className="flex items-center justify-center gap-1">
-                <span className="text-[14px] font-semibold text-white lg:text-[20px]">9,385 pts</span>
+                <span className="text-[14px] font-semibold text-white lg:text-[20px]">{userPoints?.totalPoints} pts</span>
                 <span className="text-xs text-tonic lg:text-sm">(30pts/day)</span>
               </div>
             </div>

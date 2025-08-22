@@ -161,7 +161,7 @@ export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) 
                                   name="vAPR"
                                   tickFormatter={(v) => `${formatBigInt(v, 18, 2)}%`}
                                   type="number"
-                                  domain={[0, Number(Math.max(...chartData.map((d) => d.vAPR))) * 1.5]}
+                                  domain={[-2, Number(Math.max(...chartData.map((d) => d.vAPR))) * 1.5]}
                                 />
 
                                 <Legend formatter={(v) => (v === "vAPR" ? "vAPR (%)" : v)} />

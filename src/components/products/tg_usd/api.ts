@@ -1,7 +1,7 @@
 "use server"
 
 import { Address } from "viem"
-import { MarketHistoricalData, UserTask } from "./tg_usd_type"
+import { MarketHistoricalData, UserPoints, UserTask } from "./tg_usd_type"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -202,5 +202,29 @@ export const getUserTasks = async (account: Address): Promise<Array<UserTask>> =
   } catch (error) {
     console.error("Failed to fetch tasks:", error)
     return []
+  }
+}
+
+export const getUserPoints = async (account: Address): Promise<UserPoints> => {
+  try {
+    const url = `${baseUrl}/points/${account}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    const data: UserPoints = await response.json()
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch tasks")
+    }
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch tasks:", error)
+    return { basePoints: 0, referralPoints: 0, totalPoints: 0 }
   }
 }

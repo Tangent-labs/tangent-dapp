@@ -5,7 +5,8 @@ import { formatUnits } from "viem"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { ExistingAsset, ListState } from "@/types"
-import { formatDollar } from "@/lib/number_formatter"
+import { useTgUsdContext } from "../tg_usd_context"
+import { formatDollar, formatNumber } from "@/lib/number_formatter"
 import { tgUsdListHeaders } from "./tg_usd_market_controller"
 import ListHeader from "@/components/design_system/list/list_header"
 import ListRow from "@/components/design_system/list/list_row"
@@ -28,6 +29,8 @@ const listeState: ListState = {
 
 export default function TgUsdMarketList() {
   const { displayRows, globalData, searchValue, setSearchValue, userData } = useTgUsdMaketListContext()
+
+  const { userPoints } = useTgUsdContext()
 
   return (
     <>
@@ -74,7 +77,7 @@ export default function TgUsdMarketList() {
 
             <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
               <span className="text-xs text-gray-400">Your Total Points</span>
-              <span className="text-sm font-semibold">0</span>
+              <span className="text-sm font-semibold">{formatNumber(userPoints.totalPoints, 0)}</span>
             </div>
           </div>
         </div>

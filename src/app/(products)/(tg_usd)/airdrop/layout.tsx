@@ -1,7 +1,8 @@
 "use client"
 
-import { useTgUsdContext } from "@/components/products/tg_usd/tg_usd_context"
 import Image from "next/image"
+import { formatNumber } from "@/lib/number_formatter"
+import { useTgUsdContext } from "@/components/products/tg_usd/tg_usd_context"
 
 export default function TgUsdAirdropLayout({
   children,
@@ -35,7 +36,7 @@ export default function TgUsdAirdropLayout({
           </div>
 
           <div className="w-ful flex items-center justify-between gap-1 lg:gap-4">
-            <div className="relative flex flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
+            <div className="relative flex min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
               <div className="absolute -top-2 left-0 flex w-full">
                 <div className="mx-4 flex w-full items-center justify-between rounded-full bg-black">
                   <div className="text-xs italic">boost x1.1</div>
@@ -50,7 +51,7 @@ export default function TgUsdAirdropLayout({
               </div>
             </div>
 
-            <div className="relative flex flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
+            <div className="relative flex min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
               <div className="absolute -top-2 left-0 flex w-full">
                 <div className="mx-4 flex w-full items-center justify-between rounded-full bg-black">
                   <div className="text-xs italic">boost x1.5</div>
@@ -60,8 +61,8 @@ export default function TgUsdAirdropLayout({
 
               <span className="text-[14px] text-subtitle">Liquidity points</span>
               <div className="flex items-center justify-center gap-1">
-                <span className="text-[14px] font-semibold text-white lg:text-[20px]">{userPoints?.totalPoints} pts</span>
-                <span className="text-xs text-tonic lg:text-sm">(30pts/day)</span>
+                <span className="text-[14px] font-semibold text-white lg:text-[20px]">{formatNumber(userPoints?.totalPoints, 0)} pts</span>
+                <span className="text-xs text-tonic lg:text-sm">({formatNumber(userPoints?.dailyRate, 0)}pts/day)</span>
               </div>
             </div>
           </div>

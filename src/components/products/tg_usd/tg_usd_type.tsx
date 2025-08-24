@@ -472,4 +472,5 @@ export type UserPoints = {
   totalPoints: number
   basePoints: number
   referralPoints: number
+  dailyRate: number
 }

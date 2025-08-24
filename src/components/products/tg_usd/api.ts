@@ -225,6 +225,6 @@ export const getUserPoints = async (account: Address): Promise<UserPoints> => {
     return data
   } catch (error) {
     console.error("Failed to fetch tasks:", error)
-    return { basePoints: 0, referralPoints: 0, totalPoints: 0 }
+    return { basePoints: 0, referralPoints: 0, totalPoints: 0, dailyRate: 0 }
   }
 }

@@ -2,6 +2,7 @@
 
 import { Input } from "@/components/ui/input"
 import { useTgUsdContext } from "../tg_usd_context"
+import { formatNumber } from "@/lib/number_formatter"
 import { IconShare } from "@/components/icons/icon_share"
 import { IconTrophy } from "@/components/icons/icon_trophy"
 import { Button } from "@/components/design_system/inputs/button"
@@ -73,8 +74,8 @@ export const UsgReferralCode = () => {
 
           <span className="text-[14px] text-subtitle">Liquidity points</span>
           <div className="flex items-center justify-center gap-1 text-[20px]">
-            <span className="font-semibold text-white">{userPoints?.totalPoints} pts</span>
-            <span className="text-tonic">(30pts/day)</span>
+            <span className="font-semibold text-white">{formatNumber(userPoints?.totalPoints, 0)} pts</span>
+            <span className="text-tonic">({formatNumber(userPoints?.dailyRate, 0)}pts/day)</span>
           </div>
         </div>
 

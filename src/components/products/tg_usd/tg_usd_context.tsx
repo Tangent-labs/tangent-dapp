@@ -25,7 +25,7 @@ export const TgUsdProvider = ({ children, tokens }: TgUsdContextProps) => {
 
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
 
-  const [userPoints, setUserPoints] = useState<UserPoints>({ basePoints: 0, referralPoints: 0, totalPoints: 0 })
+  const [userPoints, setUserPoints] = useState<UserPoints>({ basePoints: 0, referralPoints: 0, totalPoints: 0, dailyRate: 0 })
 
   useEffect(() => {
     if (currentAddress) {

@@ -21,6 +21,7 @@ import { LockPosition } from "../tg_usd/tg_usd_type"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { InfinityIcon } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
+import { FeatureSelect } from "@/components/design_system/structure/feature_select"
 
 const listeState: ListState = {
   search: undefined,
@@ -51,7 +52,11 @@ export const RsTanLayoutContent = ({
 
   const pathname = usePathname()
 
-  const { lockData } = useRsTanContext()
+  const { lockData, feature } = useRsTanContext()
+
+  const onTabClick = (feat: string) => {
+    router.push(`/tan/${feat.toLowerCase()}`)
+  }
 
   return (
     <>
@@ -93,17 +98,16 @@ export const RsTanLayoutContent = ({
 
       <div className="mb-4 flex w-full flex-col gap-4 xl:flex-row">
         <div className="flex w-full flex-col items-center justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
-          <div className="flex w-full items-center justify-between gap-2">
-            <ButtonTab label="Lock" active={pathname === "/tan/lock"} onClick={() => router.push("/tan/lock")} className="h-8! flex w-full justify-center" />
-            <ButtonTab
-              label="Unlock"
-              active={pathname === "/tan/unlock"}
-              onClick={() => router.push("/tan/unlock")}
-              className="h-8! flex w-full justify-center"
-            />
-            <ButtonTab label="Claim" active={pathname === "/tan/claim"} onClick={() => router.push("/tan/claim")} className="h-8! flex w-full justify-center" />
-            <ButtonTab label="Split" active={pathname === "/tan/split"} onClick={() => router.push("/tan/split")} className="h-8! flex w-full justify-center" />
-            <ButtonTab label="Merge" active={pathname === "/tan/merge"} onClick={() => router.push("/tan/merge")} className="h-8! flex w-full justify-center" />
+          <div className="hidden w-full items-center justify-between gap-2 md:flex">
+            <ButtonTab label="Lock" active={pathname === "/tan/lock"} onClick={() => onTabClick("lock")} className="h-8! flex w-full justify-center" />
+            <ButtonTab label="Unlock" active={pathname === "/tan/unlock"} onClick={() => onTabClick("unlock")} className="h-8! flex w-full justify-center" />
+            <ButtonTab label="Claim" active={pathname === "/tan/claim"} onClick={() => onTabClick("claim")} className="h-8! flex w-full justify-center" />
+            <ButtonTab label="Split" active={pathname === "/tan/split"} onClick={() => onTabClick("split")} className="h-8! flex w-full justify-center" />
+            <ButtonTab label="Merge" active={pathname === "/tan/merge"} onClick={() => onTabClick("merge")} className="h-8! flex w-full justify-center" />
+          </div>
+
+          <div className="flex w-full flex-col items-center justify-between gap-1 md:hidden">
+            <FeatureSelect options={["Lock", "Unlock", "Claim", "Split", "Merge"]} value={feature} onChange={(v: string) => onTabClick(v)}></FeatureSelect>
           </div>
 
           <Divider className="h-0.5 w-full bg-white/10" />

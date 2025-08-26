@@ -207,7 +207,7 @@ export default function TgUsdLeveragePanel() {
       )}
 
       <>
-        <span className="flex items-end justify-between text-[20px] font-semibold">Borrow amount</span>
+        <span className="flex items-end justify-between text-[14px] font-semibold md:text-[20px]">Borrow amount</span>
 
         <LeverageInput
           label="You borrow"

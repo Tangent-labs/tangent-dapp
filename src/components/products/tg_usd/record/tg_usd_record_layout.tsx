@@ -15,6 +15,7 @@ import TgUsdPositionHistory from "./position_history/tg_usd_position_history"
 import { useTgUsdMaketListContext } from "../list/tg_usd_market_list_context"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { FeatureSelect } from "@/components/design_system/structure/feature_select"
 
 type TgUsdRecordLayoutProps = {
   children: React.ReactNode
@@ -41,10 +42,10 @@ export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) 
   const router = useRouter()
 
   const onTabClick = (feat: string) => {
-    if (feat === "deposit") {
+    if (feat === "Deposit") {
       router.push(`/${collateral}`)
     } else {
-      router.push(`/${collateral}/${feat}`)
+      router.push(`/${collateral}/${feat.toLowerCase()}`)
     }
   }
 
@@ -58,16 +59,27 @@ export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) 
       <div className="my-4 flex flex-col gap-4">
         <div className="flex gap-4 max-xl:flex-col">
           <div className="rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] xl:w-5/12">
-            <div className="mb-2 flex w-full justify-between gap-2">
-              <ButtonTab className="w-full" active={feature === collateral} label={"Deposit"} onClick={() => onTabClick("deposit")} />
-              <ButtonTab className="w-full" active={feature === "borrow"} label={"Borrow"} onClick={() => onTabClick("borrow")} />
-              <ButtonTab className="w-full" active={feature === "leverage"} label={"Leverage"} onClick={() => onTabClick("leverage")} />
+            <div className="hidden w-full flex-col items-center justify-between gap-1 md:flex">
+              <div className="mb-2 flex w-full justify-between gap-2">
+                <ButtonTab className="w-full" active={feature === collateral} label={"Deposit"} onClick={() => onTabClick("deposit")} />
+                <ButtonTab className="w-full" active={feature === "borrow"} label={"Borrow"} onClick={() => onTabClick("borrow")} />
+                <ButtonTab className="w-full" active={feature === "leverage"} label={"Leverage"} onClick={() => onTabClick("leverage")} />
+              </div>
+              <div className="mb-4 flex w-full justify-between gap-2">
+                <ButtonTab className="w-full" active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />
+                <ButtonTab className="w-full" active={feature === "withdraw"} label={"Withdraw"} onClick={() => onTabClick("withdraw")} />
+                <ButtonTab className="w-full" active={feature === "liquidate"} label={"Liquidate"} onClick={() => onTabClick("liquidate")} />
+              </div>
             </div>
-            <div className="mb-4 flex w-full justify-between gap-2">
-              <ButtonTab className="w-full" active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />
-              <ButtonTab className="w-full" active={feature === "withdraw"} label={"Withdraw"} onClick={() => onTabClick("withdraw")} />
-              <ButtonTab className="w-full" active={feature === "liquidate"} label={"Liquidate"} onClick={() => onTabClick("liquidate")} />
+
+            <div className="flex w-full flex-col items-center justify-between gap-1 md:hidden">
+              <FeatureSelect
+                options={["Deposit", "Borrow", "Withdraw", "Repay", "Leverage", "Liquidate"]}
+                value={feature}
+                onChange={(v: string) => onTabClick(v)}
+              ></FeatureSelect>
             </div>
+
             <Divider />
             <div className="mt-5">{children}</div>
           </div>
@@ -208,7 +220,7 @@ export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) 
                                 />
 
                                 <ReferenceLine
-                                  x={String(Number(USGInfo?.price))}
+                                  x={String(Number(USGInfo?.price) + 0.0001)}
                                   stroke="white"
                                   strokeDasharray="4 4"
                                   strokeWidth={2}

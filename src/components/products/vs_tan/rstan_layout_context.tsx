@@ -1,12 +1,13 @@
 "use client"
 
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { doIncreaseLockTime, doTogglePermaLock, getRsTanData } from "./rstan_layout_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { BalanceAllowanceData, LockData, LockPosition } from "../tg_usd/tg_usd_type"
 import { getBalancesAndAllowances } from "../tg_usd/record/tg_usd_record_controller"
 import { Address } from "viem"
 import { VSTAN_CONTRACT } from "./rs_tan_repository"
+import { usePathname } from "next/navigation"
 
 type RsTanContextProps = {
   children: ReactNode
@@ -35,11 +36,15 @@ type RsTanContextValues = {
   fetchBalanceAllowanceData: (address: Address) => void
 
   onClickRemovePermaLock: () => void
+
+  feature: string
 }
 
 export const RsTanContext = createContext<RsTanContextValues | undefined>(undefined)
 
 export const RsTanProvider = ({ children }: RsTanContextProps) => {
+  const path = usePathname()
+
   const { currentAddress, getWalletClient } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -51,6 +56,12 @@ export const RsTanProvider = ({ children }: RsTanContextProps) => {
   const [lockData, setLockData] = useState<LockData | undefined>(undefined)
 
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
+
+  const feature = useMemo(() => {
+    const lastIndexOfSlash = path.lastIndexOf("/") + 1
+    const currentFeature = path.substring(lastIndexOfSlash, path.length)
+    return currentFeature
+  }, [path])
 
   useEffect(() => {
     loadData()
@@ -126,6 +137,7 @@ export const RsTanProvider = ({ children }: RsTanContextProps) => {
     balanceAllowanceData,
     setBalanceAllowanceData,
     fetchBalanceAllowanceData,
+    feature,
   }
 
   return <RsTanContext.Provider value={contextValue}>{children}</RsTanContext.Provider>

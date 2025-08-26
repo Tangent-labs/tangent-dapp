@@ -35,34 +35,34 @@ export default function TgUsdAirdropLayout({
             </div>
           </div>
 
-          <div className="w-ful flex items-center justify-between gap-1 lg:gap-4">
-            <div className="relative flex min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
+          <div className="flex w-full flex-col items-center justify-between gap-4 md:flex-row">
+            <div className="relative flex w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
               <div className="absolute -top-2 left-0 flex w-full">
-                <div className="mx-4 flex w-full items-center justify-between rounded-full bg-black">
-                  <div className="text-xs italic">boost x1.1</div>
+                <div className="mx-4 flex w-full items-center justify-between rounded-full bg-black px-4">
+                  <div className="text-xs italic">Boost x1.1</div>
                   <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Vote</div>
                 </div>
               </div>
 
               <span className="text-[14px] text-subtitle">Voting points</span>
               <div className="flex items-center justify-center gap-1">
-                <span className="text-[14px] font-semibold text-white lg:text-[20px]">1385 pts</span>
-                <span className="text-xs text-tonic lg:text-sm">(30pts/day)</span>
+                <span className="text-sm font-semibold text-white">1385 pts</span>
+                <span className="text-xs text-tonic">(30pts/day)</span>
               </div>
             </div>
 
-            <div className="relative flex min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
+            <div className="relative flex w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
               <div className="absolute -top-2 left-0 flex w-full">
-                <div className="mx-4 flex w-full items-center justify-between rounded-full bg-black">
-                  <div className="text-xs italic">boost x1.5</div>
+                <div className="mx-4 flex w-full items-center justify-between rounded-full bg-black px-4">
+                  <div className="text-xs italic">Boost x1.5</div>
                   <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Liquidity</div>
                 </div>
               </div>
 
               <span className="text-[14px] text-subtitle">Liquidity points</span>
               <div className="flex items-center justify-center gap-1">
-                <span className="text-[14px] font-semibold text-white lg:text-[20px]">{formatNumber(userPoints?.totalPoints, 0)} pts</span>
-                <span className="text-xs text-tonic lg:text-sm">({formatNumber(userPoints?.dailyRate, 0)}pts/day)</span>
+                <span className="text-sm font-semibold text-white">{formatNumber(userPoints?.totalPoints, 0)} pts</span>
+                <span className="text-xs text-tonic">({formatNumber(userPoints?.dailyRate, 0)}pts/day)</span>
               </div>
             </div>
           </div>

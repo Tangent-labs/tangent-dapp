@@ -187,8 +187,10 @@ export function TgUsdMarketListInner() {
                 className={cn("flex basis-[48%] flex-col items-center text-[20px] leading-5 md:flex-1", index >= 2 ? "hidden xl:block" : "")}
               >
                 <span className="flex items-center justify-center gap-2">
-                  <span className={cn("flex text-subtitle xl:hidden", indicator?.key === "tvl" ? "uppercase" : "")}>{indicator?.label}</span>
-                  <span>{indicator?.value}</span>
+                  <span className={cn("flex text-xs text-subtitle md:text-[20px] xl:hidden", indicator?.key === "tvl" ? "uppercase" : "")}>
+                    {indicator?.label}
+                  </span>
+                  <span className="text-xs md:text-[20px]">{indicator?.value}</span>
                 </span>
               </div>
             ))}

@@ -10,23 +10,23 @@ import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer, Tooltip } from "recharts"
 
 const endDot = (lastIndex: number) =>
-  function renderEndDot(cx: number, cy: number, index: number) {
+  function EndDot(props: { cx?: number; cy?: number; index?: number }) {
+    const { cx, cy, index } = props
     if (index !== lastIndex || cx == null || cy == null) return null
     return (
       <g pointerEvents="none">
-        <circle cx={cx} cy={cy} r={8} fill="rgba(0,0,0,0.55)" />
-        <circle cx={cx} cy={cy} r={6} fill="#FFFFFF" />
+        <circle cx={cx} cy={cy} r={4} fill="#FFFFFF" />
       </g>
     )
   }
 
 const endDotGradient = (lastIndex: number) =>
-  function renderEndDot(cx: number, cy: number, index: number) {
+  function EndDotGrad(props: { cx?: number; cy?: number; index?: number }) {
+    const { cx, cy, index } = props
     if (index !== lastIndex || cx == null || cy == null) return null
     return (
       <g pointerEvents="none">
-        <circle cx={cx} cy={cy} r={8} fill="rgba(0,0,0,0.55)" />
-        <circle cx={cx} cy={cy} r={6} fill="url(#gradientColor)" />
+        <circle cx={cx} cy={cy} r={4} fill="url(#gradientColor)" />
       </g>
     )
   }
@@ -106,6 +106,8 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
     ticks,
     fmtTick,
     fmtTooltipLabel,
+    startTs,
+    endTs,
   } = useMemo(() => {
     const now = new Date()
     const YEAR_MS = 365.25 * 24 * 60 * 60 * 1000
@@ -130,28 +132,27 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
         break
       case "month":
         end = addMonths(now, 1)
-        step = "day" // daily points for smoothness
-        tickEveryDays = 7 // weekly ticks
+        step = "day"
+        tickEveryDays = 7
         tickFormatter = (ts) => new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(new Date(ts))
         tooltipFormatter = (ts) => new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(new Date(ts))
         break
       case "year":
         end = addYears(now, 1)
         step = "month"
-        tickEveryMonths = 1 // every month
+        tickEveryMonths = 1
         tickFormatter = (ts) => new Intl.DateTimeFormat("en-US", { month: "short" }).format(new Date(ts))
         tooltipFormatter = (ts) => new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(new Date(ts))
         break
       case "twoYears":
         end = addYears(now, 2)
         step = "month"
-        tickEveryMonths = 2 // every 2 months (cleaner)
+        tickEveryMonths = 2
         tickFormatter = (ts) => new Intl.DateTimeFormat("en-US", { month: "short", year: "2-digit" }).format(new Date(ts))
         tooltipFormatter = (ts) => new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(new Date(ts))
         break
     }
 
-    // build x points
     const points: Array<{ t: number; baseAmount: number; amountWithLiquidity: number }> = []
     const ticks: number[] = []
     let cursor = new Date(now)
@@ -180,7 +181,6 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
       }
     }
 
-    // sample series
     if (step === "day") {
       while (cursor <= end) {
         pushPoint(cursor)
@@ -195,15 +195,25 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
       pushTicksMonths(tickEveryMonths)
     }
 
+    const startTs = now.getTime()
+    const span = end.getTime() - startTs
+
+    const MIN_PAD_MS = 1000 * 60 * 60 * 6
+    const MAX_PAD_MS = 1000 * 60 * 60 * 24 * 45
+    const padRight = Math.max(MIN_PAD_MS, Math.min(MAX_PAD_MS, 0.01 * span))
+
+    const endTs = end.getTime() + padRight
+
     return {
       data: points,
       ticks,
       fmtTick: tickFormatter,
       fmtTooltipLabel: tooltipFormatter,
+      startTs,
+      endTs,
     }
   }, [range, initialInvestment, apr, additionalLiquidity])
 
-  // ----- Y axis numbers
   const allValues = useMemo(() => {
     const a = forecastData.map((d) => d.baseAmount)
     const b = forecastData.map((d) => d.amountWithLiquidity)
@@ -212,7 +222,6 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
 
   const yAxis = calculateYAxis(Math.min(...allValues), Math.max(...allValues))
 
-  // ----- render
   const showSecondLine = additionalLiquidity > 0
 
   return (
@@ -261,17 +270,7 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
           <LineChart margin={{ top: 12, right: 16, bottom: 8, left: 8 }} data={forecastData}>
             <CartesianGrid horizontal vertical={false} />
 
-            <XAxis
-              dataKey="t"
-              type="number"
-              scale="time"
-              domain={[forecastData[0]?.t * 0.999, forecastData[forecastData.length - 1]?.t * 1.001]}
-              ticks={ticks}
-              tickFormatter={fmtTick}
-              tickMargin={8}
-              minTickGap={10}
-              allowDataOverflow
-            />
+            <XAxis dataKey="t" type="number" scale="time" domain={[startTs, endTs]} padding={{ right: 0, left: 0 }} ticks={ticks} tickFormatter={fmtTick} />
 
             <YAxis
               orientation="right"
@@ -281,11 +280,13 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
             />
 
             <Tooltip
-              cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 1 }}
+              cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
               allowEscapeViewBox={{ x: true, y: true }}
               content={(props) => <CustomTooltip {...props} fmtLabel={fmtTooltipLabel} />}
             />
+
             <Legend />
+
             <Line
               strokeWidth={2}
               type="monotone"

@@ -19,7 +19,7 @@ export const TgUsdDashboardContent = () => {
 
   return (
     <div className="flex w-full flex-col items-start justify-start gap-2">
-      <div className="flex w-full justify-between gap-2 md:justify-start">
+      <div className="flex w-full flex-col justify-between gap-2 md:flex-row md:justify-start">
         <div className="flex w-fit justify-start md:w-1/2">
           <IndicatorCards
             className={cn(globalData.USGPrice === "-" ? "shimmer" : "")}

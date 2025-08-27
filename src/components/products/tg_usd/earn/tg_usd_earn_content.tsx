@@ -50,7 +50,7 @@ export const TgUsdEarnContent = () => {
             <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
           </div>
 
-          <div className="mt-auto flex w-full items-center justify-center gap-3 p-2">
+          <div className="mt-auto flex w-full items-center justify-center gap-1 p-2 md:gap-3">
             <div
               className={cn(
                 "flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48"
@@ -111,7 +111,7 @@ export function TgUsdMarketListInner() {
       {displayRows?.map((item, index) => (
         <ListRow className="my-2" key={index} navigate={() => {}}>
           <div className="relative flex items-center gap-4">
-            <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-20" />
+            <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-12 md:w-20" />
 
             <div className="flex flex-col leading-8">
               <span className="text-[14px] font-semibold md:text-[20px]">{item?.asset}</span>
@@ -128,7 +128,7 @@ export function TgUsdMarketListInner() {
 
           <div className="flex w-full items-center gap-2">
             <div className="flex w-1/2 items-center justify-center gap-2">
-              <div className="flex flex-col items-center justify-center text-center">
+              <div className="flex flex-row items-center justify-center text-center md:flex-col">
                 <span className="flex items-center justify-center bg-button-active bg-clip-text text-[20px] font-semibold leading-4 text-transparent">
                   {item?.currentAPR}% <ListAprIndicator helpMessage="This is the APR" />
                 </span>
@@ -138,7 +138,7 @@ export function TgUsdMarketListInner() {
                   </span>
                 )}
 
-                <span className="text-xs">Up to 150.35% at x10</span>
+                <span className="hidden text-xs md:flex">Up to 150.35% at x10</span>
               </div>
             </div>
 

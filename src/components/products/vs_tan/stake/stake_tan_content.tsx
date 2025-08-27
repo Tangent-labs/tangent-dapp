@@ -96,7 +96,7 @@ export default function StakeTanContent() {
   return (
     <>
       <div className="flex w-full items-end justify-between">
-        <div className="stan-card w-7/12">
+        <div className="stan-card hidden w-7/12 lg:flex">
           <div className="flex items-center justify-center">
             <Image height={360} width={360} src="/medias/tokens/TAN.png" alt="token" />
           </div>
@@ -130,8 +130,8 @@ export default function StakeTanContent() {
         )}
       </div>
 
-      <div className="my-8 flex w-full items-start justify-start gap-4">
-        <div className="flex w-5/12 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="my-8 flex w-full flex-col items-start justify-start gap-4 md:flex-row">
+        <div className="flex w-full flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] md:w-5/12">
           <div className="flex w-full items-center justify-between gap-4">
             <ButtonTab
               onClick={() => setCurrentFeature("stake")}
@@ -177,7 +177,7 @@ export default function StakeTanContent() {
             labelProcess={currentFeature === "stake" ? "Deposit & Stake" : "Unstake"}
           />
         </div>
-        <div className="flex w-7/12 flex-col items-start justify-start rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+        <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel backdrop-blur-[60px] md:w-7/12">
           <span className="text-2xl font-semibold">Performance</span>
 
           <Divider className="h-1 w-full"></Divider>

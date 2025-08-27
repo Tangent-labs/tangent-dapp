@@ -1,9 +1,9 @@
 "use client"
 
 import { ExistingAsset } from "@/types"
+import BorderPanel from "../structure/border_panel"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { ChainViewMarketRow } from "@/components/products/tg_usd/tg_usd_type"
-import BorderPanel from "../structure/border_panel"
 
 interface ListAssetProps {
   name: string
@@ -19,7 +19,7 @@ const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: Li
       <TokenImage token={token} size={48} className="w-12 xl:w-20" />
 
       <div className="flex flex-col leading-8">
-        <span className="text-[20px] font-semibold">{name}</span>
+        <span className="text-sm font-semibold md:text-[20px]">{name}</span>
 
         {marketData && (
           <div className="hidden items-center justify-between gap-2 md:flex">

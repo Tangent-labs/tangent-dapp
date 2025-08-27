@@ -9,7 +9,7 @@ type RecordPageHeaderProps = {
 
 export default function RecordPageHeader({ apr, indicators }: RecordPageHeaderProps) {
   return (
-    <div className="flex min-h-20 flex-wrap items-center justify-evenly gap-4 rounded-[10px] bg-overlay-panel py-5 backdrop-blur-[60px] md:flex-nowrap">
+    <div className="hidden min-h-20 items-center justify-evenly gap-4 rounded-[10px] bg-overlay-panel py-5 backdrop-blur-[60px] md:flex">
       {apr && (
         <RecordPageHeaderIndicator
           title="APR"

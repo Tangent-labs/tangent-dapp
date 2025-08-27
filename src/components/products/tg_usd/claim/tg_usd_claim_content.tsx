@@ -35,7 +35,7 @@ const ClaimRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
         <div className="xl:w-1/2">{children?.at(0)}</div>
         <div className="flex justify-center xl:w-1/2">{children?.at(1)}</div>
       </div>
-      <hr className="my-4 w-full opacity-20 xl:hidden" />
+      <hr className="my-2 w-full opacity-20 xl:hidden" />
       <div className="flex w-full flex-wrap items-center justify-evenly gap-2 xl:w-1/3">{children?.at(2)}</div>
     </div>
   )

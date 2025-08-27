@@ -11,8 +11,8 @@ interface ListAPRProps {
 const MarketListAPR = ({ apr, projectedApr, className = "" }: ListAPRProps) => {
   return (
     <div className="flex justify-center gap-2">
-      <div className={`flex min-w-16 flex-col items-center justify-center text-center ${className}`}>
-        <span className="flex items-center justify-center bg-button-active bg-clip-text text-[20px] font-semibold leading-4 text-transparent">
+      <div className={`flex min-w-16 flex-row items-center justify-center text-center md:flex-col ${className}`}>
+        <span className="flex items-center justify-center bg-button-active bg-clip-text text-sm font-semibold leading-4 text-transparent md:text-[20px]">
           {apr}%
           <AprIndicator className="w-[45px] !border-none">
             <div className="flex flex-col gap-2">
@@ -37,7 +37,7 @@ const MarketListAPR = ({ apr, projectedApr, className = "" }: ListAPRProps) => {
           </span>
         )}
 
-        <span className="text-xs">Up to 150.35% at x10</span>
+        <span className="hidden text-xs md:flex">Up to 150.35% at x10</span>
       </div>
     </div>
   )

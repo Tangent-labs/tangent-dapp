@@ -25,7 +25,7 @@ export default function TgUsdRecordPageHeader() {
           <div className="flex items-center justify-between gap-2">{marketData && <MarketMetadata marketData={marketData}></MarketMetadata>}</div>
         </div>
 
-        <div className="mt-4 flex items-end gap-4 xl:mt-0">
+        <div className="mt-4 flex items-end gap-1 md:gap-4 xl:mt-0">
           <IndicatorV2 indicators={[{ title: "TVL", value: marketDisplayData.tvl }]} />
           <IndicatorV2 indicators={[{ title: "Borrowed", value: marketDisplayData.borrowed }]} />
           <IndicatorV2 indicators={[{ title: "Cap", value: marketDisplayData.cap }]} />
@@ -36,6 +36,12 @@ export default function TgUsdRecordPageHeader() {
           >
             Back
           </BorderPanel>
+        </div>
+
+        <div className="mt-4 flex items-end gap-1 md:hidden xl:mt-0">
+          <IndicatorV2 indicators={[{ title: "APR", value: "12%" }]} />
+          <IndicatorV2 indicators={[{ title: "Borrow rate", value: marketDisplayData.borrowRateCurrent }]} />
+          <IndicatorV2 indicators={[{ title: "LTV", value: marketDisplayData.maxLtv }]} />
         </div>
       </div>
 

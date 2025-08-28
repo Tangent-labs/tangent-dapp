@@ -5,14 +5,14 @@ import { ExistingAsset } from "@/types"
 import { DepositReceiveAsset } from "../tg_usd_type"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useTgUsdSwapContext } from "./tg_usd_swap_context"
-import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
+import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
+import ButtonTab from "@/components/design_system/inputs/button_tab"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { BuySellInput } from "@/components/design_system/inputs/buy_sell_input"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import BorderPanel from "@/components/design_system/structure/border_panel"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
-import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
+import { BuySellInput } from "@/components/design_system/inputs/buy_sell_input"
+import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 type AssetSelectProps = {
@@ -30,6 +30,7 @@ export default function TgUsdSwapContent() {
     setDepositSliderPercent,
     actionSwap,
     actionApprove,
+    toggleTokensSwitch,
     formState,
     computedAssets,
     isSwapLoading,
@@ -137,13 +138,14 @@ export default function TgUsdSwapContent() {
             labelReceive={"You Buy"}
             setIsBuying={setIsBuying}
             isBuying={isBuying}
+            toggleTokensSwitch={toggleTokensSwitch}
             depositAsset={depositAssetInfo!}
             depositBalance={balanceAllowanceData?.balance ?? 0n}
             receiveAmount={receiveWeiValue}
             receiveAsset={receiveAssetInfo!}
             setMaxBalance={() => handleDepositChange(balanceAllowanceData?.balance)}
             onValueChange={handleDepositChange}
-            onTangentValueChange={handleReceiveChange}
+            onReceiveValueChange={handleReceiveChange}
             percentage={depositSliderPercent}
             setPercentage={setDepositSliderPercent}
           />

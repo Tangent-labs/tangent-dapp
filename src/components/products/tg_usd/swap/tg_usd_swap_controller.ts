@@ -1,10 +1,10 @@
+import { AssetDataPriced } from "@/types"
+import WStable from "@/abi/USG/WStable.json"
+import IERC4626 from "@/abi/USG/IERC4626.json"
+import { getSwapAssetPrice } from "@/services/service_price"
+import { BalanceAllowanceData, SwapToken } from "../tg_usd_type"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, SendTransactionParameters, WalletClient, WriteContractParameters } from "viem"
-import IERC4626 from "@/abi/USG/IERC4626.json"
-import WStable from "@/abi/USG/WStable.json"
-import { BalanceAllowanceData, SwapToken } from "../tg_usd_type"
-import { getSwapAssetPrice } from "@/services/service_price"
-import { AssetDataPriced } from "@/types"
 
 export const computeSwapAssetPrice = async (tokens: SwapToken[], depositAsset: string) => {
   try {

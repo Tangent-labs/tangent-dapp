@@ -19,7 +19,7 @@ interface ComboboxProps<T extends OptionT> {
   onChange: (v: string) => void
   className?: string
   placeholder?: string
-  template?: (option: T) => React.ReactNode
+  template: (option: T) => React.ReactNode
   itemSize?: number
 }
 
@@ -64,20 +64,7 @@ export default function PopoverCombobox<T extends OptionT>({
             onChange(opt.symbol)
           }}
         >
-          {template ? (
-            template(opt)
-          ) : (
-            <div className="flex items-center gap-2">
-              {opt?.symbol === "USG" || opt?.symbol === "ETH" || opt?.symbol === "TAN" ? (
-                <TokenImage token={opt.symbol} size={20} />
-              ) : opt?.logoURI ? (
-                <Image src={opt.logoURI} alt={opt.symbol} height={20} width={20} />
-              ) : opt?.logo ? (
-                <TokenImage token={opt.logo} size={20} />
-              ) : null}
-              <span className="text-sm font-semibold">{opt.symbol}</span>
-            </div>
-          )}
+          {template(opt)}
         </button>
       </div>
     )
@@ -101,9 +88,9 @@ export default function PopoverCombobox<T extends OptionT>({
                     <TokenImage token={selected.symbol} size={20} />
                   ) : selected?.logoURI ? (
                     <Image src={selected.logoURI} alt={selected.symbol} height={20} width={20} />
-                  ) : selected?.logo ? (
-                    <TokenImage token={selected.logo} size={20} />
-                  ) : null}
+                  ) : (
+                    <TokenImage token={selected.logo} size={24} />
+                  )}
                   <span className="truncate text-sm font-semibold">{selected.symbol}</span>
                 </>
               ) : (

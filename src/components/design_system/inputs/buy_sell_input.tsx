@@ -21,13 +21,14 @@ type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositInput?: ReactNode
   receiveSelect?: ReactNode
   onValueChange: (value: bigint | undefined) => void
-  onTangentValueChange: (value: bigint | undefined) => void
+  onReceiveValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
   isLoading?: boolean
   isBuying?: boolean
   setIsBuying: (arg: boolean) => void
   percentage?: number
   setPercentage?: (value: number) => void
+  toggleTokensSwitch: () => void
 }
 
 export function BuySellInput({
@@ -40,7 +41,7 @@ export function BuySellInput({
   labelReceive = "You Buy",
   setMaxBalance,
   onValueChange,
-  onTangentValueChange,
+  onReceiveValueChange,
   depositSelect = <></>,
   receiveSelect = <></>,
   isBuying = false,
@@ -48,6 +49,7 @@ export function BuySellInput({
   isLoading = false,
   percentage = 0,
   setPercentage,
+  toggleTokensSwitch,
   disabled,
   ...props
 }: BuySellInputProps) {
@@ -121,7 +123,7 @@ export function BuySellInput({
 
     const handler = setTimeout(() => {
       const val = innerTangentValue !== undefined ? toBigInt(Number(innerTangentValue), receiveAsset?.decimals || 18) : undefined
-      onTangentValueChange(val)
+      onReceiveValueChange(val)
     }, 500)
 
     return () => clearTimeout(handler)
@@ -248,7 +250,13 @@ export function BuySellInput({
           </div>
         </BorderPanel>
 
-        <div onClick={() => setIsBuying(!isBuying)} className="my-2 flex w-full cursor-pointer items-center justify-center border-none">
+        <div
+          onClick={() => {
+            toggleTokensSwitch()
+            setIsBuying(!isBuying)
+          }}
+          className="my-2 flex w-full cursor-pointer items-center justify-center border-none"
+        >
           <IconChevron className="h-auto w-8 rounded-lg border border-white/10 p-2 backdrop-blur-[60px] hover:border-white hover:stroke-black" />
         </div>
 

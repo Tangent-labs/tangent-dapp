@@ -1,11 +1,11 @@
 "use client"
 
-import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { UserPoints, ZapToken } from "./tg_usd_type"
-import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { Address } from "viem"
-import { getBalances } from "./record/tg_usd_record_controller"
 import { getUserPoints } from "./api"
+import { UserPoints, ZapToken } from "./tg_usd_type"
+import { getBalances } from "./record/tg_usd_record_controller"
+import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
+import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 
 type TgUsdContextProps = {
   children: ReactNode

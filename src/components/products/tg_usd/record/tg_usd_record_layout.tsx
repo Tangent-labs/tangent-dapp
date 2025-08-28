@@ -12,24 +12,22 @@ import Divider from "@/components/design_system/structure/divider"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import TgUsdPositionHistory from "./position_history/tg_usd_position_history"
-import { useTgUsdMaketListContext } from "../list/tg_usd_market_list_context"
+import { FeatureSelect } from "@/components/design_system/structure/feature_select"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import { FeatureSelect } from "@/components/design_system/structure/feature_select"
 
 type TgUsdRecordLayoutProps = {
   children: React.ReactNode
 }
 
 export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) {
-  const { userData } = useTgUsdMaketListContext()
-
   const {
     collateral,
     isLeveraged,
     debtFarming,
     debtVAPR,
     chartData,
+    onChainData,
     feature,
     USGInfo,
     initialCollatAmount,
@@ -42,7 +40,7 @@ export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) 
   const router = useRouter()
 
   const onTabClick = (feat: string) => {
-    if (feat === "Deposit") {
+    if (feat.toLowerCase() === "deposit") {
       router.push(`/${collateral}`)
     } else {
       router.push(`/${collateral}/${feat.toLowerCase()}`)
@@ -150,7 +148,7 @@ export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) 
                         </>
                       )}
                     </div>
-                    {!!chartData && !!userData && !!userData.totalUserDebt && !!userData.totalUserDeposit ? (
+                    {!!chartData && onChainData?.collateralInfos?.positionCollateralUSDValue && onChainData?.debtInfos ? (
                       <div className="mt-8 flex w-full pr-6 lg:w-10/12">
                         <div className="relative hidden h-full items-start justify-start lg:flex">
                           <div className="absolute -top-6 left-16 text-lg font-semibold text-white">vAPR</div>

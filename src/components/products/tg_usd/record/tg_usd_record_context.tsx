@@ -92,6 +92,8 @@ type TgUsdRecordContextValues = {
 
   totalBorrowTimeWindow: string
   setTotalBorrowTimeWindow: (v: string) => void
+
+  onChainData: ChainViewMarketRow | undefined
 }
 
 export const TgUsdRecordContext = createContext<TgUsdRecordContextValues | undefined>(undefined)
@@ -101,7 +103,7 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
 
   const path = usePathname()
 
-  const { userData, globalData } = useTgUsdMaketListContext()
+  const { globalData } = useTgUsdMaketListContext()
 
   const [chartData, setChartData] = useState<Array<{ price: string; vAPR: number }>>([])
 
@@ -245,7 +247,7 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
 
   // Generate chart data
   useEffect(() => {
-    if (marketData && userData) {
+    if (marketData && onChainData) {
       const { irParams } = marketData.constants
       const priceRange = 1.001 - 0.9887
       const prices = Array.from({ length: 40 }, (_, i) => 0.9887 + (i * priceRange) / 39)
@@ -254,12 +256,12 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
         .map((price) => {
           const vAPR = computeVAPR(
             BigInt(Math.round(10 * 10 ** 18)) / BigInt(100),
-            userData.totalUserDeposit,
-            userData.totalUserDebt,
+            onChainData?.collateralInfos?.positionCollateralUSDValue,
+            onChainData?.debtInfos.userDebt,
             computeIR(BigInt(Math.round(price * 10 ** 18)), irParams),
             debtFarming,
             debtVAPR / 100,
-            userData.totalUserDeposit,
+            onChainData?.debtInfos.userDebt,
             isLeveraged,
             initialCollatAmount
           )
@@ -269,7 +271,7 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
 
       setChartData(data)
     }
-  }, [isLeveraged, debtFarming, debtVAPR, marketData, userData, initialCollatAmount])
+  }, [isLeveraged, debtFarming, debtVAPR, marketData, onChainData, initialCollatAmount])
 
   useEffect(() => {
     if (isLeveraged) {
@@ -352,6 +354,7 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     setTotalBorrow,
     totalBorrowTimeWindow,
     setTotalBorrowTimeWindow,
+    onChainData,
   }
 
   return <TgUsdRecordContext.Provider value={contextValue}>{children}</TgUsdRecordContext.Provider>

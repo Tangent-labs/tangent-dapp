@@ -1,6 +1,7 @@
 "use server"
 
 import { Address } from "viem"
+import * as Sentry from "@sentry/nextjs"
 import { MarketHistoricalData, UserPoints, UserTask } from "./tg_usd_type"
 
 export interface UserStatus {
@@ -152,6 +153,8 @@ export const getReferralStatus = async (account: Address): Promise<UserStatus> =
 
     return data
   } catch (error) {
+    // Report to sentry
+    Sentry.captureException("Failed to fetch user referral status")
     console.error("Failed to fetch referral status:", error)
     return { hasUsedCode: false, referralCode: null, friends: 0 }
   }

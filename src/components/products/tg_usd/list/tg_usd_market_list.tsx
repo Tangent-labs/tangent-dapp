@@ -35,7 +35,7 @@ export default function TgUsdMarketList() {
   return (
     <>
       <div className="flex items-center justify-between gap-6">
-        <div className="tgusd-card hidden w-7/12 xl:flex">
+        <div className="usg-header hidden w-7/12 xl:flex">
           <div className="flex items-center justify-center">
             <Image height={160} width={160} src="/medias/tokens/tgUSD_header.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>

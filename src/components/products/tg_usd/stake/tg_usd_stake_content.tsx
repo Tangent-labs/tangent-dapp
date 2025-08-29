@@ -91,7 +91,7 @@ export default function TgUsdStakeContent() {
   return (
     <>
       <div className="flex w-full items-end justify-between gap-4">
-        <div className="sgusd-card hidden lg:flex lg:w-7/12">
+        <div className="usg-header hidden lg:flex lg:w-7/12">
           <div className="flex items-center justify-center">
             <Image height={160} width={160} src="/medias/product_tgusd.png" alt="token" />
           </div>

@@ -37,7 +37,7 @@ export default function TgUsdLeveragePanel() {
     setDepositSliderPercent,
     setLeveragePercentage,
     actionLeverage,
-    setBorrowWeiValue,
+    updateBorrowWeiValue,
     actionZapLeverage,
     actionApproveZap,
     depositAsset,
@@ -216,7 +216,7 @@ export default function TgUsdLeveragePanel() {
           depositAsset={pricedCollateralInfo}
           percentage={isDepositDisabled ? 0 : leveragePercentage}
           setPercentage={isDepositDisabled ? undefined : setLeveragePercentage}
-          onValueChange={setBorrowWeiValue}
+          onValueChange={(e) => updateBorrowWeiValue(e)}
         />
 
         <div className="-mt-1 flex w-full items-start justify-end text-xs text-subtitle">Max leverage: x10</div>

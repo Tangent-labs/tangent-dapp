@@ -96,7 +96,7 @@ export default function StakeTanContent() {
   return (
     <>
       <div className="flex w-full items-end justify-between">
-        <div className="stan-card hidden w-7/12 lg:flex">
+        <div className="usg-header hidden w-7/12 lg:flex">
           <div className="flex items-center justify-center">
             <Image height={360} width={360} src="/medias/tokens/TAN.png" alt="token" />
           </div>

@@ -14,7 +14,7 @@ export default function TgUsdAirdropLayout({
   return (
     <div className="flex w-full flex-col items-center justify-between">
       <div className="flex w-full items-start justify-between gap-4">
-        <div className="sgusd-card hidden w-1/2 lg:flex">
+        <div className="usg-header hidden w-1/2 lg:flex">
           <div className="flex items-center justify-center">
             <Image height={320} width={320} className="an-logo" src="/medias/product_tgusd.png" alt="token" />
           </div>

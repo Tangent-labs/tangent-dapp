@@ -75,6 +75,8 @@ type TgUsdLeverageContextValues = {
   estimatedZapDollarValue: string
 
   leverageExceedsMaxLtv: boolean
+
+  updateBorrowWeiValue: (value: bigint) => Promise<void>
 }
 
 export const TgUsdLeverageContext = createContext<TgUsdLeverageContextValues | undefined>(undefined)
@@ -84,13 +86,13 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
   const {
     marketData,
-    loadOnChainData,
-    setCurrentAmounts,
+    marketInfo,
     balanceAllowanceData,
     futureMarketDisplayData,
-    fetchBalanceAllowanceData,
     collateralInfo,
-    marketInfo,
+    fetchBalanceAllowanceData,
+    loadOnChainData,
+    setCurrentAmounts,
   } = useTgUsdRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
@@ -234,12 +236,20 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
   }, [depositAsset])
 
   useEffect(() => {
-    setCurrentAmounts({
-      depositWeiValue: (depositWeiValue || 0n) + (leveragedCollateralQuote || 0n),
-      borrowWeiValue: borrowWeiValue || 0n,
-      zapValue: !!zapValue ? (BigInt(zapValue) || 0n) + (leveragedCollateralQuote || 0n) : 0n,
-    })
-  }, [depositWeiValue, borrowWeiValue, zapValue, leveragedCollateralQuote])
+    if (zapValue && depositWeiValue && borrowWeiValue && leveragedCollateralQuote && !isDepositLoading) {
+      setCurrentAmounts({
+        depositWeiValue: (depositWeiValue || 0n) + (leveragedCollateralQuote || 0n),
+        borrowWeiValue: borrowWeiValue || 0n,
+        zapValue: (BigInt(zapValue) || 0n) + (leveragedCollateralQuote || 0n),
+      })
+    } else if (depositWeiValue && borrowWeiValue && leveragedCollateralQuote && !isDepositLoading) {
+      setCurrentAmounts({
+        depositWeiValue: (depositWeiValue || 0n) + (leveragedCollateralQuote || 0n),
+        borrowWeiValue: borrowWeiValue || 0n,
+        zapValue: 0n,
+      })
+    }
+  }, [depositWeiValue, borrowWeiValue, zapValue, leveragedCollateralQuote, isDepositLoading])
 
   const actionApproveZap = async () => {
     setIsDepositLoading(true)
@@ -361,6 +371,8 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
   }
 
   const quoteDetail = useMemo(() => {
+    setIsDepositLoading(false)
+
     if (!!zapValue) {
       const sum = ` ${formatBigIntAsNumber(zapValue || 0n, 18, 0)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 0)}  ~= `
       const result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + BigInt(zapValue || 0n), 18, 0)}  ${collateralInfo?.symbol}`
@@ -427,19 +439,12 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
     }
   }, [depositAssetInfo])
 
-  useEffect(() => {
-    const computeQuote = async (value: bigint) => {
-      const { quote } = await getQuote(value, currentAddress!, marketInfo?.collatAddress, USG_CONTRACT.USG)
-
-      setIsDepositLoading(false)
-      setLeveragedCollateralQuote(quote)
-    }
-
-    if (borrowWeiValue) {
-      setIsDepositLoading(true)
-      computeQuote(borrowWeiValue)
-    }
-  }, [borrowWeiValue])
+  const updateBorrowWeiValue = async (value: bigint) => {
+    setIsDepositLoading(true)
+    const { quote } = await getQuote(value, currentAddress!, marketInfo?.collatAddress, USG_CONTRACT.USG)
+    setLeveragedCollateralQuote(quote)
+    setBorrowWeiValue(value)
+  }
 
   useEffect(() => {
     if (zapValue !== undefined) {
@@ -523,6 +528,8 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
     quoteDetail,
 
     leverageExceedsMaxLtv,
+
+    updateBorrowWeiValue,
   }
 
   return <TgUsdLeverageContext.Provider value={contextValue}>{children}</TgUsdLeverageContext.Provider>

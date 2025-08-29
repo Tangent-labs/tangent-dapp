@@ -113,7 +113,7 @@ export default function TgUsdSwapContent() {
 
   return (
     <>
-      <div className="sgusd-card relative hidden w-7/12 lg:flex">
+      <div className="usg-header relative hidden w-7/12 lg:flex">
         <div className="absolute -top-2 left-20 h-full min-h-24">
           <Image height={140} width={140} src="/medias/tokens/swapLogo.png" alt="token" />
         </div>

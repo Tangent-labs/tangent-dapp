@@ -61,7 +61,7 @@ export const RsTanLayoutContent = ({
   return (
     <>
       <div className="mb-3 flex w-full items-end justify-end gap-6">
-        <div className="stan-card hidden w-7/12 xl:flex">
+        <div className="usg-header hidden w-7/12 xl:flex">
           <div className="flex items-center justify-center">
             <Image height={360} width={360} src={`/medias/tokens/rsTan.png`} alt="token" />
           </div>

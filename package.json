@@ -26,6 +26,7 @@
     "@radix-ui/react-select": "^2.1.6",
     "@radix-ui/react-switch": "^1.1.2",
     "@radix-ui/react-tabs": "^1.1.0",
+    "@sentry/nextjs": "^10.7.0",
     "@shadcn/ui": "^0.0.4",
     "@tanstack/react-virtual": "^3.11.3",
     "@web3-onboard/common": "^2.4.2",

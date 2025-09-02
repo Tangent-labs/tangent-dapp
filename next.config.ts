@@ -1,5 +1,9 @@
 import type { NextConfig } from "next"
 
+/** @type {import('next').NextConfig} */
+
+const { withSentryConfig } = require("@sentry/nextjs")
+
 const nextConfig: NextConfig = {
   reactStrictMode: false,
   logging: {
@@ -10,8 +14,12 @@ const nextConfig: NextConfig = {
   images: {
     domains: ["raw.githubusercontent.com"],
   },
-
-  /* config options here */
+  productionBrowserSourceMaps: false,
 }
 
-export default nextConfig
+module.exports = withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  sourcemaps: { deleteSourcemapsAfterUpload: true },
+})

@@ -8,15 +8,14 @@ import { useRouter } from "next/navigation"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { MarketMetadata } from "./market_metadata"
 
-type TgUsdRecordPageHeaderProps = React.ButtonHTMLAttributes<HTMLDivElement>
-
-export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeaderProps) {
+export default function TgUsdRecordPageHeader() {
   const { collateralInfo, marketDisplayData, marketData, apr } = useTgUsdRecordContext()
+
   const router = useRouter()
 
   return (
     <>
-      <div className="mt-4 flex flex-col justify-between xl:flex-row" {...props}>
+      <div className="mt-4 flex flex-col justify-between xl:flex-row">
         <div className="flex w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px] md:w-fit">
           <div className="flex items-center gap-2">
             <TokenImage className="w-8 md:w-16" token={collateralInfo.logo} size={64} />
@@ -26,7 +25,7 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
           <div className="flex items-center justify-between gap-2">{marketData && <MarketMetadata marketData={marketData}></MarketMetadata>}</div>
         </div>
 
-        <div className="mt-4 flex items-end gap-4 xl:mt-0">
+        <div className="mt-4 flex items-end gap-1 md:gap-4 xl:mt-0">
           <IndicatorV2 indicators={[{ title: "TVL", value: marketDisplayData.tvl }]} />
           <IndicatorV2 indicators={[{ title: "Borrowed", value: marketDisplayData.borrowed }]} />
           <IndicatorV2 indicators={[{ title: "Cap", value: marketDisplayData.cap }]} />
@@ -38,6 +37,12 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
             Back
           </BorderPanel>
         </div>
+
+        <div className="mt-4 flex items-end gap-1 md:hidden xl:mt-0">
+          <IndicatorV2 indicators={[{ title: "APR", value: "12%" }]} />
+          <IndicatorV2 indicators={[{ title: "Borrow rate", value: marketDisplayData.borrowRateCurrent }]} />
+          <IndicatorV2 indicators={[{ title: "LTV", value: marketDisplayData.maxLtv }]} />
+        </div>
       </div>
 
       <RecordPageHeader
@@ -45,8 +50,8 @@ export default function TgUsdRecordPageHeader({ ...props }: TgUsdRecordPageHeade
         indicators={[
           {
             title: "APR",
-            value: marketDisplayData.rewardsCutCurrent,
-            subValue: marketDisplayData.rewardsCutNext,
+            value: "12%",
+            subValue: "15%",
           },
           {
             title: "Borrow rate",

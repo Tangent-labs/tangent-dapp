@@ -1,13 +1,5 @@
 "use client"
 
-import { AssetApr, AssetDataPriced, CollateralInfo, ListState, TgUsdMarketAsset } from "@/types"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-
-import { Address, formatUnits } from "viem"
-import { useTgUsdContext } from "../tg_usd_context"
-import { getUserPositions } from "../api"
-
 import {
   BalanceAllowanceData,
   ChainViewMarketRow,
@@ -16,35 +8,48 @@ import {
   TgUsdMarketAmounts,
   TgUsdMarketDisplayData,
   TgUsdMarketLoanDisplayData,
+  TotalBorrow,
   UserPosition,
 } from "../tg_usd_type"
+
 import {
-  getBalances,
   getComputedFutureLoanData,
   getMarketApr,
   getMarketDisplayData,
   getTgUsdMarketRecordData,
   getBalancesAndAllowances,
   transformMarketData,
+  computeIR,
+  computeVAPR,
+  mapToTotalBorrow,
 } from "./tg_usd_record_controller"
+
+import { Address, formatUnits } from "viem"
+import { usePathname } from "next/navigation"
+import { USG_CONTRACT } from "../tg_usd_repository"
+import { getCurrentBlock } from "@/services/service_rpc"
+import { getHistoricalMarketData, getUserPositions } from "../api"
+import { useTgUsdMaketListContext } from "../list/tg_usd_market_list_context"
+import { AssetApr, AssetDataPriced, CollateralInfo, ListState } from "@/types"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { sortUserData } from "./position_history/tg_usd_position_history_controller"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 
 type TgUsdRecordContextProps = {
   children: ReactNode
-  collateral: TgUsdMarketAsset
+  collateral: string
   collateralInfo: CollateralInfo
   marketInfo: TgUsdMarket
-  tgUSDInfo: AssetDataPriced
 }
 
 type TgUsdRecordContextValues = {
-  collateral: TgUsdMarketAsset
+  collateral: string
   collateralInfo: CollateralInfo
   isLoading: boolean
   marketData?: MarketDetailData
   loadOnChainData: () => void
   fetchBalanceAllowanceData: (address: Address) => void
-  tgUSDInfo: AssetDataPriced
+  USGInfo: AssetDataPriced
   futureMarketDisplayData: TgUsdMarketLoanDisplayData
   marketDisplayData: TgUsdMarketDisplayData
   apr?: AssetApr
@@ -52,8 +57,6 @@ type TgUsdRecordContextValues = {
   setCurrentAmounts: (amounts: TgUsdMarketAmounts) => void
 
   marketInfo: TgUsdMarket
-
-  balances: Record<Address, bigint> | null
 
   balanceAllowanceData: BalanceAllowanceData | null
   setBalanceAllowanceData: (arg: BalanceAllowanceData) => void
@@ -69,16 +72,40 @@ type TgUsdRecordContextValues = {
   setIsLeveraged: (v: boolean) => void
 
   pricedCollateralInfo: CollateralInfo
+
+  debtFarming: number
+  setDebtFarming: (v: number) => void
+
+  debtVAPR: number
+  setDebtVAPR: (v: number) => void
+
+  initialCollatAmount: number
+  setInitialCollatAmount: (v: number) => void
+
+  chartData: Array<{ price: string; vAPR: number }>
+  setChartData: (v: Array<{ price: string; vAPR: number }>) => void
+
+  feature: string
+
+  totalBorrow: TotalBorrow
+  setTotalBorrow: (v: TotalBorrow) => void
+
+  totalBorrowTimeWindow: string
+  setTotalBorrowTimeWindow: (v: string) => void
+
+  onChainData: ChainViewMarketRow | undefined
 }
 
 export const TgUsdRecordContext = createContext<TgUsdRecordContextValues | undefined>(undefined)
 
-export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, children, tgUSDInfo }: TgUsdRecordContextProps) => {
-  const { tokens } = useTgUsdContext()
-
+export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, children }: TgUsdRecordContextProps) => {
   const { currentAddress, getWalletClient } = useWalletConnexionContext()
 
-  const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
+  const path = usePathname()
+
+  const { globalData } = useTgUsdMaketListContext()
+
+  const [chartData, setChartData] = useState<Array<{ price: string; vAPR: number }>>([])
 
   const [onChainData, setOnChainData] = useState<ChainViewMarketRow | undefined>()
 
@@ -88,9 +115,19 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
 
   const [isLeveraged, setIsLeveraged] = useState<boolean>(false)
 
+  const [totalBorrowTimeWindow, setTotalBorrowTimeWindow] = useState<string>("1m")
+
+  const [debtFarming, setDebtFarming] = useState<number>(0)
+
+  const [debtVAPR, setDebtVAPR] = useState<number>(0)
+
+  const [initialCollatAmount, setInitialCollatAmount] = useState<number>(0)
+
   const [isUserHistoryLoading, setIsUserHistoryLoading] = useState<boolean>(true)
 
   const [apr, setApr] = useState<AssetApr | undefined>()
+
+  const [totalBorrow, setTotalBorrow] = useState<TotalBorrow>({ latestTotalDebt: "0", data: [] })
 
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
 
@@ -104,13 +141,15 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
   })
 
   const fetchUserPositions = () => {
-    getUserPositions(currentAddress!, marketInfo.marketAddress).then((pos) => {
-      if (pos) {
-        setUserPositions(pos)
-      } else {
-        setUserPositions([])
-      }
-    })
+    if (currentAddress) {
+      getUserPositions(currentAddress, marketInfo.marketAddress).then((pos) => {
+        if (pos) {
+          setUserPositions(pos)
+        } else {
+          setUserPositions([])
+        }
+      })
+    }
   }
 
   useEffect(() => {
@@ -153,25 +192,6 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     return collateralInfo
   }, [marketData, collateralInfo])
 
-  useEffect(() => {
-    const tokenAddresses: Address[] = tokens.map((el) => el.address)
-
-    if (currentAddress && tokenAddresses.length > 0) {
-      getBalances(currentAddress, tokenAddresses).then((data) => {
-        if (data) {
-          const tokenBalances = tokenAddresses.reduce(
-            (acc, address, index) => {
-              acc[address] = data[index] || BigInt(0)
-              return acc
-            },
-            {} as Record<Address, bigint>
-          )
-          setBalances(tokenBalances)
-        }
-      })
-    }
-  }, [currentAddress, tokens])
-
   const fetchBalanceAllowanceData = async (depositAssetInfo: Address) => {
     if (!depositAssetInfo) return
 
@@ -187,22 +207,18 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
   }
 
   //
-  // USER POSITION CONTEXT
+  // USER TRANSACTION HISTORY CONTEXT
 
   const displayRows = useMemo(() => {
-    if (!userPositions) {
-      setIsUserHistoryLoading(true)
-      return []
-    }
-    if (!!userPositions && userPositions.length === 0) {
+    if (userPositions) {
+      const rows = sortUserData(userPositions)
+
       setIsUserHistoryLoading(false)
+
+      return rows
+    } else {
       return []
     }
-
-    const rows = sortUserData(userPositions)
-    setIsUserHistoryLoading(false)
-
-    return rows
   }, [userPositions])
 
   const customSort = (listState: ListState) => {
@@ -229,19 +245,86 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     })
   }
 
+  // Generate chart data
+  useEffect(() => {
+    if (marketData && onChainData) {
+      const { irParams } = marketData.constants
+      const priceRange = 1.001 - 0.9887
+      const prices = Array.from({ length: 40 }, (_, i) => 0.9887 + (i * priceRange) / 39)
+
+      const data = prices
+        .map((price) => {
+          const vAPR = computeVAPR(
+            BigInt(Math.round(10 * 10 ** 18)) / BigInt(100),
+            onChainData?.collateralInfos?.positionCollateralUSDValue,
+            onChainData?.debtInfos.userDebt,
+            computeIR(BigInt(Math.round(price * 10 ** 18)), irParams),
+            debtFarming,
+            debtVAPR / 100,
+            onChainData?.debtInfos.userDebt,
+            isLeveraged,
+            initialCollatAmount
+          )
+          return { price: price.toFixed(4), vAPR }
+        })
+        .filter((d) => isFinite(d.vAPR))
+
+      setChartData(data)
+    }
+  }, [isLeveraged, debtFarming, debtVAPR, marketData, onChainData, initialCollatAmount])
+
+  useEffect(() => {
+    if (isLeveraged) {
+      setDebtFarming(0)
+      setDebtVAPR(0)
+    } else {
+      setInitialCollatAmount(0)
+    }
+  }, [isLeveraged])
+
+  const feature = useMemo(() => {
+    const lastIndexOfSlash = path.lastIndexOf("/") + 1
+    const currentFeature = path.substring(lastIndexOfSlash, path.length)
+    return currentFeature
+  }, [path])
+
+  useEffect(() => {
+    const fetchHistoricalMarketData = async (marketData: MarketDetailData) => {
+      const currentBlock = await getCurrentBlock()
+
+      const isoEndDate = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
+      const dateFrom = encodeURIComponent(isoEndDate)
+
+      const data = await getHistoricalMarketData(marketData?.marketAddress, totalBorrowTimeWindow, dateFrom)
+
+      const mappedTotalBorrowData = mapToTotalBorrow(data)
+      setTotalBorrow(mappedTotalBorrowData)
+    }
+
+    if (marketData) {
+      fetchHistoricalMarketData(marketData)
+    }
+  }, [totalBorrowTimeWindow, marketData])
+
+  const USGInfo = useMemo(() => {
+    if (globalData && globalData.USGPrice) {
+      return { address: USG_CONTRACT.USG, decimals: 18, displayDecimals: 2, symbol: "USG", price: Number(globalData.USGPrice) }
+    }
+    return { address: USG_CONTRACT.USG, decimals: 18, displayDecimals: 2, symbol: "USG", price: 1 }
+  }, [globalData])
+
   const contextValue: TgUsdRecordContextValues = {
     isLoading,
     collateral,
     collateralInfo,
     marketData,
     loadOnChainData,
-    tgUSDInfo,
+    USGInfo,
     marketDisplayData,
     futureMarketDisplayData,
     currentAmounts,
     setCurrentAmounts,
     apr,
-    balances,
     balanceAllowanceData,
     setBalanceAllowanceData,
     fetchBalanceAllowanceData,
@@ -254,6 +337,24 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     isLeveraged,
     setIsLeveraged,
     pricedCollateralInfo,
+
+    debtFarming,
+    setDebtFarming,
+
+    debtVAPR,
+    setDebtVAPR,
+
+    initialCollatAmount,
+    setInitialCollatAmount,
+
+    chartData,
+    setChartData,
+    feature,
+    totalBorrow,
+    setTotalBorrow,
+    totalBorrowTimeWindow,
+    setTotalBorrowTimeWindow,
+    onChainData,
   }
 
   return <TgUsdRecordContext.Provider value={contextValue}>{children}</TgUsdRecordContext.Provider>

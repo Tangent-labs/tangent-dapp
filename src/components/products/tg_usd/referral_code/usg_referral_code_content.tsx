@@ -1,15 +1,19 @@
 "use client"
 
-import { Button } from "@/components/design_system/inputs/button"
-import Divider from "@/components/design_system/structure/divider"
-import { IconTrophy } from "@/components/icons/icon_trophy"
-import { IconCompleted } from "@/components/icons/icon_completed"
-import { IconShare } from "@/components/icons/icon_share"
 import { Input } from "@/components/ui/input"
+import { useTgUsdContext } from "../tg_usd_context"
+import { formatNumber } from "@/lib/number_formatter"
+import { IconShare } from "@/components/icons/icon_share"
+import { IconTrophy } from "@/components/icons/icon_trophy"
+import { Button } from "@/components/design_system/inputs/button"
+import { IconCompleted } from "@/components/icons/icon_completed"
+import Divider from "@/components/design_system/structure/divider"
 import { useUsgReferralCodeContext } from "./usg_referral_code_context"
 
 export const UsgReferralCode = () => {
   const { isLoading, referralStatus, setReferralStatus, signMessage, generateReferralCode } = useUsgReferralCodeContext()
+
+  const { userPoints } = useTgUsdContext()
 
   const Ranking = () => {
     return (
@@ -47,31 +51,31 @@ export const UsgReferralCode = () => {
       <div className="flex w-full items-center justify-between gap-4">
         <div className="relative flex w-full max-w-80 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
           <div className="absolute -top-2 left-0 flex w-full">
-            <div className="mx-4 flex w-full items-center justify-between rounded-full bg-black">
-              <div className="px-2 text-xs italic">boost x1.1</div>
+            <div className="mx-4 flex w-full items-center justify-between rounded-full bg-black px-4">
+              <div className="px-2 text-xs italic">Boost x1.1</div>
               <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Vote</div>
             </div>
           </div>
 
           <span className="text-[14px] text-subtitle">Voting points</span>
-          <div className="flex items-center justify-center gap-1 text-[20px]">
-            <span className="font-semibold text-white">1385 pts</span>
-            <span className="text-tonic">(30pts/day)</span>
+          <div className="flex items-end justify-center gap-1">
+            <span className="text-sm font-semibold text-white">1385 pts</span>
+            <span className="text-xs text-tonic">(30pts/day)</span>
           </div>
         </div>
 
         <div className="relative flex w-full max-w-80 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
           <div className="absolute -top-2 left-0 flex w-full">
-            <div className="mx-4 flex w-full items-center justify-between rounded-full bg-black">
-              <div className="px-2 text-xs italic">boost x1.5</div>
+            <div className="mx-4 flex w-full items-center justify-between rounded-full bg-black px-4">
+              <div className="px-2 text-xs italic">Boost x1.5</div>
               <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Liquidity</div>
             </div>
           </div>
 
           <span className="text-[14px] text-subtitle">Liquidity points</span>
-          <div className="flex items-center justify-center gap-1 text-[20px]">
-            <span className="font-semibold text-white">9,385 pts</span>
-            <span className="text-tonic">(30pts/day)</span>
+          <div className="flex items-end justify-center gap-1">
+            <span className="text-sm font-semibold text-white">{formatNumber(userPoints?.totalPoints, 0)} pts</span>
+            <span className="text-xs text-tonic">({formatNumber(userPoints?.dailyRate, 0)}pts/day)</span>
           </div>
         </div>
 

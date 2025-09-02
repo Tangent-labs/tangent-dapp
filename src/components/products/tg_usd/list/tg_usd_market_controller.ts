@@ -1,19 +1,19 @@
 import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
 import { ChainViewMarketList, ChainViewMarketRow, TgUsdGlobalData, TgUsdMarketData, TgUsdMarketDataUser } from "../tg_usd_type"
 import { formatBigInt, formatDollar, formatPercent } from "@/lib/number_formatter"
-import { TGUSD_CONTRACT, tgUsdMarkets, tgUsdPegKeepers } from "../tg_usd_repository"
+import { USG_CONTRACT, USGMarkets, tgUsdPegKeepers } from "../tg_usd_repository"
 import { Abi, Address, formatUnits, Hex } from "viem"
-import MarketListUI from "@/abi/tgusd/MarketListUI.json"
+import MarketListUI from "@/abi/USG/MarketListUI.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
 
 export const getTgUsdMarketsData = async (address: Address | undefined) => {
-  const markets = tgUsdMarkets.map((market) => market.marketAddress)
+  const markets = USGMarkets.map((market) => market.marketAddress)
 
   return await executeChainViewUnique<ChainViewMarketList>(MarketListUI.abi as Abi, MarketListUI.bytecode as Hex, [
     address,
-    TGUSD_CONTRACT.USG_ORACLE,
-    TGUSD_CONTRACT.USG,
-    TGUSD_CONTRACT.SUSG,
+    USG_CONTRACT.USG_ORACLE,
+    USG_CONTRACT.USG,
+    USG_CONTRACT.SUSG,
     markets,
     tgUsdPegKeepers,
   ])
@@ -21,7 +21,7 @@ export const getTgUsdMarketsData = async (address: Address | undefined) => {
 
 export const transformMarketData = (data: ChainViewMarketList) => {
   const filteredData = data.rowInfos.map((el: ChainViewMarketRow) => {
-    const staticMarketData = tgUsdMarkets.find((m) => m.marketAddress === el.marketAddress)
+    const staticMarketData = USGMarkets.find((m) => m.marketAddress === el.marketAddress)
 
     return { ...el, marketType: staticMarketData?.marketType }
   })
@@ -30,7 +30,7 @@ export const transformMarketData = (data: ChainViewMarketList) => {
 }
 
 export function getMarketDatas() {
-  return tgUsdMarkets.map((market) => ({
+  return USGMarkets.map((market) => ({
     network: "mainnet",
     marketAddress: market.marketAddress,
     platforms: ["convex", "curve"],
@@ -55,35 +55,35 @@ export function getMarketDatas() {
 export function transformGlobalData(data?: ChainViewMarketList): TgUsdGlobalData {
   if (!data)
     return {
-      tgUsdPrice: "-",
-      tgUsdSupply: "-",
-      sgUsdPrice: "-",
-      sgUsdSupply: "-",
+      USGPrice: "-",
+      USGSupply: "-",
+      sUSGPrice: "-",
+      sUSGSupply: "-",
       globalCr: "-",
       globalTvl: "-",
       globalDebt: "-",
       APY: "-",
     }
 
-  const tgUsdPrice = Number(formatBigInt(data?.tgUSDPrice || "0", 18, 5))
+  const USGPrice = Number(formatBigInt(data?.USGPrice || "0", 18, 5))
 
   let totalTVL = 0n
   let totalDebt = 0n
 
   data?.rowInfos.forEach((market) => {
-    totalTVL += market.collateralInfos?.positionCollateralUSDValue
+    totalTVL += market.collateralInfos?.totalCollateralUSDValue
     totalDebt += market?.debtInfos.totalDebt
   })
 
   return {
-    tgUsdPrice: tgUsdPrice.toFixed(3),
-    tgUsdSupply: formatBigInt(data?.tgUSDSupply || "0", 18, 0),
-    sgUsdPrice: formatDollar(formatBigInt(data?.sgUSDPrice || "0", 18, 2), 2),
-    sgUsdSupply: formatBigInt(data?.sgUSDSupply || "0", 18, 0),
+    USGPrice: USGPrice.toFixed(3),
+    USGSupply: formatBigInt(data?.USGSupply || "0", 18, 0),
+    sUSGPrice: formatDollar(formatBigInt(data?.sUSGPrice || "0", 18, 2), 2),
+    sUSGSupply: formatBigInt(data?.sUSGSupply || "0", 18, 0),
     globalCr: totalDebt !== 0n ? ((Number(totalTVL) / Number(totalDebt)) * 100).toFixed(2) + "%" : "N/A",
     globalTvl: formatDollar(formatUnits(totalTVL, 18)),
     globalDebt: formatDollar(formatUnits(totalDebt, 18)),
-    APY: formatPercent(Number(formatBigInt(data?.tgUSDPercentageInSgUSD || "0", 18, 2)) * 100, 2),
+    APY: formatPercent(Number(formatBigInt(data?.USGPercentageInSUSG || "0", 18, 2)) * 100, 2),
   }
 }
 

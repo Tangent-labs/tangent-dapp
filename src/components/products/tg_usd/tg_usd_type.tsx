@@ -12,15 +12,6 @@ import {
 } from "@/types"
 import { Address } from "viem"
 
-export type TgUsdGlobalMarketData = {
-  tgUsdPrice: number
-  tgUsdsupply: number
-  sgUsdprice: number
-  sgUsdsupply: number
-  globalCr: number
-  GlobalTvl: number
-}
-
 export type TgUsdCampaignData = {
   debts: number
   deposists: number
@@ -67,10 +58,10 @@ export type TgUsdAirdropData = {
 }
 
 export type TgUsdGlobalData = {
-  tgUsdPrice: string
-  tgUsdSupply: string
-  sgUsdPrice: string
-  sgUsdSupply: string
+  USGPrice: string
+  USGSupply: string
+  sUSGPrice: string
+  sUSGSupply: string
   APY: string
   globalCr: string
   globalDebt: string
@@ -193,11 +184,11 @@ export interface Allowance {
 }
 
 export type ChainViewMarketList = {
-  tgUSDPrice: bigint // uint256
-  tgUSDSupply: bigint // uint256
-  sgUSDPrice: bigint // uint256
-  sgUSDSupply: bigint // uint256
-  tgUSDPercentageInSgUSD: bigint // uint256
+  USGPrice: bigint // uint256
+  USGSupply: bigint // uint256
+  sUSGPrice: bigint // uint256
+  sUSGSupply: bigint // uint256
+  USGPercentageInSUSG: bigint // uint256
   rowInfos: ChainViewMarketRow[]
 }
 
@@ -347,14 +338,14 @@ export type TgUsdMarket = {
 }
 
 export type StakingInfo = {
-  sgUSDBalance: bigint
-  sgUSDPrice: bigint
-  sgUSDSupply: bigint
-  tgUSDAllowance: bigint
-  tgUSDBalance: bigint
-  tgUSDPercentageInSgUSD: bigint
-  tgUSDPrice: bigint
-  tgUSDSupply: bigint
+  USGAllowance: bigint
+  USGBalance: bigint
+  USGPercentageInsUSG: bigint
+  USGPrice: bigint
+  USGSupply: bigint
+  sUSGBalance: bigint
+  sUSGPrice: bigint
+  sUSGSupply: bigint
 }
 
 export type StakingDepositType = "asset" | "sdAsset"
@@ -384,17 +375,6 @@ export type EarnTask = {
   currentAPR: number
   projectedAPR: number
   bonusPts: number
-}
-
-export type AirdropTask = {
-  name: string
-  asset: string
-  link: string
-  protocolName: string
-  actionLabel: string
-  ptsPerDay: number
-  status: string
-  totalPoints: number
 }
 
 export type LockPosition = {
@@ -447,4 +427,50 @@ export type MarketDebtData = {
 export type TgUsdCollateralData = {
   name: string
   value: number
+}
+
+export interface IrParams {
+  a1: number
+  a2: number
+  isHEC: boolean
+  k: number
+  pInf: number
+  pMax: number
+  pMin: number
+  rMax: number
+  rMin: number
+}
+
+export type MarketHistoricalData = {
+  timestamp: string
+  tvl_usd: number
+  total_debt: number
+  ir_apy: number
+  apr_current: string
+}
+
+export type TotalBorrow = {
+  latestTotalDebt: string
+  data: Array<{
+    timestamp: string
+    value: string
+  }>
+}
+
+export type UserTask = {
+  taskId: number
+  asset: string
+  protocol: string
+  url: string
+  description: string
+  pointRate: number
+  status: boolean
+  points: number
+}
+
+export type UserPoints = {
+  totalPoints: number
+  basePoints: number
+  referralPoints: number
+  dailyRate: number
 }

@@ -8,7 +8,7 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import { useTgUsdRecordContext } from "./tg_usd_record_context"
 import { CandlestickData, CandlestickSeries, createChart, DeepPartial, Time, TimeChartOptions } from "lightweight-charts"
 import { fetchGraphData } from "../api"
-import { getPublicClient } from "@/services/service_rpc"
+import { getCurrentBlock } from "@/services/service_rpc"
 import { Address } from "viem"
 import { cn } from "@/lib/utils"
 
@@ -87,10 +87,9 @@ export default function TgUsdCollateralPrice() {
     if (!address) return
 
     try {
-      const publicClient = await getPublicClient()
-      const currentBlockNumber = await publicClient.getBlockNumber()
-      const block = await publicClient.getBlock({ blockNumber: currentBlockNumber })
-      const currentTime = new Date(Number(block.timestamp))
+      const currentBlock = await getCurrentBlock()
+
+      const currentTime = new Date(Number(currentBlock.timestamp))
 
       let startTime: number
 

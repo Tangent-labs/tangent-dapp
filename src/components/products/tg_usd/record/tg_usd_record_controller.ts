@@ -1,14 +1,24 @@
-import { Abi, Address, formatEther, formatUnits, Hex, WalletClient, zeroAddress } from "viem"
-import { BalanceAllowanceData, ChainViewMarketRow, MarketDetailData, TgUsdMarketDisplayData, TgUsdMarketLoanDisplayData, ZapToken } from "../tg_usd_type"
-import { executeAppove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
-import MarketDetailsUI from "@/abi/tgusd/MarketDetailsUI.json"
-import GetBalances from "@/abi/tgusd/GetBalances.json"
+import {
+  BalanceAllowanceData,
+  ChainViewMarketRow,
+  IrParams,
+  MarketDetailData,
+  MarketHistoricalData,
+  TgUsdMarketDisplayData,
+  TgUsdMarketLoanDisplayData,
+  TotalBorrow,
+  ZapToken,
+} from "../tg_usd_type"
+
+import GetBalances from "@/abi/USG/GetBalances.json"
 import { CollateralInfo, ExistingAsset } from "@/types"
-import { TGUSD_CONTRACT, tgUsdMarkets } from "../tg_usd_repository"
-import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
-import GetBalancesAllowances from "@/abi/tgusd/GetBalancesAllowances.json"
 import { getSwapAssetPrice } from "@/services/service_price"
-import { getEnsoData } from "../api"
+import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
+import { USGMarkets } from "../tg_usd_repository"
+import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
+import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
+import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
+import { Abi, Address, formatEther, formatUnits, Hex, parseEther, WalletClient, zeroAddress } from "viem"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
@@ -28,7 +38,7 @@ export const getBalances = async (user: Address, tokens: Address[]) => {
 }
 
 export async function doApprove(walletClient: WalletClient, contract: Address, spender: Address, amount: bigint) {
-  const txHash = await executeAppove(walletClient, contract, spender, amount)
+  const txHash = await executeApprove(walletClient, contract, spender, amount)
   return await waitForTransaction(txHash)
 }
 
@@ -38,7 +48,7 @@ export const getTgUsdMarketRecordData = async (address: Address | undefined, mar
 }
 
 export const transformMarketData = (onChainData: ChainViewMarketRow, collateralInfo: CollateralInfo): MarketDetailData => {
-  const staticMarketData = tgUsdMarkets.find((m) => m.marketAddress === onChainData.marketAddress)
+  const staticMarketData = USGMarkets.find((m) => m.marketAddress === onChainData.marketAddress)
   return {
     marketAddress: onChainData.marketAddress as Address,
     collateralInfo,
@@ -134,20 +144,10 @@ export function getComputedFutureLoanData(
   } as TgUsdMarketLoanDisplayData
 }
 
-export async function loadMarketServerData(collateral: ExistingAsset) {
-  const tgUSDInfo = {
-    address: tgUsdMarkets.find((market) => market.marketName === "USG")?.collatAddress as Address,
-    decimals: 18,
-    displayDecimals: 2,
-    symbol: "USG",
-    name: "USG",
-    logo: "USG" as ExistingAsset,
-    price: 1,
-  }
-
-  const marketInfo = tgUsdMarkets.find((market) => market.marketName === collateral)
+export async function loadMarketServerData(collateral: string) {
+  const marketInfo = USGMarkets.find((market) => market.marketName === collateral)
   const collateralInfo = {
-    address: tgUsdMarkets.find((market) => market.marketName === collateral)?.collatAddress as Address,
+    address: USGMarkets.find((market) => market.marketName === collateral)?.collatAddress as Address,
     decimals: 18,
     displayDecimals: 2,
     symbol: collateral,
@@ -156,7 +156,7 @@ export async function loadMarketServerData(collateral: ExistingAsset) {
     price: 0,
   }
 
-  return { collateralInfo, tgUSDInfo, marketInfo }
+  return { collateralInfo, marketInfo }
 }
 
 export function getMarketDisplayData(marketData?: MarketDetailData, collateralInfo?: CollateralInfo) {
@@ -200,8 +200,8 @@ export function getMarketDisplayData(marketData?: MarketDetailData, collateralIn
     ltDollar: "-",
     maxLtv: formatNumber(Number(BigInt(marketData?.constants.maxLTV || 0n)) / 1000, 2) + "%",
     maxLtvDollar: formatDollar(Number(formatEther(BigInt(marketData?.constants.maxMarketDebt || 0n))), 2),
-    rewardsCutCurrent: formatNumber(Number(formatEther(BigInt(marketData?.debtInfos.currentRewardCut || 0n))), 2) + "%",
-    rewardsCutNext: formatNumber(Number(formatEther(BigInt(marketData?.debtInfos.futureRewardCut || 0n))), 2) + "%",
+    rewardsCutCurrent: formatNumber(Number(marketData?.debtInfos.currentRewardCut || 0n) / 1000, 0) + "%",
+    rewardsCutNext: formatNumber(Number(marketData?.debtInfos.futureRewardCut || 0n) / 1000, 0) + "%",
   } as TgUsdMarketDisplayData
 }
 
@@ -242,29 +242,107 @@ export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: st
   }
 }
 
-export const prepareZapTransaction = async (
-  amount: bigint,
-  tokenIn: Address,
-  tokenOut: Address,
-  marketInfo: { marketAddress: Address },
-  minAmountOut: bigint
-) => {
-  const routerCall = await getEnsoData(amount, tokenIn, tokenOut, TGUSD_CONTRACT.ZAPPER, marketInfo.marketAddress, minAmountOut)
-
-  if (!routerCall?.tx?.data) throw new Error("Failed to fetch routing data")
-
-  const zapMarketData = {
-    tokenIn: tokenIn,
-    amountIn: amount,
-    minAmountOut: 0n,
-  }
-
-  return { routerCallData: routerCall, zapMarketData }
-}
-
 export const computeMaxBorrowable = (maxBorrowable: bigint, maxMarketDebt: bigint, totalDebt: bigint) => {
   if (maxBorrowable < maxMarketDebt - totalDebt) {
     return maxBorrowable > 0n ? maxBorrowable : 0n
   }
   return maxMarketDebt - totalDebt
+}
+
+export const computeIR = (USGPrice: bigint, irParams: IrParams) => {
+  const USGPriceNumber = Number(formatUnits(USGPrice, 18))
+  const normalizedPMin = Number(formatUnits(BigInt(irParams.pMin), 6))
+  const normalizedPMax = Number(formatUnits(BigInt(irParams.pMax), 6))
+
+  if (USGPriceNumber <= normalizedPMin) {
+    const ir = Number(formatUnits(BigInt(irParams.rMax), 5))
+    const adjustedIR = Math.exp(ir) - 1
+    return parseEther(adjustedIR.toFixed(18))
+  }
+  if (USGPriceNumber >= normalizedPMax) {
+    if (irParams.isHEC) {
+      const ir = 0
+      const adjustedIR = Math.exp(ir) - 1
+      return parseEther(adjustedIR.toFixed(18))
+    }
+    const ir = Number(formatUnits(BigInt(irParams.rMin), 5))
+    const adjustedIR = Math.exp(ir) - 1
+    return parseEther(adjustedIR.toFixed(18))
+  }
+  const priceDelta = USGPriceNumber - Number(formatUnits(BigInt(irParams.pInf), 6))
+
+  const sigmaX = Number(irParams.k) * priceDelta
+
+  const exp = Math.exp(-sigmaX)
+
+  const sigma = 1 / (1 + exp)
+
+  const alpha1 = Number(irParams.a1) / 1_000
+  const alpha = alpha1 + (Number(irParams.a2) / 1_000 - alpha1) * sigma
+
+  const quotient = (normalizedPMax - USGPriceNumber) / (normalizedPMax - normalizedPMin)
+
+  const priceRatio = quotient ** alpha
+
+  const irIncrement = Number(formatUnits(BigInt(irParams.rMax) - BigInt(irParams.rMin), 5)) * priceRatio
+
+  const ir = Number(formatUnits(BigInt(irParams.rMin), 5)) + irIncrement
+
+  const adjustedIR = Math.exp(ir) - 1
+
+  return parseEther(adjustedIR.toFixed(18))
+}
+
+export const computeVAPR = (
+  collatVApr: bigint,
+  collatAmount: bigint,
+  userDebt: bigint,
+  debtRate: bigint,
+  debtFarmingAmount: number,
+  debtFarmingVApr: number,
+  totalCollateralAmount: bigint,
+  isLeveraged: boolean,
+  initialCollatAmount?: number
+) => {
+  try {
+    const debtFarmingBigInt = BigInt(debtFarmingAmount * 10 ** 18)
+    const debtVAPRBigInt = BigInt(debtFarmingVApr * 10 ** 18)
+    const initialCollatAmountBigInt = BigInt((initialCollatAmount || 1) * 10 ** 18)
+
+    let result: bigint
+    if (isLeveraged && initialCollatAmountBigInt) {
+      result = (totalCollateralAmount * collatVApr - userDebt * debtRate) / initialCollatAmountBigInt
+    } else {
+      result = ((collatVApr * collatAmount - userDebt * debtRate + debtFarmingBigInt * debtVAPRBigInt) * BigInt(10000)) / collatAmount
+    }
+
+    const vAPR = Number(result) / 100
+    if (!isFinite(vAPR)) {
+      return 0
+    }
+    return vAPR
+  } catch {
+    return 0
+  }
+}
+
+export const mapToTotalBorrow = (rows: MarketHistoricalData[]): TotalBorrow => {
+  if (!rows || rows.length === 0) {
+    return { latestTotalDebt: "0", data: [] }
+  }
+
+  const latest = rows.reduce((acc, cur) => (Date.parse(cur.timestamp) > Date.parse(acc.timestamp) ? cur : acc))
+
+  const data = rows
+    .slice()
+    .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp))
+    .map((r) => ({
+      timestamp: r.timestamp,
+      value: r.total_debt.toFixed(0),
+    }))
+
+  return {
+    latestTotalDebt: latest.total_debt.toFixed(0),
+    data,
+  }
 }

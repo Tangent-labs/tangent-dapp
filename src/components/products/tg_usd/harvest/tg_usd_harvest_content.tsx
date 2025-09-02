@@ -4,15 +4,9 @@ import HarvestList from "@/components/design_system/advanced/harvest/harvest_lis
 import { useTgUsdHarvestContext } from "./tg_usd_harvest_context"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
-type TgUsdHarvestContentProps = React.ButtonHTMLAttributes<HTMLDivElement>
-
-export default function TgUsdHarvestContent({ ...props }: TgUsdHarvestContentProps) {
+export const TgUsdHarvestContent = () => {
   const { displayRows, actionHarvest } = useTgUsdHarvestContext()
   const { canInteract } = useWalletConnexionContext()
 
-  return (
-    <div {...props}>
-      <HarvestList {...props} rows={displayRows} onHarvest={actionHarvest} canInteract={canInteract} />
-    </div>
-  )
+  return <HarvestList rows={displayRows} onHarvest={actionHarvest} canInteract={canInteract} />
 }

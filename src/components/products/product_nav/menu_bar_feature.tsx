@@ -3,7 +3,6 @@
 import { usePathname, useRouter } from "next/navigation"
 import { Logo } from "@/components/design_system/structure/logo"
 import { WalletConnexionButton } from "@/components/products/wallet/Wallet_connexion_button"
-import { MenuModal } from "@/components/design_system/structure/menu_modal"
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -27,10 +26,6 @@ export default function MenuBarFeature() {
           <div onClick={() => router.push("/")} className="flex cursor-pointer items-center gap-2 text-[20px] text-white">
             <Logo />
             Tangent
-          </div>
-
-          <div className="flex w-full items-center justify-center xl:hidden">
-            <MenuModal></MenuModal>
           </div>
 
           <NavigationMenu>
@@ -74,7 +69,7 @@ export default function MenuBarFeature() {
                   <NavigationMenuContent>
                     <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-black p-2">
                       <NavigationMenuLink onClick={() => router.push("/tan/lock")}>Lock</NavigationMenuLink>
-                      <NavigationMenuLink onClick={() => router.push("/tan/stan")}>Stake</NavigationMenuLink>
+                      <NavigationMenuLink onClick={() => router.push("/stan")}>Stake</NavigationMenuLink>
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuDropdown>
@@ -93,7 +88,7 @@ export default function MenuBarFeature() {
               </NavigationMenu>
             </NavigationMenuList>
 
-            <Button onClick={() => router.push("/swap")} className="ml-4 h-10 !px-8 font-roobert font-semibold text-white">
+            <Button onClick={() => router.push("/swap")} className="ml-4 hidden h-10 !px-8 font-roobert font-semibold text-white xl:flex">
               Buy USG
             </Button>
           </NavigationMenu>

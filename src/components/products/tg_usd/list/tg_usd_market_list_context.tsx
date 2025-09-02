@@ -37,14 +37,12 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
   const [searchValue, setSearchValue] = useState<string | null>(null)
 
   useEffect(() => {
-    loadOnChainData().then((data) => {
-      setOnChainData(data)
-    })
+    if (currentAddress) {
+      getTgUsdMarketsData(currentAddress).then((data) => {
+        setOnChainData(data)
+      })
+    }
   }, [currentAddress])
-
-  const loadOnChainData = async () => {
-    return getTgUsdMarketsData(currentAddress)
-  }
 
   const displayRows = useMemo<ListRowData[]>(() => {
     const allRows = transformToRows(getMarketDatas(), onChainData)

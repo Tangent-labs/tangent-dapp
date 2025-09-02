@@ -1,31 +1,41 @@
 "use client"
 
-import { createContext, ReactNode, useContext, useMemo, useState } from "react"
-import { AirdropTask } from "../tg_usd_type"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { mapAirdropData } from "./tg_usd_airdrop_controller"
 import { ListState } from "@/types"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { getUserTasks } from "../api"
+import { UserTask } from "../tg_usd_type"
 
 type TgUsdAirdropContextProps = {
   children: ReactNode
-  tasks: AirdropTask[]
 }
 
 type TgUsdAirdropContextValues = {
-  isLoading: boolean
-  tasks: AirdropTask[]
-  displayRows: AirdropTask[]
+  tasks: UserTask[]
+  displayRows: UserTask[]
   customSort: (arg: ListState) => void
 }
 
 export const TgUsdAirdropContext = createContext<TgUsdAirdropContextValues | undefined>(undefined)
 
-export const TgUsdAirdropProvider = ({ children, tasks }: TgUsdAirdropContextProps) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+export const TgUsdAirdropProvider = ({ children }: TgUsdAirdropContextProps) => {
+  const { currentAddress } = useWalletConnexionContext()
+
+  const [tasks, setTasks] = useState<UserTask[]>([])
+
+  useEffect(() => {
+    if (currentAddress) {
+      getUserTasks(currentAddress).then((userTasks) => {
+        setTasks(userTasks)
+      })
+    }
+  }, [currentAddress])
 
   const displayRows = useMemo(() => {
     if (!tasks) return []
+
     const rows = mapAirdropData(tasks)
-    setIsLoading(false)
 
     return rows
   }, [tasks])
@@ -33,9 +43,9 @@ export const TgUsdAirdropProvider = ({ children, tasks }: TgUsdAirdropContextPro
   const customSort = (listState: ListState) => {
     const { key, direction } = listState.sort!
 
-    displayRows.sort((elementA: AirdropTask, elementB: AirdropTask) => {
-      const aValue = elementA[key as keyof AirdropTask]
-      const bValue = elementB[key as keyof AirdropTask]
+    displayRows.sort((elementA: UserTask, elementB: UserTask) => {
+      const aValue = elementA[key as keyof UserTask]
+      const bValue = elementB[key as keyof UserTask]
 
       if (aValue < bValue) return direction === "asc" ? -1 : 1
       if (aValue > bValue) return direction === "asc" ? 1 : -1
@@ -45,7 +55,6 @@ export const TgUsdAirdropProvider = ({ children, tasks }: TgUsdAirdropContextPro
   }
 
   const contextValue: TgUsdAirdropContextValues = {
-    isLoading,
     tasks,
     displayRows,
     customSort,

@@ -1,5 +1,5 @@
 import { IconHourGlass } from "@/components/icons/icon_hourglass"
-import TgHoverCard from "../structure/tg_hover_card"
+import USGHoverCard from "../structure/usg_hover_card"
 
 interface ListAprIndicatorProps {
   helpMessage?: string
@@ -9,7 +9,7 @@ interface ListAprIndicatorProps {
 export default function ListAprIndicator({ helpMessage, className = "" }: ListAprIndicatorProps) {
   return (
     <div className={`ml-1 flex items-center gap-1 text-white ${className}`}>
-      <TgHoverCard title="">{helpMessage}</TgHoverCard>
+      <USGHoverCard title="">{helpMessage}</USGHoverCard>
 
       <IconHourGlass className="h-auto w-[20px] text-gray-400 text-row-tonic" />
     </div>

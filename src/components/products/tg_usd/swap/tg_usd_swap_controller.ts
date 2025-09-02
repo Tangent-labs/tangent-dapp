@@ -1,11 +1,10 @@
+import { AssetDataPriced } from "@/types"
+import WStable from "@/abi/USG/WStable.json"
+import IERC4626 from "@/abi/USG/IERC4626.json"
+import { getSwapAssetPrice } from "@/services/service_price"
+import { BalanceAllowanceData, SwapToken } from "../tg_usd_type"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, SendTransactionParameters, WalletClient, WriteContractParameters } from "viem"
-import IERC4626 from "@/abi/tgusd/IERC4626.json"
-import WStable from "@/abi/tgusd/WStable.json"
-import { BalanceAllowanceData, SwapToken } from "../tg_usd_type"
-import { getSwapAssetPrice } from "@/services/service_price"
-import { AssetDataPriced } from "@/types"
-import { getEnsoData } from "../api"
 
 export const computeSwapAssetPrice = async (tokens: SwapToken[], depositAsset: string) => {
   try {
@@ -115,20 +114,6 @@ export function getSwapFormState(
 
 export async function doSwap(walletClient: WalletClient, data: SendTransactionParameters) {
   return await walletClient?.sendTransaction(data)
-}
-
-export const fetchEnsoData = async (
-  depositWeiValue: bigint,
-  receiver: Address,
-  receiveAssetInfo: AssetDataPriced,
-  depositAssetInfo: AssetDataPriced,
-  minAmountOut: bigint
-) => {
-  const routerCall = await getEnsoData(depositWeiValue, depositAssetInfo?.address, receiveAssetInfo?.address, null, receiver, minAmountOut)
-
-  if (!routerCall) throw new Error("Failed to fetch routing data")
-
-  return { routerCallData: routerCall?.tx }
 }
 
 export const getABI = (depositSymbol: string, receiveSymbol: string) => {

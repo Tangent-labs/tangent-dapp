@@ -90,3 +90,19 @@ export const formatDisplayValue = (value: string | number): string => {
 export const formatBigIntAsNumber = (value: bigint, decimals: number, displayDecimals: number) => {
   return formatNumber(Number(formatUnits(value || 0n, decimals)), displayDecimals)
 }
+
+export const formatCompactDollar = (value: string | number): string => {
+  const number = typeof value === "string" ? parseFloat(value) : value
+
+  if (isNaN(number)) return "$0"
+
+  if (number >= 1_000_000_000) {
+    return `$${(number / 1_000_000_000).toFixed(2)}B`
+  } else if (number >= 1_000_000) {
+    return `$${(number / 1_000_000).toFixed(2)}M`
+  } else if (number >= 1_000) {
+    return `$${(number / 1_000).toFixed(2)}K`
+  } else {
+    return `$${number.toFixed(0)}`
+  }
+}

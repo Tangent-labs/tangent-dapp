@@ -1,16 +1,18 @@
 "use client"
 
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { BalanceAllowanceData, SwapToken, DepositReceiveAsset } from "../tg_usd_type"
-import { Abi, Address } from "viem"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
-import { SwapConfig, swapConfig } from "./swap_config"
-import { TGUSD_CONTRACT, tgUsdTokens } from "../tg_usd_repository"
-import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, fetchEnsoData, getABI, getSwapFormState } from "./tg_usd_swap_controller"
+import { toast } from "react-toastify"
+import { Abi, Address, SendTransactionParameters, WalletClient } from "viem"
 import { useTgUsdContext } from "../tg_usd_context"
-import { getQuote } from "../global_quote_controller"
+import { SwapConfig, swapConfig } from "./swap_config"
+import { getQuote, getRoute } from "../global_quote_controller"
+import { USG_CONTRACT, tgUsdTokens } from "../tg_usd_repository"
+import { ToastComponent } from "@/components/design_system/toast"
+import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { BalanceAllowanceData, SwapToken, DepositReceiveAsset } from "../tg_usd_type"
 import { getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_controller"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./tg_usd_swap_controller"
 
 type TgUsdSwapContextProps = {
   children: ReactNode
@@ -42,6 +44,9 @@ type TgUsdSwapContextValues = {
   isSwapLoading: boolean
   setIsSwapLoading: (arg: boolean) => void
 
+  slippage: number
+  setSlippage: (arg: number) => void
+
   balances: Record<Address, bigint> | null
 
   swapAssetPrice: number | null
@@ -59,6 +64,8 @@ type TgUsdSwapContextValues = {
   actionSwap: () => void
 
   actionApprove: () => void
+
+  toggleTokensSwitch: () => void
 
   formState: FormState
 
@@ -78,15 +85,15 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
   const [receiveAsset, setReceiveAsset] = useState<string>("USG")
 
-  const [depositAsset, setDepositAsset] = useState<string | null>(null)
+  const [depositAsset, setDepositAsset] = useState<string>("USDC")
 
   const [isSwapLoading, setIsSwapLoading] = useState(false)
+
+  const [slippage, setSlippage] = useState<number>(1)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
 
   const [receiveWeiValue, setReceiveWeiValue] = useState<bigint | undefined>()
-
-  const [ensoRouterAddress, setEnsoRouterAddress] = useState<Address | undefined>(undefined)
 
   const [swapAssetPrice, setSwapAssetPrice] = useState<number | null>(null)
 
@@ -162,18 +169,26 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
     return asset
   }, [depositAsset, swapAssetPrice])
 
-  const fetchBalanceAllowanceData = async () => {
+  useEffect(() => {
+    const walletClient = getWalletClient()
+    if (depositAssetInfo && receiveAssetInfo && walletClient) {
+      fetchBalanceAllowanceData(walletClient)
+    }
+  }, [depositAssetInfo, receiveAssetInfo, getWalletClient])
+
+  const fetchBalanceAllowanceData = async (walletClient: WalletClient) => {
     if (!depositAssetInfo || !receiveAssetInfo) return
 
     try {
-      const walletClient = getWalletClient()
-      if (!walletClient) throw new Error("Wallet client not found")
+      let spender = "" as Address
 
-      const quoteType = swapData?.quote
+      if (receiveAssetInfo?.address === USG_CONTRACT?.USG || depositAssetInfo?.address === USG_CONTRACT?.USG) {
+        spender = USG_CONTRACT.CURVE_ROUTER as Address
+      } else {
+        spender = USG_CONTRACT.ENSO_ROUTER as Address
+      }
 
-      const spenderAddress = (!!ensoRouterAddress && quoteType === "enso" ? ensoRouterAddress : receiveAssetInfo?.address) as Address
-
-      const data = await getBalancesAndAllowances(walletClient, depositAssetInfo.address, spenderAddress)
+      const data = await getBalancesAndAllowances(walletClient, depositAssetInfo.address, spender)
 
       setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
     } catch (error) {
@@ -265,7 +280,6 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
         if (quote) {
           setReceiveWeiValue(quote)
-          setEnsoRouterAddress(TGUSD_CONTRACT.ENSO_ROUTER as Address)
           setIsSwapLoading(false)
         }
       } catch (error) {
@@ -336,22 +350,22 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
     fetchSwapAssetData()
   }, [depositAsset])
 
-  useEffect(() => {
-    fetchBalanceAllowanceData()
-  }, [depositAssetInfo, receiveAssetInfo])
-
   const actionApprove = async () => {
     setIsLoading(true)
     const walletClient = getWalletClient()
 
     if (walletClient && receiveAssetInfo && depositAssetInfo) {
-      const quoteType = swapData?.quote
+      let spender = "" as Address
 
-      const spender = (!!ensoRouterAddress && quoteType === "enso" ? ensoRouterAddress : receiveAssetInfo?.address) as Address
+      if (receiveAssetInfo?.address === USG_CONTRACT?.USG || depositAssetInfo?.address === USG_CONTRACT?.USG) {
+        spender = USG_CONTRACT.CURVE_ROUTER as Address
+      } else {
+        spender = USG_CONTRACT.ENSO_ROUTER as Address
+      }
 
       await doApprove(walletClient, depositAssetInfo?.address, depositWeiValue || 0n, spender)
         .then(() => {
-          fetchBalanceAllowanceData()
+          fetchBalanceAllowanceData(walletClient)
           setIsLoading(false)
         })
         .catch((error) => {
@@ -365,51 +379,59 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
     setIsLoading(true)
 
     if (!depositAssetInfo || !receiveAssetInfo || !depositWeiValue) return
-
     const walletClient = getWalletClient()
-
     const swapFn = swapData?.swap
 
     if (swapFn && walletClient) {
       const contract = getABI(depositAssetInfo?.symbol, receiveAssetInfo?.symbol)
-
       const quoteType = swapData?.quote
-
       const contractSymbol = swapData?.contract
-
       const swapContractToken = [depositAssetInfo, receiveAssetInfo].find((el) => el.symbol === contractSymbol)?.address as Address
 
       doCustomSwap(walletClient, contract?.abi as Abi, swapFn, depositWeiValue || 0n, swapContractToken, quoteType === "enso")
         .then(() => {
-          setDepositWeiValue(undefined)
+          setDepositWeiValue(0n)
           setReceiveWeiValue(undefined)
-          fetchBalanceAllowanceData()
+          fetchBalanceAllowanceData(walletClient)
           setIsLoading(false)
         })
-        .catch((error) => {
-          console.error("Error during doCustomSwap:", error)
+        .catch(() => {
+          toast.error(ToastComponent, { data: { type: "Error", content: "Swap failed." } })
           setIsLoading(false)
         })
     } else {
       if (!depositWeiValue || !currentAddress) return
 
       try {
-        const { routerCallData } = await fetchEnsoData(depositWeiValue, currentAddress, receiveAssetInfo, depositAssetInfo, receiveWeiValue!)
+        const routeData = await getRoute(
+          depositAssetInfo?.address,
+          receiveAssetInfo?.address,
+          depositWeiValue,
+          (BigInt(receiveWeiValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+          currentAddress,
+          currentAddress
+        )
 
-        doSwap(walletClient!, routerCallData)
+        const tx = {
+          data: routeData?.data as `0x${string}`,
+          to: routeData?.routerAddress,
+          value: 0n,
+        } as SendTransactionParameters
+
+        doSwap(walletClient!, tx)
           .then(() => {
             setDepositWeiValue(undefined)
             setReceiveWeiValue(undefined)
-            fetchBalanceAllowanceData()
+            fetchBalanceAllowanceData(walletClient!)
             setIsLoading(false)
+            toast.success(ToastComponent, { data: { type: "Success", content: "Swap successful!" } })
           })
-          .catch((error) => {
-            console.error("Error during swap:", error)
+          .catch(() => {
+            toast.error(ToastComponent, { data: { type: "Error", content: "Swap failed." } })
             setIsLoading(false)
           })
       } catch (error) {
         console.error("Error in actionSwap:", error)
-      } finally {
         setIsLoading(false)
       }
     }
@@ -431,7 +453,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
                 quote: "enso",
                 swap: null,
                 isStaked: false,
-                contract: TGUSD_CONTRACT.ENSO_ROUTER,
+                contract: USG_CONTRACT.ENSO_ROUTER,
               }
         )
       } catch {
@@ -440,7 +462,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
           quote: "enso",
           swap: null,
           isStaked: false,
-          contract: TGUSD_CONTRACT.ENSO_ROUTER,
+          contract: USG_CONTRACT.ENSO_ROUTER,
         })
       }
     }
@@ -460,12 +482,10 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
     [depositWeiValue, receiveWeiValue, isWellConnected, depositAssetInfo, receiveAssetInfo, balanceAllowanceData!]
   )
 
-  useEffect(() => {
-    if (!depositAsset || !receiveAsset) return
-
+  const toggleTokensSwitch = () => {
     setReceiveAsset(depositAsset)
     setDepositAsset(receiveAsset)
-  }, [isBuying])
+  }
 
   const computedAssets = useMemo(() => {
     if (!balances) return { depositAssets: [], receiveAssets: [] }
@@ -585,6 +605,9 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
     computedAssets,
     depositSliderPercent,
     setDepositSliderPercent,
+    slippage,
+    setSlippage,
+    toggleTokensSwitch,
   }
 
   return <TgUsdSwapContext.Provider value={contextValue}>{children}</TgUsdSwapContext.Provider>

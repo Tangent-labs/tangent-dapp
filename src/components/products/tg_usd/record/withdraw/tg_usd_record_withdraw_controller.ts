@@ -1,6 +1,6 @@
 import { Abi, WalletClient } from "viem"
 import { MarketDetailData, TgUsdtMarketWitrhdrawParams } from "../../tg_usd_type"
-import MarketExternalActions from "@/abi/tgusd/MarketExternalActions.json"
+import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
 
 export function getWithdrawFormState(marketData: MarketDetailData, withdrawWeiValue: bigint, maxWithdrawable: bigint, isWellConnected?: boolean) {

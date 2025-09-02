@@ -1,20 +1,18 @@
 "use client"
 
-import { IconWallet } from "@/components/icons/icon_wallet"
+import { cn } from "@/lib/utils"
+import { formatUnits } from "viem"
 import { AssetDataPriced } from "@/types"
+import BorderPanel from "../structure/border_panel"
+import { IconChevron } from "@/components/icons/icon_chevron"
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
-import { formatUnits } from "viem"
-import { cn } from "@/lib/utils"
-import { IconChevron } from "@/components/icons/icon_chevron"
-import BorderPanel from "../structure/border_panel"
 
 type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
   receiveAsset?: AssetDataPriced
   depositAmount?: bigint
   depositBalance?: bigint
-  receiveBalance?: bigint
   disabled?: boolean
   labelDeposit?: string
   receiveAmount?: bigint
@@ -23,19 +21,19 @@ type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositInput?: ReactNode
   receiveSelect?: ReactNode
   onValueChange: (value: bigint | undefined) => void
-  onTangentValueChange: (value: bigint | undefined) => void
+  onReceiveValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
   isLoading?: boolean
   isBuying?: boolean
   setIsBuying: (arg: boolean) => void
   percentage?: number
   setPercentage?: (value: number) => void
+  toggleTokensSwitch: () => void
 }
 
 export function BuySellInput({
   depositAmount,
   depositBalance,
-  receiveBalance,
   depositAsset,
   receiveAsset,
   receiveAmount,
@@ -43,7 +41,7 @@ export function BuySellInput({
   labelReceive = "You Buy",
   setMaxBalance,
   onValueChange,
-  onTangentValueChange,
+  onReceiveValueChange,
   depositSelect = <></>,
   receiveSelect = <></>,
   isBuying = false,
@@ -51,6 +49,7 @@ export function BuySellInput({
   isLoading = false,
   percentage = 0,
   setPercentage,
+  toggleTokensSwitch,
   disabled,
   ...props
 }: BuySellInputProps) {
@@ -124,7 +123,7 @@ export function BuySellInput({
 
     const handler = setTimeout(() => {
       const val = innerTangentValue !== undefined ? toBigInt(Number(innerTangentValue), receiveAsset?.decimals || 18) : undefined
-      onTangentValueChange(val)
+      onReceiveValueChange(val)
     }, 500)
 
     return () => clearTimeout(handler)
@@ -154,11 +153,6 @@ export function BuySellInput({
     return `(${formatDollar(val)})`
   }, [depositAmount, depositAsset])
 
-  const displayReceiveBalanceData = useMemo(() => {
-    const formattedBalance = formatBigInt(receiveBalance || "0", receiveAsset?.decimals || 18, receiveAsset?.displayDecimals || 2)
-    return `${formattedBalance} ${receiveAsset?.symbol || ""}`
-  }, [receiveBalance, receiveAsset])
-
   const dollarReceiveDisplay = useMemo(() => {
     const val = Number(formatUnits(receiveAmount || BigInt(0), receiveAsset?.decimals || 0)) * (receiveAsset?.price || 0)
     return val?.toFixed(2) || "-"
@@ -177,7 +171,7 @@ export function BuySellInput({
       </div>
 
       <div className={cn("flex flex-col")} {...props}>
-        <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2`}>
+        <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2 hover:bg-white/10`}>
           <div className="flex w-full justify-between">
             <div className="text-sm text-gray-400">{labelDeposit}</div>
           </div>
@@ -256,11 +250,17 @@ export function BuySellInput({
           </div>
         </BorderPanel>
 
-        <div onClick={() => setIsBuying(!isBuying)} className="my-2 flex w-full cursor-pointer items-center justify-center border-none">
+        <div
+          onClick={() => {
+            toggleTokensSwitch()
+            setIsBuying(!isBuying)
+          }}
+          className="my-2 flex w-full cursor-pointer items-center justify-center border-none"
+        >
           <IconChevron className="h-auto w-8 rounded-lg border border-white/10 p-2 backdrop-blur-[60px] hover:border-white hover:stroke-black" />
         </div>
 
-        <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2`}>
+        <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2 hover:bg-white/10`}>
           <div className="text-sm text-gray-400">{labelReceive}</div>
           <div className="mb-2 flex justify-between">
             <div className="mr-4 text-xl font-medium">
@@ -278,16 +278,6 @@ export function BuySellInput({
           </div>
           <div className="flex justify-between text-xs text-gray-400">
             <div>$({dollarReceiveDisplay})</div>
-            <button
-              className="flex cursor-pointer items-center"
-              type="button"
-              onClick={() => {
-                if (setMaxBalance) setMaxBalance()
-              }}
-            >
-              <span>{displayReceiveBalanceData}</span>
-              <IconWallet className="w-6" />
-            </button>
           </div>
         </BorderPanel>
       </div>

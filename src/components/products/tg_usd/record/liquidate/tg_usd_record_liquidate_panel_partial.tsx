@@ -11,7 +11,7 @@ import BorderPanel from "@/components/design_system/structure/border_panel"
 import { TgUsdStaticAssetSelector } from "./tg_usd_record_liquidate_panel"
 
 export default function TgUsdLiquidatePanelPartial() {
-  const { tgUSDInfo, collateralInfo } = useTgUsdRecordContext()
+  const { USGInfo, collateralInfo } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -71,7 +71,7 @@ export default function TgUsdLiquidatePanelPartial() {
         depositSelect={<TgUsdStaticAssetSelector />}
         disabled={true}
         displaySliderInput={false}
-        depositAsset={tgUSDInfo}
+        depositAsset={USGInfo}
         setMaxBalance={() => {}}
         onValueChange={() => {}}
         isLoading={isQuoteLoading}
@@ -93,7 +93,7 @@ export default function TgUsdLiquidatePanelPartial() {
         displaySliderInput={true}
         percentage={repayablePercentage}
         setPercentage={setRepayablePercentage}
-        depositAsset={tgUSDInfo}
+        depositAsset={USGInfo}
         setMaxBalance={() => setRepayWeiValue(maxRepayable)}
         balance={maxRepayable}
         onValueChange={(value: bigint | undefined) => {
@@ -107,7 +107,7 @@ export default function TgUsdLiquidatePanelPartial() {
         depositSelect={<TgUsdStaticAssetSelector />}
         disabled={true}
         displaySliderInput={false}
-        depositAsset={tgUSDInfo}
+        depositAsset={USGInfo}
         setMaxBalance={() => {}}
         onValueChange={() => {}}
         isLoading={isQuoteLoading}

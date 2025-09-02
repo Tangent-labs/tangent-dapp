@@ -3,6 +3,7 @@
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { ExistingAsset, ListState } from "@/types"
+import { useTgUsdContext } from "../tg_usd_context"
 import { useTgUsdEarnContext } from "./tg_usd_earn_context"
 import ListRow from "@/components/design_system/list/list_row"
 import { tgUsdEarnListHeaders } from "./tg_usd_earn_controller"
@@ -12,6 +13,7 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import ListAprIndicator from "@/components/design_system/list/list_apr_indicator"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import { formatNumber } from "@/lib/number_formatter"
 
 const listeState: ListState = {
   search: undefined,
@@ -24,10 +26,12 @@ const listeState: ListState = {
 export const TgUsdEarnContent = () => {
   const { searchValue, setSearchValue, displayRows } = useTgUsdEarnContext()
 
+  const { userPoints } = useTgUsdContext()
+
   return (
     <>
       <div className="flex items-center justify-between gap-6">
-        <div className="tgusd-card hidden w-7/12 xl:flex">
+        <div className="usg-header hidden w-7/12 xl:flex">
           <div className="flex items-center justify-center">
             <Image height={160} width={160} src="/medias/tokens/tgUSD_header.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
@@ -46,7 +50,7 @@ export const TgUsdEarnContent = () => {
             <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
           </div>
 
-          <div className="mt-auto flex w-full items-center justify-center gap-3 p-2">
+          <div className="mt-auto flex w-full items-center justify-center gap-1 p-2 md:gap-3">
             <div
               className={cn(
                 "flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48"
@@ -67,7 +71,7 @@ export const TgUsdEarnContent = () => {
 
             <div className="flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48">
               <span className="text-xs text-gray-400">Your Total Points</span>
-              <span className="text-sm font-semibold">1385 pts</span>
+              <span className="text-sm font-semibold">{formatNumber(userPoints.totalPoints, 0)}</span>
             </div>
           </div>
         </div>
@@ -107,7 +111,7 @@ export function TgUsdMarketListInner() {
       {displayRows?.map((item, index) => (
         <ListRow className="my-2" key={index} navigate={() => {}}>
           <div className="relative flex items-center gap-4">
-            <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-20" />
+            <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-12 md:w-20" />
 
             <div className="flex flex-col leading-8">
               <span className="text-[14px] font-semibold md:text-[20px]">{item?.asset}</span>
@@ -124,7 +128,7 @@ export function TgUsdMarketListInner() {
 
           <div className="flex w-full items-center gap-2">
             <div className="flex w-1/2 items-center justify-center gap-2">
-              <div className="flex flex-col items-center justify-center text-center">
+              <div className="flex flex-row items-center justify-center text-center md:flex-col">
                 <span className="flex items-center justify-center bg-button-active bg-clip-text text-[20px] font-semibold leading-4 text-transparent">
                   {item?.currentAPR}% <ListAprIndicator helpMessage="This is the APR" />
                 </span>
@@ -134,7 +138,7 @@ export function TgUsdMarketListInner() {
                   </span>
                 )}
 
-                <span className="text-xs">Up to 150.35% at x10</span>
+                <span className="hidden text-xs md:flex">Up to 150.35% at x10</span>
               </div>
             </div>
 

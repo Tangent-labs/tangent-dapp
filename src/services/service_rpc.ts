@@ -27,6 +27,14 @@ export const chain: Chain = {
   name: dappConfig.chain.name,
 }
 
+export const getCurrentBlock = async () => {
+  const publicClient = await getPublicClient()
+  const currentBlockNumber = await publicClient.getBlockNumber()
+  const block = await publicClient.getBlock({ blockNumber: currentBlockNumber })
+
+  return block
+}
+
 export const getPublicClient = () => {
   const publicClient = createPublicClient({
     chain,
@@ -59,22 +67,9 @@ export const getApproveTx = (contract: Address, spender: Address, amount: bigint
     gas: undefined,
     address: contract,
   }
-
-  // // Encoded TX
-  // return {
-  //   encoded: {
-  //     to: contract,
-  //     data: encodeFunctionData(data),
-  //   },
-  //   raw: {
-  //     ...data,
-  //     address: contract,
-  //     gas: undefined,
-  //   },
-  // }
 }
 
-export const executeAppove = async (client: WalletClient, contract: Address, spender: Address, amount: bigint) => {
+export const executeApprove = async (client: WalletClient, contract: Address, spender: Address, amount: bigint) => {
   const txData = getApproveTx(contract, spender, amount)
   return executeContractCall(client, txData as TxContractCallData)
 }

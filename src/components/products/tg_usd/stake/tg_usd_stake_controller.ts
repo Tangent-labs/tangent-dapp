@@ -1,16 +1,17 @@
 import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
 import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import yearnV3Vault from "../../../../abi/tgusd/YearnV3Vault.json"
-import stakeUI from "../../../../abi/tgusd/sgUSDUI.json"
+import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
+import sUSGUI from "../../../../abi/USG/sUSGUI.json"
 import { StakingInfo } from "../tg_usd_type"
-import { TGUSD_CONTRACT } from "../tg_usd_repository"
+import { USG_CONTRACT } from "../tg_usd_repository"
+import { formatNumber } from "@/lib/number_formatter"
 
 export async function getTgUsdStakeOnChainData(currentAddress: Address | undefined) {
-  return await executeChainViewUnique<StakingInfo>(stakeUI.abi as Abi, stakeUI.bytecode as Hex, [
+  return await executeChainViewUnique<StakingInfo>(sUSGUI.abi as Abi, sUSGUI.bytecode as Hex, [
     currentAddress,
-    TGUSD_CONTRACT.USG_ORACLE,
-    TGUSD_CONTRACT.USG,
-    TGUSD_CONTRACT.SUSG,
+    USG_CONTRACT.USG_ORACLE,
+    USG_CONTRACT.USG,
+    USG_CONTRACT.SUSG,
   ])
 }
 
@@ -21,12 +22,12 @@ export function getFormState(stakeInfo: StakingInfo, currentFeature: "stake" | "
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
   } else {
-    isApproved = (currentFeature === "stake" && !!stakeInfo?.tgUSDAllowance && (weiValue || 0n) <= stakeInfo?.tgUSDAllowance) || currentFeature === "unstake"
+    isApproved = (currentFeature === "stake" && !!stakeInfo?.USGAllowance && (weiValue || 0n) <= stakeInfo?.USGAllowance) || currentFeature === "unstake"
     if (weiValue === 0n) {
       reasons.push("No amount.")
-    } else if (currentFeature === "stake" && (weiValue || 0n) > (stakeInfo?.tgUSDBalance || 0n)) {
+    } else if (currentFeature === "stake" && (weiValue || 0n) > (stakeInfo?.USGBalance || 0n)) {
       reasons.push("Not enough balance.")
-    } else if (currentFeature === "unstake" && (weiValue || 0n) > (stakeInfo?.sgUSDBalance || 0n)) {
+    } else if (currentFeature === "unstake" && (weiValue || 0n) > (stakeInfo?.sUSGBalance || 0n)) {
       reasons.push("Not enough balance.")
     }
     if (!expected || expected === 0n) {
@@ -36,7 +37,7 @@ export function getFormState(stakeInfo: StakingInfo, currentFeature: "stake" | "
   return { canProcess: isApproved && reasons.length === 0, cantProcessReasons: reasons, haveToApprove: !isApproved }
 }
 
-export const getExpectedTgUSD = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
+export const getExpectedUSG = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
   const [account] = await walletClient.requestAddresses()
 
   const params = [weiValue]
@@ -132,9 +133,9 @@ export const computeProjection = (stakeInfo: StakingInfo, timeFrame: number, apr
 
   if (addedLiquidity) {
     projection =
-      (Number(formatUnits(addedLiquidity, 18)) + Number(formatUnits(stakeInfo?.sgUSDBalance || 0n, 18))) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
+      (Number(formatUnits(addedLiquidity, 18)) + Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18))) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
   } else {
-    projection = Number(formatUnits(stakeInfo?.sgUSDBalance || 0n, 18)) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
+    projection = Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
   }
-  return projection
+  return formatNumber(projection, 0)
 }

@@ -18,7 +18,7 @@ type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   LeverageInput?: ReactNode
   isLoading?: boolean
   percentage?: number
-  onValueChange: (value: bigint | undefined) => void
+  onValueChange: (value: bigint) => Promise<void>
   setPercentage?: (value: number) => void
 }
 
@@ -77,15 +77,15 @@ export function LeverageInput({
   }
 
   useEffect(() => {
-    if (!depositAsset?.decimals) return
+    if (!depositAsset?.decimals || !innerValue) return
 
     const handler = setTimeout(() => {
       const val = innerValue ? toBigInt(Number(innerValue), depositAsset.decimals) : undefined
-      onValueChange(val)
-    }, 500)
+      onValueChange(val!)
+    }, 1000)
 
     return () => clearTimeout(handler)
-  }, [innerValue, depositAsset, onValueChange])
+  }, [innerValue, depositAsset])
 
   const dollarDepositDisplay = useMemo(() => {
     if (innerValue && borrowAsset?.decimals && borrowAsset?.price) {

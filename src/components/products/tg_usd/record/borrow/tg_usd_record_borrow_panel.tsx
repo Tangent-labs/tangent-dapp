@@ -12,7 +12,7 @@ import BorderPanel from "@/components/design_system/structure/border_panel"
 export default function TgUsdBorrowPanel() {
   const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, borrowPercentage, maxBorrowableValue } = useTgUsdBorrowContext()
 
-  const { tgUSDInfo } = useTgUsdRecordContext()
+  const { USGInfo } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -39,7 +39,7 @@ export default function TgUsdBorrowPanel() {
           labelDeposit="You borrow"
           depositSelect={<BorrowAssetDisplay />}
           disabled={!canInteract}
-          borrowAsset={tgUSDInfo}
+          borrowAsset={USGInfo}
           setMaxBalance={() => setBorrowWeiValue(maxBorrowableValue)}
           balance={maxBorrowableValue}
           onValueChange={(value: bigint | undefined) => {

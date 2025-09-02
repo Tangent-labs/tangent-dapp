@@ -7,12 +7,12 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { formatUnits, parseEther } from "viem"
 import { useTgUsdContext } from "../../tg_usd_context"
-import { getQuote, returnRoute } from "../../global_quote_controller"
+import { getQuote, getRoute } from "../../global_quote_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./tg_usd_record_leverage_controller"
 import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
-import { TGUSD_CONTRACT } from "../../tg_usd_repository"
+import { USG_CONTRACT } from "../../tg_usd_repository"
 import { formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 
 type TgUsdLeverageContextProps = {
@@ -75,6 +75,8 @@ type TgUsdLeverageContextValues = {
   estimatedZapDollarValue: string
 
   leverageExceedsMaxLtv: boolean
+
+  updateBorrowWeiValue: (value: bigint) => Promise<void>
 }
 
 export const TgUsdLeverageContext = createContext<TgUsdLeverageContextValues | undefined>(undefined)
@@ -84,13 +86,13 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
   const {
     marketData,
-    loadOnChainData,
-    setCurrentAmounts,
+    marketInfo,
     balanceAllowanceData,
     futureMarketDisplayData,
-    fetchBalanceAllowanceData,
     collateralInfo,
-    marketInfo,
+    fetchBalanceAllowanceData,
+    loadOnChainData,
+    setCurrentAmounts,
   } = useTgUsdRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
@@ -234,12 +236,20 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
   }, [depositAsset])
 
   useEffect(() => {
-    setCurrentAmounts({
-      depositWeiValue: (depositWeiValue || 0n) + (leveragedCollateralQuote || 0n),
-      borrowWeiValue: borrowWeiValue || 0n,
-      zapValue: !!zapValue ? (BigInt(zapValue) || 0n) + (leveragedCollateralQuote || 0n) : 0n,
-    })
-  }, [depositWeiValue, borrowWeiValue, zapValue, leveragedCollateralQuote])
+    if (zapValue && depositWeiValue && borrowWeiValue && leveragedCollateralQuote && !isDepositLoading) {
+      setCurrentAmounts({
+        depositWeiValue: (depositWeiValue || 0n) + (leveragedCollateralQuote || 0n),
+        borrowWeiValue: borrowWeiValue || 0n,
+        zapValue: (BigInt(zapValue) || 0n) + (leveragedCollateralQuote || 0n),
+      })
+    } else if (depositWeiValue && borrowWeiValue && leveragedCollateralQuote && !isDepositLoading) {
+      setCurrentAmounts({
+        depositWeiValue: (depositWeiValue || 0n) + (leveragedCollateralQuote || 0n),
+        borrowWeiValue: borrowWeiValue || 0n,
+        zapValue: 0n,
+      })
+    }
+  }, [depositWeiValue, borrowWeiValue, zapValue, leveragedCollateralQuote, isDepositLoading])
 
   const actionApproveZap = async () => {
     setIsDepositLoading(true)
@@ -277,16 +287,16 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
       loadOnChainData()
       if (!walletClient || !currentAddress || !depositWeiValue || !borrowWeiValue || !depositAssetInfo) return
 
-      const leverageData = await returnRoute(
-        TGUSD_CONTRACT.USG,
+      const leverageData = await getRoute(
+        USG_CONTRACT.USG,
         marketInfo?.collatAddress,
         borrowWeiValue,
         (BigInt(leveragedCollateralQuote!) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         marketInfo?.marketAddress,
-        TGUSD_CONTRACT.ZAPPER
+        USG_CONTRACT.ZAPPER
       )
 
-      const zapData = await returnRoute(
+      const zapData = await getRoute(
         depositAssetInfo?.address,
         marketInfo?.collatAddress,
         depositWeiValue,
@@ -334,13 +344,13 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
     loadOnChainData()
     if (!walletClient || !currentAddress || !leveragedCollateralQuote || !borrowWeiValue) return
 
-    const leverageData = await returnRoute(
-      TGUSD_CONTRACT.USG,
+    const leverageData = await getRoute(
+      USG_CONTRACT.USG,
       marketInfo?.collatAddress,
       borrowWeiValue,
       leveragedCollateralQuote,
       marketInfo?.marketAddress,
-      TGUSD_CONTRACT.ZAPPER
+      USG_CONTRACT.ZAPPER
     )
 
     doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, leverageData!)
@@ -361,6 +371,8 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
   }
 
   const quoteDetail = useMemo(() => {
+    setIsDepositLoading(false)
+
     if (!!zapValue) {
       const sum = ` ${formatBigIntAsNumber(zapValue || 0n, 18, 0)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 0)}  ~= `
       const result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + BigInt(zapValue || 0n), 18, 0)}  ${collateralInfo?.symbol}`
@@ -427,19 +439,12 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
     }
   }, [depositAssetInfo])
 
-  useEffect(() => {
-    const computeQuote = async (value: bigint) => {
-      const { quote } = await getQuote(value, currentAddress!, marketInfo?.collatAddress, TGUSD_CONTRACT.USG)
-
-      setIsDepositLoading(false)
-      setLeveragedCollateralQuote(quote)
-    }
-
-    if (borrowWeiValue) {
-      setIsDepositLoading(true)
-      computeQuote(borrowWeiValue)
-    }
-  }, [borrowWeiValue])
+  const updateBorrowWeiValue = async (value: bigint) => {
+    setIsDepositLoading(true)
+    const { quote } = await getQuote(value, currentAddress!, marketInfo?.collatAddress, USG_CONTRACT.USG)
+    setLeveragedCollateralQuote(quote)
+    setBorrowWeiValue(value)
+  }
 
   useEffect(() => {
     if (zapValue !== undefined) {
@@ -523,6 +528,8 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
     quoteDetail,
 
     leverageExceedsMaxLtv,
+
+    updateBorrowWeiValue,
   }
 
   return <TgUsdLeverageContext.Provider value={contextValue}>{children}</TgUsdLeverageContext.Provider>

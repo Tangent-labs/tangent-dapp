@@ -1,7 +1,11 @@
 "use client"
 
-import { createContext, ReactNode, useContext } from "react"
-import { ZapToken } from "./tg_usd_type"
+import { Address } from "viem"
+import { getUserPoints } from "./api"
+import { UserPoints, ZapToken } from "./tg_usd_type"
+import { getBalances } from "./record/tg_usd_record_controller"
+import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
+import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 
 type TgUsdContextProps = {
   children: ReactNode
@@ -10,13 +14,50 @@ type TgUsdContextProps = {
 
 type TgUsdContextValues = {
   tokens: ZapToken[]
+  balances: Record<Address, bigint> | null
+  userPoints: UserPoints
 }
 
 export const TgUsdContext = createContext<TgUsdContextValues | undefined>(undefined)
 
 export const TgUsdProvider = ({ children, tokens }: TgUsdContextProps) => {
+  const { currentAddress } = useWalletConnexionContext()
+
+  const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
+
+  const [userPoints, setUserPoints] = useState<UserPoints>({ basePoints: 0, referralPoints: 0, totalPoints: 0, dailyRate: 0 })
+
+  useEffect(() => {
+    if (currentAddress) {
+      getUserPoints(currentAddress).then((p) => {
+        setUserPoints(p)
+      })
+    }
+  }, [currentAddress])
+
+  useEffect(() => {
+    const tokenAddresses: Address[] = tokens.map((el) => el.address)
+
+    if (currentAddress && tokenAddresses.length > 0) {
+      getBalances(currentAddress, tokenAddresses).then((data) => {
+        if (data) {
+          const tokenBalances = tokenAddresses.reduce(
+            (acc, address, index) => {
+              acc[address] = data[index] || BigInt(0)
+              return acc
+            },
+            {} as Record<Address, bigint>
+          )
+          setBalances(tokenBalances)
+        }
+      })
+    }
+  }, [currentAddress, tokens])
+
   const contextValue: TgUsdContextValues = {
     tokens,
+    balances,
+    userPoints,
   }
 
   return <TgUsdContext.Provider value={contextValue}>{children}</TgUsdContext.Provider>

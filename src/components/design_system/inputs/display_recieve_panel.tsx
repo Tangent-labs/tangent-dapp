@@ -1,3 +1,4 @@
+import { formatDollar } from "@/lib/number_formatter"
 import PanelRaw from "../structure/panel_raw"
 import { cn } from "@/lib/utils"
 
@@ -24,7 +25,7 @@ const DisplayReceivePanel: React.FC<DisplayReceivePanelProps> = ({
         <div>{receiveAssetDisplay}</div>
       </div>
       <div className="flex justify-between text-xs text-gray-400">
-        <div>$({receiveDollarValue})</div>
+        <div>({formatDollar(receiveDollarValue)})</div>
       </div>
     </PanelRaw>
   )

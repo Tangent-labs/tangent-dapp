@@ -1,0 +1,362 @@
+"use client"
+
+import Image from "next/image"
+import { ExistingAsset } from "@/types"
+import { InfinityIcon } from "lucide-react"
+import { Switch } from "@/components/ui/switch"
+import { formatDate } from "@/lib/other_formatter"
+import { IconCircleHelp } from "@/components/icons"
+import { VSTAN_CONTRACT } from "../rs_tan_repository"
+import { formatBigInt } from "@/lib/number_formatter"
+import { useRsTanContext } from "../rstan_layout_context"
+import { useRsTanLockContext } from "./rstan_lock_context"
+import { useTgUsdContext } from "../../tg_usd/tg_usd_context"
+import { IconThunder } from "@/components/icons/icon_thunder"
+import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
+import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
+import ButtonTab from "@/components/design_system/inputs/button_tab"
+import PanelRaw from "@/components/design_system/structure/panel_raw"
+import FormButtons from "@/components/design_system/form/form_actions"
+import InputSelect from "@/components/design_system/inputs/input_select"
+import TokenImage from "@/components/design_system/structure/token_image"
+import BorderPanel from "@/components/design_system/structure/border_panel"
+import EvolutionBox from "@/components/design_system/structure/evolution_box"
+import { LockPositionSelectTemplate, ZapToken } from "../../tg_usd/tg_usd_type"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { InputSelectLockPosition } from "@/components/design_system/inputs/input_select_lock_position"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+
+export default function RsTanLockContent() {
+  const { lockData } = useRsTanContext()
+
+  const { tokens, balances } = useTgUsdContext()
+
+  const {
+    depositWeiValue,
+    depositPositionInfo,
+    depositPosition,
+    computedNewLockValue,
+    computedNewEndLockTime,
+    isPermaLock,
+    isLoading,
+    formState,
+    depositAsset,
+    zapValue,
+    zapInnerValue,
+    estimatedZapDollarValue,
+    isZapLoading,
+    depositAssetInfo,
+    maxAmountToDeposit,
+    slippage,
+    setSlippage,
+    setDepositAsset,
+    setDepositWeiValue,
+    setDepositPosition,
+    actionLock,
+    actionZapAndLock,
+    actionApprove,
+    actionApproveZap,
+    setIsPermaLock,
+    handleZapInputChange,
+    handleDepositChange,
+  } = useRsTanLockContext()
+
+  const PositionSelectTemplate = (option: LockPositionSelectTemplate) => {
+    return (
+      <>
+        {option && option?.tokenId ? (
+          <div className="flex items-center gap-2">
+            <span className="text-md font-semibold text-white">#{option.tokenId}</span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <span className="text-md font-semibold text-white">New</span>
+          </div>
+        )}
+      </>
+    )
+  }
+
+  const PositionSelect = () => {
+    if (!lockData) {
+      return (
+        <InputSelect
+          placeholder="New"
+          label="Select position"
+          className="w-full min-w-12 xl:min-w-32"
+          template={PositionSelectTemplate}
+          value={"New"}
+          options={[{ value: "New", label: "New" }]}
+          onChange={(e) => setDepositPosition(e)}
+        />
+      )
+    }
+
+    const selectOptions = lockData?.positions?.map((el) => {
+      return { ...el, value: el.tokenId.toString(), label: el.tokenId.toString() }
+    })
+
+    return (
+      <InputSelect
+        placeholder="New"
+        label="Select position"
+        className="w-full min-w-24"
+        template={PositionSelectTemplate}
+        value={depositPosition || "New"}
+        options={[{ value: "New", label: "New" }].concat(selectOptions)}
+        onChange={(e) => setDepositPosition(e)}
+      />
+    )
+  }
+
+  const AssetSelectTemplate = (option: {
+    logoURI?: string
+    logo?: ExistingAsset
+    value: string
+    name?: string
+    symbol: string
+    balance?: bigint
+    decimals?: number
+  }) => {
+    return (
+      <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
+        <div className="flex w-full items-center gap-2">
+          <>
+            {option.symbol === "ETH" || option.symbol === "TAN" ? (
+              <TokenImage token={option.logo} size={20} />
+            ) : (
+              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={32} />}</>
+            )}
+          </>
+
+          <span className="text-sm font-semibold">{option.symbol}</span>
+        </div>
+        <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
+      </div>
+    )
+  }
+
+  const AssetSelect = () => {
+    if (!balances) {
+      return null
+    }
+
+    const tokenOptions = tokens.map((el: ZapToken) => ({
+      ...el,
+      value: el.name as string,
+      balance: balances[el.address] || BigInt(0),
+    }))
+
+    const sortedAssets = [
+      {
+        symbol: "TAN",
+        name: "TAN",
+        value: "TAN",
+        decimals: 18,
+        address: VSTAN_CONTRACT?.TAN,
+        logo: "TAN" as ExistingAsset,
+        displayDecimals: 5,
+        balance: balances[VSTAN_CONTRACT?.TAN] || BigInt(0),
+      },
+      ...[
+        {
+          symbol: "ETH",
+          name: "Ethereum",
+          value: "ETH",
+          decimals: 18,
+          address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+          logo: "ETH" as ExistingAsset,
+          displayDecimals: 5,
+          balance: balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] || BigInt(0),
+        },
+        ...tokenOptions,
+      ].sort((a, b) => Number(b.balance - a.balance)),
+    ]
+
+    return (
+      <PopoverCombobox
+        className="w-full min-w-24"
+        template={AssetSelectTemplate}
+        value={depositAsset}
+        options={sortedAssets}
+        onChange={(v: string) => setDepositAsset(v)}
+      />
+    )
+  }
+
+  return (
+    <div className="flex w-full flex-col items-start justify-start">
+      <div className="mb-1 flex w-full items-end justify-between gap-2">
+        <span className="text-lg font-semibold text-white">Deposit Tan</span>
+        <span className="text-xs text-subtitle">{maxAmountToDeposit}</span>
+      </div>
+
+      <InputSelectLockPosition
+        className="w-full"
+        depositAmount={depositWeiValue}
+        depositSelect={<PositionSelect />}
+        assetSelect={<AssetSelect />}
+        depositAsset={depositAssetInfo}
+        disabled={isLoading}
+        isLoading={isLoading}
+        balance={lockData?.balance}
+        setMaxBalance={() => {
+          setDepositWeiValue(lockData?.balance)
+        }}
+        onValueChange={handleDepositChange}
+      />
+
+      {depositAsset !== "TAN" && (
+        <PanelRaw className={`${isZapLoading ? "shimmer" : ""} mt-2 flex w-full flex-col gap-1 p-2`}>
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col items-start justify-start">
+              <div className="flex items-center justify-center gap-1">
+                <div className="text-sm text-gray-400">Zap</div>
+                <IconThunder className="h-auto w-[8px] text-row-tonic" />
+                <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                <input
+                  type="number"
+                  disabled={isZapLoading}
+                  className="flex w-fit max-w-[120px] justify-start bg-transparent text-xl font-semibold focus:outline-none"
+                  value={zapInnerValue ?? ""}
+                  onChange={handleZapInputChange}
+                />
+              </div>
+              <div className="flex items-center justify-start gap-2 text-xs text-subtitle">
+                <div className="hidden md:flex">Minimum received </div>
+                <div> {!!zapValue ? estimatedZapDollarValue : ""}</div>
+              </div>
+            </div>
+            <BorderPanel className="flex items-center justify-center gap-2 bg-select-input px-2.5 py-2">
+              <TokenImage token="TAN" size={24} />
+              <div className="font-semibold">TAN</div>
+            </BorderPanel>
+          </div>
+        </PanelRaw>
+      )}
+
+      <div className="mt-2 flex w-full gap-2">
+        <Accordion className="w-full" type="single" collapsible>
+          <AccordionItem value="item-1">
+            <BorderPanel className="flex w-full cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
+              <AccordionTrigger>
+                <span className="py-1.5">Details</span>
+              </AccordionTrigger>
+              <AccordionContent className="w-full">
+                <div className="flex w-full flex-col items-center justify-center text-xs text-primary">
+                  {slippage && slippage > 0 ? (
+                    <div className="flex w-full items-center justify-between">
+                      <div className="ﬂflex w-full justify-start">Max slippage</div>
+                      <div className="flex justify-end">{slippage}%</div>
+                    </div>
+                  ) : null}
+
+                  <div className="flex w-full items-center justify-between">
+                    <div className="flex justify-start">Zapping fee</div>
+                    <div className="flex justify-end">--</div>
+                  </div>
+                </div>
+              </AccordionContent>
+            </BorderPanel>
+          </AccordionItem>
+        </Accordion>
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2 font-roobert">
+              <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
+              <button type="button" title="Slippage">
+                <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
+                  <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
+                </div>
+              </button>
+            </BorderPanel>
+          </PopoverTrigger>
+          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none font-roobert">
+            <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
+              <div className="flex w-full flex-col items-center justify-between gap-2">
+                <div className="flex w-full items-center justify-start">Slippage</div>
+                <input
+                  onChange={(e) => setSlippage(Number(e?.target?.value))}
+                  value={slippage || 0}
+                  placeholder="0.5"
+                  type="number"
+                  className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
+                />
+                <div className="mt-2 flex w-full items-center justify-between gap-2">
+                  <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />
+                  <ButtonTab onClick={() => setSlippage(1)} label={"1.0%"} active={slippage === 1} className="rounded-full !px-2 !py-1" />
+                  <ButtonTab onClick={() => setSlippage(2)} label={"2.0%"} active={slippage === 2} className="rounded-full !px-2 !py-1" />
+                </div>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
+
+      <div className="mb-1 mt-4 flex w-full items-center justify-between">
+        <div className="mb-1 text-lg font-semibold text-white">Position recap :</div>
+
+        {depositPosition === "New" && (
+          <div className="flex gap-2">
+            <div className="mb-1 text-sm text-subtitle">Perma Lock</div>
+            <Switch checked={isPermaLock} onCheckedChange={() => setIsPermaLock(!isPermaLock)} />
+          </div>
+        )}
+      </div>
+
+      <div className="flex w-full items-center justify-between gap-4 rounded-[10px] p-3 backdrop-blur-[60px]">
+        <EvolutionBox
+          className="w-full"
+          originalValue={depositPositionInfo ? formatBigInt(depositPositionInfo?.amount, 18, 2) : "0"}
+          label="vsTan"
+          newValue={computedNewLockValue}
+        />
+        <EvolutionBox
+          className="w-full text-xs"
+          originalValue={
+            depositPositionInfo?.endLockTime && depositPositionInfo?.endLockTime == "281474976710655" ? (
+              <InfinityIcon className="w-5"></InfinityIcon>
+            ) : (
+              <>
+                {" "}
+                {depositPositionInfo && depositPositionInfo?.endLockTime !== ""
+                  ? formatDate(new Date(Number(depositPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")
+                  : "-"}
+              </>
+            )
+          }
+          label="Unlock date"
+          newValue={
+            <div className="flex h-6 items-center">
+              {depositPositionInfo?.endLockTime && depositPositionInfo?.endLockTime == "281474976710655" ? (
+                <InfinityIcon className="h-5 w-5"></InfinityIcon>
+              ) : (
+                <>
+                  {isPermaLock ? <InfinityIcon className="h-5 w-5"></InfinityIcon> : formatDate(new Date(Number(computedNewEndLockTime) * 1000), "dd/MM/yyyy")}
+                </>
+              )}
+            </div>
+          }
+        />
+      </div>
+
+      <div className="mt-2 flex w-full items-center justify-center gap-4 rounded-[10px] p-3 text-sm text-subtitle backdrop-blur-[60px]">
+        Locking more tokens on a existing position will automatically extend the lock duration to its maximum (12weeks).
+      </div>
+
+      <div className="mt-2 flex w-full justify-center">
+        <FormButtons
+          actions={{
+            handleApprove: depositAsset === "TAN" ? actionApprove : actionApproveZap,
+            handleProcess: depositAsset === "TAN" ? actionLock : actionZapAndLock,
+          }}
+          formState={formState}
+          labelProcess="Lock"
+        />
+      </div>
+    </div>
+  )
+}

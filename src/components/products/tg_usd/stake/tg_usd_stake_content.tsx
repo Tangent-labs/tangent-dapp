@@ -1,21 +1,21 @@
 "use client"
 
 import Image from "next/image"
-import { useTgUsdStakeContext } from "./tg_usd_stake_context"
-import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
-import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
-import InputSelect from "@/components/design_system/inputs/input_select"
+import { USG_CONTRACT } from "../tg_usd_repository"
 import { ExistingAsset, SelectOption } from "@/types"
-import TokenImage from "@/components/design_system/structure/token_image"
-import { TGUSD_CONTRACT } from "../tg_usd_repository"
 import { ForecastGraph } from "./tg_usd_staking_forecast"
-import Divider from "@/components/design_system/structure/divider"
+import { useTgUsdStakeContext } from "./tg_usd_stake_context"
 import { computeProjection } from "./tg_usd_stake_controller"
-import EvolutionBox from "@/components/design_system/structure/evolution_box"
+import Divider from "@/components/design_system/structure/divider"
+import ButtonTab from "@/components/design_system/inputs/button_tab"
 import FormButtons from "@/components/design_system/form/form_actions"
+import InputSelect from "@/components/design_system/inputs/input_select"
+import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
+import EvolutionBox from "@/components/design_system/structure/evolution_box"
+import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
+import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
 
 export default function TgUsdStakeContent() {
   const {
@@ -23,6 +23,7 @@ export default function TgUsdStakeContent() {
     actionUnstake,
     setCurrentFeature,
     actionApprove,
+    setStakePercentage,
     setWeiValue,
     stakeInfo,
     currentFeature,
@@ -34,7 +35,6 @@ export default function TgUsdStakeContent() {
     formState,
     computeProjectedValue,
     stakePercentage,
-    setStakePercentage,
   } = useTgUsdStakeContext()
 
   const AssetSelect = () => {
@@ -43,22 +43,22 @@ export default function TgUsdStakeContent() {
 
   const AssetSelectTemplate = (option: SelectOption) => {
     const assetInfo = {
-      address: TGUSD_CONTRACT.USG,
+      address: USG_CONTRACT.USG,
       decimals: 18,
       displayDecimals: 2,
       logo: "USG",
       name: "USG",
-      price: stakeInfo?.tgUSDPrice,
+      price: stakeInfo?.USGPrice,
       symbol: "USG",
     }
 
     const sUSGInfo = {
-      address: TGUSD_CONTRACT?.SUSG,
+      address: USG_CONTRACT?.SUSG,
       decimals: 18,
       displayDecimals: 0,
       logo: "sUSG",
       name: "sUSG",
-      price: stakeInfo?.sgUSDPrice,
+      price: stakeInfo?.sUSGPrice,
       symbol: "sUSG",
     }
 
@@ -91,9 +91,9 @@ export default function TgUsdStakeContent() {
   return (
     <>
       <div className="flex w-full items-end justify-between gap-4">
-        <div className="sgusd-card hidden lg:flex lg:w-7/12">
+        <div className="usg-header hidden lg:flex lg:w-7/12">
           <div className="flex items-center justify-center">
-            <Image height={248} width={248} src="/medias/product_tgusd.png" alt="token" />
+            <Image height={160} width={160} src="/medias/product_tgusd.png" alt="token" />
           </div>
           <div className="flex flex-col items-start justify-center gap-3">
             <span className="text-5xl font-semibold">Savings account</span>
@@ -113,7 +113,7 @@ export default function TgUsdStakeContent() {
             </div>
             <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">sUSG</span>
-              <span className="text-lg font-semibold">{formatDollar(formatUnits(stakeInfo.sgUSDPrice, 18), 2)}</span>
+              <span className="text-lg font-semibold">{formatDollar(formatUnits(stakeInfo.sUSGPrice, 18), 2)}</span>
             </div>
             <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-1">
               <span className="text-black">APY</span>
@@ -153,12 +153,11 @@ export default function TgUsdStakeContent() {
             labelReceive={currentFeature === "stake" ? "You stake" : "You receive"}
             className="w-full"
             depositAmount={weiValue}
-            displayRecieve={true}
             depositSelect={<AssetSelect />}
             disabled={false}
             receiveAssetDisplay={<ReceiveAssetDisplay />}
             depositAsset={currentAssetInfo?.asset}
-            receiveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(stakeInfo?.sgUSDPrice || 0n, 18)))?.toFixed(2)}
+            receiveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(stakeInfo?.sUSGPrice || 0n, 18)))?.toFixed(2)}
             balance={currentAssetInfo?.balance}
             receiveAmount={formatBigInt(expected, 18, 2)}
             setMaxBalance={() => setWeiValue(currentAssetInfo?.balance)}
@@ -183,7 +182,7 @@ export default function TgUsdStakeContent() {
           <Divider className="h-1 w-full"></Divider>
 
           <ForecastGraph
-            initialInvestment={Number(formatUnits(stakeInfo?.sgUSDBalance || 0n, 18))}
+            initialInvestment={Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18))}
             apr={15}
             additionalLiquidity={currentFeature === "stake" ? (weiValue ? Number(formatUnits(weiValue!, 18)) : 0) : 0}
           ></ForecastGraph>
@@ -191,22 +190,22 @@ export default function TgUsdStakeContent() {
           <div className="flex w-full flex-col items-center justify-between gap-2 sm:flex-row">
             <EvolutionBox
               className="w-full"
-              originalValue={Number(formatUnits(stakeInfo?.sgUSDBalance || 0n, 18)).toFixed(2)}
+              originalValue={formatNumber(Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)), 0)}
               label="sUSG balance"
-              newValue={computeProjectedValue.toFixed(2)}
+              newValue={formatNumber(computeProjectedValue, 0)}
             />
 
             <EvolutionBox
               className="w-full"
-              originalValue={computeProjection(stakeInfo!, 1 / 12, 15).toFixed(2)}
+              originalValue={computeProjection(stakeInfo!, 1 / 12, 15)}
               label="30 days projection"
-              newValue={computeProjection(stakeInfo!, 1 / 12, 15, weiValue).toFixed(2)}
+              newValue={computeProjection(stakeInfo!, 1 / 12, 15, weiValue)}
             />
             <EvolutionBox
               className="w-full"
-              originalValue={computeProjection(stakeInfo!, 1, 15).toFixed(2)}
+              originalValue={computeProjection(stakeInfo!, 1, 15)}
               label="1 year projection"
-              newValue={computeProjection(stakeInfo!, 1, 15, weiValue).toFixed(2)}
+              newValue={computeProjection(stakeInfo!, 1, 15, weiValue)}
             />
           </div>
         </div>

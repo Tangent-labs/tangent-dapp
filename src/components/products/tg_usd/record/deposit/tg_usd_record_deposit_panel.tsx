@@ -1,26 +1,27 @@
 "use client"
 
 import Image from "next/image"
-import { useTgUsdDepositContext } from "./tg_usd_record_deposit_context"
-import { Switch } from "@/components/ui/switch"
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
-import TokenImage from "@/components/design_system/structure/token_image"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import FormButtons from "@/components/design_system/form/form_actions"
-import { formatBigInt } from "@/lib/number_formatter"
-import CustomSelect from "@/components/design_system/inputs/custom_select"
 import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
+import { Switch } from "@/components/ui/switch"
+import { formatBigInt } from "@/lib/number_formatter"
+import { useTgUsdContext } from "../../tg_usd_context"
 import { IconThunder } from "@/components/icons/icon_thunder"
-import { IconCircleHelp } from "@/components/icons/icon_circle_help"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
+import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
+import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
+import ButtonTab from "@/components/design_system/inputs/button_tab"
+import { IconCircleHelp } from "@/components/icons/icon_circle_help"
+import PanelRaw from "@/components/design_system/structure/panel_raw"
+import FormButtons from "@/components/design_system/form/form_actions"
+import { useTgUsdDepositContext } from "./tg_usd_record_deposit_context"
+import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
+import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
+import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function TgUsdDepositPanel() {
   const {
@@ -56,7 +57,9 @@ export default function TgUsdDepositPanel() {
     maxBorrowableValue,
   } = useTgUsdDepositContext()
 
-  const { collateralInfo, marketData, tgUSDInfo, balances, balanceAllowanceData, marketInfo } = useTgUsdRecordContext()
+  const { balances } = useTgUsdContext()
+
+  const { collateralInfo, marketData, USGInfo, balanceAllowanceData, marketInfo } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -93,7 +96,7 @@ export default function TgUsdDepositPanel() {
     ]
 
     return (
-      <CustomSelect
+      <PopoverCombobox
         className="w-full min-w-24"
         template={AssetSelectTemplate}
         value={depositAsset || collateralInfo.name}
@@ -219,7 +222,7 @@ export default function TgUsdDepositPanel() {
             labelDeposit="You borrow"
             depositSelect={<BorrowAssetDisplay />}
             disabled={!canInteract}
-            borrowAsset={tgUSDInfo}
+            borrowAsset={USGInfo}
             setMaxBalance={() => setBorrowWeiValue(maxBorrowableValue)}
             balance={maxBorrowableValue}
             percentage={borrowSliderPercent}
@@ -244,32 +247,33 @@ export default function TgUsdDepositPanel() {
       <div className="flex w-full items-start justify-between gap-2">
         <Accordion className="w-full" type="single" collapsible>
           <AccordionItem value="item-1">
-            <BorderPanel className="flex h-[30px] w-full cursor-pointer items-center justify-between bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px] hover:bg-white/20">
+            <BorderPanel className="flex w-full cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
               <AccordionTrigger>
-                <span className="text-md">Details</span>
+                <span className="py-1.5">Details</span>
               </AccordionTrigger>
-            </BorderPanel>
-            <AccordionContent>
-              <div className="flex w-full flex-col items-center justify-center text-primary">
-                {gas && gas > 0 ? (
-                  <div className="flex w-full items-center justify-between">
-                    <div className="flex justify-start">Network cost</div>
-                    <div className="flex justify-end">${gas}</div>
-                  </div>
-                ) : null}
-                {slippage && slippage > 0 ? (
-                  <div className="flex w-full items-center justify-between">
-                    <div className="flex justify-start">Max slippage</div>
-                    <div className="flex justify-end">{slippage}%</div>
-                  </div>
-                ) : null}
+              <AccordionContent className="w-full">
+                <div className="flex w-full flex-col items-center justify-center text-xs text-primary">
+                  {gas && gas > 0 ? (
+                    <div className="flex w-full items-center justify-between">
+                      <div className="flex justify-start">Network cost</div>
+                      <div className="flex justify-end">${gas}</div>
+                    </div>
+                  ) : null}
 
-                <div className="flex w-full items-center justify-between">
-                  <div className="flex justify-start">Zapping fee</div>
-                  <div className="flex justify-end">--</div>
+                  {slippage && slippage > 0 ? (
+                    <div className="flex w-full items-center justify-between">
+                      <div className="ﬂflex w-full justify-start">Max slippage</div>
+                      <div className="flex justify-end">{slippage}%</div>
+                    </div>
+                  ) : null}
+
+                  <div className="flex w-full items-center justify-between">
+                    <div className="flex justify-start">Zapping fee</div>
+                    <div className="flex justify-end">--</div>
+                  </div>
                 </div>
-              </div>
-            </AccordionContent>
+              </AccordionContent>
+            </BorderPanel>
           </AccordionItem>
         </Accordion>
 

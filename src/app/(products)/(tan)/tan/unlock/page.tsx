@@ -1,5 +1,5 @@
-import { RsTanUnlockContent } from "@/components/products/rs_tan/unlock/rstan_unlock_content"
-import { RsTanUnlockProvider } from "@/components/products/rs_tan/unlock/rstan_unlock_context"
+import { RsTanUnlockContent } from "@/components/products/vs_tan/unlock/rstan_unlock_content"
+import { RsTanUnlockProvider } from "@/components/products/vs_tan/unlock/rstan_unlock_context"
 
 export default function unlockTanPositionPage() {
   return (

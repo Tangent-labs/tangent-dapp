@@ -1,9 +1,9 @@
 "use client"
 
+import USGHoverCard from "../structure/usg_hover_card"
 import { ListHeaderData, ListSort, SortedState } from "@/types"
-import ListRowDisposition from "@/components/design_system/list/list_row_disposition"
 import { IconSortHeader } from "@/components/icons/icon_sort_header"
-import TgHoverCard from "../structure/tg_hover_card"
+import ListRowDisposition from "@/components/design_system/list/list_row_disposition"
 
 interface ListHeaderProps {
   headers: ListHeaderData[]
@@ -26,7 +26,7 @@ const HeaderDisplay = ({ label, sort = "none", onSort, field, indicator }: Heade
   return (
     <div className="flex w-full flex-1 items-center justify-center gap-2" onClick={() => onSort && onSort(field)}>
       <span>{label} </span>
-      {indicator && <TgHoverCard title={label as string}>{indicator}</TgHoverCard>}
+      {indicator && <USGHoverCard title={label as string}>{indicator}</USGHoverCard>}
       <div className="text-row-tonic">{label && label !== "" && <IconSortHeader sort={sort} />}</div>
     </div>
   )

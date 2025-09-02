@@ -1,15 +1,14 @@
 "use client"
 
-import { AirdropTask } from "../tg_usd_type"
+import { UserTask } from "../tg_usd_type"
 import { ExistingAsset, ListState } from "@/types"
-import Loader from "@/components/design_system/structure/loader"
-import { useTgUsdAirdropContext } from "./tg_usd_airdrop_context"
+import { formatNumber } from "@/lib/number_formatter"
 import { airdropListHeaders } from "./tg_usd_airdrop_controller"
-import { Button } from "@/components/design_system/inputs/button"
-import ListAsset from "@/components/design_system/list/list_asset"
+import { useTgUsdAirdropContext } from "./tg_usd_airdrop_context"
 import { IconSortHeader } from "@/components/icons/icon_sort_header"
-import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
+import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 
 const listeState: ListState = {
   search: undefined,
@@ -19,49 +18,72 @@ const listeState: ListState = {
   },
 }
 
-const TaskStatus = ({ status }: { status: string }) => {
-  switch (status) {
-    case "ongoing":
-      return <div className="h-2 w-2 rounded-full bg-light-tonic outline outline-1 outline-offset-4 outline-light-tonic"></div>
-    case "not_started":
-      return <div className="h-2 w-2 rounded-full bg-subtitle"></div>
+const TaskStatus = ({ status }: { status: boolean }) => {
+  if (status) {
+    return <div className="h-2 w-2 rounded-full bg-light-tonic outline outline-1 outline-offset-4 outline-light-tonic"></div>
   }
+  return <div className="h-2 w-2 rounded-full bg-subtitle"></div>
 }
 
 const AirdropRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
-    <div className="flex items-center justify-between max-xl:flex-col">
-      <div className="flex w-full items-center justify-evenly xl:w-8/12 xl:justify-start">
-        <div className="xl:w-1/3">{children?.at(0)}</div>
-        <div className="flex justify-center xl:w-1/3">{children?.at(1)}</div>
-        <div className="flex justify-center xl:w-1/3">{children?.at(2)}</div>
-      </div>
-      <hr className="my-4 w-full opacity-20 xl:hidden" />
-      <div className="flex h-full w-full flex-wrap items-center justify-evenly gap-2 xl:w-1/3">{children?.at(3)}</div>
+    <div className="flex w-full items-center justify-evenly px-2">
+      <div className="flex w-3/12 items-center justify-center">{children?.at(0)} </div>
+      <div className="hidden w-2/12 items-center justify-center lg:flex">{children?.at(1)} </div>
+      <div className="flex w-4/12 items-center justify-center lg:w-3/12">{children?.at(2)} </div>
+      <div className="flex w-1/12 items-center justify-center">{children?.at(3)} </div>
+      <div className="flex w-1/12 items-center justify-center">{children?.at(4)} </div>
+      <div className="flex w-2/12 items-center justify-center">{children?.at(5)} </div>
     </div>
   )
 }
 
 export default function TgUsdAidropContent() {
-  const { displayRows, isLoading, customSort } = useTgUsdAirdropContext()
+  const { displayRows, customSort } = useTgUsdAirdropContext()
 
   return (
-    <>
-      {isLoading ? (
-        <div className="flex h-full w-full items-start justify-center">
-          <Loader></Loader>
-        </div>
-      ) : (
-        <div className="flex w-full items-start justify-start gap-4">
-          <div className="flex w-full flex-col">
-            <ListProvider customSort={customSort} _headers={airdropListHeaders} _rows={displayRows} _listState={listeState}>
-              <AirdropList></AirdropList>
-            </ListProvider>
-          </div>
-        </div>
-      )}
-    </>
+    <div className="flex w-full items-start justify-start gap-4">
+      <div className="flex w-full flex-col">
+        <ListProvider customSort={customSort} _headers={airdropListHeaders} _rows={displayRows} _listState={listeState}>
+          <AirdropList></AirdropList>
+        </ListProvider>
+      </div>
+    </div>
   )
+}
+
+const computeProtocolDisplay = (protocol: string) => {
+  switch (protocol.toLowerCase()) {
+    case "tangent":
+      return (
+        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-[14px] backdrop-blur-[60px]">
+          <TokenImage token={"USG"} size={16} />
+          <span>Tangent</span>
+        </div>
+      )
+
+    case "convex":
+      return (
+        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-[14px] backdrop-blur-[60px]">
+          <TokenImage token={"CVX"} size={16} />
+          <span>Convex</span>
+        </div>
+      )
+    case "curve":
+      return (
+        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-[14px] backdrop-blur-[60px]">
+          <TokenImage token={"CRV"} size={16} />
+          <span>Curve</span>
+        </div>
+      )
+    case "stakedao":
+      return (
+        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-[14px] backdrop-blur-[60px]">
+          <TokenImage token={"SDT"} size={16} />
+          <span>Stake DAO</span>
+        </div>
+      )
+  }
 }
 
 function AirdropList() {
@@ -73,64 +95,115 @@ function AirdropList() {
         <div className={`hidden p-4 leading-[10px] xl:block`}>
           <AirdropRowDisposition>
             {!!headers?.at(0)?.key && (
-              <div className="flex-1">
+              <div className="flex w-full">
                 <span>{headers?.at(0)?.label}</span>
               </div>
             )}
             {!!headers?.at(1)?.key && (
-              <div className="flex-1">
+              <div className="flex w-full items-center justify-center">
                 <span>{headers?.at(1)?.label}</span>
               </div>
             )}
+
             {!!headers?.at(2)?.key && (
-              <div className="flex-1">
+              <div className="flex w-full items-center justify-center">
                 <span>{headers?.at(2)?.label}</span>
               </div>
             )}
-            <>
-              {headers.slice(3).map((header) => (
-                <div key={header?.label} className="flex-1">
-                  <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(header.key)}>
-                    <span>{header?.label} </span>
-                    <div className="text-row-tonic">
-                      <IconSortHeader sort={(listState?.sort?.key === header?.key && listState?.sort?.direction) || "none"} />
-                    </div>
-                  </button>
-                </div>
-              ))}
-            </>
+            {!!headers?.at(3)?.key && (
+              <div key={headers?.at(3)?.label} className="flex w-full items-center justify-center">
+                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(3)?.key))}>
+                  <span>{headers?.at(3)?.label} </span>
+                  <div className="text-row-tonic">
+                    <IconSortHeader sort={(listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction) || "none"} />
+                  </div>
+                </button>
+              </div>
+            )}
+            {!!headers?.at(4)?.key && (
+              <div key={headers?.at(4)?.label} className="flex w-full items-center justify-center">
+                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(4)?.key))}>
+                  <span>{headers?.at(4)?.label} </span>
+                  <div className="text-row-tonic">
+                    <IconSortHeader sort={(listState?.sort?.key === headers?.at(4)?.key && listState?.sort?.direction) || "none"} />
+                  </div>
+                </button>
+              </div>
+            )}
+            {!!headers?.at(5)?.key && (
+              <div key={headers?.at(5)?.label} className="flex w-full items-center justify-center">
+                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(5)?.key))}>
+                  <span>{headers?.at(5)?.label} </span>
+                  <div className="text-row-tonic">
+                    <IconSortHeader sort={(listState?.sort?.key === headers?.at(5)?.key && listState?.sort?.direction) || "none"} />
+                  </div>
+                </button>
+              </div>
+            )}
           </AirdropRowDisposition>
         </div>
       </div>
 
       <div className="scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent max-h-[500px] overflow-y-auto">
         {displayRows &&
-          (displayRows as AirdropTask[])?.map((task: AirdropTask) => (
+          (displayRows as UserTask[])?.map((task: UserTask) => (
             <BorderPanel
-              key={task.actionLabel}
+              key={task?.taskId}
               className="mb-2 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
             >
-              <div className="flex items-center justify-between max-xl:flex-col">
-                <div className="flex w-full items-center justify-evenly xl:w-8/12 xl:justify-start">
-                  <div className="xl:w-1/3">
-                    <ListAsset name={task?.name} token={task?.asset as ExistingAsset} assetsEarned={[]} />
-                  </div>
-                  <div className="flex justify-center xl:w-1/3">
-                    <div onClick={() => window.open(task?.link, "_blank", "noopener,noreferrer")}>{task?.protocolName}</div>
-                  </div>
-                  <div className="flex justify-center xl:w-1/3">
-                    <Button onClick={() => window.open(task?.link, "_blank", "noopener,noreferrer")}>{task?.actionLabel}</Button>
+              <div className="hidden items-center justify-between md:flex">
+                <div className="flex w-3/12 items-center gap-2 xl:gap-4">
+                  <TokenImage token={task.asset as ExistingAsset} size={48} />
+
+                  <span className="flex text-[20px] font-semibold">{task.asset}</span>
+                </div>
+                <div className="hidden w-2/12 justify-center lg:flex">
+                  <div onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}>{computeProtocolDisplay(task?.protocol)}</div>
+                </div>
+                <div className="flex w-4/12 justify-center lg:w-3/12">
+                  <div
+                    className="flex items-center justify-center rounded-[10px] bg-overlay-panel px-6 py-2 text-center text-xs backdrop-blur-[60px]"
+                    onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}
+                  >
+                    {task?.description}
                   </div>
                 </div>
-                <div className="flex h-full w-full items-center justify-evenly gap-2 xl:w-1/3">
-                  <div className="flex w-1/3 items-center justify-center">{task?.ptsPerDay}</div>
-                  <div className="flex w-1/3 items-center justify-center">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
-                      <TaskStatus status={task?.status} />
-                    </div>
+                <div className="flex w-1/12 items-center justify-center">{task?.pointRate}</div>
+                <div className="flex w-1/12 items-center justify-center">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
+                    <TaskStatus status={task?.status} />
                   </div>
-                  <div className="flex w-1/3 items-center justify-center">{task?.totalPoints}</div>
                 </div>
+                <div className="flex w-2/12 items-center justify-center">{formatNumber(task?.points, 0)}</div>
+              </div>
+
+              <div className="flex flex-col items-center justify-between md:hidden">
+                <div className="flex w-full items-start justify-between gap-1 border-b border-white border-opacity-20 pb-2">
+                  <div className="flex items-center justify-center gap-2">
+                    <TokenImage token={task.asset as ExistingAsset} size={48} />
+
+                    <span className="flex text-[14px] font-semibold">{task.asset}</span>
+                  </div>
+
+                  <div className="flex flex-col items-center justify-start">
+                    <span className="text-xs text-subtitle">Pts/Day/USD</span>
+
+                    <span className="flex text-[14px]">{task.pointRate}</span>
+                  </div>
+
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-xs text-subtitle">Protocol</span>
+
+                    <span className="flex text-[14px]">{computeProtocolDisplay(task?.protocol)}</span>
+                  </div>
+
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-xs text-subtitle">Points</span>
+
+                    <span className="flex text-[14px]">{task.points}</span>
+                  </div>
+                </div>
+                <div className="flex w-full items-center justify-center"> {task?.description}</div>
               </div>
             </BorderPanel>
           ))}

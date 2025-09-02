@@ -5,7 +5,8 @@ import { formatUnits } from "viem"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { ExistingAsset, ListState } from "@/types"
-import { formatDollar } from "@/lib/number_formatter"
+import { useTgUsdContext } from "../tg_usd_context"
+import { formatDollar, formatNumber } from "@/lib/number_formatter"
 import { tgUsdListHeaders } from "./tg_usd_market_controller"
 import ListHeader from "@/components/design_system/list/list_header"
 import ListRow from "@/components/design_system/list/list_row"
@@ -29,10 +30,12 @@ const listeState: ListState = {
 export default function TgUsdMarketList() {
   const { displayRows, globalData, searchValue, setSearchValue, userData } = useTgUsdMaketListContext()
 
+  const { userPoints } = useTgUsdContext()
+
   return (
     <>
       <div className="flex items-center justify-between gap-6">
-        <div className="tgusd-card hidden w-7/12 xl:flex">
+        <div className="usg-header hidden w-7/12 xl:flex">
           <div className="flex items-center justify-center">
             <Image height={160} width={160} src="/medias/tokens/tgUSD_header.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
@@ -74,7 +77,7 @@ export default function TgUsdMarketList() {
 
             <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
               <span className="text-xs text-gray-400">Your Total Points</span>
-              <span className="text-sm font-semibold">0</span>
+              <span className="text-sm font-semibold">{formatNumber(userPoints.totalPoints, 0)}</span>
             </div>
           </div>
         </div>
@@ -102,19 +105,19 @@ export default function TgUsdMarketList() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <IndicatorCards
-                className={cn(globalData.tgUsdPrice === "-" ? "shimmer" : "")}
+                className={cn(globalData.USGPrice === "-" ? "shimmer" : "")}
                 indicators={[
-                  { title: "USG", value: formatDollar(globalData.tgUsdPrice, 5) },
-                  { title: "Supply", value: globalData.tgUsdSupply },
+                  { title: "USG", value: formatDollar(globalData.USGPrice, 5) },
+                  { title: "Supply", value: globalData.USGSupply },
                 ]}
               >
                 <TokenImage token={"USG" as ExistingAsset} className="h-8 w-8" size={32} />
               </IndicatorCards>
               <IndicatorCards
-                className={cn(globalData.sgUsdPrice === "-" ? "shimmer" : "")}
+                className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "")}
                 indicators={[
-                  { title: "sUSG ", value: globalData.sgUsdPrice },
-                  { title: "Supply", value: globalData.sgUsdSupply },
+                  { title: "sUSG ", value: globalData.sUSGPrice },
+                  { title: "Supply", value: globalData.sUSGSupply },
                   { title: "APY", value: globalData.APY },
                 ]}
               >
@@ -168,7 +171,12 @@ export function TgUsdMarketListInner() {
         <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
       {displayRows?.map((item, index) => (
-        <ListRow className={cn("my-2", !!marketData.length && !!displayRows ? "" : "shimmer")} key={index} navigate={() => router.push(item.token)}>
+        <ListRow
+          className={cn("my-2", !!marketData.length && !!displayRows ? "" : "shimmer")}
+          key={index}
+          // Hack for Pendle markets
+          navigate={() => router.push(item.token.trim().replaceAll("/", "~").replaceAll(" ", "_"))}
+        >
           <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
           <MarketListAPR apr={item.apr.current} projectedApr={item.apr.projected} />
           <>
@@ -179,8 +187,10 @@ export function TgUsdMarketListInner() {
                 className={cn("flex basis-[48%] flex-col items-center text-[20px] leading-5 md:flex-1", index >= 2 ? "hidden xl:block" : "")}
               >
                 <span className="flex items-center justify-center gap-2">
-                  <span className={cn("flex text-subtitle xl:hidden", indicator?.key === "tvl" ? "uppercase" : "")}>{indicator?.label}</span>
-                  <span>{indicator?.value}</span>
+                  <span className={cn("flex text-xs text-subtitle md:text-[20px] xl:hidden", indicator?.key === "tvl" ? "uppercase" : "")}>
+                    {indicator?.label}
+                  </span>
+                  <span className="text-xs md:text-[20px]">{indicator?.value}</span>
                 </span>
               </div>
             ))}

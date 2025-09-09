@@ -8,7 +8,7 @@ import { IconTrophy } from "@/components/icons/icon_trophy"
 import { Button } from "@/components/design_system/inputs/button"
 import { IconCompleted } from "@/components/icons/icon_completed"
 import Divider from "@/components/design_system/structure/divider"
-import { useUsgReferralCodeContext } from "./usg_referral_code_context"
+import { useUsgReferralCodeContext } from "./usg_referral_context"
 
 export const UsgReferralCode = () => {
   const { isLoading, referralStatus, setReferralStatus, signMessage, generateReferralCode } = useUsgReferralCodeContext()
@@ -51,7 +51,7 @@ export const UsgReferralCode = () => {
       <div className="flex w-full items-center justify-between gap-4">
         <div className="relative flex w-full max-w-80 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
           <div className="absolute -top-2 left-0 flex w-full">
-            <div className="mx-4 flex w-full items-center justify-between rounded-full bg-black px-4">
+            <div className="mx-4 flex w-full items-center justify-between rounded-full bg-[#070707] px-4">
               <div className="px-2 text-xs italic">Boost x1.1</div>
               <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Vote</div>
             </div>
@@ -66,7 +66,7 @@ export const UsgReferralCode = () => {
 
         <div className="relative flex w-full max-w-80 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
           <div className="absolute -top-2 left-0 flex w-full">
-            <div className="mx-4 flex w-full items-center justify-between rounded-full bg-black px-4">
+            <div className="mx-4 flex w-full items-center justify-between rounded-full bg-[#070707] px-4">
               <div className="px-2 text-xs italic">Boost x1.5</div>
               <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Liquidity</div>
             </div>

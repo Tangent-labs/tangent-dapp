@@ -39,3 +39,4 @@ export type ExistingAsset =
   | "scrvUSD"
   | "sTAN"
   | "TAN"
+  | "vsTAN"

@@ -298,4 +298,12 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     logo: "TAN",
     displayDecimals: 2,
   },
+  vsTAN: {
+    symbol: "vsTAN",
+    name: "vsTAN",
+    decimals: 18,
+    address: TOKEN_ADDR["vsTAN"],
+    logo: "vsTAN",
+    displayDecimals: 2,
+  },
 }

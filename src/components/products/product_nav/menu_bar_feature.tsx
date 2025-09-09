@@ -55,7 +55,7 @@ export default function MenuBarFeature() {
                 <NavigationMenuDropdown>
                   <NavigationMenuTrigger>Manage</NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-black p-2">
+                    <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-[#070707] p-2">
                       <NavigationMenuLink onClick={() => router.push("/claim")}>Claim</NavigationMenuLink>
                       <NavigationMenuLink onClick={() => router.push("/harvest")}>Harvest</NavigationMenuLink>
                     </div>
@@ -67,7 +67,7 @@ export default function MenuBarFeature() {
                 <NavigationMenuDropdown>
                   <NavigationMenuTrigger>TAN</NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-black p-2">
+                    <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-[#070707] p-2">
                       <NavigationMenuLink onClick={() => router.push("/tan/lock")}>Lock</NavigationMenuLink>
                       <NavigationMenuLink onClick={() => router.push("/stan")}>Stake</NavigationMenuLink>
                     </div>
@@ -79,7 +79,7 @@ export default function MenuBarFeature() {
                 <NavigationMenuDropdown>
                   <NavigationMenuTrigger>Airdrop</NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-black p-2">
+                    <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-[#070707] p-2">
                       <NavigationMenuLink onClick={() => router.push("/airdrop")}>Task</NavigationMenuLink>
                       <NavigationMenuLink onClick={() => router.push("/referral")}>Referral</NavigationMenuLink>
                     </div>

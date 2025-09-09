@@ -270,7 +270,13 @@ export default function TgUsdLeveragePanel() {
               </BorderPanel>
             </button>
           </PopoverTrigger>
-          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="z-20 !m-0 w-96 !border-none bg-black !p-0 font-roobert">
+          <PopoverContent
+            side="bottom"
+            align="center"
+            sideOffset={8}
+            collisionPadding={16}
+            className="z-20 !m-0 w-96 !border-none bg-[#070707] !p-0 font-roobert"
+          >
             <Panel className="!border-none">
               <div className="flex w-full flex-col items-center justify-center text-primary">
                 {slippage && slippage > 0 ? (

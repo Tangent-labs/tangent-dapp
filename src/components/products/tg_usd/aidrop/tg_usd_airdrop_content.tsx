@@ -1,7 +1,9 @@
 "use client"
 
+import Image from "next/image"
 import { UserTask } from "../tg_usd_type"
 import { ExistingAsset, ListState } from "@/types"
+import { useTgUsdContext } from "../tg_usd_context"
 import { formatNumber } from "@/lib/number_formatter"
 import { airdropListHeaders } from "./tg_usd_airdrop_controller"
 import { useTgUsdAirdropContext } from "./tg_usd_airdrop_context"
@@ -41,12 +43,72 @@ const AirdropRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
 export default function TgUsdAidropContent() {
   const { displayRows, customSort } = useTgUsdAirdropContext()
 
+  const { userPoints } = useTgUsdContext()
+
   return (
-    <div className="flex w-full items-start justify-start gap-4">
-      <div className="flex w-full flex-col">
-        <ListProvider customSort={customSort} _headers={airdropListHeaders} _rows={displayRows} _listState={listeState}>
-          <AirdropList></AirdropList>
-        </ListProvider>
+    <div className="flex w-full flex-col items-center justify-between">
+      <div className="flex w-full items-start justify-between gap-4">
+        <div className="usg-header hidden w-1/2 lg:flex">
+          <div className="flex items-center justify-center">
+            <Image height={320} width={320} className="an-logo" src="/medias/product_tgusd.png" alt="token" />
+          </div>
+          <div className="flex flex-col items-start justify-center gap-3">
+            <span className="text-[48px] font-semibold">Tasks</span>
+            <p>
+              Borrow tgUSD, provide liquidity, and vote for tgUSD and sgUSD pools to earn points. Points will be convertible for TAN tokens once the campaign
+              ends.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex w-full flex-col items-stretch justify-between gap-6 lg:w-1/2">
+          <div className="flex h-full w-full flex-col items-start justify-start gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+            <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-semibold italic">
+              Points campaign
+              <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
+            </div>
+          </div>
+
+          <div className="flex w-full flex-col items-center justify-between gap-4 md:flex-row">
+            <div className="relative flex w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
+              <div className="absolute -top-2 left-0 flex w-full">
+                <div className="mx-4 flex w-full items-center justify-between rounded-full bg-[#070707] px-4">
+                  <div className="text-xs italic">Boost x1.1</div>
+                  <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Vote</div>
+                </div>
+              </div>
+
+              <span className="text-[14px] text-subtitle">Voting points</span>
+              <div className="flex items-center justify-center gap-1">
+                <span className="text-sm font-semibold text-white">1385 pts</span>
+                <span className="text-xs text-tonic">(30pts/day)</span>
+              </div>
+            </div>
+
+            <div className="relative flex w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
+              <div className="absolute -top-2 left-0 flex w-full">
+                <div className="mx-4 flex w-full items-center justify-between rounded-full bg-[#070707] px-4">
+                  <div className="text-xs italic">Boost x1.5</div>
+                  <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Liquidity</div>
+                </div>
+              </div>
+
+              <span className="text-[14px] text-subtitle">Liquidity points</span>
+              <div className="flex items-center justify-center gap-1">
+                <span className="text-sm font-semibold text-white">{formatNumber(userPoints?.totalPoints, 0)} pts</span>
+                <span className="text-xs text-tonic">({formatNumber(userPoints?.dailyRate, 0)}pts/day)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex w-full items-start justify-start gap-4">
+        <div className="flex w-full flex-col">
+          <ListProvider customSort={customSort} _headers={airdropListHeaders} _rows={displayRows} _listState={listeState}>
+            <AirdropList></AirdropList>
+          </ListProvider>
+        </div>
       </div>
     </div>
   )
@@ -168,7 +230,7 @@ function AirdropList() {
                     {task?.description}
                   </div>
                 </div>
-                <div className="flex w-1/12 items-center justify-center">{task?.pointRate}</div>
+                <div className="flex w-1/12 items-center justify-center">{(task?.pointRate * 86400).toFixed(0)}</div>
                 <div className="flex w-1/12 items-center justify-center">
                   <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
                     <TaskStatus status={task?.status} />
@@ -188,7 +250,7 @@ function AirdropList() {
                   <div className="flex flex-col items-center justify-start">
                     <span className="text-xs text-subtitle">Pts/Day/USD</span>
 
-                    <span className="flex text-[14px]">{task.pointRate}</span>
+                    <span className="flex text-[14px]">{(task.pointRate * 86400).toFixed(0)}</span>
                   </div>
 
                   <div className="flex flex-col items-center justify-center">

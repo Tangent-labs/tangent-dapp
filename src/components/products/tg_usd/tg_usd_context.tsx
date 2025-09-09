@@ -16,6 +16,7 @@ type TgUsdContextValues = {
   tokens: ZapToken[]
   balances: Record<Address, bigint> | null
   userPoints: UserPoints
+  refetchPoints: () => Promise<void>
 }
 
 export const TgUsdContext = createContext<TgUsdContextValues | undefined>(undefined)
@@ -27,11 +28,15 @@ export const TgUsdProvider = ({ children, tokens }: TgUsdContextProps) => {
 
   const [userPoints, setUserPoints] = useState<UserPoints>({ basePoints: 0, referralPoints: 0, totalPoints: 0, dailyRate: 0 })
 
+  const refetchPoints = async () => {
+    getUserPoints(currentAddress!).then((p) => {
+      setUserPoints(p)
+    })
+  }
+
   useEffect(() => {
     if (currentAddress) {
-      getUserPoints(currentAddress).then((p) => {
-        setUserPoints(p)
-      })
+      refetchPoints()
     }
   }, [currentAddress])
 
@@ -58,6 +63,7 @@ export const TgUsdProvider = ({ children, tokens }: TgUsdContextProps) => {
     tokens,
     balances,
     userPoints,
+    refetchPoints,
   }
 
   return <TgUsdContext.Provider value={contextValue}>{children}</TgUsdContext.Provider>

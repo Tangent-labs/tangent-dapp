@@ -1,10 +1,11 @@
 "use client"
 
-import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { toast } from "react-toastify"
+import { useTgUsdContext } from "../tg_usd_context"
+import { ToastComponent } from "@/components/design_system/toast"
 import { generateCode, getReferralStatus, validateReferralCode } from "../api"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { toast } from "react-toastify"
-import { ToastComponent } from "@/components/design_system/toast"
+import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 
 export type UserStatus = {
   generatedCode: string | null
@@ -37,6 +38,8 @@ export const UsgReferralCodeContext = createContext<UsgReferralCodeContextValues
 export const UsgReferralCodeProvider = ({ children, code }: UsgReferralCodeContextProps) => {
   const { currentAddress, getWalletClient } = useWalletConnexionContext()
 
+  const { refetchPoints } = useTgUsdContext()
+
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [referralStatus, setReferralStatus] = useState<UserStatus>({ generatedCode: null, hasUsedCode: false, referralCode: "", friends: 0 })
@@ -54,6 +57,8 @@ export const UsgReferralCodeProvider = ({ children, code }: UsgReferralCodeConte
           setReferralStatus({ ...referralStatus, generatedCode: status?.referralCode, hasUsedCode: status?.hasUsedCode, friends: status?.friends })
         }
       })
+
+      refetchPoints()
     }
   }, [currentAddress])
 

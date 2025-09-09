@@ -1,11 +1,12 @@
 "use client"
 
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { mapAirdropData } from "./tg_usd_airdrop_controller"
 import { ListState } from "@/types"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { getUserTasks } from "../api"
 import { UserTask } from "../tg_usd_type"
+import { useTgUsdContext } from "../tg_usd_context"
+import { mapAirdropData } from "./tg_usd_airdrop_controller"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 
 type TgUsdAirdropContextProps = {
   children: ReactNode
@@ -22,6 +23,8 @@ export const TgUsdAirdropContext = createContext<TgUsdAirdropContextValues | und
 export const TgUsdAirdropProvider = ({ children }: TgUsdAirdropContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
 
+  const { refetchPoints } = useTgUsdContext()
+
   const [tasks, setTasks] = useState<UserTask[]>([])
 
   useEffect(() => {
@@ -29,6 +32,8 @@ export const TgUsdAirdropProvider = ({ children }: TgUsdAirdropContextProps) => 
       getUserTasks(currentAddress).then((userTasks) => {
         setTasks(userTasks)
       })
+
+      refetchPoints()
     }
   }, [currentAddress])
 

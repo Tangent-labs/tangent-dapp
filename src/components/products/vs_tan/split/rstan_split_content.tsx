@@ -157,7 +157,7 @@ export const RsTanSplitContent = () => {
                 max="90"
                 value={splitPercentage}
                 onChange={(e) => setSplitPercentage(Number(e.target.value))}
-                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-black"
+                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]"
                 style={{
                   background: `linear-gradient(to right, #3b82f6 ${visualPercentage}%, #4b5563 ${visualPercentage}%)`,
                 }}

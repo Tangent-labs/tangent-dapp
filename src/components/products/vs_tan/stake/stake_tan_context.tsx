@@ -1,6 +1,6 @@
 "use client"
 
-import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedUSG, getFormState, getTanStakeOnChainData } from "./stake_tan_controller"
+import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedsTAN, getExpectedTAN, getFormState, getTanStakeOnChainData } from "./stake_tan_controller"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
@@ -51,8 +51,19 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
 
   const loadData = useCallback(() => {
     if (currentAddress) {
-      getTanStakeOnChainData(currentAddress).then((data) => {
-        setStakeInfo(data)
+      getTanStakeOnChainData(currentAddress).then(() => {
+        const mockReturnedValue = {
+          TANAllowance: 0n,
+          TANBalance: 6670000000000000000000000n,
+          TANPercentageInsTAN: 0n,
+          TANPrice: 1000000000000000000n,
+          TANSupply: 10000000000000000000000000n,
+          sTANBalance: 0n,
+          sTANPrice: 1000000000000000000n,
+          sTANSupply: 0n,
+        }
+
+        setStakeInfo(mockReturnedValue)
         setIsLoading(false)
       })
     }
@@ -86,7 +97,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
         name: "sTAN",
         price: 0,
         symbol: "sTAN",
-        balance: stakeInfo?.sTanBalance,
+        balance: stakeInfo?.sTANBalance,
       }
     }
 
@@ -98,7 +109,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
       name: "TAN",
       price: 0,
       symbol: "TAN",
-      balance: stakeInfo?.tanBalance,
+      balance: stakeInfo?.TANBalance,
     }
   }, [currentFeature, stakeInfo])
 
@@ -107,9 +118,9 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
       return {
         current: "asset" as StakingDepositType,
         address: VSTAN_CONTRACT.TAN,
-        balance: stakeInfo?.tanBalance,
+        balance: stakeInfo?.TANBalance,
         asset: {
-          price: Number(stakeInfo?.tanPrice) / 10 ** 18,
+          price: Number(stakeInfo?.TANPrice) / 10 ** 18,
           decimals: 18,
           address: VSTAN_CONTRACT.TAN,
           displayDecimals: 2,
@@ -123,9 +134,9 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
     return {
       current: "sdAsset" as StakingDepositType,
       address: VSTAN_CONTRACT.STAN,
-      balance: stakeInfo?.sTanBalance,
+      balance: stakeInfo?.sTANBalance,
       asset: {
-        price: Number(stakeInfo?.sTanPrice) / 10 ** 18,
+        price: Number(stakeInfo?.sTANPrice) / 10 ** 18,
         decimals: 18,
         address: VSTAN_CONTRACT.STAN,
         displayDecimals: 2,
@@ -142,7 +153,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
     if (!weiValue) return true
 
     if (currentFeature === "stake" && weiValue && stakeInfo) {
-      return weiValue > stakeInfo?.tanAllowance
+      return weiValue > stakeInfo?.TANAllowance
     }
 
     return false
@@ -188,14 +199,14 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
     ;(async () => {
       if (currentFeature === "stake") {
         try {
-          const sTanAmountOut = await getExpectedSUSG(getWalletClient()!, weiValue, VSTAN_CONTRACT?.TAN)
+          const sTanAmountOut = await getExpectedsTAN(getWalletClient()!, weiValue, VSTAN_CONTRACT?.TAN)
           setExpected(sTanAmountOut)
         } catch (error) {
           console.error("Error while estimating deposit preview :", error)
         }
       } else {
         try {
-          const tanAmountOut = await getExpectedUSG(getWalletClient()!, weiValue, VSTAN_CONTRACT?.TAN)
+          const tanAmountOut = await getExpectedTAN(getWalletClient()!, weiValue, VSTAN_CONTRACT?.TAN)
           setExpected(tanAmountOut)
         } catch (error) {
           console.error("Error while estimating redeem preview :", error)
@@ -206,9 +217,9 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
 
   const computeProjectedValue = useMemo(() => {
     if (currentFeature === "stake") {
-      return Number(formatUnits(stakeInfo?.sTanBalance || 0n, 18)) + Number(formatUnits(weiValue || 0n, 18))
+      return Number(formatUnits(stakeInfo?.sTANBalance || 0n, 18)) + Number(formatUnits(weiValue || 0n, 18))
     } else {
-      return Number(formatUnits(stakeInfo?.sTanBalance || 0n, 18)) - Number(formatUnits(weiValue || 0n, 18))
+      return Number(formatUnits(stakeInfo?.sTANBalance || 0n, 18)) - Number(formatUnits(weiValue || 0n, 18))
     }
   }, [currentFeature, weiValue])
 

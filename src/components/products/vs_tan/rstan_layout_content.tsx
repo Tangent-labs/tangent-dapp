@@ -77,7 +77,7 @@ export const RsTanLayoutContent = ({
         </div>
 
         <div className="flex w-full items-center justify-around rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
-          <IconVsTan className="w-32"></IconVsTan>
+          <IconVsTan className="h-10 w-32"></IconVsTan>
 
           <div className="flex w-full flex-col items-center justify-center">
             <div className="text-xs font-semibold text-subtitle">Supply</div>

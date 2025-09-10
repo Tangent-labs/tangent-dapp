@@ -1,14 +1,15 @@
 import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
 import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
-import stakeUI from "../../../../abi/USG/sUSGUI.json"
+import sTANUI from "../../../../abi/USG/sUSGUI.json"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { StakingInfo } from "../rstan_types"
+import { USG_CONTRACT } from "../../tg_usd/tg_usd_repository"
 
 export async function getTanStakeOnChainData(currentAddress: Address | undefined) {
-  return await executeChainViewUnique<StakingInfo>(stakeUI.abi as Abi, stakeUI.bytecode as Hex, [
+  return await executeChainViewUnique<StakingInfo>(sTANUI.abi as Abi, sTANUI.bytecode as Hex, [
     currentAddress,
-    VSTAN_CONTRACT.TAN,
+    USG_CONTRACT.USG_ORACLE,
     VSTAN_CONTRACT.TAN,
     VSTAN_CONTRACT.STAN,
   ])
@@ -21,12 +22,12 @@ export function getFormState(stakeInfo: StakingInfo, currentFeature: "stake" | "
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
   } else {
-    isApproved = (currentFeature === "stake" && !!stakeInfo?.tanAllowance && (weiValue || 0n) <= stakeInfo?.tanAllowance) || currentFeature === "unstake"
+    isApproved = (currentFeature === "stake" && !!stakeInfo?.TANAllowance && (weiValue || 0n) <= stakeInfo?.TANAllowance) || currentFeature === "unstake"
     if (weiValue === 0n) {
       reasons.push("No amount.")
-    } else if (currentFeature === "stake" && (weiValue || 0n) > (stakeInfo?.tanBalance || 0n)) {
+    } else if (currentFeature === "stake" && (weiValue || 0n) > (stakeInfo?.TANBalance || 0n)) {
       reasons.push("Not enough balance.")
-    } else if (currentFeature === "unstake" && (weiValue || 0n) > (stakeInfo?.sTanBalance || 0n)) {
+    } else if (currentFeature === "unstake" && (weiValue || 0n) > (stakeInfo?.sTANBalance || 0n)) {
       reasons.push("Not enough balance.")
     }
     if (!expected || expected === 0n) {
@@ -36,7 +37,7 @@ export function getFormState(stakeInfo: StakingInfo, currentFeature: "stake" | "
   return { canProcess: isApproved && reasons.length === 0, cantProcessReasons: reasons, haveToApprove: !isApproved }
 }
 
-export const getExpectedUSG = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
+export const getExpectedTAN = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
   const [account] = await walletClient.requestAddresses()
 
   const params = [weiValue]
@@ -55,7 +56,7 @@ export const getExpectedUSG = async (walletClient: WalletClient, weiValue: bigin
   return previewRedeem
 }
 
-export const getExpectedSUSG = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
+export const getExpectedsTAN = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
   const [account] = await walletClient.requestAddresses()
 
   const params = [weiValue]
@@ -132,9 +133,9 @@ export const computeProjection = (stakeInfo: StakingInfo, timeFrame: number, apr
 
   if (addedLiquidity) {
     projection =
-      (Number(formatUnits(addedLiquidity, 18)) + Number(formatUnits(stakeInfo?.sTanBalance || 0n, 18))) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
+      (Number(formatUnits(addedLiquidity, 18)) + Number(formatUnits(stakeInfo?.sTANBalance || 0n, 18))) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
   } else {
-    projection = Number(formatUnits(stakeInfo?.sTanBalance || 0n, 18)) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
+    projection = Number(formatUnits(stakeInfo?.sTANBalance || 0n, 18)) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
   }
   return projection
 }

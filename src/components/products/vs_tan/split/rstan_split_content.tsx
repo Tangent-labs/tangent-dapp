@@ -3,7 +3,7 @@
 import InputSelect from "@/components/design_system/inputs/input_select"
 import { useRsTanContext } from "../rstan_layout_context"
 import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
-import { IconRsTan } from "@/components/icons/icon_rstan"
+import { IconVsTan } from "@/components/icons/icon_vstan"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useRsTanSplitContext } from "./rstan_split_context"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
@@ -76,7 +76,7 @@ export const RsTanSplitContent = () => {
           Balance:
           {splitPositionInfo && splitPositionInfo?.amount && (
             <span className="flex items-center justify-end text-lg font-semibold text-white">
-              {formatBigInt(splitPositionInfo?.amount, 18, 2)} <IconRsTan className="ml-2 h-5 w-5"></IconRsTan>
+              {formatBigInt(splitPositionInfo?.amount, 18, 2)} <IconVsTan className="ml-2 h-5 w-5"></IconVsTan>
             </span>
           )}
         </div>
@@ -104,7 +104,7 @@ export const RsTanSplitContent = () => {
               <div className="flex h-full items-end justify-end gap-3 xl:items-center xl:justify-center">
                 <div className="hidden h-full flex-col items-center justify-center md:flex">
                   <div className="flex items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
-                    <IconRsTan className="h-4 w-4"></IconRsTan>
+                    <IconVsTan className="h-4 w-4"></IconVsTan>
                     vsTan
                   </div>
                 </div>
@@ -135,7 +135,7 @@ export const RsTanSplitContent = () => {
               <div className="flex h-full items-end justify-end gap-3 xl:items-center xl:justify-center">
                 <div className="hidden h-full flex-col items-center justify-center md:flex">
                   <div className="flex items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
-                    <IconRsTan className="h-4 w-4"></IconRsTan>
+                    <IconVsTan className="h-4 w-4"></IconVsTan>
                     vsTan
                   </div>
                 </div>
@@ -210,12 +210,12 @@ export const RsTanSplitContent = () => {
                 className="w-6/12"
                 originalValue={
                   <div className="flex items-center justify-center gap-2 text-lg">
-                    {formatBigInt(splitPositionInfo?.amount, 18, 2)} <IconRsTan className="h-5 w-5"></IconRsTan>
+                    {formatBigInt(splitPositionInfo?.amount, 18, 2)} <IconVsTan className="h-5 w-5"></IconVsTan>
                   </div>
                 }
                 newValue={
                   <div className="flex items-center justify-center gap-2">
-                    {formatBigInt(BigInt(splitPercentage / 10) * splitPositionInfo?.amount, 19, 2)} <IconRsTan className="h-5 w-5"></IconRsTan>
+                    {formatBigInt(BigInt(splitPercentage / 10) * splitPositionInfo?.amount, 19, 2)} <IconVsTan className="h-5 w-5"></IconVsTan>
                   </div>
                 }
               />
@@ -238,12 +238,12 @@ export const RsTanSplitContent = () => {
                 className="w-6/12"
                 originalValue={
                   <div className="flex items-center justify-center gap-2">
-                    0 <IconRsTan className="h-5 w-5"></IconRsTan>
+                    0 <IconVsTan className="h-5 w-5"></IconVsTan>
                   </div>
                 }
                 newValue={
                   <div className="flex items-center justify-center gap-2">
-                    {formatBigInt(BigInt((100 - splitPercentage) / 10) * splitPositionInfo?.amount, 19, 2)} <IconRsTan className="h-5 w-5"></IconRsTan>
+                    {formatBigInt(BigInt((100 - splitPercentage) / 10) * splitPositionInfo?.amount, 19, 2)} <IconVsTan className="h-5 w-5"></IconVsTan>
                   </div>
                 }
               />

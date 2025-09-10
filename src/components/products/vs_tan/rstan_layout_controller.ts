@@ -6,7 +6,7 @@ import { ListHeaderData } from "@/types"
 import { LockData } from "../tg_usd/tg_usd_type"
 import { VSTAN_CONTRACT } from "./rs_tan_repository"
 
-export async function getRsTanData(user: Address) {
+export async function getVsTanData(user: Address) {
   return await executeChainViewUnique<LockData>(LockUI.abi as Abi, LockUI.bytecode as Hex, [user, VSTAN_CONTRACT.VSTAN, VSTAN_CONTRACT.TAN])
 }
 

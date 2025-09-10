@@ -12,5 +12,5 @@ export const VSTAN_CONTRACT = {
   ZAPPER: envAddresses.utilities.zappingProxy as Address,
   TAN: envAddresses.tokens.TAN as Address,
   VSTAN: envAddresses.tokens.vsTAN as Address,
-  STAN: envAddresses.tokens.sTan as Address,
+  STAN: envAddresses.tokens.sTAN as Address,
 }

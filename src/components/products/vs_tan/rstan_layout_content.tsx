@@ -16,7 +16,7 @@ import ListRow from "@/components/design_system/list/list_row"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { IconCircleHelp } from "@/components/icons"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
-import { IconRsTan } from "@/components/icons/icon_rstan"
+import { IconVsTan } from "@/components/icons/icon_vstan"
 import { LockPosition } from "../tg_usd/tg_usd_type"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { InfinityIcon } from "lucide-react"
@@ -77,7 +77,7 @@ export const RsTanLayoutContent = ({
         </div>
 
         <div className="flex w-full items-center justify-around rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
-          <IconRsTan className="w-32"></IconRsTan>
+          <IconVsTan className="w-32"></IconVsTan>
 
           <div className="flex w-full flex-col items-center justify-center">
             <div className="text-xs font-semibold text-subtitle">Supply</div>
@@ -154,7 +154,7 @@ function LockPositionList() {
               </div>
               <div className="flex items-center justify-center text-lg font-semibold">
                 {formatBigInt(lockPosition?.amount, 18, 2)}
-                <IconRsTan className="ml-1 w-5"></IconRsTan>
+                <IconVsTan className="ml-1 w-5"></IconVsTan>
               </div>
 
               <>

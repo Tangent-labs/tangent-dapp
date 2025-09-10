@@ -1,15 +1,16 @@
 "use client"
 
+import { Address } from "viem"
 import { ExistingAsset } from "@/types"
 import BorderPanel from "../structure/border_panel"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { ChainViewMarketRow } from "@/components/products/tg_usd/tg_usd_type"
+import { MarketConstants } from "@/components/products/tg_usd/tg_usd_type"
 
 interface ListAssetProps {
   name: string
   token: ExistingAsset
   assetsEarned?: { token: ExistingAsset }[]
-  marketData?: ChainViewMarketRow | null
+  marketData?: { marketType: "Convex_CRV" | "Convex_FXN" | undefined; marketAddress: Address; constants: MarketConstants } | null
   className?: string
 }
 

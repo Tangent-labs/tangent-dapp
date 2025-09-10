@@ -2,18 +2,18 @@
 
 import { useMemo } from "react"
 import { formatAddress } from "@/lib/other_formatter"
+import { formatBigInt } from "@/lib/number_formatter"
 import { IconCross } from "@/components/icons/icon_cross"
+import { IconVsTan } from "@/components/icons/icon_vstan"
 import { Button } from "@/components/design_system/inputs/button"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { IconTx } from "@/components/icons/icon_tx"
-import { IconOpenOutside } from "@/components/icons/icon_open_outside"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
-type WalletConnexionButtonProps = React.HTMLAttributes<HTMLButtonElement>
+type WalletConnexionContentProps = React.HTMLAttributes<HTMLButtonElement>
 
-export const WalletConnexionButton = ({ ...props }: WalletConnexionButtonProps) => {
-  const { isConnecting, connect, disconnect, changeNetwork, isConnected, isChainConnected, currentAccount } = useWalletConnexionContext()
+export const WalletConnexionContent = ({ ...props }: WalletConnexionContentProps) => {
+  const { connect, disconnect, changeNetwork, tokenInfo, isConnected, isChainConnected, currentAccount, isConnecting } = useWalletConnexionContext()
 
   const buttonLabel = useMemo(() => {
     if (isConnecting) return "..."
@@ -72,7 +72,7 @@ export const WalletConnexionButton = ({ ...props }: WalletConnexionButtonProps) 
                   <TokenImage token="USG" size={24} />
 
                   <div className="flex flex-col">
-                    <span className="text-xs">50,50</span>
+                    <span className="text-xs"> {formatBigInt(tokenInfo("USG")?.balance, 18, 2)} </span>
                     <span className="text-xs text-subtitle">$50.50</span>
                   </div>
                 </div>
@@ -81,7 +81,7 @@ export const WalletConnexionButton = ({ ...props }: WalletConnexionButtonProps) 
                   <TokenImage token="sUSG" size={24} />
 
                   <div className="flex flex-col">
-                    <span className="text-xs">50,50</span>
+                    <span className="text-xs"> {formatBigInt(tokenInfo("sUSG")?.balance, 18, 2)} </span>
                     <span className="text-xs text-subtitle">$50.50</span>
                   </div>
                 </div>
@@ -92,7 +92,7 @@ export const WalletConnexionButton = ({ ...props }: WalletConnexionButtonProps) 
                   <TokenImage token="TAN" size={24} />
 
                   <div className="flex flex-col">
-                    <span className="text-xs">50,50</span>
+                    <span className="text-xs"> {formatBigInt(tokenInfo("TAN")?.balance, 18, 2)} </span>
                     <span className="text-xs text-subtitle">$50.50</span>
                   </div>
                 </div>
@@ -101,22 +101,22 @@ export const WalletConnexionButton = ({ ...props }: WalletConnexionButtonProps) 
                   <TokenImage token="sTAN" size={24} />
 
                   <div className="flex flex-col">
-                    <span className="text-xs">50,50</span>
+                    <span className="text-xs"> {formatBigInt(tokenInfo("sTAN")?.balance, 18, 2)} </span>
                     <span className="text-xs text-subtitle">$50.50</span>
                   </div>
                 </div>
 
                 <div className="flex w-full items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
-                  <TokenImage token="vsTAN" size={24} />
+                  <IconVsTan className="w-5"></IconVsTan>
 
                   <div className="flex flex-col">
-                    <span className="text-xs">50,50</span>
+                    <span className="text-xs"> {formatBigInt(tokenInfo("vsTAN")?.balance, 18, 2)} </span>
                     <span className="text-xs text-subtitle">$50.50</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex w-full flex-col border-b border-white/10 py-3 text-xs">
+              {/* <div className="flex w-full flex-col border-b border-white/10 py-3 text-xs">
                 <div className="mb-6 flex items-center justify-between">
                   <div className="flex items-center justify-start gap-2 font-semibold text-subtitle">
                     <IconTx className="w-3"></IconTx> Recent Transactions
@@ -130,7 +130,7 @@ export const WalletConnexionButton = ({ ...props }: WalletConnexionButtonProps) 
 
                   <IconOpenOutside className="w-3 cursor-pointer hover:fill-white"></IconOpenOutside>
                 </div>
-              </div>
+              </div> */}
 
               <div
                 onClick={handleButtonClick}

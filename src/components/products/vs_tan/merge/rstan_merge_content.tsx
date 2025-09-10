@@ -3,7 +3,7 @@
 import InputSelect from "@/components/design_system/inputs/input_select"
 import { useRsTanContext } from "../rstan_layout_context"
 import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
-import { IconRsTan } from "@/components/icons/icon_rstan"
+import { IconVsTan } from "@/components/icons/icon_vstan"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useRsTanMergeContext } from "./rstan_merge_context"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
@@ -114,7 +114,7 @@ export const RsTanMergeContent = () => {
           Balance:
           {firstPositionToMerge && firstPositionToMergeInfo?.amount && (
             <span className="flex items-center justify-end text-lg font-semibold text-white">
-              {formatBigInt(firstPositionToMergeInfo?.amount, 18, 2)} <IconRsTan className="ml-2 h-5 w-5"></IconRsTan>
+              {formatBigInt(firstPositionToMergeInfo?.amount, 18, 2)} <IconVsTan className="ml-2 h-5 w-5"></IconVsTan>
             </span>
           )}
         </div>
@@ -126,7 +126,7 @@ export const RsTanMergeContent = () => {
           Balance:
           {secondPositionToMerge && secondPositionToMergeInfo?.amount && (
             <span className="flex items-center justify-end text-lg font-semibold text-white">
-              {formatBigInt(secondPositionToMergeInfo?.amount, 18, 2)} <IconRsTan className="ml-2 h-5 w-5"></IconRsTan>
+              {formatBigInt(secondPositionToMergeInfo?.amount, 18, 2)} <IconVsTan className="ml-2 h-5 w-5"></IconVsTan>
             </span>
           )}
         </div>
@@ -152,13 +152,13 @@ export const RsTanMergeContent = () => {
                 className="w-4/6 sm:w-1/2"
                 originalValue={
                   <div className="flex items-center justify-center font-semibold">
-                    {formatBigInt(firstPositionToMergeInfo?.amount, 18, 2)} <IconRsTan className="ml-1 h-5 w-5"></IconRsTan>
+                    {formatBigInt(firstPositionToMergeInfo?.amount, 18, 2)} <IconVsTan className="ml-1 h-5 w-5"></IconVsTan>
                   </div>
                 }
                 newValue={
                   <div className="flex h-full items-center justify-center font-semibold">
                     {formatBigInt(secondPositionToMergeInfo?.amount + firstPositionToMergeInfo?.amount, 18, 2)}
-                    <IconRsTan className="ml-1 h-5 w-5"></IconRsTan>
+                    <IconVsTan className="ml-1 h-5 w-5"></IconVsTan>
                   </div>
                 }
               />
@@ -181,12 +181,12 @@ export const RsTanMergeContent = () => {
                 className="w-4/6 sm:w-1/2"
                 originalValue={
                   <div className="flex items-center justify-center font-semibold">
-                    {formatBigInt(secondPositionToMergeInfo?.amount, 18, 2)} <IconRsTan className="ml-1 h-5 w-5"></IconRsTan>
+                    {formatBigInt(secondPositionToMergeInfo?.amount, 18, 2)} <IconVsTan className="ml-1 h-5 w-5"></IconVsTan>
                   </div>
                 }
                 newValue={
                   <div className="flex h-full items-center justify-center font-semibold">
-                    - <IconRsTan className="ml-4 h-5 w-5"></IconRsTan>
+                    - <IconVsTan className="ml-4 h-5 w-5"></IconVsTan>
                   </div>
                 }
               />

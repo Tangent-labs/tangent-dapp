@@ -3,9 +3,9 @@
 import { ListRowData } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { getMarketDatas, getTgUsdMarketsData, transformToRows, transformGlobalData, transformMarketData } from "./tg_usd_market_controller"
-import { ChainViewMarketList, ChainViewMarketRow, MarketDebtData, TgUsdCollateralData, TgUsdGlobalData } from "../tg_usd_type"
+import { ChainViewMarketList, MarketConstants, MarketDebtData, TgUsdCollateralData, TgUsdGlobalData } from "../tg_usd_type"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { formatUnits } from "viem"
+import { Address, formatUnits } from "viem"
 
 type TgUsdMaketListContextProps = {
   children: ReactNode
@@ -16,7 +16,7 @@ type TgUsdMaketListContextValues = {
   globalData: TgUsdGlobalData
   searchValue: string | null
   setSearchValue: (value: string | null) => void
-  marketData: ChainViewMarketRow[]
+  marketData: Array<{ marketType: "Convex_CRV" | "Convex_FXN" | undefined; marketAddress: Address; constants: MarketConstants }>
   userData: {
     totalUserDebt: bigint
     totalUserDeposit: bigint
@@ -57,7 +57,7 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
     return transformGlobalData(onChainData)
   }, [onChainData])
 
-  const marketData = useMemo<ChainViewMarketRow[]>(() => {
+  const marketData = useMemo<Array<{ marketType: "Convex_CRV" | "Convex_FXN" | undefined; marketAddress: Address; constants: MarketConstants }>>(() => {
     if (onChainData) {
       return transformMarketData(onChainData)
     }
@@ -79,7 +79,7 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
         totalProtocolDebt += market.debtInfos.totalDebt
       })
 
-      const tgUsdCollateralsData = marketData.map((market) => {
+      const tgUsdCollateralsData = onChainData.rowInfos.map((market) => {
         const value = market.collateralInfos.totalCollateralUSDValue
 
         const percentage = totalProtocolDeposit > 0n ? (Number(formatUnits(value, 18)) / Number(formatUnits(totalProtocolDeposit, 18))) * 100 : 0
@@ -90,7 +90,7 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
         }
       })
 
-      const marketDebtData = marketData
+      const marketDebtData = onChainData.rowInfos
         .map((market, index) => {
           const debtValue = market.debtInfos.totalDebt
 

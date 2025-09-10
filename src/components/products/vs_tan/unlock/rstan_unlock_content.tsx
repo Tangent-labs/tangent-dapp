@@ -4,7 +4,7 @@ import InputSelect from "@/components/design_system/inputs/input_select"
 import { useRsTanContext } from "../rstan_layout_context"
 import { useRsTanUnlockContext } from "./rstan_unlock_context"
 import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
-import { IconRsTan } from "@/components/icons/icon_rstan"
+import { IconVsTan } from "@/components/icons/icon_vstan"
 import { Button } from "@/components/design_system/inputs/button"
 import { formatBigInt } from "@/lib/number_formatter"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -75,11 +75,11 @@ export const RsTanUnlockContent = () => {
 
           {unlockPositionInfo && unlockPositionInfo?.amount ? (
             <div className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 font-semibold text-tonic backdrop-blur-[60px]">
-              {formatBigInt(tanReceived, 18, 2)} <IconRsTan className="h-5 w-5" />
+              {formatBigInt(tanReceived, 18, 2)} <IconVsTan className="h-5 w-5" />
             </div>
           ) : (
             <div className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px]">
-              0 <IconRsTan className="h-5 w-5" />
+              0 <IconVsTan className="h-5 w-5" />
             </div>
           )}
         </div>
@@ -89,11 +89,11 @@ export const RsTanUnlockContent = () => {
 
           {unlockPositionInfo && unlockPositionInfo?.amount ? (
             <div className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 font-semibold backdrop-blur-[60px]">
-              {formatBigInt(unlockPositionInfo?.amount - (tanReceived || 0n), 18, 2)} <IconRsTan className="h-5 w-5" />
+              {formatBigInt(unlockPositionInfo?.amount - (tanReceived || 0n), 18, 2)} <IconVsTan className="h-5 w-5" />
             </div>
           ) : (
             <div className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px]">
-              0 <IconRsTan className="h-5 w-5" />
+              0 <IconVsTan className="h-5 w-5" />
             </div>
           )}
         </div>

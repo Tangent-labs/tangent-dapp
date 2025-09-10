@@ -20,13 +20,11 @@ export const getTgUsdMarketsData = async (address: Address | undefined) => {
 }
 
 export const transformMarketData = (data: ChainViewMarketList) => {
-  const filteredData = data.rowInfos.map((el: ChainViewMarketRow) => {
+  return data.rowInfos.map((el: ChainViewMarketRow) => {
     const staticMarketData = USGMarkets.find((m) => m.marketAddress === el.marketAddress)
 
-    return { ...el, marketType: staticMarketData?.marketType }
+    return { marketType: staticMarketData?.marketType, marketAddress: el.marketAddress as Address, constants: el.constants }
   })
-
-  return filteredData
 }
 
 export function getMarketDatas() {

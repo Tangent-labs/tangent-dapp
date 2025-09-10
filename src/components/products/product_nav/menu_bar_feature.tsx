@@ -1,8 +1,5 @@
 "use client"
 
-import { usePathname, useRouter } from "next/navigation"
-import { Logo } from "@/components/design_system/structure/logo"
-import { WalletConnexionButton } from "@/components/products/wallet/Wallet_connexion_button"
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -12,7 +9,11 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
+
+import { usePathname, useRouter } from "next/navigation"
+import { Logo } from "@/components/design_system/structure/logo"
 import { Button } from "@/components/design_system/inputs/button"
+import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 
 export default function MenuBarFeature() {
   const router = useRouter()
@@ -93,7 +94,7 @@ export default function MenuBarFeature() {
             </Button>
           </NavigationMenu>
 
-          <WalletConnexionButton />
+          <WalletConnexionContent />
         </div>
       </div>
     </header>

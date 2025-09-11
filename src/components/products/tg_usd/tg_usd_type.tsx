@@ -390,6 +390,7 @@ export type LockData = {
   percentageLocked: bigint
   positions: LockPosition[]
   tanAPR: bigint
+  tanPrice: bigint
   totalLocked: bigint
   totalSupply: bigint
 }

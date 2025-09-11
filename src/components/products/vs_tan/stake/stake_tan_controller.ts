@@ -1,17 +1,18 @@
-import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
-import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
-import sTANUI from "../../../../abi/USG/sUSGUI.json"
-import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { StakingInfo } from "../rstan_types"
-import { USG_CONTRACT } from "../../tg_usd/tg_usd_repository"
+import sTANUI from "../../../../abi/USG/sTANUI.json"
+import { VSTAN_CONTRACT } from "../rs_tan_repository"
+import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
+import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
 
 export async function getTanStakeOnChainData(currentAddress: Address | undefined) {
   return await executeChainViewUnique<StakingInfo>(sTANUI.abi as Abi, sTANUI.bytecode as Hex, [
     currentAddress,
-    USG_CONTRACT.USG_ORACLE,
+    VSTAN_CONTRACT.TAN_LP,
+    VSTAN_CONTRACT.ETH_ORACLE,
     VSTAN_CONTRACT.TAN,
     VSTAN_CONTRACT.STAN,
+    VSTAN_CONTRACT.DAO,
   ])
 }
 
@@ -22,12 +23,12 @@ export function getFormState(stakeInfo: StakingInfo, currentFeature: "stake" | "
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
   } else {
-    isApproved = (currentFeature === "stake" && !!stakeInfo?.TANAllowance && (weiValue || 0n) <= stakeInfo?.TANAllowance) || currentFeature === "unstake"
+    isApproved = (currentFeature === "stake" && !!stakeInfo?.tanAllowance && (weiValue || 0n) <= stakeInfo?.tanAllowance) || currentFeature === "unstake"
     if (weiValue === 0n) {
       reasons.push("No amount.")
-    } else if (currentFeature === "stake" && (weiValue || 0n) > (stakeInfo?.TANBalance || 0n)) {
+    } else if (currentFeature === "stake" && (weiValue || 0n) > (stakeInfo?.tanBalance || 0n)) {
       reasons.push("Not enough balance.")
-    } else if (currentFeature === "unstake" && (weiValue || 0n) > (stakeInfo?.sTANBalance || 0n)) {
+    } else if (currentFeature === "unstake" && (weiValue || 0n) > (stakeInfo?.sTanBalance || 0n)) {
       reasons.push("Not enough balance.")
     }
     if (!expected || expected === 0n) {
@@ -133,9 +134,9 @@ export const computeProjection = (stakeInfo: StakingInfo, timeFrame: number, apr
 
   if (addedLiquidity) {
     projection =
-      (Number(formatUnits(addedLiquidity, 18)) + Number(formatUnits(stakeInfo?.sTANBalance || 0n, 18))) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
+      (Number(formatUnits(addedLiquidity, 18)) + Number(formatUnits(stakeInfo?.sTanBalance || 0n, 18))) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
   } else {
-    projection = Number(formatUnits(stakeInfo?.sTANBalance || 0n, 18)) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
+    projection = Number(formatUnits(stakeInfo?.sTanBalance || 0n, 18)) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
   }
   return projection
 }

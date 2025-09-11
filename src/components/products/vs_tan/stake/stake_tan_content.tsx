@@ -48,7 +48,7 @@ export default function StakeTanContent() {
       displayDecimals: 2,
       logo: "TAN",
       name: "TAN",
-      price: stakeInfo?.TANPrice,
+      price: stakeInfo?.tanPrice,
       symbol: "TAN",
     }
 
@@ -58,7 +58,7 @@ export default function StakeTanContent() {
       displayDecimals: 0,
       logo: "sTAN",
       name: "sTAN",
-      price: stakeInfo?.sTANPrice,
+      price: stakeInfo?.sTanPrice,
       symbol: "sTAN",
     }
 
@@ -111,11 +111,11 @@ export default function StakeTanContent() {
 
             <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">Supply</span>
-              <span className="text-lg font-semibold">{stakeInfo?.sTANSupply} (7,4%)</span>
+              <span className="text-lg font-semibold">{formatBigInt(stakeInfo?.sTanSupply, 18, 0)}</span>
             </div>
             <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">sTan</span>
-              <span className="text-lg font-semibold">{formatDollar(formatUnits(stakeInfo.sTANPrice, 18), 2)}</span>
+              <span className="text-lg font-semibold">{formatDollar(formatBigInt(stakeInfo.sTanPrice, 12, 4), 6)}</span>
             </div>
             <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-2">
               <span className="font-semibold text-black">APR</span>
@@ -159,7 +159,7 @@ export default function StakeTanContent() {
             disabled={false}
             receiveAssetDisplay={<ReceiveAssetDisplay />}
             depositAsset={currentAssetInfo?.asset}
-            receiveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(stakeInfo?.sTANPrice || 0n, 18)))?.toFixed(2)}
+            receiveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(stakeInfo?.sTanPrice || 0n, 18)))?.toFixed(2)}
             balance={currentAssetInfo?.balance}
             receiveAmount={formatBigInt(expected, 18, 2)}
             setMaxBalance={() => {}}
@@ -184,13 +184,13 @@ export default function StakeTanContent() {
           <Divider className="h-1 w-full"></Divider>
 
           <ForecastGraph
-            initialInvestment={Number(formatUnits(stakeInfo?.sTANBalance || 0n, 18))}
+            initialInvestment={Number(formatUnits(stakeInfo?.sTanBalance || 0n, 18))}
             apr={15}
             additionalLiquidity={currentFeature === "stake" ? (weiValue ? Number(formatUnits(weiValue!, 18)) : 0) : 0}
           ></ForecastGraph>
 
           <div className="flex w-full items-center justify-between gap-2">
-            <EvolutionBox originalValue={formatUnits(stakeInfo?.sTANBalance || 0n, 18)} label="sTan balance" newValue={computeProjectedValue.toString()} />
+            <EvolutionBox originalValue={formatUnits(stakeInfo?.sTanBalance || 0n, 18)} label="sTan balance" newValue={computeProjectedValue.toString()} />
 
             <EvolutionBox
               originalValue={computeProjection(stakeInfo!, 1 / 12, 15).toFixed(2)}

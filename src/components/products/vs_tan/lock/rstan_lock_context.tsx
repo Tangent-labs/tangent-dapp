@@ -144,7 +144,8 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
         address: VSTAN_CONTRACT?.TAN,
         logo: "TAN" as ExistingAsset,
         displayDecimals: 5,
-        price: 0.21,
+        // TODO : update to 18 decimalss
+        price: Number(formatBigInt(lockData?.tanPrice, 12, 6)),
       }
     }
 
@@ -159,7 +160,8 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
         address: VSTAN_CONTRACT?.TAN,
         logo: "TAN" as ExistingAsset,
         displayDecimals: 5,
-        price: 0.21,
+        // TODO : update to 18 decimalss
+        price: Number(formatBigInt(lockData?.tanPrice, 12, 6)),
       }
 
     const asset: AssetDataPriced = {
@@ -172,7 +174,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     }
 
     return asset
-  }, [depositAsset, swapAssetPrice])
+  }, [depositAsset, swapAssetPrice, lockData])
 
   const actionApproveZap = async () => {
     setIsLoading(true)
@@ -446,6 +448,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
 
   useEffect(() => {
     if (depositAssetInfo) {
+      setDepositWeiValue(0n)
       fetchBalanceAllowanceData(depositAssetInfo?.address)
     }
   }, [depositAssetInfo])

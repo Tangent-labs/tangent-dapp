@@ -80,8 +80,8 @@ export const RsTanLayoutContent = ({
           <IconVsTan className="h-10 w-32"></IconVsTan>
 
           <div className="flex w-full flex-col items-center justify-center">
-            <div className="text-xs font-semibold text-subtitle">Supply</div>
-            <div className="text-md font-semibold text-white">{formatBigInt(lockData?.totalSupply, 18, 2)}</div>
+            <div className="text-xs font-semibold text-subtitle">Total Locked</div>
+            <div className="text-md font-semibold text-white">{formatBigInt(lockData?.totalLocked, 18, 2)}</div>
           </div>
 
           <div className="flex w-full flex-col items-center justify-center">

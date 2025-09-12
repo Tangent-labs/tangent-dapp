@@ -99,7 +99,7 @@ export function LeverageInput({
     <div className={cn("flex flex-col gap-2", className)} {...props}>
       <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col bg-white bg-opacity-[3%] p-2`}>
         <div className="flex w-full justify-between">
-          <div className="text-sm text-gray-400">{label}</div>
+          <div className="text-sm text-subtitle">{label}</div>
         </div>
         <div className="mb-1 flex justify-between">
           <input
@@ -118,7 +118,7 @@ export function LeverageInput({
         </div>
 
         <div className="flex w-full items-center justify-between">
-          <div className="text-xs text-gray-400">{dollarDepositDisplay}</div>
+          <div className="text-xs text-subtitle">{dollarDepositDisplay}</div>
 
           <BorderPanel
             className="rounded-full! flex w-10 cursor-pointer items-center bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"

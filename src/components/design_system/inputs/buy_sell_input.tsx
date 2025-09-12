@@ -173,7 +173,7 @@ export function BuySellInput({
       <div className={cn("flex flex-col")} {...props}>
         <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2 hover:bg-white/10`}>
           <div className="flex w-full justify-between">
-            <div className="text-sm text-gray-400">{labelDeposit}</div>
+            <div className="text-sm text-subtitle">{labelDeposit}</div>
           </div>
           <div className="mb-2 flex justify-between">
             <div className="mr-4 text-xl">
@@ -191,7 +191,7 @@ export function BuySellInput({
             </div>
             <div className="order-1 lg:order-2">{depositSelect}</div>
           </div>
-          <div className="flex justify-between text-xs text-gray-400">
+          <div className="flex justify-between text-xs text-subtitle">
             <div>{dollarDepositDisplay}</div>
 
             <div className="flex cursor-pointer items-center">
@@ -261,7 +261,7 @@ export function BuySellInput({
         </div>
 
         <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2 hover:bg-white/10`}>
-          <div className="text-sm text-gray-400">{labelReceive}</div>
+          <div className="text-sm text-subtitle">{labelReceive}</div>
           <div className="mb-2 flex justify-between">
             <div className="mr-4 text-xl font-medium">
               <input
@@ -276,7 +276,7 @@ export function BuySellInput({
             </div>
             <div>{receiveSelect}</div>
           </div>
-          <div className="flex justify-between text-xs text-gray-400">
+          <div className="flex justify-between text-xs text-subtitle">
             <div>$({dollarReceiveDisplay})</div>
           </div>
         </BorderPanel>

@@ -6,7 +6,7 @@ import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
 import { Switch } from "@/components/ui/switch"
 import { formatBigInt } from "@/lib/number_formatter"
-import { useTgUsdContext } from "../../tg_usd_context"
+import { useUSGContext } from "../../tg_usd_context"
 import { IconChevron } from "@/components/icons/icon_chevron"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
@@ -60,7 +60,7 @@ export default function TgUsdLeveragePanel() {
 
   const { collateralInfo, marketData, balanceAllowanceData, marketInfo, pricedCollateralInfo, USGInfo } = useTgUsdRecordContext()
 
-  const { balances } = useTgUsdContext()
+  const { balances } = useUSGContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -128,7 +128,7 @@ export default function TgUsdLeveragePanel() {
           </>
           <span className="text-sm font-semibold">{option.symbol}</span>
         </div>
-        <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
+        <span className="ml-auto text-xs text-subtitle">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
       </div>
     )
   }
@@ -137,7 +137,7 @@ export default function TgUsdLeveragePanel() {
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-end gap-2">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-400">Leverage only</span>
+          <span className="text-sm text-subtitle">Leverage only</span>
           <Switch checked={isDepositDisabled} onCheckedChange={(v) => setIsDepositDisabled(v)} />
         </div>
       </div>
@@ -179,7 +179,7 @@ export default function TgUsdLeveragePanel() {
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-start justify-start">
               <div className="flex items-center justify-center gap-1">
-                <div className="text-sm text-gray-400">Zap</div>
+                <div className="text-sm text-subtitle">Zap</div>
                 <IconThunder className="h-auto w-[8px] text-row-tonic" />
                 <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
               </div>

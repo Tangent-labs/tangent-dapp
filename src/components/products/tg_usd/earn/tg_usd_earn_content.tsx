@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { ExistingAsset, ListState } from "@/types"
-import { useTgUsdContext } from "../tg_usd_context"
+import { useUSGContext } from "../tg_usd_context"
 import { useTgUsdEarnContext } from "./tg_usd_earn_context"
 import ListRow from "@/components/design_system/list/list_row"
 import { tgUsdEarnListHeaders } from "./tg_usd_earn_controller"
@@ -26,7 +26,7 @@ const listeState: ListState = {
 export const TgUsdEarnContent = () => {
   const { searchValue, setSearchValue, displayRows } = useTgUsdEarnContext()
 
-  const { userPoints } = useTgUsdContext()
+  const { userPoints } = useUSGContext()
 
   return (
     <>
@@ -45,7 +45,7 @@ export const TgUsdEarnContent = () => {
         </div>
 
         <div className="flex h-full w-full flex-col items-center gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] xl:w-fit">
-          <div className="flex h-20 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-semibold italic">
+          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-semibold italic">
             Points campaign
             <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
           </div>
@@ -56,7 +56,7 @@ export const TgUsdEarnContent = () => {
                 "flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48"
               )}
             >
-              <span className="text-xs text-gray-400">USG Balance</span>
+              <span className="text-xs text-subtitle">USG Balance</span>
               <span className="text-sm font-semibold">15,000.00</span>
             </div>
 
@@ -65,12 +65,12 @@ export const TgUsdEarnContent = () => {
                 "flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48"
               )}
             >
-              <span className="text-xs text-gray-400">sUSG Balance</span>
+              <span className="text-xs text-subtitle">sUSG Balance</span>
               <span className="text-sm font-semibold">10,000.00</span>
             </div>
 
             <div className="flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48">
-              <span className="text-xs text-gray-400">Your Total Points</span>
+              <span className="text-xs text-subtitle">Your Total Points</span>
               <span className="text-sm font-semibold">{formatNumber(userPoints.totalPoints, 0)}</span>
             </div>
           </div>

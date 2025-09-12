@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { UserTask } from "../tg_usd_type"
 import { ExistingAsset, ListState } from "@/types"
-import { useTgUsdContext } from "../tg_usd_context"
+import { useUSGContext } from "../tg_usd_context"
 import { formatNumber } from "@/lib/number_formatter"
 import { airdropListHeaders } from "./tg_usd_airdrop_controller"
 import { useTgUsdAirdropContext } from "./tg_usd_airdrop_context"
@@ -43,7 +43,7 @@ const AirdropRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
 export default function TgUsdAidropContent() {
   const { displayRows, customSort } = useTgUsdAirdropContext()
 
-  const { userPoints } = useTgUsdContext()
+  const { userPoints } = useUSGContext()
 
   return (
     <div className="flex w-full flex-col items-center justify-between">

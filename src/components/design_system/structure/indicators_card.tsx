@@ -14,7 +14,7 @@ export const IndicatorCard = ({ title, value, className = "" }: IndicatorCardPro
   return (
     <div className={`flex flex-col justify-center lg:items-center ${className}`}>
       <span className="text-sm font-semibold">{title}</span>
-      <span className="text-xs text-gray-400">{value}</span>
+      <span className="text-xs text-subtitle">{value}</span>
     </div>
   )
 }

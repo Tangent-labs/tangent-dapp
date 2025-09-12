@@ -14,7 +14,7 @@ type EvolutionBoxProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
 export default function EvolutionBox({ label, originalValue, newValue, logo, ...props }: EvolutionBoxProps) {
   return (
     <div {...props}>
-      <div className="text-sm text-gray-400"> {label} </div>
+      <div className="text-sm text-subtitle"> {label} </div>
       <div className="flex items-center justify-between gap-2 rounded-[10px] bg-overlay-panel px-4 py-1.5 text-[16px] backdrop-blur-[60px]">
         <div className="flex items-center gap-1">
           <div className="font-semibold">{originalValue} </div>

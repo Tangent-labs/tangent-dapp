@@ -2,7 +2,7 @@
 
 import { toast } from "react-toastify"
 import { formatDollar } from "@/lib/number_formatter"
-import { useTgUsdContext } from "../../tg_usd_context"
+import { useUSGContext } from "../../tg_usd_context"
 import { TgUsdMarket, ZapToken } from "../../tg_usd_type"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { ToastComponent } from "@/components/design_system/toast"
@@ -74,7 +74,7 @@ type TgUsdDepositContextValues = {
 export const TgUsdDepositContext = createContext<TgUsdDepositContextValues | undefined>(undefined)
 
 export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => {
-  const { tokens } = useTgUsdContext()
+  const { tokens } = useUSGContext()
 
   const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo } =
     useTgUsdRecordContext()

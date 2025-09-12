@@ -1,7 +1,7 @@
 "use client"
 
 import { Input } from "@/components/ui/input"
-import { useTgUsdContext } from "../tg_usd_context"
+import { useUSGContext } from "../tg_usd_context"
 import { formatNumber } from "@/lib/number_formatter"
 import { IconShare } from "@/components/icons/icon_share"
 import { IconTrophy } from "@/components/icons/icon_trophy"
@@ -13,7 +13,7 @@ import { useUsgReferralCodeContext } from "./usg_referral_context"
 export const UsgReferralCode = () => {
   const { isLoading, referralStatus, setReferralStatus, signMessage, generateReferralCode } = useUsgReferralCodeContext()
 
-  const { userPoints } = useTgUsdContext()
+  const { userPoints } = useUSGContext()
 
   const Ranking = () => {
     return (

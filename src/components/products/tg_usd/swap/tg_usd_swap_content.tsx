@@ -106,7 +106,7 @@ export default function TgUsdSwapContent() {
           <span className="text-sm font-semibold">{option.symbol}</span>
         </div>
 
-        <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
+        <span className="ml-auto text-xs text-subtitle">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
       </div>
     )
   }

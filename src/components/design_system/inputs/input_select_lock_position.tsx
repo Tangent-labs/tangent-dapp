@@ -122,7 +122,7 @@ export const InputSelectLockPosition = ({
         <div className="flex h-full flex-col items-end justify-between">
           <>{depositSelect}</>
 
-          <div className="mt-1 text-xs text-gray-400">
+          <div className="mt-1 text-xs text-subtitle">
             {displayBalance && (
               <div className="flex cursor-pointer items-center">
                 <BorderPanel

@@ -9,7 +9,7 @@ interface InputToggleProps {
 const InputToggle = ({ isOn, onToggle, label, className = "" }: InputToggleProps) => {
   return (
     <div className={`flex items-center space-x-3 ${className}`}>
-      {label && <span className="text-sm text-gray-400">{label}</span>}
+      {label && <span className="text-sm text-subtitle">{label}</span>}
       <button
         type="button"
         onClick={onToggle}

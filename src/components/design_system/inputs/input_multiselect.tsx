@@ -66,7 +66,7 @@ export const MultiPositionSelect = ({ lockData, selectedPositions, setSelectedPo
           </div>
           <BorderPanel
             onClick={() => handleRemovePosition(index)}
-            className="flex h-3 w-3 items-center justify-center !rounded-full p-3 text-xs font-semibold text-gray-400 hover:border-white hover:text-white"
+            className="flex h-3 w-3 items-center justify-center !rounded-full p-3 text-xs font-semibold text-subtitle hover:border-white hover:text-white"
             aria-label="Remove position"
           >
             ✕

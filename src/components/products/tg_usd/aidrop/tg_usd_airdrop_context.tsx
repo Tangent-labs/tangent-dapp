@@ -3,7 +3,7 @@
 import { ListState } from "@/types"
 import { getUserTasks } from "../api"
 import { UserTask } from "../tg_usd_type"
-import { useTgUsdContext } from "../tg_usd_context"
+import { useUSGContext } from "../tg_usd_context"
 import { mapAirdropData } from "./tg_usd_airdrop_controller"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
@@ -23,7 +23,7 @@ export const TgUsdAirdropContext = createContext<TgUsdAirdropContextValues | und
 export const TgUsdAirdropProvider = ({ children }: TgUsdAirdropContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
 
-  const { refetchPoints } = useTgUsdContext()
+  const { refetchPoints } = useUSGContext()
 
   const [tasks, setTasks] = useState<UserTask[]>([])
 

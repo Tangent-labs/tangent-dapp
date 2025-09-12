@@ -2,32 +2,45 @@
 
 import { Address } from "viem"
 import { getUserPoints } from "./api"
-import { UserPoints, ZapToken } from "./tg_usd_type"
+import { StakingInfo, UserPoints, ZapToken } from "./tg_usd_type"
 import { getBalances } from "./record/tg_usd_record_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
-import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 import { getCurrentBlock } from "@/services/service_rpc"
+import { getUSGsUSGMetrics } from "./tg_usd_controller"
 
-type TgUsdContextProps = {
+type USGContextProps = {
   children: ReactNode
   tokens: ZapToken[]
 }
 
-type TgUsdContextValues = {
+type USGContextValues = {
   tokens: ZapToken[]
   balances: Record<Address, bigint> | null
   userPoints: UserPoints
   refetchPoints: () => Promise<void>
+  loadUSGsUSGMetrics: () => void
+  USGsUSGMetrics: StakingInfo | undefined
 }
 
-export const TgUsdContext = createContext<TgUsdContextValues | undefined>(undefined)
+export const USGContext = createContext<USGContextValues | undefined>(undefined)
 
-export const TgUsdProvider = ({ children, tokens }: TgUsdContextProps) => {
+export const USGProvider = ({ children, tokens }: USGContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
 
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
 
   const [userPoints, setUserPoints] = useState<UserPoints>({ basePoints: 0, referralPoints: 0, totalPoints: 0, dailyRate: 0 })
+
+  const [USGsUSGMetrics, setUSGsUSGMetrics] = useState<StakingInfo | undefined>()
+
+  const loadUSGsUSGMetrics = useCallback(() => {
+    if (currentAddress) {
+      getUSGsUSGMetrics(currentAddress).then((data) => {
+        setUSGsUSGMetrics(data)
+      })
+    }
+  }, [currentAddress])
 
   const refetchPoints = async () => {
     const currentBlock = await getCurrentBlock()
@@ -65,20 +78,22 @@ export const TgUsdProvider = ({ children, tokens }: TgUsdContextProps) => {
     }
   }, [currentAddress, tokens])
 
-  const contextValue: TgUsdContextValues = {
+  const contextValue: USGContextValues = {
     tokens,
     balances,
     userPoints,
     refetchPoints,
+    loadUSGsUSGMetrics,
+    USGsUSGMetrics,
   }
 
-  return <TgUsdContext.Provider value={contextValue}>{children}</TgUsdContext.Provider>
+  return <USGContext.Provider value={contextValue}>{children}</USGContext.Provider>
 }
 
-export const useTgUsdContext = () => {
-  const context = useContext(TgUsdContext)
+export const useUSGContext = () => {
+  const context = useContext(USGContext)
   if (!context) {
-    throw new Error("useTgUsdContext must be used within a TgUsdProvider")
+    throw new Error("useUSGContext must be used within a USGProvider")
   }
   return context
 }

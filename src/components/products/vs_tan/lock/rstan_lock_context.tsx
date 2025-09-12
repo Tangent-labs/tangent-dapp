@@ -2,14 +2,14 @@
 
 import { toast } from "react-toastify"
 import { formatUnits, parseEther } from "viem"
-import { useRsTanContext } from "../rstan_layout_context"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { getCurrentBlock } from "@/services/service_rpc"
-import { useTgUsdContext } from "../../tg_usd/tg_usd_context"
-import { getQuote, getRoute } from "../../tg_usd/global_quote_controller"
+import { useRsTanContext } from "../rstan_layout_context"
+import { useUSGContext } from "../../tg_usd/tg_usd_context"
 import { LockPosition, ZapToken } from "../../tg_usd/tg_usd_type"
 import { ToastComponent } from "@/components/design_system/toast"
 import { formatBigInt, formatDollar } from "@/lib/number_formatter"
+import { getQuote, getRoute } from "../../tg_usd/global_quote_controller"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { AssetDataPriced, CollateralInfo, ExistingAsset, FormState } from "@/types"
 import { computeSwapAssetPrice } from "../../tg_usd/record/tg_usd_record_controller"
@@ -82,7 +82,7 @@ export const RsTanLockContext = createContext<RsTanLockContextValues | undefined
 export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
   const { getWalletClient, isWellConnected, currentAddress } = useWalletConnexionContext()
 
-  const { tokens } = useTgUsdContext()
+  const { tokens } = useUSGContext()
 
   const { loadData, lockData, fetchBalanceAllowanceData, balanceAllowanceData } = useRsTanContext()
 

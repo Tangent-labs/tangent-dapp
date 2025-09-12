@@ -62,7 +62,7 @@ export default function TgUsdRecordPageHeader() {
             ),
             subValue: (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-400"> Proj:</span> <span>{marketDisplayData.borrowRateNext}</span>
+                <span className="text-sm text-subtitle"> Proj:</span> <span>{marketDisplayData.borrowRateNext}</span>
               </div>
             ),
           },

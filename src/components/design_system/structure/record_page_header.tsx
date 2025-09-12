@@ -38,7 +38,7 @@ export const RecordPageHeaderIndicator = ({ title, value, subValue, className }:
     >
       <span className="mb-1">{title}</span>
       <span className={cn("text-2xl font-semibold", className, title === "APR" ? "text-row-tonic" : "")}>{value}</span>
-      <span className="text-sm text-gray-400">{subValue}</span>
+      <span className="text-sm text-subtitle">{subValue}</span>
     </div>
   )
 }

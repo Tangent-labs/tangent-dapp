@@ -123,10 +123,10 @@ export function RepayInput({
         )}
       >
         <div className="flex w-full justify-between">
-          <div className="text-sm text-gray-400">{labelDeposit}</div>
+          <div className="text-sm text-subtitle">{labelDeposit}</div>
           {isZapping && (
             <div className="flex items-center justify-center gap-1">
-              <div className="text-sm text-gray-400">Zap</div>
+              <div className="text-sm text-subtitle">Zap</div>
               <IconThunder className="h-auto w-[8px] text-row-tonic" />
               <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
             </div>
@@ -146,7 +146,7 @@ export function RepayInput({
           </div>
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
-        <div className="mt-1 flex justify-between text-xs text-gray-400">
+        <div className="mt-1 flex justify-between text-xs text-subtitle">
           <div>{dollarDepositDisplay}</div>
 
           <div className="flex cursor-pointer items-center">

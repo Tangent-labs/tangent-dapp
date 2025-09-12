@@ -6,7 +6,7 @@ import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { formatUnits, parseEther } from "viem"
-import { useTgUsdContext } from "../../tg_usd_context"
+import { useUSGContext } from "../../tg_usd_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
@@ -82,7 +82,7 @@ type TgUsdLeverageContextValues = {
 export const TgUsdLeverageContext = createContext<TgUsdLeverageContextValues | undefined>(undefined)
 
 export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) => {
-  const { tokens } = useTgUsdContext()
+  const { tokens } = useUSGContext()
 
   const {
     marketData,

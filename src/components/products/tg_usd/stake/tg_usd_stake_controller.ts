@@ -1,19 +1,8 @@
 import { StakingInfo } from "../tg_usd_type"
-import { USG_CONTRACT } from "../tg_usd_repository"
-import sUSGUI from "../../../../abi/USG/sUSGUI.json"
 import { formatNumber } from "@/lib/number_formatter"
 import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
-import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
-
-export async function getTgUsdStakeOnChainData(currentAddress: Address | undefined) {
-  return await executeChainViewUnique<StakingInfo>(sUSGUI.abi as Abi, sUSGUI.bytecode as Hex, [
-    currentAddress,
-    USG_CONTRACT.USG_ORACLE,
-    USG_CONTRACT.USG,
-    USG_CONTRACT.SUSG,
-  ])
-}
+import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { Address, EstimateContractGasParameters, formatUnits, maxUint256, WalletClient, WriteContractParameters } from "viem"
 
 export function getFormState(stakeInfo: StakingInfo, currentFeature: "stake" | "unstake", weiValue?: bigint, expected?: bigint, isWellConnected?: boolean) {
   let isApproved = false

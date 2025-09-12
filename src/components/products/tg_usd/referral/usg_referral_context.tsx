@@ -1,7 +1,7 @@
 "use client"
 
 import { toast } from "react-toastify"
-import { useTgUsdContext } from "../tg_usd_context"
+import { useUSGContext } from "../tg_usd_context"
 import { ToastComponent } from "@/components/design_system/toast"
 import { generateCode, getReferralStatus, validateReferralCode } from "../api"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
@@ -39,7 +39,7 @@ export const UsgReferralCodeContext = createContext<UsgReferralCodeContextValues
 export const UsgReferralCodeProvider = ({ children, code }: UsgReferralCodeContextProps) => {
   const { currentAddress, getWalletClient } = useWalletConnexionContext()
 
-  const { refetchPoints } = useTgUsdContext()
+  const { refetchPoints } = useUSGContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 

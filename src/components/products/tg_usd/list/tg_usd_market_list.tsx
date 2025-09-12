@@ -5,7 +5,7 @@ import { formatUnits } from "viem"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { ExistingAsset, ListState } from "@/types"
-import { useTgUsdContext } from "../tg_usd_context"
+import { useUSGContext } from "../tg_usd_context"
 import { formatDollar, formatNumber } from "@/lib/number_formatter"
 import { tgUsdListHeaders } from "./tg_usd_market_controller"
 import ListHeader from "@/components/design_system/list/list_header"
@@ -30,12 +30,12 @@ const listeState: ListState = {
 export default function TgUsdMarketList() {
   const { displayRows, globalData, searchValue, setSearchValue, userData } = useTgUsdMaketListContext()
 
-  const { userPoints } = useTgUsdContext()
+  const { userPoints } = useUSGContext()
 
   return (
     <>
       <div className="flex items-center justify-between gap-6">
-        <div className="usg-header hidden w-7/12 xl:flex">
+        <div className="usg-header hidden w-6/12 xl:flex">
           <div className="flex items-center justify-center">
             <Image height={160} width={160} src="/medias/tokens/tgUSD_header.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
@@ -48,35 +48,25 @@ export default function TgUsdMarketList() {
           </div>
         </div>
 
-        <div className="hidden h-full w-full flex-col items-center gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] md:flex xl:w-fit">
-          <div className="flex h-20 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-semibold italic">
+        <div className="hidden h-full w-full flex-col items-center gap-3 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] md:flex xl:w-fit">
+          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-semibold italic">
             Points campaign
-            <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
+            <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 text-lg !font-semibold !not-italic !text-black">Live</div>
           </div>
 
           <div className="mt-auto flex w-full items-center justify-between gap-3 p-2">
-            <div
-              className={cn(
-                "flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]",
-                !!userData ? "" : "shimmer"
-              )}
-            >
-              <span className="text-xs text-gray-400">Your Debt</span>
+            <div className={cn("flex min-w-48 flex-col items-center justify-center gap-3 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}>
+              <span className="text-xs text-subtitle">Your Debt</span>
               <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDebt || 0n, 18))} USD</span>
             </div>
 
-            <div
-              className={cn(
-                "flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]",
-                !!userData ? "" : "shimmer"
-              )}
-            >
-              <span className="text-xs text-gray-400">Your Collateral Deposits</span>
+            <div className={cn("flex min-w-48 flex-col items-center justify-center gap-3 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}>
+              <span className="text-xs text-subtitle">Your Collateral Deposits</span>
               <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDeposit || 0n, 18))} USD</span>
             </div>
 
-            <div className="flex min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px]">
-              <span className="text-xs text-gray-400">Your Total Points</span>
+            <div className="flex min-w-48 flex-col items-center justify-center gap-3 rounded-[10px] bg-overlay-panel p-3">
+              <span className="text-xs text-subtitle">Your Total Points</span>
               <span className="text-sm font-semibold">{formatNumber(userPoints.totalPoints, 0)}</span>
             </div>
           </div>

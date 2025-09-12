@@ -19,7 +19,7 @@ export const InputSelectAmountTemplate = (option: SelectOptionAmount) => {
   return (
     <div className="flex items-center gap-1">
       <span className="text-sm">{option.label}</span>
-      <span className="text-xs text-gray-400">{option.amountDisplay && `(${option.amountDisplay})`}</span>
+      <span className="text-xs text-subtitle">{option.amountDisplay && `(${option.amountDisplay})`}</span>
     </div>
   )
 }

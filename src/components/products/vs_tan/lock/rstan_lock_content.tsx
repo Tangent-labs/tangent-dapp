@@ -10,9 +10,8 @@ import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useRsTanContext } from "../rstan_layout_context"
 import { useRsTanLockContext } from "./rstan_lock_context"
-import { useTgUsdContext } from "../../tg_usd/tg_usd_context"
+import { useUSGContext } from "../../tg_usd/tg_usd_context"
 import { IconThunder } from "@/components/icons/icon_thunder"
-import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
@@ -22,6 +21,7 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { LockPositionSelectTemplate, ZapToken } from "../../tg_usd/tg_usd_type"
+import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { InputSelectLockPosition } from "@/components/design_system/inputs/input_select_lock_position"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -29,7 +29,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 export default function RsTanLockContent() {
   const { lockData } = useRsTanContext()
 
-  const { tokens, balances } = useTgUsdContext()
+  const { tokens, balances } = useUSGContext()
 
   const {
     depositWeiValue,
@@ -131,7 +131,7 @@ export default function RsTanLockContent() {
 
           <span className="text-sm font-semibold">{option.symbol}</span>
         </div>
-        <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
+        <span className="ml-auto text-xs text-subtitle">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
       </div>
     )
   }
@@ -211,7 +211,7 @@ export default function RsTanLockContent() {
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-start justify-start">
               <div className="flex items-center justify-center gap-1">
-                <div className="text-sm text-gray-400">Zap</div>
+                <div className="text-sm text-subtitle">Zap</div>
                 <IconThunder className="h-auto w-[8px] text-row-tonic" />
                 <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
               </div>

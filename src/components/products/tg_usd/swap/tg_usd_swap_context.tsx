@@ -2,7 +2,7 @@
 
 import { toast } from "react-toastify"
 import { Abi, Address, SendTransactionParameters, WalletClient } from "viem"
-import { useTgUsdContext } from "../tg_usd_context"
+import { useUSGContext } from "../tg_usd_context"
 import { SwapConfig, swapConfig } from "./swap_config"
 import { getQuote, getRoute } from "../global_quote_controller"
 import { USG_CONTRACT, tgUsdTokens } from "../tg_usd_repository"
@@ -75,7 +75,7 @@ type TgUsdSwapContextValues = {
 export const TgUsdSwapContext = createContext<TgUsdSwapContextValues | undefined>(undefined)
 
 export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
-  const { tokens } = useTgUsdContext()
+  const { tokens } = useUSGContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 

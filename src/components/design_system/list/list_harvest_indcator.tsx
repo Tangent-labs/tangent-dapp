@@ -25,7 +25,7 @@ export default function ListHarvestIndicator({ isHarvested, helpMessage, classNa
         </PopoverContent>
       </Popover>
 
-      <IconHourGlass className={`h-auto w-[20px] ${isHarvested ? "text-row-tonic" : "text-gray-400"}`} />
+      <IconHourGlass className={`h-auto w-[20px] ${isHarvested ? "text-row-tonic" : "text-subtitle"}`} />
     </div>
   )
 }

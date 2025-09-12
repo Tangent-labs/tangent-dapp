@@ -81,7 +81,7 @@ const InputAssetValue = ({ value, balance, asset, onChange, options, className, 
     <div className={`flex flex-col gap-1 ${className}`}>
       <div className="flex justify-between">
         <label className={`text-xs ${!options?.displayLabel && "sr-only"} `}>{label}</label>
-        {options?.displayBalance && <span className={`text-xs text-gray-400`}>{displayBalance}</span>}
+        {options?.displayBalance && <span className={`text-xs text-subtitle`}>{displayBalance}</span>}
       </div>
       <input
         {...props}
@@ -93,7 +93,7 @@ const InputAssetValue = ({ value, balance, asset, onChange, options, className, 
           inputClassName
         )}
       />
-      {options?.displayDollarValue && <div className="text-xs text-gray-400">{dollarValueDisplay}</div>}
+      {options?.displayDollarValue && <div className="text-xs text-subtitle">{dollarValueDisplay}</div>}
     </div>
   )
 }

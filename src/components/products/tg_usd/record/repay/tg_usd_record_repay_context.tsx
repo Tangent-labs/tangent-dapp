@@ -8,7 +8,7 @@ import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepa
 import { formatUnits, maxUint256 } from "viem"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { USG_CONTRACT } from "../../tg_usd_repository"
-import { useTgUsdContext } from "../../tg_usd_context"
+import { useUSGContext } from "../../tg_usd_context"
 import { MarketDetailData, ZapToken } from "../../tg_usd_type"
 import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { toast } from "react-toastify"
@@ -79,7 +79,7 @@ type TgUsdRepayContextValues = {
 export const TgUsdRepayContext = createContext<TgUsdRepayContextValues | undefined>(undefined)
 
 export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
-  const { tokens } = useTgUsdContext()
+  const { tokens } = useUSGContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 

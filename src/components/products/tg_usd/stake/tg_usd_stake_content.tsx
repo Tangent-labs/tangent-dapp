@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { ExistingAsset, SelectOption } from "@/types"
@@ -25,7 +26,6 @@ export default function TgUsdStakeContent() {
     actionApprove,
     setStakePercentage,
     setWeiValue,
-    stakeInfo,
     currentFeature,
     depositAssetOptions,
     currentAssetInfo,
@@ -35,6 +35,7 @@ export default function TgUsdStakeContent() {
     formState,
     computeProjectedValue,
     stakePercentage,
+    USGsUSGMetrics,
   } = useTgUsdStakeContext()
 
   const AssetSelect = () => {
@@ -48,7 +49,7 @@ export default function TgUsdStakeContent() {
       displayDecimals: 2,
       logo: "USG",
       name: "USG",
-      price: stakeInfo?.USGPrice,
+      price: USGsUSGMetrics?.USGPrice,
       symbol: "USG",
     }
 
@@ -58,7 +59,7 @@ export default function TgUsdStakeContent() {
       displayDecimals: 0,
       logo: "sUSG",
       name: "sUSG",
-      price: stakeInfo?.sUSGPrice,
+      price: USGsUSGMetrics?.sUSGPrice,
       symbol: "sUSG",
     }
 
@@ -91,36 +92,39 @@ export default function TgUsdStakeContent() {
   return (
     <>
       <div className="flex w-full items-end justify-between gap-4">
-        <div className="usg-header hidden lg:flex lg:w-7/12">
+        <div className="usg-header hidden w-6/12 xl:flex">
           <div className="flex items-center justify-center">
-            <Image height={160} width={160} src="/medias/product_tgusd.png" alt="token" />
+            <Image height={160} width={160} src="/medias/tokens/SUSG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3">
-            <span className="text-5xl font-semibold">Savings account</span>
-            <p className="max-w-[480px]">
-              Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi. Learn more
-            </p>
+            <span className="text-4xl font-semibold">Savings account</span>
+            <p>Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi. Learn more</p>
           </div>
         </div>
 
-        {stakeInfo && (
-          <div className="flex w-full items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px] lg:w-5/12">
+        <div className="hidden h-full w-full flex-col items-center gap-3 md:flex xl:w-5/12">
+          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-semibold italic">
+            Points campaign
+            <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 text-lg !font-semibold !not-italic !text-black">Live</div>
+          </div>
+
+          <div className={cn("flex w-full items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2", !!USGsUSGMetrics ? "" : "shimmer")}>
             <TokenImage className="hidden sm:flex" token="sUSG" size={48} />
 
             <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">Supply</span>
-              <span className="text-lg font-semibold">10,225,145 (7,4%)</span>
+              <span className="text-lg font-semibold">{formatUnits(USGsUSGMetrics?.sUSGSupply || 0n, 18)} </span>
             </div>
             <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">sUSG</span>
-              <span className="text-lg font-semibold">{formatDollar(formatUnits(stakeInfo.sUSGPrice, 18), 2)}</span>
+              <span className="text-lg font-semibold">{formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 2)}</span>
             </div>
             <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-1">
               <span className="text-black">APY</span>
               <span className="text-lg font-semibold">15.32%</span>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       <div className="my-8 flex w-full flex-col items-start justify-start gap-4 lg:flex-row">
@@ -157,7 +161,7 @@ export default function TgUsdStakeContent() {
             disabled={false}
             receiveAssetDisplay={<ReceiveAssetDisplay />}
             depositAsset={currentAssetInfo?.asset}
-            receiveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(stakeInfo?.sUSGPrice || 0n, 18)))?.toFixed(2)}
+            receiveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18)))?.toFixed(2)}
             balance={currentAssetInfo?.balance}
             receiveAmount={formatBigInt(expected, 18, 2)}
             setMaxBalance={() => setWeiValue(currentAssetInfo?.balance)}
@@ -182,7 +186,7 @@ export default function TgUsdStakeContent() {
           <Divider className="h-1 w-full"></Divider>
 
           <ForecastGraph
-            initialInvestment={Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18))}
+            initialInvestment={Number(formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18))}
             apr={15}
             additionalLiquidity={currentFeature === "stake" ? (weiValue ? Number(formatUnits(weiValue!, 18)) : 0) : 0}
           ></ForecastGraph>
@@ -190,22 +194,22 @@ export default function TgUsdStakeContent() {
           <div className="flex w-full flex-col items-center justify-between gap-2 sm:flex-row">
             <EvolutionBox
               className="w-full"
-              originalValue={formatNumber(Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)), 0)}
+              originalValue={formatNumber(Number(formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18)), 0)}
               label="sUSG balance"
               newValue={formatNumber(computeProjectedValue, 0)}
             />
 
             <EvolutionBox
               className="w-full"
-              originalValue={computeProjection(stakeInfo!, 1 / 12, 15)}
+              originalValue={computeProjection(USGsUSGMetrics!, 1 / 12, 15)}
               label="30 days projection"
-              newValue={computeProjection(stakeInfo!, 1 / 12, 15, weiValue)}
+              newValue={computeProjection(USGsUSGMetrics!, 1 / 12, 15, weiValue)}
             />
             <EvolutionBox
               className="w-full"
-              originalValue={computeProjection(stakeInfo!, 1, 15)}
+              originalValue={computeProjection(USGsUSGMetrics!, 1, 15)}
               label="1 year projection"
-              newValue={computeProjection(stakeInfo!, 1, 15, weiValue)}
+              newValue={computeProjection(USGsUSGMetrics!, 1, 15, weiValue)}
             />
           </div>
         </div>

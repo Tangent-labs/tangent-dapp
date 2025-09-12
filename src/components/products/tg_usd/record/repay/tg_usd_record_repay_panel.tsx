@@ -6,7 +6,7 @@ import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
 import { Switch } from "@/components/ui/switch"
 import { formatBigInt } from "@/lib/number_formatter"
-import { useTgUsdContext } from "../../tg_usd_context"
+import { useUSGContext } from "../../tg_usd_context"
 import { USG_CONTRACT } from "../../tg_usd_repository"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import { IconChevron } from "@/components/icons/icon_chevron"
@@ -27,7 +27,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export default function TgUsdRepayPanel() {
-  const { tokens, balances } = useTgUsdContext()
+  const { tokens, balances } = useUSGContext()
 
   const { USGInfo, pricedCollateralInfo, collateralInfo, marketInfo } = useTgUsdRecordContext()
 
@@ -86,7 +86,7 @@ export default function TgUsdRepayPanel() {
 
           <span className="text-sm font-semibold">{option.symbol}</span>
         </div>
-        <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
+        <span className="ml-auto text-xs text-subtitle">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
       </div>
     )
   }
@@ -156,12 +156,12 @@ export default function TgUsdRepayPanel() {
     <div className="flex flex-col gap-2">
       <div className="flex w-full items-end justify-end gap-2">
         <div className="flex items-center gap-2 self-end">
-          <span className="text-sm text-gray-400">Repay and withdraw</span>
+          <span className="text-sm text-subtitle">Repay and withdraw</span>
           <Switch checked={isRepayAndWithdraw} onCheckedChange={(v) => setIsRepayAndWithdraw(v)} />
         </div>
 
         <div className="flex items-center gap-2 self-end">
-          <span className="text-sm text-gray-400">Repay All</span>
+          <span className="text-sm text-subtitle">Repay All</span>
           <Switch checked={isRepayMax} onCheckedChange={(v) => onClickMax(v)} />
         </div>
       </div>
@@ -200,7 +200,7 @@ export default function TgUsdRepayPanel() {
             <div className="flex items-center justify-between">
               <div className="flex flex-col items-start justify-start">
                 <div className="flex items-center justify-center gap-1">
-                  <div className="text-sm text-gray-400">Zap</div>
+                  <div className="text-sm text-subtitle">Zap</div>
                   <IconThunder className="h-auto w-[8px] text-row-tonic" />
                   <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
                 </div>

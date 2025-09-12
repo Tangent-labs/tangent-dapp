@@ -85,7 +85,7 @@ export const getUserPositions = async (user: Address, market: Address) => {
   }
 }
 
-export const validateReferralCode = async (referralCode: string, signature: Address, currentAddress: Address) => {
+export const validateReferralCode = async (referralCode: string, signature: Address, currentAddress: Address, now: string) => {
   try {
     const url = `${baseUrl}/referral`
 
@@ -94,7 +94,7 @@ export const validateReferralCode = async (referralCode: string, signature: Addr
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ referralCode, signature, account: currentAddress }),
+      body: JSON.stringify({ referralCode, signature, account: currentAddress, now }),
     })
 
     const data = await response.json()

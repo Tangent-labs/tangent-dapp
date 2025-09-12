@@ -6,6 +6,7 @@ import { ToastComponent } from "@/components/design_system/toast"
 import { generateCode, getReferralStatus, validateReferralCode } from "../api"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { getCurrentBlock } from "@/services/service_rpc"
 
 export type UserStatus = {
   generatedCode: string | null
@@ -87,7 +88,11 @@ export const UsgReferralCodeProvider = ({ children, code }: UsgReferralCodeConte
           message,
         })
 
-        validateReferralCode(referralStatus?.referralCode, signature, currentAddress)
+        const currentBlock = await getCurrentBlock()
+        const isoNowDate = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
+        const now = encodeURIComponent(isoNowDate)
+
+        validateReferralCode(referralStatus?.referralCode, signature, currentAddress, now)
           .then((resp) => {
             if (resp?.error) {
               toast.error(ToastComponent, { data: { type: "Error", content: "Referral process failed." } })

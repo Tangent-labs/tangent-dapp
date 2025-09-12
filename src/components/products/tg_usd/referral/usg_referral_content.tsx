@@ -113,12 +113,12 @@ export const UsgReferralCode = () => {
 
         <div className="flex w-full items-center justify-between">
           <div className="flex w-full flex-col items-center justify-center">
-            <span className="text-sm text-subtitle">Referees points</span>
-            <span className="text-lg font-semibold">10,500</span>
+            <span className="text-sm text-subtitle">Referees voting points</span>
+            <span className="bg-tonic bg-clip-text text-lg font-semibold text-transparent"> 10,500</span>
           </div>
           <div className="flex w-full flex-col items-center justify-center">
-            <span className="text-sm text-subtitle">Referees points</span>
-            <span className="text-lg font-semibold">10,500</span>
+            <span className="text-sm text-subtitle">Referees Liquidity points</span>
+            <span className="bg-pink bg-clip-text text-lg font-semibold text-transparent"> 10,500 </span>
           </div>
           <div className="flex w-full flex-col items-center justify-center">
             <span className="text-sm text-subtitle">Your Referees</span>

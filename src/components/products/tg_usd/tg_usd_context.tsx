@@ -6,6 +6,7 @@ import { UserPoints, ZapToken } from "./tg_usd_type"
 import { getBalances } from "./record/tg_usd_record_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { getCurrentBlock } from "@/services/service_rpc"
 
 type TgUsdContextProps = {
   children: ReactNode
@@ -29,7 +30,12 @@ export const TgUsdProvider = ({ children, tokens }: TgUsdContextProps) => {
   const [userPoints, setUserPoints] = useState<UserPoints>({ basePoints: 0, referralPoints: 0, totalPoints: 0, dailyRate: 0 })
 
   const refetchPoints = async () => {
-    getUserPoints(currentAddress!).then((p) => {
+    const currentBlock = await getCurrentBlock()
+
+    const isoEndDate = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
+    const dateFrom = encodeURIComponent(isoEndDate)
+
+    getUserPoints(currentAddress!, dateFrom).then((p) => {
       setUserPoints(p)
     })
   }

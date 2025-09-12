@@ -205,9 +205,9 @@ export const getUserTasks = async (account: Address): Promise<Array<UserTask>> =
   }
 }
 
-export const getUserPoints = async (account: Address): Promise<UserPoints> => {
+export const getUserPoints = async (account: Address, dateFrom: string): Promise<UserPoints> => {
   try {
-    const url = `${baseUrl}/points/${account}`
+    const url = `${baseUrl}/points/${account}/${dateFrom}`
 
     const response = await fetch(url, {
       method: "GET",

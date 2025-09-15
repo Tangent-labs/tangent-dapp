@@ -9,7 +9,7 @@ import { USG_CONTRACT, tgUsdTokens } from "../tg_usd_repository"
 import { ToastComponent } from "@/components/design_system/toast"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { BalanceAllowanceData, SwapToken, DepositReceiveAsset } from "../tg_usd_type"
+import { BalanceAllowanceData, SwapToken, DepositReceiveAsset, StakingInfo, UserPoints } from "../tg_usd_type"
 import { getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./tg_usd_swap_controller"
@@ -70,12 +70,16 @@ type TgUsdSwapContextValues = {
   formState: FormState
 
   computedAssets: { depositAssets: DepositReceiveAsset[]; receiveAssets: DepositReceiveAsset[] }
+
+  USGsUSGMetrics: StakingInfo | undefined
+
+  userPoints: UserPoints
 }
 
 export const TgUsdSwapContext = createContext<TgUsdSwapContextValues | undefined>(undefined)
 
 export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
-  const { tokens } = useUSGContext()
+  const { tokens, USGsUSGMetrics, loadUSGsUSGMetrics, userPoints } = useUSGContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
@@ -168,6 +172,10 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
     return asset
   }, [depositAsset, swapAssetPrice])
+
+  useEffect(() => {
+    loadUSGsUSGMetrics()
+  }, [currentAddress])
 
   useEffect(() => {
     const walletClient = getWalletClient()
@@ -608,6 +616,8 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
     slippage,
     setSlippage,
     toggleTokensSwitch,
+    USGsUSGMetrics,
+    userPoints,
   }
 
   return <TgUsdSwapContext.Provider value={contextValue}>{children}</TgUsdSwapContext.Provider>

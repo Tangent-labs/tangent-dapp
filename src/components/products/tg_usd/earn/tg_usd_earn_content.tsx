@@ -2,8 +2,9 @@
 
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { formatUnits } from "viem"
 import { ExistingAsset, ListState } from "@/types"
-import { useUSGContext } from "../tg_usd_context"
+import { formatNumber } from "@/lib/number_formatter"
 import { useTgUsdEarnContext } from "./tg_usd_earn_context"
 import ListRow from "@/components/design_system/list/list_row"
 import { tgUsdEarnListHeaders } from "./tg_usd_earn_controller"
@@ -13,7 +14,6 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import ListAprIndicator from "@/components/design_system/list/list_apr_indicator"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { formatNumber } from "@/lib/number_formatter"
 
 const listeState: ListState = {
   search: undefined,
@@ -24,9 +24,7 @@ const listeState: ListState = {
 }
 
 export const TgUsdEarnContent = () => {
-  const { searchValue, setSearchValue, displayRows } = useTgUsdEarnContext()
-
-  const { userPoints } = useUSGContext()
+  const { searchValue, setSearchValue, displayRows, userPoints, USGsUSGMetrics } = useTgUsdEarnContext()
 
   return (
     <>
@@ -37,7 +35,7 @@ export const TgUsdEarnContent = () => {
           </div>
           <div className="flex flex-col items-start justify-center gap-3">
             <span className="text-4xl font-semibold">Earn</span>
-            <p>
+            <p className="text-[15px]">
               Use USG and sUSG in DeFi protocols to earn yield. Below is the list of known integrations accross DEXs, yield boosters, lending markets, and yield
               trading markets.
             </p>
@@ -57,7 +55,7 @@ export const TgUsdEarnContent = () => {
               )}
             >
               <span className="text-xs text-subtitle">USG Balance</span>
-              <span className="text-sm font-semibold">15,000.00</span>
+              <span className="text-sm font-semibold">{formatUnits(USGsUSGMetrics?.USGBalance || 0n, 18)}</span>
             </div>
 
             <div
@@ -66,7 +64,7 @@ export const TgUsdEarnContent = () => {
               )}
             >
               <span className="text-xs text-subtitle">sUSG Balance</span>
-              <span className="text-sm font-semibold">10,000.00</span>
+              <span className="text-sm font-semibold">{formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18)}</span>
             </div>
 
             <div className="flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48">

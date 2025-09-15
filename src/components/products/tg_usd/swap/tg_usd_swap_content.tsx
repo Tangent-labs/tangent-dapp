@@ -1,9 +1,11 @@
 "use client"
 
 import Image from "next/image"
+import { cn } from "@/lib/utils"
+import { formatUnits } from "viem"
 import { ExistingAsset } from "@/types"
 import { DepositReceiveAsset } from "../tg_usd_type"
-import { formatBigInt } from "@/lib/number_formatter"
+import { formatBigInt, formatNumber } from "@/lib/number_formatter"
 import { useTgUsdSwapContext } from "./tg_usd_swap_context"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
@@ -46,6 +48,8 @@ export default function TgUsdSwapContent() {
     receiveAssetInfo,
     depositSliderPercent,
     slippage,
+    USGsUSGMetrics,
+    userPoints,
   } = useTgUsdSwapContext()
 
   const ReceiveAssetSelect = ({ options }: AssetSelectProps) => {
@@ -113,20 +117,54 @@ export default function TgUsdSwapContent() {
 
   return (
     <>
-      <div className="usg-header relative hidden w-7/12 lg:flex">
-        <div className="absolute -top-2 left-20 h-full min-h-24">
-          <Image height={140} width={140} src="/medias/tokens/swapLogo.png" alt="token" />
+      <div className="flex w-full items-end justify-between gap-6">
+        <div className="usg-header relative hidden w-6/12 lg:flex">
+          <div className="absolute -top-2 left-20 h-full min-h-24">
+            <Image height={140} width={140} src="/medias/tokens/swapLogo.png" alt="token" />
+          </div>
+
+          <Image className="mr-24 mt-5" height={140} width={140} src="/medias/tokens/tgUSD_header.png" alt="token" />
+
+          <div className="flex flex-col items-start justify-center gap-3">
+            <span className="text-5xl font-semibold">Swap</span>
+            <p>Swap any asset for USG and other Tangent&apos;s assets, including Curve LPs and Wrapped Tangent Stablecoins. Learn more</p>
+          </div>
         </div>
 
-        <Image className="mr-24 mt-5" height={140} width={140} src="/medias/tokens/tgUSD_header.png" alt="token" />
+        <div className="flex h-full w-full flex-col items-center gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] xl:w-fit">
+          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-semibold italic">
+            Points campaign
+            <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
+          </div>
 
-        <div className="flex flex-col items-start justify-center gap-3">
-          <span className="text-5xl font-semibold">Swap</span>
-          <p>Swap any asset for USG and other Tangent&apos;s assets, including Curve LPs and Wrapped Tangent Stablecoins. Learn more</p>
+          <div className="mt-auto flex w-full items-center justify-center gap-1 p-2 md:gap-3">
+            <div
+              className={cn(
+                "flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48"
+              )}
+            >
+              <span className="text-xs text-subtitle">USG Balance</span>
+              <span className="text-sm font-semibold">{formatUnits(USGsUSGMetrics?.USGBalance || 0n, 18)}</span>
+            </div>
+
+            <div
+              className={cn(
+                "flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48"
+              )}
+            >
+              <span className="text-xs text-subtitle">sUSG Balance</span>
+              <span className="text-sm font-semibold">{formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18)}</span>
+            </div>
+
+            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48">
+              <span className="text-xs text-subtitle">Your Total Points</span>
+              <span className="text-sm font-semibold">{formatNumber(userPoints.totalPoints, 0)}</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="mt-2 flex w-full flex-col items-center justify-center">
+      <div className="mt-6 flex w-full flex-col items-center justify-center">
         <div className="mt-2 flex flex-col items-center justify-center rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
           <BuySellInput
             depositAmount={depositWeiValue}

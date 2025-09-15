@@ -34,14 +34,14 @@ export default function TgUsdMarketList() {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-6">
+      <div className="flex items-center justify-between gap-4">
         <div className="usg-header hidden w-6/12 xl:flex">
           <div className="flex items-center justify-center">
-            <Image height={160} width={160} src="/medias/tokens/tgUSD_header.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+            <Image height={160} width={160} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3">
             <span className="text-4xl font-semibold">USG</span>
-            <p>
+            <p className="text-[15px]">
               Borrow USG against accepted LP tokens. Tangent features two kinds of markets.{" "}
               <span className="inline-block cursor-pointer underline hover:text-white/40">Learn more</span>
             </p>

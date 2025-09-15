@@ -60,38 +60,47 @@ export const RsTanLayoutContent = ({
 
   return (
     <>
-      <div className="mb-3 flex w-full items-end justify-end gap-6">
-        <div className="usg-header hidden w-7/12 xl:flex">
+      <div className="mb-3 flex w-full items-center justify-between gap-6">
+        <div className="usg-header hidden w-1/2 xl:flex">
           <div className="flex items-center justify-center">
-            <Image height={360} width={360} src={`/medias/tokens/rsTan.png`} alt="token" />
+            <Image height={360} width={360} src={`/medias/tokens/vsTAN.png`} alt="token" />
           </div>
           <div className="ml-6 flex flex-col items-start justify-between gap-3">
             <span className="mt-1 text-5xl font-semibold">Lock TAN</span>
 
-            <span>
+            <span className="text-[15px]">
               Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT
               stable pool & CVX stable pool).
             </span>
-            <span>Rewards are distributed weekly, at the beginning of each epoch. Staking positions are represented by NFTs. Learn more</span>
+            <span className="text-[15px]">
+              Rewards are distributed weekly, at the beginning of each epoch. Staking positions are represented by NFTs. Learn more
+            </span>
           </div>
         </div>
 
-        <div className="flex w-full items-center justify-around rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
-          <IconVsTan className="h-10 w-32"></IconVsTan>
-
-          <div className="flex w-full flex-col items-center justify-center">
-            <div className="text-xs font-semibold text-subtitle">Total Locked</div>
-            <div className="text-md font-semibold text-white">{formatBigInt(lockData?.totalLocked, 18, 2)}</div>
+        <div className="flex h-full w-full flex-col items-center gap-8 rounded-[10px] xl:w-1/2">
+          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-semibold italic">
+            Points campaign
+            <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
           </div>
 
-          <div className="flex w-full flex-col items-center justify-center">
-            <div className="text-xs font-semibold text-subtitle">vsTan</div>
-            <div className="text-md font-semibold text-white">$1.23</div>
-          </div>
+          <div className="justify-bewteen flex w-full items-center rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+            <IconVsTan className="h-10 w-32"></IconVsTan>
 
-          <div className="flex w-full flex-col items-center justify-center rounded-lg bg-button-active py-2">
-            <div className="text-xs font-semibold text-black">APR</div>
-            <div className="text-md font-semibold text-white">{formatBigInt(lockData?.tanAPR, 18, 2)}%</div>
+            <div className="flex w-full flex-col items-center justify-center">
+              <div className="text-xs font-semibold text-subtitle">Total Locked</div>
+              <div className="text-md font-semibold text-white">{formatBigInt(lockData?.totalLocked, 18, 2)}</div>
+            </div>
+
+            <div className="flex w-full flex-col items-center justify-center">
+              <div className="text-xs font-semibold text-subtitle">vsTan</div>
+              <div className="text-md font-semibold text-white">$1.23</div>
+            </div>
+
+            <div className="flex w-full flex-col items-center justify-center rounded-lg bg-button-active py-2">
+              <div className="text-xs font-semibold text-black">APR</div>
+              <div className="text-md font-semibold text-white">{formatBigInt(lockData?.tanAPR, 18, 2)}%</div>
+            </div>
           </div>
         </div>
       </div>

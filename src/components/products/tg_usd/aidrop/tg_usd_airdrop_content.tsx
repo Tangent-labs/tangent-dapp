@@ -55,8 +55,7 @@ export default function TgUsdAidropContent() {
           <div className="flex flex-col items-start justify-center gap-3">
             <span className="text-[48px] font-semibold">Tasks</span>
             <p>
-              Borrow tgUSD, provide liquidity, and vote for tgUSD and sgUSD pools to earn points. Points will be convertible for TAN tokens once the campaign
-              ends.
+              Borrow USG, provide liquidity, and vote for USG and sUSG pools to earn points. Points will be convertible for TAN tokens once the campaign ends.
             </p>
           </div>
         </div>

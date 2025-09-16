@@ -1,9 +1,9 @@
 "use client"
 
 import { ListState } from "@/types"
-import { getUserTasks } from "../api"
-import { UserTask } from "../tg_usd_type"
 import { useUSGContext } from "../tg_usd_context"
+import { UserTask, VoteTask } from "../tg_usd_type"
+import { getUserTasks, getUserVoteTasks } from "../api"
 import { mapAirdropData } from "./tg_usd_airdrop_controller"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
@@ -14,8 +14,13 @@ type TgUsdAirdropContextProps = {
 
 type TgUsdAirdropContextValues = {
   tasks: UserTask[]
-  displayRows: UserTask[]
-  customSort: (arg: ListState) => void
+  lpTasks: UserTask[]
+  voteTasks: VoteTask[]
+  sortLpTasks: (arg: ListState) => void
+  sortVoteTasks: (arg: ListState) => void
+
+  selectedFeature: "Borrow & LP" | "Vote"
+  setSelectedFeature: (t: "Borrow & LP" | "Vote") => void
 }
 
 export const TgUsdAirdropContext = createContext<TgUsdAirdropContextValues | undefined>(undefined)
@@ -27,17 +32,25 @@ export const TgUsdAirdropProvider = ({ children }: TgUsdAirdropContextProps) => 
 
   const [tasks, setTasks] = useState<UserTask[]>([])
 
+  const [voteTasks, setVoteTasks] = useState<VoteTask[]>([])
+
+  const [selectedFeature, setSelectedFeature] = useState<"Borrow & LP" | "Vote">("Vote")
+
   useEffect(() => {
     if (currentAddress) {
-      getUserTasks(currentAddress).then((userTasks) => {
-        setTasks(userTasks)
+      getUserTasks(currentAddress).then((tasks) => {
+        setTasks(tasks)
+      })
+
+      getUserVoteTasks(currentAddress).then((tasks) => {
+        setVoteTasks(tasks)
       })
 
       refetchPoints()
     }
   }, [currentAddress])
 
-  const displayRows = useMemo(() => {
+  const lpTasks = useMemo(() => {
     if (!tasks) return []
 
     const rows = mapAirdropData(tasks)
@@ -45,10 +58,24 @@ export const TgUsdAirdropProvider = ({ children }: TgUsdAirdropContextProps) => 
     return rows
   }, [tasks])
 
-  const customSort = (listState: ListState) => {
+  const sortVoteTasks = (listState: ListState) => {
     const { key, direction } = listState.sort!
 
-    displayRows.sort((elementA: UserTask, elementB: UserTask) => {
+    voteTasks.sort((elementA: VoteTask, elementB: VoteTask) => {
+      const aValue = elementA[key as keyof VoteTask]
+      const bValue = elementB[key as keyof VoteTask]
+
+      if (aValue < bValue) return direction === "asc" ? -1 : 1
+      if (aValue > bValue) return direction === "asc" ? 1 : -1
+
+      return 0
+    })
+  }
+
+  const sortLpTasks = (listState: ListState) => {
+    const { key, direction } = listState.sort!
+
+    lpTasks.sort((elementA: UserTask, elementB: UserTask) => {
       const aValue = elementA[key as keyof UserTask]
       const bValue = elementB[key as keyof UserTask]
 
@@ -58,11 +85,14 @@ export const TgUsdAirdropProvider = ({ children }: TgUsdAirdropContextProps) => 
       return 0
     })
   }
-
   const contextValue: TgUsdAirdropContextValues = {
     tasks,
-    displayRows,
-    customSort,
+    lpTasks,
+    voteTasks,
+    sortLpTasks,
+    sortVoteTasks,
+    selectedFeature,
+    setSelectedFeature,
   }
 
   return <TgUsdAirdropContext.Provider value={contextValue}>{children}</TgUsdAirdropContext.Provider>

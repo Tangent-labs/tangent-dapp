@@ -469,9 +469,24 @@ export type UserTask = {
   points: number
 }
 
+export type VoteTask = {
+  taskId: number
+  organisation: string
+  protocol: string
+  url: string
+  description: string
+  pointRate: number
+  status: boolean
+  points: number
+}
+
 export type UserPoints = {
   totalPoints: number
   basePoints: number
   referralPoints: number
   dailyRate: number
+}
+
+export type Leaderboard = {
+  data: Array<{ rank: number; address: Address; pts: number }>
 }

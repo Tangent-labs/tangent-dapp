@@ -9,9 +9,11 @@ import { Button } from "@/components/design_system/inputs/button"
 import { IconCompleted } from "@/components/icons/icon_completed"
 import Divider from "@/components/design_system/structure/divider"
 import { useUsgReferralCodeContext } from "./usg_referral_context"
+import { LiquidityPointsLeaderboard } from "./LiquidityPointsLeaderboard"
+import { VotingPointsLeaderboard } from "./VotingPointsLeaderboard"
 
 export const UsgReferralCode = () => {
-  const { isLoading, referralStatus, setReferralStatus, signMessage, generateReferralCode } = useUsgReferralCodeContext()
+  const { isLoading, referralStatus, lpLeaderboard, voteLeaderboard, setReferralStatus, signMessage, generateReferralCode } = useUsgReferralCodeContext()
 
   const { userPoints } = useUSGContext()
 
@@ -179,25 +181,25 @@ export const UsgReferralCode = () => {
         </div>
       </div>
 
-      <div className="my-4 flex w-full items-center justify-between gap-4">
-        <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
-          <div className="mr-auto text-lg font-semibold text-white">Referral ranking</div>
+      <div className="my-4 flex w-full items-start justify-between gap-4">
+        <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
+          <div className="mr-auto text-lg font-semibold text-white">Liquidity points leaderboard</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
 
-          <Ranking />
+          <LiquidityPointsLeaderboard lpLeaderboard={lpLeaderboard} />
         </div>
 
         <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
-          <div className="mr-auto text-lg font-semibold text-white">My referrees ranking</div>
+          <div className="mr-auto text-lg font-semibold text-white">Vote points leaderboard</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
 
-          <Ranking />
+          <VotingPointsLeaderboard voteLeaderboard={voteLeaderboard} />
         </div>
 
         <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
-          <div className="mr-auto text-lg font-semibold text-white">Points ranking</div>
+          <div className="mr-auto text-lg font-semibold text-white">My referees</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
 

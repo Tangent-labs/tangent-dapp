@@ -1,12 +1,13 @@
 "use client"
 
+import { Address } from "viem"
 import { toast } from "react-toastify"
 import { useUSGContext } from "../tg_usd_context"
+import { getCurrentBlock } from "@/services/service_rpc"
 import { ToastComponent } from "@/components/design_system/toast"
 import { generateCode, getReferralStatus, validateReferralCode } from "../api"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { getCurrentBlock } from "@/services/service_rpc"
 
 export type UserStatus = {
   generatedCode: string | null
@@ -18,25 +19,41 @@ export type UserStatus = {
 type UsgReferralCodeContextProps = {
   children: ReactNode
   code: string | undefined
+  lpLeaderboard: Array<{
+    rank: number
+    address: Address
+    pts: number
+  }>
+  voteLeaderboard: Array<{
+    rank: number
+    address: Address
+    pts: number
+  }>
 }
 
 type UsgReferralCodeContextValues = {
   isLoading: boolean
   setIsLoading: (arg: boolean) => void
-
   signMessage: () => void
-
   generateReferralCode: () => void
-
   referralStatus: UserStatus
   setReferralStatus: (arg: UserStatus) => void
-
   code: string | undefined
+  lpLeaderboard: Array<{
+    rank: number
+    address: Address
+    pts: number
+  }>
+  voteLeaderboard: Array<{
+    rank: number
+    address: Address
+    pts: number
+  }>
 }
 
 export const UsgReferralCodeContext = createContext<UsgReferralCodeContextValues | undefined>(undefined)
 
-export const UsgReferralCodeProvider = ({ children, code }: UsgReferralCodeContextProps) => {
+export const UsgReferralCodeProvider = ({ children, code, lpLeaderboard, voteLeaderboard }: UsgReferralCodeContextProps) => {
   const { currentAddress, getWalletClient } = useWalletConnexionContext()
 
   const { refetchPoints } = useUSGContext()
@@ -55,7 +72,12 @@ export const UsgReferralCodeProvider = ({ children, code }: UsgReferralCodeConte
     if (currentAddress) {
       getReferralStatus(currentAddress).then((status) => {
         if (status) {
-          setReferralStatus({ ...referralStatus, generatedCode: status?.referralCode, hasUsedCode: status?.hasUsedCode, friends: status?.friends })
+          setReferralStatus((prev) => ({
+            ...prev,
+            generatedCode: status.referralCode ?? null,
+            hasUsedCode: !!status.hasUsedCode,
+            friends: status.friends ?? 0,
+          }))
         }
       })
 
@@ -122,6 +144,8 @@ export const UsgReferralCodeProvider = ({ children, code }: UsgReferralCodeConte
     referralStatus,
     setReferralStatus,
     code,
+    lpLeaderboard,
+    voteLeaderboard,
   }
 
   return <UsgReferralCodeContext.Provider value={contextValue}>{children}</UsgReferralCodeContext.Provider>

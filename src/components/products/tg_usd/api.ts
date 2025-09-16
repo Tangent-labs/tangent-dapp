@@ -1,7 +1,7 @@
 "use server"
 
 import { Address } from "viem"
-import { MarketHistoricalData, UserPoints, UserTask } from "./tg_usd_type"
+import { MarketHistoricalData, UserPoints, UserTask, VoteTask } from "./tg_usd_type"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -181,6 +181,30 @@ export const getHistoricalMarketData = async (marketAddress: string, range: stri
   }
 }
 
+export const getUserVoteTasks = async (account: Address): Promise<Array<VoteTask>> => {
+  try {
+    const url = `${baseUrl}/tasks/vote/${account}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    const data: Array<VoteTask> = await response.json()
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch vote tasks")
+    }
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch vote tasks:", error)
+    return []
+  }
+}
+
 export const getUserTasks = async (account: Address): Promise<Array<UserTask>> => {
   try {
     const url = `${baseUrl}/tasks/${account}`
@@ -219,12 +243,47 @@ export const getUserPoints = async (account: Address, dateFrom: string): Promise
     const data: UserPoints = await response.json()
 
     if (!response.ok) {
-      throw new Error("Failed to fetch tasks")
+      throw new Error("Failed to fetch user points")
     }
 
     return data
   } catch (error) {
-    console.error("Failed to fetch tasks:", error)
+    console.error("Failed to fetch user points:", error)
     return { basePoints: 0, referralPoints: 0, totalPoints: 0, dailyRate: 0 }
+  }
+}
+
+export const getLeaderboards = async (): Promise<{
+  lpLeaderboard: Array<{
+    rank: number
+    address: Address
+    pts: number
+  }>
+  voteLeaderboard: Array<{
+    rank: number
+    address: Address
+    pts: number
+  }>
+}> => {
+  try {
+    const url = `${baseUrl}/leaderboards`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    const { lpLeaderboard, voteLeaderboard } = await response.json()
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch leaderboard")
+    }
+
+    return { lpLeaderboard, voteLeaderboard }
+  } catch (error) {
+    console.error("Failed to fetch leaderboard:", error)
+    return { lpLeaderboard: [], voteLeaderboard: [] }
   }
 }

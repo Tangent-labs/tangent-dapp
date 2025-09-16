@@ -287,3 +287,41 @@ export const getLeaderboards = async (): Promise<{
     return { lpLeaderboard: [], voteLeaderboard: [] }
   }
 }
+
+export const getGodsonsLeaderboard = async (
+  address: Address
+): Promise<
+  Array<{
+    rank: number
+    address: Address
+    lpPoints: number
+    votePts: number
+  }>
+> => {
+  try {
+    const url = `${baseUrl}/leaderboard/godsons/${address}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    const leaderboard: Array<{
+      rank: number
+      address: Address
+      lpPoints: number
+      votePts: number
+    }> = await response.json()
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch leaderboard")
+    }
+
+    return leaderboard
+  } catch (error) {
+    console.error("Failed to fetch leaderboard:", error)
+    return []
+  }
+}

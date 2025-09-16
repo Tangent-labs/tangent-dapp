@@ -487,6 +487,15 @@ export type UserPoints = {
   dailyRate: number
 }
 
-export type Leaderboard = {
-  data: Array<{ rank: number; address: Address; pts: number }>
-}
+export type Leaderboard = Array<{
+  rank: number
+  address: Address
+  pts: number
+}>
+
+export type GodsonLeaderboard = Array<{
+  rank: number
+  address: Address
+  lpPoints: number
+  votePts: number
+}>

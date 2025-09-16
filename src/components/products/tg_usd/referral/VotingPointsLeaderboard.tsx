@@ -29,7 +29,7 @@ export const VotingPointsLeaderboard = ({ voteLeaderboard }: VotingPointsLeaderb
             {el.rank}
           </div>
           <div className="flex w-1/3 items-start justify-start font-semibold">{formatAddress(el.address, 4)}</div>
-          <div className="flex w-1/3 items-start justify-start font-semibold">{formatNumber(el.pts, 0)}</div>
+          <div className="flex w-1/3 items-start justify-start bg-tonic bg-clip-text font-semibold text-transparent">{formatNumber(el.pts, 0)}</div>
         </div>
       ))}
     </>

@@ -34,7 +34,7 @@ export const TgUsdAirdropProvider = ({ children }: TgUsdAirdropContextProps) => 
 
   const [voteTasks, setVoteTasks] = useState<VoteTask[]>([])
 
-  const [selectedFeature, setSelectedFeature] = useState<"Borrow & LP" | "Vote">("Vote")
+  const [selectedFeature, setSelectedFeature] = useState<"Borrow & LP" | "Vote">("Borrow & LP")
 
   useEffect(() => {
     if (currentAddress) {

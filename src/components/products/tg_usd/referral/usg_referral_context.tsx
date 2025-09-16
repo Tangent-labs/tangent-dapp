@@ -5,9 +5,10 @@ import { toast } from "react-toastify"
 import { useUSGContext } from "../tg_usd_context"
 import { getCurrentBlock } from "@/services/service_rpc"
 import { ToastComponent } from "@/components/design_system/toast"
-import { generateCode, getReferralStatus, validateReferralCode } from "../api"
+import { generateCode, getGodsonsLeaderboard, getReferralStatus, validateReferralCode } from "../api"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { GodsonLeaderboard, Leaderboard } from "../tg_usd_type"
 
 export type UserStatus = {
   generatedCode: string | null
@@ -19,16 +20,8 @@ export type UserStatus = {
 type UsgReferralCodeContextProps = {
   children: ReactNode
   code: string | undefined
-  lpLeaderboard: Array<{
-    rank: number
-    address: Address
-    pts: number
-  }>
-  voteLeaderboard: Array<{
-    rank: number
-    address: Address
-    pts: number
-  }>
+  lpLeaderboard: Leaderboard
+  voteLeaderboard: Leaderboard
 }
 
 type UsgReferralCodeContextValues = {
@@ -39,16 +32,9 @@ type UsgReferralCodeContextValues = {
   referralStatus: UserStatus
   setReferralStatus: (arg: UserStatus) => void
   code: string | undefined
-  lpLeaderboard: Array<{
-    rank: number
-    address: Address
-    pts: number
-  }>
-  voteLeaderboard: Array<{
-    rank: number
-    address: Address
-    pts: number
-  }>
+  lpLeaderboard: Leaderboard
+  voteLeaderboard: Leaderboard
+  godsonsLeaderboard: GodsonLeaderboard
 }
 
 export const UsgReferralCodeContext = createContext<UsgReferralCodeContextValues | undefined>(undefined)
@@ -59,6 +45,15 @@ export const UsgReferralCodeProvider = ({ children, code, lpLeaderboard, voteLea
   const { refetchPoints } = useUSGContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const [godsonsLeaderboard, setGodsonsLeaderboard] = useState<
+    Array<{
+      rank: number
+      address: Address
+      lpPoints: number
+      votePts: number
+    }>
+  >([])
 
   const [referralStatus, setReferralStatus] = useState<UserStatus>({ generatedCode: null, hasUsedCode: false, referralCode: "", friends: 0 })
 
@@ -79,6 +74,10 @@ export const UsgReferralCodeProvider = ({ children, code, lpLeaderboard, voteLea
             friends: status.friends ?? 0,
           }))
         }
+      })
+
+      getGodsonsLeaderboard(currentAddress).then((l) => {
+        setGodsonsLeaderboard(l)
       })
 
       refetchPoints()
@@ -111,8 +110,7 @@ export const UsgReferralCodeProvider = ({ children, code, lpLeaderboard, voteLea
         })
 
         const currentBlock = await getCurrentBlock()
-        const isoNowDate = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
-        const now = encodeURIComponent(isoNowDate)
+        const now = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
 
         validateReferralCode(referralStatus?.referralCode, signature, currentAddress, now)
           .then((resp) => {
@@ -144,6 +142,7 @@ export const UsgReferralCodeProvider = ({ children, code, lpLeaderboard, voteLea
     referralStatus,
     setReferralStatus,
     code,
+    godsonsLeaderboard,
     lpLeaderboard,
     voteLeaderboard,
   }

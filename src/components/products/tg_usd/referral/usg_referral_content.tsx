@@ -11,42 +11,13 @@ import Divider from "@/components/design_system/structure/divider"
 import { useUsgReferralCodeContext } from "./usg_referral_context"
 import { LiquidityPointsLeaderboard } from "./LiquidityPointsLeaderboard"
 import { VotingPointsLeaderboard } from "./VotingPointsLeaderboard"
+import { GodsonsLeaderboard } from "./GodsonsLeaderboard"
 
 export const UsgReferralCode = () => {
-  const { isLoading, referralStatus, lpLeaderboard, voteLeaderboard, setReferralStatus, signMessage, generateReferralCode } = useUsgReferralCodeContext()
-
   const { userPoints } = useUSGContext()
 
-  const Ranking = () => {
-    return (
-      <>
-        <div className="flex w-full items-start justify-start">
-          <div className="flex w-1/3 items-start justify-start">Ranking</div>
-          <div className="flex w-1/3 items-start justify-start">Address</div>
-          <div className="flex w-1/3 items-start justify-start">Points</div>
-        </div>
-
-        {[
-          { rank: 1, address: "0x64129410B4Ae43c13D79537f114E3B46F97Ac92a", pts: 1234 },
-          { rank: 2, address: "0x042Eb27B32235B6cd99f74ba00e05c7166964019", pts: 1000 },
-          { rank: 3, address: "0x9beAA846aD08A22Bc504D1ca535C9E1BC109EA69", pts: 293 },
-          { rank: 4, address: "0xc600e7F967a0892A39Fb7FB8AcCb237A2B62af72", pts: 12 },
-          { rank: 4, address: "0xAcCb237A2967a02A39Fb7FB8AcCb237A2B62af72", pts: 1 },
-        ].map((el) => (
-          <div key={el?.address} className="my-1 flex w-full items-start justify-start bg-overlay-panel px-2 py-1 backdrop-blur-[60px]">
-            <div className="flex w-1/3 items-center justify-start gap-1 font-semibold">
-              {el?.rank === 1 && <IconTrophy className="w-5 fill-yellow-300"></IconTrophy>}
-              {el?.rank === 2 && <IconTrophy className="w-5 fill-gray-500"></IconTrophy>}
-              {el?.rank === 3 && <IconTrophy className="w-5 fill-amber-800"></IconTrophy>}
-              {el.rank}
-            </div>
-            <div className="flex w-1/3 items-start justify-start font-semibold">{el.address.substring(0, 5) + "..."}</div>
-            <div className="flex w-1/3 items-start justify-start font-semibold">{el.pts}</div>
-          </div>
-        ))}
-      </>
-    )
-  }
+  const { isLoading, referralStatus, lpLeaderboard, voteLeaderboard, godsonsLeaderboard, setReferralStatus, signMessage, generateReferralCode } =
+    useUsgReferralCodeContext()
 
   return (
     <div className="flex w-full flex-col items-center justify-center">
@@ -203,7 +174,7 @@ export const UsgReferralCode = () => {
 
           <Divider className="h-0.5 w-full bg-white/10" />
 
-          <Ranking />
+          <GodsonsLeaderboard godsonsLeaderboard={godsonsLeaderboard} />
         </div>
       </div>
     </div>

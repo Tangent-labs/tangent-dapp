@@ -5,8 +5,7 @@ import { formatUnits } from "viem"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { ExistingAsset, ListState } from "@/types"
-import { useUSGContext } from "../tg_usd_context"
-import { formatDollar, formatNumber } from "@/lib/number_formatter"
+import { formatDollar } from "@/lib/number_formatter"
 import { tgUsdListHeaders } from "./tg_usd_market_controller"
 import ListHeader from "@/components/design_system/list/list_header"
 import ListRow from "@/components/design_system/list/list_row"
@@ -29,8 +28,6 @@ const listeState: ListState = {
 
 export default function TgUsdMarketList() {
   const { displayRows, globalData, searchValue, setSearchValue, userData } = useTgUsdMaketListContext()
-
-  const { userPoints } = useUSGContext()
 
   return (
     <>
@@ -63,11 +60,6 @@ export default function TgUsdMarketList() {
             <div className={cn("flex min-w-48 flex-col items-center justify-center gap-3 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}>
               <span className="text-xs text-subtitle">Your Collateral Deposits</span>
               <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDeposit || 0n, 18))} USD</span>
-            </div>
-
-            <div className="flex min-w-48 flex-col items-center justify-center gap-3 rounded-[10px] bg-overlay-panel p-3">
-              <span className="text-xs text-subtitle">Your Total Points</span>
-              <span className="text-sm font-semibold">{formatNumber(userPoints.totalPoints, 0)}</span>
             </div>
           </div>
         </div>

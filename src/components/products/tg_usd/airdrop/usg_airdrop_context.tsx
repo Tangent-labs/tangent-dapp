@@ -1,14 +1,12 @@
 "use client"
 
-import { Address } from "viem"
 import { toast } from "react-toastify"
 import { useUSGContext } from "../tg_usd_context"
 import { getCurrentBlock } from "@/services/service_rpc"
 import { ToastComponent } from "@/components/design_system/toast"
-import { generateCode, getGodsonsLeaderboard, getReferralStatus, validateReferralCode } from "../api"
+import { generateCode, getReferralStatus, validateReferralCode } from "../api"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { GodsonLeaderboard, Leaderboard } from "../tg_usd_type"
 
 export type UserStatus = {
   generatedCode: string | null
@@ -17,51 +15,29 @@ export type UserStatus = {
   friends: number
 }
 
-type UsgReferralCodeContextProps = {
+type UsgAirdropContextProps = {
   children: ReactNode
-  code: string | undefined
-  lpLeaderboard: Leaderboard
-  voteLeaderboard: Leaderboard
 }
 
-type UsgReferralCodeContextValues = {
+type UsgAirdropContextValues = {
   isLoading: boolean
   setIsLoading: (arg: boolean) => void
   signMessage: () => void
   generateReferralCode: () => void
   referralStatus: UserStatus
   setReferralStatus: (arg: UserStatus) => void
-  code: string | undefined
-  lpLeaderboard: Leaderboard
-  voteLeaderboard: Leaderboard
-  godsonsLeaderboard: GodsonLeaderboard
 }
 
-export const UsgReferralCodeContext = createContext<UsgReferralCodeContextValues | undefined>(undefined)
+export const UsgAirdropContext = createContext<UsgAirdropContextValues | undefined>(undefined)
 
-export const UsgReferralCodeProvider = ({ children, code, lpLeaderboard, voteLeaderboard }: UsgReferralCodeContextProps) => {
+export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
   const { currentAddress, getWalletClient } = useWalletConnexionContext()
 
   const { refetchPoints } = useUSGContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [godsonsLeaderboard, setGodsonsLeaderboard] = useState<
-    Array<{
-      rank: number
-      address: Address
-      lpPoints: number
-      votePts: number
-    }>
-  >([])
-
   const [referralStatus, setReferralStatus] = useState<UserStatus>({ generatedCode: null, hasUsedCode: false, referralCode: "", friends: 0 })
-
-  useEffect(() => {
-    if (code) {
-      setReferralStatus({ ...referralStatus, referralCode: code })
-    }
-  }, [code])
 
   useEffect(() => {
     if (currentAddress) {
@@ -74,10 +50,6 @@ export const UsgReferralCodeProvider = ({ children, code, lpLeaderboard, voteLea
             friends: status.friends ?? 0,
           }))
         }
-      })
-
-      getGodsonsLeaderboard(currentAddress).then((l) => {
-        setGodsonsLeaderboard(l)
       })
 
       refetchPoints()
@@ -134,26 +106,22 @@ export const UsgReferralCodeProvider = ({ children, code, lpLeaderboard, voteLea
     }
   }
 
-  const contextValue: UsgReferralCodeContextValues = {
+  const contextValue: UsgAirdropContextValues = {
     isLoading,
     setIsLoading,
     signMessage,
     generateReferralCode,
     referralStatus,
     setReferralStatus,
-    code,
-    godsonsLeaderboard,
-    lpLeaderboard,
-    voteLeaderboard,
   }
 
-  return <UsgReferralCodeContext.Provider value={contextValue}>{children}</UsgReferralCodeContext.Provider>
+  return <UsgAirdropContext.Provider value={contextValue}>{children}</UsgAirdropContext.Provider>
 }
 
-export const useUsgReferralCodeContext = () => {
-  const context = useContext(UsgReferralCodeContext)
+export const useUsgAirdropContext = () => {
+  const context = useContext(UsgAirdropContext)
   if (!context) {
-    throw new Error("useUsgReferralCodeContext must be used within a UsgReferralCodeProvider")
+    throw new Error("useUsgAirdropContext must be used within a UsgAirdropProvider")
   }
   return context
 }

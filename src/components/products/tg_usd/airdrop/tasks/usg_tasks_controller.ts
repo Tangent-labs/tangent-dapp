@@ -1,5 +1,5 @@
 import { ListHeaderData } from "@/types"
-import { UserTask } from "../tg_usd_type"
+import { UserTask } from "../../tg_usd_type"
 
 export const mapAirdropData = (tasks: UserTask[]) => {
   if (!tasks || tasks.length === 0) return []

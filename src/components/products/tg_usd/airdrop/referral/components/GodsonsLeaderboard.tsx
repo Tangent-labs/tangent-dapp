@@ -1,7 +1,7 @@
 import { IconTrophy } from "@/components/icons/icon_trophy"
 import { formatNumber } from "@/lib/number_formatter"
 import { formatAddress } from "@/lib/other_formatter"
-import { GodsonLeaderboard } from "../tg_usd_type"
+import { GodsonLeaderboard } from "../../../tg_usd_type"
 
 type GodsonsLeaderboardProps = {
   godsonsLeaderboard: GodsonLeaderboard

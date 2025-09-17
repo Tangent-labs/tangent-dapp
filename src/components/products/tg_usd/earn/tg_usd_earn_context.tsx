@@ -2,7 +2,7 @@
 
 import { ListState } from "@/types"
 import { useUSGContext } from "../tg_usd_context"
-import { EarnTask, StakingInfo, UserPoints } from "../tg_usd_type"
+import { EarnTask, StakingInfo, LpUserPoints } from "../tg_usd_type"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 
@@ -18,7 +18,7 @@ type TgUsdEarnContextValues = {
   displayRows: EarnTask[]
   customSort: (arg: ListState) => void
   USGsUSGMetrics: StakingInfo | undefined
-  userPoints: UserPoints
+  lpUserPoints: LpUserPoints
 }
 
 export const TgUsdEarnContext = createContext<TgUsdEarnContextValues | undefined>(undefined)
@@ -26,7 +26,7 @@ export const TgUsdEarnContext = createContext<TgUsdEarnContextValues | undefined
 export const TgUsdEarnProvider = ({ children, tasks }: TgUsdEarnContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
 
-  const { USGsUSGMetrics, loadUSGsUSGMetrics, userPoints } = useUSGContext()
+  const { USGsUSGMetrics, loadUSGsUSGMetrics, lpUserPoints } = useUSGContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -69,7 +69,7 @@ export const TgUsdEarnProvider = ({ children, tasks }: TgUsdEarnContextProps) =>
     displayRows,
     customSort,
     USGsUSGMetrics,
-    userPoints,
+    lpUserPoints,
   }
 
   return <TgUsdEarnContext.Provider value={contextValue}>{children}</TgUsdEarnContext.Provider>

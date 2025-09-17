@@ -1,31 +1,30 @@
 "use client"
 
 import { ListState } from "@/types"
-import { useUSGContext } from "../tg_usd_context"
-import { UserTask, VoteTask } from "../tg_usd_type"
-import { getUserTasks, getUserVoteTasks } from "../api"
-import { mapAirdropData } from "./tg_usd_airdrop_controller"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { useUSGContext } from "../../tg_usd_context"
+import { UserTask, VoteTask } from "../../tg_usd_type"
+import { getUserTasks, getUserVoteTasks } from "../../api"
+import { useWalletConnexionContext } from "../../../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { mapAirdropData } from "./usg_tasks_controller"
 
-type TgUsdAirdropContextProps = {
+type UsgTasksContextProps = {
   children: ReactNode
 }
 
-type TgUsdAirdropContextValues = {
+type UsgTasksContextValues = {
   tasks: UserTask[]
   lpTasks: UserTask[]
   voteTasks: VoteTask[]
   sortLpTasks: (arg: ListState) => void
   sortVoteTasks: (arg: ListState) => void
-
   selectedFeature: "Borrow & LP" | "Vote"
   setSelectedFeature: (t: "Borrow & LP" | "Vote") => void
 }
 
-export const TgUsdAirdropContext = createContext<TgUsdAirdropContextValues | undefined>(undefined)
+export const UsgTasksContext = createContext<UsgTasksContextValues | undefined>(undefined)
 
-export const TgUsdAirdropProvider = ({ children }: TgUsdAirdropContextProps) => {
+export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
 
   const { refetchPoints } = useUSGContext()
@@ -85,7 +84,7 @@ export const TgUsdAirdropProvider = ({ children }: TgUsdAirdropContextProps) => 
       return 0
     })
   }
-  const contextValue: TgUsdAirdropContextValues = {
+  const contextValue: UsgTasksContextValues = {
     tasks,
     lpTasks,
     voteTasks,
@@ -95,13 +94,13 @@ export const TgUsdAirdropProvider = ({ children }: TgUsdAirdropContextProps) => 
     setSelectedFeature,
   }
 
-  return <TgUsdAirdropContext.Provider value={contextValue}>{children}</TgUsdAirdropContext.Provider>
+  return <UsgTasksContext.Provider value={contextValue}>{children}</UsgTasksContext.Provider>
 }
 
-export const useTgUsdAirdropContext = () => {
-  const context = useContext(TgUsdAirdropContext)
+export const useUsgTasksContext = () => {
+  const context = useContext(UsgTasksContext)
   if (!context) {
-    throw new Error("useTgUsdAirdropContext must be used within a TgUsdAirdropProvider")
+    throw new Error("useUsgTasksContext must be used within a UsgTasksProvider")
   }
   return context
 }

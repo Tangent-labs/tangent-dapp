@@ -1,19 +1,19 @@
 "use client"
 
 import Image from "next/image"
-import { lpListState, LPTasksList } from "./LPTasksList"
-import { SlidingTabs } from "./SlidingTabs"
-import { voteListState, VoteTasksList } from "./VoteTasksList"
-import { useUSGContext } from "../tg_usd_context"
+import { SlidingTabs } from "./components/SlidingTabs"
+import { useUSGContext } from "../../tg_usd_context"
 import { formatNumber } from "@/lib/number_formatter"
-import { useTgUsdAirdropContext } from "./tg_usd_airdrop_context"
+import { lpListState, LPTasksList } from "./components/LPTasksList"
+import { voteListState, VoteTasksList } from "./components/VoteTasksList"
 import { ListProvider } from "@/components/design_system/list/list_context"
-import { lpListHeaders, voteListHeaders } from "./tg_usd_airdrop_controller"
+import { useUsgTasksContext } from "./usg_tasks_context"
+import { lpListHeaders, voteListHeaders } from "./usg_tasks_controller"
 
-export default function TgUsdAidropContent() {
-  const { lpTasks, voteTasks, selectedFeature, sortLpTasks, sortVoteTasks, setSelectedFeature } = useTgUsdAirdropContext()
+export default function UsgTasksContent() {
+  const { lpTasks, voteTasks, selectedFeature, sortLpTasks, sortVoteTasks, setSelectedFeature } = useUsgTasksContext()
 
-  const { userPoints } = useUSGContext()
+  const { lpUserPoints } = useUSGContext()
 
   return (
     <div className="flex w-full flex-col items-center justify-between">
@@ -64,8 +64,8 @@ export default function TgUsdAidropContent() {
 
               <span className="text-[14px] text-subtitle">Liquidity points</span>
               <div className="flex items-center justify-center gap-1">
-                <span className="text-sm font-semibold text-white">{formatNumber(userPoints?.totalPoints, 0)} pts</span>
-                <span className="text-xs text-tonic">({formatNumber(userPoints?.dailyRate, 0)}pts/day)</span>
+                <span className="text-sm font-semibold text-white">{formatNumber(lpUserPoints?.lpTotalPoints, 0)} pts</span>
+                <span className="text-xs text-tonic">({formatNumber(lpUserPoints?.lpDailyRate, 0)}pts/day)</span>
               </div>
             </div>
           </div>

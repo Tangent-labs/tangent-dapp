@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
 import { ExistingAsset } from "@/types"
 import { DepositReceiveAsset } from "../tg_usd_type"
-import { formatBigInt, formatNumber } from "@/lib/number_formatter"
+import { formatBigInt } from "@/lib/number_formatter"
 import { useTgUsdSwapContext } from "./tg_usd_swap_context"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
@@ -49,7 +49,6 @@ export default function TgUsdSwapContent() {
     depositSliderPercent,
     slippage,
     USGsUSGMetrics,
-    userPoints,
   } = useTgUsdSwapContext()
 
   const ReceiveAssetSelect = ({ options }: AssetSelectProps) => {
@@ -154,11 +153,6 @@ export default function TgUsdSwapContent() {
             >
               <span className="text-xs text-subtitle">sUSG Balance</span>
               <span className="text-sm font-semibold">{formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18)}</span>
-            </div>
-
-            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48">
-              <span className="text-xs text-subtitle">Your Total Points</span>
-              <span className="text-sm font-semibold">{formatNumber(userPoints.totalPoints, 0)}</span>
             </div>
           </div>
         </div>

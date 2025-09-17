@@ -1,7 +1,7 @@
 "use server"
 
 import { Address } from "viem"
-import { MarketHistoricalData, UserPoints, UserTask, VoteTask } from "./tg_usd_type"
+import { Boost, MarketHistoricalData, LpUserPoints, UserTask, VoteTask } from "./tg_usd_type"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -229,7 +229,7 @@ export const getUserTasks = async (account: Address): Promise<Array<UserTask>> =
   }
 }
 
-export const getUserPoints = async (account: Address, dateFrom: string): Promise<UserPoints> => {
+export const getLpUserPoints = async (account: Address, dateFrom: string): Promise<LpUserPoints> => {
   try {
     const url = `${baseUrl}/points/${account}/${dateFrom}`
 
@@ -240,7 +240,7 @@ export const getUserPoints = async (account: Address, dateFrom: string): Promise
       },
     })
 
-    const data: UserPoints = await response.json()
+    const data: LpUserPoints = await response.json()
 
     if (!response.ok) {
       throw new Error("Failed to fetch user points")
@@ -249,7 +249,31 @@ export const getUserPoints = async (account: Address, dateFrom: string): Promise
     return data
   } catch (error) {
     console.error("Failed to fetch user points:", error)
-    return { basePoints: 0, referralPoints: 0, totalPoints: 0, dailyRate: 0 }
+    return { lpDailyRate: 0, lpTotalPoints: 0 }
+  }
+}
+
+export const getUserBoosts = async (account: Address): Promise<Array<Boost>> => {
+  try {
+    const url = `${baseUrl}/boosts/${account}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    const boosts: Array<Boost> = await response.json()
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch boosts")
+    }
+
+    return boosts
+  } catch (error) {
+    console.error("Failed to fetch boosts:", error)
+    return []
   }
 }
 
@@ -316,12 +340,12 @@ export const getGodsonsLeaderboard = async (
     }> = await response.json()
 
     if (!response.ok) {
-      throw new Error("Failed to fetch leaderboard")
+      throw new Error("Failed to fetch godsons leaderboard")
     }
 
     return leaderboard
   } catch (error) {
-    console.error("Failed to fetch leaderboard:", error)
+    console.error("Failed to fetch godsons leaderboard:", error)
     return []
   }
 }

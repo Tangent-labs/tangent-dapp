@@ -81,8 +81,9 @@ export default function MenuBarFeature() {
                   <NavigationMenuTrigger>Airdrop</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-[#070707] p-2">
-                      <NavigationMenuLink onClick={() => router.push("/airdrop")}>Task</NavigationMenuLink>
+                      <NavigationMenuLink onClick={() => router.push("/tasks")}>Task</NavigationMenuLink>
                       <NavigationMenuLink onClick={() => router.push("/referral")}>Referral</NavigationMenuLink>
+                      <NavigationMenuLink onClick={() => router.push("/boosts")}>Boosts</NavigationMenuLink>
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuDropdown>

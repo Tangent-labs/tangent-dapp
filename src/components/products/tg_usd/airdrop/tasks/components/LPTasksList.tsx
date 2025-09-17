@@ -1,26 +1,20 @@
 "use client"
 
-import { VoteTask } from "../tg_usd_type"
+import { UserTask } from "../../../tg_usd_type"
+import { ExistingAsset, ListState } from "@/types"
 import { formatNumber } from "@/lib/number_formatter"
 import { IconSortHeader } from "@/components/icons/icon_sort_header"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { useListContext } from "@/components/design_system/list/list_context"
-import { ListState } from "@/types"
+import { TaskStatus } from "../../components/TaskStatus"
 
-export const voteListState: ListState = {
+export const lpListState: ListState = {
   search: undefined,
   sort: {
-    key: "points",
+    key: "status",
     direction: "asc",
   },
-}
-
-const TaskStatus = ({ status }: { status: boolean }) => {
-  if (status) {
-    return <div className="h-2 w-2 rounded-full bg-light-tonic outline outline-1 outline-offset-4 outline-light-tonic"></div>
-  }
-  return <div className="h-2 w-2 rounded-full bg-subtitle"></div>
 }
 
 const computeProtocolDisplay = (protocol: string) => {
@@ -61,16 +55,16 @@ const AirdropRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
   return (
     <div className="flex w-full items-center justify-evenly px-2">
       <div className="flex w-3/12 items-center justify-center">{children?.at(0)} </div>
-      <div className="hidden w-1/12 items-center justify-center lg:flex">{children?.at(1)} </div>
+      <div className="hidden w-2/12 items-center justify-center lg:flex">{children?.at(1)} </div>
       <div className="flex w-4/12 items-center justify-center lg:w-3/12">{children?.at(2)} </div>
-      <div className="flex w-2/12 items-center justify-center">{children?.at(3)} </div>
+      <div className="flex w-1/12 items-center justify-center">{children?.at(3)} </div>
       <div className="flex w-1/12 items-center justify-center">{children?.at(4)} </div>
       <div className="flex w-2/12 items-center justify-center">{children?.at(5)} </div>
     </div>
   )
 }
 
-export const VoteTasksList = () => {
+export const LPTasksList = () => {
   const { headers, listState, udpateSort, displayRows } = useListContext()
 
   return (
@@ -130,16 +124,18 @@ export const VoteTasksList = () => {
 
       <div className="scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent max-h-[500px] overflow-y-auto">
         {displayRows &&
-          (displayRows as VoteTask[])?.map((task: VoteTask) => (
+          (displayRows as UserTask[])?.map((task: UserTask) => (
             <BorderPanel
               key={task?.taskId}
               className="mb-2 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
             >
               <div className="hidden items-center justify-between md:flex">
                 <div className="flex w-3/12 items-center gap-2 xl:gap-4">
-                  <span className="flex text-[20px] font-semibold">{task.organisation}</span>
+                  <TokenImage token={task.asset as ExistingAsset} size={48} />
+
+                  <span className="flex text-[20px] font-semibold">{task.asset}</span>
                 </div>
-                <div className="hidden w-1/12 justify-center lg:flex">
+                <div className="hidden w-2/12 justify-center lg:flex">
                   <div onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}>{computeProtocolDisplay(task?.protocol)}</div>
                 </div>
                 <div className="flex w-4/12 justify-center lg:w-3/12">
@@ -150,7 +146,7 @@ export const VoteTasksList = () => {
                     {task?.description}
                   </div>
                 </div>
-                <div className="flex w-2/12 items-center justify-center">1</div>
+                <div className="flex w-1/12 items-center justify-center">{(task?.pointRate * 86400).toFixed(0)}</div>
                 <div className="flex w-1/12 items-center justify-center">
                   <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
                     <TaskStatus status={task?.status} />
@@ -162,13 +158,15 @@ export const VoteTasksList = () => {
               <div className="flex flex-col items-center justify-between md:hidden">
                 <div className="flex w-full items-start justify-between gap-1 border-b border-white border-opacity-20 pb-2">
                   <div className="flex items-center justify-center gap-2">
-                    <span className="flex text-[14px] font-semibold">{task.organisation}</span>
+                    <TokenImage token={task.asset as ExistingAsset} size={48} />
+
+                    <span className="flex text-[14px] font-semibold">{task.asset}</span>
                   </div>
 
                   <div className="flex flex-col items-center justify-start">
-                    <span className="text-xs text-subtitle">Pts/VotingPower</span>
+                    <span className="text-xs text-subtitle">Pts/Day/USD</span>
 
-                    <span className="flex text-[14px]">1</span>
+                    <span className="flex text-[14px]">{(task.pointRate * 86400).toFixed(0)}</span>
                   </div>
 
                   <div className="flex flex-col items-center justify-center">

@@ -1,16 +1,5 @@
-import {
-  AprEntry,
-  AssetData,
-  AssetDataPriced,
-  CollateralInfo,
-  ERC20StaticInfos,
-  ExistingAsset,
-  Network,
-  PositionData,
-  TokenAmountPriced,
-  TokenAmountPricedRow,
-} from "@/types"
 import { Address } from "viem"
+import { AprEntry, AssetData, AssetDataPriced, CollateralInfo, ERC20StaticInfos, ExistingAsset, Network, TokenAmountPriced } from "@/types"
 
 export type TgUsdCampaignData = {
   debts: number
@@ -224,11 +213,6 @@ export type TgUsdtMarketWitrhdrawParams = {
   marketAddress: Address
 }
 
-export type TgUsdtMarketLiquidateParams = {
-  liquidateWeiValue?: bigint
-  marketAddress: Address
-}
-
 export type TgUsdtMarketRepayParams = {
   marketAddress: Address
   repayWeiValue?: bigint
@@ -276,35 +260,6 @@ export type HarvesterInfoDisplay = {
   percentage: number
   harvesterFees: number
   lastHarvestDate: bigint
-}
-
-export type BoosterClaimListRow = {
-  token: ExistingAsset
-  stakingAddress: Address
-  name: string
-  apr: {
-    current: number
-    projected: number
-  }
-  claimableDetail: TokenAmountPricedRow[]
-  claimable: { key: string; label: string; value: string; raw?: number }
-  positionsDetails: PositionData[]
-}
-
-export type ClaimSdtStakingContract = {
-  stakingContract: string
-  tokenIds: number[]
-}
-
-export interface ClaimMultipleStakingArgs {
-  claimContracts: ClaimSdtStakingContract[]
-  minCvgSdtAmountOut: bigint
-  isConvert: boolean
-  sdtRewardCount: number
-}
-
-export type ZapperData = {
-  amountOut: bigint
 }
 
 export type SwapToken = AssetData & {
@@ -480,11 +435,9 @@ export type VoteTask = {
   points: number
 }
 
-export type UserPoints = {
-  totalPoints: number
-  basePoints: number
-  referralPoints: number
-  dailyRate: number
+export type LpUserPoints = {
+  lpTotalPoints: number
+  lpDailyRate: number
 }
 
 export type Leaderboard = Array<{
@@ -499,3 +452,10 @@ export type GodsonLeaderboard = Array<{
   lpPoints: number
   votePts: number
 }>
+
+export type Boost = {
+  type: string
+  description: string
+  boost: number
+  status: boolean
+}

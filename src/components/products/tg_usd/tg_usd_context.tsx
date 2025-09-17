@@ -1,8 +1,8 @@
 "use client"
 
 import { Address } from "viem"
-import { getUserPoints } from "./api"
-import { StakingInfo, UserPoints, ZapToken } from "./tg_usd_type"
+import { getLpUserPoints } from "./api"
+import { StakingInfo, LpUserPoints, ZapToken } from "./tg_usd_type"
 import { getBalances } from "./record/tg_usd_record_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
@@ -17,7 +17,7 @@ type USGContextProps = {
 type USGContextValues = {
   tokens: ZapToken[]
   balances: Record<Address, bigint> | null
-  userPoints: UserPoints
+  lpUserPoints: LpUserPoints
   refetchPoints: () => Promise<void>
   loadUSGsUSGMetrics: () => void
   USGsUSGMetrics: StakingInfo | undefined
@@ -30,7 +30,7 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
 
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
 
-  const [userPoints, setUserPoints] = useState<UserPoints>({ basePoints: 0, referralPoints: 0, totalPoints: 0, dailyRate: 0 })
+  const [lpUserPoints, setLpUserPoints] = useState<LpUserPoints>({ lpDailyRate: 0, lpTotalPoints: 0 })
 
   const [USGsUSGMetrics, setUSGsUSGMetrics] = useState<StakingInfo | undefined>()
 
@@ -48,8 +48,8 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
     const isoEndDate = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
     const dateFrom = encodeURIComponent(isoEndDate)
 
-    getUserPoints(currentAddress!, dateFrom).then((p) => {
-      setUserPoints(p)
+    getLpUserPoints(currentAddress!, dateFrom).then((p) => {
+      setLpUserPoints(p)
     })
   }
 
@@ -81,7 +81,7 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
   const contextValue: USGContextValues = {
     tokens,
     balances,
-    userPoints,
+    lpUserPoints,
     refetchPoints,
     loadUSGsUSGMetrics,
     USGsUSGMetrics,

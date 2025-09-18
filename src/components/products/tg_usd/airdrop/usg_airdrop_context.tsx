@@ -1,7 +1,6 @@
 "use client"
 
 import { toast } from "react-toastify"
-import { useUSGContext } from "../tg_usd_context"
 import { getCurrentBlock } from "@/services/service_rpc"
 import { ToastComponent } from "@/components/design_system/toast"
 import { generateCode, getReferralStatus, validateReferralCode } from "../api"
@@ -33,8 +32,6 @@ export const UsgAirdropContext = createContext<UsgAirdropContextValues | undefin
 export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
   const { currentAddress, getWalletClient } = useWalletConnexionContext()
 
-  const { refetchPoints } = useUSGContext()
-
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [referralStatus, setReferralStatus] = useState<UserStatus>({ generatedCode: null, hasUsedCode: false, referralCode: "", friends: 0 })
@@ -51,8 +48,6 @@ export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
           }))
         }
       })
-
-      refetchPoints()
     }
   }, [currentAddress])
 

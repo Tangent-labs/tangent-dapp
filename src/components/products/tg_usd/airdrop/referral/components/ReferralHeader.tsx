@@ -2,7 +2,7 @@ import { formatNumber } from "@/lib/number_formatter"
 import { UserStatus } from "../usg_referral_context"
 import { Button } from "@/components/design_system/inputs/button"
 import { Input } from "@/components/ui/input"
-import { LpUserPoints } from "../../../tg_usd_type"
+import { LpUserPoints, VoteUserPoints } from "../../../tg_usd_type"
 
 type ReferralHeaderProps = {
   isLoading: boolean
@@ -10,9 +10,10 @@ type ReferralHeaderProps = {
   setReferralStatus: (arg: UserStatus) => void
   signMessage: () => void
   lpUserPoints: LpUserPoints
+  voteUserPoints: VoteUserPoints
 }
 
-export const ReferralHeader = ({ isLoading, referralStatus, setReferralStatus, signMessage, lpUserPoints }: ReferralHeaderProps) => {
+export const ReferralHeader = ({ isLoading, referralStatus, setReferralStatus, signMessage, lpUserPoints, voteUserPoints }: ReferralHeaderProps) => {
   return (
     <div className="flex w-full items-center justify-between gap-4">
       <div className="relative flex w-full max-w-80 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
@@ -25,8 +26,7 @@ export const ReferralHeader = ({ isLoading, referralStatus, setReferralStatus, s
 
         <span className="text-[14px] text-subtitle">Voting points</span>
         <div className="flex items-end justify-center gap-1">
-          <span className="text-sm font-semibold text-white">1385 pts</span>
-          <span className="text-xs text-tonic">(30pts/day)</span>
+          <span className="text-sm font-semibold text-white">{formatNumber(voteUserPoints?.voteTotalPoints, 0)} pts</span>
         </div>
       </div>
 

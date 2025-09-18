@@ -35,6 +35,8 @@ export const UsgReferralCodeContext = createContext<UsgReferralCodeContextValues
 export const UsgReferralCodeProvider = ({ children, code, lpLeaderboard, voteLeaderboard }: UsgReferralCodeContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
 
+  const { refetchPoints } = useUSGContext()
+
   const { setReferralStatus, referralStatus } = useUsgAirdropContext()
 
   useEffect(() => {
@@ -45,8 +47,6 @@ export const UsgReferralCodeProvider = ({ children, code, lpLeaderboard, voteLea
       })
     }
   }, [code])
-
-  const { refetchPoints } = useUSGContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 

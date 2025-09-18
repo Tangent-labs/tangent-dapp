@@ -440,6 +440,10 @@ export type LpUserPoints = {
   lpDailyRate: number
 }
 
+export type VoteUserPoints = {
+  voteTotalPoints: number
+}
+
 export type Leaderboard = Array<{
   rank: number
   address: Address

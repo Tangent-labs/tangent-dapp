@@ -1,13 +1,13 @@
 "use client"
 
 import { Address } from "viem"
-import { getLpUserPoints } from "./api"
-import { StakingInfo, LpUserPoints, ZapToken } from "./tg_usd_type"
+import { getUSGsUSGMetrics } from "./tg_usd_controller"
+import { getCurrentBlock } from "@/services/service_rpc"
+import { getLpUserPoints, getVoteUserPoints } from "./api"
 import { getBalances } from "./record/tg_usd_record_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
+import { StakingInfo, LpUserPoints, ZapToken, VoteUserPoints } from "./tg_usd_type"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
-import { getCurrentBlock } from "@/services/service_rpc"
-import { getUSGsUSGMetrics } from "./tg_usd_controller"
 
 type USGContextProps = {
   children: ReactNode
@@ -18,6 +18,7 @@ type USGContextValues = {
   tokens: ZapToken[]
   balances: Record<Address, bigint> | null
   lpUserPoints: LpUserPoints
+  voteUserPoints: VoteUserPoints
   refetchPoints: () => Promise<void>
   loadUSGsUSGMetrics: () => void
   USGsUSGMetrics: StakingInfo | undefined
@@ -31,6 +32,8 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
 
   const [lpUserPoints, setLpUserPoints] = useState<LpUserPoints>({ lpDailyRate: 0, lpTotalPoints: 0 })
+
+  const [voteUserPoints, setVoteUserPoints] = useState<VoteUserPoints>({ voteTotalPoints: 0 })
 
   const [USGsUSGMetrics, setUSGsUSGMetrics] = useState<StakingInfo | undefined>()
 
@@ -48,16 +51,14 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
     const isoEndDate = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
     const dateFrom = encodeURIComponent(isoEndDate)
 
-    getLpUserPoints(currentAddress!, dateFrom).then((p) => {
-      setLpUserPoints(p)
+    getLpUserPoints(currentAddress!, dateFrom).then((lpPts) => {
+      setLpUserPoints(lpPts)
+    })
+
+    getVoteUserPoints(currentAddress!).then((votePts) => {
+      setVoteUserPoints(votePts)
     })
   }
-
-  useEffect(() => {
-    if (currentAddress) {
-      refetchPoints()
-    }
-  }, [currentAddress])
 
   useEffect(() => {
     const tokenAddresses: Address[] = tokens.map((el) => el.address)
@@ -85,6 +86,7 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
     refetchPoints,
     loadUSGsUSGMetrics,
     USGsUSGMetrics,
+    voteUserPoints,
   }
 
   return <USGContext.Provider value={contextValue}>{children}</USGContext.Provider>

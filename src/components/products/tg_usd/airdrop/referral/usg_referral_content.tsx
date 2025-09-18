@@ -1,8 +1,10 @@
 "use client"
 
+import { useUSGContext } from "../../tg_usd_context"
 import { IconShare } from "@/components/icons/icon_share"
 import { IconTrophy } from "@/components/icons/icon_trophy"
 import { ReferralHeader } from "./components/ReferralHeader"
+import { useUsgAirdropContext } from "../usg_airdrop_context"
 import { Button } from "@/components/design_system/inputs/button"
 import { IconCompleted } from "@/components/icons/icon_completed"
 import Divider from "@/components/design_system/structure/divider"
@@ -10,11 +12,9 @@ import { useUsgReferralCodeContext } from "./usg_referral_context"
 import { GodsonsLeaderboard } from "./components/GodsonsLeaderboard"
 import { VotingPointsLeaderboard } from "./components/VotingPointsLeaderboard"
 import { LiquidityPointsLeaderboard } from "./components/LiquidityPointsLeaderboard"
-import { useUSGContext } from "../../tg_usd_context"
-import { useUsgAirdropContext } from "../usg_airdrop_context"
 
 export const UsgReferralCode = () => {
-  const { lpUserPoints } = useUSGContext()
+  const { lpUserPoints, voteUserPoints } = useUSGContext()
 
   const { setReferralStatus, referralStatus, signMessage, generateReferralCode } = useUsgAirdropContext()
 
@@ -28,9 +28,10 @@ export const UsgReferralCode = () => {
         setReferralStatus={setReferralStatus}
         signMessage={signMessage}
         lpUserPoints={lpUserPoints}
+        voteUserPoints={voteUserPoints}
       />
 
-      <div className="mt-6 flex w-full flex-col items-center justify-center rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+      <div className="mb-2 mt-6 flex w-full flex-col items-center justify-center rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
         <div className="mr-auto text-lg font-semibold text-white">Your referral</div>
 
         <Divider className="h-0.5 w-full bg-white/10" />
@@ -70,7 +71,7 @@ export const UsgReferralCode = () => {
         </div>
       </div>
 
-      <div className="my-4 flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
+      <div className="my-2 flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
         <div className="mr-auto text-lg font-semibold text-white">Airdrop referral</div>
 
         <Divider className="h-0.5 w-full bg-white/10" />
@@ -103,7 +104,7 @@ export const UsgReferralCode = () => {
         </div>
       </div>
 
-      <div className="my-4 flex w-full items-start justify-between gap-4">
+      <div className="mb-4 mt-2 flex w-full items-start justify-between gap-4">
         <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
           <div className="mr-auto text-lg font-semibold text-white">Liquidity points leaderboard</div>
 

@@ -3,8 +3,9 @@
 import { ListState } from "@/types"
 import { getUserBoosts } from "../../api"
 import { Boost } from "../../tg_usd_type"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { useUSGContext } from "../../tg_usd_context"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 type UsgBoostsContextProps = {
   children: ReactNode
@@ -20,16 +21,19 @@ export const UsgBoostsContext = createContext<UsgBoostsContextValues | undefined
 export const UsgBoostsProvider = ({ children }: UsgBoostsContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
 
+  const { refetchPoints } = useUSGContext()
+
   const [userBoosts, setUserBoosts] = useState<Array<Boost>>([])
 
   useEffect(() => {
     if (currentAddress) {
+      refetchPoints()
+
       getUserBoosts(currentAddress).then(() => {
         setUserBoosts([
           { type: "Dewhales boost", description: "Be a Dewhales member", boost: 1.7, status: true },
           { type: "Other boost", description: "Buy $DOGA", boost: 1000, status: false },
         ])
-        // setUserBoosts(b)
       })
     }
   }, [currentAddress])

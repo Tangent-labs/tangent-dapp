@@ -11,7 +11,7 @@ import { BoostsList, boostsListState } from "./components/BoostsList"
 export const UsgBoostsContent = () => {
   const { userBoosts, sortBoosts } = useUsgBoostsContext()
 
-  const { lpUserPoints } = useUSGContext()
+  const { lpUserPoints, voteUserPoints } = useUSGContext()
 
   const { isLoading, referralStatus, setReferralStatus, signMessage } = useUsgAirdropContext()
 
@@ -23,6 +23,7 @@ export const UsgBoostsContent = () => {
         setReferralStatus={setReferralStatus}
         signMessage={signMessage}
         lpUserPoints={lpUserPoints}
+        voteUserPoints={voteUserPoints}
       />
 
       <div className="flex w-full items-start justify-start gap-4">

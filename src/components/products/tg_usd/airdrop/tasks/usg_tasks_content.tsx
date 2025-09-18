@@ -13,7 +13,7 @@ import { lpListHeaders, voteListHeaders } from "./usg_tasks_controller"
 export default function UsgTasksContent() {
   const { lpTasks, voteTasks, selectedFeature, sortLpTasks, sortVoteTasks, setSelectedFeature } = useUsgTasksContext()
 
-  const { lpUserPoints } = useUSGContext()
+  const { lpUserPoints, voteUserPoints } = useUSGContext()
 
   return (
     <div className="flex w-full flex-col items-center justify-between">
@@ -49,8 +49,7 @@ export default function UsgTasksContent() {
 
               <span className="text-[14px] text-subtitle">Voting points</span>
               <div className="flex items-center justify-center gap-1">
-                <span className="text-sm font-semibold text-white">1385 pts</span>
-                <span className="text-xs text-tonic">(30pts/day)</span>
+                <span className="text-sm font-semibold text-white">{formatNumber(voteUserPoints?.voteTotalPoints, 0)} pts</span>
               </div>
             </div>
 

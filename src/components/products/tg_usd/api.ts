@@ -1,7 +1,7 @@
 "use server"
 
 import { Address } from "viem"
-import { Boost, MarketHistoricalData, LpUserPoints, UserTask, VoteTask } from "./tg_usd_type"
+import { Boost, MarketHistoricalData, LpUserPoints, UserTask, VoteTask, VoteUserPoints } from "./tg_usd_type"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -229,9 +229,33 @@ export const getUserTasks = async (account: Address): Promise<Array<UserTask>> =
   }
 }
 
+export const getVoteUserPoints = async (account: Address): Promise<VoteUserPoints> => {
+  try {
+    const url = `${baseUrl}/vote-points/${account}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    const data: VoteUserPoints = await response.json()
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch vote points")
+    }
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch vote points:", error)
+    return { voteTotalPoints: 0 }
+  }
+}
+
 export const getLpUserPoints = async (account: Address, dateFrom: string): Promise<LpUserPoints> => {
   try {
-    const url = `${baseUrl}/points/${account}/${dateFrom}`
+    const url = `${baseUrl}/lp-points/${account}/${dateFrom}`
 
     const response = await fetch(url, {
       method: "GET",

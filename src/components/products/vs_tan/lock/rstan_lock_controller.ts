@@ -1,8 +1,8 @@
-import { executeApprove, executeContractCall, getCurrentBlock, getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import VsTan from "../../../../abi/USG/VsTAN.json"
-import { BalanceAllowanceData, LockPosition, ZapMarketData } from "../../tg_usd/tg_usd_type"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
+import { LockPosition, ZapMarketData } from "../../tg_usd/tg_usd_type"
+import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
+import { executeApprove, executeContractCall, getCurrentBlock, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 
 export async function doApprove(walletClient: WalletClient, contract: Address, spender: Address, amount: bigint) {
   const txHash = await executeApprove(walletClient, contract, spender, amount)
@@ -110,9 +110,7 @@ export const doIncreaseLockAmount = async (tokenId: bigint, depositWeiValue: big
 }
 
 export async function getLockFormState(
-  balance: bigint,
-  allowance: bigint,
-  balanceAllowanceData: BalanceAllowanceData,
+  lockBalanceAllowanceData: { balance: bigint; allowance: bigint },
   depositPositionInfo: LockPosition | undefined,
   depositWeiValue: bigint,
   depositAsset: string,
@@ -125,13 +123,13 @@ export async function getLockFormState(
   const currentBlock = await getCurrentBlock()
 
   const isApproved =
-    (!isZapMode && (depositWeiValue || 0n) <= (allowance || 0n)) ||
-    (isZapMode && (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n))
+    (!isZapMode && (depositWeiValue || 0n) <= (lockBalanceAllowanceData?.allowance || 0n)) ||
+    (isZapMode && (depositWeiValue || 0n) <= (lockBalanceAllowanceData?.allowance || 0n))
 
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
   } else {
-    if (balance < depositWeiValue) {
+    if (lockBalanceAllowanceData?.balance < depositWeiValue) {
       reasons.push("Not enough balance.")
     }
     if (!depositWeiValue || depositWeiValue === 0n) {

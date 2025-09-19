@@ -184,7 +184,6 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
         .then(() => {
           fetchBalanceAllowanceData(depositAssetInfo?.address)
           setIsLoading(false)
-          loadData()
         })
         .catch((error) => {
           console.error("Error during approval:", error)
@@ -282,20 +281,21 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     }
   }
 
+  const lockBalanceAllowanceData = useMemo(() => {
+    if (!!lockData && depositAsset === "TAN") {
+      return { balance: lockData?.balance, allowance: lockData?.allowance }
+    } else if (!!balanceAllowanceData && depositAsset !== "TAN") {
+      return { balance: balanceAllowanceData?.balance, allowance: balanceAllowanceData?.allowances[0]?.allowance }
+    }
+    return { balance: 0n, allowance: 0n }
+  }, [lockData, balanceAllowanceData])
+
   useEffect(() => {
     const computeFormState = async () => {
       if (!lockData || !depositWeiValue) {
         setFormState({ canProcess: false, cantProcessReasons: ["No data"], haveToApprove: false })
       } else {
-        getLockFormState(
-          lockData?.balance,
-          lockData?.allowance,
-          balanceAllowanceData!,
-          depositPositionInfo,
-          depositWeiValue,
-          depositAsset,
-          isWellConnected
-        ).then((d) => {
+        getLockFormState(lockBalanceAllowanceData, depositPositionInfo, depositWeiValue, depositAsset, isWellConnected).then((d) => {
           setFormState(d)
         })
       }
@@ -304,7 +304,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     if (depositPositionInfo) {
       computeFormState()
     }
-  }, [depositWeiValue, isWellConnected, lockData, depositPositionInfo, balanceAllowanceData])
+  }, [depositWeiValue, isWellConnected, lockBalanceAllowanceData, depositPositionInfo])
 
   const computedNewLockValue = useMemo(() => {
     const baseValue = depositPositionInfo?.amount ? depositPositionInfo?.amount : 0n
@@ -448,8 +448,11 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
 
   useEffect(() => {
     if (depositAssetInfo) {
-      setDepositWeiValue(0n)
       fetchBalanceAllowanceData(depositAssetInfo?.address)
+    }
+
+    if (depositAsset !== depositAssetInfo?.symbol) {
+      setDepositWeiValue(0n)
     }
   }, [depositAssetInfo])
 

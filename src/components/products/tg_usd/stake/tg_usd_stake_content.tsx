@@ -150,7 +150,7 @@ export default function TgUsdStakeContent() {
 
           <div className="flex w-full items-end justify-end">
             <span className="text-xs text-subtitle">
-              Max: {formatBigInt(currentAssetInfo?.balance, 18, 3)} {currentFeature === "stake" ? "USG" : "sUSG"}{" "}
+              Max: {formatBigInt(currentAssetInfo?.balance, 18, 2)} {currentFeature === "stake" ? "USG" : "sUSG"}{" "}
             </span>
           </div>
 

@@ -55,7 +55,7 @@ export function BuySellInput({
 }: BuySellInputProps) {
   const balanceNumber = useMemo(() => {
     if (depositBalance) {
-      return Number(formatUnits(depositBalance, 18))
+      return Number(formatUnits(depositBalance, depositAsset?.decimals || 18))
     }
     return 0
   }, [depositBalance])

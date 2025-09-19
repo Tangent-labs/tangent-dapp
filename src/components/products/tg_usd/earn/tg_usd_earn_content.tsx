@@ -2,8 +2,8 @@
 
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { formatUnits } from "viem"
 import { ExistingAsset, ListState } from "@/types"
+import { formatBigInt } from "@/lib/number_formatter"
 import { useTgUsdEarnContext } from "./tg_usd_earn_context"
 import ListRow from "@/components/design_system/list/list_row"
 import { tgUsdEarnListHeaders } from "./tg_usd_earn_controller"
@@ -54,7 +54,7 @@ export const TgUsdEarnContent = () => {
               )}
             >
               <span className="text-xs text-subtitle">USG Balance</span>
-              <span className="text-sm font-semibold">{formatUnits(USGsUSGMetrics?.USGBalance || 0n, 18)}</span>
+              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)}</span>
             </div>
 
             <div
@@ -63,7 +63,7 @@ export const TgUsdEarnContent = () => {
               )}
             >
               <span className="text-xs text-subtitle">sUSG Balance</span>
-              <span className="text-sm font-semibold">{formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18)}</span>
+              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 1, 28)}</span>
             </div>
           </div>
         </div>

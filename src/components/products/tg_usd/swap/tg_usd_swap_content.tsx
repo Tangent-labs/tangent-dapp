@@ -2,7 +2,6 @@
 
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { formatUnits } from "viem"
 import { ExistingAsset } from "@/types"
 import { DepositReceiveAsset } from "../tg_usd_type"
 import { formatBigInt } from "@/lib/number_formatter"
@@ -143,7 +142,7 @@ export default function TgUsdSwapContent() {
               )}
             >
               <span className="text-xs text-subtitle">USG Balance</span>
-              <span className="text-sm font-semibold">{formatUnits(USGsUSGMetrics?.USGBalance || 0n, 18)}</span>
+              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)}</span>
             </div>
 
             <div
@@ -152,7 +151,7 @@ export default function TgUsdSwapContent() {
               )}
             >
               <span className="text-xs text-subtitle">sUSG Balance</span>
-              <span className="text-sm font-semibold">{formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18)}</span>
+              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)}</span>
             </div>
           </div>
         </div>

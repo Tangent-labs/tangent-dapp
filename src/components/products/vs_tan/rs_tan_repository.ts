@@ -13,7 +13,7 @@ export const VSTAN_CONTRACT = {
   TAN: envAddresses.tokens.TAN as Address,
   VSTAN: envAddresses.tokens.vsTAN as Address,
   STAN: envAddresses.tokens.sTAN as Address,
-  TAN_LP: "0xA8544AC03917A5483359685aDF59AF09d19B24c5",
+  TAN_LP: envAddresses.lps?.["TAN-WETH"],
   ETH_ORACLE: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
   DAO: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
 }

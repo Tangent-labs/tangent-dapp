@@ -1,6 +1,7 @@
 "use client"
 
 import { useUSGContext } from "../../tg_usd_context"
+import { Leaderboard } from "./components/Leaderboard"
 import { IconShare } from "@/components/icons/icon_share"
 import { IconTrophy } from "@/components/icons/icon_trophy"
 import { ReferralHeader } from "./components/ReferralHeader"
@@ -10,8 +11,6 @@ import { IconCompleted } from "@/components/icons/icon_completed"
 import Divider from "@/components/design_system/structure/divider"
 import { useUsgReferralCodeContext } from "./usg_referral_context"
 import { GodsonsLeaderboard } from "./components/GodsonsLeaderboard"
-import { VotingPointsLeaderboard } from "./components/VotingPointsLeaderboard"
-import { LiquidityPointsLeaderboard } from "./components/LiquidityPointsLeaderboard"
 
 export const UsgReferralCode = () => {
   const { lpUserPoints, voteUserPoints } = useUSGContext()
@@ -110,7 +109,7 @@ export const UsgReferralCode = () => {
 
           <Divider className="h-0.5 w-full bg-white/10" />
 
-          <LiquidityPointsLeaderboard lpLeaderboard={lpLeaderboard} />
+          <Leaderboard leaderboard={lpLeaderboard} />
         </div>
 
         <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
@@ -118,7 +117,7 @@ export const UsgReferralCode = () => {
 
           <Divider className="h-0.5 w-full bg-white/10" />
 
-          <VotingPointsLeaderboard voteLeaderboard={voteLeaderboard} />
+          <Leaderboard leaderboard={voteLeaderboard} />
         </div>
 
         <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">

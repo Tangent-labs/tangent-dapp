@@ -1,5 +1,10 @@
-import TgUsdRecordRepayPage from "@/components/products/tg_usd/record/repay/tg_usd_record_repay"
+import USGRepayContent from "@/components/products/tg_usd/record/repay/usg_record_repay_content"
+import { USGRepayProvider } from "@/components/products/tg_usd/record/repay/usg_record_repay_context"
 
-export default async function TgUsdMarketRepayPage() {
-  return <TgUsdRecordRepayPage />
+export default function TgUsdRecordRepayPage() {
+  return (
+    <USGRepayProvider>
+      <USGRepayContent />
+    </USGRepayProvider>
+  )
 }

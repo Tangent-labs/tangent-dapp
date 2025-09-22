@@ -1,7 +1,6 @@
 "use client"
 
 import Image from "next/image"
-import { cn } from "@/lib/utils"
 import { ExistingAsset, ListState } from "@/types"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useTgUsdEarnContext } from "./tg_usd_earn_context"
@@ -48,22 +47,14 @@ export const TgUsdEarnContent = () => {
           </div>
 
           <div className="mt-auto flex w-full items-center justify-center gap-1 p-2 md:gap-3">
-            <div
-              className={cn(
-                "flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48"
-              )}
-            >
+            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48">
               <span className="text-xs text-subtitle">USG Balance</span>
               <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)}</span>
             </div>
 
-            <div
-              className={cn(
-                "flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48"
-              )}
-            >
+            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48">
               <span className="text-xs text-subtitle">sUSG Balance</span>
-              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 1, 28)}</span>
+              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)}</span>
             </div>
           </div>
         </div>

@@ -1,21 +1,21 @@
 "use client"
 
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import FormButtons from "@/components/design_system/form/form_actions"
-import { useTgUsdWithdrawContext } from "./tg_usd_record_withdraw_context"
-import TokenImage from "@/components/design_system/structure/token_image"
 import { formatBigInt } from "@/lib/number_formatter"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { useUSGWithdrawContext } from "./usg_record_withdraw_context"
+import FormButtons from "@/components/design_system/form/form_actions"
+import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
+import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
-export default function TgUsdWithdrawPanel() {
-  const { actionWithdraw, formState, withdrawWeiValue, setWithdrawWeiValue, maxWithdrawable, withdrawPercentage, setWithdrawPercentage } =
-    useTgUsdWithdrawContext()
+export default function USGWithdrawContent() {
+  const { canInteract } = useWalletConnexionContext()
 
   const { pricedCollateralInfo, collateralInfo } = useTgUsdRecordContext()
 
-  const { canInteract } = useWalletConnexionContext()
+  const { formState, withdrawWeiValue, maxWithdrawable, withdrawPercentage, setWithdrawWeiValue, actionWithdraw, setWithdrawPercentage } =
+    useUSGWithdrawContext()
 
   const WithdrawAssetDisplay = () => {
     return (

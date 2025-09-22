@@ -4,18 +4,19 @@ import { AssetDataPriced, FormState } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doMarketLiquidate, getLiquidateFormState } from "./tg_usd_record_liquidate_controller"
+import { doMarketLiquidate, getLiquidateFormState } from "./usg_record_liquidate_controller"
 import { USG_CONTRACT } from "../../tg_usd_repository"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 import { maxUint256 } from "viem"
+import { useUSGContext } from "../../tg_usd_context"
 
-type TgUsdLiquidateContextProps = {
+type USGLiquidateContextProps = {
   children: ReactNode
 }
 
-type TgUsdLiquidateContextValues = {
+type USGLiquidateContextValues = {
   actionLiquidate: () => void
   formState: FormState
   liquidateWeiValue?: bigint
@@ -47,9 +48,11 @@ type TgUsdLiquidateContextValues = {
   handleLiquidateValueChange: (arg: bigint | undefined) => void
 }
 
-export const TgUsdLiquidateContext = createContext<TgUsdLiquidateContextValues | undefined>(undefined)
+export const USGLiquidateContext = createContext<USGLiquidateContextValues | undefined>(undefined)
 
-export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps) => {
+export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => {
+  const { loadUSGsUSGMetrics } = useUSGContext()
+
   const { marketData, marketInfo, loadOnChainData, marketDisplayData, setCurrentAmounts } = useTgUsdRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
@@ -125,6 +128,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
         marketData?.marketAddress
       )
         .then(() => {
+          loadUSGsUSGMetrics()
           loadOnChainData()
           setLiquidateWeiValue(0n)
           setRepayWeiValue(0n)
@@ -190,7 +194,7 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
     fetchZapValue()
   }
 
-  const contextValue: TgUsdLiquidateContextValues = {
+  const contextValue: USGLiquidateContextValues = {
     actionLiquidate,
     formState,
     liquidateWeiValue,
@@ -215,13 +219,13 @@ export const TgUsdLiquidateProvider = ({ children }: TgUsdLiquidateContextProps)
     setSlippage,
   }
 
-  return <TgUsdLiquidateContext.Provider value={contextValue}>{children}</TgUsdLiquidateContext.Provider>
+  return <USGLiquidateContext.Provider value={contextValue}>{children}</USGLiquidateContext.Provider>
 }
 
-export const useTgUsdLiquidateContext = () => {
-  const context = useContext(TgUsdLiquidateContext)
+export const useUSGLiquidateContext = () => {
+  const context = useContext(USGLiquidateContext)
   if (!context) {
-    throw new Error("useTgUsdLiquidateContext must be used within a TgUsdLiquidateProvider")
+    throw new Error("useUSGLiquidateContext must be used within a USGLiquidateProvider")
   }
   return context
 }

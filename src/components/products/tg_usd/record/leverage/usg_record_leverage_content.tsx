@@ -18,14 +18,14 @@ import ButtonTab from "@/components/design_system/inputs/button_tab"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { useTgUsdLeverageContext } from "./tg_usd_record_leverage_context"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { useUSGLeverageContext } from "./usg_record_leverage_context"
 
-export default function TgUsdLeveragePanel() {
+export default function USGLeverageContent() {
   const {
     setDepositAsset,
     setIsDepositDisabled,
@@ -56,7 +56,7 @@ export default function TgUsdLeveragePanel() {
     zapInnerValue,
     depositSliderPercent,
     leveragePercentage,
-  } = useTgUsdLeverageContext()
+  } = useUSGLeverageContext()
 
   const { collateralInfo, marketData, balanceAllowanceData, marketInfo, pricedCollateralInfo, USGInfo } = useTgUsdRecordContext()
 

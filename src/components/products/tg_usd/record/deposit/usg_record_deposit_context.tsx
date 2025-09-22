@@ -14,13 +14,13 @@ import { EstimateContractGasParameters, formatUnits, parseEther } from "viem"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
-import { doMarketDeposit, doZapDeposit, doZapDepositAndBorrow, getDepositFormState } from "./tg_usd_record_deposit_controller"
+import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit } from "./usg_record_deposit_controller"
 
-type TgUsdDepositContextProps = {
+type USGDepositContextProps = {
   children: ReactNode
 }
 
-type TgUsdDepositContextValues = {
+type USGDepositContextValues = {
   marketInfo: TgUsdMarket
   collateralInfo: CollateralInfo
   isDepositAndBorrow: boolean
@@ -71,10 +71,10 @@ type TgUsdDepositContextValues = {
   estimatedZapDollarValue: string
 }
 
-export const TgUsdDepositContext = createContext<TgUsdDepositContextValues | undefined>(undefined)
+export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
 
-export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => {
-  const { tokens } = useUSGContext()
+export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
+  const { tokens, loadUSGsUSGMetrics } = useUSGContext()
 
   const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo } =
     useTgUsdRecordContext()
@@ -150,6 +150,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
     setBorrowSliderPercent(0)
     setDepositSliderPercent(0)
     setIsDepositLoading(false)
+    loadUSGsUSGMetrics()
     fetchBalanceAllowanceData(depositAssetInfo?.address)
   }
 
@@ -553,7 +554,7 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
     return ""
   }, [zapValue])
 
-  const contextValue: TgUsdDepositContextValues = {
+  const contextValue: USGDepositContextValues = {
     marketInfo,
     collateralInfo,
     isDepositAndBorrow,
@@ -608,13 +609,13 @@ export const TgUsdDepositProvider = ({ children }: TgUsdDepositContextProps) => 
     estimatedZapDollarValue,
   }
 
-  return <TgUsdDepositContext.Provider value={contextValue}>{children}</TgUsdDepositContext.Provider>
+  return <USGDepositContext.Provider value={contextValue}>{children}</USGDepositContext.Provider>
 }
 
-export const useTgUsdDepositContext = () => {
-  const context = useContext(TgUsdDepositContext)
+export const useUSGDepositContext = () => {
+  const context = useContext(USGDepositContext)
   if (!context) {
-    throw new Error("useTgUsdDepositContext must be used within a TgUsdDepositProvider")
+    throw new Error("useUSGDepositContext must be used within a USGDepositProvider")
   }
   return context
 }

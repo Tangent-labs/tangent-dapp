@@ -1,5 +1,10 @@
-import TgUsdRecordBorrowPage from "@/components/products/tg_usd/record/borrow/tg_usd_record_borrow"
+import USGRecordBorrowContent from "@/components/products/tg_usd/record/borrow/usg_record_borrow_content"
+import { USGBorrowProvider } from "@/components/products/tg_usd/record/borrow/usg_record_borrow_context"
 
-export default async function TgUsdMarketBorrowPage() {
-  return <TgUsdRecordBorrowPage />
+export default function USGRecordBorrowPage() {
+  return (
+    <USGBorrowProvider>
+      <USGRecordBorrowContent />
+    </USGBorrowProvider>
+  )
 }

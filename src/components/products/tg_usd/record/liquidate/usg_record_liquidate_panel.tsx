@@ -1,19 +1,19 @@
 "use client"
 
-import FormButtons from "@/components/design_system/form/form_actions"
-import { useTgUsdLiquidateContext } from "./tg_usd_record_liquidate_context"
 import { Switch } from "@/components/ui/switch"
-import TgUsdLiquidatePanelFull from "./tg_usd_record_liquidate_panel_full"
-import TgUsdLiquidatePanelPartial from "./tg_usd_record_liquidate_panel_partial"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { IconChevron } from "@/components/icons/icon_chevron"
+import Panel from "@/components/design_system/structure/panel"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
-import Panel from "@/components/design_system/structure/panel"
-import { IconChevron } from "@/components/icons/icon_chevron"
-import BorderPanel from "@/components/design_system/structure/border_panel"
+import FormButtons from "@/components/design_system/form/form_actions"
+import { useUSGLiquidateContext } from "./usg_record_liquidate_context"
+import USGLiquidatePanelFull from "./usg_record_liquidate_panel_full"
 import TokenImage from "@/components/design_system/structure/token_image"
+import BorderPanel from "@/components/design_system/structure/border_panel"
+import USGLiquidatePanelPartial from "./usg_record_liquidate_panel_partial"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
-export const TgUsdStaticAssetSelector = () => {
+export const USGStaticAssetSelector = () => {
   return (
     <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
       <TokenImage token="USG" size={20} />
@@ -22,8 +22,8 @@ export const TgUsdStaticAssetSelector = () => {
   )
 }
 
-export default function TgUsdLiquidatePanel() {
-  const { actionLiquidate, formState, isFullLiquidation, onChangeIsFullLiquidation, slippage, setSlippage } = useTgUsdLiquidateContext()
+export default function USGLiquidatePanel() {
+  const { actionLiquidate, formState, isFullLiquidation, onChangeIsFullLiquidation, slippage, setSlippage } = useUSGLiquidateContext()
 
   return (
     <div className="flex flex-col gap-2">
@@ -34,7 +34,7 @@ export default function TgUsdLiquidatePanel() {
             <Switch checked={isFullLiquidation} onCheckedChange={(v) => onChangeIsFullLiquidation(v)} />
           </div>
         </div>
-        {isFullLiquidation ? <TgUsdLiquidatePanelFull /> : <TgUsdLiquidatePanelPartial />}
+        {isFullLiquidation ? <USGLiquidatePanelFull /> : <USGLiquidatePanelPartial />}
       </div>
 
       <FormButtons actions={{ handleApprove: undefined, handleProcess: actionLiquidate }} formState={formState} labelProcess="Liquidate" />

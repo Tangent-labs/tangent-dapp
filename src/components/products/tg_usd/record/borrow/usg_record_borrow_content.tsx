@@ -1,16 +1,16 @@
 "use client"
 
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
-import TokenImage from "@/components/design_system/structure/token_image"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import FormButtons from "@/components/design_system/form/form_actions"
-import { useTgUsdBorrowContext } from "./tg_usd_record_borrow_context"
 import { formatBigInt } from "@/lib/number_formatter"
-import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
+import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { useUSGBorrowContext } from "./usg_record_borrow_context"
+import FormButtons from "@/components/design_system/form/form_actions"
+import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
+import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
-export default function TgUsdBorrowPanel() {
-  const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, borrowPercentage, maxBorrowableValue } = useTgUsdBorrowContext()
+export default function USGRecordBorrowContent() {
+  const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, borrowPercentage, maxBorrowableValue } = useUSGBorrowContext()
 
   const { USGInfo } = useTgUsdRecordContext()
 

@@ -1,5 +1,10 @@
-import TgUsdRecordLiquidatePage from "@/components/products/tg_usd/record/liquidate/tg_usd_record_liquidate"
+import { USGLiquidateProvider } from "@/components/products/tg_usd/record/liquidate/usg_record_liquidate_context"
+import USGLiquidatePanel from "@/components/products/tg_usd/record/liquidate/usg_record_liquidate_panel"
 
-export default async function TgUsdMarketLiquidatePage() {
-  return <TgUsdRecordLiquidatePage />
+export default function USGRecordLiquidatePage() {
+  return (
+    <USGLiquidateProvider>
+      <USGLiquidatePanel />
+    </USGLiquidateProvider>
+  )
 }

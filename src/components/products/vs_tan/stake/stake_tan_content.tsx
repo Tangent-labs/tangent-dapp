@@ -25,7 +25,7 @@ export default function StakeTanContent() {
     actionApprove,
     setWeiValue,
     setStakePercentage,
-    stakeInfo,
+    TANsTANMetrics,
     currentFeature,
     depositAssetOptions,
     currentAssetInfo,
@@ -48,7 +48,7 @@ export default function StakeTanContent() {
       displayDecimals: 2,
       logo: "TAN",
       name: "TAN",
-      price: stakeInfo?.tanPrice,
+      price: TANsTANMetrics?.tanPrice,
       symbol: "TAN",
     }
 
@@ -58,7 +58,7 @@ export default function StakeTanContent() {
       displayDecimals: 0,
       logo: "sTAN",
       name: "sTAN",
-      price: stakeInfo?.sTanPrice,
+      price: TANsTANMetrics?.sTanPrice,
       symbol: "sTAN",
     }
 
@@ -105,17 +105,17 @@ export default function StakeTanContent() {
           </div>
         </div>
 
-        {stakeInfo && (
+        {TANsTANMetrics && (
           <div className="flex w-4/12 items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
             <TokenImage token="sTAN" size={48} />
 
             <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">Supply</span>
-              <span className="text-lg font-semibold">{formatBigInt(stakeInfo?.sTanSupply, 18, 0)}</span>
+              <span className="text-lg font-semibold">{formatBigInt(TANsTANMetrics?.sTanSupply, 18, 0)}</span>
             </div>
             <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">sTan</span>
-              <span className="text-lg font-semibold">{formatDollar(formatBigInt(stakeInfo.sTanPrice, 12, 4), 6)}</span>
+              <span className="text-lg font-semibold">{formatDollar(formatBigInt(TANsTANMetrics.sTanPrice, 12, 4), 6)}</span>
             </div>
             <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-2">
               <span className="font-semibold text-black">APR</span>
@@ -159,7 +159,7 @@ export default function StakeTanContent() {
             disabled={false}
             receiveAssetDisplay={<ReceiveAssetDisplay />}
             depositAsset={currentAssetInfo?.asset}
-            receiveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(stakeInfo?.sTanPrice || 0n, 18)))?.toFixed(2)}
+            receiveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(TANsTANMetrics?.sTanPrice || 0n, 18)))?.toFixed(2)}
             balance={currentAssetInfo?.balance}
             receiveAmount={formatBigInt(expected, 18, 2)}
             setMaxBalance={() => {}}
@@ -184,23 +184,27 @@ export default function StakeTanContent() {
           <Divider className="h-1 w-full"></Divider>
 
           <ForecastGraph
-            initialInvestment={Number(formatUnits(stakeInfo?.sTanBalance || 0n, 18))}
+            initialInvestment={Number(formatUnits(TANsTANMetrics?.sTanBalance || 0n, 18))}
             apr={15}
             additionalLiquidity={currentFeature === "stake" ? (weiValue ? Number(formatUnits(weiValue!, 18)) : 0) : 0}
           ></ForecastGraph>
 
           <div className="flex w-full items-center justify-between gap-2">
-            <EvolutionBox originalValue={formatUnits(stakeInfo?.sTanBalance || 0n, 18)} label="sTan balance" newValue={computeProjectedValue.toString()} />
+            <EvolutionBox
+              originalValue={formatBigInt(TANsTANMetrics?.sTanBalance || 0n, 18, 2)}
+              label="sTan balance"
+              newValue={computeProjectedValue.toString()}
+            />
 
             <EvolutionBox
-              originalValue={computeProjection(stakeInfo!, 1 / 12, 15).toFixed(2)}
+              originalValue={computeProjection(TANsTANMetrics!, 1 / 12, 15).toFixed(2)}
               label="30 days projection"
-              newValue={computeProjection(stakeInfo!, 1 / 12, 15, weiValue).toFixed(2)}
+              newValue={computeProjection(TANsTANMetrics!, 1 / 12, 15, weiValue).toFixed(2)}
             />
             <EvolutionBox
-              originalValue={computeProjection(stakeInfo!, 1, 15).toFixed(2)}
+              originalValue={computeProjection(TANsTANMetrics!, 1, 15).toFixed(2)}
               label="1 year projection"
-              newValue={computeProjection(stakeInfo!, 1, 15, weiValue).toFixed(2)}
+              newValue={computeProjection(TANsTANMetrics!, 1, 15, weiValue).toFixed(2)}
             />
           </div>
         </div>

@@ -1,5 +1,10 @@
-import TgUsdRecordLeveragePage from "@/components/products/tg_usd/record/leverage/tg_usd_record_leverage"
+import USGLeverageContent from "@/components/products/tg_usd/record/leverage/usg_record_leverage_content"
+import { USGLeverageProvider } from "@/components/products/tg_usd/record/leverage/usg_record_leverage_context"
 
-export default async function tgUsdMarketLeveragePage() {
-  return <TgUsdRecordLeveragePage />
+export default function USGRecordLeveragePage() {
+  return (
+    <USGLeverageProvider>
+      <USGLeverageContent />
+    </USGLeverageProvider>
+  )
 }

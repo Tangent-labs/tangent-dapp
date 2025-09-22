@@ -2,15 +2,15 @@
 
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
-import { useTgUsdLiquidateContext } from "./tg_usd_record_liquidate_context"
 import TokenImage from "@/components/design_system/structure/token_image"
 import Divider from "@/components/design_system/structure/divider"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { formatBigInt } from "@/lib/number_formatter"
 import BorderPanel from "@/components/design_system/structure/border_panel"
-import { TgUsdStaticAssetSelector } from "./tg_usd_record_liquidate_panel"
+import { USGStaticAssetSelector } from "./usg_record_liquidate_panel"
+import { useUSGLiquidateContext } from "./usg_record_liquidate_context"
 
-export default function TgUsdLiquidatePanelPartial() {
+export default function USGLiquidatePanelPartial() {
   const { USGInfo, collateralInfo } = useTgUsdRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
@@ -28,7 +28,7 @@ export default function TgUsdLiquidatePanelPartial() {
     repayWeiValue,
     repayablePercentage,
     maxRepayable,
-  } = useTgUsdLiquidateContext()
+  } = useUSGLiquidateContext()
 
   const LiquidateAssetDisplay = () => {
     return (
@@ -68,7 +68,7 @@ export default function TgUsdLiquidatePanelPartial() {
       <DepositInput
         depositAmount={tgUSDReceivedValue}
         labelDeposit="For"
-        depositSelect={<TgUsdStaticAssetSelector />}
+        depositSelect={<USGStaticAssetSelector />}
         disabled={true}
         displaySliderInput={false}
         depositAsset={USGInfo}
@@ -88,7 +88,7 @@ export default function TgUsdLiquidatePanelPartial() {
       <DepositInput
         depositAmount={repayWeiValue}
         labelDeposit="You repay"
-        depositSelect={<TgUsdStaticAssetSelector />}
+        depositSelect={<USGStaticAssetSelector />}
         disabled={!canInteract}
         displaySliderInput={true}
         percentage={repayablePercentage}
@@ -104,7 +104,7 @@ export default function TgUsdLiquidatePanelPartial() {
       <DepositInput
         depositAmount={(tgUSDReceivedValue || 0n) - (repayWeiValue || 0n)}
         labelDeposit="You receive"
-        depositSelect={<TgUsdStaticAssetSelector />}
+        depositSelect={<USGStaticAssetSelector />}
         disabled={true}
         displaySliderInput={false}
         depositAsset={USGInfo}

@@ -10,12 +10,11 @@ import { useUSGContext } from "../../tg_usd_context"
 import { USG_CONTRACT } from "../../tg_usd_repository"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import { IconChevron } from "@/components/icons/icon_chevron"
-import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import Panel from "@/components/design_system/structure/panel"
+import { useUSGRepayContext } from "./usg_record_repay_context"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
-import { useTgUsdRepayContext } from "./tg_usd_record_repay_context"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import FormButtons from "@/components/design_system/form/form_actions"
@@ -23,10 +22,11 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import { RepayInput } from "@/components/design_system/inputs/repay_input"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
-export default function TgUsdRepayPanel() {
+export default function USGRepayContent() {
   const { tokens, balances } = useUSGContext()
 
   const { USGInfo, pricedCollateralInfo, collateralInfo, marketInfo } = useTgUsdRecordContext()
@@ -62,7 +62,7 @@ export default function TgUsdRepayPanel() {
     isDebtBelowThreshold,
     repayAssetInfo,
     marketData,
-  } = useTgUsdRepayContext()
+  } = useUSGRepayContext()
 
   const AssetSelectTemplate = (option: {
     logoURI?: string

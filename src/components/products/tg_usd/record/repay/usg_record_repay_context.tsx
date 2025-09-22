@@ -4,7 +4,7 @@ import { AssetDataPriced, FormState } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./tg_usd_record_repay_controller"
+import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
 import { formatUnits, maxUint256 } from "viem"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { USG_CONTRACT } from "../../tg_usd_repository"
@@ -15,11 +15,11 @@ import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 import { formatDollar, toBigInt } from "@/lib/number_formatter"
 
-type TgUsdRepayContextProps = {
+type USGRepayContextProps = {
   children: ReactNode
 }
 
-type TgUsdRepayContextValues = {
+type USGRepayContextValues = {
   actionRepay: () => void
   formState: FormState
 
@@ -76,10 +76,10 @@ type TgUsdRepayContextValues = {
   tgUsdDollarRepayedValue: string
 }
 
-export const TgUsdRepayContext = createContext<TgUsdRepayContextValues | undefined>(undefined)
+export const USGRepayContext = createContext<USGRepayContextValues | undefined>(undefined)
 
-export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
-  const { tokens } = useUSGContext()
+export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
+  const { tokens, loadUSGsUSGMetrics } = useUSGContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
@@ -183,13 +183,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
       doZapRepayAndWithdraw(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData, withdrawWeiValue)
         .then(() => {
-          loadOnChainData()
-          setPercentage(0)
-          setWithdrawPercentage(0)
-          setIsZapLoading(false)
-          setRepayWeiValue(0n)
-          setWithdrawWeiValue(0n)
-          setUsgRepayedValue(0n)
+          resetAfterRepaySuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
         })
         .catch(() => {
@@ -225,13 +219,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
 
       doZapRepay(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData)
         .then(() => {
-          loadOnChainData()
-          setPercentage(0)
-          setWithdrawPercentage(0)
-          setIsZapLoading(false)
-          setRepayWeiValue(0n)
-          setWithdrawWeiValue(0n)
-          setUsgRepayedValue(0n)
+          resetAfterRepaySuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
         })
         .catch(() => {
@@ -271,11 +259,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
       marketAddress: marketData!.marketAddress,
       repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
     }).then(() => {
-      loadOnChainData()
-      setRepayWeiValue(0n)
-      setWithdrawWeiValue(0n)
-      setPercentage(0)
-      setWithdrawPercentage(0)
+      resetAfterRepaySuccess()
     })
   }
 
@@ -285,12 +269,19 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
       repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
       withdrawWeiValue,
     }).then(() => {
-      loadOnChainData()
-      setRepayWeiValue(0n)
-      setWithdrawWeiValue(0n)
-      setPercentage(0)
-      setWithdrawPercentage(0)
+      resetAfterRepaySuccess()
     })
+  }
+
+  const resetAfterRepaySuccess = () => {
+    loadOnChainData()
+    setPercentage(0)
+    setWithdrawPercentage(0)
+    setIsZapLoading(false)
+    setRepayWeiValue(0n)
+    setWithdrawWeiValue(0n)
+    setUsgRepayedValue(0n)
+    loadUSGsUSGMetrics()
   }
 
   const formState = useMemo(() => {
@@ -434,7 +425,7 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     return `(~${formatDollar((Number(Number(formatUnits(usgRepayedValue || 0n, 18))) * USGInfo?.price).toFixed(2))})`
   }, [usgRepayedValue, USGInfo])
 
-  const contextValue: TgUsdRepayContextValues = {
+  const contextValue: USGRepayContextValues = {
     actionRepay,
     formState,
     repayWeiValue,
@@ -471,13 +462,13 @@ export const TgUsdRepayProvider = ({ children }: TgUsdRepayContextProps) => {
     tgUsdDollarRepayedValue,
   }
 
-  return <TgUsdRepayContext.Provider value={contextValue}>{children}</TgUsdRepayContext.Provider>
+  return <USGRepayContext.Provider value={contextValue}>{children}</USGRepayContext.Provider>
 }
 
-export const useTgUsdRepayContext = () => {
-  const context = useContext(TgUsdRepayContext)
+export const useUSGRepayContext = () => {
+  const context = useContext(USGRepayContext)
   if (!context) {
-    throw new Error("useTgUsdRepayContext must be used within a TgUsdRepayProvider")
+    throw new Error("useUSGRepayContext must be used within a TgUsdRepayProvider")
   }
   return context
 }

@@ -4,16 +4,17 @@ import { FormState } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doMarketBorrow, getBorrowFormState } from "./tg_usd_record_borrow_controller"
+import { doMarketBorrow, getBorrowFormState } from "./usg_record_borrow_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 import { computeMaxBorrowable } from "../tg_usd_record_controller"
+import { useUSGContext } from "../../tg_usd_context"
 
-type TgUsdBorrowContextProps = {
+type USGBorrowContextProps = {
   children: ReactNode
 }
 
-type TgUsdBorrowContextValues = {
+type USGBorrowContextValues = {
   actionBorrow: () => void
   formState: FormState
   borrowWeiValue?: bigint
@@ -23,9 +24,11 @@ type TgUsdBorrowContextValues = {
   maxBorrowableValue: bigint
 }
 
-export const TgUsdBorrowContext = createContext<TgUsdBorrowContextValues | undefined>(undefined)
+export const USGBorrowContext = createContext<USGBorrowContextValues | undefined>(undefined)
 
-export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
+export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
+  const { loadUSGsUSGMetrics } = useUSGContext()
+
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
   const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
@@ -42,6 +45,7 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
           setBorrowWeiValue(0n)
           loadOnChainData()
           setBorrowPercentage(0)
+          loadUSGsUSGMetrics()
         })
         .catch(() => {
           toast.error(ToastComponent, { data: { type: "Error", content: "Borrow failed." } })
@@ -73,7 +77,7 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
     [marketData, borrowWeiValue, isWellConnected, currentAddress, maxBorrowableValue]
   )
 
-  const contextValue: TgUsdBorrowContextValues = {
+  const contextValue: USGBorrowContextValues = {
     actionBorrow,
     formState,
     borrowWeiValue,
@@ -83,13 +87,13 @@ export const TgUsdBorrowProvider = ({ children }: TgUsdBorrowContextProps) => {
     maxBorrowableValue,
   }
 
-  return <TgUsdBorrowContext.Provider value={contextValue}>{children}</TgUsdBorrowContext.Provider>
+  return <USGBorrowContext.Provider value={contextValue}>{children}</USGBorrowContext.Provider>
 }
 
-export const useTgUsdBorrowContext = () => {
-  const context = useContext(TgUsdBorrowContext)
+export const useUSGBorrowContext = () => {
+  const context = useContext(USGBorrowContext)
   if (!context) {
-    throw new Error("useTgUsdBorrowContext must be used within a TgUsdBorrowProvider")
+    throw new Error("useUSGBorrowContext must be used within a USGBorrowProvider")
   }
   return context
 }

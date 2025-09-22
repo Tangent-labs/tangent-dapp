@@ -4,13 +4,14 @@ import { FormState } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useTgUsdRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doMarketWithdraw, getWithdrawFormState } from "./tg_usd_record_withdraw_controller"
+import { doMarketWithdraw, getWithdrawFormState } from "./usg_record_withdraw_controller"
+import { useUSGContext } from "../../tg_usd_context"
 
-type TgUsdWithdrawContextProps = {
+type USGWithdrawContextProps = {
   children: ReactNode
 }
 
-type TgUsdWithdrawContextValues = {
+type USGWithdrawContextValues = {
   actionWithdraw: () => void
   formState: FormState
   withdrawWeiValue?: bigint
@@ -20,9 +21,11 @@ type TgUsdWithdrawContextValues = {
   maxWithdrawable: bigint
 }
 
-export const TgUsdWithdrawContext = createContext<TgUsdWithdrawContextValues | undefined>(undefined)
+export const USGWithdrawContext = createContext<USGWithdrawContextValues | undefined>(undefined)
 
-export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) => {
+export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
+  const { loadUSGsUSGMetrics } = useUSGContext()
+
   const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
@@ -44,6 +47,7 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
         marketAddress: marketData!.marketAddress,
         withdrawWeiValue,
       }).then(() => {
+        loadUSGsUSGMetrics()
         loadOnChainData()
         setWithdrawWeiValue(0n)
         setWithdrawPercentage(0)
@@ -71,7 +75,7 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
     return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
   }, [marketData, withdrawWeiValue, isWellConnected, currentAddress, maxWithdrawable])
 
-  const contextValue: TgUsdWithdrawContextValues = {
+  const contextValue: USGWithdrawContextValues = {
     actionWithdraw,
     formState,
     withdrawWeiValue,
@@ -81,13 +85,13 @@ export const TgUsdWithdrawProvider = ({ children }: TgUsdWithdrawContextProps) =
     setWithdrawPercentage,
   }
 
-  return <TgUsdWithdrawContext.Provider value={contextValue}>{children}</TgUsdWithdrawContext.Provider>
+  return <USGWithdrawContext.Provider value={contextValue}>{children}</USGWithdrawContext.Provider>
 }
 
-export const useTgUsdWithdrawContext = () => {
-  const context = useContext(TgUsdWithdrawContext)
+export const useUSGWithdrawContext = () => {
+  const context = useContext(USGWithdrawContext)
   if (!context) {
-    throw new Error("useTgUsdWithdrawContext must be used within a TgUsdWithdrawProvider")
+    throw new Error("useUSGWithdrawContext must be used within a USGWithdrawProvider")
   }
   return context
 }

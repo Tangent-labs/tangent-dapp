@@ -10,16 +10,16 @@ import { useUSGContext } from "../../tg_usd_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
-import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./tg_usd_record_leverage_controller"
+import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
 import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { USG_CONTRACT } from "../../tg_usd_repository"
 import { formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 
-type TgUsdLeverageContextProps = {
+type USGLeverageContextProps = {
   children: ReactNode
 }
 
-type TgUsdLeverageContextValues = {
+type USGLeverageContextValues = {
   collateralInfo: AssetDataPriced
 
   isDepositDisabled: boolean
@@ -79,10 +79,10 @@ type TgUsdLeverageContextValues = {
   updateBorrowWeiValue: (value: bigint) => Promise<void>
 }
 
-export const TgUsdLeverageContext = createContext<TgUsdLeverageContextValues | undefined>(undefined)
+export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
 
-export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) => {
-  const { tokens } = useUSGContext()
+export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
+  const { tokens, loadUSGsUSGMetrics } = useUSGContext()
 
   const {
     marketData,
@@ -318,14 +318,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
         marketInfo?.marketAddress
       )
         .then(() => {
-          loadOnChainData()
-          setZapValue(0n)
-          setDepositWeiValue(0n)
-          setBorrowWeiValue(0n)
-          setLeveragedCollateralQuote(0n)
-          setDepositSliderPercent(0)
-          setIsDepositLoading(false)
-          setLeveragePercentage(0)
+          resetAfterLeverageSuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
           setIsDepositLoading(false)
         })
@@ -355,19 +348,25 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
 
     doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, leverageData!)
       .then(() => {
-        loadOnChainData()
-        setZapValue(0n)
-        setDepositWeiValue(0n)
-        setBorrowWeiValue(0n)
-        setLeveragedCollateralQuote(0n)
-        setDepositSliderPercent(0)
-        setIsDepositLoading(false)
-        setLeveragePercentage(0)
+        resetAfterLeverageSuccess()
         toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
       })
       .catch((err) => {
         console.error("ERROR : ", err)
       })
+  }
+
+  const resetAfterLeverageSuccess = () => {
+    setZapValue(0n)
+    setDepositWeiValue(0n)
+    setBorrowWeiValue(0n)
+    setLeveragedCollateralQuote(0n)
+    setDepositSliderPercent(0)
+    setIsDepositLoading(false)
+    setLeveragePercentage(0)
+    loadUSGsUSGMetrics()
+    loadOnChainData()
+    fetchBalanceAllowanceData(depositAssetInfo?.address)
   }
 
   const quoteDetail = useMemo(() => {
@@ -471,7 +470,7 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
     return () => clearTimeout(handler)
   }, [zapInnerValue, isZapUserInput])
 
-  const contextValue: TgUsdLeverageContextValues = {
+  const contextValue: USGLeverageContextValues = {
     collateralInfo,
 
     isDepositDisabled,
@@ -532,13 +531,13 @@ export const TgUsdLeverageProvider = ({ children }: TgUsdLeverageContextProps) =
     updateBorrowWeiValue,
   }
 
-  return <TgUsdLeverageContext.Provider value={contextValue}>{children}</TgUsdLeverageContext.Provider>
+  return <USGLeverageContext.Provider value={contextValue}>{children}</USGLeverageContext.Provider>
 }
 
-export const useTgUsdLeverageContext = () => {
-  const context = useContext(TgUsdLeverageContext)
+export const useUSGLeverageContext = () => {
+  const context = useContext(USGLeverageContext)
   if (!context) {
-    throw new Error("useTgUsdLeverageContext must be used within a TgUsdLeverageProvider")
+    throw new Error("useUSGLeverageContext must be used within a USGLeverageProvider")
   }
   return context
 }

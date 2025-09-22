@@ -1,7 +1,6 @@
 "use client"
 
 import Image from "next/image"
-import { cn } from "@/lib/utils"
 import { ExistingAsset } from "@/types"
 import { DepositReceiveAsset } from "../tg_usd_type"
 import { formatBigInt } from "@/lib/number_formatter"
@@ -136,20 +135,12 @@ export default function TgUsdSwapContent() {
           </div>
 
           <div className="mt-auto flex w-full items-center justify-center gap-1 p-2 md:gap-3">
-            <div
-              className={cn(
-                "flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48"
-              )}
-            >
+            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48">
               <span className="text-xs text-subtitle">USG Balance</span>
               <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)}</span>
             </div>
 
-            <div
-              className={cn(
-                "flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48"
-              )}
-            >
+            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48">
               <span className="text-xs text-subtitle">sUSG Balance</span>
               <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)}</span>
             </div>

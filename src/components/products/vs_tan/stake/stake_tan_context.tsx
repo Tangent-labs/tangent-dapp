@@ -1,12 +1,12 @@
 "use client"
 
-import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedsTAN, getExpectedTAN, getFormState, getTanStakeOnChainData } from "./stake_tan_controller"
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { formatUnits } from "viem"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { StakingAssetInfo, StakingDepositType, StakingInfo } from "../rstan_types"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { StakingAssetInfo, StakingDepositType, TANStakingInfo } from "../rstan_types"
+import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedsTAN, getExpectedTAN, getFormState, getTanStakeOnChainData } from "./stake_tan_controller"
 
 type StakeTanContextProps = {
   children: ReactNode
@@ -15,7 +15,7 @@ type StakeTanContextProps = {
 type StakeTanContextValues = {
   weiValue?: bigint
   setWeiValue: (arg: bigint | undefined) => void
-  stakeInfo: StakingInfo | undefined
+  stakeInfo: TANStakingInfo | undefined
   isLoading: boolean
   currentFeature: "stake" | "unstake"
   setCurrentFeature: (arg: "stake" | "unstake") => void
@@ -38,7 +38,7 @@ export const StakeTanContext = createContext<StakeTanContextValues | undefined>(
 export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  const [stakeInfo, setStakeInfo] = useState<StakingInfo | undefined>()
+  const [stakeInfo, setStakeInfo] = useState<TANStakingInfo | undefined>()
 
   const [currentFeature, setCurrentFeature] = useState<"stake" | "unstake">("stake")
 

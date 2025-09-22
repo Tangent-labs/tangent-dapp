@@ -1,7 +1,7 @@
-import { AssetDataPriced } from "@/types"
 import { Address } from "viem"
+import { AssetDataPriced } from "@/types"
 
-export type StakingInfo = {
+export type TANStakingInfo = {
   sTanBalance: bigint
   sTanPrice: bigint
   sTanSupply: bigint

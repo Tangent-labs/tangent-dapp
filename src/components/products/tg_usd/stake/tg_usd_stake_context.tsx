@@ -4,7 +4,7 @@ import { formatUnits } from "viem"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { useUSGContext } from "../tg_usd_context"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { StakingAssetInfo, StakingDepositType, StakingInfo } from "../tg_usd_type"
+import { StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../tg_usd_type"
 import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedUSG, getFormState } from "./tg_usd_stake_controller"
@@ -30,7 +30,7 @@ type TgUsdStakeContextValues = {
   formState: FormState
   stakePercentage: number
   setStakePercentage: (arg: number) => void
-  USGsUSGMetrics: StakingInfo | undefined
+  USGsUSGMetrics: USGStakingInfo | undefined
 }
 
 export const TgUsdStakeContext = createContext<TgUsdStakeContextValues | undefined>(undefined)

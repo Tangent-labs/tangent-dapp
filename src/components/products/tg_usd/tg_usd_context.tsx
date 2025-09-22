@@ -1,12 +1,14 @@
 "use client"
 
 import { Address } from "viem"
+import { TANStakingInfo } from "../vs_tan/rstan_types"
 import { getUSGsUSGMetrics } from "./tg_usd_controller"
 import { getCurrentBlock } from "@/services/service_rpc"
 import { getLpUserPoints, getVoteUserPoints } from "./api"
 import { getBalances } from "./record/tg_usd_record_controller"
+import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
-import { StakingInfo, LpUserPoints, ZapToken, VoteUserPoints } from "./tg_usd_type"
+import { USGStakingInfo, LpUserPoints, ZapToken, VoteUserPoints } from "./tg_usd_type"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 
 type USGContextProps = {
@@ -21,7 +23,9 @@ type USGContextValues = {
   voteUserPoints: VoteUserPoints
   refetchPoints: () => Promise<void>
   loadUSGsUSGMetrics: () => void
-  USGsUSGMetrics: StakingInfo | undefined
+  USGsUSGMetrics: USGStakingInfo | undefined
+  TANsTANMetrics: TANStakingInfo | undefined
+  loadTanSTANMetrics: () => void
 }
 
 export const USGContext = createContext<USGContextValues | undefined>(undefined)
@@ -35,12 +39,22 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
 
   const [voteUserPoints, setVoteUserPoints] = useState<VoteUserPoints>({ voteTotalPoints: 0 })
 
-  const [USGsUSGMetrics, setUSGsUSGMetrics] = useState<StakingInfo | undefined>()
+  const [USGsUSGMetrics, setUSGsUSGMetrics] = useState<USGStakingInfo | undefined>()
+
+  const [TANsTANMetrics, setTANsTANMetrics] = useState<TANStakingInfo | undefined>()
 
   const loadUSGsUSGMetrics = useCallback(() => {
     if (currentAddress) {
       getUSGsUSGMetrics(currentAddress).then((data) => {
         setUSGsUSGMetrics(data)
+      })
+    }
+  }, [currentAddress])
+
+  const loadTanSTANMetrics = useCallback(() => {
+    if (currentAddress) {
+      getTanStakeOnChainData(currentAddress).then((data) => {
+        setTANsTANMetrics(data)
       })
     }
   }, [currentAddress])
@@ -85,7 +99,9 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
     lpUserPoints,
     refetchPoints,
     loadUSGsUSGMetrics,
+    loadTanSTANMetrics,
     USGsUSGMetrics,
+    TANsTANMetrics,
     voteUserPoints,
   }
 

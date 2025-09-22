@@ -73,7 +73,7 @@ export function BuySellInput({
       setPercentage(newPercentage)
       const newValue = newPercentage !== 0 ? Number(((newPercentage / 100) * balanceNumber).toFixed(0)) : 0
       setInnerValue(newValue)
-      onValueChange(!!newValue ? toBigInt(newValue, 18) : undefined)
+      onValueChange(!!newValue ? toBigInt(newValue, depositAsset?.decimals || 18) : undefined)
     }
   }
 

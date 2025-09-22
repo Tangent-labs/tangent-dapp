@@ -2,7 +2,7 @@
 
 import { ListState } from "@/types"
 import { useUSGContext } from "../tg_usd_context"
-import { EarnTask, StakingInfo, LpUserPoints } from "../tg_usd_type"
+import { EarnTask, USGStakingInfo, LpUserPoints } from "../tg_usd_type"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 
@@ -17,7 +17,7 @@ type TgUsdEarnContextValues = {
   setSearchValue: (value: string | null) => void
   displayRows: EarnTask[]
   customSort: (arg: ListState) => void
-  USGsUSGMetrics: StakingInfo | undefined
+  USGsUSGMetrics: USGStakingInfo | undefined
   lpUserPoints: LpUserPoints
 }
 

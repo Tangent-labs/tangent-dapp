@@ -3,7 +3,7 @@
 import { Abi, Address, Hex } from "viem"
 import sUSGUI from "../../../abi/USG/sUSGUI.json"
 import { USG_CONTRACT } from "./tg_usd_repository"
-import { StakingInfo, ZapToken } from "./tg_usd_type"
+import { USGStakingInfo, ZapToken } from "./tg_usd_type"
 import { executeChainViewUnique } from "@/services/service_rpc"
 
 export async function fetchTokens() {
@@ -13,7 +13,7 @@ export async function fetchTokens() {
 }
 
 export async function getUSGsUSGMetrics(currentAddress: Address | undefined) {
-  return await executeChainViewUnique<StakingInfo>(sUSGUI.abi as Abi, sUSGUI.bytecode as Hex, [
+  return await executeChainViewUnique<USGStakingInfo>(sUSGUI.abi as Abi, sUSGUI.bytecode as Hex, [
     currentAddress,
     USG_CONTRACT.USG_ORACLE,
     USG_CONTRACT.USG,

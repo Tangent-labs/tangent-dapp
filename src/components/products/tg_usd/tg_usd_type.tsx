@@ -292,7 +292,7 @@ export type TgUsdMarket = {
   marketType: "Convex_CRV" | "Convex_FXN"
 }
 
-export type StakingInfo = {
+export type USGStakingInfo = {
   USGAllowance: bigint
   USGBalance: bigint
   USGPercentageInsUSG: bigint

@@ -1,10 +1,10 @@
-import { StakingInfo } from "../tg_usd_type"
+import { USGStakingInfo } from "../tg_usd_type"
 import { formatNumber } from "@/lib/number_formatter"
 import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Address, EstimateContractGasParameters, formatUnits, maxUint256, WalletClient, WriteContractParameters } from "viem"
 
-export function getFormState(stakeInfo: StakingInfo, currentFeature: "stake" | "unstake", weiValue?: bigint, expected?: bigint, isWellConnected?: boolean) {
+export function getFormState(stakeInfo: USGStakingInfo, currentFeature: "stake" | "unstake", weiValue?: bigint, expected?: bigint, isWellConnected?: boolean) {
   let isApproved = false
   const reasons: string[] = []
 
@@ -117,7 +117,7 @@ export const doStakeTgUSD = async ({ walletClient, stakingAddress, weiValue }: {
   return hash
 }
 
-export const computeProjection = (stakeInfo: StakingInfo, timeFrame: number, apr: number, addedLiquidity?: bigint) => {
+export const computeProjection = (stakeInfo: USGStakingInfo, timeFrame: number, apr: number, addedLiquidity?: bigint) => {
   let projection = 0
 
   if (addedLiquidity) {

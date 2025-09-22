@@ -11,7 +11,7 @@ import { Abi, Address, SendTransactionParameters, WalletClient } from "viem"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { BalanceAllowanceData, SwapToken, DepositReceiveAsset, StakingInfo, LpUserPoints } from "../tg_usd_type"
+import { BalanceAllowanceData, SwapToken, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../tg_usd_type"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./tg_usd_swap_controller"
 
 type TgUsdSwapContextProps = {
@@ -71,7 +71,7 @@ type TgUsdSwapContextValues = {
 
   computedAssets: { depositAssets: DepositReceiveAsset[]; receiveAssets: DepositReceiveAsset[] }
 
-  USGsUSGMetrics: StakingInfo | undefined
+  USGsUSGMetrics: USGStakingInfo | undefined
 
   lpUserPoints: LpUserPoints
 }

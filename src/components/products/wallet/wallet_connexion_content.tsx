@@ -1,8 +1,9 @@
 "use client"
 
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
+import { useUSGContext } from "../tg_usd/tg_usd_context"
 import { IconCross } from "@/components/icons/icon_cross"
 import { IconVsTan } from "@/components/icons/icon_vstan"
 import { Button } from "@/components/design_system/inputs/button"
@@ -13,14 +14,21 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 type WalletConnexionContentProps = React.HTMLAttributes<HTMLButtonElement>
 
 export const WalletConnexionContent = ({ ...props }: WalletConnexionContentProps) => {
-  const { connect, disconnect, changeNetwork, tokenInfo, isConnected, isChainConnected, currentAccount, isConnecting } = useWalletConnexionContext()
+  const { connect, disconnect, changeNetwork, tokenInfo, isConnected, isChainConnected, currentAddress, isConnecting } = useWalletConnexionContext()
+
+  const { USGsUSGMetrics, loadUSGsUSGMetrics, loadTanSTANMetrics, TANsTANMetrics } = useUSGContext()
+
+  useEffect(() => {
+    loadTanSTANMetrics()
+    loadUSGsUSGMetrics()
+  }, [currentAddress])
 
   const buttonLabel = useMemo(() => {
     if (isConnecting) return "..."
     if (!isConnected) return "Connect Wallet"
     if (!isChainConnected) return "Switch Network"
-    return formatAddress(currentAccount?.address) || "Unknown Address"
-  }, [isConnected, isChainConnected, currentAccount, isConnecting])
+    return formatAddress(currentAddress) || "Unknown Address"
+  }, [isConnected, isChainConnected, currentAddress, isConnecting])
 
   const handleConnect = async () => {
     await connect()
@@ -73,7 +81,9 @@ export const WalletConnexionContent = ({ ...props }: WalletConnexionContentProps
 
                   <div className="flex flex-col">
                     <span className="text-xs"> {formatBigInt(tokenInfo("USG")?.balance, 18, 2)} </span>
-                    <span className="text-xs text-subtitle">$50.50</span>
+                    <span className="text-xs text-subtitle">
+                      ${formatBigInt(((tokenInfo("USG")?.balance || 0n) * (USGsUSGMetrics?.USGPrice || 0n)) / BigInt(10 ** 18), 18, 2)}
+                    </span>
                   </div>
                 </div>
 
@@ -82,7 +92,9 @@ export const WalletConnexionContent = ({ ...props }: WalletConnexionContentProps
 
                   <div className="flex flex-col">
                     <span className="text-xs"> {formatBigInt(tokenInfo("sUSG")?.balance, 18, 2)} </span>
-                    <span className="text-xs text-subtitle">$50.50</span>
+                    <span className="text-xs text-subtitle">
+                      ${formatBigInt(((tokenInfo("sUSG")?.balance || 0n) * (USGsUSGMetrics?.sUSGPrice || 0n)) / BigInt(10 ** 18), 18, 2)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -93,7 +105,9 @@ export const WalletConnexionContent = ({ ...props }: WalletConnexionContentProps
 
                   <div className="flex flex-col">
                     <span className="text-xs"> {formatBigInt(tokenInfo("TAN")?.balance, 18, 2)} </span>
-                    <span className="text-xs text-subtitle">$50.50</span>
+                    <span className="text-xs text-subtitle">
+                      ${formatBigInt(((tokenInfo("TAN")?.balance || 0n) * (TANsTANMetrics?.tanPrice || 0n)) / BigInt(10 ** 18), 18, 2)}
+                    </span>
                   </div>
                 </div>
 
@@ -102,7 +116,9 @@ export const WalletConnexionContent = ({ ...props }: WalletConnexionContentProps
 
                   <div className="flex flex-col">
                     <span className="text-xs"> {formatBigInt(tokenInfo("sTAN")?.balance, 18, 2)} </span>
-                    <span className="text-xs text-subtitle">$50.50</span>
+                    <span className="text-xs text-subtitle">
+                      ${formatBigInt(((tokenInfo("sTAN")?.balance || 0n) * (TANsTANMetrics?.sTanPrice || 0n)) / BigInt(10 ** 18), 18, 2)}
+                    </span>
                   </div>
                 </div>
 
@@ -111,7 +127,7 @@ export const WalletConnexionContent = ({ ...props }: WalletConnexionContentProps
 
                   <div className="flex flex-col">
                     <span className="text-xs"> {formatBigInt(tokenInfo("vsTAN")?.balance, 18, 2)} </span>
-                    <span className="text-xs text-subtitle">$50.50</span>
+                    <span className="text-xs text-subtitle">-</span>
                   </div>
                 </div>
               </div>

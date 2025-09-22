@@ -1,12 +1,12 @@
-import { StakingInfo } from "../rstan_types"
 import sTANUI from "../../../../abi/USG/sTANUI.json"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
+import { TANStakingInfo } from "../rstan_types"
 
 export async function getTanStakeOnChainData(currentAddress: Address | undefined) {
-  return await executeChainViewUnique<StakingInfo>(sTANUI.abi as Abi, sTANUI.bytecode as Hex, [
+  return await executeChainViewUnique<TANStakingInfo>(sTANUI.abi as Abi, sTANUI.bytecode as Hex, [
     currentAddress,
     VSTAN_CONTRACT.TAN_LP,
     VSTAN_CONTRACT.ETH_ORACLE,
@@ -16,7 +16,7 @@ export async function getTanStakeOnChainData(currentAddress: Address | undefined
   ])
 }
 
-export function getFormState(stakeInfo: StakingInfo, currentFeature: "stake" | "unstake", weiValue?: bigint, expected?: bigint, isWellConnected?: boolean) {
+export function getFormState(stakeInfo: TANStakingInfo, currentFeature: "stake" | "unstake", weiValue?: bigint, expected?: bigint, isWellConnected?: boolean) {
   let isApproved = false
   const reasons: string[] = []
 
@@ -129,7 +129,7 @@ export const doStakeTgUSD = async ({ walletClient, stakingAddress, weiValue }: {
   return hash
 }
 
-export const computeProjection = (stakeInfo: StakingInfo, timeFrame: number, apr: number, addedLiquidity?: bigint) => {
+export const computeProjection = (stakeInfo: TANStakingInfo, timeFrame: number, apr: number, addedLiquidity?: bigint) => {
   let projection = 0
 
   if (addedLiquidity) {

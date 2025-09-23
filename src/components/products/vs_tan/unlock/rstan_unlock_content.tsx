@@ -9,6 +9,7 @@ import { Button } from "@/components/design_system/inputs/button"
 import { formatBigInt } from "@/lib/number_formatter"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { Switch } from "@/components/ui/switch"
+import { IconOpenOutside } from "@/components/icons/icon_open_outside"
 
 export const RsTanUnlockContent = () => {
   const { lockData } = useRsTanContext()
@@ -130,6 +131,13 @@ export const RsTanUnlockContent = () => {
           </div>
         </>
       )}
+
+      <div className="my-2 flex flex-col rounded-[10px] bg-overlay-panel p-2 text-xs text-subtitle">
+        <span>A penalty is applied for early unlocks (prior to the initial unlock schedule).</span>
+        <span onClick={() => window.open("https://youtu.be/5Hplx-geZHo?t=5")} className="flex cursor-pointer items-center underline hover:text-white">
+          Learn more <IconOpenOutside className="w-3"></IconOpenOutside>
+        </span>
+      </div>
 
       {unlockPositionInfo?.amount === tanReceived ? (
         <Button className="mt-3 flex w-full justify-center" onClick={actionUnlock}>

@@ -18,11 +18,11 @@ export default function USGHoverCard({ children, title, iconClassName }: USGHove
           <IconCircleHelp className={iconClassName} />
         </button>
       </HoverCardTrigger>
-      <HoverCardContent side="top" className="z-50 w-fit max-w-80 !border-none text-xs">
+      <HoverCardContent side="top" className="z-100 w-fit max-w-56 !border-none text-xs">
         <div className="grid gap-4 !border-none">
           <div className="space-y-2">
             <span className="font-medium leading-none">{title}</span>
-            <div className="mt-4">{children}</div>
+            <div>{children}</div>
           </div>
         </div>
       </HoverCardContent>

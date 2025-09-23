@@ -11,6 +11,7 @@ import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { formatDate } from "@/lib/other_formatter"
 import { InfinityIcon } from "lucide-react"
 import FormButtons from "@/components/design_system/form/form_actions"
+import { IconOpenOutside } from "@/components/icons/icon_open_outside"
 
 export const RsTanSplitContent = () => {
   const { lockData } = useRsTanContext()
@@ -70,9 +71,9 @@ export const RsTanSplitContent = () => {
     <div className="flex w-full flex-col items-start justify-start">
       <div className="mb-1 text-lg font-semibold text-white">Select position to split:</div>
 
-      <div className="flex w-full flex-col items-center justify-between gap-2 sm:flex-row">
+      <div className="mt-2 flex h-10 w-full items-center justify-between gap-2">
         <PositionSelect />
-        <div className="flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel px-3 py-1.5 text-[15px] text-sm text-subtitle backdrop-blur-[60px] backdrop-filter">
+        <div className="mt-1 flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-3 text-sm text-subtitle">
           Balance:
           {splitPositionInfo && splitPositionInfo?.amount && (
             <span className="flex items-center justify-end text-lg font-semibold text-white">
@@ -255,6 +256,13 @@ export const RsTanSplitContent = () => {
                 )}
               </div>
             </div>
+          </div>
+
+          <div className="my-2 flex rounded-[10px] bg-overlay-panel p-2 text-xs text-subtitle">
+            <span>The newly created positions will share the same unlock schedule. </span>
+            <span onClick={() => window.open("https://youtu.be/5Hplx-geZHo?t=5")} className="ml-1 flex cursor-pointer items-center underline hover:text-white">
+              Learn more <IconOpenOutside className="w-3"></IconOpenOutside>
+            </span>
           </div>
 
           <FormButtons

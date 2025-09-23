@@ -12,6 +12,7 @@ import { InfinityIcon } from "lucide-react"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { Switch } from "@/components/ui/switch"
+import { IconOpenOutside } from "@/components/icons/icon_open_outside"
 
 export const RsTanMergeContent = () => {
   const { lockData } = useRsTanContext()
@@ -228,6 +229,16 @@ export const RsTanMergeContent = () => {
                 </div>
               </div>
             </div>
+          </div>
+
+          <div className="my-2 rounded-[10px] bg-overlay-panel p-2 text-xs text-subtitle">
+            <span>The newly created position will share the same unlock schedule as the longest one, prior to the merge. </span>
+            <span
+              onClick={() => window.open("https://youtu.be/5Hplx-geZHo?t=5")}
+              className="inline-flex cursor-pointer items-center underline hover:text-white"
+            >
+              Learn more <IconOpenOutside className="w-3"></IconOpenOutside>
+            </span>
           </div>
 
           <FormButtons actions={{ handleApprove: undefined, handleProcess: actionMerge }} formState={formState} labelProcess="Merge" />

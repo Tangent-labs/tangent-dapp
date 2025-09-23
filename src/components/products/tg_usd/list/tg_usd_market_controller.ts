@@ -105,14 +105,14 @@ function transformMarketDataToRow(data: TgUsdMarketData & TgUsdMarketDataUser, o
       projected: Number(data.apr.details.baseApr),
     },
     indicators: [
-      { key: "borrowRate", label: "Borrow Rate", value: formatBigInt(onChainRow?.debtInfos.currentBorrowRate, 18, 2) || "-", raw: 0 },
+      { key: "borrowRate", label: "Borrow Rate", value: formatBigInt(onChainRow?.debtInfos.currentBorrowRate, 18, 0) || "-", raw: 0 },
       {
         key: "tvl",
         label: "Tvl",
-        value: formatDollar(formatUnits(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0n, 18)),
+        value: formatDollar(formatUnits(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0n, 18), 0),
         raw: Number(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0),
       },
-      { key: "borrowed", label: "Borrowed", value: formatDollar(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18)) || "-", raw: data.borrowed },
+      { key: "borrowed", label: "Borrowed", value: formatDollar(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18), 0) || "-", raw: data.borrowed },
     ],
     userHasDeposited: !!onChainRow?.collateralInfos?.positionCollateralUSDValue && onChainRow?.collateralInfos?.positionCollateralUSDValue > 0n,
   }
@@ -123,14 +123,12 @@ export const tgUsdListHeaders: ListHeaderData[] = [
   {
     label: "APR",
     key: "apr",
-    indicator:
-      "Annualized cost of borrowing, expressed as a percentage, which includes the interest rate and any additional fees or costs associated with the loan",
+    indicator: "vAPR of the collateral",
   },
   {
     label: "Borrow Rate",
     key: "borrowRate",
-    indicator:
-      "Interest rate charged by a lender to a borrower for the use of borrowed funds, typically expressed as a percentage of the principal loan amount.",
+    indicator: "Interest rate that borrowers pay on their outstanding debt.",
   },
   { label: "TVL", key: "tvl" },
   { label: "Borrowed", key: "borrowed" },

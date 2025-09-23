@@ -1,27 +1,27 @@
 "use client"
 
-import { Button } from "@/components/design_system/inputs/button"
-import Divider from "@/components/design_system/structure/divider"
 import Image from "next/image"
-import { usePathname, useRouter } from "next/navigation"
-import { useRsTanContext } from "./rstan_layout_context"
-import { formatBigInt } from "@/lib/number_formatter"
-import { IconChevron } from "@/components/icons/icon_chevron"
-import { formatDate } from "@/lib/other_formatter"
 import { ListState } from "@/types"
-import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { lockListHeaders } from "./rstan_layout_controller"
-import ListHeader from "@/components/design_system/list/list_header"
-import ListRow from "@/components/design_system/list/list_row"
-import EvolutionBox from "@/components/design_system/structure/evolution_box"
-import { IconCircleHelp } from "@/components/icons/icon_circle_help"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
-import { IconVsTan } from "@/components/icons/icon_vstan"
-import { LockPosition } from "../tg_usd/tg_usd_type"
-import TokenImage from "@/components/design_system/structure/token_image"
 import { InfinityIcon } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
+import { formatDate } from "@/lib/other_formatter"
+import { LockPosition } from "../tg_usd/tg_usd_type"
+import { formatBigInt } from "@/lib/number_formatter"
+import { useRsTanContext } from "./rstan_layout_context"
+import { usePathname, useRouter } from "next/navigation"
+import { IconVsTan } from "@/components/icons/icon_vstan"
+import { lockListHeaders } from "./rstan_layout_controller"
+import { IconChevron } from "@/components/icons/icon_chevron"
+import ListRow from "@/components/design_system/list/list_row"
+import { Button } from "@/components/design_system/inputs/button"
+import Divider from "@/components/design_system/structure/divider"
+import ListHeader from "@/components/design_system/list/list_header"
+import ButtonTab from "@/components/design_system/inputs/button_tab"
+import TokenImage from "@/components/design_system/structure/token_image"
+import EvolutionBox from "@/components/design_system/structure/evolution_box"
+import USGHoverCard from "@/components/design_system/structure/usg_hover_card"
 import { FeatureSelect } from "@/components/design_system/structure/feature_select"
+import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 
 const listeState: ListState = {
   search: undefined,
@@ -149,7 +149,7 @@ function LockPositionList() {
         <ListHeader rowDisposition={LockRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 
-      <div className="flex h-full max-h-[400px] w-full flex-col overflow-y-scroll">
+      <div className="flex h-full max-h-[400px] w-full flex-col overflow-x-hidden overflow-y-scroll">
         {lockData?.positions.map((lockPosition: LockPosition) => (
           <div className="flex w-full flex-col" key={lockPosition?.tokenId}>
             <ListRow
@@ -209,7 +209,11 @@ function LockPositionList() {
                   <>
                     <div className="flex w-fit items-center justify-center gap-1">
                       <div className="text-xs font-semibold text-subtitle">Perma lock</div>
-                      <IconCircleHelp className="w-3"></IconCircleHelp>
+
+                      <USGHoverCard iconClassName="h-auto w-[14px] text-white" title="">
+                        Lock your tokens in perpetuity. You can remove the perma lock option at any time.
+                      </USGHoverCard>
+
                       <Switch checked={extendToPermaLock} onCheckedChange={() => setExtendToPermaLock(!extendToPermaLock)} />
                     </div>
 

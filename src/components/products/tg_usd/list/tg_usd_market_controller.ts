@@ -113,7 +113,6 @@ function transformMarketDataToRow(data: TgUsdMarketData & TgUsdMarketDataUser, o
         raw: Number(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0),
       },
       { key: "borrowed", label: "Borrowed", value: formatDollar(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18)) || "-", raw: data.borrowed },
-      { key: "cap", label: "Cap", value: formatBigInt(onChainRow?.constants?.maxMarketDebt, 18, 0) || "-", raw: data.cap },
     ],
     userHasDeposited: !!onChainRow?.collateralInfos?.positionCollateralUSDValue && onChainRow?.collateralInfos?.positionCollateralUSDValue > 0n,
   }
@@ -135,5 +134,4 @@ export const tgUsdListHeaders: ListHeaderData[] = [
   },
   { label: "TVL", key: "tvl" },
   { label: "Borrowed", key: "borrowed" },
-  { label: "Cap", key: "cap" },
 ]

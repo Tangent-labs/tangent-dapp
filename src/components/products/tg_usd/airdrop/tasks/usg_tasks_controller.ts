@@ -30,6 +30,5 @@ export const voteListHeaders: ListHeaderData[] = [
   { label: "Protocol", key: "protocol" },
   { label: "Vote", key: "vote" },
   { label: "Pts/VotingPower", key: "pointRate" },
-  { label: "Status", key: "status" },
   { label: "Points", key: "points" },
 ]

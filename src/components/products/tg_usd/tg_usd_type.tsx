@@ -431,7 +431,6 @@ export type VoteTask = {
   url: string
   description: string
   pointRate: number
-  status: boolean
   points: number
 }
 

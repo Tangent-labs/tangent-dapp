@@ -7,7 +7,6 @@ import { IconSortHeader } from "@/components/icons/icon_sort_header"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { useListContext } from "@/components/design_system/list/list_context"
-import { TaskStatus } from "../../components/TaskStatus"
 
 export const voteListState: ListState = {
   search: undefined,
@@ -55,11 +54,10 @@ const AirdropRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
   return (
     <div className="flex w-full items-center justify-evenly px-2">
       <div className="flex w-3/12 items-center justify-center">{children?.at(0)} </div>
-      <div className="hidden w-1/12 items-center justify-center lg:flex">{children?.at(1)} </div>
+      <div className="hidden w-2/12 items-center justify-center lg:flex">{children?.at(1)} </div>
       <div className="flex w-4/12 items-center justify-center lg:w-3/12">{children?.at(2)} </div>
       <div className="flex w-2/12 items-center justify-center">{children?.at(3)} </div>
-      <div className="flex w-1/12 items-center justify-center">{children?.at(4)} </div>
-      <div className="flex w-2/12 items-center justify-center">{children?.at(5)} </div>
+      <div className="flex w-2/12 items-center justify-center">{children?.at(4)} </div>
     </div>
   )
 }
@@ -108,16 +106,6 @@ export const VoteTasksList = () => {
                 </button>
               </div>
             )}
-            {!!headers?.at(5)?.key && (
-              <div key={headers?.at(5)?.label} className="flex w-full items-center justify-center">
-                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(5)?.key))}>
-                  <span>{headers?.at(5)?.label} </span>
-                  <div className="text-row-tonic">
-                    <IconSortHeader sort={(listState?.sort?.key === headers?.at(5)?.key && listState?.sort?.direction) || "none"} />
-                  </div>
-                </button>
-              </div>
-            )}
           </AirdropRowDisposition>
         </div>
       </div>
@@ -133,7 +121,7 @@ export const VoteTasksList = () => {
                 <div className="flex w-3/12 items-center gap-2 xl:gap-4">
                   <span className="flex text-[20px] font-semibold">{task.organisation}</span>
                 </div>
-                <div className="hidden w-1/12 justify-center lg:flex">
+                <div className="hidden w-2/12 justify-center lg:flex">
                   <div onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}>{computeProtocolDisplay(task?.protocol)}</div>
                 </div>
                 <div className="flex w-4/12 justify-center lg:w-3/12">
@@ -145,11 +133,7 @@ export const VoteTasksList = () => {
                   </div>
                 </div>
                 <div className="flex w-2/12 items-center justify-center">1</div>
-                <div className="flex w-1/12 items-center justify-center">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
-                    <TaskStatus status={task?.status} />
-                  </div>
-                </div>
+
                 <div className="flex w-2/12 items-center justify-center">{formatNumber(task?.points, 0)}</div>
               </div>
 

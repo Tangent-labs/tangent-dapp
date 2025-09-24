@@ -61,7 +61,7 @@ export const RsTanLayoutContent = ({
   return (
     <>
       <div className="mb-3 flex w-full items-center justify-between gap-6">
-        <div className="usg-header hidden w-1/2 xl:flex">
+        <div className="usg-header hidden w-7/12 xl:flex">
           <div className="flex items-center justify-center">
             <Image height={360} width={360} src={`/medias/tokens/vsTAN.png`} alt="token" />
           </div>
@@ -78,7 +78,7 @@ export const RsTanLayoutContent = ({
           </div>
         </div>
 
-        <div className="flex h-full w-full flex-col items-center gap-8 rounded-[10px] xl:w-1/2">
+        <div className="flex h-full w-full flex-col items-center gap-8 rounded-[10px] xl:w-5/12">
           <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-xl !font-semibold italic">
             Points campaign
             <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>

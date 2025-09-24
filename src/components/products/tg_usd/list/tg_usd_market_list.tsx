@@ -52,12 +52,12 @@ export default function USGMarketList() {
           </div>
 
           <div className="mt-auto flex w-full items-center justify-between gap-3 p-2">
-            <div className={cn("flex min-w-48 flex-col items-center justify-center gap-3 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}>
+            <div className={cn("flex min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}>
               <span className="text-xs text-subtitle">Your Debt</span>
               <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDebt || 0n, 18), 0)} USD</span>
             </div>
 
-            <div className={cn("flex min-w-48 flex-col items-center justify-center gap-3 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}>
+            <div className={cn("flex min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}>
               <span className="text-xs text-subtitle">Your Collateral Deposits</span>
               <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDeposit || 0n, 18), 0)} USD</span>
             </div>

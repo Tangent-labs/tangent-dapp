@@ -46,13 +46,13 @@ export const USGEarnContent = () => {
             <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
           </div>
 
-          <div className="mt-auto flex w-full items-center justify-center gap-1 p-2 md:gap-3">
-            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48">
+          <div className="mt-auto flex w-full items-center justify-center gap-3 p-3">
+            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:min-w-48">
               <span className="text-xs text-subtitle">USG Balance</span>
               <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)}</span>
             </div>
 
-            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[60px] xl:min-w-48">
+            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:min-w-48">
               <span className="text-xs text-subtitle">sUSG Balance</span>
               <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)}</span>
             </div>

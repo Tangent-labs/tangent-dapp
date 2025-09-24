@@ -20,6 +20,7 @@ type USGClaimContextValues = {
   addToClaimableMarkets: (rowData: ClaimableMarket) => void
   marketsToClaim: ClaimableMarket[]
   customSort: (arg: ListState) => void
+  onClickClaimAll: () => void
 }
 
 export const USGClaimContext = createContext<USGClaimContextValues | undefined>(undefined)
@@ -80,8 +81,8 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
     const { key, direction } = listState.sort!
 
     displayRows.sort((elementA: ClaimData, elementB: ClaimData) => {
-      const aValue = elementA[key as keyof ClaimData]
-      const bValue = elementB[key as keyof ClaimData]
+      const aValue = Number(elementA[key as keyof ClaimData])
+      const bValue = Number(elementB[key as keyof ClaimData])
 
       if (aValue < bValue) return direction === "asc" ? -1 : 1
       if (aValue > bValue) return direction === "asc" ? 1 : -1
@@ -107,6 +108,17 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
     })
   }
 
+  const onClickClaimAll = () => {
+    if (marketsToClaim.length === displayRows.length) {
+      setMarketsToClaim([])
+    } else {
+      const markets = displayRows.map((el) => {
+        return { marketName: el.marketName, claimable: el.totalClaimableValue, marketAddress: el.marketAddress } as ClaimableMarket
+      })
+      setMarketsToClaim(markets)
+    }
+  }
+
   const contextValue: USGClaimContextValues = {
     displayRows,
     actionClaim,
@@ -115,6 +127,7 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
     marketsToClaim,
     isLoading,
     customSort,
+    onClickClaimAll,
   }
 
   return <USGClaimContext.Provider value={contextValue}>{children}</USGClaimContext.Provider>

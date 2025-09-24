@@ -90,7 +90,7 @@ export default function StakeTanContent() {
 
   return (
     <>
-      <div className="flex w-full items-end justify-between">
+      <div className="flex w-full items-end justify-between gap-8">
         <div className="usg-header hidden w-7/12 lg:flex">
           <div className="flex items-center justify-center">
             <Image height={360} width={360} src="/medias/tokens/TAN.png" alt="token" />
@@ -106,7 +106,7 @@ export default function StakeTanContent() {
         </div>
 
         {TANsTANMetrics && (
-          <div className="flex w-4/12 items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
+          <div className="flex w-5/12 items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
             <TokenImage token="sTAN" size={48} />
 
             <div className="flex flex-col items-center justify-center font-semibold">
@@ -115,7 +115,7 @@ export default function StakeTanContent() {
             </div>
             <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">sTan</span>
-              <span className="text-lg font-semibold">{formatDollar(formatBigInt(TANsTANMetrics.sTanPrice, 12, 4), 6)}</span>
+              <span className="text-lg font-semibold">{formatDollar(formatBigInt(TANsTANMetrics.sTanPrice, 12, 6), 6)}</span>
             </div>
             <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-2">
               <span className="font-semibold text-black">APR</span>

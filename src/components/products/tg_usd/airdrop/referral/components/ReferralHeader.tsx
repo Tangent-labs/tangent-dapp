@@ -1,8 +1,8 @@
-import { formatNumber } from "@/lib/number_formatter"
-import { UserStatus } from "../usg_referral_context"
-import { Button } from "@/components/design_system/inputs/button"
 import { Input } from "@/components/ui/input"
+import { UserStatus } from "../usg_referral_context"
+import { formatNumber } from "@/lib/number_formatter"
 import { LpUserPoints, VoteUserPoints } from "../../../tg_usd_type"
+import { SecondaryButton } from "@/components/design_system/inputs/secondary_button"
 
 type ReferralHeaderProps = {
   isLoading: boolean
@@ -64,9 +64,9 @@ export const ReferralHeader = ({ isLoading, referralStatus, setReferralStatus, s
               onChange={(e) => setReferralStatus({ ...referralStatus, referralCode: e?.target?.value })}
               value={referralStatus?.referralCode as string}
             />
-            <Button onClick={signMessage} disabled={isLoading} className="flex w-full max-w-24 justify-center">
+            <SecondaryButton onClick={signMessage} disabled={isLoading} className="flex w-full max-w-28 justify-center">
               Enter
-            </Button>
+            </SecondaryButton>
           </div>
         </div>
       )}

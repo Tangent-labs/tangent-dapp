@@ -13,12 +13,12 @@ export const UsgBoostsContent = () => {
 
   const { lpUserPoints, voteUserPoints } = useUSGContext()
 
-  const { isLoading, referralStatus, setReferralStatus, signMessage } = useUsgAirdropContext()
+  const { airdropDataIsLoading, referralStatus, setReferralStatus, signMessage } = useUsgAirdropContext()
 
   return (
     <div className="flex w-full flex-col items-center justify-center">
       <ReferralHeader
-        isLoading={isLoading}
+        isLoading={airdropDataIsLoading}
         referralStatus={referralStatus}
         setReferralStatus={setReferralStatus}
         signMessage={signMessage}

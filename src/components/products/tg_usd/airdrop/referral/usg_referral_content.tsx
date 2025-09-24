@@ -1,23 +1,24 @@
 "use client"
 
+import { cn } from "@/lib/utils"
 import { useUSGContext } from "../../tg_usd_context"
 import { Leaderboard } from "./components/Leaderboard"
 import { IconShare } from "@/components/icons/icon_share"
 import { IconTrophy } from "@/components/icons/icon_trophy"
 import { ReferralHeader } from "./components/ReferralHeader"
 import { useUsgAirdropContext } from "../usg_airdrop_context"
-import { Button } from "@/components/design_system/inputs/button"
 import { IconCompleted } from "@/components/icons/icon_completed"
 import Divider from "@/components/design_system/structure/divider"
 import { useUsgReferralCodeContext } from "./usg_referral_context"
 import { GodsonsLeaderboard } from "./components/GodsonsLeaderboard"
+import { SecondaryButton } from "@/components/design_system/inputs/secondary_button"
 
 export const UsgReferralCode = () => {
   const { lpUserPoints, voteUserPoints } = useUSGContext()
 
-  const { setReferralStatus, referralStatus, signMessage, generateReferralCode } = useUsgAirdropContext()
-
   const { isLoading, lpLeaderboard, voteLeaderboard, godsonsLeaderboard } = useUsgReferralCodeContext()
+
+  const { setReferralStatus, referralStatus, signMessage, airdropDataIsLoading, generateReferralCode } = useUsgAirdropContext()
 
   return (
     <div className="flex w-full flex-col items-center justify-center">
@@ -30,7 +31,12 @@ export const UsgReferralCode = () => {
         voteUserPoints={voteUserPoints}
       />
 
-      <div className="mb-2 mt-6 flex w-full flex-col items-center justify-center rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+      <div
+        className={cn(
+          "mb-2 mt-6 flex w-full flex-col items-center justify-center rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]",
+          airdropDataIsLoading ? "shimmer" : ""
+        )}
+      >
         <div className="mr-auto text-lg font-semibold text-white">Your referral</div>
 
         <Divider className="h-0.5 w-full bg-white/10" />
@@ -49,24 +55,28 @@ export const UsgReferralCode = () => {
             <span className="text-lg font-semibold">{referralStatus?.friends}</span>
           </div>
 
-          {referralStatus?.generatedCode ? (
-            <>
-              <div className="flex w-full flex-col items-center justify-center">
-                <span className="text-sm text-subtitle">Your code</span>
-                <span className="text-lg font-semibold">{referralStatus?.generatedCode}</span>
-              </div>
-              <div className="flex w-full flex-col items-center justify-center">
-                <Button className="flex w-32 justify-center font-semibold">Share</Button>
-              </div>
-            </>
-          ) : (
-            <div className="flex w-full items-center justify-center gap-2">
-              <div className="flex w-full items-center justify-center text-center text-xs text-subtitle">Get a referral code for a friend</div>
-              <Button onClick={generateReferralCode} className="flex w-full max-w-24 justify-center font-semibold">
-                Generate
-              </Button>
-            </div>
-          )}
+          <div className="flex w-full items-center justify-center gap-2">
+            {referralStatus?.generatedCode && !airdropDataIsLoading && (
+              <>
+                <div className="flex w-full flex-col items-center justify-center">
+                  <span className="text-sm text-subtitle">Your code</span>
+                  <span className="text-lg font-semibold">{referralStatus?.generatedCode}</span>
+                </div>
+                <div className="flex w-full flex-col items-center justify-center">
+                  <SecondaryButton className="flex w-32 justify-center font-semibold">Share</SecondaryButton>
+                </div>
+              </>
+            )}
+
+            {!referralStatus?.generatedCode && !airdropDataIsLoading && (
+              <>
+                <div className="flex w-full items-center justify-center text-center text-xs text-subtitle">Get a referral code for a friend</div>
+                <SecondaryButton onClick={generateReferralCode} className="flex w-full max-w-24 justify-center font-semibold">
+                  Generate
+                </SecondaryButton>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

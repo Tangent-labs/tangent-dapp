@@ -103,6 +103,12 @@ export type ClaimableMarket = {
   claimable: string
 }
 
+export type HarvestableMarket = {
+  marketName: ExistingAsset
+  marketAddress: ExistingAsset
+  harvestable: number
+}
+
 export interface ChainViewMarketRow {
   marketAddress: string
   collateralInfos: CollateralInfos
@@ -259,7 +265,7 @@ export type HarvesterInfoDisplay = {
   isProcessed: boolean
   percentage: number
   harvesterFees: number
-  lastHarvestDate: bigint
+  lastHarvestDate: string
 }
 
 export type SwapToken = AssetData & {

@@ -19,8 +19,8 @@ type UsgAirdropContextProps = {
 }
 
 type UsgAirdropContextValues = {
-  isLoading: boolean
-  setIsLoading: (arg: boolean) => void
+  airdropDataIsLoading: boolean
+  setAirdropDataIsLoading: (arg: boolean) => void
   signMessage: () => void
   generateReferralCode: () => void
   referralStatus: UserStatus
@@ -32,7 +32,7 @@ export const UsgAirdropContext = createContext<UsgAirdropContextValues | undefin
 export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
   const { currentAddress, getWalletClient } = useWalletConnexionContext()
 
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [airdropDataIsLoading, setAirdropDataIsLoading] = useState<boolean>(true)
 
   const [referralStatus, setReferralStatus] = useState<UserStatus>({ generatedCode: null, hasUsedCode: false, referralCode: "", friends: 0 })
 
@@ -46,6 +46,7 @@ export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
             hasUsedCode: !!status.hasUsedCode,
             friends: status.friends ?? 0,
           }))
+          setAirdropDataIsLoading(false)
         }
       })
     }
@@ -62,7 +63,7 @@ export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
       return
     }
 
-    setIsLoading(true)
+    setAirdropDataIsLoading(true)
 
     try {
       const walletClient = getWalletClient()
@@ -97,13 +98,13 @@ export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
     } catch (err) {
       console.error(err)
     } finally {
-      setIsLoading(false)
+      setAirdropDataIsLoading(false)
     }
   }
 
   const contextValue: UsgAirdropContextValues = {
-    isLoading,
-    setIsLoading,
+    airdropDataIsLoading,
+    setAirdropDataIsLoading,
     signMessage,
     generateReferralCode,
     referralStatus,

@@ -159,7 +159,7 @@ export function BuySellInput({
   }, [receiveAmount, receiveAsset])
 
   return (
-    <div className="flex flex-col">
+    <div className="flex w-full flex-col">
       <div className="mb-3 flex w-full items-end justify-between">
         <div className="font-semibold">
           {labelDeposit === "You Buy" ? "Sell" : "Buy"} {receiveAsset?.symbol}

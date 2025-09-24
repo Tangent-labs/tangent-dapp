@@ -196,7 +196,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
         }
       }
     })()
-  }, [weiValue, currentFeature])
+  }, [weiValue])
 
   const computeProjectedValue = useMemo(() => {
     if (currentFeature === "stake") {
@@ -205,6 +205,12 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
       return Number(formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18)) - Number(formatUnits(weiValue || 0n, 18))
     }
   }, [currentFeature, weiValue])
+
+  useEffect(() => {
+    setExpected(0n)
+    setWeiValue(0n)
+    setStakePercentage(0)
+  }, [currentFeature])
 
   const contextValue: USGStakeContextValues = {
     actionStake,

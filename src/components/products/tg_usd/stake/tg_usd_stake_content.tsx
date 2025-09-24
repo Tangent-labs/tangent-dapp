@@ -91,7 +91,7 @@ export default function USGStakeContent() {
 
   return (
     <>
-      <div className="flex w-full items-end justify-between gap-6">
+      <div className="flex w-full items-center justify-between gap-6">
         <div className="usg-header hidden w-6/12 xl:flex">
           <div className="flex items-center justify-center">
             <Image height={160} width={160} src="/medias/tokens/SUSG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />

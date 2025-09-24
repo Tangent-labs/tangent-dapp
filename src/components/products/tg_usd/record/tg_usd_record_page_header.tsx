@@ -19,7 +19,7 @@ export default function TgUsdRecordPageHeader() {
         <div className="flex w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px] md:w-fit">
           <div className="flex items-center gap-2">
             <TokenImage className="w-8 md:w-16" token={collateralInfo.logo} size={64} />
-            <span className="text-[14px] font-semibold md:text-[24px]">{collateralInfo.symbol}</span>
+            <span className="text-sm font-semibold md:text-[24px]">{collateralInfo.symbol}</span>
           </div>
 
           <div className="flex items-center justify-between gap-2">{marketData && <MarketMetadata marketData={marketData}></MarketMetadata>}</div>

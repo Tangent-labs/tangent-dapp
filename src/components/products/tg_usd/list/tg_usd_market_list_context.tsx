@@ -1,6 +1,6 @@
 "use client"
 
-import { ListRowData } from "@/types"
+import { ListRowData, ListState } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { getMarketDatas, getTgUsdMarketsData, transformToRows, transformGlobalData, transformMarketData } from "./tg_usd_market_controller"
 import { ChainViewMarketList, MarketConstants, MarketDebtData, TgUsdCollateralData, TgUsdGlobalData } from "../tg_usd_type"
@@ -16,6 +16,8 @@ type TgUsdMaketListContextValues = {
   globalData: TgUsdGlobalData
   searchValue: string | null
   setSearchValue: (value: string | null) => void
+  sortMarketList: (arg: ListState) => void
+
   marketData: Array<{ marketType: "Convex_CRV" | "Convex_FXN" | undefined; marketAddress: Address; constants: MarketConstants }>
   userData: {
     totalUserDebt: bigint
@@ -111,6 +113,20 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
     return null
   }, [onChainData])
 
+  const sortMarketList = (listState: ListState) => {
+    const { key, direction } = listState.sort!
+
+    displayRows.sort((elementA: ListRowData, elementB: ListRowData) => {
+      const aValue = Number(elementA.indicators.find((el) => el.key === key)?.raw)
+      const bValue = Number(elementB.indicators.find((el) => el.key === key)?.raw)
+
+      if (aValue < bValue) return direction === "asc" ? -1 : 1
+      if (aValue > bValue) return direction === "asc" ? 1 : -1
+
+      return 0
+    })
+  }
+
   const contextValue: TgUsdMaketListContextValues = {
     displayRows,
     globalData,
@@ -118,6 +134,7 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
     setSearchValue,
     marketData,
     userData,
+    sortMarketList,
   }
 
   return <TgUsdMaketListContext.Provider value={contextValue}>{children}</TgUsdMaketListContext.Provider>

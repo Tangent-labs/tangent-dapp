@@ -45,7 +45,7 @@ export default function USGLiquidatePanelPartial() {
   return (
     <>
       <div className="flex w-full items-end justify-between">
-        <span className="text-[14px] font-semibold md:text-[20px]">Liquidate partial</span>
+        <span className="text-sm font-semibold md:text-[20px]">Liquidate partial</span>
         <span className="text-xs text-subtitle">
           Max: {formatBigInt(maxLiquidable, 18, 2)} {collateralInfo?.symbol}
         </span>

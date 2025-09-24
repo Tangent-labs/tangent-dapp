@@ -84,6 +84,7 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
       return 0
     })
   }
+
   const contextValue: UsgTasksContextValues = {
     tasks,
     lpTasks,

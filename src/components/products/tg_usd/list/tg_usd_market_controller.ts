@@ -119,17 +119,19 @@ function transformMarketDataToRow(data: TgUsdMarketData & TgUsdMarketDataUser, o
 }
 
 export const tgUsdListHeaders: ListHeaderData[] = [
-  { label: "Collateral", key: "collateral" },
+  { label: "Collateral", key: "collateral", sort: null },
   {
     label: "APR",
     key: "apr",
     indicator: "vAPR of the collateral",
+    sort: "sort",
   },
   {
     label: "Borrow Rate",
     key: "borrowRate",
     indicator: "Interest rate that borrowers pay on their outstanding debt.",
+    sort: "sort",
   },
-  { label: "TVL", key: "tvl" },
-  { label: "Borrowed", key: "borrowed" },
+  { label: "TVL", key: "tvl", sort: "sort" },
+  { label: "Borrowed", key: "borrowed", sort: null },
 ]

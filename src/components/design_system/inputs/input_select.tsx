@@ -50,7 +50,7 @@ const InputSelect = <T extends SelectOption | SelectOptionAmount>({
                   template(option as T)
                 ) : (
                   <div className="flex items-center">
-                    <span className="text-[14px] font-semibold">{option.label}</span>
+                    <span className="text-sm font-semibold">{option.label}</span>
                   </div>
                 )}
               </SelectItem>

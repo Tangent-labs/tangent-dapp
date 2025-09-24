@@ -29,7 +29,7 @@ export default function USGRecordBorrowContent() {
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
-          <span className="text-[14px] font-semibold md:text-[20px]">Borrow USG</span>
+          <span className="text-sm font-semibold md:text-[20px]">Borrow USG</span>
           <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} USG</span>
         </div>
 

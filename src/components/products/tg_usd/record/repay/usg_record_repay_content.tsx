@@ -168,7 +168,7 @@ export default function USGRepayContent() {
 
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
-          <span className="text-[14px] font-semibold md:text-[20px]">Repay debt</span>
+          <span className="text-sm font-semibold md:text-[20px]">Repay debt</span>
 
           {repayAsset === "USG" ? (
             <span className="text-xs text-subtitle"> Max: {formatBigInt(marketData?.debtInfos?.userDebt, 18, 3)} USG</span>
@@ -229,7 +229,7 @@ export default function USGRepayContent() {
         {isRepayAndWithdraw && (
           <>
             <div className="flex items-end justify-between">
-              <span className="text-[14px] font-semibold md:text-[20px]">Withdraw collateral</span>
+              <span className="text-sm font-semibold md:text-[20px]">Withdraw collateral</span>
               <span className="text-xs text-subtitle">
                 Max: {formatBigInt(maxWithdrawable, 18, 2)} {collateralInfo?.symbol}
               </span>

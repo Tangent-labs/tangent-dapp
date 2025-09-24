@@ -21,7 +21,7 @@ const computeProtocolDisplay = (protocol: string) => {
   switch (protocol.toLowerCase()) {
     case "tangent":
       return (
-        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-[14px] backdrop-blur-[60px]">
+        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
           <TokenImage token={"USG"} size={16} />
           <span>Tangent</span>
         </div>
@@ -29,21 +29,21 @@ const computeProtocolDisplay = (protocol: string) => {
 
     case "convex":
       return (
-        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-[14px] backdrop-blur-[60px]">
+        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
           <TokenImage token={"CVX"} size={16} />
           <span>Convex</span>
         </div>
       )
     case "curve":
       return (
-        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-[14px] backdrop-blur-[60px]">
+        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
           <TokenImage token={"CRV"} size={16} />
           <span>Curve</span>
         </div>
       )
     case "stakedao":
       return (
-        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-[14px] backdrop-blur-[60px]">
+        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
           <TokenImage token={"SDT"} size={16} />
           <span>Stake DAO</span>
         </div>
@@ -160,25 +160,25 @@ export const LPTasksList = () => {
                   <div className="flex items-center justify-center gap-2">
                     <TokenImage token={task.asset as ExistingAsset} size={48} />
 
-                    <span className="flex text-[14px] font-semibold">{task.asset}</span>
+                    <span className="flex text-sm font-semibold">{task.asset}</span>
                   </div>
 
                   <div className="flex flex-col items-center justify-start">
                     <span className="text-xs text-subtitle">Pts/Day/USD</span>
 
-                    <span className="flex text-[14px]">{(task.pointRate * 86400).toFixed(0)}</span>
+                    <span className="flex text-sm">{(task.pointRate * 86400).toFixed(0)}</span>
                   </div>
 
                   <div className="flex flex-col items-center justify-center">
                     <span className="text-xs text-subtitle">Protocol</span>
 
-                    <span className="flex text-[14px]">{computeProtocolDisplay(task?.protocol)}</span>
+                    <span className="flex text-sm">{computeProtocolDisplay(task?.protocol)}</span>
                   </div>
 
                   <div className="flex flex-col items-center justify-center">
                     <span className="text-xs text-subtitle">Points</span>
 
-                    <span className="flex text-[14px]">{task.points}</span>
+                    <span className="flex text-sm">{task.points}</span>
                   </div>
                 </div>
                 <div className="flex w-full items-center justify-center"> {task?.description}</div>

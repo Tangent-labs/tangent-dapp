@@ -97,7 +97,7 @@ export function TgUsdMarketListInner() {
             <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-12 md:w-20" />
 
             <div className="flex flex-col leading-8">
-              <span className="text-[14px] font-semibold md:text-[20px]">{item?.asset}</span>
+              <span className="text-sm font-semibold md:text-[20px]">{item?.asset}</span>
               <BorderPanel className="flex items-center justify-center gap-2 !rounded-full bg-earn-action px-4 py-0.5 text-xs">
                 <span>{item?.actionLabel}</span>
               </BorderPanel>

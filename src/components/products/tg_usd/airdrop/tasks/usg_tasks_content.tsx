@@ -47,7 +47,7 @@ export default function UsgTasksContent() {
                 </div>
               </div>
 
-              <span className="text-[14px] text-subtitle">Voting points</span>
+              <span className="text-sm text-subtitle">Voting points</span>
               <div className="flex items-center justify-center gap-1">
                 <span className="text-sm font-semibold text-white">{formatNumber(voteUserPoints?.voteTotalPoints, 0)} pts</span>
               </div>
@@ -61,7 +61,7 @@ export default function UsgTasksContent() {
                 </div>
               </div>
 
-              <span className="text-[14px] text-subtitle">Liquidity points</span>
+              <span className="text-sm text-subtitle">Liquidity points</span>
               <div className="flex items-center justify-center gap-1">
                 <span className="text-sm font-semibold text-white">{formatNumber(lpUserPoints?.lpTotalPoints, 0)} pts</span>
                 <span className="text-xs text-tonic">({formatNumber(lpUserPoints?.lpDailyRate, 0)}pts/day)</span>

@@ -152,7 +152,7 @@ export default function USGDepositContent() {
       </div>
 
       <div className="flex w-full items-end justify-between gap-2">
-        <span className="text-[14px] font-semibold md:text-[20px]">Deposit {collateralInfo?.symbol}</span>
+        <span className="text-sm font-semibold md:text-[20px]">Deposit {collateralInfo?.symbol}</span>
         <span className="text-xs text-subtitle">
           Max:{" "}
           {depositAsset !== collateralInfo?.name
@@ -213,7 +213,7 @@ export default function USGDepositContent() {
       {isDepositAndBorrow && (
         <div className="flex flex-col gap-1">
           <div className="flex items-end justify-between">
-            <span className="text-[14px] font-semibold md:text-[20px]">Borrow USG</span>
+            <span className="text-sm font-semibold md:text-[20px]">Borrow USG</span>
             <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} USG</span>
           </div>
           <BorrowInput

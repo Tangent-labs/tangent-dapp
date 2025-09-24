@@ -145,7 +145,7 @@ export default function USGLeverageContent() {
       {!isDepositDisabled && (
         <>
           <div className="flex w-full items-end justify-between gap-2">
-            <span className="text-[14px] font-semibold md:text-[20px]">Deposit {collateralInfo?.symbol}</span>
+            <span className="text-sm font-semibold md:text-[20px]">Deposit {collateralInfo?.symbol}</span>
             <span className="text-xs text-subtitle">
               Max:{" "}
               {depositAsset !== collateralInfo?.name
@@ -207,7 +207,7 @@ export default function USGLeverageContent() {
       )}
 
       <>
-        <span className="flex items-end justify-between text-[14px] font-semibold md:text-[20px]">Borrow amount</span>
+        <span className="flex items-end justify-between text-sm font-semibold md:text-[20px]">Borrow amount</span>
 
         <LeverageInput
           label="You borrow"
@@ -222,7 +222,7 @@ export default function USGLeverageContent() {
         <div className="-mt-1 flex w-full items-start justify-end text-xs text-subtitle">Max leverage: x10</div>
 
         <div className="flex flex-col gap-2">
-          <span className="text-[14px] font-semibold md:text-[20px]">Recap</span>
+          <span className="text-sm font-semibold md:text-[20px]">Recap</span>
 
           <div className={cn("flex flex-col gap-1 rounded-[10px] bg-overlay-panel p-2 text-xs", isDepositLoading ? "shimmer" : "")}>
             {!isDepositDisabled && (

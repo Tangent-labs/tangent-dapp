@@ -27,7 +27,7 @@ const listeState: ListState = {
 }
 
 export default function TgUsdMarketList() {
-  const { displayRows, globalData, searchValue, setSearchValue, userData } = useTgUsdMaketListContext()
+  const { displayRows, globalData, searchValue, setSearchValue, userData, sortMarketList } = useTgUsdMaketListContext()
 
   return (
     <>
@@ -135,7 +135,7 @@ export default function TgUsdMarketList() {
         </div>
       </div>
 
-      <ListProvider _headers={tgUsdListHeaders} _rows={displayRows!} _listState={listeState}>
+      <ListProvider customSort={sortMarketList} _headers={tgUsdListHeaders} _rows={displayRows!} _listState={listeState}>
         <TgUsdMarketListInner />
       </ListProvider>
     </>

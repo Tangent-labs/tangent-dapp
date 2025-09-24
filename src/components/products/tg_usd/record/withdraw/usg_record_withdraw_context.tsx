@@ -2,7 +2,7 @@
 
 import { FormState } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { useUSGRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doMarketWithdraw, getWithdrawFormState } from "./usg_record_withdraw_controller"
 import { useUSGContext } from "../../tg_usd_context"
@@ -26,7 +26,7 @@ export const USGWithdrawContext = createContext<USGWithdrawContextValues | undef
 export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
   const { loadUSGsUSGMetrics } = useUSGContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts } = useUSGRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 

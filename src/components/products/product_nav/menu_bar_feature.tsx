@@ -24,7 +24,7 @@ export default function MenuBarFeature() {
     <header className="sticky top-0 z-50 flex h-[80px] w-full font-roobert backdrop-blur-[60px]">
       <div className="container mx-auto flex w-full">
         <div className="mx-4 flex w-full items-center justify-between">
-          <div onClick={() => router.push("/")} className="flex cursor-pointer items-center gap-2 text-[20px] text-white">
+          <div onClick={() => router.push("/")} className="flex cursor-pointer items-center gap-2 text-xl text-white">
             <Logo />
             Tangent
           </div>

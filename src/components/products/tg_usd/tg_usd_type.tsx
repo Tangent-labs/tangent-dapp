@@ -9,7 +9,7 @@ export type TgUsdCampaignData = {
 
 export type MarketPlatforms = "convex" | "curve"
 
-export type TgUsdMarketData = {
+export type USGMarketData = {
   network: Network
   platforms: MarketPlatforms[]
   collateral: ExistingAsset
@@ -35,7 +35,7 @@ export type HarvesterInfo = {
   lastHarvestDate: bigint
 }
 
-export type TgUsdMarketDataUser = {
+export type USGMarketDataUser = {
   debt: number
   health: number
 }
@@ -57,7 +57,7 @@ export type TgUsdGlobalData = {
   globalTvl: string
 }
 
-export type TgUsdMarketType = "Convex_CRV" | "Convex_FXN"
+export type USGMarketType = "Convex_CRV" | "Convex_FXN"
 
 export type ClaimerInfoDisplay = {
   asset: ExistingAsset // Address
@@ -111,7 +111,7 @@ export interface ChainViewMarketRow {
   obas: OutputBalanceAllowances[]
   rewardTokens: ERC20StaticInfos[]
   sociabilization: SociabilizationData
-  marketType?: TgUsdMarketType
+  marketType?: USGMarketType
 }
 
 export interface CollateralInfos {
@@ -194,7 +194,7 @@ export type MarketDetailData = {
   collateralBalance: bigint
   collateralAllowance: bigint
   collateralInfos: CollateralInfos
-  marketType?: TgUsdMarketType
+  marketType?: USGMarketType
   sociabilization?: SociabilizationData
 }
 
@@ -219,7 +219,7 @@ export type TgUsdtMarketRepayParams = {
   withdrawWeiValue?: bigint
 }
 
-export type TgUsdMarketLoanDisplayData = {
+export type USGMarketLoanDisplayData = {
   collateralValue: string
   debt: string
   health: string
@@ -228,7 +228,7 @@ export type TgUsdMarketLoanDisplayData = {
   maxWithdrawable: string
 }
 
-export type TgUsdMarketDisplayData = TgUsdMarketLoanDisplayData & {
+export type USGMarketDisplayData = USGMarketLoanDisplayData & {
   tvl: string
   tvlDollar: string
   borrowed: string
@@ -243,7 +243,7 @@ export type TgUsdMarketDisplayData = TgUsdMarketLoanDisplayData & {
   ltDollar: string
 }
 
-export type TgUsdMarketAmounts = {
+export type USGMarketAmounts = {
   depositWeiValue?: bigint
   borrowWeiValue?: bigint
   withdrawWeiValue?: bigint
@@ -285,7 +285,7 @@ export type ZapMarketData = {
   minAmountOut: bigint
 }
 
-export type TgUsdMarket = {
+export type USGMarket = {
   marketAddress: Address
   marketName: ExistingAsset
   collatAddress: Address

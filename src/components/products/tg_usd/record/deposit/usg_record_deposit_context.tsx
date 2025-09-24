@@ -3,8 +3,8 @@
 import { toast } from "react-toastify"
 import { formatDollar } from "@/lib/number_formatter"
 import { useUSGContext } from "../../tg_usd_context"
-import { TgUsdMarket, ZapToken } from "../../tg_usd_type"
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { USGMarket, ZapToken } from "../../tg_usd_type"
+import { useUSGRecordContext } from "../tg_usd_record_context"
 import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
@@ -21,7 +21,7 @@ type USGDepositContextProps = {
 }
 
 type USGDepositContextValues = {
-  marketInfo: TgUsdMarket
+  marketInfo: USGMarket
   collateralInfo: CollateralInfo
   isDepositAndBorrow: boolean
   setIsDepositAndBorrow: (arg: boolean) => void
@@ -76,8 +76,7 @@ export const USGDepositContext = createContext<USGDepositContextValues | undefin
 export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   const { tokens, loadUSGsUSGMetrics } = useUSGContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo } =
-    useTgUsdRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo } = useUSGRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 

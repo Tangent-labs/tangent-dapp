@@ -7,19 +7,19 @@ import { AssetDataPriced } from "@/types"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { HarvesterInfo, HarvesterInfoDisplay } from "../tg_usd_type"
 
-type TgUsdHarvestContextProps = {
+type USGHarvestContextProps = {
   children: ReactNode
 }
 
-type TgUsdHarvestContextValues = {
+type USGHarvestContextValues = {
   isLoading: boolean
   displayRows: HarvesterInfoDisplay[]
   actionHarvest: (arg: Address) => void
 }
 
-export const TgUsdHarvestContext = createContext<TgUsdHarvestContextValues | undefined>(undefined)
+export const USGHarvestContext = createContext<USGHarvestContextValues | undefined>(undefined)
 
-export const TgUsdHarvestProvider = ({ children }: TgUsdHarvestContextProps) => {
+export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [harvestInfo, setHarvestInfo] = useState<HarvesterInfo[] | undefined>()
   const [rewardsInfo, setRewardsInfo] = useState<AssetDataPriced[]>()
@@ -66,19 +66,19 @@ export const TgUsdHarvestProvider = ({ children }: TgUsdHarvestContextProps) => 
     [currentAddress]
   )
 
-  const contextValue: TgUsdHarvestContextValues = {
+  const contextValue: USGHarvestContextValues = {
     isLoading,
     displayRows,
     actionHarvest,
   }
 
-  return <TgUsdHarvestContext.Provider value={contextValue}>{children}</TgUsdHarvestContext.Provider>
+  return <USGHarvestContext.Provider value={contextValue}>{children}</USGHarvestContext.Provider>
 }
 
-export const useTgUsdHarvestContext = () => {
-  const context = useContext(TgUsdHarvestContext)
+export const useUSGHarvestContext = () => {
+  const context = useContext(USGHarvestContext)
   if (!context) {
-    throw new Error("useTgUsdHarvestContext must be used within a TgUsdHarvestProvider")
+    throw new Error("useUSGHarvestContext must be used within a USGHarvestProvider")
   }
   return context
 }

@@ -1,7 +1,7 @@
 import UsgTasksContent from "@/components/products/tg_usd/airdrop/tasks/usg_tasks_content"
 import { UsgTasksProvider } from "@/components/products/tg_usd/airdrop/tasks/usg_tasks_context"
 
-export default async function TgUsdAirdropPage() {
+export default async function USGAirdropPage() {
   return (
     <UsgTasksProvider>
       <UsgTasksContent />

@@ -2,7 +2,7 @@
 
 import { FormState } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { useUSGRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doMarketBorrow, getBorrowFormState } from "./usg_record_borrow_controller"
 import { toast } from "react-toastify"
@@ -31,7 +31,7 @@ export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts } = useTgUsdRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts } = useUSGRecordContext()
 
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
 

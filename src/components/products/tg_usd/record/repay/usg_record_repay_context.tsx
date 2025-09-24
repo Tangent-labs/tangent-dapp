@@ -2,7 +2,7 @@
 
 import { AssetDataPriced, FormState } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { useUSGRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
 import { formatUnits, maxUint256 } from "viem"
@@ -83,7 +83,7 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  const { marketData, USGInfo, balanceAllowanceData, loadOnChainData, setCurrentAmounts, fetchBalanceAllowanceData } = useTgUsdRecordContext()
+  const { marketData, USGInfo, balanceAllowanceData, loadOnChainData, setCurrentAmounts, fetchBalanceAllowanceData } = useUSGRecordContext()
 
   const [isZapLoading, setIsZapLoading] = useState(false)
 

@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGContext } from "../../tg_usd_context"
 import { IconThunder } from "@/components/icons/icon_thunder"
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { useUSGRecordContext } from "../tg_usd_record_context"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
@@ -59,7 +59,7 @@ export default function USGDepositContent() {
 
   const { balances } = useUSGContext()
 
-  const { collateralInfo, marketData, USGInfo, balanceAllowanceData, marketInfo } = useTgUsdRecordContext()
+  const { collateralInfo, marketData, USGInfo, balanceAllowanceData, marketInfo } = useUSGRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -152,7 +152,7 @@ export default function USGDepositContent() {
       </div>
 
       <div className="flex w-full items-end justify-between gap-2">
-        <span className="text-sm font-semibold md:text-[20px]">Deposit {collateralInfo?.symbol}</span>
+        <span className="text-sm font-semibold md:text-xl">Deposit {collateralInfo?.symbol}</span>
         <span className="text-xs text-subtitle">
           Max:{" "}
           {depositAsset !== collateralInfo?.name
@@ -213,7 +213,7 @@ export default function USGDepositContent() {
       {isDepositAndBorrow && (
         <div className="flex flex-col gap-1">
           <div className="flex items-end justify-between">
-            <span className="text-sm font-semibold md:text-[20px]">Borrow USG</span>
+            <span className="text-sm font-semibold md:text-xl">Borrow USG</span>
             <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} USG</span>
           </div>
           <BorrowInput

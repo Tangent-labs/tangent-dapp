@@ -1,4 +1,4 @@
-import { TgUsdMarket } from "./tg_usd_type"
+import { USGMarket } from "./tg_usd_type"
 import { Address } from "viem"
 
 const addresses = process.env.NEXT_PUBLIC_ADDRESSES_JSON
@@ -20,12 +20,12 @@ export const tgUsdTokens = [envAddresses.wStables, envAddresses.lps, envAddresse
 
 export const tgUsdPegKeepers: Address[] = Object.values(envAddresses.pegKeepers)
 
-export const USGMarkets: TgUsdMarket[] = envAddresses.markets.map((market: RawMarket) => ({
+export const USGMarkets: USGMarket[] = envAddresses.markets.map((market: RawMarket) => ({
   marketAddress: market.marketAddress as Address,
   marketName: market.collatName.replace("_", "-"),
   collatAddress: market.collatAddress as Address,
   marketType: market.marketType,
-})) as TgUsdMarket[]
+})) as USGMarket[]
 
 export const PendleCollaterals: Array<Address> = envAddresses.markets
   .filter((m: RawMarket) => m.marketType.includes("Pendle_PT"))

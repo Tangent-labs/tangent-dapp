@@ -4,7 +4,7 @@ import Image from "next/image"
 import { ExistingAsset } from "@/types"
 import { DepositReceiveAsset } from "../tg_usd_type"
 import { formatBigInt } from "@/lib/number_formatter"
-import { useTgUsdSwapContext } from "./tg_usd_swap_context"
+import { useUSGSwapContext } from "./tg_usd_swap_context"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import FormButtons from "@/components/design_system/form/form_actions"
@@ -19,7 +19,7 @@ type AssetSelectProps = {
   options: DepositReceiveAsset[]
 }
 
-export default function TgUsdSwapContent() {
+export default function USGSwapContent() {
   const {
     setIsBuying,
     handleDepositChange,
@@ -47,7 +47,7 @@ export default function TgUsdSwapContent() {
     depositSliderPercent,
     slippage,
     USGsUSGMetrics,
-  } = useTgUsdSwapContext()
+  } = useUSGSwapContext()
 
   const ReceiveAssetSelect = ({ options }: AssetSelectProps) => {
     if (!balances || !options) {
@@ -129,7 +129,7 @@ export default function TgUsdSwapContent() {
         </div>
 
         <div className="flex h-full w-full flex-col items-center gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] xl:w-fit">
-          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-semibold italic">
+          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-xl !font-semibold italic">
             Points campaign
             <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
           </div>

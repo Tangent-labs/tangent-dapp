@@ -36,7 +36,11 @@ type RecordPageHeaderIndicatorProps = {
 export const RecordPageHeaderIndicator = ({ title, value, subValue, indicator, className }: RecordPageHeaderIndicatorProps) => {
   return (
     <div
-      className={cn(`flex w-full max-w-32 flex-col items-center justify-center xl:max-w-none`, `${title === "LT" ? "" : "xl:border-r xl:border-[#3F3F3F]"}`)}
+      className={cn(
+        `flex w-full max-w-32 flex-col items-center justify-center xl:max-w-none`,
+        `${title === "LT" ? "" : "xl:border-r xl:border-[#3F3F3F]"}`,
+        `${title === "APR" ? "text-xl" : "text-[15px]"}`
+      )}
     >
       <div className="flex items-center justify-center gap-1">
         {title}
@@ -45,8 +49,8 @@ export const RecordPageHeaderIndicator = ({ title, value, subValue, indicator, c
         </USGHoverCard>
       </div>
 
-      <span className={cn("text-2xl font-semibold", className, title === "APR" ? "text-row-tonic" : "")}>{value}</span>
-      <span className="text-sm text-subtitle">{subValue}</span>
+      <span className={cn("text-xl font-semibold", className, title === "APR" ? "text-row-tonic" : "")}>{value}</span>
+      <span className="text-xs text-subtitle">{subValue}</span>
     </div>
   )
 }

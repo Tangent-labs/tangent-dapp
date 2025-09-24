@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react"
 import { ResponsiveContainer, AreaChart, XAxis, YAxis, CartesianGrid, Legend, Area, Tooltip } from "recharts"
-import { useTgUsdRecordContext } from "./tg_usd_record_context"
+import { useUSGRecordContext } from "./tg_usd_record_context"
 import { formatUnits, parseUnits } from "viem"
 import { computeIR } from "./tg_usd_record_controller"
 
 export default function InterestRateGraph() {
-  const { marketData } = useTgUsdRecordContext()
+  const { marketData } = useUSGRecordContext()
 
   interface RCParams {
     endCutPercentage: bigint

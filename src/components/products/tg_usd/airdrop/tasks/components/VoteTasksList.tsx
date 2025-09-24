@@ -119,7 +119,7 @@ export const VoteTasksList = () => {
             >
               <div className="hidden items-center justify-between md:flex">
                 <div className="flex w-3/12 items-center gap-2 xl:gap-4">
-                  <span className="flex text-[20px] font-semibold">{task.organisation}</span>
+                  <span className="flex text-xl font-semibold">{task.organisation}</span>
                 </div>
                 <div className="hidden w-2/12 justify-center lg:flex">
                   <div onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}>{computeProtocolDisplay(task?.protocol)}</div>

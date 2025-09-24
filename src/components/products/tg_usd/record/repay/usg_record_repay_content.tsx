@@ -12,7 +12,7 @@ import { IconThunder } from "@/components/icons/icon_thunder"
 import { IconChevron } from "@/components/icons/icon_chevron"
 import Panel from "@/components/design_system/structure/panel"
 import { useUSGRepayContext } from "./usg_record_repay_context"
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { useUSGRecordContext } from "../tg_usd_record_context"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
@@ -29,7 +29,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 export default function USGRepayContent() {
   const { tokens, balances } = useUSGContext()
 
-  const { USGInfo, pricedCollateralInfo, collateralInfo, marketInfo } = useTgUsdRecordContext()
+  const { USGInfo, pricedCollateralInfo, collateralInfo, marketInfo } = useUSGRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -168,7 +168,7 @@ export default function USGRepayContent() {
 
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
-          <span className="text-sm font-semibold md:text-[20px]">Repay debt</span>
+          <span className="text-sm font-semibold md:text-xl">Repay debt</span>
 
           {repayAsset === "USG" ? (
             <span className="text-xs text-subtitle"> Max: {formatBigInt(marketData?.debtInfos?.userDebt, 18, 3)} USG</span>
@@ -229,7 +229,7 @@ export default function USGRepayContent() {
         {isRepayAndWithdraw && (
           <>
             <div className="flex items-end justify-between">
-              <span className="text-sm font-semibold md:text-[20px]">Withdraw collateral</span>
+              <span className="text-sm font-semibold md:text-xl">Withdraw collateral</span>
               <span className="text-xs text-subtitle">
                 Max: {formatBigInt(maxWithdrawable, 18, 2)} {collateralInfo?.symbol}
               </span>

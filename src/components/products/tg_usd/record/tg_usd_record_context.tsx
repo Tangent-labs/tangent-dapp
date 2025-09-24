@@ -4,10 +4,10 @@ import {
   BalanceAllowanceData,
   ChainViewMarketRow,
   MarketDetailData,
-  TgUsdMarket,
-  TgUsdMarketAmounts,
-  TgUsdMarketDisplayData,
-  TgUsdMarketLoanDisplayData,
+  USGMarket,
+  USGMarketAmounts,
+  USGMarketDisplayData,
+  USGMarketLoanDisplayData,
   TotalBorrow,
   UserPosition,
 } from "../tg_usd_type"
@@ -16,7 +16,7 @@ import {
   getComputedFutureLoanData,
   getMarketApr,
   getMarketDisplayData,
-  getTgUsdMarketRecordData,
+  getUSGMarketRecordData,
   getBalancesAndAllowances,
   transformMarketData,
   computeIR,
@@ -29,20 +29,20 @@ import { usePathname } from "next/navigation"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { getCurrentBlock } from "@/services/service_rpc"
 import { getHistoricalMarketData, getUserPositions } from "../api"
-import { useTgUsdMaketListContext } from "../list/tg_usd_market_list_context"
 import { AssetApr, AssetDataPriced, CollateralInfo, ListState } from "@/types"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { sortUserData } from "./position_history/tg_usd_position_history_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { useUSGMaketListContext } from "../list/tg_usd_market_list_context"
 
-type TgUsdRecordContextProps = {
+type USGRecordContextProps = {
   children: ReactNode
   collateral: string
   collateralInfo: CollateralInfo
-  marketInfo: TgUsdMarket
+  marketInfo: USGMarket
 }
 
-type TgUsdRecordContextValues = {
+type USGRecordContextValues = {
   collateral: string
   collateralInfo: CollateralInfo
   isLoading: boolean
@@ -50,13 +50,13 @@ type TgUsdRecordContextValues = {
   loadOnChainData: () => void
   fetchBalanceAllowanceData: (address: Address) => void
   USGInfo: AssetDataPriced
-  futureMarketDisplayData: TgUsdMarketLoanDisplayData
-  marketDisplayData: TgUsdMarketDisplayData
+  futureMarketDisplayData: USGMarketLoanDisplayData
+  marketDisplayData: USGMarketDisplayData
   apr?: AssetApr
-  currentAmounts: TgUsdMarketAmounts
-  setCurrentAmounts: (amounts: TgUsdMarketAmounts) => void
+  currentAmounts: USGMarketAmounts
+  setCurrentAmounts: (amounts: USGMarketAmounts) => void
 
-  marketInfo: TgUsdMarket
+  marketInfo: USGMarket
 
   balanceAllowanceData: BalanceAllowanceData | null
   setBalanceAllowanceData: (arg: BalanceAllowanceData) => void
@@ -96,14 +96,14 @@ type TgUsdRecordContextValues = {
   onChainData: ChainViewMarketRow | undefined
 }
 
-export const TgUsdRecordContext = createContext<TgUsdRecordContextValues | undefined>(undefined)
+export const USGRecordContext = createContext<USGRecordContextValues | undefined>(undefined)
 
-export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, children }: TgUsdRecordContextProps) => {
+export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, children }: USGRecordContextProps) => {
   const { currentAddress, getWalletClient } = useWalletConnexionContext()
 
   const path = usePathname()
 
-  const { globalData } = useTgUsdMaketListContext()
+  const { globalData } = useUSGMaketListContext()
 
   const [chartData, setChartData] = useState<Array<{ price: string; vAPR: number }>>([])
 
@@ -131,7 +131,7 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
 
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
 
-  const [currentAmounts, setCurrentAmounts] = useState<TgUsdMarketAmounts>({
+  const [currentAmounts, setCurrentAmounts] = useState<USGMarketAmounts>({
     depositWeiValue: 0n,
     borrowWeiValue: 0n,
     withdrawWeiValue: 0n,
@@ -165,7 +165,7 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
 
   const loadOnChainData = () => {
     setIsLoading(true)
-    getTgUsdMarketRecordData(currentAddress, marketInfo.marketAddress).then((data) => {
+    getUSGMarketRecordData(currentAddress, marketInfo.marketAddress).then((data) => {
       setOnChainData(data)
       setIsLoading(false)
     })
@@ -313,7 +313,7 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     return { address: USG_CONTRACT.USG, decimals: 18, displayDecimals: 2, symbol: "USG", price: 1 }
   }, [globalData])
 
-  const contextValue: TgUsdRecordContextValues = {
+  const contextValue: USGRecordContextValues = {
     isLoading,
     collateral,
     collateralInfo,
@@ -357,13 +357,13 @@ export const TgUsdRecordProvider = ({ collateral, marketInfo, collateralInfo, ch
     onChainData,
   }
 
-  return <TgUsdRecordContext.Provider value={contextValue}>{children}</TgUsdRecordContext.Provider>
+  return <USGRecordContext.Provider value={contextValue}>{children}</USGRecordContext.Provider>
 }
 
-export const useTgUsdRecordContext = () => {
-  const context = useContext(TgUsdRecordContext)
+export const useUSGRecordContext = () => {
+  const context = useContext(USGRecordContext)
   if (!context) {
-    throw new Error("useTgUsdRecordContext must be used within a TgUsdRecordProvider")
+    throw new Error("useUSGRecordContext must be used within a USGRecordProvider")
   }
   return context
 }

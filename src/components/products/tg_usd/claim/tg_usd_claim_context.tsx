@@ -8,11 +8,11 @@ import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { computeAndReturnPrices, doClaim, getTgUsdClaimOnChainData, transformClaimOnChainData } from "./tg_usd_claim_controller"
 
-type TgUsdClaimContextProps = {
+type USGClaimContextProps = {
   children: ReactNode
 }
 
-type TgUsdClaimContextValues = {
+type USGClaimContextValues = {
   isLoading: boolean
   displayRows: ClaimData[]
   actionClaim: (arg: Address, markets: Address[]) => void
@@ -22,9 +22,9 @@ type TgUsdClaimContextValues = {
   customSort: (arg: ListState) => void
 }
 
-export const TgUsdClaimContext = createContext<TgUsdClaimContextValues | undefined>(undefined)
+export const USGClaimContext = createContext<USGClaimContextValues | undefined>(undefined)
 
-export const TgUsdClaimProvider = ({ children }: TgUsdClaimContextProps) => {
+export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
   const { getWalletClient, currentAddress } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -107,7 +107,7 @@ export const TgUsdClaimProvider = ({ children }: TgUsdClaimContextProps) => {
     })
   }
 
-  const contextValue: TgUsdClaimContextValues = {
+  const contextValue: USGClaimContextValues = {
     displayRows,
     actionClaim,
     onClickClaim,
@@ -117,13 +117,13 @@ export const TgUsdClaimProvider = ({ children }: TgUsdClaimContextProps) => {
     customSort,
   }
 
-  return <TgUsdClaimContext.Provider value={contextValue}>{children}</TgUsdClaimContext.Provider>
+  return <USGClaimContext.Provider value={contextValue}>{children}</USGClaimContext.Provider>
 }
 
-export const useTgUsdClaimContext = () => {
-  const context = useContext(TgUsdClaimContext)
+export const useUSGClaimContext = () => {
+  const context = useContext(USGClaimContext)
   if (!context) {
-    throw new Error("useTgUsdClaimContext must be used within a TgUsdClaimProvider")
+    throw new Error("useUSGClaimContext must be used within a USGClaimProvider")
   }
   return context
 }

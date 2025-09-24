@@ -5,7 +5,7 @@ import { formatUnits } from "viem"
 import { ListState } from "@/types"
 import { formatDollar } from "@/lib/number_formatter"
 import { claimListHeaders } from "./tg_usd_claim_controller"
-import { useTgUsdClaimContext } from "./tg_usd_claim_context"
+import { useUSGClaimContext } from "./tg_usd_claim_context"
 import ListRow from "@/components/design_system/list/list_row"
 import ListAPR from "@/components/design_system/list/list_apr"
 import { Button } from "@/components/design_system/inputs/button"
@@ -41,8 +41,8 @@ const ClaimRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   )
 }
 
-export default function TgUsdClaimContent() {
-  const { displayRows, onClickClaim, marketsToClaim, customSort } = useTgUsdClaimContext()
+export default function USGClaimContent() {
+  const { displayRows, onClickClaim, marketsToClaim, customSort } = useUSGClaimContext()
 
   return (
     <>
@@ -104,7 +104,7 @@ export default function TgUsdClaimContent() {
 function ClaimList() {
   const { headers, listState, udpateSort, displayRows } = useListContext()
 
-  const { addToClaimableMarkets, marketsToClaim } = useTgUsdClaimContext()
+  const { addToClaimableMarkets, marketsToClaim } = useUSGClaimContext()
 
   return (
     <>

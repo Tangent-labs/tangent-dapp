@@ -1,7 +1,7 @@
 "use client"
 
 import { formatBigInt } from "@/lib/number_formatter"
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { useUSGRecordContext } from "../tg_usd_record_context"
 import { useUSGBorrowContext } from "./usg_record_borrow_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -12,7 +12,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 export default function USGRecordBorrowContent() {
   const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, borrowPercentage, maxBorrowableValue } = useUSGBorrowContext()
 
-  const { USGInfo } = useTgUsdRecordContext()
+  const { USGInfo } = useUSGRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -29,7 +29,7 @@ export default function USGRecordBorrowContent() {
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
-          <span className="text-sm font-semibold md:text-[20px]">Borrow USG</span>
+          <span className="text-sm font-semibold md:text-xl">Borrow USG</span>
           <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} USG</span>
         </div>
 

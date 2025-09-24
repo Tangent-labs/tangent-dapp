@@ -12,11 +12,11 @@ import ListRow from "@/components/design_system/list/list_row"
 import ListAsset from "@/components/design_system/list/list_asset"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { useTgUsdMaketListContext } from "./tg_usd_market_list_context"
 import InputSearch from "@/components/design_system/inputs/input_search"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import MarketListAPR from "@/components/design_system/list/market_list_apr"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import { useUSGMaketListContext } from "./tg_usd_market_list_context"
 
 const listeState: ListState = {
   search: undefined,
@@ -26,8 +26,8 @@ const listeState: ListState = {
   },
 }
 
-export default function TgUsdMarketList() {
-  const { displayRows, globalData, searchValue, setSearchValue, userData, sortMarketList } = useTgUsdMaketListContext()
+export default function USGMarketList() {
+  const { displayRows, globalData, searchValue, setSearchValue, userData, sortMarketList } = useUSGMaketListContext()
 
   return (
     <>
@@ -46,7 +46,7 @@ export default function TgUsdMarketList() {
         </div>
 
         <div className="hidden h-full w-full flex-col items-center gap-3 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] md:flex xl:w-fit">
-          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-semibold italic">
+          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-xl !font-semibold italic">
             Points campaign
             <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 text-lg !font-semibold !not-italic !text-black">Live</div>
           </div>
@@ -54,12 +54,12 @@ export default function TgUsdMarketList() {
           <div className="mt-auto flex w-full items-center justify-between gap-3 p-2">
             <div className={cn("flex min-w-48 flex-col items-center justify-center gap-3 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}>
               <span className="text-xs text-subtitle">Your Debt</span>
-              <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDebt || 0n, 18))} USD</span>
+              <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDebt || 0n, 18), 0)} USD</span>
             </div>
 
             <div className={cn("flex min-w-48 flex-col items-center justify-center gap-3 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}>
               <span className="text-xs text-subtitle">Your Collateral Deposits</span>
-              <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDeposit || 0n, 18))} USD</span>
+              <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDeposit || 0n, 18), 0)} USD</span>
             </div>
           </div>
         </div>
@@ -136,15 +136,15 @@ export default function TgUsdMarketList() {
       </div>
 
       <ListProvider customSort={sortMarketList} _headers={tgUsdListHeaders} _rows={displayRows!} _listState={listeState}>
-        <TgUsdMarketListInner />
+        <USGMarketListInner />
       </ListProvider>
     </>
   )
 }
 
-export function TgUsdMarketListInner() {
+export function USGMarketListInner() {
   const { headers, listState, udpateSort } = useListContext()
-  const { displayRows, marketData } = useTgUsdMaketListContext()
+  const { displayRows, marketData } = useUSGMaketListContext()
   const router = useRouter()
 
   return (
@@ -166,13 +166,11 @@ export function TgUsdMarketListInner() {
               <div
                 key={indicator.key}
                 style={{ fontWeight: 300 }}
-                className={cn("flex basis-[48%] flex-col items-center text-[20px] leading-5 md:flex-1", index >= 2 ? "hidden xl:block" : "")}
+                className={cn("flex basis-[48%] flex-col items-center text-xl leading-5 md:flex-1", index >= 2 ? "hidden xl:block" : "")}
               >
                 <span className="flex items-center justify-center gap-2">
-                  <span className={cn("flex text-xs text-subtitle md:text-[20px] xl:hidden", indicator?.key === "tvl" ? "uppercase" : "")}>
-                    {indicator?.label}
-                  </span>
-                  <span className="text-xs md:text-[20px]">{indicator?.value}</span>
+                  <span className={cn("flex text-xs text-subtitle md:text-xl xl:hidden", indicator?.key === "tvl" ? "uppercase" : "")}>{indicator?.label}</span>
+                  <span className="text-xs md:text-xl">{indicator?.value}</span>
                 </span>
               </div>
             ))}

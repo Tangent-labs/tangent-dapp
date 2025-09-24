@@ -2,7 +2,7 @@
 
 import { AssetDataPriced, FormState } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { useUSGRecordContext } from "../tg_usd_record_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doMarketLiquidate, getLiquidateFormState } from "./usg_record_liquidate_controller"
 import { USG_CONTRACT } from "../../tg_usd_repository"
@@ -53,7 +53,7 @@ export const USGLiquidateContext = createContext<USGLiquidateContextValues | und
 export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => {
   const { loadUSGsUSGMetrics } = useUSGContext()
 
-  const { marketData, marketInfo, loadOnChainData, marketDisplayData, setCurrentAmounts } = useTgUsdRecordContext()
+  const { marketData, marketInfo, loadOnChainData, marketDisplayData, setCurrentAmounts } = useUSGRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 

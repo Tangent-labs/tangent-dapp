@@ -2,7 +2,7 @@
 
 import { ZapToken } from "../../tg_usd_type"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { useUSGRecordContext } from "../tg_usd_record_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { formatUnits, parseEther } from "viem"
@@ -93,7 +93,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     fetchBalanceAllowanceData,
     loadOnChainData,
     setCurrentAmounts,
-  } = useTgUsdRecordContext()
+  } = useUSGRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 

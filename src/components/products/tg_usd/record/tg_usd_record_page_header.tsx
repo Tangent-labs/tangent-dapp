@@ -2,14 +2,14 @@
 
 import { useRouter } from "next/navigation"
 import { MarketMetadata } from "./market_metadata"
-import { useTgUsdRecordContext } from "./tg_usd_record_context"
+import { useUSGRecordContext } from "./tg_usd_record_context"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import IndicatorV2 from "@/components/design_system/structure/indicators_v2"
 import RecordPageHeader from "@/components/design_system/structure/record_page_header"
 
-export default function TgUsdRecordPageHeader() {
-  const { collateralInfo, marketDisplayData, marketData, apr } = useTgUsdRecordContext()
+export default function USGRecordPageHeader() {
+  const { collateralInfo, marketDisplayData, marketData, apr } = useUSGRecordContext()
 
   const router = useRouter()
 
@@ -26,7 +26,7 @@ export default function TgUsdRecordPageHeader() {
         </div>
 
         <div className="mt-4 flex items-end gap-1 md:gap-4 xl:mt-0">
-          <IndicatorV2 indicators={[{ title: "TVL", value: marketDisplayData.tvl }]} />
+          <IndicatorV2 indicators={[{ title: "TVL", value: marketDisplayData.tvlDollar }]} />
           <IndicatorV2 indicators={[{ title: "Borrowed", value: marketDisplayData.borrowed }]} />
           <IndicatorV2 indicators={[{ title: "Cap", value: marketDisplayData.cap }]} />
 

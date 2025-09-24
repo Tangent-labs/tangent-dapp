@@ -4,14 +4,14 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import TokenImage from "@/components/design_system/structure/token_image"
 import Divider from "@/components/design_system/structure/divider"
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { useUSGRecordContext } from "../tg_usd_record_context"
 import { formatBigInt } from "@/lib/number_formatter"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { USGStaticAssetSelector } from "./usg_record_liquidate_panel"
 import { useUSGLiquidateContext } from "./usg_record_liquidate_context"
 
 export default function USGLiquidatePanelPartial() {
-  const { USGInfo, collateralInfo } = useTgUsdRecordContext()
+  const { USGInfo, collateralInfo } = useUSGRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -45,7 +45,7 @@ export default function USGLiquidatePanelPartial() {
   return (
     <>
       <div className="flex w-full items-end justify-between">
-        <span className="text-sm font-semibold md:text-[20px]">Liquidate partial</span>
+        <span className="text-sm font-semibold md:text-xl">Liquidate partial</span>
         <span className="text-xs text-subtitle">
           Max: {formatBigInt(maxLiquidable, 18, 2)} {collateralInfo?.symbol}
         </span>

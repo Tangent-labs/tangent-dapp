@@ -7,13 +7,13 @@ import { IconArrow } from "@/components/icons/icon_arrow"
 import Divider from "@/components/design_system/structure/divider"
 import { MarketDebtData, TgUsdCollateralData } from "../tg_usd_type"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { useTgUsdMaketListContext } from "../list/tg_usd_market_list_context"
+import { useUSGMaketListContext } from "../list/tg_usd_market_list_context"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { mockBarChartData, COLORS, formatXAxis, formatYAxis, mockTotalSupplyData } from "./dashboard_controller"
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, XAxis, Tooltip, YAxis, Bar, Area, AreaChart } from "recharts"
 
-export const TgUsdDashboardContent = () => {
-  const { globalData, userData } = useTgUsdMaketListContext()
+export const USGDashboardContent = () => {
+  const { globalData, userData } = useUSGMaketListContext()
 
   const maxUv = Math.max(...mockBarChartData.map((item) => item.uv))
 

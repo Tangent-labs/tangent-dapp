@@ -1,7 +1,7 @@
 "use client"
 
 import { formatBigInt } from "@/lib/number_formatter"
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { useUSGRecordContext } from "../tg_usd_record_context"
 import { useUSGWithdrawContext } from "./usg_record_withdraw_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -12,7 +12,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 export default function USGWithdrawContent() {
   const { canInteract } = useWalletConnexionContext()
 
-  const { pricedCollateralInfo, collateralInfo } = useTgUsdRecordContext()
+  const { pricedCollateralInfo, collateralInfo } = useUSGRecordContext()
 
   const { formState, withdrawWeiValue, maxWithdrawable, withdrawPercentage, setWithdrawWeiValue, actionWithdraw, setWithdrawPercentage } =
     useUSGWithdrawContext()
@@ -31,7 +31,7 @@ export default function USGWithdrawContent() {
       <div className="flex flex-col gap-2">
         <div className="flex flex-col gap-2">
           <div className="flex items-end justify-between">
-            <span className="text-sm font-semibold md:text-[20px]">Withdraw collateral</span>
+            <span className="text-sm font-semibold md:text-xl">Withdraw collateral</span>
             <span className="text-xs text-subtitle">
               Max: {formatBigInt(maxWithdrawable, 18, 3)} {collateralInfo?.symbol}
             </span>

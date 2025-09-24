@@ -133,7 +133,7 @@ export const LPTasksList = () => {
                 <div className="flex w-3/12 items-center gap-2 xl:gap-4">
                   <TokenImage token={task.asset as ExistingAsset} size={48} />
 
-                  <span className="flex text-[20px] font-semibold">{task.asset}</span>
+                  <span className="flex text-xl font-semibold">{task.asset}</span>
                 </div>
                 <div className="hidden w-2/12 justify-center lg:flex">
                   <div onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}>{computeProtocolDisplay(task?.protocol)}</div>

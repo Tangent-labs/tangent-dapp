@@ -2,16 +2,16 @@
 
 import { ListRowData, ListState } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { getMarketDatas, getTgUsdMarketsData, transformToRows, transformGlobalData, transformMarketData } from "./tg_usd_market_controller"
+import { getMarketDatas, getUSGMarketsData, transformToRows, transformGlobalData, transformMarketData } from "./tg_usd_market_controller"
 import { ChainViewMarketList, MarketConstants, MarketDebtData, TgUsdCollateralData, TgUsdGlobalData } from "../tg_usd_type"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { Address, formatUnits } from "viem"
 
-type TgUsdMaketListContextProps = {
+type USGMaketListContextProps = {
   children: ReactNode
 }
 
-type TgUsdMaketListContextValues = {
+type USGMaketListContextValues = {
   displayRows: ListRowData[]
   globalData: TgUsdGlobalData
   searchValue: string | null
@@ -29,9 +29,9 @@ type TgUsdMaketListContextValues = {
   } | null
 }
 
-export const TgUsdMaketListContext = createContext<TgUsdMaketListContextValues | undefined>(undefined)
+export const USGMaketListContext = createContext<USGMaketListContextValues | undefined>(undefined)
 
-export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps) => {
+export const USGMaketListProvider = ({ children }: USGMaketListContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
 
   const [onChainData, setOnChainData] = useState<ChainViewMarketList | undefined>()
@@ -40,7 +40,7 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
 
   useEffect(() => {
     if (currentAddress) {
-      getTgUsdMarketsData(currentAddress).then((data) => {
+      getUSGMarketsData(currentAddress).then((data) => {
         setOnChainData(data)
       })
     }
@@ -127,7 +127,7 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
     })
   }
 
-  const contextValue: TgUsdMaketListContextValues = {
+  const contextValue: USGMaketListContextValues = {
     displayRows,
     globalData,
     searchValue,
@@ -137,13 +137,13 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
     sortMarketList,
   }
 
-  return <TgUsdMaketListContext.Provider value={contextValue}>{children}</TgUsdMaketListContext.Provider>
+  return <USGMaketListContext.Provider value={contextValue}>{children}</USGMaketListContext.Provider>
 }
 
-export const useTgUsdMaketListContext = () => {
-  const context = useContext(TgUsdMaketListContext)
+export const useUSGMaketListContext = () => {
+  const context = useContext(USGMaketListContext)
   if (!context) {
-    throw new Error("useTgUsdMaketListContext must be used within a TgUsdMaketListProvider")
+    throw new Error("useUSGMaketListContext must be used within a USGMaketListProvider")
   }
   return context
 }

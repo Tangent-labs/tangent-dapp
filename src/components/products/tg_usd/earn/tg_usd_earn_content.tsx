@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { ExistingAsset, ListState } from "@/types"
 import { formatBigInt } from "@/lib/number_formatter"
-import { useTgUsdEarnContext } from "./tg_usd_earn_context"
+import { useUSGEarnContext } from "./tg_usd_earn_context"
 import ListRow from "@/components/design_system/list/list_row"
 import { tgUsdEarnListHeaders } from "./tg_usd_earn_controller"
 import ListHeader from "@/components/design_system/list/list_header"
@@ -21,8 +21,8 @@ const listeState: ListState = {
   },
 }
 
-export const TgUsdEarnContent = () => {
-  const { searchValue, setSearchValue, displayRows, USGsUSGMetrics } = useTgUsdEarnContext()
+export const USGEarnContent = () => {
+  const { searchValue, setSearchValue, displayRows, USGsUSGMetrics } = useUSGEarnContext()
 
   return (
     <>
@@ -41,7 +41,7 @@ export const TgUsdEarnContent = () => {
         </div>
 
         <div className="flex h-full w-full flex-col items-center gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] xl:w-fit">
-          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-semibold italic">
+          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-xl !font-semibold italic">
             Points campaign
             <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
           </div>
@@ -75,15 +75,15 @@ export const TgUsdEarnContent = () => {
       </div>
 
       <ListProvider _headers={tgUsdEarnListHeaders} _rows={displayRows!} _listState={listeState}>
-        <TgUsdMarketListInner />
+        <USGMEarnListInner />
       </ListProvider>
     </>
   )
 }
 
-export function TgUsdMarketListInner() {
+export function USGMEarnListInner() {
   const { headers, listState, udpateSort } = useListContext()
-  const { displayRows } = useTgUsdEarnContext()
+  const { displayRows } = useUSGEarnContext()
 
   return (
     <>
@@ -97,7 +97,7 @@ export function TgUsdMarketListInner() {
             <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-12 md:w-20" />
 
             <div className="flex flex-col leading-8">
-              <span className="text-sm font-semibold md:text-[20px]">{item?.asset}</span>
+              <span className="text-sm font-semibold md:text-xl">{item?.asset}</span>
               <BorderPanel className="flex items-center justify-center gap-2 !rounded-full bg-earn-action px-4 py-0.5 text-xs">
                 <span>{item?.actionLabel}</span>
               </BorderPanel>
@@ -112,7 +112,7 @@ export function TgUsdMarketListInner() {
           <div className="flex w-full items-center gap-2">
             <div className="flex w-1/2 items-center justify-center gap-2">
               <div className="flex flex-row items-center justify-center text-center md:flex-col">
-                <span className="flex items-center justify-center bg-button-active bg-clip-text text-[20px] font-semibold leading-4 text-transparent">
+                <span className="flex items-center justify-center bg-button-active bg-clip-text text-xl font-semibold leading-4 text-transparent">
                   {item?.currentAPR}% <ListAprIndicator helpMessage="This is the APR" />
                 </span>
                 {item?.projectedAPR && (
@@ -125,7 +125,7 @@ export function TgUsdMarketListInner() {
               </div>
             </div>
 
-            <div className="flex w-1/2 items-center justify-center text-[20px]">
+            <div className="flex w-1/2 items-center justify-center text-xl">
               <div className="hidden xl:flex"> x{item?.bonusPts} </div>
 
               <div className="flex xl:hidden"> x{item?.bonusPts} Points </div>

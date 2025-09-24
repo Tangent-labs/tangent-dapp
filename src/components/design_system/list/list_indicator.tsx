@@ -7,7 +7,7 @@ interface ListIndicatorProps {
 }
 
 const HighLightDisplay = ({ val }: { val?: string }) => {
-  return <span className="text-[20px]">{val}</span>
+  return <span className="text-xl">{val}</span>
 }
 
 const QuietDisplay = ({ val }: { val?: string }) => {

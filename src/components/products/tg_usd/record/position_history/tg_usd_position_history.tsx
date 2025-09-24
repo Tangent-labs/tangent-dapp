@@ -4,7 +4,7 @@ import { ListProvider, useListContext } from "@/components/design_system/list/li
 import Divider from "@/components/design_system/structure/divider"
 import Title from "@/components/design_system/structure/title"
 import { IconSortHeader } from "@/components/icons/icon_sort_header"
-import { useTgUsdRecordContext } from "../tg_usd_record_context"
+import { useUSGRecordContext } from "../tg_usd_record_context"
 import { formatActionLabel, userPositionListHeaders } from "./tg_usd_position_history_controller"
 import { ListState } from "@/types"
 import { UserPosition } from "../../tg_usd_type"
@@ -38,7 +38,7 @@ const HistoryRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
 }
 
 export default function TgUsdPositionHistory() {
-  const { displayRows, customSort, isUserHistoryLoading } = useTgUsdRecordContext()
+  const { displayRows, customSort, isUserHistoryLoading } = useUSGRecordContext()
 
   return (
     <div className="rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
@@ -67,7 +67,7 @@ export default function TgUsdPositionHistory() {
 function PositionList() {
   const { headers, listState, udpateSort, displayRows } = useListContext()
 
-  const { collateralInfo } = useTgUsdRecordContext()
+  const { collateralInfo } = useUSGRecordContext()
 
   return (
     <>

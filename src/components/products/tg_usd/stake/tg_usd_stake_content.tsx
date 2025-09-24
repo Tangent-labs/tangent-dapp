@@ -6,7 +6,7 @@ import { formatUnits } from "viem"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { ExistingAsset, SelectOption } from "@/types"
 import { ForecastGraph } from "./tg_usd_staking_forecast"
-import { useTgUsdStakeContext } from "./tg_usd_stake_context"
+import { useUSGStakeContext } from "./tg_usd_stake_context"
 import { computeProjection } from "./tg_usd_stake_controller"
 import Divider from "@/components/design_system/structure/divider"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
@@ -18,7 +18,7 @@ import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
 import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
 
-export default function TgUsdStakeContent() {
+export default function USGStakeContent() {
   const {
     actionStake,
     actionUnstake,
@@ -36,7 +36,7 @@ export default function TgUsdStakeContent() {
     computeProjectedValue,
     stakePercentage,
     USGsUSGMetrics,
-  } = useTgUsdStakeContext()
+  } = useUSGStakeContext()
 
   const AssetSelect = () => {
     return <InputSelect className="w-full" template={AssetSelectTemplate} value={currentAssetInfo?.current} options={depositAssetOptions} onChange={() => {}} />
@@ -105,7 +105,7 @@ export default function TgUsdStakeContent() {
         </div>
 
         <div className="hidden h-full w-full flex-col items-center gap-3 md:flex xl:w-6/12">
-          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-[20px] !font-semibold italic">
+          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-xl !font-semibold italic">
             Points campaign
             <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 text-lg !font-semibold !not-italic !text-black">Live</div>
           </div>

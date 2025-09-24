@@ -9,11 +9,11 @@ import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedUSG, getFormState } from "./tg_usd_stake_controller"
 
-type TgUsdStakeContextProps = {
+type USGStakeContextProps = {
   children: ReactNode
 }
 
-type TgUsdStakeContextValues = {
+type USGStakeContextValues = {
   weiValue?: bigint
   setWeiValue: (arg: bigint | undefined) => void
   currentFeature: "stake" | "unstake"
@@ -33,9 +33,9 @@ type TgUsdStakeContextValues = {
   USGsUSGMetrics: USGStakingInfo | undefined
 }
 
-export const TgUsdStakeContext = createContext<TgUsdStakeContextValues | undefined>(undefined)
+export const USGStakeContext = createContext<USGStakeContextValues | undefined>(undefined)
 
-export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
+export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   const [currentFeature, setCurrentFeature] = useState<"stake" | "unstake">("stake")
 
   const [weiValue, setWeiValue] = useState<bigint | undefined>()
@@ -206,7 +206,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     }
   }, [currentFeature, weiValue])
 
-  const contextValue: TgUsdStakeContextValues = {
+  const contextValue: USGStakeContextValues = {
     actionStake,
     actionApprove,
     actionUnstake,
@@ -226,13 +226,13 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     USGsUSGMetrics,
   }
 
-  return <TgUsdStakeContext.Provider value={contextValue}>{children}</TgUsdStakeContext.Provider>
+  return <USGStakeContext.Provider value={contextValue}>{children}</USGStakeContext.Provider>
 }
 
-export const useTgUsdStakeContext = () => {
-  const context = useContext(TgUsdStakeContext)
+export const useUSGStakeContext = () => {
+  const context = useContext(USGStakeContext)
   if (!context) {
-    throw new Error("useTgUsdStakeContext must be used within a TgUsdStakProvider")
+    throw new Error("useUSGStakeContext must be used within a TgUsdStakProvider")
   }
   return context
 }

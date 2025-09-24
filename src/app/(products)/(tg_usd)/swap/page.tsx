@@ -1,10 +1,10 @@
-import TgUsdSwapContent from "@/components/products/tg_usd/swap/tg_usd_swap_content"
-import { TgUsdSwapProvider } from "@/components/products/tg_usd/swap/tg_usd_swap_context"
+import USGSwapContent from "@/components/products/tg_usd/swap/tg_usd_swap_content"
+import { USGSwapProvider } from "@/components/products/tg_usd/swap/tg_usd_swap_context"
 
-export default async function TgUsdSwapPage() {
+export default async function USGSwapPage() {
   return (
-    <TgUsdSwapProvider>
-      <TgUsdSwapContent />
-    </TgUsdSwapProvider>
+    <USGSwapProvider>
+      <USGSwapContent />
+    </USGSwapProvider>
   )
 }

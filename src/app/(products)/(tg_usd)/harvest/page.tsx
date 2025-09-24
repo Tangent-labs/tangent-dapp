@@ -1,10 +1,10 @@
-import { TgUsdHarvestContent } from "@/components/products/tg_usd/harvest/tg_usd_harvest_content"
-import { TgUsdHarvestProvider } from "@/components/products/tg_usd/harvest/tg_usd_harvest_context"
+import { USGHarvestContent } from "@/components/products/tg_usd/harvest/tg_usd_harvest_content"
+import { USGHarvestProvider } from "@/components/products/tg_usd/harvest/tg_usd_harvest_context"
 
-export default async function TgUsdHarvestPage() {
+export default async function USGHarvestPage() {
   return (
-    <TgUsdHarvestProvider>
-      <TgUsdHarvestContent />
-    </TgUsdHarvestProvider>
+    <USGHarvestProvider>
+      <USGHarvestContent />
+    </USGHarvestProvider>
   )
 }

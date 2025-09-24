@@ -14,11 +14,11 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { BalanceAllowanceData, SwapToken, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../tg_usd_type"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./tg_usd_swap_controller"
 
-type TgUsdSwapContextProps = {
+type USGSwapContextProps = {
   children: ReactNode
 }
 
-type TgUsdSwapContextValues = {
+type USGSwapContextValues = {
   isLoading: boolean
 
   depositWeiValue?: bigint
@@ -76,9 +76,9 @@ type TgUsdSwapContextValues = {
   lpUserPoints: LpUserPoints
 }
 
-export const TgUsdSwapContext = createContext<TgUsdSwapContextValues | undefined>(undefined)
+export const USGSwapContext = createContext<USGSwapContextValues | undefined>(undefined)
 
-export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
+export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const { tokens, USGsUSGMetrics, loadUSGsUSGMetrics, lpUserPoints } = useUSGContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
@@ -585,7 +585,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
     return { depositAssets, receiveAssets }
   }, [balances, isBuying])
 
-  const contextValue: TgUsdSwapContextValues = {
+  const contextValue: USGSwapContextValues = {
     isLoading,
     depositWeiValue,
     setDepositWeiValue,
@@ -620,13 +620,13 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
     lpUserPoints,
   }
 
-  return <TgUsdSwapContext.Provider value={contextValue}>{children}</TgUsdSwapContext.Provider>
+  return <USGSwapContext.Provider value={contextValue}>{children}</USGSwapContext.Provider>
 }
 
-export const useTgUsdSwapContext = () => {
-  const context = useContext(TgUsdSwapContext)
+export const useUSGSwapContext = () => {
+  const context = useContext(USGSwapContext)
   if (!context) {
-    throw new Error("useTgUsdSwapContext must be used within a TgUsdSwapProvider")
+    throw new Error("useUSGSwapContext must be used within a USGSwapProvider")
   }
   return context
 }

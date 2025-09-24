@@ -6,12 +6,12 @@ import { EarnTask, USGStakingInfo, LpUserPoints } from "../tg_usd_type"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 
-type TgUsdEarnContextProps = {
+type USGEarnContextProps = {
   children: ReactNode
   tasks: EarnTask[]
 }
 
-type TgUsdEarnContextValues = {
+type USGEarnContextValues = {
   isLoading: boolean
   searchValue: string | null
   setSearchValue: (value: string | null) => void
@@ -21,9 +21,9 @@ type TgUsdEarnContextValues = {
   lpUserPoints: LpUserPoints
 }
 
-export const TgUsdEarnContext = createContext<TgUsdEarnContextValues | undefined>(undefined)
+export const USGEarnContext = createContext<USGEarnContextValues | undefined>(undefined)
 
-export const TgUsdEarnProvider = ({ children, tasks }: TgUsdEarnContextProps) => {
+export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
 
   const { USGsUSGMetrics, loadUSGsUSGMetrics, lpUserPoints } = useUSGContext()
@@ -62,7 +62,7 @@ export const TgUsdEarnProvider = ({ children, tasks }: TgUsdEarnContextProps) =>
     loadUSGsUSGMetrics()
   }, [currentAddress])
 
-  const contextValue: TgUsdEarnContextValues = {
+  const contextValue: USGEarnContextValues = {
     isLoading,
     searchValue,
     setSearchValue,
@@ -72,13 +72,13 @@ export const TgUsdEarnProvider = ({ children, tasks }: TgUsdEarnContextProps) =>
     lpUserPoints,
   }
 
-  return <TgUsdEarnContext.Provider value={contextValue}>{children}</TgUsdEarnContext.Provider>
+  return <USGEarnContext.Provider value={contextValue}>{children}</USGEarnContext.Provider>
 }
 
-export const useTgUsdEarnContext = () => {
-  const context = useContext(TgUsdEarnContext)
+export const useUSGEarnContext = () => {
+  const context = useContext(USGEarnContext)
   if (!context) {
-    throw new Error("useTgUsdEarnContext must be used within a TgUsdEarnProvider")
+    throw new Error("useUSGEarnContext must be used within a USGEarnProvider")
   }
   return context
 }

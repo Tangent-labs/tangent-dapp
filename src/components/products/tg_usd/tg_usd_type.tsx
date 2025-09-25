@@ -445,6 +445,11 @@ export type LpUserPoints = {
   lpDailyRate: number
 }
 
+export type RefereesPoints = {
+  lpPoints: number
+  votePoints: number
+}
+
 export type VoteUserPoints = {
   voteTotalPoints: number
 }

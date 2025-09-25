@@ -12,9 +12,10 @@ import Divider from "@/components/design_system/structure/divider"
 import { useUsgReferralCodeContext } from "./usg_referral_context"
 import { GodsonsLeaderboard } from "./components/GodsonsLeaderboard"
 import { SecondaryButton } from "@/components/design_system/inputs/secondary_button"
+import { formatNumber } from "@/lib/number_formatter"
 
 export const UsgReferralCode = () => {
-  const { lpUserPoints, voteUserPoints } = useUSGContext()
+  const { lpUserPoints, voteUserPoints, refereesPoints } = useUSGContext()
 
   const { isLoading, lpLeaderboard, voteLeaderboard, godsonsLeaderboard } = useUsgReferralCodeContext()
 
@@ -44,11 +45,11 @@ export const UsgReferralCode = () => {
         <div className="flex w-full items-center justify-between">
           <div className="flex w-full flex-col items-center justify-center">
             <span className="text-sm text-subtitle">Referees voting points</span>
-            <span className="bg-tonic bg-clip-text text-lg font-semibold text-transparent"> 10,500</span>
+            <span className="bg-tonic bg-clip-text text-lg font-semibold text-transparent"> {formatNumber(refereesPoints.votePoints, 0)} </span>
           </div>
           <div className="flex w-full flex-col items-center justify-center">
             <span className="text-sm text-subtitle">Referees Liquidity points</span>
-            <span className="bg-pink bg-clip-text text-lg font-semibold text-transparent"> 10,500 </span>
+            <span className="bg-pink bg-clip-text text-lg font-semibold text-transparent"> {formatNumber(refereesPoints.lpPoints, 0)} </span>
           </div>
           <div className="flex w-full flex-col items-center justify-center">
             <span className="text-sm text-subtitle">Your Referees</span>

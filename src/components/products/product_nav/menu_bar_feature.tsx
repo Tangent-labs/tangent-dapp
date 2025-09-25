@@ -9,10 +9,8 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-
 import { usePathname, useRouter } from "next/navigation"
 import { Logo } from "@/components/design_system/structure/logo"
-import { Button } from "@/components/design_system/inputs/button"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 
 export default function MenuBarFeature() {
@@ -89,10 +87,6 @@ export default function MenuBarFeature() {
                 </NavigationMenuDropdown>
               </NavigationMenu>
             </NavigationMenuList>
-
-            <Button onClick={() => router.push("/swap")} className="ml-4 hidden h-10 !px-8 font-roobert font-semibold text-white xl:flex">
-              Buy USG
-            </Button>
           </NavigationMenu>
 
           <WalletConnexionContent />

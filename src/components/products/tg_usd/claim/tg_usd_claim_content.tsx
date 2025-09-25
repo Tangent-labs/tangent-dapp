@@ -27,12 +27,12 @@ const listeState: ListState = {
 const ClaimRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
     <div className="flex items-center justify-between max-xl:flex-col">
-      <div className="flex w-full items-center justify-evenly xl:w-7/12 xl:justify-start">
-        <div className="xl:w-1/2">{children?.at(0)}</div>
-        <div className="flex justify-center xl:w-1/2">{children?.at(1)}</div>
+      <div className="flex w-full items-center justify-evenly xl:w-1/2 xl:justify-start">
+        <div className="xl:w-2/3">{children?.at(0)}</div>
+        <div className="flex justify-center xl:w-1/3">{children?.at(1)}</div>
       </div>
       <hr className="my-2 w-full opacity-20 xl:hidden" />
-      <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-5/12">{children?.at(2)}</div>
+      <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-1/2">{children?.at(2)}</div>
     </div>
   )
 }
@@ -41,7 +41,7 @@ export default function USGClaimContent() {
   const { displayRows, onClickClaim, marketsToClaim, customSort, onClickClaimAll } = useUSGClaimContext()
 
   return (
-    <div className="flex w-full flex-col-reverse items-start justify-start gap-4 md:flex-row">
+    <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
       <div className="flex w-full flex-col md:w-9/12">
         <div className="flex w-full items-end justify-between">
           <div className="mt-10 flex items-center justify-between">
@@ -81,7 +81,7 @@ export default function USGClaimContent() {
 
         <div className="flex w-full flex-col">
           {marketsToClaim.map((el: ClaimableMarket) => (
-            <div key={el.marketName} className="flex w-full items-center justify-between">
+            <div key={el.marketName} className="my-1 flex w-full items-center justify-between">
               <div className={`relative flex items-center gap-4`}>
                 <TokenImage token={el.marketName} size={16} className="w-8" />
                 <span className="text-[12px] font-semibold">{el.marketName}</span>
@@ -116,11 +116,11 @@ function ClaimList() {
       {(displayRows as ClaimData[])?.map((item: ClaimData) => (
         <div key={item.marketAddress} className="my-1 rounded-[10px] bg-overlay-panel px-4 py-2.5 backdrop-blur-[60px]">
           <div className="flex items-center justify-between max-xl:flex-col">
-            <div className="flex w-full items-center justify-evenly xl:w-7/12 xl:justify-start">
-              <div className="xl:w-1/2">
+            <div className="flex w-full items-center justify-evenly xl:w-1/2 xl:justify-start">
+              <div className="xl:w-2/3">
                 <ListAsset name={item?.marketName} token={item.marketName} assetsEarned={[]} />
               </div>
-              <div className="flex justify-center xl:w-1/2">
+              <div className="flex justify-center xl:w-1/3">
                 <div className="flex min-w-16 flex-col items-center justify-center gap-2">
                   <span className="bg-button-active bg-clip-text text-xl font-semibold leading-4 text-transparent">12%</span>
 
@@ -131,13 +131,13 @@ function ClaimList() {
               </div>
             </div>
             <hr className="my-2 w-full opacity-20 xl:hidden" />
-            <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-5/12">
+            <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-1/2">
               <div className="flex w-full flex-1 cursor-pointer items-center justify-center gap-2 text-xl">
                 {formatDollar(item?.totalClaimableValue || 0, 0)}
 
                 <USGHoverCard iconClassName="text-row-tonic" title={`${item?.marketName} Rewards Breakdown`}>
                   {(item?.claimable as ClaimAsset[]).map((reward: ClaimAsset) => (
-                    <div key={reward?.symbol} className="flex items-center gap-4">
+                    <div key={reward?.symbol} className="my-1 flex items-center gap-4">
                       <TokenImage token={reward.symbol} size={16} />
 
                       <span> {Number(formatUnits(BigInt(reward.amount), 18)).toFixed(2)}</span>

@@ -4,11 +4,11 @@ import { Address } from "viem"
 import { TANStakingInfo } from "../vs_tan/rstan_types"
 import { getUSGsUSGMetrics } from "./tg_usd_controller"
 import { getCurrentBlock } from "@/services/service_rpc"
-import { getLpUserPoints, getVoteUserPoints } from "./api"
+import { getLpUserPoints, getUserRefereesPoints, getVoteUserPoints } from "./api"
 import { getBalances } from "./record/tg_usd_record_controller"
 import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
-import { USGStakingInfo, LpUserPoints, ZapToken, VoteUserPoints } from "./tg_usd_type"
+import { USGStakingInfo, LpUserPoints, ZapToken, VoteUserPoints, RefereesPoints } from "./tg_usd_type"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 
 type USGContextProps = {
@@ -26,6 +26,7 @@ type USGContextValues = {
   USGsUSGMetrics: USGStakingInfo | undefined
   TANsTANMetrics: TANStakingInfo | undefined
   loadTanSTANMetrics: () => void
+  refereesPoints: RefereesPoints
 }
 
 export const USGContext = createContext<USGContextValues | undefined>(undefined)
@@ -38,6 +39,8 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
   const [lpUserPoints, setLpUserPoints] = useState<LpUserPoints>({ lpDailyRate: 0, lpTotalPoints: 0 })
 
   const [voteUserPoints, setVoteUserPoints] = useState<VoteUserPoints>({ voteTotalPoints: 0 })
+
+  const [refereesPoints, setRefereesPoints] = useState<RefereesPoints>({ lpPoints: 0, votePoints: 0 })
 
   const [USGsUSGMetrics, setUSGsUSGMetrics] = useState<USGStakingInfo | undefined>()
 
@@ -59,6 +62,12 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
     }
   }, [currentAddress])
 
+  const getRefereesPoints = async () => {
+    getUserRefereesPoints(currentAddress!).then((p) => {
+      setRefereesPoints(p)
+    })
+  }
+
   const refetchPoints = async () => {
     const currentBlock = await getCurrentBlock()
 
@@ -72,6 +81,8 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
     getVoteUserPoints(currentAddress!).then((votePts) => {
       setVoteUserPoints(votePts)
     })
+
+    getRefereesPoints()
   }
 
   useEffect(() => {
@@ -103,6 +114,7 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
     USGsUSGMetrics,
     TANsTANMetrics,
     voteUserPoints,
+    refereesPoints,
   }
 
   return <USGContext.Provider value={contextValue}>{children}</USGContext.Provider>

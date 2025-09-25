@@ -144,8 +144,8 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
         address: VSTAN_CONTRACT?.TAN,
         logo: "TAN" as ExistingAsset,
         displayDecimals: 5,
-        // TODO : update to 18 decimalss
-        price: Number(formatBigInt(lockData?.tanPrice, 12, 6)),
+        // TODO : update to formatBigInt(lockData?.tanPrice, 18, 6)
+        price: Number(formatBigInt(lockData?.tanPrice, 13, 6)),
       }
     }
 
@@ -160,8 +160,8 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
         address: VSTAN_CONTRACT?.TAN,
         logo: "TAN" as ExistingAsset,
         displayDecimals: 5,
-        // TODO : update to 18 decimalss
-        price: Number(formatBigInt(lockData?.tanPrice, 12, 6)),
+        // TODO : update to formatBigInt(lockData?.tanPrice, 18, 6)
+        price: Number(formatBigInt(lockData?.tanPrice, 13, 6)),
       }
 
     const asset: AssetDataPriced = {
@@ -432,8 +432,8 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
   }, [depositAsset])
 
   const estimatedZapDollarValue = useMemo(() => {
-    if (zapValue) {
-      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * BigInt(0.22 * 10 ** 18)) / BigInt(10 ** 18), 18))})`
+    if (zapValue && lockData) {
+      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * lockData?.tanPrice) / BigInt(10 ** 13), 18))})` // TODO update to BigInt(10 ** 18)
       return result
     }
 

@@ -39,7 +39,7 @@ export default function USGHarvestContent() {
   const { displayRows, onClickHarvest, marketsToHarvest, customSort, onClickHarvestAll } = useUSGHarvestContext()
 
   return (
-    <div className="mt-6 flex w-full flex-col-reverse items-start justify-start gap-4 md:flex-row">
+    <div className="mt-6 flex w-full flex-col items-start justify-start gap-4 md:flex-row">
       <div className="flex w-full flex-col md:w-9/12">
         <div className="flex w-full items-center justify-end">
           <div className="flex gap-2">
@@ -64,7 +64,7 @@ export default function USGHarvestContent() {
 
         <div className="flex w-full flex-col">
           {marketsToHarvest.map((el: HarvestableMarket) => (
-            <div key={el.marketName} className="flex w-full items-center justify-between">
+            <div key={el.marketName} className="my-1 flex w-full items-center justify-between">
               <div className={`relative flex items-center gap-4`}>
                 <TokenImage token={el.marketName} size={16} className="w-8" />
                 <span className="text-[12px] font-semibold">{el.marketName}</span>
@@ -101,10 +101,10 @@ function HarvestList() {
               <div className="xl:w-1/2">
                 <ListAsset name={item?.asset} token={item.asset} assetsEarned={[]} />
               </div>
-              <div className="flex justify-center gap-2 xl:w-1/2">
+              <div className="flex justify-center gap-2 text-xl xl:w-1/2">
                 {formatDollar(item?.rewards?.totalDollar || 0)}
 
-                <USGHoverCard title={`${item?.asset} Rewards Breakdown`}>
+                <USGHoverCard iconClassName="text-row-tonic" title={`${item?.asset} Rewards Breakdown`}>
                   <div className="flex flex-col gap-1 text-sm">
                     {item?.rewards?.details?.map((reward, index) => (
                       <div key={index} className="flex items-center gap-2">

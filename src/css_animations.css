@@ -173,3 +173,27 @@
 .scrollbar-thin::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1); /* White with 10% opacity */
 }
+
+.gradient-border-btn {
+  position: relative;
+  background: #070707;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.gradient-border-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(81.44% 110.1% at 50% 100%, #00c2ff 0%, #0075ff 100%);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+.gradient-border-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

@@ -1,12 +1,12 @@
 "use client"
 
 import { useUSGContext } from "../../tg_usd_context"
+import { boostHeaders } from "./usg_boosts_controller"
 import { useUsgBoostsContext } from "./usg_boosts_context"
 import { useUsgAirdropContext } from "../usg_airdrop_context"
+import { BoostsList, boostsListState } from "./components/BoostsList"
 import { ReferralHeader } from "../referral/components/ReferralHeader"
 import { ListProvider } from "@/components/design_system/list/list_context"
-import { boostHeaders } from "./usg_boosts_controller"
-import { BoostsList, boostsListState } from "./components/BoostsList"
 
 export const UsgBoostsContent = () => {
   const { userBoosts, sortBoosts } = useUsgBoostsContext()

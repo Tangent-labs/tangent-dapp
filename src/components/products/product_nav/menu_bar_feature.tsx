@@ -67,8 +67,8 @@ export default function MenuBarFeature() {
                     <NavigationMenuContent>
                       <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-[#070707] p-2">
                         <NavigationMenuLink onClick={() => router.push("/harvest")}>Harvest</NavigationMenuLink>
-                        <NavigationMenuLink onClick={() => router.push("/forum")}>Forum</NavigationMenuLink>
-                        <NavigationMenuLink onClick={() => router.push("/snapshot")}>Snapshot</NavigationMenuLink>
+                        <NavigationMenuLink>Forum</NavigationMenuLink>
+                        <NavigationMenuLink>Snapshot</NavigationMenuLink>
                       </div>
                     </NavigationMenuContent>
                   </NavigationMenuDropdown>

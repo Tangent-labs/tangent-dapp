@@ -97,11 +97,11 @@ export const validateReferralCode = async (referralCode: string, signature: Addr
       body: JSON.stringify({ referralCode, signature, account: currentAddress, now }),
     })
 
-    const data = await response.json()
-
     if (!response.ok) {
-      throw new Error(data.error || `Referral validation failed with status ${response.status}`)
+      throw new Error(`Referral validation failed with status ${response.status}`)
     }
+
+    const data = await response.json()
 
     return data
   } catch {
@@ -121,11 +121,11 @@ export const generateCode = async (account: Address): Promise<string> => {
       body: JSON.stringify({ account }),
     })
 
-    const data = await response.json()
-
     if (!response.ok) {
-      throw new Error(data.error || `Referral code creation failed with status ${response.status}`)
+      throw new Error(`Referral code creation failed with status ${response.status}`)
     }
+
+    const data = await response.json()
 
     return data.message as string
   } catch {
@@ -144,11 +144,11 @@ export const getReferralStatus = async (account: Address): Promise<UserStatus> =
       },
     })
 
-    const data: UserStatus = await response.json()
-
     if (!response.ok) {
       throw new Error("Failed to fetch referral status with status")
     }
+
+    const data: UserStatus = await response.json()
 
     return data
   } catch (error) {
@@ -168,11 +168,11 @@ export const getHistoricalMarketData = async (marketAddress: string, range: stri
       },
     })
 
-    const data: Array<MarketHistoricalData> = await response.json()
-
     if (!response.ok) {
       throw new Error("Failed to fetch historical market data")
     }
+
+    const data: Array<MarketHistoricalData> = await response.json()
 
     return data
   } catch (error) {
@@ -192,11 +192,11 @@ export const getUserVoteTasks = async (account: Address): Promise<Array<VoteTask
       },
     })
 
-    const data: Array<VoteTask> = await response.json()
-
     if (!response.ok) {
       throw new Error("Failed to fetch vote tasks")
     }
+
+    const data: Array<VoteTask> = await response.json()
 
     return data
   } catch (error) {
@@ -216,11 +216,11 @@ export const getUserTasks = async (account: Address): Promise<Array<UserTask>> =
       },
     })
 
-    const data: Array<UserTask> = await response.json()
-
     if (!response.ok) {
       throw new Error("Failed to fetch tasks")
     }
+
+    const data: Array<UserTask> = await response.json()
 
     return data
   } catch (error) {
@@ -240,11 +240,11 @@ export const getVoteUserPoints = async (account: Address): Promise<VoteUserPoint
       },
     })
 
-    const data: VoteUserPoints = await response.json()
-
     if (!response.ok) {
       throw new Error("Failed to fetch vote points")
     }
+
+    const data: VoteUserPoints = await response.json()
 
     return data
   } catch (error) {
@@ -264,11 +264,11 @@ export const getUserRefereesPoints = async (account: Address): Promise<RefereesP
       },
     })
 
-    const data: RefereesPoints = await response.json()
-
     if (!response.ok) {
       throw new Error("Failed to fetch user points")
     }
+
+    const data: RefereesPoints = await response.json()
 
     return data
   } catch (error) {
@@ -288,11 +288,11 @@ export const getLpUserPoints = async (account: Address, dateFrom: string): Promi
       },
     })
 
-    const data: LpUserPoints = await response.json()
-
     if (!response.ok) {
       throw new Error("Failed to fetch user points")
     }
+
+    const data: LpUserPoints = await response.json()
 
     return data
   } catch (error) {
@@ -312,11 +312,11 @@ export const getUserBoosts = async (account: Address): Promise<Array<Boost>> => 
       },
     })
 
-    const boosts: Array<Boost> = await response.json()
-
     if (!response.ok) {
       throw new Error("Failed to fetch boosts")
     }
+
+    const boosts: Array<Boost> = await response.json()
 
     return boosts
   } catch (error) {
@@ -347,11 +347,11 @@ export const getLeaderboards = async (): Promise<{
       },
     })
 
-    const { lpLeaderboard, voteLeaderboard } = await response.json()
-
     if (!response.ok) {
       throw new Error("Failed to fetch leaderboard")
     }
+
+    const { lpLeaderboard, voteLeaderboard } = await response.json()
 
     return { lpLeaderboard, voteLeaderboard }
   } catch (error) {
@@ -380,16 +380,16 @@ export const getGodsonsLeaderboard = async (
       },
     })
 
+    if (!response.ok) {
+      throw new Error("Failed to fetch godsons leaderboard")
+    }
+
     const leaderboard: Array<{
       rank: number
       address: Address
       lpPoints: number
       votePts: number
     }> = await response.json()
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch godsons leaderboard")
-    }
 
     return leaderboard
   } catch (error) {

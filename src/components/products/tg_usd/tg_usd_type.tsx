@@ -1,16 +1,5 @@
-import {
-  AprEntry,
-  AssetData,
-  AssetDataPriced,
-  CollateralInfo,
-  ERC20StaticInfos,
-  ExistingAsset,
-  Network,
-  PositionData,
-  TokenAmountPriced,
-  TokenAmountPricedRow,
-} from "@/types"
 import { Address } from "viem"
+import { AprEntry, AssetData, AssetDataPriced, CollateralInfo, ERC20StaticInfos, ExistingAsset, Network, TokenAmountPriced } from "@/types"
 
 export type TgUsdCampaignData = {
   debts: number
@@ -20,7 +9,7 @@ export type TgUsdCampaignData = {
 
 export type MarketPlatforms = "convex" | "curve"
 
-export type TgUsdMarketData = {
+export type USGMarketData = {
   network: Network
   platforms: MarketPlatforms[]
   collateral: ExistingAsset
@@ -46,7 +35,7 @@ export type HarvesterInfo = {
   lastHarvestDate: bigint
 }
 
-export type TgUsdMarketDataUser = {
+export type USGMarketDataUser = {
   debt: number
   health: number
 }
@@ -68,7 +57,7 @@ export type TgUsdGlobalData = {
   globalTvl: string
 }
 
-export type TgUsdMarketType = "Convex_CRV" | "Convex_FXN"
+export type USGMarketType = "Convex_CRV" | "Convex_FXN"
 
 export type ClaimerInfoDisplay = {
   asset: ExistingAsset // Address
@@ -114,6 +103,12 @@ export type ClaimableMarket = {
   claimable: string
 }
 
+export type HarvestableMarket = {
+  marketName: ExistingAsset
+  marketAddress: ExistingAsset
+  harvestable: number
+}
+
 export interface ChainViewMarketRow {
   marketAddress: string
   collateralInfos: CollateralInfos
@@ -122,7 +117,7 @@ export interface ChainViewMarketRow {
   obas: OutputBalanceAllowances[]
   rewardTokens: ERC20StaticInfos[]
   sociabilization: SociabilizationData
-  marketType?: TgUsdMarketType
+  marketType?: USGMarketType
 }
 
 export interface CollateralInfos {
@@ -205,7 +200,7 @@ export type MarketDetailData = {
   collateralBalance: bigint
   collateralAllowance: bigint
   collateralInfos: CollateralInfos
-  marketType?: TgUsdMarketType
+  marketType?: USGMarketType
   sociabilization?: SociabilizationData
 }
 
@@ -224,18 +219,13 @@ export type TgUsdtMarketWitrhdrawParams = {
   marketAddress: Address
 }
 
-export type TgUsdtMarketLiquidateParams = {
-  liquidateWeiValue?: bigint
-  marketAddress: Address
-}
-
 export type TgUsdtMarketRepayParams = {
   marketAddress: Address
   repayWeiValue?: bigint
   withdrawWeiValue?: bigint
 }
 
-export type TgUsdMarketLoanDisplayData = {
+export type USGMarketLoanDisplayData = {
   collateralValue: string
   debt: string
   health: string
@@ -244,7 +234,7 @@ export type TgUsdMarketLoanDisplayData = {
   maxWithdrawable: string
 }
 
-export type TgUsdMarketDisplayData = TgUsdMarketLoanDisplayData & {
+export type USGMarketDisplayData = USGMarketLoanDisplayData & {
   tvl: string
   tvlDollar: string
   borrowed: string
@@ -259,7 +249,7 @@ export type TgUsdMarketDisplayData = TgUsdMarketLoanDisplayData & {
   ltDollar: string
 }
 
-export type TgUsdMarketAmounts = {
+export type USGMarketAmounts = {
   depositWeiValue?: bigint
   borrowWeiValue?: bigint
   withdrawWeiValue?: bigint
@@ -275,36 +265,7 @@ export type HarvesterInfoDisplay = {
   isProcessed: boolean
   percentage: number
   harvesterFees: number
-  lastHarvestDate: bigint
-}
-
-export type BoosterClaimListRow = {
-  token: ExistingAsset
-  stakingAddress: Address
-  name: string
-  apr: {
-    current: number
-    projected: number
-  }
-  claimableDetail: TokenAmountPricedRow[]
-  claimable: { key: string; label: string; value: string; raw?: number }
-  positionsDetails: PositionData[]
-}
-
-export type ClaimSdtStakingContract = {
-  stakingContract: string
-  tokenIds: number[]
-}
-
-export interface ClaimMultipleStakingArgs {
-  claimContracts: ClaimSdtStakingContract[]
-  minCvgSdtAmountOut: bigint
-  isConvert: boolean
-  sdtRewardCount: number
-}
-
-export type ZapperData = {
-  amountOut: bigint
+  lastHarvestDate: string
 }
 
 export type SwapToken = AssetData & {
@@ -330,14 +291,14 @@ export type ZapMarketData = {
   minAmountOut: bigint
 }
 
-export type TgUsdMarket = {
+export type USGMarket = {
   marketAddress: Address
   marketName: ExistingAsset
   collatAddress: Address
   marketType: "Convex_CRV" | "Convex_FXN"
 }
 
-export type StakingInfo = {
+export type USGStakingInfo = {
   USGAllowance: bigint
   USGBalance: bigint
   USGPercentageInsUSG: bigint
@@ -390,6 +351,7 @@ export type LockData = {
   percentageLocked: bigint
   positions: LockPosition[]
   tanAPR: bigint
+  tanPrice: bigint
   totalLocked: bigint
   totalSupply: bigint
 }
@@ -468,9 +430,46 @@ export type UserTask = {
   points: number
 }
 
-export type UserPoints = {
-  totalPoints: number
-  basePoints: number
-  referralPoints: number
-  dailyRate: number
+export type VoteTask = {
+  taskId: number
+  organisation: string
+  protocol: string
+  url: string
+  description: string
+  pointRate: number
+  points: number
+}
+
+export type LpUserPoints = {
+  lpTotalPoints: number
+  lpDailyRate: number
+}
+
+export type RefereesPoints = {
+  lpPoints: number
+  votePoints: number
+}
+
+export type VoteUserPoints = {
+  voteTotalPoints: number
+}
+
+export type Leaderboard = Array<{
+  rank: number
+  address: Address
+  pts: number
+}>
+
+export type GodsonLeaderboard = Array<{
+  rank: number
+  address: Address
+  lpPoints: number
+  votePts: number
+}>
+
+export type Boost = {
+  type: string
+  description: string
+  boost: number
+  status: boolean
 }

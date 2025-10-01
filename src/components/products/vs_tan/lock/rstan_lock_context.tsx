@@ -2,14 +2,14 @@
 
 import { toast } from "react-toastify"
 import { formatUnits, parseEther } from "viem"
-import { useRsTanContext } from "../rstan_layout_context"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { getCurrentBlock } from "@/services/service_rpc"
-import { useTgUsdContext } from "../../tg_usd/tg_usd_context"
-import { getQuote, getRoute } from "../../tg_usd/global_quote_controller"
+import { useRsTanContext } from "../rstan_layout_context"
+import { useUSGContext } from "../../tg_usd/tg_usd_context"
 import { LockPosition, ZapToken } from "../../tg_usd/tg_usd_type"
 import { ToastComponent } from "@/components/design_system/toast"
 import { formatBigInt, formatDollar } from "@/lib/number_formatter"
+import { getQuote, getRoute } from "../../tg_usd/global_quote_controller"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { AssetDataPriced, CollateralInfo, ExistingAsset, FormState } from "@/types"
 import { computeSwapAssetPrice } from "../../tg_usd/record/tg_usd_record_controller"
@@ -82,7 +82,7 @@ export const RsTanLockContext = createContext<RsTanLockContextValues | undefined
 export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
   const { getWalletClient, isWellConnected, currentAddress } = useWalletConnexionContext()
 
-  const { tokens } = useTgUsdContext()
+  const { tokens } = useUSGContext()
 
   const { loadData, lockData, fetchBalanceAllowanceData, balanceAllowanceData } = useRsTanContext()
 
@@ -144,7 +144,8 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
         address: VSTAN_CONTRACT?.TAN,
         logo: "TAN" as ExistingAsset,
         displayDecimals: 5,
-        price: 0.21,
+        // TODO : update to formatBigInt(lockData?.tanPrice, 18, 6)
+        price: Number(formatBigInt(lockData?.tanPrice, 13, 6)),
       }
     }
 
@@ -159,7 +160,8 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
         address: VSTAN_CONTRACT?.TAN,
         logo: "TAN" as ExistingAsset,
         displayDecimals: 5,
-        price: 0.21,
+        // TODO : update to formatBigInt(lockData?.tanPrice, 18, 6)
+        price: Number(formatBigInt(lockData?.tanPrice, 13, 6)),
       }
 
     const asset: AssetDataPriced = {
@@ -172,7 +174,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     }
 
     return asset
-  }, [depositAsset, swapAssetPrice])
+  }, [depositAsset, swapAssetPrice, lockData])
 
   const actionApproveZap = async () => {
     setIsLoading(true)
@@ -182,7 +184,6 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
         .then(() => {
           fetchBalanceAllowanceData(depositAssetInfo?.address)
           setIsLoading(false)
-          loadData()
         })
         .catch((error) => {
           console.error("Error during approval:", error)
@@ -280,20 +281,21 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     }
   }
 
+  const lockBalanceAllowanceData = useMemo(() => {
+    if (!!lockData && depositAsset === "TAN") {
+      return { balance: lockData?.balance, allowance: lockData?.allowance }
+    } else if (!!balanceAllowanceData && depositAsset !== "TAN") {
+      return { balance: balanceAllowanceData?.balance, allowance: balanceAllowanceData?.allowances[0]?.allowance }
+    }
+    return { balance: 0n, allowance: 0n }
+  }, [lockData, balanceAllowanceData])
+
   useEffect(() => {
     const computeFormState = async () => {
       if (!lockData || !depositWeiValue) {
         setFormState({ canProcess: false, cantProcessReasons: ["No data"], haveToApprove: false })
       } else {
-        getLockFormState(
-          lockData?.balance,
-          lockData?.allowance,
-          balanceAllowanceData!,
-          depositPositionInfo,
-          depositWeiValue,
-          depositAsset,
-          isWellConnected
-        ).then((d) => {
+        getLockFormState(lockBalanceAllowanceData, depositPositionInfo, depositWeiValue, depositAsset, isWellConnected).then((d) => {
           setFormState(d)
         })
       }
@@ -302,7 +304,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     if (depositPositionInfo) {
       computeFormState()
     }
-  }, [depositWeiValue, isWellConnected, lockData, depositPositionInfo, balanceAllowanceData])
+  }, [depositWeiValue, isWellConnected, lockBalanceAllowanceData, depositPositionInfo])
 
   const computedNewLockValue = useMemo(() => {
     const baseValue = depositPositionInfo?.amount ? depositPositionInfo?.amount : 0n
@@ -430,8 +432,8 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
   }, [depositAsset])
 
   const estimatedZapDollarValue = useMemo(() => {
-    if (zapValue) {
-      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * BigInt(0.22 * 10 ** 18)) / BigInt(10 ** 18), 18))})`
+    if (zapValue && lockData) {
+      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * lockData?.tanPrice) / BigInt(10 ** 13), 18))})` // TODO update to BigInt(10 ** 18)
       return result
     }
 
@@ -447,6 +449,10 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
   useEffect(() => {
     if (depositAssetInfo) {
       fetchBalanceAllowanceData(depositAssetInfo?.address)
+    }
+
+    if (depositAsset !== depositAssetInfo?.symbol) {
+      setDepositWeiValue(0n)
     }
   }, [depositAssetInfo])
 

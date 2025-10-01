@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react"
 import { ResponsiveContainer, AreaChart, XAxis, YAxis, CartesianGrid, Legend, Area, Tooltip } from "recharts"
-import { useTgUsdRecordContext } from "./tg_usd_record_context"
+import { useUSGRecordContext } from "./tg_usd_record_context"
 import { formatUnits, parseUnits } from "viem"
 import { computeIR } from "./tg_usd_record_controller"
 
 export default function InterestRateGraph() {
-  const { marketData } = useTgUsdRecordContext()
+  const { marketData } = useUSGRecordContext()
 
   interface RCParams {
     endCutPercentage: bigint
@@ -65,7 +65,7 @@ export default function InterestRateGraph() {
     const { irParams, rcParams } = marketData.constants
 
     const startPrice = 1.0
-    const endPrice = 0.98
+    const endPrice = 0.985
     const numPoints = 100
     const step = (startPrice - endPrice) / (numPoints - 1)
 
@@ -121,7 +121,7 @@ export default function InterestRateGraph() {
           axisLine={{ stroke: "#454545" }}
           tickLine={false}
           tickFormatter={(value) => value.toFixed(3)}
-          domain={[1.0, 0.98]}
+          domain={[1.0, 0.985]}
         />
 
         <YAxis

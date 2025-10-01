@@ -107,7 +107,8 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
 
 export const claimListHeaders: ListHeaderData[] = [
   { label: "Market", key: "marketName" },
-  { label: "APR", key: "apr" },
-  { label: "Claimable", key: "totalClaimableValue" },
-  { label: "Deposited", key: "totalDepositedValue" },
+  { label: "APR", key: "apr", sort: "sort" },
+  { label: "Claimable", key: "totalClaimableValue", sort: "sort" },
+  { label: "Deposited", key: "totalDepositedValue", sort: "sort" },
+  { label: "", key: "" },
 ]

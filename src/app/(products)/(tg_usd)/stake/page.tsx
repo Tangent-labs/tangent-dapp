@@ -1,10 +1,10 @@
-import TgUsdClaimContent from "@/components/products/tg_usd/stake/tg_usd_stake_content"
-import { TgUsdStakeProvider } from "@/components/products/tg_usd/stake/tg_usd_stake_context"
+import USGStakeContent from "@/components/products/tg_usd/stake/tg_usd_stake_content"
+import { USGStakeProvider } from "@/components/products/tg_usd/stake/tg_usd_stake_context"
 
-export default async function TgUsdStakePage() {
+export default async function USGStakePage() {
   return (
-    <TgUsdStakeProvider>
-      <TgUsdClaimContent />
-    </TgUsdStakeProvider>
+    <USGStakeProvider>
+      <USGStakeContent />
+    </USGStakeProvider>
   )
 }

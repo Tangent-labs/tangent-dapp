@@ -68,7 +68,7 @@ const CustomTooltip = (props: {
   const base = props?.payload.find((p: { dataKey?: string | number | undefined; value?: ValueType | undefined }) => p.dataKey === "baseAmount")
   const liq = props?.payload.find((p: { dataKey?: string | number | undefined; value?: ValueType | undefined }) => p.dataKey === "amountWithLiquidity")
   return (
-    <div className="pointer-events-none rounded-xl bg-black/70 px-3 py-2 shadow-xl ring-1 ring-white/20 backdrop-blur">
+    <div className="pointer-events-none rounded-xl bg-[#070707] px-3 py-2 shadow-xl ring-1 ring-white/20 backdrop-blur">
       <div className="mb-1 text-[10px] uppercase tracking-wide text-white/60">{props?.fmtLabel(Number(props?.label))}</div>
       <div className="flex flex-col gap-1">
         {base && (

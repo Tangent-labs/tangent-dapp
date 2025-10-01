@@ -1,20 +1,22 @@
-import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
-import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
-import stakeUI from "../../../../abi/USG/sUSGUI.json"
+import sTANUI from "../../../../abi/USG/sTANUI.json"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { StakingInfo } from "../rstan_types"
+import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
+import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
+import { TANStakingInfo } from "../rstan_types"
 
 export async function getTanStakeOnChainData(currentAddress: Address | undefined) {
-  return await executeChainViewUnique<StakingInfo>(stakeUI.abi as Abi, stakeUI.bytecode as Hex, [
+  return await executeChainViewUnique<TANStakingInfo>(sTANUI.abi as Abi, sTANUI.bytecode as Hex, [
     currentAddress,
-    VSTAN_CONTRACT.TAN,
+    VSTAN_CONTRACT.TAN_LP,
+    VSTAN_CONTRACT.ETH_ORACLE,
     VSTAN_CONTRACT.TAN,
     VSTAN_CONTRACT.STAN,
+    VSTAN_CONTRACT.DAO,
   ])
 }
 
-export function getFormState(stakeInfo: StakingInfo, currentFeature: "stake" | "unstake", weiValue?: bigint, expected?: bigint, isWellConnected?: boolean) {
+export function getFormState(stakeInfo: TANStakingInfo, currentFeature: "stake" | "unstake", weiValue?: bigint, expected?: bigint, isWellConnected?: boolean) {
   let isApproved = false
   const reasons: string[] = []
 
@@ -36,7 +38,7 @@ export function getFormState(stakeInfo: StakingInfo, currentFeature: "stake" | "
   return { canProcess: isApproved && reasons.length === 0, cantProcessReasons: reasons, haveToApprove: !isApproved }
 }
 
-export const getExpectedUSG = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
+export const getExpectedTAN = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
   const [account] = await walletClient.requestAddresses()
 
   const params = [weiValue]
@@ -55,7 +57,7 @@ export const getExpectedUSG = async (walletClient: WalletClient, weiValue: bigin
   return previewRedeem
 }
 
-export const getExpectedSUSG = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
+export const getExpectedsTAN = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
   const [account] = await walletClient.requestAddresses()
 
   const params = [weiValue]
@@ -127,7 +129,7 @@ export const doStakeTgUSD = async ({ walletClient, stakingAddress, weiValue }: {
   return hash
 }
 
-export const computeProjection = (stakeInfo: StakingInfo, timeFrame: number, apr: number, addedLiquidity?: bigint) => {
+export const computeProjection = (stakeInfo: TANStakingInfo, timeFrame: number, apr: number, addedLiquidity?: bigint) => {
   let projection = 0
 
   if (addedLiquidity) {

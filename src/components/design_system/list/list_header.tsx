@@ -4,6 +4,7 @@ import USGHoverCard from "../structure/usg_hover_card"
 import { ListHeaderData, ListSort, SortedState } from "@/types"
 import { IconSortHeader } from "@/components/icons/icon_sort_header"
 import ListRowDisposition from "@/components/design_system/list/list_row_disposition"
+import { cn } from "@/lib/utils"
 
 interface ListHeaderProps {
   headers: ListHeaderData[]
@@ -11,7 +12,7 @@ interface ListHeaderProps {
   activeSort?: ListSort
   onSort?: (key: string) => void
   indicator?: string
-  rowDisposition?: React.ComponentType<{ children: React.ReactNode[] }> // Simplified custom disposition component
+  rowDisposition?: React.ComponentType<{ children: React.ReactNode[] }>
 }
 
 interface HeaderDisplayProps {
@@ -20,14 +21,19 @@ interface HeaderDisplayProps {
   onSort?: (key: string) => void
   field: string
   indicator?: string
+  className?: string
 }
 
-const HeaderDisplay = ({ label, sort = "none", onSort, field, indicator }: HeaderDisplayProps) => {
+const HeaderDisplay = ({ label, sort = "none", onSort, field, indicator, className }: HeaderDisplayProps) => {
   return (
-    <div className="flex w-full flex-1 items-center justify-center gap-2" onClick={() => onSort && onSort(field)}>
-      <span>{label} </span>
-      {indicator && <USGHoverCard title={label as string}>{indicator}</USGHoverCard>}
-      <div className="text-row-tonic">{label && label !== "" && <IconSortHeader sort={sort} />}</div>
+    <div className={cn(className, "cursor-pointer gap-2 text-sm")} onClick={() => onSort && onSort(field)}>
+      <span>{label}</span>
+      {indicator && (
+        <USGHoverCard iconClassName="w-[13px]" title={label as string}>
+          {indicator}
+        </USGHoverCard>
+      )}
+      {!!onSort && <IconSortHeader sort={sort} />}
     </div>
   )
 }
@@ -36,24 +42,26 @@ const ListHeader = ({ headers, className = "", activeSort, onSort, rowDispositio
   return (
     <div className={`hidden p-4 leading-[10px] xl:block ${className}`}>
       <CustomRowDisposition>
-        {!!headers?.at(0)?.key && (
+        {!!headers[0]?.key && (
           <HeaderDisplay
-            key={headers?.at(0)?.key}
-            label={headers?.at(0)?.label}
-            sort={(activeSort?.key == headers?.at(0)?.key && activeSort?.direction) || "none"}
-            field={headers?.at(0)?.key || ""}
-            onSort={onSort}
-            indicator={headers?.at(0)?.indicator}
+            key={headers[0]?.key}
+            label={headers[0]?.label}
+            sort={(activeSort?.key == headers[0]?.key && activeSort?.direction) || "none"}
+            field={headers[0]?.key || ""}
+            onSort={!!headers[0]?.sort ? onSort : undefined}
+            indicator={headers[0]?.indicator}
+            className="flex w-full items-center justify-start pl-8"
           />
         )}
-        {!!headers?.at(1)?.key && (
+        {!!headers[1]?.key && (
           <HeaderDisplay
-            key={headers?.at(1)?.key}
-            label={headers?.at(1)?.label}
-            sort={(activeSort?.key == headers?.at(1)?.key && activeSort?.direction) || "none"}
-            field={headers?.at(1)?.key || ""}
-            onSort={onSort}
-            indicator={headers?.at(1)?.indicator}
+            key={headers[1]?.key}
+            label={headers[1]?.label}
+            sort={(activeSort?.key == headers[1]?.key && activeSort?.direction) || "none"}
+            field={headers[1]?.key || ""}
+            onSort={!!headers[1]?.sort ? onSort : undefined}
+            indicator={headers[1]?.indicator}
+            className="flex w-full items-center justify-center"
           />
         )}
         <>
@@ -63,8 +71,9 @@ const ListHeader = ({ headers, className = "", activeSort, onSort, rowDispositio
               label={header.label}
               sort={(activeSort?.key == header.key && activeSort?.direction) || "none"}
               field={header.key}
-              onSort={onSort}
+              onSort={!!header.sort ? onSort : undefined}
               indicator={header.indicator}
+              className="flex w-full flex-1 items-center justify-center"
             />
           ))}
         </>

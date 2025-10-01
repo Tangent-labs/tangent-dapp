@@ -112,10 +112,10 @@ export function DepositReceiveInput({
         className={`${isLoading ? "shimmer" : ""} flex flex-col bg-white bg-opacity-[3%] p-2 transition-colors duration-200 ease-in-out hover:bg-white/10`}
       >
         <div className="flex w-full justify-between">
-          <div className="text-sm text-gray-400">{labelDeposit}</div>
+          <div className="text-sm text-subtitle">{labelDeposit}</div>
           {isZapping && (
             <div className="flex items-center justify-center gap-1">
-              <div className="text-sm text-gray-400">Zap</div>
+              <div className="text-sm text-subtitle">Zap</div>
               <IconThunder className="h-auto w-[8px] text-row-tonic" />
               <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
             </div>
@@ -137,7 +137,7 @@ export function DepositReceiveInput({
           </div>
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
-        <div className="flex justify-between text-xs text-gray-400">
+        <div className="flex justify-between text-xs text-subtitle">
           <div>{dollarDepositDisplay}</div>
 
           <BorderPanel
@@ -159,7 +159,7 @@ export function DepositReceiveInput({
               max="100"
               value={percentage}
               onChange={handleSliderChange}
-              className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-black"
+              className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]"
               style={{
                 background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
               }}

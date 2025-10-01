@@ -1,0 +1,673 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "sTANUI",
+  "sourceName": "src/chainview/USG/ui/sTANUI.cv.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "contract ICurveCryptoSwap",
+          "name": "tanLP",
+          "type": "address"
+        },
+        {
+          "internalType": "contract IAggregatorV3",
+          "name": "ethOracle",
+          "type": "address"
+        },
+        {
+          "internalType": "contract IERC20Metadata",
+          "name": "tan",
+          "type": "address"
+        },
+        {
+          "internalType": "contract IYearnV3Vault",
+          "name": "sTan",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "dao",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "tanPrice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "sTanPrice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "sTanSupply",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "tanPercentageInsTan",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "tanBalance",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "sTanBalance",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "tanAllowance",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct sTANUI.sTANUIOut",
+          "name": "output",
+          "type": "tuple"
+        }
+      ],
+      "name": "sTANUIOutError",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "components": [
+            {
+              "internalType": "contract IERC20",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "address[]",
+              "name": "spenders",
+              "type": "address[]"
+            }
+          ],
+          "internalType": "struct InputBalancesAllowances[]",
+          "name": "ibas",
+          "type": "tuple[]"
+        }
+      ],
+      "name": "getBalancesAllowances",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "contract IERC20",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "balance",
+              "type": "uint256"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "spender",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "allowance",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct Allowance[]",
+              "name": "allowances",
+              "type": "tuple[]"
+            }
+          ],
+          "internalType": "struct OutputBalanceAllowances[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "contract IERC20",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct TokenAmount[]",
+          "name": "tokenAmounts",
+          "type": "tuple[]"
+        }
+      ],
+      "name": "getERC20AmountInfos",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "contract IERC20Metadata",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "decimals",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct ERC20AmountInfos[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "contract IERC20",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct TokenAmount",
+          "name": "tokenAmount",
+          "type": "tuple"
+        }
+      ],
+      "name": "getERC20AmountInfos",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "contract IERC20Metadata",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "decimals",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct ERC20AmountInfos",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IERC20",
+          "name": "erc20",
+          "type": "address"
+        }
+      ],
+      "name": "getERC20StaticInfos",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "contract IERC20Metadata",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "decimals",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct ERC20StaticInfos",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IERC20[]",
+          "name": "erc20s",
+          "type": "address[]"
+        }
+      ],
+      "name": "getERC20StaticInfos",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "contract IERC20Metadata",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "decimals",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct ERC20StaticInfos[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "market",
+          "type": "address"
+        }
+      ],
+      "name": "getMarketDetails",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "marketAddress",
+              "type": "address"
+            },
+            {
+              "components": [
+                {
+                  "components": [
+                    {
+                      "internalType": "contract IERC20Metadata",
+                      "name": "token",
+                      "type": "address"
+                    },
+                    {
+                      "internalType": "uint256",
+                      "name": "decimals",
+                      "type": "uint256"
+                    },
+                    {
+                      "internalType": "string",
+                      "name": "symbol",
+                      "type": "string"
+                    }
+                  ],
+                  "internalType": "struct ERC20StaticInfos",
+                  "name": "collateralToken",
+                  "type": "tuple"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "totalCollateralUSDValue",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "totalCollateralAmount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "collateralUSDPrice",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "positionCollateralAmount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "positionCollateralUSDValue",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "contract IPriceOracle",
+                  "name": "priceOracle",
+                  "type": "address"
+                }
+              ],
+              "internalType": "struct GetMarketDetails.CollateralInfos",
+              "name": "collateralInfos",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "totalDebt",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "userDebt",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "healthRatio",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "currentBorrowRate",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "futureBorrowRate",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "currentRewardCut",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "futureRewardCut",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct GetMarketDetails.DebtInfos",
+              "name": "debtInfos",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "maxLTV",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "maxMarketDebt",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "minimumLoan",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "liquidationThreshold",
+                  "type": "uint256"
+                },
+                {
+                  "components": [
+                    {
+                      "internalType": "bool",
+                      "name": "isHEC",
+                      "type": "bool"
+                    },
+                    {
+                      "internalType": "uint24",
+                      "name": "rMin",
+                      "type": "uint24"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "rMax",
+                      "type": "uint32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "pMin",
+                      "type": "uint32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "pInf",
+                      "type": "uint32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "pMax",
+                      "type": "uint32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "a1",
+                      "type": "uint32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "a2",
+                      "type": "uint32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "k",
+                      "type": "uint32"
+                    }
+                  ],
+                  "internalType": "struct IRParams",
+                  "name": "irParams",
+                  "type": "tuple"
+                },
+                {
+                  "components": [
+                    {
+                      "internalType": "uint16",
+                      "name": "harvestFeePercentage",
+                      "type": "uint16"
+                    },
+                    {
+                      "internalType": "uint16",
+                      "name": "stepAmount",
+                      "type": "uint16"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "startCutPercentage",
+                      "type": "uint32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "endCutPercentage",
+                      "type": "uint32"
+                    },
+                    {
+                      "internalType": "uint80",
+                      "name": "startCutPrice",
+                      "type": "uint80"
+                    },
+                    {
+                      "internalType": "uint80",
+                      "name": "endCutPrice",
+                      "type": "uint80"
+                    }
+                  ],
+                  "internalType": "struct RCParams",
+                  "name": "rcParams",
+                  "type": "tuple"
+                }
+              ],
+              "internalType": "struct GetMarketDetails.MarketConstants",
+              "name": "constants",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "contract IERC20",
+                  "name": "token",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "balance",
+                  "type": "uint256"
+                },
+                {
+                  "components": [
+                    {
+                      "internalType": "address",
+                      "name": "spender",
+                      "type": "address"
+                    },
+                    {
+                      "internalType": "uint256",
+                      "name": "allowance",
+                      "type": "uint256"
+                    }
+                  ],
+                  "internalType": "struct Allowance[]",
+                  "name": "allowances",
+                  "type": "tuple[]"
+                }
+              ],
+              "internalType": "struct OutputBalanceAllowances[]",
+              "name": "obas",
+              "type": "tuple[]"
+            },
+            {
+              "components": [
+                {
+                  "components": [
+                    {
+                      "internalType": "contract IERC20Metadata",
+                      "name": "token",
+                      "type": "address"
+                    },
+                    {
+                      "internalType": "uint256",
+                      "name": "decimals",
+                      "type": "uint256"
+                    },
+                    {
+                      "internalType": "string",
+                      "name": "symbol",
+                      "type": "string"
+                    }
+                  ],
+                  "internalType": "struct ERC20StaticInfos",
+                  "name": "erc20Info",
+                  "type": "tuple"
+                },
+                {
+                  "components": [
+                    {
+                      "internalType": "uint128",
+                      "name": "lastUpdateTime",
+                      "type": "uint128"
+                    },
+                    {
+                      "internalType": "uint128",
+                      "name": "periodFinish",
+                      "type": "uint128"
+                    },
+                    {
+                      "internalType": "uint256",
+                      "name": "rewardRate",
+                      "type": "uint256"
+                    },
+                    {
+                      "internalType": "uint256",
+                      "name": "rewardPerTokenStored",
+                      "type": "uint256"
+                    }
+                  ],
+                  "internalType": "struct Reward",
+                  "name": "streamingData",
+                  "type": "tuple"
+                }
+              ],
+              "internalType": "struct GetMarketDetails.MarketRewards[]",
+              "name": "rewardData",
+              "type": "tuple[]"
+            }
+          ],
+          "internalType": "struct GetMarketDetails.MarketRow",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x60806040525f195f55348015610013575f5ffd5b506040516107ce3803806107ce833981016040819052610032916105bc565b5f846001600160a01b031663313ce5676040518163ffffffff1660e01b8152600401602060405180830381865afa15801561006f573d5f5f3e3d5ffd5b505050506040513d601f19601f82011682018060405250810190610093919061063f565b61009e90600a61075f565b856001600160a01b03166350d25bcd6040518163ffffffff1660e01b8152600401602060405180830381865afa1580156100da573d5f5f3e3d5ffd5b505050506040513d601f19601f820116820180604052508101906100fe919061076d565b6101089190610784565b90505f6001600160a01b0387161561017d57866001600160a01b031663c146bf946040518163ffffffff1660e01b8152600401602060405180830381865afa158015610156573d5f5f3e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061017a919061076d565b90505b5f8261019183670de0b6b3a7640000610784565b61019b919061079b565b90506040518060e00160405280828152602001670de0b6b3a7640000876001600160a01b03166399530b066040518163ffffffff1660e01b8152600401602060405180830381865afa1580156101f3573d5f5f3e3d5ffd5b505050506040513d601f19601f82011682018060405250810190610217919061076d565b6102219085610784565b61022b919061079b565b8152602001866001600160a01b03166318160ddd6040518163ffffffff1660e01b8152600401602060405180830381865afa15801561026c573d5f5f3e3d5ffd5b505050506040513d601f19601f82011682018060405250810190610290919061076d565b81526040516370a0823160e01b81526001600160a01b0387811660048301526020909201918916906370a0823190602401602060405180830381865afa1580156102dc573d5f5f3e3d5ffd5b505050506040513d601f19601f82011682018060405250810190610300919061076d565b886001600160a01b03166318160ddd6040518163ffffffff1660e01b8152600401602060405180830381865afa15801561033c573d5f5f3e3d5ffd5b505050506040513d601f19601f82011682018060405250810190610360919061076d565b61036a91906107ba565b6040516370a0823160e01b81526001600160a01b0389811660048301528a16906370a0823190602401602060405180830381865afa1580156103ae573d5f5f3e3d5ffd5b505050506040513d601f19601f820116820180604052508101906103d2919061076d565b6103e490670de0b6b3a7640000610784565b6103ee919061079b565b81526040516370a0823160e01b81526001600160a01b038c811660048301526020909201918916906370a0823190602401602060405180830381865afa15801561043a573d5f5f3e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061045e919061076d565b81526040516370a0823160e01b81526001600160a01b038c811660048301526020909201918816906370a0823190602401602060405180830381865afa1580156104aa573d5f5f3e3d5ffd5b505050506040513d601f19601f820116820180604052508101906104ce919061076d565b8152604051636eb1769f60e11b81526001600160a01b038c81166004830152888116602483015260209092019189169063dd62ed3e90604401602060405180830381865afa158015610522573d5f5f3e3d5ffd5b505050506040513d601f19601f82011682018060405250810190610546919061076d565b905260408051638676615960e01b81528251600482015260208301516024820152908201516044820152606082015160648201526080820151608482015260a082015160a482015260c09091015160c482015260e40160405180910390fd5b6001600160a01b03811681146105b9575f5ffd5b50565b5f5f5f5f5f5f60c087890312156105d1575f5ffd5b86516105dc816105a5565b60208801519096506105ed816105a5565b60408801519095506105fe816105a5565b606088015190945061060f816105a5565b6080880151909350610620816105a5565b60a0880151909250610631816105a5565b809150509295509295509295565b5f6020828403121561064f575f5ffd5b815160ff8116811461065f575f5ffd5b9392505050565b634e487b7160e01b5f52601160045260245ffd5b6001815b60018411156106b55780850481111561069957610699610666565b60018416156106a757908102905b60019390931c92800261067e565b935093915050565b5f826106cb57506001610759565b816106d757505f610759565b81600181146106ed57600281146106f757610713565b6001915050610759565b60ff84111561070857610708610666565b50506001821b610759565b5060208310610133831016604e8410600b8410161715610736575081810a610759565b6107425f19848461067a565b805f190482111561075557610755610666565b0290505b92915050565b5f61065f60ff8416836106bd565b5f6020828403121561077d575f5ffd5b5051919050565b808202811582820484141761075957610759610666565b5f826107b557634e487b7160e01b5f52601260045260245ffd5b500490565b818103818111156107595761075961066656fe"
+}

@@ -1,27 +1,27 @@
 "use client"
 
-import { Button } from "@/components/design_system/inputs/button"
-import Divider from "@/components/design_system/structure/divider"
 import Image from "next/image"
-import { usePathname, useRouter } from "next/navigation"
-import { useRsTanContext } from "./rstan_layout_context"
-import { formatBigInt } from "@/lib/number_formatter"
-import { IconChevron } from "@/components/icons/icon_chevron"
-import { formatDate } from "@/lib/other_formatter"
 import { ListState } from "@/types"
-import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { lockListHeaders } from "./rstan_layout_controller"
-import ListHeader from "@/components/design_system/list/list_header"
-import ListRow from "@/components/design_system/list/list_row"
-import EvolutionBox from "@/components/design_system/structure/evolution_box"
-import { IconCircleHelp } from "@/components/icons"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
-import { IconRsTan } from "@/components/icons/icon_rstan"
-import { LockPosition } from "../tg_usd/tg_usd_type"
-import TokenImage from "@/components/design_system/structure/token_image"
 import { InfinityIcon } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
+import { formatDate } from "@/lib/other_formatter"
+import { LockPosition } from "../tg_usd/tg_usd_type"
+import { formatBigInt } from "@/lib/number_formatter"
+import { useRsTanContext } from "./rstan_layout_context"
+import { usePathname, useRouter } from "next/navigation"
+import { IconVsTan } from "@/components/icons/icon_vstan"
+import { lockListHeaders } from "./rstan_layout_controller"
+import { IconChevron } from "@/components/icons/icon_chevron"
+import ListRow from "@/components/design_system/list/list_row"
+import { Button } from "@/components/design_system/inputs/button"
+import Divider from "@/components/design_system/structure/divider"
+import ListHeader from "@/components/design_system/list/list_header"
+import ButtonTab from "@/components/design_system/inputs/button_tab"
+import TokenImage from "@/components/design_system/structure/token_image"
+import EvolutionBox from "@/components/design_system/structure/evolution_box"
+import USGHoverCard from "@/components/design_system/structure/usg_hover_card"
 import { FeatureSelect } from "@/components/design_system/structure/feature_select"
+import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 
 const listeState: ListState = {
   search: undefined,
@@ -60,38 +60,47 @@ export const RsTanLayoutContent = ({
 
   return (
     <>
-      <div className="mb-3 flex w-full items-end justify-end gap-6">
+      <div className="mb-3 flex w-full items-center justify-between gap-6">
         <div className="usg-header hidden w-7/12 xl:flex">
           <div className="flex items-center justify-center">
-            <Image height={360} width={360} src={`/medias/tokens/rsTan.png`} alt="token" />
+            <Image height={360} width={360} src={`/medias/tokens/vsTAN.png`} alt="token" />
           </div>
           <div className="ml-6 flex flex-col items-start justify-between gap-3">
             <span className="mt-1 text-5xl font-semibold">Lock TAN</span>
 
-            <span>
+            <span className="text-[15px]">
               Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT
               stable pool & CVX stable pool).
             </span>
-            <span>Rewards are distributed weekly, at the beginning of each epoch. Staking positions are represented by NFTs. Learn more</span>
+            <span className="text-[15px]">
+              Rewards are distributed weekly, at the beginning of each epoch. Staking positions are represented by NFTs. Learn more
+            </span>
           </div>
         </div>
 
-        <div className="flex w-full items-center justify-around rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
-          <IconRsTan className="w-32"></IconRsTan>
-
-          <div className="flex w-full flex-col items-center justify-center">
-            <div className="text-xs font-semibold text-subtitle">Supply</div>
-            <div className="text-md font-semibold text-white">{formatBigInt(lockData?.totalSupply, 18, 2)}</div>
+        <div className="flex h-full w-full flex-col items-center gap-8 rounded-[10px] xl:w-5/12">
+          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-xl !font-semibold italic">
+            Points campaign
+            <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
           </div>
 
-          <div className="flex w-full flex-col items-center justify-center">
-            <div className="text-xs font-semibold text-subtitle">vsTan</div>
-            <div className="text-md font-semibold text-white">$1.23</div>
-          </div>
+          <div className="justify-bewteen flex w-full items-center rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+            <IconVsTan className="h-10 w-32"></IconVsTan>
 
-          <div className="flex w-full flex-col items-center justify-center rounded-lg bg-button-active py-2">
-            <div className="text-xs font-semibold text-black">APR</div>
-            <div className="text-md font-semibold text-white">{formatBigInt(lockData?.tanAPR, 18, 2)}%</div>
+            <div className="flex w-full flex-col items-center justify-center">
+              <div className="text-xs font-semibold text-subtitle">Total Locked</div>
+              <div className="text-md font-semibold text-white">{formatBigInt(lockData?.totalLocked, 18, 2)}</div>
+            </div>
+
+            <div className="flex w-full flex-col items-center justify-center">
+              <div className="text-xs font-semibold text-subtitle">vsTan</div>
+              <div className="text-md font-semibold text-white">$1.23</div>
+            </div>
+
+            <div className="flex w-full flex-col items-center justify-center rounded-lg bg-button-active py-2">
+              <div className="text-xs font-semibold text-black">APR</div>
+              <div className="text-md font-semibold text-white">{formatBigInt(lockData?.tanAPR, 18, 2)}%</div>
+            </div>
           </div>
         </div>
       </div>
@@ -140,7 +149,7 @@ function LockPositionList() {
         <ListHeader rowDisposition={LockRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 
-      <div className="flex h-full max-h-[400px] w-full flex-col overflow-y-scroll">
+      <div className="flex h-full max-h-[400px] w-full flex-col overflow-x-hidden overflow-y-scroll">
         {lockData?.positions.map((lockPosition: LockPosition) => (
           <div className="flex w-full flex-col" key={lockPosition?.tokenId}>
             <ListRow
@@ -154,7 +163,7 @@ function LockPositionList() {
               </div>
               <div className="flex items-center justify-center text-lg font-semibold">
                 {formatBigInt(lockPosition?.amount, 18, 2)}
-                <IconRsTan className="ml-1 w-5"></IconRsTan>
+                <IconVsTan className="ml-1 w-5"></IconVsTan>
               </div>
 
               <>
@@ -200,7 +209,11 @@ function LockPositionList() {
                   <>
                     <div className="flex w-fit items-center justify-center gap-1">
                       <div className="text-xs font-semibold text-subtitle">Perma lock</div>
-                      <IconCircleHelp className="w-3"></IconCircleHelp>
+
+                      <USGHoverCard iconClassName="h-auto w-[14px] text-white" title="">
+                        Lock your tokens in perpetuity. You can remove the perma lock option at any time.
+                      </USGHoverCard>
+
                       <Switch checked={extendToPermaLock} onCheckedChange={() => setExtendToPermaLock(!extendToPermaLock)} />
                     </div>
 

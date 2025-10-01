@@ -1,4 +1,4 @@
-type TgUsdMarketAsset =
+type USGMarketAsset =
   | "crvUSD-USDC"
   | "crvUSD-USDT"
   | "USDC-fxUSD"
@@ -17,7 +17,7 @@ type TgUsdMarketAsset =
   | "pxETH-stETH"
 
 export type ExistingAsset =
-  | TgUsdMarketAsset
+  | USGMarketAsset
   | "CRV"
   | "CVX"
   | "BAL"
@@ -39,3 +39,4 @@ export type ExistingAsset =
   | "scrvUSD"
   | "sTAN"
   | "TAN"
+  | "vsTAN"

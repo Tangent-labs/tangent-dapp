@@ -1,13 +1,14 @@
-import { executeChainViewUnique, executeContractCall } from "@/services/service_rpc"
+import { formatDate } from "@/lib/other_formatter"
 import { Abi, Address, Hex, WalletClient } from "viem"
-import harvestUI from "../../../../abi/USG/HarvestUI.json"
 import market from "../../../../abi/USG/Market.json"
-import { HarvesterInfo, HarvesterInfoDisplay } from "../tg_usd_type"
-import { AssetData, AssetDataPriced, ExistingAsset } from "@/types"
-import { USG_CONTRACT, USGMarkets } from "../tg_usd_repository"
-import { getPricesFromTokenAmounts } from "@/lib/asset_utils"
-import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
+import harvestUI from "../../../../abi/USG/HarvestUI.json"
 import { getTokensPrice } from "@/services/service_price"
+import { getPricesFromTokenAmounts } from "@/lib/asset_utils"
+import { USG_CONTRACT, USGMarkets } from "../tg_usd_repository"
+import { HarvesterInfo, HarvesterInfoDisplay } from "../tg_usd_type"
+import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
+import { AssetData, AssetDataPriced, ExistingAsset, ListHeaderData } from "@/types"
+import { executeChainViewUnique, executeContractCall } from "@/services/service_rpc"
 
 export async function doHarvest(stakingAddress: Address, walletClient: WalletClient) {
   const [account] = await walletClient.requestAddresses()
@@ -42,7 +43,7 @@ export function transformHarvestOnChainData(harvesterInfos: HarvesterInfo[], ass
       rewards: rewards?.data,
       isProcessed: true,
       contractAddress: stakingInfo.marketAddress,
-      lastHarvestDate: info.lastHarvestDate,
+      lastHarvestDate: formatDate(new Date(Number(info.lastHarvestDate) * 1000), "dd-MM-yyyy"),
     } as HarvesterInfoDisplay
   }
   return harvesterInfos?.map(processOne).filter((a) => !!a) || []
@@ -80,3 +81,11 @@ export const computeAndReturnPrices = async (harvestInfo: HarvesterInfo[]) => {
     return
   }
 }
+
+export const harvestListHeaders: ListHeaderData[] = [
+  { label: "Assets", key: "assets" },
+  { label: "Total Rewards", key: "totalRewards", sort: "sort" },
+  { label: "Harvester Fees", key: "harvesterFees", sort: "sort" },
+  { label: "Harvester Rewards", key: "harvesterRewards", sort: "sort" },
+  { label: "", key: "" },
+]

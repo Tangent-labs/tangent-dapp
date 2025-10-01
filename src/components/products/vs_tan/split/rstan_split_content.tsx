@@ -3,7 +3,7 @@
 import InputSelect from "@/components/design_system/inputs/input_select"
 import { useRsTanContext } from "../rstan_layout_context"
 import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
-import { IconRsTan } from "@/components/icons/icon_rstan"
+import { IconVsTan } from "@/components/icons/icon_vstan"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useRsTanSplitContext } from "./rstan_split_context"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
@@ -11,6 +11,7 @@ import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { formatDate } from "@/lib/other_formatter"
 import { InfinityIcon } from "lucide-react"
 import FormButtons from "@/components/design_system/form/form_actions"
+import { IconOpenOutside } from "@/components/icons/icon_open_outside"
 
 export const RsTanSplitContent = () => {
   const { lockData } = useRsTanContext()
@@ -70,13 +71,13 @@ export const RsTanSplitContent = () => {
     <div className="flex w-full flex-col items-start justify-start">
       <div className="mb-1 text-lg font-semibold text-white">Select position to split:</div>
 
-      <div className="flex w-full flex-col items-center justify-between gap-2 sm:flex-row">
+      <div className="mt-2 flex h-10 w-full items-center justify-between gap-2">
         <PositionSelect />
-        <div className="flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel px-3 py-1.5 text-[15px] text-sm text-subtitle backdrop-blur-[60px] backdrop-filter">
+        <div className="mt-1 flex h-full w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-3 text-sm text-subtitle">
           Balance:
           {splitPositionInfo && splitPositionInfo?.amount && (
             <span className="flex items-center justify-end text-lg font-semibold text-white">
-              {formatBigInt(splitPositionInfo?.amount, 18, 2)} <IconRsTan className="ml-2 h-5 w-5"></IconRsTan>
+              {formatBigInt(splitPositionInfo?.amount, 18, 2)} <IconVsTan className="ml-2 h-5 w-5"></IconVsTan>
             </span>
           )}
         </div>
@@ -104,7 +105,7 @@ export const RsTanSplitContent = () => {
               <div className="flex h-full items-end justify-end gap-3 xl:items-center xl:justify-center">
                 <div className="hidden h-full flex-col items-center justify-center md:flex">
                   <div className="flex items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
-                    <IconRsTan className="h-4 w-4"></IconRsTan>
+                    <IconVsTan className="h-4 w-4"></IconVsTan>
                     vsTan
                   </div>
                 </div>
@@ -135,7 +136,7 @@ export const RsTanSplitContent = () => {
               <div className="flex h-full items-end justify-end gap-3 xl:items-center xl:justify-center">
                 <div className="hidden h-full flex-col items-center justify-center md:flex">
                   <div className="flex items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
-                    <IconRsTan className="h-4 w-4"></IconRsTan>
+                    <IconVsTan className="h-4 w-4"></IconVsTan>
                     vsTan
                   </div>
                 </div>
@@ -157,7 +158,7 @@ export const RsTanSplitContent = () => {
                 max="90"
                 value={splitPercentage}
                 onChange={(e) => setSplitPercentage(Number(e.target.value))}
-                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-black"
+                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]"
                 style={{
                   background: `linear-gradient(to right, #3b82f6 ${visualPercentage}%, #4b5563 ${visualPercentage}%)`,
                 }}
@@ -210,12 +211,12 @@ export const RsTanSplitContent = () => {
                 className="w-6/12"
                 originalValue={
                   <div className="flex items-center justify-center gap-2 text-lg">
-                    {formatBigInt(splitPositionInfo?.amount, 18, 2)} <IconRsTan className="h-5 w-5"></IconRsTan>
+                    {formatBigInt(splitPositionInfo?.amount, 18, 2)} <IconVsTan className="h-5 w-5"></IconVsTan>
                   </div>
                 }
                 newValue={
                   <div className="flex items-center justify-center gap-2">
-                    {formatBigInt(BigInt(splitPercentage / 10) * splitPositionInfo?.amount, 19, 2)} <IconRsTan className="h-5 w-5"></IconRsTan>
+                    {formatBigInt(BigInt(splitPercentage / 10) * splitPositionInfo?.amount, 19, 2)} <IconVsTan className="h-5 w-5"></IconVsTan>
                   </div>
                 }
               />
@@ -238,12 +239,12 @@ export const RsTanSplitContent = () => {
                 className="w-6/12"
                 originalValue={
                   <div className="flex items-center justify-center gap-2">
-                    0 <IconRsTan className="h-5 w-5"></IconRsTan>
+                    0 <IconVsTan className="h-5 w-5"></IconVsTan>
                   </div>
                 }
                 newValue={
                   <div className="flex items-center justify-center gap-2">
-                    {formatBigInt(BigInt((100 - splitPercentage) / 10) * splitPositionInfo?.amount, 19, 2)} <IconRsTan className="h-5 w-5"></IconRsTan>
+                    {formatBigInt(BigInt((100 - splitPercentage) / 10) * splitPositionInfo?.amount, 19, 2)} <IconVsTan className="h-5 w-5"></IconVsTan>
                   </div>
                 }
               />
@@ -255,6 +256,13 @@ export const RsTanSplitContent = () => {
                 )}
               </div>
             </div>
+          </div>
+
+          <div className="my-2 flex rounded-[10px] bg-overlay-panel p-2 text-xs text-subtitle">
+            <span>The newly created positions will share the same unlock schedule. </span>
+            <span onClick={() => window.open("https://youtu.be/5Hplx-geZHo?t=5")} className="ml-1 flex cursor-pointer items-center underline hover:text-white">
+              Learn more <IconOpenOutside className="w-3"></IconOpenOutside>
+            </span>
           </div>
 
           <FormButtons

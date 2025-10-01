@@ -1,12 +1,13 @@
 "use client"
-import React, { createContext, useContext, useState, ReactNode, useMemo } from "react"
+
 import { ListHeaderData, ListRowData, ListSort, ListState } from "@/types"
-import { ClaimData, EarnTask, UserPosition, UserTask } from "@/components/products/tg_usd/tg_usd_type"
+import React, { createContext, useContext, useState, ReactNode, useMemo } from "react"
+import { Boost, ClaimData, EarnTask, HarvesterInfoDisplay, UserPosition, UserTask, VoteTask } from "@/components/products/tg_usd/tg_usd_type"
 
 //  Defined what is injected into the Provider ( mosty via server execution)
 interface ListProviderProps {
   _listState: ListState
-  _rows: ListRowData[] | ClaimData[] | UserTask[] | UserPosition[] | EarnTask[]
+  _rows: ListRowData[] | ClaimData[] | UserTask[] | VoteTask[] | UserPosition[] | EarnTask[] | Boost[] | HarvesterInfoDisplay[]
   _headers: ListHeaderData[]
   children: ReactNode
   customSort?: (arg: ListState) => void
@@ -15,7 +16,7 @@ interface ListProviderProps {
 // Define what is returned by the provider
 interface ListContextValues {
   listState: ListState
-  displayRows: ListRowData[] | ClaimData[] | UserTask[] | UserPosition[] | EarnTask[]
+  displayRows: ListRowData[] | ClaimData[] | UserTask[] | VoteTask[] | UserPosition[] | EarnTask[] | Boost[] | HarvesterInfoDisplay[]
   headers: ListHeaderData[]
   udpateSort: (field: string) => void
   udpateSearch: (search: string) => void
@@ -50,6 +51,7 @@ export const ListProvider = ({ children, _listState, _rows, _headers, customSort
       newSort.key = field
       newSort.direction = "asc"
     }
+
     setListState({ ...listState, sort: newSort })
     if (customSort) {
       customSort({ ...listState, sort: newSort })

@@ -1,39 +1,89 @@
 "use client"
 
 import { Address } from "viem"
-import { getUserPoints } from "./api"
-import { UserPoints, ZapToken } from "./tg_usd_type"
+import { TANStakingInfo } from "../vs_tan/rstan_types"
+import { getUSGsUSGMetrics } from "./tg_usd_controller"
+import { getCurrentBlock } from "@/services/service_rpc"
+import { getLpUserPoints, getUserRefereesPoints, getVoteUserPoints } from "./api"
 import { getBalances } from "./record/tg_usd_record_controller"
+import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
-import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { USGStakingInfo, LpUserPoints, ZapToken, VoteUserPoints, RefereesPoints } from "./tg_usd_type"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 
-type TgUsdContextProps = {
+type USGContextProps = {
   children: ReactNode
   tokens: ZapToken[]
 }
 
-type TgUsdContextValues = {
+type USGContextValues = {
   tokens: ZapToken[]
   balances: Record<Address, bigint> | null
-  userPoints: UserPoints
+  lpUserPoints: LpUserPoints
+  voteUserPoints: VoteUserPoints
+  refetchPoints: () => Promise<void>
+  loadUSGsUSGMetrics: () => void
+  USGsUSGMetrics: USGStakingInfo | undefined
+  TANsTANMetrics: TANStakingInfo | undefined
+  loadTanSTANMetrics: () => void
+  refereesPoints: RefereesPoints
 }
 
-export const TgUsdContext = createContext<TgUsdContextValues | undefined>(undefined)
+export const USGContext = createContext<USGContextValues | undefined>(undefined)
 
-export const TgUsdProvider = ({ children, tokens }: TgUsdContextProps) => {
+export const USGProvider = ({ children, tokens }: USGContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
 
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
 
-  const [userPoints, setUserPoints] = useState<UserPoints>({ basePoints: 0, referralPoints: 0, totalPoints: 0, dailyRate: 0 })
+  const [lpUserPoints, setLpUserPoints] = useState<LpUserPoints>({ lpDailyRate: 0, lpTotalPoints: 0 })
 
-  useEffect(() => {
+  const [voteUserPoints, setVoteUserPoints] = useState<VoteUserPoints>({ voteTotalPoints: 0 })
+
+  const [refereesPoints, setRefereesPoints] = useState<RefereesPoints>({ lpPoints: 0, votePoints: 0 })
+
+  const [USGsUSGMetrics, setUSGsUSGMetrics] = useState<USGStakingInfo | undefined>()
+
+  const [TANsTANMetrics, setTANsTANMetrics] = useState<TANStakingInfo | undefined>()
+
+  const loadUSGsUSGMetrics = useCallback(() => {
     if (currentAddress) {
-      getUserPoints(currentAddress).then((p) => {
-        setUserPoints(p)
+      getUSGsUSGMetrics(currentAddress).then((data) => {
+        setUSGsUSGMetrics(data)
       })
     }
   }, [currentAddress])
+
+  const loadTanSTANMetrics = useCallback(() => {
+    if (currentAddress) {
+      getTanStakeOnChainData(currentAddress).then((data) => {
+        setTANsTANMetrics(data)
+      })
+    }
+  }, [currentAddress])
+
+  const getRefereesPoints = async () => {
+    getUserRefereesPoints(currentAddress!).then((p) => {
+      setRefereesPoints(p)
+    })
+  }
+
+  const refetchPoints = async () => {
+    const currentBlock = await getCurrentBlock()
+
+    const isoEndDate = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
+    const dateFrom = encodeURIComponent(isoEndDate)
+
+    getLpUserPoints(currentAddress!, dateFrom).then((lpPts) => {
+      setLpUserPoints(lpPts)
+    })
+
+    getVoteUserPoints(currentAddress!).then((votePts) => {
+      setVoteUserPoints(votePts)
+    })
+
+    getRefereesPoints()
+  }
 
   useEffect(() => {
     const tokenAddresses: Address[] = tokens.map((el) => el.address)
@@ -54,19 +104,26 @@ export const TgUsdProvider = ({ children, tokens }: TgUsdContextProps) => {
     }
   }, [currentAddress, tokens])
 
-  const contextValue: TgUsdContextValues = {
+  const contextValue: USGContextValues = {
     tokens,
     balances,
-    userPoints,
+    lpUserPoints,
+    refetchPoints,
+    loadUSGsUSGMetrics,
+    loadTanSTANMetrics,
+    USGsUSGMetrics,
+    TANsTANMetrics,
+    voteUserPoints,
+    refereesPoints,
   }
 
-  return <TgUsdContext.Provider value={contextValue}>{children}</TgUsdContext.Provider>
+  return <USGContext.Provider value={contextValue}>{children}</USGContext.Provider>
 }
 
-export const useTgUsdContext = () => {
-  const context = useContext(TgUsdContext)
+export const useUSGContext = () => {
+  const context = useContext(USGContext)
   if (!context) {
-    throw new Error("useTgUsdContext must be used within a TgUsdProvider")
+    throw new Error("useUSGContext must be used within a USGProvider")
   }
   return context
 }

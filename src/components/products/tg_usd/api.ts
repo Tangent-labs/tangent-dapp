@@ -1,7 +1,7 @@
 "use server"
 
 import { Address } from "viem"
-import { MarketHistoricalData, UserPoints, UserTask } from "./tg_usd_type"
+import { Boost, MarketHistoricalData, LpUserPoints, UserTask, VoteTask, VoteUserPoints, RefereesPoints } from "./tg_usd_type"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -85,7 +85,7 @@ export const getUserPositions = async (user: Address, market: Address) => {
   }
 }
 
-export const validateReferralCode = async (referralCode: string, signature: Address, currentAddress: Address) => {
+export const validateReferralCode = async (referralCode: string, signature: Address, currentAddress: Address, now: string) => {
   try {
     const url = `${baseUrl}/referral`
 
@@ -94,14 +94,14 @@ export const validateReferralCode = async (referralCode: string, signature: Addr
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ referralCode, signature, account: currentAddress }),
+      body: JSON.stringify({ referralCode, signature, account: currentAddress, now }),
     })
 
-    const data = await response.json()
-
     if (!response.ok) {
-      throw new Error(data.error || `Referral validation failed with status ${response.status}`)
+      throw new Error(`Referral validation failed with status ${response.status}`)
     }
+
+    const data = await response.json()
 
     return data
   } catch {
@@ -121,11 +121,11 @@ export const generateCode = async (account: Address): Promise<string> => {
       body: JSON.stringify({ account }),
     })
 
-    const data = await response.json()
-
     if (!response.ok) {
-      throw new Error(data.error || `Referral code creation failed with status ${response.status}`)
+      throw new Error(`Referral code creation failed with status ${response.status}`)
     }
+
+    const data = await response.json()
 
     return data.message as string
   } catch {
@@ -144,11 +144,11 @@ export const getReferralStatus = async (account: Address): Promise<UserStatus> =
       },
     })
 
-    const data: UserStatus = await response.json()
-
     if (!response.ok) {
       throw new Error("Failed to fetch referral status with status")
     }
+
+    const data: UserStatus = await response.json()
 
     return data
   } catch (error) {
@@ -168,15 +168,39 @@ export const getHistoricalMarketData = async (marketAddress: string, range: stri
       },
     })
 
-    const data: Array<MarketHistoricalData> = await response.json()
-
     if (!response.ok) {
       throw new Error("Failed to fetch historical market data")
     }
 
+    const data: Array<MarketHistoricalData> = await response.json()
+
     return data
   } catch (error) {
     console.error("Failed to fetch historical market data :", error)
+    return []
+  }
+}
+
+export const getUserVoteTasks = async (account: Address): Promise<Array<VoteTask>> => {
+  try {
+    const url = `${baseUrl}/tasks/vote/${account}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch vote tasks")
+    }
+
+    const data: Array<VoteTask> = await response.json()
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch vote tasks:", error)
     return []
   }
 }
@@ -192,11 +216,11 @@ export const getUserTasks = async (account: Address): Promise<Array<UserTask>> =
       },
     })
 
-    const data: Array<UserTask> = await response.json()
-
     if (!response.ok) {
       throw new Error("Failed to fetch tasks")
     }
+
+    const data: Array<UserTask> = await response.json()
 
     return data
   } catch (error) {
@@ -205,9 +229,9 @@ export const getUserTasks = async (account: Address): Promise<Array<UserTask>> =
   }
 }
 
-export const getUserPoints = async (account: Address): Promise<UserPoints> => {
+export const getVoteUserPoints = async (account: Address): Promise<VoteUserPoints> => {
   try {
-    const url = `${baseUrl}/points/${account}`
+    const url = `${baseUrl}/vote-points/${account}`
 
     const response = await fetch(url, {
       method: "GET",
@@ -216,15 +240,160 @@ export const getUserPoints = async (account: Address): Promise<UserPoints> => {
       },
     })
 
-    const data: UserPoints = await response.json()
-
     if (!response.ok) {
-      throw new Error("Failed to fetch tasks")
+      throw new Error("Failed to fetch vote points")
     }
+
+    const data: VoteUserPoints = await response.json()
 
     return data
   } catch (error) {
-    console.error("Failed to fetch tasks:", error)
-    return { basePoints: 0, referralPoints: 0, totalPoints: 0, dailyRate: 0 }
+    console.error("Failed to fetch vote points:", error)
+    return { voteTotalPoints: 0 }
+  }
+}
+
+export const getUserRefereesPoints = async (account: Address): Promise<RefereesPoints> => {
+  try {
+    const url = `${baseUrl}/refereess/points/${account}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch user points")
+    }
+
+    const data: RefereesPoints = await response.json()
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch user points:", error)
+    return { lpPoints: 0, votePoints: 0 }
+  }
+}
+
+export const getLpUserPoints = async (account: Address, dateFrom: string): Promise<LpUserPoints> => {
+  try {
+    const url = `${baseUrl}/lp-points/${account}/${dateFrom}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch user points")
+    }
+
+    const data: LpUserPoints = await response.json()
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch user points:", error)
+    return { lpDailyRate: 0, lpTotalPoints: 0 }
+  }
+}
+
+export const getUserBoosts = async (account: Address): Promise<Array<Boost>> => {
+  try {
+    const url = `${baseUrl}/boosts/${account}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch boosts")
+    }
+
+    const boosts: Array<Boost> = await response.json()
+
+    return boosts
+  } catch (error) {
+    console.error("Failed to fetch boosts:", error)
+    return []
+  }
+}
+
+export const getLeaderboards = async (): Promise<{
+  lpLeaderboard: Array<{
+    rank: number
+    address: Address
+    pts: number
+  }>
+  voteLeaderboard: Array<{
+    rank: number
+    address: Address
+    pts: number
+  }>
+}> => {
+  try {
+    const url = `${baseUrl}/leaderboards`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch leaderboard")
+    }
+
+    const { lpLeaderboard, voteLeaderboard } = await response.json()
+
+    return { lpLeaderboard, voteLeaderboard }
+  } catch (error) {
+    console.error("Failed to fetch leaderboard:", error)
+    return { lpLeaderboard: [], voteLeaderboard: [] }
+  }
+}
+
+export const getGodsonsLeaderboard = async (
+  address: Address
+): Promise<
+  Array<{
+    rank: number
+    address: Address
+    lpPoints: number
+    votePts: number
+  }>
+> => {
+  try {
+    const url = `${baseUrl}/leaderboard/godsons/${address}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch godsons leaderboard")
+    }
+
+    const leaderboard: Array<{
+      rank: number
+      address: Address
+      lpPoints: number
+      votePts: number
+    }> = await response.json()
+
+    return leaderboard
+  } catch (error) {
+    console.error("Failed to fetch godsons leaderboard:", error)
+    return []
   }
 }

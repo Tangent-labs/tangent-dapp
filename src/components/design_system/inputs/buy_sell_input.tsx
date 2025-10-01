@@ -55,7 +55,7 @@ export function BuySellInput({
 }: BuySellInputProps) {
   const balanceNumber = useMemo(() => {
     if (depositBalance) {
-      return Number(formatUnits(depositBalance, 18))
+      return Number(formatUnits(depositBalance, depositAsset?.decimals || 18))
     }
     return 0
   }, [depositBalance])
@@ -73,7 +73,7 @@ export function BuySellInput({
       setPercentage(newPercentage)
       const newValue = newPercentage !== 0 ? Number(((newPercentage / 100) * balanceNumber).toFixed(0)) : 0
       setInnerValue(newValue)
-      onValueChange(!!newValue ? toBigInt(newValue, 18) : undefined)
+      onValueChange(!!newValue ? toBigInt(newValue, depositAsset?.decimals || 18) : undefined)
     }
   }
 
@@ -159,7 +159,7 @@ export function BuySellInput({
   }, [receiveAmount, receiveAsset])
 
   return (
-    <div className="flex flex-col">
+    <div className="flex w-full flex-col">
       <div className="mb-3 flex w-full items-end justify-between">
         <div className="font-semibold">
           {labelDeposit === "You Buy" ? "Sell" : "Buy"} {receiveAsset?.symbol}
@@ -173,7 +173,7 @@ export function BuySellInput({
       <div className={cn("flex flex-col")} {...props}>
         <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2 hover:bg-white/10`}>
           <div className="flex w-full justify-between">
-            <div className="text-sm text-gray-400">{labelDeposit}</div>
+            <div className="text-sm text-subtitle">{labelDeposit}</div>
           </div>
           <div className="mb-2 flex justify-between">
             <div className="mr-4 text-xl">
@@ -191,7 +191,7 @@ export function BuySellInput({
             </div>
             <div className="order-1 lg:order-2">{depositSelect}</div>
           </div>
-          <div className="flex justify-between text-xs text-gray-400">
+          <div className="flex justify-between text-xs text-subtitle">
             <div>{dollarDepositDisplay}</div>
 
             <div className="flex cursor-pointer items-center">
@@ -213,7 +213,7 @@ export function BuySellInput({
             max="100"
             value={percentage}
             onChange={handleSliderChange}
-            className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-black"
+            className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]"
             style={{
               background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
             }}
@@ -261,7 +261,7 @@ export function BuySellInput({
         </div>
 
         <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2 hover:bg-white/10`}>
-          <div className="text-sm text-gray-400">{labelReceive}</div>
+          <div className="text-sm text-subtitle">{labelReceive}</div>
           <div className="mb-2 flex justify-between">
             <div className="mr-4 text-xl font-medium">
               <input
@@ -276,7 +276,7 @@ export function BuySellInput({
             </div>
             <div>{receiveSelect}</div>
           </div>
-          <div className="flex justify-between text-xs text-gray-400">
+          <div className="flex justify-between text-xs text-subtitle">
             <div>$({dollarReceiveDisplay})</div>
           </div>
         </BorderPanel>

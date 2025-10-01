@@ -1,25 +1,33 @@
 "use client"
 
-import { createContext, ReactNode, useContext, useMemo, useState } from "react"
-import { EarnTask } from "../tg_usd_type"
 import { ListState } from "@/types"
+import { useUSGContext } from "../tg_usd_context"
+import { EarnTask, USGStakingInfo, LpUserPoints } from "../tg_usd_type"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 
-type TgUsdEarnContextProps = {
+type USGEarnContextProps = {
   children: ReactNode
   tasks: EarnTask[]
 }
 
-type TgUsdEarnContextValues = {
+type USGEarnContextValues = {
   isLoading: boolean
   searchValue: string | null
   setSearchValue: (value: string | null) => void
   displayRows: EarnTask[]
   customSort: (arg: ListState) => void
+  USGsUSGMetrics: USGStakingInfo | undefined
+  lpUserPoints: LpUserPoints
 }
 
-export const TgUsdEarnContext = createContext<TgUsdEarnContextValues | undefined>(undefined)
+export const USGEarnContext = createContext<USGEarnContextValues | undefined>(undefined)
 
-export const TgUsdEarnProvider = ({ children, tasks }: TgUsdEarnContextProps) => {
+export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
+  const { currentAddress } = useWalletConnexionContext()
+
+  const { USGsUSGMetrics, loadUSGsUSGMetrics, lpUserPoints } = useUSGContext()
+
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [searchValue, setSearchValue] = useState<string | null>(null)
@@ -50,21 +58,27 @@ export const TgUsdEarnProvider = ({ children, tasks }: TgUsdEarnContextProps) =>
     })
   }
 
-  const contextValue: TgUsdEarnContextValues = {
+  useEffect(() => {
+    loadUSGsUSGMetrics()
+  }, [currentAddress])
+
+  const contextValue: USGEarnContextValues = {
     isLoading,
     searchValue,
     setSearchValue,
     displayRows,
     customSort,
+    USGsUSGMetrics,
+    lpUserPoints,
   }
 
-  return <TgUsdEarnContext.Provider value={contextValue}>{children}</TgUsdEarnContext.Provider>
+  return <USGEarnContext.Provider value={contextValue}>{children}</USGEarnContext.Provider>
 }
 
-export const useTgUsdEarnContext = () => {
-  const context = useContext(TgUsdEarnContext)
+export const useUSGEarnContext = () => {
+  const context = useContext(USGEarnContext)
   if (!context) {
-    throw new Error("useTgUsdEarnContext must be used within a TgUsdEarnProvider")
+    throw new Error("useUSGEarnContext must be used within a USGEarnProvider")
   }
   return context
 }

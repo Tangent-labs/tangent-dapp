@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { doIncreaseLockTime, doTogglePermaLock, getRsTanData } from "./rstan_layout_controller"
+import { doIncreaseLockTime, doTogglePermaLock, getVsTanData } from "./rstan_layout_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { BalanceAllowanceData, LockData, LockPosition } from "../tg_usd/tg_usd_type"
 import { getBalancesAndAllowances } from "../tg_usd/record/tg_usd_record_controller"
@@ -73,7 +73,7 @@ export const RsTanProvider = ({ children }: RsTanContextProps) => {
 
   const loadData = useCallback(() => {
     if (currentAddress) {
-      getRsTanData(currentAddress).then((d) => {
+      getVsTanData(currentAddress).then((d) => {
         setLockData(d)
         setIsLoading(false)
       })

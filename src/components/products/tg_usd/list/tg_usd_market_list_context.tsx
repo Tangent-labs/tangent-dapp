@@ -1,22 +1,24 @@
 "use client"
 
-import { ListRowData } from "@/types"
+import { ListRowData, ListState } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { getMarketDatas, getTgUsdMarketsData, transformToRows, transformGlobalData, transformMarketData } from "./tg_usd_market_controller"
-import { ChainViewMarketList, ChainViewMarketRow, MarketDebtData, TgUsdCollateralData, TgUsdGlobalData } from "../tg_usd_type"
+import { getMarketDatas, getUSGMarketsData, transformToRows, transformGlobalData, transformMarketData } from "./tg_usd_market_controller"
+import { ChainViewMarketList, MarketConstants, MarketDebtData, TgUsdCollateralData, TgUsdGlobalData } from "../tg_usd_type"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { formatUnits } from "viem"
+import { Address, formatUnits } from "viem"
 
-type TgUsdMaketListContextProps = {
+type USGMaketListContextProps = {
   children: ReactNode
 }
 
-type TgUsdMaketListContextValues = {
+type USGMaketListContextValues = {
   displayRows: ListRowData[]
   globalData: TgUsdGlobalData
   searchValue: string | null
   setSearchValue: (value: string | null) => void
-  marketData: ChainViewMarketRow[]
+  sortMarketList: (arg: ListState) => void
+
+  marketData: Array<{ marketType: "Convex_CRV" | "Convex_FXN" | undefined; marketAddress: Address; constants: MarketConstants }>
   userData: {
     totalUserDebt: bigint
     totalUserDeposit: bigint
@@ -27,9 +29,9 @@ type TgUsdMaketListContextValues = {
   } | null
 }
 
-export const TgUsdMaketListContext = createContext<TgUsdMaketListContextValues | undefined>(undefined)
+export const USGMaketListContext = createContext<USGMaketListContextValues | undefined>(undefined)
 
-export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps) => {
+export const USGMaketListProvider = ({ children }: USGMaketListContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
 
   const [onChainData, setOnChainData] = useState<ChainViewMarketList | undefined>()
@@ -38,7 +40,7 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
 
   useEffect(() => {
     if (currentAddress) {
-      getTgUsdMarketsData(currentAddress).then((data) => {
+      getUSGMarketsData(currentAddress).then((data) => {
         setOnChainData(data)
       })
     }
@@ -57,7 +59,7 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
     return transformGlobalData(onChainData)
   }, [onChainData])
 
-  const marketData = useMemo<ChainViewMarketRow[]>(() => {
+  const marketData = useMemo<Array<{ marketType: "Convex_CRV" | "Convex_FXN" | undefined; marketAddress: Address; constants: MarketConstants }>>(() => {
     if (onChainData) {
       return transformMarketData(onChainData)
     }
@@ -79,7 +81,7 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
         totalProtocolDebt += market.debtInfos.totalDebt
       })
 
-      const tgUsdCollateralsData = marketData.map((market) => {
+      const tgUsdCollateralsData = onChainData.rowInfos.map((market) => {
         const value = market.collateralInfos.totalCollateralUSDValue
 
         const percentage = totalProtocolDeposit > 0n ? (Number(formatUnits(value, 18)) / Number(formatUnits(totalProtocolDeposit, 18))) * 100 : 0
@@ -90,7 +92,7 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
         }
       })
 
-      const marketDebtData = marketData
+      const marketDebtData = onChainData.rowInfos
         .map((market, index) => {
           const debtValue = market.debtInfos.totalDebt
 
@@ -111,22 +113,37 @@ export const TgUsdMaketListProvider = ({ children }: TgUsdMaketListContextProps)
     return null
   }, [onChainData])
 
-  const contextValue: TgUsdMaketListContextValues = {
+  const sortMarketList = (listState: ListState) => {
+    const { key, direction } = listState.sort!
+
+    displayRows.sort((elementA: ListRowData, elementB: ListRowData) => {
+      const aValue = Number(elementA.indicators.find((el) => el.key === key)?.raw)
+      const bValue = Number(elementB.indicators.find((el) => el.key === key)?.raw)
+
+      if (aValue < bValue) return direction === "asc" ? -1 : 1
+      if (aValue > bValue) return direction === "asc" ? 1 : -1
+
+      return 0
+    })
+  }
+
+  const contextValue: USGMaketListContextValues = {
     displayRows,
     globalData,
     searchValue,
     setSearchValue,
     marketData,
     userData,
+    sortMarketList,
   }
 
-  return <TgUsdMaketListContext.Provider value={contextValue}>{children}</TgUsdMaketListContext.Provider>
+  return <USGMaketListContext.Provider value={contextValue}>{children}</USGMaketListContext.Provider>
 }
 
-export const useTgUsdMaketListContext = () => {
-  const context = useContext(TgUsdMaketListContext)
+export const useUSGMaketListContext = () => {
+  const context = useContext(USGMaketListContext)
   if (!context) {
-    throw new Error("useTgUsdMaketListContext must be used within a TgUsdMaketListProvider")
+    throw new Error("useUSGMaketListContext must be used within a USGMaketListProvider")
   }
   return context
 }

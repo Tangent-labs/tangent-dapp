@@ -4,12 +4,12 @@ import Divider from "@/components/design_system/structure/divider"
 import Title from "@/components/design_system/structure/title"
 import UsgTotalBorrow from "./usg_total_borrow"
 import InterestRateGraph from "./tg_usd_interest_rate_graph"
-import { useTgUsdRecordContext } from "./tg_usd_record_context"
+import { useUSGRecordContext } from "./tg_usd_record_context"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import { formatCompactDollar } from "@/lib/number_formatter"
 
-export default function TgUsdMarketInfo() {
-  const { totalBorrow, totalBorrowTimeWindow, setTotalBorrowTimeWindow } = useTgUsdRecordContext()
+export default function USGMarketInfo() {
+  const { totalBorrow, totalBorrowTimeWindow, setTotalBorrowTimeWindow } = useUSGRecordContext()
 
   return (
     <div className="rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
@@ -21,7 +21,7 @@ export default function TgUsdMarketInfo() {
             <div className="flex w-full items-center justify-between gap-2">
               <div className="flex items-center justify-center gap-2">
                 <span>Total borrow</span>
-                <span className="bg-button-active bg-clip-text text-[20px] font-semibold leading-4 text-transparent">
+                <span className="bg-button-active bg-clip-text text-xl font-semibold leading-4 text-transparent">
                   {" "}
                   {formatCompactDollar(totalBorrow?.latestTotalDebt)}{" "}
                 </span>

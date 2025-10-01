@@ -1,7 +1,7 @@
 "use client"
 
-import TokenImage from "@/components/design_system/structure/token_image"
 import { MarketDetailData } from "../tg_usd_type"
+import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 
 type MarketMetadataProps = {
@@ -15,7 +15,7 @@ export const MarketMetadata = ({ marketData }: MarketMetadataProps) => {
         <>
           {marketData?.marketType?.includes("CRV") && (
             <>
-              <div className="hidden items-center justify-center gap-2 rounded-full bg-overlay-panel px-4 py-0.5 text-xs md:flex">
+              <div className="hidden items-center justify-center gap-1 rounded-full bg-overlay-panel px-3 py-0.5 text-xs md:flex">
                 <TokenImage token={"CRV"} size={16} />
                 <span className="flex text-sm">Curve</span>
               </div>
@@ -25,7 +25,7 @@ export const MarketMetadata = ({ marketData }: MarketMetadataProps) => {
           )}
           {marketData?.marketType?.startsWith("Convex_") && (
             <>
-              <div className="hidden items-center justify-center gap-2 rounded-full bg-overlay-panel px-4 py-0.5 text-xs md:flex">
+              <div className="hidden items-center justify-center gap-1 rounded-full bg-overlay-panel px-3 py-0.5 text-xs md:flex">
                 <TokenImage token={"CVX"} size={16} />
                 <span className="flex text-sm">Convex</span>
               </div>
@@ -33,7 +33,9 @@ export const MarketMetadata = ({ marketData }: MarketMetadataProps) => {
             </>
           )}
 
-          <BorderPanel className="flex items-center justify-center !rounded-full bg-button-linear px-3 py-0.5 text-xs">
+          <BorderPanel
+            className={`flex items-center justify-center !rounded-full px-3 py-0.5 text-xs ${marketData?.constants?.irParams.isHEC ? "bg-button-linear" : "bg-lec"}`}
+          >
             {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
           </BorderPanel>
         </>

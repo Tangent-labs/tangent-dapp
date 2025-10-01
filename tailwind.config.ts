@@ -26,7 +26,7 @@ const config: Config = {
         "list-row-hover": "var(--tgt-list-row-hover)",
         "panel-title-gradient": "var(--tgt-panel-title-gradient)",
         "button-gradient": "var(--tgt-button)",
-        lec: "var(--tgt-lec)",
+        lec: "var(--tgt-bg-lec)",
       },
       colors: {
         "button-active": "var(--tgt-bg-button-active)",

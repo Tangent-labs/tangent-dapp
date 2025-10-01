@@ -101,6 +101,10 @@ export const RsTanClaimContent = () => {
         </div>
       </div>
 
+      <div className="my-2 flex flex-col rounded-[10px] bg-overlay-panel p-2 text-xs text-subtitle">
+        <span>Rewards can be claimed separately, or all together.</span>
+      </div>
+
       {selectedPositionsData && selectedPositionsData.length > 0 && (
         <Button state={hasDuplicates ? "disabled" : "active"} className="mt-3 flex w-full justify-center" onClick={actionClaim}>
           Claim

@@ -8,11 +8,11 @@ import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { computeAndReturnPrices, doClaim, getTgUsdClaimOnChainData, transformClaimOnChainData } from "./tg_usd_claim_controller"
 
-type TgUsdClaimContextProps = {
+type USGClaimContextProps = {
   children: ReactNode
 }
 
-type TgUsdClaimContextValues = {
+type USGClaimContextValues = {
   isLoading: boolean
   displayRows: ClaimData[]
   actionClaim: (arg: Address, markets: Address[]) => void
@@ -20,11 +20,12 @@ type TgUsdClaimContextValues = {
   addToClaimableMarkets: (rowData: ClaimableMarket) => void
   marketsToClaim: ClaimableMarket[]
   customSort: (arg: ListState) => void
+  onClickClaimAll: () => void
 }
 
-export const TgUsdClaimContext = createContext<TgUsdClaimContextValues | undefined>(undefined)
+export const USGClaimContext = createContext<USGClaimContextValues | undefined>(undefined)
 
-export const TgUsdClaimProvider = ({ children }: TgUsdClaimContextProps) => {
+export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
   const { getWalletClient, currentAddress } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -80,8 +81,8 @@ export const TgUsdClaimProvider = ({ children }: TgUsdClaimContextProps) => {
     const { key, direction } = listState.sort!
 
     displayRows.sort((elementA: ClaimData, elementB: ClaimData) => {
-      const aValue = elementA[key as keyof ClaimData]
-      const bValue = elementB[key as keyof ClaimData]
+      const aValue = Number(elementA[key as keyof ClaimData])
+      const bValue = Number(elementB[key as keyof ClaimData])
 
       if (aValue < bValue) return direction === "asc" ? -1 : 1
       if (aValue > bValue) return direction === "asc" ? 1 : -1
@@ -107,7 +108,18 @@ export const TgUsdClaimProvider = ({ children }: TgUsdClaimContextProps) => {
     })
   }
 
-  const contextValue: TgUsdClaimContextValues = {
+  const onClickClaimAll = () => {
+    if (marketsToClaim.length === displayRows.length) {
+      setMarketsToClaim([])
+    } else {
+      const markets = displayRows.map((el) => {
+        return { marketName: el.marketName, claimable: el.totalClaimableValue, marketAddress: el.marketAddress } as ClaimableMarket
+      })
+      setMarketsToClaim(markets)
+    }
+  }
+
+  const contextValue: USGClaimContextValues = {
     displayRows,
     actionClaim,
     onClickClaim,
@@ -115,15 +127,16 @@ export const TgUsdClaimProvider = ({ children }: TgUsdClaimContextProps) => {
     marketsToClaim,
     isLoading,
     customSort,
+    onClickClaimAll,
   }
 
-  return <TgUsdClaimContext.Provider value={contextValue}>{children}</TgUsdClaimContext.Provider>
+  return <USGClaimContext.Provider value={contextValue}>{children}</USGClaimContext.Provider>
 }
 
-export const useTgUsdClaimContext = () => {
-  const context = useContext(TgUsdClaimContext)
+export const useUSGClaimContext = () => {
+  const context = useContext(USGClaimContext)
   if (!context) {
-    throw new Error("useTgUsdClaimContext must be used within a TgUsdClaimProvider")
+    throw new Error("useUSGClaimContext must be used within a USGClaimProvider")
   }
   return context
 }

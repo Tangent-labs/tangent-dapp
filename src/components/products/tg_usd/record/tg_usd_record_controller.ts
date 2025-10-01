@@ -4,8 +4,8 @@ import {
   IrParams,
   MarketDetailData,
   MarketHistoricalData,
-  TgUsdMarketDisplayData,
-  TgUsdMarketLoanDisplayData,
+  USGMarketDisplayData,
+  USGMarketLoanDisplayData,
   TotalBorrow,
   ZapToken,
 } from "../tg_usd_type"
@@ -42,7 +42,7 @@ export async function doApprove(walletClient: WalletClient, contract: Address, s
   return await waitForTransaction(txHash)
 }
 
-export const getTgUsdMarketRecordData = async (address: Address | undefined, market: Address) => {
+export const getUSGMarketRecordData = async (address: Address | undefined, market: Address) => {
   address = address || zeroAddress
   return await executeChainViewUnique<ChainViewMarketRow>(MarketDetailsUI.abi as Abi, MarketDetailsUI.bytecode as Hex, [address, market])
 }
@@ -141,7 +141,7 @@ export function getComputedFutureLoanData(
     ltv: ltv > 0 ? formatNumber(collateralValueToNumber(ltv || 0), 2) + "%" : "0%",
     maxBorrowable: formatDollarBigInt(maxBorrowable, collateralInfo.decimals, 0),
     maxWithdrawable: formatDollarBigInt(maxWithDrawable, collateralInfo.decimals, 0),
-  } as TgUsdMarketLoanDisplayData
+  } as USGMarketLoanDisplayData
 }
 
 export async function loadMarketServerData(collateral: string) {
@@ -182,7 +182,7 @@ export function getMarketDisplayData(marketData?: MarketDetailData, collateralIn
       maxLtvDollar: "-",
       rewardsCutCurrent: "-",
       rewardsCutNext: "-",
-    } as TgUsdMarketDisplayData
+    } as USGMarketDisplayData
 
   const loanData = getComputedFutureLoanData(marketData, collateralInfo, { borrowWeiValue: 0n, depositWeiValue: 0n })
 
@@ -202,7 +202,7 @@ export function getMarketDisplayData(marketData?: MarketDetailData, collateralIn
     maxLtvDollar: formatDollar(Number(formatEther(BigInt(marketData?.constants.maxMarketDebt || 0n))), 2),
     rewardsCutCurrent: formatNumber(Number(marketData?.debtInfos.currentRewardCut || 0n) / 1000, 0) + "%",
     rewardsCutNext: formatNumber(Number(marketData?.debtInfos.futureRewardCut || 0n) / 1000, 0) + "%",
-  } as TgUsdMarketDisplayData
+  } as USGMarketDisplayData
 }
 
 export function getMarketApr(marketAddress: Address) {

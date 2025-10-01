@@ -1,4 +1,4 @@
-import { IconCircleHelp } from "@/components/icons"
+import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { AprEntry, ExistingAsset } from "@/types"
 import TokenImage from "./token_image"
 import ProgressBar from "./progress_bar"

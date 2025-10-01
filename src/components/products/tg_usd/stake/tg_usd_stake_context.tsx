@@ -1,22 +1,21 @@
 "use client"
 
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { formatUnits } from "viem"
-import { StakingAssetInfo, StakingDepositType, StakingInfo } from "../tg_usd_type"
-import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedUSG, getFormState, getTgUsdStakeOnChainData } from "./tg_usd_stake_controller"
 import { USG_CONTRACT } from "../tg_usd_repository"
+import { useUSGContext } from "../tg_usd_context"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../tg_usd_type"
+import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedUSG, getFormState } from "./tg_usd_stake_controller"
 
-type TgUsdStakeContextProps = {
+type USGStakeContextProps = {
   children: ReactNode
 }
 
-type TgUsdStakeContextValues = {
+type USGStakeContextValues = {
   weiValue?: bigint
   setWeiValue: (arg: bigint | undefined) => void
-  stakeInfo: StakingInfo | undefined
-  isLoading: boolean
   currentFeature: "stake" | "unstake"
   setCurrentFeature: (arg: "stake" | "unstake") => void
   expected?: bigint
@@ -31,31 +30,26 @@ type TgUsdStakeContextValues = {
   formState: FormState
   stakePercentage: number
   setStakePercentage: (arg: number) => void
+  USGsUSGMetrics: USGStakingInfo | undefined
 }
 
-export const TgUsdStakeContext = createContext<TgUsdStakeContextValues | undefined>(undefined)
+export const USGStakeContext = createContext<USGStakeContextValues | undefined>(undefined)
 
-export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [stakeInfo, setStakeInfo] = useState<StakingInfo | undefined>()
+export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   const [currentFeature, setCurrentFeature] = useState<"stake" | "unstake">("stake")
+
   const [weiValue, setWeiValue] = useState<bigint | undefined>()
+
   const [expected, setExpected] = useState<bigint | undefined>()
+
   const [stakePercentage, setStakePercentage] = useState<number>(0)
+
+  const { loadUSGsUSGMetrics, USGsUSGMetrics } = useUSGContext()
 
   const { getWalletClient, currentAddress } = useWalletConnexionContext()
 
   useEffect(() => {
-    loadData()
-  }, [currentAddress])
-
-  const loadData = useCallback(() => {
-    if (currentAddress) {
-      getTgUsdStakeOnChainData(currentAddress).then((data) => {
-        setStakeInfo(data)
-        setIsLoading(false)
-      })
-    }
+    loadUSGsUSGMetrics()
   }, [currentAddress])
 
   const depositAssetOptions = useMemo(() => {
@@ -86,7 +80,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
         name: "sUSG",
         price: 0,
         symbol: "sUSG",
-        balance: stakeInfo?.sUSGBalance,
+        balance: USGsUSGMetrics?.sUSGBalance,
       }
     }
 
@@ -98,18 +92,18 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
       name: "USG",
       price: 0,
       symbol: "USG",
-      balance: stakeInfo?.USGBalance,
+      balance: USGsUSGMetrics?.USGBalance,
     }
-  }, [currentFeature, stakeInfo])
+  }, [currentFeature, USGsUSGMetrics])
 
   const currentAssetInfo = useMemo(() => {
     if (currentFeature === "stake") {
       return {
         current: "asset" as StakingDepositType,
         address: USG_CONTRACT.USG,
-        balance: stakeInfo?.USGBalance,
+        balance: USGsUSGMetrics?.USGBalance,
         asset: {
-          price: Number(stakeInfo?.USGPrice) / 10 ** 18,
+          price: Number(USGsUSGMetrics?.USGPrice) / 10 ** 18,
           decimals: 18,
           address: USG_CONTRACT.USG,
           displayDecimals: 2,
@@ -123,9 +117,9 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     return {
       current: "sdAsset" as StakingDepositType,
       address: USG_CONTRACT.SUSG,
-      balance: stakeInfo?.sUSGBalance,
+      balance: USGsUSGMetrics?.sUSGBalance,
       asset: {
-        price: Number(stakeInfo?.sUSGPrice) / 10 ** 18,
+        price: Number(USGsUSGMetrics?.sUSGPrice) / 10 ** 18,
         decimals: 18,
         address: USG_CONTRACT.SUSG,
         displayDecimals: 2,
@@ -134,19 +128,19 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
         logo: "sUSG" as ExistingAsset,
       },
     }
-  }, [currentFeature, stakeInfo])
+  }, [currentFeature, USGsUSGMetrics])
 
-  const formState = useMemo<FormState>(() => getFormState(stakeInfo!, currentFeature, weiValue, expected, true), [stakeInfo, weiValue, expected])
+  const formState = useMemo<FormState>(() => getFormState(USGsUSGMetrics!, currentFeature, weiValue, expected, true), [USGsUSGMetrics, weiValue, expected])
 
   const hasToApprove = useMemo(() => {
     if (!weiValue) return true
 
-    if (currentFeature === "stake" && weiValue && stakeInfo) {
-      return weiValue > stakeInfo?.USGAllowance
+    if (currentFeature === "stake" && weiValue && USGsUSGMetrics) {
+      return weiValue > USGsUSGMetrics?.USGAllowance
     }
 
     return false
-  }, [stakeInfo, currentFeature, weiValue])
+  }, [USGsUSGMetrics, currentFeature, weiValue])
 
   const actionUnstake = async () => {
     if (!weiValue || weiValue === 0n) return
@@ -158,7 +152,7 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
       weiValue,
     }
     await doUnstakeTgUSD(params)
-    loadData()
+    loadUSGsUSGMetrics()
     setWeiValue(0n)
     setExpected(0n)
   }
@@ -173,14 +167,14 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
       weiValue,
     }
     await doStakeTgUSD(params)
-    loadData()
+    loadUSGsUSGMetrics()
     setWeiValue(0n)
     setExpected(0n)
   }
 
   const actionApprove = async () => {
     if (!currentAssetInfo?.address) return
-    await doApprove(getWalletClient()!, USG_CONTRACT.USG, weiValue || 0n, USG_CONTRACT.SUSG).then(loadData)
+    await doApprove(getWalletClient()!, USG_CONTRACT.USG, weiValue || 0n, USG_CONTRACT.SUSG).then(loadUSGsUSGMetrics)
   }
 
   useEffect(() => {
@@ -202,25 +196,29 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
         }
       }
     })()
-  }, [weiValue, currentFeature])
+  }, [weiValue])
 
   const computeProjectedValue = useMemo(() => {
     if (currentFeature === "stake") {
-      return Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)) + Number(formatUnits(weiValue || 0n, 18))
+      return Number(formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18)) + Number(formatUnits(weiValue || 0n, 18))
     } else {
-      return Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)) - Number(formatUnits(weiValue || 0n, 18))
+      return Number(formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18)) - Number(formatUnits(weiValue || 0n, 18))
     }
   }, [currentFeature, weiValue])
 
-  const contextValue: TgUsdStakeContextValues = {
+  useEffect(() => {
+    setExpected(0n)
+    setWeiValue(0n)
+    setStakePercentage(0)
+  }, [currentFeature])
+
+  const contextValue: USGStakeContextValues = {
     actionStake,
     actionApprove,
     actionUnstake,
     setCurrentFeature,
     setWeiValue,
     computeProjectedValue,
-    isLoading,
-    stakeInfo,
     currentFeature,
     weiValue,
     expected,
@@ -231,15 +229,16 @@ export const TgUsdStakeProvider = ({ children }: TgUsdStakeContextProps) => {
     formState,
     stakePercentage,
     setStakePercentage,
+    USGsUSGMetrics,
   }
 
-  return <TgUsdStakeContext.Provider value={contextValue}>{children}</TgUsdStakeContext.Provider>
+  return <USGStakeContext.Provider value={contextValue}>{children}</USGStakeContext.Provider>
 }
 
-export const useTgUsdStakeContext = () => {
-  const context = useContext(TgUsdStakeContext)
+export const useUSGStakeContext = () => {
+  const context = useContext(USGStakeContext)
   if (!context) {
-    throw new Error("useTgUsdStakeContext must be used within a TgUsdStakProvider")
+    throw new Error("useUSGStakeContext must be used within a TgUsdStakProvider")
   }
   return context
 }

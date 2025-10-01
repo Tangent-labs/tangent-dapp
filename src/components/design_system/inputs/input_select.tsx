@@ -19,7 +19,7 @@ export const InputSelectAmountTemplate = (option: SelectOptionAmount) => {
   return (
     <div className="flex items-center gap-1">
       <span className="text-sm">{option.label}</span>
-      <span className="text-xs text-gray-400">{option.amountDisplay && `(${option.amountDisplay})`}</span>
+      <span className="text-xs text-subtitle">{option.amountDisplay && `(${option.amountDisplay})`}</span>
     </div>
   )
 }
@@ -50,7 +50,7 @@ const InputSelect = <T extends SelectOption | SelectOptionAmount>({
                   template(option as T)
                 ) : (
                   <div className="flex items-center">
-                    <span className="text-[14px] font-semibold">{option.label}</span>
+                    <span className="text-sm font-semibold">{option.label}</span>
                   </div>
                 )}
               </SelectItem>

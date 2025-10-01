@@ -2,12 +2,12 @@
 
 import { useRouter } from "next/navigation"
 import { Switch } from "@/components/ui/switch"
-import TgUsdMarketInfo from "./tg_usd_market_info"
-import TgUsdLoanDetail from "./tg_usd_loan_detail"
+import USGMarketInfo from "./tg_usd_market_info"
+import USGLoanDetail from "./tg_usd_loan_detail"
 import { formatBigInt } from "@/lib/number_formatter"
 import TgUsdCollateralPrice from "./tg_usd_collateral_price"
-import TgUsdRecordPageHeader from "./tg_usd_record_page_header"
-import { useTgUsdRecordContext } from "./tg_usd_record_context"
+import USGRecordPageHeader from "./tg_usd_record_page_header"
+import { useUSGRecordContext } from "./tg_usd_record_context"
 import Divider from "@/components/design_system/structure/divider"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import BorderPanel from "@/components/design_system/structure/border_panel"
@@ -16,11 +16,11 @@ import { FeatureSelect } from "@/components/design_system/structure/feature_sele
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
-type TgUsdRecordLayoutProps = {
+type USGRecordLayoutProps = {
   children: React.ReactNode
 }
 
-export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) {
+export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
   const {
     collateral,
     isLeveraged,
@@ -35,7 +35,7 @@ export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) 
     setDebtVAPR,
     setDebtFarming,
     setIsLeveraged,
-  } = useTgUsdRecordContext()
+  } = useUSGRecordContext()
 
   const router = useRouter()
 
@@ -50,9 +50,9 @@ export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) 
   return (
     <>
       <div className="flex flex-col gap-4">
-        <TgUsdRecordPageHeader />
+        <USGRecordPageHeader />
         <Divider />
-        <TgUsdLoanDetail />
+        <USGLoanDetail />
       </div>
       <div className="my-4 flex flex-col gap-4">
         <div className="flex gap-4 max-xl:flex-col">
@@ -268,7 +268,7 @@ export default function TgUsdRecordLayout({ children }: TgUsdRecordLayoutProps) 
           </BorderPanel>
         </Accordion>
         <Divider />
-        <TgUsdMarketInfo />
+        <USGMarketInfo />
         <TgUsdPositionHistory />
       </div>
     </>

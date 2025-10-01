@@ -4,7 +4,7 @@ import Image from "next/image"
 import { ExistingAsset } from "@/types"
 import { DepositReceiveAsset } from "../tg_usd_type"
 import { formatBigInt } from "@/lib/number_formatter"
-import { useTgUsdSwapContext } from "./tg_usd_swap_context"
+import { useUSGSwapContext } from "./tg_usd_swap_context"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import FormButtons from "@/components/design_system/form/form_actions"
@@ -19,7 +19,7 @@ type AssetSelectProps = {
   options: DepositReceiveAsset[]
 }
 
-export default function TgUsdSwapContent() {
+export default function USGSwapContent() {
   const {
     setIsBuying,
     handleDepositChange,
@@ -46,7 +46,8 @@ export default function TgUsdSwapContent() {
     receiveAssetInfo,
     depositSliderPercent,
     slippage,
-  } = useTgUsdSwapContext()
+    USGsUSGMetrics,
+  } = useUSGSwapContext()
 
   const ReceiveAssetSelect = ({ options }: AssetSelectProps) => {
     if (!balances || !options) {
@@ -106,28 +107,49 @@ export default function TgUsdSwapContent() {
           <span className="text-sm font-semibold">{option.symbol}</span>
         </div>
 
-        <span className="ml-auto text-xs text-gray-400">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
+        <span className="ml-auto text-xs text-subtitle">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
       </div>
     )
   }
 
   return (
     <>
-      <div className="usg-header relative hidden w-7/12 lg:flex">
-        <div className="absolute -top-2 left-20 h-full min-h-24">
-          <Image height={140} width={140} src="/medias/tokens/swapLogo.png" alt="token" />
+      <div className="flex w-full items-center justify-between gap-6">
+        <div className="usg-header relative hidden w-6/12 lg:flex">
+          <div className="absolute -top-2 left-20 h-full min-h-24">
+            <Image height={140} width={140} src="/medias/tokens/swapLogo.png" alt="token" />
+          </div>
+
+          <Image className="mr-24 mt-5" height={140} width={140} src="/medias/tokens/tgUSD_header.png" alt="token" />
+
+          <div className="flex flex-col items-start justify-center gap-3">
+            <span className="text-5xl font-semibold">Swap</span>
+            <p>Swap any asset for USG and other Tangent&apos;s assets, including Curve LPs and Wrapped Tangent Stablecoins. Learn more</p>
+          </div>
         </div>
 
-        <Image className="mr-24 mt-5" height={140} width={140} src="/medias/tokens/tgUSD_header.png" alt="token" />
+        <div className="flex h-full w-full flex-col items-center gap-4 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] xl:w-fit">
+          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-xl !font-semibold italic">
+            Points campaign
+            <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
+          </div>
 
-        <div className="flex flex-col items-start justify-center gap-3">
-          <span className="text-5xl font-semibold">Swap</span>
-          <p>Swap any asset for USG and other Tangent&apos;s assets, including Curve LPs and Wrapped Tangent Stablecoins. Learn more</p>
+          <div className="mt-auto flex w-full items-center justify-center gap-3 p-3">
+            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px] xl:min-w-48">
+              <span className="text-xs text-subtitle">USG Balance</span>
+              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)}</span>
+            </div>
+
+            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px] xl:min-w-48">
+              <span className="text-xs text-subtitle">sUSG Balance</span>
+              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)}</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="mt-2 flex w-full flex-col items-center justify-center">
-        <div className="mt-2 flex flex-col items-center justify-center rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+      <div className="mt-6 flex w-full flex-col items-center justify-center">
+        <div className="mt-2 flex w-full max-w-[450px] flex-col items-center justify-center rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px]">
           <BuySellInput
             depositAmount={depositWeiValue}
             depositSelect={<DepositAssetSelect options={computedAssets?.depositAssets} />}

@@ -122,7 +122,7 @@ export const InputSelectLockPosition = ({
         <div className="flex h-full flex-col items-end justify-between">
           <>{depositSelect}</>
 
-          <div className="mt-1 text-xs text-gray-400">
+          <div className="mt-1 text-xs text-subtitle">
             {displayBalance && (
               <div className="flex cursor-pointer items-center">
                 <BorderPanel
@@ -146,7 +146,7 @@ export const InputSelectLockPosition = ({
         max="100"
         value={percentage}
         onChange={handleSliderChange}
-        className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-black"
+        className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]"
         style={{
           background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
         }}

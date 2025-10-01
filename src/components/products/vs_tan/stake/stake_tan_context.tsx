@@ -1,12 +1,13 @@
 "use client"
 
-import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedUSG, getFormState, getTanStakeOnChainData } from "./stake_tan_controller"
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { formatUnits } from "viem"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { StakingAssetInfo, StakingDepositType, StakingInfo } from "../rstan_types"
+import { useUSGContext } from "../../tg_usd/tg_usd_context"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { StakingAssetInfo, StakingDepositType, TANStakingInfo } from "../rstan_types"
+import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedsTAN, getExpectedTAN, getFormState } from "./stake_tan_controller"
 
 type StakeTanContextProps = {
   children: ReactNode
@@ -15,7 +16,7 @@ type StakeTanContextProps = {
 type StakeTanContextValues = {
   weiValue?: bigint
   setWeiValue: (arg: bigint | undefined) => void
-  stakeInfo: StakingInfo | undefined
+  TANsTANMetrics: TANStakingInfo | undefined
   isLoading: boolean
   currentFeature: "stake" | "unstake"
   setCurrentFeature: (arg: "stake" | "unstake") => void
@@ -36,26 +37,22 @@ type StakeTanContextValues = {
 export const StakeTanContext = createContext<StakeTanContextValues | undefined>(undefined)
 
 export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
+  const { loadTanSTANMetrics, TANsTANMetrics } = useUSGContext()
+
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [stakeInfo, setStakeInfo] = useState<StakingInfo | undefined>()
+
   const [currentFeature, setCurrentFeature] = useState<"stake" | "unstake">("stake")
+
   const [weiValue, setWeiValue] = useState<bigint | undefined>()
+
   const [expected, setExpected] = useState<bigint | undefined>()
+
   const [stakePercentage, setStakePercentage] = useState<number>(0)
 
   const { getWalletClient, currentAddress } = useWalletConnexionContext()
 
   useEffect(() => {
-    loadData()
-  }, [currentAddress])
-
-  const loadData = useCallback(() => {
-    if (currentAddress) {
-      getTanStakeOnChainData(currentAddress).then((data) => {
-        setStakeInfo(data)
-        setIsLoading(false)
-      })
-    }
+    loadTanSTANMetrics()
   }, [currentAddress])
 
   const depositAssetOptions = useMemo(() => {
@@ -86,7 +83,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
         name: "sTAN",
         price: 0,
         symbol: "sTAN",
-        balance: stakeInfo?.sTanBalance,
+        balance: TANsTANMetrics?.sTanBalance,
       }
     }
 
@@ -98,18 +95,18 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
       name: "TAN",
       price: 0,
       symbol: "TAN",
-      balance: stakeInfo?.tanBalance,
+      balance: TANsTANMetrics?.tanBalance,
     }
-  }, [currentFeature, stakeInfo])
+  }, [currentFeature, TANsTANMetrics])
 
   const currentAssetInfo = useMemo(() => {
     if (currentFeature === "stake") {
       return {
         current: "asset" as StakingDepositType,
         address: VSTAN_CONTRACT.TAN,
-        balance: stakeInfo?.tanBalance,
+        balance: TANsTANMetrics?.tanBalance,
         asset: {
-          price: Number(stakeInfo?.tanPrice) / 10 ** 18,
+          price: Number(TANsTANMetrics?.tanPrice) / 10 ** 18,
           decimals: 18,
           address: VSTAN_CONTRACT.TAN,
           displayDecimals: 2,
@@ -123,9 +120,9 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
     return {
       current: "sdAsset" as StakingDepositType,
       address: VSTAN_CONTRACT.STAN,
-      balance: stakeInfo?.sTanBalance,
+      balance: TANsTANMetrics?.sTanBalance,
       asset: {
-        price: Number(stakeInfo?.sTanPrice) / 10 ** 18,
+        price: Number(TANsTANMetrics?.sTanPrice) / 10 ** 18,
         decimals: 18,
         address: VSTAN_CONTRACT.STAN,
         displayDecimals: 2,
@@ -134,19 +131,19 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
         logo: "sTAN" as ExistingAsset,
       },
     }
-  }, [currentFeature, stakeInfo])
+  }, [currentFeature, TANsTANMetrics])
 
-  const formState = useMemo<FormState>(() => getFormState(stakeInfo!, currentFeature, weiValue, expected, true), [stakeInfo, weiValue, expected])
+  const formState = useMemo<FormState>(() => getFormState(TANsTANMetrics!, currentFeature, weiValue, expected, true), [TANsTANMetrics, weiValue, expected])
 
   const hasToApprove = useMemo(() => {
     if (!weiValue) return true
 
-    if (currentFeature === "stake" && weiValue && stakeInfo) {
-      return weiValue > stakeInfo?.tanAllowance
+    if (currentFeature === "stake" && weiValue && TANsTANMetrics) {
+      return weiValue > TANsTANMetrics?.tanAllowance
     }
 
     return false
-  }, [stakeInfo, currentFeature, weiValue])
+  }, [TANsTANMetrics, currentFeature, weiValue])
 
   const actionUnstake = async () => {
     if (!weiValue || weiValue === 0n) return
@@ -158,9 +155,10 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
       weiValue,
     }
     await doUnstakeTgUSD(params)
-    loadData()
+    loadTanSTANMetrics()
     setWeiValue(0n)
     setExpected(0n)
+    setIsLoading(false)
   }
 
   const actionStake = async () => {
@@ -173,14 +171,15 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
       weiValue,
     }
     await doStakeTgUSD(params)
-    loadData()
+    loadTanSTANMetrics()
     setWeiValue(0n)
     setExpected(0n)
+    setIsLoading(false)
   }
 
   const actionApprove = async () => {
     if (!currentAssetInfo?.address) return
-    await doApprove(getWalletClient()!, VSTAN_CONTRACT.TAN, weiValue || 0n, VSTAN_CONTRACT.STAN).then(loadData)
+    await doApprove(getWalletClient()!, VSTAN_CONTRACT.TAN, weiValue || 0n, VSTAN_CONTRACT.STAN).then(loadTanSTANMetrics)
   }
 
   useEffect(() => {
@@ -188,14 +187,14 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
     ;(async () => {
       if (currentFeature === "stake") {
         try {
-          const sTanAmountOut = await getExpectedSUSG(getWalletClient()!, weiValue, VSTAN_CONTRACT?.TAN)
+          const sTanAmountOut = await getExpectedsTAN(getWalletClient()!, weiValue, VSTAN_CONTRACT?.STAN)
           setExpected(sTanAmountOut)
         } catch (error) {
           console.error("Error while estimating deposit preview :", error)
         }
       } else {
         try {
-          const tanAmountOut = await getExpectedUSG(getWalletClient()!, weiValue, VSTAN_CONTRACT?.TAN)
+          const tanAmountOut = await getExpectedTAN(getWalletClient()!, weiValue, VSTAN_CONTRACT?.STAN)
           setExpected(tanAmountOut)
         } catch (error) {
           console.error("Error while estimating redeem preview :", error)
@@ -206,9 +205,9 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
 
   const computeProjectedValue = useMemo(() => {
     if (currentFeature === "stake") {
-      return Number(formatUnits(stakeInfo?.sTanBalance || 0n, 18)) + Number(formatUnits(weiValue || 0n, 18))
+      return Number(formatUnits(TANsTANMetrics?.sTanBalance || 0n, 18)) + Number(formatUnits(weiValue || 0n, 18))
     } else {
-      return Number(formatUnits(stakeInfo?.sTanBalance || 0n, 18)) - Number(formatUnits(weiValue || 0n, 18))
+      return Number(formatUnits(TANsTANMetrics?.sTanBalance || 0n, 18)) - Number(formatUnits(weiValue || 0n, 18))
     }
   }, [currentFeature, weiValue])
 
@@ -220,7 +219,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
     setWeiValue,
     computeProjectedValue,
     isLoading,
-    stakeInfo,
+    TANsTANMetrics,
     currentFeature,
     weiValue,
     expected,

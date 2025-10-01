@@ -23,7 +23,7 @@ export default function HarvestRow({ info, onHarvest, canInteract, className, ..
       <div className={`relative flex min-w-[300px] items-center gap-4`}>
         <TokenImage token={info.asset} size={48} className="w-24" />
         <div className="flex flex-col leading-8">
-          <span className="text-[14px] font-semibold md:text-[20px]">{info.asset}</span>
+          <span className="text-sm font-semibold md:text-xl">{info.asset}</span>
         </div>
       </div>
       <div className="flex grow items-center justify-between gap-2 md:justify-evenly">

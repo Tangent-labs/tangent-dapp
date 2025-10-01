@@ -72,9 +72,9 @@ export const MenuModal = () => {
             <button
               className={cn(
                 "flex items-center justify-center rounded-[10px] border border-white border-opacity-20 px-4 py-2 font-roobert text-[15px] font-semibold",
-                pathname === "/airdrop" ? "bg-button-active text-black" : "text-white"
+                pathname === "/tasks" ? "bg-button-active text-black" : "text-white"
               )}
-              onClick={() => router.push("/airdrop")}
+              onClick={() => router.push("/tasks")}
             >
               Tasks
             </button>

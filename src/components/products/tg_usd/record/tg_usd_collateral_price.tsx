@@ -5,7 +5,7 @@ import ButtonTab from "@/components/design_system/inputs/button_tab"
 import Divider from "@/components/design_system/structure/divider"
 import Title from "@/components/design_system/structure/title"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { useTgUsdRecordContext } from "./tg_usd_record_context"
+import { useUSGRecordContext } from "./tg_usd_record_context"
 import { CandlestickData, CandlestickSeries, createChart, DeepPartial, Time, TimeChartOptions } from "lightweight-charts"
 import { fetchGraphData } from "../api"
 import { getCurrentBlock } from "@/services/service_rpc"
@@ -49,7 +49,7 @@ const CollateralGraph = ({ graphData, isPending }: CollateralGraphParams) => {
 }
 
 export default function TgUsdCollateralPrice() {
-  const { collateralInfo, marketInfo } = useTgUsdRecordContext()
+  const { collateralInfo, marketInfo } = useUSGRecordContext()
 
   const [graphData, setGraphData] = useState<GraphData | null>(null)
 

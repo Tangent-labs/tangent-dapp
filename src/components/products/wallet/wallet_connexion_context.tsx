@@ -5,8 +5,9 @@ import web3Onboard from "@/services/config_wallet_provider"
 import { chain } from "@/services/service_rpc"
 import { WalletState } from "@web3-onboard/core"
 import { NotificationType } from "@web3-onboard/core/dist/types"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { Address, createWalletClient, custom, toHex, WalletClient } from "viem"
+import { getUserBalances } from "./wallet_connexion_controller"
 
 export type Account = {
   address: Address
@@ -26,6 +27,8 @@ export type WalletConnexionContextValues = {
   changeNetwork: () => void
   getWalletClient: () => WalletClient | undefined
   canInteract: boolean
+  userBalances: Array<{ balance: bigint; token: string; address: Address }>
+  tokenInfo: (t: string) => { balance: bigint; token: string; address: Address } | undefined
 }
 
 interface WalletConnexionProviderProps {
@@ -36,8 +39,12 @@ const WalletConnexionContext = createContext<WalletConnexionContextValues | unde
 
 export const WalletConnexionProvider = ({ children }: WalletConnexionProviderProps) => {
   const [currentWallet, setCurrentWallet] = useState<WalletState | undefined>(undefined)
+
   const [currentAccount, setCurrentAccount] = useState<Account | undefined>(undefined)
+
   const [isConnecting, setIsConnecting] = useState<boolean>(false)
+
+  const [userBalances, setUserBalances] = useState<Array<{ balance: bigint; token: string; address: Address }>>([])
 
   const connect = async () => {
     await web3Onboard.connectWallet()
@@ -141,6 +148,27 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
     return !!currentAddress && isWellConnected
   }, [currentAddress, isWellConnected])
 
+  const fetchUserBalances = async () => {
+    if (currentAddress) {
+      getUserBalances(currentAddress).then((res) => {
+        setUserBalances(res)
+      })
+    }
+  }
+
+  useEffect(() => {
+    if (currentAddress) {
+      fetchUserBalances()
+    }
+  }, [currentAddress])
+
+  const tokenInfo = useCallback(
+    (t: string) => {
+      return userBalances.find((el) => el.token === t)
+    },
+    [userBalances]
+  )
+
   const contextValue: WalletConnexionContextValues = {
     currentAddress,
     currentAccount,
@@ -154,6 +182,8 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
     disconnect,
     changeNetwork,
     canInteract,
+    userBalances,
+    tokenInfo,
   }
 
   return <WalletConnexionContext.Provider value={contextValue}>{children} </WalletConnexionContext.Provider>

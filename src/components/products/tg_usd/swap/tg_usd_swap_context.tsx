@@ -1,24 +1,24 @@
 "use client"
 
 import { toast } from "react-toastify"
-import { Abi, Address, SendTransactionParameters, WalletClient } from "viem"
-import { useTgUsdContext } from "../tg_usd_context"
+import { useUSGContext } from "../tg_usd_context"
 import { SwapConfig, swapConfig } from "./swap_config"
 import { getQuote, getRoute } from "../global_quote_controller"
 import { USG_CONTRACT, tgUsdTokens } from "../tg_usd_repository"
 import { ToastComponent } from "@/components/design_system/toast"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
+import { Abi, Address, SendTransactionParameters, WalletClient } from "viem"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { BalanceAllowanceData, SwapToken, DepositReceiveAsset } from "../tg_usd_type"
 import { getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { BalanceAllowanceData, SwapToken, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../tg_usd_type"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./tg_usd_swap_controller"
 
-type TgUsdSwapContextProps = {
+type USGSwapContextProps = {
   children: ReactNode
 }
 
-type TgUsdSwapContextValues = {
+type USGSwapContextValues = {
   isLoading: boolean
 
   depositWeiValue?: bigint
@@ -70,12 +70,16 @@ type TgUsdSwapContextValues = {
   formState: FormState
 
   computedAssets: { depositAssets: DepositReceiveAsset[]; receiveAssets: DepositReceiveAsset[] }
+
+  USGsUSGMetrics: USGStakingInfo | undefined
+
+  lpUserPoints: LpUserPoints
 }
 
-export const TgUsdSwapContext = createContext<TgUsdSwapContextValues | undefined>(undefined)
+export const USGSwapContext = createContext<USGSwapContextValues | undefined>(undefined)
 
-export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
-  const { tokens } = useTgUsdContext()
+export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
+  const { tokens, USGsUSGMetrics, loadUSGsUSGMetrics, lpUserPoints } = useUSGContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
@@ -168,6 +172,10 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
 
     return asset
   }, [depositAsset, swapAssetPrice])
+
+  useEffect(() => {
+    loadUSGsUSGMetrics()
+  }, [currentAddress])
 
   useEffect(() => {
     const walletClient = getWalletClient()
@@ -577,7 +585,7 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
     return { depositAssets, receiveAssets }
   }, [balances, isBuying])
 
-  const contextValue: TgUsdSwapContextValues = {
+  const contextValue: USGSwapContextValues = {
     isLoading,
     depositWeiValue,
     setDepositWeiValue,
@@ -608,15 +616,17 @@ export const TgUsdSwapProvider = ({ children }: TgUsdSwapContextProps) => {
     slippage,
     setSlippage,
     toggleTokensSwitch,
+    USGsUSGMetrics,
+    lpUserPoints,
   }
 
-  return <TgUsdSwapContext.Provider value={contextValue}>{children}</TgUsdSwapContext.Provider>
+  return <USGSwapContext.Provider value={contextValue}>{children}</USGSwapContext.Provider>
 }
 
-export const useTgUsdSwapContext = () => {
-  const context = useContext(TgUsdSwapContext)
+export const useUSGSwapContext = () => {
+  const context = useContext(USGSwapContext)
   if (!context) {
-    throw new Error("useTgUsdSwapContext must be used within a TgUsdSwapProvider")
+    throw new Error("useUSGSwapContext must be used within a USGSwapProvider")
   }
   return context
 }

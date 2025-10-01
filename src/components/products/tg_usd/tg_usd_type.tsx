@@ -365,6 +365,14 @@ export type LockPositionSelectTemplate = {
   value?: string
 }
 
+export type PendleSYToPTQuote = {
+  market: string | undefined
+  pt: string | undefined
+  sy: string | undefined
+  underlyingIn: string
+  tokenInAmount: bigint
+}
+
 export type CurveQuote = {
   _route: Address[]
   _swap_params: bigint[][]

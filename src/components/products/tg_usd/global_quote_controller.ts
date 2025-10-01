@@ -1,13 +1,11 @@
 import { Address } from "viem"
 import { getEnsoData } from "./api"
-import { VSTAN_CONTRACT } from "../vs_tan/rs_tan_repository"
-import { PendleCollaterals, USG_CONTRACT } from "./tg_usd_repository"
+import { PendleCollaterals, CurveCollaterals } from "./tg_usd_repository"
 import { getCustomQuote, getCustomRouterRoute } from "./curve_routing_controller"
-
-const curveRouterTokens = [USG_CONTRACT?.USG, USG_CONTRACT?.USG, VSTAN_CONTRACT?.TAN, VSTAN_CONTRACT?.STAN]
+import { getCustomPendleQuote, getPendleCustomRouterRoute } from "./pendle_routing_controller"
 
 const isCurveRouter = (tokenIn: Address, tokenOut: Address) => {
-  return curveRouterTokens.includes(tokenIn) || curveRouterTokens.includes(tokenOut)
+  return CurveCollaterals.includes(tokenIn) || CurveCollaterals.includes(tokenOut)
 }
 
 const isPendleRouter = (tokenIn: Address, tokenOut: Address) => {
@@ -20,10 +18,16 @@ export const getQuote = async (depositWeiValue: bigint, currentAddress: Address,
   if (data) {
     return { quote: data?.amountOut }
   } else if (isCurveRouter(tokenIn, tokenOut)) {
-    const quote = await getCustomQuote(tokenIn, tokenOut, depositWeiValue, "curve")
+    const quote = await getCustomQuote(tokenIn, tokenOut, depositWeiValue)
     return { quote }
   } else if (isPendleRouter(tokenIn, tokenOut)) {
-    const quote = await getCustomQuote(tokenIn, tokenOut, depositWeiValue, "pendle")
+    let swapDirection = "tokenToPT"
+
+    if (PendleCollaterals.includes(tokenIn)) {
+      swapDirection = "PTToToken"
+    }
+
+    const quote = await getCustomPendleQuote(tokenIn, tokenOut, depositWeiValue, swapDirection)
     return { quote }
   } else {
     return { quote: 0n }
@@ -44,10 +48,16 @@ export const getRoute = async (
   if (route) {
     return { data: route?.tx?.data as string, routerAddress: route?.tx?.to }
   } else if (isCurveRouter(tokenIn, tokenOut)) {
-    const { data, routerAddress } = await getCustomRouterRoute(tokenIn, tokenOut, amount, minAmountOut, user ? user : receiver, "curve")
+    const { data, routerAddress } = await getCustomRouterRoute(tokenIn, tokenOut, amount, minAmountOut, user ? user : receiver)
     return { data, routerAddress }
   } else if (isPendleRouter(tokenIn, tokenOut)) {
-    const { data, routerAddress } = await getCustomRouterRoute(tokenIn, tokenOut, amount, minAmountOut, user ? user : receiver, "pendle")
+    let swapDirection = "tokenToPT"
+
+    if (PendleCollaterals.includes(tokenIn)) {
+      swapDirection = "PTToToken"
+    }
+
+    const { data, routerAddress } = await getPendleCustomRouterRoute(tokenIn, tokenOut, amount, minAmountOut, user ? user : receiver, swapDirection)
     return { data, routerAddress }
   } else {
     return undefined

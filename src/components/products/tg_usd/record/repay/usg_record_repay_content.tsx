@@ -92,14 +92,10 @@ export default function USGRepayContent() {
   }
 
   const AssetSelect = () => {
-    if (!balances) {
-      return null
-    }
-
     const tokenOptions = tokens.map((el: ZapToken) => ({
       ...el,
       value: el.name as string,
-      balance: balances[el.address] || BigInt(0),
+      balance: balances ? balances[el.address] : BigInt(0),
     }))
 
     const sortedAssets = [
@@ -112,7 +108,7 @@ export default function USGRepayContent() {
         price: 1,
         symbol: "USG",
         value: "USG",
-        balance: balances[marketInfo?.collatAddress] || BigInt(0),
+        balance: balances ? balances[marketInfo?.collatAddress] : BigInt(0),
       },
       ...[
         {
@@ -123,7 +119,7 @@ export default function USGRepayContent() {
           address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
           logo: "ETH" as ExistingAsset,
           displayDecimals: 5,
-          balance: balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] || BigInt(0),
+          balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
         },
         ...tokenOptions,
       ].sort((a, b) => Number(b.balance - a.balance)),

@@ -137,14 +137,10 @@ export default function RsTanLockContent() {
   }
 
   const AssetSelect = () => {
-    if (!balances) {
-      return null
-    }
-
     const tokenOptions = tokens.map((el: ZapToken) => ({
       ...el,
       value: el.name as string,
-      balance: balances[el.address] || BigInt(0),
+      balance: balances ? balances[el.address] : BigInt(0),
     }))
 
     const sortedAssets = [
@@ -156,7 +152,7 @@ export default function RsTanLockContent() {
         address: VSTAN_CONTRACT?.TAN,
         logo: "TAN" as ExistingAsset,
         displayDecimals: 5,
-        balance: balances[VSTAN_CONTRACT?.TAN] || BigInt(0),
+        balance: balances ? balances[VSTAN_CONTRACT?.TAN] : BigInt(0),
       },
       ...[
         {
@@ -167,7 +163,7 @@ export default function RsTanLockContent() {
           address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
           logo: "ETH" as ExistingAsset,
           displayDecimals: 5,
-          balance: balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] || BigInt(0),
+          balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
         },
         ...tokenOptions,
       ].sort((a, b) => Number(b.balance - a.balance)),

@@ -27,6 +27,10 @@ export const USGMarkets: USGMarket[] = envAddresses.markets.map((market: RawMark
   marketType: market.marketType,
 })) as USGMarket[]
 
+export const CurveCollaterals: Array<Address> = envAddresses.markets
+  .filter((m: RawMarket) => m.marketType.includes("Convex_CRV"))
+  .map((market: RawMarket) => market.collatAddress as Address)
+
 export const PendleCollaterals: Array<Address> = envAddresses.markets
   .filter((m: RawMarket) => m.marketType.includes("Pendle_PT"))
   .map((market: RawMarket) => market.collatAddress as Address)
@@ -41,6 +45,6 @@ export const USG_CONTRACT = {
   USG_ORACLE: envAddresses.oracles.USG as Address,
   ENSO_ROUTER: "0xF75584eF6673aD213a685a1B58Cc0330B8eA22Cf",
   CURVE_ROUTER: "0x45312ea0eff7e09c83cbe249fa1d7598c4c8cd4e",
-  PENDLE_ROUTER: "0x1234567890",
+  PENDLE_ROUTER: "0x6d041EF9096F7013d27fF7a41c17971201499879",
   DAO: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
 }

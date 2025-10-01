@@ -60,6 +60,7 @@
     "viem": "^2.21.18"
   },
   "devDependencies": {
+    "@tangent/defi-resources": "github:Tangent-labs/defi-resources#main",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^19",

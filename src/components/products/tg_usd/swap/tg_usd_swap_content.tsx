@@ -39,7 +39,6 @@ export default function USGSwapContent() {
     depositAsset,
     receiveAsset,
     isBuying,
-    balances,
     isLoading,
     balanceAllowanceData,
     receiveWeiValue,
@@ -50,7 +49,7 @@ export default function USGSwapContent() {
   } = useUSGSwapContext()
 
   const ReceiveAssetSelect = ({ options }: AssetSelectProps) => {
-    if (!balances || !options) {
+    if (!options) {
       return (
         <PopoverCombobox className="w-full" template={AssetSelectTemplate} value={receiveAsset} options={[]} onChange={(v: string) => setReceiveAsset(v)} />
       )
@@ -62,18 +61,6 @@ export default function USGSwapContent() {
   }
 
   const DepositAssetSelect = ({ options }: AssetSelectProps) => {
-    if (!balances) {
-      return (
-        <PopoverCombobox
-          className="w-full"
-          template={AssetSelectTemplate}
-          value={depositAsset || ""}
-          options={[]}
-          onChange={(v: string) => setDepositAsset(v)}
-        />
-      )
-    }
-
     return (
       <PopoverCombobox
         className="w-full"

@@ -21,7 +21,7 @@ export function getLeverageFormState(
 
   const reasons: string[] = []
   const isApproved =
-    (depositWeiValue || 0n) <= (marketData?.collateralAllowance || 0n) ||
+    (!isZapMode && (depositWeiValue || 0n) <= (marketData?.collateralAllowance || 0n)) ||
     (isZapMode && (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n))
 
   if (isDepositLoading) {
@@ -70,6 +70,8 @@ export const doZapLeverage = async (
 
   const publicClient = await getPublicClient()
 
+  const zap = { router: zapData.routerAddress, routerCall: zapData.data }
+
   const estimateGasData = {
     abi: MarketExternalActions.abi,
     functionName: "zapLeverage",
@@ -77,15 +79,18 @@ export const doZapLeverage = async (
       tgUSDToFlashMint,
       minCollatAmountOut,
       { router: leverageData?.routerAddress, routerCall: leverageData?.data },
-      { tokenIn, amountIn, minAmountOut, zap: { router: zapData.routerAddress, routerCall: zapData.data } },
+      { tokenIn, amountIn, minAmountOut, zap },
     ] as unknown[],
     address: marketAddress,
     account,
   } as EstimateContractGasParameters
 
   const gas = await publicClient.estimateContractGas(estimateGasData)
+
   const txData = { ...estimateGasData, gas }
+
   const hash = await walletClient.writeContract(txData as WriteContractParameters)
+
   return hash
 }
 

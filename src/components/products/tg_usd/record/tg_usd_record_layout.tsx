@@ -63,7 +63,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                 <ButtonTab className="w-full" active={feature === "borrow"} label={"Borrow"} onClick={() => onTabClick("borrow")} />
                 <ButtonTab className="w-full" active={feature === "leverage"} label={"Leverage"} onClick={() => onTabClick("leverage")} />
               </div>
-              <div className="mb-4 flex w-full justify-between gap-2">
+              <div className="mb-2 flex w-full justify-between gap-2">
                 <ButtonTab className="w-full" active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />
                 <ButtonTab className="w-full" active={feature === "withdraw"} label={"Withdraw"} onClick={() => onTabClick("withdraw")} />
                 <ButtonTab className="w-full" active={feature === "liquidate"} label={"Liquidate"} onClick={() => onTabClick("liquidate")} />
@@ -79,7 +79,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
             </div>
 
             <Divider />
-            <div className="mt-5">{children}</div>
+            <div className="mt-2">{children}</div>
           </div>
           <div className="flex w-full flex-col gap-2 xl:w-7/12">
             <TgUsdCollateralPrice />

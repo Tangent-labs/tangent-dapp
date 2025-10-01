@@ -114,9 +114,9 @@ export const getPendleCustomRouterRoute = async (
           _route: matchingRoute._route,
           _swap_params: matchingRoute._swap_params,
           _amount: amount,
-          _min_dy: 0n,
+          _min_dy: minAmountOut,
           _pools: matchingRoute._pools,
-          _receiver: receiver,
+          _receiver: USG_CONTRACT.PENDLE_ROUTER,
         },
         {
           market: underlyingPool?.MARKET,
@@ -124,7 +124,7 @@ export const getPendleCustomRouterRoute = async (
           sy: underlyingPool?.SY,
           underlyingIn: underlyingPool?.UNDERLYING_IN[0],
           receiver,
-          minPTOut: 0n,
+          minPTOut: minAmountOut,
         },
       ],
     })

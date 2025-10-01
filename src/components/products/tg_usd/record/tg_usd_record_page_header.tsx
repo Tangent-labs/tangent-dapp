@@ -15,7 +15,7 @@ export default function USGRecordPageHeader() {
 
   return (
     <>
-      <div className="mt-4 flex flex-col justify-between xl:flex-row">
+      <div className="flex flex-col justify-between xl:flex-row">
         <div className="flex w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px] md:w-fit">
           <div className="flex items-center gap-2">
             <TokenImage className="w-8 md:w-16" token={collateralInfo.logo} size={64} />

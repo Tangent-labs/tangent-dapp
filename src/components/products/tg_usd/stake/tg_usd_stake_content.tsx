@@ -104,14 +104,14 @@ export default function USGStakeContent() {
           </div>
         </div>
 
-        <div className="hidden h-full w-full flex-col items-center gap-3 md:flex xl:w-6/12">
+        <div className="flex h-full w-full flex-col items-center gap-3 xl:w-6/12">
           <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-xl !font-semibold italic">
             Points campaign
             <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 text-lg !font-semibold !not-italic !text-black">Live</div>
           </div>
 
           <div className={cn("flex w-full items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2", !!USGsUSGMetrics ? "" : "shimmer")}>
-            <TokenImage className="hidden sm:flex" token="sUSG" size={48} />
+            <TokenImage token="sUSG" size={48} />
 
             <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">Supply</span>

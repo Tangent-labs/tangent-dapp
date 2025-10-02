@@ -10,7 +10,6 @@ import ListHeader from "@/components/design_system/list/list_header"
 import InputSearch from "@/components/design_system/inputs/input_search"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
-import ListAprIndicator from "@/components/design_system/list/list_apr_indicator"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 
 const listeState: ListState = {
@@ -111,9 +110,9 @@ export function USGMEarnListInner() {
 
           <div className="flex w-full items-center gap-2">
             <div className="flex w-1/2 items-center justify-center gap-2">
-              <div className="flex flex-row items-center justify-center text-center md:flex-col">
-                <span className="flex items-center justify-center bg-button-active bg-clip-text text-xl font-semibold leading-4 text-transparent">
-                  {item?.currentAPR}% <ListAprIndicator helpMessage="This is the APR" />
+              <div className="flex flex-row items-center justify-center gap-2 text-center md:flex-col md:gap-0">
+                <span className="flex items-center justify-center bg-button-active bg-clip-text text-sm font-semibold leading-4 text-transparent md:text-xl">
+                  {item?.currentAPR}%
                 </span>
                 {item?.projectedAPR && (
                   <span className="whitespace-nowrap text-xs text-subtitle">
@@ -128,7 +127,7 @@ export function USGMEarnListInner() {
             <div className="flex w-1/2 items-center justify-center text-xl">
               <div className="hidden xl:flex"> x{item?.bonusPts} </div>
 
-              <div className="flex xl:hidden"> x{item?.bonusPts} Points </div>
+              <div className="flex text-xs md:text-sm xl:hidden"> x{item?.bonusPts} Points </div>
             </div>
           </div>
         </ListRow>

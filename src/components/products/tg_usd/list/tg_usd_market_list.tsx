@@ -45,7 +45,7 @@ export default function USGMarketList() {
           </div>
         </div>
 
-        <div className="hidden h-full w-full flex-col items-center gap-3 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] md:flex xl:w-fit">
+        <div className="hidden h-full w-full flex-col items-center gap-3 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] md:flex xl:w-5/12">
           <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-xl !font-semibold italic">
             Points campaign
             <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 text-lg !font-semibold !not-italic !text-black">Live</div>

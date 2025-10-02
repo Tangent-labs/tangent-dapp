@@ -59,18 +59,14 @@ export default function TgUsdCollateralPrice() {
 
   const computeTimeDiff = (customStartTime: string) => {
     switch (customStartTime) {
-      case "15m":
-        return 15 * 60
-      case "1h":
-        return 60 * 60
-      case "4h":
-        return 4 * 60 * 60
       case "1d":
         return 24 * 60 * 60
-      case "1w":
+      case "7d":
         return 7 * 24 * 60 * 60
-      case "1mo":
-        return 30 * 24 * 60 * 60
+      case "1m":
+        return 31 * 24 * 60 * 60
+      case "1y":
+        return 365 * 24 * 60 * 60
       default:
         return 7 * 24 * 60 * 60
     }
@@ -122,12 +118,10 @@ export default function TgUsdCollateralPrice() {
         </div>
         <div>
           <div className="flex gap-2">
-            <ButtonTab onClick={() => selectTab("15m")} label={"15m"} active={timeWindow === "15m"} className="rounded-full !py-1" />
-            <ButtonTab onClick={() => selectTab("1h")} label={"1h"} active={timeWindow === "1h"} className="rounded-full !py-1" />
-            <ButtonTab onClick={() => selectTab("4h")} label={"4h"} active={timeWindow === "4h"} className="rounded-full !py-1" />
             <ButtonTab onClick={() => selectTab("1d")} label={"1d"} active={timeWindow === "1d"} className="rounded-full !py-1" />
-            <ButtonTab onClick={() => selectTab("1w")} label={"1w"} active={timeWindow === "1w"} className="rounded-full !py-1" />
-            <ButtonTab onClick={() => selectTab("1mo")} label={"1mo"} active={timeWindow === "1mo"} className="rounded-full !py-1" />
+            <ButtonTab onClick={() => selectTab("7d")} label={"7d"} active={timeWindow === "7d"} className="rounded-full !py-1" />
+            <ButtonTab onClick={() => selectTab("1m")} label={"1m"} active={timeWindow === "1m"} className="rounded-full !py-1" />
+            <ButtonTab onClick={() => selectTab("1y")} label={"1y"} active={timeWindow === "1y"} className="rounded-full !py-1" />
           </div>
         </div>
       </div>

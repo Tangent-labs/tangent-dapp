@@ -175,21 +175,20 @@ export function BuySellInput({
           <div className="flex w-full justify-between">
             <div className="text-sm text-subtitle">{labelDeposit}</div>
           </div>
-          <div className="mb-2 flex justify-between">
-            <div className="mr-4 text-xl">
-              <input
-                {...props}
-                disabled={disabled}
-                type="number"
-                value={innerValue ?? ""}
-                placeholder="Amount"
-                onChange={handleInputChange}
-                className={cn(
-                  "min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
-                )}
-              />
-            </div>
-            <div className="order-1 lg:order-2">{depositSelect}</div>
+          <div className="mb-2 flex w-full justify-between">
+            <input
+              {...props}
+              disabled={disabled}
+              type="number"
+              value={innerValue ?? ""}
+              placeholder="Amount"
+              onChange={handleInputChange}
+              className={cn(
+                "min-h-10 rounded-[10px] border-opacity-20 bg-transparent text-xl font-semibold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
+              )}
+            />
+
+            {depositSelect}
           </div>
           <div className="flex justify-between text-xs text-subtitle">
             <div>{dollarDepositDisplay}</div>
@@ -257,7 +256,7 @@ export function BuySellInput({
           }}
           className="my-2 flex w-full cursor-pointer items-center justify-center border-none"
         >
-          <IconChevron className="h-auto w-8 rounded-lg border border-white/10 p-2 backdrop-blur-[60px] hover:border-white hover:stroke-black" />
+          <IconChevron className="h-auto w-8 rounded-lg border border-white border-white/10 border-opacity-20 bg-select-input p-2 text-white backdrop-blur-[60px] hover:border-white hover:stroke-black" />
         </div>
 
         <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2 hover:bg-white/10`}>

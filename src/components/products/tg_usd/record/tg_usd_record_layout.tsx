@@ -85,8 +85,8 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
             <TgUsdCollateralPrice />
           </div>
         </div>
-        <Divider />
-        <Accordion className="w-full" type="single" collapsible>
+        <Divider className="hidden xl:flex" />
+        <Accordion className="hidden w-full xl:flex" type="single" collapsible>
           <BorderPanel className="flex w-full cursor-pointer items-center justify-between bg-overlay-panel px-2 backdrop-blur-[60px]">
             <AccordionItem value="item-1">
               <AccordionTrigger>

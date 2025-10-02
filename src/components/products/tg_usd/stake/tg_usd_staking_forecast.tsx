@@ -237,7 +237,7 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
           </div>
         </div>
 
-        <div className="flex items-end justify-end gap-2">
+        <div className="hidden items-end justify-end gap-2 md:flex">
           <ButtonTab
             onClick={() => setRange("week")}
             label="1w"

@@ -25,7 +25,7 @@ const listeState: ListState = {
 const HarvestRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
     <div className="flex items-center justify-between max-xl:flex-col">
-      <div className="flex w-full items-center justify-evenly xl:w-1/2 xl:justify-start">
+      <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
         <div className="xl:w-1/2">{children?.at(0)}</div>
         <div className="flex justify-center xl:w-1/2">{children?.at(1)}</div>
       </div>
@@ -97,11 +97,11 @@ function HarvestList() {
       {(displayRows as HarvesterInfoDisplay[])?.map((item: HarvesterInfoDisplay) => (
         <div key={item.contractAddress} className="my-1 rounded-[10px] bg-overlay-panel px-4 py-2.5 backdrop-blur-[60px]">
           <div className="flex items-center justify-between max-xl:flex-col">
-            <div className="flex w-full items-center justify-evenly xl:w-1/2 xl:justify-start">
+            <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
               <div className="xl:w-1/2">
                 <ListAsset name={item?.asset} token={item.asset} assetsEarned={[]} />
               </div>
-              <div className="flex justify-center gap-2 text-xl xl:w-1/2">
+              <div className="text-md flex justify-center gap-2 md:text-xl xl:w-1/2">
                 {formatDollar(item?.rewards?.totalDollar || 0)}
 
                 <USGHoverCard iconClassName="text-row-tonic" title={`${item?.asset} Rewards Breakdown`}>
@@ -121,9 +121,9 @@ function HarvestList() {
             </div>
             <hr className="my-2 w-full opacity-20 xl:hidden" />
             <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-1/2">
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center gap-2 text-xl">{formatPercent(item?.harvesterFees)}</div>
+              <div className="flex w-full flex-1 cursor-pointer items-center justify-center gap-2 text-sm md:text-xl">{formatPercent(item?.harvesterFees)}</div>
 
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center text-xl">{formatDollar(item?.rewards.totalDollar)}</div>
+              <div className="flex w-full flex-1 cursor-pointer items-center justify-center text-sm md:text-xl">{formatDollar(item?.rewards.totalDollar)}</div>
 
               <div className="flex w-full flex-1 cursor-pointer flex-col items-center justify-center">
                 <Switch

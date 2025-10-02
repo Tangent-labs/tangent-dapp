@@ -10,7 +10,7 @@ interface ListAPRProps {
 
 const MarketListAPR = ({ apr, projectedApr, className = "" }: ListAPRProps) => {
   return (
-    <div className={`flex min-w-16 flex-row items-center justify-center text-center md:flex-col ${className}`}>
+    <div className={`flex min-w-16 flex-row items-center justify-center gap-2 text-center md:flex-col md:gap-0 ${className}`}>
       <span className="flex items-center justify-center bg-button-active bg-clip-text text-sm font-semibold leading-4 text-transparent md:text-xl">
         {apr}%
         <AprIndicator>

@@ -63,7 +63,7 @@ export default function USGSwapContent() {
   const DepositAssetSelect = ({ options }: AssetSelectProps) => {
     return (
       <PopoverCombobox
-        className="w-full"
+        className="w-fit"
         template={AssetSelectTemplate}
         value={depositAsset || ""}
         options={options}

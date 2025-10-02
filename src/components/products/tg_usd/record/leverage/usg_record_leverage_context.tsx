@@ -243,33 +243,27 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     }
   }, [depositWeiValue, borrowWeiValue, zapValue, leveragedCollateralQuote, isDepositLoading])
 
-  const actionApproveZap = async () => {
+  const actionApproveZap = () => {
     setIsDepositLoading(true)
-
     const walletClient = getWalletClient()
-    if (!walletClient || !depositAssetInfo) {
-      console.error("Wallet client is not available.")
-      return
-    }
-
-    await doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue || 0n)
-      .then(() => {
-        fetchBalanceAllowanceData(depositAssetInfo?.address)
-        setIsDepositLoading(false)
-      })
-      .catch((error) => {
-        console.error("Error during approval:", error)
-        setIsDepositLoading(false)
-      })
+    if (walletClient && depositWeiValue)
+      doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue || 0n)
+        .then(() => {
+          fetchBalanceAllowanceData(depositAssetInfo?.address)
+          setIsDepositLoading(false)
+        })
+        .catch((error) => {
+          console.error("Error during approval:", error)
+          setIsDepositLoading(false)
+        })
   }
 
   const actionApprove = () => {
+    setIsDepositLoading(true)
     const walletClient = getWalletClient()
     if (walletClient && depositWeiValue)
       doApprove(walletClient, marketInfo?.collatAddress, marketInfo?.marketAddress, depositWeiValue).then(() => {
         loadOnChainData()
-        setIsDepositLoading(false)
-        fetchBalanceAllowanceData(depositAssetInfo?.address)
       })
   }
 
@@ -328,9 +322,10 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }
 
   const actionLeverage = async () => {
+    setIsDepositLoading(true)
+
     const walletClient = getWalletClient()
 
-    loadOnChainData()
     if (!walletClient || !currentAddress || !leveragedCollateralQuote || !borrowWeiValue) return
 
     const leverageData = await getRoute(
@@ -400,6 +395,15 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     return !!quoteDetail && !!futureMarketDisplayData && ltvAsNumber > 90
   }, [quoteDetail, futureMarketDisplayData])
 
+  const leverageBalanceAllowanceData = useMemo(() => {
+    if (!!marketData && depositAsset === collateralInfo?.name) {
+      return { balance: marketData?.collateralBalance, allowance: marketData?.collateralAllowance }
+    } else if (!!balanceAllowanceData && depositAsset !== collateralInfo?.name) {
+      return { balance: balanceAllowanceData?.balance, allowance: balanceAllowanceData?.allowances[0]?.allowance }
+    }
+    return { balance: 0n, allowance: 0n }
+  }, [marketData, balanceAllowanceData])
+
   const formState = useMemo(
     () =>
       getLeverageFormState(
@@ -411,7 +415,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         isWellConnected,
         depositAssetInfo!,
         collateralInfo!,
-        balanceAllowanceData!,
+        leverageBalanceAllowanceData!,
         isDepositLoading
       ),
     [
@@ -422,7 +426,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       isWellConnected,
       currentAddress,
       depositAssetInfo,
-      balanceAllowanceData,
+      leverageBalanceAllowanceData,
       isDepositLoading,
       leverageExceedsMaxLtv,
     ]

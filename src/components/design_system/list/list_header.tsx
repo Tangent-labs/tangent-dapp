@@ -40,7 +40,7 @@ const HeaderDisplay = ({ label, sort = "none", onSort, field, indicator, classNa
 
 const ListHeader = ({ headers, className = "", activeSort, onSort, rowDisposition: CustomRowDisposition = ListRowDisposition }: ListHeaderProps) => {
   return (
-    <div className={`hidden p-4 leading-[10px] xl:block ${className}`}>
+    <div className={`hidden px-4 py-2 leading-[10px] xl:block ${className}`}>
       <CustomRowDisposition>
         {!!headers[0]?.key && (
           <HeaderDisplay

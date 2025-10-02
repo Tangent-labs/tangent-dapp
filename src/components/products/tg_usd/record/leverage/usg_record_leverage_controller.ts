@@ -2,7 +2,7 @@ import { AssetDataPriced, CollateralInfo } from "@/types"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getBorrowCommonFormState } from "../tg_usd_record_controller"
 import { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
-import { BalanceAllowanceData, MarketDetailData } from "../../tg_usd_type"
+import { MarketDetailData } from "../../tg_usd_type"
 import { getPublicClient } from "@/services/service_rpc"
 
 export function getLeverageFormState(
@@ -14,15 +14,14 @@ export function getLeverageFormState(
   isWellConnected?: boolean,
   depositAssetInfo?: AssetDataPriced,
   collateralInfo?: CollateralInfo,
-  balanceAllowanceData?: BalanceAllowanceData,
+  balanceAllowanceData?: { balance: bigint; allowance: bigint },
   isDepositLoading?: boolean
 ) {
-  const isZapMode = !!balanceAllowanceData && depositAssetInfo?.address !== collateralInfo?.address
+  const isZapMode = depositAssetInfo?.address !== collateralInfo?.address
 
   const reasons: string[] = []
-  const isApproved =
-    (!isZapMode && (depositWeiValue || 0n) <= (marketData?.collateralAllowance || 0n)) ||
-    (isZapMode && (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n))
+
+  const isApproved = (depositWeiValue || 0n) <= (balanceAllowanceData?.allowance || 0n)
 
   if (isDepositLoading) {
     reasons.push("Action in progress.")

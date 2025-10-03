@@ -116,13 +116,12 @@ export default function TgUsdCollateralPrice() {
           <TokenImage token={collateralInfo?.logo} size={32} />
           <span>{collateralInfo.symbol}</span>
         </div>
-        <div>
-          <div className="flex gap-2">
-            <ButtonTab onClick={() => selectTab("1d")} label={"1d"} active={timeWindow === "1d"} className="rounded-full !py-1" />
-            <ButtonTab onClick={() => selectTab("7d")} label={"7d"} active={timeWindow === "7d"} className="rounded-full !py-1" />
-            <ButtonTab onClick={() => selectTab("1m")} label={"1m"} active={timeWindow === "1m"} className="rounded-full !py-1" />
-            <ButtonTab onClick={() => selectTab("1y")} label={"1y"} active={timeWindow === "1y"} className="rounded-full !py-1" />
-          </div>
+
+        <div className="flex gap-2">
+          <ButtonTab onClick={() => selectTab("1d")} label={"1d"} active={timeWindow === "1d"} className="rounded-full !py-1" />
+          <ButtonTab onClick={() => selectTab("7d")} label={"7d"} active={timeWindow === "7d"} className="rounded-full !py-1" />
+          <ButtonTab onClick={() => selectTab("1m")} label={"1m"} active={timeWindow === "1m"} className="rounded-full !py-1" />
+          <ButtonTab onClick={() => selectTab("1y")} label={"1y"} active={timeWindow === "1y"} className="rounded-full !py-1" />
         </div>
       </div>
 

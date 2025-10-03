@@ -397,3 +397,27 @@ export const getGodsonsLeaderboard = async (
     return []
   }
 }
+
+export const getTotalSupply = async (dateTo: string, dateFrom: string, tokenAddress: string): Promise<Array<{ timestamp: Date; amount: string }>> => {
+  try {
+    const url = `${baseUrl}/total-supply/${dateTo}/${dateFrom}/${tokenAddress}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch total supply of : ${tokenAddress}`)
+    }
+
+    const data: Array<{ timestamp: Date; amount: string }> = await response.json()
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch historical market data :", error)
+    return []
+  }
+}

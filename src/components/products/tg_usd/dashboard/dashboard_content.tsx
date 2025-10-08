@@ -16,12 +16,22 @@ import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Area, AreaChart
 export const USGDashboardContent = () => {
   const { globalData, userData } = useUSGMaketListContext()
 
-  const { totalSupplies, selectedTab, setSelectedTab } = useUSGDashboardContext()
+  const { totalSupplies, sUSGSelectedTab, USGSelectedTab, fetchUSGTotalSupplyData, fetchsUSGTotalSupplyData } = useUSGDashboardContext()
 
   const maxUv = Math.max(...mockBarChartData.map((item) => item.uv))
 
   return (
     <div className="flex w-full flex-col items-start justify-start gap-2">
+      <div className="mb-2 flex h-full w-full flex-col items-start justify-start gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+        <div
+          style={{ fontSize: "20px", lineHeight: "20px" }}
+          className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-12 font-semibold italic"
+        >
+          Points campaign
+          <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold text-black">Live</div>
+        </div>
+      </div>
+
       <div className="flex w-full flex-col justify-between gap-4 md:flex-row md:justify-start">
         <IndicatorCards
           className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "flex w-full items-center justify-around")}
@@ -58,10 +68,10 @@ export const USGDashboardContent = () => {
               </div>
 
               <div className="flex gap-2">
-                <ButtonTab onClick={() => setSelectedTab("1d")} label={"1d"} active={selectedTab === "1d"} className="rounded-full !py-1" />
-                <ButtonTab onClick={() => setSelectedTab("7d")} label={"7d"} active={selectedTab === "7d"} className="rounded-full !py-1" />
-                <ButtonTab onClick={() => setSelectedTab("1m")} label={"1m"} active={selectedTab === "1m"} className="rounded-full !py-1" />
-                <ButtonTab onClick={() => setSelectedTab("1y")} label={"1y"} active={selectedTab === "1y"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchUSGTotalSupplyData("1d")} label={"1d"} active={USGSelectedTab === "1d"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchUSGTotalSupplyData("7d")} label={"7d"} active={USGSelectedTab === "7d"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchUSGTotalSupplyData("1m")} label={"1m"} active={USGSelectedTab === "1m"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchUSGTotalSupplyData("1y")} label={"1y"} active={USGSelectedTab === "1y"} className="rounded-full !py-1" />
               </div>
             </div>
 
@@ -98,6 +108,20 @@ export const USGDashboardContent = () => {
             <div className="text-xl font-semibold">Total Supply </div>
             <Divider className="h-0.5 w-full bg-white/10" />
 
+            <div className="mb-2 flex w-full items-center justify-between">
+              <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-1">
+                <TokenImage token="sUSG" size={20} />
+                sUSG
+              </div>
+
+              <div className="flex gap-2">
+                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("1d")} label={"1d"} active={sUSGSelectedTab === "1d"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("7d")} label={"7d"} active={sUSGSelectedTab === "7d"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("1m")} label={"1m"} active={sUSGSelectedTab === "1m"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("1y")} label={"1y"} active={sUSGSelectedTab === "1y"} className="rounded-full !py-1" />
+              </div>
+            </div>
+
             <div className="mb-8 flex h-48 min-h-48 w-full items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
@@ -118,7 +142,7 @@ export const USGDashboardContent = () => {
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="date" tickFormatter={formatXAxis} scale="point" padding={{ left: 10, right: 10 }} />
-                  <YAxis tickFormatter={formatYAxis} label={{ value: "Revenue (k$)", angle: -90, position: "insideLeft" }} domain={[0, maxUv * 1.2]} />
+                  <YAxis tickFormatter={formatYAxis} domain={[0, maxUv * 1.2]} />
                   <Area type="monotone" dataKey="uv" stroke="#00C2FF" fill="url(#gradientFill1)" />
                 </AreaChart>
               </ResponsiveContainer>

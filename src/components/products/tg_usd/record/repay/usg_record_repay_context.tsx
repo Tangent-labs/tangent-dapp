@@ -1,19 +1,19 @@
 "use client"
 
-import { AssetDataPriced, FormState } from "@/types"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { useUSGRecordContext } from "../tg_usd_record_context"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
-import { formatUnits, maxUint256 } from "viem"
-import { getQuote, getRoute } from "../../global_quote_controller"
-import { USG_CONTRACT } from "../../tg_usd_repository"
-import { useUSGContext } from "../../tg_usd_context"
-import { MarketDetailData, ZapToken } from "../../tg_usd_type"
-import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { toast } from "react-toastify"
-import { ToastComponent } from "@/components/design_system/toast"
+import { formatUnits, maxUint256 } from "viem"
+import { useUSGContext } from "../../tg_usd_context"
+import { AssetDataPriced, FormState } from "@/types"
+import { USG_CONTRACT } from "../../tg_usd_repository"
+import { useUSGRecordContext } from "../tg_usd_record_context"
+import { MarketDetailData, ZapToken } from "../../tg_usd_type"
 import { formatDollar, toBigInt } from "@/lib/number_formatter"
+import { ToastComponent } from "@/components/design_system/toast"
+import { getQuote, getRoute } from "../../global_quote_controller"
+import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
 
 type USGRepayContextProps = {
   children: ReactNode
@@ -348,16 +348,6 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
   }
 
   const handleRepayValueChange = (value: bigint | undefined) => {
-    const assetInfo: AssetDataPriced = {
-      address: USG_CONTRACT.USG,
-      decimals: 18,
-      displayDecimals: 2,
-      logo: "USG",
-      name: "USG",
-      price: 1,
-      symbol: "USG",
-    }
-
     setRepayWeiValue(value)
 
     const fetchZapValue = async () => {
@@ -365,7 +355,7 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
 
       setIsZapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, assetInfo?.address, repayAssetInfo?.address)
+        const { quote } = await getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address)
 
         if (quote) {
           setUsgRepayedValue(quote)
@@ -377,7 +367,9 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
       }
     }
 
-    fetchZapValue()
+    if (!!repayAssetInfo && repayAssetInfo?.symbol !== "USG") {
+      fetchZapValue()
+    }
   }
 
   useEffect(() => {

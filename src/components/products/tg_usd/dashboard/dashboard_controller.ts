@@ -25,3 +25,18 @@ export const formatXAxis = (tick: string) => {
   const date = new Date(tick)
   return `${date.toLocaleString("en-US", { month: "short" })} ${date.getDate()}`
 }
+
+export const convertRange = (range: string): number => {
+  switch (range) {
+    case "1d":
+      return 24 * 60 * 60 * 1000
+    case "7d":
+      return 7 * 24 * 60 * 60 * 1000
+    case "1m":
+      return 30 * 24 * 60 * 60 * 1000
+    case "1y":
+      return 365 * 24 * 60 * 60 * 1000
+    default:
+      return 30 * 24 * 60 * 60 * 1000
+  }
+}

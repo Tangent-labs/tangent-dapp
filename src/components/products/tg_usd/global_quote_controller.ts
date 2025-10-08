@@ -30,7 +30,8 @@ export const getQuote = async (depositWeiValue: bigint, currentAddress: Address,
     const quote = await getCustomPendleQuote(tokenIn, tokenOut, depositWeiValue, swapDirection)
     return { quote }
   } else {
-    return { quote: 0n }
+    const quote = await getCustomQuote(tokenIn, tokenOut, depositWeiValue)
+    return { quote }
   }
 }
 

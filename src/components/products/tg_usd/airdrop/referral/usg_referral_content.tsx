@@ -13,6 +13,7 @@ import { useUsgReferralCodeContext } from "./usg_referral_context"
 import { GodsonsLeaderboard } from "./components/GodsonsLeaderboard"
 import { SecondaryButton } from "@/components/design_system/inputs/secondary_button"
 import { formatNumber } from "@/lib/number_formatter"
+import { useClipboard } from "@/hooks/useClipboard"
 
 export const UsgReferralCode = () => {
   const { lpUserPoints, voteUserPoints, refereesPoints } = useUSGContext()
@@ -20,6 +21,8 @@ export const UsgReferralCode = () => {
   const { isLoading, lpLeaderboard, voteLeaderboard, godsonsLeaderboard } = useUsgReferralCodeContext()
 
   const { setReferralStatus, referralStatus, signMessage, airdropDataIsLoading, generateReferralCode } = useUsgAirdropContext()
+
+  const { copied, copy } = useClipboard()
 
   return (
     <div className="flex w-full flex-col items-center justify-center">
@@ -64,7 +67,12 @@ export const UsgReferralCode = () => {
                   <span className="text-lg font-semibold">{referralStatus?.generatedCode}</span>
                 </div>
                 <div className="flex w-full flex-col items-center justify-center">
-                  <SecondaryButton className="flex w-32 justify-center font-semibold">Share</SecondaryButton>
+                  <SecondaryButton
+                    onClick={() => copy(`https://tangent-dapp.vercel.app/referral?code=${referralStatus?.generatedCode}`)}
+                    className="flex w-32 justify-center font-semibold"
+                  >
+                    {copied ? "Copied!" : "Share"}
+                  </SecondaryButton>
                 </div>
               </>
             )}

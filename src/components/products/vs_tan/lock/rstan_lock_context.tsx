@@ -334,7 +334,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
       }
     }
 
-    if (depositAsset !== "TAN") {
+    if (!!depositAsset && depositAsset !== "TAN") {
       fetchZapValue()
     }
   }

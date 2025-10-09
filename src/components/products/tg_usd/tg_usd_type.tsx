@@ -232,6 +232,7 @@ export type USGMarketLoanDisplayData = {
   ltv: string
   maxBorrowable: string
   maxWithdrawable: string
+  positionAPR: string
 }
 
 export type USGMarketDisplayData = USGMarketLoanDisplayData & {
@@ -247,6 +248,7 @@ export type USGMarketDisplayData = USGMarketLoanDisplayData & {
   rewardsCutNext: string
   lt: string
   ltDollar: string
+  positionAPR: string
 }
 
 export type USGMarketAmounts = {
@@ -480,4 +482,26 @@ export type Boost = {
   description: string
   boost: number
   status: boolean
+}
+
+export type MarketAPR = {
+  currentAPR: {
+    [rewardToken: string]: number // allows any other dynamic APR components (e.g. CRV, CVX, FXN, etc.)
+  }
+  projectedAPR: {
+    [rewardToken: string]: number // allows any other dynamic APR components (e.g. CRV, CVX, FXN, etc.)
+  }
+  marketAddress: Address
+  marketName: string
+}
+
+export type MarketListAPRData = {
+  marketAddress: Address
+  collateral: ExistingAsset
+  currentAPR: {
+    [rewardToken: string]: number // allows any other dynamic APR components (e.g. CRV, CVX, FXN, etc.)
+  }
+  projectedAPR: {
+    [rewardToken: string]: number // allows any other dynamic APR components (e.g. CRV, CVX, FXN, etc.)
+  }
 }

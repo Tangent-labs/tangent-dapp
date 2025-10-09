@@ -4,16 +4,17 @@ import { Address } from "viem"
 import { TANStakingInfo } from "../vs_tan/rstan_types"
 import { getUSGsUSGMetrics } from "./tg_usd_controller"
 import { getCurrentBlock } from "@/services/service_rpc"
-import { getLpUserPoints, getUserRefereesPoints, getVoteUserPoints } from "./api"
 import { getBalances } from "./record/tg_usd_record_controller"
 import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
-import { USGStakingInfo, LpUserPoints, ZapToken, VoteUserPoints, RefereesPoints } from "./tg_usd_type"
+import { getLpUserPoints, getUserRefereesPoints, getVoteUserPoints } from "./api"
+import { USGStakingInfo, LpUserPoints, ZapToken, VoteUserPoints, RefereesPoints, MarketAPR } from "./tg_usd_type"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 
 type USGContextProps = {
   children: ReactNode
   tokens: ZapToken[]
+  marketAprs: MarketAPR[]
 }
 
 type USGContextValues = {
@@ -27,11 +28,12 @@ type USGContextValues = {
   TANsTANMetrics: TANStakingInfo | undefined
   loadTanSTANMetrics: () => void
   refereesPoints: RefereesPoints
+  marketAprs: MarketAPR[]
 }
 
 export const USGContext = createContext<USGContextValues | undefined>(undefined)
 
-export const USGProvider = ({ children, tokens }: USGContextProps) => {
+export const USGProvider = ({ children, tokens, marketAprs }: USGContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
 
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
@@ -115,6 +117,7 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
     TANsTANMetrics,
     voteUserPoints,
     refereesPoints,
+    marketAprs,
   }
 
   return <USGContext.Provider value={contextValue}>{children}</USGContext.Provider>

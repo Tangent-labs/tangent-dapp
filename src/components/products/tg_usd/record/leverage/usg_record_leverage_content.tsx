@@ -215,7 +215,9 @@ export default function USGLeverageContent() {
           onValueChange={(e) => updateBorrowWeiValue(e)}
         />
 
-        <div className="-mt-1 flex w-full items-start justify-end text-xs text-subtitle">Max leverage: x10</div>
+        <div className="-mt-1 flex w-full items-start justify-end text-xs text-subtitle">
+          Max leverage: x{Number((1 / (1 - Number(marketData?.constants.maxLTV) / 100000)).toFixed(0))}
+        </div>
 
         <div className="flex flex-col gap-2">
           <span className="text-sm font-semibold md:text-xl">Recap</span>

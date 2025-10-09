@@ -1,38 +1,57 @@
-"use client"
-
 import AprIndicator from "./apr_indicator"
 
 interface ListAPRProps {
+  currentAPRDetails?: {
+    [rewardToken: string]: number
+  }
   apr?: number
   projectedApr?: number
   className?: string
 }
 
-const MarketListAPR = ({ apr, projectedApr, className = "" }: ListAPRProps) => {
+const MarketListAPR = ({ currentAPRDetails, apr, projectedApr, className = "" }: ListAPRProps) => {
+  const rewardEntries = Object.entries(currentAPRDetails ?? {})
+    .filter(([k, v]) => k !== "APY" && typeof v === "number")
+    .sort((a, b) => b[1] - a[1])
+
   return (
     <div className={`flex min-w-16 flex-row items-center justify-center gap-2 text-center md:flex-col md:gap-0 ${className}`}>
       <span className="flex items-center justify-center bg-button-active bg-clip-text text-sm font-semibold leading-4 text-transparent md:text-xl">
         {apr}%
         <AprIndicator>
           <div className="flex flex-col gap-2">
-            <div className="flex min-w-44 items-center justify-between">
-              <span>vAPR</span>
-              <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">{apr}%</span>
-            </div>
-            <div className="mt-3 flex items-center justify-between">
-              <span>USDT</span>
-              <span>30%</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>USG</span>
-              <span>33%</span>
-            </div>
+            {currentAPRDetails && (
+              <div className="flex min-w-44 items-center justify-between">
+                <span>Base APY</span>
+                <span className="flex items-center justify-center">{currentAPRDetails["APY"]}%</span>
+              </div>
+            )}
+
+            {rewardEntries.length > 0 ? (
+              <div className="flex flex-col gap-2">
+                {rewardEntries.map(([token, value]) => (
+                  <div className="flex items-center justify-between" key={token}>
+                    <span>{token} APR</span>
+                    <span>{value}%</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-2 text-xs text-subtitle">No rewards data</div>
+            )}
+
+            {currentAPRDetails && (
+              <div className="mt-2 flex min-w-44 items-center justify-between">
+                <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">Net vAPR</span>
+                <span className="flex items-center justify-center rounded-[10px] bg-button-active px-2 py-0.5 font-semibold">{apr}%</span>
+              </div>
+            )}
           </div>
         </AprIndicator>
       </span>
       {projectedApr && (
         <span className="whitespace-nowrap text-xs text-subtitle">
-          Proj: <span>{projectedApr}%</span>
+          Proj: <span>{projectedApr.toFixed(2)}%</span>
         </span>
       )}
 

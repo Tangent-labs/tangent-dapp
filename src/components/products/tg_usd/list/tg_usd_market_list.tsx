@@ -46,9 +46,12 @@ export default function USGMarketList() {
         </div>
 
         <div className="hidden h-full w-full flex-col items-center gap-3 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] md:flex xl:w-5/12">
-          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-xl !font-semibold italic">
+          <div
+            style={{ fontSize: "20px", lineHeight: "20px" }}
+            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !font-semibold italic"
+          >
             Points campaign
-            <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 text-lg !font-semibold !not-italic !text-black">Live</div>
+            <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
           </div>
 
           <div className="mt-auto flex w-full items-center justify-between gap-3 p-2">
@@ -164,7 +167,7 @@ export function USGMarketListInner() {
           navigate={() => router.push(item.token.trim().replaceAll("/", "~").replaceAll(" ", "_"))}
         >
           <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
-          <MarketListAPR apr={item.apr.current} projectedApr={item.apr.projected} />
+          <MarketListAPR currentAPRDetails={item.currentAPRDetails} apr={item.apr.current} projectedApr={item.apr.projected} />
           <>
             {item.indicators.map((indicator, index) => (
               <div

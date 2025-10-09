@@ -1,7 +1,7 @@
 "use server"
 
 import { Address } from "viem"
-import { Boost, MarketHistoricalData, LpUserPoints, UserTask, VoteTask, VoteUserPoints, RefereesPoints } from "./tg_usd_type"
+import { Boost, MarketHistoricalData, LpUserPoints, UserTask, VoteTask, VoteUserPoints, RefereesPoints, MarketAPR } from "./tg_usd_type"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -418,6 +418,30 @@ export const getTotalSupply = async (dateTo: string, dateFrom: string, tokenAddr
     return data
   } catch (error) {
     console.error("Failed to fetch historical market data :", error)
+    return []
+  }
+}
+
+export const getMarketAprs = async (): Promise<Array<MarketAPR>> => {
+  try {
+    const url = `${baseUrl}/aprs`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch aprs`)
+    }
+
+    const data: Array<MarketAPR> = await response.json()
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch aprs :", error)
     return []
   }
 }

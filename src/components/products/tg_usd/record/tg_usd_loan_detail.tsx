@@ -14,7 +14,7 @@ export default function USGLoanDetail() {
   if (!isWellConnected) return <></>
 
   return (
-    <div className="flex flex-col rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+    <div className="flex flex-col rounded-[10px] bg-overlay-panel px-3 py-2 backdrop-blur-[60px]">
       <Title label={"Loan details"} size={"normal"} />
       <Divider />
       <div className="flex flex-wrap gap-4">
@@ -28,7 +28,7 @@ export default function USGLoanDetail() {
         <EvolutionBox originalValue={marketDisplayData.health} label={"Health"} newValue={futureMarketDisplayData.health} className="flex-1" />
         <EvolutionBox originalValue={marketDisplayData.ltv} label={"LTV"} newValue={futureMarketDisplayData.ltv} className="flex-1" />
 
-        <EvolutionBox originalValue={"XXX"} label={"Position APR"} newValue={"YYY"} className="flex-1" />
+        <EvolutionBox originalValue={marketDisplayData.positionAPR} label={"Position APR"} newValue={futureMarketDisplayData.positionAPR} className="flex-1" />
       </div>
     </div>
   )

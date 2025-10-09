@@ -2,10 +2,12 @@
 
 import { ListRowData, ListState } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { getMarketDatas, getUSGMarketsData, transformToRows, transformGlobalData, transformMarketData } from "./tg_usd_market_controller"
+import { getUSGMarketsData, transformToRows, transformGlobalData, transformMarketData } from "./tg_usd_market_controller"
 import { ChainViewMarketList, MarketConstants, MarketDebtData, TgUsdCollateralData, TgUsdGlobalData } from "../tg_usd_type"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { Address, formatUnits } from "viem"
+import { USGMarkets } from "../tg_usd_repository"
+import { useUSGContext } from "../tg_usd_context"
 
 type USGMaketListContextProps = {
   children: ReactNode
@@ -31,8 +33,10 @@ type USGMaketListContextValues = {
 
 export const USGMaketListContext = createContext<USGMaketListContextValues | undefined>(undefined)
 
-export const USGMaketListProvider = ({ children }: USGMaketListContextProps) => {
+export const USGMarketListProvider = ({ children }: USGMaketListContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
+
+  const { marketAprs } = useUSGContext()
 
   const [onChainData, setOnChainData] = useState<ChainViewMarketList | undefined>()
 
@@ -46,14 +50,36 @@ export const USGMaketListProvider = ({ children }: USGMaketListContextProps) => 
     }
   }, [currentAddress])
 
+  const marketDataWithAPR = useMemo(() => {
+    return USGMarkets.map((market) => {
+      const currentMarket = marketAprs.find((m) => m.marketAddress.toLowerCase() === market.marketAddress.toLowerCase())
+
+      if (currentMarket) {
+        return {
+          marketAddress: market.marketAddress,
+          collateral: market.marketName,
+          currentAPR: currentMarket.currentAPR,
+          projectedAPR: currentMarket.projectedAPR,
+        }
+      }
+
+      return {
+        marketAddress: market.marketAddress,
+        collateral: market.marketName,
+        currentAPR: {},
+        projectedAPR: {},
+      }
+    })
+  }, [marketAprs])
+
   const displayRows = useMemo<ListRowData[]>(() => {
-    const allRows = transformToRows(getMarketDatas(), onChainData)
+    const allRows = transformToRows(marketDataWithAPR, onChainData)
     if (!searchValue || searchValue.trim() === "") {
       return allRows
     }
     const lowered = searchValue.toLowerCase()
     return allRows.filter((row) => row.name.toLowerCase().includes(lowered) || row.token.toLowerCase().includes(lowered))
-  }, [onChainData, searchValue])
+  }, [onChainData, searchValue, marketDataWithAPR])
 
   const globalData = useMemo<TgUsdGlobalData>(() => {
     return transformGlobalData(onChainData)
@@ -143,7 +169,7 @@ export const USGMaketListProvider = ({ children }: USGMaketListContextProps) => 
 export const useUSGMaketListContext = () => {
   const context = useContext(USGMaketListContext)
   if (!context) {
-    throw new Error("useUSGMaketListContext must be used within a USGMaketListProvider")
+    throw new Error("useUSGMaketListContext must be used within a USGMarketListProvider")
   }
   return context
 }

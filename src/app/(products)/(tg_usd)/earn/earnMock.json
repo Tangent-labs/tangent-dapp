@@ -1,24 +1,31 @@
 {
   "tasks": [
     {
-      "name": "USG/USDC",
-      "asset": "USG-USDC",
-      "link": "https://curve.fi/dex/#/ethereum/pools/factory-crvusd-0/deposit",
-      "protocolName": "Convex",
-      "actionLabel": "Get USG/USDC LP",
-      "currentAPR": 60.5,
-      "projectedAPR": 70.2,
+      "name": "crvUSD-USDT",
+      "asset": "crvUSD-USDT",
+      "address": "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4",
+      "link": "https://www.curve.finance/dex/ethereum/pools/factory-crvusd-1/deposit",
+      "protocolName": "Curve",
+      "actionLabel": "Get crvUSD/USDT LP",
       "bonusPts": 1.5
     },
     {
-      "name": "USG/tgDAI",
-      "asset": "USG-tgDAI",
-      "link": "https://curve.fi/dex/#/ethereum/pools/factory-crvusd-0/deposit",
-      "protocolName": "Convex",
-      "actionLabel": "Get USG/USDC LP",
-      "currentAPR": 60.5,
-      "projectedAPR": 70.2,
+      "name": "crvUSD-USDC",
+      "asset": "crvUSD-USDC",
+      "address": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
+      "link": "https://www.curve.finance/dex/ethereum/pools/factory-crvusd-0/deposit",
+      "protocolName": "Curve",
+      "actionLabel": "Get crvUSD/USDC LP",
       "bonusPts": 4
+    },
+    {
+      "name": "USR-RLP",
+      "asset": "USR-RLP",
+      "address": "0xF55B0f6F2Da5ffDDb104b58a60F2862745960442",
+      "link": "https://www.curve.finance/dex/ethereum/pools/fbite",
+      "protocolName": "Curve",
+      "actionLabel": "Get crvUSD/USDC LP",
+      "bonusPts": 12
     }
   ]
 }

@@ -329,6 +329,16 @@ export type DepositReceiveAsset = {
   balance?: bigint
 }
 
+export type EarnProtocolInput = {
+  name: string
+  asset: string
+  link: string
+  protocolName: string
+  actionLabel: string
+  bonusPts: number
+  address: string
+}
+
 export type EarnTask = {
   name: string
   asset: string
@@ -338,6 +348,7 @@ export type EarnTask = {
   currentAPR: number
   projectedAPR: number
   bonusPts: number
+  address: string
 }
 
 export type LockPosition = {
@@ -504,4 +515,10 @@ export type MarketListAPRData = {
   projectedAPR: {
     [rewardToken: string]: number // allows any other dynamic APR components (e.g. CRV, CVX, FXN, etc.)
   }
+}
+
+export type GaugeAPR = {
+  address: Address
+  gaugeCrvApy: Array<number>
+  gaugeFutureCrvApy: Array<number>
 }

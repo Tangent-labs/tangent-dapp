@@ -138,29 +138,7 @@ export function getComputedFutureLoanData(
   const ltv = futureDepositedDollar !== 0 ? (Number(futureDebt) / futureDepositedDollar) * 100 : 0
   const health = futureDebt !== 0n ? (futureDeposited * collateralPriceRaw * liquidationThresholdRaw) / (futureDebt * DENOMINATOR) : 0n
 
-  const collatValue = futureDeposited
-
-  const debt = futureDebt
-
-  const currentMarket = marketAPRs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())
-
-  let collatAPR = 1
-
-  if (currentMarket) {
-    collatAPR = Object.values(currentMarket?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
-  }
-
-  const grossRevenues = (collatValue * BigInt(collatAPR * 1000)) / BigInt(1000)
-
-  const priceInWei = parseUnits(usgPrice.toFixed(6), 18)
-
-  const debtIr = computeIR(priceInWei, marketData?.constants.irParams)
-
-  const debtAtCurrentIr = (debt * debtIr) / BigInt(10 ** 18)
-
-  const revenues = grossRevenues - debtAtCurrentIr
-
-  const positionAPR = Number(revenues) / Number(collatValue)
+  const positionAPR = computeAPR(futureDeposited, futureDebt, usgPrice, marketAPRs, marketData)
 
   return {
     collateralValue: formatDollar(futureDepositedDollar, 0),
@@ -169,7 +147,7 @@ export function getComputedFutureLoanData(
     ltv: ltv > 0 ? formatNumber(collateralValueToNumber(ltv || 0), 2) + "%" : "0%",
     maxBorrowable: formatDollarBigInt(maxBorrowable, collateralInfo.decimals, 0),
     maxWithdrawable: formatDollarBigInt(maxWithDrawable, collateralInfo.decimals, 0),
-    positionAPR: !!collatValue && !!grossRevenues ? positionAPR.toFixed(2) + "%" : "-",
+    positionAPR: !!futureDeposited && !!marketAPRs ? positionAPR.toFixed(2) + "%" : "-",
   } as USGMarketLoanDisplayData
 }
 
@@ -220,25 +198,7 @@ export function getMarketDisplayData(usgPrice: number, marketAPRs: MarketAPR[], 
 
   const debt = marketData?.debtInfos?.totalDebt
 
-  const currentMarket = marketAPRs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())
-
-  let collatAPR = 1
-
-  if (currentMarket) {
-    collatAPR = Object.values(currentMarket?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
-  }
-
-  const grossRevenues = (marketData?.collateralInfos.positionCollateralUSDValue * BigInt(collatAPR * 1000)) / BigInt(1000)
-
-  const priceInWei = parseUnits(usgPrice.toFixed(6), 18)
-
-  const debtIr = computeIR(priceInWei, marketData.constants.irParams)
-
-  const debtAtCurrentIr = (debt * debtIr) / BigInt(10 ** 18)
-
-  const revenues = grossRevenues - debtAtCurrentIr
-
-  const positionAPR = Number(revenues) / Number(collatValue)
+  const positionAPR = computeAPR(collatValue, debt, usgPrice, marketAPRs, marketData)
 
   return {
     ...loanData,
@@ -256,8 +216,25 @@ export function getMarketDisplayData(usgPrice: number, marketAPRs: MarketAPR[], 
     maxLtvDollar: formatDollar(Number(formatEther(BigInt(marketData?.constants.maxMarketDebt || 0n))), 2),
     rewardsCutCurrent: formatNumber(Number(marketData?.debtInfos.currentRewardCut || 0n) / 1000, 0) + "%",
     rewardsCutNext: formatNumber(Number(marketData?.debtInfos.futureRewardCut || 0n) / 1000, 0) + "%",
-    positionAPR: !!collatValue && !!grossRevenues ? positionAPR.toFixed(2) + "%" : "-",
+    positionAPR: !!collatValue && !!marketAPRs ? positionAPR.toFixed(2) + "%" : "-",
   } as USGMarketDisplayData
+}
+
+const computeAPR = (collatValue: bigint, debt: bigint, usgPrice: number, marketAPRs: MarketAPR[], marketData: MarketDetailData) => {
+  const currentMarket = marketAPRs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())
+  let collatAPR = 1
+
+  if (currentMarket) {
+    collatAPR = Object.values(currentMarket?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+  }
+
+  const grossRevenues = (collatValue * BigInt(collatAPR * 1000)) / BigInt(1000)
+  const priceInWei = parseUnits(usgPrice.toFixed(6), 18)
+  const debtIr = computeIR(priceInWei, marketData?.constants.irParams)
+  const debtAtCurrentIr = (debt * debtIr) / BigInt(10 ** 18)
+  const revenues = grossRevenues - debtAtCurrentIr
+
+  return Number(revenues) / Number(collatValue)
 }
 
 export function getMarketApr(marketAddress: Address) {

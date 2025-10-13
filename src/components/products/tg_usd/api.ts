@@ -1,7 +1,7 @@
 "use server"
 
 import { Address } from "viem"
-import { Boost, MarketHistoricalData, LpUserPoints, UserTask, VoteTask, VoteUserPoints, RefereesPoints, MarketAPR } from "./tg_usd_type"
+import { Boost, MarketHistoricalData, LpUserPoints, UserTask, VoteTask, VoteUserPoints, RefereesPoints, MarketAPR, GaugeAPR } from "./tg_usd_type"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -442,6 +442,30 @@ export const getMarketAprs = async (): Promise<Array<MarketAPR>> => {
     return data
   } catch (error) {
     console.error("Failed to fetch aprs :", error)
+    return []
+  }
+}
+
+export const getPools = async (): Promise<Array<GaugeAPR>> => {
+  try {
+    const url = `https://api.curve.finance/v1/getPools/all/ethereum`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch pool`)
+    }
+
+    const { data } = await response.json()
+
+    return data?.poolData
+  } catch (error) {
+    console.error("Failed to fetch pool :", error)
     return []
   }
 }

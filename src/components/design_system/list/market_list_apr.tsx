@@ -20,31 +20,33 @@ const MarketListAPR = ({ currentAPRDetails, apr, projectedApr, className = "" }:
         {apr}%
         <AprIndicator>
           <div className="flex flex-col gap-2">
-            {currentAPRDetails && (
-              <div className="flex min-w-44 items-center justify-between">
-                <span>Base APY</span>
-                <span className="flex items-center justify-center">{currentAPRDetails["APY"]}%</span>
-              </div>
-            )}
-
             {rewardEntries.length > 0 ? (
-              <div className="flex flex-col gap-2">
-                {rewardEntries.map(([token, value]) => (
-                  <div className="flex items-center justify-between" key={token}>
-                    <span>{token} APR</span>
-                    <span>{value}%</span>
+              <>
+                {currentAPRDetails && (
+                  <div className="flex min-w-44 items-center justify-between">
+                    <span>Base APY</span>
+                    <span className="flex items-center justify-center">{currentAPRDetails["APY"]}%</span>
                   </div>
-                ))}
-              </div>
+                )}
+
+                <div className="flex flex-col gap-2">
+                  {rewardEntries.map(([token, value]) => (
+                    <div className="flex items-center justify-between" key={token}>
+                      <span>{token} APR</span>
+                      <span>{value}%</span>
+                    </div>
+                  ))}
+                </div>
+
+                {currentAPRDetails && (
+                  <div className="mt-2 flex min-w-44 items-center justify-between">
+                    <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">Net vAPR</span>
+                    <span className="flex items-center justify-center rounded-[10px] bg-button-active px-2 py-0.5 font-semibold">{apr}%</span>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="p-2 text-xs text-subtitle">No rewards data</div>
-            )}
-
-            {currentAPRDetails && (
-              <div className="mt-2 flex min-w-44 items-center justify-between">
-                <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">Net vAPR</span>
-                <span className="flex items-center justify-center rounded-[10px] bg-button-active px-2 py-0.5 font-semibold">{apr}%</span>
-              </div>
             )}
           </div>
         </AprIndicator>

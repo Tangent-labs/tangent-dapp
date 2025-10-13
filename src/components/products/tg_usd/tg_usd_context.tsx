@@ -7,14 +7,13 @@ import { getCurrentBlock } from "@/services/service_rpc"
 import { getBalances } from "./record/tg_usd_record_controller"
 import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
-import { getLpUserPoints, getUserRefereesPoints, getVoteUserPoints } from "./api"
+import { getLpUserPoints, getMarketAprs, getUserRefereesPoints, getVoteUserPoints } from "./api"
 import { USGStakingInfo, LpUserPoints, ZapToken, VoteUserPoints, RefereesPoints, MarketAPR } from "./tg_usd_type"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 
 type USGContextProps = {
   children: ReactNode
   tokens: ZapToken[]
-  marketAprs: MarketAPR[]
 }
 
 type USGContextValues = {
@@ -33,7 +32,7 @@ type USGContextValues = {
 
 export const USGContext = createContext<USGContextValues | undefined>(undefined)
 
-export const USGProvider = ({ children, tokens, marketAprs }: USGContextProps) => {
+export const USGProvider = ({ children, tokens }: USGContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
 
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
@@ -47,6 +46,18 @@ export const USGProvider = ({ children, tokens, marketAprs }: USGContextProps) =
   const [USGsUSGMetrics, setUSGsUSGMetrics] = useState<USGStakingInfo | undefined>()
 
   const [TANsTANMetrics, setTANsTANMetrics] = useState<TANStakingInfo | undefined>()
+
+  const [marketAprs, setMarketAprs] = useState<Array<MarketAPR>>([])
+
+  const fetchAprs = async () => {
+    const markets = await getMarketAprs()
+
+    setMarketAprs(markets)
+  }
+
+  useEffect(() => {
+    fetchAprs()
+  }, [])
 
   const loadUSGsUSGMetrics = useCallback(() => {
     if (currentAddress) {

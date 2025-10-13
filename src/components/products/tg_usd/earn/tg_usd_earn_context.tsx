@@ -1,9 +1,8 @@
 "use client"
 
-import { Address } from "viem"
 import { ListState } from "@/types"
 import { useUSGContext } from "../tg_usd_context"
-import { mapTasks } from "./tg_usd_earn_controller"
+import { mapPoolsAndTasks, mapTasks } from "./tg_usd_earn_controller"
 import { getCurvePools, getConvexPools, getStakeDAOPools } from "../api"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
@@ -42,7 +41,6 @@ export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
 
     if (!searchValue || searchValue.trim() === "") {
       const mappedTasks = mapTasks(tasks, poolsData)
-      setIsLoading(false)
       return mappedTasks
     }
 
@@ -68,33 +66,10 @@ export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
   const fetchPoolsData = async () => {
     const [curvePools, convexPools, stakeDaoPools] = await Promise.all([getCurvePools(), getConvexPools(), getStakeDAOPools()])
 
-    const allCurvePoolsAddresses = tasks.filter((t) => t.protocolName === "Curve").map((t) => t.address)
-    const allConvexPoolsAddresses = tasks.filter((t) => t.protocolName === "Convex").map((t) => t.address)
-    const allStakeDaoPoolsPoolsAddresses = tasks.filter((t) => t.protocolName === "StakeDAO").map((t) => t.address)
+    const mappedPools = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, tasks)
 
-    const curvePoolsOfInterest = curvePools
-      .filter((p: GaugeAPR) => allCurvePoolsAddresses.includes(p.address))
-      .map((el) => {
-        return { ...el, protocol: "Curve" }
-      })
-
-    const convexPoolsOfInterest = convexPools
-      .filter((p: GaugeAPR) => allConvexPoolsAddresses.includes(p.address))
-      .map((el) => {
-        return { ...el, protocol: "Convex" }
-      })
-
-    const stakeDaoPoolsOfInterest = stakeDaoPools
-      .filter((p: { lpToken: { address: string } }) => allStakeDaoPoolsPoolsAddresses.includes(p.lpToken.address))
-      .map((el) => {
-        const address = el.lpToken.address as Address
-        const gaugeCrvApy = el.apr.current.total
-        const gaugeFutureCrvApy = el.apr.projected.total
-
-        return { protocol: "StakeDAO", address, gaugeCrvApy: [gaugeCrvApy], gaugeFutureCrvApy: [gaugeFutureCrvApy] }
-      })
-
-    setPoolsData(curvePoolsOfInterest.concat(convexPoolsOfInterest).concat(stakeDaoPoolsOfInterest))
+    setPoolsData(mappedPools)
+    setIsLoading(false)
   }
 
   useEffect(() => {

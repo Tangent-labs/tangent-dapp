@@ -1,5 +1,6 @@
 import { ListHeaderData } from "@/types"
-import { EarnProtocolInput, GaugeAPR } from "../tg_usd_type"
+import { EarnProtocolInput, GaugeAPR, StakeDaoAPRData } from "../tg_usd_type"
+import { Address } from "viem"
 
 export const tgUsdEarnListHeaders: ListHeaderData[] = [
   { label: "Asset", key: "asset" },
@@ -35,4 +36,34 @@ export const mapTasks = (tasks: EarnProtocolInput[], poolsData?: Array<GaugeAPR>
       projectedAPR,
     }
   })
+}
+
+export const mapPoolsAndTasks = (curvePools: GaugeAPR[], convexPools: GaugeAPR[], stakeDaoPools: StakeDaoAPRData[], tasks: EarnProtocolInput[]) => {
+  const allCurvePoolsAddresses = tasks.filter((t) => t.protocolName === "Curve").map((t) => t.address)
+  const allConvexPoolsAddresses = tasks.filter((t) => t.protocolName === "Convex").map((t) => t.address)
+  const allStakeDaoPoolsPoolsAddresses = tasks.filter((t) => t.protocolName === "StakeDAO").map((t) => t.address)
+
+  const curvePoolsOfInterest = curvePools
+    .filter((p: GaugeAPR) => allCurvePoolsAddresses.includes(p.address))
+    .map((el) => {
+      return { ...el, protocol: "Curve" }
+    })
+
+  const convexPoolsOfInterest = convexPools
+    .filter((p: GaugeAPR) => allConvexPoolsAddresses.includes(p.address))
+    .map((el) => {
+      return { ...el, protocol: "Convex" }
+    })
+
+  const stakeDaoPoolsOfInterest = stakeDaoPools
+    .filter((p: { lpToken: { address: string } }) => allStakeDaoPoolsPoolsAddresses.includes(p.lpToken.address))
+    .map((el) => {
+      const address = el.lpToken.address as Address
+      const gaugeCrvApy = el.apr.current.total
+      const gaugeFutureCrvApy = el.apr.projected.total
+
+      return { protocol: "StakeDAO", address, gaugeCrvApy: [gaugeCrvApy], gaugeFutureCrvApy: [gaugeFutureCrvApy] }
+    })
+
+  return curvePoolsOfInterest.concat(convexPoolsOfInterest).concat(stakeDaoPoolsOfInterest)
 }

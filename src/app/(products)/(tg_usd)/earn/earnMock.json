@@ -19,13 +19,22 @@
       "bonusPts": 4
     },
     {
-      "name": "USR-RLP",
-      "asset": "USR-RLP",
-      "address": "0xF55B0f6F2Da5ffDDb104b58a60F2862745960442",
-      "link": "https://www.curve.finance/dex/ethereum/pools/fbite",
-      "protocolName": "Curve",
-      "actionLabel": "Get crvUSD/USDC LP",
-      "bonusPts": 12
+      "name": "DOLA-USR",
+      "asset": "DOLA-USR",
+      "address": "0x38De22a3175708D45E7c7c64CD78479C8B56f76E",
+      "link": "https://www.curve.finance/dex/ethereum/pools",
+      "protocolName": "Convex",
+      "actionLabel": "Get DOLA-USR LP",
+      "bonusPts": 2
+    },
+    {
+      "name": "crvUSD-USDC",
+      "asset": "crvUSD-USDC",
+      "address": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
+      "link": "https://www.curve.finance/dex/ethereum/pools",
+      "protocolName": "StakeDAO",
+      "actionLabel": "Stake crvUSD-USDC",
+      "bonusPts": 20
     }
   ]
 }

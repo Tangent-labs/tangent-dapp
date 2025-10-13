@@ -1,6 +1,5 @@
 import { ListHeaderData } from "@/types"
-import { EarnProtocolInput } from "../tg_usd_type"
-import { Address } from "viem"
+import { EarnProtocolInput, GaugeAPR } from "../tg_usd_type"
 
 export const tgUsdEarnListHeaders: ListHeaderData[] = [
   { label: "Asset", key: "asset" },
@@ -17,9 +16,9 @@ export const tgUsdEarnListHeaders: ListHeaderData[] = [
   { label: "Points", key: "points" },
 ]
 
-export const mapTasks = (tasks: EarnProtocolInput[], poolsData?: Array<{ address: Address; gaugeCrvApy: Array<number>; gaugeFutureCrvApy: Array<number> }>) => {
+export const mapTasks = (tasks: EarnProtocolInput[], poolsData?: Array<GaugeAPR>) => {
   return tasks.map((t) => {
-    const currentPool = poolsData?.find((el) => el.address === t.address) || null
+    const currentPool = poolsData?.find((el) => el.address === t.address && el.protocol === t.protocolName) || null
 
     const currentAPR = currentPool?.gaugeCrvApy.reduce((sum, n) => sum + n, 0) || 0
     const projectedAPR = currentPool?.gaugeFutureCrvApy.reduce((sum, n) => sum + n, 0) || 0

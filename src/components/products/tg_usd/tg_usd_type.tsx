@@ -518,7 +518,20 @@ export type MarketListAPRData = {
 }
 
 export type GaugeAPR = {
+  protocol: string
   address: Address
   gaugeCrvApy: Array<number>
   gaugeFutureCrvApy: Array<number>
+}
+
+export type StakeDaoAPRData = {
+  lpToken: {
+    address: string
+  }
+  apr: {
+    current: {
+      total: number
+    }
+    projected: { total: number }
+  }
 }

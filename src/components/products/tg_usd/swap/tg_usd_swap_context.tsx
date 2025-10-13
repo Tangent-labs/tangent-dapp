@@ -13,6 +13,7 @@ import { getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_c
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { BalanceAllowanceData, SwapToken, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../tg_usd_type"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./tg_usd_swap_controller"
+import { useRootContext } from "../../root/root_context"
 
 type USGSwapContextProps = {
   children: ReactNode
@@ -79,6 +80,8 @@ type USGSwapContextValues = {
 export const USGSwapContext = createContext<USGSwapContextValues | undefined>(undefined)
 
 export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
+  const { curveRoutes } = useRootContext()
+
   const { tokens, USGsUSGMetrics, loadUSGsUSGMetrics, lpUserPoints } = useUSGContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
@@ -241,7 +244,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
       setIsSwapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, depositAssetInfo?.address, receiveAssetInfo?.address)
+        const { quote } = await getQuote(value, currentAddress, depositAssetInfo?.address, receiveAssetInfo?.address, curveRoutes)
 
         if (quote) {
           setDepositWeiValue(quote)
@@ -284,7 +287,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
       setIsSwapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, receiveAssetInfo?.address, depositAssetInfo?.address)
+        const { quote } = await getQuote(value, currentAddress, receiveAssetInfo?.address, depositAssetInfo?.address, curveRoutes)
 
         if (quote) {
           setReceiveWeiValue(quote)
@@ -417,7 +420,8 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
           depositWeiValue,
           (BigInt(receiveWeiValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
           currentAddress,
-          currentAddress
+          currentAddress,
+          curveRoutes
         )
 
         const tx = {

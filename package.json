@@ -10,7 +10,7 @@
     "lint:tscold": "npx tsc --noEmit  --jsx preserve  --skipLibCheck  --excludeDirectories _utils --resolveJsonModule",
     "lint:tsc": "npx tsc --noEmit",
     "lint:prettier": "prettier --check .",
-    "lintfix": "prettier --write --list-different . ",
+    "lint:fix": "prettier --write --list-different . ",
     "prepare": "husky",
     "helper:build-token-tstype": "node ./_utils/create_tokens_ts_type.js",
     "validate": "npm run lint && npm run lint:tsc && npm run lint:prettier"

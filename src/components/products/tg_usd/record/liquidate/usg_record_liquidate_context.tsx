@@ -11,6 +11,7 @@ import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 import { maxUint256 } from "viem"
 import { useUSGContext } from "../../tg_usd_context"
+import { useRootContext } from "@/components/products/root/root_context"
 
 type USGLiquidateContextProps = {
   children: ReactNode
@@ -51,6 +52,8 @@ type USGLiquidateContextValues = {
 export const USGLiquidateContext = createContext<USGLiquidateContextValues | undefined>(undefined)
 
 export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => {
+  const { curveRoutes } = useRootContext()
+
   const { loadUSGsUSGMetrics } = useUSGContext()
 
   const { marketData, marketInfo, loadOnChainData, marketDisplayData, setCurrentAmounts } = useUSGRecordContext()
@@ -116,6 +119,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         0n,
         USG_CONTRACT.LIQUIDATOR_PROXY,
         USG_CONTRACT.LIQUIDATOR_PROXY,
+        curveRoutes,
         currentAddress
       )
 
@@ -179,7 +183,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
       if (!value || !currentAddress || !marketData) return
 
       try {
-        const { quote } = await getQuote(value, currentAddress, assetInfo?.address, marketData?.collateralInfo?.address)
+        const { quote } = await getQuote(value, currentAddress, assetInfo?.address, marketData?.collateralInfo?.address, curveRoutes)
 
         if (quote) {
           setTgUSDReceivedValue(quote)

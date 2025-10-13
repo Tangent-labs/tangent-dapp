@@ -9,7 +9,7 @@ export interface UserStatus {
   friends: number
 }
 
-const baseUrl = process.env.BASE_URL || "http://localhost:3100"
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3100"
 
 export const getEnsoData = async (
   amountIn: bigint,

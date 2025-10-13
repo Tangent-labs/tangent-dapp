@@ -14,6 +14,7 @@ import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 import { formatDollar, toBigInt } from "@/lib/number_formatter"
+import { useRootContext } from "@/components/products/root/root_context"
 
 type USGRepayContextProps = {
   children: ReactNode
@@ -79,6 +80,8 @@ type USGRepayContextValues = {
 export const USGRepayContext = createContext<USGRepayContextValues | undefined>(undefined)
 
 export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
+  const { curveRoutes } = useRootContext()
+
   const { tokens, loadUSGsUSGMetrics } = useUSGContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
@@ -173,7 +176,15 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
     setIsZapLoading(true)
 
     try {
-      const repayData = await getRoute(repayAssetInfo?.address, USG_CONTRACT?.USG, repayWeiValue, usgRepayedValue!, currentAddress!, USG_CONTRACT.ZAPPER)
+      const repayData = await getRoute(
+        repayAssetInfo?.address,
+        USG_CONTRACT?.USG,
+        repayWeiValue,
+        usgRepayedValue!,
+        currentAddress!,
+        USG_CONTRACT.ZAPPER,
+        curveRoutes
+      )
 
       const zapMarketData = {
         tokenIn: repayAssetInfo?.address,
@@ -208,7 +219,8 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
         repayWeiValue,
         (BigInt(usgRepayedValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         currentAddress!,
-        USG_CONTRACT.ZAPPER
+        USG_CONTRACT.ZAPPER,
+        curveRoutes
       )
 
       const zapMarketData = {
@@ -365,7 +377,7 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
 
       setIsZapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, assetInfo?.address, repayAssetInfo?.address)
+        const { quote } = await getQuote(value, currentAddress, assetInfo?.address, repayAssetInfo?.address, curveRoutes)
 
         if (quote) {
           setUsgRepayedValue(quote)

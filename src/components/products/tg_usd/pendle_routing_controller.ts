@@ -45,10 +45,11 @@ const returnCustomPendleQuoteData = async (
     underlyings = underlyingPool?.UNDERLYING_OUT
   }
 
-  const params: {
-    curveRouterData: { _route: string[]; _swap_params: number[][]; _amount: bigint; _pools: Address[] }
-    data: PendleSYToPTQuote | PendlePTToSYQuote
-  }[] = []
+  type AnyParamEntry =
+    | ({ curveRouterData: { _route: string[]; _swap_params: number[][]; _amount: bigint; _pools: Address[] } } & { syToPTData: PendleSYToPTQuote })
+    | ({ curveRouterData: { _route: string[]; _swap_params: number[][]; _amount: bigint; _pools: Address[] } } & { PTToSYData: PendlePTToSYQuote })
+
+  const params: AnyParamEntry[] = []
 
   underlyings?.forEach((u: string) => {
     const [routeTokenIn, routeTokenOut] = swapDirection === "tokenToPT" ? [tokenIn, u] : [u, tokenOut]
@@ -73,7 +74,7 @@ const returnCustomPendleQuoteData = async (
         }
 
         matchingRoutes.push(curveQuote)
-        params.push({ curveRouterData: curveQuote, data: syToPTData })
+        params.push({ curveRouterData: curveQuote, syToPTData })
       }
     } else {
       const PTToSYData: PendlePTToSYQuote = {
@@ -93,7 +94,7 @@ const returnCustomPendleQuoteData = async (
         }
 
         matchingRoutes.push(curveQuote)
-        params.push({ curveRouterData: curveQuote, data: PTToSYData })
+        params.push({ curveRouterData: curveQuote, PTToSYData })
       }
     }
   })
@@ -147,9 +148,7 @@ export const getPendleCustomRouterRoute = async (
           _route: matchingRoute._route,
           _swap_params: matchingRoute._swap_params,
           _amount: amount,
-          _min_dy: 0n,
           _pools: matchingRoute._pools,
-          _receiver: USG_CONTRACT.PENDLE_ROUTER,
         },
         {
           market: underlyingPool?.MARKET,

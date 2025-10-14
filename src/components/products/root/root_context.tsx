@@ -25,7 +25,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
   const fetchAndStore = async (localStorageKey: string) => {
     try {
       let data
-      if (process.env.ENV_NAME === "local") {
+      if (process.env.NEXT_PUBLIC_ENV_NAME === "local") {
         data = swapRoutes
       } else {
         const response = await fetch(CUSTOM_CURVE_ROUTES_GITHUB_URL)

@@ -10,6 +10,7 @@ import { MarketDetailData, ZapToken } from "../../tg_usd_type"
 import { formatDollar, toBigInt } from "@/lib/number_formatter"
 import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
+import { useRootContext } from "@/components/products/root/root_context"
 import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
@@ -79,6 +80,8 @@ type USGRepayContextValues = {
 export const USGRepayContext = createContext<USGRepayContextValues | undefined>(undefined)
 
 export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
+  const { curveRoutes } = useRootContext()
+
   const { tokens, loadUSGsUSGMetrics } = useUSGContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
@@ -173,7 +176,15 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
     setIsZapLoading(true)
 
     try {
-      const repayData = await getRoute(repayAssetInfo?.address, USG_CONTRACT?.USG, repayWeiValue, usgRepayedValue!, currentAddress!, USG_CONTRACT.ZAPPER)
+      const repayData = await getRoute(
+        repayAssetInfo?.address,
+        USG_CONTRACT?.USG,
+        repayWeiValue,
+        usgRepayedValue!,
+        currentAddress!,
+        USG_CONTRACT.ZAPPER,
+        curveRoutes
+      )
 
       const zapMarketData = {
         tokenIn: repayAssetInfo?.address,
@@ -208,7 +219,8 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
         repayWeiValue,
         (BigInt(usgRepayedValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         currentAddress!,
-        USG_CONTRACT.ZAPPER
+        USG_CONTRACT.ZAPPER,
+        curveRoutes
       )
 
       const zapMarketData = {
@@ -355,7 +367,7 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
 
       setIsZapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address)
+        const { quote } = await getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address, curveRoutes)
 
         if (quote) {
           setUsgRepayedValue(quote)

@@ -1,4 +1,3 @@
-import routes from "./swapRoutes.json"
 import { USG_CONTRACT } from "./tg_usd_repository"
 import { PendlePools } from "@tangent/defi-resources"
 import PendlePTRouter from "../../../abi/USG/PendlePTRouter.json"
@@ -7,6 +6,7 @@ import QuotePTToToken from "../../../abi/USG/QuotePTToToken.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import { Abi, Address, encodeFunctionData, Hex, zeroAddress } from "viem"
 import { PendlePTToSYQuote, PendleSYToPTQuote } from "./tg_usd_type"
+import { CustomCurveRoutes } from "./global_quote_controller"
 
 type RawRoute = {
   params: {
@@ -16,7 +16,13 @@ type RawRoute = {
   display: string
 }
 
-const returnCustomPendleQuoteData = async (tokenIn: Address, tokenOut: Address, amount: bigint, swapDirection: string) => {
+const returnCustomPendleQuoteData = async (
+  customCurveRoutes: CustomCurveRoutes,
+  tokenIn: Address,
+  tokenOut: Address,
+  amount: bigint,
+  swapDirection: string
+) => {
   type RoutesMap = Record<string, Record<string, RawRoute[]>>
 
   const pendlePT = swapDirection === "tokenToPT" ? tokenOut : tokenIn
@@ -47,7 +53,7 @@ const returnCustomPendleQuoteData = async (tokenIn: Address, tokenOut: Address, 
   underlyings?.forEach((u: string) => {
     const [routeTokenIn, routeTokenOut] = swapDirection === "tokenToPT" ? [tokenIn, u] : [u, tokenOut]
 
-    const curveRoutes = (routes?.success as RoutesMap)?.[routeTokenIn.toLowerCase()]?.[routeTokenOut.toLowerCase()] ?? []
+    const curveRoutes = (customCurveRoutes?.success as RoutesMap)?.[routeTokenIn.toLowerCase()]?.[routeTokenOut.toLowerCase()] ?? []
 
     if (swapDirection === "tokenToPT") {
       const syToPTData: PendleSYToPTQuote = {
@@ -99,13 +105,20 @@ const returnCustomPendleQuoteData = async (tokenIn: Address, tokenOut: Address, 
   return { matchingRoutes, quotes, bestQuote }
 }
 
-export const getCustomPendleQuote = async (tokenIn: Address, tokenOut: Address, amount: bigint, swapDirection: string) => {
-  const { bestQuote } = await returnCustomPendleQuoteData(tokenIn, tokenOut, amount, swapDirection)
+export const getCustomPendleQuote = async (
+  customCurveRoutes: CustomCurveRoutes,
+  tokenIn: Address,
+  tokenOut: Address,
+  amount: bigint,
+  swapDirection: string
+) => {
+  const { bestQuote } = await returnCustomPendleQuoteData(customCurveRoutes, tokenIn, tokenOut, amount, swapDirection)
 
   return bestQuote as bigint
 }
 
 export const getPendleCustomRouterRoute = async (
+  customCurveRoutes: CustomCurveRoutes,
   tokenIn: Address,
   tokenOut: Address,
   amount: bigint,
@@ -113,7 +126,7 @@ export const getPendleCustomRouterRoute = async (
   receiver: Address,
   swapDirection: string
 ) => {
-  const { matchingRoutes, quotes, bestQuote } = await returnCustomPendleQuoteData(tokenIn, tokenOut, amount, swapDirection)
+  const { matchingRoutes, quotes, bestQuote } = await returnCustomPendleQuoteData(customCurveRoutes, tokenIn, tokenOut, amount, swapDirection)
 
   const biggestValueIndex = quotes?.indexOf(bestQuote!) as number
 

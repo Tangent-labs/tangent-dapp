@@ -14,6 +14,7 @@ import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_rec
 import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { USG_CONTRACT } from "../../tg_usd_repository"
 import { formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
+import { useRootContext } from "@/components/products/root/root_context"
 
 type USGLeverageContextProps = {
   children: ReactNode
@@ -82,6 +83,8 @@ type USGLeverageContextValues = {
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
 
 export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
+  const { curveRoutes } = useRootContext()
+
   const { tokens, loadUSGsUSGMetrics } = useUSGContext()
 
   const {
@@ -164,7 +167,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       if (depositAssetInfo.address === marketInfo?.collatAddress) return
 
       setIsZapLoading(true)
-      getQuote(value, currentAddress, marketInfo?.collatAddress, depositAssetInfo.address)
+
+      getQuote(value, currentAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
         .then(({ quote }) => {
           if (quote) setZapValue(quote as bigint)
         })
@@ -187,7 +191,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       if (!currentAddress || !depositAssetInfo) return
       setIsDepositLoading(true)
       try {
-        const { quote } = await getQuote(parseEther(value), currentAddress, depositAssetInfo.address, marketInfo?.collatAddress)
+        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
+
         setDepositWeiValue(quote)
       } catch (err) {
         console.error("Error fetching depositWeiValue:", err)
@@ -280,7 +285,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         borrowWeiValue,
         (BigInt(leveragedCollateralQuote!) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         marketInfo?.marketAddress,
-        USG_CONTRACT.ZAPPER
+        USG_CONTRACT.ZAPPER,
+        curveRoutes
       )
 
       const zapData = await getRoute(
@@ -290,6 +296,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         (BigInt(zapValue!) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         marketInfo?.marketAddress,
         currentAddress!,
+        curveRoutes,
         currentAddress!
       )
 
@@ -334,7 +341,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       borrowWeiValue,
       leveragedCollateralQuote,
       marketInfo?.marketAddress,
-      USG_CONTRACT.ZAPPER
+      USG_CONTRACT.ZAPPER,
+      curveRoutes
     )
 
     doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, leverageData!)
@@ -440,7 +448,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const updateBorrowWeiValue = async (value: bigint) => {
     setIsDepositLoading(true)
-    getQuote(value, currentAddress!, marketInfo?.collatAddress, USG_CONTRACT.USG).then(({ quote }) => {
+    getQuote(value, currentAddress!, marketInfo?.collatAddress, USG_CONTRACT.USG, curveRoutes).then(({ quote }) => {
       setLeveragedCollateralQuote(quote)
       setIsDepositLoading(false)
       setBorrowWeiValue(value)

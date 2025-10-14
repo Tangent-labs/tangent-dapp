@@ -15,6 +15,7 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit } from "./usg_record_deposit_controller"
+import { useRootContext } from "@/components/products/root/root_context"
 
 type USGDepositContextProps = {
   children: ReactNode
@@ -74,6 +75,8 @@ type USGDepositContextValues = {
 export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
 
 export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
+  const { curveRoutes } = useRootContext()
+
   const { tokens, loadUSGsUSGMetrics } = useUSGContext()
 
   const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo } = useUSGRecordContext()
@@ -161,7 +164,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
 
       setIsZapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, marketInfo?.collatAddress, depositAssetInfo?.address)
+        const { quote } = await getQuote(value, currentAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
 
         if (quote) {
           setZapValue(quote)
@@ -191,7 +194,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
       setIsDepositLoading(true)
 
       try {
-        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress)
+        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
 
         setDepositWeiValue(quote)
       } catch (error) {
@@ -358,7 +361,8 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
         depositWeiValue!,
         (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         marketInfo.marketAddress,
-        currentAddress!
+        currentAddress!,
+        curveRoutes
       )
 
       const zapMarketData = {
@@ -445,7 +449,8 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
         depositWeiValue,
         (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         marketInfo?.marketAddress,
-        currentAddress
+        currentAddress,
+        curveRoutes
       )
 
       const zapMarketData = {
@@ -484,7 +489,8 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
         depositWeiValue,
         (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         marketInfo?.marketAddress,
-        currentAddress
+        currentAddress,
+        curveRoutes
       )
 
       const zapMarketData = {

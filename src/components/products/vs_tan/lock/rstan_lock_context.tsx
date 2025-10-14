@@ -15,6 +15,7 @@ import { AssetDataPriced, CollateralInfo, ExistingAsset, FormState } from "@/typ
 import { computeSwapAssetPrice } from "../../tg_usd/record/tg_usd_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { doApprove, doIncreaseLockAmount, doLock, doZapAndIncreaseLock, doZapAndLock, getLockFormState } from "./rstan_lock_controller"
+import { useRootContext } from "../../root/root_context"
 
 type RsTanLockContextProps = {
   children: ReactNode
@@ -80,6 +81,8 @@ type RsTanLockContextValues = {
 export const RsTanLockContext = createContext<RsTanLockContextValues | undefined>(undefined)
 
 export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
+  const { curveRoutes } = useRootContext()
+
   const { getWalletClient, isWellConnected, currentAddress } = useWalletConnexionContext()
 
   const { tokens } = useUSGContext()
@@ -224,7 +227,8 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
         depositWeiValue,
         (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
         VSTAN_CONTRACT.VSTAN,
-        currentAddress!
+        currentAddress!,
+        curveRoutes
       )
 
       if (depositPositionInfo && depositPositionInfo?.tokenId !== 0n) {
@@ -322,7 +326,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
 
       setIsZapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, VSTAN_CONTRACT?.TAN, depositAssetInfo?.address)
+        const { quote } = await getQuote(value, currentAddress, VSTAN_CONTRACT?.TAN, depositAssetInfo?.address, curveRoutes)
 
         if (quote) {
           setZapValue(quote)
@@ -352,7 +356,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
       setIsZapLoading(true)
 
       try {
-        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, VSTAN_CONTRACT?.TAN)
+        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, VSTAN_CONTRACT?.TAN, curveRoutes)
 
         setDepositWeiValue(quote)
       } catch (error) {

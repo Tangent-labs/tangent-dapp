@@ -140,7 +140,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     liquidateValue: 0n,
   })
 
-  const fetchUserPositions = () => {
+  const fetchUserPositions = async () => {
     if (currentAddress) {
       getUserPositions(currentAddress, marketInfo.marketAddress).then((pos) => {
         if (pos) {

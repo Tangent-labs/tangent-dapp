@@ -6,7 +6,7 @@ import QuoteTokenToPT from "../../../abi/USG/QuoteTokenToPT.json"
 import QuotePTToToken from "../../../abi/USG/QuotePTToToken.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import { Abi, Address, encodeFunctionData, Hex, zeroAddress } from "viem"
-import { PendleSYToPTQuote } from "./tg_usd_type"
+import { PendlePTToSYQuote, PendleSYToPTQuote } from "./tg_usd_type"
 
 type RawRoute = {
   params: {
@@ -24,51 +24,71 @@ const returnCustomPendleQuoteData = async (tokenIn: Address, tokenOut: Address, 
   const underlyingPool = Object.values(PendlePools).find((pool) => pool.PT.toLowerCase() === pendlePT.toLowerCase())
 
   let underlyings
-
-  if (swapDirection === "tokenToPT") {
-    underlyings = underlyingPool?.UNDERLYING_IN
-  } else {
-    underlyings = underlyingPool?.UNDERLYING_OUT
-  }
-
-  const matchingRoutes: Array<{ _route: string[]; _swap_params: number[][]; _amount: bigint; _pools: Address[] }> = []
-
   let abi
   let bytecode
+
+  const matchingRoutes: Array<{ _route: string[]; _swap_params: number[][]; _amount: bigint; _pools: Address[] }> = []
 
   if (swapDirection === "tokenToPT") {
     abi = QuoteTokenToPT.abi
     bytecode = QuoteTokenToPT.bytecode
+    underlyings = underlyingPool?.UNDERLYING_IN
   } else {
     abi = QuotePTToToken.abi
     bytecode = QuotePTToToken.bytecode
+    underlyings = underlyingPool?.UNDERLYING_OUT
   }
 
-  const params: { curveRouterData: { _route: string[]; _swap_params: number[][]; _amount: bigint; _pools: Address[] }; syToPTData: PendleSYToPTQuote }[] = []
+  const params: {
+    curveRouterData: { _route: string[]; _swap_params: number[][]; _amount: bigint; _pools: Address[] }
+    data: PendleSYToPTQuote | PendlePTToSYQuote
+  }[] = []
 
   underlyings?.forEach((u: string) => {
     const [routeTokenIn, routeTokenOut] = swapDirection === "tokenToPT" ? [tokenIn, u] : [u, tokenOut]
 
     const curveRoutes = (routes?.success as RoutesMap)?.[routeTokenIn.toLowerCase()]?.[routeTokenOut.toLowerCase()] ?? []
 
-    const syToPTData: PendleSYToPTQuote = {
-      market: underlyingPool?.MARKET,
-      pt: underlyingPool?.PT,
-      sy: underlyingPool?.SY,
-      underlyingIn: u,
-      tokenInAmount: amount,
-    }
-
-    for (const r of curveRoutes) {
-      const curveQuote = {
-        _route: r.params.routeAddresses,
-        _swap_params: r.params.swapParamsFull,
-        _amount: amount,
-        _pools: [zeroAddress, zeroAddress, zeroAddress, zeroAddress, zeroAddress],
+    if (swapDirection === "tokenToPT") {
+      const syToPTData: PendleSYToPTQuote = {
+        market: underlyingPool?.MARKET,
+        pt: underlyingPool?.PT,
+        sy: underlyingPool?.SY,
+        underlyingIn: u,
+        tokenInAmount: amount,
       }
 
-      matchingRoutes.push(curveQuote)
-      params.push({ curveRouterData: curveQuote, syToPTData })
+      for (const r of curveRoutes) {
+        const curveQuote = {
+          _route: r.params.routeAddresses,
+          _swap_params: r.params.swapParamsFull,
+          _amount: amount,
+          _pools: [zeroAddress, zeroAddress, zeroAddress, zeroAddress, zeroAddress],
+        }
+
+        matchingRoutes.push(curveQuote)
+        params.push({ curveRouterData: curveQuote, data: syToPTData })
+      }
+    } else {
+      const PTToSYData: PendlePTToSYQuote = {
+        market: underlyingPool?.MARKET,
+        pt: underlyingPool?.PT,
+        sy: underlyingPool?.SY,
+        underlyingOut: u,
+        ptAmount: amount,
+      }
+
+      for (const r of curveRoutes) {
+        const curveQuote = {
+          _route: r.params.routeAddresses,
+          _swap_params: r.params.swapParamsFull,
+          _amount: amount,
+          _pools: [zeroAddress, zeroAddress, zeroAddress, zeroAddress, zeroAddress],
+        }
+
+        matchingRoutes.push(curveQuote)
+        params.push({ curveRouterData: curveQuote, data: PTToSYData })
+      }
     }
   })
 
@@ -114,7 +134,7 @@ export const getPendleCustomRouterRoute = async (
           _route: matchingRoute._route,
           _swap_params: matchingRoute._swap_params,
           _amount: amount,
-          _min_dy: minAmountOut,
+          _min_dy: 0n,
           _pools: matchingRoute._pools,
           _receiver: USG_CONTRACT.PENDLE_ROUTER,
         },

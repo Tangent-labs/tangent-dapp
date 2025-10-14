@@ -386,6 +386,14 @@ export type PendleSYToPTQuote = {
   tokenInAmount: bigint
 }
 
+export type PendlePTToSYQuote = {
+  market: string | undefined
+  pt: string | undefined
+  sy: string | undefined
+  underlyingOut: string
+  ptAmount: bigint
+}
+
 export type CurveQuote = {
   _route: Address[]
   _swap_params: bigint[][]

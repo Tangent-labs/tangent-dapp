@@ -31,7 +31,7 @@ export const getExpectedUSG = async (walletClient: WalletClient, weiValue: bigin
 
   const params = [weiValue]
 
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
   const txData = {
     abi: yearnV3Vault,
     functionName: "previewRedeem",
@@ -50,7 +50,7 @@ export const getExpectedSUSG = async (walletClient: WalletClient, weiValue: bigi
 
   const params = [weiValue]
 
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
   const txData = {
     abi: yearnV3Vault,
     functionName: "previewDeposit",
@@ -65,7 +65,7 @@ export const getExpectedSUSG = async (walletClient: WalletClient, weiValue: bigi
 }
 
 export const doApprove = async (walletClient: WalletClient, assetAddress: Address, amount: bigint, stakingContract: Address) => {
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
   amount = amount || maxUint256
 
   const txData = getApproveTx(assetAddress, stakingContract, amount)
@@ -80,7 +80,7 @@ export const doUnstakeTgUSD = async ({ walletClient, stakingAddress, weiValue }:
 
   const params = [weiValue, account, account]
 
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
   const txData = {
     abi: yearnV3Vault,
     functionName: "redeem",
@@ -101,7 +101,7 @@ export const doStakeTgUSD = async ({ walletClient, stakingAddress, weiValue }: {
 
   const params = [weiValue, account]
 
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
   const txData = {
     abi: yearnV3Vault,
     functionName: "deposit",

@@ -22,7 +22,7 @@ export const computeSwapAssetPrice = async (tokens: SwapToken[], depositAsset: s
 }
 
 export const doApprove = async (walletClient: WalletClient, depositAssetAddress: Address, amount: bigint, spender: Address) => {
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
 
   const txData = getApproveTx(depositAssetAddress, spender, amount)
 
@@ -34,7 +34,7 @@ export const doApprove = async (walletClient: WalletClient, depositAssetAddress:
 }
 
 export const doCustomQuote = async (method: string, depositValue: bigint, address: Address | undefined, tokenAddress: Address) => {
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
 
   const txData = {
     abi: IERC4626.abi as Abi,
@@ -52,7 +52,7 @@ export const doCustomQuote = async (method: string, depositValue: bigint, addres
 export const doCustomSwap = async (walletClient: WalletClient, abi: Abi, method: string, amount: bigint, contractAddress: Address, isStaked?: boolean) => {
   const [account] = await walletClient.requestAddresses()
 
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
 
   const fnArgs = method === "deposit" || method === "redeem" ? [amount, account] : [amount, account, isStaked]
 

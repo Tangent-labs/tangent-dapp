@@ -417,7 +417,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
         estimateGasData.value = zapMarketData?.amountIn
       }
 
-      const publicClient = await getPublicClient()
+      const publicClient = getPublicClient()
       const gasData = await publicClient.estimateContractGas(estimateGasData)
       const gasInUsd = await gasCostToUSD(gasData)
       setGas(gasInUsd)

@@ -98,6 +98,8 @@ type USGRecordContextValues = {
   canLeverage: boolean
 }
 
+const LEVERAGE_TRESHOLD = 0.989
+
 export const USGRecordContext = createContext<USGRecordContextValues | undefined>(undefined)
 
 export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, children }: USGRecordContextProps) => {
@@ -309,7 +311,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   }, [totalBorrowTimeWindow, marketData])
 
   const canLeverage = useMemo(() => {
-    return USGInfo && USGInfo.price > 0.989
+    return !!USGInfo && USGInfo.price > LEVERAGE_TRESHOLD
   }, [USGInfo])
 
   const contextValue: USGRecordContextValues = {

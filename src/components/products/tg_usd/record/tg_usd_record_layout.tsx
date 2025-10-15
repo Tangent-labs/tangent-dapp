@@ -1,6 +1,5 @@
 "use client"
 
-import { useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { Switch } from "@/components/ui/switch"
 import USGMarketInfo from "./tg_usd_market_info"
@@ -36,6 +35,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     setInitialCollatAmount,
     setDebtVAPR,
     setDebtFarming,
+
     setIsLeveraged,
   } = useUSGRecordContext()
 

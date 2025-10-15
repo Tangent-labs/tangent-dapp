@@ -31,9 +31,11 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     feature,
     USGInfo,
     initialCollatAmount,
+    canLeverage,
     setInitialCollatAmount,
     setDebtVAPR,
     setDebtFarming,
+
     setIsLeveraged,
   } = useUSGRecordContext()
 
@@ -44,6 +46,12 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
       router.push(`/${collateral}`)
     } else {
       router.push(`/${collateral}/${feat.toLowerCase()}`)
+    }
+  }
+
+  const onTabClickLeverage = () => {
+    if (canLeverage) {
+      onTabClick("leverage")
     }
   }
 
@@ -61,7 +69,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
               <div className="mb-2 flex w-full justify-between gap-2">
                 <ButtonTab className="w-full" active={feature === collateral} label={"Deposit"} onClick={() => onTabClick("deposit")} />
                 <ButtonTab className="w-full" active={feature === "borrow"} label={"Borrow"} onClick={() => onTabClick("borrow")} />
-                <ButtonTab className="w-full" active={feature === "leverage"} label={"Leverage"} onClick={() => onTabClick("leverage")} />
+                <ButtonTab disabled={!canLeverage} className="w-full" active={feature === "leverage"} label={"Leverage"} onClick={() => onTabClickLeverage()} />
               </div>
               <div className="mb-2 flex w-full justify-between gap-2">
                 <ButtonTab className="w-full" active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />

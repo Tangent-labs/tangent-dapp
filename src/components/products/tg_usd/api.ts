@@ -52,9 +52,9 @@ export const getEnsoData = async (
   }
 }
 
-export const fetchGraphData = async (tokenIn: Address, start: number, end: number) => {
+export const fetchGraphData = async (aggNumber: number, aggUnit: string, tokenIn: Address, start: number, end: number) => {
   try {
-    const url = `https://prices.curve.finance/v1/lp_ohlc/ethereum/${tokenIn}?agg_number=15&agg_units=hour&start=${start}&end=${end}&price_units=usd`
+    const url = `https://prices.curve.finance/v1/lp_ohlc/ethereum/${tokenIn}?agg_number=${aggNumber}&agg_units=${aggUnit}&start=${start}&end=${end}&price_units=usd`
 
     const response = await fetch(url, {
       method: "GET",

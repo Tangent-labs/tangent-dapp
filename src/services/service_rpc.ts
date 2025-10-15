@@ -23,12 +23,14 @@ export const chain: Chain = {
     name: "ETH",
     symbol: "ETH",
   },
-  rpcUrls: { default: { http: [dappConfig.chain.rpc], webSocket: [] } },
+  rpcUrls: {
+    default: { http: [dappConfig.chain.rpc], webSocket: [] },
+  },
   name: dappConfig.chain.name,
 }
 
 export const getCurrentBlock = async () => {
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
   const currentBlockNumber = await publicClient.getBlockNumber()
   const block = await publicClient.getBlock({ blockNumber: currentBlockNumber })
 
@@ -38,7 +40,10 @@ export const getCurrentBlock = async () => {
 export const getPublicClient = () => {
   const publicClient = createPublicClient({
     chain,
-    transport: http(),
+    transport: http(chain.rpcUrls.default.http[0], {
+      retryCount: 0,
+      timeout: 30000,
+    }),
   })
   return publicClient
 }

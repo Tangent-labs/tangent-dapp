@@ -47,6 +47,12 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     }
   }
 
+  const onTabClickLeverage = () => {
+    if (USGInfo && USGInfo.price > 0.989) {
+      onTabClick("leverage")
+    }
+  }
+
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -61,7 +67,13 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
               <div className="mb-2 flex w-full justify-between gap-2">
                 <ButtonTab className="w-full" active={feature === collateral} label={"Deposit"} onClick={() => onTabClick("deposit")} />
                 <ButtonTab className="w-full" active={feature === "borrow"} label={"Borrow"} onClick={() => onTabClick("borrow")} />
-                <ButtonTab className="w-full" active={feature === "leverage"} label={"Leverage"} onClick={() => onTabClick("leverage")} />
+                <ButtonTab
+                  disabled={!!USGInfo && USGInfo.price <= 0.989}
+                  className="w-full"
+                  active={feature === "leverage"}
+                  label={"Leverage"}
+                  onClick={() => onTabClickLeverage()}
+                />
               </div>
               <div className="mb-2 flex w-full justify-between gap-2">
                 <ButtonTab className="w-full" active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />

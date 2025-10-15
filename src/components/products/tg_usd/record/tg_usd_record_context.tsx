@@ -94,6 +94,8 @@ type USGRecordContextValues = {
   setTotalBorrowTimeWindow: (v: string) => void
 
   onChainData: ChainViewMarketRow | undefined
+
+  canLeverage: boolean
 }
 
 export const USGRecordContext = createContext<USGRecordContextValues | undefined>(undefined)
@@ -306,6 +308,10 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     }
   }, [totalBorrowTimeWindow, marketData])
 
+  const canLeverage = useMemo(() => {
+    return USGInfo && USGInfo.price > 0.989
+  }, [USGInfo])
+
   const contextValue: USGRecordContextValues = {
     isLoading,
     collateral,
@@ -347,6 +353,8 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     totalBorrowTimeWindow,
     setTotalBorrowTimeWindow,
     onChainData,
+
+    canLeverage,
   }
 
   return <USGRecordContext.Provider value={contextValue}>{children}</USGRecordContext.Provider>

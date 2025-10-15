@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { Switch } from "@/components/ui/switch"
 import USGMarketInfo from "./tg_usd_market_info"
@@ -31,6 +32,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     feature,
     USGInfo,
     initialCollatAmount,
+    canLeverage,
     setInitialCollatAmount,
     setDebtVAPR,
     setDebtFarming,
@@ -48,7 +50,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
   }
 
   const onTabClickLeverage = () => {
-    if (USGInfo && USGInfo.price > 0.989) {
+    if (canLeverage) {
       onTabClick("leverage")
     }
   }
@@ -67,13 +69,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
               <div className="mb-2 flex w-full justify-between gap-2">
                 <ButtonTab className="w-full" active={feature === collateral} label={"Deposit"} onClick={() => onTabClick("deposit")} />
                 <ButtonTab className="w-full" active={feature === "borrow"} label={"Borrow"} onClick={() => onTabClick("borrow")} />
-                <ButtonTab
-                  disabled={!!USGInfo && USGInfo.price <= 0.989}
-                  className="w-full"
-                  active={feature === "leverage"}
-                  label={"Leverage"}
-                  onClick={() => onTabClickLeverage()}
-                />
+                <ButtonTab disabled={!canLeverage} className="w-full" active={feature === "leverage"} label={"Leverage"} onClick={() => onTabClickLeverage()} />
               </div>
               <div className="mb-2 flex w-full justify-between gap-2">
                 <ButtonTab className="w-full" active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />

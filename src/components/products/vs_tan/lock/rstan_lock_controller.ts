@@ -18,7 +18,7 @@ export const doZapAndIncreaseLock = async (
 ) => {
   const [account] = await walletClient.requestAddresses()
 
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
 
   const estimateGasData = {
     abi: VsTan.abi,
@@ -56,7 +56,7 @@ export const doZapAndLock = async (
 ) => {
   const [account] = await walletClient.requestAddresses()
 
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
 
   const estimateGasData = {
     abi: VsTan.abi,

@@ -42,13 +42,11 @@ export const CollateralGraph = ({ graphData, isPending }: CollateralGraphParams)
         horzLines: { color: "rgba(255,255,255,0.06)" },
       },
       rightPriceScale: {
-        borderVisible: false,
         scaleMargins: { top: 0.1, bottom: 0.1 },
       },
       timeScale: {
         borderVisible: false,
         rightOffset: 2,
-        barSpacing: 8,
         fixLeftEdge: false,
         fixRightEdge: false,
         timeVisible: true,
@@ -56,11 +54,6 @@ export const CollateralGraph = ({ graphData, isPending }: CollateralGraphParams)
       },
       localization: {
         priceFormatter: (p: number) => formatDollar(p, 4),
-      },
-      crosshair: {
-        vertLine: { labelBackgroundColor: "rgba(0,0,0,0.8)" },
-        horzLine: { labelBackgroundColor: "rgba(0,0,0,0.8)" },
-        mode: 1,
       },
     }
 
@@ -74,7 +67,7 @@ export const CollateralGraph = ({ graphData, isPending }: CollateralGraphParams)
       borderDownColor: "#ef5350",
       wickUpColor: "#26a69a",
       wickDownColor: "#ef5350",
-      priceFormat: { type: "price", minMove: 0.00000001 },
+      priceFormat: { type: "price", minMove: 0.0001 },
     }
 
     const series = chart.addSeries(CandlestickSeries, seriesOptions)

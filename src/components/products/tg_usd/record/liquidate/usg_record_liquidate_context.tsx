@@ -109,28 +109,22 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
 
     if (walletClient && liquidateWeiValue && currentAddress && tgUSDReceivedValue && marketData) {
       let repayValue = repayWeiValue || 0n
-      if (repayWeiValue === maxRepayable) {
+      if (repayWeiValue === maxRepayable && repayWeiValue !== 0n) {
         repayValue = maxUint256
       }
+
       const liquidationData = await getRoute(
         marketInfo?.collatAddress,
         USG_CONTRACT.USG,
         liquidateWeiValue,
+
         0n,
-        USG_CONTRACT.LIQUIDATOR_PROXY,
-        USG_CONTRACT.LIQUIDATOR_PROXY,
-        curveRoutes,
-        currentAddress
+        currentAddress,
+        USG_CONTRACT.ZAPPER,
+        curveRoutes
       )
 
-      doMarketLiquidate(
-        liquidateWeiValue,
-        repayValue,
-        (tgUSDReceivedValue * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
-        liquidationData!,
-        walletClient,
-        marketData?.marketAddress
-      )
+      doMarketLiquidate(liquidateWeiValue, repayValue, 0n, liquidationData!, walletClient, marketInfo?.marketAddress)
         .then(() => {
           loadUSGsUSGMetrics()
           loadOnChainData()

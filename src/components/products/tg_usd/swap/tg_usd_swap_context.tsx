@@ -531,7 +531,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
             },
             ...tokenOptions,
             ...tgTokens,
-          ].sort((a, b) => Number(b.balance - a.balance)),
+          ].sort((a, b) => Number(b.balance) - Number(a.balance)),
         ]
       : [
           ...tgTokens,
@@ -547,7 +547,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
               balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
             },
             ...tokenOptions,
-          ].sort((a, b) => Number(b.balance - a.balance)),
+          ].sort((a, b) => Number(b.balance) - Number(a.balance)),
         ]
 
     const receiveAssets = isBuying
@@ -565,7 +565,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
               balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
             },
             ...tokenOptions,
-          ].sort((a, b) => Number(b.balance - a.balance)),
+          ].sort((a, b) => Number(b.balance) - Number(a.balance)),
         ]
       : [
           ...[
@@ -581,7 +581,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
             },
             ...tokenOptions,
             ...tgTokens,
-          ].sort((a, b) => Number(b.balance - a.balance)),
+          ].sort((a, b) => Number(b.balance) - Number(a.balance)),
         ]
 
     return { depositAssets, receiveAssets }

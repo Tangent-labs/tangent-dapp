@@ -15,6 +15,16 @@
     },
     {
       "inputs": [],
+      "name": "CallerNotPauser",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "DebtToRepayTooBig",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "DepositPaused",
       "type": "error"
     },
@@ -60,12 +70,22 @@
     },
     {
       "inputs": [],
+      "name": "NotAMigratoor",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "NotLiquidablePosition",
       "type": "error"
     },
     {
       "inputs": [],
       "name": "NotRewardAccumulator",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OverMaxLTV",
       "type": "error"
     },
     {
@@ -123,11 +143,6 @@
     },
     {
       "inputs": [],
-      "name": "UserDebtTooHigh",
-      "type": "error"
-    },
-    {
-      "inputs": [],
       "name": "UserDebtTooLow",
       "type": "error"
     },
@@ -165,6 +180,12 @@
           "indexed": false,
           "internalType": "uint256",
           "name": "borrowedAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "debtShares",
           "type": "uint256"
         }
       ],
@@ -210,6 +231,12 @@
           "internalType": "uint256",
           "name": "borrowedAmount",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "debtShares",
+          "type": "uint256"
         }
       ],
       "name": "DepositAndBorrow",
@@ -241,6 +268,12 @@
           "internalType": "uint256",
           "name": "borrowedAmount",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "debtShares",
+          "type": "uint256"
         }
       ],
       "name": "Leverage",
@@ -264,6 +297,12 @@
         {
           "indexed": false,
           "internalType": "uint256",
+          "name": "debtShares",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
           "name": "fee",
           "type": "uint256"
         },
@@ -278,15 +317,77 @@
           "internalType": "address",
           "name": "liquidator",
           "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "bool",
-          "name": "isRepayAll",
-          "type": "bool"
         }
       ],
       "name": "Liquidate",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "collatRemoved",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "debtRemoved",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "debtRepaid",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newUserDebtShares",
+          "type": "uint256"
+        }
+      ],
+      "name": "MigrateFrom",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "collatAdded",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "debtAdded",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newUserDebtShares",
+          "type": "uint256"
+        }
+      ],
+      "name": "MigrateTo",
       "type": "event"
     },
     {
@@ -331,9 +432,9 @@
         },
         {
           "indexed": false,
-          "internalType": "bool",
-          "name": "isRepayAll",
-          "type": "bool"
+          "internalType": "uint256",
+          "name": "debtShares",
+          "type": "uint256"
         }
       ],
       "name": "Repay",
@@ -362,9 +463,9 @@
         },
         {
           "indexed": false,
-          "internalType": "bool",
-          "name": "isRepayAll",
-          "type": "bool"
+          "internalType": "uint256",
+          "name": "debtShares",
+          "type": "uint256"
         }
       ],
       "name": "RepayAndWithdraw",
@@ -413,6 +514,12 @@
         {
           "indexed": false,
           "internalType": "uint256",
+          "name": "debtShares",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
           "name": "collateralLiquidated",
           "type": "uint256"
         },
@@ -421,12 +528,6 @@
           "internalType": "address",
           "name": "liquidator",
           "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "bool",
-          "name": "isRepayAll",
-          "type": "bool"
         }
       ],
       "name": "SelfLiquidate",
@@ -505,6 +606,12 @@
         },
         {
           "indexed": false,
+          "internalType": "uint256",
+          "name": "debtShares",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
           "internalType": "contract IERC20",
           "name": "tokenIn",
           "type": "address"
@@ -554,6 +661,12 @@
         },
         {
           "indexed": false,
+          "internalType": "uint256",
+          "name": "debtShares",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
           "internalType": "contract IERC20",
           "name": "tokenIn",
           "type": "address"
@@ -591,9 +704,9 @@
         },
         {
           "indexed": false,
-          "internalType": "bool",
-          "name": "isRepayAll",
-          "type": "bool"
+          "internalType": "uint256",
+          "name": "debtShares",
+          "type": "uint256"
         },
         {
           "indexed": false,
@@ -634,9 +747,9 @@
         },
         {
           "indexed": false,
-          "internalType": "bool",
-          "name": "isRepayAll",
-          "type": "bool"
+          "internalType": "uint256",
+          "name": "debtShares",
+          "type": "uint256"
         },
         {
           "indexed": false,
@@ -744,6 +857,19 @@
     },
     {
       "inputs": [],
+      "name": "collatDecimals",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "collatOracle",
       "outputs": [
         {
@@ -782,19 +908,6 @@
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "controlTower",
-      "outputs": [
-        {
-          "internalType": "contract IControlTower",
-          "name": "",
-          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -1038,25 +1151,6 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        }
-      ],
-      "name": "liquidationPrice",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "liquidationThreshold",
       "outputs": [
@@ -1115,6 +1209,78 @@
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "contract IControlTower",
+          "name": "_controlTower",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "collatToRemove",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "debtToRemove",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "debtToRepay",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "receiver",
+          "type": "address"
+        }
+      ],
+      "name": "migrateFrom",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IControlTower",
+          "name": "_controlTower",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "collatToAdd",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "debtToAdd",
+          "type": "uint256"
+        }
+      ],
+      "name": "migrateTo",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "minimumLoan",
       "outputs": [
@@ -1170,6 +1336,38 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IControlTower",
+          "name": "_controlTower",
+          "type": "address"
+        }
+      ],
+      "name": "reeantrancyOff",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IControlTower",
+          "name": "_controlTower",
+          "type": "address"
+        }
+      ],
+      "name": "reeantrancyOn",
+      "outputs": [
+        {
+          "internalType": "contract IERC20",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -1815,5 +2013,9 @@
       "stateMutability": "view",
       "type": "function"
     }
-  ]
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
 }

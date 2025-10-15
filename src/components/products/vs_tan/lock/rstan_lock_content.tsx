@@ -166,7 +166,7 @@ export default function RsTanLockContent() {
           balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
         },
         ...tokenOptions,
-      ].sort((a, b) => Number(b.balance - a.balance)),
+      ].sort((a, b) => Number(b.balance) - Number(a.balance)),
     ]
 
     return (

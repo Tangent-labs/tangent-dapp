@@ -33,7 +33,7 @@ const returnCustomPendleQuoteData = async (
   let abi
   let bytecode
 
-  const matchingRoutes: Array<{ _route: string[]; _swap_params: number[][]; _amount: bigint; _pools: Address[] }> = []
+  const matchingRoutes: Array<{ _route: string[]; _swap_params: number[][]; _amount?: bigint; _pools: Address[] }> = []
 
   if (swapDirection === "tokenToPT") {
     abi = QuoteTokenToPT.abi
@@ -47,7 +47,7 @@ const returnCustomPendleQuoteData = async (
 
   type AnyParamEntry =
     | ({ curveRouterData: { _route: string[]; _swap_params: number[][]; _amount: bigint; _pools: Address[] } } & { syToPTData: PendleSYToPTQuote })
-    | ({ curveRouterData: { _route: string[]; _swap_params: number[][]; _amount: bigint; _pools: Address[] } } & { PTToSYData: PendlePTToSYQuote })
+    | ({ curveRouterData: { _route: string[]; _swap_params: number[][]; _pools: Address[] } } & { ptToSYData: PendlePTToSYQuote })
 
   const params: AnyParamEntry[] = []
 
@@ -77,7 +77,7 @@ const returnCustomPendleQuoteData = async (
         params.push({ curveRouterData: curveQuote, syToPTData })
       }
     } else {
-      const PTToSYData: PendlePTToSYQuote = {
+      const ptToSYData: PendlePTToSYQuote = {
         market: underlyingPool?.MARKET,
         pt: underlyingPool?.PT,
         sy: underlyingPool?.SY,
@@ -89,12 +89,11 @@ const returnCustomPendleQuoteData = async (
         const curveQuote = {
           _route: r.params.routeAddresses,
           _swap_params: r.params.swapParamsFull,
-          _amount: amount,
           _pools: [zeroAddress, zeroAddress, zeroAddress, zeroAddress, zeroAddress],
         }
 
         matchingRoutes.push(curveQuote)
-        params.push({ curveRouterData: curveQuote, PTToSYData })
+        params.push({ curveRouterData: curveQuote, ptToSYData })
       }
     }
   })

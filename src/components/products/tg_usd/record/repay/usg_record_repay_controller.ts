@@ -77,7 +77,7 @@ export const doZapRepayAndWithdraw = async (
 ) => {
   const [account] = await walletClient.requestAddresses()
 
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
 
   const estimateGasData = {
     abi: MarketExternalActions.abi,
@@ -110,7 +110,7 @@ export const doZapRepay = async (
 ) => {
   const [account] = await walletClient.requestAddresses()
 
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
 
   const estimateGasData = {
     abi: MarketExternalActions.abi,

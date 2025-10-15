@@ -67,7 +67,7 @@ export const doZapLeverage = async (
 ) => {
   const [account] = await walletClient.requestAddresses()
 
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
 
   const zap = { router: zapData.routerAddress, routerCall: zapData.data }
 
@@ -103,7 +103,7 @@ export const doMarketLeverage = async (
 ) => {
   const [account] = await walletClient.requestAddresses()
 
-  const publicClient = await getPublicClient()
+  const publicClient = getPublicClient()
 
   const estimateGasData = {
     abi: MarketExternalActions.abi,

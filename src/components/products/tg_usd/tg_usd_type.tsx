@@ -239,8 +239,8 @@ export type USGMarketDisplayData = USGMarketLoanDisplayData & {
   tvl: string
   tvlDollar: string
   borrowed: string
-  borrowRateCurrent: string
-  borrowRateNext: string
+  borrowRateCurrent: number
+  borrowRateNext: number
   cap: string
   maxLtv: string
   maxLtvDollar: string

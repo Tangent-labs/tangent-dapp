@@ -7,15 +7,20 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import IndicatorV2 from "@/components/design_system/structure/indicators_v2"
 import RecordPageHeader from "@/components/design_system/structure/record_page_header"
+import { useUSGContext } from "../tg_usd_context"
 
 export default function USGRecordPageHeader() {
-  const { collateralInfo, marketDisplayData, marketData, apr } = useUSGRecordContext()
+  const { marketAprs } = useUSGContext()
+
+  const { collateralInfo, marketDisplayData, marketData } = useUSGRecordContext()
 
   const router = useRouter()
 
+  const currentMarketApr = marketAprs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())
+
   return (
     <>
-      <div className="mt-4 flex flex-col justify-between xl:flex-row">
+      <div className="flex flex-col justify-between xl:flex-row">
         <div className="flex w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px] md:w-fit">
           <div className="flex items-center gap-2">
             <TokenImage className="w-8 md:w-16" token={collateralInfo.logo} size={64} />
@@ -46,14 +51,8 @@ export default function USGRecordPageHeader() {
       </div>
 
       <RecordPageHeader
-        apr={apr}
+        apr={currentMarketApr!}
         indicators={[
-          {
-            title: "APR",
-            value: "12%",
-            subValue: "15%",
-            indicator: "vAPR of the collateral",
-          },
           {
             title: "Borrow rate",
             value: (

@@ -10,8 +10,8 @@ import ListHeader from "@/components/design_system/list/list_header"
 import InputSearch from "@/components/design_system/inputs/input_search"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
-import ListAprIndicator from "@/components/design_system/list/list_apr_indicator"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import { cn } from "@/lib/utils"
 
 const listeState: ListState = {
   search: undefined,
@@ -41,9 +41,12 @@ export const USGEarnContent = () => {
         </div>
 
         <div className="flex h-full w-full flex-col items-center gap-4 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] xl:w-fit">
-          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-xl !font-semibold italic">
+          <div
+            style={{ fontSize: "20px", lineHeight: "20px" }}
+            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !font-semibold italic"
+          >
             Points campaign
-            <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
+            <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
           </div>
 
           <div className="mt-auto flex w-full items-center justify-center gap-3 p-3">
@@ -83,7 +86,8 @@ export const USGEarnContent = () => {
 
 export function USGMEarnListInner() {
   const { headers, listState, udpateSort } = useListContext()
-  const { displayRows } = useUSGEarnContext()
+
+  const { displayRows, isLoading } = useUSGEarnContext()
 
   return (
     <>
@@ -92,7 +96,7 @@ export function USGMEarnListInner() {
       </div>
 
       {displayRows?.map((item, index) => (
-        <ListRow className="my-2" key={index} navigate={() => {}}>
+        <ListRow className={cn("my-2", isLoading ? "shimmer" : "")} key={index}>
           <div className="relative flex items-center gap-4">
             <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-12 md:w-20" />
 
@@ -104,31 +108,45 @@ export function USGMEarnListInner() {
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-3 py-2 text-xs">
-            <TokenImage token={"CVX"} size={16} />
-            <span>{item?.protocolName} </span>
+          <div className="flex items-center justify-center rounded-full bg-overlay-panel px-3 py-2">
+            {item.protocolName === "Curve" && (
+              <div className="flex items-center justify-center gap-2 px-3 py-0.5 text-sm">
+                <TokenImage token={"CRV"} size={16} />
+                <span>Curve</span>
+              </div>
+            )}
+            {item.protocolName === "Convex" && (
+              <div className="flex items-center justify-center gap-2 px-3 py-0.5 text-sm">
+                <TokenImage token={"CVX"} size={16} />
+                <span>Convex</span>
+              </div>
+            )}
+            {item.protocolName === "StakeDAO" && (
+              <div className="flex items-center justify-center gap-2 px-3 py-0.5 text-sm">
+                <TokenImage token={"SDT"} size={16} />
+                <span>Stake DAO</span>
+              </div>
+            )}
           </div>
 
           <div className="flex w-full items-center gap-2">
             <div className="flex w-1/2 items-center justify-center gap-2">
-              <div className="flex flex-row items-center justify-center text-center md:flex-col">
-                <span className="flex items-center justify-center bg-button-active bg-clip-text text-xl font-semibold leading-4 text-transparent">
-                  {item?.currentAPR}% <ListAprIndicator helpMessage="This is the APR" />
+              <div className="flex flex-row items-center justify-center gap-2 text-center md:flex-col md:gap-0">
+                <span className="flex items-center justify-center bg-button-active bg-clip-text text-sm font-semibold leading-4 text-transparent md:text-xl">
+                  {item?.currentAPR.toFixed(2)}%
                 </span>
-                {item?.projectedAPR && (
-                  <span className="whitespace-nowrap text-xs text-subtitle">
-                    Proj: <span>{item?.projectedAPR}%</span>
-                  </span>
-                )}
+                <span className="whitespace-nowrap text-xs text-subtitle">
+                  {!!item?.projectedAPR && item?.projectedAPR !== 0 ? <>Proj: {item?.projectedAPR.toFixed(2)}%</> : <>Proj: 0%</>}
+                </span>
 
-                <span className="hidden text-xs md:flex">Up to 150.35% at x10</span>
+                <span className="hidden text-xs md:flex">Up to {(item?.projectedAPR * 10).toFixed(2)}% at x10</span>
               </div>
             </div>
 
             <div className="flex w-1/2 items-center justify-center text-xl">
               <div className="hidden xl:flex"> x{item?.bonusPts} </div>
 
-              <div className="flex xl:hidden"> x{item?.bonusPts} Points </div>
+              <div className="flex text-xs md:text-sm xl:hidden"> x{item?.bonusPts} Points </div>
             </div>
           </div>
         </ListRow>

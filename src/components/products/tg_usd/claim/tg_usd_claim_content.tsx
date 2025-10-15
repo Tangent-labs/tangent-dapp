@@ -27,7 +27,7 @@ const listeState: ListState = {
 const ClaimRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
     <div className="flex items-center justify-between max-xl:flex-col">
-      <div className="flex w-full items-center justify-evenly xl:w-1/2 xl:justify-start">
+      <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
         <div className="xl:w-2/3">{children?.at(0)}</div>
         <div className="flex justify-center xl:w-1/3">{children?.at(1)}</div>
       </div>
@@ -43,7 +43,7 @@ export default function USGClaimContent() {
   return (
     <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
       <div className="flex w-full flex-col md:w-9/12">
-        <div className="flex w-full items-end justify-between">
+        <div className="flex w-full flex-col items-start justify-between sm:flex-row sm:items-end">
           <div className="mt-10 flex items-center justify-between">
             <IndicatorCards
               indicators={[
@@ -116,13 +116,13 @@ function ClaimList() {
       {(displayRows as ClaimData[])?.map((item: ClaimData) => (
         <div key={item.marketAddress} className="my-1 rounded-[10px] bg-overlay-panel px-4 py-2.5 backdrop-blur-[60px]">
           <div className="flex items-center justify-between max-xl:flex-col">
-            <div className="flex w-full items-center justify-evenly xl:w-1/2 xl:justify-start">
+            <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
               <div className="xl:w-2/3">
                 <ListAsset name={item?.marketName} token={item.marketName} assetsEarned={[]} />
               </div>
               <div className="flex justify-center xl:w-1/3">
                 <div className="flex min-w-16 flex-col items-center justify-center gap-2">
-                  <span className="bg-button-active bg-clip-text text-xl font-semibold leading-4 text-transparent">12%</span>
+                  <span className="bg-button-active bg-clip-text text-lg font-semibold leading-4 text-transparent md:text-xl">12%</span>
 
                   <span className="whitespace-nowrap text-xs">
                     Proj: <span>10%</span>
@@ -132,7 +132,7 @@ function ClaimList() {
             </div>
             <hr className="my-2 w-full opacity-20 xl:hidden" />
             <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-1/2">
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center gap-2 text-xl">
+              <div className="flex w-full flex-1 cursor-pointer items-center justify-center gap-2 text-sm md:text-xl">
                 {formatDollar(item?.totalClaimableValue || 0, 0)}
 
                 <USGHoverCard iconClassName="text-row-tonic" title={`${item?.marketName} Rewards Breakdown`}>
@@ -149,7 +149,9 @@ function ClaimList() {
                 </USGHoverCard>
               </div>
 
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center text-xl">{formatDollar(item?.totalDepositedValue || 0, 0)}</div>
+              <div className="flex w-full flex-1 cursor-pointer items-center justify-center text-sm md:text-xl">
+                {formatDollar(item?.totalDepositedValue || 0, 0)}
+              </div>
 
               <div className="flex w-full flex-1 cursor-pointer items-center justify-center">
                 <Switch

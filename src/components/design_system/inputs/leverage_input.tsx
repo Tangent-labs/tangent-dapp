@@ -77,12 +77,11 @@ export function LeverageInput({
   }
 
   useEffect(() => {
-    if (!depositAsset?.decimals || !innerValue) return
-
+    if (!depositAsset?.decimals || !innerValue || innerValue === "0") return
     const handler = setTimeout(() => {
       const val = innerValue ? toBigInt(Number(innerValue), depositAsset.decimals) : undefined
       onValueChange(val!)
-    }, 1000)
+    }, 500)
 
     return () => clearTimeout(handler)
   }, [innerValue, depositAsset])

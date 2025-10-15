@@ -51,13 +51,13 @@ const computeProtocolDisplay = (protocol: string) => {
   }
 }
 
-const AirdropRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
+const LpTaskListDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
     <div className="flex w-full items-center justify-evenly px-2">
-      <div className="flex w-3/12 items-center justify-center">{children?.at(0)} </div>
+      <div className="flex w-2/12 items-center justify-center">{children?.at(0)} </div>
       <div className="hidden w-2/12 items-center justify-center lg:flex">{children?.at(1)} </div>
       <div className="flex w-4/12 items-center justify-center lg:w-3/12">{children?.at(2)} </div>
-      <div className="flex w-1/12 items-center justify-center">{children?.at(3)} </div>
+      <div className="flex w-2/12 items-center justify-center">{children?.at(3)} </div>
       <div className="flex w-1/12 items-center justify-center">{children?.at(4)} </div>
       <div className="flex w-2/12 items-center justify-center">{children?.at(5)} </div>
     </div>
@@ -71,7 +71,7 @@ export const LPTasksList = () => {
     <>
       <div className="mb-1 mt-6 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <div className={`hidden p-4 leading-[10px] xl:block`}>
-          <AirdropRowDisposition>
+          <LpTaskListDisposition>
             {!!headers?.at(0)?.key && (
               <div className="flex w-full">
                 <span>{headers?.at(0)?.label}</span>
@@ -118,7 +118,7 @@ export const LPTasksList = () => {
                 </button>
               </div>
             )}
-          </AirdropRowDisposition>
+          </LpTaskListDisposition>
         </div>
       </div>
 
@@ -130,7 +130,7 @@ export const LPTasksList = () => {
               className="mb-2 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
             >
               <div className="hidden items-center justify-between md:flex">
-                <div className="flex w-3/12 items-center gap-2 xl:gap-4">
+                <div className="flex w-2/12 items-center gap-2 xl:gap-4">
                   <TokenImage token={task.asset as ExistingAsset} size={48} />
 
                   <span className="flex text-xl font-semibold">{task.asset}</span>
@@ -146,7 +146,7 @@ export const LPTasksList = () => {
                     {task?.description}
                   </div>
                 </div>
-                <div className="flex w-1/12 items-center justify-center">{(task?.pointRate * 86400).toFixed(0)}</div>
+                <div className="flex w-2/12 items-center justify-center">{(task?.pointRate * 86400).toFixed(0)}</div>
                 <div className="flex w-1/12 items-center justify-center">
                   <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
                     <TaskStatus status={task?.status} />

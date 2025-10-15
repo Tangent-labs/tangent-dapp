@@ -1,3 +1,13 @@
+import { USGMarkets } from "../tg_usd_repository"
+import GetBalances from "@/abi/USG/GetBalances.json"
+import { CollateralInfo, ExistingAsset } from "@/types"
+import { getSwapAssetPrice } from "@/services/service_price"
+import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
+import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
+import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
+import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
+import { Abi, Address, formatEther, formatUnits, Hex, parseEther, parseUnits, WalletClient, zeroAddress } from "viem"
+
 import {
   BalanceAllowanceData,
   ChainViewMarketRow,
@@ -8,17 +18,8 @@ import {
   USGMarketLoanDisplayData,
   TotalBorrow,
   ZapToken,
+  MarketAPR,
 } from "../tg_usd_type"
-
-import GetBalances from "@/abi/USG/GetBalances.json"
-import { CollateralInfo, ExistingAsset } from "@/types"
-import { getSwapAssetPrice } from "@/services/service_price"
-import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
-import { USGMarkets } from "../tg_usd_repository"
-import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
-import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
-import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
-import { Abi, Address, formatEther, formatUnits, Hex, parseEther, WalletClient, zeroAddress } from "viem"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
@@ -81,7 +82,9 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, borrowWe
 }
 
 export function getComputedFutureLoanData(
-  marketData?: MarketDetailData,
+  usgPrice: number,
+  marketAPRs: MarketAPR[],
+  marketData: MarketDetailData,
   collateralInfo?: CollateralInfo,
   amounts?: {
     depositWeiValue?: bigint
@@ -94,7 +97,7 @@ export function getComputedFutureLoanData(
 ) {
   amounts = { ...{ borrowWeiValue: 0n, repayWeiValue: 0n, depositWeiValue: 0n, withdrawWeiValue: 0n, zapValue: 0n, liquidateValue: 0n }, ...(amounts || {}) }
 
-  if (!marketData || !collateralInfo)
+  if (!marketData || !collateralInfo || !usgPrice)
     return {
       collateralValue: "-",
       debt: "-",
@@ -102,6 +105,7 @@ export function getComputedFutureLoanData(
       ltv: "-",
       maxBorrowable: "-",
       maxWithdrawable: "-",
+      positionAPR: "-",
     }
 
   const collateralValueToNumber = (value: bigint | number) => {
@@ -134,6 +138,8 @@ export function getComputedFutureLoanData(
   const ltv = futureDepositedDollar !== 0 ? (Number(futureDebt) / futureDepositedDollar) * 100 : 0
   const health = futureDebt !== 0n ? (futureDeposited * collateralPriceRaw * liquidationThresholdRaw) / (futureDebt * DENOMINATOR) : 0n
 
+  const positionAPR = computeAPR(futureDeposited, futureDebt, usgPrice, marketAPRs, marketData)
+
   return {
     collateralValue: formatDollar(futureDepositedDollar, 0),
     debt: futureDebt > 0n ? formatDollarBigInt(futureDebt, collateralInfo.decimals, collateralInfo.displayDecimals) : "$0",
@@ -141,6 +147,7 @@ export function getComputedFutureLoanData(
     ltv: ltv > 0 ? formatNumber(collateralValueToNumber(ltv || 0), 2) + "%" : "0%",
     maxBorrowable: formatDollarBigInt(maxBorrowable, collateralInfo.decimals, 0),
     maxWithdrawable: formatDollarBigInt(maxWithDrawable, collateralInfo.decimals, 0),
+    positionAPR: !!futureDeposited && !!marketAPRs ? positionAPR.toFixed(2) + "%" : "-",
   } as USGMarketLoanDisplayData
 }
 
@@ -159,8 +166,8 @@ export async function loadMarketServerData(collateral: string) {
   return { collateralInfo, marketInfo }
 }
 
-export function getMarketDisplayData(marketData?: MarketDetailData, collateralInfo?: CollateralInfo) {
-  if (!marketData || !collateralInfo)
+export function getMarketDisplayData(usgPrice: number, marketAPRs: MarketAPR[], marketData?: MarketDetailData, collateralInfo?: CollateralInfo) {
+  if (!marketData || !collateralInfo || !usgPrice)
     return {
       tvl: "-",
       borrowed: "-",
@@ -182,9 +189,16 @@ export function getMarketDisplayData(marketData?: MarketDetailData, collateralIn
       maxLtvDollar: "-",
       rewardsCutCurrent: "-",
       rewardsCutNext: "-",
+      positionAPR: "-",
     } as USGMarketDisplayData
 
-  const loanData = getComputedFutureLoanData(marketData, collateralInfo, { borrowWeiValue: 0n, depositWeiValue: 0n })
+  const loanData = getComputedFutureLoanData(usgPrice, marketAPRs, marketData!, collateralInfo, { borrowWeiValue: 0n, depositWeiValue: 0n })
+
+  const collatValue = marketData?.collateralInfos.positionCollateralUSDValue
+
+  const debt = marketData?.debtInfos?.totalDebt
+
+  const positionAPR = computeAPR(collatValue, debt, usgPrice, marketAPRs, marketData)
 
   return {
     ...loanData,
@@ -202,7 +216,25 @@ export function getMarketDisplayData(marketData?: MarketDetailData, collateralIn
     maxLtvDollar: formatDollar(Number(formatEther(BigInt(marketData?.constants.maxMarketDebt || 0n))), 2),
     rewardsCutCurrent: formatNumber(Number(marketData?.debtInfos.currentRewardCut || 0n) / 1000, 0) + "%",
     rewardsCutNext: formatNumber(Number(marketData?.debtInfos.futureRewardCut || 0n) / 1000, 0) + "%",
+    positionAPR: !!collatValue && !!marketAPRs ? positionAPR.toFixed(2) + "%" : "-",
   } as USGMarketDisplayData
+}
+
+const computeAPR = (collatValue: bigint, debt: bigint, usgPrice: number, marketAPRs: MarketAPR[], marketData: MarketDetailData) => {
+  const currentMarket = marketAPRs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())
+  let collatAPR = 1
+
+  if (currentMarket) {
+    collatAPR = Object.values(currentMarket?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+  }
+
+  const grossRevenues = (collatValue * BigInt(collatAPR * 1000)) / BigInt(1000)
+  const priceInWei = parseUnits(usgPrice.toFixed(6), 18)
+  const debtIr = computeIR(priceInWei, marketData?.constants.irParams)
+  const debtAtCurrentIr = (debt * debtIr) / BigInt(10 ** 18)
+  const revenues = grossRevenues - debtAtCurrentIr
+
+  return Number(revenues) / Number(collatValue)
 }
 
 export function getMarketApr(marketAddress: Address) {

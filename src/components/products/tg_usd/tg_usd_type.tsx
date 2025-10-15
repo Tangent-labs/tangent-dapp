@@ -232,6 +232,7 @@ export type USGMarketLoanDisplayData = {
   ltv: string
   maxBorrowable: string
   maxWithdrawable: string
+  positionAPR: string
 }
 
 export type USGMarketDisplayData = USGMarketLoanDisplayData & {
@@ -247,6 +248,7 @@ export type USGMarketDisplayData = USGMarketLoanDisplayData & {
   rewardsCutNext: string
   lt: string
   ltDollar: string
+  positionAPR: string
 }
 
 export type USGMarketAmounts = {
@@ -327,6 +329,16 @@ export type DepositReceiveAsset = {
   balance?: bigint
 }
 
+export type EarnProtocolInput = {
+  name: string
+  asset: string
+  link: string
+  protocolName: string
+  actionLabel: string
+  bonusPts: number
+  address: string
+}
+
 export type EarnTask = {
   name: string
   asset: string
@@ -336,6 +348,7 @@ export type EarnTask = {
   currentAPR: number
   projectedAPR: number
   bonusPts: number
+  address: string
 }
 
 export type LockPosition = {
@@ -363,6 +376,22 @@ export type LockPositionSelectTemplate = {
   tokenId?: bigint
   label?: string
   value?: string
+}
+
+export type PendleSYToPTQuote = {
+  market: string | undefined
+  pt: string | undefined
+  sy: string | undefined
+  underlyingIn: string
+  tokenInAmount: bigint
+}
+
+export type PendlePTToSYQuote = {
+  market: string | undefined
+  pt: string | undefined
+  sy: string | undefined
+  underlyingOut: string
+  ptAmount: bigint
 }
 
 export type CurveQuote = {
@@ -472,4 +501,45 @@ export type Boost = {
   description: string
   boost: number
   status: boolean
+}
+
+export type MarketAPR = {
+  currentAPR: {
+    [rewardToken: string]: number // allows any other dynamic APR components (e.g. CRV, CVX, FXN, etc.)
+  }
+  projectedAPR: {
+    [rewardToken: string]: number // allows any other dynamic APR components (e.g. CRV, CVX, FXN, etc.)
+  }
+  marketAddress: Address
+  marketName: string
+}
+
+export type MarketListAPRData = {
+  marketAddress: Address
+  collateral: ExistingAsset
+  currentAPR: {
+    [rewardToken: string]: number // allows any other dynamic APR components (e.g. CRV, CVX, FXN, etc.)
+  }
+  projectedAPR: {
+    [rewardToken: string]: number // allows any other dynamic APR components (e.g. CRV, CVX, FXN, etc.)
+  }
+}
+
+export type GaugeAPR = {
+  protocol: string
+  address: Address
+  gaugeCrvApy: Array<number>
+  gaugeFutureCrvApy: Array<number>
+}
+
+export type StakeDaoAPRData = {
+  lpToken: {
+    address: string
+  }
+  apr: {
+    current: {
+      total: number
+    }
+    projected: { total: number }
+  }
 }

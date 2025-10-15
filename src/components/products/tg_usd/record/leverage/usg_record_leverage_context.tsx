@@ -3,7 +3,7 @@
 import { ZapToken } from "../../tg_usd_type"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useUSGRecordContext } from "../tg_usd_record_context"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { formatUnits, parseEther } from "viem"
 import { useUSGContext } from "../../tg_usd_context"
@@ -160,53 +160,46 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     return asset
   }, [depositAsset, swapAssetPrice, marketData])
 
-  const handleDepositChange = (value: bigint | undefined) => {
-    setDepositWeiValue(value)
-
-    const fetchZapValue = async () => {
+  const handleDepositChange = useCallback(
+    (value: bigint | undefined) => {
+      setDepositWeiValue(value)
       if (!value || !currentAddress || !depositAssetInfo) return
+      if (depositAssetInfo.address === marketInfo?.collatAddress) return
 
       setIsZapLoading(true)
-      try {
-        const { quote } = await getQuote(value, currentAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
 
-        if (quote) {
-          setZapValue(quote as bigint)
-        }
-      } catch (error) {
-        console.error("Error fetching zap value:", error)
-      } finally {
-        setIsZapLoading(false)
-      }
-    }
-
-    fetchZapValue()
-  }
+      getQuote(value, currentAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
+        .then(({ quote }) => {
+          if (quote) setZapValue(quote as bigint)
+        })
+        .catch((e) => console.error("Error fetching zap value:", e))
+        .finally(() => setIsZapLoading(false))
+    },
+    [currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress]
+  )
 
   const handleZapChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setZapValue(parseEther(e?.target?.value))
+    const value = e?.target?.value
+    setZapValue(parseEther(value))
 
-    if (e?.target?.value === "") {
+    if (value === "") {
       setDepositWeiValue(undefined)
       return
     }
 
-    const debounceTimeout = setTimeout(async () => {
-      if (!parseEther(e?.target?.value) || !currentAddress || !depositAssetInfo) return
+    ;(async () => {
+      if (!currentAddress || !depositAssetInfo) return
       setIsDepositLoading(true)
-
       try {
         const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
 
         setDepositWeiValue(quote)
-      } catch (error) {
-        console.error("Error fetching depositWeiValue:", error)
+      } catch (err) {
+        console.error("Error fetching depositWeiValue:", err)
       } finally {
         setIsDepositLoading(false)
       }
-    }, 500)
-
-    return () => clearTimeout(debounceTimeout)
+    })()
   }
 
   const handleZapInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,6 +228,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     setDepositWeiValue(0n)
     setDepositSliderPercent(0)
     setLeveragePercentage(0)
+    setLeveragedCollateralQuote(0n)
     setZapValue(0n)
   }, [depositAsset])
 
@@ -254,40 +248,35 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     }
   }, [depositWeiValue, borrowWeiValue, zapValue, leveragedCollateralQuote, isDepositLoading])
 
-  const actionApproveZap = async () => {
+  const actionApproveZap = () => {
     setIsDepositLoading(true)
     const walletClient = getWalletClient()
-    if (!walletClient || !depositAssetInfo) {
-      console.error("Wallet client is not available.")
-      return
-    }
-
-    await doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue || 0n)
-      .then(() => {
-        fetchBalanceAllowanceData(depositAssetInfo?.address)
-        setIsDepositLoading(false)
-      })
-      .catch((error) => {
-        console.error("Error during approval:", error)
-        setIsDepositLoading(false)
-      })
+    if (walletClient && depositWeiValue)
+      doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue || 0n)
+        .then(() => {
+          fetchBalanceAllowanceData(depositAssetInfo?.address)
+          setIsDepositLoading(false)
+        })
+        .catch((error) => {
+          console.error("Error during approval:", error)
+          setIsDepositLoading(false)
+        })
   }
 
   const actionApprove = () => {
+    setIsDepositLoading(true)
     const walletClient = getWalletClient()
     if (walletClient && depositWeiValue)
       doApprove(walletClient, marketInfo?.collatAddress, marketInfo?.marketAddress, depositWeiValue).then(() => {
         loadOnChainData()
-        setIsDepositLoading(false)
-        fetchBalanceAllowanceData(depositAssetInfo?.address)
       })
   }
 
   const actionZapLeverage = async () => {
+    setIsDepositLoading(true)
     try {
       const walletClient = getWalletClient()
 
-      loadOnChainData()
       if (!walletClient || !currentAddress || !depositWeiValue || !borrowWeiValue || !depositAssetInfo) return
 
       const leverageData = await getRoute(
@@ -329,17 +318,21 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         })
         .catch((err) => {
           console.error("ERROR : ", err)
+          setIsDepositLoading(false)
           toast.error(ToastComponent, { data: { type: "Error", content: "Something went wrong." } })
         })
-    } catch {
+    } catch (err) {
+      console.error("ERROR : ", err)
+      setIsDepositLoading(false)
       toast.error(ToastComponent, { data: { type: "Error", content: "Something went wrong." } })
     }
   }
 
   const actionLeverage = async () => {
+    setIsDepositLoading(true)
+
     const walletClient = getWalletClient()
 
-    loadOnChainData()
     if (!walletClient || !currentAddress || !leveragedCollateralQuote || !borrowWeiValue) return
 
     const leverageData = await getRoute(
@@ -376,22 +369,22 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }
 
   const quoteDetail = useMemo(() => {
-    setIsDepositLoading(false)
-
-    if (!!zapValue) {
+    if (zapValue) {
       const sum = ` ${formatBigIntAsNumber(zapValue || 0n, 18, 0)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 0)}  ~= `
       const result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + BigInt(zapValue || 0n), 18, 0)}  ${collateralInfo?.symbol}`
-
       return { sum, result }
-    } else if (!zapValue && !!depositWeiValue) {
+    } else if (depositWeiValue) {
       const sum = ` ${formatBigIntAsNumber(depositWeiValue || 0n, 18, 0)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 0)}  ~= `
       const result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18, 0)}  ${collateralInfo?.symbol}`
-
       return { sum, result }
-    } else {
-      return { sum: "", result: `0 ${collateralInfo?.symbol}` }
     }
-  }, [depositWeiValue, leveragedCollateralQuote, zapValue])
+    return { sum: "", result: `0 ${collateralInfo?.symbol}` }
+  }, [
+    zapValue,
+    depositWeiValue,
+    leveragedCollateralQuote,
+    collateralInfo?.symbol, // include symbol
+  ])
 
   const estimatedZapDollarValue = useMemo(() => {
     if (zapValue && marketData) {
@@ -410,6 +403,15 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     return !!quoteDetail && !!futureMarketDisplayData && ltvAsNumber > 90
   }, [quoteDetail, futureMarketDisplayData])
 
+  const leverageBalanceAllowanceData = useMemo(() => {
+    if (!!marketData && depositAsset === collateralInfo?.name) {
+      return { balance: marketData?.collateralBalance, allowance: marketData?.collateralAllowance }
+    } else if (!!balanceAllowanceData && depositAsset !== collateralInfo?.name) {
+      return { balance: balanceAllowanceData?.balance, allowance: balanceAllowanceData?.allowances[0]?.allowance }
+    }
+    return { balance: 0n, allowance: 0n }
+  }, [marketData, balanceAllowanceData])
+
   const formState = useMemo(
     () =>
       getLeverageFormState(
@@ -421,7 +423,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         isWellConnected,
         depositAssetInfo!,
         collateralInfo!,
-        balanceAllowanceData!,
+        leverageBalanceAllowanceData!,
         isDepositLoading
       ),
     [
@@ -432,7 +434,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       isWellConnected,
       currentAddress,
       depositAssetInfo,
-      balanceAllowanceData,
+      leverageBalanceAllowanceData,
       isDepositLoading,
       leverageExceedsMaxLtv,
     ]
@@ -446,9 +448,11 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const updateBorrowWeiValue = async (value: bigint) => {
     setIsDepositLoading(true)
-    const { quote } = await getQuote(value, currentAddress!, marketInfo?.collatAddress, USG_CONTRACT.USG, curveRoutes)
-    setLeveragedCollateralQuote(quote)
-    setBorrowWeiValue(value)
+    getQuote(value, currentAddress!, marketInfo?.collatAddress, USG_CONTRACT.USG, curveRoutes).then(({ quote }) => {
+      setLeveragedCollateralQuote(quote)
+      setIsDepositLoading(false)
+      setBorrowWeiValue(value)
+    })
   }
 
   useEffect(() => {
@@ -462,17 +466,12 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   useEffect(() => {
     if (zapInnerValue === undefined) {
-      setDepositWeiValue(undefined)
-      setZapValue(0n)
-      return
+      /* reset */ return
     }
-
     if (!isZapUserInput) return
-
     const handler = setTimeout(() => {
       handleZapChange({ target: { value: zapInnerValue.toString() } } as React.ChangeEvent<HTMLInputElement>)
     }, 500)
-
     return () => clearTimeout(handler)
   }, [zapInnerValue, isZapUserInput])
 

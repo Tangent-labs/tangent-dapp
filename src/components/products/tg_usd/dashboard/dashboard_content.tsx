@@ -3,60 +3,84 @@
 import { cn } from "@/lib/utils"
 import { ExistingAsset } from "@/types"
 import { formatDollar } from "@/lib/number_formatter"
-import { IconArrow } from "@/components/icons/icon_arrow"
+import { useUSGDashboardContext } from "./dashboard_context"
 import Divider from "@/components/design_system/structure/divider"
 import { MarketDebtData, TgUsdCollateralData } from "../tg_usd_type"
+import ButtonTab from "@/components/design_system/inputs/button_tab"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { useUSGMaketListContext } from "../list/tg_usd_market_list_context"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
-import { mockBarChartData, COLORS, formatXAxis, formatYAxis, mockTotalSupplyData } from "./dashboard_controller"
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, XAxis, Tooltip, YAxis, Bar, Area, AreaChart } from "recharts"
+import { mockBarChartData, COLORS, formatXAxis, formatYAxis } from "./dashboard_controller"
+import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Area, AreaChart } from "recharts"
 
 export const USGDashboardContent = () => {
   const { globalData, userData } = useUSGMaketListContext()
+
+  const { totalSupplies, sUSGSelectedTab, USGSelectedTab, fetchUSGTotalSupplyData, fetchsUSGTotalSupplyData } = useUSGDashboardContext()
 
   const maxUv = Math.max(...mockBarChartData.map((item) => item.uv))
 
   return (
     <div className="flex w-full flex-col items-start justify-start gap-2">
-      <div className="flex w-full flex-col justify-between gap-2 md:flex-row md:justify-start">
-        <div className="flex w-fit justify-start md:w-1/2">
-          <IndicatorCards
-            className={cn(globalData.USGPrice === "-" ? "shimmer" : "")}
-            indicators={[
-              { title: "USG", value: formatDollar(globalData.USGPrice, 5) },
-              { title: "Supply", value: globalData.USGSupply },
-            ]}
-          >
-            <TokenImage token="USG" className="h-8 w-8" size={32} />
-          </IndicatorCards>
+      <div className="mb-2 flex h-full w-full flex-col items-start justify-start gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+        <div
+          style={{ fontSize: "20px", lineHeight: "20px" }}
+          className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !font-semibold italic"
+        >
+          Points campaign
+          <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
         </div>
+      </div>
 
-        <div className="flex w-fit justify-end md:w-1/2 md:justify-start">
-          <IndicatorCards
-            className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "")}
-            indicators={[
-              { title: "sUSG ", value: globalData.sUSGPrice },
-              { title: "Supply", value: globalData.sUSGSupply },
-              { title: "APY", value: globalData.APY },
-            ]}
-          >
-            <TokenImage token="sUSG" className="h-8 w-8" size={32} />
-          </IndicatorCards>
-        </div>
+      <div className="flex w-full flex-col justify-between gap-4 md:flex-row md:justify-start">
+        <IndicatorCards
+          className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "flex w-full items-center justify-around")}
+          indicators={[
+            { title: "USG", value: formatDollar(globalData.USGPrice, 5) },
+            { title: "Supply", value: globalData.USGSupply },
+          ]}
+        >
+          <TokenImage token="USG" className="h-8 w-8" size={32} />
+        </IndicatorCards>
+
+        <IndicatorCards
+          className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "flex w-full items-center justify-around")}
+          indicators={[
+            { title: "sUSG ", value: globalData.sUSGPrice },
+            { title: "Supply", value: globalData.sUSGSupply },
+            { title: "APY", value: globalData.APY },
+          ]}
+        >
+          <TokenImage token="sUSG" className="h-8 w-8" size={32} />
+        </IndicatorCards>
       </div>
 
       <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
         <div className="flex w-full items-start justify-start md:w-1/2">
-          <div className="mt-1 flex h-full max-h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
+          <div className="mt-1 flex h-full max-h-72 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
             <div className="text-xl font-semibold">Total Supply </div>
             <Divider className="h-0.5 w-full bg-white/10" />
+
+            <div className="mb-2 flex w-full items-center justify-between">
+              <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-1">
+                <TokenImage token="USG" size={20} />
+                USG
+              </div>
+
+              <div className="flex gap-2">
+                <ButtonTab onClick={() => fetchUSGTotalSupplyData("1d")} label={"1d"} active={USGSelectedTab === "1d"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchUSGTotalSupplyData("7d")} label={"7d"} active={USGSelectedTab === "7d"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchUSGTotalSupplyData("1m")} label={"1m"} active={USGSelectedTab === "1m"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchUSGTotalSupplyData("1y")} label={"1y"} active={USGSelectedTab === "1y"} className="rounded-full !py-1" />
+              </div>
+            </div>
+
             <div className="mb-8 flex h-48 min-h-48 w-full items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                   width={500}
                   height={400}
-                  data={mockTotalSupplyData}
+                  data={totalSupplies.USGTotalSupply}
                   margin={{
                     top: 10,
                     right: 20,
@@ -70,14 +94,8 @@ export const USGDashboardContent = () => {
                       <stop offset="100%" stopColor="#0075FF" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis
-                    dataKey="date"
-                    tickFormatter={formatXAxis}
-                    scale="point"
-                    padding={{ left: 10, right: 10 }}
-                    label={{ value: "Week", position: "insideBottomRight", offset: -5 }}
-                  />
-                  <YAxis tickFormatter={formatYAxis} label={{ value: "Revenue (k$)", angle: -90, position: "insideLeft" }} domain={[0, maxUv * 1.2]} />
+                  <XAxis dataKey="date" tickFormatter={formatXAxis} scale="point" padding={{ left: 10, right: 10 }} />
+                  <YAxis tickFormatter={formatYAxis} domain={[0, maxUv * 1.2]} />
                   <Area type="monotone" dataKey="uv" stroke="#00C2FF" fill="url(#gradientFill1)" />
                 </AreaChart>
               </ResponsiveContainer>
@@ -86,16 +104,30 @@ export const USGDashboardContent = () => {
         </div>
 
         <div className="flex w-full items-start justify-start md:w-1/2">
-          <div className="mt-1 flex h-full max-h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+          <div className="mt-1 flex h-full max-h-72 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
             <div className="text-xl font-semibold">Total Supply </div>
             <Divider className="h-0.5 w-full bg-white/10" />
+
+            <div className="mb-2 flex w-full items-center justify-between">
+              <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-1">
+                <TokenImage token="sUSG" size={20} />
+                sUSG
+              </div>
+
+              <div className="flex gap-2">
+                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("1d")} label={"1d"} active={sUSGSelectedTab === "1d"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("7d")} label={"7d"} active={sUSGSelectedTab === "7d"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("1m")} label={"1m"} active={sUSGSelectedTab === "1m"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("1y")} label={"1y"} active={sUSGSelectedTab === "1y"} className="rounded-full !py-1" />
+              </div>
+            </div>
 
             <div className="mb-8 flex h-48 min-h-48 w-full items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                   width={500}
                   height={400}
-                  data={mockTotalSupplyData}
+                  data={totalSupplies.sUSGTotalSupply}
                   margin={{
                     top: 10,
                     right: 20,
@@ -109,14 +141,8 @@ export const USGDashboardContent = () => {
                       <stop offset="100%" stopColor="#0075FF" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis
-                    dataKey="date"
-                    tickFormatter={formatXAxis}
-                    scale="point"
-                    padding={{ left: 10, right: 10 }}
-                    label={{ value: "Week", position: "insideBottomRight", offset: -5 }}
-                  />
-                  <YAxis tickFormatter={formatYAxis} label={{ value: "Revenue (k$)", angle: -90, position: "insideLeft" }} domain={[0, maxUv * 1.2]} />
+                  <XAxis dataKey="date" tickFormatter={formatXAxis} scale="point" padding={{ left: 10, right: 10 }} />
+                  <YAxis tickFormatter={formatYAxis} domain={[0, maxUv * 1.2]} />
                   <Area type="monotone" dataKey="uv" stroke="#00C2FF" fill="url(#gradientFill1)" />
                 </AreaChart>
               </ResponsiveContainer>
@@ -219,7 +245,7 @@ export const USGDashboardContent = () => {
       </div>
 
       <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
-        <div className="flex w-full items-start justify-start md:w-1/2">
+        {/* <div className="flex w-full items-start justify-start md:w-1/2">
           <div className="mt-3 flex h-full max-h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
             <div className="text-xl font-semibold">Protocol revenues</div>
             <Divider className="h-0.5 w-full bg-white/10" />
@@ -244,10 +270,10 @@ export const USGDashboardContent = () => {
               </ResponsiveContainer>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="flex w-full items-start justify-start md:w-1/2">
-          <div className="mt-3 flex h-full min-h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+          {/* <div className="mt-3 flex h-full min-h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
             <div className="text-xl font-semibold">Top performing LPs</div>
             <Divider className="h-0.5 w-full bg-white/10" />
 
@@ -281,7 +307,7 @@ export const USGDashboardContent = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

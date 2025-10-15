@@ -1,23 +1,30 @@
-import { AssetApr } from "@/types"
 import { cn } from "@/lib/utils"
 import { ReactNode } from "react"
 import USGHoverCard from "./usg_hover_card"
+import { MarketAPR } from "@/components/products/tg_usd/tg_usd_type"
 
 type RecordPageHeaderProps = {
-  apr?: AssetApr
+  apr?: MarketAPR
   indicators?: RecordPageHeaderIndicatorProps[]
 }
 
 export default function RecordPageHeader({ apr, indicators }: RecordPageHeaderProps) {
+  let totalCurrentAPR = 0
+  let totalProjectedAPR = 0
+
+  if (apr && apr?.currentAPR && apr?.projectedAPR) {
+    totalCurrentAPR = Object.values(apr?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+    totalProjectedAPR = Object.values(apr?.projectedAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+  }
+
   return (
-    <div className="hidden min-h-20 items-center justify-evenly gap-4 rounded-[10px] bg-overlay-panel py-5 backdrop-blur-[60px] md:flex">
-      {apr && (
-        <RecordPageHeaderIndicator
-          title="APR"
-          value={`${apr?.actualsApr?.totalApr ? `${apr?.actualsApr?.totalApr?.toFixed(2)}%` : "-"}`}
-          subValue={`Proj:${apr?.projectedApr?.totalApr ? `${apr?.projectedApr?.totalApr?.toFixed(2)}%` : "-"}`}
-        />
-      )}
+    <div className="hidden min-h-20 items-center justify-evenly gap-4 rounded-[10px] bg-overlay-panel py-3 backdrop-blur-[60px] md:flex">
+      <RecordPageHeaderIndicator
+        title="APR"
+        value={`${totalCurrentAPR ? `${totalCurrentAPR?.toFixed(2)}%` : "-"}`}
+        subValue={`Proj: ${totalProjectedAPR ? `${totalProjectedAPR?.toFixed(2)}%` : "-"}`}
+      />
+
       {indicators?.map((i, index) => (
         <RecordPageHeaderIndicator indicator={i?.indicator} key={index} title={i.title} value={i.value} subValue={i.subValue} className={i?.className || ""} />
       ))}

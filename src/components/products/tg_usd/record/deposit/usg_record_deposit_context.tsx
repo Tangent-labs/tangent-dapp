@@ -176,7 +176,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
       }
     }
 
-    if (depositAsset !== collateralInfo?.symbol) {
+    if (!!depositAssetInfo && !!collateralInfo && depositAssetInfo?.address !== collateralInfo?.address) {
       fetchZapValue()
     }
   }

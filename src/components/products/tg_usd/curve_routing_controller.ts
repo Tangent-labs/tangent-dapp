@@ -1,14 +1,11 @@
-import { Abi, Address, encodeFunctionData, Hex, zeroAddress } from "viem"
-
-import QuotesCurveRouter from "../../../abi/USG/QuotesCurveRouter.json"
-import QuotesPendleRouter from "../../../abi/USG/QuotesPendleRouter.json"
-import { executeChainViewUnique } from "@/services/service_rpc"
-import CurveRouterABI from "../../../abi/USG/CurveRouter.json"
-import PendleRouterABI from "../../../abi/USG/PendleRouter.json"
 import { USG_CONTRACT } from "./tg_usd_repository"
+import CurveRouterABI from "../../../abi/USG/CurveRouter.json"
+import { executeChainViewUnique } from "@/services/service_rpc"
+import QuotesCurveRouter from "../../../abi/USG/QuotesCurveRouter.json"
+import { Abi, Address, encodeFunctionData, Hex, zeroAddress } from "viem"
 import { CustomCurveRoutes } from "./global_quote_controller"
 
-const returnCustomQuoteData = async (customCurveRoutes: CustomCurveRoutes, tokenIn: Address, tokenOut: Address, amount: bigint, protocol: string) => {
+const returnCustomQuoteData = async (customCurveRoutes: CustomCurveRoutes, tokenIn: Address, tokenOut: Address, amount: bigint) => {
   const matchingRoutes =
     customCurveRoutes.success?.[tokenIn.toLowerCase()]?.[tokenOut.toLowerCase()]?.map((route) => ({
       _route: route.params.routeAddresses,
@@ -17,18 +14,8 @@ const returnCustomQuoteData = async (customCurveRoutes: CustomCurveRoutes, token
       _pools: [zeroAddress, zeroAddress, zeroAddress, zeroAddress, zeroAddress],
     })) ?? []
 
-  let abi
-  let bytecode
-
-  if (protocol === "curve") {
-    abi = QuotesCurveRouter.abi
-    bytecode = QuotesCurveRouter.bytecode
-  }
-
-  if (protocol === "pendle") {
-    abi = QuotesPendleRouter.abi
-    bytecode = QuotesPendleRouter.bytecode
-  }
+  const abi = QuotesCurveRouter.abi
+  const bytecode = QuotesCurveRouter.bytecode
 
   const quotes = await executeChainViewUnique<bigint[]>(abi as Abi, bytecode as Hex, [matchingRoutes])
 
@@ -37,8 +24,8 @@ const returnCustomQuoteData = async (customCurveRoutes: CustomCurveRoutes, token
   return { matchingRoutes, quotes, bestQuote }
 }
 
-export const getCustomQuote = async (customCurveRoutes: CustomCurveRoutes, tokenIn: Address, tokenOut: Address, amount: bigint, protocol: string) => {
-  const { bestQuote } = await returnCustomQuoteData(customCurveRoutes, tokenIn, tokenOut, amount, protocol)
+export const getCustomQuote = async (customCurveRoutes: CustomCurveRoutes, tokenIn: Address, tokenOut: Address, amount: bigint) => {
+  const { bestQuote } = await returnCustomQuoteData(customCurveRoutes, tokenIn, tokenOut, amount)
 
   return bestQuote
 }
@@ -49,27 +36,16 @@ export const getCustomRouterRoute = async (
   tokenOut: Address,
   amount: bigint,
   minAmountOut: bigint,
-  receiver: Address,
-  protocol: string
+  receiver: Address
 ) => {
-  const { matchingRoutes, quotes, bestQuote } = await returnCustomQuoteData(customCurveRoutes, tokenIn, tokenOut, amount, protocol)
+  const { matchingRoutes, quotes, bestQuote } = await returnCustomQuoteData(customCurveRoutes, tokenIn, tokenOut, amount)
 
   const biggestValueIndex = quotes?.indexOf(bestQuote) as number
 
   const matchingRoute = matchingRoutes[biggestValueIndex]
 
-  let abi
-  let routerAddress
-
-  if (protocol === "curve") {
-    abi = CurveRouterABI
-    routerAddress = USG_CONTRACT.CURVE_ROUTER
-  }
-
-  if (protocol === "pendle") {
-    abi = PendleRouterABI
-    routerAddress = USG_CONTRACT.PENDLE_ROUTER
-  }
+  const abi = CurveRouterABI
+  const routerAddress = USG_CONTRACT.CURVE_ROUTER
 
   const data = encodeFunctionData({
     abi: abi as Abi,

@@ -9,6 +9,7 @@ import DisplayReceivePanel from "./display_recieve_panel"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import BorderPanel from "../structure/border_panel"
+import { IconChevron } from "@/components/icons/icon_chevron"
 
 type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
@@ -197,6 +198,11 @@ export function DepositReceiveInput({
           </>
         )}
       </BorderPanel>
+
+      <div className="my-2 flex w-full cursor-pointer items-center justify-center border-none">
+        <IconChevron className="h-auto w-10 rounded-lg border border-white border-opacity-20 bg-select-input p-3 text-white" />
+      </div>
+
       <DisplayReceivePanel
         labelReceive={labelReceive}
         receiveAmount={receiveAmount}

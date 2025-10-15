@@ -34,7 +34,7 @@ export default function USGMarketList() {
       <div className="flex items-center justify-between gap-4">
         <div className="usg-header hidden w-6/12 xl:flex">
           <div className="flex items-center justify-center">
-            <Image height={160} width={160} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+            <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3">
             <span className="text-4xl font-semibold">USG</span>
@@ -45,19 +45,26 @@ export default function USGMarketList() {
           </div>
         </div>
 
-        <div className="hidden h-full w-full flex-col items-center gap-3 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] md:flex xl:w-fit">
-          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-xl !font-semibold italic">
+        <div className="hidden h-full w-full flex-col items-center gap-3 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] md:flex xl:w-5/12">
+          <div
+            style={{ fontSize: "20px", lineHeight: "20px" }}
+            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !font-semibold italic"
+          >
             Points campaign
-            <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 text-lg !font-semibold !not-italic !text-black">Live</div>
+            <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
           </div>
 
           <div className="mt-auto flex w-full items-center justify-between gap-3 p-2">
-            <div className={cn("flex min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}>
+            <div
+              className={cn("flex min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-1", !!userData ? "" : "shimmer")}
+            >
               <span className="text-xs text-subtitle">Your Debt</span>
               <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDebt || 0n, 18), 0)} USD</span>
             </div>
 
-            <div className={cn("flex min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}>
+            <div
+              className={cn("flex min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-1", !!userData ? "" : "shimmer")}
+            >
               <span className="text-xs text-subtitle">Your Collateral Deposits</span>
               <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDeposit || 0n, 18), 0)} USD</span>
             </div>
@@ -82,7 +89,7 @@ export default function USGMarketList() {
         </div>
       </div>
 
-      <div className="mt-10 hidden items-start justify-between xl:flex">
+      <div className="mt-6 hidden items-start justify-between xl:flex">
         <div className="flex flex-col items-start justify-between">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -154,13 +161,13 @@ export function USGMarketListInner() {
       </div>
       {displayRows?.map((item, index) => (
         <ListRow
-          className={cn("my-2", !!marketData.length && !!displayRows ? "" : "shimmer")}
+          className={cn("my-1", !!marketData.length && !!displayRows ? "" : "shimmer")}
           key={index}
           // Hack for Pendle markets
           navigate={() => router.push(item.token.trim().replaceAll("/", "~").replaceAll(" ", "_"))}
         >
           <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
-          <MarketListAPR apr={item.apr.current} projectedApr={item.apr.projected} />
+          <MarketListAPR currentAPRDetails={item.currentAPRDetails} apr={item.apr.current} projectedApr={item.apr.projected} />
           <>
             {item.indicators.map((indicator, index) => (
               <div

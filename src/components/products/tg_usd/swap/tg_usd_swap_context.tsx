@@ -86,7 +86,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [isBuying, setIsBuying] = useState<boolean>(true)
 
@@ -500,22 +500,20 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   }
 
   const computedAssets = useMemo(() => {
-    if (!balances) return { depositAssets: [], receiveAssets: [] }
-
     const tgTokens = Object.entries(tgUsdTokens).flatMap(([, tokens]) => {
       return Object.entries(tokens).map(([name, address]) => ({
         name,
         symbol: name,
         value: name,
         address,
-        balance: balances[address as Address] || BigInt(0),
+        balance: balances ? balances[address as Address] : BigInt(0),
       }))
     })
 
     const tokenOptions = tokens.map((el: SwapToken) => ({
       ...el,
       value: el.name as string,
-      balance: balances[el.address] || BigInt(0),
+      balance: balances ? balances[el.address] : BigInt(0),
     }))
 
     const depositAssets = isBuying
@@ -529,11 +527,11 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
               address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
               logo: "ETH" as ExistingAsset,
               displayDecimals: 5,
-              balance: balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] || BigInt(0),
+              balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
             },
             ...tokenOptions,
             ...tgTokens,
-          ].sort((a, b) => Number(b.balance - a.balance)),
+          ].sort((a, b) => Number(b.balance) - Number(a.balance)),
         ]
       : [
           ...tgTokens,
@@ -546,10 +544,10 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
               address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
               logo: "ETH" as ExistingAsset,
               displayDecimals: 5,
-              balance: balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] || BigInt(0),
+              balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
             },
             ...tokenOptions,
-          ].sort((a, b) => Number(b.balance - a.balance)),
+          ].sort((a, b) => Number(b.balance) - Number(a.balance)),
         ]
 
     const receiveAssets = isBuying
@@ -564,10 +562,10 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
               address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
               logo: "ETH" as ExistingAsset,
               displayDecimals: 5,
-              balance: balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] || BigInt(0),
+              balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
             },
             ...tokenOptions,
-          ].sort((a, b) => Number(b.balance - a.balance)),
+          ].sort((a, b) => Number(b.balance) - Number(a.balance)),
         ]
       : [
           ...[
@@ -579,11 +577,11 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
               address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
               logo: "ETH" as ExistingAsset,
               displayDecimals: 5,
-              balance: balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] || BigInt(0),
+              balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
             },
             ...tokenOptions,
             ...tgTokens,
-          ].sort((a, b) => Number(b.balance - a.balance)),
+          ].sort((a, b) => Number(b.balance) - Number(a.balance)),
         ]
 
     return { depositAssets, receiveAssets }

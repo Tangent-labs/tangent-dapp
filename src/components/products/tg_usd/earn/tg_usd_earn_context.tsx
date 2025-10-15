@@ -2,13 +2,15 @@
 
 import { ListState } from "@/types"
 import { useUSGContext } from "../tg_usd_context"
-import { EarnTask, USGStakingInfo, LpUserPoints } from "../tg_usd_type"
+import { mapPoolsAndTasks, mapTasks } from "./tg_usd_earn_controller"
+import { getCurvePools, getConvexPools, getStakeDAOPools } from "../api"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { EarnTask, USGStakingInfo, LpUserPoints, EarnProtocolInput, GaugeAPR } from "../tg_usd_type"
 
 type USGEarnContextProps = {
   children: ReactNode
-  tasks: EarnTask[]
+  tasks: EarnProtocolInput[]
 }
 
 type USGEarnContextValues = {
@@ -28,21 +30,24 @@ export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
 
   const { USGsUSGMetrics, loadUSGsUSGMetrics, lpUserPoints } = useUSGContext()
 
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+
+  const [poolsData, setPoolsData] = useState<Array<GaugeAPR>>([])
 
   const [searchValue, setSearchValue] = useState<string | null>(null)
 
   const displayRows = useMemo(() => {
     if (!tasks) return []
-    setIsLoading(false)
 
     if (!searchValue || searchValue.trim() === "") {
-      return tasks
+      const mappedTasks = mapTasks(tasks, poolsData)
+      return mappedTasks
     }
 
     const lowered = searchValue.toLowerCase()
-    return tasks.filter((row: EarnTask) => row.name.toLowerCase().includes(lowered) || row?.asset.toLowerCase().includes(lowered))
-  }, [tasks, searchValue])
+    const mappedTasks = mapTasks(tasks, poolsData)
+    return mappedTasks.filter((row: EarnTask) => row.name.toLowerCase().includes(lowered) || row?.asset.toLowerCase().includes(lowered))
+  }, [tasks, searchValue, poolsData])
 
   const customSort = (listState: ListState) => {
     const { key, direction } = listState.sort!
@@ -58,8 +63,19 @@ export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
     })
   }
 
+  const fetchPoolsData = async () => {
+    const [curvePools, convexPools, stakeDaoPools] = await Promise.all([getCurvePools(), getConvexPools(), getStakeDAOPools()])
+
+    const mappedPools = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, tasks)
+
+    setPoolsData(mappedPools)
+    setIsLoading(false)
+  }
+
   useEffect(() => {
     loadUSGsUSGMetrics()
+
+    fetchPoolsData()
   }, [currentAddress])
 
   const contextValue: USGEarnContextValues = {

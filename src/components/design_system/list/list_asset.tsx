@@ -17,9 +17,9 @@ interface ListAssetProps {
 const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: ListAssetProps) => {
   return (
     <div className={`relative flex items-center gap-2 ${className}`}>
-      <TokenImage token={token} size={48} className="w-12 xl:w-20" />
+      <TokenImage token={token} size={48} className="w-8 xl:w-16" />
 
-      <div className="flex flex-col gap-2 leading-8">
+      <div className="flex flex-col gap-1 leading-8">
         <span className="text-sm font-semibold md:text-xl">{name}</span>
 
         {marketData && (

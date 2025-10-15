@@ -1,10 +1,10 @@
-import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
-import { ChainViewMarketList, ChainViewMarketRow, TgUsdGlobalData, USGMarketData, USGMarketDataUser } from "../tg_usd_type"
-import { formatBigInt, formatDollar, formatPercent } from "@/lib/number_formatter"
-import { USG_CONTRACT, USGMarkets, tgUsdPegKeepers } from "../tg_usd_repository"
 import { Abi, Address, formatUnits, Hex } from "viem"
 import MarketListUI from "@/abi/USG/MarketListUI.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
+import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
+import { USG_CONTRACT, USGMarkets, tgUsdPegKeepers } from "../tg_usd_repository"
+import { formatBigInt, formatDollar, formatPercent } from "@/lib/number_formatter"
+import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, TgUsdGlobalData } from "../tg_usd_type"
 
 export const getUSGMarketsData = async (address: Address | undefined) => {
   const markets = USGMarkets.map((market) => market.marketAddress)
@@ -25,29 +25,6 @@ export const transformMarketData = (data: ChainViewMarketList) => {
 
     return { marketType: staticMarketData?.marketType, marketAddress: el.marketAddress as Address, constants: el.constants }
   })
-}
-
-export function getMarketDatas() {
-  return USGMarkets.map((market) => ({
-    network: "mainnet",
-    marketAddress: market.marketAddress,
-    platforms: ["convex", "curve"],
-    collateral: market.marketName,
-    apr: {
-      details: {
-        baseApr: 0.3,
-        boostApr: 0.02,
-        type: "variable",
-      },
-      totalApr: 0.05,
-    },
-    borrowRate: 0.03,
-    tvl: 20000000,
-    borrowed: 15000000,
-    cap: 25000000,
-    debt: 10000000,
-    health: 1.5,
-  })) as (USGMarketData & USGMarketDataUser)[]
 }
 
 export function transformGlobalData(data?: ChainViewMarketList): TgUsdGlobalData {
@@ -85,7 +62,7 @@ export function transformGlobalData(data?: ChainViewMarketList): TgUsdGlobalData
   }
 }
 
-export function transformToRows(datas: (USGMarketData & USGMarketDataUser)[], onChainData: ChainViewMarketList | undefined): ListRowData[] {
+export function transformToRows(datas: Array<MarketListAPRData>, onChainData: ChainViewMarketList | undefined): ListRowData[] {
   const list: ListRowData[] = []
 
   datas.forEach((data) => {
@@ -95,15 +72,24 @@ export function transformToRows(datas: (USGMarketData & USGMarketDataUser)[], on
   return list
 }
 
-function transformMarketDataToRow(data: USGMarketData & USGMarketDataUser, onChainRow?: ChainViewMarketRow): ListRowData {
+function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainViewMarketRow): ListRowData {
+  let totalCurrentAPR = 0
+  let totalProjectedAPR = 0
+
+  if (data && data?.currentAPR && data?.projectedAPR) {
+    totalCurrentAPR = Object.values(data?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+    totalProjectedAPR = Object.values(data?.projectedAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+  }
+
   return {
     token: data.collateral as ExistingAsset,
     name: data.collateral,
     address: onChainRow?.marketAddress as Address,
     apr: {
-      current: Number(data.apr.details.baseApr),
-      projected: Number(data.apr.details.baseApr),
+      current: Number(totalCurrentAPR),
+      projected: Number(totalProjectedAPR),
     },
+    currentAPRDetails: data?.currentAPR,
     indicators: [
       { key: "borrowRate", label: "Borrow Rate", value: formatBigInt(onChainRow?.debtInfos.currentBorrowRate, 18, 0) || "-", raw: 0 },
       {
@@ -112,7 +98,7 @@ function transformMarketDataToRow(data: USGMarketData & USGMarketDataUser, onCha
         value: formatDollar(formatUnits(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0n, 18), 0),
         raw: Number(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0),
       },
-      { key: "borrowed", label: "Borrowed", value: formatDollar(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18), 0) || "-", raw: data.borrowed },
+      { key: "borrowed", label: "Borrowed", value: formatDollar(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18), 0) || "-", raw: 0 },
     ],
     userHasDeposited: !!onChainRow?.collateralInfos?.positionCollateralUSDValue && onChainRow?.collateralInfos?.positionCollateralUSDValue > 0n,
   }

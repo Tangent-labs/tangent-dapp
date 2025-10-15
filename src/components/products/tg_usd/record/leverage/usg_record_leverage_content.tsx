@@ -9,21 +9,21 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGContext } from "../../tg_usd_context"
 import { IconChevron } from "@/components/icons/icon_chevron"
 import { IconThunder } from "@/components/icons/icon_thunder"
-import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import Panel from "@/components/design_system/structure/panel"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
+import { useUSGLeverageContext } from "./usg_record_leverage_context"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { useUSGLeverageContext } from "./usg_record_leverage_context"
 
 export default function USGLeverageContent() {
   const {
@@ -65,21 +65,17 @@ export default function USGLeverageContent() {
   const { canInteract } = useWalletConnexionContext()
 
   const AssetSelect = () => {
-    if (!balances) {
-      return null
-    }
-
     const tokenOptions = tokens.map((el: ZapToken) => ({
       ...el,
       value: el.name as string,
-      balance: balances[el.address] || BigInt(0),
+      balance: balances ? balances[el.address] : BigInt(0),
     }))
 
     const sortedAssets = [
       {
         ...collateralInfo,
         value: collateralInfo.name as string,
-        balance: balances[marketInfo?.collatAddress] || BigInt(0),
+        balance: balances ? balances[marketInfo?.collatAddress] : BigInt(0),
       },
       ...[
         {
@@ -90,10 +86,10 @@ export default function USGLeverageContent() {
           address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
           logo: "ETH" as ExistingAsset,
           displayDecimals: 5,
-          balance: balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] || BigInt(0),
+          balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
         },
         ...tokenOptions,
-      ].sort((a, b) => Number(b.balance - a.balance)),
+      ].sort((a, b) => Number(b.balance) - Number(a.balance)),
     ]
 
     return (
@@ -219,7 +215,9 @@ export default function USGLeverageContent() {
           onValueChange={(e) => updateBorrowWeiValue(e)}
         />
 
-        <div className="-mt-1 flex w-full items-start justify-end text-xs text-subtitle">Max leverage: x10</div>
+        <div className="-mt-1 flex w-full items-start justify-end text-xs text-subtitle">
+          Max leverage: x{Number((1 / (1 - Number(marketData?.constants.maxLTV) / 100000)).toFixed(0))}
+        </div>
 
         <div className="flex flex-col gap-2">
           <span className="text-sm font-semibold md:text-xl">Recap</span>

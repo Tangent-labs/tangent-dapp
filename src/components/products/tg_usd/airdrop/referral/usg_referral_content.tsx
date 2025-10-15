@@ -13,6 +13,7 @@ import { useUsgReferralCodeContext } from "./usg_referral_context"
 import { GodsonsLeaderboard } from "./components/GodsonsLeaderboard"
 import { SecondaryButton } from "@/components/design_system/inputs/secondary_button"
 import { formatNumber } from "@/lib/number_formatter"
+import { useClipboard } from "@/hooks/useClipboard"
 
 export const UsgReferralCode = () => {
   const { lpUserPoints, voteUserPoints, refereesPoints } = useUSGContext()
@@ -20,6 +21,8 @@ export const UsgReferralCode = () => {
   const { isLoading, lpLeaderboard, voteLeaderboard, godsonsLeaderboard } = useUsgReferralCodeContext()
 
   const { setReferralStatus, referralStatus, signMessage, airdropDataIsLoading, generateReferralCode } = useUsgAirdropContext()
+
+  const { copied, copy } = useClipboard()
 
   return (
     <div className="flex w-full flex-col items-center justify-center">
@@ -42,7 +45,7 @@ export const UsgReferralCode = () => {
 
         <Divider className="h-0.5 w-full bg-white/10" />
 
-        <div className="flex w-full items-center justify-between">
+        <div className="flex w-full flex-wrap items-center justify-between md:flex-nowrap">
           <div className="flex w-full flex-col items-center justify-center">
             <span className="text-sm text-subtitle">Referees voting points</span>
             <span className="bg-tonic bg-clip-text text-lg font-semibold text-transparent"> {formatNumber(refereesPoints.votePoints, 0)} </span>
@@ -64,7 +67,12 @@ export const UsgReferralCode = () => {
                   <span className="text-lg font-semibold">{referralStatus?.generatedCode}</span>
                 </div>
                 <div className="flex w-full flex-col items-center justify-center">
-                  <SecondaryButton className="flex w-32 justify-center font-semibold">Share</SecondaryButton>
+                  <SecondaryButton
+                    onClick={() => copy(`https://tangent-dapp.vercel.app/referral?code=${referralStatus?.generatedCode}`)}
+                    className="flex w-32 justify-center font-semibold"
+                  >
+                    {copied ? "Copied!" : "Share"}
+                  </SecondaryButton>
                 </div>
               </>
             )}
@@ -81,7 +89,7 @@ export const UsgReferralCode = () => {
         </div>
       </div>
 
-      <div className="my-2 flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
+      <div className="my-2 hidden w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px] xl:flex">
         <div className="mr-auto text-lg font-semibold text-white">Airdrop referral</div>
 
         <Divider className="h-0.5 w-full bg-white/10" />
@@ -114,7 +122,7 @@ export const UsgReferralCode = () => {
         </div>
       </div>
 
-      <div className="mb-4 mt-2 flex w-full items-start justify-between gap-4">
+      <div className="mb-4 mt-2 flex w-full flex-wrap items-start justify-between gap-4 xl:flex-row xl:flex-nowrap">
         <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
           <div className="mr-auto text-lg font-semibold text-white">Liquidity points leaderboard</div>
 

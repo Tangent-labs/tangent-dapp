@@ -39,7 +39,6 @@ export default function USGSwapContent() {
     depositAsset,
     receiveAsset,
     isBuying,
-    balances,
     isLoading,
     balanceAllowanceData,
     receiveWeiValue,
@@ -50,7 +49,7 @@ export default function USGSwapContent() {
   } = useUSGSwapContext()
 
   const ReceiveAssetSelect = ({ options }: AssetSelectProps) => {
-    if (!balances || !options) {
+    if (!options) {
       return (
         <PopoverCombobox className="w-full" template={AssetSelectTemplate} value={receiveAsset} options={[]} onChange={(v: string) => setReceiveAsset(v)} />
       )
@@ -62,21 +61,9 @@ export default function USGSwapContent() {
   }
 
   const DepositAssetSelect = ({ options }: AssetSelectProps) => {
-    if (!balances) {
-      return (
-        <PopoverCombobox
-          className="w-full"
-          template={AssetSelectTemplate}
-          value={depositAsset || ""}
-          options={[]}
-          onChange={(v: string) => setDepositAsset(v)}
-        />
-      )
-    }
-
     return (
       <PopoverCombobox
-        className="w-full"
+        className="w-fit"
         template={AssetSelectTemplate}
         value={depositAsset || ""}
         options={options}
@@ -129,9 +116,12 @@ export default function USGSwapContent() {
         </div>
 
         <div className="flex h-full w-full flex-col items-center gap-4 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] xl:w-fit">
-          <div className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !text-xl !font-semibold italic">
+          <div
+            style={{ fontSize: "20px", lineHeight: "20px" }}
+            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !font-semibold italic"
+          >
             Points campaign
-            <div className="ml-2 flex items-center justify-center rounded-[10px] bg-tonic px-2 py-0.5 !font-semibold !not-italic !text-black">Live</div>
+            <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
           </div>
 
           <div className="mt-auto flex w-full items-center justify-center gap-3 p-3">

@@ -14,7 +14,6 @@ import {
 
 import {
   getComputedFutureLoanData,
-  getMarketApr,
   getMarketDisplayData,
   getUSGMarketRecordData,
   getBalancesAndAllowances,
@@ -26,14 +25,15 @@ import {
 
 import { Address, formatUnits } from "viem"
 import { usePathname } from "next/navigation"
+import { useUSGContext } from "../tg_usd_context"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { getCurrentBlock } from "@/services/service_rpc"
 import { getHistoricalMarketData, getUserPositions } from "../api"
-import { AssetApr, AssetDataPriced, CollateralInfo, ListState } from "@/types"
+import { AssetDataPriced, CollateralInfo, ListState } from "@/types"
+import { useUSGMaketListContext } from "../list/tg_usd_market_list_context"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { sortUserData } from "./position_history/tg_usd_position_history_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { useUSGMaketListContext } from "../list/tg_usd_market_list_context"
 
 type USGRecordContextProps = {
   children: ReactNode
@@ -52,7 +52,7 @@ type USGRecordContextValues = {
   USGInfo: AssetDataPriced
   futureMarketDisplayData: USGMarketLoanDisplayData
   marketDisplayData: USGMarketDisplayData
-  apr?: AssetApr
+
   currentAmounts: USGMarketAmounts
   setCurrentAmounts: (amounts: USGMarketAmounts) => void
 
@@ -101,6 +101,8 @@ export const USGRecordContext = createContext<USGRecordContextValues | undefined
 export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, children }: USGRecordContextProps) => {
   const { currentAddress, getWalletClient } = useWalletConnexionContext()
 
+  const { marketAprs } = useUSGContext()
+
   const path = usePathname()
 
   const { globalData } = useUSGMaketListContext()
@@ -124,8 +126,6 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   const [initialCollatAmount, setInitialCollatAmount] = useState<number>(0)
 
   const [isUserHistoryLoading, setIsUserHistoryLoading] = useState<boolean>(true)
-
-  const [apr, setApr] = useState<AssetApr | undefined>()
 
   const [totalBorrow, setTotalBorrow] = useState<TotalBorrow>({ latestTotalDebt: "0", data: [] })
 
@@ -159,10 +159,6 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     }
   }, [currentAddress])
 
-  useEffect(() => {
-    loadApr()
-  }, [])
-
   const loadOnChainData = () => {
     setIsLoading(true)
     getUSGMarketRecordData(currentAddress, marketInfo.marketAddress).then((data) => {
@@ -171,21 +167,25 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     })
   }
 
-  const loadApr = () => {
-    if (marketData?.marketAddress) setApr(getMarketApr(marketInfo.marketAddress))
-  }
+  const USGInfo = useMemo(() => {
+    if (globalData && globalData.USGPrice) {
+      return { address: USG_CONTRACT.USG, decimals: 18, displayDecimals: 2, symbol: "USG", price: Number(globalData.USGPrice) }
+    }
+    return { address: USG_CONTRACT.USG, decimals: 18, displayDecimals: 2, symbol: "USG", price: 1 }
+  }, [globalData])
+
   const marketData = useMemo(() => {
     if (!onChainData) return
     return transformMarketData(onChainData, collateralInfo)
   }, [onChainData])
 
   const futureMarketDisplayData = useMemo(() => {
-    return getComputedFutureLoanData(marketData, collateralInfo, currentAmounts)
-  }, [currentAmounts, marketData])
+    return getComputedFutureLoanData(USGInfo?.price, marketAprs, marketData!, collateralInfo, currentAmounts)
+  }, [currentAmounts, marketData, USGInfo])
 
   const marketDisplayData = useMemo(() => {
-    return getMarketDisplayData(marketData, collateralInfo)
-  }, [marketData])
+    return getMarketDisplayData(USGInfo?.price, marketAprs, marketData!, collateralInfo)
+  }, [marketData, USGInfo])
 
   const pricedCollateralInfo = useMemo(() => {
     if (marketData) return { ...collateralInfo, price: Number(formatUnits(marketData?.collateralInfos.collateralUSDPrice, 18)) }
@@ -306,13 +306,6 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     }
   }, [totalBorrowTimeWindow, marketData])
 
-  const USGInfo = useMemo(() => {
-    if (globalData && globalData.USGPrice) {
-      return { address: USG_CONTRACT.USG, decimals: 18, displayDecimals: 2, symbol: "USG", price: Number(globalData.USGPrice) }
-    }
-    return { address: USG_CONTRACT.USG, decimals: 18, displayDecimals: 2, symbol: "USG", price: 1 }
-  }, [globalData])
-
   const contextValue: USGRecordContextValues = {
     isLoading,
     collateral,
@@ -324,7 +317,6 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     futureMarketDisplayData,
     currentAmounts,
     setCurrentAmounts,
-    apr,
     balanceAllowanceData,
     setBalanceAllowanceData,
     fetchBalanceAllowanceData,

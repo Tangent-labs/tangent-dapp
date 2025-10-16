@@ -82,8 +82,8 @@ type USGRecordContextValues = {
   initialCollatAmount: number
   setInitialCollatAmount: (v: number) => void
 
-  chartData: Array<{ price: string; vAPR: number }>
-  setChartData: (v: Array<{ price: string; vAPR: number }>) => void
+  chartData: Array<{ price: number; vAPR: number }>
+  setChartData: (v: Array<{ price: number; vAPR: number }>) => void
 
   feature: string
 
@@ -113,7 +113,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
 
   const { globalData } = useUSGMaketListContext()
 
-  const [chartData, setChartData] = useState<Array<{ price: string; vAPR: number }>>([])
+  const [chartData, setChartData] = useState<Array<{ price: number; vAPR: number }>>([])
 
   const [onChainData, setOnChainData] = useState<ChainViewMarketRow | undefined>()
 
@@ -270,7 +270,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   useEffect(() => {
     if (marketData && onChainData) {
       const { irParams } = marketData.constants
-      const priceRange = 1.001 - 0.9887
+      const priceRange = 1.005 - 0.9887
       const prices = Array.from({ length: 40 }, (_, i) => 0.9887 + (i * priceRange) / 39)
 
       const data = prices
@@ -286,7 +286,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
             isLeveraged,
             initialCollatAmount
           )
-          return { price: price.toFixed(4), vAPR }
+          return { price: Number(price.toFixed(4)), vAPR }
         })
         .filter((d) => isFinite(d.vAPR))
 

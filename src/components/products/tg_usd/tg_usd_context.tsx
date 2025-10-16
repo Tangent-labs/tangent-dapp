@@ -1,6 +1,6 @@
 "use client"
 
-import { Address } from "viem"
+import { Address, zeroAddress } from "viem"
 import { TANStakingInfo } from "../vs_tan/rstan_types"
 import { getUSGsUSGMetrics } from "./tg_usd_controller"
 import { getCurrentBlock } from "@/services/service_rpc"
@@ -60,13 +60,13 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
   }, [])
 
   const loadUSGsUSGMetrics = useCallback(() => {
-    getUSGsUSGMetrics(currentAddress || "0X000").then((data) => {
+    getUSGsUSGMetrics(currentAddress || zeroAddress).then((data) => {
       setUSGsUSGMetrics(data)
     })
   }, [currentAddress])
 
   const loadTanSTANMetrics = useCallback(() => {
-    getTanStakeOnChainData(currentAddress || "0X000").then((data) => {
+    getTanStakeOnChainData(currentAddress || zeroAddress).then((data) => {
       setTANsTANMetrics(data)
     })
   }, [currentAddress])

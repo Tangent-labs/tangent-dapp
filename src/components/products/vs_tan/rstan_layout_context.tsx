@@ -5,7 +5,7 @@ import { doIncreaseLockTime, doTogglePermaLock, getVsTanData } from "./rstan_lay
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { BalanceAllowanceData, LockData, LockPosition } from "../tg_usd/tg_usd_type"
 import { getBalancesAndAllowances } from "../tg_usd/record/tg_usd_record_controller"
-import { Address } from "viem"
+import { Address, zeroAddress } from "viem"
 import { VSTAN_CONTRACT } from "./rs_tan_repository"
 import { usePathname } from "next/navigation"
 
@@ -72,7 +72,7 @@ export const RsTanProvider = ({ children }: RsTanContextProps) => {
   }, [selectedPosition])
 
   const loadData = useCallback(() => {
-    getVsTanData(currentAddress || "0X000")
+    getVsTanData(currentAddress || zeroAddress)
       .then((d) => {
         setLockData(d)
         setIsLoading(false)

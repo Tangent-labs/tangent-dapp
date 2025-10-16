@@ -5,7 +5,7 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { getUSGMarketsData, transformToRows, transformGlobalData, transformMarketData } from "./tg_usd_market_controller"
 import { ChainViewMarketList, MarketConstants, MarketDebtData, TgUsdCollateralData, TgUsdGlobalData } from "../tg_usd_type"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { Address, formatUnits } from "viem"
+import { Address, formatUnits, zeroAddress } from "viem"
 import { USGMarkets } from "../tg_usd_repository"
 import { useUSGContext } from "../tg_usd_context"
 
@@ -43,7 +43,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
   const [searchValue, setSearchValue] = useState<string | null>(null)
 
   useEffect(() => {
-    getUSGMarketsData(currentAddress || "0X000").then((data) => {
+    getUSGMarketsData(currentAddress || zeroAddress).then((data) => {
       setOnChainData(data)
     })
   }, [currentAddress])

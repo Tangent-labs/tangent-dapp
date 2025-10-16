@@ -1,6 +1,6 @@
 "use client"
 
-import { Address } from "viem"
+import { Address, zeroAddress } from "viem"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { AssetDataPriced, ListState } from "@/types"
 import { ClaimableMarket, ClaimData, ClaimerInfo } from "../tg_usd_type"
@@ -51,7 +51,7 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
   }, [currentAddress])
 
   const loadData = useCallback(() => {
-    getTgUsdClaimOnChainData(currentAddress || "0X000").then((data) => {
+    getTgUsdClaimOnChainData(currentAddress || zeroAddress).then((data) => {
       setClaimInfo(data)
     })
   }, [currentAddress])

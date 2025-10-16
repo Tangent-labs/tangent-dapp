@@ -149,15 +149,13 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   useEffect(() => {
     loadOnChainData()
 
-    if (currentAddress) {
-      getUserPositions(currentAddress, marketInfo.marketAddress).then((pos) => {
-        if (pos) {
-          setUserPositions(pos)
-        } else {
-          setUserPositions([])
-        }
-      })
-    }
+    getUserPositions(currentAddress!, marketInfo.marketAddress).then((pos) => {
+      if (pos) {
+        setUserPositions(pos)
+      } else {
+        setUserPositions([])
+      }
+    })
   }, [currentAddress])
 
   const loadOnChainData = () => {
@@ -206,9 +204,6 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
       console.error("Failed to fetch balance/allowance:", error)
     }
   }
-
-  //
-  // USER TRANSACTION HISTORY CONTEXT
 
   const displayRows = useMemo(() => {
     if (userPositions) {

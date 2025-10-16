@@ -32,10 +32,10 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     USGInfo,
     initialCollatAmount,
     canLeverage,
+    currentTotalMarketApr,
     setInitialCollatAmount,
     setDebtVAPR,
     setDebtFarming,
-
     setIsLeveraged,
   } = useUSGRecordContext()
 
@@ -111,7 +111,9 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                     <div className="mt-3 flex w-full flex-wrap items-center justify-center sm:flex-row sm:flex-nowrap lg:w-2/12 lg:flex-col">
                       <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel px-2 py-1 backdrop-blur-[60px]">
                         <span>Current vAPR</span>
-                        <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">60.5%</span>
+                        <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">
+                          {currentTotalMarketApr} %
+                        </span>
                       </div>
                       <div className="my-2 flex w-full items-center justify-center gap-1 lg:justify-end">
                         Leverage <Switch checked={isLeveraged} onCheckedChange={(v) => setIsLeveraged(v)} />

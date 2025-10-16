@@ -136,7 +136,7 @@ export interface DebtInfos {
   userDebt: bigint
   healthRatio: string
   currentBorrowRate: bigint
-  futureBorrowRate: string
+  futureBorrowRate: bigint
   currentRewardCut: string
   futureRewardCut: string
 }
@@ -232,7 +232,6 @@ export type USGMarketLoanDisplayData = {
   ltv: string
   maxBorrowable: string
   maxWithdrawable: string
-  positionAPR: string
 }
 
 export type USGMarketDisplayData = USGMarketLoanDisplayData & {
@@ -248,7 +247,6 @@ export type USGMarketDisplayData = USGMarketLoanDisplayData & {
   rewardsCutNext: string
   lt: string
   ltDollar: string
-  positionAPR: string
 }
 
 export type USGMarketAmounts = {

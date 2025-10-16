@@ -91,7 +91,15 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
     },
     currentAPRDetails: data?.currentAPR,
     indicators: [
-      { key: "borrowRate", label: "Borrow Rate", value: formatBigInt(onChainRow?.debtInfos.currentBorrowRate, 18, 0) || "-", raw: 0 },
+      {
+        key: "borrowRate",
+        label: "Borrow Rate",
+        value:
+          !!onChainRow?.debtInfos.currentBorrowRate && onChainRow?.debtInfos.currentBorrowRate >= 0n
+            ? (Math.exp(Number(formatBigInt(onChainRow?.debtInfos.currentBorrowRate, 18, 4))) - 1).toFixed(2) + "%"
+            : "0%",
+        raw: 0,
+      },
       {
         key: "tvl",
         label: "Tvl",

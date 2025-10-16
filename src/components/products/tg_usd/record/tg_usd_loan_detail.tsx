@@ -17,7 +17,7 @@ export default function USGLoanDetail() {
     <div className="flex flex-col rounded-[10px] bg-overlay-panel px-3 py-2 backdrop-blur-[60px]">
       <Title label={"Loan details"} size={"normal"} />
       <Divider />
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-2 lg:gap-6">
         <EvolutionBox
           originalValue={marketDisplayData.collateralValue}
           label={"Collateral value"}
@@ -27,8 +27,6 @@ export default function USGLoanDetail() {
         <EvolutionBox originalValue={marketDisplayData.debt} label={"Debt"} newValue={futureMarketDisplayData.debt} className="flex-1" logo="USG" />
         <EvolutionBox originalValue={marketDisplayData.health} label={"Health"} newValue={futureMarketDisplayData.health} className="flex-1" />
         <EvolutionBox originalValue={marketDisplayData.ltv} label={"LTV"} newValue={futureMarketDisplayData.ltv} className="flex-1" />
-
-        <EvolutionBox originalValue={marketDisplayData.positionAPR} label={"Position APR"} newValue={futureMarketDisplayData.positionAPR} className="flex-1" />
       </div>
     </div>
   )

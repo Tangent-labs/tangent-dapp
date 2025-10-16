@@ -78,6 +78,10 @@ export const getRoute = async (
       user ? user : receiver,
       swapDirection
     )
+
+    return { data, routerAddress }
+  } else {
+    const { data, routerAddress } = await getCustomRouterRoute(curveRoutes, tokenIn, tokenOut, amount, minAmountOut, user ? user : receiver)
     return { data, routerAddress }
   }
 }

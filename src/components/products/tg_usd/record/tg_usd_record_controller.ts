@@ -299,10 +299,11 @@ export const computeVAPR = (
     if (isLeveraged && initialCollatAmountBigInt) {
       result = (totalCollateralAmount * collatVApr - userDebt * debtRate) / initialCollatAmountBigInt
     } else {
-      result = ((collatVApr * collatAmount - userDebt * debtRate + debtFarmingBigInt * debtVAPRBigInt) * BigInt(10000)) / collatAmount
+      result = (collatVApr * collatAmount - userDebt * debtRate + debtFarmingBigInt * debtVAPRBigInt) / collatAmount
     }
 
-    const vAPR = Number(result) / 100
+    const vAPR = Number(result) * 100
+
     if (!isFinite(vAPR)) {
       return 0
     }

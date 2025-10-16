@@ -179,7 +179,10 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
 
                                 <YAxis
                                   name="vAPR"
-                                  tickFormatter={(v) => `${formatBigInt(v, 18, 2)}%`}
+                                  tickFormatter={(v) => {
+                                    const formatted = formatBigInt(v < 0 ? -v : v, 18, 2)
+                                    return `${formatted}%`
+                                  }}
                                   type="number"
                                   domain={[-2, Number(Math.max(...chartData.map((d) => d.vAPR))) * 1.5]}
                                 />
@@ -191,7 +194,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                                       <div className="flex min-w-28 flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-input p-2 text-white backdrop-blur-[60px]">
                                         <div className="flex w-full items-center justify-between">
                                           <p className="font-semibold">vAPR:</p>
-                                          <p>{formatBigInt(payload[0]?.value?.toString(), 18, 2)}%</p>
+                                          <p>{(Number(payload[0]?.value?.toString()) / 10 ** 18).toFixed(2)}%</p>
                                         </div>
                                         <div className="flex w-full items-center justify-between">
                                           <p className="font-semibold">Price:</p>
@@ -244,7 +247,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                                         textAnchor="start"
                                         dominantBaseline="hanging"
                                       >
-                                        ${USGInfo?.price} (USG Price)
+                                        ${(USGInfo?.price).toFixed(4)} (USG Price)
                                       </text>
                                     )
                                   }}

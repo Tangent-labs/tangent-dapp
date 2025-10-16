@@ -1,6 +1,6 @@
 "use server"
 
-import { Abi, Address, Hex } from "viem"
+import { Abi, Hex } from "viem"
 import sUSGUI from "../../../abi/USG/sUSGUI.json"
 import { USG_CONTRACT } from "./tg_usd_repository"
 import { USGStakingInfo, ZapToken } from "./tg_usd_type"
@@ -12,7 +12,7 @@ export async function fetchTokens() {
   return tokens.filter((el: ZapToken) => !!el.chainId && el.chainId === 1)
 }
 
-export async function getUSGsUSGMetrics(currentAddress: Address | undefined) {
+export async function getUSGsUSGMetrics(currentAddress: string) {
   return await executeChainViewUnique<USGStakingInfo>(sUSGUI.abi as Abi, sUSGUI.bytecode as Hex, [
     currentAddress,
     USG_CONTRACT.USG_ORACLE,

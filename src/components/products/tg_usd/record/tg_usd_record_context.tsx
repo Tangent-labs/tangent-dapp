@@ -146,7 +146,9 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     liquidateValue: 0n,
   })
 
-  const fetchUserPositions = async () => {
+  useEffect(() => {
+    loadOnChainData()
+
     if (currentAddress) {
       getUserPositions(currentAddress, marketInfo.marketAddress).then((pos) => {
         if (pos) {
@@ -155,13 +157,6 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
           setUserPositions([])
         }
       })
-    }
-  }
-
-  useEffect(() => {
-    if (currentAddress) {
-      loadOnChainData()
-      fetchUserPositions()
     }
   }, [currentAddress])
 

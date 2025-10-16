@@ -60,19 +60,15 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
   }, [])
 
   const loadUSGsUSGMetrics = useCallback(() => {
-    if (currentAddress) {
-      getUSGsUSGMetrics(currentAddress).then((data) => {
-        setUSGsUSGMetrics(data)
-      })
-    }
+    getUSGsUSGMetrics(currentAddress || "0X000").then((data) => {
+      setUSGsUSGMetrics(data)
+    })
   }, [currentAddress])
 
   const loadTanSTANMetrics = useCallback(() => {
-    if (currentAddress) {
-      getTanStakeOnChainData(currentAddress).then((data) => {
-        setTANsTANMetrics(data)
-      })
-    }
+    getTanStakeOnChainData(currentAddress || "0X000").then((data) => {
+      setTANsTANMetrics(data)
+    })
   }, [currentAddress])
 
   const getRefereesPoints = async () => {

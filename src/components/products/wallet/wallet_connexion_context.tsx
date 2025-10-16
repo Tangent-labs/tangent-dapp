@@ -148,17 +148,11 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
     return !!currentAddress && isWellConnected
   }, [currentAddress, isWellConnected])
 
-  const fetchUserBalances = async () => {
+  useEffect(() => {
     if (currentAddress) {
       getUserBalances(currentAddress).then((res) => {
         setUserBalances(res)
       })
-    }
-  }
-
-  useEffect(() => {
-    if (currentAddress) {
-      fetchUserBalances()
     }
   }, [currentAddress])
 

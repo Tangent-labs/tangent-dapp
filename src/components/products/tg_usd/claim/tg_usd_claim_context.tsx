@@ -51,11 +51,9 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
   }, [currentAddress])
 
   const loadData = useCallback(() => {
-    if (currentAddress) {
-      getTgUsdClaimOnChainData(currentAddress).then((data) => {
-        setClaimInfo(data)
-      })
-    }
+    getTgUsdClaimOnChainData(currentAddress || "0X000").then((data) => {
+      setClaimInfo(data)
+    })
   }, [currentAddress])
 
   const displayRows = useMemo(() => {

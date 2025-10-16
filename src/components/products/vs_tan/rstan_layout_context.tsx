@@ -72,12 +72,14 @@ export const RsTanProvider = ({ children }: RsTanContextProps) => {
   }, [selectedPosition])
 
   const loadData = useCallback(() => {
-    if (currentAddress) {
-      getVsTanData(currentAddress).then((d) => {
+    getVsTanData(currentAddress || "0X000")
+      .then((d) => {
         setLockData(d)
         setIsLoading(false)
       })
-    }
+      .catch(() => {
+        console.error("Failed to fetch vsTanData")
+      })
   }, [currentAddress])
 
   const onClickExtend = async () => {

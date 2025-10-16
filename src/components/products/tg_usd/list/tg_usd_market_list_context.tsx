@@ -43,11 +43,9 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
   const [searchValue, setSearchValue] = useState<string | null>(null)
 
   useEffect(() => {
-    if (currentAddress) {
-      getUSGMarketsData(currentAddress).then((data) => {
-        setOnChainData(data)
-      })
-    }
+    getUSGMarketsData(currentAddress || "0X000").then((data) => {
+      setOnChainData(data)
+    })
   }, [currentAddress])
 
   const marketDataWithAPR = useMemo(() => {

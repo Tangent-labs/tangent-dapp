@@ -57,12 +57,12 @@ export default function USGRecordPageHeader() {
             title: "Borrow rate",
             value: (
               <div className="flex items-center gap-2">
-                <span>{(Math.exp(marketDisplayData.borrowRateCurrent) - 1).toFixed(2)}%</span>
+                <span>{((Math.exp(marketDisplayData.borrowRateCurrent) - 1) * 100).toFixed(2)}%</span>
               </div>
             ),
             subValue: (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-subtitle"> Proj:</span> <span>{(Math.exp(marketDisplayData.borrowRateNext) - 1).toFixed(2)} %</span>
+                <span className="text-sm text-subtitle"> Proj:</span> <span>{((Math.exp(marketDisplayData.borrowRateNext) - 1) * 100).toFixed(2)} %</span>
               </div>
             ),
             indicator: "Interest rate that borrowers pay on their outstanding debt",

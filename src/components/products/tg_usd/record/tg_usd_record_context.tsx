@@ -82,8 +82,8 @@ type USGRecordContextValues = {
   initialCollatAmount: number
   setInitialCollatAmount: (v: number) => void
 
-  chartData: Array<{ price: string; vAPR: number }>
-  setChartData: (v: Array<{ price: string; vAPR: number }>) => void
+  chartData: Array<{ price: number; vAPR: number }>
+  setChartData: (v: Array<{ price: number; vAPR: number }>) => void
 
   feature: string
 
@@ -96,6 +96,8 @@ type USGRecordContextValues = {
   onChainData: ChainViewMarketRow | undefined
 
   canLeverage: boolean
+
+  currentTotalMarketApr: number
 }
 
 const LEVERAGE_TRESHOLD = 0.989
@@ -111,7 +113,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
 
   const { globalData } = useUSGMaketListContext()
 
-  const [chartData, setChartData] = useState<Array<{ price: string; vAPR: number }>>([])
+  const [chartData, setChartData] = useState<Array<{ price: number; vAPR: number }>>([])
 
   const [onChainData, setOnChainData] = useState<ChainViewMarketRow | undefined>()
 
@@ -184,11 +186,11 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   }, [onChainData])
 
   const futureMarketDisplayData = useMemo(() => {
-    return getComputedFutureLoanData(USGInfo?.price, marketAprs, marketData!, collateralInfo, currentAmounts)
+    return getComputedFutureLoanData(USGInfo?.price, marketData!, collateralInfo, currentAmounts)
   }, [currentAmounts, marketData, USGInfo])
 
   const marketDisplayData = useMemo(() => {
-    return getMarketDisplayData(USGInfo?.price, marketAprs, marketData!, collateralInfo)
+    return getMarketDisplayData(USGInfo?.price, marketData!, collateralInfo)
   }, [marketData, USGInfo])
 
   const pricedCollateralInfo = useMemo(() => {
@@ -249,17 +251,32 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     })
   }
 
+  const currentTotalMarketApr = useMemo(() => {
+    if (marketAprs && marketData) {
+      const APRS = marketAprs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())
+
+      let totalCurrentAPR = 0
+
+      if (!!APRS && APRS?.currentAPR) {
+        totalCurrentAPR = Object.values(APRS?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+        return totalCurrentAPR
+      }
+    }
+
+    return 0
+  }, [marketAprs, marketData])
+
   // Generate chart data
   useEffect(() => {
     if (marketData && onChainData) {
       const { irParams } = marketData.constants
-      const priceRange = 1.001 - 0.9887
+      const priceRange = 1.005 - 0.9887
       const prices = Array.from({ length: 40 }, (_, i) => 0.9887 + (i * priceRange) / 39)
 
       const data = prices
         .map((price) => {
           const vAPR = computeVAPR(
-            BigInt(Math.round(10 * 10 ** 18)) / BigInt(100),
+            BigInt(Math.round(currentTotalMarketApr * 10 ** 18)) / BigInt(100),
             onChainData?.collateralInfos?.positionCollateralUSDValue,
             onChainData?.debtInfos.userDebt,
             computeIR(BigInt(Math.round(price * 10 ** 18)), irParams),
@@ -269,13 +286,13 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
             isLeveraged,
             initialCollatAmount
           )
-          return { price: price.toFixed(4), vAPR }
+          return { price: Number(price.toFixed(4)), vAPR }
         })
         .filter((d) => isFinite(d.vAPR))
 
       setChartData(data)
     }
-  }, [isLeveraged, debtFarming, debtVAPR, marketData, onChainData, initialCollatAmount])
+  }, [isLeveraged, debtFarming, debtVAPR, marketData, onChainData, initialCollatAmount, currentTotalMarketApr])
 
   useEffect(() => {
     if (isLeveraged) {
@@ -357,6 +374,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     onChainData,
 
     canLeverage,
+    currentTotalMarketApr,
   }
 
   return <USGRecordContext.Provider value={contextValue}>{children}</USGRecordContext.Provider>

@@ -32,10 +32,10 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     USGInfo,
     initialCollatAmount,
     canLeverage,
+    currentTotalMarketApr,
     setInitialCollatAmount,
     setDebtVAPR,
     setDebtFarming,
-
     setIsLeveraged,
   } = useUSGRecordContext()
 
@@ -111,7 +111,9 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                     <div className="mt-3 flex w-full flex-wrap items-center justify-center sm:flex-row sm:flex-nowrap lg:w-2/12 lg:flex-col">
                       <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel px-2 py-1 backdrop-blur-[60px]">
                         <span>Current vAPR</span>
-                        <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">60.5%</span>
+                        <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">
+                          {currentTotalMarketApr} %
+                        </span>
                       </div>
                       <div className="my-2 flex w-full items-center justify-center gap-1 lg:justify-end">
                         Leverage <Switch checked={isLeveraged} onCheckedChange={(v) => setIsLeveraged(v)} />
@@ -156,51 +158,41 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                         </>
                       )}
                     </div>
-                    {!!chartData && onChainData?.collateralInfos?.positionCollateralUSDValue && onChainData?.debtInfos ? (
+                    {!!chartData && !!onChainData?.collateralInfos?.positionCollateralUSDValue && !!onChainData?.debtInfos.userDebt ? (
                       <div className="mt-8 flex w-full pr-6 lg:w-10/12">
                         <div className="relative hidden h-full items-start justify-start lg:flex">
                           <div className="absolute -top-6 left-16 text-lg font-semibold text-white">vAPR</div>
                         </div>
                         {chartData && (
                           <>
-                            <ResponsiveContainer className="relative" width="100%" height={300}>
+                            <ResponsiveContainer width="100%" height={300}>
                               <LineChart data={chartData}>
-                                <CartesianGrid horizontal={true} vertical={false} />
+                                <CartesianGrid horizontal vertical={false} />
 
                                 <XAxis
                                   dataKey="price"
+                                  domain={[1.005, 0.9897]}
                                   name="Price"
+                                  type="number"
                                   tickFormatter={(value) => `$${value}`}
-                                  interval={Math.max(1, Math.floor(chartData.length / 12) - 1)}
                                   reversed={true}
+                                  ticks={Array.from({ length: 12 }, (_, i) => Number((0.988 + (i * (1.005 - 0.988)) / 12).toFixed(4)))}
                                 />
 
                                 <YAxis
                                   name="vAPR"
-                                  tickFormatter={(v) => `${formatBigInt(v, 18, 2)}%`}
+                                  tickFormatter={(v) => {
+                                    const formatted = formatBigInt(v < 0 ? -v : v, 18, 2)
+                                    const symbol = v < 0 ? "-" : ""
+                                    return `${symbol}${formatted}%`
+                                  }}
                                   type="number"
-                                  domain={[-2, Number(Math.max(...chartData.map((d) => d.vAPR))) * 1.5]}
-                                />
-
-                                <Legend formatter={(v) => (v === "vAPR" ? "vAPR (%)" : v)} />
-                                <Tooltip
-                                  content={({ active, payload, label }) =>
-                                    active && payload?.length ? (
-                                      <div className="flex min-w-28 flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-input p-2 text-white backdrop-blur-[60px]">
-                                        <div className="flex w-full items-center justify-between">
-                                          <p className="font-semibold">vAPR:</p>
-                                          <p>{formatBigInt(payload[0]?.value?.toString(), 18, 2)}%</p>
-                                        </div>
-                                        <div className="flex w-full items-center justify-between">
-                                          <p className="font-semibold">Price:</p>
-                                          <p>${label}</p>
-                                        </div>
-                                      </div>
-                                    ) : null
-                                  }
+                                  domain={[0, Number(Math.max(...chartData.map((d) => d.vAPR))) * 1.5 + 1]}
                                 />
 
                                 <Line strokeWidth="3px" type="monotone" dataKey="vAPR" stroke="url(#gradientColor)" name="vAPR (%)" dot={false} />
+
+                                <Legend formatter={(v) => (v === "vAPR" ? "vAPR (%)" : v)} />
 
                                 <ReferenceLine
                                   y={"0"}
@@ -225,6 +217,23 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                                   }}
                                 />
 
+                                <Tooltip
+                                  content={({ active, payload, label }) =>
+                                    active && payload?.length ? (
+                                      <div className="flex min-w-28 flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-input p-2 text-white backdrop-blur-[60px]">
+                                        <div className="flex w-full items-center justify-between">
+                                          <p className="font-semibold">vAPR:</p>
+                                          <p>{(Number(payload[0]?.value?.toString()) / 10 ** 18).toFixed(2)}%</p>
+                                        </div>
+                                        <div className="flex w-full items-center justify-between">
+                                          <p className="font-semibold">Price:</p>
+                                          <p>${label}</p>
+                                        </div>
+                                      </div>
+                                    ) : null
+                                  }
+                                />
+
                                 <ReferenceLine
                                   x={String(Number(USGInfo?.price) + 0.0001)}
                                   stroke="white"
@@ -242,7 +251,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                                         textAnchor="start"
                                         dominantBaseline="hanging"
                                       >
-                                        ${USGInfo?.price} (USG Price)
+                                        ${(USGInfo?.price).toFixed(4)} (USG Price)
                                       </text>
                                     )
                                   }}

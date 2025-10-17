@@ -1,14 +1,14 @@
-import { RsTanLayoutContent } from "@/components/products/vs_tan/rstan_layout_content"
-import { RsTanProvider } from "@/components/products/vs_tan/rstan_layout_context"
+import { VsTanLayoutContent } from "@/components/products/vs_tan/rstan_layout_content"
+import { VsTanProvider } from "@/components/products/vs_tan/rstan_layout_context"
 
-export default async function RsTanLayout({
+export default async function VsTanLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
   return (
-    <RsTanProvider>
-      <RsTanLayoutContent>{children}</RsTanLayoutContent>
-    </RsTanProvider>
+    <VsTanProvider>
+      <VsTanLayoutContent>{children}</VsTanLayoutContent>
+    </VsTanProvider>
   )
 }

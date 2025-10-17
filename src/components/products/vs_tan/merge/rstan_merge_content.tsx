@@ -1,7 +1,7 @@
 "use client"
 
 import InputSelect from "@/components/design_system/inputs/input_select"
-import { useRsTanContext } from "../rstan_layout_context"
+import { useVsTanContext } from "../rstan_layout_context"
 import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
 import { IconVsTan } from "@/components/icons/icon_vstan"
 import { formatBigInt } from "@/lib/number_formatter"
@@ -15,7 +15,7 @@ import { Switch } from "@/components/ui/switch"
 import { IconOpenOutside } from "@/components/icons/icon_open_outside"
 
 export const RsTanMergeContent = () => {
-  const { lockData } = useRsTanContext()
+  const { lockData } = useVsTanContext()
 
   const {
     actionMerge,

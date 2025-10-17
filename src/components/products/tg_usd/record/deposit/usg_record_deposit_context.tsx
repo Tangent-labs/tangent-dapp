@@ -1,21 +1,21 @@
 "use client"
 
 import { toast } from "react-toastify"
-import { formatDollar } from "@/lib/number_formatter"
 import { useUSGContext } from "../../tg_usd_context"
 import { USGMarket, ZapToken } from "../../tg_usd_type"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
+import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { gasCostToUSD, getPublicClient } from "@/services/service_rpc"
+import { useRootContext } from "@/components/products/root/root_context"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
-import { EstimateContractGasParameters, formatUnits, parseEther } from "viem"
+import { EstimateContractGasParameters, formatUnits, parseEther, zeroAddress } from "viem"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit } from "./usg_record_deposit_controller"
-import { useRootContext } from "@/components/products/root/root_context"
 
 type USGDepositContextProps = {
   children: ReactNode
@@ -70,6 +70,8 @@ type USGDepositContextValues = {
   maxBorrowableValue: bigint
 
   estimatedZapDollarValue: string
+
+  maxDepositString: string
 }
 
 export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
@@ -160,11 +162,11 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     setDepositWeiValue(value)
 
     const fetchZapValue = async () => {
-      if (!value || !currentAddress || !depositAssetInfo) return
+      if (!value || !depositAssetInfo) return
 
       setIsZapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
+        const { quote } = await getQuote(value, currentAddress || zeroAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
 
         if (quote) {
           setZapValue(quote)
@@ -559,6 +561,15 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     return ""
   }, [zapValue])
 
+  const maxDepositString = useMemo(() => {
+    if (!!balanceAllowanceData && currentAddress && depositAsset !== collateralInfo?.name) {
+      return `Max ${formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)}  ${depositAssetInfo?.symbol}`
+    } else if (currentAddress && depositAsset === collateralInfo?.name) {
+      return `Max ${formatBigInt(marketData?.collateralBalance, depositAssetInfo?.decimals, 2)} ${depositAssetInfo?.symbol}`
+    }
+    return `Max 0 ${depositAssetInfo?.symbol}`
+  }, [depositAsset, collateralInfo, currentAddress, depositAssetInfo, balanceAllowanceData])
+
   const contextValue: USGDepositContextValues = {
     marketInfo,
     collateralInfo,
@@ -612,6 +623,8 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     maxBorrowableValue,
 
     estimatedZapDollarValue,
+
+    maxDepositString,
   }
 
   return <USGDepositContext.Provider value={contextValue}>{children}</USGDepositContext.Provider>

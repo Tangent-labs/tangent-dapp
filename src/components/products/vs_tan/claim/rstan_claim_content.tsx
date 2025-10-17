@@ -1,6 +1,6 @@
 "use client"
 
-import { useRsTanContext } from "../rstan_layout_context"
+import { useVsTanContext } from "../rstan_layout_context"
 import { LockPosition, LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
 import { Button } from "@/components/design_system/inputs/button"
 import { useRsTanClaimContext } from "./rstan_claim_context"
@@ -10,7 +10,7 @@ import { MultiPositionSelect } from "@/components/design_system/inputs/input_mul
 import { Switch } from "@/components/ui/switch"
 
 export const RsTanClaimContent = () => {
-  const { lockData } = useRsTanContext()
+  const { lockData } = useVsTanContext()
 
   const { claimAsSUSG, selectedPositions, hasDuplicates, selectedPositionsData, actionClaim, setClaimAsSUSG, setSelectedPositions } = useRsTanClaimContext()
 

@@ -15,6 +15,7 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import USGHoverCard from "@/components/design_system/structure/usg_hover_card"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
 const listeState: ListState = {
   search: undefined,
@@ -39,6 +40,8 @@ const ClaimRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
 
 export default function USGClaimContent() {
   const { displayRows, onClickClaim, marketsToClaim, customSort, onClickClaimAll } = useUSGClaimContext()
+
+  const { isWellConnected, connect } = useWalletConnexionContext()
 
   return (
     <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
@@ -94,7 +97,13 @@ export default function USGClaimContent() {
 
         <div className="mt-8 flex w-full">
           {marketsToClaim.length > 0 && (
-            <Button label="CLAIM" className="flex w-full items-center justify-center" onClick={() => onClickClaim(marketsToClaim)} />
+            <>
+              {isWellConnected ? (
+                <Button label="CLAIM" className="flex w-full items-center justify-center" onClick={() => onClickClaim(marketsToClaim)} />
+              ) : (
+                <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
+              )}
+            </>
           )}
         </div>
       </div>

@@ -1,20 +1,20 @@
 "use client"
 
+import { toast } from "react-toastify"
 import { ZapToken } from "../../tg_usd_type"
-import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
-import { useUSGRecordContext } from "../tg_usd_record_context"
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { formatUnits, parseEther } from "viem"
 import { useUSGContext } from "../../tg_usd_context"
-import { getQuote, getRoute } from "../../global_quote_controller"
-import { toast } from "react-toastify"
-import { ToastComponent } from "@/components/design_system/toast"
-import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
-import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { USG_CONTRACT } from "../../tg_usd_repository"
-import { formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
+import { useUSGRecordContext } from "../tg_usd_record_context"
+import { ToastComponent } from "@/components/design_system/toast"
+import { getQuote, getRoute } from "../../global_quote_controller"
+import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
+import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
+import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
 
 type USGLeverageContextProps = {
   children: ReactNode
@@ -78,6 +78,8 @@ type USGLeverageContextValues = {
   leverageExceedsMaxLtv: boolean
 
   updateBorrowWeiValue: (value: bigint) => Promise<void>
+
+  maxDepositString: string
 }
 
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
@@ -475,6 +477,15 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     return () => clearTimeout(handler)
   }, [zapInnerValue, isZapUserInput])
 
+  const maxDepositString = useMemo(() => {
+    if (!!balanceAllowanceData && currentAddress && depositAsset !== collateralInfo?.name) {
+      return `Max ${formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)}  ${depositAssetInfo?.symbol}`
+    } else if (currentAddress && depositAsset === collateralInfo?.name) {
+      return `Max ${formatBigInt(marketData?.collateralBalance, depositAssetInfo?.decimals, 2)} ${depositAssetInfo?.symbol}`
+    }
+    return `Max 0 ${depositAssetInfo?.symbol}`
+  }, [depositAsset, collateralInfo, currentAddress, depositAssetInfo, balanceAllowanceData])
+
   const contextValue: USGLeverageContextValues = {
     collateralInfo,
 
@@ -534,6 +545,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     leverageExceedsMaxLtv,
 
     updateBorrowWeiValue,
+
+    maxDepositString,
   }
 
   return <USGLeverageContext.Provider value={contextValue}>{children}</USGLeverageContext.Provider>

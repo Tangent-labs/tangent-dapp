@@ -12,6 +12,7 @@ import { ToastComponent } from "@/components/design_system/toast"
 import { maxUint256 } from "viem"
 import { useUSGContext } from "../../tg_usd_context"
 import { useRootContext } from "@/components/products/root/root_context"
+import { formatBigInt } from "@/lib/number_formatter"
 
 type USGLiquidateContextProps = {
   children: ReactNode
@@ -47,6 +48,8 @@ type USGLiquidateContextValues = {
   maxRepayable: bigint
 
   handleLiquidateValueChange: (arg: bigint | undefined) => void
+
+  maxLiquidateString: string
 }
 
 export const USGLiquidateContext = createContext<USGLiquidateContextValues | undefined>(undefined)
@@ -192,6 +195,13 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     fetchZapValue()
   }
 
+  const maxLiquidateString = useMemo(() => {
+    if (currentAddress && marketData) {
+      return `Max: ${formatBigInt(maxLiquidable, 18, 2)} ${marketData?.collateralInfo?.symbol}`
+    }
+    return `Max: 0 ${marketData?.collateralInfo?.symbol}`
+  }, [maxLiquidable, currentAddress, marketData])
+
   const contextValue: USGLiquidateContextValues = {
     actionLiquidate,
     formState,
@@ -215,6 +225,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     onChangeIsFullLiquidation,
     slippage,
     setSlippage,
+    maxLiquidateString,
   }
 
   return <USGLiquidateContext.Provider value={contextValue}>{children}</USGLiquidateContext.Provider>

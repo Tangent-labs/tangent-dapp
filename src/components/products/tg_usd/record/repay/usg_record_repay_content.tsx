@@ -14,6 +14,7 @@ import Panel from "@/components/design_system/structure/panel"
 import { useUSGRepayContext } from "./usg_record_repay_context"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
+import { Button } from "@/components/design_system/inputs/button"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
@@ -31,7 +32,7 @@ export default function USGRepayContent() {
 
   const { USGInfo, pricedCollateralInfo, collateralInfo, marketInfo } = useUSGRecordContext()
 
-  const { canInteract } = useWalletConnexionContext()
+  const { canInteract, connect } = useWalletConnexionContext()
 
   const {
     actionRepay,
@@ -180,7 +181,7 @@ export default function USGRepayContent() {
           depositAmount={repayWeiValue}
           labelDeposit="You repay"
           depositSelect={<AssetSelect />}
-          disabled={!canInteract || isRepayMax}
+          disabled={isRepayMax}
           isZapping={!!repayAsset && repayAsset !== "USG"}
           depositAsset={repayAssetInfo || USGInfo}
           balance={maxRepayableValue}
@@ -235,7 +236,6 @@ export default function USGRepayContent() {
               depositAmount={withdrawWeiValue}
               labelDeposit="You withdraw"
               depositSelect={<WithdrawAssetDisplay />}
-              disabled={!canInteract}
               depositAsset={pricedCollateralInfo}
               balance={maxWithdrawable}
               displaySliderInput={true}
@@ -262,16 +262,22 @@ export default function USGRepayContent() {
         )}
       </>
 
-      <div className="flex w-full items-center justify-center">
-        <FormButtons
-          actions={{
-            handleApprove: repayAsset && repayAsset !== "USG" ? actionApprove : undefined,
-            handleProcess: repayAsset && repayAsset !== "USG" ? actionZapRepay : actionRepay,
-          }}
-          formState={formState}
-          labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}
-        />
-      </div>
+      {canInteract ? (
+        <>
+          <FormButtons
+            actions={{
+              handleApprove: repayAsset && repayAsset !== "USG" ? actionApprove : undefined,
+              handleProcess: repayAsset && repayAsset !== "USG" ? actionZapRepay : actionRepay,
+            }}
+            formState={formState}
+            labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}
+          />{" "}
+        </>
+      ) : (
+        <>
+          <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
+        </>
+      )}
 
       <div className="flex w-full items-end justify-between gap-2">
         <Popover>

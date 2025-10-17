@@ -4,7 +4,7 @@ import { toast } from "react-toastify"
 import { formatUnits, parseEther } from "viem"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { getCurrentBlock } from "@/services/service_rpc"
-import { useRsTanContext } from "../rstan_layout_context"
+import { useVsTanContext } from "../rstan_layout_context"
 import { useUSGContext } from "../../tg_usd/tg_usd_context"
 import { LockPosition, ZapToken } from "../../tg_usd/tg_usd_type"
 import { ToastComponent } from "@/components/design_system/toast"
@@ -87,7 +87,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
 
   const { tokens } = useUSGContext()
 
-  const { loadData, lockData, fetchBalanceAllowanceData, balanceAllowanceData } = useRsTanContext()
+  const { loadData, lockData, fetchBalanceAllowanceData, balanceAllowanceData } = useVsTanContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -445,10 +445,13 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
   }, [zapValue])
 
   const maxAmountToDeposit = useMemo(() => {
-    const amount = depositAsset === "TAN" ? lockData?.balance : balanceAllowanceData?.balance
+    if (lockData && currentAddress) {
+      const amount = depositAsset === "TAN" ? lockData?.balance : balanceAllowanceData?.balance
 
-    return `Max : ${formatBigInt(amount, depositAssetInfo?.decimals, 2)} ${depositAssetInfo?.symbol}`
-  }, [depositAssetInfo, lockData, balanceAllowanceData])
+      return `Max : ${formatBigInt(amount, depositAssetInfo?.decimals, 2)} ${depositAssetInfo?.symbol}`
+    }
+    return ""
+  }, [depositAssetInfo, lockData, balanceAllowanceData, currentAddress])
 
   useEffect(() => {
     if (depositAssetInfo) {

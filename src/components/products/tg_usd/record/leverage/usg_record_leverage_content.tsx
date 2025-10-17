@@ -24,6 +24,7 @@ import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { Button } from "@/components/design_system/inputs/button"
 
 export default function USGLeverageContent() {
   const {
@@ -56,13 +57,14 @@ export default function USGLeverageContent() {
     zapInnerValue,
     depositSliderPercent,
     leveragePercentage,
+    maxDepositString,
   } = useUSGLeverageContext()
 
   const { collateralInfo, marketData, balanceAllowanceData, marketInfo, pricedCollateralInfo, USGInfo } = useUSGRecordContext()
 
   const { balances } = useUSGContext()
 
-  const { canInteract } = useWalletConnexionContext()
+  const { canInteract, connect } = useWalletConnexionContext()
 
   const AssetSelect = () => {
     const tokenOptions = tokens.map((el: ZapToken) => ({
@@ -142,20 +144,13 @@ export default function USGLeverageContent() {
         <>
           <div className="flex w-full items-end justify-between gap-2">
             <span className="text-sm font-semibold md:text-xl">Deposit {collateralInfo?.symbol}</span>
-            <span className="text-xs text-subtitle">
-              Max:{" "}
-              {depositAsset !== collateralInfo?.name
-                ? `${formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)} `
-                : `${formatBigInt(marketData?.collateralBalance, depositAssetInfo?.decimals, 2)} `}{" "}
-              {depositAssetInfo?.symbol}
-            </span>
+            <span className="text-xs text-subtitle">{maxDepositString}</span>
           </div>
 
           <DepositInput
             displaySliderInput={true}
             depositAmount={depositWeiValue}
             depositSelect={<AssetSelect />}
-            disabled={!canInteract}
             isLoading={isZapLoading}
             depositAsset={depositAssetInfo}
             balance={!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance}
@@ -249,14 +244,22 @@ export default function USGLeverageContent() {
         )}
       </>
 
-      <FormButtons
-        actions={{
-          handleApprove: depositAsset && depositAsset !== collateralInfo?.name ? actionApproveZap : actionApprove,
-          handleProcess: depositAsset && depositAsset !== collateralInfo?.name ? actionZapLeverage : actionLeverage,
-        }}
-        formState={formState}
-        labelProcess={depositAsset && depositAsset !== collateralInfo?.name ? "Zap and leverage" : "Leverage"}
-      />
+      {canInteract ? (
+        <>
+          <FormButtons
+            actions={{
+              handleApprove: depositAsset && depositAsset !== collateralInfo?.name ? actionApproveZap : actionApprove,
+              handleProcess: depositAsset && depositAsset !== collateralInfo?.name ? actionZapLeverage : actionLeverage,
+            }}
+            formState={formState}
+            labelProcess={depositAsset && depositAsset !== collateralInfo?.name ? "Zap and leverage" : "Leverage"}
+          />
+        </>
+      ) : (
+        <>
+          <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
+        </>
+      )}
 
       <div className="flex w-full items-end justify-between gap-2">
         <Popover>

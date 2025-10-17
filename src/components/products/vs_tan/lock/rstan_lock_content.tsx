@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch"
 import { formatDate } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { useRsTanContext } from "../rstan_layout_context"
+import { useVsTanContext } from "../rstan_layout_context"
 import { useRsTanLockContext } from "./rstan_lock_context"
 import { useUSGContext } from "../../tg_usd/tg_usd_context"
 import { IconThunder } from "@/components/icons/icon_thunder"
@@ -27,7 +27,7 @@ import { InputSelectLockPosition } from "@/components/design_system/inputs/input
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function RsTanLockContent() {
-  const { lockData } = useRsTanContext()
+  const { lockData } = useVsTanContext()
 
   const { tokens, balances } = useUSGContext()
 

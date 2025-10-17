@@ -8,13 +8,14 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { Button } from "@/components/design_system/inputs/button"
 
 export default function USGRecordBorrowContent() {
   const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, borrowPercentage, maxBorrowableValue } = useUSGBorrowContext()
 
   const { USGInfo } = useUSGRecordContext()
 
-  const { canInteract } = useWalletConnexionContext()
+  const { canInteract, connect } = useWalletConnexionContext()
 
   const BorrowAssetDisplay = () => {
     return (
@@ -38,7 +39,6 @@ export default function USGRecordBorrowContent() {
           borrowAmount={borrowWeiValue}
           labelDeposit="You borrow"
           depositSelect={<BorrowAssetDisplay />}
-          disabled={!canInteract}
           borrowAsset={USGInfo}
           setMaxBalance={() => setBorrowWeiValue(maxBorrowableValue)}
           balance={maxBorrowableValue}
@@ -56,7 +56,15 @@ export default function USGRecordBorrowContent() {
         )}
       </>
 
-      <FormButtons actions={{ handleApprove: undefined, handleProcess: actionBorrow }} formState={formState} labelProcess="Borrow" />
+      {canInteract ? (
+        <>
+          <FormButtons actions={{ handleApprove: undefined, handleProcess: actionBorrow }} formState={formState} labelProcess="Borrow" />
+        </>
+      ) : (
+        <>
+          <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
+        </>
+      )}
     </div>
   )
 }

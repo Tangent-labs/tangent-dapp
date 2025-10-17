@@ -2,6 +2,7 @@
 
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../tg_usd_record_context"
+import { Button } from "@/components/design_system/inputs/button"
 import { useUSGWithdrawContext } from "./usg_record_withdraw_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -10,7 +11,7 @@ import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export default function USGWithdrawContent() {
-  const { canInteract } = useWalletConnexionContext()
+  const { canInteract, connect } = useWalletConnexionContext()
 
   const { pricedCollateralInfo, collateralInfo } = useUSGRecordContext()
 
@@ -41,7 +42,6 @@ export default function USGWithdrawContent() {
             depositAmount={withdrawWeiValue}
             labelDeposit="You withdraw"
             depositSelect={<WithdrawAssetDisplay />}
-            disabled={!canInteract}
             depositAsset={pricedCollateralInfo}
             balance={maxWithdrawable}
             displaySliderInput={true}
@@ -58,7 +58,15 @@ export default function USGWithdrawContent() {
           )}
         </>
 
-        <FormButtons actions={{ handleApprove: undefined, handleProcess: actionWithdraw }} formState={formState} labelProcess="Withdraw" />
+        {canInteract ? (
+          <>
+            <FormButtons actions={{ handleApprove: undefined, handleProcess: actionWithdraw }} formState={formState} labelProcess="Withdraw" />
+          </>
+        ) : (
+          <>
+            <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
+          </>
+        )}
       </div>
     </>
   )

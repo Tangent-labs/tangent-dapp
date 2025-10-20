@@ -264,7 +264,7 @@ export default function USGLeverageContent() {
       <div className="flex w-full items-end justify-between gap-2">
         <Popover>
           <PopoverTrigger asChild>
-            <button type="button" className="w-full font-roobert" title="Slippage">
+            <button type="button" className="w-full font-gilroy" title="Slippage">
               <BorderPanel className="flex h-[30px] w-full cursor-pointer items-center justify-between px-2 text-xs text-primary hover:bg-white/20">
                 Details
                 <IconChevron className="h-auto w-[12px] text-row-tonic" />
@@ -276,7 +276,7 @@ export default function USGLeverageContent() {
             align="center"
             sideOffset={8}
             collisionPadding={16}
-            className="z-20 !m-0 w-96 !border-none bg-[#070707] !p-0 font-roobert"
+            className="z-20 !m-0 w-96 !border-none bg-[#070707] !p-0 font-gilroy"
           >
             <Panel className="!border-none">
               <div className="flex w-full flex-col items-center justify-center text-primary">

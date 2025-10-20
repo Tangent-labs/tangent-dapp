@@ -62,7 +62,6 @@ export default function USGRepayContent() {
     usgRepayedValue,
     isDebtBelowThreshold,
     repayAssetInfo,
-    marketData,
   } = useUSGRepayContext()
 
   const AssetSelectTemplate = (option: {
@@ -167,14 +166,9 @@ export default function USGRepayContent() {
         <div className="flex items-end justify-between">
           <span className="text-sm font-semibold md:text-xl">Repay debt</span>
 
-          {repayAsset === "USG" ? (
-            <span className="text-xs text-subtitle"> Max: {formatBigInt(marketData?.debtInfos?.userDebt, 18, 3)} USG</span>
-          ) : (
-            <span className="text-xs text-subtitle">
-              {" "}
-              Max: {formatBigInt(maxRepayableValue, repayAssetInfo?.decimals || 18, 3)} {repayAssetInfo?.symbol}
-            </span>
-          )}
+          <span className="text-xs text-subtitle">
+            Max: {formatBigInt(maxRepayableValue, repayAssetInfo?.decimals || 18, 3)} {repayAssetInfo?.symbol || "USG"}
+          </span>
         </div>
 
         <RepayInput

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo } from "react"
+import { useMemo } from "react"
 import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGContext } from "../tg_usd/tg_usd_context"
@@ -14,12 +14,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 export const WalletConnexionContent = () => {
   const { connect, disconnect, changeNetwork, tokenInfo, isConnected, isChainConnected, currentAddress, isConnecting } = useWalletConnexionContext()
 
-  const { USGsUSGMetrics, loadUSGsUSGMetrics, loadTanSTANMetrics, TANsTANMetrics } = useUSGContext()
-
-  useEffect(() => {
-    loadTanSTANMetrics()
-    loadUSGsUSGMetrics()
-  }, [currentAddress])
+  const { USGsUSGMetrics, TANsTANMetrics } = useUSGContext()
 
   const buttonLabel = useMemo(() => {
     if (isConnecting) return "..."

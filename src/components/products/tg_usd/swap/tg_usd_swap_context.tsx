@@ -8,7 +8,7 @@ import { USG_CONTRACT, tgUsdTokens } from "../tg_usd_repository"
 import { ToastComponent } from "@/components/design_system/toast"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
 import { Abi, Address, SendTransactionParameters, WalletClient } from "viem"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { BalanceAllowanceData, SwapToken, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../tg_usd_type"
@@ -82,7 +82,7 @@ export const USGSwapContext = createContext<USGSwapContextValues | undefined>(un
 export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const { curveRoutes } = useRootContext()
 
-  const { tokens, USGsUSGMetrics, loadUSGsUSGMetrics, lpUserPoints } = useUSGContext()
+  const { tokens, USGsUSGMetrics, lpUserPoints } = useUSGContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
@@ -175,10 +175,6 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
     return asset
   }, [depositAsset, swapAssetPrice])
-
-  useEffect(() => {
-    loadUSGsUSGMetrics()
-  }, [currentAddress])
 
   useEffect(() => {
     const walletClient = getWalletClient()

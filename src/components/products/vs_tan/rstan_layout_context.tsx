@@ -45,7 +45,7 @@ export const VsTanContext = createContext<VsTanContextValues | undefined>(undefi
 export const VsTanProvider = ({ children }: VsTanContextProps) => {
   const path = usePathname()
 
-  const { currentAddress, getWalletClient } = useWalletConnexionContext()
+  const { currentAddress, getWalletClient, isWalletInitialized } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -63,8 +63,22 @@ export const VsTanProvider = ({ children }: VsTanContextProps) => {
     return currentFeature
   }, [path])
 
+  /**
+   * On init
+   */
   useEffect(() => {
-    loadData()
+    if (isWalletInitialized) {
+      loadData()
+    }
+  }, [isWalletInitialized])
+
+  /**
+   * On user logs in
+   */
+  useEffect(() => {
+    if (isWalletInitialized && currentAddress && lockData) {
+      loadData()
+    }
   }, [currentAddress])
 
   useEffect(() => {

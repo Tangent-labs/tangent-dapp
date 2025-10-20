@@ -15,7 +15,7 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import USGHoverCard from "@/components/design_system/structure/usg_hover_card"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 const listeState: ListState = {
   search: undefined,

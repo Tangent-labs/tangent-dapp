@@ -1,13 +1,13 @@
 "use client"
 
 import { ListRowData, ListState } from "@/types"
+import { useUSGContext } from "../tg_usd_context"
+import { USGMarkets } from "../tg_usd_repository"
+import { Address, formatUnits, zeroAddress } from "viem"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { getUSGMarketsData, transformToRows, transformGlobalData, transformMarketData } from "./tg_usd_market_controller"
 import { ChainViewMarketList, MarketConstants, MarketDebtData, TgUsdCollateralData, TgUsdGlobalData } from "../tg_usd_type"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { Address, formatUnits, zeroAddress } from "viem"
-import { USGMarkets } from "../tg_usd_repository"
-import { useUSGContext } from "../tg_usd_context"
 
 type USGMaketListContextProps = {
   children: ReactNode
@@ -34,7 +34,7 @@ type USGMaketListContextValues = {
 export const USGMaketListContext = createContext<USGMaketListContextValues | undefined>(undefined)
 
 export const USGMarketListProvider = ({ children }: USGMaketListContextProps) => {
-  const { currentAddress } = useWalletConnexionContext()
+  const { currentAddress, isWalletInitialized } = useWalletConnexionContext()
 
   const { marketAprs } = useUSGContext()
 
@@ -42,10 +42,26 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
 
   const [searchValue, setSearchValue] = useState<string | null>(null)
 
+  /**
+   * On init
+   */
   useEffect(() => {
-    getUSGMarketsData(currentAddress || zeroAddress).then((data) => {
-      setOnChainData(data)
-    })
+    if (isWalletInitialized) {
+      getUSGMarketsData(currentAddress || zeroAddress).then((d) => {
+        setOnChainData(d)
+      })
+    }
+  }, [isWalletInitialized])
+
+  /**
+   * On user logs in/logs out
+   */
+  useEffect(() => {
+    if (isWalletInitialized && onChainData) {
+      getUSGMarketsData(currentAddress || zeroAddress).then((d) => {
+        setOnChainData(d)
+      })
+    }
   }, [currentAddress])
 
   const marketDataWithAPR = useMemo(() => {

@@ -480,7 +480,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   const maxDepositString = useMemo(() => {
     if (!!balanceAllowanceData && currentAddress && depositAsset !== collateralInfo?.name) {
       return `Max ${formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)}  ${depositAssetInfo?.symbol}`
-    } else if (currentAddress && depositAsset === collateralInfo?.name) {
+    }
+    if (currentAddress && depositAsset === collateralInfo?.name) {
       return `Max ${formatBigInt(marketData?.collateralBalance, depositAssetInfo?.decimals, 2)} ${depositAssetInfo?.symbol}`
     }
     return `Max 0 ${depositAssetInfo?.symbol}`

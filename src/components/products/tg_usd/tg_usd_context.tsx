@@ -7,9 +7,9 @@ import { getCurrentBlock } from "@/services/service_rpc"
 import { getBalances } from "./record/tg_usd_record_controller"
 import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
+import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { getLpUserPoints, getMarketAprs, getUserRefereesPoints, getVoteUserPoints } from "./api"
 import { USGStakingInfo, LpUserPoints, ZapToken, VoteUserPoints, RefereesPoints, MarketAPR } from "./tg_usd_type"
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 
 type USGContextProps = {
   children: ReactNode
@@ -33,7 +33,7 @@ type USGContextValues = {
 export const USGContext = createContext<USGContextValues | undefined>(undefined)
 
 export const USGProvider = ({ children, tokens }: USGContextProps) => {
-  const { currentAddress } = useWalletConnexionContext()
+  const { currentAddress, isWalletInitialized } = useWalletConnexionContext()
 
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
 
@@ -59,16 +59,36 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
     fetchAprs()
   }, [])
 
-  const loadUSGsUSGMetrics = useCallback(() => {
+  const loadUSGsUSGMetrics = () => {
     getUSGsUSGMetrics(currentAddress || zeroAddress).then((data) => {
       setUSGsUSGMetrics(data)
     })
-  }, [currentAddress])
+  }
 
-  const loadTanSTANMetrics = useCallback(() => {
+  const loadTanSTANMetrics = () => {
     getTanStakeOnChainData(currentAddress || zeroAddress).then((data) => {
       setTANsTANMetrics(data)
     })
+  }
+
+  /**
+   * On init
+   */
+  useEffect(() => {
+    if (isWalletInitialized) {
+      loadUSGsUSGMetrics()
+      loadTanSTANMetrics()
+    }
+  }, [isWalletInitialized])
+
+  /**
+   * On user logs in/logs out
+   */
+  useEffect(() => {
+    if (isWalletInitialized && USGsUSGMetrics) {
+      loadUSGsUSGMetrics()
+      loadTanSTANMetrics()
+    }
   }, [currentAddress])
 
   const getRefereesPoints = async () => {

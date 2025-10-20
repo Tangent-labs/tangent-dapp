@@ -4,7 +4,7 @@ import { Address, zeroAddress } from "viem"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { AssetDataPriced, ListState } from "@/types"
 import { ClaimableMarket, ClaimData, ClaimerInfo } from "../tg_usd_type"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { computeAndReturnPrices, doClaim, getTgUsdClaimOnChainData, transformClaimOnChainData } from "./tg_usd_claim_controller"
 

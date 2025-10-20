@@ -23,15 +23,15 @@ import {
   mapToTotalBorrow,
 } from "./tg_usd_record_controller"
 
-import { Address, formatUnits } from "viem"
 import { usePathname } from "next/navigation"
 import { useUSGContext } from "../tg_usd_context"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { getCurrentBlock } from "@/services/service_rpc"
+import { Address, formatUnits, zeroAddress } from "viem"
 import { getHistoricalMarketData, getUserPositions } from "../api"
 import { AssetDataPriced, CollateralInfo, ListState } from "@/types"
 import { useUSGMaketListContext } from "../list/tg_usd_market_list_context"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { sortUserData } from "./position_history/tg_usd_position_history_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 
@@ -105,7 +105,7 @@ const LEVERAGE_TRESHOLD = 0.989
 export const USGRecordContext = createContext<USGRecordContextValues | undefined>(undefined)
 
 export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, children }: USGRecordContextProps) => {
-  const { currentAddress, getWalletClient } = useWalletConnexionContext()
+  const { currentAddress, getWalletClient, isWalletInitialized } = useWalletConnexionContext()
 
   const { marketAprs } = useUSGContext()
 
@@ -146,25 +146,46 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     liquidateValue: 0n,
   })
 
-  useEffect(() => {
-    loadOnChainData()
-
-    getUserPositions(currentAddress!, marketInfo.marketAddress).then((pos) => {
-      if (pos) {
-        setUserPositions(pos)
-      } else {
-        setUserPositions([])
-      }
-    })
-  }, [currentAddress])
-
   const loadOnChainData = () => {
     setIsLoading(true)
-    getUSGMarketRecordData(currentAddress, marketInfo.marketAddress).then((data) => {
+    getUSGMarketRecordData(currentAddress || zeroAddress, marketInfo.marketAddress).then((data) => {
       setOnChainData(data)
       setIsLoading(false)
     })
   }
+
+  /**
+   * Loads on chain data when wallet is initialized
+   */
+  useEffect(() => {
+    if (isWalletInitialized) {
+      loadOnChainData()
+    }
+  }, [isWalletInitialized])
+
+  /**
+   * Loads on chain data if user logs in/logs out
+   */
+  useEffect(() => {
+    if (isWalletInitialized && onChainData) {
+      loadOnChainData()
+    }
+  }, [currentAddress])
+
+  /**
+   * Loads user positions if wallet is initialized and if currentAddress is defined
+   */
+  useEffect(() => {
+    if (isWalletInitialized && currentAddress) {
+      getUserPositions(currentAddress!, marketInfo.marketAddress).then((pos) => {
+        if (pos) {
+          setUserPositions(pos)
+        } else {
+          setUserPositions([])
+        }
+      })
+    }
+  }, [isWalletInitialized, currentAddress])
 
   const USGInfo = useMemo(() => {
     if (globalData && globalData.USGPrice) {

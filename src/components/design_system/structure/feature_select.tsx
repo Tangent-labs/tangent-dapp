@@ -19,7 +19,7 @@ export const FeatureSelect = ({ value, onChange, options }: { value: string; onC
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent align="start" className="rounded-[10px] p-1 font-roobert">
+      <PopoverContent align="start" className="rounded-[10px] p-1 font-gilroy">
         <div className="flex flex-col gap-1">
           {options.map((opt) => (
             <button
@@ -28,7 +28,7 @@ export const FeatureSelect = ({ value, onChange, options }: { value: string; onC
                 onChange(opt)
                 setOpen(false)
               }}
-              className="w-full rounded-[10px] px-3 py-1 text-left font-roobert"
+              className="w-full rounded-[10px] px-3 py-1 text-left font-gilroy"
             >
               {opt}
             </button>

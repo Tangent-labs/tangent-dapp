@@ -264,7 +264,7 @@ export default function RsTanLockContent() {
 
         <Popover>
           <PopoverTrigger asChild>
-            <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2 font-roobert">
+            <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2 font-gilroy">
               <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
               <button type="button" title="Slippage">
                 <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
@@ -273,7 +273,7 @@ export default function RsTanLockContent() {
               </button>
             </BorderPanel>
           </PopoverTrigger>
-          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none font-roobert">
+          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none font-gilroy">
             <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
               <div className="flex w-full flex-col items-center justify-between gap-2">
                 <div className="flex w-full items-center justify-start">Slippage</div>

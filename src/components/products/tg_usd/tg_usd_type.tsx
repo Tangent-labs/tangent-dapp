@@ -455,6 +455,10 @@ export type UserTask = {
   pointRate: number
   status: boolean
   points: number
+  tokenAddress: Address
+  priceUSD: number
+  balance?: number
+  balanceUsd?: number
 }
 
 export type VoteTask = {

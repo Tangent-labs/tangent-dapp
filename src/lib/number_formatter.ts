@@ -71,7 +71,7 @@ export function formatDollarBigInt(value: bigint | string | undefined, decimals:
  * @param displayDecimals - The number of decimal places to show in the formatted output.
  * @returns A string representing the formatted value with thousands separators and limited decimal places.
  */
-export function formatNumber(value: number, displayDecimals: number): string {
+export function formatNumber(value: number | undefined, displayDecimals: number): string {
   if (value === undefined || value === null) return ""
   let num = parseFloat(value?.toString())
   if (isNaN(num)) return ""

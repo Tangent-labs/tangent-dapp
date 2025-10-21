@@ -6,7 +6,9 @@ import { UserTask, VoteTask } from "../../tg_usd_type"
 import { getUserTasks, getUserVoteTasks } from "../../api"
 import { useWalletConnexionContext } from "../../../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { mapAirdropData } from "./usg_tasks_controller"
+import { getUserBalancesAndDebtForLpTasks, mapAirdropData } from "./usg_tasks_controller"
+import { USGMarkets } from "../../tg_usd_repository"
+import { Address, formatEther } from "viem"
 
 type UsgTasksContextProps = {
   children: ReactNode
@@ -49,6 +51,36 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
     }
   }, [currentAddress])
 
+  useEffect(() => {
+    if (tasks.length !== 0) {
+      const tokens = tasks.map((t) => t.tokenAddress) as Address[]
+
+      getUserBalancesAndDebtForLpTasks(
+        currentAddress as Address,
+        USGMarkets.map((m) => m.marketAddress),
+        tokens.slice(1) // Remove the first element because
+      ).then((balances) => {
+        if (balances) {
+          const tasksCopy = [...tasks]
+
+          // Aggregation of all debt from all markets is on the last element of the array returned by the chainview
+          const debt = balances[balances.length - 1]
+          // The debt task is always the one with id = 0
+          tasksCopy[0].balance = Number(formatEther(debt))
+          // The price of USD is in the task at the index 1 as it's the task to hold USG
+          tasksCopy[0].balanceUsd = tasksCopy[0].balance * tasksCopy[1].priceUSD
+
+          for (let i = 1; i < tasksCopy.length; i++) {
+            const t = tasksCopy[i]
+            t.balance = Number(formatEther(balances[i - 1]))
+            t.balanceUsd = t.balance * t.priceUSD
+          }
+          setTasks(tasksCopy)
+        }
+      })
+    }
+  }, [tasks.length])
+
   const lpTasks = useMemo(() => {
     if (!tasks) return []
 
@@ -77,6 +109,8 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
     lpTasks.sort((elementA: UserTask, elementB: UserTask) => {
       const aValue = elementA[key as keyof UserTask]
       const bValue = elementB[key as keyof UserTask]
+      if (!aValue) return 1
+      if (!bValue) return 1
 
       if (aValue < bValue) return direction === "asc" ? -1 : 1
       if (aValue > bValue) return direction === "asc" ? 1 : -1

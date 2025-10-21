@@ -4,7 +4,6 @@ import { MenuModal } from "@/components/design_system/structure/menu_modal"
 import IconDashboard from "@/components/icons/icon_dashboard"
 import { IconEarn } from "@/components/icons/icon_earn"
 import { IconMarket } from "@/components/icons/icon_market"
-import { IconMenuTan } from "@/components/icons/icon_menu_tan"
 import { IconSavings } from "@/components/icons/icon_savings"
 import { usePathname, useRouter } from "next/navigation"
 
@@ -32,10 +31,6 @@ export default function MobileMenuBarFeature() {
           <div onClick={() => router.push("/earn")} className="flex w-12 cursor-pointer flex-col items-center justify-center">
             <IconEarn active={pathname === "/earn"} className="w-6"></IconEarn>
             Earn
-          </div>
-          <div onClick={() => router.push("/tan/lock")} className="flex w-12 cursor-pointer flex-col items-center justify-center">
-            <IconMenuTan active={pathname.includes("tan")} className="w-6"></IconMenuTan>
-            Tan
           </div>
           <div className="flex w-12 cursor-pointer flex-col items-center justify-center">
             <MenuModal></MenuModal>

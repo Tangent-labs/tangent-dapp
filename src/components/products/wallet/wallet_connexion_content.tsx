@@ -12,16 +12,15 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export const WalletConnexionContent = () => {
-  const { connect, disconnect, changeNetwork, tokenInfo, isConnected, isChainConnected, currentAddress, isConnecting } = useWalletConnexionContext()
+  const { connect, disconnect, changeNetwork, tokenInfo, isConnected, isChainConnected, currentAddress } = useWalletConnexionContext()
 
   const { USGsUSGMetrics, TANsTANMetrics } = useUSGContext()
 
   const buttonLabel = useMemo(() => {
-    if (isConnecting) return "..."
     if (!isConnected) return "Connect Wallet"
     if (!isChainConnected) return "Switch Network"
     return formatAddress(currentAddress) || "Unknown Address"
-  }, [isConnected, isChainConnected, currentAddress, isConnecting])
+  }, [isConnected, isChainConnected, currentAddress])
 
   const handleConnect = async () => {
     await connect()
@@ -50,12 +49,12 @@ export const WalletConnexionContent = () => {
       <Popover>
         {isConnected ? (
           <PopoverTrigger asChild>
-            <Button className="flex h-10 items-center justify-center" disabled={isConnecting}>
+            <Button className="flex h-10 items-center justify-center">
               {buttonLabel} {isConnected && <IconCross className="ml-2 mt-0.5 w-3"></IconCross>}
             </Button>
           </PopoverTrigger>
         ) : (
-          <Button onClick={handleConnect} className="flex h-10 items-center justify-center" disabled={isConnecting}>
+          <Button onClick={handleConnect} className="flex h-10 items-center justify-center">
             {buttonLabel} {isConnected && <IconCross className="ml-2 mt-0.5 w-3"></IconCross>}
           </Button>
         )}
@@ -124,22 +123,6 @@ export const WalletConnexionContent = () => {
                   </div>
                 </div>
               </div>
-
-              {/* <div className="flex w-full flex-col border-b border-white/10 py-3 text-xs">
-                <div className="mb-6 flex items-center justify-between">
-                  <div className="flex items-center justify-start gap-2 font-semibold text-subtitle">
-                    <IconTx className="w-3"></IconTx> Recent Transactions
-                  </div>
-
-                  <div className="font-semibold text-white">Clear All</div>
-                </div>
-
-                <div className="flex w-full cursor-pointer items-center justify-between hover:text-white">
-                  <span className="text-subtitle">Stake 50 TAN for 50 sTAN</span>
-
-                  <IconOpenOutside className="w-3 cursor-pointer hover:fill-white"></IconOpenOutside>
-                </div>
-              </div> */}
 
               <div
                 onClick={handleButtonClick}

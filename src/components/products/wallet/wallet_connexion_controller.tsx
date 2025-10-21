@@ -28,11 +28,3 @@ export const getUserBalances = async (currentAddress: Address) => {
     token: tokenMap[b.token.toLowerCase()] ?? "vsTAN",
   }))
 }
-
-export const registerUser = async (address: Address) => {
-  await fetch("/api/users/register", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ address }),
-  })
-}

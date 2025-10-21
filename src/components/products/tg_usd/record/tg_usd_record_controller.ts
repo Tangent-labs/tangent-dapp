@@ -42,8 +42,7 @@ export async function doApprove(walletClient: WalletClient, contract: Address, s
   return await waitForTransaction(txHash)
 }
 
-export const getUSGMarketRecordData = async (address: Address | undefined, market: Address) => {
-  address = address || zeroAddress
+export const getUSGMarketRecordData = async (address: Address, market: Address) => {
   return await executeChainViewUnique<ChainViewMarketRow>(MarketDetailsUI.abi as Abi, MarketDetailsUI.bytecode as Hex, [address, market])
 }
 

@@ -1,15 +1,15 @@
 "use client"
 
-import { Address } from "viem"
+import { Address, zeroAddress } from "viem"
 import { TANStakingInfo } from "../vs_tan/rstan_types"
 import { getUSGsUSGMetrics } from "./tg_usd_controller"
 import { getCurrentBlock } from "@/services/service_rpc"
 import { getBalances } from "./record/tg_usd_record_controller"
 import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
+import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { getLpUserPoints, getMarketAprs, getUserRefereesPoints, getVoteUserPoints } from "./api"
 import { USGStakingInfo, LpUserPoints, ZapToken, VoteUserPoints, RefereesPoints, MarketAPR } from "./tg_usd_type"
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 
 type USGContextProps = {
   children: ReactNode
@@ -33,7 +33,7 @@ type USGContextValues = {
 export const USGContext = createContext<USGContextValues | undefined>(undefined)
 
 export const USGProvider = ({ children, tokens }: USGContextProps) => {
-  const { currentAddress } = useWalletConnexionContext()
+  const { currentAddress, isWalletInitialized } = useWalletConnexionContext()
 
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
 
@@ -59,19 +59,35 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
     fetchAprs()
   }, [])
 
-  const loadUSGsUSGMetrics = useCallback(() => {
-    if (currentAddress) {
-      getUSGsUSGMetrics(currentAddress).then((data) => {
-        setUSGsUSGMetrics(data)
-      })
-    }
-  }, [currentAddress])
+  const loadUSGsUSGMetrics = () => {
+    getUSGsUSGMetrics(currentAddress || zeroAddress).then((data) => {
+      setUSGsUSGMetrics(data)
+    })
+  }
 
-  const loadTanSTANMetrics = useCallback(() => {
-    if (currentAddress) {
-      getTanStakeOnChainData(currentAddress).then((data) => {
-        setTANsTANMetrics(data)
-      })
+  const loadTanSTANMetrics = () => {
+    getTanStakeOnChainData(currentAddress || zeroAddress).then((data) => {
+      setTANsTANMetrics(data)
+    })
+  }
+
+  /**
+   * On init
+   */
+  useEffect(() => {
+    if (isWalletInitialized) {
+      loadUSGsUSGMetrics()
+      loadTanSTANMetrics()
+    }
+  }, [isWalletInitialized])
+
+  /**
+   * On user logs in/logs out
+   */
+  useEffect(() => {
+    if (isWalletInitialized && USGsUSGMetrics) {
+      loadUSGsUSGMetrics()
+      loadTanSTANMetrics()
     }
   }, [currentAddress])
 

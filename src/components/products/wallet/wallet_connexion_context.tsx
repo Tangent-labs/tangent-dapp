@@ -1,13 +1,12 @@
 "use client"
+
 import { dappConfig } from "@/dapp_config"
-import { formatAddress } from "@/lib/other_formatter"
-import web3Onboard from "@/services/config_wallet_provider"
 import { chain } from "@/services/service_rpc"
 import { WalletState } from "@web3-onboard/core"
-import { NotificationType } from "@web3-onboard/core/dist/types"
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { Address, createWalletClient, custom, toHex, WalletClient } from "viem"
+import web3Onboard from "@/services/config_wallet_provider"
 import { getUserBalances } from "./wallet_connexion_controller"
+import { Address, createWalletClient, custom, toHex, WalletClient } from "viem"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 
 export type Account = {
   address: Address
@@ -29,6 +28,7 @@ export type WalletConnexionContextValues = {
   canInteract: boolean
   userBalances: Array<{ balance: bigint; token: string; address: Address }>
   tokenInfo: (t: string) => { balance: bigint; token: string; address: Address } | undefined
+  isWalletInitialized: boolean
 }
 
 interface WalletConnexionProviderProps {
@@ -45,6 +45,8 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
   const [isConnecting, setIsConnecting] = useState<boolean>(false)
 
   const [userBalances, setUserBalances] = useState<Array<{ balance: bigint; token: string; address: Address }>>([])
+
+  const [isWalletInitialized, setIsWalletInitialized] = useState<boolean>(false)
 
   const connect = async () => {
     await web3Onboard.connectWallet()
@@ -96,39 +98,41 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
     return isConnected && isChainConnected
   }, [currentWallet])
 
-  const notify = (message: string, type: NotificationType = "hint") => {
-    web3Onboard.state.actions.customNotification({
-      type: type,
-      message: message,
-      autoDismiss: 3 * 1000,
-    })
-  }
-
-  // manage  the event handling
   useEffect(() => {
     const state = web3Onboard.state.select("wallets")
-    const currentAddress = currentAccount?.address
-    const debounce = (func: (arg: WalletState[]) => void, delay: number) => {
-      let timeoutId: ReturnType<typeof setTimeout>
-      return (arg: WalletState[]) => {
-        clearTimeout(timeoutId)
-        timeoutId = setTimeout(() => func(arg), delay)
+
+    const handleUpdate = (wallets: WalletState[]) => {
+      if (wallets.length === 0) {
+        setCurrentWallet(undefined)
+        setCurrentAccount(undefined)
+        return
       }
+
+      const newWallet = wallets[0]
+      const newAccount = wallets[0].accounts[0] as unknown as Account
+
+      if (newWallet.label !== currentWallet?.label) {
+        setCurrentWallet(newWallet)
+      }
+
+      setCurrentAccount(newAccount)
+      setIsWalletInitialized(true)
     }
 
-    const handleUpdate = debounce((wallets: WalletState[]) => {
-      if (wallets?.at(0)?.label !== currentWallet?.label) {
-        setCurrentWallet(wallets?.at(0))
-      }
-      // check if account have changed
-      if (wallets?.at(0)?.accounts?.at(0)?.address !== currentAddress) {
-        if (wallets?.at(0)?.accounts?.at(0)?.address) notify(`Connected with  ${formatAddress(wallets?.at(0)?.accounts?.at(0)?.address)}`)
-        else notify(`Disconnected`)
-      }
+    /**
+     * Hack when the user is not connected
+     */
+    setTimeout(() => {
+      const state = web3Onboard.state.get().wallets
 
-      setCurrentAccount(wallets?.at(0)?.accounts?.at(0) as Account | undefined)
-    }, 500)
+      if (state.length === 0) {
+        setIsWalletInitialized(true)
+      }
+    }, 800)
 
+    /**
+     * Subscribe to wallet state update
+     */
     const subscription = state.subscribe({
       next: (update: WalletState[]) => {
         handleUpdate(update)
@@ -137,6 +141,7 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
         console.error("Error in subscription:", err)
       },
     })
+
     return () => {
       if (subscription) {
         subscription.unsubscribe()
@@ -148,17 +153,11 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
     return !!currentAddress && isWellConnected
   }, [currentAddress, isWellConnected])
 
-  const fetchUserBalances = async () => {
+  useEffect(() => {
     if (currentAddress) {
       getUserBalances(currentAddress).then((res) => {
         setUserBalances(res)
       })
-    }
-  }
-
-  useEffect(() => {
-    if (currentAddress) {
-      fetchUserBalances()
     }
   }, [currentAddress])
 
@@ -184,6 +183,7 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
     canInteract,
     userBalances,
     tokenInfo,
+    isWalletInitialized,
   }
 
   return <WalletConnexionContext.Provider value={contextValue}>{children} </WalletConnexionContext.Provider>

@@ -31,7 +31,7 @@ export default function USGRepayContent() {
 
   const { USGInfo, pricedCollateralInfo, collateralInfo, marketInfo } = useUSGRecordContext()
 
-  const { canInteract } = useWalletConnexionContext()
+  const { connect } = useWalletConnexionContext()
 
   const {
     actionRepay,
@@ -61,7 +61,6 @@ export default function USGRepayContent() {
     usgRepayedValue,
     isDebtBelowThreshold,
     repayAssetInfo,
-    marketData,
   } = useUSGRepayContext()
 
   const AssetSelectTemplate = (option: {
@@ -161,26 +160,20 @@ export default function USGRepayContent() {
           <Switch checked={isRepayMax} onCheckedChange={(v) => onClickMax(v)} />
         </div>
       </div>
-
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
           <span className="text-sm font-semibold md:text-xl">Repay debt</span>
 
-          {repayAsset === "USG" ? (
-            <span className="text-xs text-subtitle"> Max: {formatBigInt(marketData?.debtInfos?.userDebt, 18, 3)} USG</span>
-          ) : (
-            <span className="text-xs text-subtitle">
-              {" "}
-              Max: {formatBigInt(maxRepayableValue, repayAssetInfo?.decimals || 18, 3)} {repayAssetInfo?.symbol}
-            </span>
-          )}
+          <span className="text-xs text-subtitle">
+            Max: {formatBigInt(maxRepayableValue, repayAssetInfo?.decimals || 18, 3)} {repayAssetInfo?.symbol || "USG"}
+          </span>
         </div>
 
         <RepayInput
           depositAmount={repayWeiValue}
           labelDeposit="You repay"
           depositSelect={<AssetSelect />}
-          disabled={!canInteract || isRepayMax}
+          disabled={isRepayMax}
           isZapping={!!repayAsset && repayAsset !== "USG"}
           depositAsset={repayAssetInfo || USGInfo}
           balance={maxRepayableValue}
@@ -235,7 +228,6 @@ export default function USGRepayContent() {
               depositAmount={withdrawWeiValue}
               labelDeposit="You withdraw"
               depositSelect={<WithdrawAssetDisplay />}
-              disabled={!canInteract}
               depositAsset={pricedCollateralInfo}
               balance={maxWithdrawable}
               displaySliderInput={true}
@@ -249,29 +241,26 @@ export default function USGRepayContent() {
           </>
         )}
       </div>
-
       <>
         {isDebtBelowThreshold && (
           <div className="flex w-full items-center justify-center text-xs text-red-500">Remaining debt can not be lower than $3,000</div>
         )}
       </>
-
       <>
         {!isDebtBelowThreshold && !!repayWeiValue && formState.cantProcessReasons.length > 0 && (
           <div className="flex w-full items-center justify-center text-xs text-red-500"> {formState.cantProcessReasons[0]}</div>
         )}
       </>
 
-      <div className="flex w-full items-center justify-center">
-        <FormButtons
-          actions={{
-            handleApprove: repayAsset && repayAsset !== "USG" ? actionApprove : undefined,
-            handleProcess: repayAsset && repayAsset !== "USG" ? actionZapRepay : actionRepay,
-          }}
-          formState={formState}
-          labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}
-        />
-      </div>
+      <FormButtons
+        connect={connect}
+        actions={{
+          handleApprove: repayAsset && repayAsset !== "USG" ? actionApprove : undefined,
+          handleProcess: repayAsset && repayAsset !== "USG" ? actionZapRepay : actionRepay,
+        }}
+        formState={formState}
+        labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}
+      />
 
       <div className="flex w-full items-end justify-between gap-2">
         <Popover>

@@ -1,7 +1,9 @@
 "use client"
 
 import { cn } from "@/lib/utils"
+import { useClipboard } from "@/hooks/useClipboard"
 import { useUSGContext } from "../../tg_usd_context"
+import { formatNumber } from "@/lib/number_formatter"
 import { Leaderboard } from "./components/Leaderboard"
 import { IconShare } from "@/components/icons/icon_share"
 import { IconTrophy } from "@/components/icons/icon_trophy"
@@ -11,18 +13,19 @@ import { IconCompleted } from "@/components/icons/icon_completed"
 import Divider from "@/components/design_system/structure/divider"
 import { useUsgReferralCodeContext } from "./usg_referral_context"
 import { GodsonsLeaderboard } from "./components/GodsonsLeaderboard"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { SecondaryButton } from "@/components/design_system/inputs/secondary_button"
-import { formatNumber } from "@/lib/number_formatter"
-import { useClipboard } from "@/hooks/useClipboard"
 
 export const UsgReferralCode = () => {
+  const { canInteract } = useWalletConnexionContext()
+
+  const { copied, copy } = useClipboard()
+
   const { lpUserPoints, voteUserPoints, refereesPoints } = useUSGContext()
 
   const { isLoading, lpLeaderboard, voteLeaderboard, godsonsLeaderboard } = useUsgReferralCodeContext()
 
   const { setReferralStatus, referralStatus, signMessage, airdropDataIsLoading, generateReferralCode } = useUsgAirdropContext()
-
-  const { copied, copy } = useClipboard()
 
   return (
     <div className="flex w-full flex-col items-center justify-center">
@@ -79,10 +82,16 @@ export const UsgReferralCode = () => {
 
             {!referralStatus?.generatedCode && !airdropDataIsLoading && (
               <>
-                <div className="flex w-full items-center justify-center text-center text-xs text-subtitle">Get a referral code for a friend</div>
-                <SecondaryButton onClick={generateReferralCode} className="flex w-full max-w-24 justify-center font-semibold">
-                  Generate
-                </SecondaryButton>
+                {canInteract ? (
+                  <>
+                    <div className="flex w-full items-center justify-center text-center text-xs text-subtitle">Get a referral code for a friend</div>
+                    <SecondaryButton onClick={generateReferralCode} className="flex w-full max-w-24 justify-center font-semibold">
+                      Generate
+                    </SecondaryButton>
+                  </>
+                ) : (
+                  <></>
+                )}
               </>
             )}
           </div>

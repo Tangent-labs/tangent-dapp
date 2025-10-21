@@ -14,7 +14,7 @@ export default function USGRecordBorrowContent() {
 
   const { USGInfo } = useUSGRecordContext()
 
-  const { canInteract } = useWalletConnexionContext()
+  const { connect } = useWalletConnexionContext()
 
   const BorrowAssetDisplay = () => {
     return (
@@ -38,7 +38,6 @@ export default function USGRecordBorrowContent() {
           borrowAmount={borrowWeiValue}
           labelDeposit="You borrow"
           depositSelect={<BorrowAssetDisplay />}
-          disabled={!canInteract}
           borrowAsset={USGInfo}
           setMaxBalance={() => setBorrowWeiValue(maxBorrowableValue)}
           balance={maxBorrowableValue}
@@ -56,7 +55,7 @@ export default function USGRecordBorrowContent() {
         )}
       </>
 
-      <FormButtons actions={{ handleApprove: undefined, handleProcess: actionBorrow }} formState={formState} labelProcess="Borrow" />
+      <FormButtons connect={connect} actions={{ handleApprove: undefined, handleProcess: actionBorrow }} formState={formState} labelProcess="Borrow" />
     </div>
   )
 }

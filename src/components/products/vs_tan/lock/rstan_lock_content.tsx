@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch"
 import { formatDate } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { useRsTanContext } from "../rstan_layout_context"
+import { useVsTanContext } from "../rstan_layout_context"
 import { useRsTanLockContext } from "./rstan_lock_context"
 import { useUSGContext } from "../../tg_usd/tg_usd_context"
 import { IconThunder } from "@/components/icons/icon_thunder"
@@ -25,9 +25,12 @@ import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { InputSelectLockPosition } from "@/components/design_system/inputs/input_select_lock_position"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
 export default function RsTanLockContent() {
-  const { lockData } = useRsTanContext()
+  const { lockData } = useVsTanContext()
+
+  const { connect } = useWalletConnexionContext()
 
   const { tokens, balances } = useUSGContext()
 
@@ -349,6 +352,7 @@ export default function RsTanLockContent() {
             handleApprove: depositAsset === "TAN" ? actionApprove : actionApproveZap,
             handleProcess: depositAsset === "TAN" ? actionLock : actionZapAndLock,
           }}
+          connect={connect}
           formState={formState}
           labelProcess="Lock"
         />

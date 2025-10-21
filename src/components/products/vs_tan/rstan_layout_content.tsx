@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch"
 import { formatDate } from "@/lib/other_formatter"
 import { LockPosition } from "../tg_usd/tg_usd_type"
 import { formatBigInt } from "@/lib/number_formatter"
-import { useRsTanContext } from "./rstan_layout_context"
+import { useVsTanContext } from "./rstan_layout_context"
 import { usePathname, useRouter } from "next/navigation"
 import { IconVsTan } from "@/components/icons/icon_vstan"
 import { lockListHeaders } from "./rstan_layout_controller"
@@ -43,7 +43,7 @@ const LockRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   )
 }
 
-export const RsTanLayoutContent = ({
+export const VsTanLayoutContent = ({
   children,
 }: Readonly<{
   children: React.ReactNode
@@ -52,7 +52,7 @@ export const RsTanLayoutContent = ({
 
   const pathname = usePathname()
 
-  const { lockData, feature } = useRsTanContext()
+  const { lockData, feature } = useVsTanContext()
 
   const onTabClick = (feat: string) => {
     router.push(`/tan/${feat.toLowerCase()}`)
@@ -144,7 +144,7 @@ export const RsTanLayoutContent = ({
 function LockPositionList() {
   const { headers, listState, udpateSort } = useListContext()
 
-  const { lockData, selectedPosition, extendToPermaLock, setSelectedPosition, onClickExtend, setExtendToPermaLock, onClickRemovePermaLock } = useRsTanContext()
+  const { lockData, selectedPosition, extendToPermaLock, setSelectedPosition, onClickExtend, setExtendToPermaLock, onClickRemovePermaLock } = useVsTanContext()
 
   return (
     <>

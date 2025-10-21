@@ -5,15 +5,15 @@ import { doIncreaseLockTime, doTogglePermaLock, getVsTanData } from "./rstan_lay
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { BalanceAllowanceData, LockData, LockPosition } from "../tg_usd/tg_usd_type"
 import { getBalancesAndAllowances } from "../tg_usd/record/tg_usd_record_controller"
-import { Address } from "viem"
+import { Address, zeroAddress } from "viem"
 import { VSTAN_CONTRACT } from "./rs_tan_repository"
 import { usePathname } from "next/navigation"
 
-type RsTanContextProps = {
+type VsTanContextProps = {
   children: ReactNode
 }
 
-type RsTanContextValues = {
+type VsTanContextValues = {
   loadData: () => void
 
   isLoading: boolean
@@ -40,12 +40,12 @@ type RsTanContextValues = {
   feature: string
 }
 
-export const RsTanContext = createContext<RsTanContextValues | undefined>(undefined)
+export const VsTanContext = createContext<VsTanContextValues | undefined>(undefined)
 
-export const RsTanProvider = ({ children }: RsTanContextProps) => {
+export const VsTanProvider = ({ children }: VsTanContextProps) => {
   const path = usePathname()
 
-  const { currentAddress, getWalletClient } = useWalletConnexionContext()
+  const { currentAddress, getWalletClient, isWalletInitialized } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -63,8 +63,22 @@ export const RsTanProvider = ({ children }: RsTanContextProps) => {
     return currentFeature
   }, [path])
 
+  /**
+   * On init
+   */
   useEffect(() => {
-    loadData()
+    if (isWalletInitialized) {
+      loadData()
+    }
+  }, [isWalletInitialized])
+
+  /**
+   * On user logs in
+   */
+  useEffect(() => {
+    if (isWalletInitialized && currentAddress && lockData) {
+      loadData()
+    }
   }, [currentAddress])
 
   useEffect(() => {
@@ -72,12 +86,14 @@ export const RsTanProvider = ({ children }: RsTanContextProps) => {
   }, [selectedPosition])
 
   const loadData = useCallback(() => {
-    if (currentAddress) {
-      getVsTanData(currentAddress).then((d) => {
+    getVsTanData(currentAddress || zeroAddress)
+      .then((d) => {
         setLockData(d)
         setIsLoading(false)
       })
-    }
+      .catch(() => {
+        console.error("Failed to fetch vsTanData")
+      })
   }, [currentAddress])
 
   const onClickExtend = async () => {
@@ -122,7 +138,7 @@ export const RsTanProvider = ({ children }: RsTanContextProps) => {
     }
   }
 
-  const contextValue: RsTanContextValues = {
+  const contextValue: VsTanContextValues = {
     loadData,
     isLoading,
     setIsLoading,
@@ -140,13 +156,13 @@ export const RsTanProvider = ({ children }: RsTanContextProps) => {
     feature,
   }
 
-  return <RsTanContext.Provider value={contextValue}>{children}</RsTanContext.Provider>
+  return <VsTanContext.Provider value={contextValue}>{children}</VsTanContext.Provider>
 }
 
-export const useRsTanContext = () => {
-  const context = useContext(RsTanContext)
+export const useVsTanContext = () => {
+  const context = useContext(VsTanContext)
   if (!context) {
-    throw new Error("useRsTanContext must be used within a RsTanProvider")
+    throw new Error("useVsTanContext must be used within a VsTanProvider")
   }
   return context
 }

@@ -24,6 +24,12 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function USGDepositContent() {
+  const { balances } = useUSGContext()
+
+  const { collateralInfo, marketData, USGInfo, balanceAllowanceData, marketInfo } = useUSGRecordContext()
+
+  const { connect } = useWalletConnexionContext()
+
   const {
     setDepositAsset,
     setIsDepositAndBorrow,
@@ -55,13 +61,8 @@ export default function USGDepositContent() {
     depositSliderPercent,
     borrowSliderPercent,
     maxBorrowableValue,
+    maxDepositString,
   } = useUSGDepositContext()
-
-  const { balances } = useUSGContext()
-
-  const { collateralInfo, marketData, USGInfo, balanceAllowanceData, marketInfo } = useUSGRecordContext()
-
-  const { canInteract } = useWalletConnexionContext()
 
   const AssetSelect = () => {
     const tokenOptions = tokens.map((el: ZapToken) => ({
@@ -149,20 +150,13 @@ export default function USGDepositContent() {
 
       <div className="flex w-full items-end justify-between gap-2">
         <span className="text-sm font-semibold md:text-xl">Deposit {collateralInfo?.symbol}</span>
-        <span className="text-xs text-subtitle">
-          Max:{" "}
-          {depositAsset !== collateralInfo?.name
-            ? `${formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)} `
-            : `${formatBigInt(marketData?.collateralBalance, depositAssetInfo?.decimals, 2)} `}{" "}
-          {depositAssetInfo?.symbol}
-        </span>
+        <span className="text-xs text-subtitle">{maxDepositString}</span>
       </div>
 
       <DepositInput
         displaySliderInput={true}
         depositAmount={depositWeiValue}
         depositSelect={<AssetSelect />}
-        disabled={!canInteract}
         isLoading={isDepositLoading}
         depositAsset={depositAssetInfo}
         balance={balanceAllowanceData?.balance || marketData?.collateralBalance}
@@ -217,7 +211,6 @@ export default function USGDepositContent() {
             borrowAmount={borrowWeiValue}
             labelDeposit="You borrow"
             depositSelect={<BorrowAssetDisplay />}
-            disabled={!canInteract}
             borrowAsset={USGInfo}
             setMaxBalance={() => setBorrowWeiValue(maxBorrowableValue)}
             balance={maxBorrowableValue}
@@ -229,16 +222,16 @@ export default function USGDepositContent() {
           />
         </div>
       )}
-      <div>
-        <FormButtons
-          actions={{
-            handleApprove: depositAsset === "ETH" ? undefined : depositAsset && depositAsset !== collateralInfo?.symbol ? actionApproveZap : actionApprove,
-            handleProcess: depositAsset && depositAsset !== collateralInfo?.symbol ? getRouteAndDeposit : actionDeposit,
-          }}
-          formState={formState}
-          labelProcess={"Deposit"}
-        />
-      </div>
+
+      <FormButtons
+        actions={{
+          handleApprove: depositAsset === "ETH" ? undefined : depositAsset && depositAsset !== collateralInfo?.symbol ? actionApproveZap : actionApprove,
+          handleProcess: depositAsset && depositAsset !== collateralInfo?.symbol ? getRouteAndDeposit : actionDeposit,
+        }}
+        formState={formState}
+        labelProcess={"Deposit"}
+        connect={connect}
+      />
 
       <div className="flex w-full items-start justify-between gap-2">
         <Accordion className="w-full" type="single" collapsible>

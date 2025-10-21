@@ -28,6 +28,7 @@ export default function USGLiquidatePanelPartial() {
     repayWeiValue,
     repayablePercentage,
     maxRepayable,
+    maxLiquidateString,
   } = useUSGLiquidateContext()
 
   const LiquidateAssetDisplay = () => {
@@ -46,9 +47,7 @@ export default function USGLiquidatePanelPartial() {
     <>
       <div className="flex w-full items-end justify-between">
         <span className="text-sm font-semibold md:text-xl">Liquidate partial</span>
-        <span className="text-xs text-subtitle">
-          Max: {formatBigInt(maxLiquidable, 18, 2)} {collateralInfo?.symbol}
-        </span>
+        <span className="text-xs text-subtitle">{maxLiquidateString}</span>
       </div>
 
       <DepositInput

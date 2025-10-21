@@ -5,7 +5,7 @@ import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransacti
 import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
 import { TANStakingInfo } from "../rstan_types"
 
-export async function getTanStakeOnChainData(currentAddress: Address | undefined) {
+export async function getTanStakeOnChainData(currentAddress: string) {
   return await executeChainViewUnique<TANStakingInfo>(sTANUI.abi as Abi, sTANUI.bytecode as Hex, [
     currentAddress,
     VSTAN_CONTRACT.TAN_LP,

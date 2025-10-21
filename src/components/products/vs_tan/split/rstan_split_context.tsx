@@ -1,8 +1,8 @@
 "use client"
 
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { useRsTanContext } from "../rstan_layout_context"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { useVsTanContext } from "../rstan_layout_context"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { LockPosition } from "../../tg_usd/tg_usd_type"
 import { doSplit, getSplitFormState } from "./rstan_split_controller"
 import { formatBigInt } from "@/lib/number_formatter"
@@ -40,7 +40,7 @@ export const RsTanSplitContext = createContext<RsTanSplitContextValues | undefin
 export const RsTanSplitProvider = ({ children }: RsTanSplitContextProps) => {
   const { getWalletClient, isWellConnected } = useWalletConnexionContext()
 
-  const { loadData, lockData } = useRsTanContext()
+  const { loadData, lockData } = useVsTanContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 

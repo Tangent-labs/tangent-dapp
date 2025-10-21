@@ -56,13 +56,14 @@ export default function USGLeverageContent() {
     zapInnerValue,
     depositSliderPercent,
     leveragePercentage,
+    maxDepositString,
   } = useUSGLeverageContext()
 
   const { collateralInfo, marketData, balanceAllowanceData, marketInfo, pricedCollateralInfo, USGInfo } = useUSGRecordContext()
 
   const { balances } = useUSGContext()
 
-  const { canInteract } = useWalletConnexionContext()
+  const { connect } = useWalletConnexionContext()
 
   const AssetSelect = () => {
     const tokenOptions = tokens.map((el: ZapToken) => ({
@@ -142,20 +143,13 @@ export default function USGLeverageContent() {
         <>
           <div className="flex w-full items-end justify-between gap-2">
             <span className="text-sm font-semibold md:text-xl">Deposit {collateralInfo?.symbol}</span>
-            <span className="text-xs text-subtitle">
-              Max:{" "}
-              {depositAsset !== collateralInfo?.name
-                ? `${formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)} `
-                : `${formatBigInt(marketData?.collateralBalance, depositAssetInfo?.decimals, 2)} `}{" "}
-              {depositAssetInfo?.symbol}
-            </span>
+            <span className="text-xs text-subtitle">{maxDepositString}</span>
           </div>
 
           <DepositInput
             displaySliderInput={true}
             depositAmount={depositWeiValue}
             depositSelect={<AssetSelect />}
-            disabled={!canInteract}
             isLoading={isZapLoading}
             depositAsset={depositAssetInfo}
             balance={!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance}
@@ -254,6 +248,7 @@ export default function USGLeverageContent() {
           handleApprove: depositAsset && depositAsset !== collateralInfo?.name ? actionApproveZap : actionApprove,
           handleProcess: depositAsset && depositAsset !== collateralInfo?.name ? actionZapLeverage : actionLeverage,
         }}
+        connect={connect}
         formState={formState}
         labelProcess={depositAsset && depositAsset !== collateralInfo?.name ? "Zap and leverage" : "Leverage"}
       />

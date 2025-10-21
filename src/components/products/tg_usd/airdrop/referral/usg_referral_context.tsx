@@ -1,12 +1,12 @@
 "use client"
 
 import { Address } from "viem"
-import { useUSGContext } from "../../tg_usd_context"
 import { getGodsonsLeaderboard } from "../../api"
-import { useWalletConnexionContext } from "../../../wallet/wallet_connexion_context"
-import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { GodsonLeaderboard, Leaderboard } from "../../tg_usd_type"
+import { useUSGContext } from "../../tg_usd_context"
 import { useUsgAirdropContext } from "../usg_airdrop_context"
+import { GodsonLeaderboard, Leaderboard } from "../../tg_usd_type"
+import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export type UserStatus = {
   generatedCode: string | null

@@ -55,7 +55,7 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
   }
 
   const maxWithdrawable = useMemo(() => {
-    if (marketData) {
+    if (marketData && currentAddress) {
       const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice
       const futureDebt = marketData?.debtInfos?.userDebt
       const futureDeposited = BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n)
@@ -66,7 +66,7 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
     }
 
     return 0n
-  }, [marketData])
+  }, [marketData, currentAddress])
 
   const formState = useMemo(() => {
     if (marketData) {

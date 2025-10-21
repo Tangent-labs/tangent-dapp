@@ -3,7 +3,7 @@
 import { formatUnits } from "viem"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { useUSGContext } from "../tg_usd_context"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../tg_usd_type"
 import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
@@ -36,6 +36,10 @@ type USGStakeContextValues = {
 export const USGStakeContext = createContext<USGStakeContextValues | undefined>(undefined)
 
 export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
+  const { getWalletClient } = useWalletConnexionContext()
+
+  const { loadUSGsUSGMetrics, USGsUSGMetrics } = useUSGContext()
+
   const [currentFeature, setCurrentFeature] = useState<"stake" | "unstake">("stake")
 
   const [weiValue, setWeiValue] = useState<bigint | undefined>()
@@ -43,14 +47,6 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   const [expected, setExpected] = useState<bigint | undefined>()
 
   const [stakePercentage, setStakePercentage] = useState<number>(0)
-
-  const { loadUSGsUSGMetrics, USGsUSGMetrics } = useUSGContext()
-
-  const { getWalletClient, currentAddress } = useWalletConnexionContext()
-
-  useEffect(() => {
-    loadUSGsUSGMetrics()
-  }, [currentAddress])
 
   const depositAssetOptions = useMemo(() => {
     return currentFeature === "stake"

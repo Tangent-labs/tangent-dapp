@@ -22,14 +22,13 @@ import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Button } from "@/components/design_system/inputs/button"
 
 export default function USGDepositContent() {
   const { balances } = useUSGContext()
 
   const { collateralInfo, marketData, USGInfo, balanceAllowanceData, marketInfo } = useUSGRecordContext()
 
-  const { canInteract, connect } = useWalletConnexionContext()
+  const { connect } = useWalletConnexionContext()
 
   const {
     setDepositAsset,
@@ -224,20 +223,15 @@ export default function USGDepositContent() {
         </div>
       )}
 
-      {canInteract ? (
-        <>
-          <FormButtons
-            actions={{
-              handleApprove: depositAsset === "ETH" ? undefined : depositAsset && depositAsset !== collateralInfo?.symbol ? actionApproveZap : actionApprove,
-              handleProcess: depositAsset && depositAsset !== collateralInfo?.symbol ? getRouteAndDeposit : actionDeposit,
-            }}
-            formState={formState}
-            labelProcess={"Deposit"}
-          />
-        </>
-      ) : (
-        <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
-      )}
+      <FormButtons
+        actions={{
+          handleApprove: depositAsset === "ETH" ? undefined : depositAsset && depositAsset !== collateralInfo?.symbol ? actionApproveZap : actionApprove,
+          handleProcess: depositAsset && depositAsset !== collateralInfo?.symbol ? getRouteAndDeposit : actionDeposit,
+        }}
+        formState={formState}
+        labelProcess={"Deposit"}
+        connect={connect}
+      />
 
       <div className="flex w-full items-start justify-between gap-2">
         <Accordion className="w-full" type="single" collapsible>

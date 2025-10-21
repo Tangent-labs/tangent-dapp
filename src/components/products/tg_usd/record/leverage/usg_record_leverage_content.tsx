@@ -24,7 +24,6 @@ import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { Button } from "@/components/design_system/inputs/button"
 
 export default function USGLeverageContent() {
   const {
@@ -64,7 +63,7 @@ export default function USGLeverageContent() {
 
   const { balances } = useUSGContext()
 
-  const { canInteract, connect } = useWalletConnexionContext()
+  const { connect } = useWalletConnexionContext()
 
   const AssetSelect = () => {
     const tokenOptions = tokens.map((el: ZapToken) => ({
@@ -244,22 +243,15 @@ export default function USGLeverageContent() {
         )}
       </>
 
-      {canInteract ? (
-        <>
-          <FormButtons
-            actions={{
-              handleApprove: depositAsset && depositAsset !== collateralInfo?.name ? actionApproveZap : actionApprove,
-              handleProcess: depositAsset && depositAsset !== collateralInfo?.name ? actionZapLeverage : actionLeverage,
-            }}
-            formState={formState}
-            labelProcess={depositAsset && depositAsset !== collateralInfo?.name ? "Zap and leverage" : "Leverage"}
-          />
-        </>
-      ) : (
-        <>
-          <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
-        </>
-      )}
+      <FormButtons
+        actions={{
+          handleApprove: depositAsset && depositAsset !== collateralInfo?.name ? actionApproveZap : actionApprove,
+          handleProcess: depositAsset && depositAsset !== collateralInfo?.name ? actionZapLeverage : actionLeverage,
+        }}
+        connect={connect}
+        formState={formState}
+        labelProcess={depositAsset && depositAsset !== collateralInfo?.name ? "Zap and leverage" : "Leverage"}
+      />
 
       <div className="flex w-full items-end justify-between gap-2">
         <Popover>

@@ -14,7 +14,6 @@ import Panel from "@/components/design_system/structure/panel"
 import { useUSGRepayContext } from "./usg_record_repay_context"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
-import { Button } from "@/components/design_system/inputs/button"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
@@ -32,7 +31,7 @@ export default function USGRepayContent() {
 
   const { USGInfo, pricedCollateralInfo, collateralInfo, marketInfo } = useUSGRecordContext()
 
-  const { canInteract, connect } = useWalletConnexionContext()
+  const { connect } = useWalletConnexionContext()
 
   const {
     actionRepay,
@@ -161,7 +160,6 @@ export default function USGRepayContent() {
           <Switch checked={isRepayMax} onCheckedChange={(v) => onClickMax(v)} />
         </div>
       </div>
-
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
           <span className="text-sm font-semibold md:text-xl">Repay debt</span>
@@ -243,35 +241,26 @@ export default function USGRepayContent() {
           </>
         )}
       </div>
-
       <>
         {isDebtBelowThreshold && (
           <div className="flex w-full items-center justify-center text-xs text-red-500">Remaining debt can not be lower than $3,000</div>
         )}
       </>
-
       <>
         {!isDebtBelowThreshold && !!repayWeiValue && formState.cantProcessReasons.length > 0 && (
           <div className="flex w-full items-center justify-center text-xs text-red-500"> {formState.cantProcessReasons[0]}</div>
         )}
       </>
 
-      {canInteract ? (
-        <>
-          <FormButtons
-            actions={{
-              handleApprove: repayAsset && repayAsset !== "USG" ? actionApprove : undefined,
-              handleProcess: repayAsset && repayAsset !== "USG" ? actionZapRepay : actionRepay,
-            }}
-            formState={formState}
-            labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}
-          />{" "}
-        </>
-      ) : (
-        <>
-          <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
-        </>
-      )}
+      <FormButtons
+        connect={connect}
+        actions={{
+          handleApprove: repayAsset && repayAsset !== "USG" ? actionApprove : undefined,
+          handleProcess: repayAsset && repayAsset !== "USG" ? actionZapRepay : actionRepay,
+        }}
+        formState={formState}
+        labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}
+      />
 
       <div className="flex w-full items-end justify-between gap-2">
         <Popover>

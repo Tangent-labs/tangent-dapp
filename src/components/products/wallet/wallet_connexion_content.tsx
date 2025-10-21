@@ -61,7 +61,7 @@ export const WalletConnexionContent = () => {
 
         <PopoverContent align="end">
           {isConnected && (
-            <div data-combobox className="flex min-h-56 w-full min-w-80 flex-col overflow-hidden bg-[#070707] p-2 font-roobert">
+            <div data-combobox className="flex min-h-56 w-full min-w-80 flex-col overflow-hidden bg-[#070707] p-2 font-gilroy">
               <div className="flex flex-col border-b border-white/10 py-2">
                 <span className="font-semibold"> {buttonLabel} </span>
                 <span className="text-subtitle"> Connected with Metamask </span>

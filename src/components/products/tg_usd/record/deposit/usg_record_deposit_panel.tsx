@@ -22,14 +22,13 @@ import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Button } from "@/components/design_system/inputs/button"
 
 export default function USGDepositContent() {
   const { balances } = useUSGContext()
 
   const { collateralInfo, marketData, USGInfo, balanceAllowanceData, marketInfo } = useUSGRecordContext()
 
-  const { canInteract, connect } = useWalletConnexionContext()
+  const { connect } = useWalletConnexionContext()
 
   const {
     setDepositAsset,
@@ -224,20 +223,15 @@ export default function USGDepositContent() {
         </div>
       )}
 
-      {canInteract ? (
-        <>
-          <FormButtons
-            actions={{
-              handleApprove: depositAsset === "ETH" ? undefined : depositAsset && depositAsset !== collateralInfo?.symbol ? actionApproveZap : actionApprove,
-              handleProcess: depositAsset && depositAsset !== collateralInfo?.symbol ? getRouteAndDeposit : actionDeposit,
-            }}
-            formState={formState}
-            labelProcess={"Deposit"}
-          />
-        </>
-      ) : (
-        <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
-      )}
+      <FormButtons
+        actions={{
+          handleApprove: depositAsset === "ETH" ? undefined : depositAsset && depositAsset !== collateralInfo?.symbol ? actionApproveZap : actionApprove,
+          handleProcess: depositAsset && depositAsset !== collateralInfo?.symbol ? getRouteAndDeposit : actionDeposit,
+        }}
+        formState={formState}
+        labelProcess={"Deposit"}
+        connect={connect}
+      />
 
       <div className="flex w-full items-start justify-between gap-2">
         <Accordion className="w-full" type="single" collapsible>
@@ -274,7 +268,7 @@ export default function USGDepositContent() {
 
         <Popover>
           <PopoverTrigger asChild>
-            <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2 font-roobert">
+            <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2 font-gilroy">
               <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
               <button type="button" title="Slippage">
                 <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
@@ -283,7 +277,7 @@ export default function USGDepositContent() {
               </button>
             </BorderPanel>
           </PopoverTrigger>
-          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none font-roobert">
+          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none font-gilroy">
             <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
               <div className="flex w-full flex-col items-center justify-between gap-2">
                 <div className="flex w-full items-center justify-start">Slippage</div>

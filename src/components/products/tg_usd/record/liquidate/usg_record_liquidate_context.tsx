@@ -142,8 +142,8 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   }
 
   const formState = useMemo(() => {
-    if (marketData && liquidateWeiValue) {
-      return getLiquidateFormState(marketData, liquidateWeiValue, repayWeiValue || 0n, isWellConnected, isQuoteLoading)
+    if (marketData) {
+      return getLiquidateFormState(marketData, liquidateWeiValue!, repayWeiValue || 0n, isWellConnected, isQuoteLoading)
     }
     return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
   }, [marketData, liquidateWeiValue, isWellConnected, currentAddress, isQuoteLoading, repayWeiValue])

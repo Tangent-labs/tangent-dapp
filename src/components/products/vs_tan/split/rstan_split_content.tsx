@@ -12,9 +12,12 @@ import { formatDate } from "@/lib/other_formatter"
 import { InfinityIcon } from "lucide-react"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { IconOpenOutside } from "@/components/icons/icon_open_outside"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
 export const RsTanSplitContent = () => {
   const { lockData } = useVsTanContext()
+
+  const { connect } = useWalletConnexionContext()
 
   const {
     splitPosition,
@@ -270,6 +273,7 @@ export const RsTanSplitContent = () => {
               handleApprove: undefined,
               handleProcess: actionSplit,
             }}
+            connect={connect}
             formState={formState}
             labelProcess="Split"
           />

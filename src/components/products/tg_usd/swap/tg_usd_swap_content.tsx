@@ -14,6 +14,7 @@ import { BuySellInput } from "@/components/design_system/inputs/buy_sell_input"
 import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
 type AssetSelectProps = {
   options: DepositReceiveAsset[]
@@ -47,6 +48,8 @@ export default function USGSwapContent() {
     slippage,
     USGsUSGMetrics,
   } = useUSGSwapContext()
+
+  const { connect } = useWalletConnexionContext()
 
   const ReceiveAssetSelect = ({ options }: AssetSelectProps) => {
     if (!options) {
@@ -227,6 +230,7 @@ export default function USGSwapContent() {
                 handleApprove: actionApprove,
                 handleProcess: actionSwap,
               }}
+              connect={connect}
               formState={formState}
               labelProcess="Swap"
             />

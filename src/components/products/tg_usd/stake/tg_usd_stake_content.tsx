@@ -17,6 +17,7 @@ import BorderPanel from "@/components/design_system/structure/border_panel"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
 import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
 export default function USGStakeContent() {
   const {
@@ -37,6 +38,8 @@ export default function USGStakeContent() {
     stakePercentage,
     USGsUSGMetrics,
   } = useUSGStakeContext()
+
+  const { connect } = useWalletConnexionContext()
 
   const AssetSelect = () => {
     return <InputSelect className="w-full" template={AssetSelectTemplate} value={currentAssetInfo?.current} options={depositAssetOptions} onChange={() => {}} />
@@ -181,6 +184,7 @@ export default function USGStakeContent() {
               handleApprove: currentFeature === "stake" ? actionApprove : undefined,
               handleProcess: currentFeature === "stake" ? actionStake : actionUnstake,
             }}
+            connect={connect}
             formState={formState}
             labelProcess={currentFeature === "stake" ? "Deposit & Stake" : "Unstake"}
           />

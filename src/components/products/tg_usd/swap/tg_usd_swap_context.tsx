@@ -7,7 +7,7 @@ import { getQuote, getRoute } from "../global_quote_controller"
 import { USG_CONTRACT, tgUsdTokens } from "../tg_usd_repository"
 import { ToastComponent } from "@/components/design_system/toast"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
-import { Abi, Address, SendTransactionParameters, WalletClient } from "viem"
+import { Abi, Address, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
@@ -279,11 +279,11 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     const quote = swapData?.quote
 
     const fetchSwapValue = async () => {
-      if (!value || !currentAddress || !depositAssetInfo || !receiveAssetInfo) return
+      if (!value || !depositAssetInfo || !receiveAssetInfo) return
 
       setIsSwapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, receiveAssetInfo?.address, depositAssetInfo?.address, curveRoutes)
+        const { quote } = await getQuote(value, currentAddress || zeroAddress, receiveAssetInfo?.address, depositAssetInfo?.address, curveRoutes)
 
         if (quote) {
           setReceiveWeiValue(quote)

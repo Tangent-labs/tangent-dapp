@@ -7,6 +7,7 @@ import web3Onboard from "@/services/config_wallet_provider"
 import { getUserBalances } from "./wallet_connexion_controller"
 import { Address, createWalletClient, custom, toHex, WalletClient } from "viem"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { registerUser } from "./register_user"
 
 export type Account = {
   address: Address
@@ -20,7 +21,6 @@ export type WalletConnexionContextValues = {
   currentAccount?: Account
   currentWallet?: WalletState
   currentAddress?: Address
-  isConnecting: boolean
   connect: () => void
   disconnect: () => void
   changeNetwork: () => void
@@ -42,19 +42,21 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
 
   const [currentAccount, setCurrentAccount] = useState<Account | undefined>(undefined)
 
-  const [isConnecting, setIsConnecting] = useState<boolean>(false)
-
   const [userBalances, setUserBalances] = useState<Array<{ balance: bigint; token: string; address: Address }>>([])
 
   const [isWalletInitialized, setIsWalletInitialized] = useState<boolean>(false)
 
   const connect = async () => {
     await web3Onboard.connectWallet()
-    setIsConnecting(false)
     const state = web3Onboard.state.get()
     if (state?.wallets.length > 0) {
-      setCurrentWallet(state.wallets?.at(0))
-      setCurrentAccount(state.wallets?.at(0)?.accounts?.at(0) as unknown as Account)
+      const userAccount = state.wallets?.at(0)?.accounts?.at(0)
+
+      if (userAccount) {
+        setCurrentWallet(state.wallets?.at(0))
+        setCurrentAccount(userAccount as Account)
+        registerUser(userAccount?.address)
+      }
     }
   }
 
@@ -82,7 +84,7 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
   // is there an actual wallet connect on the DAPP
   const isConnected = useMemo<boolean>(() => {
     return !!currentAccount?.address || false
-  }, [currentWallet])
+  }, [currentAccount])
 
   // is the connected wallet  has the good chain selected
   const isChainConnected = useMemo<boolean>(() => {
@@ -96,7 +98,7 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
   // are all the condition for interacting with the daap are met .
   const isWellConnected = useMemo<boolean>(() => {
     return isConnected && isChainConnected
-  }, [currentWallet])
+  }, [isConnected, isChainConnected])
 
   useEffect(() => {
     const state = web3Onboard.state.select("wallets")
@@ -175,7 +177,6 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
     isConnected,
     isChainConnected,
     isWellConnected,
-    isConnecting,
     getWalletClient,
     connect,
     disconnect,

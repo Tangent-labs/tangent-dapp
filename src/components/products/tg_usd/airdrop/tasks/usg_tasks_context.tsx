@@ -54,11 +54,10 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
   useEffect(() => {
     if (tasks.length !== 0) {
       const tokens = tasks.map((t) => t.tokenAddress) as Address[]
-
       getUserBalancesAndDebtForLpTasks(
         currentAddress as Address,
         USGMarkets.map((m) => m.marketAddress),
-        tokens.slice(1) // Remove the first element because
+        tokens.slice(1) // Remove the first element as there is no tokens on the first task
       ).then((balances) => {
         if (balances) {
           const tasksCopy = [...tasks]

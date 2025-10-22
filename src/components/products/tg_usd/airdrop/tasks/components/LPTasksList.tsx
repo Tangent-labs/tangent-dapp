@@ -2,7 +2,7 @@
 
 import { UserTask } from "../../../tg_usd_type"
 import { ExistingAsset, ListState } from "@/types"
-import { formatNumber } from "@/lib/number_formatter"
+import { formatNumber, formatDollar } from "@/lib/number_formatter"
 import { IconSortHeader } from "@/components/icons/icon_sort_header"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
@@ -56,10 +56,11 @@ const LpTaskListDisposition = ({ children }: { children: React.ReactNode[] }) =>
     <div className="flex w-full items-center justify-evenly px-2">
       <div className="flex w-2/12 items-center justify-center">{children?.at(0)} </div>
       <div className="hidden w-2/12 items-center justify-center lg:flex">{children?.at(1)} </div>
-      <div className="flex w-4/12 items-center justify-center lg:w-3/12">{children?.at(2)} </div>
-      <div className="flex w-2/12 items-center justify-center">{children?.at(3)} </div>
-      <div className="flex w-1/12 items-center justify-center">{children?.at(4)} </div>
-      <div className="flex w-2/12 items-center justify-center">{children?.at(5)} </div>
+      <div className="flex w-3/12 items-center justify-center">{children?.at(2)} </div>
+      <div className="flex w-1/12 items-center justify-center">{children?.at(3)} </div>
+      <div className="flex w-2/12 items-center justify-center">{children?.at(4)} </div>
+      <div className="flex w-1/12 items-center justify-center">{children?.at(5)} </div>
+      <div className="flex w-1/12 items-center justify-center">{children?.at(6)} </div>
     </div>
   )
 }
@@ -88,6 +89,7 @@ export const LPTasksList = () => {
                 <span>{headers?.at(2)?.label}</span>
               </div>
             )}
+
             {!!headers?.at(3)?.key && (
               <div key={headers?.at(3)?.label} className="flex w-full items-center justify-center">
                 <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(3)?.key))}>
@@ -98,6 +100,7 @@ export const LPTasksList = () => {
                 </button>
               </div>
             )}
+
             {!!headers?.at(4)?.key && (
               <div key={headers?.at(4)?.label} className="flex w-full items-center justify-center">
                 <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(4)?.key))}>
@@ -108,12 +111,24 @@ export const LPTasksList = () => {
                 </button>
               </div>
             )}
+
             {!!headers?.at(5)?.key && (
               <div key={headers?.at(5)?.label} className="flex w-full items-center justify-center">
                 <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(5)?.key))}>
                   <span>{headers?.at(5)?.label} </span>
                   <div className="text-row-tonic">
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(5)?.key && listState?.sort?.direction) || "none"} />
+                  </div>
+                </button>
+              </div>
+            )}
+
+            {!!headers?.at(6)?.key && (
+              <div key={headers?.at(6)?.label} className="flex w-full items-center justify-center">
+                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(6)?.key))}>
+                  <span>{headers?.at(6)?.label} </span>
+                  <div className="text-row-tonic">
+                    <IconSortHeader sort={(listState?.sort?.key === headers?.at(6)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
               </div>
@@ -126,6 +141,7 @@ export const LPTasksList = () => {
         {displayRows &&
           (displayRows as UserTask[])?.map((task: UserTask) => (
             <BorderPanel
+              onClick={() => window.open(task.url, "_blank")}
               key={task?.taskId}
               className="mb-2 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
             >
@@ -135,24 +151,28 @@ export const LPTasksList = () => {
 
                   <span className="flex text-xl font-semibold">{task.asset}</span>
                 </div>
+
                 <div className="hidden w-2/12 justify-center lg:flex">
-                  <div onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}>{computeProtocolDisplay(task?.protocol)}</div>
+                  <div>{computeProtocolDisplay(task?.protocol)}</div>
                 </div>
-                <div className="flex w-4/12 justify-center lg:w-3/12">
-                  <div
-                    className="flex items-center justify-center rounded-[10px] bg-overlay-panel px-6 py-2 text-center text-xs backdrop-blur-[60px]"
-                    onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}
-                  >
+
+                <div className="flex w-3/12 justify-center">
+                  <div className="flex items-center justify-center rounded-[10px] bg-overlay-panel px-6 py-2 text-center text-xs backdrop-blur-[60px]">
                     {task?.description}
                   </div>
                 </div>
-                <div className="flex w-2/12 items-center justify-center">{(task?.pointRate * 86400).toFixed(0)}</div>
-                <div className="flex w-1/12 items-center justify-center">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
+
+                <div className="flex w-1/12 items-center justify-center">{(task?.pointRate * 86400).toFixed(0)}</div>
+
+                <div className="flex w-2/12 items-center justify-center">{formatDollar(task?.balanceUsd)}</div>
+
+                <div className="flex w-1/12 items-center justify-center">{formatNumber(task?.points, 0)}</div>
+
+                <div className="flex w-1/12 flex-col items-center justify-center">
+                  <div className="flex h-12 w-12 flex-col items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
                     <TaskStatus status={task?.status} />
                   </div>
                 </div>
-                <div className="flex w-2/12 items-center justify-center">{formatNumber(task?.points, 0)}</div>
               </div>
 
               <div className="flex flex-col items-center justify-between md:hidden">

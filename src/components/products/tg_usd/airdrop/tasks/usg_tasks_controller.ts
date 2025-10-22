@@ -1,5 +1,8 @@
 import { ListHeaderData } from "@/types"
 import { UserTask } from "../../tg_usd_type"
+import { Abi, Address, Hex } from "viem"
+import { executeChainViewUnique } from "@/services/service_rpc"
+import TaskListUI from "../../../../../abi/USG/TaskListUI.json"
 
 export const mapAirdropData = (tasks: UserTask[]) => {
   if (!tasks || tasks.length === 0) return []
@@ -11,7 +14,6 @@ export const mapAirdropData = (tasks: UserTask[]) => {
     if (a.status && !b.status) {
       return b.pointRate - a.pointRate
     }
-
     return 0
   })
 }
@@ -21,8 +23,9 @@ export const lpListHeaders: ListHeaderData[] = [
   { label: "Protocol", key: "protocol" },
   { label: "Action", key: "action" },
   { label: "Pts/Day/USD", key: "pointRate" },
-  { label: "Status", key: "status" },
+  { label: "Owned", key: "balanceUsd" },
   { label: "Points", key: "points" },
+  { label: "Status", key: "status" },
 ]
 
 export const voteListHeaders: ListHeaderData[] = [
@@ -32,3 +35,7 @@ export const voteListHeaders: ListHeaderData[] = [
   { label: "Pts/VotingPower", key: "pointRate" },
   { label: "Points", key: "points" },
 ]
+
+export async function getUserBalancesAndDebtForLpTasks(address: Address, markets: Address[], tokens: Address[]) {
+  return await executeChainViewUnique<bigint[]>(TaskListUI.abi as Abi, TaskListUI.bytecode as Hex, [address, markets, tokens])
+}

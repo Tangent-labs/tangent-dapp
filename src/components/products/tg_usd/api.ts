@@ -216,7 +216,7 @@ export const getUserVoteTasks = async (account: Address): Promise<Array<VoteTask
   }
 }
 
-export const getUserTasks = async (account: Address): Promise<Array<UserTask>> => {
+export const getUserTasks = async (account: Address): Promise<UserTask[]> => {
   try {
     const url = `${baseUrl}/tasks/${account}`
 
@@ -231,7 +231,7 @@ export const getUserTasks = async (account: Address): Promise<Array<UserTask>> =
       throw new Error("Failed to fetch tasks")
     }
 
-    const data: Array<UserTask> = await response.json()
+    const data: UserTask[] = await response.json()
 
     return data
   } catch (error) {

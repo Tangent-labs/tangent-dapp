@@ -2,9 +2,9 @@
 
 import { getCurrentBlock } from "@/services/service_rpc"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { getTotalSupply } from "../api"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { convertRange } from "./dashboard_controller"
+import { getTotalSupply } from "../client_api"
 
 type USGDashboardContextProps = {
   children: ReactNode

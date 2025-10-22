@@ -369,6 +369,8 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
 
         if (quote) {
           setUsgRepayedValue(quote)
+        } else {
+          toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." } })
         }
       } catch (error) {
         console.error(error)

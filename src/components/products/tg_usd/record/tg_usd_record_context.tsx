@@ -28,7 +28,7 @@ import { useUSGContext } from "../tg_usd_context"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { getCurrentBlock } from "@/services/service_rpc"
 import { Address, formatUnits, zeroAddress } from "viem"
-import { getHistoricalMarketData, getUserPositions } from "../api"
+import { getHistoricalMarketData, getUserPositions } from "../client_api"
 import { AssetDataPriced, CollateralInfo, ListState } from "@/types"
 import { useUSGMaketListContext } from "../list/tg_usd_market_list_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -218,9 +218,11 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     try {
       const walletClient = getWalletClient()
 
-      const data = await getBalancesAndAllowances(walletClient!, depositAssetInfo, marketInfo?.marketAddress)
+      if (walletClient) {
+        const data = await getBalancesAndAllowances(walletClient!, depositAssetInfo, marketInfo?.marketAddress)
 
-      setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
+        setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
+      }
     } catch (error) {
       console.error("Failed to fetch balance/allowance:", error)
     }

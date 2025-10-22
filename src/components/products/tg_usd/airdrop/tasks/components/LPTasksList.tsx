@@ -143,7 +143,7 @@ export const LPTasksList = () => {
             <BorderPanel
               onClick={() => window.open(task.url, "_blank")}
               key={task?.taskId}
-              className="mb-2 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
+              className="mb-2 bg-overlay-panel px-2 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover lg:px-5"
             >
               <div className="hidden items-center justify-between md:flex">
                 <div className="flex w-2/12 items-center gap-2 xl:gap-4">

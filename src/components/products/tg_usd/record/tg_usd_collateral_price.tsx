@@ -2,16 +2,16 @@
 
 import { Address } from "viem"
 import { cn } from "@/lib/utils"
-import { fetchGraphData } from "../api"
+import { fetchGraphData } from "../client_api"
+import { formatDollar } from "@/lib/number_formatter"
 import { getCurrentBlock } from "@/services/service_rpc"
 import { useUSGRecordContext } from "./tg_usd_record_context"
 import Title from "@/components/design_system/structure/title"
 import Divider from "@/components/design_system/structure/divider"
+import { useTransition, useEffect, useState, useRef } from "react"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { useTransition, useEffect, useState, useRef } from "react"
 import { CandlestickSeries, CandlestickSeriesOptions, createChart, DeepPartial, IChartApi, ISeriesApi, Time, TimeChartOptions } from "lightweight-charts"
-import { formatDollar } from "@/lib/number_formatter"
 
 type GraphData = {
   chain: string

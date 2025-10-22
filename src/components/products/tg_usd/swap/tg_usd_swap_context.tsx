@@ -244,6 +244,8 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
         if (quote) {
           setDepositWeiValue(quote)
+        } else {
+          toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." } })
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)
@@ -288,6 +290,8 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
         if (quote) {
           setReceiveWeiValue(quote)
           setIsSwapLoading(false)
+        } else {
+          toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." } })
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)

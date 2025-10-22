@@ -3,7 +3,7 @@
 import { ListState } from "@/types"
 import { useUSGContext } from "../tg_usd_context"
 import { mapPoolsAndTasks, mapTasks } from "./tg_usd_earn_controller"
-import { getCurvePools, getConvexPools, getStakeDAOPools } from "../api"
+import { getCurvePools, getConvexPools, getStakeDAOPools } from "../client_api"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { EarnTask, USGStakingInfo, LpUserPoints, EarnProtocolInput, GaugeAPR } from "../tg_usd_type"

@@ -195,7 +195,11 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       try {
         const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
 
-        setDepositWeiValue(quote)
+        if (quote) {
+          setDepositWeiValue(quote)
+        } else {
+          toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." } })
+        }
       } catch (err) {
         console.error("Error fetching depositWeiValue:", err)
       } finally {

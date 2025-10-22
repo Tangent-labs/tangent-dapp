@@ -3,9 +3,9 @@
 import { toast } from "react-toastify"
 import { getCurrentBlock } from "@/services/service_rpc"
 import { ToastComponent } from "@/components/design_system/toast"
-import { generateCode, getReferralStatus, validateReferralCode } from "../api"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { generateCode, getReferralStatus, validateReferralCode } from "../client_api"
 
 export type UserStatus = {
   generatedCode: string | null

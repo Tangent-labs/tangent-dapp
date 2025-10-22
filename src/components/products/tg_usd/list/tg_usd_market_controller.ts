@@ -6,7 +6,7 @@ import { USG_CONTRACT, USGMarkets, tgUsdPegKeepers } from "../tg_usd_repository"
 import { formatBigInt, formatDollar, formatPercent } from "@/lib/number_formatter"
 import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, TgUsdGlobalData } from "../tg_usd_type"
 
-export const getUSGMarketsData = async (address: Address | undefined) => {
+export const getUSGMarketsData = async (address: string) => {
   const markets = USGMarkets.map((market) => market.marketAddress)
 
   return await executeChainViewUnique<ChainViewMarketList>(MarketListUI.abi as Abi, MarketListUI.bytecode as Hex, [

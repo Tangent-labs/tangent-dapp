@@ -1,8 +1,8 @@
 "use client"
 
 import { createContext, ReactNode, useContext, useMemo, useState } from "react"
-import { useRsTanContext } from "../rstan_layout_context"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { useVsTanContext } from "../rstan_layout_context"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { LockPosition } from "../../tg_usd/tg_usd_type"
 import { doClaim } from "./rstan_claim_controller"
 
@@ -32,7 +32,7 @@ export const RsTanClaimContext = createContext<RsTanClaimContextValues | undefin
 export const RsTanClaimProvider = ({ children }: RsTanClaimContextProps) => {
   const { getWalletClient } = useWalletConnexionContext()
 
-  const { loadData, lockData } = useRsTanContext()
+  const { loadData, lockData } = useVsTanContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 

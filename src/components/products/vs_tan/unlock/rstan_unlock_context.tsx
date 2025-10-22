@@ -1,11 +1,11 @@
 "use client"
 
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { useRsTanContext } from "../rstan_layout_context"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
-import { LockPosition } from "../../tg_usd/tg_usd_type"
 import { doUnlock } from "./rstan_unlock_controller"
+import { LockPosition } from "../../tg_usd/tg_usd_type"
 import { getCurrentBlock } from "@/services/service_rpc"
+import { useVsTanContext } from "../rstan_layout_context"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 type RsTanUnlockContextProps = {
   children: ReactNode
@@ -35,7 +35,7 @@ export const RsTanUnlockContext = createContext<RsTanUnlockContextValues | undef
 export const RsTanUnlockProvider = ({ children }: RsTanUnlockContextProps) => {
   const { getWalletClient } = useWalletConnexionContext()
 
-  const { loadData, lockData } = useRsTanContext()
+  const { loadData, lockData } = useVsTanContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 

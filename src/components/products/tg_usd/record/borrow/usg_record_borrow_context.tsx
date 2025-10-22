@@ -59,7 +59,7 @@ export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
   }, [borrowWeiValue])
 
   const maxBorrowableValue = useMemo(() => {
-    if (marketData?.collateralInfos) {
+    if (marketData?.collateralInfos && currentAddress) {
       const futureDebt = marketData?.debtInfos?.userDebt
 
       const maxBorrowable = (marketData?.collateralInfos?.positionCollateralUSDValue * marketData?.constants.maxLTV) / BigInt(100000n) - futureDebt
@@ -70,7 +70,7 @@ export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
     }
 
     return 0n
-  }, [marketData])
+  }, [marketData, currentAddress])
 
   const formState = useMemo(
     () => getBorrowFormState(marketData, borrowWeiValue, isWellConnected, maxBorrowableValue),

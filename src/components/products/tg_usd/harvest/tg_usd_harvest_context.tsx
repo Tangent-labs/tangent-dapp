@@ -3,7 +3,7 @@
 import { Address } from "viem"
 import { AssetDataPriced, ListState } from "@/types"
 import { HarvestableMarket, HarvesterInfo, HarvesterInfoDisplay } from "../tg_usd_type"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { computeAndReturnPrices, doHarvest, getTgUsdHarvestOnChainData, transformHarvestOnChainData } from "./tg_usd_harvest_controller"
 

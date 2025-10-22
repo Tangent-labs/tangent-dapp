@@ -1,13 +1,13 @@
 import { ListHeaderData } from "@/types"
+import { Abi, Hex, WalletClient } from "viem"
 import VsTAN from "../../../abi/USG/VsTAN.json"
 import { LockData } from "../tg_usd/tg_usd_type"
 import LockUI from "../../../abi/USG/LockUI.json"
 import { VSTAN_CONTRACT } from "./rs_tan_repository"
-import { Abi, Address, Hex, WalletClient } from "viem"
 import { USG_CONTRACT } from "../tg_usd/tg_usd_repository"
 import { executeChainViewUnique, executeContractCall, waitForTransaction } from "@/services/service_rpc"
 
-export async function getVsTanData(user: Address) {
+export async function getVsTanData(user: string) {
   return await executeChainViewUnique<LockData>(LockUI.abi as Abi, LockUI.bytecode as Hex, [
     user,
     VSTAN_CONTRACT.TAN,

@@ -1,12 +1,12 @@
 "use client"
 
 import { toast } from "react-toastify"
+import { ZapToken } from "../../tg_usd_type"
 import { formatUnits, maxUint256 } from "viem"
 import { useUSGContext } from "../../tg_usd_context"
 import { AssetDataPriced, FormState } from "@/types"
 import { USG_CONTRACT } from "../../tg_usd_repository"
 import { useUSGRecordContext } from "../tg_usd_record_context"
-import { MarketDetailData, ZapToken } from "../../tg_usd_type"
 import { formatDollar, toBigInt } from "@/lib/number_formatter"
 import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
@@ -39,8 +39,6 @@ type USGRepayContextValues = {
   setIsRepayAndWithdraw: (arg: boolean) => void
 
   maxWithdrawable: bigint
-
-  marketData?: MarketDetailData
 
   withdrawPercentage: number
   setWithdrawPercentage: (arg: number) => void
@@ -305,7 +303,7 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
   }, [marketData, repayWeiValue, isWellConnected, currentAddress, balanceAllowanceData, repayAsset])
 
   const marketValues = useMemo(() => {
-    if (marketData) {
+    if (marketData && currentAddress) {
       if (repayAsset === "USG") {
         const maxRepayableValue = marketData.debtInfos?.userDebt || 0n
         const minimumLoan = marketData.constants.minimumLoan || 0n
@@ -320,10 +318,10 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
     }
 
     return { maxRepayableValue: 0n, minimumLoan: 0n }
-  }, [marketData, repayAssetInfo])
+  }, [marketData, repayAssetInfo, currentAddress])
 
   const maxWithdrawable = useMemo(() => {
-    if (marketData) {
+    if (marketData && currentAddress) {
       const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice
 
       const computedRepayWeiValue = !!repayAsset && repayAsset === "USG" ? repayWeiValue : usgRepayedValue
@@ -338,7 +336,7 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
     }
 
     return 0n
-  }, [marketData, repayWeiValue, usgRepayedValue])
+  }, [marketData, repayWeiValue, usgRepayedValue, currentAddress])
 
   const onClickMax = (isChecked: boolean) => {
     if (isChecked) {
@@ -460,7 +458,6 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
     isRepayMax,
     setIsRepayMax,
     isDebtBelowThreshold,
-    marketData,
     slippage,
     setSlippage,
     tgUsdDollarRepayedValue,

@@ -10,7 +10,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 import { usePathname, useRouter } from "next/navigation"
-import { Logo } from "@/components/design_system/structure/logo"
+import { IconTangent } from "@/components/icons/icon_tangent"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 import TokenImage from "@/components/design_system/structure/token_image"
 
@@ -20,13 +20,12 @@ export default function MenuBarFeature() {
   const pathname = usePathname()
 
   return (
-    <header className="sticky top-0 z-50 flex h-[80px] w-full font-roobert backdrop-blur-[60px]">
-      <div className="usg-container mx-auto flex w-full px-0 md:px-4">
+    <header className="sticky top-0 z-50 flex h-[80px] w-full font-gilroy backdrop-blur-[60px]">
+      <div className="mx-auto flex w-full">
         <div className="mx-4 flex w-full items-center justify-between">
           <div className="flex w-full items-center justify-start gap-3">
             <div onClick={() => router.push("/")} className="flex cursor-pointer items-center gap-2 text-xl text-white">
-              <Logo />
-              Tangent
+              <IconTangent className="mb-2 w-32"></IconTangent>
             </div>
 
             <NavigationMenu>
@@ -105,7 +104,7 @@ export default function MenuBarFeature() {
 
             <button
               onClick={() => router.push("/swap")}
-              className="gradient-border-btn hidden cursor-pointer px-4 py-2.5 font-roobert text-sm font-semibold xl:flex"
+              className="gradient-border-btn hidden cursor-pointer px-4 py-2.5 font-gilroy text-sm font-semibold xl:flex"
             >
               Swap
             </button>

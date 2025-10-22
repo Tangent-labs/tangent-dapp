@@ -10,7 +10,7 @@ import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export default function USGWithdrawContent() {
-  const { canInteract } = useWalletConnexionContext()
+  const { connect } = useWalletConnexionContext()
 
   const { pricedCollateralInfo, collateralInfo } = useUSGRecordContext()
 
@@ -41,7 +41,6 @@ export default function USGWithdrawContent() {
             depositAmount={withdrawWeiValue}
             labelDeposit="You withdraw"
             depositSelect={<WithdrawAssetDisplay />}
-            disabled={!canInteract}
             depositAsset={pricedCollateralInfo}
             balance={maxWithdrawable}
             displaySliderInput={true}
@@ -58,7 +57,7 @@ export default function USGWithdrawContent() {
           )}
         </>
 
-        <FormButtons actions={{ handleApprove: undefined, handleProcess: actionWithdraw }} formState={formState} labelProcess="Withdraw" />
+        <FormButtons connect={connect} actions={{ handleApprove: undefined, handleProcess: actionWithdraw }} formState={formState} labelProcess="Withdraw" />
       </div>
     </>
   )

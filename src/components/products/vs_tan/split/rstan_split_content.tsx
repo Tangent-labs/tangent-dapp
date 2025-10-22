@@ -1,7 +1,7 @@
 "use client"
 
 import InputSelect from "@/components/design_system/inputs/input_select"
-import { useRsTanContext } from "../rstan_layout_context"
+import { useVsTanContext } from "../rstan_layout_context"
 import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
 import { IconVsTan } from "@/components/icons/icon_vstan"
 import { formatBigInt } from "@/lib/number_formatter"
@@ -12,9 +12,12 @@ import { formatDate } from "@/lib/other_formatter"
 import { InfinityIcon } from "lucide-react"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { IconOpenOutside } from "@/components/icons/icon_open_outside"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
 export const RsTanSplitContent = () => {
-  const { lockData } = useRsTanContext()
+  const { lockData } = useVsTanContext()
+
+  const { connect } = useWalletConnexionContext()
 
   const {
     splitPosition,
@@ -270,6 +273,7 @@ export const RsTanSplitContent = () => {
               handleApprove: undefined,
               handleProcess: actionSplit,
             }}
+            connect={connect}
             formState={formState}
             labelProcess="Split"
           />

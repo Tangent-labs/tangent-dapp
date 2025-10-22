@@ -17,7 +17,7 @@ function NavigationMenu({
     <NavigationMenuPrimitive.Root
       data-slot="navigation-menu"
       data-viewport={viewport}
-      className={cn("group/navigation-menu relative hidden max-w-max flex-1 items-center justify-center lg:flex", className)}
+      className={cn("group/navigation-menu relative hidden max-w-max lg:flex", className)}
       {...props}
     >
       {children}

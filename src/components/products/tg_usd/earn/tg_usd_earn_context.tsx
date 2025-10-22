@@ -4,7 +4,7 @@ import { ListState } from "@/types"
 import { useUSGContext } from "../tg_usd_context"
 import { mapPoolsAndTasks, mapTasks } from "./tg_usd_earn_controller"
 import { getCurvePools, getConvexPools, getStakeDAOPools } from "../api"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { EarnTask, USGStakingInfo, LpUserPoints, EarnProtocolInput, GaugeAPR } from "../tg_usd_type"
 
@@ -28,7 +28,7 @@ export const USGEarnContext = createContext<USGEarnContextValues | undefined>(un
 export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
 
-  const { USGsUSGMetrics, loadUSGsUSGMetrics, lpUserPoints } = useUSGContext()
+  const { USGsUSGMetrics, lpUserPoints } = useUSGContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
@@ -73,8 +73,6 @@ export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
   }
 
   useEffect(() => {
-    loadUSGsUSGMetrics()
-
     fetchPoolsData()
   }, [currentAddress])
 

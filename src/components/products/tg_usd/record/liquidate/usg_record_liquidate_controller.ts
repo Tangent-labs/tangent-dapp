@@ -15,10 +15,12 @@ export function getLiquidateFormState(
 
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
-  } else if (isQuoteLoading) {
-    reasons.push("Quote loading.")
-  } else if (withdrawWeiValue > marketData?.collateralInfos?.positionCollateralAmount) {
-    reasons.push("Withdraw value too high.")
+  } else {
+    if (isQuoteLoading) {
+      reasons.push("Quote loading.")
+    } else if (withdrawWeiValue > marketData?.collateralInfos?.positionCollateralAmount) {
+      reasons.push("Withdraw value too high.")
+    }
   }
 
   const existingDebt = marketData.debtInfos?.userDebt || 0n

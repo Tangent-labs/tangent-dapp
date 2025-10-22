@@ -106,10 +106,8 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
     const { key, direction } = listState.sort!
 
     lpTasks.sort((elementA: UserTask, elementB: UserTask) => {
-      const aValue = elementA[key as keyof UserTask]
-      const bValue = elementB[key as keyof UserTask]
-      if (!aValue) return 1
-      if (!bValue) return 1
+      const aValue = elementA[key as keyof UserTask]!
+      const bValue = elementB[key as keyof UserTask]!
 
       if (aValue < bValue) return direction === "asc" ? -1 : 1
       if (aValue > bValue) return direction === "asc" ? 1 : -1

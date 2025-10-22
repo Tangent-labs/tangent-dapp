@@ -378,15 +378,20 @@ export const getGodsonsLeaderboard = async (
   }
 }
 
-export const getTotalSupply = async (dateTo: string, dateFrom: string, tokenAddress: string): Promise<Array<{ timestamp: Date; amount: string }>> => {
+export const getTotalSupply = async (dateTo: string, dateFrom: string | null, tokenAddress: string): Promise<Array<{ timestamp: Date; amount: string }>> => {
   try {
-    const url = `${baseUrl}/total-supply/${dateTo}/${dateFrom}/${tokenAddress}`
+    const url = `${baseUrl}/total-supply`
 
     const response = await fetch(url, {
-      method: "GET",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        dateTo,
+        dateFrom,
+        tokenAddress,
+      }),
     })
 
     if (!response.ok) {
@@ -394,10 +399,9 @@ export const getTotalSupply = async (dateTo: string, dateFrom: string, tokenAddr
     }
 
     const data: Array<{ timestamp: Date; amount: string }> = await response.json()
-
     return data
   } catch (error) {
-    console.error("Failed to fetch historical market data :", error)
+    console.error("Failed to fetch historical market data:", error)
     return []
   }
 }

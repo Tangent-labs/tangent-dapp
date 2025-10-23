@@ -81,7 +81,7 @@ type RsTanLockContextValues = {
 export const RsTanLockContext = createContext<RsTanLockContextValues | undefined>(undefined)
 
 export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
-  const { curveRoutes } = useRootContext()
+  const { curveRoutes, handleQuote } = useRootContext()
 
   const { getWalletClient, isWellConnected, currentAddress } = useWalletConnexionContext()
 
@@ -328,10 +328,10 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
       try {
         const { quote } = await getQuote(value, currentAddress, VSTAN_CONTRACT?.TAN, depositAssetInfo?.address, curveRoutes)
 
+        handleQuote(quote)
+
         if (quote) {
           setZapValue(quote)
-        } else {
-          toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." } })
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)
@@ -360,10 +360,10 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
       try {
         const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, VSTAN_CONTRACT?.TAN, curveRoutes)
 
+        handleQuote(quote)
+
         if (quote) {
           setDepositWeiValue(quote)
-        } else {
-          toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." } })
         }
       } catch (error) {
         console.error("Error fetching depositWeiValue:", error)

@@ -24,7 +24,7 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
     <RootProvider>
       <WalletConnexionProvider>
         <USGProvider tokens={tokens}>
-          <ToastContainer position="top-right" autoClose={5000} closeOnClick={true} />
+          <ToastContainer position="top-right" autoClose={2000} closeOnClick={true} />
           <MenuBarFeature />
           <div className="usg-container mx-auto mt-2 flex min-h-[80vh] w-full bg-repeat px-4 md:px-8">
             <div className="w-full">{children}</div>

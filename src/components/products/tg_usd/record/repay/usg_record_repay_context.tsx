@@ -78,7 +78,7 @@ type USGRepayContextValues = {
 export const USGRepayContext = createContext<USGRepayContextValues | undefined>(undefined)
 
 export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
-  const { curveRoutes } = useRootContext()
+  const { curveRoutes, handleQuote } = useRootContext()
 
   const { tokens, loadUSGsUSGMetrics } = useUSGContext()
 
@@ -367,10 +367,10 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
       try {
         const { quote } = await getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address, curveRoutes)
 
+        handleQuote(quote)
+
         if (quote) {
           setUsgRepayedValue(quote)
-        } else {
-          toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." } })
         }
       } catch (error) {
         console.error(error)

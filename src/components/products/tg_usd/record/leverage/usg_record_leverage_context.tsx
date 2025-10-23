@@ -85,7 +85,7 @@ type USGLeverageContextValues = {
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
 
 export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
-  const { curveRoutes } = useRootContext()
+  const { curveRoutes, handleQuote } = useRootContext()
 
   const { tokens, loadUSGsUSGMetrics } = useUSGContext()
 
@@ -195,10 +195,10 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       try {
         const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
 
+        handleQuote(quote)
+
         if (quote) {
           setDepositWeiValue(quote)
-        } else {
-          toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." } })
         }
       } catch (err) {
         console.error("Error fetching depositWeiValue:", err)

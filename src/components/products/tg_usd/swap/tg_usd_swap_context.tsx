@@ -80,7 +80,7 @@ type USGSwapContextValues = {
 export const USGSwapContext = createContext<USGSwapContextValues | undefined>(undefined)
 
 export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
-  const { curveRoutes } = useRootContext()
+  const { curveRoutes, handleQuote } = useRootContext()
 
   const { tokens, USGsUSGMetrics, lpUserPoints } = useUSGContext()
 
@@ -242,10 +242,10 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
       try {
         const { quote } = await getQuote(value, currentAddress, depositAssetInfo?.address, receiveAssetInfo?.address, curveRoutes)
 
+        handleQuote(quote)
+
         if (quote) {
           setDepositWeiValue(quote)
-        } else {
-          toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." } })
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)
@@ -287,12 +287,12 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
       try {
         const { quote } = await getQuote(value, currentAddress || zeroAddress, receiveAssetInfo?.address, depositAssetInfo?.address, curveRoutes)
 
+        handleQuote(quote)
+
         if (quote) {
           setReceiveWeiValue(quote)
-          setIsSwapLoading(false)
-        } else {
-          toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." } })
         }
+        setIsSwapLoading(false)
       } catch (error) {
         console.error("Error fetching zap value:", error)
         setIsSwapLoading(false)

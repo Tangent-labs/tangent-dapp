@@ -77,7 +77,7 @@ type USGDepositContextValues = {
 export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
 
 export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
-  const { curveRoutes } = useRootContext()
+  const { curveRoutes, handleQuote } = useRootContext()
 
   const { tokens, loadUSGsUSGMetrics } = useUSGContext()
 
@@ -168,10 +168,10 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
       try {
         const { quote } = await getQuote(value, currentAddress || zeroAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
 
+        handleQuote(quote)
+
         if (quote) {
           setZapValue(quote)
-        } else {
-          toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." } })
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)
@@ -200,10 +200,10 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
       try {
         const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
 
+        handleQuote(quote)
+
         if (quote) {
           setDepositWeiValue(quote)
-        } else {
-          toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." } })
         }
       } catch (error) {
         console.error("Error fetching depositWeiValue:", error)

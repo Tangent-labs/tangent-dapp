@@ -378,20 +378,15 @@ export const getGodsonsLeaderboard = async (
   }
 }
 
-export const getTotalSupply = async (dateTo: string, dateFrom: string | null, tokenAddress: string): Promise<Array<{ timestamp: Date; amount: string }>> => {
+export const getTotalSupply = async (dateTo: number, dateFrom: number | null, tokenAddress: string): Promise<Array<{ timestamp: Date; amount: string }>> => {
   try {
-    const url = `${baseUrl}/total-supply`
+    const url = `${baseUrl}/total-supply/${dateTo}/${dateFrom}/${tokenAddress}`
 
     const response = await fetch(url, {
-      method: "POST",
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        dateTo,
-        dateFrom,
-        tokenAddress,
-      }),
     })
 
     if (!response.ok) {

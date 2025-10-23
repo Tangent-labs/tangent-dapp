@@ -45,8 +45,8 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
 
     const rangeInMilliseconds = convertRange(range)
     const currentBlock = await getCurrentBlock()
-    const toIso = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
-    const fromIso = rangeInMilliseconds ? new Date(new Date(toIso).getTime() - rangeInMilliseconds).toISOString() : null
+    const toIso = Number(currentBlock.timestamp) * 1000
+    const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
 
     const usgSupply = await getTotalSupply(toIso, fromIso, USG_CONTRACT.USG)
 
@@ -63,8 +63,8 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
 
     const rangeInMilliseconds = convertRange(range)
     const currentBlock = await getCurrentBlock()
-    const toIso = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
-    const fromIso = rangeInMilliseconds ? new Date(new Date(toIso).getTime() - rangeInMilliseconds).toISOString() : null
+    const toIso = Number(currentBlock.timestamp) * 1000
+    const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
 
     const susgSupply = await getTotalSupply(toIso, fromIso, USG_CONTRACT.SUSG)
 
@@ -83,8 +83,8 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
       try {
         const currentBlock = await getCurrentBlock()
         const date = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
-        const toIso = new Date(new Date(date).getTime()).toISOString()
-        const fromIso = new Date(new Date(date).getTime() - 30 * 24 * 60 * 60 * 1000).toISOString()
+        const toIso = new Date(date).getTime()
+        const fromIso = new Date(date).getTime() - 30 * 24 * 60 * 60 * 1000
 
         const [usgSupply, sUsgSupply] = await Promise.all([getTotalSupply(toIso, fromIso, USG_CONTRACT.USG), getTotalSupply(toIso, fromIso, USG_CONTRACT.SUSG)])
 

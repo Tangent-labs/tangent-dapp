@@ -37,5 +37,5 @@ const RANGE_TO_MS: Record<string, number | null> = {
 }
 
 export const convertRange = (range: string): number | null => {
-  return RANGE_TO_MS[range] ?? RANGE_TO_MS["1m"]
+  return RANGE_TO_MS[range] ?? null
 }

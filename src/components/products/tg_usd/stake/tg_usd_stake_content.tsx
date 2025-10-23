@@ -6,6 +6,7 @@ import { formatUnits } from "viem"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { ExistingAsset, SelectOption } from "@/types"
 import { ForecastGraph } from "./tg_usd_staking_forecast"
+import { useRootContext } from "../../root/root_context"
 import { useUSGStakeContext } from "./tg_usd_stake_context"
 import { computeProjection } from "./tg_usd_stake_controller"
 import Divider from "@/components/design_system/structure/divider"
@@ -16,8 +17,8 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
-import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
 
 export default function USGStakeContent() {
   const {
@@ -38,6 +39,8 @@ export default function USGStakeContent() {
     stakePercentage,
     USGsUSGMetrics,
   } = useUSGStakeContext()
+
+  const { sUSGCurrentAPY } = useRootContext()
 
   const { connect } = useWalletConnexionContext()
 
@@ -121,7 +124,7 @@ export default function USGStakeContent() {
 
             <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">Supply</span>
-              <span className="text-lg font-semibold">{formatUnits(USGsUSGMetrics?.sUSGSupply || 0n, 18)} </span>
+              <span className="text-lg font-semibold">{formatNumber(Number(formatUnits(USGsUSGMetrics?.sUSGSupply || 0n, 18)), 0)} </span>
             </div>
             <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">sUSG</span>
@@ -129,7 +132,7 @@ export default function USGStakeContent() {
             </div>
             <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-1">
               <span className="text-black">APY</span>
-              <span className="text-lg font-semibold">15.32%</span>
+              <span className="text-lg font-semibold">{sUSGCurrentAPY}%</span>
             </div>
           </div>
         </div>
@@ -196,7 +199,7 @@ export default function USGStakeContent() {
 
           <ForecastGraph
             initialInvestment={Number(formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18))}
-            apr={15}
+            apr={sUSGCurrentAPY}
             additionalLiquidity={currentFeature === "stake" ? (weiValue ? Number(formatUnits(weiValue!, 18)) : 0) : 0}
           ></ForecastGraph>
 

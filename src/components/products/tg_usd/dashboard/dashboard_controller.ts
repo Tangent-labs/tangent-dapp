@@ -1,4 +1,4 @@
-import { formatDollar } from "@/lib/number_formatter"
+import { formatCompact } from "@/lib/number_formatter"
 
 export const COLORS = ["#A145FF", "#FA6298", "#FAA24B", "#F9D33D", "#88E143", "#00A6FF"]
 
@@ -19,23 +19,9 @@ export const mockBarChartData = [
   { date: "2025-04-07", uv: 3490 },
 ]
 
-export const formatYAxis = (tick: number) => `${formatDollar(tick / 1000000)}M$`
+export const formatYAxis = (tick: number) => `$${formatCompact(tick)}`
 
 export const formatXAxis = (tick: string) => {
   const date = new Date(tick)
   return `${date.toLocaleString("en-US", { month: "short" })} ${date.getDate()}`
-}
-
-const ONE_DAY_MS = 24 * 60 * 60 * 1000
-
-const RANGE_TO_MS: Record<string, number | null> = {
-  "1w": 7 * ONE_DAY_MS,
-  "1m": 30 * ONE_DAY_MS,
-  "3m": 90 * ONE_DAY_MS,
-  "1y": 365 * ONE_DAY_MS,
-  all: null,
-}
-
-export const convertRange = (range: string): number | null => {
-  return RANGE_TO_MS[range] ?? null
 }

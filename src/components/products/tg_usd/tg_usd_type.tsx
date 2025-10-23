@@ -545,3 +545,10 @@ export type StakeDaoAPRData = {
     projected: { total: number }
   }
 }
+
+export type SavingAccountsApy = {
+  timestamp: Date
+  value: number
+  key: string
+  tokenAddress: string
+}

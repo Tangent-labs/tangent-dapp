@@ -1,6 +1,6 @@
 "use client"
 
-import { formatCompactDollar, formatDollar } from "@/lib/number_formatter"
+import { formatCompact, formatDollar } from "@/lib/number_formatter"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 
 type UsgTotalBorrowProps = {
@@ -34,7 +34,7 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
             }
           />
 
-          <YAxis orientation="right" tickFormatter={(value) => formatCompactDollar(value)} />
+          <YAxis orientation="right" tickFormatter={(value) => `$${formatCompact(value)}`} />
 
           <Tooltip
             content={({ active, payload, label }) => {

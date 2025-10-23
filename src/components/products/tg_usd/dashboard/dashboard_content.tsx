@@ -3,21 +3,21 @@
 import { cn } from "@/lib/utils"
 import { ExistingAsset } from "@/types"
 import { formatDollar } from "@/lib/number_formatter"
+import { useRootContext } from "../../root/root_context"
 import { useUSGDashboardContext } from "./dashboard_context"
 import Divider from "@/components/design_system/structure/divider"
 import { MarketDebtData, TgUsdCollateralData } from "../tg_usd_type"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
-import { useUSGMaketListContext } from "../list/tg_usd_market_list_context"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { mockBarChartData, COLORS, formatXAxis, formatYAxis } from "./dashboard_controller"
 import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip } from "recharts"
 
 export const USGDashboardContent = () => {
-  const { globalData, userData } = useUSGMaketListContext()
+  const { globalData, userData } = useUSGDashboardContext()
 
-  const { totalSupplies, sUSGSelectedTab, USGSelectedTab, fetchUSGTotalSupplyData, fetchsUSGTotalSupplyData } = useUSGDashboardContext()
+  const { totalSupplies, sUSGSelectedTab, USGSelectedTab, fetchUSGTotalSupplyData, fetchsUSGTotalSupplyData, sUSGCurrentAPY } = useRootContext()
 
   const maxUv = Math.max(...mockBarChartData.map((item) => item.uv))
 
@@ -72,7 +72,7 @@ export const USGDashboardContent = () => {
           indicators={[
             { title: "sUSG ", value: globalData.sUSGPrice },
             { title: "Supply", value: globalData.sUSGSupply },
-            { title: "APY", value: globalData.APY },
+            { title: "APY", value: `${sUSGCurrentAPY}%` },
           ]}
         >
           <TokenImage token="sUSG" className="h-8 w-8" size={32} />
@@ -125,8 +125,8 @@ export const USGDashboardContent = () => {
 
                   <Tooltip
                     cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
-                    allowEscapeViewBox={{ x: true, y: true }}
-                    content={(props) => <CustomTooltip {...props} />}
+                    allowEscapeViewBox={{ x: false, y: false }}
+                    content={<CustomTooltip />}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -179,8 +179,8 @@ export const USGDashboardContent = () => {
                   <Area type="monotone" dataKey="uv" stroke="#00C2FF" fill="url(#gradientFill1)" />
                   <Tooltip
                     cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
-                    allowEscapeViewBox={{ x: true, y: true }}
-                    content={(props) => <CustomTooltip {...props} />}
+                    allowEscapeViewBox={{ x: false, y: false }}
+                    content={<CustomTooltip />}
                   />
                 </AreaChart>
               </ResponsiveContainer>

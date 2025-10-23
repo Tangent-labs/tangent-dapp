@@ -1,15 +1,37 @@
 "use client"
 
-import { useContext, useEffect, useState, createContext, ReactNode } from "react"
-import { CustomCurveRoutes } from "../tg_usd/global_quote_controller"
-
-import * as swapRoutes from "../tg_usd/swapRoutes.json"
 import { toast } from "react-toastify"
+import { convertRange } from "./root_controller"
+import { formatCompact } from "@/lib/number_formatter"
+import * as swapRoutes from "../tg_usd/swapRoutes.json"
+import { getCurrentBlock } from "@/services/service_rpc"
+import { SavingAccountsApy } from "../tg_usd/tg_usd_type"
+import { USG_CONTRACT } from "../tg_usd/tg_usd_repository"
 import { ToastComponent } from "@/components/design_system/toast"
+import { getSavingsAPY, getTotalSupply } from "../tg_usd/client_api"
+import { CustomCurveRoutes } from "../tg_usd/global_quote_controller"
+import { useContext, useEffect, useState, createContext, ReactNode, useMemo } from "react"
 
 export type RootContextValues = {
   curveRoutes: CustomCurveRoutes
   handleQuote: (quote: bigint) => bigint | null
+
+  isLoading: boolean
+  totalSupplies: {
+    USGTotalSupply: Array<{ date: number; uv: number }>
+    sUSGTotalSupply: Array<{ date: number; uv: number }>
+  }
+  USGSelectedTab: string
+  sUSGSelectedTab: string
+
+  fetchUSGTotalSupplyData: (r: string) => Promise<void>
+  fetchsUSGTotalSupplyData: (r: string) => Promise<void>
+
+  usgCurrentSupply: string
+
+  savingsAPY: SavingAccountsApy[]
+
+  sUSGCurrentAPY: number
 }
 
 const RootContext = createContext<RootContextValues | undefined>(undefined)
@@ -23,6 +45,10 @@ interface RootProviderProps {
 }
 
 export const RootProvider = ({ children }: RootProviderProps) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const [savingsAPY, setSavingsAPY] = useState<SavingAccountsApy[]>([])
+
   const [curveRoutes, setCurveRoutes] = useState<CustomCurveRoutes>({ errors: [], success: {} })
 
   const handleQuote = (quote: bigint) => {
@@ -87,7 +113,125 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     fetchAndStore(CUSTOM_CURVE_ROUTES_KEY)
   }, [])
 
-  const contextValue: RootContextValues = { curveRoutes, handleQuote }
+  const [USGSelectedTab, setUSGSelectedTab] = useState<string>("1m")
+
+  const [sUSGSelectedTab, setsUSGSelectedTab] = useState<string>("1m")
+
+  const [totalSupplies, setTotalSupplies] = useState<{
+    USGTotalSupply: Array<{ date: number; uv: number }>
+    sUSGTotalSupply: Array<{ date: number; uv: number }>
+  }>({
+    USGTotalSupply: [],
+    sUSGTotalSupply: [],
+  })
+
+  const fetchUSGTotalSupplyData = async (range: string) => {
+    setUSGSelectedTab(range)
+
+    const rangeInMilliseconds = convertRange(range)
+    const currentBlock = await getCurrentBlock()
+    const toIso = Number(currentBlock.timestamp) * 1000
+    const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
+
+    const usgSupply = await getTotalSupply(toIso, fromIso, USG_CONTRACT.USG)
+
+    const USGData = usgSupply.map((p) => ({
+      date: new Date(p.timestamp).getTime(),
+      uv: Number(p.amount),
+    }))
+
+    setTotalSupplies((prev) => ({ ...prev, USGTotalSupply: USGData }))
+  }
+
+  const fetchsUSGTotalSupplyData = async (range: string) => {
+    setsUSGSelectedTab(range)
+
+    const rangeInMilliseconds = convertRange(range)
+    const currentBlock = await getCurrentBlock()
+    const toIso = Number(currentBlock.timestamp) * 1000
+    const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
+
+    const susgSupply = await getTotalSupply(toIso, fromIso, USG_CONTRACT.SUSG)
+
+    const sUSGData = susgSupply.map((p) => ({
+      date: new Date(p.timestamp).getTime(),
+      uv: Number(p.amount),
+    }))
+
+    setTotalSupplies((prev) => {
+      return { ...prev, sUSGTotalSupply: sUSGData }
+    })
+  }
+
+  const fetchTotalSupplies = async () => {
+    try {
+      const currentBlock = await getCurrentBlock()
+      const date = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
+      const toIso = new Date(date).getTime()
+      const fromIso = new Date(date).getTime() - 30 * 24 * 60 * 60 * 1000
+
+      const [usgSupply, sUsgSupply] = await Promise.all([getTotalSupply(toIso, fromIso, USG_CONTRACT.USG), getTotalSupply(toIso, fromIso, USG_CONTRACT.SUSG)])
+
+      const USGData = usgSupply.map((p) => ({
+        date: new Date(p.timestamp).getTime(),
+        uv: Number(p.amount),
+      }))
+
+      const sUSGData = sUsgSupply.map((p) => ({
+        date: new Date(p.timestamp).getTime(),
+        uv: Number(p.amount),
+      }))
+
+      setTotalSupplies({ USGTotalSupply: USGData, sUSGTotalSupply: sUSGData })
+      setIsLoading(false)
+    } catch {
+      setIsLoading(false)
+      setTotalSupplies({ USGTotalSupply: [], sUSGTotalSupply: [] })
+    }
+  }
+
+  const fetchSavingsAPY = () => {
+    getSavingsAPY().then((apys) => {
+      setSavingsAPY(apys)
+    })
+  }
+
+  useEffect(() => {
+    setIsLoading(true)
+    fetchTotalSupplies()
+    fetchSavingsAPY()
+  }, [])
+
+  const usgCurrentSupply = useMemo(() => {
+    if (totalSupplies.USGTotalSupply && totalSupplies.USGTotalSupply.length > 0) {
+      const latestSupplyValue = totalSupplies.USGTotalSupply.reduce((latest, current) => (current.date > latest.date ? current : latest))
+
+      return formatCompact(latestSupplyValue.uv)
+    }
+    return "0"
+  }, [totalSupplies])
+
+  const sUSGCurrentAPY = useMemo(() => {
+    const apy = savingsAPY.find((v) => v.tokenAddress.toLowerCase() === USG_CONTRACT.SUSG.toLowerCase())
+
+    if (apy) return apy.value
+
+    return 0
+  }, [savingsAPY])
+
+  const contextValue: RootContextValues = {
+    curveRoutes,
+    handleQuote,
+    totalSupplies,
+    isLoading,
+    USGSelectedTab,
+    sUSGSelectedTab,
+    fetchUSGTotalSupplyData,
+    fetchsUSGTotalSupplyData,
+    usgCurrentSupply,
+    savingsAPY,
+    sUSGCurrentAPY,
+  }
 
   return <RootContext.Provider value={contextValue}>{children}</RootContext.Provider>
 }

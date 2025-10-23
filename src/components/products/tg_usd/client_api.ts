@@ -11,6 +11,7 @@ import {
   MarketAPR,
   GaugeAPR,
   StakeDaoAPRData,
+  SavingAccountsApy,
 } from "./tg_usd_type"
 
 export interface UserStatus {
@@ -397,6 +398,29 @@ export const getTotalSupply = async (dateTo: number, dateFrom: number | null, to
     return data
   } catch (error) {
     console.error("Failed to fetch historical market data:", error)
+    return []
+  }
+}
+
+export const getSavingsAPY = async (): Promise<SavingAccountsApy[]> => {
+  try {
+    const url = `${baseUrl}/savingAccounts/apy`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch savings APY")
+    }
+
+    const data: SavingAccountsApy[] = await response.json()
+    return data
+  } catch (error) {
+    console.error("Failed to fetch savings APY : ", error)
     return []
   }
 }

@@ -1,122 +1,34 @@
 "use client"
 
-import { getCurrentBlock } from "@/services/service_rpc"
-import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { USG_CONTRACT } from "../tg_usd_repository"
-import { convertRange } from "./dashboard_controller"
-import { getTotalSupply } from "../client_api"
+import { createContext, ReactNode, useContext } from "react"
+import { useUSGMaketListContext } from "../list/tg_usd_market_list_context"
+import { TgUsdCollateralData, MarketDebtData, TgUsdGlobalData } from "../tg_usd_type"
 
 type USGDashboardContextProps = {
   children: ReactNode
 }
 
 type USGDashboardContextValues = {
-  isLoading: boolean
-  totalSupplies: {
-    USGTotalSupply: Array<{ date: number; uv: number }>
-    sUSGTotalSupply: Array<{ date: number; uv: number }>
-  }
-  USGSelectedTab: string
-  sUSGSelectedTab: string
+  userData: {
+    totalUserDebt: bigint
+    totalUserDeposit: bigint
+    totalProtocolDeposit: bigint
+    totalProtocolDebt: bigint
+    tgUsdCollateralsData: TgUsdCollateralData[]
+    marketDebtData: MarketDebtData[]
+  } | null
 
-  fetchUSGTotalSupplyData: (r: string) => Promise<void>
-  fetchsUSGTotalSupplyData: (r: string) => Promise<void>
+  globalData: TgUsdGlobalData
 }
 
 export const USGDashboardContext = createContext<USGDashboardContextValues | undefined>(undefined)
 
 export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-
-  const [USGSelectedTab, setUSGSelectedTab] = useState<string>("1m")
-
-  const [sUSGSelectedTab, setsUSGSelectedTab] = useState<string>("1m")
-
-  const [totalSupplies, setTotalSupplies] = useState<{
-    USGTotalSupply: Array<{ date: number; uv: number }>
-    sUSGTotalSupply: Array<{ date: number; uv: number }>
-  }>({
-    USGTotalSupply: [],
-    sUSGTotalSupply: [],
-  })
-
-  const fetchUSGTotalSupplyData = async (range: string) => {
-    setUSGSelectedTab(range)
-
-    const rangeInMilliseconds = convertRange(range)
-    const currentBlock = await getCurrentBlock()
-    const toIso = Number(currentBlock.timestamp) * 1000
-    const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
-
-    const usgSupply = await getTotalSupply(toIso, fromIso, USG_CONTRACT.USG)
-
-    const USGData = usgSupply.map((p) => ({
-      date: new Date(p.timestamp).getTime(),
-      uv: Number(p.amount),
-    }))
-
-    setTotalSupplies((prev) => ({ ...prev, USGTotalSupply: USGData }))
-  }
-
-  const fetchsUSGTotalSupplyData = async (range: string) => {
-    setsUSGSelectedTab(range)
-
-    const rangeInMilliseconds = convertRange(range)
-    const currentBlock = await getCurrentBlock()
-    const toIso = Number(currentBlock.timestamp) * 1000
-    const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
-
-    const susgSupply = await getTotalSupply(toIso, fromIso, USG_CONTRACT.SUSG)
-
-    const sUSGData = susgSupply.map((p) => ({
-      date: new Date(p.timestamp).getTime(),
-      uv: Number(p.amount),
-    }))
-
-    setTotalSupplies((prev) => {
-      return { ...prev, sUSGTotalSupply: sUSGData }
-    })
-  }
-
-  useEffect(() => {
-    const fetchTotalSupplies = async () => {
-      try {
-        const currentBlock = await getCurrentBlock()
-        const date = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
-        const toIso = new Date(date).getTime()
-        const fromIso = new Date(date).getTime() - 30 * 24 * 60 * 60 * 1000
-
-        const [usgSupply, sUsgSupply] = await Promise.all([getTotalSupply(toIso, fromIso, USG_CONTRACT.USG), getTotalSupply(toIso, fromIso, USG_CONTRACT.SUSG)])
-
-        const USGData = usgSupply.map((p) => ({
-          date: new Date(p.timestamp).getTime(),
-          uv: Number(p.amount),
-        }))
-
-        const sUSGData = sUsgSupply.map((p) => ({
-          date: new Date(p.timestamp).getTime(),
-          uv: Number(p.amount),
-        }))
-
-        setTotalSupplies({ USGTotalSupply: USGData, sUSGTotalSupply: sUSGData })
-        setIsLoading(false)
-      } catch {
-        setIsLoading(false)
-        setTotalSupplies({ USGTotalSupply: [], sUSGTotalSupply: [] })
-      }
-    }
-
-    setIsLoading(true)
-    fetchTotalSupplies()
-  }, [])
+  const { globalData, userData } = useUSGMaketListContext()
 
   const contextValue: USGDashboardContextValues = {
-    totalSupplies,
-    isLoading,
-    USGSelectedTab,
-    sUSGSelectedTab,
-    fetchUSGTotalSupplyData,
-    fetchsUSGTotalSupplyData,
+    globalData,
+    userData,
   }
 
   return <USGDashboardContext.Provider value={contextValue}>{children}</USGDashboardContext.Provider>

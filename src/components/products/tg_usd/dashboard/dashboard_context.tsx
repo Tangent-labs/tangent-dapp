@@ -2,9 +2,9 @@
 
 import { getCurrentBlock } from "@/services/service_rpc"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { getTotalSupply } from "../api"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { convertRange } from "./dashboard_controller"
+import { getTotalSupply } from "../client_api"
 
 type USGDashboardContextProps = {
   children: ReactNode
@@ -44,11 +44,9 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
     setUSGSelectedTab(range)
 
     const rangeInMilliseconds = convertRange(range)
-
     const currentBlock = await getCurrentBlock()
-    const date = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
-    const toIso = new Date(new Date(date).getTime()).toISOString()
-    const fromIso = new Date(new Date(date).getTime() - rangeInMilliseconds).toISOString()
+    const toIso = Number(currentBlock.timestamp) * 1000
+    const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
 
     const usgSupply = await getTotalSupply(toIso, fromIso, USG_CONTRACT.USG)
 
@@ -57,20 +55,16 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
       uv: Number(p.amount),
     }))
 
-    setTotalSupplies((prev) => {
-      return { ...prev, USGTotalSupply: USGData }
-    })
+    setTotalSupplies((prev) => ({ ...prev, USGTotalSupply: USGData }))
   }
 
   const fetchsUSGTotalSupplyData = async (range: string) => {
     setsUSGSelectedTab(range)
 
     const rangeInMilliseconds = convertRange(range)
-
     const currentBlock = await getCurrentBlock()
-    const date = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
-    const toIso = new Date(new Date(date).getTime()).toISOString()
-    const fromIso = new Date(new Date(date).getTime() - rangeInMilliseconds).toISOString()
+    const toIso = Number(currentBlock.timestamp) * 1000
+    const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
 
     const susgSupply = await getTotalSupply(toIso, fromIso, USG_CONTRACT.SUSG)
 
@@ -89,8 +83,8 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
       try {
         const currentBlock = await getCurrentBlock()
         const date = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
-        const toIso = new Date(new Date(date).getTime()).toISOString()
-        const fromIso = new Date(new Date(date).getTime() - 30 * 24 * 60 * 60 * 1000).toISOString()
+        const toIso = new Date(date).getTime()
+        const fromIso = new Date(date).getTime() - 30 * 24 * 60 * 60 * 1000
 
         const [usgSupply, sUsgSupply] = await Promise.all([getTotalSupply(toIso, fromIso, USG_CONTRACT.USG), getTotalSupply(toIso, fromIso, USG_CONTRACT.SUSG)])
 

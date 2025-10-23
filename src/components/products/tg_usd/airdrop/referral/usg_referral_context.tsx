@@ -1,8 +1,8 @@
 "use client"
 
 import { Address } from "viem"
-import { getGodsonsLeaderboard } from "../../api"
 import { useUSGContext } from "../../tg_usd_context"
+import { getGodsonsLeaderboard } from "../../client_api"
 import { useUsgAirdropContext } from "../usg_airdrop_context"
 import { GodsonLeaderboard, Leaderboard } from "../../tg_usd_type"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"

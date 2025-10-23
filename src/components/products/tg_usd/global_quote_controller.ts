@@ -1,5 +1,5 @@
 import { Address } from "viem"
-import { getEnsoData } from "./api"
+import { getEnsoData } from "./server_api"
 import { PendleCollaterals, CurveCollaterals } from "./tg_usd_repository"
 import { getCustomQuote, getCustomRouterRoute } from "./curve_routing_controller"
 import { getCustomPendleQuote, getPendleCustomRouterRoute } from "./pendle_routing_controller"

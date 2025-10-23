@@ -81,7 +81,7 @@ type RsTanLockContextValues = {
 export const RsTanLockContext = createContext<RsTanLockContextValues | undefined>(undefined)
 
 export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
-  const { curveRoutes } = useRootContext()
+  const { curveRoutes, handleQuote } = useRootContext()
 
   const { getWalletClient, isWellConnected, currentAddress } = useWalletConnexionContext()
 
@@ -328,6 +328,8 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
       try {
         const { quote } = await getQuote(value, currentAddress, VSTAN_CONTRACT?.TAN, depositAssetInfo?.address, curveRoutes)
 
+        handleQuote(quote)
+
         if (quote) {
           setZapValue(quote)
         }
@@ -358,7 +360,11 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
       try {
         const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, VSTAN_CONTRACT?.TAN, curveRoutes)
 
-        setDepositWeiValue(quote)
+        handleQuote(quote)
+
+        if (quote) {
+          setDepositWeiValue(quote)
+        }
       } catch (error) {
         console.error("Error fetching depositWeiValue:", error)
       } finally {

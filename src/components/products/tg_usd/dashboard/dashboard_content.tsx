@@ -8,10 +8,11 @@ import Divider from "@/components/design_system/structure/divider"
 import { MarketDebtData, TgUsdCollateralData } from "../tg_usd_type"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import TokenImage from "@/components/design_system/structure/token_image"
+import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import { useUSGMaketListContext } from "../list/tg_usd_market_list_context"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { mockBarChartData, COLORS, formatXAxis, formatYAxis } from "./dashboard_controller"
-import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Area, AreaChart } from "recharts"
+import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip } from "recharts"
 
 export const USGDashboardContent = () => {
   const { globalData, userData } = useUSGMaketListContext()
@@ -19,6 +20,29 @@ export const USGDashboardContent = () => {
   const { totalSupplies, sUSGSelectedTab, USGSelectedTab, fetchUSGTotalSupplyData, fetchsUSGTotalSupplyData } = useUSGDashboardContext()
 
   const maxUv = Math.max(...mockBarChartData.map((item) => item.uv))
+
+  const CustomTooltip = (props: {
+    active?: boolean | undefined
+    payload?: Array<{ dataKey?: string | number | undefined; value?: ValueType | undefined }> | undefined
+    label?: number
+  }) => {
+    const date = new Date(props?.label as number)
+
+    const value = Number(props?.payload ? props?.payload[0]?.value : 0)
+
+    return (
+      <div className="pointer-events-none rounded-xl bg-[#070707] px-3 py-2 text-[10px]">
+        <div className="flex gap-1">
+          <div className="text-subtitle">Date : </div>
+          <div className="font-bold text-white">{date.toDateString()}</div>
+        </div>
+        <div className="flex gap-1">
+          <div className="text-subtitle">Total Supply :</div>
+          <div className="font-bold text-white"> {formatDollar(value, 0)}</div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex w-full flex-col items-start justify-start gap-2">
@@ -68,10 +92,11 @@ export const USGDashboardContent = () => {
               </div>
 
               <div className="flex gap-2">
-                <ButtonTab onClick={() => fetchUSGTotalSupplyData("1d")} label={"1d"} active={USGSelectedTab === "1d"} className="rounded-full !py-1" />
-                <ButtonTab onClick={() => fetchUSGTotalSupplyData("7d")} label={"7d"} active={USGSelectedTab === "7d"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchUSGTotalSupplyData("1w")} label={"1w"} active={USGSelectedTab === "1w"} className="rounded-full !py-1" />
                 <ButtonTab onClick={() => fetchUSGTotalSupplyData("1m")} label={"1m"} active={USGSelectedTab === "1m"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchUSGTotalSupplyData("3m")} label={"3m"} active={USGSelectedTab === "3m"} className="rounded-full !py-1" />
                 <ButtonTab onClick={() => fetchUSGTotalSupplyData("1y")} label={"1y"} active={USGSelectedTab === "1y"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchUSGTotalSupplyData("all")} label={"all"} active={USGSelectedTab === "all"} className="rounded-full !py-1" />
               </div>
             </div>
 
@@ -97,6 +122,12 @@ export const USGDashboardContent = () => {
                   <XAxis dataKey="date" tickFormatter={formatXAxis} scale="point" padding={{ left: 10, right: 10 }} />
                   <YAxis tickFormatter={formatYAxis} domain={[0, maxUv * 1.2]} />
                   <Area type="monotone" dataKey="uv" stroke="#00C2FF" fill="url(#gradientFill1)" />
+
+                  <Tooltip
+                    cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
+                    allowEscapeViewBox={{ x: true, y: true }}
+                    content={(props) => <CustomTooltip {...props} />}
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -115,10 +146,11 @@ export const USGDashboardContent = () => {
               </div>
 
               <div className="flex gap-2">
-                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("1d")} label={"1d"} active={sUSGSelectedTab === "1d"} className="rounded-full !py-1" />
-                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("7d")} label={"7d"} active={sUSGSelectedTab === "7d"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("1w")} label={"1w"} active={sUSGSelectedTab === "1w"} className="rounded-full !py-1" />
                 <ButtonTab onClick={() => fetchsUSGTotalSupplyData("1m")} label={"1m"} active={sUSGSelectedTab === "1m"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("3m")} label={"3m"} active={sUSGSelectedTab === "3m"} className="rounded-full !py-1" />
                 <ButtonTab onClick={() => fetchsUSGTotalSupplyData("1y")} label={"1y"} active={sUSGSelectedTab === "1y"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("all")} label={"all"} active={sUSGSelectedTab === "all"} className="rounded-full !py-1" />
               </div>
             </div>
 
@@ -143,7 +175,13 @@ export const USGDashboardContent = () => {
                   </defs>
                   <XAxis dataKey="date" tickFormatter={formatXAxis} scale="point" padding={{ left: 10, right: 10 }} />
                   <YAxis tickFormatter={formatYAxis} domain={[0, maxUv * 1.2]} />
+
                   <Area type="monotone" dataKey="uv" stroke="#00C2FF" fill="url(#gradientFill1)" />
+                  <Tooltip
+                    cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
+                    allowEscapeViewBox={{ x: true, y: true }}
+                    content={(props) => <CustomTooltip {...props} />}
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </div>

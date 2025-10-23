@@ -1,8 +1,8 @@
 "use client"
 
 import { ListState } from "@/types"
-import { getUserBoosts } from "../../api"
 import { Boost } from "../../tg_usd_type"
+import { getUserBoosts } from "../../client_api"
 import { useUSGContext } from "../../tg_usd_context"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"

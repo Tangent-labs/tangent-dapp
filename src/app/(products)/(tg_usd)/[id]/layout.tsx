@@ -6,10 +6,12 @@ import { loadMarketServerData } from "@/components/products/tg_usd/record/tg_usd
 import NotFound from "../../not-found"
 
 export default async function Layout({ params, children }: { params: { id: string }; children: ReactNode }) {
-  const collateral = params.id
+  const collateral = await params
+
+  const marketCollat = collateral?.id
 
   // Hack for Pendle markets
-  const toMarketSlug = collateral.replaceAll("~", "/").replaceAll("_", " ")
+  const toMarketSlug = marketCollat.replaceAll("~", "/").replaceAll("_", " ")
   const { marketInfo, collateralInfo } = await loadMarketServerData(toMarketSlug)
 
   if (!marketInfo) {
@@ -18,7 +20,7 @@ export default async function Layout({ params, children }: { params: { id: strin
 
   return (
     <USGMarketListProvider>
-      <USGRecordProvider collateral={collateral} collateralInfo={collateralInfo} marketInfo={marketInfo!}>
+      <USGRecordProvider collateral={marketCollat} collateralInfo={collateralInfo} marketInfo={marketInfo!}>
         <USGRecordLayout>{children}</USGRecordLayout>
       </USGRecordProvider>
     </USGMarketListProvider>

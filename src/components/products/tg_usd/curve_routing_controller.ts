@@ -19,9 +19,12 @@ const returnCustomQuoteData = async (customCurveRoutes: CustomCurveRoutes, token
 
   const quotes = await executeChainViewUnique<bigint[]>(abi as Abi, bytecode as Hex, [matchingRoutes])
 
-  const bestQuote: bigint = quotes!.reduce((a, b) => (a > b ? a : b))
+  if (quotes) {
+    const bestQuote: bigint = quotes.length > 0 ? quotes!.reduce((a, b) => (a > b ? a : b)) : 0n
 
-  return { matchingRoutes, quotes, bestQuote }
+    return { matchingRoutes, quotes, bestQuote }
+  }
+  return { matchingRoutes, quotes: [], bestQuote: 0n }
 }
 
 export const getCustomQuote = async (customCurveRoutes: CustomCurveRoutes, tokenIn: Address, tokenOut: Address, amount: bigint) => {

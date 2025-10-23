@@ -8,7 +8,7 @@ import { getBalances } from "./record/tg_usd_record_controller"
 import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { getLpUserPoints, getMarketAprs, getUserRefereesPoints, getVoteUserPoints } from "./api"
+import { getLpUserPoints, getMarketAprs, getUserRefereesPoints, getVoteUserPoints } from "./client_api"
 import { USGStakingInfo, LpUserPoints, ZapToken, VoteUserPoints, RefereesPoints, MarketAPR } from "./tg_usd_type"
 
 type USGContextProps = {

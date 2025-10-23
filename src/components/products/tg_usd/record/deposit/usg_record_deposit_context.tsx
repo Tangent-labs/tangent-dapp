@@ -77,7 +77,7 @@ type USGDepositContextValues = {
 export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
 
 export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
-  const { curveRoutes } = useRootContext()
+  const { curveRoutes, handleQuote } = useRootContext()
 
   const { tokens, loadUSGsUSGMetrics } = useUSGContext()
 
@@ -168,6 +168,8 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
       try {
         const { quote } = await getQuote(value, currentAddress || zeroAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
 
+        handleQuote(quote)
+
         if (quote) {
           setZapValue(quote)
         }
@@ -198,7 +200,11 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
       try {
         const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
 
-        setDepositWeiValue(quote)
+        handleQuote(quote)
+
+        if (quote) {
+          setDepositWeiValue(quote)
+        }
       } catch (error) {
         console.error("Error fetching depositWeiValue:", error)
       } finally {

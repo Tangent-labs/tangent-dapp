@@ -55,7 +55,7 @@ type USGLiquidateContextValues = {
 export const USGLiquidateContext = createContext<USGLiquidateContextValues | undefined>(undefined)
 
 export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => {
-  const { curveRoutes } = useRootContext()
+  const { curveRoutes, handleQuote } = useRootContext()
 
   const { loadUSGsUSGMetrics } = useUSGContext()
 
@@ -181,6 +181,8 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
 
       try {
         const { quote } = await getQuote(value, currentAddress, assetInfo?.address, marketData?.collateralInfo?.address, curveRoutes)
+
+        handleQuote(quote)
 
         if (quote) {
           setTgUSDReceivedValue(quote)

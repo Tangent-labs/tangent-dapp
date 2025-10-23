@@ -4,9 +4,12 @@ import { useContext, useEffect, useState, createContext, ReactNode } from "react
 import { CustomCurveRoutes } from "../tg_usd/global_quote_controller"
 
 import * as swapRoutes from "../tg_usd/swapRoutes.json"
+import { toast } from "react-toastify"
+import { ToastComponent } from "@/components/design_system/toast"
 
 export type RootContextValues = {
   curveRoutes: CustomCurveRoutes
+  handleQuote: (quote: bigint) => bigint | null
 }
 
 const RootContext = createContext<RootContextValues | undefined>(undefined)
@@ -21,6 +24,15 @@ interface RootProviderProps {
 
 export const RootProvider = ({ children }: RootProviderProps) => {
   const [curveRoutes, setCurveRoutes] = useState<CustomCurveRoutes>({ errors: [], success: {} })
+
+  const handleQuote = (quote: bigint) => {
+    if (quote) {
+      return quote
+    } else {
+      toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." } })
+      return null
+    }
+  }
 
   const fetchAndStore = async (localStorageKey: string) => {
     try {
@@ -75,7 +87,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     fetchAndStore(CUSTOM_CURVE_ROUTES_KEY)
   }, [])
 
-  const contextValue: RootContextValues = { curveRoutes }
+  const contextValue: RootContextValues = { curveRoutes, handleQuote }
 
   return <RootContext.Provider value={contextValue}>{children}</RootContext.Provider>
 }

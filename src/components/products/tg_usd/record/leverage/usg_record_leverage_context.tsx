@@ -85,7 +85,7 @@ type USGLeverageContextValues = {
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
 
 export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
-  const { curveRoutes } = useRootContext()
+  const { curveRoutes, handleQuote } = useRootContext()
 
   const { tokens, loadUSGsUSGMetrics } = useUSGContext()
 
@@ -195,7 +195,11 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       try {
         const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
 
-        setDepositWeiValue(quote)
+        handleQuote(quote)
+
+        if (quote) {
+          setDepositWeiValue(quote)
+        }
       } catch (err) {
         console.error("Error fetching depositWeiValue:", err)
       } finally {

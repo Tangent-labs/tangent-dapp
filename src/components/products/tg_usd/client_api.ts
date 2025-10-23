@@ -1,6 +1,5 @@
-"use server"
-
 import { Address } from "viem"
+
 import {
   Boost,
   MarketHistoricalData,
@@ -21,36 +20,6 @@ export interface UserStatus {
 }
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3100"
-
-export const getEnsoData = async (
-  amountIn: bigint,
-  tokenIn: Address,
-  tokenOut: Address,
-  fromAddress: Address | null,
-  receiver: Address,
-  minAmountOut: bigint
-) => {
-  try {
-    const url = `https://api.enso.finance/api/v1/shortcuts/route?chainId=1&fromAddress=${!!fromAddress ? fromAddress : receiver}&receiver=${receiver}&tokenIn=${tokenIn}&tokenOut=${tokenOut}&amountIn=${amountIn}&minAmountOut=${minAmountOut}&routingStrategy=router`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.NEXT_ENSO_API_KEY}`,
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`)
-    }
-
-    return await response.json()
-  } catch (error) {
-    console.error("Failed to fetch Enso data:", error)
-    return null
-  }
-}
 
 export const fetchGraphData = async (aggNumber: number, aggUnit: string, tokenIn: Address, start: number, end: number) => {
   try {
@@ -409,7 +378,7 @@ export const getGodsonsLeaderboard = async (
   }
 }
 
-export const getTotalSupply = async (dateTo: string, dateFrom: string, tokenAddress: string): Promise<Array<{ timestamp: Date; amount: string }>> => {
+export const getTotalSupply = async (dateTo: number, dateFrom: number | null, tokenAddress: string): Promise<Array<{ timestamp: Date; amount: string }>> => {
   try {
     const url = `${baseUrl}/total-supply/${dateTo}/${dateFrom}/${tokenAddress}`
 
@@ -425,10 +394,9 @@ export const getTotalSupply = async (dateTo: string, dateFrom: string, tokenAddr
     }
 
     const data: Array<{ timestamp: Date; amount: string }> = await response.json()
-
     return data
   } catch (error) {
-    console.error("Failed to fetch historical market data :", error)
+    console.error("Failed to fetch historical market data:", error)
     return []
   }
 }

@@ -1,14 +1,14 @@
 "use client"
 
 import { ListState } from "@/types"
-import { useUSGContext } from "../../tg_usd_context"
-import { UserTask, VoteTask } from "../../tg_usd_type"
-import { getUserTasks, getUserVoteTasks } from "../../api"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { getUserBalancesAndDebtForLpTasks, mapAirdropData } from "./usg_tasks_controller"
-import { USGMarkets } from "../../tg_usd_repository"
 import { Address, formatEther } from "viem"
+import { useUSGContext } from "../../tg_usd_context"
+import { USGMarkets } from "../../tg_usd_repository"
+import { UserTask, VoteTask } from "../../tg_usd_type"
+import { getUserTasks, getUserVoteTasks } from "../../client_api"
+import { getUserBalancesAndDebtForLpTasks, mapAirdropData } from "./usg_tasks_controller"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 type UsgTasksContextProps = {
   children: ReactNode

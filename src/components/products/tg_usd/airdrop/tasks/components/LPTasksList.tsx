@@ -2,12 +2,12 @@
 
 import { UserTask } from "../../../tg_usd_type"
 import { ExistingAsset, ListState } from "@/types"
+import { TaskStatus } from "../../components/TaskStatus"
 import { formatNumber, formatDollar } from "@/lib/number_formatter"
 import { IconSortHeader } from "@/components/icons/icon_sort_header"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { useListContext } from "@/components/design_system/list/list_context"
-import { TaskStatus } from "../../components/TaskStatus"
 
 export const lpListState: ListState = {
   search: undefined,
@@ -18,37 +18,41 @@ export const lpListState: ListState = {
 }
 
 const computeProtocolDisplay = (protocol: string) => {
+  let token: ExistingAsset
+  let label = ""
+
   switch (protocol.toLowerCase()) {
     case "tangent":
-      return (
-        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
-          <TokenImage token={"USG"} size={16} />
-          <span>Tangent</span>
-        </div>
-      )
-
+      token = "USG"
+      label = "Tangent"
+      break
     case "convex":
-      return (
-        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
-          <TokenImage token={"CVX"} size={16} />
-          <span>Convex</span>
-        </div>
-      )
+      token = "CVX"
+      label = "Convex"
+      break
     case "curve":
-      return (
-        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
-          <TokenImage token={"CRV"} size={16} />
-          <span>Curve</span>
-        </div>
-      )
+      token = "CRV"
+      label = "Curve"
+      break
     case "stakedao":
-      return (
-        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
-          <TokenImage token={"SDT"} size={16} />
-          <span>Stake DAO</span>
-        </div>
-      )
+      token = "SDT"
+      label = "Stake DAO"
+      break
+    case "pendle":
+      token = "PENDLE"
+      label = "Pendle"
+      break
+    default:
+      token = "CRV"
+      label = "Curve"
   }
+
+  return (
+    <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
+      <TokenImage token={token} size={16} />
+      <span>{label}</span>
+    </div>
+  )
 }
 
 const LpTaskListDisposition = ({ children }: { children: React.ReactNode[] }) => {

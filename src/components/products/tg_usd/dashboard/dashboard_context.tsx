@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, ReactNode, useContext } from "react"
+import { createContext, ReactNode, useContext, useMemo } from "react"
 import { useUSGMaketListContext } from "../list/tg_usd_market_list_context"
 import { TgUsdCollateralData, MarketDebtData, TgUsdGlobalData } from "../tg_usd_type"
 
@@ -19,6 +19,8 @@ type USGDashboardContextValues = {
   } | null
 
   globalData: TgUsdGlobalData
+
+  marketDebtMaxValue: number
 }
 
 export const USGDashboardContext = createContext<USGDashboardContextValues | undefined>(undefined)
@@ -26,9 +28,14 @@ export const USGDashboardContext = createContext<USGDashboardContextValues | und
 export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => {
   const { globalData, userData } = useUSGMaketListContext()
 
+  const marketDebtMaxValue = useMemo(() => {
+    return Math.max(...(userData?.marketDebtData?.filter((el: MarketDebtData) => el.value > 0).map((el: MarketDebtData) => el.value) || [1]))
+  }, [userData])
+
   const contextValue: USGDashboardContextValues = {
     globalData,
     userData,
+    marketDebtMaxValue,
   }
 
   return <USGDashboardContext.Provider value={contextValue}>{children}</USGDashboardContext.Provider>

@@ -411,6 +411,7 @@ export type MarketDebtData = {
   id: number
   value: number
   name: string
+  rawValue: bigint
 }
 
 export type TgUsdCollateralData = {

@@ -2,24 +2,23 @@
 
 import { cn } from "@/lib/utils"
 import { ExistingAsset } from "@/types"
-import { formatDollar } from "@/lib/number_formatter"
 import { useRootContext } from "../../root/root_context"
 import { useUSGDashboardContext } from "./dashboard_context"
 import Divider from "@/components/design_system/structure/divider"
 import { MarketDebtData, TgUsdCollateralData } from "../tg_usd_type"
+import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import TokenImage from "@/components/design_system/structure/token_image"
+import { COLORS, formatXAxis, formatYAxis } from "./dashboard_controller"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
+import InnerTooltip from "@/components/design_system/structure/inner_tooltip"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
-import { mockBarChartData, COLORS, formatXAxis, formatYAxis } from "./dashboard_controller"
 import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip } from "recharts"
 
 export const USGDashboardContent = () => {
-  const { globalData, userData } = useUSGDashboardContext()
+  const { globalData, userData, marketDebtMaxValue } = useUSGDashboardContext()
 
   const { totalSupplies, sUSGSelectedTab, USGSelectedTab, fetchUSGTotalSupplyData, fetchsUSGTotalSupplyData, sUSGCurrentAPY } = useRootContext()
-
-  const maxUv = Math.max(...mockBarChartData.map((item) => item.uv))
 
   const CustomTooltip = (props: {
     active?: boolean | undefined
@@ -120,7 +119,7 @@ export const USGDashboardContent = () => {
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="date" tickFormatter={formatXAxis} scale="point" padding={{ left: 10, right: 10 }} />
-                  <YAxis tickFormatter={formatYAxis} domain={[0, maxUv * 1.2]} />
+                  <YAxis tickFormatter={formatYAxis} />
                   <Area type="monotone" dataKey="uv" stroke="#00C2FF" fill="url(#gradientFill1)" />
 
                   <Tooltip
@@ -173,10 +172,13 @@ export const USGDashboardContent = () => {
                       <stop offset="100%" stopColor="#0075FF" stopOpacity={0} />
                     </linearGradient>
                   </defs>
+
                   <XAxis dataKey="date" tickFormatter={formatXAxis} scale="point" padding={{ left: 10, right: 10 }} />
-                  <YAxis tickFormatter={formatYAxis} domain={[0, maxUv * 1.2]} />
+
+                  <YAxis tickFormatter={formatYAxis} />
 
                   <Area type="monotone" dataKey="uv" stroke="#00C2FF" fill="url(#gradientFill1)" />
+
                   <Tooltip
                     cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
                     allowEscapeViewBox={{ x: false, y: false }}
@@ -260,23 +262,27 @@ export const USGDashboardContent = () => {
             </div>
 
             <div className="scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent flex w-full flex-col gap-1 overflow-y-auto">
-              {(() => {
-                const maxValue = Math.max(
-                  ...(userData?.marketDebtData?.filter((el: MarketDebtData) => el.value > 0).map((el: MarketDebtData) => el.value) || [1])
-                )
-
-                return userData?.marketDebtData
-                  ?.filter((el: MarketDebtData) => el.value > 0)
-                  .map((data: MarketDebtData) => (
-                    <div key={data.id} className="flex w-full items-center justify-start gap-2">
-                      <div className="h-2 flex-grow rounded-full bg-blue-500" style={{ maxWidth: `${(data.value / (maxValue + 20)) * 100}%` }}></div>
+              {userData?.marketDebtData
+                ?.filter((el: MarketDebtData) => el.value > 0)
+                .map((data: MarketDebtData) => (
+                  <InnerTooltip
+                    innerContent={
+                      <div className="flex min-w-24 items-center justify-center gap-2 px-4">
+                        <div className="text-subtitle">Debt:</div>
+                        <div className="text-white">${formatBigInt(data.rawValue, 18, 2)}</div>
+                      </div>
+                    }
+                    key={data.id}
+                  >
+                    <div key={data.id} className="flex w-full cursor-pointer items-center justify-start gap-2">
+                      <div className="h-2 flex-grow rounded-full bg-blue-500" style={{ maxWidth: `${(data.value / (marketDebtMaxValue + 20)) * 100}%` }}></div>
                       <div className="flex min-w-[120px] flex-shrink-0 items-center justify-start gap-1 text-xs">
                         <span className="font-semibold">{data.value}%</span>
                         <span>{data.name}</span>
                       </div>
                     </div>
-                  ))
-              })()}
+                  </InnerTooltip>
+                ))}
             </div>
           </div>
         </div>

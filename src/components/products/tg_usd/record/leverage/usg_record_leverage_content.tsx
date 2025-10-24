@@ -164,7 +164,7 @@ export default function USGLeverageContent() {
         </>
       )}
 
-      {depositAsset && depositAsset !== collateralInfo?.symbol && (
+      {!isDepositDisabled && depositAsset && depositAsset !== collateralInfo?.symbol && (
         <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-start justify-start">

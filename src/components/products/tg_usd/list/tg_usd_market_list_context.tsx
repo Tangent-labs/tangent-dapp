@@ -20,7 +20,7 @@ type USGMaketListContextValues = {
   setSearchValue: (value: string | null) => void
   sortMarketList: (arg: ListState) => void
 
-  marketData: Array<{ marketType: "Convex_CRV" | "Convex_FXN" | undefined; marketAddress: Address; constants: MarketConstants }>
+  marketData: Array<{ marketType: "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | undefined; marketAddress: Address; constants: MarketConstants }>
   userData: {
     totalUserDebt: bigint
     totalUserDeposit: bigint
@@ -99,7 +99,9 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     return transformGlobalData(onChainData)
   }, [onChainData])
 
-  const marketData = useMemo<Array<{ marketType: "Convex_CRV" | "Convex_FXN" | undefined; marketAddress: Address; constants: MarketConstants }>>(() => {
+  const marketData = useMemo<
+    Array<{ marketType: "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | undefined; marketAddress: Address; constants: MarketConstants }>
+  >(() => {
     if (onChainData) {
       return transformMarketData(onChainData)
     }

@@ -10,7 +10,7 @@ interface ListAssetProps {
   name: string
   token: ExistingAsset
   assetsEarned?: { token: ExistingAsset }[]
-  marketData?: { marketType: "Convex_CRV" | "Convex_FXN" | undefined; marketAddress: Address; constants: MarketConstants } | null
+  marketData?: { marketType: "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | undefined; marketAddress: Address; constants: MarketConstants } | null
   className?: string
 }
 

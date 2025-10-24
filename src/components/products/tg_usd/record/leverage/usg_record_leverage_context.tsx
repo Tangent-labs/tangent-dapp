@@ -426,7 +426,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         leverageExceedsMaxLtv,
         depositWeiValue,
         borrowWeiValue,
-        isDepositDisabled,
+        !isDepositDisabled,
         isWellConnected,
         depositAssetInfo!,
         collateralInfo!,

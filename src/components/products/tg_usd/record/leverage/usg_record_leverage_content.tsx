@@ -59,11 +59,11 @@ export default function USGLeverageContent() {
     maxDepositString,
   } = useUSGLeverageContext()
 
-  const { collateralInfo, marketData, balanceAllowanceData, marketInfo, pricedCollateralInfo, USGInfo } = useUSGRecordContext()
-
   const { balances } = useUSGContext()
 
   const { connect } = useWalletConnexionContext()
+
+  const { collateralInfo, marketData, balanceAllowanceData, marketInfo, pricedCollateralInfo, USGInfo, maxBorrowCapReached } = useUSGRecordContext()
 
   const AssetSelect = () => {
     const tokenOptions = tokens.map((el: ZapToken) => ({
@@ -240,6 +240,12 @@ export default function USGLeverageContent() {
           <div className="flex w-full items-center justify-center text-xs text-red-500">
             Price impact too high. Reduce your leverage or add more collateral.
           </div>
+        )}
+      </>
+
+      <>
+        {(!!zapValue || !!depositWeiValue) && maxBorrowCapReached && (
+          <div className="flex w-full items-center justify-center text-xs text-red-500">Max borrow cap reached. You cannot borrow USG for now</div>
         )}
       </>
 

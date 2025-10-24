@@ -26,7 +26,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 export default function USGDepositContent() {
   const { balances } = useUSGContext()
 
-  const { collateralInfo, marketData, USGInfo, balanceAllowanceData, marketInfo } = useUSGRecordContext()
+  const { collateralInfo, marketData, USGInfo, balanceAllowanceData, marketInfo, maxBorrowCapReached } = useUSGRecordContext()
 
   const { connect } = useWalletConnexionContext()
 
@@ -209,19 +209,26 @@ export default function USGDepositContent() {
           <BorrowInput
             displaySliderInput={true}
             borrowAmount={borrowWeiValue}
+            disabled={maxBorrowCapReached}
             labelDeposit="You borrow"
             depositSelect={<BorrowAssetDisplay />}
             borrowAsset={USGInfo}
-            setMaxBalance={() => setBorrowWeiValue(maxBorrowableValue)}
+            setMaxBalance={maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue)}
             balance={maxBorrowableValue}
             percentage={borrowSliderPercent}
-            setPercentage={setBorrowSliderPercent}
+            setPercentage={maxBorrowCapReached ? () => {} : setBorrowSliderPercent}
             onValueChange={(value: bigint | undefined) => {
               setBorrowWeiValue(value)
             }}
           />
         </div>
       )}
+
+      <>
+        {!borrowWeiValue && isDepositAndBorrow && maxBorrowCapReached && (
+          <div className="flex w-full items-center justify-center text-xs text-red-500">Max borrow cap reached. You cannot borrow USG for now</div>
+        )}
+      </>
 
       <FormButtons
         actions={{

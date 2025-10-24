@@ -10,11 +10,11 @@ import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export default function USGRecordBorrowContent() {
-  const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, borrowPercentage, maxBorrowableValue } = useUSGBorrowContext()
-
-  const { USGInfo } = useUSGRecordContext()
-
   const { connect } = useWalletConnexionContext()
+
+  const { USGInfo, maxBorrowCapReached } = useUSGRecordContext()
+
+  const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, borrowPercentage, maxBorrowableValue } = useUSGBorrowContext()
 
   const BorrowAssetDisplay = () => {
     return (
@@ -36,22 +36,29 @@ export default function USGRecordBorrowContent() {
         <BorrowInput
           displaySliderInput={true}
           borrowAmount={borrowWeiValue}
+          disabled={maxBorrowCapReached}
           labelDeposit="You borrow"
           depositSelect={<BorrowAssetDisplay />}
           borrowAsset={USGInfo}
-          setMaxBalance={() => setBorrowWeiValue(maxBorrowableValue)}
+          setMaxBalance={maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue)}
           balance={maxBorrowableValue}
           onValueChange={(value: bigint | undefined) => {
             setBorrowWeiValue(value)
           }}
           percentage={borrowPercentage}
-          setPercentage={setBorrowPercentage}
+          setPercentage={maxBorrowCapReached ? () => {} : setBorrowPercentage}
         />
       </div>
 
       <>
         {!!borrowWeiValue && formState?.cantProcessReasons.length > 0 && (
           <div className="flex w-full items-center justify-center text-xs text-red-500">{formState?.cantProcessReasons[0]}</div>
+        )}
+      </>
+
+      <>
+        {!borrowWeiValue && maxBorrowCapReached && (
+          <div className="flex w-full items-center justify-center text-xs text-red-500">Max borrow cap reached. You cannot borrow USG for now</div>
         )}
       </>
 

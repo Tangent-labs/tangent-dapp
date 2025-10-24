@@ -81,9 +81,9 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
 
   const { tokens, loadUSGsUSGMetrics } = useUSGContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo } = useUSGRecordContext()
-
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+
+  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo } = useUSGRecordContext()
 
   const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(false)
 

@@ -3,7 +3,6 @@ export const metadata: Metadata = {
   title: "Tangent",
   description: "the tangent DAPP",
 }
-import { ToastContainer } from "react-toastify"
 import { ReactNode } from "react"
 import { WalletConnexionProvider } from "@/components/products/wallet/wallet_connexion_context"
 import MenuBarFeature from "@/components/products/product_nav/menu_bar_feature"
@@ -24,7 +23,6 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
     <RootProvider>
       <WalletConnexionProvider>
         <USGProvider tokens={tokens}>
-          <ToastContainer position="top-right" autoClose={2000} closeOnClick={true} />
           <MenuBarFeature />
           <div className="usg-container mx-auto flex min-h-[80vh] w-full bg-repeat px-4 md:px-8">
             <div className="w-full">{children}</div>

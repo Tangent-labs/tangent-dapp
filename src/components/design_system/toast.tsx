@@ -4,9 +4,10 @@ import { IconBell } from "../icons/icon_bell"
 
 type ToastContentProps = {
   data: { content: string; type: "Success" | "Notification" | "Error" | "Pending Transaction" }
+  closeToast?: () => void
 }
 
-export const ToastComponent = ({ data }: ToastContentProps) => {
+export const ToastComponent = ({ data, closeToast }: ToastContentProps) => {
   const computedTitleClass = () => {
     switch (data.type) {
       case "Error":
@@ -23,13 +24,13 @@ export const ToastComponent = ({ data }: ToastContentProps) => {
   const computedIcon = () => {
     switch (data.type) {
       case "Error":
-        return <IconBell className="mr-2 w-4 fill-danger"></IconBell>
+        return <IconBell className="mr-2 w-4 fill-danger" />
       case "Notification":
-        return <IconBell className="mr-2 w-4 fill-tonic"></IconBell>
+        return <IconBell className="mr-2 w-4 fill-tonic" />
       case "Success":
-        return <IconBell className="mr-2 w-4 fill-success"></IconBell>
+        return <IconBell className="mr-2 w-4 fill-success" />
       case "Pending Transaction":
-        return <IconBell className="mr-2 w-4 fill-light-tonic"></IconBell>
+        return <IconBell className="mr-2 w-4 fill-light-tonic" />
     }
   }
 
@@ -40,7 +41,9 @@ export const ToastComponent = ({ data }: ToastContentProps) => {
           {computedIcon()}
           {data?.type}
         </div>
-        <div className="flex w-12 items-center justify-center text-xs text-subtitle hover:text-white">✕</div>
+        <div onClick={closeToast} className="flex w-12 items-center justify-center text-xs text-subtitle hover:text-white">
+          ✕
+        </div>
       </div>
       <div className="flex items-start justify-start p-2 text-xs text-subtitle">{data?.content}</div>
     </div>

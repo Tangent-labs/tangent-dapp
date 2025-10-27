@@ -204,12 +204,12 @@ export type MarketDetailData = {
   sociabilization?: SociabilizationData
 }
 
-export type TgUsdtMarketDepositParams = TgUsdtMarketBorrowParams & {
+export type USGMarketDepositParams = USGMarketBorrowParams & {
   isDepositAndBorrow: boolean
   depositWeiValue: bigint
 }
 
-export type TgUsdtMarketBorrowParams = {
+export type USGMarketBorrowParams = {
   borrowWeiValue?: bigint
   marketAddress: Address
 }

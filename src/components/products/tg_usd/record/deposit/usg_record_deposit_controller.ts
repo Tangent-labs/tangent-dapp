@@ -1,9 +1,9 @@
 import { CollateralInfo } from "@/types"
-import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getBorrowCommonFormState } from "../tg_usd_record_controller"
-import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
-import { BalanceAllowanceData, MarketDetailData, USGMarketDepositParams, ZapMarketData } from "../../tg_usd_type"
+import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
+import { BalanceAllowanceData, MarketAPR, MarketDetailData, USGMarketDepositParams, ZapMarketData } from "../../tg_usd_type"
 
 export function getDepositFormState(
   marketData?: MarketDetailData,
@@ -142,4 +142,22 @@ export const doZapDeposit = async (marketAddress: Address, walletClient: WalletC
   const txData = { ...estimateGasData, gas }
   const hash = await walletClient.writeContract(txData as WriteContractParameters)
   return hash
+}
+
+export const computeAprVariation = (marketAprs: MarketAPR[], marketData: MarketDetailData, inputValue: bigint) => {
+  const currentMarketApr = marketAprs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())
+
+  if (currentMarketApr) {
+    const totalCurrentAPR = Object.values(currentMarketApr?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+
+    if (marketData && currentMarketApr && currentMarketApr?.currentAPR) {
+      const newAPR =
+        (marketData?.collateralInfos.totalCollateralAmount * BigInt(totalCurrentAPR * 100)) / (marketData?.collateralInfos.totalCollateralAmount + inputValue)
+
+      return { aprVariation: { current: `${totalCurrentAPR}% =>`, updated: `${Number(newAPR) / 100}%` } }
+    }
+
+    return { aprVariation: { current: `${totalCurrentAPR}% =>`, updated: "-" } }
+  }
+  return { aprVariation: { current: `- =>`, updated: "-" } }
 }

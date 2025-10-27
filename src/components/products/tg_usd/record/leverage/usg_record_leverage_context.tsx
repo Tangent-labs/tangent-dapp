@@ -386,12 +386,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       return { sum, result }
     }
     return { sum: "", result: `0 ${collateralInfo?.symbol}` }
-  }, [
-    zapValue,
-    depositWeiValue,
-    leveragedCollateralQuote,
-    collateralInfo?.symbol, // include symbol
-  ])
+  }, [zapValue, depositWeiValue, leveragedCollateralQuote, collateralInfo?.symbol])
 
   const estimatedZapDollarValue = useMemo(() => {
     if (zapValue && marketData) {

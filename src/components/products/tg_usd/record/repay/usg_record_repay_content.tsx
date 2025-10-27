@@ -9,8 +9,6 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGContext } from "../../tg_usd_context"
 import { USG_CONTRACT } from "../../tg_usd_repository"
 import { IconThunder } from "@/components/icons/icon_thunder"
-import { IconChevron } from "@/components/icons/icon_chevron"
-import Panel from "@/components/design_system/structure/panel"
 import { useUSGRepayContext } from "./usg_record_repay_context"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
@@ -149,17 +147,54 @@ export default function USGRepayContent() {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex w-full items-end justify-end gap-2">
-        <div className="flex items-center gap-2 self-end">
-          <span className="text-sm text-subtitle">Repay and withdraw</span>
-          <Switch checked={isRepayAndWithdraw} onCheckedChange={(v) => setIsRepayAndWithdraw(v)} />
+      <div className="flex w-full items-center justify-between">
+        <div className="flex w-full items-start justify-start gap-2">
+          <div className="flex items-center gap-2 self-end">
+            <span className="text-sm text-subtitle">Repay and withdraw</span>
+            <Switch checked={isRepayAndWithdraw} onCheckedChange={(v) => setIsRepayAndWithdraw(v)} />
+          </div>
+
+          <div className="flex items-center gap-2 self-end">
+            <span className="text-sm text-subtitle">Repay All</span>
+            <Switch checked={isRepayMax} onCheckedChange={(v) => onClickMax(v)} />
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 self-end">
-          <span className="text-sm text-subtitle">Repay All</span>
-          <Switch checked={isRepayMax} onCheckedChange={(v) => onClickMax(v)} />
+        <div className="flex items-center justify-start gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2">
+                <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
+                <button type="button" title="Slippage">
+                  <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
+                    <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
+                  </div>
+                </button>
+              </BorderPanel>
+            </PopoverTrigger>
+            <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none">
+              <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
+                <div className="flex w-full flex-col items-center justify-between gap-2">
+                  <div className="flex w-full items-center justify-start">Slippage</div>
+                  <input
+                    onChange={(e) => setSlippage(Number(e?.target?.value))}
+                    value={slippage || 0}
+                    placeholder="0.5"
+                    type="number"
+                    className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
+                  />
+                  <div className="mt-2 flex w-full items-center justify-between gap-2">
+                    <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />
+                    <ButtonTab onClick={() => setSlippage(1)} label={"1.0%"} active={slippage === 1} className="rounded-full !px-2 !py-1" />
+                    <ButtonTab onClick={() => setSlippage(2)} label={"2.0%"} active={slippage === 2} className="rounded-full !px-2 !py-1" />
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
+
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
           <span className="text-sm font-semibold md:text-xl">Repay debt</span>
@@ -261,71 +296,6 @@ export default function USGRepayContent() {
         formState={formState}
         labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}
       />
-
-      <div className="flex w-full items-end justify-between gap-2">
-        <Popover>
-          <PopoverTrigger asChild>
-            <button type="button" className="w-full" title="Slippage">
-              <div
-                style={{ borderWidth: 1.5 }}
-                className="flex h-[30px] w-full cursor-pointer items-center justify-between rounded-[10px] border-white/30 px-2 text-xs text-primary hover:bg-white/20"
-              >
-                Details
-                <IconChevron className="h-auto w-[12px] text-row-tonic" />
-              </div>
-            </button>
-          </PopoverTrigger>
-          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="z-20 !m-0 w-96 !border-none bg-[#070707] !p-0">
-            <Panel className="!border-none">
-              <div className="flex w-full flex-col items-center justify-center text-primary">
-                {slippage && slippage > 0 ? (
-                  <div className="flex w-full items-center justify-between">
-                    <div className="flex justify-start">Max slippage</div>
-                    <div className="flex justify-end">{slippage}%</div>
-                  </div>
-                ) : null}
-
-                <div className="flex w-full items-center justify-between">
-                  <div className="flex justify-start">Zapping fee</div>
-                  <div className="flex justify-end">--</div>
-                </div>
-              </div>
-            </Panel>
-          </PopoverContent>
-        </Popover>
-
-        <Popover>
-          <PopoverTrigger asChild>
-            <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2">
-              <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
-              <button type="button" title="Slippage">
-                <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
-                  <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
-                </div>
-              </button>
-            </BorderPanel>
-          </PopoverTrigger>
-          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none">
-            <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
-              <div className="flex w-full flex-col items-center justify-between gap-2">
-                <div className="flex w-full items-center justify-start">Slippage</div>
-                <input
-                  onChange={(e) => setSlippage(Number(e?.target?.value))}
-                  value={slippage || 0}
-                  placeholder="0.5"
-                  type="number"
-                  className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
-                />
-                <div className="mt-2 flex w-full items-center justify-between gap-2">
-                  <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />
-                  <ButtonTab onClick={() => setSlippage(1)} label={"1.0%"} active={slippage === 1} className="rounded-full !px-2 !py-1" />
-                  <ButtonTab onClick={() => setSlippage(2)} label={"2.0%"} active={slippage === 2} className="rounded-full !px-2 !py-1" />
-                </div>
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div>
     </div>
   )
 }

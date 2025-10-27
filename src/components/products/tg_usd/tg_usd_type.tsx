@@ -123,7 +123,7 @@ export interface ChainViewMarketRow {
 export interface CollateralInfos {
   collateralToken: ERC20StaticInfos
   totalCollateralUSDValue: bigint
-  totalCollateralAmount: string
+  totalCollateralAmount: bigint
   collateralUSDPrice: bigint
   positionCollateralAmount: bigint
   positionCollateralUSDValue: bigint

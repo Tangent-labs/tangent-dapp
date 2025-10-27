@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { cn } from "@/lib/utils"
 import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
 import { Switch } from "@/components/ui/switch"
@@ -21,7 +22,6 @@ import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function USGDepositContent() {
   const { balances } = useUSGContext()
@@ -62,6 +62,7 @@ export default function USGDepositContent() {
     borrowSliderPercent,
     maxBorrowableValue,
     maxDepositString,
+    quoteDetail,
   } = useUSGDepositContext()
 
   const AssetSelect = () => {
@@ -141,10 +142,44 @@ export default function USGDepositContent() {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-end gap-2">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm text-subtitle">Deposit and borrow</span>
           <Switch checked={isDepositAndBorrow} onCheckedChange={(v) => setIsDepositAndBorrow(v)} />
+        </div>
+
+        <div className="items-end justify-end gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2 font-gilroy">
+                <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
+                <button type="button" title="Slippage">
+                  <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
+                    <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
+                  </div>
+                </button>
+              </BorderPanel>
+            </PopoverTrigger>
+            <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none font-gilroy">
+              <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
+                <div className="flex w-full flex-col items-center justify-between gap-2">
+                  <div className="flex w-full items-center justify-start">Slippage</div>
+                  <input
+                    onChange={(e) => setSlippage(Number(e?.target?.value))}
+                    value={slippage || 0}
+                    placeholder="0.5"
+                    type="number"
+                    className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
+                  />
+                  <div className="mt-2 flex w-full items-center justify-between gap-2">
+                    <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />
+                    <ButtonTab onClick={() => setSlippage(1)} label={"1.0%"} active={slippage === 1} className="rounded-full !px-2 !py-1" />
+                    <ButtonTab onClick={() => setSlippage(2)} label={"2.0%"} active={slippage === 2} className="rounded-full !px-2 !py-1" />
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
@@ -224,6 +259,26 @@ export default function USGDepositContent() {
         </div>
       )}
 
+      <div className="flex flex-col gap-2">
+        <span className="text-sm font-semibold md:text-xl">Recap</span>
+
+        <div className={cn("flex flex-col gap-1 rounded-[10px] bg-overlay-panel p-2 text-xs", isDepositLoading ? "shimmer" : "")}>
+          <div className="flex w-full items-center justify-between">
+            <span className="text-subtitle">APR variation : </span>
+            <div className="flex items-center justify-center gap-1">
+              <span className="text-white">{quoteDetail.aprVariation.current}</span>
+              <span className="text-tonic">{quoteDetail.aprVariation.updated}</span>
+            </div>
+          </div>
+
+          <div className="flex w-full items-center justify-between">
+            <span className="text-subtitle">Expected : </span>
+
+            <span className="text-white">{quoteDetail.expected}</span>
+          </div>
+        </div>
+      </div>
+
       <>
         {!borrowWeiValue && isDepositAndBorrow && maxBorrowCapReached && (
           <div className="flex w-full items-center justify-center text-xs text-red-500">Max borrow cap reached. You cannot borrow USG for now</div>
@@ -239,72 +294,6 @@ export default function USGDepositContent() {
         labelProcess={"Deposit"}
         connect={connect}
       />
-
-      <div className="flex w-full items-start justify-between gap-2">
-        <Accordion className="w-full" type="single" collapsible>
-          <AccordionItem value="item-1">
-            <BorderPanel className="flex w-full cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
-              <AccordionTrigger>
-                <span className="py-1.5">Details</span>
-              </AccordionTrigger>
-              <AccordionContent className="w-full">
-                <div className="flex w-full flex-col items-center justify-center text-xs text-primary">
-                  {gas && gas > 0 ? (
-                    <div className="flex w-full items-center justify-between">
-                      <div className="flex justify-start">Network cost</div>
-                      <div className="flex justify-end">${gas}</div>
-                    </div>
-                  ) : null}
-
-                  {slippage && slippage > 0 ? (
-                    <div className="flex w-full items-center justify-between">
-                      <div className="ﬂflex w-full justify-start">Max slippage</div>
-                      <div className="flex justify-end">{slippage}%</div>
-                    </div>
-                  ) : null}
-
-                  <div className="flex w-full items-center justify-between">
-                    <div className="flex justify-start">Zapping fee</div>
-                    <div className="flex justify-end">--</div>
-                  </div>
-                </div>
-              </AccordionContent>
-            </BorderPanel>
-          </AccordionItem>
-        </Accordion>
-
-        <Popover>
-          <PopoverTrigger asChild>
-            <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2 font-gilroy">
-              <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
-              <button type="button" title="Slippage">
-                <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
-                  <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
-                </div>
-              </button>
-            </BorderPanel>
-          </PopoverTrigger>
-          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none font-gilroy">
-            <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
-              <div className="flex w-full flex-col items-center justify-between gap-2">
-                <div className="flex w-full items-center justify-start">Slippage</div>
-                <input
-                  onChange={(e) => setSlippage(Number(e?.target?.value))}
-                  value={slippage || 0}
-                  placeholder="0.5"
-                  type="number"
-                  className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
-                />
-                <div className="mt-2 flex w-full items-center justify-between gap-2">
-                  <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />
-                  <ButtonTab onClick={() => setSlippage(1)} label={"1.0%"} active={slippage === 1} className="rounded-full !px-2 !py-1" />
-                  <ButtonTab onClick={() => setSlippage(2)} label={"2.0%"} active={slippage === 2} className="rounded-full !px-2 !py-1" />
-                </div>
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div>
     </div>
   )
 }

@@ -6,7 +6,7 @@ import { USGMarket, ZapToken } from "../../tg_usd_type"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
-import { formatBigInt, formatDollar } from "@/lib/number_formatter"
+import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { gasCostToUSD, getPublicClient } from "@/services/service_rpc"
 import { useRootContext } from "@/components/products/root/root_context"
@@ -15,7 +15,7 @@ import { EstimateContractGasParameters, formatUnits, parseEther, zeroAddress } f
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
-import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit } from "./usg_record_deposit_controller"
+import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit, computeAprVariation } from "./usg_record_deposit_controller"
 
 type USGDepositContextProps = {
   children: ReactNode
@@ -72,6 +72,8 @@ type USGDepositContextValues = {
   estimatedZapDollarValue: string
 
   maxDepositString: string
+
+  quoteDetail: { expected: string; aprVariation: { current: string; updated: string } }
 }
 
 export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
@@ -79,7 +81,7 @@ export const USGDepositContext = createContext<USGDepositContextValues | undefin
 export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { tokens, loadUSGsUSGMetrics } = useUSGContext()
+  const { tokens, loadUSGsUSGMetrics, marketAprs } = useUSGContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
@@ -203,7 +205,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
         handleQuote(quote)
 
         if (quote) {
-          setDepositWeiValue(quote)
+          setDepositWeiValue(BigInt(quote))
         }
       } catch (error) {
         console.error("Error fetching depositWeiValue:", error)
@@ -577,6 +579,29 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     return `Max 0 ${depositAssetInfo?.symbol}`
   }, [depositAsset, collateralInfo, currentAddress, depositAssetInfo, balanceAllowanceData])
 
+  const quoteDetail = useMemo(() => {
+    if (marketData) {
+      if (marketAprs && zapValue && depositAsset !== collateralInfo?.symbol) {
+        const expected = `${formatBigIntAsNumber(BigInt(zapValue || 0n), 18, 0)}  ${collateralInfo?.symbol}`
+
+        const { aprVariation } = computeAprVariation(marketAprs, marketData, BigInt(zapValue))
+
+        return { expected, aprVariation }
+      } else if (marketAprs && depositAssetInfo?.address === collateralInfo?.address && depositWeiValue) {
+        const expected = `${formatBigIntAsNumber(depositWeiValue || 0n, 18, 0)}  ${collateralInfo?.symbol}`
+
+        const { aprVariation } = computeAprVariation(marketAprs, marketData, depositWeiValue)
+
+        return { expected, aprVariation }
+      }
+
+      const { aprVariation } = computeAprVariation(marketAprs, marketData, 0n)
+
+      return { expected: `0 ${collateralInfo?.symbol}`, aprVariation }
+    }
+    return { expected: `0 ${collateralInfo?.symbol}`, aprVariation: { current: `- =>`, updated: "-" } }
+  }, [zapValue, depositWeiValue, collateralInfo?.symbol, marketAprs, marketData])
+
   const contextValue: USGDepositContextValues = {
     marketInfo,
     collateralInfo,
@@ -632,6 +657,8 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     estimatedZapDollarValue,
 
     maxDepositString,
+
+    quoteDetail,
   }
 
   return <USGDepositContext.Provider value={contextValue}>{children}</USGDepositContext.Provider>

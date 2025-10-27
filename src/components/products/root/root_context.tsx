@@ -4,7 +4,7 @@ import { toast } from "react-toastify"
 import { convertRange } from "./root_controller"
 import { formatCompact } from "@/lib/number_formatter"
 import * as swapRoutes from "../tg_usd/swapRoutes.json"
-import { getCurrentBlock } from "@/services/service_rpc"
+import { getCurrentBlock, getCachedCurrentBlock } from "@/services/service_rpc"
 import { SavingAccountsApy } from "../tg_usd/tg_usd_type"
 import { USG_CONTRACT } from "../tg_usd/tg_usd_repository"
 import { ToastComponent } from "@/components/design_system/toast"
@@ -129,7 +129,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     setUSGSelectedTab(range)
 
     const rangeInMilliseconds = convertRange(range)
-    const currentBlock = await getCurrentBlock()
+    const currentBlock = await getCachedCurrentBlock()
     const toIso = Number(currentBlock.timestamp) * 1000
     const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
 
@@ -147,7 +147,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     setsUSGSelectedTab(range)
 
     const rangeInMilliseconds = convertRange(range)
-    const currentBlock = await getCurrentBlock()
+    const currentBlock = await getCachedCurrentBlock()
     const toIso = Number(currentBlock.timestamp) * 1000
     const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
 

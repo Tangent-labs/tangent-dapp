@@ -26,7 +26,7 @@ import {
 import { usePathname } from "next/navigation"
 import { useUSGContext } from "../tg_usd_context"
 import { USG_CONTRACT } from "../tg_usd_repository"
-import { getCurrentBlock } from "@/services/service_rpc"
+import { getCachedCurrentBlock } from "@/services/service_rpc"
 import { Address, formatUnits, zeroAddress } from "viem"
 import { getHistoricalMarketData, getUserPositions } from "../client_api"
 import { AssetDataPriced, CollateralInfo, ListState } from "@/types"
@@ -324,7 +324,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
 
   useEffect(() => {
     const fetchHistoricalMarketData = async (marketData: MarketDetailData) => {
-      const currentBlock = await getCurrentBlock()
+      const currentBlock = await getCachedCurrentBlock()
 
       const isoEndDate = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
       const dateFrom = encodeURIComponent(isoEndDate)

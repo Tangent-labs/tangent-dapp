@@ -3,7 +3,7 @@
 import { Address, zeroAddress } from "viem"
 import { TANStakingInfo } from "../vs_tan/rstan_types"
 import { getUSGsUSGMetrics } from "./tg_usd_controller"
-import { getCurrentBlock } from "@/services/service_rpc"
+import { getCachedCurrentBlock } from "@/services/service_rpc"
 import { getBalances } from "./record/tg_usd_record_controller"
 import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
@@ -98,7 +98,7 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
   }
 
   const refetchPoints = async () => {
-    const currentBlock = await getCurrentBlock()
+    const currentBlock = await getCachedCurrentBlock()
 
     const isoEndDate = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
     const dateFrom = encodeURIComponent(isoEndDate)

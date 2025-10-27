@@ -159,5 +159,5 @@ export const computeAprVariation = (marketAprs: MarketAPR[], marketData: MarketD
 
     return { aprVariation: { current: `${totalCurrentAPR}% =>`, updated: "-" } }
   }
-  return { aprVariation: { current: `- =>`, updated: "-" } }
+  return { aprVariation: { current: "", updated: "-" } }
 }

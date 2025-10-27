@@ -56,7 +56,6 @@ export default function USGDepositContent() {
     zapValue,
     depositAssetInfo,
     slippage,
-    gas,
     zapInnerValue,
     depositSliderPercent,
     borrowSliderPercent,

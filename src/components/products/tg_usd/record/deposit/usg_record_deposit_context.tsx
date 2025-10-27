@@ -3,15 +3,13 @@
 import { toast } from "react-toastify"
 import { useUSGContext } from "../../tg_usd_context"
 import { USGMarket, ZapToken } from "../../tg_usd_type"
+import { formatUnits, parseEther, zeroAddress } from "viem"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
-import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
-import { gasCostToUSD, getPublicClient } from "@/services/service_rpc"
 import { useRootContext } from "@/components/products/root/root_context"
-import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
-import { EstimateContractGasParameters, formatUnits, parseEther, zeroAddress } from "viem"
+import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
@@ -51,7 +49,6 @@ type USGDepositContextValues = {
 
   slippage: number
   setSlippage: (arg: number) => void
-  gas: number | null
 
   zapInnerValue: number | undefined
   setZapInnerValue: (arg: number | undefined) => void
@@ -112,8 +109,6 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   const [isZapUserInput, setIsZapUserInput] = useState<boolean>(false)
 
   const [slippage, setSlippage] = useState<number>(1)
-
-  const [gas, setGas] = useState<number | null>(null)
 
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
     if (depositAsset === "ETH") {
@@ -363,79 +358,6 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     }
   }, [isDepositAndBorrow])
 
-  const computeGas = async () => {
-    try {
-      const zapData = await getRoute(
-        depositAssetInfo?.address,
-        collateralInfo?.address,
-        depositWeiValue!,
-        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
-        marketInfo.marketAddress,
-        currentAddress!,
-        curveRoutes
-      )
-
-      const zapMarketData = {
-        tokenIn: depositAssetInfo?.address,
-        amountIn: depositWeiValue!,
-        minAmountOut: (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
-      }
-
-      const walletClient = getWalletClient()
-
-      const [account] = await walletClient!.requestAddresses()
-
-      let estimateGasData
-
-      if (!!borrowWeiValue) {
-        estimateGasData = {
-          abi: MarketExternalActions.abi,
-          functionName: "zapDepositAndBorrow",
-          args: [
-            borrowWeiValue,
-            {
-              tokenIn: zapMarketData?.tokenIn,
-              amountIn: zapMarketData?.amountIn,
-              minAmountOut: zapMarketData?.minAmountOut,
-              zap: { router: zapData?.routerAddress, routerCall: zapData?.data },
-            },
-          ] as unknown[],
-          address: marketInfo?.marketAddress,
-          account,
-          value: 0n,
-        } as EstimateContractGasParameters
-      } else {
-        estimateGasData = {
-          abi: MarketExternalActions.abi,
-          functionName: "zapDeposit",
-          args: [
-            account,
-            {
-              tokenIn: zapMarketData?.tokenIn,
-              amountIn: zapMarketData?.amountIn,
-              minAmountOut: zapMarketData?.minAmountOut,
-              zap: { router: zapData?.routerAddress, routerCall: zapData?.data },
-            },
-          ] as unknown[],
-          address: marketInfo?.marketAddress,
-          account,
-          value: 0n,
-        } as EstimateContractGasParameters
-      }
-
-      if (zapMarketData?.tokenIn === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
-        estimateGasData.value = zapMarketData?.amountIn
-      }
-
-      const publicClient = getPublicClient()
-      const gasData = await publicClient.estimateContractGas(estimateGasData)
-      const gasInUsd = await gasCostToUSD(gasData)
-      setGas(gasInUsd)
-    } catch (error) {
-      console.error("Error in computeGas:", error)
-    }
-  }
-
   const getRouteAndDeposit = async () => {
     if (!depositWeiValue || !currentAddress || !depositAssetInfo) return
 
@@ -529,12 +451,6 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     }
   }
 
-  useEffect(() => {
-    if (!!depositWeiValue && !!zapValue && !!depositAssetInfo && !!currentAddress && !formState?.haveToApprove && !isZapLoading && !isDepositLoading) {
-      computeGas()
-    }
-  }, [depositWeiValue, zapValue, formState, isZapLoading, isDepositLoading])
-
   const maxBorrowableValue = useMemo(() => {
     const deposit = depositWeiValue || 0n
 
@@ -599,7 +515,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
 
       return { expected: `0 ${collateralInfo?.symbol}`, aprVariation }
     }
-    return { expected: `0 ${collateralInfo?.symbol}`, aprVariation: { current: `- =>`, updated: "-" } }
+    return { expected: `0 ${collateralInfo?.symbol}`, aprVariation: { current: "", updated: "-" } }
   }, [zapValue, depositWeiValue, collateralInfo?.symbol, marketAprs, marketData])
 
   const contextValue: USGDepositContextValues = {
@@ -636,7 +552,6 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
 
     slippage,
     setSlippage,
-    gas,
 
     zapInnerValue,
     setZapInnerValue,

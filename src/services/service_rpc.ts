@@ -31,10 +31,7 @@ export const chain: Chain = {
 
 export const getCurrentBlock = async () => {
   const publicClient = getPublicClient()
-  const currentBlockNumber = await publicClient.getBlockNumber()
-  const block = await publicClient.getBlock({ blockNumber: currentBlockNumber })
-
-  return block
+  return publicClient.getBlock({ blockTag: "latest" })
 }
 
 export const getPublicClient = () => {

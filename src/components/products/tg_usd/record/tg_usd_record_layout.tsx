@@ -57,11 +57,9 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
 
   return (
     <>
-      <div className="flex flex-col gap-4">
-        <USGRecordPageHeader />
-        <Divider />
-        <USGLoanDetail />
-      </div>
+      <USGRecordPageHeader />
+      <USGLoanDetail />
+
       <div className="my-4 flex flex-col gap-4">
         <div className="flex gap-4 max-xl:flex-col">
           <div className="rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] xl:w-5/12">

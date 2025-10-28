@@ -411,6 +411,7 @@ export type MarketDebtData = {
   id: number
   value: number
   name: string
+  rawValue: bigint
 }
 
 export type TgUsdCollateralData = {
@@ -544,4 +545,11 @@ export type StakeDaoAPRData = {
     }
     projected: { total: number }
   }
+}
+
+export type SavingAccountsApy = {
+  timestamp: Date
+  value: number
+  key: string
+  tokenAddress: string
 }

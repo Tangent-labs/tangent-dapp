@@ -4,8 +4,8 @@ import { ListRowData, ListState } from "@/types"
 import { useUSGContext } from "../tg_usd_context"
 import { USGMarkets } from "../tg_usd_repository"
 import { Address, formatUnits, zeroAddress } from "viem"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { getUSGMarketsData, transformToRows, transformGlobalData, transformMarketData } from "./tg_usd_market_controller"
 import { ChainViewMarketList, MarketConstants, MarketDebtData, TgUsdCollateralData, TgUsdGlobalData } from "../tg_usd_type"
 
@@ -141,6 +141,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
           return {
             id: index + 1,
             value: Number(percentage.toFixed(2)),
+            rawValue: debtValue,
             name: market?.collateralInfos?.collateralToken?.symbol,
           }
         })

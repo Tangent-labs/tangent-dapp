@@ -3,13 +3,13 @@
 import { Address, zeroAddress } from "viem"
 import { TANStakingInfo } from "../vs_tan/rstan_types"
 import { getUSGsUSGMetrics } from "./tg_usd_controller"
-import { getCurrentBlock } from "@/services/service_rpc"
 import { getBalances } from "./record/tg_usd_record_controller"
 import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { getLpUserPoints, getMarketAprs, getUserRefereesPoints, getVoteUserPoints } from "./client_api"
 import { USGStakingInfo, LpUserPoints, ZapToken, VoteUserPoints, RefereesPoints, MarketAPR } from "./tg_usd_type"
+import { useRootContext } from "../root/root_context"
 
 type USGContextProps = {
   children: ReactNode
@@ -33,6 +33,8 @@ type USGContextValues = {
 export const USGContext = createContext<USGContextValues | undefined>(undefined)
 
 export const USGProvider = ({ children, tokens }: USGContextProps) => {
+  const { getCachedCurrentBlock } = useRootContext()
+
   const { currentAddress, isWalletInitialized } = useWalletConnexionContext()
 
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
@@ -98,7 +100,7 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
   }
 
   const refetchPoints = async () => {
-    const currentBlock = await getCurrentBlock()
+    const currentBlock = await getCachedCurrentBlock()
 
     const isoEndDate = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
     const dateFrom = encodeURIComponent(isoEndDate)

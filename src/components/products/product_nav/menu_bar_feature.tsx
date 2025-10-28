@@ -9,12 +9,16 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
+
+import { useRootContext } from "../root/root_context"
 import { usePathname, useRouter } from "next/navigation"
 import { IconTangent } from "@/components/icons/icon_tangent"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 import TokenImage from "@/components/design_system/structure/token_image"
 
 export default function MenuBarFeature() {
+  const { usgCurrentSupply, sUSGCurrentAPY } = useRootContext()
+
   const router = useRouter()
 
   const pathname = usePathname()
@@ -94,11 +98,11 @@ export default function MenuBarFeature() {
               <span className="border-r border-white/30 px-2">TVL: $69M</span>
               <span className="flex items-center justify-center gap-1 border-r border-white/30 px-2">
                 <TokenImage token="USG" size={20} />
-                $3.12M
+                {usgCurrentSupply}
               </span>
               <span className="flex items-center justify-center gap-1 px-2">
                 <TokenImage token="sUSG" size={20} />
-                10.3% APY
+                {sUSGCurrentAPY}% APY
               </span>
             </div>
 

@@ -18,7 +18,7 @@ export default function RecordPageHeader({ apr, indicators }: RecordPageHeaderPr
   }
 
   return (
-    <div className="hidden min-h-20 items-center justify-evenly gap-4 rounded-[10px] bg-overlay-panel py-3 backdrop-blur-[60px] md:flex">
+    <div className="my-4 hidden min-h-20 items-center justify-evenly gap-4 rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px] md:flex">
       <RecordPageHeaderIndicator
         title="APR"
         value={`${totalCurrentAPR ? `${totalCurrentAPR?.toFixed(2)}%` : "-"}`}

@@ -362,6 +362,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }
 
   const resetAfterLeverageSuccess = () => {
+    setCurrentAmounts({})
     setZapValue(0n)
     setDepositWeiValue(0n)
     setBorrowWeiValue(0n)

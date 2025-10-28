@@ -4,13 +4,13 @@ import { toast, ToastContainer } from "react-toastify"
 import { convertRange } from "./root_controller"
 import { formatCompact } from "@/lib/number_formatter"
 import * as swapRoutes from "../tg_usd/swapRoutes.json"
-import { getCurrentBlock } from "@/services/service_rpc"
 import { SavingAccountsApy } from "../tg_usd/tg_usd_type"
 import { USG_CONTRACT } from "../tg_usd/tg_usd_repository"
 import { ToastComponent } from "@/components/design_system/toast"
 import { getSavingsAPY, getTotalSupply } from "../tg_usd/client_api"
 import { CustomCurveRoutes } from "../tg_usd/global_quote_controller"
 import { useContext, useEffect, useState, createContext, ReactNode, useMemo } from "react"
+import { getPublicClient } from "@/services/service_rpc"
 
 export type RootContextValues = {
   curveRoutes: CustomCurveRoutes
@@ -32,17 +32,22 @@ export type RootContextValues = {
   savingsAPY: SavingAccountsApy[]
 
   sUSGCurrentAPY: number
+
+  getCachedCurrentBlock: (d?: number) => Promise<Block>
 }
 
 const RootContext = createContext<RootContextValues | undefined>(undefined)
 
 const CUSTOM_CURVE_ROUTES_KEY = "CURVE_CUSTOM_ROUTING"
+const CURRENT_BLOCK = "CURRENT_BLOCK"
 const CUSTOM_CURVE_ROUTES_REFRESH_MIN = 30
 const CUSTOM_CURVE_ROUTES_GITHUB_URL = "https://raw.githubusercontent.com/Tangent-labs/public-files/refs/heads/main/routes.json"
 
 interface RootProviderProps {
   children: ReactNode
 }
+
+type Block = Awaited<ReturnType<ReturnType<typeof getPublicClient>["getBlock"]>>
 
 export const RootProvider = ({ children }: RootProviderProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -58,6 +63,30 @@ export const RootProvider = ({ children }: RootProviderProps) => {
       toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." }, autoClose: 6000 })
       return null
     }
+  }
+
+  const getCachedCurrentBlock = async (cacheDelay = 600_000): Promise<Block> => {
+    const now = Date.now()
+    const blockData = localStorage.getItem(CURRENT_BLOCK)
+
+    if (blockData) {
+      const block = JSON.parse(blockData, (_, value) => {
+        return typeof value === "string" && /^\d+$/.test(value) ? BigInt(value) : value
+      })
+
+      if (block && now < block.lastRefresh) return block
+    }
+
+    const publicClient = getPublicClient()
+
+    return publicClient.getBlock({ blockTag: "latest" }).then((block) => {
+      localStorage.setItem(
+        CURRENT_BLOCK,
+        JSON.stringify({ ...block, lastRefresh: Date.now() + cacheDelay }, (_, value) => (typeof value === "bigint" ? value.toString() : value))
+      )
+
+      return block
+    })
   }
 
   const fetchAndStore = async (localStorageKey: string) => {
@@ -129,7 +158,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     setUSGSelectedTab(range)
 
     const rangeInMilliseconds = convertRange(range)
-    const currentBlock = await getCurrentBlock()
+    const currentBlock = await getCachedCurrentBlock()
     const toIso = Number(currentBlock.timestamp) * 1000
     const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
 
@@ -147,7 +176,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     setsUSGSelectedTab(range)
 
     const rangeInMilliseconds = convertRange(range)
-    const currentBlock = await getCurrentBlock()
+    const currentBlock = await getCachedCurrentBlock()
     const toIso = Number(currentBlock.timestamp) * 1000
     const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
 
@@ -165,7 +194,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
 
   const fetchTotalSupplies = async () => {
     try {
-      const currentBlock = await getCurrentBlock()
+      const currentBlock = await getCachedCurrentBlock()
       const date = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
       const toIso = new Date(date).getTime()
       const fromIso = new Date(date).getTime() - 30 * 24 * 60 * 60 * 1000
@@ -231,6 +260,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     usgCurrentSupply,
     savingsAPY,
     sUSGCurrentAPY,
+    getCachedCurrentBlock,
   }
 
   return (

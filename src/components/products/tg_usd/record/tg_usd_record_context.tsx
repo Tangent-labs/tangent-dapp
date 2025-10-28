@@ -27,7 +27,7 @@ import { toast } from "react-toastify"
 import { usePathname } from "next/navigation"
 import { useUSGContext } from "../tg_usd_context"
 import { USG_CONTRACT } from "../tg_usd_repository"
-import { getCurrentBlock } from "@/services/service_rpc"
+import { useRootContext } from "../../root/root_context"
 import { Address, formatUnits, zeroAddress } from "viem"
 import { ToastComponent } from "@/components/design_system/toast"
 import { AssetDataPriced, CollateralInfo, ListState } from "@/types"
@@ -109,13 +109,15 @@ const LEVERAGE_TRESHOLD = 0.989
 export const USGRecordContext = createContext<USGRecordContextValues | undefined>(undefined)
 
 export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, children }: USGRecordContextProps) => {
-  const { currentAddress, getWalletClient, isWalletInitialized } = useWalletConnexionContext()
+  const path = usePathname()
 
   const { marketAprs } = useUSGContext()
 
-  const path = usePathname()
+  const { getCachedCurrentBlock } = useRootContext()
 
   const { globalData } = useUSGMaketListContext()
+
+  const { currentAddress, getWalletClient, isWalletInitialized } = useWalletConnexionContext()
 
   const [chartData, setChartData] = useState<Array<{ price: number; vAPR: number }>>([])
 
@@ -328,7 +330,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
 
   useEffect(() => {
     const fetchHistoricalMarketData = async (marketData: MarketDetailData) => {
-      const currentBlock = await getCurrentBlock()
+      const currentBlock = await getCachedCurrentBlock()
 
       const isoEndDate = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
       const dateFrom = encodeURIComponent(isoEndDate)

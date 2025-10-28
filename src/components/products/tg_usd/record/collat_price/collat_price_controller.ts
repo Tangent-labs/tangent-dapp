@@ -24,7 +24,7 @@ export const computeTimeDiff = (customStartTime: string) => {
   }
 }
 
-export const mapPendleResponseToGraphData = (resp: PendleCollatApiType, chain: string, address: string) => {
+export const mapPendleResponseToGraphData = (resp: PendleCollatApiType, address: string) => {
   if (!resp?.results) throw new Error("Invalid response format")
 
   const lines = resp.results.trim().split("\n")
@@ -47,7 +47,7 @@ export const mapPendleResponseToGraphData = (resp: PendleCollatApiType, chain: s
     }
   })
 
-  return { chain, address, data }
+  return { chain: "1", address, data }
 }
 
 const RANGE_TO_UNIT: Record<string, string> = {

@@ -4,8 +4,8 @@ import { Address } from "viem"
 import { CollateralInfo } from "@/types"
 import { Time } from "lightweight-charts"
 import { USGMarket } from "../../tg_usd_type"
-import { getCurrentBlock } from "@/services/service_rpc"
 import { useUSGRecordContext } from "../tg_usd_record_context"
+import { useRootContext } from "@/components/products/root/root_context"
 import { fetchGraphData, fetchPendlePTGraphData } from "../../client_api"
 import { CRV_DUO_ETH_CVX } from "@tangent/defi-resources/build/ressources/lps/curve"
 import { createContext, ReactNode, useContext, useEffect, useState, useTransition } from "react"
@@ -33,6 +33,8 @@ type GraphData = {
 export const CollateralPriceContext = createContext<CollateralPriceContextValues | undefined>(undefined)
 
 export const CollateralPriceProvider = ({ children }: CollateralPriceContextProps) => {
+  const { getCachedCurrentBlock } = useRootContext()
+
   const { collateralInfo, marketInfo } = useUSGRecordContext()
 
   const [graphData, setGraphData] = useState<GraphData | null>(null)
@@ -48,11 +50,11 @@ export const CollateralPriceProvider = ({ children }: CollateralPriceContextProp
     })
   }
 
-  const fetchGraphDataForCollat = async (address: Address, customStartTime: string) => {
+  const fetchGraphDataForCurveLP = async (address: Address, customStartTime: string) => {
     if (!address) return
 
     try {
-      const currentBlock = await getCurrentBlock()
+      const currentBlock = await getCachedCurrentBlock()
 
       const currentTime = new Date(Number(currentBlock.timestamp))
 
@@ -74,7 +76,7 @@ export const CollateralPriceProvider = ({ children }: CollateralPriceContextProp
     if (!address) return
 
     try {
-      const currentBlock = await getCurrentBlock()
+      const currentBlock = await getCachedCurrentBlock()
 
       const currentTime = new Date(Number(currentBlock.timestamp))
 
@@ -86,7 +88,7 @@ export const CollateralPriceProvider = ({ children }: CollateralPriceContextProp
 
       const resp = await fetchPendlePTGraphData(aggUnit, address, startTime, currentTime.getTime())
 
-      const mappedData = mapPendleResponseToGraphData(resp, "1", address) as GraphData
+      const mappedData = mapPendleResponseToGraphData(resp, address) as GraphData
 
       setGraphData(mappedData)
     } catch (error) {
@@ -100,7 +102,7 @@ export const CollateralPriceProvider = ({ children }: CollateralPriceContextProp
     } else {
       const collatAddress = marketInfo?.marketName === "CVX-ETH" ? CRV_DUO_ETH_CVX : marketInfo?.collatAddress
 
-      fetchGraphDataForCollat(collatAddress, timeWindow)
+      fetchGraphDataForCurveLP(collatAddress, timeWindow)
     }
   }, [marketInfo?.collatAddress, timeWindow])
 

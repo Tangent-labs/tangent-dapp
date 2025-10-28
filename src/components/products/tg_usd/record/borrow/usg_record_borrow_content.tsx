@@ -8,6 +8,7 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { MaxBorrowCapReached } from "@/components/design_system/notificatons/max_borrow_cap_reached"
 
 export default function USGRecordBorrowContent() {
   const { connect } = useWalletConnexionContext()
@@ -56,11 +57,7 @@ export default function USGRecordBorrowContent() {
         )}
       </>
 
-      <>
-        {!borrowWeiValue && maxBorrowCapReached && (
-          <div className="flex w-full items-center justify-center text-xs text-red-500">Max borrow cap reached. You cannot borrow USG for now</div>
-        )}
-      </>
+      <MaxBorrowCapReached display={!borrowWeiValue && maxBorrowCapReached} />
 
       <FormButtons connect={connect} actions={{ handleApprove: undefined, handleProcess: actionBorrow }} formState={formState} labelProcess="Borrow" />
     </div>

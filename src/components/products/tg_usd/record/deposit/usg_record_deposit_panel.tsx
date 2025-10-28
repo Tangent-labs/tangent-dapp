@@ -22,6 +22,7 @@ import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { MaxBorrowCapReached } from "@/components/design_system/notificatons/max_borrow_cap_reached"
 
 export default function USGDepositContent() {
   const { balances } = useUSGContext()
@@ -224,11 +225,7 @@ export default function USGDepositContent() {
         </div>
       )}
 
-      <>
-        {!borrowWeiValue && isDepositAndBorrow && maxBorrowCapReached && (
-          <div className="flex w-full items-center justify-center text-xs text-red-500">Max borrow cap reached. You cannot borrow USG for now</div>
-        )}
-      </>
+      <MaxBorrowCapReached display={!borrowWeiValue && isDepositAndBorrow && maxBorrowCapReached} />
 
       <FormButtons
         actions={{

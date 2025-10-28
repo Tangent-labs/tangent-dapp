@@ -24,6 +24,7 @@ import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { MaxBorrowCapReached } from "@/components/design_system/notificatons/max_borrow_cap_reached"
 
 export default function USGLeverageContent() {
   const {
@@ -243,11 +244,7 @@ export default function USGLeverageContent() {
         )}
       </>
 
-      <>
-        {(!!zapValue || !!depositWeiValue) && maxBorrowCapReached && (
-          <div className="flex w-full items-center justify-center text-xs text-red-500">Max borrow cap reached. You cannot borrow USG for now</div>
-        )}
-      </>
+      <MaxBorrowCapReached display={(!!zapValue || !!depositWeiValue) && maxBorrowCapReached} />
 
       <FormButtons
         actions={{

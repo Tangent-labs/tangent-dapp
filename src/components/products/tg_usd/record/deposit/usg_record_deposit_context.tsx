@@ -12,8 +12,8 @@ import { useRootContext } from "@/components/products/root/root_context"
 import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
-import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit, computeAprVariation } from "./usg_record_deposit_controller"
+import { computeAprVariation, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
+import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit } from "./usg_record_deposit_controller"
 
 type USGDepositContextProps = {
   children: ReactNode

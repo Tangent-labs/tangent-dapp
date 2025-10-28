@@ -8,6 +8,7 @@ import {
   USGMarketLoanDisplayData,
   TotalBorrow,
   ZapToken,
+  MarketAPR,
 } from "../tg_usd_type"
 
 import { USGMarkets } from "../tg_usd_repository"
@@ -333,4 +334,22 @@ export const mapToTotalBorrow = (rows: MarketHistoricalData[]): TotalBorrow => {
     latestTotalDebt: latest.total_debt.toFixed(0),
     data,
   }
+}
+
+export const computeAprVariation = (marketAprs: MarketAPR[], marketData: MarketDetailData, inputValue: bigint) => {
+  const currentMarketApr = marketAprs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())
+
+  if (currentMarketApr) {
+    const totalCurrentAPR = Object.values(currentMarketApr?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+
+    if (marketData && currentMarketApr && currentMarketApr?.currentAPR) {
+      const newAPR =
+        (marketData?.collateralInfos.totalCollateralAmount * BigInt(totalCurrentAPR * 100)) / (marketData?.collateralInfos.totalCollateralAmount + inputValue)
+
+      return { aprVariation: { current: `${totalCurrentAPR}% =>`, updated: `${Number(newAPR) / 100}%` } }
+    }
+
+    return { aprVariation: { current: `${totalCurrentAPR}% =>`, updated: "-" } }
+  }
+  return { aprVariation: { current: "", updated: "-" } }
 }

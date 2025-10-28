@@ -257,6 +257,14 @@ export default function USGLeverageContent() {
             )}
 
             <div className="flex w-full items-center justify-between">
+              <span className="text-subtitle">APR variation : </span>
+              <div className="flex items-center justify-center gap-1">
+                <span className="text-white">{quoteDetail.aprVariation.current}</span>
+                <span className="text-tonic">{quoteDetail.aprVariation.updated}</span>
+              </div>
+            </div>
+
+            <div className="flex w-full items-center justify-between">
               <span className="text-subtitle">Expected : </span>
               <span className="text-white">
                 {quoteDetail?.sum}

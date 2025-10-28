@@ -3,98 +3,98 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Light (300) */
 @font-face {
   font-family: "Gilroy";
-  src: url("/fonts/Gilroy-BoldItalic.woff2") format("opentype");
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Gilroy";
-  src: url("/fonts/Gilroy-Bold.woff2") format("opentype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Gilroy";
-  src: url("/fonts/Gilroy-Heavy.woff2") format("opentype");
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Gilroy";
-  src: url("/fonts/Gilroy-HeavyItalic.woff2") format("opentype");
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Gilroy";
-  src: url("/fonts/Gilroy-Light.woff2") format("opentype");
+  src: url("/fonts/Gilroy-Light.woff2") format("woff2");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
-
 @font-face {
   font-family: "Gilroy";
-  src: url("/fonts/Gilroy-LightItalic.woff2") format("opentype");
+  src: url("/fonts/Gilroy-LightItalic.woff2") format("woff2");
   font-weight: 300;
   font-style: italic;
   font-display: swap;
 }
 
+/* Regular (400) */
 @font-face {
   font-family: "Gilroy";
-  src: url("/fonts/Gilroy-Medium.woff2") format("opentype");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Gilroy";
-  src: url("/fonts/Gilroy-MediumItalic.woff2") format("opentype");
-  font-weight: 500;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Gilroy";
-  src: url("/fonts/Gilroy-Regular.woff2") format("opentype");
+  src: url("/fonts/Gilroy-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
-
 @font-face {
   font-family: "Gilroy";
-  src: url("/fonts/Gilroy-RegularItalic.woff2") format("opentype");
+  src: url("/fonts/Gilroy-RegularItalic.woff2") format("woff2");
   font-weight: 400;
   font-style: italic;
   font-display: swap;
 }
 
+/* Medium (500) */
 @font-face {
   font-family: "Gilroy";
-  src: url("/fonts/Gilroy-SemiBold.woff2") format("opentype");
-  font-weight: 650;
+  src: url("/fonts/Gilroy-Medium.woff2") format("woff2");
+  font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
-
 @font-face {
   font-family: "Gilroy";
-  src: url("/fonts/Gilroy-SemiBoldItalic.woff2") format("opentype");
-  font-weight: 650;
+  src: url("/fonts/Gilroy-MediumItalic.woff2") format("woff2");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* SemiBold (600)  — was 650 */
+@font-face {
+  font-family: "Gilroy";
+  src: url("/fonts/Gilroy-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Gilroy";
+  src: url("/fonts/Gilroy-SemiBoldItalic.woff2") format("woff2");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Bold (700) */
+@font-face {
+  font-family: "Gilroy";
+  src: url("/fonts/Gilroy-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Gilroy";
+  src: url("/fonts/Gilroy-BoldItalic.woff2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Heavy (800) — fix wrong weight & duplicate italic-only */
+@font-face {
+  font-family: "Gilroy";
+  src: url("/fonts/Gilroy-Heavy.woff2") format("woff2");
+  font-weight: 800; /* or 900 if that’s how the file is intended */
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Gilroy";
+  src: url("/fonts/Gilroy-HeavyItalic.woff2") format("woff2");
+  font-weight: 800; /* or 900 */
   font-style: italic;
   font-display: swap;
 }

@@ -22,6 +22,31 @@ export interface UserStatus {
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3100"
 
+export const fetchPendlePTGraphData = async (aggUnit: string, tokenIn: Address, start: number, end: number) => {
+  const queryStartDate = new Date(start * 1000)
+  const queryEndDate = new Date(end * 1000)
+
+  try {
+    const url = `https://api-v2.pendle.finance/core/v4/1/prices/${tokenIn}/ohlcv?time_frame=${aggUnit}&timestamp_start=${queryStartDate}&timestamp_end=${queryEndDate}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Pendle API request failed with status ${response.status}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Pendle API failed to fetch data:", error)
+    return null
+  }
+}
+
 export const fetchGraphData = async (aggNumber: number, aggUnit: string, tokenIn: Address, start: number, end: number) => {
   try {
     const url = `https://prices.curve.finance/v1/lp_ohlc/ethereum/${tokenIn}?agg_number=${aggNumber}&agg_units=${aggUnit}&start=${start}&end=${end}&price_units=usd`
@@ -34,12 +59,12 @@ export const fetchGraphData = async (aggNumber: number, aggUnit: string, tokenIn
     })
 
     if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`)
+      throw new Error(`Curve API request failed with status ${response.status}`)
     }
 
     return await response.json()
   } catch (error) {
-    console.error("Failed to fetch Enso data:", error)
+    console.error("Curve API failed to fetch data:", error)
     return null
   }
 }

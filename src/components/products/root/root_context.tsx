@@ -1,6 +1,6 @@
 "use client"
 
-import { toast } from "react-toastify"
+import { toast, ToastContainer } from "react-toastify"
 import { convertRange } from "./root_controller"
 import { formatCompact } from "@/lib/number_formatter"
 import * as swapRoutes from "../tg_usd/swapRoutes.json"
@@ -60,7 +60,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     if (quote) {
       return quote
     } else {
-      toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." } })
+      toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." }, autoClose: 6000 })
       return null
     }
   }
@@ -263,7 +263,23 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     getCachedCurrentBlock,
   }
 
-  return <RootContext.Provider value={contextValue}>{children}</RootContext.Provider>
+  return (
+    <RootContext.Provider value={contextValue}>
+      <ToastContainer
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick={true}
+        rtl={false}
+        draggable
+        pauseOnHover={true}
+        pauseOnFocusLoss={false}
+      />
+
+      {children}
+    </RootContext.Provider>
+  )
 }
 
 export const useRootContext = () => {

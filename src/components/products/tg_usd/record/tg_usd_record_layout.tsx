@@ -5,16 +5,17 @@ import { Switch } from "@/components/ui/switch"
 import USGMarketInfo from "./tg_usd_market_info"
 import USGLoanDetail from "./tg_usd_loan_detail"
 import { formatBigInt } from "@/lib/number_formatter"
-import TgUsdCollateralPrice from "./tg_usd_collateral_price"
 import USGRecordPageHeader from "./tg_usd_record_page_header"
 import { useUSGRecordContext } from "./tg_usd_record_context"
 import Divider from "@/components/design_system/structure/divider"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
+import USGCollateralPrice from "./collat_price/collat_price_content"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import TgUsdPositionHistory from "./position_history/tg_usd_position_history"
 import { FeatureSelect } from "@/components/design_system/structure/feature_select"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { CollateralPriceProvider } from "./collat_price/collat_price_context"
 
 type USGRecordLayoutProps = {
   children: React.ReactNode
@@ -22,21 +23,21 @@ type USGRecordLayoutProps = {
 
 export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
   const {
-    collateral,
-    isLeveraged,
-    debtFarming,
+    USGInfo,
+    feature,
     debtVAPR,
     chartData,
-    onChainData,
-    feature,
-    USGInfo,
-    initialCollatAmount,
+    collateral,
+    debtFarming,
+    isLeveraged,
     canLeverage,
+    onChainData,
+    initialCollatAmount,
     currentTotalMarketApr,
-    setInitialCollatAmount,
     setDebtVAPR,
     setDebtFarming,
     setIsLeveraged,
+    setInitialCollatAmount,
   } = useUSGRecordContext()
 
   const router = useRouter()
@@ -88,7 +89,9 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
             <div className="mt-2">{children}</div>
           </div>
           <div className="flex w-full flex-col gap-2 xl:w-7/12">
-            <TgUsdCollateralPrice />
+            <CollateralPriceProvider>
+              <USGCollateralPrice />
+            </CollateralPriceProvider>
           </div>
         </div>
         <Divider className="hidden xl:flex" />

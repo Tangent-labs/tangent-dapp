@@ -246,17 +246,8 @@ input[type="range"]::-moz-range-thumb {
 }
 .Toastify__toast--rtl {
   width: 290px;
-  background: none;
 }
 
 .Toastify__toast-icon {
-  display: none;
-}
-
-.Toastify__progress-bar--wrp {
-  display: none;
-}
-
-.Toastify__progress-bar--animated {
   display: none;
 }

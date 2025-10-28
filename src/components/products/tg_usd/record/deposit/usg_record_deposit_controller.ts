@@ -2,7 +2,7 @@ import { CollateralInfo } from "@/types"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getBorrowCommonFormState } from "../tg_usd_record_controller"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
-import { BalanceAllowanceData, MarketDetailData, TgUsdtMarketDepositParams, ZapMarketData } from "../../tg_usd_type"
+import { BalanceAllowanceData, MarketDetailData, USGMarketDepositParams, ZapMarketData } from "../../tg_usd_type"
 import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 
 export function getDepositFormState(
@@ -50,7 +50,7 @@ export function getDepositFormState(
   }
 }
 
-export async function doMarketDeposit(walletClient: WalletClient, args: TgUsdtMarketDepositParams) {
+export async function doMarketDeposit(walletClient: WalletClient, args: USGMarketDepositParams) {
   if (!args.isDepositAndBorrow) {
     const [account] = await walletClient.requestAddresses()
     const txData = {

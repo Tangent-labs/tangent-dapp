@@ -1,5 +1,5 @@
 import { Abi, WalletClient } from "viem"
-import { MarketDetailData, TgUsdtMarketBorrowParams } from "../../tg_usd_type"
+import { MarketDetailData, USGMarketBorrowParams } from "../../tg_usd_type"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
 import { getBorrowCommonFormState } from "../tg_usd_record_controller"
@@ -21,7 +21,7 @@ export function getBorrowFormState(marketData?: MarketDetailData, borrowWeiValue
   return { canProcess: reasons.length === 0, cantProcessReasons: reasons, haveToApprove: false }
 }
 
-export async function doMarketBorrow(walletClient: WalletClient, args: TgUsdtMarketBorrowParams) {
+export async function doMarketBorrow(walletClient: WalletClient, args: USGMarketBorrowParams) {
   const [account] = await walletClient.requestAddresses()
   const txData = {
     abi: MarketExternalActions.abi as Abi,

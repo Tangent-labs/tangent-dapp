@@ -9,8 +9,8 @@ import { USG_CONTRACT } from "../tg_usd/tg_usd_repository"
 import { ToastComponent } from "@/components/design_system/toast"
 import { getSavingsAPY, getTotalSupply } from "../tg_usd/client_api"
 import { CustomCurveRoutes } from "../tg_usd/global_quote_controller"
-import { getPublicClient } from "@/services/service_rpc"
 import { useContext, useEffect, useState, createContext, ReactNode, useMemo } from "react"
+import { getPublicClient } from "@/services/service_rpc"
 
 export type RootContextValues = {
   curveRoutes: CustomCurveRoutes

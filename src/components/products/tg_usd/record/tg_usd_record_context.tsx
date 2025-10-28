@@ -23,17 +23,19 @@ import {
   mapToTotalBorrow,
 } from "./tg_usd_record_controller"
 
+import { toast } from "react-toastify"
 import { usePathname } from "next/navigation"
 import { useUSGContext } from "../tg_usd_context"
 import { USG_CONTRACT } from "../tg_usd_repository"
-import { Address, formatUnits, zeroAddress } from "viem"
-import { getHistoricalMarketData, getUserPositions } from "../client_api"
-import { AssetDataPriced, CollateralInfo, ListState } from "@/types"
-import { useUSGMaketListContext } from "../list/tg_usd_market_list_context"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { sortUserData } from "./position_history/tg_usd_position_history_controller"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useRootContext } from "../../root/root_context"
+import { Address, formatUnits, zeroAddress } from "viem"
+import { ToastComponent } from "@/components/design_system/toast"
+import { AssetDataPriced, CollateralInfo, ListState } from "@/types"
+import { getHistoricalMarketData, getUserPositions } from "../client_api"
+import { useUSGMaketListContext } from "../list/tg_usd_market_list_context"
+import { sortUserData } from "./position_history/tg_usd_position_history_controller"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 
 type USGRecordContextProps = {
   children: ReactNode
@@ -98,6 +100,8 @@ type USGRecordContextValues = {
   canLeverage: boolean
 
   currentTotalMarketApr: number
+
+  maxBorrowCapReached: boolean
 }
 
 const LEVERAGE_TRESHOLD = 0.989
@@ -346,6 +350,33 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     return !!USGInfo && USGInfo.price > LEVERAGE_TRESHOLD
   }, [USGInfo])
 
+  const maxBorrowCapReached = useMemo(() => {
+    if (!marketData) return false
+
+    const maxDebt = marketData.constants.maxMarketDebt
+    const totalDebt = marketData.debtInfos?.totalDebt
+
+    return maxDebt <= totalDebt
+  }, [marketData])
+
+  const maxMktDbtToastAlreadyShown = useRef(false)
+
+  useEffect(() => {
+    if (!marketData) return
+
+    const maxDebt = marketData.constants.maxMarketDebt
+
+    const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n) + BigInt(currentAmounts.borrowWeiValue || 0n)
+
+    if (marketData && currentAmounts.borrowWeiValue && maxDebt <= futureDebt && !maxMktDbtToastAlreadyShown.current) {
+      toast.info(ToastComponent, {
+        data: { type: "Notification", content: "Max debt reached." },
+      })
+
+      maxMktDbtToastAlreadyShown.current = true
+    }
+  }, [maxBorrowCapReached, currentAmounts.borrowWeiValue, marketData])
+
   const contextValue: USGRecordContextValues = {
     isLoading,
     collateral,
@@ -390,6 +421,8 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
 
     canLeverage,
     currentTotalMarketApr,
+
+    maxBorrowCapReached,
   }
 
   return <USGRecordContext.Provider value={contextValue}>{children}</USGRecordContext.Provider>

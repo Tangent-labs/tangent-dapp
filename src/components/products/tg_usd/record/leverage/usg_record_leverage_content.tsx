@@ -24,6 +24,7 @@ import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { MaxBorrowCapReached } from "@/components/design_system/notificatons/max_borrow_cap_reached"
 
 export default function USGLeverageContent() {
   const {
@@ -59,11 +60,11 @@ export default function USGLeverageContent() {
     maxDepositString,
   } = useUSGLeverageContext()
 
-  const { collateralInfo, marketData, balanceAllowanceData, marketInfo, pricedCollateralInfo, USGInfo } = useUSGRecordContext()
-
   const { balances } = useUSGContext()
 
   const { connect } = useWalletConnexionContext()
+
+  const { collateralInfo, marketData, balanceAllowanceData, marketInfo, pricedCollateralInfo, USGInfo, maxBorrowCapReached } = useUSGRecordContext()
 
   const AssetSelect = () => {
     const tokenOptions = tokens.map((el: ZapToken) => ({
@@ -164,7 +165,7 @@ export default function USGLeverageContent() {
         </>
       )}
 
-      {depositAsset && depositAsset !== collateralInfo?.symbol && (
+      {!isDepositDisabled && depositAsset && depositAsset !== collateralInfo?.symbol && (
         <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-start justify-start">
@@ -242,6 +243,8 @@ export default function USGLeverageContent() {
           </div>
         )}
       </>
+
+      <MaxBorrowCapReached display={(!!zapValue || !!depositWeiValue) && maxBorrowCapReached} />
 
       <FormButtons
         actions={{

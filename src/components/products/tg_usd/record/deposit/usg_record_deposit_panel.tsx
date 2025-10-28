@@ -22,11 +22,12 @@ import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { MaxBorrowCapReached } from "@/components/design_system/notificatons/max_borrow_cap_reached"
 
 export default function USGDepositContent() {
   const { balances } = useUSGContext()
 
-  const { collateralInfo, marketData, USGInfo, balanceAllowanceData, marketInfo } = useUSGRecordContext()
+  const { collateralInfo, marketData, USGInfo, balanceAllowanceData, marketInfo, maxBorrowCapReached } = useUSGRecordContext()
 
   const { connect } = useWalletConnexionContext()
 
@@ -209,19 +210,22 @@ export default function USGDepositContent() {
           <BorrowInput
             displaySliderInput={true}
             borrowAmount={borrowWeiValue}
+            disabled={maxBorrowCapReached}
             labelDeposit="You borrow"
             depositSelect={<BorrowAssetDisplay />}
             borrowAsset={USGInfo}
-            setMaxBalance={() => setBorrowWeiValue(maxBorrowableValue)}
+            setMaxBalance={maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue)}
             balance={maxBorrowableValue}
             percentage={borrowSliderPercent}
-            setPercentage={setBorrowSliderPercent}
+            setPercentage={maxBorrowCapReached ? () => {} : setBorrowSliderPercent}
             onValueChange={(value: bigint | undefined) => {
               setBorrowWeiValue(value)
             }}
           />
         </div>
       )}
+
+      <MaxBorrowCapReached display={!borrowWeiValue && isDepositAndBorrow && maxBorrowCapReached} />
 
       <FormButtons
         actions={{

@@ -40,7 +40,6 @@ const RootContext = createContext<RootContextValues | undefined>(undefined)
 
 const CUSTOM_CURVE_ROUTES_KEY = "CURVE_CUSTOM_ROUTING"
 const CURRENT_BLOCK = "CURRENT_BLOCK"
-const CURRENT_BLOCK_DATE = "CURRENT_BLOCK_DATE"
 const CUSTOM_CURVE_ROUTES_REFRESH_MIN = 30
 const CUSTOM_CURVE_ROUTES_GITHUB_URL = "https://raw.githubusercontent.com/Tangent-labs/public-files/refs/heads/main/routes.json"
 
@@ -69,26 +68,21 @@ export const RootProvider = ({ children }: RootProviderProps) => {
   const getCachedCurrentBlock = async (cacheDelay = 600_000): Promise<Block> => {
     const now = Date.now()
     const blockData = localStorage.getItem(CURRENT_BLOCK)
-    const blockDateDate = localStorage.getItem(CURRENT_BLOCK_DATE)
 
-    if (blockData && blockDateDate) {
+    if (blockData) {
       const block = JSON.parse(blockData, (_, value) => {
         return typeof value === "string" && /^\d+$/.test(value) ? BigInt(value) : value
       })
 
-      const date = JSON.parse(blockDateDate)
-
-      if (block && now < date) return block
+      if (block && now < block.lastRefresh) return block
     }
 
     const publicClient = getPublicClient()
 
     return publicClient.getBlock({ blockTag: "latest" }).then((block) => {
-      localStorage.setItem(CURRENT_BLOCK_DATE, JSON.stringify(Date.now() + cacheDelay))
-
       localStorage.setItem(
         CURRENT_BLOCK,
-        JSON.stringify(block, (_, value) => (typeof value === "bigint" ? value.toString() : value))
+        JSON.stringify({ ...block, lastRefresh: Date.now() + cacheDelay }, (_, value) => (typeof value === "bigint" ? value.toString() : value))
       )
 
       return block

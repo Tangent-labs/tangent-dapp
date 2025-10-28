@@ -15,7 +15,7 @@ type ReferralHeaderProps = {
 
 export const ReferralHeader = ({ isLoading, referralStatus, setReferralStatus, signMessage, lpUserPoints, voteUserPoints }: ReferralHeaderProps) => {
   return (
-    <div className="flex w-full flex-col items-center justify-between gap-4 xl:flex-row">
+    <div className="mt-4 flex w-full flex-col items-center justify-between gap-4 xl:flex-row">
       <div className="flex w-full flex-col items-center justify-center gap-4 sm:flex-row xl:flex-1 xl:justify-start">
         <div className="relative flex w-full max-w-none flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px] md:max-w-80">
           <div className="absolute -top-2 left-0 flex w-full">

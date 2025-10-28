@@ -29,35 +29,6 @@ export const chain: Chain = {
   name: dappConfig.chain.name,
 }
 
-// services/service_rpc.ts
-type Block = Awaited<ReturnType<ReturnType<typeof getPublicClient>["getBlock"]>>
-
-let _cacheValue: Block | null = null
-let _cacheExpiryDate = 0
-let latestValue: Promise<Block> | null = null
-
-export async function getCachedCurrentBlock(cacheDelay = 120_000): Promise<Block> {
-  const now = Date.now()
-
-  if (_cacheValue && now < _cacheExpiryDate) return _cacheValue
-
-  if (latestValue) return latestValue
-
-  const publicClient = getPublicClient()
-  latestValue = publicClient
-    .getBlock({ blockTag: "latest" })
-    .then((block) => {
-      _cacheValue = block
-      _cacheExpiryDate = Date.now() + cacheDelay
-      return block
-    })
-    .finally(() => {
-      latestValue = null
-    })
-
-  return latestValue
-}
-
 export const getCurrentBlock = async () => {
   const publicClient = getPublicClient()
   return publicClient.getBlock({ blockTag: "latest" })

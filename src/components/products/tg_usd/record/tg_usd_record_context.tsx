@@ -26,7 +26,6 @@ import {
 import { usePathname } from "next/navigation"
 import { useUSGContext } from "../tg_usd_context"
 import { USG_CONTRACT } from "../tg_usd_repository"
-import { getCachedCurrentBlock } from "@/services/service_rpc"
 import { Address, formatUnits, zeroAddress } from "viem"
 import { getHistoricalMarketData, getUserPositions } from "../client_api"
 import { AssetDataPriced, CollateralInfo, ListState } from "@/types"
@@ -34,6 +33,7 @@ import { useUSGMaketListContext } from "../list/tg_usd_market_list_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { sortUserData } from "./position_history/tg_usd_position_history_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { useRootContext } from "../../root/root_context"
 
 type USGRecordContextProps = {
   children: ReactNode
@@ -105,13 +105,15 @@ const LEVERAGE_TRESHOLD = 0.989
 export const USGRecordContext = createContext<USGRecordContextValues | undefined>(undefined)
 
 export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, children }: USGRecordContextProps) => {
-  const { currentAddress, getWalletClient, isWalletInitialized } = useWalletConnexionContext()
+  const path = usePathname()
 
   const { marketAprs } = useUSGContext()
 
-  const path = usePathname()
+  const { getCachedCurrentBlock } = useRootContext()
 
   const { globalData } = useUSGMaketListContext()
+
+  const { currentAddress, getWalletClient, isWalletInitialized } = useWalletConnexionContext()
 
   const [chartData, setChartData] = useState<Array<{ price: number; vAPR: number }>>([])
 

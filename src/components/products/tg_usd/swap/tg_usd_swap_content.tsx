@@ -13,7 +13,6 @@ import BorderPanel from "@/components/design_system/structure/border_panel"
 import { BuySellInput } from "@/components/design_system/inputs/buy_sell_input"
 import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
 type AssetSelectProps = {
@@ -165,32 +164,7 @@ export default function USGSwapContent() {
             setPercentage={setDepositSliderPercent}
           />
 
-          <div className="mt-2 flex w-full gap-2">
-            <Accordion className="w-full" type="single" collapsible>
-              <AccordionItem value="item-1">
-                <BorderPanel className="flex w-full cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
-                  <AccordionTrigger>
-                    <span className="py-1.5">Details</span>
-                  </AccordionTrigger>
-                  <AccordionContent className="w-full">
-                    <div className="flex w-full flex-col items-center justify-center text-xs text-primary">
-                      {slippage && slippage > 0 ? (
-                        <div className="flex w-full items-center justify-between">
-                          <div className="ﬂflex w-full justify-start">Max slippage</div>
-                          <div className="flex justify-end">{slippage}%</div>
-                        </div>
-                      ) : null}
-
-                      <div className="flex w-full items-center justify-between">
-                        <div className="flex justify-start">Zapping fee</div>
-                        <div className="flex justify-end">--</div>
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </BorderPanel>
-              </AccordionItem>
-            </Accordion>
-
+          <div className="mt-2 flex w-full items-end justify-end gap-2">
             <Popover>
               <PopoverTrigger asChild>
                 <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2 font-gilroy">

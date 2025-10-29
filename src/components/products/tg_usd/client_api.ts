@@ -1,18 +1,6 @@
 import { Address } from "viem"
 
-import {
-  Boost,
-  MarketHistoricalData,
-  LpUserPoints,
-  UserTask,
-  VoteTask,
-  VoteUserPoints,
-  RefereesPoints,
-  MarketAPR,
-  GaugeAPR,
-  StakeDaoAPRData,
-  SavingAccountsApy,
-} from "./tg_usd_type"
+import { Boost, MarketHistoricalData, LpUserPoints, UserTask, VoteTask, VoteUserPoints, RefereesPoints, MarketAPR, SavingAccountsApy } from "./tg_usd_type"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -470,78 +458,6 @@ export const getMarketAprs = async (): Promise<Array<MarketAPR>> => {
     return data
   } catch (error) {
     console.error("Failed to fetch aprs :", error)
-    return []
-  }
-}
-
-export const getStakeDAOPools = async (): Promise<Array<StakeDaoAPRData>> => {
-  try {
-    const url = `https://api.stakedao.org/api/strategies/curve/`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch convex pool`)
-    }
-
-    const { deployed } = await response.json()
-
-    return deployed
-  } catch (error) {
-    console.error("Failed to fetch convex pool :", error)
-    return []
-  }
-}
-
-export const getConvexPools = async (): Promise<Array<GaugeAPR>> => {
-  try {
-    const url = `https://curve.convexfinance.com/api/curve/pools`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch convex pool`)
-    }
-
-    const { pools } = await response.json()
-
-    return pools
-  } catch (error) {
-    console.error("Failed to fetch convex pool :", error)
-    return []
-  }
-}
-
-export const getCurvePools = async (): Promise<Array<GaugeAPR>> => {
-  try {
-    const url = `https://api.curve.finance/v1/getPools/all/ethereum`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch curve pools`)
-    }
-
-    const { data } = await response.json()
-
-    return data?.poolData
-  } catch (error) {
-    console.error("Failed to fetch curve pools :", error)
     return []
   }
 }

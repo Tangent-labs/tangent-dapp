@@ -22,7 +22,8 @@ import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { MaxBorrowCapReached } from "@/components/design_system/notificatons/max_borrow_cap_reached"
+import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
+import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 
 export default function USGDepositContent() {
   const { balances } = useUSGContext()
@@ -278,6 +279,8 @@ export default function USGDepositContent() {
           </div>
         </div>
       </div>
+
+      <MarketTransactionError display={!!borrowWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />
 
       <MaxBorrowCapReached display={!borrowWeiValue && isDepositAndBorrow && maxBorrowCapReached} />
 

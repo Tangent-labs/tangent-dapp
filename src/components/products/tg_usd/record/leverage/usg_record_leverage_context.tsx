@@ -437,8 +437,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         isWellConnected,
         depositAssetInfo!,
         collateralInfo!,
-        leverageBalanceAllowanceData!,
-        isDepositLoading
+        leverageBalanceAllowanceData!
       ),
     [
       marketData,
@@ -449,7 +448,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       currentAddress,
       depositAssetInfo,
       leverageBalanceAllowanceData,
-      isDepositLoading,
       leverageExceedsMaxLtv,
     ]
   )

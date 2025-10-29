@@ -330,8 +330,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
         isWellConnected,
         depositAssetInfo?.address,
         collateralInfo!,
-        balanceAllowanceData!,
-        isDepositLoading
+        balanceAllowanceData!
       ),
     [marketData, isDepositAndBorrow, borrowWeiValue, depositWeiValue, isWellConnected, currentAddress, depositAssetInfo, balanceAllowanceData, isDepositLoading]
   )

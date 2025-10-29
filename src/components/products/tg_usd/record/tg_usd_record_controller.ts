@@ -74,7 +74,7 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, borrowWe
     const totalDebt = marketData?.debtInfos?.totalDebt || 0n
 
     if (borrowWeiValue + totalDebt < minLoan) {
-      reasons.push(`Min debt is ${formatEther(minLoan)}`)
+      reasons.push(`Min debt is ${formatEther(minLoan)} USG`)
     } else if (BigInt(marketData?.debtInfos?.userDebt || 0n) + BigInt(borrowWeiValue || 0n) > (marketData?.constants?.maxMarketDebt || 0n)) {
       reasons.push("Max market debt reached.")
     }

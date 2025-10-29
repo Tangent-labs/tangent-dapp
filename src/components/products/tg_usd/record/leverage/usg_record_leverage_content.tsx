@@ -22,7 +22,8 @@ import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { MaxBorrowCapReached } from "@/components/design_system/notificatons/max_borrow_cap_reached"
+import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
+import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 
 export default function USGLeverageContent() {
   const {
@@ -230,7 +231,13 @@ export default function USGLeverageContent() {
       )}
 
       <>
-        <span className="flex items-end justify-between text-sm font-semibold md:text-xl">Borrow amount</span>
+        <div className="flex w-full items-end justify-between">
+          <span className="flex items-start justify-start text-sm font-semibold md:text-xl">Borrow amount</span>
+
+          <div className="flex items-end justify-end text-xs text-subtitle">
+            Max leverage: x{Number((1 / (1 - Number(marketData?.constants.maxLTV) / 100000)).toFixed(0))}
+          </div>
+        </div>
 
         <LeverageInput
           label="You borrow"
@@ -241,10 +248,6 @@ export default function USGLeverageContent() {
           setPercentage={isDepositDisabled ? undefined : setLeveragePercentage}
           onValueChange={(e) => updateBorrowWeiValue(e)}
         />
-
-        <div className="-mt-1 flex w-full items-start justify-end text-xs text-subtitle">
-          Max leverage: x{Number((1 / (1 - Number(marketData?.constants.maxLTV) / 100000)).toFixed(0))}
-        </div>
 
         <div className="flex flex-col gap-2">
           <span className="text-sm font-semibold md:text-xl">Recap</span>
@@ -275,6 +278,8 @@ export default function USGLeverageContent() {
           </div>
         </div>
       </>
+
+      <MarketTransactionError display={!!depositWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />
 
       <>
         {leverageExceedsMaxLtv && (

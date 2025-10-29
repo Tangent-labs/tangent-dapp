@@ -155,7 +155,7 @@ export function BuySellInput({
 
   const dollarReceiveDisplay = useMemo(() => {
     const val = Number(formatUnits(receiveAmount || BigInt(0), receiveAsset?.decimals || 0)) * (receiveAsset?.price || 0)
-    return val?.toFixed(2) || "-"
+    return `(${formatDollar(val)})`
   }, [receiveAmount, receiveAsset])
 
   return (
@@ -184,7 +184,7 @@ export function BuySellInput({
               placeholder="Amount"
               onChange={handleInputChange}
               className={cn(
-                "min-h-10 rounded-[10px] border-opacity-20 bg-transparent text-xl font-semibold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
+                "min-h-10 max-w-28 rounded-[10px] border-opacity-20 bg-transparent text-xl font-semibold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30 md:max-w-32"
               )}
             />
 
@@ -269,14 +269,14 @@ export function BuySellInput({
                 placeholder="Amount"
                 onChange={handleInputTangentChange}
                 className={cn(
-                  "min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
+                  "min-h-10 max-w-28 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30 md:max-w-32"
                 )}
               />
             </div>
             <div>{receiveSelect}</div>
           </div>
           <div className="flex justify-between text-xs text-subtitle">
-            <div>$({dollarReceiveDisplay})</div>
+            <div>{dollarReceiveDisplay}</div>
           </div>
         </BorderPanel>
       </div>

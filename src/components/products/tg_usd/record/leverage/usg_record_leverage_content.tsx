@@ -57,6 +57,7 @@ export default function USGLeverageContent() {
     depositSliderPercent,
     leveragePercentage,
     maxDepositString,
+    computedMaxLeverage,
   } = useUSGLeverageContext()
 
   const { balances } = useUSGContext()
@@ -234,9 +235,7 @@ export default function USGLeverageContent() {
         <div className="flex w-full items-end justify-between">
           <span className="flex items-start justify-start text-sm font-semibold md:text-xl">Borrow amount</span>
 
-          <div className="flex items-end justify-end text-xs text-subtitle">
-            Max leverage: x{Number((1 / (1 - Number(marketData?.constants.maxLTV) / 100000)).toFixed(0))}
-          </div>
+          <div className="flex items-end justify-end text-xs text-subtitle">{computedMaxLeverage}</div>
         </div>
 
         <LeverageInput

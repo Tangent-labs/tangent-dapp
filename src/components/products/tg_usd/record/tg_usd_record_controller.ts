@@ -337,19 +337,22 @@ export const mapToTotalBorrow = (rows: MarketHistoricalData[]): TotalBorrow => {
 }
 
 export const computeAprVariation = (marketAprs: MarketAPR[], marketData: MarketDetailData, inputValue: bigint) => {
+  let result = { aprVariation: { current: "", updated: "-" } }
+
   const currentMarketApr = marketAprs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())
 
   if (currentMarketApr) {
     const totalCurrentAPR = Object.values(currentMarketApr?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
 
-    if (marketData && currentMarketApr && currentMarketApr?.currentAPR) {
-      const newAPR =
-        (marketData?.collateralInfos.totalCollateralAmount * BigInt(totalCurrentAPR * 100)) / (marketData?.collateralInfos.totalCollateralAmount + inputValue)
+    const newAPR =
+      (marketData?.collateralInfos.totalCollateralAmount * BigInt(totalCurrentAPR * 100)) / (marketData?.collateralInfos.totalCollateralAmount + inputValue)
 
-      return { aprVariation: { current: `${totalCurrentAPR}% =>`, updated: `${Number(newAPR) / 100}%` } }
+    if (newAPR) {
+      result = { aprVariation: { current: `${totalCurrentAPR}% =>`, updated: `${Number(newAPR) / 100}%` } }
+    } else {
+      result = { aprVariation: { current: `${totalCurrentAPR}% =>`, updated: "-" } }
     }
-
-    return { aprVariation: { current: `${totalCurrentAPR}% =>`, updated: "-" } }
   }
-  return { aprVariation: { current: "", updated: "-" } }
+
+  return result
 }

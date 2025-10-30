@@ -500,9 +500,9 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   const expectedCollateral = useMemo(() => {
     if (marketData) {
       if (zapValue && depositAsset !== collateralInfo?.symbol) {
-        return `${formatBigIntAsNumber(BigInt(zapValue || 0n), 18, 0)}  ${collateralInfo?.symbol}`
+        return `${formatBigIntAsNumber(BigInt(zapValue || 0n), 18, 3)}  ${collateralInfo?.symbol}`
       } else if (depositAssetInfo?.address === collateralInfo?.address && depositWeiValue) {
-        return `${formatBigIntAsNumber(depositWeiValue || 0n, 18, 0)}  ${collateralInfo?.symbol}`
+        return `${formatBigIntAsNumber(depositWeiValue || 0n, 18, 3)}  ${collateralInfo?.symbol}`
       }
     }
     return `0 ${collateralInfo?.symbol}`

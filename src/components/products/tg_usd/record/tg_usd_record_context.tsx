@@ -384,7 +384,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
 
   const fetchLpConvexData = async (address: Address) => {
     const convexLpData = await getConvexPools()
-    const convexCollateralInfo = convexLpData.find((el) => el.lpTokenAddress === address)
+    const convexCollateralInfo = convexLpData.find((el) => el.lpTokenAddress?.toLowerCase() === address.toLowerCase())
 
     setCurrentConvexTVL(BigInt((convexCollateralInfo?.convexPoolData?.usdTotal || 0) * 10 ** 18))
   }

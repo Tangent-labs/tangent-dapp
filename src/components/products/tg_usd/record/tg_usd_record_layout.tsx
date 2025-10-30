@@ -59,10 +59,9 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
   return (
     <>
       <USGRecordPageHeader />
-      <USGLoanDetail />
 
       <div className="my-4 flex flex-col gap-4">
-        <div className="flex gap-4 max-xl:flex-col">
+        <div className="relative flex gap-4 max-xl:flex-col">
           <div className="rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] xl:w-5/12">
             <div className="hidden w-full flex-col items-center justify-between gap-1 md:flex">
               <div className="flex w-full justify-between gap-2">
@@ -88,12 +87,16 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
             <Divider />
             <div className="mt-2">{children}</div>
           </div>
-          <div className="flex w-full flex-col gap-2 xl:w-7/12">
+
+          <div className="flex w-full flex-col gap-2 self-start xl:sticky xl:top-24 xl:w-7/12">
+            <USGLoanDetail />
+
             <CollateralPriceProvider>
               <USGCollateralPrice />
             </CollateralPriceProvider>
           </div>
         </div>
+
         <Divider className="hidden xl:flex" />
         <Accordion className="hidden w-full xl:flex" type="single" collapsible>
           <BorderPanel className="flex w-full cursor-pointer items-center justify-between bg-overlay-panel px-2 backdrop-blur-[60px]">

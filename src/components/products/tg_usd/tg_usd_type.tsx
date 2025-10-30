@@ -533,6 +533,8 @@ export type GaugeAPR = {
   address: Address
   gaugeCrvApy: Array<number>
   gaugeFutureCrvApy: Array<number>
+  lpTokenAddress?: Address
+  convexPoolData?: { usdTotal?: number }
 }
 
 export type StakeDaoAPRData = {

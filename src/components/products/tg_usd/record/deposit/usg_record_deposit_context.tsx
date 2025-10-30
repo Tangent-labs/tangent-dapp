@@ -3,11 +3,11 @@
 import { toast } from "react-toastify"
 import { useUSGContext } from "../../tg_usd_context"
 import { USGMarket, ZapToken } from "../../tg_usd_type"
-import { formatUnits, parseEther, zeroAddress } from "viem"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
+import { formatUnits, parseEther, zeroAddress } from "viem"
 import { useRootContext } from "@/components/products/root/root_context"
 import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
@@ -70,7 +70,9 @@ type USGDepositContextValues = {
 
   maxDepositString: string
 
-  quoteDetail: { expected: string; aprVariation: { current: string; updated: string } }
+  expectedCollateral: string
+
+  aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
 }
 
 export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
@@ -82,7 +84,8 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo } = useUSGRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo, currentConvexTVL } =
+    useUSGRecordContext()
 
   const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(false)
 
@@ -494,28 +497,31 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     return `Max 0 ${depositAssetInfo?.symbol}`
   }, [depositAsset, collateralInfo, currentAddress, depositAssetInfo, balanceAllowanceData])
 
-  const quoteDetail = useMemo(() => {
+  const expectedCollateral = useMemo(() => {
     if (marketData) {
-      if (marketAprs && zapValue && depositAsset !== collateralInfo?.symbol) {
-        const expected = `${formatBigIntAsNumber(BigInt(zapValue || 0n), 18, 0)}  ${collateralInfo?.symbol}`
-
-        const { aprVariation } = computeAprVariation(marketAprs, marketData, BigInt(zapValue))
-
-        return { expected, aprVariation }
-      } else if (marketAprs && depositAssetInfo?.address === collateralInfo?.address && depositWeiValue) {
-        const expected = `${formatBigIntAsNumber(depositWeiValue || 0n, 18, 0)}  ${collateralInfo?.symbol}`
-
-        const { aprVariation } = computeAprVariation(marketAprs, marketData, depositWeiValue)
-
-        return { expected, aprVariation }
+      if (zapValue && depositAsset !== collateralInfo?.symbol) {
+        return `${formatBigIntAsNumber(BigInt(zapValue || 0n), 18, 0)}  ${collateralInfo?.symbol}`
+      } else if (depositAssetInfo?.address === collateralInfo?.address && depositWeiValue) {
+        return `${formatBigIntAsNumber(depositWeiValue || 0n, 18, 0)}  ${collateralInfo?.symbol}`
       }
-
-      const { aprVariation } = computeAprVariation(marketAprs, marketData, 0n)
-
-      return { expected: `0 ${collateralInfo?.symbol}`, aprVariation }
     }
-    return { expected: `0 ${collateralInfo?.symbol}`, aprVariation: { current: "", updated: "-" } }
-  }, [zapValue, depositWeiValue, collateralInfo?.symbol, marketAprs, marketData])
+    return `0 ${collateralInfo?.symbol}`
+  }, [zapValue, depositWeiValue, collateralInfo?.symbol, marketData])
+
+  const aprVariation = useMemo(() => {
+    let result = { current: "", currentUpdated: "-", projected: "", projectedUpdated: "-" }
+
+    if (marketData && currentConvexTVL) {
+      if (marketAprs && zapValue && depositAsset !== collateralInfo?.symbol) {
+        result = computeAprVariation(marketAprs, currentConvexTVL, marketData, BigInt(zapValue))
+      } else if (marketAprs && depositAssetInfo?.address === collateralInfo?.address && depositWeiValue) {
+        result = computeAprVariation(marketAprs, currentConvexTVL, marketData, depositWeiValue)
+      } else {
+        result = computeAprVariation(marketAprs, currentConvexTVL, marketData, 0n)
+      }
+    }
+    return result
+  }, [zapValue, depositWeiValue, collateralInfo?.symbol, marketAprs, marketData, currentConvexTVL])
 
   const contextValue: USGDepositContextValues = {
     marketInfo,
@@ -572,7 +578,9 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
 
     maxDepositString,
 
-    quoteDetail,
+    aprVariation,
+
+    expectedCollateral,
   }
 
   return <USGDepositContext.Provider value={contextValue}>{children}</USGDepositContext.Provider>

@@ -52,12 +52,13 @@ export default function USGLeverageContent() {
     depositAssetInfo,
     slippage,
     estimatedZapDollarValue,
-    quoteDetail,
+    expectedCollateral,
     zapInnerValue,
     depositSliderPercent,
     leveragePercentage,
     maxDepositString,
     computedMaxLeverage,
+    aprVariation,
   } = useUSGLeverageContext()
 
   const { balances } = useUSGContext()
@@ -254,24 +255,36 @@ export default function USGLeverageContent() {
           <div className={cn("flex flex-col gap-1 rounded-[10px] bg-overlay-panel p-2 text-xs", isDepositLoading ? "shimmer" : "")}>
             {!isDepositDisabled && (
               <div className="flex w-full items-center justify-between">
-                <span className="text-subtitle">Leverage</span>
+                <span className="text-subtitle">Leverage : </span>
                 <span className="text-white">~{leveragePercentage.toFixed(2)}x</span>
               </div>
             )}
 
             <div className="flex w-full items-center justify-between">
               <span className="text-subtitle">APR variation : </span>
+            </div>
+
+            <div className="flex w-full items-center justify-between">
+              <span className="ml-4 italic text-subtitle">Current </span>
               <div className="flex items-center justify-center gap-1">
-                <span className="text-white">{quoteDetail.aprVariation.current}</span>
-                <span className="text-tonic">{quoteDetail.aprVariation.updated}</span>
+                <span className="text-white">{aprVariation.current}</span>
+                <span className="text-tonic">{aprVariation.currentUpdated}</span>
               </div>
             </div>
 
             <div className="flex w-full items-center justify-between">
+              <span className="ml-4 italic text-subtitle">Projected </span>
+              <div className="flex items-center justify-center gap-1">
+                <span className="text-white">{aprVariation.projected}</span>
+                <span className="text-tonic">{aprVariation.projectedUpdated}</span>
+              </div>
+            </div>
+
+            <div className="mt-2 flex w-full items-center justify-between border-t border-white/30 pt-2">
               <span className="text-subtitle">Expected : </span>
               <span className="text-white">
-                {quoteDetail?.sum}
-                <span className="font-semibold text-white">{quoteDetail?.result}</span>
+                {expectedCollateral?.sum}
+                <span className="font-semibold text-white">{expectedCollateral?.result}</span>
               </span>
             </div>
           </div>

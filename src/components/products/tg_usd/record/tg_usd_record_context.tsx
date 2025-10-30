@@ -25,6 +25,7 @@ import {
 
 import { toast } from "react-toastify"
 import { usePathname } from "next/navigation"
+import { getConvexPools } from "../server_api"
 import { useUSGContext } from "../tg_usd_context"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { useRootContext } from "../../root/root_context"
@@ -102,6 +103,8 @@ type USGRecordContextValues = {
   currentTotalMarketApr: number
 
   maxBorrowCapReached: boolean
+
+  currentConvexTVL: bigint
 }
 
 const LEVERAGE_TRESHOLD = 0.989
@@ -142,6 +145,8 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   const [totalBorrow, setTotalBorrow] = useState<TotalBorrow>({ latestTotalDebt: "0", data: [] })
 
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
+
+  const [currentConvexTVL, setCurrentConvexTVL] = useState<bigint>(1n)
 
   const [currentAmounts, setCurrentAmounts] = useState<USGMarketAmounts>({
     depositWeiValue: 0n,
@@ -377,6 +382,17 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     }
   }, [maxBorrowCapReached, currentAmounts.borrowWeiValue, marketData])
 
+  const fetchLpConvexData = async (address: Address) => {
+    const convexLpData = await getConvexPools()
+    const convexCollateralInfo = convexLpData.find((el) => el.lpTokenAddress === address)
+
+    setCurrentConvexTVL(BigInt((convexCollateralInfo?.convexPoolData?.usdTotal || 0) * 10 ** 18))
+  }
+
+  useEffect(() => {
+    fetchLpConvexData(collateralInfo?.address)
+  }, [collateralInfo?.address])
+
   const contextValue: USGRecordContextValues = {
     isLoading,
     collateral,
@@ -423,6 +439,8 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     currentTotalMarketApr,
 
     maxBorrowCapReached,
+
+    currentConvexTVL,
   }
 
   return <USGRecordContext.Provider value={contextValue}>{children}</USGRecordContext.Provider>

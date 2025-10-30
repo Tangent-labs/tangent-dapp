@@ -336,21 +336,36 @@ export const mapToTotalBorrow = (rows: MarketHistoricalData[]): TotalBorrow => {
   }
 }
 
-export const computeAprVariation = (marketAprs: MarketAPR[], marketData: MarketDetailData, inputValue: bigint) => {
-  let result = { aprVariation: { current: "", updated: "-" } }
+export const computeAprVariation = (marketAprs: MarketAPR[], currentConvexTVL: bigint, marketData: MarketDetailData, inputValue: bigint) => {
+  let result = { current: "", currentUpdated: "-", projected: "", projectedUpdated: "-" }
 
   const currentMarketApr = marketAprs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())
 
   if (currentMarketApr) {
+    const { APY: currentAPY, ...currentAPRWithoutApy } = currentMarketApr?.currentAPR
+    const { APY: projectedAPY, ...projectedAPRWithoutApy } = currentMarketApr?.projectedAPR
+
     const totalCurrentAPR = Object.values(currentMarketApr?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+    const totalProjectedAPR = Object.values(currentMarketApr?.projectedAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+
+    const totalCurrentAPRWithoutAPY = Object.values(currentAPRWithoutApy).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+    const totalProjectedAPRWithoutAPY = Object.values(projectedAPRWithoutApy).reduce((sum, value) => Number(sum) + Number(value), 0) as number
 
     const newAPR =
-      (marketData?.collateralInfos.totalCollateralAmount * BigInt(totalCurrentAPR * 100)) / (marketData?.collateralInfos.totalCollateralAmount + inputValue)
+      (marketData?.collateralInfos.totalCollateralAmount * BigInt((totalCurrentAPRWithoutAPY * 100).toFixed(0))) /
+      (marketData?.collateralInfos.totalCollateralAmount + inputValue || 1n)
 
-    if (newAPR) {
-      result = { aprVariation: { current: `${totalCurrentAPR}% =>`, updated: `${Number(newAPR) / 100}%` } }
+    const newProjectedAPR = (currentConvexTVL * BigInt((totalProjectedAPRWithoutAPY * 100).toFixed(0))) / (currentConvexTVL + inputValue)
+
+    if (newAPR >= 0n && currentAPY >= 0 && newProjectedAPR >= 0 && projectedAPY >= 0) {
+      result = {
+        current: `${totalCurrentAPR.toFixed(2)}% =>`,
+        currentUpdated: `${(Number(newAPR) / 100 + currentAPY).toFixed(2)}%`,
+        projected: `${totalProjectedAPR.toFixed(2)}% =>`,
+        projectedUpdated: `${(Number(newProjectedAPR) / 100 + projectedAPY).toFixed(2)}%`,
+      }
     } else {
-      result = { aprVariation: { current: `${totalCurrentAPR}% =>`, updated: "-" } }
+      result = { current: `${totalCurrentAPR.toFixed(2)}% =>`, currentUpdated: "-", projected: `${totalProjectedAPR.toFixed(2)}% =>`, projectedUpdated: "-" }
     }
   }
 

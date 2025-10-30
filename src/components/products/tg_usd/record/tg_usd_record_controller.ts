@@ -17,7 +17,7 @@ import { CollateralInfo, ExistingAsset } from "@/types"
 import { getSwapAssetPrice } from "@/services/service_price"
 import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
 import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
-import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
+import { formatBigInt, formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
 import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, formatEther, formatUnits, Hex, parseEther, WalletClient, zeroAddress } from "viem"
 
@@ -139,7 +139,7 @@ export function getComputedFutureLoanData(
 
   return {
     collateralValue: formatDollar(futureDepositedDollar, 0),
-    debt: futureDebt > 0n ? formatDollarBigInt(futureDebt, collateralInfo.decimals, collateralInfo.displayDecimals) : "$0",
+    debt: futureDebt > 0n ? formatBigInt(futureDebt, collateralInfo.decimals, collateralInfo.displayDecimals) : "0",
     health: health > 0n ? formatNumber(etherValueToNumber(health), 2) : "0",
     ltv: ltv > 0 ? formatNumber(collateralValueToNumber(ltv || 0), 2) + "%" : "0%",
     maxBorrowable: formatDollarBigInt(maxBorrowable, collateralInfo.decimals, 0),

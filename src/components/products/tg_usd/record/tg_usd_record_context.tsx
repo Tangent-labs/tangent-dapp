@@ -105,6 +105,8 @@ type USGRecordContextValues = {
   maxBorrowCapReached: boolean
 
   currentConvexTVL: bigint
+
+  displayAPRVariation: boolean
 }
 
 const LEVERAGE_TRESHOLD = 0.989
@@ -385,13 +387,18 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   const fetchLpConvexData = async (address: Address) => {
     const convexLpData = await getConvexPools()
     const convexCollateralInfo = convexLpData.find((el) => el.lpTokenAddress?.toLowerCase() === address.toLowerCase())
-
     setCurrentConvexTVL(BigInt((convexCollateralInfo?.convexPoolData?.usdTotal || 0) * 10 ** 18))
   }
 
+  const displayAPRVariation = useMemo(() => {
+    return marketInfo?.marketType !== "Pendle_PT"
+  }, [marketInfo])
+
   useEffect(() => {
-    fetchLpConvexData(collateralInfo?.address)
-  }, [collateralInfo?.address])
+    if (displayAPRVariation) {
+      fetchLpConvexData(collateralInfo?.address)
+    }
+  }, [collateralInfo?.address, displayAPRVariation])
 
   const contextValue: USGRecordContextValues = {
     isLoading,
@@ -441,6 +448,8 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     maxBorrowCapReached,
 
     currentConvexTVL,
+
+    displayAPRVariation,
   }
 
   return <USGRecordContext.Provider value={contextValue}>{children}</USGRecordContext.Provider>

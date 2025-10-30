@@ -65,7 +65,8 @@ export default function USGLeverageContent() {
 
   const { connect } = useWalletConnexionContext()
 
-  const { collateralInfo, marketData, balanceAllowanceData, marketInfo, pricedCollateralInfo, USGInfo, maxBorrowCapReached } = useUSGRecordContext()
+  const { collateralInfo, marketData, balanceAllowanceData, marketInfo, pricedCollateralInfo, USGInfo, maxBorrowCapReached, displayAPRVariation } =
+    useUSGRecordContext()
 
   const AssetSelect = () => {
     const tokenOptions = tokens.map((el: ZapToken) => ({
@@ -260,27 +261,31 @@ export default function USGLeverageContent() {
               </div>
             )}
 
-            <div className="flex w-full items-center justify-between">
-              <span className="text-subtitle">APR variation : </span>
-            </div>
+            {displayAPRVariation && (
+              <>
+                <div className="flex w-full items-center justify-between">
+                  <span className="text-subtitle">APR variation : </span>
+                </div>
 
-            <div className="flex w-full items-center justify-between">
-              <span className="ml-4 italic text-subtitle">Current </span>
-              <div className="flex items-center justify-center gap-1">
-                <span className="text-white">{aprVariation.current}</span>
-                <span className="text-tonic">{aprVariation.currentUpdated}</span>
-              </div>
-            </div>
+                <div className="flex w-full items-center justify-between">
+                  <span className="ml-4 italic text-subtitle">Current </span>
+                  <div className="flex items-center justify-center gap-1">
+                    <span className="text-white">{aprVariation.current}</span>
+                    <span className="text-tonic">{aprVariation.currentUpdated}</span>
+                  </div>
+                </div>
 
-            <div className="flex w-full items-center justify-between">
-              <span className="ml-4 italic text-subtitle">Projected </span>
-              <div className="flex items-center justify-center gap-1">
-                <span className="text-white">{aprVariation.projected}</span>
-                <span className="text-tonic">{aprVariation.projectedUpdated}</span>
-              </div>
-            </div>
+                <div className="flex w-full items-center justify-between">
+                  <span className="ml-4 italic text-subtitle">Projected </span>
+                  <div className="flex items-center justify-center gap-1">
+                    <span className="text-white">{aprVariation.projected}</span>
+                    <span className="text-tonic">{aprVariation.projectedUpdated}</span>
+                  </div>
+                </div>
+              </>
+            )}
 
-            <div className="mt-2 flex w-full items-center justify-between border-t border-white/30 pt-2">
+            <div className={cn(displayAPRVariation ? "mt-2 border-t border-white/30 pt-2" : "", "flex w-full items-center justify-between")}>
               <span className="text-subtitle">Expected : </span>
               <span className="text-white">
                 {expectedCollateral?.sum}

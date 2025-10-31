@@ -60,7 +60,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     if (quote) {
       return quote
     } else {
-      toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." }, autoClose: 6000 })
+      toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." } })
       return null
     }
   }

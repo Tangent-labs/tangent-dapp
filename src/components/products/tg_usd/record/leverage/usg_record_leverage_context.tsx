@@ -259,6 +259,14 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     }
   }, [depositWeiValue, borrowWeiValue, zapValue, leveragedCollateralQuote, isDepositLoading])
 
+  useEffect(() => {
+    setCurrentAmounts({
+      depositWeiValue: 0n,
+      borrowWeiValue: 0n,
+      zapValue: 0n,
+    })
+  }, [])
+
   const actionApproveZap = () => {
     setIsDepositLoading(true)
     const walletClient = getWalletClient()
@@ -470,11 +478,15 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const updateBorrowWeiValue = async (value: bigint) => {
     setIsDepositLoading(true)
-    getQuote(value, currentAddress!, marketInfo?.collatAddress, USG_CONTRACT.USG, curveRoutes).then(({ quote }) => {
-      setLeveragedCollateralQuote(quote)
-      setIsDepositLoading(false)
-      setBorrowWeiValue(value)
-    })
+    getQuote(value, currentAddress!, marketInfo?.collatAddress, USG_CONTRACT.USG, curveRoutes)
+      .then(({ quote }) => {
+        setLeveragedCollateralQuote(quote)
+        setIsDepositLoading(false)
+        setBorrowWeiValue(value)
+      })
+      .catch(() => {
+        toast.error(ToastComponent, { data: { type: "Error", content: "USG to Collateral quote failed." } })
+      })
   }
 
   useEffect(() => {

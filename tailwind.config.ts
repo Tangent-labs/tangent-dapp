@@ -6,7 +6,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        gilroy: ["Gilroy"],
+        gilroy: ["var(--font-gilroy)", "sans-serif"],
       },
       backgroundImage: {
         header: "var(--tgt-bg-header)",

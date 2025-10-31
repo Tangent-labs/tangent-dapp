@@ -33,11 +33,11 @@ export const USGDashboardContent = () => {
       <div className="pointer-events-none rounded-xl bg-[#070707] px-3 py-2 text-[10px]">
         <div className="flex gap-1">
           <div className="text-subtitle">Date : </div>
-          <div className="font-bold text-white">{date.toDateString()}</div>
+          <div className="font-semibold text-white">{date.toDateString()}</div>
         </div>
         <div className="flex gap-1">
           <div className="text-subtitle">Total Supply :</div>
-          <div className="font-bold text-white"> {formatDollar(value, 0)}</div>
+          <div className="font-semibold text-white"> {formatDollar(value, 0)}</div>
         </div>
       </div>
     )

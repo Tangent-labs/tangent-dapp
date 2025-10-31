@@ -384,10 +384,10 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     const quoteDetail = { sum: "", result: `0 ${collateralInfo?.symbol}` }
 
     if (marketData) {
-      if (marketAprs && zapValue && leveragedCollateralQuote) {
+      if (zapValue && leveragedCollateralQuote) {
         quoteDetail.sum = ` ${formatBigIntAsNumber(zapValue || 0n, 18, 3)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 3)}  ~= `
         quoteDetail.result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + BigInt(zapValue || 0n), 18, 3)}  ${collateralInfo?.symbol}`
-      } else if (marketAprs && depositWeiValue && leveragedCollateralQuote) {
+      } else if (depositWeiValue && leveragedCollateralQuote) {
         quoteDetail.sum = ` ${formatBigIntAsNumber(depositWeiValue || 0n, 18, 3)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 3)}  ~= `
         quoteDetail.result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18, 3)}  ${collateralInfo?.symbol}`
       }
@@ -408,7 +408,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       }
     }
     return apr
-  }, [zapValue, depositWeiValue, leveragedCollateralQuote, collateralInfo?.symbol, marketData, currentConvexTVL])
+  }, [zapValue, depositWeiValue, leveragedCollateralQuote, marketData, currentConvexTVL])
 
   const estimatedZapDollarValue = useMemo(() => {
     if (zapValue && marketData) {

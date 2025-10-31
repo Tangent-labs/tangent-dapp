@@ -352,8 +352,8 @@ export const computeAprVariation = (marketAprs: MarketAPR[], currentConvexTVL: b
     const totalProjectedAPRWithoutAPY = Object.values(projectedAPRWithoutApy).reduce((sum, value) => Number(sum) + Number(value), 0) as number
 
     const newAPR =
-      (marketData?.collateralInfos.totalCollateralAmount * BigInt((totalCurrentAPRWithoutAPY * 100).toFixed(0))) /
-      (marketData?.collateralInfos.totalCollateralAmount + inputValue || 1n)
+      (marketData?.collateralInfos.totalCollateralUSDValue * BigInt((totalCurrentAPRWithoutAPY * 100).toFixed(0))) /
+      (marketData?.collateralInfos.totalCollateralUSDValue + inputValue || 1n)
 
     const newProjectedAPR = (currentConvexTVL * BigInt((totalProjectedAPRWithoutAPY * 100).toFixed(0))) / (currentConvexTVL + inputValue)
 

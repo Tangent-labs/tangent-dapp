@@ -1,17 +1,12 @@
 "use client"
 
+import { useUSGRecordContext } from "./tg_usd_record_context"
+import Title from "@/components/design_system/structure/title"
 import Divider from "@/components/design_system/structure/divider"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
-import Title from "@/components/design_system/structure/title"
-
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { useUSGRecordContext } from "./tg_usd_record_context"
 
 export default function USGLoanDetail() {
-  const { isWellConnected } = useWalletConnexionContext()
   const { marketDisplayData, futureMarketDisplayData } = useUSGRecordContext()
-
-  if (!isWellConnected) return <></>
 
   return (
     <div className="mb-2 flex flex-col rounded-[10px] bg-overlay-panel px-3 py-2 backdrop-blur-[60px]">

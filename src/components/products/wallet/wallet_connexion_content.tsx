@@ -126,7 +126,7 @@ export const WalletConnexionContent = () => {
 
               <div
                 onClick={handleButtonClick}
-                className="flex w-full cursor-pointer items-center justify-start bg-danger bg-clip-text p-2 font-bold text-transparent"
+                className="flex w-full cursor-pointer items-center justify-start bg-danger bg-clip-text p-2 font-semibold text-transparent"
               >
                 {isConnected ? "Log out" : ""}
               </div>

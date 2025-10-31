@@ -48,30 +48,30 @@ export default function MenuBarFeature() {
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem
-                  className={pathname === "/dashboard" ? "bg-tab bg-clip-text font-bold text-transparent" : ""}
+                  className={pathname === "/dashboard" ? "bg-tab bg-clip-text font-semibold text-transparent" : ""}
                   onClick={() => router.push("/dashboard")}
                 >
                   Dashboard
                 </NavigationMenuItem>
-                <NavigationMenuItem className={pathname === "/" ? "bg-tab bg-clip-text font-bold text-transparent" : ""} onClick={() => router.push("/")}>
+                <NavigationMenuItem className={pathname === "/" ? "bg-tab bg-clip-text font-semibold text-transparent" : ""} onClick={() => router.push("/")}>
                   Markets
                 </NavigationMenuItem>
                 <NavigationMenuItem
-                  className={pathname === "/stake" ? "bg-tab bg-clip-text font-bold text-transparent" : ""}
+                  className={pathname === "/stake" ? "bg-tab bg-clip-text font-semibold text-transparent" : ""}
                   onClick={() => router.push("/stake")}
                 >
                   Savings
                 </NavigationMenuItem>
 
                 <NavigationMenuItem
-                  className={pathname === "/earn" ? "bg-tab bg-clip-text font-bold text-transparent" : ""}
+                  className={pathname === "/earn" ? "bg-tab bg-clip-text font-semibold text-transparent" : ""}
                   onClick={() => router.push("/earn")}
                 >
                   Earn
                 </NavigationMenuItem>
 
                 <NavigationMenuItem
-                  className={pathname === "/claim" ? "bg-tab bg-clip-text font-bold text-transparent" : ""}
+                  className={pathname === "/claim" ? "bg-tab bg-clip-text font-semibold text-transparent" : ""}
                   onClick={() => router.push("/claim")}
                 >
                   Claim

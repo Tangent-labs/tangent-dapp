@@ -123,7 +123,7 @@ export interface ChainViewMarketRow {
 export interface CollateralInfos {
   collateralToken: ERC20StaticInfos
   totalCollateralUSDValue: bigint
-  totalCollateralAmount: string
+  totalCollateralAmount: bigint
   collateralUSDPrice: bigint
   positionCollateralAmount: bigint
   positionCollateralUSDValue: bigint
@@ -145,7 +145,7 @@ export interface MarketConstants {
   maxLTV: bigint
   maxMarketDebt: bigint
   minimumLoan: bigint
-  liquidationThreshold: string
+  liquidationThreshold: bigint
   irParams: {
     a1: number
     a2: number
@@ -533,6 +533,8 @@ export type GaugeAPR = {
   address: Address
   gaugeCrvApy: Array<number>
   gaugeFutureCrvApy: Array<number>
+  lpTokenAddress?: Address
+  convexPoolData?: { usdTotal?: number }
 }
 
 export type StakeDaoAPRData = {

@@ -7,9 +7,7 @@ import { ZapToken } from "../../tg_usd_type"
 import { Switch } from "@/components/ui/switch"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGContext } from "../../tg_usd_context"
-import { IconChevron } from "@/components/icons/icon_chevron"
 import { IconThunder } from "@/components/icons/icon_thunder"
-import Panel from "@/components/design_system/structure/panel"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
@@ -24,7 +22,8 @@ import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { MaxBorrowCapReached } from "@/components/design_system/notificatons/max_borrow_cap_reached"
+import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
+import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 
 export default function USGLeverageContent() {
   const {
@@ -53,18 +52,21 @@ export default function USGLeverageContent() {
     depositAssetInfo,
     slippage,
     estimatedZapDollarValue,
-    quoteDetail,
+    expectedCollateral,
     zapInnerValue,
     depositSliderPercent,
     leveragePercentage,
     maxDepositString,
+    computedMaxLeverage,
+    aprVariation,
   } = useUSGLeverageContext()
 
   const { balances } = useUSGContext()
 
   const { connect } = useWalletConnexionContext()
 
-  const { collateralInfo, marketData, balanceAllowanceData, marketInfo, pricedCollateralInfo, USGInfo, maxBorrowCapReached } = useUSGRecordContext()
+  const { collateralInfo, marketData, balanceAllowanceData, marketInfo, pricedCollateralInfo, USGInfo, maxBorrowCapReached, displayAPRVariation } =
+    useUSGRecordContext()
 
   const AssetSelect = () => {
     const tokenOptions = tokens.map((el: ZapToken) => ({
@@ -133,10 +135,44 @@ export default function USGLeverageContent() {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-end gap-2">
+      <div className="flex w-full items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm text-subtitle">Leverage only</span>
           <Switch checked={isDepositDisabled} onCheckedChange={(v) => setIsDepositDisabled(v)} />
+        </div>
+
+        <div className="flex items-center justify-start gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2">
+                <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
+                <button type="button" title="Slippage">
+                  <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
+                    <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
+                  </div>
+                </button>
+              </BorderPanel>
+            </PopoverTrigger>
+            <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none">
+              <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
+                <div className="flex w-full flex-col items-center justify-between gap-2">
+                  <div className="flex w-full items-center justify-start">Slippage</div>
+                  <input
+                    onChange={(e) => setSlippage(Number(e?.target?.value))}
+                    value={slippage || 0}
+                    placeholder="0.5"
+                    type="number"
+                    className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
+                  />
+                  <div className="mt-2 flex w-full items-center justify-between gap-2">
+                    <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />
+                    <ButtonTab onClick={() => setSlippage(1)} label={"1.0%"} active={slippage === 1} className="rounded-full !px-2 !py-1" />
+                    <ButtonTab onClick={() => setSlippage(2)} label={"2.0%"} active={slippage === 2} className="rounded-full !px-2 !py-1" />
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
@@ -198,7 +234,11 @@ export default function USGLeverageContent() {
       )}
 
       <>
-        <span className="flex items-end justify-between text-sm font-semibold md:text-xl">Borrow amount</span>
+        <div className="flex w-full items-end justify-between">
+          <span className="flex items-start justify-start text-sm font-semibold md:text-xl">Borrow amount</span>
+
+          <div className="flex items-end justify-end text-xs text-subtitle">{computedMaxLeverage}</div>
+        </div>
 
         <LeverageInput
           label="You borrow"
@@ -210,31 +250,53 @@ export default function USGLeverageContent() {
           onValueChange={(e) => updateBorrowWeiValue(e)}
         />
 
-        <div className="-mt-1 flex w-full items-start justify-end text-xs text-subtitle">
-          Max leverage: x{Number((1 / (1 - Number(marketData?.constants.maxLTV) / 100000)).toFixed(0))}
-        </div>
-
         <div className="flex flex-col gap-2">
           <span className="text-sm font-semibold md:text-xl">Recap</span>
 
           <div className={cn("flex flex-col gap-1 rounded-[10px] bg-overlay-panel p-2 text-xs", isDepositLoading ? "shimmer" : "")}>
             {!isDepositDisabled && (
               <div className="flex w-full items-center justify-between">
-                <span className="text-subtitle">Leverage</span>
+                <span className="text-subtitle">Leverage : </span>
                 <span className="text-white">~{leveragePercentage.toFixed(2)}x</span>
               </div>
             )}
 
-            <div className="flex w-full items-center justify-between">
+            {displayAPRVariation && (
+              <>
+                <div className="flex w-full items-center justify-between">
+                  <span className="text-subtitle">APR variation : </span>
+                </div>
+
+                <div className="flex w-full items-center justify-between">
+                  <span className="ml-4 italic text-subtitle">Current </span>
+                  <div className="flex items-center justify-center gap-1">
+                    <span className="text-white">{aprVariation.current}</span>
+                    <span className="text-tonic">{aprVariation.currentUpdated}</span>
+                  </div>
+                </div>
+
+                <div className="flex w-full items-center justify-between">
+                  <span className="ml-4 italic text-subtitle">Projected </span>
+                  <div className="flex items-center justify-center gap-1">
+                    <span className="text-white">{aprVariation.projected}</span>
+                    <span className="text-tonic">{aprVariation.projectedUpdated}</span>
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div className={cn(displayAPRVariation ? "mt-2 border-t border-white/30 pt-2" : "", "flex w-full items-center justify-between")}>
               <span className="text-subtitle">Expected : </span>
               <span className="text-white">
-                {quoteDetail?.sum}
-                <span className="font-semibold text-white">{quoteDetail?.result}</span>
+                {expectedCollateral?.sum}
+                <span className="font-semibold text-white">{expectedCollateral?.result}</span>
               </span>
             </div>
           </div>
         </div>
       </>
+
+      <MarketTransactionError display={!!depositWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />
 
       <>
         {leverageExceedsMaxLtv && (
@@ -255,74 +317,6 @@ export default function USGLeverageContent() {
         formState={formState}
         labelProcess={depositAsset && depositAsset !== collateralInfo?.name ? "Zap and leverage" : "Leverage"}
       />
-
-      <div className="flex w-full items-end justify-between gap-2">
-        <Popover>
-          <PopoverTrigger asChild>
-            <button type="button" className="w-full font-gilroy" title="Slippage">
-              <BorderPanel className="flex h-[30px] w-full cursor-pointer items-center justify-between px-2 text-xs text-primary hover:bg-white/20">
-                Details
-                <IconChevron className="h-auto w-[12px] text-row-tonic" />
-              </BorderPanel>
-            </button>
-          </PopoverTrigger>
-          <PopoverContent
-            side="bottom"
-            align="center"
-            sideOffset={8}
-            collisionPadding={16}
-            className="z-20 !m-0 w-96 !border-none bg-[#070707] !p-0 font-gilroy"
-          >
-            <Panel className="!border-none">
-              <div className="flex w-full flex-col items-center justify-center text-primary">
-                {slippage && slippage > 0 ? (
-                  <div className="flex w-full items-center justify-between">
-                    <div className="flex justify-start">Max slippage</div>
-                    <div className="flex justify-end">{slippage}%</div>
-                  </div>
-                ) : null}
-
-                <div className="flex w-full items-center justify-between">
-                  <div className="flex justify-start">Zapping fee</div>
-                  <div className="flex justify-end">--</div>
-                </div>
-              </div>
-            </Panel>
-          </PopoverContent>
-        </Popover>
-
-        <Popover>
-          <PopoverTrigger asChild>
-            <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2">
-              <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
-              <button type="button" title="Slippage">
-                <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
-                  <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
-                </div>
-              </button>
-            </BorderPanel>
-          </PopoverTrigger>
-          <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none">
-            <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
-              <div className="flex w-full flex-col items-center justify-between gap-2">
-                <div className="flex w-full items-center justify-start">Slippage</div>
-                <input
-                  onChange={(e) => setSlippage(Number(e?.target?.value))}
-                  value={slippage || 0}
-                  placeholder="0.5"
-                  type="number"
-                  className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
-                />
-                <div className="mt-2 flex w-full items-center justify-between gap-2">
-                  <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />
-                  <ButtonTab onClick={() => setSlippage(1)} label={"1.0%"} active={slippage === 1} className="rounded-full !px-2 !py-1" />
-                  <ButtonTab onClick={() => setSlippage(2)} label={"2.0%"} active={slippage === 2} className="rounded-full !px-2 !py-1" />
-                </div>
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div>
     </div>
   )
 }

@@ -103,6 +103,6 @@ export const formatCompact = (value: string | number): string => {
   } else if (number >= 1_000) {
     return `${(number / 1_000).toFixed(2)}K`
   } else {
-    return `$${number.toFixed(0)}`
+    return `${number.toFixed(0)}`
   }
 }

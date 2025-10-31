@@ -14,10 +14,10 @@ export default function USGLoanDetail() {
   if (!isWellConnected) return <></>
 
   return (
-    <div className="my-4 flex flex-col rounded-[10px] bg-overlay-panel px-3 py-2 backdrop-blur-[60px]">
+    <div className="mb-2 flex flex-col rounded-[10px] bg-overlay-panel px-3 py-2 backdrop-blur-[60px]">
       <Title label={"Loan details"} size={"normal"} />
       <Divider />
-      <div className="flex flex-wrap gap-2 lg:gap-6">
+      <div className="flex flex-wrap gap-2">
         <EvolutionBox
           originalValue={marketDisplayData.collateralValue}
           label={"Collateral value"}

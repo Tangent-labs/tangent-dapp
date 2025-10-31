@@ -14,8 +14,7 @@ export function getLeverageFormState(
   isWellConnected?: boolean,
   depositAssetInfo?: AssetDataPriced,
   collateralInfo?: CollateralInfo,
-  balanceAllowanceData?: { balance: bigint; allowance: bigint },
-  isDepositLoading?: boolean
+  balanceAllowanceData?: { balance: bigint; allowance: bigint }
 ) {
   const isZapMode = depositAssetInfo?.address !== collateralInfo?.address
 
@@ -23,9 +22,6 @@ export function getLeverageFormState(
 
   const isApproved = (depositWeiValue || 0n) <= (balanceAllowanceData?.allowance || 0n)
 
-  if (isDepositLoading) {
-    reasons.push("Action in progress.")
-  }
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
   } else {

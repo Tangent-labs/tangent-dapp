@@ -10,7 +10,7 @@ import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
-import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
+import { computeAprVariation, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
@@ -71,7 +71,7 @@ type USGLeverageContextValues = {
   leveragedCollateralQuote: bigint | undefined
   setLeveragedCollateralQuote: (arg: bigint) => void
 
-  quoteDetail: { sum: string; result: string }
+  expectedCollateral: { sum: string; result: string }
 
   estimatedZapDollarValue: string
 
@@ -80,25 +80,30 @@ type USGLeverageContextValues = {
   updateBorrowWeiValue: (value: bigint) => Promise<void>
 
   maxDepositString: string
+
+  computedMaxLeverage: string
+
+  aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
 }
 
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
 
 export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
-  const { curveRoutes, handleQuote } = useRootContext()
-
-  const { tokens, loadUSGsUSGMetrics } = useUSGContext()
-
   const {
     marketData,
     marketInfo,
     balanceAllowanceData,
     futureMarketDisplayData,
     collateralInfo,
+    currentConvexTVL,
     fetchBalanceAllowanceData,
     loadOnChainData,
     setCurrentAmounts,
   } = useUSGRecordContext()
+
+  const { curveRoutes, handleQuote } = useRootContext()
+
+  const { tokens, loadUSGsUSGMetrics, marketAprs } = useUSGContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
@@ -375,23 +380,35 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     fetchBalanceAllowanceData(depositAssetInfo?.address)
   }
 
-  const quoteDetail = useMemo(() => {
-    if (zapValue) {
-      const sum = ` ${formatBigIntAsNumber(zapValue || 0n, 18, 0)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 0)}  ~= `
-      const result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + BigInt(zapValue || 0n), 18, 0)}  ${collateralInfo?.symbol}`
-      return { sum, result }
-    } else if (depositWeiValue) {
-      const sum = ` ${formatBigIntAsNumber(depositWeiValue || 0n, 18, 0)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 0)}  ~= `
-      const result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18, 0)}  ${collateralInfo?.symbol}`
-      return { sum, result }
+  const expectedCollateral = useMemo(() => {
+    const quoteDetail = { sum: "", result: `0 ${collateralInfo?.symbol}` }
+
+    if (marketData) {
+      if (marketAprs && zapValue && leveragedCollateralQuote) {
+        quoteDetail.sum = ` ${formatBigIntAsNumber(zapValue || 0n, 18, 3)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 3)}  ~= `
+        quoteDetail.result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + BigInt(zapValue || 0n), 18, 3)}  ${collateralInfo?.symbol}`
+      } else if (marketAprs && depositWeiValue && leveragedCollateralQuote) {
+        quoteDetail.sum = ` ${formatBigIntAsNumber(depositWeiValue || 0n, 18, 3)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 3)}  ~= `
+        quoteDetail.result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18, 3)}  ${collateralInfo?.symbol}`
+      }
     }
-    return { sum: "", result: `0 ${collateralInfo?.symbol}` }
-  }, [
-    zapValue,
-    depositWeiValue,
-    leveragedCollateralQuote,
-    collateralInfo?.symbol, // include symbol
-  ])
+    return quoteDetail
+  }, [zapValue, depositWeiValue, leveragedCollateralQuote, collateralInfo?.symbol, marketData])
+
+  const aprVariation = useMemo(() => {
+    let apr = { current: "", currentUpdated: "-", projected: "", projectedUpdated: "-" }
+
+    if (marketData) {
+      if (marketAprs && zapValue && leveragedCollateralQuote) {
+        apr = computeAprVariation(marketAprs, currentConvexTVL, marketData, leveragedCollateralQuote + BigInt(zapValue))
+      } else if (marketAprs && depositWeiValue && leveragedCollateralQuote) {
+        apr = computeAprVariation(marketAprs, currentConvexTVL, marketData, leveragedCollateralQuote + depositWeiValue)
+      } else {
+        apr = computeAprVariation(marketAprs, currentConvexTVL, marketData, 0n)
+      }
+    }
+    return apr
+  }, [zapValue, depositWeiValue, leveragedCollateralQuote, collateralInfo?.symbol, marketData, currentConvexTVL])
 
   const estimatedZapDollarValue = useMemo(() => {
     if (zapValue && marketData) {
@@ -407,8 +424,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
     const ltvAsNumber = Number(computedLtv)
 
-    return !!quoteDetail && !!futureMarketDisplayData && ltvAsNumber > 90
-  }, [quoteDetail, futureMarketDisplayData])
+    return !!expectedCollateral && !!futureMarketDisplayData && ltvAsNumber > 90
+  }, [expectedCollateral, futureMarketDisplayData])
 
   const leverageBalanceAllowanceData = useMemo(() => {
     if (!!marketData && depositAsset === collateralInfo?.name) {
@@ -430,8 +447,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         isWellConnected,
         depositAssetInfo!,
         collateralInfo!,
-        leverageBalanceAllowanceData!,
-        isDepositLoading
+        leverageBalanceAllowanceData!
       ),
     [
       marketData,
@@ -442,7 +458,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       currentAddress,
       depositAssetInfo,
       leverageBalanceAllowanceData,
-      isDepositLoading,
       leverageExceedsMaxLtv,
     ]
   )
@@ -491,6 +506,10 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     }
     return `Max 0 ${depositAssetInfo?.symbol}`
   }, [depositAsset, collateralInfo, currentAddress, depositAssetInfo, balanceAllowanceData])
+
+  const computedMaxLeverage = useMemo(() => {
+    return marketData ? `Max leverage: x${Number((1 / (1 - Number(marketData?.constants.maxLTV) / 100000)).toFixed(0))}` : ""
+  }, [marketData])
 
   const contextValue: USGLeverageContextValues = {
     collateralInfo,
@@ -546,13 +565,17 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
     estimatedZapDollarValue,
 
-    quoteDetail,
+    expectedCollateral,
 
     leverageExceedsMaxLtv,
 
     updateBorrowWeiValue,
 
     maxDepositString,
+
+    computedMaxLeverage,
+
+    aprVariation,
   }
 
   return <USGLeverageContext.Provider value={contextValue}>{children}</USGLeverageContext.Provider>

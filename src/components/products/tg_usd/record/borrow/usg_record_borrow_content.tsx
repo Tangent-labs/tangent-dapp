@@ -8,7 +8,8 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { MaxBorrowCapReached } from "@/components/design_system/notificatons/max_borrow_cap_reached"
+import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
+import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 
 export default function USGRecordBorrowContent() {
   const { connect } = useWalletConnexionContext()
@@ -51,11 +52,7 @@ export default function USGRecordBorrowContent() {
         />
       </div>
 
-      <>
-        {!!borrowWeiValue && formState?.cantProcessReasons.length > 0 && (
-          <div className="flex w-full items-center justify-center text-xs text-red-500">{formState?.cantProcessReasons[0]}</div>
-        )}
-      </>
+      <MarketTransactionError display={!!borrowWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />
 
       <MaxBorrowCapReached display={!borrowWeiValue && maxBorrowCapReached} />
 

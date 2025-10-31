@@ -10,11 +10,14 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 
+import { useCallback } from "react"
 import { useRootContext } from "../root/root_context"
 import { usePathname, useRouter } from "next/navigation"
 import { IconTangent } from "@/components/icons/icon_tangent"
-import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
+import { mapRouteToFeature } from "./menu_bar_feature_controller"
+import { IconTangentLogo } from "@/components/icons/icon_tangent_logo"
 import TokenImage from "@/components/design_system/structure/token_image"
+import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 
 export default function MenuBarFeature() {
   const { usgCurrentSupply, sUSGCurrentAPY } = useRootContext()
@@ -23,13 +26,23 @@ export default function MenuBarFeature() {
 
   const pathname = usePathname()
 
+  const computedFeature = useCallback(() => {
+    return mapRouteToFeature(pathname.substring(1, pathname.length))
+  }, [pathname])
+
   return (
     <header className="sticky top-0 z-50 flex h-[80px] w-full font-gilroy backdrop-blur-[60px]">
       <div className="mx-auto flex w-full">
         <div className="mx-4 flex w-full items-center justify-between">
           <div className="flex w-full items-center justify-start gap-3">
-            <div onClick={() => router.push("/")} className="flex cursor-pointer items-center gap-2 text-xl text-white">
+            <div onClick={() => router.push("/")} className="hidden cursor-pointer items-center gap-2 text-xl text-white md:flex">
               <IconTangent className="mb-2 w-32"></IconTangent>
+            </div>
+
+            <div onClick={() => router.push("/")} className="flex cursor-pointer items-center gap-4 text-xl text-white md:hidden">
+              <IconTangentLogo className="mb-2 w-12 border-r border-white/30 px-2"></IconTangentLogo>
+
+              {computedFeature()}
             </div>
 
             <NavigationMenu>

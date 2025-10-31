@@ -8,6 +8,7 @@ import {
   USGMarketLoanDisplayData,
   TotalBorrow,
   ZapToken,
+  MarketAPR,
 } from "../tg_usd_type"
 
 import { USGMarkets } from "../tg_usd_repository"
@@ -16,7 +17,7 @@ import { CollateralInfo, ExistingAsset } from "@/types"
 import { getSwapAssetPrice } from "@/services/service_price"
 import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
 import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
-import { formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
+import { formatBigInt, formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
 import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, formatEther, formatUnits, Hex, parseEther, WalletClient, zeroAddress } from "viem"
 
@@ -73,7 +74,7 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, borrowWe
     const totalDebt = marketData?.debtInfos?.totalDebt || 0n
 
     if (borrowWeiValue + totalDebt < minLoan) {
-      reasons.push(`Min debt is ${formatEther(minLoan)}`)
+      reasons.push(`Min debt is ${formatEther(minLoan)} USG`)
     } else if (BigInt(marketData?.debtInfos?.userDebt || 0n) + BigInt(borrowWeiValue || 0n) > (marketData?.constants?.maxMarketDebt || 0n)) {
       reasons.push("Max market debt reached.")
     }
@@ -138,7 +139,7 @@ export function getComputedFutureLoanData(
 
   return {
     collateralValue: formatDollar(futureDepositedDollar, 0),
-    debt: futureDebt > 0n ? formatDollarBigInt(futureDebt, collateralInfo.decimals, collateralInfo.displayDecimals) : "$0",
+    debt: futureDebt > 0n ? formatBigInt(futureDebt, collateralInfo.decimals, collateralInfo.displayDecimals) : "0",
     health: health > 0n ? formatNumber(etherValueToNumber(health), 2) : "0",
     ltv: ltv > 0 ? formatNumber(collateralValueToNumber(ltv || 0), 2) + "%" : "0%",
     maxBorrowable: formatDollarBigInt(maxBorrowable, collateralInfo.decimals, 0),
@@ -333,4 +334,40 @@ export const mapToTotalBorrow = (rows: MarketHistoricalData[]): TotalBorrow => {
     latestTotalDebt: latest.total_debt.toFixed(0),
     data,
   }
+}
+
+export const computeAprVariation = (marketAprs: MarketAPR[], currentConvexTVL: bigint, marketData: MarketDetailData, inputValue: bigint) => {
+  let result = { current: "", currentUpdated: "-", projected: "", projectedUpdated: "-" }
+
+  const currentMarketApr = marketAprs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())
+
+  if (currentMarketApr) {
+    const { APY: currentAPY, ...currentAPRWithoutApy } = currentMarketApr?.currentAPR
+    const { APY: projectedAPY, ...projectedAPRWithoutApy } = currentMarketApr?.projectedAPR
+
+    const totalCurrentAPR = Object.values(currentMarketApr?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+    const totalProjectedAPR = Object.values(currentMarketApr?.projectedAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+
+    const totalCurrentAPRWithoutAPY = Object.values(currentAPRWithoutApy).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+    const totalProjectedAPRWithoutAPY = Object.values(projectedAPRWithoutApy).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+
+    const newAPR =
+      (marketData?.collateralInfos.totalCollateralUSDValue * BigInt((totalCurrentAPRWithoutAPY * 100).toFixed(0))) /
+      (marketData?.collateralInfos.totalCollateralUSDValue + inputValue || 1n)
+
+    const newProjectedAPR = (currentConvexTVL * BigInt((totalProjectedAPRWithoutAPY * 100).toFixed(0))) / (currentConvexTVL + inputValue)
+
+    if (newAPR >= 0n && currentAPY >= 0 && newProjectedAPR >= 0 && projectedAPY >= 0) {
+      result = {
+        current: `${totalCurrentAPR.toFixed(2)}% =>`,
+        currentUpdated: `${(Number(newAPR) / 100 + currentAPY).toFixed(2)}%`,
+        projected: `${totalProjectedAPR.toFixed(2)}% =>`,
+        projectedUpdated: `${(Number(newProjectedAPR) / 100 + projectedAPY).toFixed(2)}%`,
+      }
+    } else {
+      result = { current: `${totalCurrentAPR.toFixed(2)}% =>`, currentUpdated: "-", projected: `${totalProjectedAPR.toFixed(2)}% =>`, projectedUpdated: "-" }
+    }
+  }
+
+  return result
 }

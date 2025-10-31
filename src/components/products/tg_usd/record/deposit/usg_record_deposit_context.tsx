@@ -6,15 +6,13 @@ import { USGMarket, ZapToken } from "../../tg_usd_type"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
-import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
-import { gasCostToUSD, getPublicClient } from "@/services/service_rpc"
+import { formatUnits, parseEther, zeroAddress } from "viem"
 import { useRootContext } from "@/components/products/root/root_context"
-import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
-import { EstimateContractGasParameters, formatUnits, parseEther, zeroAddress } from "viem"
+import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
+import { computeAprVariation, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit } from "./usg_record_deposit_controller"
 
 type USGDepositContextProps = {
@@ -51,7 +49,6 @@ type USGDepositContextValues = {
 
   slippage: number
   setSlippage: (arg: number) => void
-  gas: number | null
 
   zapInnerValue: number | undefined
   setZapInnerValue: (arg: number | undefined) => void
@@ -72,6 +69,10 @@ type USGDepositContextValues = {
   estimatedZapDollarValue: string
 
   maxDepositString: string
+
+  expectedCollateral: string
+
+  aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
 }
 
 export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
@@ -79,11 +80,12 @@ export const USGDepositContext = createContext<USGDepositContextValues | undefin
 export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { tokens, loadUSGsUSGMetrics } = useUSGContext()
+  const { tokens, loadUSGsUSGMetrics, marketAprs } = useUSGContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo } = useUSGRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo, currentConvexTVL } =
+    useUSGRecordContext()
 
   const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(false)
 
@@ -110,8 +112,6 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   const [isZapUserInput, setIsZapUserInput] = useState<boolean>(false)
 
   const [slippage, setSlippage] = useState<number>(1)
-
-  const [gas, setGas] = useState<number | null>(null)
 
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
     if (depositAsset === "ETH") {
@@ -203,7 +203,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
         handleQuote(quote)
 
         if (quote) {
-          setDepositWeiValue(quote)
+          setDepositWeiValue(BigInt(quote))
         }
       } catch (error) {
         console.error("Error fetching depositWeiValue:", error)
@@ -333,8 +333,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
         isWellConnected,
         depositAssetInfo?.address,
         collateralInfo!,
-        balanceAllowanceData!,
-        isDepositLoading
+        balanceAllowanceData!
       ),
     [marketData, isDepositAndBorrow, borrowWeiValue, depositWeiValue, isWellConnected, currentAddress, depositAssetInfo, balanceAllowanceData, isDepositLoading]
   )
@@ -360,79 +359,6 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
       setBorrowSliderPercent(0)
     }
   }, [isDepositAndBorrow])
-
-  const computeGas = async () => {
-    try {
-      const zapData = await getRoute(
-        depositAssetInfo?.address,
-        collateralInfo?.address,
-        depositWeiValue!,
-        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
-        marketInfo.marketAddress,
-        currentAddress!,
-        curveRoutes
-      )
-
-      const zapMarketData = {
-        tokenIn: depositAssetInfo?.address,
-        amountIn: depositWeiValue!,
-        minAmountOut: (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
-      }
-
-      const walletClient = getWalletClient()
-
-      const [account] = await walletClient!.requestAddresses()
-
-      let estimateGasData
-
-      if (!!borrowWeiValue) {
-        estimateGasData = {
-          abi: MarketExternalActions.abi,
-          functionName: "zapDepositAndBorrow",
-          args: [
-            borrowWeiValue,
-            {
-              tokenIn: zapMarketData?.tokenIn,
-              amountIn: zapMarketData?.amountIn,
-              minAmountOut: zapMarketData?.minAmountOut,
-              zap: { router: zapData?.routerAddress, routerCall: zapData?.data },
-            },
-          ] as unknown[],
-          address: marketInfo?.marketAddress,
-          account,
-          value: 0n,
-        } as EstimateContractGasParameters
-      } else {
-        estimateGasData = {
-          abi: MarketExternalActions.abi,
-          functionName: "zapDeposit",
-          args: [
-            account,
-            {
-              tokenIn: zapMarketData?.tokenIn,
-              amountIn: zapMarketData?.amountIn,
-              minAmountOut: zapMarketData?.minAmountOut,
-              zap: { router: zapData?.routerAddress, routerCall: zapData?.data },
-            },
-          ] as unknown[],
-          address: marketInfo?.marketAddress,
-          account,
-          value: 0n,
-        } as EstimateContractGasParameters
-      }
-
-      if (zapMarketData?.tokenIn === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
-        estimateGasData.value = zapMarketData?.amountIn
-      }
-
-      const publicClient = getPublicClient()
-      const gasData = await publicClient.estimateContractGas(estimateGasData)
-      const gasInUsd = await gasCostToUSD(gasData)
-      setGas(gasInUsd)
-    } catch (error) {
-      console.error("Error in computeGas:", error)
-    }
-  }
 
   const getRouteAndDeposit = async () => {
     if (!depositWeiValue || !currentAddress || !depositAssetInfo) return
@@ -527,12 +453,6 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     }
   }
 
-  useEffect(() => {
-    if (!!depositWeiValue && !!zapValue && !!depositAssetInfo && !!currentAddress && !formState?.haveToApprove && !isZapLoading && !isDepositLoading) {
-      computeGas()
-    }
-  }, [depositWeiValue, zapValue, formState, isZapLoading, isDepositLoading])
-
   const maxBorrowableValue = useMemo(() => {
     const deposit = depositWeiValue || 0n
 
@@ -577,6 +497,32 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     return `Max 0 ${depositAssetInfo?.symbol}`
   }, [depositAsset, collateralInfo, currentAddress, depositAssetInfo, balanceAllowanceData])
 
+  const expectedCollateral = useMemo(() => {
+    if (marketData) {
+      if (zapValue && depositAsset !== collateralInfo?.symbol) {
+        return `${formatBigIntAsNumber(BigInt(zapValue || 0n), 18, 3)}  ${collateralInfo?.symbol}`
+      } else if (depositAssetInfo?.address === collateralInfo?.address && depositWeiValue) {
+        return `${formatBigIntAsNumber(depositWeiValue || 0n, 18, 3)}  ${collateralInfo?.symbol}`
+      }
+    }
+    return `0 ${collateralInfo?.symbol}`
+  }, [zapValue, depositWeiValue, collateralInfo?.symbol, marketData])
+
+  const aprVariation = useMemo(() => {
+    let result = { current: "", currentUpdated: "-", projected: "", projectedUpdated: "-" }
+
+    if (marketData && currentConvexTVL) {
+      if (marketAprs && zapValue && depositAsset !== collateralInfo?.symbol) {
+        result = computeAprVariation(marketAprs, currentConvexTVL, marketData, BigInt(zapValue))
+      } else if (marketAprs && depositAssetInfo?.address === collateralInfo?.address && depositWeiValue) {
+        result = computeAprVariation(marketAprs, currentConvexTVL, marketData, depositWeiValue)
+      } else {
+        result = computeAprVariation(marketAprs, currentConvexTVL, marketData, 0n)
+      }
+    }
+    return result
+  }, [zapValue, depositWeiValue, collateralInfo?.symbol, marketAprs, marketData, currentConvexTVL])
+
   const contextValue: USGDepositContextValues = {
     marketInfo,
     collateralInfo,
@@ -611,7 +557,6 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
 
     slippage,
     setSlippage,
-    gas,
 
     zapInnerValue,
     setZapInnerValue,
@@ -632,6 +577,10 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     estimatedZapDollarValue,
 
     maxDepositString,
+
+    aprVariation,
+
+    expectedCollateral,
   }
 
   return <USGDepositContext.Provider value={contextValue}>{children}</USGDepositContext.Provider>

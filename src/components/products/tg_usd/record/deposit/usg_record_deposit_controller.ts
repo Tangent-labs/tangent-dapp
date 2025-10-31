@@ -1,9 +1,9 @@
 import { CollateralInfo } from "@/types"
-import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getBorrowCommonFormState } from "../tg_usd_record_controller"
+import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
+import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { BalanceAllowanceData, MarketDetailData, USGMarketDepositParams, ZapMarketData } from "../../tg_usd_type"
-import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 
 export function getDepositFormState(
   marketData?: MarketDetailData,
@@ -13,8 +13,7 @@ export function getDepositFormState(
   isWellConnected?: boolean,
   depositAssetInfo?: Address,
   collateralInfo?: CollateralInfo,
-  balanceAllowanceData?: BalanceAllowanceData,
-  isDepositLoading?: boolean
+  balanceAllowanceData?: BalanceAllowanceData
 ) {
   const isZapMode = depositAssetInfo !== collateralInfo?.address
 
@@ -23,9 +22,6 @@ export function getDepositFormState(
     (!isZapMode && (depositWeiValue || 0n) <= (marketData?.collateralAllowance || 0n)) ||
     (isZapMode && (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n))
 
-  if (isDepositLoading) {
-    reasons.push("Action in progress.")
-  }
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
   } else {

@@ -12,7 +12,7 @@ export const brand = localFont({
   display: "swap",
   src: [
     { path: "../../public/fonts/Gilroy-Regular.woff2", weight: "400", style: "normal" },
-    { path: "../../public/fonts/Gilroy-Semibold.woff2", weight: "600", style: "normal" },
+    { path: "../../public/fonts/Gilroy-Semibold.woff2", weight: "650", style: "normal" },
   ],
 })
 
@@ -26,8 +26,8 @@ export default function RootLayout({
       <head>
         <link rel="preload" href="/fonts/Gilroy-Regular.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>
-      <body className={`antialiased" dark relative bg-[#070707] ${brand.variable}`} id="body" suppressHydrationWarning>
-        <main className="mx-auto min-h-[80vh] w-full font-gilroy">{children}</main>
+      <body className={`antialiased" dark relative bg-[#070707] font-gilroy ${brand.variable}`} id="body" suppressHydrationWarning>
+        <main className="mx-auto min-h-[80vh] w-full">{children}</main>
       </body>
     </html>
   )

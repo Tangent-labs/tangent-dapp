@@ -2,7 +2,7 @@
 
 import { AssetDataPriced } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
-import { formatDollar, toBigInt } from "@/lib/number_formatter"
+import { formatDisplayValue, formatDollar, sanitizeValue, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import DisplayReceivePanel from "./display_recieve_panel"
@@ -28,8 +28,8 @@ type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   setMaxBalance: () => void
   isZapping?: boolean
   isLoading?: boolean
-  percentage?: number
-  setPercentage?: (value: number) => void
+  percentage: number
+  setPercentage: (value: number) => void
   displaySliderInput?: boolean
 }
 
@@ -61,22 +61,23 @@ export function DepositReceiveInput({
   }, [balance])
 
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
+
   const [isUserInput, setIsUserInput] = useState(false)
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!!setPercentage) {
-      const newPercentage = Number(e.target.value)
-      setPercentage(newPercentage)
-      const newValue = newPercentage !== 0 ? Number(((newPercentage / 100) * balanceNumber).toFixed(0)) : 0
-      setInnerValue(newValue.toFixed(0))
-      onValueChange(!!newValue ? toBigInt(newValue, 18) : undefined)
-    }
+    const newPercentage = Number(e.target.value)
+    setPercentage(newPercentage)
+
+    const newValue = newPercentage !== 0 ? Number(((newPercentage / 100) * balanceNumber).toFixed(0)) : 0
+
+    setInnerValue(formatDisplayValue(newValue.toFixed(0)))
+    onValueChange(!!newValue ? toBigInt(newValue, 18) : undefined)
   }
 
   useEffect(() => {
     if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
-      const updatedValue = Number(formatUnits(depositAmount, depositAsset.decimals)).toFixed(0)
-      setInnerValue(updatedValue)
+      const updatedValue = formatUnits(depositAmount, depositAsset.decimals)
+      setInnerValue(formatDisplayValue(updatedValue))
       setIsUserInput(false)
     }
   }, [depositAmount, depositAsset])
@@ -85,7 +86,9 @@ export function DepositReceiveInput({
     if (!depositAsset?.decimals || !isUserInput) return
 
     const handler = setTimeout(() => {
-      const val = innerValue ? toBigInt(Number(innerValue), depositAsset.decimals) : undefined
+      const raw = sanitizeValue(innerValue)
+
+      const val = raw ? toBigInt(Number(raw), depositAsset?.decimals ?? 18) : undefined
       onValueChange(val)
     }, 500)
 
@@ -94,12 +97,12 @@ export function DepositReceiveInput({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
-    setIsUserInput(true)
-    setInnerValue(newValue)
 
-    if (!!setPercentage) {
-      setPercentage(newValue !== undefined && balanceNumber > 0 ? (Number(newValue) / balanceNumber) * 100 : 0)
-    }
+    setIsUserInput(true)
+    setInnerValue(formatDisplayValue(newValue))
+    const raw = sanitizeValue(newValue)
+
+    setPercentage(newValue !== undefined && balanceNumber > 0 ? (Number(raw) / balanceNumber) * 100 : 0)
   }
 
   const dollarDepositDisplay = useMemo(() => {
@@ -127,7 +130,9 @@ export function DepositReceiveInput({
             <input
               {...props}
               disabled={isLoading}
-              type="number"
+              type="text"
+              inputMode="decimal"
+              pattern="[0-9]*[.,]?[0-9]*"
               value={innerValue}
               placeholder="Amount"
               onInput={handleInputChange}

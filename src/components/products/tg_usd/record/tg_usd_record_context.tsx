@@ -21,6 +21,7 @@ import {
   computeIR,
   computeVAPR,
   mapToTotalBorrow,
+  computeLiquidationPrice,
 } from "./tg_usd_record_controller"
 
 import { toast } from "react-toastify"
@@ -28,6 +29,7 @@ import { usePathname } from "next/navigation"
 import { getConvexPools } from "../server_api"
 import { useUSGContext } from "../tg_usd_context"
 import { USG_CONTRACT } from "../tg_usd_repository"
+import { formatBigInt } from "@/lib/number_formatter"
 import { useRootContext } from "../../root/root_context"
 import { Address, formatUnits, zeroAddress } from "viem"
 import { ToastComponent } from "@/components/design_system/toast"
@@ -107,6 +109,8 @@ type USGRecordContextValues = {
   currentConvexTVL: bigint
 
   displayAPRVariation: boolean
+
+  liquidationPrice: number
 }
 
 const LEVERAGE_TRESHOLD = 0.989
@@ -400,6 +404,15 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     }
   }, [collateralInfo?.address, displayAPRVariation])
 
+  const liquidationPrice = useMemo(() => {
+    if (marketData) {
+      const price = computeLiquidationPrice(marketData, currentAmounts)
+
+      return Number(formatBigInt(price, 18, 3))
+    }
+    return 0
+  }, [marketData, currentAmounts])
+
   const contextValue: USGRecordContextValues = {
     isLoading,
     collateral,
@@ -450,6 +463,8 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     currentConvexTVL,
 
     displayAPRVariation,
+
+    liquidationPrice,
   }
 
   return <USGRecordContext.Provider value={contextValue}>{children}</USGRecordContext.Provider>

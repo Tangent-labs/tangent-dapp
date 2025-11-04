@@ -1,13 +1,13 @@
 "use client"
 
-import { AssetDataPriced, CollateralInfo } from "@/types"
-import { ReactNode, useEffect, useMemo, useState } from "react"
-import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
-import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
-import { IconCircleHelp } from "@/components/icons/icon_circle_help"
-import { IconThunder } from "@/components/icons/icon_thunder"
+import { formatUnits } from "viem"
 import BorderPanel from "../structure/border_panel"
+import { AssetDataPriced, CollateralInfo } from "@/types"
+import { IconThunder } from "@/components/icons/icon_thunder"
+import { ReactNode, useEffect, useMemo, useState } from "react"
+import { IconCircleHelp } from "@/components/icons/icon_circle_help"
+import { formatDisplayValue, sanitizeValue, toBigInt } from "@/lib/number_formatter"
 
 type DepositInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced | CollateralInfo
@@ -45,28 +45,28 @@ export function DepositInput({
   ...props
 }: DepositInputProps) {
   const balanceNumber = useMemo(() => {
-    if (balance) {
-      return Number(formatUnits(balance, depositAsset?.decimals || 18))
-    }
+    if (balance) return Number(formatUnits(balance, depositAsset?.decimals ?? 18))
     return 0
   }, [balance, depositAsset])
 
-  const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 18) : "")
+  const [innerValue, setInnerValue] = useState<string>(
+    depositAmount !== undefined ? formatDisplayValue(formatUnits(depositAmount, depositAsset?.decimals ?? 18)) : ""
+  )
   const [isUserInput, setIsUserInput] = useState(false)
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!!setPercentage) {
       const newPercentage = Number(e.target.value)
       setPercentage(newPercentage)
-      const newValue = newPercentage === 100 ? balanceNumber : Number(((newPercentage / 100) * balanceNumber).toFixed(0))
+      const newValue = newPercentage === 100 ? balanceNumber : Number(((newPercentage / 100) * balanceNumber).toFixed(3))
       setInnerValue(formatDisplayValue(newValue))
-      onValueChange(!!newValue ? toBigInt(newValue, depositAsset?.decimals || 18) : undefined)
+      onValueChange(!!newValue ? toBigInt(newValue, depositAsset?.decimals ?? 18) : undefined)
     }
   }
 
   useEffect(() => {
     if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
-      const updatedValue = formatUnits(depositAmount, depositAsset.decimals)
+      const updatedValue = formatUnits(depositAmount, depositAsset?.decimals ?? 18)
       setInnerValue(formatDisplayValue(updatedValue))
       setIsUserInput(false)
     }
@@ -76,26 +76,37 @@ export function DepositInput({
     if (!depositAsset?.decimals || !isUserInput) return
 
     const handler = setTimeout(() => {
-      const val = innerValue ? toBigInt(Number(innerValue), depositAsset.decimals) : undefined
+      const raw = sanitizeValue(innerValue)
+
+      const val = raw ? toBigInt(Number(raw), depositAsset?.decimals ?? 18) : undefined
       onValueChange(val)
     }, 500)
 
     return () => clearTimeout(handler)
-  }, [innerValue, depositAsset, isUserInput, onValueChange])
+  }, [innerValue, depositAsset, isUserInput])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value
+    const raw = sanitizeValue(e.target?.value)
+
     setIsUserInput(true)
-    setInnerValue(formatDisplayValue(newValue))
+    setInnerValue(raw)
 
     if (!!setPercentage) {
-      setPercentage(newValue !== "" && balanceNumber > 0 ? (Number(newValue) / balanceNumber) * 100 : 0)
+      setPercentage(raw !== "" && balanceNumber > 0 ? (Number(raw) / balanceNumber) * 100 : 0)
     }
   }
 
+  const handleBlur = () => {
+    setInnerValue((prev) => formatDisplayValue(prev))
+    setIsUserInput(false)
+  }
+
   const dollarDepositDisplay = useMemo(() => {
-    const val = Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals || 0)) * (depositAsset?.price || 0)
-    return `(${formatDollar(val)})`
+    const val = Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals ?? 18)) * (depositAsset?.price || 0)
+    return `(${new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(val)})`
   }, [depositAmount, depositAsset])
 
   return (
@@ -117,21 +128,25 @@ export function DepositInput({
             </div>
           )}
         </div>
+
         <div className="flex justify-between">
           <div className="text-xl">
             <input
               {...props}
               disabled={isLoading || disabled}
-              type="number"
+              type="text"
+              inputMode="decimal"
+              pattern="[0-9]*[.,]?[0-9]*"
               value={innerValue}
               placeholder="Amount"
               onChange={handleInputChange}
+              onBlur={handleBlur}
               className={cn("min-h-10 max-w-36 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none")}
-              step="any"
             />
           </div>
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
+
         <div className="mt-1 flex justify-between text-xs text-subtitle">
           <div>{dollarDepositDisplay}</div>
 
@@ -162,37 +177,25 @@ export function DepositInput({
               disabled={disabled}
               value={percentage}
               onChange={handleSliderChange}
-              className={cn("mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]", disabled ? "cursor-default" : "cursor-pointer")}
+              className={cn("mt-3 h-2 w-full appearance-none rounded-lg bg-[#070707]", disabled ? "cursor-default" : "cursor-pointer")}
               style={{
                 background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
               }}
             />
+
             <div className="flex w-full items-center justify-between text-xs text-subtitle">
-              <div className="relative flex w-fit items-center justify-center">
-                0%
-                <div
-                  onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-                  className="absolute -top-1.5 left-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
-                ></div>
-              </div>
-              {[25, 50, 75].map((el) => (
+              {[0, 25, 50, 75, 100].map((el) => (
                 <div key={el} className="relative flex w-fit items-center justify-center">
                   {el}%
                   <div
-                    onClick={
-                      !!handleSliderChange ? () => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>) : () => {}
-                    }
-                    className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                    onClick={() => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>)}
+                    className={cn(
+                      "absolute -top-1.5 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30",
+                      el === 0 ? "left-1" : el === 100 ? "right-1" : "left-2"
+                    )}
                   ></div>
                 </div>
               ))}
-              <div className="relative flex w-fit items-center justify-center">
-                100%
-                <div
-                  onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "100" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-                  className="absolute -top-1.5 right-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
-                ></div>
-              </div>
             </div>
           </>
         )}

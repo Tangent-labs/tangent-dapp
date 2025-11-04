@@ -1,13 +1,13 @@
 "use client"
 
-import { AssetDataPriced } from "@/types"
-import { ReactNode, useEffect, useMemo, useState } from "react"
-import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
-import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
-import { IconCircleHelp } from "@/components/icons/icon_circle_help"
-import { IconThunder } from "@/components/icons/icon_thunder"
+import { formatUnits } from "viem"
+import { AssetDataPriced } from "@/types"
 import BorderPanel from "../structure/border_panel"
+import { IconThunder } from "@/components/icons/icon_thunder"
+import { ReactNode, useEffect, useMemo, useState } from "react"
+import { IconCircleHelp } from "@/components/icons/icon_circle_help"
+import { formatDisplayValue, formatDollar, sanitizeValue, toBigInt } from "@/lib/number_formatter"
 
 type BorrowInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   borrowAsset?: AssetDataPriced
@@ -45,52 +45,56 @@ export function BorrowInput({
   ...props
 }: BorrowInputProps) {
   const balanceNumber = useMemo(() => {
-    if (balance) {
-      return Number(formatUnits(balance, borrowAsset?.decimals || 18))
-    }
+    if (balance) return Number(formatUnits(balance, borrowAsset?.decimals ?? 18))
     return 0
   }, [balance, borrowAsset])
 
-  const [innerValue, setInnerValue] = useState<string>(borrowAmount !== undefined ? formatUnits(borrowAmount, borrowAsset?.decimals || 18) : "")
+  const [innerValue, setInnerValue] = useState<string>(
+    borrowAmount !== undefined ? formatDisplayValue(formatUnits(borrowAmount, borrowAsset?.decimals ?? 18)) : ""
+  )
   const [isUserInput, setIsUserInput] = useState(false)
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!!setPercentage) {
-      const newPercentage = Number(e.target.value)
-      setPercentage(newPercentage)
-      const newValue = newPercentage === 100 ? balanceNumber : Number(((newPercentage / 100) * balanceNumber).toFixed(0))
-      setInnerValue(formatDisplayValue(newValue))
-      onValueChange(!!newValue ? toBigInt(newValue, borrowAsset?.decimals || 18) : undefined)
-    }
+    const newPercentage = Number(e.target.value)
+    setPercentage(newPercentage)
+
+    const newValue = newPercentage === 100 ? balanceNumber : Number(((newPercentage / 100) * balanceNumber).toFixed(2))
+
+    setInnerValue(formatDisplayValue(newValue))
+    onValueChange(!!newValue ? toBigInt(newValue, borrowAsset?.decimals ?? 18) : undefined)
   }
 
   useEffect(() => {
-    if (borrowAmount !== undefined && borrowAsset?.decimals !== undefined) {
-      const updatedValue = formatUnits(borrowAmount, borrowAsset.decimals)
+    if (borrowAmount !== undefined) {
+      const updatedValue = formatUnits(borrowAmount, borrowAsset?.decimals ?? 18)
       setInnerValue(formatDisplayValue(updatedValue))
       setIsUserInput(false)
     }
   }, [borrowAmount, borrowAsset])
 
   useEffect(() => {
-    if (!borrowAsset?.decimals || !isUserInput) return
-
+    if (!isUserInput) return
     const handler = setTimeout(() => {
-      const val = innerValue ? toBigInt(Number(innerValue), borrowAsset.decimals) : undefined
+      const raw = sanitizeValue(innerValue)
+
+      const val = raw ? toBigInt(Number(raw), borrowAsset?.decimals ?? 18) : undefined
       onValueChange(val)
     }, 500)
-
     return () => clearTimeout(handler)
-  }, [innerValue, borrowAsset, isUserInput, onValueChange])
+  }, [innerValue, isUserInput, onValueChange, borrowAsset])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value
-    setIsUserInput(true)
-    setInnerValue(formatDisplayValue(newValue))
+    const raw = sanitizeValue(e.target.value)
 
-    if (!!setPercentage) {
-      setPercentage(newValue !== "" && balanceNumber > 0 ? (Number(newValue) / balanceNumber) * 100 : 0)
-    }
+    setIsUserInput(true)
+    setInnerValue(raw)
+
+    setPercentage(raw !== "" && balanceNumber > 0 ? (Number(raw) / balanceNumber) * 100 : 0)
+  }
+
+  const handleBlur = () => {
+    setInnerValue((prev) => formatDisplayValue(prev))
+    setIsUserInput(false)
   }
 
   const dollarDepositDisplay = useMemo(() => {
@@ -120,21 +124,25 @@ export function BorrowInput({
             </div>
           )}
         </div>
+
         <div className="flex justify-between">
           <div className="text-xl">
             <input
               {...props}
               disabled={isLoading || disabled}
-              type="number"
+              type="text"
+              inputMode="decimal"
+              pattern="[0-9]*[.,]?[0-9]*"
               value={innerValue}
               placeholder="Amount"
               onChange={handleInputChange}
+              onBlur={handleBlur}
               className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none")}
-              step="any"
             />
           </div>
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
+
         <div className="mt-1 flex justify-between text-xs text-subtitle">
           <div>{dollarDepositDisplay}</div>
 
@@ -142,10 +150,8 @@ export function BorrowInput({
             <BorderPanel
               className="rounded-full! ml-1 flex w-10 cursor-pointer items-center bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
               onClick={() => {
-                if (setMaxBalance) {
-                  setPercentage(100)
-                  setMaxBalance()
-                }
+                setPercentage(100)
+                setMaxBalance()
               }}
             >
               Max.
@@ -172,7 +178,7 @@ export function BorrowInput({
               <div className="relative flex w-fit items-center justify-center">
                 0%
                 <div
-                  onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+                  onClick={() => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>)}
                   className="absolute -top-1.5 left-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
                 ></div>
               </div>
@@ -180,9 +186,7 @@ export function BorrowInput({
                 <div key={el} className="relative flex w-fit items-center justify-center">
                   {el}%
                   <div
-                    onClick={
-                      !!handleSliderChange ? () => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>) : () => {}
-                    }
+                    onClick={() => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>)}
                     className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
                   ></div>
                 </div>
@@ -190,7 +194,7 @@ export function BorrowInput({
               <div className="relative flex w-fit items-center justify-center">
                 100%
                 <div
-                  onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "100" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+                  onClick={() => handleSliderChange({ target: { value: "100" } } as React.ChangeEvent<HTMLInputElement>)}
                   className="absolute -top-1.5 right-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
                 ></div>
               </div>

@@ -5,18 +5,18 @@ import { formatUnits } from "viem"
 import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
 import { Switch } from "@/components/ui/switch"
-import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGContext } from "../../tg_usd_context"
 import { USG_CONTRACT } from "../../tg_usd_repository"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import { useUSGRepayContext } from "./usg_record_repay_context"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
+import ButtonTab from "@/components/design_system/inputs/button_tab"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
+import { formatBigInt, formatDisplayValue } from "@/lib/number_formatter"
 import { RepayInput } from "@/components/design_system/inputs/repay_input"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
@@ -230,11 +230,13 @@ export default function USGRepayContent() {
                 </div>
                 <div className="flex items-center justify-center gap-2">
                   <input
-                    type="string"
-                    placeholder="0"
-                    disabled={true}
-                    className="flex justify-start bg-transparent text-xl font-semibold focus:outline-none"
-                    value={Number(formatUnits(usgRepayedValue || 0n, 18)).toFixed(2) ?? ""}
+                    type="text"
+                    readOnly
+                    inputMode="decimal"
+                    pattern="[0-9]*[.,]?[0-9]*"
+                    disabled={isZapLoading}
+                    className="flex w-fit max-w-[120px] justify-start bg-transparent text-xl font-semibold focus:outline-none"
+                    value={formatDisplayValue(formatUnits(usgRepayedValue || 0n, 18))}
                   />
                 </div>
                 <div className="flex justify-between gap-2 text-xs text-subtitle">

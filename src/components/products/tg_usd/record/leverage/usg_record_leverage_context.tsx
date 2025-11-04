@@ -10,11 +10,11 @@ import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
-import { computeAprVariation, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
-import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { computeAprVariation, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
+import { formatBigInt, formatBigIntAsNumber, formatDisplayValue, formatDollar, sanitizeValue } from "@/lib/number_formatter"
 
 type USGLeverageContextProps = {
   children: ReactNode
@@ -53,8 +53,8 @@ type USGLeverageContextValues = {
   slippage: number
   setSlippage: (arg: number) => void
 
-  zapInnerValue: number | undefined
-  setZapInnerValue: (arg: number | undefined) => void
+  zapInnerValue: string
+  setZapInnerValue: (arg: string) => void
 
   depositSliderPercent: number
   setDepositSliderPercent: (arg: number) => void
@@ -68,6 +68,8 @@ type USGLeverageContextValues = {
 
   actionZapLeverage: () => void
 
+  handleZapBlur: () => void
+
   leveragedCollateralQuote: bigint | undefined
   setLeveragedCollateralQuote: (arg: bigint) => void
 
@@ -77,7 +79,7 @@ type USGLeverageContextValues = {
 
   leverageExceedsMaxLtv: boolean
 
-  updateBorrowWeiValue: (value: bigint) => Promise<void>
+  updateBorrowWeiValue: (value: bigint | undefined) => Promise<void>
 
   maxDepositString: string
 
@@ -129,7 +131,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const [zapValue, setZapValue] = useState<bigint | null>(null)
 
-  const [zapInnerValue, setZapInnerValue] = useState<number | undefined>(zapValue !== undefined ? Number(formatUnits(zapValue || BigInt(0), 18)) : undefined)
+  const [zapInnerValue, setZapInnerValue] = useState<string>(zapValue !== undefined ? formatDisplayValue(formatUnits(zapValue || 0n, 18), 3) : "")
 
   const [leveragedCollateralQuote, setLeveragedCollateralQuote] = useState<bigint | undefined>()
 
@@ -213,10 +215,16 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     })()
   }
 
+  const handleZapBlur = () => {
+    setZapInnerValue((prev) => formatDisplayValue(prev, 3))
+    setIsZapUserInput(false)
+  }
+
   const handleZapInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value ? Number(e.target.value) : undefined
+    const raw = sanitizeValue(e.target?.value)
+
+    setZapInnerValue(raw)
     setIsZapUserInput(true)
-    setZapInnerValue(value)
   }
 
   useEffect(() => {
@@ -476,38 +484,42 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     }
   }, [depositAssetInfo])
 
-  const updateBorrowWeiValue = async (value: bigint) => {
-    setIsDepositLoading(true)
-    getQuote(value, currentAddress!, marketInfo?.collatAddress, USG_CONTRACT.USG, curveRoutes)
-      .then(({ quote }) => {
-        setLeveragedCollateralQuote(quote)
-        setIsDepositLoading(false)
-        setBorrowWeiValue(value)
-      })
-      .catch(() => {
-        toast.error(ToastComponent, { data: { type: "Error", content: "USG to Collateral quote failed." } })
-      })
+  const updateBorrowWeiValue = async (value: bigint | undefined) => {
+    if (value) {
+      setIsDepositLoading(true)
+      getQuote(value, currentAddress!, marketInfo?.collatAddress, USG_CONTRACT.USG, curveRoutes)
+        .then(({ quote }) => {
+          setLeveragedCollateralQuote(quote)
+          setIsDepositLoading(false)
+          setBorrowWeiValue(value)
+        })
+        .catch(() => {
+          toast.error(ToastComponent, { data: { type: "Error", content: "USG to Collateral quote failed." } })
+        })
+    }
   }
 
   useEffect(() => {
     if (zapValue !== undefined) {
-      const updatedValue = Number(Number(formatUnits(zapValue || 0n, 18)).toFixed(3))
-      setZapInnerValue(updatedValue)
+      const units = formatUnits(zapValue ?? 0n, 18)
+      setZapInnerValue(formatDisplayValue(units, 3))
+      setIsZapUserInput(false)
     } else {
-      setZapInnerValue(undefined)
+      setZapInnerValue("")
     }
   }, [zapValue])
 
   useEffect(() => {
-    if (zapInnerValue === undefined) {
-      /* reset */ return
-    }
     if (!isZapUserInput) return
+
     const handler = setTimeout(() => {
-      handleZapChange({ target: { value: zapInnerValue.toString() } } as React.ChangeEvent<HTMLInputElement>)
+      const raw = sanitizeValue(zapInnerValue)
+
+      handleZapChange({ target: { value: raw } } as React.ChangeEvent<HTMLInputElement>)
     }, 500)
+
     return () => clearTimeout(handler)
-  }, [zapInnerValue, isZapUserInput])
+  }, [zapInnerValue, isZapUserInput, handleZapChange])
 
   const maxDepositString = useMemo(() => {
     if (!!balanceAllowanceData && currentAddress && depositAsset !== collateralInfo?.name) {
@@ -588,6 +600,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     computedMaxLeverage,
 
     aprVariation,
+
+    handleZapBlur,
   }
 
   return <USGLeverageContext.Provider value={contextValue}>{children}</USGLeverageContext.Provider>

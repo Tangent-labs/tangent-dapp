@@ -268,9 +268,14 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
     doRepay(walletClientRef.current!, {
       marketAddress: marketData!.marketAddress,
       repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
-    }).then(() => {
-      resetAfterRepaySuccess()
     })
+      .then(() => {
+        toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
+        resetAfterRepaySuccess()
+      })
+      .catch(() => {
+        toast.error(ToastComponent, { data: { type: "Error", content: "Transaction failed." } })
+      })
   }
 
   const marketRepayAndWithdraw = () => {
@@ -278,9 +283,13 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
       marketAddress: marketData!.marketAddress,
       repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
       withdrawWeiValue,
-    }).then(() => {
-      resetAfterRepaySuccess()
     })
+      .then(() => {
+        resetAfterRepaySuccess()
+      })
+      .catch(() => {
+        toast.error(ToastComponent, { data: { type: "Error", content: "Transaction failed." } })
+      })
   }
 
   const resetAfterRepaySuccess = () => {
@@ -361,7 +370,10 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
     setRepayWeiValue(value)
 
     const fetchZapValue = async () => {
-      if (!value || !currentAddress || !marketData || !repayAssetInfo) return
+      if (!value || !currentAddress || !marketData || !repayAssetInfo) {
+        setUsgRepayedValue(0n)
+        return
+      }
 
       setIsZapLoading(true)
       try {

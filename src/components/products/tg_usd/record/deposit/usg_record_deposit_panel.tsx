@@ -7,12 +7,10 @@ import { ZapToken } from "../../tg_usd_type"
 import { Switch } from "@/components/ui/switch"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGContext } from "../../tg_usd_context"
-import { IconThunder } from "@/components/icons/icon_thunder"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
-import { IconCircleHelp } from "@/components/icons/icon_circle_help"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
+import { ZapInput } from "@/components/design_system/inputs/zap_input"
 import { useUSGDepositContext } from "./usg_record_deposit_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -58,6 +56,7 @@ export default function USGDepositContent() {
     maxBorrowableValue,
     maxDepositString,
     aprVariation,
+    handleZapBlur,
     expectedCollateral,
   } = useUSGDepositContext()
 
@@ -207,34 +206,16 @@ export default function USGDepositContent() {
       />
 
       {depositAsset && depositAsset !== collateralInfo?.symbol && (
-        <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col items-start justify-start">
-              <div className="flex items-center justify-center gap-1">
-                <div className="text-sm text-subtitle">Zap</div>
-                <IconThunder className="h-auto w-[8px] text-row-tonic" />
-                <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
-              </div>
-              <div className="flex items-center justify-center gap-2">
-                <input
-                  type="number"
-                  disabled={isZapLoading}
-                  className="flex w-fit max-w-[120px] justify-start bg-transparent text-xl font-semibold focus:outline-none"
-                  value={zapInnerValue ?? ""}
-                  onChange={handleZapInputChange}
-                />
-              </div>
-              <div className="flex items-center justify-start gap-2 text-xs text-subtitle">
-                <div className="hidden md:flex">Minimum received </div>
-                <div> {zapValue && !!marketData?.collateralInfos ? estimatedZapDollarValue : ""}</div>
-              </div>
-            </div>
-            <BorderPanel className="flex items-center justify-center gap-2 bg-select-input px-2.5 py-2">
-              <TokenImage token={collateralInfo?.logo as ExistingAsset} size={32} />
-              <div className="font-semibold">{collateralInfo?.symbol}</div>
-            </BorderPanel>
-          </div>
-        </PanelRaw>
+        <ZapInput
+          isZapLoading={isZapLoading}
+          zapInnerValue={zapInnerValue}
+          handleZapInputChange={handleZapInputChange}
+          handleZapBlur={handleZapBlur}
+          zapValue={zapValue!}
+          marketData={marketData!}
+          estimatedZapDollarValue={estimatedZapDollarValue}
+          collateralInfo={collateralInfo}
+        ></ZapInput>
       )}
 
       {isDepositAndBorrow && (

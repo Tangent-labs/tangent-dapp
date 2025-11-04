@@ -9,7 +9,7 @@ import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { formatUnits, parseEther, zeroAddress } from "viem"
 import { useRootContext } from "@/components/products/root/root_context"
-import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
+import { formatBigInt, formatBigIntAsNumber, formatDisplayValue, formatDollar, sanitizeValue } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computeAprVariation, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
@@ -50,8 +50,8 @@ type USGDepositContextValues = {
   slippage: number
   setSlippage: (arg: number) => void
 
-  zapInnerValue: number | undefined
-  setZapInnerValue: (arg: number | undefined) => void
+  zapInnerValue: string
+  setZapInnerValue: (arg: string) => void
 
   isZapUserInput: boolean
   setIsZapUserInput: (arg: boolean) => void
@@ -73,6 +73,8 @@ type USGDepositContextValues = {
   expectedCollateral: string
 
   aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
+
+  handleZapBlur: () => void
 }
 
 export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
@@ -107,7 +109,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
 
   const [zapValue, setZapValue] = useState<bigint | null>(null)
 
-  const [zapInnerValue, setZapInnerValue] = useState<number | undefined>(zapValue !== undefined ? Number(formatUnits(zapValue || BigInt(0), 18)) : undefined)
+  const [zapInnerValue, setZapInnerValue] = useState<string>(zapValue !== undefined ? formatDisplayValue(formatUnits(zapValue || 0n, 18), 3) : "")
 
   const [isZapUserInput, setIsZapUserInput] = useState<boolean>(false)
 
@@ -216,18 +218,24 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   }
 
   const handleZapInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value ? Number(e.target.value) : undefined
-    setZapInnerValue(value)
+    const raw = sanitizeValue(e.target?.value)
+
+    setZapInnerValue(raw)
     setIsZapUserInput(true)
+  }
+
+  const handleZapBlur = () => {
+    setZapInnerValue((prev) => formatDisplayValue(prev, 3))
+    setIsZapUserInput(false)
   }
 
   useEffect(() => {
     if (zapValue !== undefined) {
-      const updatedValue = Number(Number(formatUnits(zapValue || 0n, 18)).toFixed(3))
-      setZapInnerValue(updatedValue)
+      const units = formatUnits(zapValue || 0n, 18)
+      setZapInnerValue(formatDisplayValue(units, 3))
       setIsZapUserInput(false)
     } else {
-      setZapInnerValue(undefined)
+      setZapInnerValue("")
     }
   }, [zapValue])
 
@@ -581,6 +589,8 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     aprVariation,
 
     expectedCollateral,
+
+    handleZapBlur,
   }
 
   return <USGDepositContext.Provider value={contextValue}>{children}</USGDepositContext.Provider>

@@ -79,12 +79,18 @@ export function formatNumber(value: number | undefined, displayDecimals: number)
   return new Intl.NumberFormat("en-US").format(num)
 }
 
-export const formatDisplayValue = (value: string | number): string => {
-  const num = Number(value)
+export const formatDisplayValue = (value: string | number, decimals = 3): string => {
+  const num = typeof value === "string" ? Number(value.replace(/,/g, "")) : Number(value)
   if (isNaN(num)) return ""
-  if (Number.isInteger(num)) return num.toString()
-  const formatted = num.toFixed(3).replace(/\.?0+$/, "")
-  return formatted
+
+  const rounded = Number(num.toFixed(decimals))
+
+  const nf = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: decimals,
+  })
+
+  return nf.format(rounded)
 }
 
 export const formatBigIntAsNumber = (value: bigint, decimals: number, displayDecimals: number) => {
@@ -105,4 +111,11 @@ export const formatCompact = (value: string | number): string => {
   } else {
     return `${number.toFixed(0)}`
   }
+}
+
+export const sanitizeValue = (value: string) => {
+  return value
+    .replace(/,/g, "")
+    .replace(/[^\d.]/g, "")
+    .replace(/(\..*)\./, "$1")
 }

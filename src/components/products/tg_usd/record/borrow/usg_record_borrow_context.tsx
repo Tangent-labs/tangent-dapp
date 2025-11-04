@@ -1,14 +1,14 @@
 "use client"
 
 import { FormState } from "@/types"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { useUSGRecordContext } from "../tg_usd_record_context"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doMarketBorrow, getBorrowFormState } from "./usg_record_borrow_controller"
 import { toast } from "react-toastify"
+import { useUSGContext } from "../../tg_usd_context"
+import { useUSGRecordContext } from "../tg_usd_record_context"
 import { ToastComponent } from "@/components/design_system/toast"
 import { computeMaxBorrowable } from "../tg_usd_record_controller"
-import { useUSGContext } from "../../tg_usd_context"
+import { doMarketBorrow, getBorrowFormState } from "./usg_record_borrow_controller"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 type USGBorrowContextProps = {
   children: ReactNode
@@ -46,6 +46,7 @@ export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
           loadOnChainData()
           setBorrowPercentage(0)
           loadUSGsUSGMetrics()
+          toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
         })
         .catch(() => {
           toast.error(ToastComponent, { data: { type: "Error", content: "Borrow failed." } })

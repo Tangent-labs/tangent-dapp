@@ -2,7 +2,7 @@
 
 import { AssetDataPriced } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
-import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
+import { formatDisplayValue, formatDollar, sanitizeValue, toBigInt } from "@/lib/number_formatter"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
@@ -81,17 +81,21 @@ export function RepayInput({
         val = balance
         if (setPercentage) setPercentage(100)
       } else {
-        val = innerValue ? toBigInt(Number(innerValue), depositAsset.decimals) : undefined
-        if (setPercentage && val !== undefined) {
+        const raw = sanitizeValue(innerValue)
+
+        const num = Number(raw)
+        val = toBigInt(num, depositAsset.decimals)
+        if (setPercentage) {
           const percentageCalc = (Number(val) * 100) / Number(balance)
           setPercentage(Math.min(Math.round(percentageCalc), 100))
         }
       }
+
       onValueChange(val)
     }, 500)
 
     return () => clearTimeout(handler)
-  }, [innerValue, depositAsset, isUserInput, onValueChange, setPercentage, balance])
+  }, [innerValue, depositAsset, isUserInput, balance])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
@@ -101,15 +105,25 @@ export function RepayInput({
     if (newValue === "MAX" && setPercentage) {
       setPercentage(100)
     } else if (setPercentage && newValue !== "" && balance) {
-      const val = toBigInt(Number(newValue), depositAsset?.decimals || 18)
-      const percentageCalc = (Number(val) * 100) / Number(balance)
-      setPercentage(Math.min(Math.round(percentageCalc), 100))
+      const sanitized = sanitizeValue(newValue)
+
+      const num = Number(sanitized)
+
+      const val = toBigInt(num, depositAsset?.decimals || 18)
+
+      const newPercentage = (Number(val) * 100) / Number(balance)
+
+      setPercentage(Math.min(Math.round(newPercentage), 100))
     }
   }
 
   const dollarDepositDisplay = useMemo(() => {
     if (innerValue === "MAX") return "MAX"
-    const val = Number(innerValue || 0) * (Number(depositAsset?.price) || 0)
+
+    const sanitized = sanitizeValue(innerValue)
+
+    const val = Number(sanitized || 0) * (Number(depositAsset?.price) || 1)
+
     return formatDollar(val) || "-"
   }, [innerValue, depositAsset])
 

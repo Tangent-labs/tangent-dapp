@@ -5,7 +5,7 @@ import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import TokenImage from "../structure/token_image"
-import { formatDollar, toBigInt } from "@/lib/number_formatter"
+import { formatDisplayValue, formatDollar, sanitizeValue, toBigInt } from "@/lib/number_formatter"
 import BorderPanel from "../structure/border_panel"
 
 type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -18,7 +18,7 @@ type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   LeverageInput?: ReactNode
   isLoading?: boolean
   percentage?: number
-  onValueChange: (value: bigint) => Promise<void>
+  onValueChange: (value: bigint | undefined) => Promise<void>
   setPercentage?: (value: number) => void
 }
 
@@ -49,6 +49,25 @@ export function LeverageInput({
     }
   }, [depositAmount])
 
+  useEffect(() => {
+    if (!!setPercentage) {
+      setPercentage(innerValue !== undefined && depositAmountNumber > 0 ? Number(innerValue) / depositAmountNumber : 0)
+    }
+  }, [depositAmountNumber])
+
+  useEffect(() => {
+    if (!depositAsset?.decimals || !innerValue || innerValue === "0") return
+
+    const handler = setTimeout(() => {
+      const raw = sanitizeValue(innerValue)
+
+      const val = raw ? toBigInt(Number(raw), 18) : undefined
+      onValueChange(val)
+    }, 500)
+
+    return () => clearTimeout(handler)
+  }, [innerValue, depositAsset])
+
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!!setPercentage && depositAsset) {
       const newPercentage = Number(e.target.value)
@@ -57,41 +76,36 @@ export function LeverageInput({
       const inputValueToUSD = depositAmountNumber * depositAsset?.price
       const newValue = newPercentage !== 0 ? Number((newPercentage * inputValueToUSD - inputValueToUSD).toFixed(0)) : 0
 
-      setInnerValue(newValue.toFixed(0))
+      setInnerValue(formatDisplayValue(newValue))
     }
   }
-
-  useEffect(() => {
-    if (!!setPercentage) {
-      setPercentage(innerValue !== undefined && depositAmountNumber > 0 ? Number(innerValue) / depositAmountNumber : 0)
-    }
-  }, [depositAmountNumber])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value
-    setInnerValue(newValue)
+    const raw = sanitizeValue(e.target?.value)
+
+    setInnerValue(formatDisplayValue(raw))
 
     if (!!setPercentage) {
-      setPercentage(newValue !== undefined && depositAmountNumber > 0 ? (Number(newValue) + depositAmountNumber) / depositAmountNumber : 0)
+      const num = raw === "" ? 0 : Number(raw)
+      setPercentage(depositAmountNumber > 0 ? (num + depositAmountNumber) / depositAmountNumber : 0)
     }
   }
 
-  useEffect(() => {
-    if (!depositAsset?.decimals || !innerValue || innerValue === "0") return
-    const handler = setTimeout(() => {
-      const val = innerValue ? toBigInt(Number(innerValue), depositAsset.decimals) : undefined
-      onValueChange(val!)
-    }, 500)
-
-    return () => clearTimeout(handler)
-  }, [innerValue, depositAsset])
-
   const dollarDepositDisplay = useMemo(() => {
-    if (innerValue && borrowAsset?.decimals && borrowAsset?.price) {
-      const val = Number(formatUnits(toBigInt(Number(innerValue), 18), borrowAsset.decimals)) * borrowAsset.price
-      return `(${formatDollar(val)})`
-    }
-    return "($0)"
+    if (!borrowAsset?.decimals || !borrowAsset?.price) return "($0)"
+
+    const raw = sanitizeValue(innerValue)
+
+    if (raw === "" || raw === ".") return "($0)"
+
+    const num = Number(raw)
+    if (!Number.isFinite(num)) return "($0)"
+
+    const asBig = toBigInt(num, 18)
+    const units = Number(formatUnits(asBig, borrowAsset.decimals))
+    const val = units * borrowAsset.price
+
+    return `(${formatDollar(val)})`
   }, [innerValue, borrowAsset])
 
   return (
@@ -103,9 +117,11 @@ export function LeverageInput({
         <div className="mb-1 flex justify-between">
           <input
             {...props}
-            type="string"
+            type="text"
+            inputMode="decimal"
+            pattern="[0-9]*[.,]?[0-9]*"
             value={innerValue}
-            onInput={handleInputChange}
+            onChange={handleInputChange}
             placeholder="Amount"
             className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent text-xl font-semibold focus:outline-none")}
           />

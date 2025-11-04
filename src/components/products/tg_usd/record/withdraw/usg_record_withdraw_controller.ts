@@ -15,7 +15,7 @@ export function getWithdrawFormState(marketData: MarketDetailData, withdrawWeiVa
       reasons.push("Amount must be greater than zero.")
     }
     if (maxWithdrawable < withdrawWeiValue) {
-      reasons.push("Value is greater than maxWithdrawable.")
+      reasons.push("Withdraw amount exceeds current assets value.")
     }
   }
   return { canProcess: reasons.length === 0, cantProcessReasons: reasons, haveToApprove: false }

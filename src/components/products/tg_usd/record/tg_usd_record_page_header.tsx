@@ -55,14 +55,10 @@ export default function USGRecordPageHeader() {
         indicators={[
           {
             title: "Borrow rate",
-            value: (
-              <div className="flex items-center gap-2">
-                <span>{((Math.exp(marketDisplayData.borrowRateCurrent) - 1) * 100).toFixed(2)}%</span>
-              </div>
-            ),
+            value: <div className="flex items-center">{((Math.exp(marketDisplayData.borrowRateCurrent) - 1) * 100).toFixed(2)}%</div>,
             subValue: (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-subtitle"> Proj:</span> <span>{((Math.exp(marketDisplayData.borrowRateNext) - 1) * 100).toFixed(2)} %</span>
+              <div className="flex items-center gap-1 text-xs text-subtitle">
+                Proj: <span>{((Math.exp(marketDisplayData.borrowRateNext) - 1) * 100).toFixed(2)} %</span>
               </div>
             ),
             indicator: "Interest rate that borrowers pay on their outstanding debt",
@@ -70,7 +66,11 @@ export default function USGRecordPageHeader() {
           {
             title: "Rewards cut",
             value: marketDisplayData.rewardsCutCurrent,
-            subValue: marketDisplayData.rewardsCutNext,
+            subValue: (
+              <div className="flex items-center gap-1 text-xs text-subtitle">
+                Proj: <span>{marketDisplayData.rewardsCutNext} </span>
+              </div>
+            ),
             indicator: "Rewards deduction. The percentage of collateral's rewards that are deducted.",
           },
           {

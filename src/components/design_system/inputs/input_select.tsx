@@ -15,15 +15,6 @@ interface InputSelectProps<T extends SelectOption | SelectOptionAmount> {
   template?: (option: T) => ReactNode // Template matches the type of options
 }
 
-export const InputSelectAmountTemplate = (option: SelectOptionAmount) => {
-  return (
-    <div className="flex items-center gap-1">
-      <span className="text-sm">{option.label}</span>
-      <span className="text-xs text-subtitle">{option.amountDisplay && `(${option.amountDisplay})`}</span>
-    </div>
-  )
-}
-
 const InputSelect = <T extends SelectOption | SelectOptionAmount>({
   options,
   onChange,

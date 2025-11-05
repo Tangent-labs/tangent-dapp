@@ -10,6 +10,24 @@ import { useUSGMaketListContext } from "../tg_usd_market_list_context"
 import InputSearch from "@/components/design_system/inputs/input_search"
 import MarketListAPR from "@/components/design_system/list/market_list_apr"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import InputSelect from "@/components/design_system/inputs/input_select"
+
+const AssetSelectTemplate = (option: { label: string; value: string }) => {
+  return <span className="flex w-full cursor-pointer items-center rounded-[10px] px-3 text-sm font-semibold text-white hover:bg-white/10">{option?.label}</span>
+}
+
+const marketOptions = [
+  { label: "All", value: "All" },
+  { label: "HEC", value: "HEC" },
+  { label: "LEC", value: "LEC" },
+]
+
+const protocolOptions = [
+  { label: "All", value: "All" },
+  { label: "Curve", value: "Curve" },
+  { label: "Convex", value: "Convex" },
+  { label: "Pendle", value: "Pendle" },
+]
 
 export const USGMarketModalListHeaders: ListHeaderData[] = [
   { label: "LP", key: "lp", sort: null },
@@ -36,18 +54,45 @@ const listeState: ListState = {
 }
 
 export default function USGModalMarketList() {
-  const { displayRows, searchValue, setSearchValue, sortMarketList } = useUSGMaketListContext()
+  const { displayRows, searchValue, setSearchValue, sortMarketList, marketType, setMarketType, protocol, setProtocol } = useUSGMaketListContext()
 
   return (
     <div className="p-4">
-      <div className="flex w-1/2 flex-col items-center justify-center">
-        <div className="mb-1 text-xs text-subtitle"> Search </div>
-        <InputSearch
-          placeholder=""
-          className="flex w-full flex-col items-center justify-center"
-          value={searchValue ?? ""}
-          onChange={(e) => setSearchValue(e as string)}
-        />
+      <div className="flex w-full items-center justify-between">
+        <div className="flex flex-col items-center justify-center">
+          <div className="mb-1 text-xs text-subtitle"> Search </div>
+          <InputSearch
+            placeholder=""
+            className="flex w-full flex-col items-center justify-center"
+            value={searchValue ?? ""}
+            onChange={(e) => setSearchValue(e as string)}
+          />
+        </div>
+
+        <div className="flex items-center justify-center gap-2">
+          <div className="flex flex-col items-center justify-center">
+            <div className="mb-1 text-xs text-subtitle"> Type </div>
+            <InputSelect
+              className="w-full min-w-32"
+              template={AssetSelectTemplate}
+              value={marketType || ""}
+              options={marketOptions}
+              onChange={(e) => setMarketType(e)}
+            />
+          </div>
+
+          <div className="flex flex-col items-center justify-center">
+            <div className="mb-1 text-xs text-subtitle"> Protocol </div>
+
+            <InputSelect
+              className="w-full min-w-32"
+              template={AssetSelectTemplate}
+              value={protocol || ""}
+              options={protocolOptions}
+              onChange={(e) => setProtocol(e)}
+            />
+          </div>
+        </div>
       </div>
 
       <ListProvider customSort={sortMarketList} _headers={USGMarketModalListHeaders} _rows={displayRows!} _listState={listeState}>
@@ -74,9 +119,11 @@ export function USGModalMarketListInner() {
 
   return (
     <>
-      <ListHeader rowDisposition={ModalMarketListRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
+      <div className="mt-3 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+        <ListHeader rowDisposition={ModalMarketListRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
+      </div>
 
-      <div className="max-h-[75vh] overflow-y-auto p-4">
+      <div className="mt-2 max-h-[75vh] overflow-y-auto">
         {displayRows?.map((item, index) => (
           <ListRow
             rowDisposition={ModalMarketListRowDisposition}

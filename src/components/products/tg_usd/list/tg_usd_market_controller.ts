@@ -81,8 +81,14 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
     totalProjectedAPR = Object.values(data?.projectedAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
   }
 
+  const protocol = (USGMarkets.find((m) => m.marketAddress === onChainRow?.marketAddress)?.marketType || "Curve") as string
+
+  const type = onChainRow?.constants.irParams.isHEC ? "HEC" : "LEC"
+
   return {
     token: data.collateral as ExistingAsset,
+    protocol,
+    type,
     name: data.collateral,
     address: onChainRow?.marketAddress as Address,
     apr: {

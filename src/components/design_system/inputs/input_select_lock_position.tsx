@@ -5,7 +5,7 @@ import { formatUnits } from "viem"
 import BorderPanel from "../structure/border_panel"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
-import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
+import { formatDisplayValue, formatDollar, sanitizeValue, toBigInt } from "@/lib/number_formatter"
 
 type InputSelectLockPositionProps = React.InputHTMLAttributes<HTMLInputElement> & {
   className?: string
@@ -70,7 +70,9 @@ export const InputSelectLockPosition = ({
     if (!depositAsset?.decimals || !isUserInput) return
 
     const handler = setTimeout(() => {
-      const val = innerValue ? toBigInt(Number(innerValue), depositAsset.decimals) : undefined
+      const raw = sanitizeValue(innerValue)
+
+      const val = raw ? toBigInt(Number(raw), depositAsset?.decimals ?? 18) : undefined
       onValueChange(val)
     }, 500)
 
@@ -102,9 +104,11 @@ export const InputSelectLockPosition = ({
             <input
               {...props}
               disabled={isLoading}
-              type="number"
-              value={innerValue !== undefined ? innerValue : ""}
               placeholder="Amount"
+              type="text"
+              inputMode="decimal"
+              pattern="[0-9]*[.,]?[0-9]*"
+              value={innerValue !== undefined ? innerValue : ""}
               onInput={handleInputChange}
               className={cn("min-h-8 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none")}
             />

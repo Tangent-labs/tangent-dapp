@@ -22,7 +22,7 @@ export const CollateralCard = ({ collateralInfo, marketData }: CollateralCardPro
           role="button"
           tabIndex={0}
           style={{ borderWidth: 1.5 }}
-          className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-[10px] border border-white/10 bg-overlay-panel p-2 backdrop-blur-[60px] hover:border-white md:w-fit"
+          className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-[10px] border border-white/10 bg-overlay-panel p-2 backdrop-blur-[60px] hover:border-white/30 md:w-fit"
         >
           <div className="flex items-center gap-2">
             <TokenImage className="w-8 md:w-16" token={collateralInfo.logo as ExistingAsset} size={64} />
@@ -35,10 +35,7 @@ export const CollateralCard = ({ collateralInfo, marketData }: CollateralCardPro
         </div>
       </DialogTrigger>
 
-      <DialogContent
-        variant="center"
-        className="min-h-[600px] w-[90vw] max-w-[800px] rounded-2xl border border-white/10 bg-[#1A1A1A] p-0 text-white shadow-xl focus:outline-none"
-      >
+      <DialogContent variant="center" className="min-h-[600px] rounded-[10px] bg-overlay-panel p-4 text-white focus:outline-none">
         <USGMarketListProvider>
           <USGModalMarketList />
         </USGMarketListProvider>

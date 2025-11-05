@@ -29,6 +29,12 @@ type USGMaketListContextValues = {
     tgUsdCollateralsData: TgUsdCollateralData[]
     marketDebtData: MarketDebtData[]
   } | null
+
+  marketType: string
+  setMarketType: (s: string) => void
+
+  protocol: string
+  setProtocol: (s: string) => void
 }
 
 export const USGMaketListContext = createContext<USGMaketListContextValues | undefined>(undefined)
@@ -41,6 +47,10 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
   const [onChainData, setOnChainData] = useState<ChainViewMarketList | undefined>()
 
   const [searchValue, setSearchValue] = useState<string | null>(null)
+
+  const [marketType, setMarketType] = useState<string>("All")
+
+  const [protocol, setProtocol] = useState<string>("All")
 
   /**
    * On init
@@ -86,14 +96,40 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     })
   }, [marketAprs])
 
+  const TYPE_TO_MARKET: Record<string, string> = {
+    Convex_CRV: "Curve",
+    Convex_FXN: "Convex",
+    Pendle_PT: "Pendle",
+  }
+
+  const mapProtocol = (p: string): string => {
+    return TYPE_TO_MARKET[p]
+  }
+
   const displayRows = useMemo<ListRowData[]>(() => {
     const allRows = transformToRows(marketDataWithAPR, onChainData)
+
+    const filteredRows = allRows
+      .filter((market) => {
+        if (marketType !== "All") {
+          return market.type === marketType
+        }
+        return true
+      })
+      .filter((marketProtocol) => {
+        if (protocol !== "All") {
+          return mapProtocol(marketProtocol.protocol) === protocol
+        }
+        return true
+      })
+
     if (!searchValue || searchValue.trim() === "") {
-      return allRows
+      return filteredRows
     }
+
     const lowered = searchValue.toLowerCase()
-    return allRows.filter((row) => row.name.toLowerCase().includes(lowered) || row.token.toLowerCase().includes(lowered))
-  }, [onChainData, searchValue, marketDataWithAPR])
+    return filteredRows.filter((row) => row.name.toLowerCase().includes(lowered) || row.token.toLowerCase().includes(lowered))
+  }, [onChainData, searchValue, marketDataWithAPR, marketType, protocol])
 
   const globalData = useMemo<TgUsdGlobalData>(() => {
     return transformGlobalData(onChainData)
@@ -178,6 +214,10 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     marketData,
     userData,
     sortMarketList,
+    marketType,
+    setMarketType,
+    protocol,
+    setProtocol,
   }
 
   return <USGMaketListContext.Provider value={contextValue}>{children}</USGMaketListContext.Provider>

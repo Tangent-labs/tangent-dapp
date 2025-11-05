@@ -235,9 +235,7 @@ export default function USGDepositContent() {
             balance={maxBorrowableValue}
             percentage={borrowSliderPercent}
             setPercentage={maxBorrowCapReached ? () => {} : setBorrowSliderPercent}
-            onValueChange={(value: bigint | undefined) => {
-              setBorrowWeiValue(value)
-            }}
+            onValueChange={setBorrowWeiValue}
           />
         </div>
       )}

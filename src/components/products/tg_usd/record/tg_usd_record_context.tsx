@@ -29,7 +29,6 @@ import { usePathname } from "next/navigation"
 import { getConvexPools } from "../server_api"
 import { useUSGContext } from "../tg_usd_context"
 import { USG_CONTRACT } from "../tg_usd_repository"
-import { formatBigInt } from "@/lib/number_formatter"
 import { useRootContext } from "../../root/root_context"
 import { Address, formatUnits, zeroAddress } from "viem"
 import { ToastComponent } from "@/components/design_system/toast"
@@ -110,7 +109,7 @@ type USGRecordContextValues = {
 
   displayAPRVariation: boolean
 
-  liquidationPrice: number
+  liquidationPrice: bigint
 }
 
 const LEVERAGE_TRESHOLD = 0.989
@@ -405,12 +404,8 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   }, [collateralInfo?.address, displayAPRVariation])
 
   const liquidationPrice = useMemo(() => {
-    if (marketData) {
-      const price = computeLiquidationPrice(marketData, currentAmounts)
-
-      return Number(formatBigInt(price, 18, 3))
-    }
-    return 0
+    if (marketData) return computeLiquidationPrice(marketData, currentAmounts) * 100n
+    return 0n
   }, [marketData, currentAmounts])
 
   const contextValue: USGRecordContextValues = {

@@ -92,11 +92,6 @@ export function BorrowInput({
     setPercentage(raw !== "" && balanceNumber > 0 ? (Number(raw) / balanceNumber) * 100 : 0)
   }
 
-  const handleBlur = () => {
-    setInnerValue((prev) => formatDisplayValue(prev))
-    setIsUserInput(false)
-  }
-
   const dollarDepositDisplay = useMemo(() => {
     if (borrowAmount && borrowAsset?.decimals && borrowAsset?.price) {
       const val = Number(formatUnits(borrowAmount, borrowAsset.decimals)) * borrowAsset.price
@@ -136,7 +131,6 @@ export function BorrowInput({
               value={innerValue}
               placeholder="Amount"
               onChange={handleInputChange}
-              onBlur={handleBlur}
               className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none")}
             />
           </div>

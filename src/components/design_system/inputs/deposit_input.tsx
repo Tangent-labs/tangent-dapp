@@ -96,11 +96,6 @@ export function DepositInput({
     }
   }
 
-  const handleBlur = () => {
-    setInnerValue((prev) => formatDisplayValue(prev))
-    setIsUserInput(false)
-  }
-
   const dollarDepositDisplay = useMemo(() => {
     const val = Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals ?? 18)) * (depositAsset?.price || 0)
     return `(${new Intl.NumberFormat("en-US", {
@@ -140,7 +135,6 @@ export function DepositInput({
               value={innerValue}
               placeholder="Amount"
               onChange={handleInputChange}
-              onBlur={handleBlur}
               className={cn("min-h-10 max-w-36 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none")}
             />
           </div>

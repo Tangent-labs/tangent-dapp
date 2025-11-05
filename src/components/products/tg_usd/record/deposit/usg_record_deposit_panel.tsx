@@ -56,7 +56,6 @@ export default function USGDepositContent() {
     maxBorrowableValue,
     maxDepositString,
     aprVariation,
-    handleZapBlur,
     expectedCollateral,
   } = useUSGDepositContext()
 
@@ -210,7 +209,6 @@ export default function USGDepositContent() {
           isZapLoading={isZapLoading}
           zapInnerValue={zapInnerValue}
           handleZapInputChange={handleZapInputChange}
-          handleZapBlur={handleZapBlur}
           zapValue={zapValue!}
           marketData={marketData!}
           estimatedZapDollarValue={estimatedZapDollarValue}

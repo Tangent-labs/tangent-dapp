@@ -68,8 +68,6 @@ type USGLeverageContextValues = {
 
   actionZapLeverage: () => void
 
-  handleZapBlur: () => void
-
   leveragedCollateralQuote: bigint | undefined
   setLeveragedCollateralQuote: (arg: bigint) => void
 
@@ -213,11 +211,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         setIsDepositLoading(false)
       }
     })()
-  }
-
-  const handleZapBlur = () => {
-    setZapInnerValue((prev) => formatDisplayValue(prev, 3))
-    setIsZapUserInput(false)
   }
 
   const handleZapInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -600,8 +593,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     computedMaxLeverage,
 
     aprVariation,
-
-    handleZapBlur,
   }
 
   return <USGLeverageContext.Provider value={contextValue}>{children}</USGLeverageContext.Provider>

@@ -57,7 +57,6 @@ export default function USGLeverageContent() {
     maxDepositString,
     computedMaxLeverage,
     aprVariation,
-    handleZapBlur,
   } = useUSGLeverageContext()
 
   const { balances } = useUSGContext()
@@ -205,7 +204,6 @@ export default function USGLeverageContent() {
           isZapLoading={isZapLoading}
           zapInnerValue={zapInnerValue}
           handleZapInputChange={handleZapInputChange}
-          handleZapBlur={handleZapBlur}
           zapValue={zapValue!}
           marketData={marketData!}
           estimatedZapDollarValue={estimatedZapDollarValue}

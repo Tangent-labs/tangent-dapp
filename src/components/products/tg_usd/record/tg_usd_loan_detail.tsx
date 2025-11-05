@@ -1,6 +1,6 @@
 "use client"
 
-import { formatBigInt, formatDisplayValue } from "@/lib/number_formatter"
+import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "./tg_usd_record_context"
 import Title from "@/components/design_system/structure/title"
 import Divider from "@/components/design_system/structure/divider"

@@ -73,8 +73,6 @@ type USGDepositContextValues = {
   expectedCollateral: string
 
   aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
-
-  handleZapBlur: () => void
 }
 
 export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
@@ -222,11 +220,6 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
 
     setZapInnerValue(raw)
     setIsZapUserInput(true)
-  }
-
-  const handleZapBlur = () => {
-    setZapInnerValue((prev) => formatDisplayValue(prev, 3))
-    setIsZapUserInput(false)
   }
 
   useEffect(() => {
@@ -589,8 +582,6 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     aprVariation,
 
     expectedCollateral,
-
-    handleZapBlur,
   }
 
   return <USGDepositContext.Provider value={contextValue}>{children}</USGDepositContext.Provider>

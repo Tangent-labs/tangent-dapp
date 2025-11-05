@@ -11,7 +11,6 @@ type ZapInputProps = {
   isZapLoading: boolean
   zapInnerValue: string
   handleZapInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  handleZapBlur: () => void
   zapValue: bigint
   marketData: MarketDetailData
   estimatedZapDollarValue: string
@@ -22,7 +21,6 @@ export const ZapInput = ({
   isZapLoading,
   zapInnerValue,
   handleZapInputChange,
-  handleZapBlur,
   zapValue,
   marketData,
   estimatedZapDollarValue,
@@ -45,7 +43,6 @@ export const ZapInput = ({
               className="flex w-fit max-w-[120px] justify-start bg-transparent text-xl font-semibold focus:outline-none"
               value={zapInnerValue}
               onChange={handleZapInputChange}
-              onBlur={handleZapBlur}
             />
           </div>
           <div className="flex items-center justify-start gap-2 text-xs text-subtitle">

@@ -17,7 +17,7 @@ export const GodsonsLeaderboard = ({ godsonsLeaderboard }: GodsonsLeaderboardPro
       </div>
 
       {godsonsLeaderboard?.map((el) => (
-        <div key={el?.address} className="my-1 flex w-full items-center justify-center bg-overlay-panel px-2 py-1 backdrop-blur-[60px]">
+        <div key={el?.address} className="my-1 flex w-full items-center justify-start rounded-[10px] bg-overlay-panel px-2 py-1">
           <div className="flex w-2/12 items-center justify-start gap-1 font-semibold">
             {el?.rank === 1 && <IconTrophy className="w-5 fill-yellow-300"></IconTrophy>}
             {el?.rank === 2 && <IconTrophy className="w-5 fill-gray-500"></IconTrophy>}

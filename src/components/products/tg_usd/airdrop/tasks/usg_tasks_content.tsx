@@ -1,16 +1,20 @@
 "use client"
 
 import Image from "next/image"
-import { SlidingTabs } from "./components/SlidingTabs"
 import { useUSGContext } from "../../tg_usd_context"
 import { formatNumber } from "@/lib/number_formatter"
+import { SlidingTabs } from "./components/SlidingTabs"
+import { useUsgTasksContext } from "./usg_tasks_context"
+import { Button } from "@/components/design_system/inputs/button"
 import { lpListState, LPTasksList } from "./components/LPTasksList"
+import { lpListHeaders, voteListHeaders } from "./usg_tasks_controller"
 import { voteListState, VoteTasksList } from "./components/VoteTasksList"
 import { ListProvider } from "@/components/design_system/list/list_context"
-import { useUsgTasksContext } from "./usg_tasks_context"
-import { lpListHeaders, voteListHeaders } from "./usg_tasks_controller"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export default function UsgTasksContent() {
+  const { isConnected, connect } = useWalletConnexionContext()
+
   const { lpTasks, voteTasks, selectedFeature, sortLpTasks, sortVoteTasks, setSelectedFeature } = useUsgTasksContext()
 
   const { lpUserPoints, voteUserPoints } = useUSGContext()
@@ -80,16 +84,25 @@ export default function UsgTasksContent() {
 
       <div className="flex w-full items-start justify-start gap-4">
         <div className="flex w-full flex-col">
-          {selectedFeature === "Borrow & LP" && (
+          {isConnected && selectedFeature === "Borrow & LP" && (
             <ListProvider customSort={sortLpTasks} _headers={lpListHeaders} _rows={lpTasks} _listState={lpListState}>
               <LPTasksList></LPTasksList>
             </ListProvider>
           )}
 
-          {selectedFeature === "Vote" && (
+          {isConnected && selectedFeature === "Vote" && (
             <ListProvider customSort={sortVoteTasks} _headers={voteListHeaders} _rows={voteTasks} _listState={voteListState}>
               <VoteTasksList></VoteTasksList>
             </ListProvider>
+          )}
+
+          {!isConnected && (
+            <div className="mt-12 flex min-h-28 w-full flex-col items-center justify-center gap-4">
+              <div className="test-sm flex w-full items-center justify-center text-subtitle">Connect your wallet to see you current tasks</div>
+              <div className="flex w-56 flex-col items-center justify-center">
+                <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
+              </div>
+            </div>
           )}
         </div>
       </div>

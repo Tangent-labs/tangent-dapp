@@ -58,8 +58,8 @@ export default function USGModalMarketList() {
 
   return (
     <div className="p-4">
-      <div className="flex w-full items-center justify-between">
-        <div className="flex flex-col items-center justify-center">
+      <div className="flex w-full flex-col-reverse items-center justify-between gap-2 md:flex-row">
+        <div className="flex w-full flex-col items-center justify-center md:w-fit">
           <div className="mb-1 text-xs text-subtitle"> Search </div>
           <InputSearch
             placeholder=""
@@ -70,7 +70,7 @@ export default function USGModalMarketList() {
         </div>
 
         <div className="flex items-center justify-center gap-2">
-          <div className="flex flex-col items-center justify-center">
+          <div className="flex w-full flex-col items-center justify-center md:w-fit">
             <div className="mb-1 text-xs text-subtitle"> Type </div>
             <InputSelect
               className="w-full min-w-32"
@@ -81,7 +81,7 @@ export default function USGModalMarketList() {
             />
           </div>
 
-          <div className="flex flex-col items-center justify-center">
+          <div className="flex w-full flex-col items-center justify-center md:w-fit">
             <div className="mb-1 text-xs text-subtitle"> Protocol </div>
 
             <InputSelect
@@ -94,7 +94,6 @@ export default function USGModalMarketList() {
           </div>
         </div>
       </div>
-
       <ListProvider customSort={sortMarketList} _headers={USGMarketModalListHeaders} _rows={displayRows!} _listState={listeState}>
         <USGModalMarketListInner />
       </ListProvider>
@@ -104,10 +103,10 @@ export default function USGModalMarketList() {
 
 const ModalMarketListRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
-    <div className="flex items-center justify-between max-xl:flex-col">
-      <div className="flex items-center justify-start xl:w-1/2">{children?.at(0)}</div>
-      <div className="flex items-center justify-center xl:w-1/4">{children?.at(1)}</div>
-      <div className="flex items-center justify-center xl:w-1/4">{children?.at(2)}</div>
+    <div className="flex items-center justify-between">
+      <div className="flex w-1/2 items-center justify-start">{children?.at(0)}</div>
+      <div className="flex w-1/2 items-center justify-center md:w-1/4">{children?.at(1)}</div>
+      <div className="hidden w-1/4 items-center justify-center md:flex">{children?.at(2)}</div>
     </div>
   )
 }
@@ -123,7 +122,7 @@ export function USGModalMarketListInner() {
         <ListHeader rowDisposition={ModalMarketListRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 
-      <div className="mt-2 max-h-[75vh] overflow-y-auto">
+      <div className="mt-2 max-h-[476px] overflow-y-auto">
         {displayRows?.map((item, index) => (
           <ListRow
             rowDisposition={ModalMarketListRowDisposition}
@@ -135,7 +134,7 @@ export function USGModalMarketListInner() {
             <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
             <MarketListAPR currentAPRDetails={item.currentAPRDetails} apr={item.apr.current} projectedApr={item.apr.projected} />
 
-            <span className="flex items-center justify-center gap-2">
+            <span className="hidden items-center justify-center gap-2 md:flex">
               <span className={cn("flex text-xs text-subtitle md:text-xl xl:hidden")}>{item.indicators[0]?.label}</span>
               <span className="text-xs md:text-xl">{item.indicators[0]?.value}</span>
             </span>

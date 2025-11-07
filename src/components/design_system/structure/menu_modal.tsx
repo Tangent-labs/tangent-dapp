@@ -19,7 +19,7 @@ export const MenuModal = () => {
           </>
         </button>
       </DialogTrigger>
-      <DialogContent variant="bottom" className="bg-[#1A1A1A] text-white">
+      <DialogContent className="bg-[#1A1A1A] text-white">
         <div className="flex flex-col space-y-2">
           <h3 className="mb-2 text-lg font-semibold">More</h3>
 

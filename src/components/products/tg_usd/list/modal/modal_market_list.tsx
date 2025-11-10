@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
-import { ListHeaderData, ListState } from "@/types"
+import { ListState } from "@/types"
 import ListRow from "@/components/design_system/list/list_row"
 import ListAsset from "@/components/design_system/list/list_asset"
 import ListHeader from "@/components/design_system/list/list_header"

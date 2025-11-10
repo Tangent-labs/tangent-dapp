@@ -1,7 +1,6 @@
 "use client"
 
 import { IndicatorData } from "@/types"
-import Panel from "@/components/design_system/structure/panel"
 import { ReactNode } from "react"
 
 type IndicatorCardProps = {
@@ -27,12 +26,12 @@ interface IndicatorCardsProps {
 
 const IndicatorCards = ({ indicators, className = "", children }: IndicatorCardsProps) => {
   return (
-    <Panel className={`inline-flex w-auto gap-4 !border-none ${className}`}>
+    <div className={`inline-flex w-auto rounded-[10px] border-white border-opacity-20 bg-overlay-panel p-4 backdrop-blur-[60px] ${className}`}>
       {children}
       {indicators.map((indicator, index) => (
         <IndicatorCard key={index} title={indicator.title} value={indicator.value} />
       ))}
-    </Panel>
+    </div>
   )
 }
 

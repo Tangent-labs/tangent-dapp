@@ -49,6 +49,7 @@ export default function USGClaimContent() {
         <div className="flex w-full flex-col items-start justify-between sm:flex-row sm:items-end">
           <div className="mt-10 flex items-center justify-between">
             <IndicatorCards
+              className="gap-6"
               indicators={[
                 {
                   title: "Total deposited",

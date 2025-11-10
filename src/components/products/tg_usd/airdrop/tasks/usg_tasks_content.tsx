@@ -44,8 +44,7 @@ export default function UsgTasksContent() {
           <div className="flex w-full flex-col items-center justify-between gap-4 md:flex-row">
             <div className="relative flex w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
               <div className="absolute -top-2 left-0 flex w-full">
-                <div className="mx-4 flex w-full items-center justify-between rounded-full pl-3">
-                  <div className="text-xs italic">Boost x1.1</div>
+                <div className="mx-4 flex w-full items-center justify-end rounded-full pl-3">
                   <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Vote</div>
                 </div>
               </div>
@@ -58,8 +57,7 @@ export default function UsgTasksContent() {
 
             <div className="relative flex w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
               <div className="absolute -top-2 left-0 flex w-full">
-                <div className="mx-4 flex w-full items-center justify-between rounded-full pl-3">
-                  <div className="text-xs italic">Boost x1.5</div>
+                <div className="mx-4 flex w-full items-center justify-end rounded-full pl-3">
                   <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Liquidity</div>
                 </div>
               </div>

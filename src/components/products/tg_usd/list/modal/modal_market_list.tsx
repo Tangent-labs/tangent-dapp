@@ -11,39 +11,11 @@ import InputSearch from "@/components/design_system/inputs/input_search"
 import MarketListAPR from "@/components/design_system/list/market_list_apr"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import InputSelect from "@/components/design_system/inputs/input_select"
+import { marketOptions, protocolOptions, USGMarketModalListHeaders } from "../tg_usd_market_controller"
 
-const AssetSelectTemplate = (option: { label: string; value: string }) => {
+const MarketListSelectTemplate = (option: { label: string; value: string }) => {
   return <span className="flex w-full cursor-pointer items-center rounded-[10px] px-3 text-sm font-semibold text-white hover:bg-white/10">{option?.label}</span>
 }
-
-const marketOptions = [
-  { label: "All", value: "All" },
-  { label: "HEC", value: "HEC" },
-  { label: "LEC", value: "LEC" },
-]
-
-const protocolOptions = [
-  { label: "All", value: "All" },
-  { label: "Curve", value: "Curve" },
-  { label: "Convex", value: "Convex" },
-  { label: "Pendle", value: "Pendle" },
-]
-
-export const USGMarketModalListHeaders: ListHeaderData[] = [
-  { label: "LP", key: "lp", sort: null },
-  {
-    label: "APR",
-    key: "apr",
-    indicator: "vAPR of the collateral",
-    sort: "sort",
-  },
-  {
-    label: "Borrow Rate",
-    key: "borrowRate",
-    indicator: "Interest rate that borrowers pay on their outstanding debt.",
-    sort: "sort",
-  },
-]
 
 const listeState: ListState = {
   search: undefined,
@@ -74,7 +46,7 @@ export default function USGModalMarketList() {
             <div className="mb-1 text-xs text-subtitle"> Type </div>
             <InputSelect
               className="w-full min-w-32"
-              template={AssetSelectTemplate}
+              template={MarketListSelectTemplate}
               value={marketType || ""}
               options={marketOptions}
               onChange={(e) => setMarketType(e)}
@@ -86,7 +58,7 @@ export default function USGModalMarketList() {
 
             <InputSelect
               className="w-full min-w-32"
-              template={AssetSelectTemplate}
+              template={MarketListSelectTemplate}
               value={protocol || ""}
               options={protocolOptions}
               onChange={(e) => setProtocol(e)}

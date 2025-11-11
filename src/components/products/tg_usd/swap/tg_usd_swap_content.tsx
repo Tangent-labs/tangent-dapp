@@ -103,24 +103,26 @@ export default function USGSwapContent() {
 
   return (
     <>
-      <div className="flex w-full items-center justify-between gap-6">
-        <div className="usg-header relative hidden w-6/12 lg:flex">
+      <div className="flex items-stretch justify-between gap-6">
+        <div className="relative hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="absolute -top-2 left-20 h-full min-h-24">
             <Image height={140} width={140} src="/medias/tokens/swapLogo.png" alt="token" />
           </div>
 
           <Image className="mr-24 mt-5" height={140} width={140} src="/medias/tokens/tgUSD_header.png" alt="token" />
 
-          <div className="flex flex-col items-start justify-center gap-3">
+          <div className="flex flex-col items-start justify-center gap-3 pr-6">
             <span className="text-5xl font-semibold">Swap</span>
-            <p>Swap any asset for USG and other Tangent&apos;s assets, including Curve LPs and Wrapped Tangent Stablecoins. Learn more</p>
+            <p className="font-gilroy text-[15px]">
+              Swap any asset for USG and other Tangent&apos;s assets, including Curve LPs and Wrapped Tangent Stablecoins. Learn more
+            </p>
           </div>
         </div>
 
-        <div className="flex h-full w-full flex-col items-center gap-4 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] xl:w-fit">
+        <div className="hidden h-auto w-full flex-col items-center gap-3 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] md:flex xl:w-1/2">
           <div
             style={{ fontSize: "20px", lineHeight: "20px" }}
-            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !font-semibold italic"
+            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
           >
             Points campaign
             <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>

@@ -97,29 +97,29 @@ export default function USGStakeContent() {
 
   return (
     <>
-      <div className="flex w-full items-center justify-between gap-6">
-        <div className="usg-header hidden w-6/12 xl:flex">
+      <div className="flex items-stretch justify-between gap-6">
+        <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
-            <Image height={160} width={160} src="/medias/tokens/SUSG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+            <Image height={140} width={140} src="/medias/tokens/SUSG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
-          <div className="flex flex-col items-start justify-center gap-3">
+          <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Savings account</span>
-            <p className="text-[15px]">
+            <p className="font-gilroy text-[15px]">
               Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi. Learn more
             </p>
           </div>
         </div>
 
-        <div className="flex h-full w-full flex-col items-center gap-3 xl:w-6/12">
+        <div className="hidden h-auto w-full flex-col items-center gap-3 md:flex xl:w-1/2">
           <div
             style={{ fontSize: "20px", lineHeight: "20px" }}
-            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !font-semibold italic"
+            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
           >
             Points campaign
             <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
           </div>
 
-          <div className={cn("flex w-full items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2", !!USGsUSGMetrics ? "" : "shimmer")}>
+          <div className={cn("flex w-full items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-3", !!USGsUSGMetrics ? "" : "shimmer")}>
             <TokenImage token="sUSG" size={48} />
 
             <div className="flex flex-col items-center justify-center font-semibold">

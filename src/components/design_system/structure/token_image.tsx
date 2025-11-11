@@ -6,7 +6,7 @@ import { ExistingAsset } from "@/types"
 
 interface TokenImageProps extends React.HTMLAttributes<HTMLImageElement> {
   token?: ExistingAsset
-  size: 12 | 16 | 20 | 24 | 32 | 48 | 64 | 96 | 128 | 256 | 384
+  size: 8 | 12 | 16 | 20 | 24 | 32 | 48 | 64 | 96 | 128 | 256 | 384
 }
 
 interface ImageWithFallbackProps extends Omit<ImageProps, "src"> {

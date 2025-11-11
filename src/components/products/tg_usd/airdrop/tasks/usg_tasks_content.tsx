@@ -79,7 +79,7 @@ export default function UsgTasksContent() {
       </div>
 
       <div className="my-2 w-full">
-        <SlidingTabs labels={["Borrow & LP", "Vote"]} value={selectedFeature} onChange={(e: "Borrow & LP" | "Vote") => setSelectedFeature(e)} />
+        <SlidingTabs labels={["Borrow & LP", "Vote"]} value={selectedFeature} onSwitchTab={(e: string) => setSelectedFeature(e)} />
       </div>
 
       <div className="flex w-full items-start justify-start gap-4">

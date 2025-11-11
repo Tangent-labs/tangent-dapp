@@ -6,17 +6,11 @@ import { useUSGRecordContext } from "./tg_usd_record_context"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import IndicatorV2 from "@/components/design_system/structure/indicators_v2"
-import RecordPageHeader from "@/components/design_system/structure/record_page_header"
-import { useUSGContext } from "../tg_usd_context"
 
 export default function USGRecordPageHeader() {
-  const { marketAprs } = useUSGContext()
-
   const { collateralInfo, marketDisplayData, marketData } = useUSGRecordContext()
 
   const router = useRouter()
-
-  const currentMarketApr = marketAprs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())
 
   return (
     <>
@@ -49,44 +43,6 @@ export default function USGRecordPageHeader() {
           <IndicatorV2 indicators={[{ title: "LTV", value: marketDisplayData.maxLtv }]} />
         </div>
       </div>
-
-      <RecordPageHeader
-        apr={currentMarketApr!}
-        indicators={[
-          {
-            title: "Borrow rate",
-            value: (
-              <div className="flex items-center gap-2">
-                <span>{((Math.exp(marketDisplayData.borrowRateCurrent) - 1) * 100).toFixed(2)}%</span>
-              </div>
-            ),
-            subValue: (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-subtitle"> Proj:</span> <span>{((Math.exp(marketDisplayData.borrowRateNext) - 1) * 100).toFixed(2)} %</span>
-              </div>
-            ),
-            indicator: "Interest rate that borrowers pay on their outstanding debt",
-          },
-          {
-            title: "Rewards cut",
-            value: marketDisplayData.rewardsCutCurrent,
-            subValue: marketDisplayData.rewardsCutNext,
-            indicator: "Rewards deduction. The percentage of collateral's rewards that are deducted.",
-          },
-          {
-            title: "LTV",
-            value: marketDisplayData.maxLtv,
-            subValue: null,
-            indicator: "Maximum Loan-to-value: represents the maximum borrowable amount compared to the collateral's value.",
-          },
-          {
-            title: "LT",
-            value: marketDisplayData.lt,
-            subValue: null,
-            indicator: "Liquidation-threshold: the LTV level at which your position becomes eligible for liquidation.",
-          },
-        ]}
-      />
     </>
   )
 }

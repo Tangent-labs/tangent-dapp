@@ -18,7 +18,7 @@ export default function RecordPageHeader({ apr, indicators }: RecordPageHeaderPr
   }
 
   return (
-    <div className="my-4 hidden min-h-20 items-center justify-evenly gap-4 rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px] md:flex">
+    <>
       <RecordPageHeaderIndicator
         title="APR"
         value={`${totalCurrentAPR ? `${totalCurrentAPR?.toFixed(2)}%` : "-"}`}
@@ -28,7 +28,7 @@ export default function RecordPageHeader({ apr, indicators }: RecordPageHeaderPr
       {indicators?.map((i, index) => (
         <RecordPageHeaderIndicator indicator={i?.indicator} key={index} title={i.title} value={i.value} subValue={i.subValue} className={i?.className || ""} />
       ))}
-    </div>
+    </>
   )
 }
 
@@ -44,7 +44,7 @@ export const RecordPageHeaderIndicator = ({ title, value, subValue, indicator, c
   return (
     <div
       className={cn(
-        `flex w-full max-w-32 flex-col items-center justify-center xl:max-w-none`,
+        `flex min-h-20 w-full max-w-32 flex-col items-center justify-center xl:max-w-none`,
         `${title === "LT" ? "" : "xl:border-r xl:border-[#3F3F3F]"}`,
         `${title === "APR" ? "text-xl" : "text-[15px]"}`
       )}

@@ -7,6 +7,7 @@ import USGLoanDetail from "./tg_usd_loan_detail"
 import { formatBigInt } from "@/lib/number_formatter"
 import USGRecordPageHeader from "./tg_usd_record_page_header"
 import { useUSGRecordContext } from "./tg_usd_record_context"
+import { MarketDetails } from "./header/market_details_header"
 import Divider from "@/components/design_system/structure/divider"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import USGCollateralPrice from "./collat_price/collat_price_content"
@@ -59,6 +60,8 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
   return (
     <>
       <USGRecordPageHeader />
+
+      <MarketDetails />
 
       <div className="my-4 flex flex-col gap-4">
         <div className="relative flex gap-4 max-xl:flex-col">

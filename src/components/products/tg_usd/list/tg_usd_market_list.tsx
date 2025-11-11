@@ -121,7 +121,7 @@ export default function USGMarketList() {
       </div>
 
       <div className="mb-4 mt-6 hidden items-end justify-between xl:flex">
-        <div className="flex flex-col items-start justify-between gap-3">
+        <div className="flex flex-col items-stretch justify-between gap-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <IndicatorCards
@@ -146,8 +146,8 @@ export default function USGMarketList() {
             </div>
           </div>
 
-          <div className="flex w-full items-center justify-between">
-            <div className="flex items-end justify-start gap-2">
+          <div className="flex w-full items-stretch justify-between">
+            <div className="flex w-full items-end justify-start gap-2">
               <div className="flex w-full flex-col items-center justify-center">
                 <div className="mb-1 text-xs text-subtitle"> Search </div>
                 <InputSearch
@@ -163,8 +163,8 @@ export default function USGMarketList() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-end justify-end gap-3">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col items-stretch justify-end gap-3">
+          <div className="items-strech flex w-full gap-2">
             <IndicatorCards
               className={cn(globalData.globalTvl === "-" ? "shimmer" : "")}
               indicators={[{ title: "Global TVL ", value: globalData.globalTvl }]}
@@ -176,11 +176,11 @@ export default function USGMarketList() {
             <IndicatorCards className={cn(globalData.globalCr === "-" ? "shimmer" : "")} indicators={[{ title: "Global CR ", value: globalData.globalCr }]} />
           </div>
 
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex w-full items-stretch justify-center gap-2">
             <div className="flex w-full flex-col items-center justify-center md:w-fit">
               <div className="mb-1 text-xs text-subtitle"> Type </div>
               <InputSelect
-                className="w-full min-w-32"
+                className="w-full min-w-40"
                 template={MarketListSelectTemplate}
                 value={marketType || ""}
                 options={marketOptions}
@@ -192,7 +192,7 @@ export default function USGMarketList() {
               <div className="mb-1 text-xs text-subtitle"> Protocol </div>
 
               <InputSelect
-                className="w-full min-w-32"
+                className="w-full min-w-40"
                 template={MarketListSelectTemplate}
                 value={protocol || ""}
                 options={protocolOptions}

@@ -2,12 +2,12 @@
 
 import { ReactNode, useMemo, useState } from "react"
 import { formatDollar } from "@/lib/number_formatter"
-import { LineDot } from "recharts/types/cartesian/Line"
-import Panel from "@/components/design_system/structure/panel"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
+import USGHoverCard from "@/components/design_system/structure/usg_hover_card"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer, Tooltip } from "recharts"
+import { LineDot } from "recharts/types/cartesian/Line"
 
 const endDot = (lastIndex: number) =>
   function EndDot(props: { cx?: number; cy?: number; index?: number }) {
@@ -96,10 +96,10 @@ interface ForecastGraphProps {
   additionalLiquidity: number
 }
 
-type RangeKey = "week" | "month" | "year" | "twoYears"
+type RangeKey = "week" | "month" | "year"
 
 export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: ForecastGraphProps) => {
-  const [range, setRange] = useState<RangeKey>("year")
+  const [range, setRange] = useState<RangeKey>("month")
 
   const {
     data: forecastData,
@@ -142,13 +142,6 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
         step = "month"
         tickEveryMonths = 1
         tickFormatter = (ts) => new Intl.DateTimeFormat("en-US", { month: "short" }).format(new Date(ts))
-        tooltipFormatter = (ts) => new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(new Date(ts))
-        break
-      case "twoYears":
-        end = addYears(now, 2)
-        step = "month"
-        tickEveryMonths = 2
-        tickFormatter = (ts) => new Intl.DateTimeFormat("en-US", { month: "short", year: "2-digit" }).format(new Date(ts))
         tooltipFormatter = (ts) => new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(new Date(ts))
         break
     }
@@ -226,15 +219,20 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
 
   return (
     <>
-      <div className="flex h-8 w-full items-center justify-between">
+      <div className="flex w-full items-center justify-between">
         <div className="flex items-center justify-start gap-2">
-          <div className="flex w-fit items-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
-            <TokenImage token="sUSG" size={16} />
-            <span className="text-sm font-semibold leading-3">sUSG</span>
+          <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-1.5">
+            <TokenImage token="sUSG" size={20} />
+            sUSG
           </div>
+
           <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-4 py-1">
-            <span className="text-lg font-semibold">{apr}%</span>
+            <span className="text-lg font-semibold">{apr.toFixed(2)}%</span>
           </div>
+
+          <USGHoverCard iconClassName="h-auto w-[14px] text-white" title="">
+            Estimated Annual Percentage Yield based on the last rewards distribution.
+          </USGHoverCard>
         </div>
 
         <div className="hidden items-end justify-end gap-2 md:flex">
@@ -242,84 +240,79 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
             onClick={() => setRange("week")}
             label="1w"
             active={range === "week"}
-            className={`cursor-pointer rounded-[10px] border-2 border-white/30 px-4 py-1 text-xs ${range === "week" ? "bg-white text-black" : ""}`}
+            className={`cursor-pointer rounded-full !py-1 ${range === "week" ? "bg-white text-black" : ""}`}
           />
           <ButtonTab
             onClick={() => setRange("month")}
             label="1m"
             active={range === "month"}
-            className={`cursor-pointer rounded-[10px] border-2 border-white/30 px-4 py-1 text-xs ${range === "month" ? "bg-white text-black" : ""}`}
+            className={`cursor-pointer rounded-full !py-1 ${range === "month" ? "bg-white text-black" : ""}`}
           />
           <ButtonTab
             onClick={() => setRange("year")}
             label="1y"
             active={range === "year"}
-            className={`cursor-pointer rounded-[10px] border-2 border-white/30 px-4 py-1 text-xs ${range === "year" ? "bg-white text-black" : ""}`}
-          />
-          <ButtonTab
-            onClick={() => setRange("twoYears")}
-            label="2y"
-            active={range === "twoYears"}
-            className={`cursor-pointer rounded-[10px] border-2 border-white/30 px-4 py-1 text-xs ${range === "twoYears" ? "bg-white text-black" : ""}`}
+            className={`cursor-pointer rounded-full !py-1 ${range === "year" ? "bg-white text-black" : ""}`}
           />
         </div>
       </div>
 
-      <Panel className="mt-3 flex h-full w-full items-center justify-center !pt-2">
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart margin={{ top: 12, right: 16, bottom: 8, left: 8 }} data={forecastData}>
-            <CartesianGrid horizontal vertical={false} />
+      {!!apr && apr > 0 ? (
+        <div className="mt-3 flex w-full items-center justify-center !pt-2">
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart margin={{ top: 12, right: 16, bottom: 8, left: 8 }} data={forecastData}>
+              <defs>
+                <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#FBF911" />
+                  <stop offset="100%" stopColor="#99FF00" />
+                </linearGradient>
+              </defs>
 
-            <XAxis dataKey="t" type="number" scale="time" domain={[startTs, endTs]} padding={{ right: 0, left: 0 }} ticks={ticks} tickFormatter={fmtTick} />
+              <CartesianGrid horizontal vertical={false} />
 
-            <YAxis
-              orientation="right"
-              tickFormatter={(v) => `$${v}`}
-              domain={[yAxis.min, yAxis.max]}
-              ticks={Array.from({ length: (yAxis.max - yAxis.min) / yAxis.stepSize + 1 }, (_, i) => yAxis.min + i * yAxis.stepSize)}
-            />
+              <XAxis dataKey="t" type="number" scale="time" domain={[startTs, endTs]} padding={{ right: 0, left: 0 }} ticks={ticks} tickFormatter={fmtTick} />
 
-            <Tooltip
-              cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
-              allowEscapeViewBox={{ x: true, y: true }}
-              content={(props) => <CustomTooltip {...props} fmtLabel={fmtTooltipLabel} />}
-            />
+              <YAxis
+                orientation="right"
+                tickFormatter={(v) => `$${v}`}
+                domain={[yAxis.min, yAxis.max]}
+                ticks={Array.from({ length: Math.max(1, Math.floor((yAxis.max - yAxis.min) / yAxis.stepSize) + 1) }, (_, i) => yAxis.min + i * yAxis.stepSize)}
+              />
 
-            <Legend />
+              <Tooltip
+                cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
+                allowEscapeViewBox={{ x: true, y: true }}
+                content={(props) => <CustomTooltip {...props} fmtLabel={fmtTooltipLabel} />}
+              />
 
-            <Line
-              strokeWidth={2}
-              type="monotone"
-              dataKey="baseAmount"
-              stroke="#FFFFFF"
-              name="Base Investment (USD)"
-              dot={endDot(forecastData.length - 1) as LineDot}
-              isAnimationActive={false}
-            />
+              <Legend />
 
-            {showSecondLine && (
               <Line
                 strokeWidth={2}
                 type="monotone"
-                dataKey="amountWithLiquidity"
-                stroke="url(#gradientColor)"
-                name="Investment + Additional Liquidity (USD)"
-                dot={endDotGradient(forecastData.length - 1) as LineDot}
+                dataKey="baseAmount"
+                stroke="#FFFFFF"
+                name="Base Investment (USD)"
+                dot={endDot(forecastData.length - 1) as LineDot}
                 isAnimationActive={false}
               />
-            )}
-          </LineChart>
-        </ResponsiveContainer>
-
-        <svg width="0" height="0">
-          <defs>
-            <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#FBF911" />
-              <stop offset="100%" stopColor="#99FF00" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </Panel>
+              {showSecondLine && (
+                <Line
+                  strokeWidth={2}
+                  type="monotone"
+                  dataKey="amountWithLiquidity"
+                  stroke="url(#gradientColor)"
+                  name="Investment + Additional Liquidity (USD)"
+                  dot={endDotGradient(forecastData.length - 1) as LineDot}
+                  isAnimationActive={false}
+                />
+              )}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="flex min-h-80 w-full items-center justify-center text-subtitle">No APY data</div>
+      )}
     </>
   )
 }

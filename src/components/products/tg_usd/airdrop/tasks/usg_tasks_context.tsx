@@ -20,8 +20,8 @@ type UsgTasksContextValues = {
   voteTasks: VoteTask[]
   sortLpTasks: (arg: ListState) => void
   sortVoteTasks: (arg: ListState) => void
-  selectedFeature: "Borrow & LP" | "Vote"
-  setSelectedFeature: (t: "Borrow & LP" | "Vote") => void
+  selectedFeature: string
+  setSelectedFeature: (t: string) => void
 }
 
 export const UsgTasksContext = createContext<UsgTasksContextValues | undefined>(undefined)
@@ -35,7 +35,7 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
 
   const [voteTasks, setVoteTasks] = useState<VoteTask[]>([])
 
-  const [selectedFeature, setSelectedFeature] = useState<"Borrow & LP" | "Vote">("Borrow & LP")
+  const [selectedFeature, setSelectedFeature] = useState<string>("Borrow & LP")
 
   useEffect(() => {
     if (currentAddress) {

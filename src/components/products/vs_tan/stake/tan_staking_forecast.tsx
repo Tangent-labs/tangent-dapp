@@ -33,7 +33,6 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
     week: 1 / 52,
     month: 1 / 12,
     year: 1,
-    twoYears: 2,
   }
 
   const [filter, setFilter] = useState<number>(timeFilters.year)
@@ -74,7 +73,7 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
 
   return (
     <>
-      <div className="flex h-8 w-full items-center justify-between">
+      <div className="flex w-full items-center justify-between">
         <div className="flex items-center justify-start gap-2">
           <div className="flex w-fit items-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
             <TokenImage token="sTAN" size={16} />
@@ -87,30 +86,11 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
         </div>
 
         <div className="flex items-end justify-end gap-2">
-          <ButtonTab
-            onClick={() => setFilter(timeFilters.week)}
-            label={"1w"}
-            active={false}
-            className={`cursor-pointer rounded-[10px] border border-white/30 px-4 py-1 text-xs ${filter === timeFilters.week ? "bg-white text-black" : ""}`}
-          />
-          <ButtonTab
-            onClick={() => setFilter(timeFilters.month)}
-            label={"1m"}
-            active={false}
-            className={`cursor-pointer rounded-[10px] border border-white/30 px-4 py-1 text-xs ${filter === timeFilters.month ? "bg-white text-black" : ""}`}
-          />
-          <ButtonTab
-            onClick={() => setFilter(timeFilters.year)}
-            label={"1y"}
-            active={false}
-            className={`cursor-pointer rounded-[10px] border border-white/30 px-4 py-1 text-xs ${filter === timeFilters.year ? "bg-white text-black" : ""}`}
-          />
-          <ButtonTab
-            onClick={() => setFilter(timeFilters.twoYears)}
-            label={"2y"}
-            active={false}
-            className={`cursor-pointer rounded-[10px] border border-white/30 px-4 py-1 text-xs ${filter === timeFilters.twoYears ? "bg-white text-black" : ""}`}
-          />
+          <div className="flex gap-2">
+            <ButtonTab onClick={() => setFilter(timeFilters.week)} label={"1w"} active={filter === timeFilters.week} className="rounded-full !py-1" />
+            <ButtonTab onClick={() => setFilter(timeFilters.month)} label={"1m"} active={filter === timeFilters.month} className="rounded-full !py-1" />
+            <ButtonTab onClick={() => setFilter(timeFilters.year)} label={"1y"} active={filter === timeFilters.year} className="rounded-full !py-1" />
+          </div>
         </div>
       </div>
 

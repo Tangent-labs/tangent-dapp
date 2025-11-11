@@ -410,10 +410,6 @@ export const computeLiquidationPrice = (
 
   const ltRaw = marketData.constants.liquidationThreshold ?? 0n
 
-  const priceLiq = (debt: bigint, collat: bigint): bigint => {
-    if (debt <= 0n || collat <= 0n) return 0n
-    return (debt * 10n ** 18n) / (collat * (ltRaw / BigInt(1000n)))
-  }
-
-  return priceLiq(futureDebt, futureCollat || 1n)
+  if (futureDebt <= 0n || futureCollat <= 0n) return 0n
+  return (futureDebt * 10n ** 18n) / ((futureCollat || 1n) * (ltRaw / BigInt(1000n)))
 }

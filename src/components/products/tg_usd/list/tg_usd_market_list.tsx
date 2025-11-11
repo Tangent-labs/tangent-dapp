@@ -121,7 +121,7 @@ export default function USGMarketList() {
       </div>
 
       <div className="mb-4 mt-6 hidden items-end justify-between xl:flex">
-        <div className="flex flex-col items-start justify-between">
+        <div className="flex flex-col items-start justify-between gap-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <IndicatorCards
@@ -163,7 +163,7 @@ export default function USGMarketList() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-end justify-end gap-2">
+        <div className="flex flex-col items-end justify-end gap-3">
           <div className="flex items-center gap-2">
             <IndicatorCards
               className={cn(globalData.globalTvl === "-" ? "shimmer" : "")}

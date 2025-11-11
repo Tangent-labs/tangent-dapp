@@ -115,7 +115,7 @@ export default function MenuBarFeature() {
               </span>
               <span className="flex items-center justify-center gap-1 px-2">
                 <TokenImage token="sUSG" size={20} />
-                {sUSGCurrentAPY}% APY
+                {sUSGCurrentAPY.toFixed(2)}% APY
               </span>
             </div>
 

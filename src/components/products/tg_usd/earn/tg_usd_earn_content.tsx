@@ -33,7 +33,7 @@ export const USGEarnContent = () => {
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Earn</span>
-            <p className="font-gilroy text-[15px]">
+            <p className="text-[15px]">
               Use USG and sUSG in DeFi protocols to earn yield. Below is the list of known integrations accross DEXs, yield boosters, lending markets, and yield
               trading markets.
             </p>

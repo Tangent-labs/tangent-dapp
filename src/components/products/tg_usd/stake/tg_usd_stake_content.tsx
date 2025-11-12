@@ -104,7 +104,7 @@ export default function USGStakeContent() {
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Savings account</span>
-            <p className="font-gilroy text-[15px]">
+            <p className="text-[15px]">
               Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi. Learn more
             </p>
           </div>

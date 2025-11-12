@@ -40,7 +40,7 @@ const ClaimRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
 }
 
 export default function USGClaimContent() {
-  const { displayRows, onClickClaim, marketsToClaim, customSort, onClickClaimAll, USGsUSGMetrics } = useUSGClaimContext()
+  const { displayRows, onClickClaim, marketsToClaim, customSort, onClickClaimAll, USGsUSGMetrics, totalDeposited, totalClaimable } = useUSGClaimContext()
 
   const { isWellConnected, connect } = useWalletConnexionContext()
 
@@ -53,7 +53,7 @@ export default function USGClaimContent() {
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Claim</span>
-            <p className="font-gilroy text-[15px]">Claim protocol-generated CRV and CVX rewards associated with your active streaming pool positions.</p>
+            <p className="text-[15px]">Claim protocol-generated CRV and CVX rewards associated with your active streaming pool positions.</p>
           </div>
         </div>
 
@@ -88,11 +88,11 @@ export default function USGClaimContent() {
                 indicators={[
                   {
                     title: "Total deposited",
-                    value: `${formatDollar(displayRows.reduce((sum, token) => sum + parseFloat(token.totalDepositedValue), 0).toFixed(0))}`,
+                    value: totalDeposited,
                   },
                   {
                     title: "Total claimable",
-                    value: `${formatDollar(displayRows.reduce((sum, token) => sum + parseFloat(token.totalClaimableValue), 0).toFixed(0))}`,
+                    value: totalClaimable,
                   },
                 ]}
               />

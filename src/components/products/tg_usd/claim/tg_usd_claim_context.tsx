@@ -8,6 +8,7 @@ import { ClaimableMarket, ClaimData, ClaimerInfo, USGStakingInfo } from "../tg_u
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { computeAndReturnPrices, doClaim, getTgUsdClaimOnChainData, transformClaimOnChainData } from "./tg_usd_claim_controller"
+import { formatDollar } from "@/lib/number_formatter"
 
 type USGClaimContextProps = {
   children: ReactNode
@@ -23,6 +24,9 @@ type USGClaimContextValues = {
   customSort: (arg: ListState) => void
   onClickClaimAll: () => void
   USGsUSGMetrics: USGStakingInfo | undefined
+
+  totalDeposited: string
+  totalClaimable: string
 }
 
 export const USGClaimContext = createContext<USGClaimContextValues | undefined>(undefined)
@@ -121,6 +125,13 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
     }
   }
 
+  const totals = useMemo(() => {
+    return {
+      totalDeposited: formatDollar(displayRows.reduce((sum, token) => sum + parseFloat(token.totalDepositedValue), 0).toFixed(0)),
+      totalClaimable: formatDollar(displayRows.reduce((sum, token) => sum + parseFloat(token.totalClaimableValue), 0).toFixed(0)),
+    }
+  }, [displayRows])
+
   const contextValue: USGClaimContextValues = {
     displayRows,
     actionClaim,
@@ -131,6 +142,8 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
     customSort,
     onClickClaimAll,
     USGsUSGMetrics,
+    totalDeposited: totals.totalDeposited,
+    totalClaimable: totals.totalClaimable,
   }
 
   return <USGClaimContext.Provider value={contextValue}>{children}</USGClaimContext.Provider>

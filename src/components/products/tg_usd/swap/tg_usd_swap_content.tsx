@@ -113,7 +113,7 @@ export default function USGSwapContent() {
 
           <div className="flex flex-col items-start justify-center gap-3 pr-6">
             <span className="text-5xl font-semibold">Swap</span>
-            <p className="font-gilroy text-[15px]">
+            <p className="text-[15px]">
               Swap any asset for USG and other Tangent&apos;s assets, including Curve LPs and Wrapped Tangent Stablecoins. Learn more
             </p>
           </div>

@@ -38,7 +38,7 @@ export default function USGMarketList() {
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">USG</span>
-            <p className="font-gilroy text-[15px]">
+            <p className="text-[15px]">
               Borrow USG against accepted LP tokens. Tangent features two kinds of markets.
               <span className="inline-block cursor-pointer underline hover:text-white/40">Learn more</span>
             </p>

@@ -28,7 +28,7 @@ export default function UsgTasksContent() {
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Tasks</span>
-            <p className="font-gilroy text-[15px]">
+            <p className="text-[15px]">
               Borrow USG, provide liquidity, and vote for USG and sUSG pools to earn points. Points will be convertible for TAN tokens once the campaign ends.
             </p>
           </div>

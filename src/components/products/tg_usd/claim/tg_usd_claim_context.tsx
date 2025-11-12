@@ -1,9 +1,10 @@
 "use client"
 
 import { Address, zeroAddress } from "viem"
+import { useUSGContext } from "../tg_usd_context"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { AssetDataPriced, ListState } from "@/types"
-import { ClaimableMarket, ClaimData, ClaimerInfo } from "../tg_usd_type"
+import { ClaimableMarket, ClaimData, ClaimerInfo, USGStakingInfo } from "../tg_usd_type"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { computeAndReturnPrices, doClaim, getTgUsdClaimOnChainData, transformClaimOnChainData } from "./tg_usd_claim_controller"
@@ -21,11 +22,14 @@ type USGClaimContextValues = {
   marketsToClaim: ClaimableMarket[]
   customSort: (arg: ListState) => void
   onClickClaimAll: () => void
+  USGsUSGMetrics: USGStakingInfo | undefined
 }
 
 export const USGClaimContext = createContext<USGClaimContextValues | undefined>(undefined)
 
 export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
+  const { USGsUSGMetrics } = useUSGContext()
+
   const { getWalletClient, currentAddress } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -126,6 +130,7 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
     isLoading,
     customSort,
     onClickClaimAll,
+    USGsUSGMetrics,
   }
 
   return <USGClaimContext.Provider value={contextValue}>{children}</USGClaimContext.Provider>

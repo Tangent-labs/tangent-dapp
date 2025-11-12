@@ -1,9 +1,10 @@
 "use client"
 
 import { Address } from "viem"
+import { useUSGContext } from "../tg_usd_context"
 import { AssetDataPriced, ListState } from "@/types"
-import { HarvestableMarket, HarvesterInfo, HarvesterInfoDisplay } from "../tg_usd_type"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { HarvestableMarket, HarvesterInfo, HarvesterInfoDisplay, USGStakingInfo } from "../tg_usd_type"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { computeAndReturnPrices, doHarvest, getTgUsdHarvestOnChainData, transformHarvestOnChainData } from "./tg_usd_harvest_controller"
 
@@ -20,17 +21,23 @@ type USGHarvestContextValues = {
   marketsToHarvest: HarvestableMarket[]
   addToHarvestableMarkets: (rowData: HarvestableMarket) => void
   onClickHarvest: () => void
+  USGsUSGMetrics: USGStakingInfo | undefined
 }
 
 export const USGHarvestContext = createContext<USGHarvestContextValues | undefined>(undefined)
 
 export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [harvestInfo, setHarvestInfo] = useState<HarvesterInfo[] | undefined>()
-  const [rewardsInfo, setRewardsInfo] = useState<AssetDataPriced[]>()
-  const [marketsToHarvest, setMarketsToHarvest] = useState<HarvestableMarket[]>([])
+  const { USGsUSGMetrics } = useUSGContext()
 
   const { getWalletClient, currentAddress } = useWalletConnexionContext()
+
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const [harvestInfo, setHarvestInfo] = useState<HarvesterInfo[] | undefined>()
+
+  const [rewardsInfo, setRewardsInfo] = useState<AssetDataPriced[]>()
+
+  const [marketsToHarvest, setMarketsToHarvest] = useState<HarvestableMarket[]>([])
 
   useEffect(() => {
     setIsLoading(true)
@@ -122,6 +129,7 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
     marketsToHarvest,
     addToHarvestableMarkets,
     onClickHarvest,
+    USGsUSGMetrics,
   }
 
   return <USGHarvestContext.Provider value={contextValue}>{children}</USGHarvestContext.Provider>

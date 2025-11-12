@@ -11,7 +11,8 @@ const ROUTE_TO_FEATURE: Record<string, string> = {
   "tan/unlock": "Tan",
   "tan/claim": "Tan",
   "tan/merge": "Tan",
-  harvet: "Harvest",
+  harvest: "Harvest",
+  claim: "Claim",
 }
 
 export const mapRouteToFeature = (route: string): string => {

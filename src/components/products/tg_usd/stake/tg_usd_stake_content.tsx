@@ -138,7 +138,7 @@ export default function USGStakeContent() {
         </div>
       </div>
 
-      <div className="my-8 flex w-full flex-col items-start justify-start gap-4 lg:flex-row">
+      <div className="mt-2 flex w-full flex-col items-start justify-start gap-4 md:mt-8 lg:flex-row">
         <div className="flex w-full flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] lg:w-5/12">
           <div className="flex w-full items-center justify-between gap-4">
             <ButtonTab

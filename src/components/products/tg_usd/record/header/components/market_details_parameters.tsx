@@ -7,7 +7,7 @@ import RecordPageHeader from "@/components/design_system/structure/record_page_h
 export default function MarketDetailsParameters() {
   const { marketAprs } = useUSGContext()
 
-  const { marketDisplayData, marketData } = useUSGRecordContext()
+  const { marketDisplayData, marketData, computedBorrowRate } = useUSGRecordContext()
 
   const currentMarketApr = marketAprs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())
 
@@ -20,12 +20,12 @@ export default function MarketDetailsParameters() {
             title: "Borrow rate",
             value: (
               <div className="flex items-center gap-2">
-                <span>{((Math.exp(marketDisplayData.borrowRateCurrent) - 1) * 100).toFixed(2)}%</span>
+                <span>{computedBorrowRate.current}</span>
               </div>
             ),
             subValue: (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-subtitle"> Proj:</span> <span>{((Math.exp(marketDisplayData.borrowRateNext) - 1) * 100).toFixed(2)} %</span>
+                <span className="text-sm text-subtitle"> Proj:</span> <span> {computedBorrowRate.next} </span>
               </div>
             ),
             indicator: "Interest rate that borrowers pay on their outstanding debt",

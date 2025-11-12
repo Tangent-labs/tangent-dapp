@@ -107,6 +107,8 @@ type USGRecordContextValues = {
   currentConvexTVL: bigint
 
   displayAPRVariation: boolean
+
+  computedBorrowRate: { current: string; next: string }
 }
 
 const LEVERAGE_TRESHOLD = 0.989
@@ -400,6 +402,13 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     }
   }, [collateralInfo?.address, displayAPRVariation])
 
+  const computedBorrowRate = useMemo(() => {
+    return {
+      current: `${((Math.exp(marketDisplayData.borrowRateCurrent) - 1) * 100).toFixed(2)}%`,
+      next: `${((Math.exp(marketDisplayData.borrowRateNext) - 1) * 100).toFixed(2)}%`,
+    }
+  }, [marketDisplayData])
+
   const contextValue: USGRecordContextValues = {
     isLoading,
     collateral,
@@ -450,6 +459,8 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     currentConvexTVL,
 
     displayAPRVariation,
+
+    computedBorrowRate,
   }
 
   return <USGRecordContext.Provider value={contextValue}>{children}</USGRecordContext.Provider>

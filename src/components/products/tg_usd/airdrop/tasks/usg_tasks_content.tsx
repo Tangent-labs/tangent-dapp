@@ -21,20 +21,20 @@ export default function UsgTasksContent() {
 
   return (
     <div className="flex w-full flex-col items-center justify-between">
-      <div className="flex w-full items-start justify-between gap-4">
-        <div className="usg-header hidden w-1/2 lg:flex">
+      <div className="flex w-full items-stretch justify-between gap-6">
+        <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
             <Image height={320} width={320} className="an-logo" src="/medias/product_tgusd.png" alt="token" />
           </div>
-          <div className="flex flex-col items-start justify-center gap-3">
-            <span className="text-[48px] font-semibold">Tasks</span>
-            <p>
+          <div className="flex flex-col items-start justify-center gap-3 px-6">
+            <span className="text-4xl font-semibold">Tasks</span>
+            <p className="text-[15px]">
               Borrow USG, provide liquidity, and vote for USG and sUSG pools to earn points. Points will be convertible for TAN tokens once the campaign ends.
             </p>
           </div>
         </div>
 
-        <div className="flex w-full flex-col items-stretch justify-between gap-6 lg:w-1/2">
+        <div className="flex h-auto w-full flex-col items-center gap-3 xl:w-1/2">
           <div className="flex h-full w-full flex-col items-start justify-start gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
             <div
               style={{ fontSize: "20px", lineHeight: "20px" }}

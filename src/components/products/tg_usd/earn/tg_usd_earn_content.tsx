@@ -26,12 +26,12 @@ export const USGEarnContent = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-6">
-        <div className="usg-header hidden w-7/12 xl:flex">
+      <div className="flex items-stretch justify-between gap-6">
+        <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
             <Image height={160} width={160} src="/medias/tokens/tgUSD_header.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
-          <div className="flex flex-col items-start justify-center gap-3">
+          <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Earn</span>
             <p className="text-[15px]">
               Use USG and sUSG in DeFi protocols to earn yield. Below is the list of known integrations accross DEXs, yield boosters, lending markets, and yield
@@ -40,22 +40,22 @@ export const USGEarnContent = () => {
           </div>
         </div>
 
-        <div className="flex h-full w-full flex-col items-center gap-4 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] xl:w-fit">
+        <div className="hidden h-auto w-full flex-col items-center gap-3 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] md:flex xl:w-1/2">
           <div
             style={{ fontSize: "20px", lineHeight: "20px" }}
-            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !font-semibold italic"
+            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
           >
             Points campaign
             <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
           </div>
 
           <div className="mt-auto flex w-full items-center justify-center gap-3 p-3">
-            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px] xl:min-w-48">
+            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 xl:min-w-48">
               <span className="text-xs text-subtitle">USG Balance</span>
               <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)}</span>
             </div>
 
-            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px] xl:min-w-48">
+            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 xl:min-w-48">
               <span className="text-xs text-subtitle">sUSG Balance</span>
               <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)}</span>
             </div>

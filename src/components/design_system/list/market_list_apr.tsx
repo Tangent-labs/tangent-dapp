@@ -57,7 +57,7 @@ const MarketListAPR = ({ currentAPRDetails, apr, projectedApr, className = "" }:
         </span>
       )}
 
-      <span className="hidden text-xs md:flex">Up to 150.35% at x10</span>
+      {apr && <span className="hidden text-xs md:flex">Up to ${(apr * 10).toFixed(2)} % at x10</span>}
     </div>
   )
 }

@@ -21,6 +21,7 @@ import {
   computeIR,
   computeVAPR,
   mapToTotalBorrow,
+  computeLiquidationPrice,
 } from "./tg_usd_record_controller"
 
 import { toast } from "react-toastify"
@@ -109,6 +110,8 @@ type USGRecordContextValues = {
   displayAPRVariation: boolean
 
   computedBorrowRate: { current: string; next: string }
+
+  liquidationPrice: bigint
 }
 
 const LEVERAGE_TRESHOLD = 0.989
@@ -409,6 +412,11 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     }
   }, [marketDisplayData])
 
+  const liquidationPrice = useMemo(() => {
+    if (marketData) return computeLiquidationPrice(marketData, currentAmounts) * 100n
+    return 0n
+  }, [marketData, currentAmounts])
+
   const contextValue: USGRecordContextValues = {
     isLoading,
     collateral,
@@ -461,6 +469,8 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     displayAPRVariation,
 
     computedBorrowRate,
+
+    liquidationPrice,
   }
 
   return <USGRecordContext.Provider value={contextValue}>{children}</USGRecordContext.Provider>

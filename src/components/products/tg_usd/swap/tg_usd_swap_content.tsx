@@ -13,7 +13,7 @@ import BorderPanel from "@/components/design_system/structure/border_panel"
 import { BuySellInput } from "@/components/design_system/inputs/buy_sell_input"
 import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 type AssetSelectProps = {
   options: DepositReceiveAsset[]
@@ -106,10 +106,10 @@ export default function USGSwapContent() {
       <div className="flex items-stretch justify-between gap-6">
         <div className="relative hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="absolute -top-2 left-20 h-full min-h-24">
-            <Image height={140} width={140} src="/medias/tokens/swapLogo.png" alt="token" />
+            <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
 
-          <Image className="mr-24 mt-5" height={140} width={140} src="/medias/tokens/tgUSD_header.png" alt="token" />
+          <Image className="mr-24 mt-5" height={140} width={140} src="/medias/tokens/SUSG.png" alt="token" />
 
           <div className="flex flex-col items-start justify-center gap-3 pr-6">
             <span className="text-5xl font-semibold">Swap</span>

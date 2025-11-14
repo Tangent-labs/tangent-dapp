@@ -20,9 +20,10 @@ export default function RecordPageHeader({ apr, indicators }: RecordPageHeaderPr
   return (
     <>
       <RecordPageHeaderIndicator
-        title="APR"
+        title="vAPR"
         value={`${totalCurrentAPR ? `${totalCurrentAPR?.toFixed(2)}%` : "-"}`}
-        subValue={`Proj: ${totalProjectedAPR ? `${totalProjectedAPR?.toFixed(2)}%` : "-"}`}
+        subValue={<div className="flex items-center text-xs text-subtitle">{`Proj: ${totalProjectedAPR ? `${totalProjectedAPR?.toFixed(2)}%` : "-"}`}</div>}
+        indicator="vAPR of the collateral"
       />
 
       {indicators?.map((i, index) => (
@@ -44,19 +45,19 @@ export const RecordPageHeaderIndicator = ({ title, value, subValue, indicator, c
   return (
     <div
       className={cn(
-        `flex min-h-20 w-full max-w-32 flex-col items-center justify-center xl:max-w-none`,
+        `flex w-full max-w-32 flex-col items-center justify-center xl:max-w-none`,
         `${title === "LT" ? "" : "xl:border-r xl:border-[#3F3F3F]"}`,
-        `${title === "APR" ? "text-xl" : "text-[15px]"}`
+        `${title === "vAPR" ? "text-xl" : "text-[15px]"}`
       )}
     >
       <div className="flex items-center justify-center gap-1">
         {title}
-        <USGHoverCard iconClassName="h-auto w-[14px] text-white" title="">
+        <USGHoverCard iconClassName="h-auto w-[12px] text-white" title="">
           {indicator}
         </USGHoverCard>
       </div>
 
-      <span className={cn("text-xl font-semibold", className, title === "APR" ? "text-row-tonic" : "")}>{value}</span>
+      <span className={cn("text-xl font-semibold", className, title === "vAPR" ? "text-row-tonic" : "")}>{value}</span>
       <span className="text-xs text-subtitle">{subValue}</span>
     </div>
   )

@@ -8,6 +8,9 @@ import { StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../tg_usd_
 import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedUSG, getFormState } from "./tg_usd_stake_controller"
+import { convertRange } from "../../root/root_controller"
+import { useRootContext } from "../../root/root_context"
+import { getsUsgApyData } from "../client_api"
 
 type USGStakeContextProps = {
   children: ReactNode
@@ -29,22 +32,36 @@ type USGStakeContextValues = {
   computeProjectedValue: number
   formState: FormState
   stakePercentage: number
+
   setStakePercentage: (arg: number) => void
   USGsUSGMetrics: USGStakingInfo | undefined
+
+  sUSGSelectedTab: string
+  setsUSGSelectedTab: (arg: string) => void
+
+  apyHistory: Array<{ date: number; uv: number }>
+
+  fetchsUSGHistoryAPY: (s: string) => Promise<void>
 }
 
 export const USGStakeContext = createContext<USGStakeContextValues | undefined>(undefined)
 
 export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
+  const { getCachedCurrentBlock } = useRootContext()
+
   const { getWalletClient } = useWalletConnexionContext()
 
   const { loadUSGsUSGMetrics, USGsUSGMetrics } = useUSGContext()
 
   const [currentFeature, setCurrentFeature] = useState<"stake" | "unstake">("stake")
 
+  const [sUSGSelectedTab, setsUSGSelectedTab] = useState<string>("1m")
+
   const [weiValue, setWeiValue] = useState<bigint | undefined>()
 
   const [expected, setExpected] = useState<bigint | undefined>()
+
+  const [apyHistory, setAPYHistory] = useState<Array<{ date: number; uv: number }>>([])
 
   const [stakePercentage, setStakePercentage] = useState<number>(0)
 
@@ -208,6 +225,24 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     setStakePercentage(0)
   }, [currentFeature])
 
+  const fetchsUSGHistoryAPY = async (range: string) => {
+    setsUSGSelectedTab(range)
+
+    const rangeInMilliseconds = convertRange(range)
+    const currentBlock = await getCachedCurrentBlock()
+    const toIso = Number(currentBlock.timestamp) * 1000
+    const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
+
+    const sUSGHistoryAPY = await getsUsgApyData(toIso, fromIso, USG_CONTRACT.USG)
+
+    const sUSGData = sUSGHistoryAPY.map((p) => ({
+      date: new Date(p.timestamp).getTime(),
+      uv: Number(p.amount),
+    }))
+
+    setAPYHistory(sUSGData)
+  }
+
   const contextValue: USGStakeContextValues = {
     actionStake,
     actionApprove,
@@ -226,6 +261,10 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     stakePercentage,
     setStakePercentage,
     USGsUSGMetrics,
+    sUSGSelectedTab,
+    setsUSGSelectedTab,
+    apyHistory,
+    fetchsUSGHistoryAPY,
   }
 
   return <USGStakeContext.Provider value={contextValue}>{children}</USGStakeContext.Provider>

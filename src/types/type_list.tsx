@@ -38,4 +38,6 @@ export type ListRowData = {
     raw?: number // Raw numerical value for calculations
   }[]
   userHasDeposited: boolean
+  protocol: string
+  type: string
 }

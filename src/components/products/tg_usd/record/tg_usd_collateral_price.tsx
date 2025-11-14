@@ -2,8 +2,21 @@
 
 import { cn } from "@/lib/utils"
 import { useEffect, useRef } from "react"
-import { formatDollar } from "@/lib/number_formatter"
-import { CandlestickSeries, CandlestickSeriesOptions, createChart, DeepPartial, IChartApi, ISeriesApi, Time, TimeChartOptions } from "lightweight-charts"
+import { formatBigInt, formatDollar } from "@/lib/number_formatter"
+import {
+  CandlestickSeries,
+  CandlestickSeriesOptions,
+  createChart,
+  DeepPartial,
+  IChartApi,
+  ISeriesApi,
+  IPriceLine,
+  LineStyle,
+  PriceLineOptions,
+  Time,
+  TimeChartOptions,
+  CreatePriceLineOptions,
+} from "lightweight-charts"
 
 type GraphData = {
   chain: string
@@ -14,12 +27,14 @@ type GraphData = {
 type CollateralGraphParams = {
   graphData: GraphData
   isPending: boolean
+  liquidationPrice: bigint
 }
 
-export const CollateralGraph = ({ graphData, isPending }: CollateralGraphParams) => {
+export const CollateralGraph = ({ graphData, isPending, liquidationPrice }: CollateralGraphParams) => {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<IChartApi | null>(null)
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null)
+  const priceLineRef = useRef<IPriceLine | null>(null)
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -63,15 +78,33 @@ export const CollateralGraph = ({ graphData, isPending }: CollateralGraphParams)
     }
 
     const series = chart.addSeries(CandlestickSeries, seriesOptions)
-
     seriesRef.current = series
   }, [])
 
   useEffect(() => {
-    if (!seriesRef.current || !chartRef.current || !graphData?.data?.length) return
-
+    if (!seriesRef.current || !graphData?.data?.length) return
     seriesRef.current.setData(graphData.data)
   }, [graphData])
+
+  useEffect(() => {
+    const series = seriesRef.current
+    if (!series) return
+
+    const baseOptions: Partial<PriceLineOptions> = {
+      price: Number(formatBigInt(liquidationPrice, 18, 3)),
+      color: "rgba(239, 83, 80, 0.7)",
+      lineWidth: 1,
+      lineStyle: LineStyle.Dotted,
+      axisLabelVisible: true,
+      title: "Liquidation",
+    }
+
+    if (!priceLineRef.current) {
+      priceLineRef.current = series.createPriceLine(baseOptions as CreatePriceLineOptions)
+    } else {
+      priceLineRef.current.applyOptions(baseOptions)
+    }
+  }, [liquidationPrice])
 
   return (
     <div ref={containerRef} className={cn("relative flex min-h-80 w-full rounded-[10px] bg-[#0a0a0a] ring-1 ring-white/5", isPending ? "animate-pulse" : "")} />

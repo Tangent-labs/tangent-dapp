@@ -4,13 +4,18 @@ import { useUSGRecordContext } from "./tg_usd_record_context"
 import Title from "@/components/design_system/structure/title"
 import Divider from "@/components/design_system/structure/divider"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
+import { formatBigInt } from "@/lib/number_formatter"
 
 export default function USGLoanDetail() {
-  const { marketDisplayData, futureMarketDisplayData } = useUSGRecordContext()
+  const { marketDisplayData, futureMarketDisplayData, liquidationPrice } = useUSGRecordContext()
 
   return (
     <div className="mb-2 flex flex-col rounded-[10px] bg-overlay-panel px-3 py-2 backdrop-blur-[60px]">
-      <Title label={"Loan details"} size={"normal"} />
+      <div className="flex w-full items-center justify-between">
+        <Title label={"Loan details"} size={"normal"} />
+
+        {!!liquidationPrice && <div className="font-gilroy text-tonic"> Liquidation Price : ${formatBigInt(liquidationPrice, 18, 3)} </div>}
+      </div>{" "}
       <Divider />
       <div className="flex flex-wrap gap-2">
         <EvolutionBox

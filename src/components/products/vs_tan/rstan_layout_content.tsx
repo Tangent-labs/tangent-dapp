@@ -60,28 +60,28 @@ export const VsTanLayoutContent = ({
 
   return (
     <>
-      <div className="mb-3 flex w-full items-center justify-between gap-6">
-        <div className="usg-header hidden w-7/12 xl:flex">
+      <div className="flex items-stretch justify-between gap-6">
+        <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
             <Image height={360} width={360} src={`/medias/tokens/vsTAN.png`} alt="token" />
           </div>
-          <div className="ml-6 flex flex-col items-start justify-between gap-3">
+          <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="mt-1 text-5xl font-semibold">Lock TAN</span>
 
-            <span className="text-[15px]">
+            <span className="text-xs">
               Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT
               stable pool & CVX stable pool).
             </span>
-            <span className="text-[15px]">
+            <span className="text-xs">
               Rewards are distributed weekly, at the beginning of each epoch. Staking positions are represented by NFTs. Learn more
             </span>
           </div>
         </div>
 
-        <div className="flex h-full w-full flex-col items-center gap-8 rounded-[10px] xl:w-5/12">
+        <div className="hidden h-auto w-full flex-col items-center justify-between gap-3 md:flex xl:w-1/2">
           <div
             style={{ fontSize: "20px", lineHeight: "20px" }}
-            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !font-semibold italic"
+            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
           >
             Points campaign
             <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
@@ -108,7 +108,7 @@ export const VsTanLayoutContent = ({
         </div>
       </div>
 
-      <div className="mb-4 flex w-full flex-col gap-4 xl:flex-row">
+      <div className="my-4 flex w-full flex-col gap-4 xl:flex-row">
         <div className="flex w-full flex-col items-center justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
           <div className="hidden w-full items-center justify-between gap-2 md:flex">
             <ButtonTab label="Lock" active={pathname === "/tan/lock"} onClick={() => onTabClick("lock")} className="h-8! flex w-full justify-center" />

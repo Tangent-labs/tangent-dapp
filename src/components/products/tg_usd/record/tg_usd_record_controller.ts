@@ -371,3 +371,40 @@ export const computeAprVariation = (marketAprs: MarketAPR[], currentConvexTVL: b
 
   return result
 }
+
+/**
+ * Computes the liquidation price in USD for the given market
+ *
+ */
+export const computeLiquidationPrice = (
+  marketData: MarketDetailData,
+  amounts?: {
+    depositWeiValue?: bigint
+    withdrawWeiValue?: bigint
+    zapValue?: bigint
+    liquidateValue?: bigint
+    borrowWeiValue?: bigint
+    repayWeiValue?: bigint
+  }
+): bigint => {
+  const currentAmounts = {
+    depositWeiValue: 0n,
+    withdrawWeiValue: 0n,
+    zapValue: 0n,
+    liquidateValue: 0n,
+    borrowWeiValue: 0n,
+    repayWeiValue: 0n,
+    ...(amounts || {}),
+  }
+
+  const futureDebt = marketData.debtInfos.userDebt + currentAmounts?.borrowWeiValue - currentAmounts?.repayWeiValue
+
+  const futureCollat = !!BigInt(currentAmounts?.zapValue)
+    ? marketData.collateralInfos.positionCollateralAmount + BigInt(currentAmounts.zapValue) - currentAmounts?.withdrawWeiValue - currentAmounts?.liquidateValue
+    : marketData.collateralInfos.positionCollateralAmount + currentAmounts?.depositWeiValue - currentAmounts?.withdrawWeiValue - currentAmounts?.liquidateValue
+
+  const ltRaw = marketData.constants.liquidationThreshold
+
+  if (futureDebt <= 0n || futureCollat <= 0n) return 0n
+  return (futureDebt * 10n ** 18n) / ((futureCollat || 1n) * (ltRaw / BigInt(1000n)))
+}

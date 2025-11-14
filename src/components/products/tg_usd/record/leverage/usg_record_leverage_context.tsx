@@ -476,17 +476,19 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     }
   }, [depositAssetInfo])
 
-  const updateBorrowWeiValue = async (value: bigint) => {
-    setIsDepositLoading(true)
-    getQuote(value, currentAddress!, marketInfo?.collatAddress, USG_CONTRACT.USG, curveRoutes)
-      .then(({ quote }) => {
-        setLeveragedCollateralQuote(quote)
-        setIsDepositLoading(false)
-        setBorrowWeiValue(value)
-      })
-      .catch(() => {
-        toast.error(ToastComponent, { data: { type: "Error", content: "USG to Collateral quote failed." } })
-      })
+  const updateBorrowWeiValue = async (value: bigint | undefined) => {
+    if (value) {
+      setIsDepositLoading(true)
+      getQuote(value, currentAddress!, marketInfo?.collatAddress, USG_CONTRACT.USG, curveRoutes)
+        .then(({ quote }) => {
+          setLeveragedCollateralQuote(quote)
+          setIsDepositLoading(false)
+          setBorrowWeiValue(value)
+        })
+        .catch(() => {
+          toast.error(ToastComponent, { data: { type: "Error", content: "USG to Collateral quote failed." } })
+        })
+    }
   }
 
   useEffect(() => {

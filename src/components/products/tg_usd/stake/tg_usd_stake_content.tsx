@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { ExistingAsset, SelectOption } from "@/types"
-import { ForecastGraph } from "./tg_usd_staking_forecast"
 import { useRootContext } from "../../root/root_context"
 import { useUSGStakeContext } from "./tg_usd_stake_context"
 import { computeProjection } from "./tg_usd_stake_controller"
@@ -15,10 +14,10 @@ import FormButtons from "@/components/design_system/form/form_actions"
 import InputSelect from "@/components/design_system/inputs/input_select"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
-import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
+import PerformanceHistoryPanel from "./components/PerformanceHistoryPanel"
 
 export default function USGStakeContent() {
   const {
@@ -28,6 +27,7 @@ export default function USGStakeContent() {
     actionApprove,
     setStakePercentage,
     setWeiValue,
+    fetchsUSGHistoryAPY,
     currentFeature,
     depositAssetOptions,
     currentAssetInfo,
@@ -38,6 +38,8 @@ export default function USGStakeContent() {
     computeProjectedValue,
     stakePercentage,
     USGsUSGMetrics,
+    sUSGSelectedTab,
+    apyHistory,
   } = useUSGStakeContext()
 
   const { sUSGCurrentAPY } = useRootContext()
@@ -119,7 +121,7 @@ export default function USGStakeContent() {
             <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
           </div>
 
-          <div className={cn("flex w-full items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-3", !!USGsUSGMetrics ? "" : "shimmer")}>
+          <div className={cn("flex w-full items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2", !!USGsUSGMetrics ? "" : "shimmer")}>
             <TokenImage token="sUSG" size={48} />
 
             <div className="flex flex-col items-center justify-center font-semibold">
@@ -132,13 +134,13 @@ export default function USGStakeContent() {
             </div>
             <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-1">
               <span className="text-black">APY</span>
-              <span className="text-lg font-semibold">{sUSGCurrentAPY}%</span>
+              <span className="text-lg font-semibold">{sUSGCurrentAPY.toFixed(2)}%</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mt-2 flex w-full flex-col items-start justify-start gap-4 md:mt-8 lg:flex-row">
+      <div className="my-8 flex w-full flex-col items-stretch justify-start gap-4 lg:flex-row">
         <div className="flex w-full flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] lg:w-5/12">
           <div className="flex w-full items-center justify-between gap-4">
             <ButtonTab
@@ -192,39 +194,18 @@ export default function USGStakeContent() {
             labelProcess={currentFeature === "stake" ? "Deposit & Stake" : "Unstake"}
           />
         </div>
-        <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px] lg:w-7/12">
-          <span className="text-2xl font-semibold">Performance</span>
 
-          <Divider className="h-1 w-full"></Divider>
-
-          <ForecastGraph
-            initialInvestment={Number(formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18))}
-            apr={sUSGCurrentAPY}
-            additionalLiquidity={currentFeature === "stake" ? (weiValue ? Number(formatUnits(weiValue!, 18)) : 0) : 0}
-          ></ForecastGraph>
-
-          <div className="flex w-full flex-col items-center justify-between gap-2 sm:flex-row">
-            <EvolutionBox
-              className="w-full"
-              originalValue={formatNumber(Number(formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18)), 0)}
-              label="sUSG balance"
-              newValue={formatNumber(computeProjectedValue, 0)}
-            />
-
-            <EvolutionBox
-              className="w-full"
-              originalValue={computeProjection(USGsUSGMetrics!, 1 / 12, 15)}
-              label="30 days projection"
-              newValue={computeProjection(USGsUSGMetrics!, 1 / 12, 15, weiValue)}
-            />
-            <EvolutionBox
-              className="w-full"
-              originalValue={computeProjection(USGsUSGMetrics!, 1, 15)}
-              label="1 year projection"
-              newValue={computeProjection(USGsUSGMetrics!, 1, 15, weiValue)}
-            />
-          </div>
-        </div>
+        <PerformanceHistoryPanel
+          currentFeature={currentFeature}
+          USGsUSGMetrics={USGsUSGMetrics!}
+          computeProjection={computeProjection}
+          weiValue={weiValue || 0n}
+          computeProjectedValue={computeProjectedValue}
+          sUSGSelectedTab={sUSGSelectedTab}
+          fetchsUSGHistoryAPY={fetchsUSGHistoryAPY}
+          apyHistory={apyHistory}
+          sUSGCurrentAPY={sUSGCurrentAPY}
+        ></PerformanceHistoryPanel>
       </div>
     </>
   )

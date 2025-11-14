@@ -24,7 +24,7 @@ export default function UsgTasksContent() {
       <div className="flex w-full items-stretch justify-between gap-6">
         <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
-            <Image height={320} width={320} className="an-logo" src="/medias/product_tgusd.png" alt="token" />
+            <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Tasks</span>
@@ -48,8 +48,7 @@ export default function UsgTasksContent() {
           <div className="flex w-full flex-col items-center justify-between gap-4 md:flex-row">
             <div className="relative flex w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
               <div className="absolute -top-2 left-0 flex w-full">
-                <div className="mx-4 flex w-full items-center justify-between rounded-full pl-3">
-                  <div className="text-xs italic">Boost x1.1</div>
+                <div className="mx-4 flex w-full items-center justify-end rounded-full pl-3">
                   <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Vote</div>
                 </div>
               </div>
@@ -62,8 +61,7 @@ export default function UsgTasksContent() {
 
             <div className="relative flex w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
               <div className="absolute -top-2 left-0 flex w-full">
-                <div className="mx-4 flex w-full items-center justify-between rounded-full pl-3">
-                  <div className="text-xs italic">Boost x1.5</div>
+                <div className="mx-4 flex w-full items-center justify-end rounded-full pl-3">
                   <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Liquidity</div>
                 </div>
               </div>

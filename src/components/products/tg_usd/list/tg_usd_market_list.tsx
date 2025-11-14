@@ -6,17 +6,18 @@ import { formatUnits } from "viem"
 import { useRouter } from "next/navigation"
 import { ExistingAsset, ListState } from "@/types"
 import { formatDollar } from "@/lib/number_formatter"
-import { tgUsdListHeaders } from "./tg_usd_market_controller"
 import ListRow from "@/components/design_system/list/list_row"
 import ListAsset from "@/components/design_system/list/list_asset"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import ListHeader from "@/components/design_system/list/list_header"
 import { useUSGMaketListContext } from "./tg_usd_market_list_context"
+import InputSelect from "@/components/design_system/inputs/input_select"
 import InputSearch from "@/components/design_system/inputs/input_search"
 import TokenImage from "@/components/design_system/structure/token_image"
 import MarketListAPR from "@/components/design_system/list/market_list_apr"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import { marketOptions, protocolOptions, tgUsdListHeaders } from "./tg_usd_market_controller"
 
 const listeState: ListState = {
   search: undefined,
@@ -26,8 +27,13 @@ const listeState: ListState = {
   },
 }
 
+const MarketListSelectTemplate = (option: { label: string; value: string }) => {
+  return <span className="flex w-full cursor-pointer items-center rounded-[10px] px-3 text-sm font-semibold text-white hover:bg-white/10">{option?.label}</span>
+}
+
 export default function USGMarketList() {
-  const { displayRows, globalData, searchValue, setSearchValue, userData, sortMarketList } = useUSGMaketListContext()
+  const { displayRows, globalData, searchValue, setSearchValue, userData, sortMarketList, marketType, protocol, setMarketType, setProtocol } =
+    useUSGMaketListContext()
 
   return (
     <>
@@ -68,7 +74,7 @@ export default function USGMarketList() {
         </div>
       </div>
 
-      <div className="mt-3 flex w-full items-end justify-between xl:hidden">
+      <div className="mt-3 flex w-full flex-col items-end justify-between xl:hidden">
         <div className="flex w-full items-end justify-start gap-2">
           <div className="flex w-full flex-col items-center justify-center">
             <div className="mb-1 text-xs text-subtitle"> Search </div>
@@ -83,14 +89,39 @@ export default function USGMarketList() {
           <ButtonTab className="h-10 px-4" active={true} label="All"></ButtonTab>
           <ButtonTab className="h-10 px-4" active={false} label="Deposits"></ButtonTab>
         </div>
+
+        <div className="mt-2 flex w-full items-center justify-between gap-2">
+          <div className="flex w-full flex-col items-center justify-center md:w-fit">
+            <div className="mb-1 text-xs text-subtitle"> Type </div>
+            <InputSelect
+              className="w-full min-w-32"
+              template={MarketListSelectTemplate}
+              value={marketType || ""}
+              options={marketOptions}
+              onChange={(e) => setMarketType(e)}
+            />
+          </div>
+
+          <div className="flex w-full flex-col items-center justify-center md:w-fit">
+            <div className="mb-1 text-xs text-subtitle"> Protocol </div>
+
+            <InputSelect
+              className="w-full min-w-32"
+              template={MarketListSelectTemplate}
+              value={protocol || ""}
+              options={protocolOptions}
+              onChange={(e) => setProtocol(e)}
+            />
+          </div>
+        </div>
       </div>
 
-      <div className="mt-6 hidden items-start justify-between xl:flex">
-        <div className="flex flex-col items-start justify-between">
+      <div className="mb-4 mt-6 hidden items-end justify-between xl:flex">
+        <div className="flex flex-col items-stretch justify-between gap-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <IndicatorCards
-                className={cn(globalData.USGPrice === "-" ? "shimmer" : "")}
+                className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "gap-6")}
                 indicators={[
                   { title: "USG", value: formatDollar(globalData.USGPrice, 5) },
                   { title: "Supply", value: globalData.USGSupply },
@@ -99,7 +130,7 @@ export default function USGMarketList() {
                 <TokenImage token={"USG" as ExistingAsset} className="h-8 w-8" size={32} />
               </IndicatorCards>
               <IndicatorCards
-                className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "")}
+                className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "gap-6")}
                 indicators={[
                   { title: "sUSG ", value: globalData.sUSGPrice },
                   { title: "Supply", value: globalData.sUSGSupply },
@@ -111,7 +142,7 @@ export default function USGMarketList() {
             </div>
           </div>
 
-          <div className="flex w-full items-end justify-between">
+          <div className="flex w-full items-stretch justify-between">
             <div className="flex w-full items-end justify-start gap-2">
               <div className="flex w-full flex-col items-center justify-center">
                 <div className="mb-1 text-xs text-subtitle"> Search </div>
@@ -128,13 +159,43 @@ export default function USGMarketList() {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <IndicatorCards className={cn(globalData.globalTvl === "-" ? "shimmer" : "")} indicators={[{ title: "Global TVL ", value: globalData.globalTvl }]} />
-          <IndicatorCards
-            className={cn(globalData.globalDebt === "-" ? "shimmer" : "")}
-            indicators={[{ title: "Global Debt ", value: globalData.globalDebt }]}
-          />
-          <IndicatorCards className={cn(globalData.globalCr === "-" ? "shimmer" : "")} indicators={[{ title: "Global CR ", value: globalData.globalCr }]} />
+        <div className="flex flex-col items-stretch justify-end gap-3">
+          <div className="items-strech flex w-full gap-2">
+            <IndicatorCards
+              className={cn(globalData.globalTvl === "-" ? "shimmer" : "")}
+              indicators={[{ title: "Global TVL ", value: globalData.globalTvl }]}
+            />
+            <IndicatorCards
+              className={cn(globalData.globalDebt === "-" ? "shimmer" : "")}
+              indicators={[{ title: "Global Debt ", value: globalData.globalDebt }]}
+            />
+            <IndicatorCards className={cn(globalData.globalCr === "-" ? "shimmer" : "")} indicators={[{ title: "Global CR ", value: globalData.globalCr }]} />
+          </div>
+
+          <div className="flex w-full items-stretch justify-center gap-2">
+            <div className="flex w-full flex-col items-center justify-center md:w-fit">
+              <div className="mb-1 text-xs text-subtitle"> Type </div>
+              <InputSelect
+                className="w-full min-w-40"
+                template={MarketListSelectTemplate}
+                value={marketType || ""}
+                options={marketOptions}
+                onChange={(e) => setMarketType(e)}
+              />
+            </div>
+
+            <div className="flex w-full flex-col items-center justify-center md:w-fit">
+              <div className="mb-1 text-xs text-subtitle"> Protocol </div>
+
+              <InputSelect
+                className="w-full min-w-40"
+                template={MarketListSelectTemplate}
+                value={protocol || ""}
+                options={protocolOptions}
+                onChange={(e) => setProtocol(e)}
+              />
+            </div>
+          </div>
         </div>
       </div>
 

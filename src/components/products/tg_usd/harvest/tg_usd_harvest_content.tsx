@@ -44,7 +44,7 @@ export default function USGHarvestContent() {
       <div className="flex items-stretch justify-between gap-6">
         <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
-            <Image height={160} width={160} src="/medias/tokens/tgUSD_header.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+            <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Harvest</span>

@@ -12,16 +12,7 @@ interface InputSelectProps<T extends SelectOption | SelectOptionAmount> {
   className?: string
   value?: string
   disabled?: boolean
-  template?: (option: T) => ReactNode // Template matches the type of options
-}
-
-export const InputSelectAmountTemplate = (option: SelectOptionAmount) => {
-  return (
-    <div className="flex items-center gap-1">
-      <span className="text-sm">{option.label}</span>
-      <span className="text-xs text-subtitle">{option.amountDisplay && `(${option.amountDisplay})`}</span>
-    </div>
-  )
+  template?: (option: T) => ReactNode
 }
 
 const InputSelect = <T extends SelectOption | SelectOptionAmount>({
@@ -37,7 +28,7 @@ const InputSelect = <T extends SelectOption | SelectOptionAmount>({
   return (
     <>
       <div className={`flex flex-col ${className}`}>
-        <div className="mb-1 flex justify-between text-xs font-semibold text-subtitle">{label}</div>
+        <div className="mb-1 flex w-full justify-between text-xs font-semibold text-subtitle">{label}</div>
 
         <Select disabled={disabled} value={value} onValueChange={(value) => onChange(value)}>
           <SelectTrigger disabled={disabled} className={className}>

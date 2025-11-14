@@ -81,8 +81,14 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
     totalProjectedAPR = Object.values(data?.projectedAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
   }
 
+  const protocol = (USGMarkets.find((m) => m.marketAddress === onChainRow?.marketAddress)?.marketType || "Curve") as string
+
+  const type = onChainRow?.constants.irParams.isHEC ? "HEC" : "LEC"
+
   return {
     token: data.collateral as ExistingAsset,
+    protocol,
+    type,
     name: data.collateral,
     address: onChainRow?.marketAddress as Address,
     apr: {
@@ -128,4 +134,33 @@ export const tgUsdListHeaders: ListHeaderData[] = [
   },
   { label: "TVL", key: "tvl", sort: "sort" },
   { label: "Borrowed", key: "borrowed", sort: null },
+]
+
+export const marketOptions = [
+  { label: "All", value: "All" },
+  { label: "HEC", value: "HEC" },
+  { label: "LEC", value: "LEC" },
+]
+
+export const protocolOptions = [
+  { label: "All", value: "All" },
+  { label: "Curve", value: "Curve" },
+  { label: "Convex", value: "Convex" },
+  { label: "Pendle", value: "Pendle" },
+]
+
+export const USGMarketModalListHeaders: ListHeaderData[] = [
+  { label: "LP", key: "lp", sort: null },
+  {
+    label: "APR",
+    key: "apr",
+    indicator: "vAPR of the collateral",
+    sort: "sort",
+  },
+  {
+    label: "Borrow Rate",
+    key: "borrowRate",
+    indicator: "Interest rate that borrowers pay on their outstanding debt.",
+    sort: "sort",
+  },
 ]

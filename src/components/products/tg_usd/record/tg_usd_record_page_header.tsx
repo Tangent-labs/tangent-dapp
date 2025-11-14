@@ -1,11 +1,10 @@
 "use client"
 
-import { useRouter } from "next/navigation"
-import { MarketMetadata } from "./market_metadata"
-import { useUSGRecordContext } from "./tg_usd_record_context"
-import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
+import { CollateralCard } from "./collateral_selection"
+import { useUSGRecordContext } from "./tg_usd_record_context"
 import IndicatorV2 from "@/components/design_system/structure/indicators_v2"
+import { useRouter } from "next/navigation"
 
 export default function USGRecordPageHeader() {
   const { collateralInfo, marketDisplayData, marketData } = useUSGRecordContext()
@@ -15,14 +14,7 @@ export default function USGRecordPageHeader() {
   return (
     <>
       <div className="flex flex-col justify-between xl:flex-row">
-        <div className="flex w-full items-center justify-between gap-4 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px] md:w-fit">
-          <div className="flex items-center gap-2">
-            <TokenImage className="w-8 md:w-16" token={collateralInfo.logo} size={64} />
-            <span className="text-sm font-semibold md:text-[24px]">{collateralInfo.symbol}</span>
-          </div>
-
-          <div className="flex items-center justify-between gap-2">{marketData && <MarketMetadata marketData={marketData}></MarketMetadata>}</div>
-        </div>
+        <CollateralCard collateralInfo={collateralInfo} marketData={marketData}></CollateralCard>
 
         <div className="mt-4 flex items-end gap-1 md:gap-4 xl:mt-0">
           <IndicatorV2 indicators={[{ title: "TVL", value: marketDisplayData.tvlDollar }]} />

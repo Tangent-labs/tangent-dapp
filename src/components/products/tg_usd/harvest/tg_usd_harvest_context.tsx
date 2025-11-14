@@ -31,7 +31,7 @@ export const USGHarvestContext = createContext<USGHarvestContextValues | undefin
 export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
   const { USGsUSGMetrics } = useUSGContext()
 
-  const { getWalletClient, currentAddress } = useWalletConnexionContext()
+  const { getWalletClient } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 

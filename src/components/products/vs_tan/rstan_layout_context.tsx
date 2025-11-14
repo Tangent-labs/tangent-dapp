@@ -2,7 +2,7 @@
 
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { doIncreaseLockTime, doTogglePermaLock, getVsTanData } from "./rstan_layout_controller"
-import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { BalanceAllowanceData, LockData, LockPosition } from "../tg_usd/tg_usd_type"
 import { getBalancesAndAllowances } from "../tg_usd/record/tg_usd_record_controller"
 import { Address, zeroAddress } from "viem"

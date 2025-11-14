@@ -13,7 +13,7 @@ import BorderPanel from "@/components/design_system/structure/border_panel"
 import { BuySellInput } from "@/components/design_system/inputs/buy_sell_input"
 import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 type AssetSelectProps = {
   options: DepositReceiveAsset[]

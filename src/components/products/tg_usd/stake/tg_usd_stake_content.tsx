@@ -15,7 +15,7 @@ import InputSelect from "@/components/design_system/inputs/input_select"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
 import PerformanceHistoryPanel from "./components/PerformanceHistoryPanel"
 

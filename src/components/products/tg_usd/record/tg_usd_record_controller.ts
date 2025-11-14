@@ -397,18 +397,13 @@ export const computeLiquidationPrice = (
     ...(amounts || {}),
   }
 
-  const futureDebt = (marketData.debtInfos.userDebt ?? 0n) + currentAmounts?.borrowWeiValue - currentAmounts?.repayWeiValue
-  const futureCollat = !!BigInt(currentAmounts?.zapValue)
-    ? (marketData.collateralInfos.positionCollateralAmount ?? 0n) +
-      BigInt(currentAmounts.zapValue) -
-      currentAmounts?.withdrawWeiValue -
-      currentAmounts?.liquidateValue
-    : (marketData.collateralInfos.positionCollateralAmount ?? 0n) +
-      currentAmounts?.depositWeiValue -
-      currentAmounts?.withdrawWeiValue -
-      currentAmounts?.liquidateValue
+  const futureDebt = marketData.debtInfos.userDebt + currentAmounts?.borrowWeiValue - currentAmounts?.repayWeiValue
 
-  const ltRaw = marketData.constants.liquidationThreshold ?? 0n
+  const futureCollat = !!BigInt(currentAmounts?.zapValue)
+    ? marketData.collateralInfos.positionCollateralAmount + BigInt(currentAmounts.zapValue) - currentAmounts?.withdrawWeiValue - currentAmounts?.liquidateValue
+    : marketData.collateralInfos.positionCollateralAmount + currentAmounts?.depositWeiValue - currentAmounts?.withdrawWeiValue - currentAmounts?.liquidateValue
+
+  const ltRaw = marketData.constants.liquidationThreshold
 
   if (futureDebt <= 0n || futureCollat <= 0n) return 0n
   return (futureDebt * 10n ** 18n) / ((futureCollat || 1n) * (ltRaw / BigInt(1000n)))

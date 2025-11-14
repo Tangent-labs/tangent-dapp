@@ -34,7 +34,7 @@ export default function UsgTasksContent() {
           </div>
         </div>
 
-        <div className="flex h-auto w-full flex-col items-center gap-3 xl:w-1/2">
+        <div className="flex h-auto w-full flex-col items-stretch justify-between gap-6 xl:w-1/2">
           <div className="flex h-full w-full flex-col items-start justify-start gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
             <div
               style={{ fontSize: "20px", lineHeight: "20px" }}

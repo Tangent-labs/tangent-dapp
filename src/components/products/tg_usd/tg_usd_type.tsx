@@ -105,7 +105,7 @@ export type ClaimableMarket = {
 
 export type HarvestableMarket = {
   marketName: ExistingAsset
-  marketAddress: ExistingAsset
+  marketAddress: Address
   harvestable: number
 }
 
@@ -259,7 +259,7 @@ export type USGMarketAmounts = {
 }
 
 export type HarvesterInfoDisplay = {
-  asset: ExistingAsset // Address
+  asset: ExistingAsset
   contractAddress: Address
   rewards: TokenAmountPriced
   isProcessed: boolean

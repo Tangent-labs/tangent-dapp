@@ -70,7 +70,7 @@ export const BoostsList = () => {
         </div>
       </div>
 
-      <div className="scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent max-h-[500px] overflow-y-auto">
+      <div className="scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent max-h-[560px] overflow-y-auto">
         {displayRows &&
           (displayRows as Boost[])?.map((boost: Boost) => (
             <BorderPanel
@@ -86,7 +86,7 @@ export const BoostsList = () => {
                     {boost?.description}
                   </div>
                 </div>
-                <div className="flex w-1/6 justify-center">x{boost?.boost}</div>
+                <div className="flex w-1/6 justify-center">+{boost?.boost}</div>
                 <div className="flex w-1/6 items-center justify-center">
                   <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
                     <TaskStatus status={boost?.status} />

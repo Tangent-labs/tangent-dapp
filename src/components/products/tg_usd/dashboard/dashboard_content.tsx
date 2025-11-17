@@ -17,7 +17,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Area, AreaChart
 export const USGDashboardContent = () => {
   const { globalData, userData, marketDebtMaxValue } = useUSGDashboardContext()
 
-  const { combinedData, USGCurrentSupply, sUSGCurrentSupply, sUSGCurrentAPY, totalSupplySelectedTab, fetchTotalSupplyData } = useRootContext()
+  const { USGsUSGTotalSupplyData, USGCurrentSupply, sUSGCurrentSupply, sUSGCurrentAPY, totalSupplySelectedTab, fetchTotalSupplyData } = useRootContext()
 
   type PayloadItem = {
     dataKey?: string
@@ -119,46 +119,51 @@ export const USGDashboardContent = () => {
                 <div className="text-xs font-semibold text-white"> {formatDollar(sUSGCurrentSupply + USGCurrentSupply, 0)}</div>
               </div>
 
-              <div className="flex flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2">
-                <div className="flex w-full items-center justify-between gap-2">
-                  <div className="flex h-2 w-2 rounded-full bg-button-linear"></div>
+              {USGCurrentSupply > 0 && (
+                <div className="flex flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2">
+                  <div className="flex w-full items-center justify-between gap-2">
+                    <div className="flex h-2 w-2 rounded-full bg-button-linear"></div>
 
-                  <div className="flex items-center justify-center gap-1">
-                    <TokenImage token="USG" size={16} />
-                    USG
+                    <div className="flex items-center justify-center gap-1">
+                      <TokenImage token="USG" size={16} />
+                      USG
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-2 font-semibold">
+                    <span>{formatCompact(USGCurrentSupply)}</span>
+                    <span className="h-1 w-1 rounded-full bg-white"></span>
+                    <span>{((USGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(2)}%</span>
                   </div>
                 </div>
+              )}
 
-                <div className="flex items-center justify-between gap-2 font-semibold">
-                  <span>{formatCompact(USGCurrentSupply)}</span>
-                  <span className="h-1 w-1 rounded-full bg-white"></span>
-                  <span>{((USGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(2)}%</span>
-                </div>
-              </div>
+              {sUSGCurrentSupply > 0 && (
+                <div className="flex flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2">
+                  <div className="flex w-full items-center justify-between gap-2">
+                    <div className="flex h-2 w-2 rounded-full bg-tonic"></div>
 
-              <div className="flex flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2">
-                <div className="flex w-full items-center justify-between gap-2">
-                  <div className="flex h-2 w-2 rounded-full bg-tonic"></div>
+                    <div className="flex items-center justify-center gap-1">
+                      <TokenImage token="sUSG" size={16} />
+                      sUSG
+                    </div>
+                  </div>
 
-                  <div className="flex items-center justify-center gap-1">
-                    <TokenImage token="sUSG" size={16} />
-                    sUSG
+                  <div className="flex items-center justify-between gap-2 font-semibold">
+                    <span>{formatCompact(sUSGCurrentSupply)}</span>
+                    <span className="h-1 w-1 rounded-full bg-white"></span>
+                    <span>{((sUSGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(2)}%</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-between gap-2 font-semibold">
-                  <span>{formatCompact(sUSGCurrentSupply)}</span>
-                  <span className="h-1 w-1 rounded-full bg-white"></span>
-                  <span>{((sUSGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(2)}%</span>
-                </div>
-              </div>
+              )}
             </div>
 
-            <div className="mb-8 flex h-48 min-h-48 w-full items-center justify-center">
+            <div className="mb-8 flex h-56 min-h-56 w-full items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                   width={500}
                   height={400}
-                  data={combinedData}
+                  data={USGsUSGTotalSupplyData}
                   margin={{
                     top: 10,
                     right: 20,
@@ -167,12 +172,12 @@ export const USGDashboardContent = () => {
                   }}
                 >
                   <defs>
-                    <linearGradient strokeWidth={2} id="usgGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgba(251, 249, 17, 0.3)" />
+                    <linearGradient id="susgGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="rgba(252, 248, 47, 0.3)" />
                       <stop offset="100%" stopColor="rgba(251, 249, 17, 0)" />
                     </linearGradient>
 
-                    <linearGradient strokeWidth={2} id="susgGradient" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient id="usgGradient" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="rgba(0, 117, 255, 0.3)" />
                       <stop offset="100%" stopColor="rgba(0, 117, 255, 0)" />
                     </linearGradient>
@@ -182,9 +187,25 @@ export const USGDashboardContent = () => {
 
                   <YAxis tickFormatter={formatYAxis} />
 
-                  <Area type="monotone" dataKey="usg" stroke="rgba(251, 249, 17, 0.8)" fill="url(#usgGradient)" name="USG Total Supply" connectNulls />
+                  <Area
+                    strokeWidth={2}
+                    type="monotone"
+                    dataKey="susg"
+                    stroke="rgba(251, 249, 17, 0.8)"
+                    fill="url(#susgGradient)"
+                    name="sUSG Total Supply"
+                    connectNulls
+                  />
 
-                  <Area type="monotone" dataKey="susg" stroke="rgba(0, 117, 255, 0.8)" fill="url(#susgGradient)" name="sUSG Total Supply" connectNulls />
+                  <Area
+                    strokeWidth={2}
+                    type="monotone"
+                    dataKey="usg"
+                    stroke="rgba(0, 117, 255, 0.8)"
+                    fill="url(#usgGradient)"
+                    name="USG Total Supply"
+                    connectNulls
+                  />
 
                   <Tooltip
                     cursor={{

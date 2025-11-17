@@ -35,7 +35,7 @@ export type RootContextValues = {
 
   getCachedCurrentBlock: (d?: number) => Promise<Block>
 
-  combinedData: {
+  USGsUSGTotalSupplyData: {
     date: number
     usg?: number | null
     susg?: number | null
@@ -181,7 +181,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     setTotalSupplies({ USGTotalSupply: USGData, sUSGTotalSupply: sUSGData })
   }
 
-  const combinedData = useMemo(() => {
+  const USGsUSGTotalSupplyData = useMemo(() => {
     const map = new Map<number, { date: number; usg?: number; susg?: number }>()
 
     totalSupplies.USGTotalSupply.forEach((point) => {
@@ -274,7 +274,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     savingsAPY,
     sUSGCurrentAPY,
     getCachedCurrentBlock,
-    combinedData,
+    USGsUSGTotalSupplyData,
   }
 
   return (

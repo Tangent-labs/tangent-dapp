@@ -1,16 +1,15 @@
 "use client"
 
-import { toast, ToastContainer } from "react-toastify"
 import { convertRange } from "./root_controller"
-import { formatCompact } from "@/lib/number_formatter"
+import { toast, ToastContainer } from "react-toastify"
 import * as swapRoutes from "../tg_usd/swapRoutes.json"
+import { getPublicClient } from "@/services/service_rpc"
 import { SavingAccountsApy } from "../tg_usd/tg_usd_type"
 import { USG_CONTRACT } from "../tg_usd/tg_usd_repository"
 import { ToastComponent } from "@/components/design_system/toast"
 import { getSavingsAPY, getTotalSupply } from "../tg_usd/client_api"
 import { CustomCurveRoutes } from "../tg_usd/global_quote_controller"
 import { useContext, useEffect, useState, createContext, ReactNode, useMemo } from "react"
-import { getPublicClient } from "@/services/service_rpc"
 
 export type RootContextValues = {
   curveRoutes: CustomCurveRoutes
@@ -21,19 +20,26 @@ export type RootContextValues = {
     USGTotalSupply: Array<{ date: number; uv: number }>
     sUSGTotalSupply: Array<{ date: number; uv: number }>
   }
-  USGSelectedTab: string
-  sUSGSelectedTab: string
 
-  fetchUSGTotalSupplyData: (r: string) => Promise<void>
-  fetchsUSGTotalSupplyData: (r: string) => Promise<void>
+  totalSupplySelectedTab: string
 
-  usgCurrentSupply: string
+  fetchTotalSupplyData: (r: string) => Promise<void>
+
+  USGCurrentSupply: number
+
+  sUSGCurrentSupply: number
 
   savingsAPY: SavingAccountsApy[]
 
   sUSGCurrentAPY: number
 
   getCachedCurrentBlock: (d?: number) => Promise<Block>
+
+  combinedData: {
+    date: number
+    usg?: number | null
+    susg?: number | null
+  }[]
 }
 
 const RootContext = createContext<RootContextValues | undefined>(undefined)
@@ -142,9 +148,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     fetchAndStore(CUSTOM_CURVE_ROUTES_KEY)
   }, [])
 
-  const [USGSelectedTab, setUSGSelectedTab] = useState<string>("1m")
-
-  const [sUSGSelectedTab, setsUSGSelectedTab] = useState<string>("1m")
+  const [totalSupplySelectedTab, setTotalSupplySelectedTab] = useState<string>("1m")
 
   const [totalSupplies, setTotalSupplies] = useState<{
     USGTotalSupply: Array<{ date: number; uv: number }>
@@ -154,43 +158,44 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     sUSGTotalSupply: [],
   })
 
-  const fetchUSGTotalSupplyData = async (range: string) => {
-    setUSGSelectedTab(range)
+  const fetchTotalSupplyData = async (range: string) => {
+    setTotalSupplySelectedTab(range)
 
     const rangeInMilliseconds = convertRange(range)
     const currentBlock = await getCachedCurrentBlock()
     const toIso = Number(currentBlock.timestamp) * 1000
     const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
 
-    const usgSupply = await getTotalSupply(toIso, fromIso, USG_CONTRACT.USG)
+    const [usgSupply, sUsgSupply] = await Promise.all([getTotalSupply(toIso, fromIso, USG_CONTRACT.USG), getTotalSupply(toIso, fromIso, USG_CONTRACT.SUSG)])
 
     const USGData = usgSupply.map((p) => ({
       date: new Date(p.timestamp).getTime(),
       uv: Number(p.amount),
     }))
 
-    setTotalSupplies((prev) => ({ ...prev, USGTotalSupply: USGData }))
-  }
-
-  const fetchsUSGTotalSupplyData = async (range: string) => {
-    setsUSGSelectedTab(range)
-
-    const rangeInMilliseconds = convertRange(range)
-    const currentBlock = await getCachedCurrentBlock()
-    const toIso = Number(currentBlock.timestamp) * 1000
-    const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
-
-    const susgSupply = await getTotalSupply(toIso, fromIso, USG_CONTRACT.SUSG)
-
-    const sUSGData = susgSupply.map((p) => ({
+    const sUSGData = sUsgSupply.map((p) => ({
       date: new Date(p.timestamp).getTime(),
       uv: Number(p.amount),
     }))
 
-    setTotalSupplies((prev) => {
-      return { ...prev, sUSGTotalSupply: sUSGData }
-    })
+    setTotalSupplies({ USGTotalSupply: USGData, sUSGTotalSupply: sUSGData })
   }
+
+  const combinedData = useMemo(() => {
+    const map = new Map<number, { date: number; usg?: number; susg?: number }>()
+
+    totalSupplies.USGTotalSupply.forEach((point) => {
+      const usgExistingData = map.get(point.date) || { date: point.date }
+      map.set(point.date, { ...usgExistingData, usg: point.uv })
+    })
+
+    totalSupplies.sUSGTotalSupply.forEach((point) => {
+      const sUSGExistingData = map.get(point.date) || { date: point.date }
+      map.set(point.date, { ...sUSGExistingData, susg: point.uv })
+    })
+
+    return Array.from(map.values()).sort((a, b) => a.date - b.date)
+  }, [totalSupplies])
 
   const fetchTotalSupplies = async () => {
     try {
@@ -231,13 +236,22 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     fetchSavingsAPY()
   }, [])
 
-  const usgCurrentSupply = useMemo(() => {
+  const USGCurrentSupply = useMemo(() => {
     if (totalSupplies.USGTotalSupply && totalSupplies.USGTotalSupply.length > 0) {
       const latestSupplyValue = totalSupplies.USGTotalSupply.reduce((latest, current) => (current.date > latest.date ? current : latest))
 
-      return formatCompact(latestSupplyValue.uv)
+      return latestSupplyValue.uv
     }
-    return "0"
+    return 0
+  }, [totalSupplies])
+
+  const sUSGCurrentSupply = useMemo(() => {
+    if (totalSupplies.sUSGTotalSupply && totalSupplies.sUSGTotalSupply.length > 0) {
+      const latestSupplyValue = totalSupplies.sUSGTotalSupply.reduce((latest, current) => (current.date > latest.date ? current : latest))
+
+      return latestSupplyValue.uv
+    }
+    return 0
   }, [totalSupplies])
 
   const sUSGCurrentAPY = useMemo(() => {
@@ -253,14 +267,14 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     handleQuote,
     totalSupplies,
     isLoading,
-    USGSelectedTab,
-    sUSGSelectedTab,
-    fetchUSGTotalSupplyData,
-    fetchsUSGTotalSupplyData,
-    usgCurrentSupply,
+    totalSupplySelectedTab,
+    USGCurrentSupply,
+    sUSGCurrentSupply,
+    fetchTotalSupplyData,
     savingsAPY,
     sUSGCurrentAPY,
     getCachedCurrentBlock,
+    combinedData,
   }
 
   return (

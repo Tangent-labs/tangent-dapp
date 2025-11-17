@@ -18,9 +18,10 @@ import { mapRouteToFeature } from "./menu_bar_feature_controller"
 import { IconTangentLogo } from "@/components/icons/icon_tangent_logo"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
+import { formatCompact } from "@/lib/number_formatter"
 
 export default function MenuBarFeature() {
-  const { usgCurrentSupply, sUSGCurrentAPY } = useRootContext()
+  const { USGCurrentSupply, sUSGCurrentAPY } = useRootContext()
 
   const router = useRouter()
 
@@ -111,7 +112,7 @@ export default function MenuBarFeature() {
               <span className="border-r border-white/30 px-2">TVL: $69M</span>
               <span className="flex items-center justify-center gap-1 border-r border-white/30 px-2">
                 <TokenImage token="USG" size={20} />
-                {usgCurrentSupply}
+                {formatCompact(USGCurrentSupply)}
               </span>
               <span className="flex items-center justify-center gap-1 px-2">
                 <TokenImage token="sUSG" size={20} />

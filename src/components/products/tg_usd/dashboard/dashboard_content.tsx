@@ -6,38 +6,55 @@ import { useRootContext } from "../../root/root_context"
 import { useUSGDashboardContext } from "./dashboard_context"
 import Divider from "@/components/design_system/structure/divider"
 import { MarketDebtData, TgUsdCollateralData } from "../tg_usd_type"
-import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { COLORS, formatXAxis, formatYAxis } from "./dashboard_controller"
-import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import InnerTooltip from "@/components/design_system/structure/inner_tooltip"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
-import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip } from "recharts"
+import { formatBigInt, formatCompact, formatDollar } from "@/lib/number_formatter"
+import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip, TooltipProps } from "recharts"
 
 export const USGDashboardContent = () => {
   const { globalData, userData, marketDebtMaxValue } = useUSGDashboardContext()
 
-  const { totalSupplies, sUSGSelectedTab, USGSelectedTab, fetchUSGTotalSupplyData, fetchsUSGTotalSupplyData, sUSGCurrentAPY } = useRootContext()
+  const { combinedData, USGCurrentSupply, sUSGCurrentSupply, sUSGCurrentAPY, totalSupplySelectedTab, fetchTotalSupplyData } = useRootContext()
 
-  const CustomTooltip = (props: {
-    active?: boolean | undefined
-    payload?: Array<{ dataKey?: string | number | undefined; value?: ValueType | undefined }> | undefined
-    label?: number
-  }) => {
-    const date = new Date(props?.label as number)
+  type PayloadItem = {
+    dataKey?: string
+    value?: number
+    payload?: { date?: number | undefined }
+  }
 
-    const value = Number(props?.payload ? props?.payload[0]?.value : 0)
+  const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
+    if (!active || !payload || payload.length === 0) return null
+
+    const usgItem = payload.find((p) => p.dataKey === "usg") as PayloadItem | undefined
+    const susgItem = payload.find((p) => p.dataKey === "susg") as PayloadItem | undefined
+
+    const usg = (usgItem?.value as number) ?? 0
+    const susg = (susgItem?.value as number) ?? 0
+    const total = usg + susg
+
+    const ts = (usgItem?.payload?.date ?? susgItem?.payload?.date) as number
+    const dateLabel = new Date(ts).toDateString()
 
     return (
-      <div className="pointer-events-none rounded-xl bg-[#070707] px-3 py-2 text-[10px]">
-        <div className="flex gap-1">
-          <div className="text-subtitle">Date : </div>
-          <div className="font-semibold text-white">{date.toDateString()}</div>
+      <div className="rounded-[10px] border border-white border-opacity-20 bg-input p-3 backdrop-blur-[60px]">
+        <div className="mb-3 text-xs font-medium text-slate-300">{dateLabel}</div>
+
+        <div className="mb-2 flex items-center justify-between text-xs">
+          <span className="font-semibold text-white"> Total </span>
+          <span className="font-semibold text-white">${formatCompact(total)}</span>
         </div>
-        <div className="flex gap-1">
-          <div className="text-subtitle">Total Supply :</div>
-          <div className="font-semibold text-white"> {formatDollar(value, 0)}</div>
+
+        <div className="mb-1 flex items-center justify-between gap-2 text-xs">
+          <span className="bg-tab bg-clip-text text-transparent">USG</span>
+          <span className="text-white">${formatCompact(usg)}</span>
+        </div>
+
+        <div className="flex items-center justify-between gap-2 text-xs">
+          <span className="bg-tonic bg-clip-text text-transparent">sUSG</span>
+          <span className="text-white">${formatCompact(susg)}</span>
         </div>
       </div>
     )
@@ -79,23 +96,60 @@ export const USGDashboardContent = () => {
       </div>
 
       <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
-        <div className="flex w-full items-start justify-start md:w-1/2">
-          <div className="mt-1 flex h-full max-h-72 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
-            <div className="text-xl font-semibold">Total Supply </div>
-            <Divider className="h-0.5 w-full bg-white/10" />
-
-            <div className="mb-2 flex w-full items-center justify-between">
-              <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-1">
-                <TokenImage token="USG" size={20} />
-                USG
-              </div>
+        <div className="flex w-full items-start justify-start">
+          <div className="mt-1 flex h-full max-h-80 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
+            <div className="flex w-full items-center justify-between">
+              <div className="text-xl font-semibold">Total Supply </div>
 
               <div className="flex gap-2">
-                <ButtonTab onClick={() => fetchUSGTotalSupplyData("1w")} label={"1w"} active={USGSelectedTab === "1w"} className="rounded-full !py-1" />
-                <ButtonTab onClick={() => fetchUSGTotalSupplyData("1m")} label={"1m"} active={USGSelectedTab === "1m"} className="rounded-full !py-1" />
-                <ButtonTab onClick={() => fetchUSGTotalSupplyData("3m")} label={"3m"} active={USGSelectedTab === "3m"} className="rounded-full !py-1" />
-                <ButtonTab onClick={() => fetchUSGTotalSupplyData("1y")} label={"1y"} active={USGSelectedTab === "1y"} className="rounded-full !py-1" />
-                <ButtonTab onClick={() => fetchUSGTotalSupplyData("all")} label={"all"} active={USGSelectedTab === "all"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTotalSupplyData("1w")} label={"1w"} active={totalSupplySelectedTab === "1w"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTotalSupplyData("1m")} label={"1m"} active={totalSupplySelectedTab === "1m"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTotalSupplyData("3m")} label={"3m"} active={totalSupplySelectedTab === "3m"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTotalSupplyData("1y")} label={"1y"} active={totalSupplySelectedTab === "1y"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTotalSupplyData("all")} label={"all"} active={totalSupplySelectedTab === "all"} className="rounded-full !py-1" />
+              </div>
+            </div>
+
+            <Divider className="h-0.5 w-full bg-white/10" />
+
+            <div className="flex w-full items-stretch justify-start gap-2 text-xs">
+              <div className="flex flex-col items-start justify-start gap-2 self-stretch rounded-[10px] bg-overlay-panel p-2">
+                <div className="text-xs text-subtitle">Total</div>
+
+                <div className="text-xs font-semibold text-white"> {formatDollar(sUSGCurrentSupply + USGCurrentSupply, 0)}</div>
+              </div>
+
+              <div className="flex flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2">
+                <div className="flex w-full items-center justify-between gap-2">
+                  <div className="flex h-2 w-2 rounded-full bg-button-linear"></div>
+
+                  <div className="flex items-center justify-center gap-1">
+                    <TokenImage token="USG" size={16} />
+                    USG
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-2 font-semibold">
+                  <span>{formatCompact(USGCurrentSupply)}</span>
+                  <span className="h-1 w-1 rounded-full bg-white"></span>
+                  <span>{((USGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(2)}%</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2">
+                <div className="flex w-full items-center justify-between gap-2">
+                  <div className="flex h-2 w-2 rounded-full bg-tonic"></div>
+
+                  <div className="flex items-center justify-center gap-1">
+                    <TokenImage token="sUSG" size={16} />
+                    sUSG
+                  </div>
+                </div>
+                <div className="flex items-center justify-between gap-2 font-semibold">
+                  <span>{formatCompact(sUSGCurrentSupply)}</span>
+                  <span className="h-1 w-1 rounded-full bg-white"></span>
+                  <span>{((sUSGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(2)}%</span>
+                </div>
               </div>
             </div>
 
@@ -104,7 +158,7 @@ export const USGDashboardContent = () => {
                 <AreaChart
                   width={500}
                   height={400}
-                  data={totalSupplies.USGTotalSupply}
+                  data={combinedData}
                   margin={{
                     top: 10,
                     right: 20,
@@ -113,63 +167,14 @@ export const USGDashboardContent = () => {
                   }}
                 >
                   <defs>
-                    <linearGradient id="gradientFill1" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#0075FF" stopOpacity={0.8} />
-                      <stop offset="100%" stopColor="#0075FF" stopOpacity={0} />
+                    <linearGradient strokeWidth={2} id="usgGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="rgba(251, 249, 17, 0.3)" />
+                      <stop offset="100%" stopColor="rgba(251, 249, 17, 0)" />
                     </linearGradient>
-                  </defs>
-                  <XAxis dataKey="date" tickFormatter={formatXAxis} scale="point" padding={{ left: 10, right: 10 }} />
-                  <YAxis tickFormatter={formatYAxis} />
-                  <Area type="monotone" dataKey="uv" stroke="#00C2FF" fill="url(#gradientFill1)" />
 
-                  <Tooltip
-                    cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
-                    allowEscapeViewBox={{ x: false, y: false }}
-                    content={<CustomTooltip />}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex w-full items-start justify-start md:w-1/2">
-          <div className="mt-1 flex h-full max-h-72 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
-            <div className="text-xl font-semibold">Total Supply </div>
-            <Divider className="h-0.5 w-full bg-white/10" />
-
-            <div className="mb-2 flex w-full items-center justify-between">
-              <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-1">
-                <TokenImage token="sUSG" size={20} />
-                sUSG
-              </div>
-
-              <div className="flex gap-2">
-                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("1w")} label={"1w"} active={sUSGSelectedTab === "1w"} className="rounded-full !py-1" />
-                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("1m")} label={"1m"} active={sUSGSelectedTab === "1m"} className="rounded-full !py-1" />
-                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("3m")} label={"3m"} active={sUSGSelectedTab === "3m"} className="rounded-full !py-1" />
-                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("1y")} label={"1y"} active={sUSGSelectedTab === "1y"} className="rounded-full !py-1" />
-                <ButtonTab onClick={() => fetchsUSGTotalSupplyData("all")} label={"all"} active={sUSGSelectedTab === "all"} className="rounded-full !py-1" />
-              </div>
-            </div>
-
-            <div className="mb-8 flex h-48 min-h-48 w-full items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  width={500}
-                  height={400}
-                  data={totalSupplies.sUSGTotalSupply}
-                  margin={{
-                    top: 10,
-                    right: 20,
-                    left: 20,
-                    bottom: 10,
-                  }}
-                >
-                  <defs>
-                    <linearGradient id="gradientFill1" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#0075FF" stopOpacity={0.8} />
-                      <stop offset="100%" stopColor="#0075FF" stopOpacity={0} />
+                    <linearGradient strokeWidth={2} id="susgGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="rgba(0, 117, 255, 0.3)" />
+                      <stop offset="100%" stopColor="rgba(0, 117, 255, 0)" />
                     </linearGradient>
                   </defs>
 
@@ -177,10 +182,16 @@ export const USGDashboardContent = () => {
 
                   <YAxis tickFormatter={formatYAxis} />
 
-                  <Area type="monotone" dataKey="uv" stroke="#00C2FF" fill="url(#gradientFill1)" />
+                  <Area type="monotone" dataKey="usg" stroke="rgba(251, 249, 17, 0.8)" fill="url(#usgGradient)" name="USG Total Supply" connectNulls />
+
+                  <Area type="monotone" dataKey="susg" stroke="rgba(0, 117, 255, 0.8)" fill="url(#susgGradient)" name="sUSG Total Supply" connectNulls />
 
                   <Tooltip
-                    cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
+                    cursor={{
+                      stroke: "rgba(255,255,255,0.7)",
+                      strokeWidth: 2,
+                      strokeDasharray: "4 4",
+                    }}
                     allowEscapeViewBox={{ x: false, y: false }}
                     content={<CustomTooltip />}
                   />

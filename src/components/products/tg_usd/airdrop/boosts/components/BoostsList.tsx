@@ -2,10 +2,10 @@
 
 import { ListState } from "@/types"
 import { Boost } from "../../../tg_usd_type"
+import { TaskStatus } from "../../components/TaskStatus"
 import { IconSortHeader } from "@/components/icons/icon_sort_header"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { useListContext } from "@/components/design_system/list/list_context"
-import { TaskStatus } from "../../components/TaskStatus"
 
 export const boostsListState: ListState = {
   search: undefined,
@@ -89,6 +89,20 @@ export const BoostsList = () => {
                 <div className="flex w-1/6 justify-center">+{boost?.boost}</div>
                 <div className="flex w-1/6 items-center justify-center">
                   <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
+                    <TaskStatus status={boost?.status} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between md:hidden">
+                <div className="flex w-1/2 items-center gap-2 xl:gap-4">
+                  <span className="flex text-sm font-semibold">{boost?.type}</span>
+                </div>
+
+                <div className="flex w-1/6 justify-center">+{boost?.boost}</div>
+
+                <div className="flex w-1/6 items-center justify-center">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
                     <TaskStatus status={boost?.status} />
                   </div>
                 </div>

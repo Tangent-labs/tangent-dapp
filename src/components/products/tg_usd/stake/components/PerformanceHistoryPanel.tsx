@@ -24,7 +24,7 @@ interface PerformanceHistoryPanelProps {
   computeProjection: (stakeInfo: USGStakingInfo, timeFrame: number, apr: number, addedLiquidity?: bigint) => string
 }
 
-const CustomTooltip = (props: {
+const CustomsUSGPerformanceTooltip = (props: {
   active?: boolean | undefined
   payload?: Array<{ dataKey?: string | number | undefined; value?: ValueType | undefined }> | undefined
   label?: number
@@ -34,14 +34,13 @@ const CustomTooltip = (props: {
   const value = Number(props?.payload ? props?.payload[0]?.value : 0)
 
   return (
-    <div className="pointer-events-none rounded-xl bg-[#070707] px-3 py-2 text-[10px]">
+    <div className="pointer-events-none flex flex-col items-start justify-between gap-3 rounded-[10px] bg-[#070707] px-3 py-2 text-[10px]">
       <div className="flex gap-1">
-        <div className="text-subtitle">Date : </div>
-        <div className="font-semibold text-white">{date.toDateString()}</div>
+        <div className="font-extralight text-white">{date.toDateString()}</div>
       </div>
       <div className="flex gap-1">
-        <div className="text-subtitle">APY :</div>
-        <div className="font-semibold text-white"> {value}</div>
+        <div className="h-3 w-3 rounded-[3px] bg-tonic"></div>
+        <div className="text-white"> APR : {value.toFixed(2)}%</div>
       </div>
     </div>
   )
@@ -125,7 +124,7 @@ export default function PerformanceHistoryPanel({
               </div>
             </div>
 
-            <div className="mb-8 flex h-48 min-h-48 w-full items-center justify-center">
+            <div className="mb-8 flex h-72 min-h-72 w-full items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                   width={500}
@@ -139,19 +138,45 @@ export default function PerformanceHistoryPanel({
                   }}
                 >
                   <defs>
-                    <linearGradient id="gradientFill1" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#0075FF" stopOpacity={0.8} />
-                      <stop offset="100%" stopColor="#0075FF" stopOpacity={0} />
+                    <linearGradient id="yellowGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#FBF911" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="#FBF911" stopOpacity={0} />
+                    </linearGradient>
+
+                    <linearGradient id="lineStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0.08%" stopColor="#FBF911" />
+                      <stop offset="100%" stopColor="#99FF00" />
+                    </linearGradient>
+
+                    <linearGradient id="activeDotGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0.08%" stopColor="#FBF911" />
+                      <stop offset="100%" stopColor="#99FF00" />
                     </linearGradient>
                   </defs>
+
                   <XAxis dataKey="date" tickFormatter={formatXAxis} scale="point" padding={{ left: 10, right: 10 }} />
                   <YAxis tickFormatter={formatYAxis} />
-                  <Area type="monotone" dataKey="uv" stroke="#00C2FF" fill="url(#gradientFill1)" />
+
+                  <Area
+                    type="monotone"
+                    dataKey="uv"
+                    stroke="url(#lineStroke)"
+                    strokeWidth={2}
+                    fill="url(#yellowGradient)"
+                    dot={false}
+                    activeDot={{
+                      r: 3,
+                      stroke: "url(#activeDotGradient)",
+                      strokeWidth: 3,
+                      fill: "url(#activeDotGradient)",
+                      filter: "drop-shadow(0 0 12px rgba(251, 249, 17, 0.6))",
+                    }}
+                  />
 
                   <Tooltip
                     cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
                     allowEscapeViewBox={{ x: false, y: false }}
-                    content={<CustomTooltip />}
+                    content={<CustomsUSGPerformanceTooltip />}
                   />
                 </AreaChart>
               </ResponsiveContainer>

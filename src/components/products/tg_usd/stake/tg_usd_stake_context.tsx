@@ -1,16 +1,16 @@
 "use client"
 
 import { formatUnits } from "viem"
-import { USG_CONTRACT } from "../tg_usd_repository"
+import { getsUsgApyData } from "../client_api"
 import { useUSGContext } from "../tg_usd_context"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { USG_CONTRACT } from "../tg_usd_repository"
+import { useRootContext } from "../../root/root_context"
+import { convertRange } from "../../root/root_controller"
 import { StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../tg_usd_type"
 import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedUSG, getFormState } from "./tg_usd_stake_controller"
-import { convertRange } from "../../root/root_controller"
-import { useRootContext } from "../../root/root_context"
-import { getsUsgApyData } from "../client_api"
 
 type USGStakeContextProps = {
   children: ReactNode
@@ -64,6 +64,10 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   const [apyHistory, setAPYHistory] = useState<Array<{ date: number; uv: number }>>([])
 
   const [stakePercentage, setStakePercentage] = useState<number>(0)
+
+  useEffect(() => {
+    fetchsUSGHistoryAPY("1m")
+  }, [])
 
   const depositAssetOptions = useMemo(() => {
     return currentFeature === "stake"
@@ -233,7 +237,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     const toIso = Number(currentBlock.timestamp) * 1000
     const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
 
-    const sUSGHistoryAPY = await getsUsgApyData(toIso, fromIso, USG_CONTRACT.USG)
+    const sUSGHistoryAPY = await getsUsgApyData(toIso, fromIso)
 
     const sUSGData = sUSGHistoryAPY.map((p) => ({
       date: new Date(p.timestamp).getTime(),

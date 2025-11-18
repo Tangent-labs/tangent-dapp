@@ -28,6 +28,7 @@ export const UsgBoostsContent = () => {
         signMessage={signMessage}
         lpUserPoints={lpUserPoints}
         voteUserPoints={voteUserPoints}
+        isConnected={isConnected}
       />
 
       {isConnected && (

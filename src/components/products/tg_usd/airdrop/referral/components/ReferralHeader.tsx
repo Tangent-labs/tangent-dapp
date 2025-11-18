@@ -11,9 +11,18 @@ type ReferralHeaderProps = {
   signMessage: () => void
   lpUserPoints: LpUserPoints
   voteUserPoints: VoteUserPoints
+  isConnected: boolean
 }
 
-export const ReferralHeader = ({ isLoading, referralStatus, setReferralStatus, signMessage, lpUserPoints, voteUserPoints }: ReferralHeaderProps) => {
+export const ReferralHeader = ({
+  isLoading,
+  referralStatus,
+  setReferralStatus,
+  signMessage,
+  lpUserPoints,
+  voteUserPoints,
+  isConnected,
+}: ReferralHeaderProps) => {
   return (
     <div className="mt-4 flex w-full flex-col items-center justify-between gap-4 xl:flex-row">
       <div className="flex w-full flex-col items-center justify-center gap-4 sm:flex-row xl:flex-1 xl:justify-start">
@@ -59,6 +68,7 @@ export const ReferralHeader = ({ isLoading, referralStatus, setReferralStatus, s
           <div className="flex w-full items-center justify-between gap-2 pl-3">
             <span className="text-xs font-semibold">Enter code</span>
             <Input
+              disabled={!isConnected}
               placeholder="Type a referral code"
               className="px-auto mx-auto flex max-w-36 items-center justify-center"
               onChange={(e) => setReferralStatus({ ...referralStatus, referralCode: e?.target?.value })}

@@ -17,7 +17,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { SecondaryButton } from "@/components/design_system/inputs/secondary_button"
 
 export const UsgReferralCode = () => {
-  const { canInteract } = useWalletConnexionContext()
+  const { isConnected, currentAddress } = useWalletConnexionContext()
 
   const { copied, copy } = useClipboard()
 
@@ -36,12 +36,13 @@ export const UsgReferralCode = () => {
         signMessage={signMessage}
         lpUserPoints={lpUserPoints}
         voteUserPoints={voteUserPoints}
+        isConnected={isConnected}
       />
 
       <div
         className={cn(
           "mb-2 mt-6 flex w-full flex-col items-center justify-center rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]",
-          airdropDataIsLoading ? "shimmer" : ""
+          !!airdropDataIsLoading && currentAddress ? "shimmer" : ""
         )}
       >
         <div className="mr-auto text-lg font-semibold text-white">Your referral</div>
@@ -63,7 +64,7 @@ export const UsgReferralCode = () => {
           </div>
 
           <div className="flex w-full items-center justify-center gap-2">
-            {referralStatus?.generatedCode && !airdropDataIsLoading && (
+            {referralStatus?.generatedCode && !airdropDataIsLoading && isConnected && (
               <>
                 <div className="flex w-full flex-col items-center justify-center">
                   <span className="text-sm text-subtitle">Your code</span>
@@ -80,18 +81,12 @@ export const UsgReferralCode = () => {
               </>
             )}
 
-            {!referralStatus?.generatedCode && !airdropDataIsLoading && (
+            {!referralStatus?.generatedCode && !airdropDataIsLoading && isConnected && (
               <>
-                {canInteract ? (
-                  <>
-                    <div className="flex w-full items-center justify-center text-center text-xs text-subtitle">Get a referral code for a friend</div>
-                    <SecondaryButton onClick={generateReferralCode} className="flex w-full max-w-24 justify-center font-semibold">
-                      Generate
-                    </SecondaryButton>
-                  </>
-                ) : (
-                  <></>
-                )}
+                <div className="flex w-full items-center justify-center text-center text-xs text-subtitle">Get a referral code for a friend</div>
+                <SecondaryButton onClick={generateReferralCode} className="flex w-full max-w-24 justify-center font-semibold">
+                  Generate
+                </SecondaryButton>
               </>
             )}
           </div>

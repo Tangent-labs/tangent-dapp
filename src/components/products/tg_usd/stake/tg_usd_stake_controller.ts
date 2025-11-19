@@ -128,3 +128,18 @@ export const computeProjection = (stakeInfo: USGStakingInfo, timeFrame: number, 
   }
   return formatNumber(projection, 0)
 }
+
+export const computeSUSGAprVariation = (currentFeature: string, USGsUSGMetrics: USGStakingInfo, inputValue: bigint, currentAPY: number) => {
+  let newAPR = 0n
+
+  if (currentFeature === "stake") {
+    newAPR = (USGsUSGMetrics?.sUSGSupply * BigInt((currentAPY * 100).toFixed(0))) / (USGsUSGMetrics?.sUSGSupply + inputValue || 1n)
+  } else {
+    newAPR = (USGsUSGMetrics?.sUSGSupply * BigInt((currentAPY * 100).toFixed(0))) / (USGsUSGMetrics?.sUSGSupply - inputValue || 1n)
+  }
+
+  return {
+    current: `${currentAPY.toFixed(2)}% =>`,
+    updated: `${(Number(newAPR) / 100).toFixed(2)}%`,
+  }
+}

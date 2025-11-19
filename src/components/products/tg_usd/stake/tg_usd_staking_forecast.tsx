@@ -111,14 +111,13 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
   } = useMemo(() => {
     const now = new Date()
     const YEAR_MS = 365.25 * 24 * 60 * 60 * 1000
-    const n = 26 // compounding periods/year
+    const n = 26
 
     let end: Date
     let step: "day" | "week" | "month"
     let tickEveryDays = 1
     let tickEveryMonths = 1
 
-    // label formatters
     let tickFormatter: (ts: number) => string
     let tooltipFormatter: (ts: number) => string
 
@@ -219,7 +218,7 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
 
   return (
     <>
-      <div className="flex w-full items-center justify-between">
+      <div className="flex w-full justify-between">
         <div className="flex items-center justify-start gap-2">
           <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-1.5">
             <TokenImage token="sUSG" size={20} />
@@ -258,8 +257,8 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
       </div>
 
       {!!apr && apr > 0 ? (
-        <div className="mt-3 flex w-full items-center justify-center !pt-2">
-          <ResponsiveContainer width="100%" height={300}>
+        <div className="mb-8 mt-3 flex h-72 min-h-72 w-full">
+          <ResponsiveContainer width="100%" height="100%">
             <LineChart margin={{ top: 12, right: 16, bottom: 8, left: 8 }} data={forecastData}>
               <defs>
                 <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -281,7 +280,7 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
 
               <Tooltip
                 cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
-                allowEscapeViewBox={{ x: true, y: true }}
+                allowEscapeViewBox={{ x: false, y: false }}
                 content={(props) => <CustomTooltip {...props} fmtLabel={fmtTooltipLabel} />}
               />
 

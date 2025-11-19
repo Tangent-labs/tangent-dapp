@@ -108,7 +108,7 @@ export function DepositReceiveInput({
   }, [depositAmount, depositAsset])
 
   return (
-    <div className={cn("flex flex-col gap-2", className)} {...props}>
+    <div className={cn("flex flex-col", className)} {...props}>
       <BorderPanel
         className={`${isLoading ? "shimmer" : ""} flex flex-col bg-white bg-opacity-[3%] p-2 transition-colors duration-200 ease-in-out hover:bg-white/10`}
       >
@@ -200,7 +200,7 @@ export function DepositReceiveInput({
       </BorderPanel>
 
       <div className="my-2 flex w-full cursor-pointer items-center justify-center border-none">
-        <IconChevron className="h-auto w-10 rounded-lg border border-white border-opacity-20 bg-select-input p-3 text-white" />
+        <IconChevron className="h-10 w-10 rounded-[10px] border border-white border-opacity-20 bg-select-input p-3 text-white" />
       </div>
 
       <DisplayReceivePanel

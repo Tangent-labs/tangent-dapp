@@ -75,56 +75,25 @@ export default function PerformanceHistoryPanel({
   }, [weiValue])
 
   return (
-    <div className="flex w-full flex-col rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px] lg:w-7/12">
+    <div className="flex h-full w-full flex-col items-stretch justify-stretch lg:w-2/3">
       <div className="w-full">
         <SlidingTabs labels={["Projected earnings", "Position APR"]} value={selectedFeature} onSwitchTab={(e: string) => setSelectedFeature(e)} />
       </div>
 
-      <div className="mt-4 w-full">
-        {selectedFeature === "Projected earnings" && (
-          <>
-            <ForecastGraph initialInvestment={sUSGBalance} apr={sUSGCurrentAPY} additionalLiquidity={addLiq} />
-
-            <Divider className="h-0.5 w-full bg-white/10" />
-
-            {!!sUSGCurrentAPY && sUSGCurrentAPY > 0 && (
-              <div className="mt-3 flex w-full flex-col items-end justify-between gap-2 self-end sm:flex-row">
-                <EvolutionBox
-                  className="w-full"
-                  originalValue={formatNumber(sUSGBalance, 0)}
-                  label="sUSG balance"
-                  newValue={formatNumber(computeProjectedValue, 0)}
-                />
-
-                <EvolutionBox
-                  className="w-full"
-                  originalValue={computeProjection(USGsUSGMetrics!, 1 / 12, sUSGCurrentAPY)}
-                  label="30 days projection"
-                  newValue={computeProjection(USGsUSGMetrics!, 1 / 12, sUSGCurrentAPY, weiValue)}
-                />
-
-                <EvolutionBox
-                  className="w-full"
-                  originalValue={computeProjection(USGsUSGMetrics!, 1, sUSGCurrentAPY)}
-                  label="1 year projection"
-                  newValue={computeProjection(USGsUSGMetrics!, 1, sUSGCurrentAPY, weiValue)}
-                />
-              </div>
-            )}
-          </>
-        )}
+      <div className="mt-6 flex w-full flex-col rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px]">
+        {selectedFeature === "Projected earnings" && <ForecastGraph initialInvestment={sUSGBalance} apr={sUSGCurrentAPY} additionalLiquidity={addLiq} />}
 
         {selectedFeature === "Position APR" && (
           <>
-            <div className="mb-2 flex w-full items-center justify-end">
-              <div className="mt-1 flex gap-2">
+            <div className="flex w-full items-center justify-end">
+              <div className="mt-2 flex gap-2">
                 <ButtonTab onClick={() => fetchsUSGHistoryAPY("1w")} label={"1w"} active={sUSGSelectedTab === "1w"} className="rounded-full !py-1" />
                 <ButtonTab onClick={() => fetchsUSGHistoryAPY("1m")} label={"1m"} active={sUSGSelectedTab === "1m"} className="rounded-full !py-1" />
                 <ButtonTab onClick={() => fetchsUSGHistoryAPY("1y")} label={"1y"} active={sUSGSelectedTab === "1y"} className="rounded-full !py-1" />
               </div>
             </div>
 
-            <div className="mb-8 flex h-72 min-h-72 w-full items-center justify-center">
+            <div className="mb-8 mt-3 flex h-72 min-h-72 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                   width={500}
@@ -155,7 +124,7 @@ export default function PerformanceHistoryPanel({
                   </defs>
 
                   <XAxis dataKey="date" tickFormatter={formatXAxis} scale="point" padding={{ left: 10, right: 10 }} />
-                  <YAxis tickFormatter={formatYAxis} />
+                  <YAxis orientation="right" tickFormatter={formatYAxis} />
 
                   <Area
                     type="monotone"
@@ -182,6 +151,33 @@ export default function PerformanceHistoryPanel({
               </ResponsiveContainer>
             </div>
           </>
+        )}
+
+        <Divider className="h-0.5 w-full bg-white/10" />
+
+        {!!sUSGCurrentAPY && sUSGCurrentAPY > 0 && (
+          <div className="mt-6 flex w-full flex-col items-end justify-between gap-2 self-end sm:flex-row">
+            <EvolutionBox
+              className="w-full"
+              originalValue={formatNumber(sUSGBalance, 0)}
+              label="sUSG balance"
+              newValue={formatNumber(computeProjectedValue, 0)}
+            />
+
+            <EvolutionBox
+              className="w-full"
+              originalValue={computeProjection(USGsUSGMetrics!, 1 / 12, sUSGCurrentAPY)}
+              label="30 days projection"
+              newValue={computeProjection(USGsUSGMetrics!, 1 / 12, sUSGCurrentAPY, weiValue)}
+            />
+
+            <EvolutionBox
+              className="w-full"
+              originalValue={computeProjection(USGsUSGMetrics!, 1, sUSGCurrentAPY)}
+              label="1 year projection"
+              newValue={computeProjection(USGsUSGMetrics!, 1, sUSGCurrentAPY, weiValue)}
+            />
+          </div>
         )}
       </div>
     </div>

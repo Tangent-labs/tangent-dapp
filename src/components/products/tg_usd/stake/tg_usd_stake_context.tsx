@@ -10,7 +10,7 @@ import { StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../tg_usd_
 import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedUSG, getFormState } from "./tg_usd_stake_controller"
+import { computeSUSGAprVariation, doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedUSG, getFormState } from "./tg_usd_stake_controller"
 
 type USGStakeContextProps = {
   children: ReactNode
@@ -42,16 +42,18 @@ type USGStakeContextValues = {
   apyHistory: Array<{ date: number; uv: number }>
 
   fetchsUSGHistoryAPY: (s: string) => Promise<void>
+
+  aprVariation: { current: string; updated: string }
 }
 
 export const USGStakeContext = createContext<USGStakeContextValues | undefined>(undefined)
 
 export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
-  const { getCachedCurrentBlock } = useRootContext()
-
   const { getWalletClient } = useWalletConnexionContext()
 
   const { loadUSGsUSGMetrics, USGsUSGMetrics } = useUSGContext()
+
+  const { getCachedCurrentBlock, sUSGCurrentAPY } = useRootContext()
 
   const [currentFeature, setCurrentFeature] = useState<"stake" | "unstake">("stake")
 
@@ -247,6 +249,19 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     setAPYHistory(sUSGData)
   }
 
+  const aprVariation = useMemo(() => {
+    let result = { current: "", updated: "" }
+
+    if (USGsUSGMetrics && sUSGCurrentAPY) {
+      if (weiValue) {
+        result = computeSUSGAprVariation(currentFeature, USGsUSGMetrics, weiValue, sUSGCurrentAPY)
+      } else {
+        result = computeSUSGAprVariation(currentFeature, USGsUSGMetrics, 0n, sUSGCurrentAPY)
+      }
+    }
+    return result
+  }, [USGsUSGMetrics, weiValue, currentFeature])
+
   const contextValue: USGStakeContextValues = {
     actionStake,
     actionApprove,
@@ -269,6 +284,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     setsUSGSelectedTab,
     apyHistory,
     fetchsUSGHistoryAPY,
+    aprVariation,
   }
 
   return <USGStakeContext.Provider value={contextValue}>{children}</USGStakeContext.Provider>

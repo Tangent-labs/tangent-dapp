@@ -40,6 +40,7 @@ export default function USGStakeContent() {
     USGsUSGMetrics,
     sUSGSelectedTab,
     apyHistory,
+    aprVariation,
   } = useUSGStakeContext()
 
   const { sUSGCurrentAPY } = useRootContext()
@@ -140,8 +141,8 @@ export default function USGStakeContent() {
         </div>
       </div>
 
-      <div className="my-8 flex w-full flex-col items-stretch justify-start gap-4 lg:flex-row">
-        <div className="flex w-full flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] lg:w-5/12">
+      <div className="mt-4 flex w-full flex-col gap-4 lg:flex-row">
+        <div className="flex w-full flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] lg:w-1/3">
           <div className="flex w-full items-center justify-between gap-4">
             <ButtonTab
               onClick={() => setCurrentFeature("stake")}
@@ -183,6 +184,28 @@ export default function USGStakeContent() {
             setPercentage={setStakePercentage}
             displaySliderInput={true}
           />
+
+          <div className="mb-2 flex w-full flex-col gap-2">
+            <span className="w-full text-sm font-semibold md:text-xl">Recap:</span>
+
+            <div className="flex w-full flex-col gap-1 rounded-[10px] bg-overlay-panel p-2 text-xs">
+              <div className="flex w-full items-center justify-between">
+                <span className="text-subtitle">APR variation : </span>
+                <div className="flex items-center justify-center gap-1">
+                  <span className="text-white">{aprVariation.current}</span>
+                  <span className="text-tonic">{aprVariation.updated}</span>
+                </div>
+              </div>
+
+              <div className="flex w-full items-center justify-between">
+                <span className="text-subtitle">Expected : </span>
+
+                <span className="font-semibold text-white">
+                  {formatBigInt(expected, 18, 2)} {currentFeature === "stake" ? "sUSG" : "USG"}
+                </span>
+              </div>
+            </div>
+          </div>
 
           <FormButtons
             actions={{

@@ -1,7 +1,7 @@
 "use client"
 
 import { AssetDataPriced, CollateralInfo } from "@/types"
-import { ReactNode, useEffect, useMemo, useState } from "react"
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
 import TokenImage from "../structure/token_image"
@@ -11,7 +11,6 @@ import BorderPanel from "../structure/border_panel"
 type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced | CollateralInfo
   borrowAsset?: AssetDataPriced | CollateralInfo
-  className?: string
   depositAmount?: bigint
   disabled?: boolean
   label?: string
@@ -23,7 +22,6 @@ type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 }
 
 export function LeverageInput({
-  className,
   depositAmount,
   borrowAsset,
   depositAsset,
@@ -40,6 +38,8 @@ export function LeverageInput({
     }
     return 0
   }, [depositAmount])
+
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "0")
 
@@ -94,82 +94,89 @@ export function LeverageInput({
     return "($0)"
   }, [innerValue, borrowAsset])
 
+  const onClickFocus = () => {
+    inputRef.current?.focus()
+  }
+
   return (
-    <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col bg-white bg-opacity-[3%] p-2`}>
-        <div className="flex w-full justify-between">
-          <div className="text-sm text-subtitle">{label}</div>
-        </div>
-        <div className="mb-1 flex justify-between">
+    <BorderPanel onClick={onClickFocus} className={`${isLoading ? "shimmer" : ""} flex cursor-pointer flex-col bg-white bg-opacity-[3%] p-2`}>
+      <div className="flex w-full justify-between">
+        <div className="text-sm text-subtitle">{label}</div>
+      </div>
+      <div className="mb-1 flex justify-between">
+        <div className="flex items-center justify-start">
           <input
             {...props}
             type="string"
+            ref={inputRef}
             value={innerValue}
             onInput={handleInputChange}
             placeholder="Amount"
-            className={cn("min-h-10 rounded-[10px] border-opacity-20 bg-transparent text-xl font-semibold focus:outline-none")}
+            className={cn("auto-grow bg-transparent text-[24px] font-semibold focus:outline-none")}
           />
 
-          <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
-            <TokenImage token="USG" size={20} />
-            <span className="flex flex-col text-[15px] font-semibold">USG</span>
-          </BorderPanel>
-        </div>
-
-        <div className="flex w-full items-center justify-between">
           <div className="text-xs text-subtitle">{dollarDepositDisplay}</div>
-
-          <BorderPanel
-            className="rounded-full! flex w-10 cursor-pointer items-center bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
-            onClick={() => handleSliderChange({ target: { value: "10" } } as React.ChangeEvent<HTMLInputElement>)}
-          >
-            Max.
-          </BorderPanel>
         </div>
 
-        <input
-          type="range"
-          min="1"
-          step="0.1"
-          max="10"
-          value={percentage}
-          onChange={handleSliderChange}
-          className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]"
-          style={{
-            background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage * 10}%)`,
-          }}
-        />
+        <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
+          <TokenImage token="USG" size={20} />
+          <span className="flex flex-col text-[15px] font-semibold">USG</span>
+        </BorderPanel>
+      </div>
 
-        <div className="flex w-full items-center justify-between text-xs text-subtitle">
-          <div className="relative flex w-fit items-center justify-center">
-            x1
-            <div
-              onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-              className="absolute -top-1.5 left-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
-            ></div>
-          </div>
+      <div className="flex w-full items-center justify-between gap-2">
+        <div className="flex w-full flex-col">
+          <input
+            type="range"
+            min="1"
+            step="0.1"
+            max="10"
+            value={percentage}
+            onChange={handleSliderChange}
+            className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]"
+            style={{
+              background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage * 10}%)`,
+            }}
+          />
 
-          {[2, 3, 4, 5, 6, 7, 8, 9].map((el) => (
-            <div key={el} className="relative flex w-fit items-center justify-center">
-              x{el}
+          <div className="flex w-full items-center justify-between text-[10px] text-subtitle">
+            <div className="relative flex w-fit items-center justify-center">
+              x1
               <div
-                onClick={
-                  !!handleSliderChange ? () => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>) : () => {}
-                }
-                className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+                className="absolute -top-1.5 left-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
               ></div>
             </div>
-          ))}
 
-          <div className="relative flex w-fit items-center justify-center">
-            x10
-            <div
-              onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "10" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-              className="absolute -top-1.5 right-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
-            ></div>
+            {[2, 3, 4, 5, 6, 7, 8, 9].map((el) => (
+              <div key={el} className="relative flex w-fit items-center justify-center">
+                x{el}
+                <div
+                  onClick={
+                    !!handleSliderChange ? () => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>) : () => {}
+                  }
+                  className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                ></div>
+              </div>
+            ))}
+
+            <div className="relative flex w-fit items-center justify-center">
+              x10
+              <div
+                onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "10" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
+                className="absolute -top-1.5 right-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+              ></div>
+            </div>
           </div>
         </div>
-      </BorderPanel>
-    </div>
+
+        <BorderPanel
+          className="rounded-full! flex w-10 cursor-pointer items-center bg-button-active px-1 text-xs text-white hover:font-semibold"
+          onClick={() => handleSliderChange({ target: { value: "10" } } as React.ChangeEvent<HTMLInputElement>)}
+        >
+          Max.
+        </BorderPanel>
+      </div>
+    </BorderPanel>
   )
 }

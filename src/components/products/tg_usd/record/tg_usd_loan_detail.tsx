@@ -10,12 +10,12 @@ export default function USGLoanDetail() {
   const { marketDisplayData, futureMarketDisplayData, liquidationPrice } = useUSGRecordContext()
 
   return (
-    <div className="mb-2 flex flex-col rounded-[10px] bg-overlay-panel px-3 py-2 backdrop-blur-[60px]">
+    <div className="flex flex-col rounded-[10px] bg-overlay-panel px-3 py-2 backdrop-blur-[60px]">
       <div className="flex w-full items-center justify-between">
         <Title label={"Loan details"} size={"normal"} />
 
         {!!liquidationPrice && <div className="font-gilroy text-tonic"> Liquidation Price : ${formatBigInt(liquidationPrice, 18, 3)} </div>}
-      </div>{" "}
+      </div>
       <Divider />
       <div className="flex flex-wrap gap-2">
         <EvolutionBox

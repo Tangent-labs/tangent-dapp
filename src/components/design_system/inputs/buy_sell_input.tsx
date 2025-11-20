@@ -218,7 +218,7 @@ export function BuySellInput({
             }}
           />
 
-          <div className="flex w-full items-center justify-between text-xs text-subtitle">
+          <div className="flex w-full items-center justify-between text-[10px] text-subtitle">
             <div className="relative flex w-fit items-center justify-center">
               0%
               <div

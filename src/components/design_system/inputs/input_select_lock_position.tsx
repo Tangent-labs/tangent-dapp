@@ -126,7 +126,7 @@ export const InputSelectLockPosition = ({
             {displayBalance && (
               <div className="flex cursor-pointer items-center">
                 <BorderPanel
-                  className="flex w-10 cursor-pointer items-center bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
+                  className="flex w-10 cursor-pointer items-center bg-button-active px-1 text-xs text-white hover:font-semibold"
                   onClick={() => {
                     if (setMaxBalance) setMaxBalance()
                   }}
@@ -152,7 +152,7 @@ export const InputSelectLockPosition = ({
         }}
       />
 
-      <div className="flex w-full items-center justify-between text-xs text-subtitle">
+      <div className="flex w-full items-center justify-between text-[10px] text-subtitle">
         <div className="relative flex w-fit items-center justify-center">
           0%
           <div

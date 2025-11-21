@@ -359,13 +359,13 @@ export const computeAprVariation = (marketAprs: MarketAPR[], currentConvexTVL: b
 
     if (newAPR >= 0n && currentAPY >= 0 && newProjectedAPR >= 0 && projectedAPY >= 0) {
       result = {
-        current: `${totalCurrentAPR.toFixed(2)}% =>`,
+        current: `${totalCurrentAPR.toFixed(2)}%`,
         currentUpdated: `${(Number(newAPR) / 100 + currentAPY).toFixed(2)}%`,
-        projected: `${totalProjectedAPR.toFixed(2)}% =>`,
+        projected: `${totalProjectedAPR.toFixed(2)}%`,
         projectedUpdated: `${(Number(newProjectedAPR) / 100 + projectedAPY).toFixed(2)}%`,
       }
     } else {
-      result = { current: `${totalCurrentAPR.toFixed(2)}% =>`, currentUpdated: "-", projected: `${totalProjectedAPR.toFixed(2)}% =>`, projectedUpdated: "-" }
+      result = { current: `${totalCurrentAPR.toFixed(2)}%`, currentUpdated: "-", projected: `${totalProjectedAPR.toFixed(2)}%`, projectedUpdated: "-" }
     }
   }
 

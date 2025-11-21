@@ -145,7 +145,7 @@ export function DepositInput({
               disabled={disabled}
               value={percentage}
               onChange={handleSliderChange}
-              className={cn("mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]", disabled ? "cursor-default" : "cursor-pointer")}
+              className={cn("mt-3 h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]", disabled ? "cursor-default" : "cursor-pointer")}
               style={{
                 background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
               }}
@@ -155,7 +155,7 @@ export function DepositInput({
                 0%
                 <div
                   onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-                  className="absolute -top-1.5 left-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                  className="absolute -top-1.5 left-1 mt-[1px] h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
                 ></div>
               </div>
               {[25, 50, 75].map((el) => (
@@ -165,7 +165,7 @@ export function DepositInput({
                     onClick={
                       !!handleSliderChange ? () => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>) : () => {}
                     }
-                    className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                    className="absolute -top-1.5 left-2 mt-[1px] h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
                   ></div>
                 </div>
               ))}
@@ -173,7 +173,7 @@ export function DepositInput({
                 100%
                 <div
                   onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "100" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-                  className="absolute -top-1.5 right-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                  className="absolute -top-1.5 right-1 mt-[1px] h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
                 ></div>
               </div>
             </div>

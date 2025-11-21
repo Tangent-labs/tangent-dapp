@@ -212,7 +212,7 @@ export function BuySellInput({
             max="100"
             value={percentage}
             onChange={handleSliderChange}
-            className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]"
+            className="mt-3 h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]"
             style={{
               background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
             }}
@@ -223,7 +223,7 @@ export function BuySellInput({
               0%
               <div
                 onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-                className="absolute -top-1.5 left-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                className="absolute -top-1.5 left-1 mt-[1px] h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
               ></div>
             </div>
 
@@ -234,7 +234,7 @@ export function BuySellInput({
                   onClick={
                     !!handleSliderChange ? () => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>) : () => {}
                   }
-                  className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                  className="absolute -top-1.5 left-2 mt-[1px] h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
                 ></div>
               </div>
             ))}
@@ -243,7 +243,7 @@ export function BuySellInput({
               100%
               <div
                 onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "100" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-                className="absolute -top-1.5 right-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                className="absolute -top-1.5 right-1 mt-[1px] h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
               ></div>
             </div>
           </div>

@@ -25,6 +25,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
 
 export default function USGDepositContent() {
   const {
@@ -270,7 +271,7 @@ export default function USGDepositContent() {
                 <span className="py-1.5">Recap</span>
               </AccordionTrigger>
               <AccordionContent className="w-full">
-                <div className={cn("flex flex-col gap-1 p-2 text-xs", isDepositLoading ? "shimmer" : "")}>
+                <div className={cn("flex flex-col gap-1 text-xs", isDepositLoading ? "shimmer" : "")}>
                   {displayAPRVariation && (
                     <>
                       <div className="flex w-full items-center justify-between">
@@ -281,6 +282,7 @@ export default function USGDepositContent() {
                         <span className="ml-4 italic text-subtitle">Current </span>
                         <div className="flex items-center justify-center gap-1">
                           <span className="text-white">{aprVariation.current}</span>
+                          <IconSingleArrow></IconSingleArrow>
                           <span className="text-tonic">{aprVariation.currentUpdated}</span>
                         </div>
                       </div>
@@ -289,6 +291,7 @@ export default function USGDepositContent() {
                         <span className="ml-4 italic text-subtitle">Projected </span>
                         <div className="flex items-center justify-center gap-1">
                           <span className="text-white">{aprVariation.projected}</span>
+                          <IconSingleArrow></IconSingleArrow>
                           <span className="text-tonic">{aprVariation.projectedUpdated}</span>
                         </div>
                       </div>

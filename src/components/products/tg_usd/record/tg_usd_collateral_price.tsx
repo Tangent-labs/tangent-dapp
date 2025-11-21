@@ -25,7 +25,7 @@ type GraphData = {
 }
 
 type CollateralGraphParams = {
-  graphData: GraphData
+  graphData: GraphData | null
   isPending: boolean
   liquidationPrice: bigint
 }

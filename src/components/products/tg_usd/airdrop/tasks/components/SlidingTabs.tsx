@@ -26,7 +26,6 @@ export function SlidingTabs({ labels, value, onSwitchTab }: SlidingTabsProps) {
         className={cn(
           "pointer-events-none absolute bottom-0 left-0 h-1 rounded-full",
           "bg-gradient-to-r from-sky-400 to-blue-600",
-          "shadow-[0_0_12px_1px_rgba(37,99,235,0.35)]",
           "transition-[transform,width] duration-300 ease-out motion-reduce:transition-none"
         )}
         style={{

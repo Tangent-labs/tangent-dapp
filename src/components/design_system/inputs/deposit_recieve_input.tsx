@@ -142,7 +142,7 @@ export function DepositReceiveInput({
           <div>{dollarDepositDisplay}</div>
 
           <BorderPanel
-            className="flex w-10 cursor-pointer items-center bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
+            className="flex w-10 cursor-pointer items-center bg-button-active px-1 text-xs text-white hover:font-semibold"
             onClick={() => {
               if (setMaxBalance) setMaxBalance()
             }}
@@ -160,18 +160,18 @@ export function DepositReceiveInput({
               max="100"
               value={percentage}
               onChange={handleSliderChange}
-              className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]"
+              className="mt-3 h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]"
               style={{
                 background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
               }}
             />
 
-            <div className="flex w-full items-center justify-between text-xs text-subtitle">
+            <div className="flex w-full items-center justify-between text-[10px] text-subtitle">
               <div className="relative flex w-fit items-center justify-center">
                 0%
                 <div
                   onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-                  className="absolute -top-1.5 left-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                  className="absolute -top-1.5 left-1 mt-[1px] h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
                 ></div>
               </div>
 
@@ -182,7 +182,7 @@ export function DepositReceiveInput({
                     onClick={
                       !!handleSliderChange ? () => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>) : () => {}
                     }
-                    className="absolute -top-1.5 left-2 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                    className="absolute -top-1.5 left-2 mt-[1px] h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
                   ></div>
                 </div>
               ))}
@@ -191,7 +191,7 @@ export function DepositReceiveInput({
                 100%
                 <div
                   onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "100" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-                  className="absolute -top-1.5 right-1 h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
+                  className="absolute -top-1.5 right-1 mt-[1px] h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
                 ></div>
               </div>
             </div>

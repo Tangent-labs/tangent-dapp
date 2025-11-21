@@ -64,18 +64,22 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
       <MarketDetails />
 
       <div className="my-4 flex flex-col gap-4">
-        <div className="relative flex gap-4 max-xl:flex-col">
-          <div className="rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] xl:w-5/12">
+        <div className="relative flex items-start justify-start gap-4 max-xl:flex-col">
+          <div className="w-full rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] xl:w-5/12">
             <div className="hidden w-full flex-col items-center justify-between gap-1 md:flex">
-              <div className="flex w-full justify-between gap-2">
-                <ButtonTab className="w-full" active={feature === collateral} label={"Deposit"} onClick={() => onTabClick("deposit")} />
-                <ButtonTab className="w-full" active={feature === "borrow"} label={"Borrow"} onClick={() => onTabClick("borrow")} />
-                <ButtonTab disabled={!canLeverage} className="w-full" active={feature === "leverage"} label={"Leverage"} onClick={() => onTabClickLeverage()} />
-              </div>
-              <div className="flex w-full justify-between gap-2">
-                <ButtonTab className="w-full" active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />
-                <ButtonTab className="w-full" active={feature === "withdraw"} label={"Withdraw"} onClick={() => onTabClick("withdraw")} />
-                <ButtonTab className="w-full" active={feature === "liquidate"} label={"Liquidate"} onClick={() => onTabClick("liquidate")} />
+              <div className="flex w-full justify-between gap-1">
+                <ButtonTab className="w-full !px-2" active={feature === collateral} label={"Deposit"} onClick={() => onTabClick("deposit")} />
+                <ButtonTab className="w-full !px-2" active={feature === "borrow"} label={"Borrow"} onClick={() => onTabClick("borrow")} />
+                <ButtonTab className="w-full !px-2" active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />
+                <ButtonTab className="w-full !px-2" active={feature === "withdraw"} label={"Withdraw"} onClick={() => onTabClick("withdraw")} />
+                <ButtonTab
+                  disabled={!canLeverage}
+                  className="w-full !px-2"
+                  active={feature === "leverage"}
+                  label={"Leverage"}
+                  onClick={() => onTabClickLeverage()}
+                />
+                <ButtonTab className="w-full !px-2" active={feature === "liquidate"} label={"Liquidate"} onClick={() => onTabClick("liquidate")} />
               </div>
             </div>
 

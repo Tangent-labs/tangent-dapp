@@ -1,12 +1,14 @@
 "use client"
 
 import { Address } from "viem"
+import { toast } from "react-toastify"
 import { useUSGContext } from "../tg_usd_context"
 import { AssetDataPriced, ListState } from "@/types"
+import { ToastComponent } from "@/components/design_system/toast"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { HarvestableMarket, HarvesterInfo, HarvesterInfoDisplay, USGStakingInfo } from "../tg_usd_type"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { computeAndReturnPrices, doHarvest, getTgUsdHarvestOnChainData, transformHarvestOnChainData } from "./tg_usd_harvest_controller"
+import { computeAndReturnPrices, doHarvest, doMultiHarvest, getTgUsdHarvestOnChainData, transformHarvestOnChainData } from "./tg_usd_harvest_controller"
 
 type USGHarvestContextProps = {
   children: ReactNode
@@ -17,7 +19,7 @@ type USGHarvestContextValues = {
   displayRows: HarvesterInfoDisplay[]
   actionHarvest: (arg: Address) => void
   customSort: (arg: ListState) => void
-  onClickHarvestAll: () => void
+  onClickSelectAll: () => void
   marketsToHarvest: HarvestableMarket[]
   addToHarvestableMarkets: (rowData: HarvestableMarket) => void
   onClickHarvest: () => void
@@ -29,7 +31,7 @@ export const USGHarvestContext = createContext<USGHarvestContextValues | undefin
 export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
   const { USGsUSGMetrics } = useUSGContext()
 
-  const { getWalletClient, currentAddress } = useWalletConnexionContext()
+  const { getWalletClient } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -71,20 +73,33 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
     return rows
   }, [harvestInfo, rewardsInfo])
 
-  const actionHarvest = useCallback(
-    (stakingAddress: Address) => {
-      const walletClient = getWalletClient()
-      doHarvest(stakingAddress, walletClient!).then(loadData)
-    },
-    [currentAddress]
-  )
+  const actionHarvest = () => {
+    const walletClient = getWalletClient()
+    doHarvest(marketsToHarvest[0].marketAddress, walletClient!).then(() => {
+      loadData()
+      setMarketsToHarvest([])
+      toast.success(ToastComponent, { data: { type: "Success", content: "Market harvested successfully" } })
+    })
+  }
 
-  const onClickHarvestAll = () => {
+  const actionHarvestMultipleMarkets = () => {
+    const walletClient = getWalletClient()
+
+    const marketAddresses = marketsToHarvest.map((el) => el.marketAddress)
+
+    doMultiHarvest(marketAddresses, walletClient!).then(() => {
+      loadData()
+      setMarketsToHarvest([])
+      toast.success(ToastComponent, { data: { type: "Success", content: "Markets harvested successfully" } })
+    })
+  }
+
+  const onClickSelectAll = () => {
     if (marketsToHarvest.length === displayRows.length) {
       setMarketsToHarvest([])
     } else {
       const markets = displayRows.map((el) => {
-        return { marketName: el.asset, harvestable: el.rewards.totalDollar, marketAddress: el.asset } as HarvestableMarket
+        return { marketName: el.asset, harvestable: el.rewards.totalDollar, marketAddress: el.contractAddress } satisfies HarvestableMarket
       })
       setMarketsToHarvest(markets)
     }
@@ -117,14 +132,18 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
   }
 
   const onClickHarvest = () => {
-    console.info("onClickHarvest")
+    if (marketsToHarvest.length > 1) {
+      actionHarvestMultipleMarkets()
+    } else {
+      actionHarvest()
+    }
   }
 
   const contextValue: USGHarvestContextValues = {
     isLoading,
     displayRows,
     customSort,
-    onClickHarvestAll,
+    onClickSelectAll,
     actionHarvest,
     marketsToHarvest,
     addToHarvestableMarkets,

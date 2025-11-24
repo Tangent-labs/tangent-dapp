@@ -37,7 +37,7 @@ const HarvestRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
 }
 
 export default function USGHarvestContent() {
-  const { displayRows, USGsUSGMetrics, marketsToHarvest, customSort, onClickHarvestAll, onClickHarvest } = useUSGHarvestContext()
+  const { displayRows, USGsUSGMetrics, marketsToHarvest, customSort, onClickSelectAll, onClickHarvest } = useUSGHarvestContext()
 
   return (
     <>
@@ -80,7 +80,7 @@ export default function USGHarvestContent() {
           <div className="flex w-full items-center justify-end">
             <div className="flex gap-2">
               <span className="text-sm text-subtitle">Harvest all</span>
-              <Switch onClick={() => onClickHarvestAll()}></Switch>
+              <Switch onClick={() => onClickSelectAll()}></Switch>
             </div>
           </div>
 
@@ -169,7 +169,7 @@ function HarvestList() {
                     addToHarvestableMarkets({
                       marketName: item.asset,
                       harvestable: item.rewards.totalDollar,
-                      marketAddress: item.asset,
+                      marketAddress: item.contractAddress,
                     })
                   }
                 />

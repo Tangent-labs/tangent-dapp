@@ -1,6 +1,6 @@
 import { Address } from "viem"
 
-import { Boost, MarketHistoricalData, LpUserPoints, UserTask, VoteTask, VoteUserPoints, RefereesPoints, MarketAPR, SavingAccountsApy } from "./tg_usd_type"
+import { MarketHistoricalData, LpUserPoints, UserTask, VoteTask, VoteUserPoints, RefereesPoints, MarketAPR, SavingAccountsApy } from "./tg_usd_type"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -295,7 +295,7 @@ export const getLpUserPoints = async (account: Address, dateFrom: string): Promi
   }
 }
 
-export const getUserBoosts = async (account: Address): Promise<Array<Boost>> => {
+export const getUserBoosts = async (account: Address): Promise<Array<string>> => {
   try {
     const url = `${baseUrl}/boosts/${account}`
 
@@ -310,7 +310,7 @@ export const getUserBoosts = async (account: Address): Promise<Array<Boost>> => 
       throw new Error("Failed to fetch boosts")
     }
 
-    const boosts: Array<Boost> = await response.json()
+    const boosts: Array<string> = await response.json()
 
     return boosts
   } catch (error) {

@@ -6,6 +6,7 @@ import { getUserBoosts } from "../../client_api"
 import { useUSGContext } from "../../tg_usd_context"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { mapUserBoosts } from "./usg_boosts_controller"
 
 type UsgBoostsContextProps = {
   children: ReactNode
@@ -29,11 +30,9 @@ export const UsgBoostsProvider = ({ children }: UsgBoostsContextProps) => {
     if (currentAddress) {
       refetchPoints()
 
-      getUserBoosts(currentAddress).then(() => {
-        setUserBoosts([
-          { type: "Dewhales boost", description: "Be a Dewhales member", boost: 1.7, status: true },
-          { type: "Other boost", description: "Buy $DOGA", boost: 1000, status: false },
-        ])
+      getUserBoosts(currentAddress).then((b) => {
+        const mappedBoosts = mapUserBoosts(b)
+        setUserBoosts(mappedBoosts)
       })
     }
   }, [currentAddress])

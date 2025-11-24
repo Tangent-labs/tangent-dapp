@@ -10,8 +10,11 @@ import { Button } from "@/components/design_system/inputs/button"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { useClipboard } from "@/hooks/useClipboard"
 
 export const WalletConnexionContent = () => {
+  const { copied, copy } = useClipboard()
+
   const { connect, disconnect, changeNetwork, tokenInfo, isConnected, isChainConnected, currentAddress } = useWalletConnexionContext()
 
   const { USGsUSGMetrics, TANsTANMetrics } = useUSGContext()
@@ -60,11 +63,12 @@ export const WalletConnexionContent = () => {
         )}
 
         <PopoverContent align="end">
-          {isConnected && (
-            <div data-combobox className="flex min-h-56 w-full min-w-80 flex-col overflow-hidden bg-[#070707] p-2 font-gilroy">
+          {isConnected && currentAddress && (
+            <div data-combobox className="flex w-full min-w-80 flex-col overflow-hidden bg-[#070707] p-2 font-gilroy">
               <div className="flex flex-col border-b border-white/10 py-2">
-                <span className="font-semibold"> {buttonLabel} </span>
-                <span className="text-subtitle"> Connected with Metamask </span>
+                <span onClick={() => copy(currentAddress)} className="cursor-pointer font-semibold text-white/80 hover:text-white">
+                  {copied ? "Copied!" : buttonLabel}
+                </span>
               </div>
 
               <div className="my-3 flex w-full items-center justify-between gap-2">

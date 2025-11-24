@@ -156,3 +156,15 @@ input[type="range"]::-moz-range-thumb {
 .Toastify__toast-icon {
   display: none;
 }
+
+.auto-grow {
+  min-width: 20px;
+  max-width: 100%;
+  padding: 0 8px 0 0;
+  width: auto;
+  field-sizing: content;
+}
+
+.auto-grow:focus {
+  outline: none;
+}

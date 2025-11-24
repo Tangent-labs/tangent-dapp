@@ -99,7 +99,7 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
       setMarketsToHarvest([])
     } else {
       const markets = displayRows.map((el) => {
-        return { marketName: el.asset, harvestable: el.rewards.totalDollar, marketAddress: el.contractAddress } as HarvestableMarket
+        return { marketName: el.asset, harvestable: el.rewards.totalDollar, marketAddress: el.contractAddress } satisfies HarvestableMarket
       })
       setMarketsToHarvest(markets)
     }

@@ -11,10 +11,7 @@ const config: Config = {
       backgroundImage: {
         header: "var(--tgt-bg-header)",
         progress: "var(--tgt-bg-progress)",
-        "button-linear": "var(--tgt-bg-button-linear)",
         "button-inactive": "var(--tgt-bg-button-inactive)",
-        "button-active-hover": "var(--tgt-bg-button-active-hover)",
-        "button-active": "var(--tgt-bg-button-active)",
         "top-performing-lps": "var(--tgt-bg-top-performing-lps)",
         "earn-action": "var(--tgt-bg-earn-action)",
         danger: "var(--tgt-bg-danger)",
@@ -29,7 +26,8 @@ const config: Config = {
         lec: "var(--tgt-bg-lec)",
       },
       colors: {
-        "button-active": "var(--tgt-bg-button-active)",
+        "button-active-hover": "var(--tgt-button-active-hover)",
+        "button-active": "var(--tgt-button-active)",
         "row-tonic": "var(--tgt-row-tonic)",
         "overlay-panel": "var(--tgt-bg-overlay-panel)",
         "panel-disabled": "var(--tgt-bg-panel-disabled)",

@@ -12,7 +12,7 @@ import { useRootContext } from "@/components/products/root/root_context"
 import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { computeAprVariation, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
+import { computeAprVariation, computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit } from "./usg_record_deposit_controller"
 
 type USGDepositContextProps = {
@@ -356,7 +356,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   }
 
   const zapAndDepositAndBorrow = async () => {
-    if (!depositWeiValue || !currentAddress || !depositAssetInfo || !borrowWeiValue) return
+    if (!depositWeiValue || !currentAddress || !depositAssetInfo || !borrowWeiValue || !zapValue) return
 
     setIsZapLoading(true)
     setIsDepositLoading(true)
@@ -366,7 +366,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
         depositAssetInfo?.address,
         collateralInfo?.address,
         depositWeiValue,
-        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        computedMinAmountOut(zapValue, slippage),
         marketInfo?.marketAddress,
         currentAddress,
         curveRoutes
@@ -375,7 +375,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
       const zapMarketData = {
         tokenIn: depositAssetInfo?.address,
         amountIn: depositWeiValue,
-        minAmountOut: (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        minAmountOut: computedMinAmountOut(zapValue, slippage),
       }
 
       const walletClient = getWalletClient()
@@ -396,7 +396,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   }
 
   const zapAndDeposit = async () => {
-    if (!depositWeiValue || !currentAddress || !depositAssetInfo) return
+    if (!depositWeiValue || !currentAddress || !depositAssetInfo || !zapValue) return
 
     setIsZapLoading(true)
     setIsDepositLoading(true)
@@ -406,7 +406,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
         depositAssetInfo?.address,
         collateralInfo?.address,
         depositWeiValue,
-        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        computedMinAmountOut(zapValue, slippage),
         marketInfo?.marketAddress,
         currentAddress,
         curveRoutes
@@ -415,7 +415,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
       const zapMarketData = {
         tokenIn: depositAssetInfo?.address,
         amountIn: depositWeiValue,
-        minAmountOut: (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        minAmountOut: computedMinAmountOut(zapValue, slippage),
       }
 
       const walletClient = getWalletClient()

@@ -39,9 +39,8 @@ export default function MenuBarFeature() {
             <div onClick={() => router.push("/")} className="hidden cursor-pointer items-center gap-2 text-xl text-white md:flex">
               <IconTangent className="mb-2 w-32"></IconTangent>
             </div>
-
             <div onClick={() => router.push("/")} className="flex cursor-pointer items-center gap-4 text-xl text-white md:hidden">
-              <IconTangentLogo className="mb-2 w-12 border-r border-white/30 px-2"></IconTangentLogo>
+              <IconTangentLogo className="mb-2 mr-2 w-12 border-r border-white/30 px-2"></IconTangentLogo>
 
               {computedFeature()}
             </div>
@@ -49,30 +48,33 @@ export default function MenuBarFeature() {
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem
-                  className={pathname === "/dashboard" ? "bg-tab bg-clip-text font-semibold text-transparent" : ""}
+                  className={pathname === "/dashboard" ? "bg-white/10 font-semibold hover:bg-white/20" : "hover:bg-white/10"}
                   onClick={() => router.push("/dashboard")}
                 >
                   Dashboard
                 </NavigationMenuItem>
-                <NavigationMenuItem className={pathname === "/" ? "bg-tab bg-clip-text font-semibold text-transparent" : ""} onClick={() => router.push("/")}>
+                <NavigationMenuItem
+                  className={pathname === "/" ? "bg-white/10 font-semibold hover:bg-white/20" : "hover:bg-white/10"}
+                  onClick={() => router.push("/")}
+                >
                   Markets
                 </NavigationMenuItem>
                 <NavigationMenuItem
-                  className={pathname === "/stake" ? "bg-tab bg-clip-text font-semibold text-transparent" : ""}
+                  className={pathname === "/stake" ? "bg-white/10 font-semibold hover:bg-white/20" : "hover:bg-white/10"}
                   onClick={() => router.push("/stake")}
                 >
                   Savings
                 </NavigationMenuItem>
 
                 <NavigationMenuItem
-                  className={pathname === "/earn" ? "bg-tab bg-clip-text font-semibold text-transparent" : ""}
+                  className={pathname === "/earn" ? "bg-white/10 font-semibold hover:bg-white/20" : "hover:bg-white/10"}
                   onClick={() => router.push("/earn")}
                 >
                   Earn
                 </NavigationMenuItem>
 
                 <NavigationMenuItem
-                  className={pathname === "/claim" ? "bg-tab bg-clip-text font-semibold text-transparent" : ""}
+                  className={pathname === "/claim" ? "bg-white/10 font-semibold hover:bg-white/20" : "hover:bg-white/10"}
                   onClick={() => router.push("/claim")}
                 >
                   Claim
@@ -122,7 +124,7 @@ export default function MenuBarFeature() {
 
             <button
               onClick={() => router.push("/swap")}
-              className="gradient-border-btn hidden cursor-pointer px-4 py-2.5 font-gilroy text-sm font-semibold xl:flex"
+              className="gradient-border-btn hidden cursor-pointer px-4 py-2.5 font-gilroy text-sm font-semibold hover:border-none hover:bg-button-active xl:flex"
             >
               Swap
             </button>

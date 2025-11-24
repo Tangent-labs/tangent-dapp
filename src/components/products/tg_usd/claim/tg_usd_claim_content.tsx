@@ -136,7 +136,7 @@ export default function USGClaimContent() {
             {marketsToClaim.length > 0 && (
               <>
                 {isWellConnected ? (
-                  <Button label="CLAIM" className="flex w-full items-center justify-center" onClick={() => onClickClaim(marketsToClaim)} />
+                  <Button label="Claim" className="flex w-full items-center justify-center" onClick={() => onClickClaim(marketsToClaim)} />
                 ) : (
                   <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
                 )}

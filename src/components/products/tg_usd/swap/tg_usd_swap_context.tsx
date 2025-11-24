@@ -9,7 +9,7 @@ import { ToastComponent } from "@/components/design_system/toast"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
 import { Abi, Address, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_controller"
+import { computedMinAmountOut, getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { BalanceAllowanceData, SwapToken, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../tg_usd_type"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./tg_usd_swap_controller"
@@ -411,14 +411,14 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
           setIsLoading(false)
         })
     } else {
-      if (!depositWeiValue || !currentAddress) return
+      if (!depositWeiValue || !currentAddress || !receiveWeiValue) return
 
       try {
         const routeData = await getRoute(
           depositAssetInfo?.address,
           receiveAssetInfo?.address,
           depositWeiValue,
-          (BigInt(receiveWeiValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+          computedMinAmountOut(receiveWeiValue, slippage),
           currentAddress,
           currentAddress,
           curveRoutes

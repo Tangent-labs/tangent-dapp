@@ -408,3 +408,7 @@ export const computeLiquidationPrice = (
   if (futureDebt <= 0n || futureCollat <= 0n) return 0n
   return (futureDebt * 10n ** 18n) / ((futureCollat || 1n) * (ltRaw / BigInt(1000n)))
 }
+
+export const computedMinAmountOut = (zapValue: bigint, slippage: number) => {
+  return (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
+}

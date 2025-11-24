@@ -122,7 +122,7 @@ export const USGDashboardContent = () => {
               {USGCurrentSupply > 0 && (
                 <div className="flex flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2">
                   <div className="flex w-full items-center justify-between gap-2">
-                    <div className="flex h-2 w-2 rounded-full bg-button-linear"></div>
+                    <div className="flex h-2 w-2 rounded-full bg-button-active"></div>
 
                     <div className="flex items-center justify-center gap-1">
                       <TokenImage token="USG" size={16} />

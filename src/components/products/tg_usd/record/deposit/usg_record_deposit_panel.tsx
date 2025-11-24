@@ -9,23 +9,21 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGContext } from "../../tg_usd_context"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import { useUSGRecordContext } from "../tg_usd_record_context"
-import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
+import { useUSGDepositContext } from "./usg_record_deposit_context"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
-import { useUSGDepositContext } from "./usg_record_deposit_context"
+import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
+import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
 
 export default function USGDepositContent() {
   const {
@@ -153,37 +151,7 @@ export default function USGDepositContent() {
         </div>
 
         <div className="items-end justify-end gap-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2 font-gilroy">
-                <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
-                <button type="button" title="Slippage">
-                  <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
-                    <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
-                  </div>
-                </button>
-              </BorderPanel>
-            </PopoverTrigger>
-            <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none font-gilroy">
-              <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
-                <div className="flex w-full flex-col items-center justify-between gap-2">
-                  <div className="flex w-full items-center justify-start">Slippage</div>
-                  <input
-                    onChange={(e) => setSlippage(Number(e?.target?.value))}
-                    value={slippage || 0}
-                    placeholder="0.5"
-                    type="number"
-                    className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
-                  />
-                  <div className="mt-2 flex w-full items-center justify-between gap-2">
-                    <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />
-                    <ButtonTab onClick={() => setSlippage(1)} label={"1.0%"} active={slippage === 1} className="rounded-full !px-2 !py-1" />
-                    <ButtonTab onClick={() => setSlippage(2)} label={"2.0%"} active={slippage === 2} className="rounded-full !px-2 !py-1" />
-                  </div>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+          <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
         </div>
       </div>
 

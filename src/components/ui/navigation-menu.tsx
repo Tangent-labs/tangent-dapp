@@ -30,7 +30,7 @@ function NavigationMenuList({ className, ...props }: React.ComponentProps<typeof
   return (
     <NavigationMenuPrimitive.List
       data-slot="navigation-menu-list"
-      className={cn("group flex flex-1 list-none items-center justify-center gap-2", className)}
+      className={cn("group flex flex-1 list-none items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]", className)}
       {...props}
     />
   )
@@ -54,7 +54,7 @@ function NavigationMenuItem({ className, ...props }: React.ComponentProps<typeof
     <NavigationMenuPrimitive.Item
       data-slot="navigation-menu-item"
       className={cn(
-        "relative cursor-pointer px-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-transparent aria-disabled:text-gray-500",
+        "relative cursor-pointer rounded-[10px] px-2 py-2.5 text-sm font-semibold text-white transition-colors duration-200 aria-disabled:text-gray-500",
         className
       )}
       {...props}
@@ -63,7 +63,7 @@ function NavigationMenuItem({ className, ...props }: React.ComponentProps<typeof
 }
 
 const navigationMenuTriggerStyle = cva(
-  "group inline-flex h-9 w-max items-center justify-center font-semibold rounded-[10px] p-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=open]:hover:bg-accent data-[state=open]:text-accent-foreground data-[state=open]:focus:bg-accent data-[state=open]:bg-accent/50 focus-visible:ring-ring/50 outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1"
+  "group inline-flex w-max items-center justify-center font-semibold rounded-[10px] px-2 py-2.5 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=open]:hover:bg-accent data-[state=open]:text-accent-foreground data-[state=open]:focus:bg-accent data-[state=open]:bg-accent/50 focus-visible:ring-ring/50 outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1"
 )
 
 function NavigationMenuTrigger({ className, children, ...props }: React.ComponentProps<typeof NavigationMenuPrimitive.Trigger>) {
@@ -73,7 +73,7 @@ function NavigationMenuTrigger({ className, children, ...props }: React.Componen
       className={cn(navigationMenuTriggerStyle(), "group font-semibold", className)}
       {...props}
     >
-      {children} <ChevronDownIcon className="relative top-[1px] ml-1 size-3 transition duration-300 group-data-[state=open]:rotate-180" aria-hidden="true" />
+      {children} <ChevronDownIcon className="relative top-[1px] ml-1 size-3 transition duration-100 group-data-[state=open]:rotate-180" aria-hidden="true" />
     </NavigationMenuPrimitive.Trigger>
   )
 }
@@ -112,10 +112,7 @@ function NavigationMenuLink({ className, ...props }: React.ComponentProps<typeof
   return (
     <NavigationMenuPrimitive.Link
       data-slot="navigation-menu-link"
-      className={cn(
-        "cursor-pointer text-sm font-semibold text-white transition-colors duration-200 hover:bg-tab hover:bg-clip-text hover:text-transparent aria-disabled:text-gray-500",
-        className
-      )}
+      className={cn("cursor-pointer text-sm font-semibold text-white transition-colors duration-200 aria-disabled:text-gray-500", className)}
       {...props}
     />
   )

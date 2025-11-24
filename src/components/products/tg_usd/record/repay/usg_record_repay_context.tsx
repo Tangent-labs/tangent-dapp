@@ -11,7 +11,7 @@ import { formatDollar, toBigInt } from "@/lib/number_formatter"
 import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
-import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
+import { computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
@@ -206,7 +206,7 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
   }
 
   const zapRepay = async () => {
-    if (!repayWeiValue || !repayAssetInfo || !marketData) return
+    if (!repayWeiValue || !repayAssetInfo || !marketData || !usgRepayedValue) return
 
     setIsZapLoading(true)
 
@@ -215,7 +215,7 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
         repayAssetInfo?.address,
         USG_CONTRACT?.USG,
         repayWeiValue,
-        (BigInt(usgRepayedValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        computedMinAmountOut(usgRepayedValue, slippage),
         currentAddress!,
         USG_CONTRACT.ZAPPER,
         curveRoutes
@@ -224,7 +224,7 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
       const zapMarketData = {
         tokenIn: repayAssetInfo?.address,
         amountIn: repayWeiValue,
-        minAmountOut: (BigInt(usgRepayedValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        minAmountOut: computedMinAmountOut(usgRepayedValue, slippage),
       }
 
       doZapRepay(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData)

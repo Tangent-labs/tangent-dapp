@@ -10,7 +10,7 @@ import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
-import { computeAprVariation, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
+import { computeAprVariation, computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
@@ -292,17 +292,18 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }
 
   const actionZapLeverage = async () => {
-    setIsDepositLoading(true)
     try {
       const walletClient = getWalletClient()
 
-      if (!walletClient || !currentAddress || !depositWeiValue || !borrowWeiValue || !depositAssetInfo) return
+      if (!walletClient || !currentAddress || !depositWeiValue || !borrowWeiValue || !depositAssetInfo || !leveragedCollateralQuote || !zapValue) return
+
+      setIsDepositLoading(true)
 
       const leverageData = await getRoute(
         USG_CONTRACT.USG,
         marketInfo?.collatAddress,
         borrowWeiValue,
-        (BigInt(leveragedCollateralQuote!) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        computedMinAmountOut(leveragedCollateralQuote, slippage),
         marketInfo?.marketAddress,
         USG_CONTRACT.ZAPPER,
         curveRoutes
@@ -312,7 +313,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         depositAssetInfo?.address,
         marketInfo?.collatAddress,
         depositWeiValue,
-        (BigInt(zapValue!) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        computedMinAmountOut(zapValue, slippage),
         marketInfo?.marketAddress,
         currentAddress!,
         curveRoutes,
@@ -321,11 +322,11 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
       doZapLeverage(
         borrowWeiValue,
-        (BigInt(leveragedCollateralQuote!) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        computedMinAmountOut(leveragedCollateralQuote, slippage),
         leverageData!,
         depositAssetInfo?.address,
         depositWeiValue,
-        (BigInt(zapValue!) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        computedMinAmountOut(zapValue, slippage),
         zapData!,
         walletClient,
         marketInfo?.marketAddress

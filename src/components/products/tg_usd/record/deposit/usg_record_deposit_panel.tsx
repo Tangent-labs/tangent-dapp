@@ -231,52 +231,51 @@ export default function USGDepositContent() {
         </div>
       )}
 
-      <div className="flex flex-col gap-2">
-        <Accordion className="w-full" type="single" collapsible>
-          <AccordionItem value="item-1">
-            <BorderPanel className="flex w-full cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
-              <AccordionTrigger>
-                <span className="py-1.5">Recap</span>
-              </AccordionTrigger>
-              <AccordionContent className="w-full">
-                <div className={cn("flex flex-col gap-1 text-xs", isDepositLoading ? "shimmer" : "")}>
-                  {displayAPRVariation && (
-                    <>
-                      <div className="flex w-full items-center justify-between">
-                        <span className="text-subtitle">APR variation : </span>
+      <Accordion className="w-full" type="single" collapsible>
+        <AccordionItem value="item-1">
+          <BorderPanel className="flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
+            <AccordionTrigger>
+              <span className="py-1.5">Recap</span>
+            </AccordionTrigger>
+
+            <AccordionContent className="w-full">
+              <div className={cn("flex flex-col gap-1 text-xs", isDepositLoading ? "shimmer" : "")}>
+                {displayAPRVariation && (
+                  <>
+                    <div className="flex w-full items-center justify-between">
+                      <span className="text-subtitle">APR variation : </span>
+                    </div>
+
+                    <div className="flex w-full items-center justify-between">
+                      <span className="ml-4 italic text-subtitle">Current </span>
+                      <div className="flex items-center justify-center gap-1">
+                        <span className="text-white">{aprVariation.current}</span>
+                        <IconSingleArrow></IconSingleArrow>
+                        <span className="text-tonic">{aprVariation.currentUpdated}</span>
                       </div>
+                    </div>
 
-                      <div className="flex w-full items-center justify-between">
-                        <span className="ml-4 italic text-subtitle">Current </span>
-                        <div className="flex items-center justify-center gap-1">
-                          <span className="text-white">{aprVariation.current}</span>
-                          <IconSingleArrow></IconSingleArrow>
-                          <span className="text-tonic">{aprVariation.currentUpdated}</span>
-                        </div>
+                    <div className="flex w-full items-center justify-between">
+                      <span className="ml-4 italic text-subtitle">Projected </span>
+                      <div className="flex items-center justify-center gap-1">
+                        <span className="text-white">{aprVariation.projected}</span>
+                        <IconSingleArrow></IconSingleArrow>
+                        <span className="text-tonic">{aprVariation.projectedUpdated}</span>
                       </div>
+                    </div>
+                  </>
+                )}
 
-                      <div className="flex w-full items-center justify-between">
-                        <span className="ml-4 italic text-subtitle">Projected </span>
-                        <div className="flex items-center justify-center gap-1">
-                          <span className="text-white">{aprVariation.projected}</span>
-                          <IconSingleArrow></IconSingleArrow>
-                          <span className="text-tonic">{aprVariation.projectedUpdated}</span>
-                        </div>
-                      </div>
-                    </>
-                  )}
+                <div className={cn(displayAPRVariation ? "mt-2 border-t border-white/30 pt-2" : "", "flex w-full items-center justify-between")}>
+                  <span className="text-subtitle">Expected collateral: </span>
 
-                  <div className={cn(displayAPRVariation ? "mt-2 border-t border-white/30 pt-2" : "", "flex w-full items-center justify-between")}>
-                    <span className="text-subtitle">Expected collateral: </span>
-
-                    <span className="font-semibold text-white">{expectedCollateral}</span>
-                  </div>
+                  <span className="font-semibold text-white">{expectedCollateral}</span>
                 </div>
-              </AccordionContent>
-            </BorderPanel>
-          </AccordionItem>
-        </Accordion>
-      </div>
+              </div>
+            </AccordionContent>
+          </BorderPanel>
+        </AccordionItem>
+      </Accordion>
 
       <MarketTransactionError display={!!borrowWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />
 

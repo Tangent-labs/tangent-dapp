@@ -105,12 +105,14 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
         </div>
 
         <Divider className="hidden xl:flex" />
-        <Accordion className="hidden w-full xl:flex" type="single" collapsible>
-          <BorderPanel className="flex w-full cursor-pointer items-center justify-between bg-overlay-panel px-2 backdrop-blur-[60px]">
-            <AccordionItem value="item-1">
-              <AccordionTrigger>
-                <span className="text-md py-3">vAPR Calculator</span>
+
+        <Accordion type="single" collapsible>
+          <AccordionItem value="item-1">
+            <BorderPanel className="flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
+              <AccordionTrigger className="flex w-full justify-between">
+                <span className="py-2 text-sm text-white">vAPR Calculator</span>
               </AccordionTrigger>
+
               <AccordionContent>
                 <div className="flex w-full flex-col items-center justify-center text-primary">
                   <div className="flex w-full items-start justify-start">
@@ -292,9 +294,10 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                   </div>
                 </div>
               </AccordionContent>
-            </AccordionItem>
-          </BorderPanel>
+            </BorderPanel>
+          </AccordionItem>
         </Accordion>
+
         <Divider />
         <USGMarketInfo />
         <TgUsdPositionHistory />

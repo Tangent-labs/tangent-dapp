@@ -29,6 +29,7 @@ export default function USGLeverageContent() {
   const {
     setDepositAsset,
     setIsDepositDisabled,
+    setIsLeverageAllPosition,
     setDepositWeiValue,
     actionApprove,
     handleDepositChange,
@@ -40,6 +41,7 @@ export default function USGLeverageContent() {
     updateBorrowWeiValue,
     actionZapLeverage,
     actionApproveZap,
+    isLeverageAllPosition,
     depositAsset,
     depositWeiValue,
     formState,
@@ -59,6 +61,7 @@ export default function USGLeverageContent() {
     maxDepositString,
     computedMaxLeverage,
     aprVariation,
+    computedDepositAmount,
   } = useUSGLeverageContext()
 
   const { balances } = useUSGContext()
@@ -136,9 +139,20 @@ export default function USGLeverageContent() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex w-full items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-subtitle">Leverage only</span>
-          <Switch checked={isDepositDisabled} onCheckedChange={(v) => setIsDepositDisabled(v)} />
+        <div className="flex items-center justify-between gap-2">
+          {!!marketData?.collateralInfos?.positionCollateralAmount && marketData?.collateralInfos?.positionCollateralAmount > 0n && !isLeverageAllPosition && (
+            <>
+              <span className="text-sm text-subtitle">Leverage only</span>
+              <Switch checked={isDepositDisabled} onCheckedChange={(v) => setIsDepositDisabled(v)} />
+            </>
+          )}
+
+          {!!marketData?.collateralInfos?.positionCollateralAmount && marketData?.collateralInfos?.positionCollateralAmount > 0n && !isDepositDisabled && (
+            <>
+              <span className="text-sm text-subtitle">Leverage all</span>
+              <Switch checked={isLeverageAllPosition} onCheckedChange={(v) => setIsLeverageAllPosition(v)} />
+            </>
+          )}
         </div>
 
         <div className="flex items-center justify-start gap-2">
@@ -212,11 +226,11 @@ export default function USGLeverageContent() {
 
         <LeverageInput
           label="You borrow"
-          depositAmount={!!zapValue ? zapValue : depositWeiValue}
+          depositAmount={computedDepositAmount}
           borrowAsset={USGInfo}
           depositAsset={pricedCollateralInfo}
-          percentage={isDepositDisabled ? 0 : leveragePercentage}
-          setPercentage={isDepositDisabled ? undefined : setLeveragePercentage}
+          percentage={leveragePercentage}
+          setPercentage={setLeveragePercentage}
           onValueChange={(e) => updateBorrowWeiValue(e)}
         />
 
@@ -228,12 +242,10 @@ export default function USGLeverageContent() {
               </AccordionTrigger>
               <AccordionContent className="w-full">
                 <div className={cn("flex flex-col gap-1 text-xs", isDepositLoading ? "shimmer" : "")}>
-                  {!isDepositDisabled && (
-                    <div className="flex w-full items-center justify-between">
-                      <span className="text-subtitle">Leverage : </span>
-                      <span className="text-white">~{leveragePercentage.toFixed(2)}x</span>
-                    </div>
-                  )}
+                  <div className="flex w-full items-center justify-between">
+                    <span className="text-subtitle">Leverage : </span>
+                    <span className="text-white">~{leveragePercentage.toFixed(2)}x</span>
+                  </div>
 
                   {displayAPRVariation && (
                     <>

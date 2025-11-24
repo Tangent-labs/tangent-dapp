@@ -26,6 +26,9 @@ type USGLeverageContextValues = {
   isDepositDisabled: boolean
   setIsDepositDisabled: (arg: boolean) => void
 
+  isLeverageAllPosition: boolean
+  setIsLeverageAllPosition: (arg: boolean) => void
+
   depositWeiValue?: bigint
   setDepositWeiValue: (arg: bigint | undefined) => void
   actionApprove: () => void
@@ -84,6 +87,8 @@ type USGLeverageContextValues = {
   computedMaxLeverage: string
 
   aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
+
+  computedDepositAmount: bigint
 }
 
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
@@ -108,6 +113,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
   const [isDepositDisabled, setIsDepositDisabled] = useState<boolean>(false)
+
+  const [isLeverageAllPosition, setIsLeverageAllPosition] = useState<boolean>(false)
 
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
 
@@ -244,13 +251,13 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }, [depositAsset])
 
   useEffect(() => {
-    if (zapValue && depositWeiValue && borrowWeiValue && leveragedCollateralQuote && !isDepositLoading) {
+    if (zapValue && borrowWeiValue && leveragedCollateralQuote && !isDepositLoading) {
       setCurrentAmounts({
         depositWeiValue: (depositWeiValue || 0n) + (leveragedCollateralQuote || 0n),
         borrowWeiValue: borrowWeiValue || 0n,
         zapValue: (BigInt(zapValue) || 0n) + (leveragedCollateralQuote || 0n),
       })
-    } else if (depositWeiValue && borrowWeiValue && leveragedCollateralQuote && !isDepositLoading) {
+    } else if (borrowWeiValue && leveragedCollateralQuote && !isDepositLoading) {
       setCurrentAmounts({
         depositWeiValue: (depositWeiValue || 0n) + (leveragedCollateralQuote || 0n),
         borrowWeiValue: borrowWeiValue || 0n,
@@ -376,6 +383,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }
 
   const resetAfterLeverageSuccess = () => {
+    setIsLeverageAllPosition(false)
+    setIsDepositDisabled(false)
     setCurrentAmounts({})
     setZapValue(0n)
     setDepositWeiValue(0n)
@@ -396,13 +405,19 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       if (zapValue && leveragedCollateralQuote) {
         quoteDetail.sum = ` ${formatBigIntAsNumber(zapValue || 0n, 18, 3)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 3)}  ~= `
         quoteDetail.result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + BigInt(zapValue || 0n), 18, 3)}  ${collateralInfo?.symbol}`
-      } else if (depositWeiValue && leveragedCollateralQuote) {
+      } else if (depositWeiValue && leveragedCollateralQuote && !isLeverageAllPosition) {
         quoteDetail.sum = ` ${formatBigIntAsNumber(depositWeiValue || 0n, 18, 3)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 3)}  ~= `
         quoteDetail.result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18, 3)}  ${collateralInfo?.symbol}`
+      } else if (leveragedCollateralQuote && isDepositDisabled) {
+        quoteDetail.sum = ` ${formatBigIntAsNumber(marketData?.collateralInfos?.positionCollateralAmount || 0n, 18, 3)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 3)}  ~= `
+        quoteDetail.result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + (marketData?.collateralInfos?.positionCollateralAmount || 0n), 18, 3)}  ${collateralInfo?.symbol}`
+      } else if (depositWeiValue && leveragedCollateralQuote && isLeverageAllPosition) {
+        quoteDetail.sum = ` ${formatBigIntAsNumber(marketData?.collateralInfos?.positionCollateralAmount + (depositWeiValue || 0n), 18, 3)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 3)}  ~= `
+        quoteDetail.result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + (marketData?.collateralInfos?.positionCollateralAmount + (depositWeiValue || 0n)), 18, 3)}  ${collateralInfo?.symbol}`
       }
     }
     return quoteDetail
-  }, [zapValue, depositWeiValue, leveragedCollateralQuote, collateralInfo?.symbol, marketData])
+  }, [zapValue, depositWeiValue, leveragedCollateralQuote, collateralInfo?.symbol, marketData, isLeverageAllPosition, isDepositDisabled])
 
   const aprVariation = useMemo(() => {
     let apr = { current: "", currentUpdated: "-", projected: "", projectedUpdated: "-" }
@@ -505,6 +520,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     if (zapInnerValue === undefined) {
       /* reset */ return
     }
+
     if (!isZapUserInput) return
     const handler = setTimeout(() => {
       handleZapChange({ target: { value: zapInnerValue.toString() } } as React.ChangeEvent<HTMLInputElement>)
@@ -525,6 +541,24 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   const computedMaxLeverage = useMemo(() => {
     return marketData ? `Max leverage: x${Number((1 / (1 - Number(marketData?.constants.maxLTV) / 100000)).toFixed(0))}` : ""
   }, [marketData])
+
+  const computedDepositAmount = useMemo(() => {
+    if (!marketData?.collateralInfos) return 0n
+
+    if (!isDepositDisabled && !isLeverageAllPosition) {
+      return !!zapValue ? zapValue : depositWeiValue || 0n
+    }
+
+    if (isDepositDisabled && !isLeverageAllPosition) {
+      return marketData?.collateralInfos?.positionCollateralAmount
+    }
+
+    if (!isDepositDisabled && isLeverageAllPosition) {
+      return marketData?.collateralInfos?.positionCollateralAmount + (depositWeiValue || 0n)
+    }
+
+    return 0n
+  }, [zapValue, depositWeiValue, isDepositDisabled, isLeverageAllPosition, marketData])
 
   const contextValue: USGLeverageContextValues = {
     collateralInfo,
@@ -591,6 +625,11 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     computedMaxLeverage,
 
     aprVariation,
+
+    isLeverageAllPosition,
+    setIsLeverageAllPosition,
+
+    computedDepositAmount,
   }
 
   return <USGLeverageContext.Provider value={contextValue}>{children}</USGLeverageContext.Provider>

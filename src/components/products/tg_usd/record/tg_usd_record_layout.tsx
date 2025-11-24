@@ -70,8 +70,6 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
               <div className="flex w-full justify-between gap-1">
                 <ButtonTab className="w-full !px-2" active={feature === collateral} label={"Deposit"} onClick={() => onTabClick("deposit")} />
                 <ButtonTab className="w-full !px-2" active={feature === "borrow"} label={"Borrow"} onClick={() => onTabClick("borrow")} />
-                <ButtonTab className="w-full !px-2" active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />
-                <ButtonTab className="w-full !px-2" active={feature === "withdraw"} label={"Withdraw"} onClick={() => onTabClick("withdraw")} />
                 <ButtonTab
                   disabled={!canLeverage}
                   className="w-full !px-2"
@@ -79,6 +77,8 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                   label={"Leverage"}
                   onClick={() => onTabClickLeverage()}
                 />
+                <ButtonTab className="w-full !px-2" active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />
+                <ButtonTab className="w-full !px-2" active={feature === "withdraw"} label={"Withdraw"} onClick={() => onTabClick("withdraw")} />
                 <ButtonTab className="w-full !px-2" active={feature === "liquidate"} label={"Liquidate"} onClick={() => onTabClick("liquidate")} />
               </div>
             </div>

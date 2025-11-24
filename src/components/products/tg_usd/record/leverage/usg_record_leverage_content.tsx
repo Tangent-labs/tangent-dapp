@@ -293,8 +293,13 @@ export default function USGLeverageContent() {
                     </>
                   )}
 
-                  <div className={cn(displayAPRVariation ? "mt-2 border-t border-white/30 pt-2" : "", "flex w-full items-center justify-between")}>
-                    <span className="text-subtitle">Expected : </span>
+                  <div
+                    className={cn(
+                      displayAPRVariation ? "mt-2 border-t border-white/30 pt-2" : "",
+                      "flex w-full flex-col items-start justify-start md:flex-row md:items-center md:justify-between"
+                    )}
+                  >
+                    <span className="text-subtitle">Expected collateral: </span>
                     <span className="text-white">
                       {expectedCollateral?.sum}
                       <span className="font-semibold text-white">{expectedCollateral?.result}</span>

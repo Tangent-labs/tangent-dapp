@@ -96,7 +96,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
   const [isSwapLoading, setIsSwapLoading] = useState(false)
 
-  const [slippage, setSlippage] = useState<number>(1)
+  const [slippage, setSlippage] = useState<number>(0.2)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
 

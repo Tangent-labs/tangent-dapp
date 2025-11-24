@@ -111,7 +111,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
 
   const [isZapUserInput, setIsZapUserInput] = useState<boolean>(false)
 
-  const [slippage, setSlippage] = useState<number>(1)
+  const [slippage, setSlippage] = useState<number>(0.2)
 
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
     if (depositAsset === "ETH") {
@@ -323,21 +323,6 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     }
   }
 
-  const formState = useMemo(
-    () =>
-      getDepositFormState(
-        marketData,
-        depositWeiValue,
-        borrowWeiValue,
-        isDepositAndBorrow,
-        isWellConnected,
-        depositAssetInfo?.address,
-        collateralInfo!,
-        balanceAllowanceData!
-      ),
-    [marketData, isDepositAndBorrow, borrowWeiValue, depositWeiValue, isWellConnected, currentAddress, depositAssetInfo, balanceAllowanceData, isDepositLoading]
-  )
-
   useEffect(() => {
     if (depositAssetInfo) {
       fetchBalanceAllowanceData(depositAssetInfo?.address)
@@ -480,12 +465,12 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
 
   const estimatedZapDollarValue = useMemo(() => {
     if (zapValue && marketData) {
-      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), 18))})`
+      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * BigInt(1000000 - Math.round(slippage * 10000)) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 24), 18))})`
       return result
     }
 
     return ""
-  }, [zapValue])
+  }, [zapValue, slippage])
 
   const maxDepositString = useMemo(() => {
     if (!!balanceAllowanceData && currentAddress && depositAsset !== collateralInfo?.name) {
@@ -522,6 +507,22 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     }
     return result
   }, [zapValue, depositWeiValue, collateralInfo?.symbol, marketAprs, marketData, currentConvexTVL])
+
+  const formState = useMemo(
+    () =>
+      getDepositFormState(
+        marketData,
+        depositWeiValue,
+        borrowWeiValue,
+        isDepositAndBorrow,
+        isWellConnected,
+        depositAssetInfo?.address,
+        collateralInfo!,
+        balanceAllowanceData!,
+        maxBorrowableValue || 0n
+      ),
+    [marketData, isDepositAndBorrow, borrowWeiValue, depositWeiValue, isWellConnected, currentAddress, depositAssetInfo, balanceAllowanceData, isDepositLoading]
+  )
 
   const contextValue: USGDepositContextValues = {
     marketInfo,

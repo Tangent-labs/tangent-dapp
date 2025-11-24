@@ -87,7 +87,7 @@ export function LeverageInput({
   }, [innerValue, depositAsset])
 
   const dollarDepositDisplay = useMemo(() => {
-    if (innerValue && borrowAsset?.decimals && borrowAsset?.price) {
+    if (innerValue && Number(innerValue) && borrowAsset?.decimals && borrowAsset?.price) {
       const val = Number(formatUnits(toBigInt(Number(innerValue), 18), borrowAsset.decimals)) * borrowAsset.price
       return `(${formatDollar(val)})`
     }
@@ -107,7 +107,8 @@ export function LeverageInput({
         <div className="flex items-center justify-start">
           <input
             {...props}
-            type="string"
+            type="number"
+            step="any"
             ref={inputRef}
             value={innerValue}
             onInput={handleInputChange}

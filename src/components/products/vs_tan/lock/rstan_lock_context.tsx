@@ -101,7 +101,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
 
   const [swapAssetPrice, setSwapAssetPrice] = useState<number>(0)
 
-  const [slippage, setSlippage] = useState<number>(1)
+  const [slippage, setSlippage] = useState<number>(0.2)
 
   const [depositPosition, setDepositPosition] = useState<string>("New")
 

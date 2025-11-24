@@ -98,7 +98,7 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
 
   const [percentage, setPercentage] = useState<number>(0)
 
-  const [slippage, setSlippage] = useState<number>(1)
+  const [slippage, setSlippage] = useState<number>(0.2)
 
   const [isRepayMax, setIsRepayMax] = useState<boolean>(false)
 

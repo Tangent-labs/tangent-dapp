@@ -32,7 +32,7 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
               type="number"
               min={0.1}
               step={0.1}
-              className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
+              className="w-full rounded-[10px] border border-white/30 bg-transparent pl-2 focus:outline-none"
             />
             <div className="mt-2 flex w-full items-center justify-between gap-2">
               <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />

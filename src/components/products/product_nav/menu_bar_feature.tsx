@@ -124,7 +124,7 @@ export default function MenuBarFeature() {
 
             <button
               onClick={() => router.push("/swap")}
-              className="gradient-border-btn hidden cursor-pointer px-4 py-2.5 font-gilroy text-sm font-semibold hover:border-none hover:bg-button-active xl:flex"
+              className="hidden cursor-pointer rounded-[10px] border border-button-active px-4 py-[9px] font-gilroy text-sm font-semibold hover:border-black hover:bg-button-active xl:flex"
             >
               Swap
             </button>

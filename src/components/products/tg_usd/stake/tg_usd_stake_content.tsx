@@ -132,7 +132,7 @@ export default function USGStakeContent() {
               <span className="text-sm text-subtitle">sUSG</span>
               <span className="text-lg font-semibold">{formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 2)}</span>
             </div>
-            <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-1">
+            <div className="flex flex-col items-center justify-center rounded-[10px] bg-button-active px-8 py-1">
               <span className="text-black">APY</span>
               <span className="text-lg font-semibold">{sUSGCurrentAPY.toFixed(2)}%</span>
             </div>

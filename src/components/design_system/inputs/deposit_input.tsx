@@ -145,7 +145,7 @@ export function DepositInput({
               disabled={disabled}
               value={percentage}
               onChange={handleSliderChange}
-              className={cn("mt-3 h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]", disabled ? "cursor-default" : "cursor-pointer")}
+              className={cn("mt-3 h-1.5 w-full cursor-pointer appearance-none rounded-[10px] bg-[#070707]", disabled ? "cursor-default" : "cursor-pointer")}
               style={{
                 background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
               }}

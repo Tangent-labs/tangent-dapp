@@ -146,7 +146,7 @@ export const InputSelectLockPosition = ({
         max="100"
         value={percentage}
         onChange={handleSliderChange}
-        className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]"
+        className="h-2 w-full cursor-pointer appearance-none rounded-[10px] bg-[#070707]"
         style={{
           background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
         }}

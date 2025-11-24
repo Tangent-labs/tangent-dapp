@@ -100,7 +100,7 @@ export const VsTanLayoutContent = ({
               <div className="text-md font-semibold text-white">$1.23</div>
             </div>
 
-            <div className="flex w-full flex-col items-center justify-center rounded-lg bg-button-active py-2">
+            <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-button-active py-2">
               <div className="text-xs font-semibold text-black">APR</div>
               <div className="text-md font-semibold text-white">{formatBigInt(lockData?.tanAPR, 18, 2)}%</div>
             </div>

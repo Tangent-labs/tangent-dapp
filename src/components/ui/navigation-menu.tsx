@@ -112,7 +112,10 @@ function NavigationMenuLink({ className, ...props }: React.ComponentProps<typeof
   return (
     <NavigationMenuPrimitive.Link
       data-slot="navigation-menu-link"
-      className={cn("cursor-pointer text-sm font-semibold text-white transition-colors duration-200 aria-disabled:text-gray-500", className)}
+      className={cn(
+        "cursor-pointer rounded-[10px] p-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-white/10 aria-disabled:text-gray-500",
+        className
+      )}
       {...props}
     />
   )

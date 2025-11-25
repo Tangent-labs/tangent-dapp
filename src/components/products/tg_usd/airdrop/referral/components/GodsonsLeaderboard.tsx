@@ -1,13 +1,25 @@
-import { IconTrophy } from "@/components/icons/icon_trophy"
-import { formatNumber } from "@/lib/number_formatter"
+"use client"
+
+import { toast } from "react-toastify"
+import { useClipboard } from "@/hooks/useClipboard"
 import { formatAddress } from "@/lib/other_formatter"
+import { formatNumber } from "@/lib/number_formatter"
 import { GodsonLeaderboard } from "../../../tg_usd_type"
+import { IconTrophy } from "@/components/icons/icon_trophy"
+import { ToastComponent } from "@/components/design_system/toast"
 
 type GodsonsLeaderboardProps = {
   godsonsLeaderboard: GodsonLeaderboard
 }
 
 export const GodsonsLeaderboard = ({ godsonsLeaderboard }: GodsonsLeaderboardProps) => {
+  const { copy } = useClipboard()
+
+  const onClickAddress = (address: string) => {
+    copy(address)
+    toast.success(ToastComponent, { data: { type: "Success", content: "Address copied to clipboard" } })
+  }
+
   return (
     <>
       <div className="flex w-full items-start justify-start">
@@ -26,7 +38,9 @@ export const GodsonsLeaderboard = ({ godsonsLeaderboard }: GodsonsLeaderboardPro
               {el?.rank === 3 && <IconTrophy className="w-5 fill-amber-800"></IconTrophy>}
               {el.rank}
             </div>
-            <div className="flex w-4/12 items-start justify-start font-semibold">{formatAddress(el.address, 4)}</div>
+            <div onClick={() => onClickAddress(el?.address)} className="flex w-4/12 items-start justify-start font-semibold">
+              {formatAddress(el.address, 4)}
+            </div>
             <div className="flex w-3/12 items-center justify-center bg-pink bg-clip-text text-xs font-semibold text-transparent">
               {formatNumber(el.lpPoints, 0)}
             </div>

@@ -19,6 +19,12 @@ import { IconTangentLogo } from "@/components/icons/icon_tangent_logo"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 import { formatCompact } from "@/lib/number_formatter"
+import { IconHarvest } from "@/components/icons/icon_harvest"
+import { IconForum } from "@/components/icons/icon_forum"
+import { IconSnapshot } from "@/components/icons/icon_snapshot"
+import { IconTask } from "@/components/icons/icon_task"
+import { IconReferral } from "@/components/icons/icon_referral"
+import { IconBoosts } from "@/components/icons/icon_boosts"
 
 export default function MenuBarFeature() {
   const { USGCurrentSupply, sUSGCurrentAPY } = useRootContext()
@@ -85,9 +91,20 @@ export default function MenuBarFeature() {
                     <NavigationMenuTrigger>DAO</NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-[#070707] p-2">
-                        <NavigationMenuLink onClick={() => router.push("/harvest")}>Harvest</NavigationMenuLink>
-                        <NavigationMenuLink>Forum</NavigationMenuLink>
-                        <NavigationMenuLink>Snapshot</NavigationMenuLink>
+                        <NavigationMenuLink className="flex items-center justify-start gap-2" onClick={() => router.push("/harvest")}>
+                          <IconHarvest className="w-2"></IconHarvest>
+                          Harvest
+                        </NavigationMenuLink>
+
+                        <NavigationMenuLink className="flex items-center justify-start gap-2">
+                          <IconForum className="w-3"></IconForum>
+                          Forum
+                        </NavigationMenuLink>
+
+                        <NavigationMenuLink className="flex items-center justify-start gap-2">
+                          <IconSnapshot className="w-3"></IconSnapshot>
+                          Snapshot
+                        </NavigationMenuLink>
                       </div>
                     </NavigationMenuContent>
                   </NavigationMenuDropdown>
@@ -98,9 +115,20 @@ export default function MenuBarFeature() {
                     <NavigationMenuTrigger>Airdrop</NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-[#070707] p-2">
-                        <NavigationMenuLink onClick={() => router.push("/tasks")}>Task</NavigationMenuLink>
-                        <NavigationMenuLink onClick={() => router.push("/referral")}>Referral</NavigationMenuLink>
-                        <NavigationMenuLink onClick={() => router.push("/boosts")}>Boosts</NavigationMenuLink>
+                        <NavigationMenuLink className="flex items-center justify-start gap-2" onClick={() => router.push("/tasks")}>
+                          <IconTask className="w-3"></IconTask>
+                          Task
+                        </NavigationMenuLink>
+
+                        <NavigationMenuLink className="flex items-center justify-start gap-2" onClick={() => router.push("/referral")}>
+                          <IconReferral className="w-3"></IconReferral>
+                          Referral
+                        </NavigationMenuLink>
+
+                        <NavigationMenuLink className="flex items-center justify-start gap-2" onClick={() => router.push("/boosts")}>
+                          <IconBoosts className="w-3"></IconBoosts>
+                          Boosts
+                        </NavigationMenuLink>
                       </div>
                     </NavigationMenuContent>
                   </NavigationMenuDropdown>

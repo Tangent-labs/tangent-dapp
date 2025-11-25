@@ -353,7 +353,9 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
     } else {
       setIsRepayMax(false)
       setRepayWeiValue(0n)
+      setWithdrawWeiValue(0n)
       setPercentage(0)
+      setWithdrawPercentage(0)
     }
   }
 

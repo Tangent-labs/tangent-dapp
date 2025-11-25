@@ -6,8 +6,8 @@ import { useUSGContext } from "../tg_usd_context"
 import { USG_CONTRACT } from "../tg_usd_repository"
 import { useRootContext } from "../../root/root_context"
 import { convertRange } from "../../root/root_controller"
+import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
 import { StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../tg_usd_type"
-import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computeSUSGAprVariation, doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedUSG, getFormState } from "./tg_usd_stake_controller"
@@ -26,7 +26,6 @@ type USGStakeContextValues = {
   actionStake: () => void
   actionUnstake: () => void
   currentAssetInfo?: StakingAssetInfo
-  depositAssetOptions: SelectAssetLogoOption[]
   receivedTokenInfo: AssetDataPriced
   hasToApprove: boolean
   computeProjectedValue: number
@@ -70,24 +69,6 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   useEffect(() => {
     fetchsUSGHistoryAPY("1m")
   }, [])
-
-  const depositAssetOptions = useMemo(() => {
-    return currentFeature === "stake"
-      ? ([
-          {
-            label: "USG",
-            value: "asset",
-            logo: "USG",
-          },
-        ] as SelectAssetLogoOption[])
-      : ([
-          {
-            label: "sUSG",
-            value: "sdAsset",
-            logo: "sUSG",
-          },
-        ] as SelectAssetLogoOption[])
-  }, [currentFeature])
 
   const receivedTokenInfo = useMemo(() => {
     if (currentFeature === "stake") {
@@ -273,7 +254,6 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     weiValue,
     expected,
     currentAssetInfo,
-    depositAssetOptions,
     receivedTokenInfo,
     hasToApprove,
     formState,

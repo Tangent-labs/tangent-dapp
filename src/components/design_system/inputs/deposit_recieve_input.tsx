@@ -1,15 +1,13 @@
 "use client"
 
+import { cn } from "@/lib/utils"
+import { formatUnits } from "viem"
 import { AssetDataPriced } from "@/types"
+import BorderPanel from "../structure/border_panel"
+import DisplayReceivePanel from "./display_recieve_panel"
+import { IconChevron } from "@/components/icons/icon_chevron"
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatDollar, toBigInt } from "@/lib/number_formatter"
-import { formatUnits } from "viem"
-import { cn } from "@/lib/utils"
-import DisplayReceivePanel from "./display_recieve_panel"
-import { IconCircleHelp } from "@/components/icons/icon_circle_help"
-import { IconThunder } from "@/components/icons/icon_thunder"
-import BorderPanel from "../structure/border_panel"
-import { IconChevron } from "@/components/icons/icon_chevron"
 
 type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
@@ -26,11 +24,9 @@ type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   receiveAssetDisplay?: ReactNode
   onValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
-  isZapping?: boolean
   isLoading?: boolean
   percentage?: number
   setPercentage?: (value: number) => void
-  displaySliderInput?: boolean
 }
 
 export function DepositReceiveInput({
@@ -46,10 +42,8 @@ export function DepositReceiveInput({
   onValueChange,
   depositSelect = <></>,
   receiveAssetDisplay = <></>,
-  isZapping = false,
   isLoading = false,
   percentage = 0,
-  displaySliderInput = false,
   setPercentage,
   ...props
 }: DepositReceiveInputProps) {
@@ -112,18 +106,10 @@ export function DepositReceiveInput({
       <BorderPanel
         className={`${isLoading ? "shimmer" : ""} flex flex-col bg-white bg-opacity-[3%] p-2 transition-colors duration-200 ease-in-out hover:bg-white/10`}
       >
-        <div className="flex w-full justify-between">
-          <div className="text-sm text-subtitle">{labelDeposit}</div>
-          {isZapping && (
-            <div className="flex items-center justify-center gap-1">
-              <div className="text-sm text-subtitle">Zap</div>
-              <IconThunder className="h-auto w-[8px] text-row-tonic" />
-              <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
-            </div>
-          )}
-        </div>
-        <div className="mb-2 flex justify-between">
-          <div className="text-xl">
+        <div className="text-sm text-subtitle">{labelDeposit}</div>
+
+        <div className="mb-2 flex items-center justify-between">
+          <div className="flex items-center justify-center">
             <input
               {...props}
               disabled={isLoading}
@@ -131,28 +117,16 @@ export function DepositReceiveInput({
               value={innerValue}
               placeholder="Amount"
               onInput={handleInputChange}
-              className={cn(
-                "min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
-              )}
+              className="auto-grow bg-transparent text-[24px] font-semibold focus:outline-none"
             />
+            <div className="text-xs text-subtitle">{dollarDepositDisplay}</div>
           </div>
+
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
-        <div className="flex justify-between text-xs text-subtitle">
-          <div>{dollarDepositDisplay}</div>
 
-          <BorderPanel
-            className="flex w-10 cursor-pointer items-center bg-button-active px-1 text-xs text-white hover:font-semibold"
-            onClick={() => {
-              if (setMaxBalance) setMaxBalance()
-            }}
-          >
-            Max.
-          </BorderPanel>
-        </div>
-
-        {displaySliderInput && (
-          <>
+        <div className="flex w-full cursor-pointer items-center gap-2">
+          <div className="flex w-full flex-col">
             <input
               type="range"
               min="0"
@@ -195,8 +169,16 @@ export function DepositReceiveInput({
                 ></div>
               </div>
             </div>
-          </>
-        )}
+          </div>
+          <BorderPanel
+            className="flex w-10 cursor-pointer items-center bg-button-active px-1 text-xs text-white hover:font-semibold"
+            onClick={() => {
+              if (setMaxBalance) setMaxBalance()
+            }}
+          >
+            Max.
+          </BorderPanel>
+        </div>
       </BorderPanel>
 
       <div className="my-2 flex w-full cursor-pointer items-center justify-center border-none">

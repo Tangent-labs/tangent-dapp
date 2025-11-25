@@ -5,12 +5,12 @@ import { useMemo, useState } from "react"
 import { USGStakingInfo } from "../../tg_usd_type"
 import { formatNumber } from "@/lib/number_formatter"
 import { ForecastGraph } from "../tg_usd_staking_forecast"
+import Divider from "@/components/design_system/structure/divider"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import { SlidingTabs } from "../../airdrop/tasks/components/SlidingTabs"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import Divider from "@/components/design_system/structure/divider"
+import { Area, AreaChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 interface PerformanceHistoryPanelProps {
   sUSGCurrentAPY: number
@@ -22,6 +22,25 @@ interface PerformanceHistoryPanelProps {
   apyHistory: Array<{ date: number; uv: number }>
   fetchsUSGHistoryAPY: (s: string) => Promise<void>
   computeProjection: (stakeInfo: USGStakingInfo, timeFrame: number, apr: number, addedLiquidity?: bigint) => string
+}
+
+const CustomAverageDisplay = (props: { averageApy: number; viewBox?: { y: number; width: number } }) => {
+  const { viewBox, averageApy } = props
+
+  if (!viewBox || !averageApy) return null
+
+  const { width, y } = viewBox
+
+  const labelY = y - 8
+
+  return (
+    <g>
+      <rect x={width + 30} y={labelY - 30} width={80} rx={15} className="rounded-[10px]" height={30} fill="rgba(10,10,20,0.95)" />
+      <text x={width + 70} y={labelY - 10} textAnchor="middle" fill="#d9fb0b" fontSize={13} fontWeight={700}>
+        Avg {averageApy.toFixed(2)}%
+      </text>
+    </g>
+  )
 }
 
 const CustomsUSGPerformanceTooltip = (props: {
@@ -38,9 +57,9 @@ const CustomsUSGPerformanceTooltip = (props: {
       <div className="flex gap-1">
         <div className="font-extralight text-white">{date.toDateString()}</div>
       </div>
-      <div className="flex gap-1">
-        <div className="h-3 w-3 rounded-[3px] bg-tonic"></div>
-        <div className="text-white"> APR : {value.toFixed(2)}%</div>
+      <div className="flex items-center justify-center gap-1">
+        <div className="h-3 w-3 rounded-[3px] bg-button-active"></div>
+        <div className="text-xs font-semibold text-white"> APR: {value.toFixed(2)}%</div>
       </div>
     </div>
   )
@@ -66,6 +85,12 @@ export default function PerformanceHistoryPanel({
 }: PerformanceHistoryPanelProps) {
   const [selectedFeature, setSelectedFeature] = useState<string>("Projected earnings")
 
+  const averageApy = useMemo(() => {
+    if (!apyHistory || apyHistory.length === 0) return 0
+    const sum = apyHistory.reduce((acc, point) => acc + point.uv, 0)
+    return sum / apyHistory.length
+  }, [apyHistory])
+
   const sUSGBalance = useMemo(() => {
     return Number(formatUnits(USGsUSGMetrics?.sUSGBalance ?? 0n, 18))
   }, [USGsUSGMetrics?.USGBalance])
@@ -75,25 +100,25 @@ export default function PerformanceHistoryPanel({
   }, [weiValue])
 
   return (
-    <div className="flex h-full w-full flex-col items-stretch justify-stretch lg:w-2/3">
+    <div className="hidden h-full w-full flex-col items-stretch justify-stretch lg:flex lg:w-7/12 xl:w-2/3">
       <div className="w-full">
         <SlidingTabs labels={["Projected earnings", "Position APR"]} value={selectedFeature} onSwitchTab={(e: string) => setSelectedFeature(e)} />
       </div>
 
       <div className="mt-6 flex w-full flex-col rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px]">
-        {selectedFeature === "Projected earnings" && <ForecastGraph initialInvestment={sUSGBalance} apr={sUSGCurrentAPY} additionalLiquidity={addLiq} />}
+        {selectedFeature === "Projected earnings" && <ForecastGraph currentInvestment={sUSGBalance} apr={sUSGCurrentAPY} newLiquidity={addLiq} />}
 
         {selectedFeature === "Position APR" && (
           <>
             <div className="flex w-full items-center justify-end">
               <div className="mt-2 flex gap-2">
-                <ButtonTab onClick={() => fetchsUSGHistoryAPY("1w")} label={"1w"} active={sUSGSelectedTab === "1w"} className="rounded-full !py-1" />
                 <ButtonTab onClick={() => fetchsUSGHistoryAPY("1m")} label={"1m"} active={sUSGSelectedTab === "1m"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchsUSGHistoryAPY("3m")} label={"3m"} active={sUSGSelectedTab === "3m"} className="rounded-full !py-1" />
                 <ButtonTab onClick={() => fetchsUSGHistoryAPY("1y")} label={"1y"} active={sUSGSelectedTab === "1y"} className="rounded-full !py-1" />
               </div>
             </div>
 
-            <div className="mb-8 mt-3 flex h-72 min-h-72 w-full">
+            <div className="mb mt-3 flex h-72 min-h-72 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                   width={500}
@@ -107,37 +132,33 @@ export default function PerformanceHistoryPanel({
                   }}
                 >
                   <defs>
-                    <linearGradient id="yellowGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#FBF911" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="#FBF911" stopOpacity={0} />
+                    <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#0075FF" stopOpacity={0.6} />
+                      <stop offset="100%" stopColor="#00c2ff" stopOpacity={0} />
                     </linearGradient>
 
                     <linearGradient id="lineStroke" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0.08%" stopColor="#FBF911" />
-                      <stop offset="100%" stopColor="#99FF00" />
-                    </linearGradient>
-
-                    <linearGradient id="activeDotGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0.08%" stopColor="#FBF911" />
-                      <stop offset="100%" stopColor="#99FF00" />
+                      <stop offset="0.08%" stopColor="#0075FF" />
+                      <stop offset="100%" stopColor="#00c2ff" />
                     </linearGradient>
                   </defs>
 
                   <XAxis dataKey="date" tickFormatter={formatXAxis} scale="point" padding={{ left: 10, right: 10 }} />
-                  <YAxis orientation="right" tickFormatter={formatYAxis} />
+
+                  <YAxis orientation="left" tickFormatter={formatYAxis} />
 
                   <Area
                     type="monotone"
                     dataKey="uv"
                     stroke="url(#lineStroke)"
                     strokeWidth={2}
-                    fill="url(#yellowGradient)"
+                    fill="url(#blueGradient)"
                     dot={false}
                     activeDot={{
                       r: 3,
-                      stroke: "url(#activeDotGradient)",
+                      stroke: "#0075FF",
                       strokeWidth: 3,
-                      fill: "url(#activeDotGradient)",
+                      fill: "#0075FF",
                       filter: "drop-shadow(0 0 12px rgba(251, 249, 17, 0.6))",
                     }}
                   />
@@ -146,6 +167,14 @@ export default function PerformanceHistoryPanel({
                     cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
                     allowEscapeViewBox={{ x: false, y: false }}
                     content={<CustomsUSGPerformanceTooltip />}
+                  />
+
+                  <ReferenceLine
+                    y={averageApy}
+                    stroke="#d9fb0b"
+                    strokeDasharray="8 6"
+                    strokeWidth={2}
+                    label={<CustomAverageDisplay averageApy={averageApy} />}
                   />
                 </AreaChart>
               </ResponsiveContainer>

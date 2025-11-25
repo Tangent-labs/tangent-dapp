@@ -4,6 +4,8 @@ import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Address, EstimateContractGasParameters, formatUnits, maxUint256, WalletClient, WriteContractParameters } from "viem"
 
+export const COMPOUNDING_PERIODS_PER_YEAR = 8760 // every hour
+
 export function getFormState(stakeInfo: USGStakingInfo, currentFeature: "stake" | "unstake", weiValue?: bigint, expected?: bigint, isWellConnected?: boolean) {
   let isApproved = false
   const reasons: string[] = []
@@ -122,9 +124,11 @@ export const computeProjection = (stakeInfo: USGStakingInfo, timeFrame: number, 
 
   if (addedLiquidity) {
     projection =
-      (Number(formatUnits(addedLiquidity, 18)) + Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18))) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
+      (Number(formatUnits(addedLiquidity, 18)) + Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18))) *
+      Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeFrame)
   } else {
-    projection = Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
+    projection =
+      Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)) * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeFrame)
   }
   return formatNumber(projection, 0)
 }

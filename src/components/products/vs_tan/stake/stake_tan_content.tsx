@@ -169,7 +169,6 @@ export default function StakeTanContent() {
             onValueChange={(value: bigint | undefined) => setWeiValue(value)}
             percentage={stakePercentage}
             setPercentage={setStakePercentage}
-            displaySliderInput={true}
           />
 
           <FormButtons

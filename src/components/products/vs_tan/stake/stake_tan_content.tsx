@@ -189,7 +189,7 @@ export default function StakeTanContent() {
           <ForecastGraph
             initialInvestment={Number(formatUnits(TANsTANMetrics?.sTanBalance || 0n, 18))}
             apr={15}
-            additionalLiquidity={currentFeature === "stake" ? (weiValue ? Number(formatUnits(weiValue!, 18)) : 0) : 0}
+            additionalLiquidity={weiValue ? Number(formatUnits(weiValue!, 18)) : 0}
           ></ForecastGraph>
 
           <div className="flex w-full items-center justify-between gap-2">

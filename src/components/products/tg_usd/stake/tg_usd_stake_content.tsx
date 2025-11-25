@@ -150,7 +150,7 @@ export default function USGStakeContent() {
             depositAsset={currentAssetInfo?.asset}
             receiveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18)))?.toFixed(2)}
             balance={currentAssetInfo?.balance}
-            receiveAmount={formatBigInt(expected, 18, 2)}
+            receiveAmount={Number(formatUnits(expected || 0n, 18)).toFixed(0)}
             setMaxBalance={() => setWeiValue(currentAssetInfo?.balance)}
             onValueChange={(value: bigint | undefined) => setWeiValue(value)}
             percentage={stakePercentage}
@@ -202,16 +202,16 @@ export default function USGStakeContent() {
 
               <EvolutionBox
                 className="w-full"
-                originalValue={computeProjection(USGsUSGMetrics!, 1 / 12, sUSGCurrentAPY)}
+                originalValue={computeProjection(USGsUSGMetrics!, 1 / 12, sUSGCurrentAPY, currentFeature)}
                 label="30 days projection"
-                newValue={computeProjection(USGsUSGMetrics!, 1 / 12, sUSGCurrentAPY, weiValue)}
+                newValue={computeProjection(USGsUSGMetrics!, 1 / 12, sUSGCurrentAPY, currentFeature, weiValue)}
               />
 
               <EvolutionBox
                 className="w-full"
-                originalValue={computeProjection(USGsUSGMetrics!, 1, sUSGCurrentAPY)}
+                originalValue={computeProjection(USGsUSGMetrics!, 1, sUSGCurrentAPY, currentFeature)}
                 label="1 year projection"
-                newValue={computeProjection(USGsUSGMetrics!, 1, sUSGCurrentAPY, weiValue)}
+                newValue={computeProjection(USGsUSGMetrics!, 1, sUSGCurrentAPY, currentFeature, weiValue)}
               />
             </div>
           )}

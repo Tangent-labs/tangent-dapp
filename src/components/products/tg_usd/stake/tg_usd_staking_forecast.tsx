@@ -80,7 +80,7 @@ const CustomTooltip = (props: {
     <div className="pointer-events-none rounded-xl bg-[#070707] px-3 py-2 shadow-xl ring-1 ring-white/20 backdrop-blur">
       <div className="mb-1 text-[10px] uppercase tracking-wide text-white/60">{props.fmtLabel(Number(props.label))}</div>
       <div className="flex flex-col gap-1.5">
-        {total && props.newLiquidity > 0 && (
+        {total && base && props.newLiquidity > 0 && Number(total?.value) > Number(base?.value) && (
           <div className="flex items-center gap-2">
             <span className="inline-block h-2 w-2 rounded-full" style={{ background: "linear-gradient(90deg,#FBF911 0%,#99FF00 100%)" }} />
             <span className="text-xs text-white/70">Compounding Forecast</span>
@@ -91,8 +91,16 @@ const CustomTooltip = (props: {
         {base && (
           <div className="flex items-center gap-2">
             <span className="inline-block h-2 w-2 rounded-full bg-white" />
-            <span className="text-xs text-white/70">Base Forecast</span>
+            <span className="text-xs text-white/70">Current Forecast</span>
             <span className="text-sm font-semibold">{formatDollar(Number(base.value))}</span>
+          </div>
+        )}
+
+        {total && base && props.newLiquidity > 0 && Number(total?.value) < Number(base?.value) && (
+          <div className="flex items-center gap-2">
+            <span className="inline-block h-2 w-2 rounded-full" style={{ background: "linear-gradient(90deg,#FBF911 0%,#99FF00 100%)" }} />
+            <span className="text-xs text-white/70">Forecast if unstake</span>
+            <span className="text-sm font-semibold">{formatDollar(Number(total.value))}</span>
           </div>
         )}
       </div>
@@ -104,11 +112,12 @@ interface ForecastGraphProps {
   currentInvestment: number
   newLiquidity: number
   apr: number
+  currentFeature: string
 }
 
 type RangeKey = "1m" | "3m" | "1y"
 
-export const ForecastGraph = ({ currentInvestment, newLiquidity, apr }: ForecastGraphProps) => {
+export const ForecastGraph = ({ currentInvestment, newLiquidity, apr, currentFeature }: ForecastGraphProps) => {
   const [range, setRange] = useState<RangeKey>("1m")
 
   const {
@@ -160,11 +169,19 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apr }: Forecast
       const t = date.getTime()
       const timeInYears = (t - now.getTime()) / MS_PER_YEAR
 
-      const existingCompounded =
-        newLiquidity + currentInvestment * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeInYears)
+      let existingCompounded = 0
+      let newCompounded = 0
 
-      const newCompounded =
-        (currentInvestment + newLiquidity) * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeInYears)
+      if (currentFeature === "stake") {
+        existingCompounded =
+          newLiquidity + currentInvestment * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeInYears)
+
+        newCompounded = (currentInvestment + newLiquidity) * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeInYears)
+      } else {
+        existingCompounded = currentInvestment * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeInYears)
+
+        newCompounded = (currentInvestment - newLiquidity) * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeInYears)
+      }
 
       points.push({
         t,

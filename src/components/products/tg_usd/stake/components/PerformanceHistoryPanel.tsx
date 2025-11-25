@@ -15,13 +15,13 @@ import { Area, AreaChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YA
 interface PerformanceHistoryPanelProps {
   sUSGCurrentAPY: number
   USGsUSGMetrics: USGStakingInfo
-  currentFeature: "stake" | "unstake" | string
+  currentFeature: "stake" | "unstake"
   weiValue: bigint
   computeProjectedValue: number
   sUSGSelectedTab: string
   apyHistory: Array<{ date: number; uv: number }>
   fetchsUSGHistoryAPY: (s: string) => Promise<void>
-  computeProjection: (stakeInfo: USGStakingInfo, timeFrame: number, apr: number, addedLiquidity?: bigint) => string
+  computeProjection: (stakeInfo: USGStakingInfo, timeFrame: number, apr: number, currentFeature: "stake" | "unstake", amount?: bigint) => string
 }
 
 const CustomAverageDisplay = (props: { averageApy: number; viewBox?: { y: number; width: number } }) => {
@@ -96,7 +96,7 @@ export default function PerformanceHistoryPanel({
   }, [USGsUSGMetrics?.USGBalance])
 
   const addLiq = useMemo(() => {
-    return currentFeature === "stake" ? (weiValue ? Number(formatUnits(weiValue, 18)) : 0) : 0
+    return weiValue ? Number(formatUnits(weiValue, 18)) : 0
   }, [weiValue])
 
   return (
@@ -106,7 +106,9 @@ export default function PerformanceHistoryPanel({
       </div>
 
       <div className="mt-6 flex w-full flex-col rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px]">
-        {selectedFeature === "Projected earnings" && <ForecastGraph currentInvestment={sUSGBalance} apr={sUSGCurrentAPY} newLiquidity={addLiq} />}
+        {selectedFeature === "Projected earnings" && (
+          <ForecastGraph currentFeature={currentFeature} currentInvestment={sUSGBalance} apr={sUSGCurrentAPY} newLiquidity={addLiq} />
+        )}
 
         {selectedFeature === "Position APR" && (
           <>
@@ -195,16 +197,16 @@ export default function PerformanceHistoryPanel({
 
             <EvolutionBox
               className="w-full"
-              originalValue={computeProjection(USGsUSGMetrics!, 1 / 12, sUSGCurrentAPY)}
+              originalValue={computeProjection(USGsUSGMetrics!, 1 / 12, sUSGCurrentAPY, currentFeature)}
               label="30 days projection"
-              newValue={computeProjection(USGsUSGMetrics!, 1 / 12, sUSGCurrentAPY, weiValue)}
+              newValue={computeProjection(USGsUSGMetrics!, 1 / 12, sUSGCurrentAPY, currentFeature, weiValue)}
             />
 
             <EvolutionBox
               className="w-full"
-              originalValue={computeProjection(USGsUSGMetrics!, 1, sUSGCurrentAPY)}
+              originalValue={computeProjection(USGsUSGMetrics!, 1, sUSGCurrentAPY, currentFeature)}
               label="1 year projection"
-              newValue={computeProjection(USGsUSGMetrics!, 1, sUSGCurrentAPY, weiValue)}
+              newValue={computeProjection(USGsUSGMetrics!, 1, sUSGCurrentAPY, currentFeature, weiValue)}
             />
           </div>
         )}

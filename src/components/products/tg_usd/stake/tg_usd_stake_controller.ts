@@ -119,18 +119,31 @@ export const doStakeTgUSD = async ({ walletClient, stakingAddress, weiValue }: {
   return hash
 }
 
-export const computeProjection = (stakeInfo: USGStakingInfo, timeFrame: number, apr: number, addedLiquidity?: bigint) => {
+export const computeProjection = (stakeInfo: USGStakingInfo, timeFrame: number, apr: number, currentFeature: "stake" | "unstake", amount?: bigint) => {
   let projection = 0
 
-  if (addedLiquidity) {
-    projection =
-      (Number(formatUnits(addedLiquidity, 18)) + Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18))) *
-      Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeFrame)
+  if (currentFeature === "stake") {
+    if (amount) {
+      projection =
+        (Number(formatUnits(amount, 18)) + Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18))) *
+        Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeFrame)
+    } else {
+      projection =
+        Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)) * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeFrame)
+    }
+
+    return formatNumber(projection, 0)
   } else {
-    projection =
-      Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)) * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeFrame)
+    if (amount) {
+      projection =
+        (Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)) - Number(formatUnits(amount, 18))) *
+        Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeFrame)
+    } else {
+      projection =
+        Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)) * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeFrame)
+    }
+    return formatNumber(projection, 0)
   }
-  return formatNumber(projection, 0)
 }
 
 export const computeSUSGAprVariation = (currentFeature: string, USGsUSGMetrics: USGStakingInfo, inputValue: bigint, currentAPY: number) => {

@@ -406,7 +406,8 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
           fetchBalanceAllowanceData(walletClient)
           setIsLoading(false)
         })
-        .catch(() => {
+        .catch((e) => {
+          console.error(e)
           toast.error(ToastComponent, { data: { type: "Error", content: "Swap failed." } })
           setIsLoading(false)
         })
@@ -438,7 +439,8 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
             setIsLoading(false)
             toast.success(ToastComponent, { data: { type: "Success", content: "Swap successful!" } })
           })
-          .catch(() => {
+          .catch((e) => {
+            console.error(e)
             toast.error(ToastComponent, { data: { type: "Error", content: "Swap failed." } })
             setIsLoading(false)
           })

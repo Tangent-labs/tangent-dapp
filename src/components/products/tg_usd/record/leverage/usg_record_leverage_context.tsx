@@ -501,7 +501,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
           setIsDepositLoading(false)
           setBorrowWeiValue(value)
         })
-        .catch(() => {
+        .catch((e) => {
+          console.error(e)
           toast.error(ToastComponent, { data: { type: "Error", content: "USG to Collateral quote failed." } })
         })
     }

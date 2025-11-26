@@ -13,6 +13,7 @@ import { maxUint256 } from "viem"
 import { useUSGContext } from "../../tg_usd_context"
 import { useRootContext } from "@/components/products/root/root_context"
 import { formatBigInt } from "@/lib/number_formatter"
+import { computedMinAmountOut } from "../tg_usd_record_controller"
 
 type USGLiquidateContextProps = {
   children: ReactNode
@@ -112,6 +113,10 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
 
     if (walletClient && liquidateWeiValue && currentAddress && tgUSDReceivedValue && marketData) {
       let repayValue = repayWeiValue || 0n
+
+      // TODO : Change this into a logical value
+      const maxUSGToBurn = maxUint256
+
       if (repayWeiValue === maxRepayable && repayWeiValue !== 0n) {
         repayValue = maxUint256
       }
@@ -120,22 +125,32 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         marketInfo?.collatAddress,
         USG_CONTRACT.USG,
         liquidateWeiValue,
-
-        0n,
+        computedMinAmountOut(tgUSDReceivedValue, slippage),
         currentAddress,
-        USG_CONTRACT.ZAPPER,
+        USG_CONTRACT.LIQUIDATOR_PROXY,
         curveRoutes
       )
 
-      doMarketLiquidate(liquidateWeiValue, repayValue, 0n, liquidationData!, walletClient, marketInfo?.marketAddress)
+      doMarketLiquidate(
+        liquidateWeiValue,
+        repayValue,
+        computedMinAmountOut(tgUSDReceivedValue, slippage),
+        maxUSGToBurn,
+        liquidationData!,
+        walletClient,
+        marketInfo?.marketAddress
+      )
         .then(() => {
+          toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
           loadUSGsUSGMetrics()
           loadOnChainData()
           setLiquidateWeiValue(0n)
+          setLiquidablePercentage(0)
           setRepayWeiValue(0n)
           setTgUSDReceivedValue(0n)
         })
-        .catch(() => {
+        .catch((e) => {
+          console.error(e)
           toast.error(ToastComponent, { data: { type: "Error", content: "Something wrong happened" } })
         })
     }

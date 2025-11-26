@@ -87,7 +87,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo, currentConvexTVL } =
     useUSGRecordContext()
 
-  const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(false)
+  const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(true)
 
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
 
@@ -313,7 +313,8 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
           resetAfterDepositSuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
         })
-        .catch(() => {
+        .catch((e) => {
+          console.error(e)
           setIsDepositLoading(false)
           toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
         })
@@ -385,7 +386,8 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
           resetAfterDepositSuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
         })
-        .catch(() => {
+        .catch((e) => {
+          console.error(e)
           setIsZapLoading(false)
           setIsDepositLoading(false)
           toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
@@ -425,7 +427,8 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
           resetAfterDepositSuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
         })
-        .catch(() => {
+        .catch((e) => {
+          console.error(e)
           setIsZapLoading(false)
           setIsDepositLoading(false)
           toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })

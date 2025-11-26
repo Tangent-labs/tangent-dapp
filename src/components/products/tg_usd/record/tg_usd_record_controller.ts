@@ -409,8 +409,8 @@ export const computeLiquidationPrice = (
   return (futureDebt * 10n ** 18n) / ((futureCollat || 1n) * (ltRaw / BigInt(1000n)))
 }
 
-export const computedMinAmountOut = (zapValue: bigint, slippage: number) => {
-  return (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
+export const computedMinAmountOut = (value: bigint, slippage: number) => {
+  return (BigInt(value || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
 }
 
 // Markets contracts

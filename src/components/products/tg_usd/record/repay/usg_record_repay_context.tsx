@@ -195,7 +195,8 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
           resetAfterRepaySuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
         })
-        .catch(() => {
+        .catch((e) => {
+          console.error(e)
           toast.error(ToastComponent, { data: { type: "Error", content: "Transaction failed." } })
           setIsZapLoading(false)
         })
@@ -232,7 +233,8 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
           resetAfterRepaySuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
         })
-        .catch(() => {
+        .catch((e) => {
+          console.error(e)
           toast.error(ToastComponent, { data: { type: "Error", content: "Transaction failed." } })
           setIsZapLoading(false)
         })

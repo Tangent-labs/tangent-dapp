@@ -70,6 +70,11 @@
     },
     {
       "inputs": [],
+      "name": "MaxUSGToBurn",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "NotAMigratoor",
       "type": "error"
     },
@@ -1111,6 +1116,11 @@
         },
         {
           "internalType": "uint256",
+          "name": "maxUSGToBurn",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
           "name": "minUSGOut",
           "type": "uint256"
         },
@@ -1211,11 +1221,6 @@
     {
       "inputs": [
         {
-          "internalType": "contract IControlTower",
-          "name": "_controlTower",
-          "type": "address"
-        },
-        {
           "internalType": "address",
           "name": "account",
           "type": "address"
@@ -1254,11 +1259,6 @@
     },
     {
       "inputs": [
-        {
-          "internalType": "contract IControlTower",
-          "name": "_controlTower",
-          "type": "address"
-        },
         {
           "internalType": "address",
           "name": "account",
@@ -1339,26 +1339,14 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "contract IControlTower",
-          "name": "_controlTower",
-          "type": "address"
-        }
-      ],
+      "inputs": [],
       "name": "reeantrancyOff",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "contract IControlTower",
-          "name": "_controlTower",
-          "type": "address"
-        }
-      ],
+      "inputs": [],
       "name": "reeantrancyOn",
       "outputs": [
         {
@@ -1455,6 +1443,11 @@
         {
           "internalType": "uint256",
           "name": "USGToRepay",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxUSGToBurn",
           "type": "uint256"
         },
         {

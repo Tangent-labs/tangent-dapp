@@ -412,3 +412,203 @@ export const computeLiquidationPrice = (
 export const computedMinAmountOut = (zapValue: bigint, slippage: number) => {
   return (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
 }
+
+// Markets contracts
+
+type MarketContract = { name: string; address: Address }
+
+const MARKET_CONTRACTS: Record<string, MarketContract[]> = {
+  "crvUSD-USDC": [
+    {
+      name: "Market",
+      address: "0xA3527eeFcB25E01116EE4Fc37B5C17D77B7d7b17" as Address,
+    },
+    {
+      name: "Collateral Token",
+      address: "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E" as Address,
+    },
+    {
+      name: "Reward Distributor",
+      address: "0x0000000000000000000000000000000000000001" as Address,
+    },
+    {
+      name: "Oracle",
+      address: "0x0000000000000000000000000000000000000002" as Address,
+    },
+  ],
+
+  "crvUSD-USDT": [
+    {
+      name: "Market",
+      address: "0x380655A1bc784Bdc9dbC8C95D7D9A97dfb261068" as Address,
+    },
+    {
+      name: "Collateral Token",
+      address: "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4" as Address,
+    },
+    {
+      name: "Reward Distributor",
+      address: "0x0000000000000000000000000000000000000003" as Address,
+    },
+    {
+      name: "Oracle",
+      address: "0x0000000000000000000000000000000000000004" as Address,
+    },
+  ],
+
+  USDC_USDT: [
+    {
+      name: "Market",
+      address: "0x627527004E78A024a9a74b425f6bd3B7CB94DD2f" as Address,
+    },
+    {
+      name: "Collateral Token",
+      address: "0x4f493b7de8aac7d55f71853688b1f7c8f0243c85" as Address,
+    },
+    {
+      name: "Reward Distributor",
+      address: "0x0000000000000000000000000000000000000005" as Address,
+    },
+    {
+      name: "Oracle",
+      address: "0x0000000000000000000000000000000000000006" as Address,
+    },
+  ],
+
+  frxUSD_USDe: [
+    {
+      name: "Market",
+      address: "0xf05262E0D9849b5052baa5A0BB638d21255D9CeB" as Address,
+    },
+    {
+      name: "Collateral Token",
+      address: "0xdbb1d219d84eacefb850ee04cacf2f1830934580" as Address,
+    },
+    {
+      name: "Reward Distributor",
+      address: "0x0000000000000000000000000000000000000007" as Address,
+    },
+    {
+      name: "Oracle",
+      address: "0x0000000000000000000000000000000000000008" as Address,
+    },
+  ],
+
+  frxETH_WETH: [
+    {
+      name: "Market",
+      address: "0x30Be42f8d46D34cB3F1455A8AbFd68119DF57C32" as Address,
+    },
+    {
+      name: "Collateral Token",
+      address: "0x9c3b46c0ceb5b9e304fcd6d88fc50f7dd24b31bc" as Address,
+    },
+    {
+      name: "Reward Distributor",
+      address: "0x0000000000000000000000000000000000000009" as Address,
+    },
+    {
+      name: "Oracle",
+      address: "0x000000000000000000000000000000000000000A" as Address,
+    },
+  ],
+
+  pxETH_WETH: [
+    {
+      name: "Market",
+      address: "0xD0dF1d131B177891ecd68Ee4d75f85b5f4344E50" as Address,
+    },
+    {
+      name: "Collateral Token",
+      address: "0xC8Eb2Cf2f792F77AF0Cd9e203305a585E588179D" as Address,
+    },
+    {
+      name: "Reward Distributor",
+      address: "0x000000000000000000000000000000000000000B" as Address,
+    },
+    {
+      name: "Oracle",
+      address: "0x000000000000000000000000000000000000000C" as Address,
+    },
+  ],
+
+  pxETH_stETH: [
+    {
+      name: "Market",
+      address: "0xb7533586217DB24b6E3c5B07CC26b4071aA15E6a" as Address,
+    },
+    {
+      name: "Collateral Token",
+      address: "0x6951bdc4734b9f7f3e1b74afebc670c736a0edb6" as Address,
+    },
+    {
+      name: "Reward Distributor",
+      address: "0x000000000000000000000000000000000000000D" as Address,
+    },
+    {
+      name: "Oracle",
+      address: "0x000000000000000000000000000000000000000E" as Address,
+    },
+  ],
+
+  USDC_fxUSD: [
+    {
+      name: "Market",
+      address: "0xc5b4ee8e284dB5182f604a5C125b2430d24a6cea" as Address,
+    },
+    {
+      name: "Collateral Token",
+      address: "0x5018BE882DccE5E3F2f3B0913AE2096B9b3fB61f" as Address,
+    },
+    {
+      name: "Reward Distributor",
+      address: "0x000000000000000000000000000000000000000F" as Address,
+    },
+    {
+      name: "Oracle",
+      address: "0x0000000000000000000000000000000000000010" as Address,
+    },
+  ],
+
+  "USDe 27/11/25": [
+    {
+      name: "Market",
+      address: "0x128C0F20dAcea6152F46e83E69122f2504A0FDeB" as Address,
+    },
+    {
+      name: "Collateral Token",
+      address: "0x62c6e813b9589c3631ba0cdb013acdb8544038b7" as Address,
+    },
+    {
+      name: "Reward Distributor",
+      address: "0x0000000000000000000000000000000000000011" as Address,
+    },
+    {
+      name: "Oracle",
+      address: "0x0000000000000000000000000000000000000012" as Address,
+    },
+  ],
+
+  "sUSDe 27/11/25": [
+    {
+      name: "Market",
+      address: "0xfB2Db1994D24f7bCB37228801ba35e22Aa33d2Ce" as Address,
+    },
+    {
+      name: "Collateral Token",
+      address: "0xe6a934089bbee34f832060ce98848359883749b3" as Address,
+    },
+    {
+      name: "Reward Distributor",
+      address: "0x0000000000000000000000000000000000000013" as Address,
+    },
+    {
+      name: "Oracle",
+      address: "0x0000000000000000000000000000000000000014" as Address,
+    },
+  ],
+}
+
+export const fetchMarketContracts = (name: string): MarketContract[] => {
+  return MARKET_CONTRACTS[name] ?? []
+}

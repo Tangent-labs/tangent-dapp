@@ -8,7 +8,7 @@ import MarketDetailsParameters from "./components/market_details_parameters"
 import { MarketDetailsContracts } from "./components/market_details_contracts"
 
 export const MarketDetails = () => {
-  const { marketData } = useUSGRecordContext()
+  const { marketData, marketContracts } = useUSGRecordContext()
 
   const [selectedFeature, setSelectedFeature] = useState<string>("Parameters")
 
@@ -20,7 +20,7 @@ export const MarketDetails = () => {
 
       {selectedFeature === "Info" && marketData && <MarketDetailsInfos marketData={marketData} />}
 
-      {selectedFeature === "Contracts" && <MarketDetailsContracts />}
+      {selectedFeature === "Contracts" && <MarketDetailsContracts marketContracts={marketContracts} />}
     </div>
   )
 }

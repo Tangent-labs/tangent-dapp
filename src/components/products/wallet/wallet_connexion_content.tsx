@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import { useClipboard } from "@/hooks/useClipboard"
 import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGContext } from "../tg_usd/tg_usd_context"
@@ -10,7 +11,6 @@ import { Button } from "@/components/design_system/inputs/button"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { useClipboard } from "@/hooks/useClipboard"
 
 export const WalletConnexionContent = () => {
   const { copied, copy } = useClipboard()
@@ -53,7 +53,7 @@ export const WalletConnexionContent = () => {
         {isConnected ? (
           <PopoverTrigger asChild>
             <Button className="flex h-10 items-center justify-center">
-              {buttonLabel} {isConnected && <IconCross className="ml-2 mt-0.5 w-3"></IconCross>}
+              {buttonLabel} {isConnected}
             </Button>
           </PopoverTrigger>
         ) : (
@@ -67,7 +67,7 @@ export const WalletConnexionContent = () => {
             <div data-combobox className="flex w-full min-w-80 flex-col overflow-hidden bg-[#070707] p-2 font-gilroy">
               <div className="flex flex-col border-b border-white/10 py-2">
                 <span onClick={() => copy(currentAddress)} className="cursor-pointer font-semibold text-white/80 hover:text-white">
-                  {copied ? "Copied!" : buttonLabel}
+                  {copied ? "Copied" : buttonLabel}
                 </span>
               </div>
 
@@ -128,10 +128,7 @@ export const WalletConnexionContent = () => {
                 </div>
               </div>
 
-              <div
-                onClick={handleButtonClick}
-                className="flex w-full cursor-pointer items-center justify-start bg-danger bg-clip-text p-2 font-semibold text-transparent"
-              >
+              <div onClick={handleButtonClick} className="flex w-full cursor-pointer items-center justify-start p-2 font-semibold text-danger">
                 {isConnected ? "Log out" : ""}
               </div>
             </div>

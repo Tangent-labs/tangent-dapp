@@ -87,7 +87,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo, currentConvexTVL } =
     useUSGRecordContext()
 
-  const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(false)
+  const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(true)
 
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
 

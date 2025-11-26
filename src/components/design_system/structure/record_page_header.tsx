@@ -57,7 +57,7 @@ export const RecordPageHeaderIndicator = ({ title, value, subValue, indicator, c
         </USGHoverCard>
       </div>
 
-      <span className={cn("text-sm font-semibold", className, title === "vAPR" ? "text-row-tonic" : "")}>{value}</span>
+      <span className={cn("text-[20px] font-semibold", className, title === "vAPR" ? "text-row-tonic" : "")}>{value}</span>
       <span className="text-xs text-subtitle">{subValue}</span>
     </div>
   )

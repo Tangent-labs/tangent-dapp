@@ -1,12 +1,12 @@
 import { formatDate } from "@/lib/other_formatter"
 import { Abi, Address, Hex, WalletClient } from "viem"
-import market from "../../../../abi/USG/Market.json"
 import harvestUI from "../../../../abi/USG/HarvestUI.json"
 import { getTokensPrice } from "@/services/service_price"
 import { getPricesFromTokenAmounts } from "@/lib/asset_utils"
 import { USG_CONTRACT, USGMarkets } from "../tg_usd_repository"
 import { HarvesterInfo, HarvesterInfoDisplay } from "../tg_usd_type"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
+import rewardAccumulator from "../../../../abi/USG/RewardAccumulator.json"
 import { AssetData, AssetDataPriced, ExistingAsset, ListHeaderData } from "@/types"
 import { executeChainViewUnique, executeContractCall } from "@/services/service_rpc"
 
@@ -14,10 +14,23 @@ export async function doHarvest(stakingAddress: Address, walletClient: WalletCli
   const [account] = await walletClient.requestAddresses()
 
   const txData = {
-    abi: market.abi as Abi,
+    abi: rewardAccumulator.abi as Abi,
     functionName: "processRewards",
-    args: [account],
-    address: stakingAddress,
+    args: [stakingAddress, account],
+    address: USG_CONTRACT.REWARD_ACCUMULATOR,
+    gas: undefined as undefined | bigint,
+  }
+  return await executeContractCall(walletClient, txData)
+}
+
+export async function doMultiHarvest(addresses: Array<Address>, walletClient: WalletClient) {
+  const [account] = await walletClient.requestAddresses()
+
+  const txData = {
+    abi: rewardAccumulator.abi as Abi,
+    functionName: "processMultiRewards",
+    args: [addresses, account, addresses.length],
+    address: USG_CONTRACT.REWARD_ACCUMULATOR,
     gas: undefined as undefined | bigint,
   }
   return await executeContractCall(walletClient, txData)

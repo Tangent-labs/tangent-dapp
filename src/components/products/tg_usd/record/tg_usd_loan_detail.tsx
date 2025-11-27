@@ -17,7 +17,7 @@ export default function USGLoanDetail() {
         {!!liquidationPrice && <div className="font-gilroy text-tonic"> Liquidation Price : ${formatBigInt(liquidationPrice, 18, 3)} </div>}
       </div>
       <Divider />
-      <div className="flex flex-wrap gap-2">
+      <div className="flex gap-2">
         <EvolutionBox
           originalValue={marketDisplayData.collateralValue}
           label={"Collateral value"}

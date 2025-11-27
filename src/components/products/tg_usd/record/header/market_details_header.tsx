@@ -13,7 +13,7 @@ export const MarketDetails = () => {
   const [selectedFeature, setSelectedFeature] = useState<string>("Parameters")
 
   return (
-    <div className="my-2 hidden w-full md:flex md:flex-col">
+    <div className="mb-2 hidden w-full md:flex md:flex-col">
       <SlidingTabs labels={["Parameters", "Info", "Contracts"]} value={selectedFeature} onSwitchTab={(e: string) => setSelectedFeature(e)} />
 
       {selectedFeature === "Parameters" && <MarketDetailsParameters />}

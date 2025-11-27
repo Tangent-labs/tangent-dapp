@@ -180,8 +180,10 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
       }
     }
 
-    if (!!depositAssetInfo && !!collateralInfo && depositAssetInfo?.address !== collateralInfo?.address) {
+    if (!!value && value > 0n && depositAssetInfo?.address !== collateralInfo?.address) {
       fetchZapValue()
+    } else if (!value || value == 0n) {
+      setZapValue(0n)
     }
   }
 
@@ -267,11 +269,25 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   }, [depositAsset])
 
   useEffect(() => {
-    setCurrentAmounts({
-      depositWeiValue: depositWeiValue || 0n,
-      borrowWeiValue: borrowWeiValue || 0n,
-      zapValue: zapValue || 0n,
-    })
+    if (depositWeiValue && depositAsset !== collateralInfo?.symbol && zapValue) {
+      setCurrentAmounts({
+        depositWeiValue: depositWeiValue,
+        borrowWeiValue: borrowWeiValue || 0n,
+        zapValue: zapValue,
+      })
+    } else if (depositWeiValue && depositAsset === collateralInfo?.symbol) {
+      setCurrentAmounts({
+        depositWeiValue: depositWeiValue || 0n,
+        borrowWeiValue: borrowWeiValue || 0n,
+        zapValue: 0n,
+      })
+    } else {
+      setCurrentAmounts({
+        depositWeiValue: 0n,
+        borrowWeiValue: 0n,
+        zapValue: 0n,
+      })
+    }
   }, [depositWeiValue, borrowWeiValue, zapValue])
 
   const actionApproveZap = async () => {

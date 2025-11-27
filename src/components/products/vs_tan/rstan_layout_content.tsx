@@ -18,7 +18,6 @@ import Divider from "@/components/design_system/structure/divider"
 import ListHeader from "@/components/design_system/list/list_header"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import TokenImage from "@/components/design_system/structure/token_image"
-import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import USGHoverCard from "@/components/design_system/structure/usg_hover_card"
 import { FeatureSelect } from "@/components/design_system/structure/feature_select"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
@@ -191,7 +190,7 @@ function LockPositionList() {
               <div className="slide-down-fade-in flex w-full flex-wrap items-center justify-between gap-3 rounded-b-lg bg-overlay-panel p-3 md:flex-row">
                 <div className="flex items-center justify-center gap-2">
                   <div className="hidden w-full text-sm text-subtitle md:flex">Unlock date</div>
-                  <EvolutionBox
+                  {/* <EvolutionBox
                     originalValue={formatDate(new Date(), "dd/MM/yyyy")}
                     label=""
                     newValue={
@@ -201,7 +200,7 @@ function LockPositionList() {
                         <> {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd/MM/yyyy")}</>
                       )
                     }
-                  />
+                  /> */}
                 </div>
 
                 {!!lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (

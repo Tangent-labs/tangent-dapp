@@ -2,9 +2,7 @@
 
 import Image from "next/image"
 import { ExistingAsset } from "@/types"
-import { InfinityIcon } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
-import { formatDate } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { useVsTanContext } from "../rstan_layout_context"
@@ -36,7 +34,6 @@ export default function RsTanLockContent() {
     depositPositionInfo,
     depositPosition,
     computedNewLockValue,
-    computedNewEndLockTime,
     isPermaLock,
     isLoading,
     formState,
@@ -255,14 +252,13 @@ export default function RsTanLockContent() {
           label="vsTan"
           newValue={computedNewLockValue}
         />
-        <EvolutionBox
+        {/* <EvolutionBox
           className="w-full text-xs"
           originalValue={
             depositPositionInfo?.endLockTime && depositPositionInfo?.endLockTime == "281474976710655" ? (
               <InfinityIcon className="w-5"></InfinityIcon>
             ) : (
               <>
-                {" "}
                 {depositPositionInfo && depositPositionInfo?.endLockTime !== ""
                   ? formatDate(new Date(Number(depositPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")
                   : "-"}
@@ -281,7 +277,7 @@ export default function RsTanLockContent() {
               )}
             </div>
           }
-        />
+        /> */}
       </div>
 
       <div className="mt-2 flex w-full items-center justify-center gap-4 rounded-[10px] p-3 text-sm text-subtitle backdrop-blur-[60px]">

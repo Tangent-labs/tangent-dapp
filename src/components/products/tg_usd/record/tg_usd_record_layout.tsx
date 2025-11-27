@@ -65,7 +65,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
 
       <div className="my-4 flex flex-col gap-4">
         <div className="relative flex items-start justify-start gap-4 max-xl:flex-col">
-          <div className="w-full rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] xl:w-5/12">
+          <div className="w-full rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
             <div className="hidden w-full flex-col items-center justify-between gap-1 md:flex">
               <div className="flex w-full justify-between gap-1">
                 <ButtonTab className="w-full !px-2" active={feature === collateral} label={"Deposit"} onClick={() => onTabClick("deposit")} />

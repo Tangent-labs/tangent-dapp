@@ -272,6 +272,7 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
       repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
     }).then(() => {
       resetAfterRepaySuccess()
+      toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
     })
   }
 
@@ -282,6 +283,7 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
       withdrawWeiValue,
     }).then(() => {
       resetAfterRepaySuccess()
+      toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
     })
   }
 

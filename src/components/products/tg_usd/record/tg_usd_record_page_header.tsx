@@ -1,10 +1,10 @@
 "use client"
 
-import BorderPanel from "@/components/design_system/structure/border_panel"
+import { useRouter } from "next/navigation"
 import { CollateralCard } from "./collateral_selection"
 import { useUSGRecordContext } from "./tg_usd_record_context"
+import BorderPanel from "@/components/design_system/structure/border_panel"
 import IndicatorV2 from "@/components/design_system/structure/indicators_v2"
-import { useRouter } from "next/navigation"
 
 export default function USGRecordPageHeader() {
   const { collateralInfo, marketDisplayData, marketData } = useUSGRecordContext()

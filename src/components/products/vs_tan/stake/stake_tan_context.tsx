@@ -2,7 +2,7 @@
 
 import { formatUnits } from "viem"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { useUSGContext } from "../../tg_usd/tg_usd_context"
+import { useUSGContext } from "../../usg/usg_context"
 import { StakingAssetInfo, StakingDepositType, TANStakingInfo } from "../rstan_types"
 import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"

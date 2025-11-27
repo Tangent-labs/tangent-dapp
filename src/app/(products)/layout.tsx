@@ -6,9 +6,9 @@ export const metadata: Metadata = {
 import { ReactNode } from "react"
 import { WalletConnexionProvider } from "@/components/products/wallet/wallet_connexion_context"
 import MenuBarFeature from "@/components/products/product_nav/menu_bar_feature"
-import { fetchTokens } from "@/components/products/tg_usd/tg_usd_controller"
+import { fetchTokens } from "@/components/products/usg/usg_controller"
 import MobileMenuBarFeature from "@/components/products/product_nav/mobile_menu_bar_feature"
-import { USGProvider } from "@/components/products/tg_usd/tg_usd_context"
+import { USGProvider } from "@/components/products/usg/usg_context"
 import { RootProvider } from "@/components/products/root/root_context"
 
 type ProductLayoutProps = {

@@ -1,10 +1,10 @@
-import { RsTanMergeContent } from "@/components/products/vs_tan/merge/rstan_merge_content"
-import { RsTanMergeProvider } from "@/components/products/vs_tan/merge/rstan_merge_context"
+import { VsTanMergeContent } from "@/components/products/vs_tan/merge/rstan_merge_content"
+import { VsTanMergeProvider } from "@/components/products/vs_tan/merge/rstan_merge_context"
 
 export default function mergeTanPositionPage() {
   return (
-    <RsTanMergeProvider>
-      <RsTanMergeContent></RsTanMergeContent>
-    </RsTanMergeProvider>
+    <VsTanMergeProvider>
+      <VsTanMergeContent></VsTanMergeContent>
+    </VsTanMergeProvider>
   )
 }

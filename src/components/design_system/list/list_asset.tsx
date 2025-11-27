@@ -4,7 +4,7 @@ import { Address } from "viem"
 import { ExistingAsset } from "@/types"
 import BorderPanel from "../structure/border_panel"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { MarketConstants } from "@/components/products/tg_usd/tg_usd_type"
+import { MarketConstants } from "@/components/products/usg/usg_type"
 
 interface ListAssetProps {
   name: string

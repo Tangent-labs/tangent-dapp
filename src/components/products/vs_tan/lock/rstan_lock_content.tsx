@@ -8,8 +8,8 @@ import { formatDate } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { useVsTanContext } from "../rstan_layout_context"
-import { useRsTanLockContext } from "./rstan_lock_context"
-import { useUSGContext } from "../../tg_usd/tg_usd_context"
+import { useVsTanLockContext } from "./rstan_lock_context"
+import { useUSGContext } from "../../usg/usg_context"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
@@ -18,13 +18,13 @@ import InputSelect from "@/components/design_system/inputs/input_select"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
-import { LockPositionSelectTemplate, ZapToken } from "../../tg_usd/tg_usd_type"
+import { LockPositionSelectTemplate, ZapToken } from "../../usg/usg_type"
 import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { InputSelectLockPosition } from "@/components/design_system/inputs/input_select_lock_position"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 
-export default function RsTanLockContent() {
+export default function VsTanLockContent() {
   const { lockData } = useVsTanContext()
 
   const { connect } = useWalletConnexionContext()
@@ -59,7 +59,7 @@ export default function RsTanLockContent() {
     setIsPermaLock,
     handleZapInputChange,
     handleDepositChange,
-  } = useRsTanLockContext()
+  } = useVsTanLockContext()
 
   const PositionSelectTemplate = (option: LockPositionSelectTemplate) => {
     return (

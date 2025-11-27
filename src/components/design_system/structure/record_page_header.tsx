@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 import { ReactNode } from "react"
 import USGHoverCard from "./usg_hover_card"
-import { MarketAPR } from "@/components/products/tg_usd/tg_usd_type"
+import { MarketAPR } from "@/components/products/usg/usg_type"
 
 type RecordPageHeaderProps = {
   apr?: MarketAPR

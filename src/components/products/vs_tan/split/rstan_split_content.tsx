@@ -2,10 +2,10 @@
 
 import InputSelect from "@/components/design_system/inputs/input_select"
 import { useVsTanContext } from "../rstan_layout_context"
-import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
+import { LockPositionSelectTemplate } from "../../usg/usg_type"
 import { IconVsTan } from "@/components/icons/icon_vstan"
 import { formatBigInt } from "@/lib/number_formatter"
-import { useRsTanSplitContext } from "./rstan_split_context"
+import { useVsTanSplitContext } from "./rstan_split_context"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { formatDate } from "@/lib/other_formatter"
@@ -14,7 +14,7 @@ import FormButtons from "@/components/design_system/form/form_actions"
 import { IconOpenOutside } from "@/components/icons/icon_open_outside"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
-export const RsTanSplitContent = () => {
+export const VsTanSplitContent = () => {
   const { lockData } = useVsTanContext()
 
   const { connect } = useWalletConnexionContext()
@@ -30,7 +30,7 @@ export const RsTanSplitContent = () => {
     setSplitPosition,
     actionSplit,
     setSplitPercentage,
-  } = useRsTanSplitContext()
+  } = useVsTanSplitContext()
 
   const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {
     return (

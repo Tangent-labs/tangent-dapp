@@ -1,0 +1,232 @@
+"use client"
+
+import { ListRowData, ListState } from "@/types"
+import { useUSGContext } from "../usg_context"
+import { USGMarkets } from "../usg_repository"
+import { Address, formatUnits, zeroAddress } from "viem"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { getUSGMarketsData, transformToRows, transformGlobalData, transformMarketData } from "./usg_market_controller"
+import { ChainViewMarketList, MarketConstants, MarketDebtData, TgUsdCollateralData, TgUsdGlobalData } from "../usg_type"
+
+type USGMaketListContextProps = {
+  children: ReactNode
+}
+
+type USGMaketListContextValues = {
+  displayRows: ListRowData[]
+  globalData: TgUsdGlobalData
+  searchValue: string | null
+  setSearchValue: (value: string | null) => void
+  sortMarketList: (arg: ListState) => void
+
+  marketData: Array<{ marketType: "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | undefined; marketAddress: Address; constants: MarketConstants }>
+  userData: {
+    totalUserDebt: bigint
+    totalUserDeposit: bigint
+    totalProtocolDeposit: bigint
+    totalProtocolDebt: bigint
+    tgUsdCollateralsData: TgUsdCollateralData[]
+    marketDebtData: MarketDebtData[]
+  } | null
+
+  marketType: string
+  setMarketType: (s: string) => void
+
+  protocol: string
+  setProtocol: (s: string) => void
+}
+
+export const USGMaketListContext = createContext<USGMaketListContextValues | undefined>(undefined)
+
+export const USGMarketListProvider = ({ children }: USGMaketListContextProps) => {
+  const { currentAddress, isWalletInitialized } = useWalletConnexionContext()
+
+  const { marketAprs } = useUSGContext()
+
+  const [onChainData, setOnChainData] = useState<ChainViewMarketList | undefined>()
+
+  const [searchValue, setSearchValue] = useState<string | null>(null)
+
+  const [marketType, setMarketType] = useState<string>("All")
+
+  const [protocol, setProtocol] = useState<string>("All")
+
+  /**
+   * On init
+   */
+  useEffect(() => {
+    if (isWalletInitialized) {
+      getUSGMarketsData(currentAddress || zeroAddress).then((d) => {
+        setOnChainData(d)
+      })
+    }
+  }, [isWalletInitialized])
+
+  /**
+   * On user logs in/logs out
+   */
+  useEffect(() => {
+    if (isWalletInitialized && onChainData) {
+      getUSGMarketsData(currentAddress || zeroAddress).then((d) => {
+        setOnChainData(d)
+      })
+    }
+  }, [currentAddress])
+
+  const marketDataWithAPR = useMemo(() => {
+    return USGMarkets.map((market) => {
+      const currentMarket = marketAprs.find((m) => m.marketAddress.toLowerCase() === market.marketAddress.toLowerCase())
+
+      if (currentMarket) {
+        return {
+          marketAddress: market.marketAddress,
+          collateral: market.marketName,
+          currentAPR: currentMarket.currentAPR,
+          projectedAPR: currentMarket.projectedAPR,
+        }
+      }
+
+      return {
+        marketAddress: market.marketAddress,
+        collateral: market.marketName,
+        currentAPR: {},
+        projectedAPR: {},
+      }
+    })
+  }, [marketAprs])
+
+  const TYPE_TO_MARKET: Record<string, string> = {
+    Convex_CRV: "Curve",
+    Convex_FXN: "Convex",
+    Pendle_PT: "Pendle",
+  }
+
+  const mapProtocol = (p: string): string => {
+    return TYPE_TO_MARKET[p]
+  }
+
+  const displayRows = useMemo<ListRowData[]>(() => {
+    const allRows = transformToRows(marketDataWithAPR, onChainData)
+
+    const filteredRows = allRows
+      .filter((market) => {
+        if (marketType !== "All") {
+          return market.type === marketType
+        }
+        return true
+      })
+      .filter((marketProtocol) => {
+        if (protocol !== "All") {
+          return mapProtocol(marketProtocol.protocol) === protocol
+        }
+        return true
+      })
+
+    if (!searchValue || searchValue.trim() === "") {
+      return filteredRows
+    }
+
+    const lowered = searchValue.toLowerCase()
+    return filteredRows.filter((row) => row.name.toLowerCase().includes(lowered) || row.token.toLowerCase().includes(lowered))
+  }, [onChainData, searchValue, marketDataWithAPR, marketType, protocol])
+
+  const globalData = useMemo<TgUsdGlobalData>(() => {
+    return transformGlobalData(onChainData)
+  }, [onChainData])
+
+  const marketData = useMemo<
+    Array<{ marketType: "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | undefined; marketAddress: Address; constants: MarketConstants }>
+  >(() => {
+    if (onChainData) {
+      return transformMarketData(onChainData)
+    }
+
+    return []
+  }, [onChainData])
+
+  const userData = useMemo(() => {
+    if (onChainData) {
+      let totalUserDebt = 0n
+      let totalUserDeposit = 0n
+      let totalProtocolDeposit = 0n
+      let totalProtocolDebt = 0n
+
+      onChainData?.rowInfos.forEach((market) => {
+        totalUserDebt += market.debtInfos.userDebt
+        totalUserDeposit += market.collateralInfos.positionCollateralUSDValue
+        totalProtocolDeposit += market.collateralInfos?.totalCollateralUSDValue
+        totalProtocolDebt += market.debtInfos.totalDebt
+      })
+
+      const tgUsdCollateralsData = onChainData.rowInfos.map((market) => {
+        const value = market.collateralInfos.totalCollateralUSDValue
+
+        const percentage = totalProtocolDeposit > 0n ? (Number(formatUnits(value, 18)) / Number(formatUnits(totalProtocolDeposit, 18))) * 100 : 0
+
+        return {
+          name: market.collateralInfos.collateralToken.symbol,
+          value: Number(percentage.toFixed(2)),
+        }
+      })
+
+      const marketDebtData = onChainData.rowInfos
+        .map((market, index) => {
+          const debtValue = market.debtInfos.totalDebt
+
+          const percentage = totalProtocolDebt > 0 ? (Number(formatUnits(debtValue, 18)) / Number(formatUnits(totalProtocolDebt, 18))) * 100 : 0
+
+          return {
+            id: index + 1,
+            value: Number(percentage.toFixed(2)),
+            rawValue: debtValue,
+            name: market?.collateralInfos?.collateralToken?.symbol,
+          }
+        })
+        .sort((a, b) => {
+          return a.value > b.value ? -1 : 1
+        })
+
+      return { totalUserDebt, totalUserDeposit, totalProtocolDeposit, totalProtocolDebt, tgUsdCollateralsData, marketDebtData }
+    }
+    return null
+  }, [onChainData])
+
+  const sortMarketList = (listState: ListState) => {
+    const { key, direction } = listState.sort!
+
+    displayRows.sort((elementA: ListRowData, elementB: ListRowData) => {
+      const aValue = Number(elementA.indicators.find((el) => el.key === key)?.raw)
+      const bValue = Number(elementB.indicators.find((el) => el.key === key)?.raw)
+
+      if (aValue < bValue) return direction === "asc" ? -1 : 1
+      if (aValue > bValue) return direction === "asc" ? 1 : -1
+
+      return 0
+    })
+  }
+
+  const contextValue: USGMaketListContextValues = {
+    displayRows,
+    globalData,
+    searchValue,
+    setSearchValue,
+    marketData,
+    userData,
+    sortMarketList,
+    marketType,
+    setMarketType,
+    protocol,
+    setProtocol,
+  }
+
+  return <USGMaketListContext.Provider value={contextValue}>{children}</USGMaketListContext.Provider>
+}
+
+export const useUSGMaketListContext = () => {
+  const context = useContext(USGMaketListContext)
+  if (!context) {
+    throw new Error("useUSGMaketListContext must be used within a USGMarketListProvider")
+  }
+  return context
+}

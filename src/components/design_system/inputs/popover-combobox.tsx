@@ -8,7 +8,7 @@ import AutoSizer from "react-virtualized-auto-sizer"
 import { useMemo, useRef, useState } from "react"
 import TokenImage from "../structure/token_image"
 import { FixedSizeList as List } from "react-window"
-import { DepositReceiveAsset } from "@/components/products/tg_usd/tg_usd_type"
+import { DepositReceiveAsset } from "@/components/products/usg/usg_type"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 type OptionT = DepositReceiveAsset

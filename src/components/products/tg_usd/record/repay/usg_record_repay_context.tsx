@@ -7,11 +7,11 @@ import { useUSGContext } from "../../tg_usd_context"
 import { AssetDataPriced, FormState } from "@/types"
 import { USG_CONTRACT } from "../../tg_usd_repository"
 import { useUSGRecordContext } from "../tg_usd_record_context"
-import { formatDollar, toBigInt } from "@/lib/number_formatter"
 import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
 import { computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
+import { formatBigIntAsNumber, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
@@ -73,6 +73,10 @@ type USGRepayContextValues = {
   isDebtBelowThreshold: boolean
 
   tgUsdDollarRepayedValue: string
+
+  currentQuotePriceImpact: bigint | undefined
+
+  expectedUSG: string
 }
 
 export const USGRepayContext = createContext<USGRepayContextValues | undefined>(undefined)
@@ -107,6 +111,8 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
   const [withdrawPercentage, setWithdrawPercentage] = useState<number>(0)
 
   const [usgRepayedValue, setUsgRepayedValue] = useState<bigint | undefined>()
+
+  const [currentQuotePriceImpact, setCurrentQuotePriceImpact] = useState<bigint | undefined>(undefined)
 
   const walletClientRef = useRef<ReturnType<typeof getWalletClient> | null>(null)
 
@@ -365,12 +371,13 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
 
       setIsZapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address, curveRoutes)
+        const { quote, priceImpact } = await getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address, curveRoutes)
 
         handleQuote(quote)
 
         if (quote) {
           setUsgRepayedValue(quote)
+          setCurrentQuotePriceImpact(priceImpact)
         }
       } catch (error) {
         console.error(error)
@@ -429,6 +436,17 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
     return `(~${formatDollar((Number(Number(formatUnits(usgRepayedValue || 0n, 18))) * USGInfo?.price).toFixed(2))})`
   }, [usgRepayedValue, USGInfo])
 
+  const expectedUSG = useMemo(() => {
+    if (marketData) {
+      if (usgRepayedValue && repayAsset && repayAsset !== "USG") {
+        return `${formatBigIntAsNumber(BigInt(usgRepayedValue || 0n), 18, 2)} USG`
+      } else if (repayAsset && repayAsset === "USG" && repayWeiValue) {
+        return `${formatBigIntAsNumber(repayWeiValue || 0n, 18, 2)}  USG`
+      }
+    }
+    return "0 USG"
+  }, [usgRepayedValue, repayWeiValue, repayAsset, marketData])
+
   const contextValue: USGRepayContextValues = {
     actionRepay,
     formState,
@@ -463,6 +481,8 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
     slippage,
     setSlippage,
     tgUsdDollarRepayedValue,
+    currentQuotePriceImpact,
+    expectedUSG,
   }
 
   return <USGRepayContext.Provider value={contextValue}>{children}</USGRepayContext.Provider>

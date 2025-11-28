@@ -73,6 +73,8 @@ type USGDepositContextValues = {
   expectedCollateral: string
 
   aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
+
+  currentQuotePriceImpact: bigint
 }
 
 export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
@@ -100,6 +102,8 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   const [depositSliderPercent, setDepositSliderPercent] = useState<number>(0)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
+
+  const [currentQuotePriceImpact, setCurrentQuotePriceImpact] = useState<bigint>(0n)
 
   const [isDepositLoading, setIsDepositLoading] = useState(false)
 
@@ -166,12 +170,13 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
 
       setIsZapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress || zeroAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
+        const { quote, priceImpact } = await getQuote(value, currentAddress || zeroAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
 
         handleQuote(quote)
 
         if (quote) {
           setZapValue(quote)
+          setCurrentQuotePriceImpact(priceImpact)
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)
@@ -198,12 +203,19 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
       setIsDepositLoading(true)
 
       try {
-        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
+        const { quote, priceImpact } = await getQuote(
+          parseEther(e?.target?.value),
+          currentAddress,
+          depositAssetInfo?.address,
+          marketInfo?.collatAddress,
+          curveRoutes
+        )
 
         handleQuote(quote)
 
         if (quote) {
           setDepositWeiValue(BigInt(quote))
+          setCurrentQuotePriceImpact(priceImpact)
         }
       } catch (error) {
         console.error("Error fetching depositWeiValue:", error)
@@ -581,6 +593,8 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     aprVariation,
 
     expectedCollateral,
+
+    currentQuotePriceImpact,
   }
 
   return <USGDepositContext.Provider value={contextValue}>{children}</USGDepositContext.Provider>

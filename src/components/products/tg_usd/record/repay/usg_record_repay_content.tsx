@@ -1,11 +1,12 @@
 "use client"
 
 import Image from "next/image"
+import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
 import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
 import { Switch } from "@/components/ui/switch"
-import { formatBigInt } from "@/lib/number_formatter"
+import { formatBigInt, formatBigIntAsNumber } from "@/lib/number_formatter"
 import { useUSGContext } from "../../tg_usd_context"
 import { USG_CONTRACT } from "../../tg_usd_repository"
 import { IconThunder } from "@/components/icons/icon_thunder"
@@ -23,6 +24,7 @@ import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function USGRepayContent() {
   const { tokens, balances } = useUSGContext()
@@ -59,6 +61,8 @@ export default function USGRepayContent() {
     usgRepayedValue,
     isDebtBelowThreshold,
     repayAssetInfo,
+    currentQuotePriceImpact,
+    expectedUSG,
   } = useUSGRepayContext()
 
   const AssetSelectTemplate = (option: {
@@ -276,6 +280,33 @@ export default function USGRepayContent() {
           </>
         )}
       </div>
+
+      <Accordion className="w-full" type="single" collapsible>
+        <AccordionItem value="item-1">
+          <BorderPanel className="flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
+            <AccordionTrigger>
+              <span className="py-1.5">Recap</span>
+            </AccordionTrigger>
+
+            <AccordionContent className="w-full">
+              <div className={cn("flex flex-col gap-1 text-xs", isZapLoading ? "shimmer" : "")}>
+                <div className="flex w-full items-center justify-between">
+                  <span className="text-subtitle">Price impact : </span>
+
+                  <span className="font-semibold text-white">{`${formatBigIntAsNumber(currentQuotePriceImpact || 0n, 18, 2)}  USG`}</span>
+                </div>
+
+                <div className="flex w-full items-center justify-between">
+                  <span className="text-subtitle">Expected : </span>
+
+                  <span className="font-semibold text-white">{expectedUSG}</span>
+                </div>
+              </div>
+            </AccordionContent>
+          </BorderPanel>
+        </AccordionItem>
+      </Accordion>
+
       <>
         {isDebtBelowThreshold && (
           <div className="flex w-full items-center justify-center text-xs text-red-500">Remaining debt can not be lower than $3,000</div>

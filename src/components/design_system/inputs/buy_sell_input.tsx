@@ -196,7 +196,7 @@ export function BuySellInput({
 
             <div className="flex cursor-pointer items-center">
               <BorderPanel
-                className="flex w-10 cursor-pointer items-center rounded-full bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
+                className="w-10 min-w-10 cursor-pointer bg-button-active px-1 text-center text-xs text-white hover:font-semibold"
                 onClick={() => {
                   if (setMaxBalance) setMaxBalance()
                 }}
@@ -206,20 +206,7 @@ export function BuySellInput({
             </div>
           </div>
 
-          <input
-            type="range"
-            min="0"
-            step="1"
-            max="100"
-            value={percentage}
-            onChange={handleSliderChange}
-            className="mt-3 h-1.5 w-full cursor-pointer appearance-none rounded-[10px] bg-[#070707]"
-            style={{
-              background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
-            }}
-          />
-
-          <SliderInput handleSliderChange={handleSliderChange}></SliderInput>
+          <SliderInput percentage={percentage} handleSliderChange={handleSliderChange}></SliderInput>
         </BorderPanel>
 
         <div

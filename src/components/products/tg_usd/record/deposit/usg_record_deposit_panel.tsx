@@ -233,13 +233,13 @@ export default function USGDepositContent() {
 
       <Accordion className="w-full" type="single" collapsible>
         <AccordionItem value="item-1">
-          <BorderPanel className="flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
+          <BorderPanel className="flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary">
             <AccordionTrigger>
               <span className="py-1.5">Recap</span>
             </AccordionTrigger>
 
             <AccordionContent className="w-full">
-              <div className={cn("flex flex-col gap-1 text-xs", isDepositLoading ? "shimmer" : "")}>
+              <div className={cn("flex flex-col gap-1 rounded-[10px] text-xs", isDepositLoading ? "shimmer" : "")}>
                 {displayAPRVariation && (
                   <>
                     <div className="flex w-full items-center justify-between">

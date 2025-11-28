@@ -241,7 +241,7 @@ export default function USGLeverageContent() {
                 <span className="py-1.5">Recap</span>
               </AccordionTrigger>
               <AccordionContent className="w-full">
-                <div className={cn("flex flex-col gap-1 text-xs", isDepositLoading ? "shimmer" : "")}>
+                <div className={cn("flex flex-col gap-1 rounded-[10px] text-xs", isDepositLoading ? "shimmer" : "")}>
                   <div className="flex w-full items-center justify-between">
                     <span className="text-subtitle">Leverage : </span>
                     <span className="text-white">~{leveragePercentage.toFixed(2)}x</span>

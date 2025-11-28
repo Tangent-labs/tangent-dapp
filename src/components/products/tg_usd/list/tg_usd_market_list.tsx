@@ -176,7 +176,7 @@ export default function USGMarketList() {
             <div className="flex w-full flex-col items-center justify-center md:w-fit">
               <div className="mb-1 text-xs text-subtitle"> Type </div>
               <InputSelect
-                className="w-full min-w-40"
+                className="w-full min-w-48"
                 template={MarketListSelectTemplate}
                 value={marketType || ""}
                 options={marketOptions}
@@ -188,7 +188,7 @@ export default function USGMarketList() {
               <div className="mb-1 text-xs text-subtitle"> Protocol </div>
 
               <InputSelect
-                className="w-full min-w-40"
+                className="w-full min-w-48"
                 template={MarketListSelectTemplate}
                 value={protocol || ""}
                 options={protocolOptions}

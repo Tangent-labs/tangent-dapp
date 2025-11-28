@@ -143,7 +143,7 @@ export function DepositReceiveInput({
           <div>{dollarDepositDisplay}</div>
 
           <BorderPanel
-            className="flex w-10 cursor-pointer items-center bg-button-active px-1 text-xs text-white hover:font-semibold"
+            className="w-10 min-w-10 cursor-pointer bg-button-active px-1 text-center text-xs text-white hover:font-semibold"
             onClick={() => {
               if (setMaxBalance) setMaxBalance()
             }}
@@ -154,20 +154,7 @@ export function DepositReceiveInput({
 
         {displaySliderInput && (
           <>
-            <input
-              type="range"
-              min="0"
-              step="1"
-              max="100"
-              value={percentage}
-              onChange={handleSliderChange}
-              className="mt-3 h-1.5 w-full cursor-pointer appearance-none rounded-[10px] bg-[#070707]"
-              style={{
-                background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
-              }}
-            />
-
-            <SliderInput handleSliderChange={handleSliderChange}></SliderInput>
+            <SliderInput percentage={percentage} handleSliderChange={handleSliderChange}></SliderInput>
           </>
         )}
       </BorderPanel>

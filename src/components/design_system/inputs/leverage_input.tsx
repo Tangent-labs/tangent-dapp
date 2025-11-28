@@ -99,7 +99,10 @@ export function LeverageInput({
   }
 
   return (
-    <BorderPanel onClick={onClickFocus} className={`${isLoading ? "shimmer" : ""} flex cursor-pointer flex-col bg-white bg-opacity-[3%] p-2`}>
+    <BorderPanel
+      onClick={onClickFocus}
+      className={`${isLoading ? "shimmer" : ""} flex cursor-pointer flex-col bg-white bg-opacity-[3%] p-2 transition-colors duration-200 hover:bg-white/10`}
+    >
       <div className="flex w-full justify-between">
         <div className="text-sm text-subtitle">{label}</div>
       </div>

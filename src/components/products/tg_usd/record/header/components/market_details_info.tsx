@@ -32,7 +32,7 @@ export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
   }, [selectedToken])
 
   return (
-    <div className="mt-4 hidden h-28 items-center rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px] md:flex">
+    <div className="mt-4 hidden h-24 items-center rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px] md:flex">
       <div className="flex min-h-20 w-2/12 flex-col items-center justify-center border-r border-[#3F3F3F] px-8">
         <span className="text-[15px] text-white">Assets</span>
 

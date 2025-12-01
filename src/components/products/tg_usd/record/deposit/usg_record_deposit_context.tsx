@@ -275,7 +275,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
         borrowWeiValue: borrowWeiValue || 0n,
         zapValue: zapValue,
       })
-    } else if (depositWeiValue && depositAsset === collateralInfo?.symbol) {
+    } else if (depositWeiValue && depositAssetInfo?.symbol === collateralInfo?.symbol) {
       setCurrentAmounts({
         depositWeiValue: depositWeiValue || 0n,
         borrowWeiValue: borrowWeiValue || 0n,

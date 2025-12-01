@@ -12,7 +12,7 @@ export default function MarketDetailsParameters() {
   const currentMarketApr = marketAprs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())
 
   return (
-    <div className="mt-4 hidden h-28 items-center justify-evenly rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px] md:flex">
+    <div className="mt-4 hidden h-24 items-center justify-evenly rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px] md:flex">
       <RecordPageHeader
         apr={currentMarketApr!}
         indicators={[

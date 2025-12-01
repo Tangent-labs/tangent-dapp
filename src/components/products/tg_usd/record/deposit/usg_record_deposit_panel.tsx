@@ -4,7 +4,6 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
-import { Switch } from "@/components/ui/switch"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGContext } from "../../tg_usd_context"
 import { IconThunder } from "@/components/icons/icon_thunder"
@@ -28,7 +27,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 export default function USGDepositContent() {
   const {
     setDepositAsset,
-    setIsDepositAndBorrow,
     setDepositWeiValue,
     actionApprove,
     actionDeposit,
@@ -48,7 +46,6 @@ export default function USGDepositContent() {
     tokens,
     isZapLoading,
     isDepositLoading,
-    isDepositAndBorrow,
     zapValue,
     depositAssetInfo,
     slippage,
@@ -65,7 +62,8 @@ export default function USGDepositContent() {
 
   const { connect } = useWalletConnexionContext()
 
-  const { collateralInfo, marketData, USGInfo, balanceAllowanceData, marketInfo, maxBorrowCapReached, displayAPRVariation } = useUSGRecordContext()
+  const { collateralInfo, marketData, USGInfo, balanceAllowanceData, marketInfo, maxBorrowCapReached, displayAPRVariation, isDepositAndBorrow } =
+    useUSGRecordContext()
 
   const AssetSelect = () => {
     const tokenOptions = tokens.map((el: ZapToken) => ({
@@ -144,17 +142,6 @@ export default function USGDepositContent() {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-subtitle">Deposit and borrow</span>
-          <Switch checked={isDepositAndBorrow} onCheckedChange={(v) => setIsDepositAndBorrow(v)} />
-        </div>
-
-        <div className="items-end justify-end gap-2">
-          <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
-        </div>
-      </div>
-
       <div className="flex w-full items-end justify-between gap-2">
         <span className="text-sm font-semibold md:text-xl">Deposit {collateralInfo?.symbol}</span>
         <span className="text-xs text-subtitle">{maxDepositString}</span>
@@ -231,51 +218,55 @@ export default function USGDepositContent() {
         </div>
       )}
 
-      <Accordion className="w-full" type="single" collapsible>
-        <AccordionItem value="item-1">
-          <BorderPanel className="flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary">
-            <AccordionTrigger>
-              <span className="py-1.5">Recap</span>
-            </AccordionTrigger>
+      <div className="flex items-center justify-between gap-2">
+        <Accordion className="w-full" type="single" collapsible>
+          <AccordionItem value="item-1">
+            <BorderPanel className="flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary">
+              <AccordionTrigger>
+                <span className="py-1.5">Recap</span>
+              </AccordionTrigger>
 
-            <AccordionContent className="w-full">
-              <div className={cn("flex flex-col gap-1 rounded-[10px] text-xs", isDepositLoading ? "shimmer" : "")}>
-                {displayAPRVariation && (
-                  <>
-                    <div className="flex w-full items-center justify-between">
-                      <span className="text-subtitle">APR variation : </span>
-                    </div>
-
-                    <div className="flex w-full items-center justify-between">
-                      <span className="ml-4 italic text-subtitle">Current </span>
-                      <div className="flex items-center justify-center gap-1">
-                        <span className="text-white">{aprVariation.current}</span>
-                        <IconSingleArrow></IconSingleArrow>
-                        <span className="text-tonic">{aprVariation.currentUpdated}</span>
+              <AccordionContent className="w-full">
+                <div className={cn("flex flex-col gap-1 rounded-[10px] text-xs", isDepositLoading ? "shimmer" : "")}>
+                  {displayAPRVariation && (
+                    <>
+                      <div className="flex w-full items-center justify-between">
+                        <span className="text-subtitle">APR variation : </span>
                       </div>
-                    </div>
 
-                    <div className="flex w-full items-center justify-between">
-                      <span className="ml-4 italic text-subtitle">Projected </span>
-                      <div className="flex items-center justify-center gap-1">
-                        <span className="text-white">{aprVariation.projected}</span>
-                        <IconSingleArrow></IconSingleArrow>
-                        <span className="text-tonic">{aprVariation.projectedUpdated}</span>
+                      <div className="flex w-full items-center justify-between">
+                        <span className="ml-4 italic text-subtitle">Current </span>
+                        <div className="flex items-center justify-center gap-1">
+                          <span className="text-white">{aprVariation.current}</span>
+                          <IconSingleArrow></IconSingleArrow>
+                          <span className="text-tonic">{aprVariation.currentUpdated}</span>
+                        </div>
                       </div>
-                    </div>
-                  </>
-                )}
 
-                <div className={cn(displayAPRVariation ? "mt-2 border-t border-white/30 pt-2" : "", "flex w-full items-center justify-between")}>
-                  <span className="text-subtitle">Expected collateral: </span>
+                      <div className="flex w-full items-center justify-between">
+                        <span className="ml-4 italic text-subtitle">Projected </span>
+                        <div className="flex items-center justify-center gap-1">
+                          <span className="text-white">{aprVariation.projected}</span>
+                          <IconSingleArrow></IconSingleArrow>
+                          <span className="text-tonic">{aprVariation.projectedUpdated}</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
 
-                  <span className="font-semibold text-white">{expectedCollateral}</span>
+                  <div className={cn(displayAPRVariation ? "mt-2 border-t border-white/30 pt-2" : "", "flex w-full items-center justify-between")}>
+                    <span className="text-subtitle">Expected collateral: </span>
+
+                    <span className="font-semibold text-white">{expectedCollateral}</span>
+                  </div>
                 </div>
-              </div>
-            </AccordionContent>
-          </BorderPanel>
-        </AccordionItem>
-      </Accordion>
+              </AccordionContent>
+            </BorderPanel>
+          </AccordionItem>
+        </Accordion>
+
+        <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
+      </div>
 
       <MarketTransactionError display={!!borrowWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />
 
@@ -287,7 +278,7 @@ export default function USGDepositContent() {
           handleProcess: depositAsset && depositAsset !== collateralInfo?.symbol ? getRouteAndDeposit : actionDeposit,
         }}
         formState={formState}
-        labelProcess={isDepositAndBorrow ? "Deposit and borrow" : "Deposit"}
+        labelProcess={isDepositAndBorrow ? "Deposit & borrow" : "Deposit"}
         connect={connect}
       />
     </div>

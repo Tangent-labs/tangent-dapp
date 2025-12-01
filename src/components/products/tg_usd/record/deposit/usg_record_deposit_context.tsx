@@ -22,8 +22,6 @@ type USGDepositContextProps = {
 type USGDepositContextValues = {
   marketInfo: USGMarket
   collateralInfo: CollateralInfo
-  isDepositAndBorrow: boolean
-  setIsDepositAndBorrow: (arg: boolean) => void
   depositWeiValue?: bigint
   setDepositWeiValue: (arg: bigint | undefined) => void
   actionDeposit: () => void
@@ -84,10 +82,17 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo, currentConvexTVL } =
-    useUSGRecordContext()
-
-  const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(true)
+  const {
+    marketData,
+    loadOnChainData,
+    setCurrentAmounts,
+    balanceAllowanceData,
+    fetchBalanceAllowanceData,
+    collateralInfo,
+    marketInfo,
+    currentConvexTVL,
+    isDepositAndBorrow,
+  } = useUSGRecordContext()
 
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
 
@@ -546,8 +551,6 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   const contextValue: USGDepositContextValues = {
     marketInfo,
     collateralInfo,
-    isDepositAndBorrow,
-    setIsDepositAndBorrow,
     depositWeiValue,
     setDepositWeiValue,
     actionApprove,

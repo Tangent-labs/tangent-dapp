@@ -255,9 +255,11 @@ export const USGDashboardContent = () => {
                         dataKey="value"
                         stroke="none"
                       >
-                        {userData?.tgUsdCollateralsData.map((_, index: number) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
+                        {userData?.tgUsdCollateralsData
+                          .sort((a: TgUsdCollateralData, b: TgUsdCollateralData) => (a.value > b.value ? -1 : 1))
+                          .map((_, index: number) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
                       </Pie>
                     </PieChart>
                   </ResponsiveContainer>

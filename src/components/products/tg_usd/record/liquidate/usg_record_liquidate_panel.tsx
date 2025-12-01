@@ -1,6 +1,5 @@
 "use client"
 
-import { Switch } from "@/components/ui/switch"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { useUSGLiquidateContext } from "./usg_record_liquidate_context"
 import USGLiquidatePanelFull from "./usg_record_liquidate_panel_full"
@@ -20,7 +19,7 @@ export const USGStaticAssetSelector = () => {
 }
 
 export default function USGLiquidatePanel() {
-  const { actionLiquidate, formState, isFullLiquidation, onChangeIsFullLiquidation, slippage, setSlippage } = useUSGLiquidateContext()
+  const { actionLiquidate, formState, isFullLiquidation, slippage, setSlippage } = useUSGLiquidateContext()
 
   const { connect } = useWalletConnexionContext()
 
@@ -28,11 +27,6 @@ export default function USGLiquidatePanel() {
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2">
         <div className="flex w-full items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-subtitle">Liquidate all the position</span>
-            <Switch checked={isFullLiquidation} onCheckedChange={(v) => onChangeIsFullLiquidation(v)} />
-          </div>
-
           <div className="flex items-center justify-end gap-2">
             <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
           </div>

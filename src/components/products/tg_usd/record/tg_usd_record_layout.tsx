@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Switch } from "@/components/ui/switch"
 import USGMarketInfo from "./tg_usd_market_info"
@@ -9,12 +10,11 @@ import USGRecordPageHeader from "./tg_usd_record_page_header"
 import { useUSGRecordContext } from "./tg_usd_record_context"
 import { MarketDetails } from "./header/market_details_header"
 import Divider from "@/components/design_system/structure/divider"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
 import USGCollateralPrice from "./collat_price/collat_price_content"
+import { FeatureTabs } from "@/components/design_system/inputs/feature_tabs"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { CollateralPriceProvider } from "./collat_price/collat_price_context"
 import TgUsdPositionHistory from "./position_history/tg_usd_position_history"
-import { FeatureSelect } from "@/components/design_system/structure/feature_select"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
@@ -39,13 +39,29 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     setDebtFarming,
     setIsLeveraged,
     setInitialCollatAmount,
+    setIsDepositAndBorrow,
+    setIsRepayAndWithdraw,
+    isDepositAndBorrow,
+    isRepayAndWithdraw,
   } = useUSGRecordContext()
+
+  const [activeTab, setActiveTab] = useState<string>("Borrow")
 
   const router = useRouter()
 
   const onTabClick = (feat: string) => {
     if (feat.toLowerCase() === "deposit") {
       router.push(`/${collateral}`)
+      setIsDepositAndBorrow(false)
+    } else if (feat.toLowerCase() === "deposit&borrow") {
+      router.push(`/${collateral}`)
+      setIsDepositAndBorrow(true)
+    } else if (feat.toLowerCase() === "repay") {
+      router.push(`/${collateral}/${feat.toLowerCase()}`)
+      setIsRepayAndWithdraw(false)
+    } else if (feat.toLowerCase() === "repay&withdraw") {
+      router.push(`/${collateral}/repay`)
+      setIsRepayAndWithdraw(true)
     } else {
       router.push(`/${collateral}/${feat.toLowerCase()}`)
     }
@@ -57,6 +73,18 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     }
   }
 
+  useEffect(() => {
+    if (activeTab === "Borrow") {
+      router.push(`/${collateral}`)
+      setIsDepositAndBorrow(true)
+    }
+
+    if (activeTab === "Repay") {
+      router.push(`/${collateral}/repay`)
+      setIsRepayAndWithdraw(true)
+    }
+  }, [activeTab])
+
   return (
     <>
       <USGRecordPageHeader />
@@ -66,32 +94,18 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
       <div className="my-4 flex flex-col gap-4">
         <div className="relative flex items-start justify-start gap-4 max-xl:flex-col">
           <div className="w-full rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
-            <div className="hidden w-full flex-col items-center justify-between gap-1 md:flex">
-              <div className="flex w-full justify-between gap-1">
-                <ButtonTab className="w-full !px-2" active={feature === collateral} label={"Deposit"} onClick={() => onTabClick("deposit")} />
-                <ButtonTab className="w-full !px-2" active={feature === "borrow"} label={"Borrow"} onClick={() => onTabClick("borrow")} />
-                <ButtonTab
-                  disabled={!canLeverage}
-                  className="w-full !px-2"
-                  active={feature === "leverage"}
-                  label={"Leverage"}
-                  onClick={() => onTabClickLeverage()}
-                />
-                <ButtonTab className="w-full !px-2" active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />
-                <ButtonTab className="w-full !px-2" active={feature === "withdraw"} label={"Withdraw"} onClick={() => onTabClick("withdraw")} />
-                <ButtonTab className="w-full !px-2" active={feature === "liquidate"} label={"Liquidate"} onClick={() => onTabClick("liquidate")} />
-              </div>
-            </div>
+            <FeatureTabs
+              feature={feature}
+              activeTab={activeTab}
+              collateral={collateral}
+              isRepayAndWithdraw={isRepayAndWithdraw}
+              isDepositAndBorrow={isDepositAndBorrow}
+              canLeverage={canLeverage}
+              onTabClick={onTabClick}
+              onTabClickLeverage={onTabClickLeverage}
+              setActiveTab={setActiveTab}
+            ></FeatureTabs>
 
-            <div className="flex w-full flex-col items-center justify-between gap-1 md:hidden">
-              <FeatureSelect
-                options={["Deposit", "Borrow", "Withdraw", "Repay", "Leverage", "Liquidate"]}
-                value={feature}
-                onChange={(v: string) => onTabClick(v)}
-              ></FeatureSelect>
-            </div>
-
-            <Divider />
             <div className="mt-2">{children}</div>
           </div>
 

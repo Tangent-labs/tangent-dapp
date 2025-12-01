@@ -26,7 +26,7 @@ type USGLiquidateContextValues = {
   setLiquidateWeiValue: (arg: bigint | undefined) => void
   isFullLiquidation: boolean
   setIsFullLiquidation: (arg: boolean) => void
-  onChangeIsFullLiquidation: (arg: boolean) => void
+
   maxLiquidable: bigint
   liquidablePercentage: number
   setLiquidablePercentage: (arg: number) => void
@@ -79,15 +79,6 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   const [repayWeiValue, setRepayWeiValue] = useState<bigint | undefined>()
 
   const [tgUSDReceivedValue, setTgUSDReceivedValue] = useState<bigint | undefined>()
-
-  const onChangeIsFullLiquidation = (liquidateFull: boolean) => {
-    setIsFullLiquidation(liquidateFull)
-
-    if (!liquidateFull) {
-      setLiquidateWeiValue(0n)
-      setLiquidablePercentage(0)
-    }
-  }
 
   useEffect(() => {
     if (isFullLiquidation) {
@@ -239,7 +230,6 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     setRepayablePercentage,
     maxRepayable,
     handleLiquidateValueChange,
-    onChangeIsFullLiquidation,
     slippage,
     setSlippage,
     maxLiquidateString,

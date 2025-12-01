@@ -4,7 +4,6 @@ import Image from "next/image"
 import { formatUnits } from "viem"
 import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
-import { Switch } from "@/components/ui/switch"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGContext } from "../../tg_usd_context"
 import { USG_CONTRACT } from "../../tg_usd_repository"
@@ -15,17 +14,17 @@ import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { RepayInput } from "@/components/design_system/inputs/repay_input"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { SlippageInput } from "@/components/design_system/inputs/slippage"
 
 export default function USGRepayContent() {
   const { tokens, balances } = useUSGContext()
 
-  const { USGInfo, pricedCollateralInfo, collateralInfo, marketInfo } = useUSGRecordContext()
+  const { USGInfo, pricedCollateralInfo, collateralInfo, marketInfo, isRepayAndWithdraw } = useUSGRecordContext()
 
   const { connect } = useWalletConnexionContext()
 
@@ -33,21 +32,18 @@ export default function USGRepayContent() {
     actionRepay,
     setPercentage,
     setWithdrawWeiValue,
-    setIsRepayAndWithdraw,
     setWithdrawPercentage,
     setRepayAsset,
     handleRepayValueChange,
     actionZapRepay,
     actionApprove,
     setSlippage,
-    onClickMax,
     slippage,
     repayWeiValue,
     repayAsset,
     maxRepayableValue,
     formState,
     percentage,
-    isRepayAndWithdraw,
     isRepayMax,
     withdrawWeiValue,
     maxWithdrawable,
@@ -145,24 +141,6 @@ export default function USGRepayContent() {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex w-full items-center justify-between">
-        <div className="flex w-full items-start justify-start gap-2">
-          <div className="flex items-center gap-2 self-end">
-            <span className="text-sm text-subtitle">Repay and withdraw</span>
-            <Switch checked={isRepayAndWithdraw} onCheckedChange={(v) => setIsRepayAndWithdraw(v)} />
-          </div>
-
-          <div className="flex items-center gap-2 self-end">
-            <span className="text-sm text-subtitle">Repay All</span>
-            <Switch checked={isRepayMax} onCheckedChange={(v) => onClickMax(v)} />
-          </div>
-        </div>
-
-        <div className="flex items-center justify-start gap-2">
-          <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
-        </div>
-      </div>
-
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
           <span className="text-sm font-semibold md:text-xl">Repay debt</span>
@@ -244,6 +222,11 @@ export default function USGRepayContent() {
           </>
         )}
       </div>
+
+      <div className="flex items-center justify-end gap-2">
+        <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
+      </div>
+
       <>
         {isDebtBelowThreshold && (
           <div className="flex w-full items-center justify-center text-xs text-red-500">Remaining debt can not be lower than $3,000</div>

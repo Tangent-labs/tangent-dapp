@@ -29,7 +29,6 @@ const IndicatorCards = ({ indicators, className = "", children }: IndicatorCards
     <div
       className={`flex w-full items-center justify-center rounded-[10px] border-white border-opacity-20 bg-overlay-panel p-4 backdrop-blur-[60px] ${className}`}
     >
-      {" "}
       {children}
       {indicators.map((indicator, index) => (
         <IndicatorCard key={index} title={indicator.title} value={indicator.value} />

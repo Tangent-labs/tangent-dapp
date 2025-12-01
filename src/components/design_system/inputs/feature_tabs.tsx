@@ -1,0 +1,229 @@
+"use client"
+
+import { cn } from "@/lib/utils"
+import ButtonTab from "./button_tab"
+import { motion } from "framer-motion"
+import Divider from "../structure/divider"
+import { FeatureSelect } from "../structure/feature_select"
+
+type FeatureTabsProps = {
+  feature: string
+  activeTab: string
+  collateral: string
+  canLeverage: boolean
+  isRepayAndWithdraw: boolean
+  isDepositAndBorrow: boolean
+  setActiveTab: (v: string) => void
+  onTabClick: (v: string) => void
+  onTabClickLeverage: () => void
+}
+
+export const FeatureTabs = ({
+  feature,
+  activeTab,
+  collateral,
+  canLeverage,
+  isRepayAndWithdraw,
+  isDepositAndBorrow,
+  setActiveTab,
+  onTabClick,
+  onTabClickLeverage,
+}: FeatureTabsProps) => {
+  return (
+    <>
+      <div className="hidden w-full flex-col items-center justify-between gap-1 md:flex">
+        <div className="mt-2 flex w-full justify-between gap-2">
+          <ButtonTab className="w-full !px-2" active={activeTab === "Borrow"} label={"Borrow"} onClick={() => setActiveTab("Borrow")} />
+          <ButtonTab className="w-full !px-2" active={activeTab === "Repay"} label={"Repay"} onClick={() => setActiveTab("Repay")} />
+        </div>
+
+        <Divider className="h-0.5 w-full bg-white/10" />
+
+        <>
+          {activeTab === "Borrow" ? (
+            <div className="flex w-full items-center justify-between gap-2 rounded-[10px] bg-white bg-opacity-[3%] text-xs">
+              <div
+                onClick={() => onTabClick("deposit&borrow")}
+                className={cn(
+                  "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold transition-colors hover:bg-white/10",
+                  feature === collateral && isDepositAndBorrow ? "text-black" : "text-white"
+                )}
+              >
+                {feature === collateral && isDepositAndBorrow && (
+                  <motion.div
+                    layoutId="activeSubNavigationTab"
+                    className="absolute inset-0 rounded-[10px] bg-white"
+                    transition={{
+                      type: "spring",
+                      stiffness: 350,
+                      damping: 30,
+                    }}
+                  />
+                )}
+                <span className="relative z-20">Deposit & Borrow</span>
+              </div>
+
+              <div
+                onClick={() => onTabClickLeverage()}
+                className={cn(
+                  "relative z-10 rounded-[10px] px-4 py-1.5 font-semibold transition-colors hover:bg-white/10",
+                  feature === "leverage" ? "text-black" : "text-white",
+                  canLeverage ? "cursor-pointer" : "cursor-not-allowed"
+                )}
+              >
+                {feature === "leverage" && (
+                  <motion.div
+                    layoutId="activeSubNavigationTab"
+                    className="absolute inset-0 rounded-[10px] bg-white"
+                    transition={{
+                      type: "spring",
+                      stiffness: 350,
+                      damping: 30,
+                    }}
+                  />
+                )}
+                <span className="relative z-20">Leverage</span>
+              </div>
+
+              <div
+                onClick={() => onTabClick("deposit")}
+                className={cn(
+                  "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold text-white transition-colors hover:bg-white/10",
+                  feature === collateral && !isDepositAndBorrow ? "text-black" : "text-white"
+                )}
+              >
+                {feature === collateral && !isDepositAndBorrow && (
+                  <motion.div
+                    layoutId="activeSubNavigationTab"
+                    className="absolute inset-0 rounded-[10px] bg-white"
+                    transition={{
+                      type: "spring",
+                      stiffness: 350,
+                      damping: 30,
+                    }}
+                  />
+                )}
+                <span className="relative z-20">Deposit</span>
+              </div>
+
+              <div
+                onClick={() => onTabClick("borrow")}
+                className={cn(
+                  "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold text-white transition-colors hover:bg-white/10",
+                  feature === "borrow" ? "text-black" : "text-white"
+                )}
+              >
+                {feature === "borrow" && (
+                  <motion.div
+                    layoutId="activeSubNavigationTab"
+                    className="absolute inset-0 rounded-[10px] bg-white"
+                    transition={{
+                      type: "spring",
+                      stiffness: 350,
+                      damping: 30,
+                    }}
+                  />
+                )}
+                <span className="relative z-20">Borrow</span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex w-full items-center justify-between gap-2 rounded-[10px] bg-white bg-opacity-[3%] text-xs">
+              <div
+                onClick={() => onTabClick("repay&withdraw")}
+                className={cn(
+                  "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold text-white transition-colors hover:bg-white/10",
+                  feature === "repay" && isRepayAndWithdraw ? "text-black" : "text-white"
+                )}
+              >
+                {feature === "repay" && isRepayAndWithdraw && (
+                  <motion.div
+                    layoutId="activeSubNavigationTab"
+                    className="absolute inset-0 rounded-[10px] bg-white"
+                    transition={{
+                      type: "spring",
+                      stiffness: 350,
+                      damping: 30,
+                    }}
+                  />
+                )}
+                <span className="relative z-20">Repay & Withdraw</span>
+              </div>
+
+              <div
+                onClick={() => onTabClick("liquidate")}
+                className={cn(
+                  "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold text-white transition-colors hover:bg-white/10",
+                  feature === "liquidate" ? "text-black" : "text-white"
+                )}
+              >
+                {feature === "liquidate" && (
+                  <motion.div
+                    layoutId="activeSubNavigationTab"
+                    className="absolute inset-0 rounded-[10px] bg-white"
+                    transition={{
+                      type: "spring",
+                      stiffness: 350,
+                      damping: 30,
+                    }}
+                  />
+                )}
+                <span className="relative z-20">Liquidate</span>
+              </div>
+
+              <div
+                onClick={() => onTabClick("repay")}
+                className={cn(
+                  "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold text-white transition-colors hover:bg-white/10",
+                  feature === "repay" && !isRepayAndWithdraw ? "text-black" : "text-white"
+                )}
+              >
+                {feature === "repay" && !isRepayAndWithdraw && (
+                  <motion.div
+                    layoutId="activeSubNavigationTab"
+                    className="absolute inset-0 rounded-[10px] bg-white"
+                    transition={{
+                      type: "spring",
+                      stiffness: 350,
+                      damping: 30,
+                    }}
+                  />
+                )}
+                <span className="relative z-20">Repay</span>
+              </div>
+
+              <div
+                onClick={() => onTabClick("withdraw")}
+                className={cn(
+                  "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold text-white transition-colors hover:bg-white/10",
+                  feature === "withdraw" ? "text-black" : "text-white"
+                )}
+              >
+                {feature === "withdraw" && (
+                  <motion.div
+                    layoutId="activeSubNavigationTab"
+                    className="absolute inset-0 rounded-[10px] bg-white"
+                    transition={{
+                      type: "spring",
+                      stiffness: 350,
+                      damping: 30,
+                    }}
+                  />
+                )}
+                <span className="relative z-20">Withdraw</span>
+              </div>
+            </div>
+          )}
+        </>
+      </div>
+
+      <div className="flex w-full flex-col items-center justify-between gap-1 md:hidden">
+        <FeatureSelect
+          options={["Deposit", "Borrow", "Withdraw", "Repay", "Leverage", "Liquidate"]}
+          value={feature}
+          onChange={(v: string) => onTabClick(v)}
+        ></FeatureSelect>
+      </div>
+    </>
+  )
+}

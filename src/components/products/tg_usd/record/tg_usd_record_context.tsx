@@ -115,6 +115,12 @@ type USGRecordContextValues = {
   liquidationPrice: bigint
 
   marketContracts: Array<{ name: string; address: Address }>
+
+  isDepositAndBorrow: boolean
+  setIsDepositAndBorrow: (arg: boolean) => void
+
+  isRepayAndWithdraw: boolean
+  setIsRepayAndWithdraw: (arg: boolean) => void
 }
 
 const LEVERAGE_TRESHOLD = 0.989
@@ -129,6 +135,10 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   const { getCachedCurrentBlock } = useRootContext()
 
   const { globalData } = useUSGMaketListContext()
+
+  const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(true)
+
+  const [isRepayAndWithdraw, setIsRepayAndWithdraw] = useState<boolean>(false)
 
   const { currentAddress, getWalletClient, isWalletInitialized } = useWalletConnexionContext()
 
@@ -483,6 +493,12 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     liquidationPrice,
 
     marketContracts,
+
+    isDepositAndBorrow,
+    setIsDepositAndBorrow,
+
+    isRepayAndWithdraw,
+    setIsRepayAndWithdraw,
   }
 
   return <USGRecordContext.Provider value={contextValue}>{children}</USGRecordContext.Provider>

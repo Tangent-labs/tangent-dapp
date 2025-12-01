@@ -433,8 +433,8 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
         doSwap(walletClient!, tx)
           .then(() => {
-            setDepositWeiValue(undefined)
-            setReceiveWeiValue(undefined)
+            setDepositWeiValue(0n)
+            setReceiveWeiValue(0n)
             fetchBalanceAllowanceData(walletClient!)
             setIsLoading(false)
             toast.success(ToastComponent, { data: { type: "Success", content: "Swap successful!" } })

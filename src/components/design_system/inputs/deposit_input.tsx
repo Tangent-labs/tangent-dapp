@@ -122,7 +122,7 @@ export function DepositInput({
             value={innerValue}
             placeholder="Amount"
             onChange={handleInputChange}
-            className={cn("auto-grow bg-transparent text-[24px] font-semibold focus:outline-none")}
+            className="auto-grow bg-transparent text-[24px] font-semibold focus:outline-none"
             ref={inputRef}
             step="any"
           />

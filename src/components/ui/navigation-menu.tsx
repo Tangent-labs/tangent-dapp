@@ -30,7 +30,7 @@ function NavigationMenuList({ className, ...props }: React.ComponentProps<typeof
   return (
     <NavigationMenuPrimitive.List
       data-slot="navigation-menu-list"
-      className={cn("group flex flex-1 list-none items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]", className)}
+      className={cn("group relative flex flex-1 list-none items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]", className)}
       {...props}
     />
   )
@@ -54,7 +54,7 @@ function NavigationMenuItem({ className, ...props }: React.ComponentProps<typeof
     <NavigationMenuPrimitive.Item
       data-slot="navigation-menu-item"
       className={cn(
-        "relative cursor-pointer rounded-[10px] px-2 py-2.5 text-sm font-semibold text-white transition-colors duration-200 aria-disabled:text-gray-500",
+        "relative cursor-pointer rounded-[10px] text-sm font-semibold text-white transition-colors duration-200 aria-disabled:text-gray-500",
         className
       )}
       {...props}

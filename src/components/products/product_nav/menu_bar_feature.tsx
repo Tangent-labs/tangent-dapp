@@ -10,7 +10,9 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 
+import { cn } from "@/lib/utils"
 import { useCallback } from "react"
+import { motion } from "framer-motion"
 import { useRootContext } from "../root/root_context"
 import { usePathname, useRouter } from "next/navigation"
 import { IconTangent } from "@/components/icons/icon_tangent"
@@ -54,36 +56,107 @@ export default function MenuBarFeature() {
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem
-                  className={pathname === "/dashboard" ? "bg-white/10 font-semibold hover:bg-white/20" : "hover:bg-white/10"}
                   onClick={() => router.push("/dashboard")}
+                  className={cn(
+                    "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
+                    pathname === "/dashboard" ? "" : "hover:bg-white/20"
+                  )}
                 >
-                  Dashboard
+                  {pathname === "/dashboard" && (
+                    <motion.div
+                      layoutId="activeNavigationTab"
+                      className="absolute inset-0 rounded-lg bg-white/10"
+                      transition={{
+                        type: "spring",
+                        stiffness: 350,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                  <span className="relative z-20">Dashboard</span>
                 </NavigationMenuItem>
+
                 <NavigationMenuItem
-                  className={pathname === "/" ? "bg-white/10 font-semibold hover:bg-white/20" : "hover:bg-white/10"}
                   onClick={() => router.push("/")}
+                  className={cn(
+                    "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
+                    pathname === "/" ? "" : "hover:bg-white/20"
+                  )}
                 >
-                  Markets
+                  {pathname === "/" && (
+                    <motion.div
+                      layoutId="activeNavigationTab"
+                      className="absolute inset-0 rounded-lg bg-white/10"
+                      transition={{
+                        type: "spring",
+                        stiffness: 350,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                  <span className="relative z-20">Markets</span>
                 </NavigationMenuItem>
                 <NavigationMenuItem
-                  className={pathname === "/stake" ? "bg-white/10 font-semibold hover:bg-white/20" : "hover:bg-white/10"}
                   onClick={() => router.push("/stake")}
+                  className={cn(
+                    "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
+                    pathname === "/stake" ? "" : "hover:bg-white/20"
+                  )}
                 >
-                  Savings
+                  {pathname === "/stake" && (
+                    <motion.div
+                      layoutId="activeNavigationTab"
+                      className="absolute inset-0 rounded-lg bg-white/10"
+                      transition={{
+                        type: "spring",
+                        stiffness: 350,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                  <span className="relative z-20">Savings</span>
                 </NavigationMenuItem>
 
                 <NavigationMenuItem
-                  className={pathname === "/earn" ? "bg-white/10 font-semibold hover:bg-white/20" : "hover:bg-white/10"}
                   onClick={() => router.push("/earn")}
+                  className={cn(
+                    "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
+                    pathname === "/earn" ? "" : "hover:bg-white/20"
+                  )}
                 >
-                  Earn
+                  {pathname === "/earn" && (
+                    <motion.div
+                      layoutId="activeNavigationTab"
+                      className="absolute inset-0 rounded-lg bg-white/10"
+                      transition={{
+                        type: "spring",
+                        stiffness: 350,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                  <span className="relative z-20">Earn</span>
                 </NavigationMenuItem>
 
                 <NavigationMenuItem
-                  className={pathname === "/claim" ? "bg-white/10 font-semibold hover:bg-white/20" : "hover:bg-white/10"}
                   onClick={() => router.push("/claim")}
+                  className={cn(
+                    "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
+                    pathname === "/claim" ? "hover:bg-white/20" : "hover:bg-white/10"
+                  )}
                 >
-                  Claim
+                  {pathname === "/claim" && (
+                    <motion.div
+                      layoutId="activeNavigationTab"
+                      className="absolute inset-0 rounded-lg bg-white/10"
+                      transition={{
+                        type: "spring",
+                        stiffness: 350,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                  <span className="relative z-20">Claim</span>
                 </NavigationMenuItem>
 
                 <NavigationMenu>

@@ -3,11 +3,11 @@
 import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
 import { AssetDataPriced } from "@/types"
+import { SliderInput } from "./slider_input"
 import BorderPanel from "../structure/border_panel"
 import { IconChevron } from "@/components/icons/icon_chevron"
-import { ReactNode, useEffect, useMemo, useState } from "react"
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
 import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
-import { SliderInput } from "./slider_input"
 
 type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
@@ -54,6 +54,8 @@ export function BuySellInput({
   disabled,
   ...props
 }: BuySellInputProps) {
+  const inputRef = useRef<HTMLInputElement>(null)
+
   const balanceNumber = useMemo(() => {
     if (depositBalance) {
       return Number(formatUnits(depositBalance, depositAsset?.decimals || 18))
@@ -159,6 +161,10 @@ export function BuySellInput({
     return `(${formatDollar(val)})`
   }, [receiveAmount, receiveAsset])
 
+  const onClickFocus = () => {
+    inputRef.current?.focus()
+  }
+
   return (
     <div className="flex w-full flex-col">
       <div className="mb-3 flex w-full items-end justify-between">
@@ -172,29 +178,33 @@ export function BuySellInput({
       </div>
 
       <div className={cn("flex flex-col")} {...props}>
-        <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2 hover:bg-white/10`}>
+        <BorderPanel onClick={onClickFocus} className={`${isLoading ? "shimmer" : ""} flex cursor-pointer flex-col p-2 hover:bg-white/10`}>
           <div className="flex w-full justify-between">
             <div className="text-sm text-subtitle">{labelDeposit}</div>
           </div>
-          <div className="mb-2 flex w-full justify-between">
-            <input
-              {...props}
-              disabled={disabled}
-              type="number"
-              value={innerValue ?? ""}
-              placeholder="Amount"
-              onChange={handleInputChange}
-              className={cn(
-                "min-h-10 max-w-28 rounded-[10px] border-opacity-20 bg-transparent text-xl font-semibold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30 md:max-w-32"
-              )}
-            />
+          <div className="mb-2 flex justify-between">
+            <div className="flex items-center justify-start">
+              <input
+                {...props}
+                disabled={disabled}
+                type="number"
+                value={innerValue ?? ""}
+                ref={inputRef}
+                placeholder="Amount"
+                onChange={handleInputChange}
+                className="auto-grow bg-transparent text-[24px] font-semibold focus:outline-none"
+              />
+              <div className="text-xs text-subtitle">{dollarDepositDisplay}</div>
+            </div>
 
             {depositSelect}
           </div>
-          <div className="flex justify-between text-xs text-subtitle">
-            <div>{dollarDepositDisplay}</div>
+          <div className="flex w-full justify-between text-xs text-subtitle">
+            <div className="flex w-full cursor-pointer items-center justify-between gap-2">
+              <div className="flex w-full flex-col">
+                <SliderInput percentage={percentage} handleSliderChange={handleSliderChange}></SliderInput>
+              </div>
 
-            <div className="flex cursor-pointer items-center">
               <BorderPanel
                 className="w-10 min-w-10 cursor-pointer bg-button-active px-1 text-center text-xs text-white hover:font-semibold"
                 onClick={() => {
@@ -205,8 +215,6 @@ export function BuySellInput({
               </BorderPanel>
             </div>
           </div>
-
-          <SliderInput percentage={percentage} handleSliderChange={handleSliderChange}></SliderInput>
         </BorderPanel>
 
         <div

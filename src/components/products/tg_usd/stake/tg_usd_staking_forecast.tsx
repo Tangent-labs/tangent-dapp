@@ -3,8 +3,8 @@
 import { ReactNode, useMemo, useState } from "react"
 import { formatDollar } from "@/lib/number_formatter"
 import type { LineDot } from "recharts/types/cartesian/Line"
+import { computedProjection } from "./tg_usd_stake_controller"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
-import { COMPOUNDING_PERIODS_PER_YEAR } from "./tg_usd_stake_controller"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import USGHoverCard from "@/components/design_system/structure/usg_hover_card"
@@ -173,14 +173,11 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apr, currentFea
       let newCompounded = 0
 
       if (currentFeature === "stake") {
-        existingCompounded =
-          newLiquidity + currentInvestment * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeInYears)
-
-        newCompounded = (currentInvestment + newLiquidity) * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeInYears)
+        existingCompounded = newLiquidity + computedProjection(currentInvestment, timeInYears, apr)
+        newCompounded = computedProjection(currentInvestment + newLiquidity, timeInYears, apr)
       } else {
-        existingCompounded = currentInvestment * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeInYears)
-
-        newCompounded = (currentInvestment - newLiquidity) * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeInYears)
+        existingCompounded = computedProjection(currentInvestment, timeInYears, apr)
+        newCompounded = computedProjection(currentInvestment - newLiquidity, timeInYears, apr)
       }
 
       points.push({

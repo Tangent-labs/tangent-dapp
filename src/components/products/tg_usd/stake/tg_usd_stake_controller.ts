@@ -119,31 +119,21 @@ export const doStakeTgUSD = async ({ walletClient, stakingAddress, weiValue }: {
   return hash
 }
 
-export const computeProjection = (stakeInfo: USGStakingInfo, timeFrame: number, apr: number, currentFeature: "stake" | "unstake", amount?: bigint) => {
+export const computedProjection = (amount: number, timeFrame: number, apr: number) => {
+  return amount * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeFrame)
+}
+
+export const computeProjection = (sUSGBalance: bigint, timeFrame: number, apr: number, currentFeature: "stake" | "unstake", amount?: bigint) => {
   let projection = 0
 
-  if (currentFeature === "stake") {
-    if (amount) {
-      projection =
-        (Number(formatUnits(amount, 18)) + Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18))) *
-        Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeFrame)
-    } else {
-      projection =
-        Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)) * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeFrame)
-    }
-
-    return formatNumber(projection, 0)
+  if (currentFeature === "stake" && !!amount && amount > 0n) {
+    projection = computedProjection(Number(formatUnits(sUSGBalance || 0n, 18)) + Number(formatUnits(amount, 18)), timeFrame, apr)
+  } else if (currentFeature === "unstake" && !!amount && amount > 0n) {
+    projection = computedProjection(Number(formatUnits(sUSGBalance || 0n, 18)) - Number(formatUnits(amount, 18)), timeFrame, apr)
   } else {
-    if (amount) {
-      projection =
-        (Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)) - Number(formatUnits(amount, 18))) *
-        Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeFrame)
-    } else {
-      projection =
-        Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)) * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeFrame)
-    }
-    return formatNumber(projection, 0)
+    projection = computedProjection(Number(formatUnits(sUSGBalance || 0n, 18)), timeFrame, apr)
   }
+  return formatNumber(projection, 0)
 }
 
 export const computeSUSGAprVariation = (currentFeature: string, USGsUSGMetrics: USGStakingInfo, inputValue: bigint, currentAPY: number) => {

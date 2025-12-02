@@ -17,6 +17,7 @@ import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
 import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function USGStakeContent() {
   const {
@@ -115,7 +116,7 @@ export default function USGStakeContent() {
       </div>
 
       <div className="mt-4 flex w-full flex-col gap-2 lg:flex-row lg:gap-4">
-        <div className="flex w-full flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] lg:w-5/12 xl:w-1/3">
+        <div className="flex w-full flex-col items-center justify-start gap-1 rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] lg:w-5/12 xl:w-1/3">
           <div className="flex w-full items-center justify-between gap-4">
             <ButtonTab
               onClick={() => setCurrentFeature("stake")}
@@ -157,27 +158,35 @@ export default function USGStakeContent() {
             setPercentage={setStakePercentage}
           />
 
-          <div className="mb-4 mt-2 flex w-full flex-col gap-2">
-            <span className="w-full text-sm font-semibold lg:text-xl">Recap:</span>
+          <Accordion className="w-full" type="single" collapsible>
+            <AccordionItem value="item-1">
+              <BorderPanel className="my-2 flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
+                <AccordionTrigger>
+                  <span className="py-1.5">Recap</span>
+                </AccordionTrigger>
 
-            <div className="flex w-full flex-col gap-1 rounded-[10px] bg-overlay-panel p-2 text-xs">
-              <div className="flex w-full items-center justify-between">
-                <span className="text-subtitle">APR variation : </span>
-                <div className="flex items-center justify-center gap-1">
-                  <span className="text-white">{aprVariation.current}</span>
-                  <span className="text-tonic">{aprVariation.updated}</span>
-                </div>
-              </div>
+                <AccordionContent className="w-full">
+                  <div className="flex flex-col gap-1 text-xs">
+                    <div className="flex w-full items-center justify-between">
+                      <span className="text-subtitle">APR variation : </span>
+                      <div className="flex items-center justify-center gap-1">
+                        <span className="text-white">{aprVariation.current}</span>
+                        <span className="text-tonic">{aprVariation.updated}</span>
+                      </div>
+                    </div>
 
-              <div className="flex w-full items-center justify-between">
-                <span className="text-subtitle">Expected : </span>
+                    <div className="flex w-full items-center justify-between">
+                      <span className="text-subtitle">Expected : </span>
 
-                <span className="font-semibold text-white">
-                  {formatBigInt(expected, 18, 2)} {currentFeature === "stake" ? "sUSG" : "USG"}
-                </span>
-              </div>
-            </div>
-          </div>
+                      <span className="font-semibold text-white">
+                        {formatBigInt(expected, 18, 2)} {currentFeature === "stake" ? "sUSG" : "USG"}
+                      </span>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </BorderPanel>
+            </AccordionItem>
+          </Accordion>
 
           <FormButtons
             actions={{
@@ -191,7 +200,7 @@ export default function USGStakeContent() {
         </div>
 
         <div className="flex w-full flex-col lg:hidden">
-          {!!sUSGCurrentAPY && sUSGCurrentAPY > 0 && (
+          {!!USGsUSGMetrics && !!sUSGCurrentAPY && sUSGCurrentAPY > 0 && (
             <div className="mt-6 flex w-full flex-col items-end justify-between gap-2 self-end sm:flex-row">
               <EvolutionBox
                 className="w-full"
@@ -202,16 +211,16 @@ export default function USGStakeContent() {
 
               <EvolutionBox
                 className="w-full"
-                originalValue={computeProjection(USGsUSGMetrics!, 1 / 12, sUSGCurrentAPY, currentFeature)}
+                originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature)}
                 label="30 days projection"
-                newValue={computeProjection(USGsUSGMetrics!, 1 / 12, sUSGCurrentAPY, currentFeature, weiValue)}
+                newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature, weiValue)}
               />
 
               <EvolutionBox
                 className="w-full"
-                originalValue={computeProjection(USGsUSGMetrics!, 1, sUSGCurrentAPY, currentFeature)}
+                originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature)}
                 label="1 year projection"
-                newValue={computeProjection(USGsUSGMetrics!, 1, sUSGCurrentAPY, currentFeature, weiValue)}
+                newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature, weiValue)}
               />
             </div>
           )}

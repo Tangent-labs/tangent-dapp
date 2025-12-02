@@ -2,7 +2,7 @@
 
 import { toast } from "react-toastify"
 import { ZapToken } from "../../tg_usd_type"
-import { formatUnits, parseEther } from "viem"
+import { formatUnits, parseEther, zeroAddress } from "viem"
 import { useUSGContext } from "../../tg_usd_context"
 import { USG_CONTRACT } from "../../tg_usd_repository"
 import { useUSGRecordContext } from "../tg_usd_record_context"
@@ -84,6 +84,8 @@ type USGLeverageContextValues = {
   computedMaxLeverage: string
 
   aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
+
+  isZapping: boolean
 }
 
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
@@ -135,7 +137,22 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const [slippage, setSlippage] = useState<number>(1)
 
+  const isZapping = useMemo(() => {
+    return !!depositAsset && depositAsset !== collateralInfo?.symbol && depositAsset !== `Gauge ${collateralInfo?.symbol}`
+  }, [depositAsset, collateralInfo])
+
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
+    if (!!marketData && depositAsset === `Gauge ${collateralInfo?.symbol}`) {
+      return {
+        address: marketData?.constants?.receipt,
+        decimals: 18,
+        displayDecimals: 5,
+        symbol: `Gauge ${collateralInfo?.symbol}`,
+        name: `Gauge ${collateralInfo?.symbol}`,
+        price: Number(formatUnits(marketData?.collateralInfos.collateralUSDPrice, 18)),
+      }
+    }
+
     if (depositAsset === "ETH") {
       return {
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
@@ -364,7 +381,9 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       curveRoutes
     )
 
-    doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, leverageData!)
+    const isReceiptIn = marketData?.constants?.receipt === depositAssetInfo?.address
+
+    doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, isReceiptIn, leverageData!)
       .then(() => {
         resetAfterLeverageSuccess()
         toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
@@ -512,14 +531,20 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }, [zapInnerValue, isZapUserInput])
 
   const maxDepositString = useMemo(() => {
-    if (!!balanceAllowanceData && currentAddress && depositAsset !== collateralInfo?.name) {
+    if (!!balanceAllowanceData && currentAddress && isZapping) {
       return `Max ${formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)}  ${depositAssetInfo?.symbol}`
     }
-    if (currentAddress && depositAsset === collateralInfo?.name) {
+
+    if (!!balanceAllowanceData && !!marketData && marketData?.constants?.receipt !== zeroAddress) {
+      return `Max ${formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)}  ${depositAssetInfo?.symbol}`
+    }
+
+    if (currentAddress && !isZapping) {
       return `Max ${formatBigInt(marketData?.collateralBalance, depositAssetInfo?.decimals, 2)} ${depositAssetInfo?.symbol}`
     }
+
     return `Max 0 ${depositAssetInfo?.symbol}`
-  }, [depositAsset, collateralInfo, currentAddress, depositAssetInfo, balanceAllowanceData])
+  }, [depositAsset, collateralInfo, currentAddress, depositAssetInfo, balanceAllowanceData, marketData])
 
   const computedMaxLeverage = useMemo(() => {
     return marketData ? `Max leverage: x${Number((1 / (1 - Number(marketData?.constants.maxLTV) / 100000)).toFixed(0))}` : ""
@@ -590,6 +615,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     computedMaxLeverage,
 
     aprVariation,
+
+    isZapping,
   }
 
   return <USGLeverageContext.Provider value={contextValue}>{children}</USGLeverageContext.Provider>

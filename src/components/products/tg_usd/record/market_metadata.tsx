@@ -23,6 +23,7 @@ export const MarketMetadata = ({ marketData }: MarketMetadataProps) => {
               <TokenImage className="flex text-sm md:hidden" token={"CRV"} size={20} />
             </>
           )}
+
           {marketData?.marketType?.startsWith("Convex_") && (
             <>
               <div className="hidden items-center justify-center gap-1 rounded-full bg-overlay-panel px-3 py-0.5 text-xs md:flex">
@@ -30,6 +31,16 @@ export const MarketMetadata = ({ marketData }: MarketMetadataProps) => {
                 <span className="flex text-sm">Convex</span>
               </div>
               <TokenImage className="flex text-sm md:hidden" token={"CVX"} size={20} />
+            </>
+          )}
+
+          {marketData?.marketType?.startsWith("STAKEDAO") && (
+            <>
+              <div className="hidden items-center justify-center gap-1 rounded-full bg-overlay-panel px-3 py-0.5 text-xs md:flex">
+                <TokenImage token={"SDT"} size={16} />
+                <span className="flex text-sm">StakeDAO</span>
+              </div>
+              <TokenImage className="flex text-sm md:hidden" token={"SDT"} size={20} />
             </>
           )}
 

@@ -26,6 +26,7 @@ import { MaxBorrowCapReached } from "@/components/design_system/notifications/ma
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
+import { Address, zeroAddress } from "viem"
 
 export default function USGLeverageContent() {
   const {
@@ -61,6 +62,7 @@ export default function USGLeverageContent() {
     maxDepositString,
     computedMaxLeverage,
     aprVariation,
+    isZapping,
   } = useUSGLeverageContext()
 
   const { balances } = useUSGContext()
@@ -71,42 +73,57 @@ export default function USGLeverageContent() {
     useUSGRecordContext()
 
   const AssetSelect = () => {
-    const tokenOptions = tokens.map((el: ZapToken) => ({
-      ...el,
-      value: el.name as string,
-      balance: balances ? balances[el.address] : BigInt(0),
-    }))
+    if (!!marketData) {
+      const tokenOptions = tokens.map((el: ZapToken) => ({
+        ...el,
+        value: el.name as string,
+        balance: balances ? balances[el.address] : BigInt(0),
+      }))
 
-    const sortedAssets = [
-      {
-        ...collateralInfo,
-        value: collateralInfo.name as string,
-        balance: balances ? balances[marketInfo?.collatAddress] : BigInt(0),
-      },
-      ...[
+      const sortedAssets = [
         {
-          symbol: "ETH",
-          name: "Ethereum",
-          value: "ETH",
-          decimals: 18,
-          address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-          logo: "ETH" as ExistingAsset,
-          displayDecimals: 5,
-          balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
+          ...collateralInfo,
+          value: collateralInfo.name as string,
+          balance: balances ? balances[marketInfo?.collatAddress] : BigInt(0),
         },
-        ...tokenOptions,
-      ].sort((a, b) => Number(b.balance) - Number(a.balance)),
-    ]
+        ...[
+          {
+            symbol: "ETH",
+            name: "Ethereum",
+            value: "ETH",
+            decimals: 18,
+            address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+            logo: "ETH" as ExistingAsset,
+            displayDecimals: 5,
+            balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
+          },
+          ...tokenOptions,
+        ].sort((a, b) => Number(b.balance) - Number(a.balance)),
+      ]
 
-    return (
-      <PopoverCombobox
-        className="w-full"
-        template={AssetSelectTemplate}
-        value={depositAsset || collateralInfo.name}
-        options={sortedAssets}
-        onChange={(v: string) => setDepositAsset(v)}
-      />
-    )
+      if (marketData?.constants?.receipt !== zeroAddress) {
+        sortedAssets.unshift({
+          decimals: 18,
+          displayDecimals: 5,
+          logo: collateralInfo?.logo as ExistingAsset,
+          symbol: `Gauge ${collateralInfo?.symbol}`,
+          name: `Gauge ${collateralInfo?.symbol}`,
+          address: marketData?.constants?.receipt as Address,
+          value: `Gauge ${collateralInfo?.symbol}`,
+          balance: balances?.[marketData?.constants?.receipt] ?? BigInt(0),
+        })
+      }
+
+      return (
+        <PopoverCombobox
+          className="w-full min-w-32"
+          template={AssetSelectTemplate}
+          value={depositAsset || collateralInfo.name}
+          options={sortedAssets}
+          onChange={(v: string) => setDepositAsset(v)}
+        />
+      )
+    }
   }
 
   const AssetSelectTemplate = (option: {
@@ -192,7 +209,7 @@ export default function USGLeverageContent() {
             isLoading={isZapLoading}
             depositAsset={depositAssetInfo}
             balance={!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance}
-            isZapping={!!depositAsset && depositAsset !== collateralInfo?.name}
+            isZapping={isZapping}
             onValueChange={handleDepositChange}
             percentage={depositSliderPercent}
             setPercentage={setDepositSliderPercent}
@@ -203,7 +220,7 @@ export default function USGLeverageContent() {
         </>
       )}
 
-      {!isDepositDisabled && depositAsset && depositAsset !== collateralInfo?.symbol && (
+      {!isDepositDisabled && depositAsset && isZapping && (
         <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-start justify-start">
@@ -321,12 +338,12 @@ export default function USGLeverageContent() {
 
       <FormButtons
         actions={{
-          handleApprove: depositAsset && depositAsset !== collateralInfo?.name ? actionApproveZap : actionApprove,
-          handleProcess: depositAsset && depositAsset !== collateralInfo?.name ? actionZapLeverage : actionLeverage,
+          handleApprove: depositAsset && isZapping ? actionApproveZap : actionApprove,
+          handleProcess: depositAsset && isZapping ? actionZapLeverage : actionLeverage,
         }}
         connect={connect}
         formState={formState}
-        labelProcess={depositAsset && depositAsset !== collateralInfo?.name ? "Zap and leverage" : "Leverage"}
+        labelProcess={depositAsset && isZapping ? "Zap and leverage" : "Leverage"}
       />
     </div>
   )

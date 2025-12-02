@@ -3,6 +3,7 @@
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { ExistingAsset } from "@/types"
+import { Address, zeroAddress } from "viem"
 import { ZapToken } from "../../tg_usd_type"
 import { Switch } from "@/components/ui/switch"
 import { formatBigInt } from "@/lib/number_formatter"
@@ -14,6 +15,7 @@ import ButtonTab from "@/components/design_system/inputs/button_tab"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import { useUSGDepositContext } from "./usg_record_deposit_context"
+import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
@@ -25,7 +27,6 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
 
 export default function USGDepositContent() {
   const {
@@ -61,6 +62,7 @@ export default function USGDepositContent() {
     maxDepositString,
     aprVariation,
     expectedCollateral,
+    isZapping,
   } = useUSGDepositContext()
 
   const { balances } = useUSGContext()
@@ -70,42 +72,57 @@ export default function USGDepositContent() {
   const { collateralInfo, marketData, USGInfo, balanceAllowanceData, marketInfo, maxBorrowCapReached, displayAPRVariation } = useUSGRecordContext()
 
   const AssetSelect = () => {
-    const tokenOptions = tokens.map((el: ZapToken) => ({
-      ...el,
-      value: el.name as string,
-      balance: balances ? balances[el.address] : BigInt(0),
-    }))
+    if (!!marketData) {
+      const tokenOptions = tokens.map((el: ZapToken) => ({
+        ...el,
+        value: el.name as string,
+        balance: balances ? balances[el.address] : BigInt(0),
+      }))
 
-    const sortedAssets = [
-      {
-        ...collateralInfo,
-        value: collateralInfo.name as string,
-        balance: balances ? balances[marketInfo?.collatAddress] : BigInt(0),
-      },
-      ...[
+      const sortedAssets = [
         {
-          symbol: "ETH",
-          name: "Ethereum",
-          value: "ETH",
-          decimals: 18,
-          address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-          logo: "ETH" as ExistingAsset,
-          displayDecimals: 5,
-          balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
+          ...collateralInfo,
+          value: collateralInfo.name as string,
+          balance: balances ? balances[marketInfo?.collatAddress] : BigInt(0),
         },
-        ...tokenOptions,
-      ].sort((a, b) => Number(b.balance) - Number(a.balance)),
-    ]
+        ...[
+          {
+            symbol: "ETH",
+            name: "Ethereum",
+            value: "ETH",
+            decimals: 18,
+            address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+            logo: "ETH" as ExistingAsset,
+            displayDecimals: 5,
+            balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
+          },
+          ...tokenOptions,
+        ].sort((a, b) => Number(b.balance) - Number(a.balance)),
+      ]
 
-    return (
-      <PopoverCombobox
-        className="w-full min-w-24"
-        template={AssetSelectTemplate}
-        value={depositAsset || collateralInfo.name}
-        options={sortedAssets}
-        onChange={(v: string) => setDepositAsset(v)}
-      />
-    )
+      if (marketData?.constants?.receipt !== zeroAddress) {
+        sortedAssets.unshift({
+          decimals: 18,
+          displayDecimals: 5,
+          logo: collateralInfo?.logo as ExistingAsset,
+          symbol: `Gauge ${collateralInfo?.symbol}`,
+          name: `Gauge ${collateralInfo?.symbol}`,
+          address: marketData?.constants?.receipt as Address,
+          value: `Gauge ${collateralInfo?.symbol}`,
+          balance: balances?.[marketData?.constants?.receipt] ?? BigInt(0),
+        })
+      }
+
+      return (
+        <PopoverCombobox
+          className="w-full min-w-24"
+          template={AssetSelectTemplate}
+          value={depositAsset || collateralInfo.name}
+          options={sortedAssets}
+          onChange={(v: string) => setDepositAsset(v)}
+        />
+      )
+    }
   }
 
   const AssetSelectTemplate = (option: {
@@ -199,7 +216,7 @@ export default function USGDepositContent() {
         isLoading={isDepositLoading}
         depositAsset={depositAssetInfo}
         balance={balanceAllowanceData?.balance || marketData?.collateralBalance}
-        isZapping={!!depositAsset && depositAsset !== collateralInfo?.name}
+        isZapping={isZapping}
         onValueChange={handleDepositChange}
         percentage={depositSliderPercent}
         setPercentage={setDepositSliderPercent}
@@ -208,7 +225,7 @@ export default function USGDepositContent() {
         }}
       />
 
-      {depositAsset && depositAsset !== collateralInfo?.symbol && (
+      {depositAsset && isZapping && (
         <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-start justify-start">
@@ -315,8 +332,8 @@ export default function USGDepositContent() {
 
       <FormButtons
         actions={{
-          handleApprove: depositAsset === "ETH" ? undefined : depositAsset && depositAsset !== collateralInfo?.symbol ? actionApproveZap : actionApprove,
-          handleProcess: depositAsset && depositAsset !== collateralInfo?.symbol ? getRouteAndDeposit : actionDeposit,
+          handleApprove: depositAsset === "ETH" ? undefined : !!depositAsset && isZapping ? actionApproveZap : actionApprove,
+          handleProcess: !!depositAsset && isZapping ? getRouteAndDeposit : actionDeposit,
         }}
         formState={formState}
         labelProcess={"Deposit"}

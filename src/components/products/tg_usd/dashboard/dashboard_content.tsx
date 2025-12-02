@@ -5,7 +5,7 @@ import { ExistingAsset } from "@/types"
 import { useRootContext } from "../../root/root_context"
 import { useUSGDashboardContext } from "./dashboard_context"
 import Divider from "@/components/design_system/structure/divider"
-import { MarketDebtData, TgUsdCollateralData } from "../tg_usd_type"
+import { MarketDebtData, USGCollateralData } from "../tg_usd_type"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { COLORS, formatXAxis, formatYAxis } from "./dashboard_controller"
@@ -236,7 +236,7 @@ export const USGDashboardContent = () => {
                     <div className="flex h-full w-full flex-col items-center justify-center gap-1">
                       <div className="mt-4 text-xs text-subtitle">Collaterals</div>
                       <div className="text-[40px] font-semibold text-white">
-                        {userData?.tgUsdCollateralsData.filter((el: TgUsdCollateralData) => el.value > 0)?.length}
+                        {userData?.tgUsdCollateralsData.filter((el: USGCollateralData) => el.value > 0)?.length}
                       </div>
                     </div>
                   </div>
@@ -267,9 +267,9 @@ export const USGDashboardContent = () => {
               <div className="hidden max-h-48 w-full flex-col items-start justify-start gap-1 sm:flex sm:w-6/12 md:hidden xl:flex xl:w-6/12">
                 <div className="scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent my-4 flex max-h-full w-full flex-col gap-1 overflow-y-auto">
                   {userData?.tgUsdCollateralsData
-                    .filter((el: TgUsdCollateralData) => el.value > 0)
-                    .sort((a: TgUsdCollateralData, b: TgUsdCollateralData) => (a.value > b.value ? -1 : 1))
-                    .map((el: TgUsdCollateralData, index: number) => (
+                    .filter((el: USGCollateralData) => el.value > 0)
+                    .sort((a: USGCollateralData, b: USGCollateralData) => (a.value > b.value ? -1 : 1))
+                    .map((el: USGCollateralData, index: number) => (
                       <div key={el.name} className="mb-1 flex w-full items-center justify-start gap-2 rounded-[10px] px-3 py-1 backdrop-blur-[60px]">
                         <div className="h-1 w-1 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
                         <TokenImage token={el.name as ExistingAsset} size={16} className="w-7" />

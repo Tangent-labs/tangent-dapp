@@ -1,12 +1,6 @@
 import { Address } from "viem"
 import { AprEntry, AssetData, AssetDataPriced, CollateralInfo, ERC20StaticInfos, ExistingAsset, Network, TokenAmountPriced } from "@/types"
 
-export type TgUsdCampaignData = {
-  debts: number
-  deposists: number
-  totalPoints: number
-}
-
 export type MarketPlatforms = "convex" | "curve"
 
 export type USGMarketData = {
@@ -21,7 +15,7 @@ export type USGMarketData = {
   marketAddress: Address
 }
 
-export type TgUSDTokenAmount = {
+export type USGTokenAmount = {
   token: string
   symbol: ExistingAsset
   amount: bigint
@@ -31,7 +25,7 @@ export type HarvesterInfo = {
   collateralName: string
   harvesterFeePercentage: bigint
   marketAddress: string
-  tokenAmounts: TgUSDTokenAmount[]
+  tokenAmounts: USGTokenAmount[]
   lastHarvestDate: bigint
 }
 
@@ -40,13 +34,7 @@ export type USGMarketDataUser = {
   health: number
 }
 
-export type TgUsdAirdropData = {
-  debts: number
-  deposists: number
-  totalPoints: number
-}
-
-export type TgUsdGlobalData = {
+export type USGGlobalData = {
   USGPrice: string
   USGSupply: string
   sUSGPrice: string
@@ -165,6 +153,7 @@ export interface MarketConstants {
     startCutPrice: bigint
     stepAmount: number
   }
+  receipt: Address
 }
 
 export interface OutputBalanceAllowances {
@@ -207,6 +196,7 @@ export type MarketDetailData = {
 export type USGMarketDepositParams = USGMarketBorrowParams & {
   isDepositAndBorrow: boolean
   depositWeiValue: bigint
+  isReceiptIn: boolean
 }
 
 export type USGMarketBorrowParams = {
@@ -214,15 +204,17 @@ export type USGMarketBorrowParams = {
   marketAddress: Address
 }
 
-export type TgUsdtMarketWitrhdrawParams = {
+export type USGMarketWitrhdrawParams = {
   withdrawWeiValue?: bigint
   marketAddress: Address
+  isReceiptOut: boolean
 }
 
-export type TgUsdtMarketRepayParams = {
+export type USGMarketRepayParams = {
   marketAddress: Address
   repayWeiValue?: bigint
   withdrawWeiValue?: bigint
+  isReceiptOut?: boolean
 }
 
 export type USGMarketLoanDisplayData = {
@@ -414,7 +406,7 @@ export type MarketDebtData = {
   rawValue: bigint
 }
 
-export type TgUsdCollateralData = {
+export type USGCollateralData = {
   name: string
   value: number
 }

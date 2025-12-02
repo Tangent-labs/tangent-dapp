@@ -37,6 +37,13 @@ const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: Li
               </BorderPanel>
             )}
 
+            {marketData?.marketType?.startsWith("STAKEDAO") && (
+              <BorderPanel className="flex items-center justify-center gap-1 !rounded-full bg-overlay-panel px-3 py-0.5 text-xs">
+                <TokenImage token={"SDT"} size={12} />
+                <span>StakeDAO</span>
+              </BorderPanel>
+            )}
+
             {marketData?.marketType?.startsWith("Pendle") && (
               <BorderPanel className="flex items-center justify-center gap-1 !rounded-full bg-overlay-panel px-3 py-0.5 text-xs">
                 <TokenImage token={"PENDLE"} size={12} />

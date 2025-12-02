@@ -1,11 +1,11 @@
 "use client"
 
 import { FormState } from "@/types"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { useUSGRecordContext } from "../tg_usd_record_context"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doMarketWithdraw, getWithdrawFormState } from "./usg_record_withdraw_controller"
 import { useUSGContext } from "../../tg_usd_context"
+import { useUSGRecordContext } from "../tg_usd_record_context"
+import { doMarketWithdraw, getWithdrawFormState } from "./usg_record_withdraw_controller"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 type USGWithdrawContextProps = {
   children: ReactNode
@@ -19,6 +19,8 @@ type USGWithdrawContextValues = {
   withdrawPercentage: number
   setWithdrawPercentage: (arg: number) => void
   maxWithdrawable: bigint
+  selectedAsset: string
+  setSelectedAsset: (v: string) => void
 }
 
 export const USGWithdrawContext = createContext<USGWithdrawContextValues | undefined>(undefined)
@@ -26,13 +28,15 @@ export const USGWithdrawContext = createContext<USGWithdrawContextValues | undef
 export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
   const { loadUSGsUSGMetrics } = useUSGContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts } = useUSGRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts, collateral } = useUSGRecordContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
   const [withdrawWeiValue, setWithdrawWeiValue] = useState<bigint | undefined>()
 
   const [withdrawPercentage, setWithdrawPercentage] = useState<number>(0)
+
+  const [selectedAsset, setSelectedAsset] = useState<string>(collateral)
 
   useEffect(() => {
     setCurrentAmounts({
@@ -46,6 +50,7 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
       doMarketWithdraw(walletClient, {
         marketAddress: marketData!.marketAddress,
         withdrawWeiValue,
+        isReceiptOut: selectedAsset !== collateral,
       }).then(() => {
         loadUSGsUSGMetrics()
         loadOnChainData()
@@ -75,6 +80,11 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
     return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
   }, [marketData, withdrawWeiValue, isWellConnected, currentAddress, maxWithdrawable])
 
+  useEffect(() => {
+    setWithdrawWeiValue(0n)
+    setWithdrawPercentage(0)
+  }, [selectedAsset, marketData])
+
   const contextValue: USGWithdrawContextValues = {
     actionWithdraw,
     formState,
@@ -83,6 +93,8 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
     withdrawPercentage,
     maxWithdrawable,
     setWithdrawPercentage,
+    setSelectedAsset,
+    selectedAsset,
   }
 
   return <USGWithdrawContext.Provider value={contextValue}>{children}</USGWithdrawContext.Provider>

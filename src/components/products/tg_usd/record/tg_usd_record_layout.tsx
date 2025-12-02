@@ -28,13 +28,13 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     feature,
     debtVAPR,
     chartData,
-    collateral,
     debtFarming,
     isLeveraged,
     canLeverage,
     onChainData,
     initialCollatAmount,
     currentTotalMarketApr,
+    marketInfo,
     setDebtVAPR,
     setDebtFarming,
     setIsLeveraged,
@@ -45,9 +45,9 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
 
   const onTabClick = (feat: string) => {
     if (feat.toLowerCase() === "deposit") {
-      router.push(`/${collateral}`)
+      router.push(`/${marketInfo?.marketAddress}`)
     } else {
-      router.push(`/${collateral}/${feat.toLowerCase()}`)
+      router.push(`/${marketInfo?.marketAddress}/${feat.toLowerCase()}`)
     }
   }
 
@@ -68,7 +68,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
           <div className="w-full rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] xl:w-5/12">
             <div className="hidden w-full flex-col items-center justify-between gap-1 md:flex">
               <div className="flex w-full justify-between gap-1">
-                <ButtonTab className="w-full !px-2" active={feature === collateral} label={"Deposit"} onClick={() => onTabClick("deposit")} />
+                <ButtonTab className="w-full !px-2" active={feature === marketInfo?.marketAddress} label={"Deposit"} onClick={() => onTabClick("deposit")} />
                 <ButtonTab className="w-full !px-2" active={feature === "borrow"} label={"Borrow"} onClick={() => onTabClick("borrow")} />
                 <ButtonTab className="w-full !px-2" active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />
                 <ButtonTab className="w-full !px-2" active={feature === "withdraw"} label={"Withdraw"} onClick={() => onTabClick("withdraw")} />

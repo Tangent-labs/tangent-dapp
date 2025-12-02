@@ -151,15 +151,15 @@ export function getComputedFutureLoanData(
   } as USGMarketLoanDisplayData
 }
 
-export async function loadMarketServerData(collateral: string) {
-  const marketInfo = USGMarkets.find((market) => market.marketName === collateral)
+export async function loadMarketServerData(collateral: Address) {
+  const marketInfo = USGMarkets.find((market) => market.marketAddress === collateral)
   const collateralInfo = {
-    address: USGMarkets.find((market) => market.marketName === collateral)?.collatAddress as Address,
+    address: USGMarkets.find((market) => market.marketAddress === collateral)?.collatAddress as Address,
     decimals: 18,
     displayDecimals: 2,
-    symbol: collateral,
-    name: collateral,
-    logo: collateral as ExistingAsset,
+    symbol: marketInfo?.marketName as string,
+    name: marketInfo?.marketName as string,
+    logo: marketInfo?.marketName as ExistingAsset,
     price: 0,
   }
 
@@ -411,4 +411,8 @@ export const computeLiquidationPrice = (
 
   if (futureDebt <= 0n || futureCollat <= 0n) return 0n
   return (futureDebt * 10n ** 18n) / ((futureCollat || 1n) * (ltRaw / BigInt(1000n)))
+}
+
+export const computedMinAmountOut = (value: bigint, slippage: number) => {
+  return (BigInt(value || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
 }

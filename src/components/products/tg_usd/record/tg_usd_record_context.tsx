@@ -112,6 +112,11 @@ type USGRecordContextValues = {
   computedBorrowRate: { current: string; next: string }
 
   liquidationPrice: bigint
+
+  depositAssetOptions: Array<{
+    label: string
+    value: string
+  }>
 }
 
 const LEVERAGE_TRESHOLD = 0.989
@@ -417,6 +422,19 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     return 0n
   }, [marketData, currentAmounts])
 
+  const depositAssetOptions = useMemo(() => {
+    return [
+      {
+        label: collateralInfo?.symbol,
+        value: collateralInfo?.symbol,
+      },
+      {
+        label: `Gauge ${collateralInfo?.symbol}`,
+        value: `Gauge ${collateralInfo?.symbol}`,
+      },
+    ]
+  }, [collateralInfo])
+
   const contextValue: USGRecordContextValues = {
     isLoading,
     collateral,
@@ -471,6 +489,8 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     computedBorrowRate,
 
     liquidationPrice,
+
+    depositAssetOptions,
   }
 
   return <USGRecordContext.Provider value={contextValue}>{children}</USGRecordContext.Provider>

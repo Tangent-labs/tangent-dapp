@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { formatUnits } from "viem"
+import { formatUnits, zeroAddress } from "viem"
 import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
 import { Switch } from "@/components/ui/switch"
@@ -23,11 +23,12 @@ import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import InputSelect from "@/components/design_system/inputs/input_select"
 
 export default function USGRepayContent() {
   const { tokens, balances } = useUSGContext()
 
-  const { USGInfo, pricedCollateralInfo, collateralInfo, marketInfo } = useUSGRecordContext()
+  const { USGInfo, pricedCollateralInfo, collateralInfo, marketInfo, marketData, depositAssetOptions } = useUSGRecordContext()
 
   const { connect } = useWalletConnexionContext()
 
@@ -59,6 +60,8 @@ export default function USGRepayContent() {
     usgRepayedValue,
     isDebtBelowThreshold,
     repayAssetInfo,
+    withdrawSelectedAsset,
+    setWithdrawSelectedAsset,
   } = useUSGRepayContext()
 
   const AssetSelectTemplate = (option: {
@@ -133,17 +136,30 @@ export default function USGRepayContent() {
     )
   }
 
-  const WithdrawAssetDisplay = () => {
+  const WithdrawAssetSelectTemplate = (option: { logo?: ExistingAsset; label: string }) => {
     return (
-      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
-        <TokenImage token={collateralInfo?.logo} size={32} />
-
-        <span className="flex flex-col text-sm font-semibold">
-          <span>{collateralInfo.symbol}</span>
-        </span>
-      </BorderPanel>
+      <div className="flex w-full cursor-pointer items-center gap-2 rounded-[10px] py-1 hover:bg-white/10">
+        <TokenImage token={option?.logo} size={24} />
+        <span className="text-sm font-semibold">{option.label}</span>
+      </div>
     )
   }
+
+  const assetSelectElement =
+    marketData?.constants?.receipt !== zeroAddress ? (
+      <InputSelect
+        className="w-full"
+        template={WithdrawAssetSelectTemplate}
+        value={withdrawSelectedAsset || collateralInfo?.symbol}
+        options={depositAssetOptions}
+        onChange={(v) => setWithdrawSelectedAsset(v)}
+      />
+    ) : (
+      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
+        <TokenImage token={collateralInfo?.logo} size={32} />
+        <span className="flex flex-col text-sm font-semibold">{collateralInfo?.symbol}</span>
+      </BorderPanel>
+    )
 
   return (
     <div className="flex flex-col gap-2">
@@ -255,14 +271,14 @@ export default function USGRepayContent() {
             <div className="flex items-end justify-between">
               <span className="text-sm font-semibold md:text-xl">Withdraw collateral</span>
               <span className="text-xs text-subtitle">
-                Max: {formatBigInt(maxWithdrawable, 18, 2)} {collateralInfo?.symbol}
+                Max: {formatBigInt(maxWithdrawable, 18, 2)} {withdrawSelectedAsset}
               </span>
             </div>
 
             <DepositInput
               depositAmount={withdrawWeiValue}
               labelDeposit="You withdraw"
-              depositSelect={<WithdrawAssetDisplay />}
+              depositSelect={assetSelectElement}
               depositAsset={pricedCollateralInfo}
               balance={maxWithdrawable}
               displaySliderInput={true}

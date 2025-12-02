@@ -53,7 +53,7 @@ export async function doMarketDeposit(walletClient: WalletClient, args: USGMarke
       abi: MarketExternalActions.abi as Abi,
       functionName: "deposit",
       address: args.marketAddress,
-      args: [account, args.depositWeiValue],
+      args: [account, args.depositWeiValue, args?.isReceiptIn],
     }
     const txHash = await executeContractCall(walletClient, txData)
     return await waitForTransaction(txHash)
@@ -62,7 +62,7 @@ export async function doMarketDeposit(walletClient: WalletClient, args: USGMarke
       abi: MarketExternalActions.abi as Abi,
       functionName: "depositAndBorrow",
       address: args.marketAddress,
-      args: [args.depositWeiValue, args.borrowWeiValue],
+      args: [args.depositWeiValue, args.borrowWeiValue, args?.isReceiptIn],
     }
     const txHash = await executeContractCall(walletClient, txData)
     return await waitForTransaction(txHash)

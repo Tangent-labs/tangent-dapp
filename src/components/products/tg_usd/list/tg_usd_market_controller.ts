@@ -16,6 +16,7 @@ export const getUSGMarketsData = async (address: string) => {
     USG_CONTRACT.SUSG,
     markets,
     tgUsdPegKeepers,
+    USG_CONTRACT.MARKET_VIEWER,
   ])
 }
 

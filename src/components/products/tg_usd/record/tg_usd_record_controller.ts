@@ -11,7 +11,7 @@ import {
   MarketAPR,
 } from "../tg_usd_type"
 
-import { USGMarkets } from "../tg_usd_repository"
+import { USG_CONTRACT, USGMarkets } from "../tg_usd_repository"
 import GetBalances from "@/abi/USG/GetBalances.json"
 import { CollateralInfo, ExistingAsset } from "@/types"
 import { getSwapAssetPrice } from "@/services/service_price"
@@ -44,7 +44,11 @@ export async function doApprove(walletClient: WalletClient, contract: Address, s
 }
 
 export const getUSGMarketRecordData = async (address: Address, market: Address) => {
-  return await executeChainViewUnique<ChainViewMarketRow>(MarketDetailsUI.abi as Abi, MarketDetailsUI.bytecode as Hex, [address, market])
+  return await executeChainViewUnique<ChainViewMarketRow>(MarketDetailsUI.abi as Abi, MarketDetailsUI.bytecode as Hex, [
+    address,
+    market,
+    USG_CONTRACT.MARKET_VIEWER,
+  ])
 }
 
 export const transformMarketData = (onChainData: ChainViewMarketRow, collateralInfo: CollateralInfo): MarketDetailData => {

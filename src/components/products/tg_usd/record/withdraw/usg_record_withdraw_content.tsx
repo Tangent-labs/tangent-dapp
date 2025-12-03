@@ -1,16 +1,17 @@
 "use client"
 
+import Image from "next/image"
+import { ExistingAsset } from "@/types"
+import { Address, zeroAddress } from "viem"
+import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { useUSGWithdrawContext } from "./usg_record_withdraw_context"
 import FormButtons from "@/components/design_system/form/form_actions"
-import InputSelect from "@/components/design_system/inputs/input_select"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { zeroAddress } from "viem"
-import BorderPanel from "@/components/design_system/structure/border_panel"
-import { ExistingAsset } from "@/types"
 
 export default function USGWithdrawContent() {
   const { connect } = useWalletConnexionContext()
@@ -29,30 +30,45 @@ export default function USGWithdrawContent() {
     selectedAsset,
   } = useUSGWithdrawContext()
 
-  const AssetSelectTemplate = (option: { logo?: ExistingAsset; label: string }) => {
+  const AssetSelectTemplate = (option: {
+    logoURI?: string
+    logo?: ExistingAsset
+    value: string
+    name?: string
+    symbol: string
+    balance?: bigint
+    decimals?: number
+    address?: Address
+  }) => {
     return (
-      <div className="flex w-full cursor-pointer items-center gap-2 rounded-[10px] py-1 hover:bg-white/10">
-        <TokenImage token={option?.logo} size={24} />
-        <span className="text-sm font-semibold">{option.label}</span>
+      <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
+        <div className="flex w-full items-center gap-2">
+          <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} /> : <TokenImage token={option.logo} size={32} />}</>
+
+          <div className="flex flex-col items-start justify-start">
+            <span className="text-sm font-semibold">{option.symbol}</span>
+            <span className="text-xs text-subtitle">{formatAddress(option?.address, 4)}</span>
+          </div>
+        </div>
+        <span className="ml-auto text-xs text-subtitle">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
       </div>
     )
   }
 
-  const assetSelectElement =
-    marketData?.constants?.receipt !== zeroAddress ? (
-      <InputSelect
-        className="w-full"
+  const AssetSelect = () => {
+    const disabled = marketData?.constants?.receipt === zeroAddress
+
+    return (
+      <AssetSelectionDialog
+        disabled={disabled}
+        className="w-full min-w-24"
         template={AssetSelectTemplate}
         value={selectedAsset || collateralInfo?.symbol}
         options={depositAssetOptions}
         onChange={(v) => setSelectedAsset(v)}
       />
-    ) : (
-      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
-        <TokenImage token={collateralInfo?.logo} size={32} />
-        <span className="flex flex-col text-sm font-semibold">{collateralInfo?.symbol}</span>
-      </BorderPanel>
     )
+  }
 
   return (
     <>
@@ -68,7 +84,7 @@ export default function USGWithdrawContent() {
           <DepositInput
             depositAmount={withdrawWeiValue}
             labelDeposit="You withdraw"
-            depositSelect={assetSelectElement}
+            depositSelect={<AssetSelect />}
             depositAsset={pricedCollateralInfo}
             balance={maxWithdrawable}
             displaySliderInput={true}

@@ -77,7 +77,7 @@ export default function PopoverCombobox<T extends OptionT>({
           <button
             type="button"
             className={cn(
-              "flex min-h-10 w-full items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 py-1.5 ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              "flex min-h-10 w-full items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 py-1.5 placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             )}
             style={{ borderWidth: 1.5 }}
           >

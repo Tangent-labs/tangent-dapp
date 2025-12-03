@@ -35,7 +35,7 @@ export const CollateralCard = ({ collateralInfo, marketData }: CollateralCardPro
         </div>
       </DialogTrigger>
 
-      <DialogContent className="h-[640px] rounded-[10px] bg-overlay-panel p-4 text-white focus:outline-none">
+      <DialogContent className="h-[640px] max-w-[763px] rounded-[10px] bg-overlay-panel p-4 text-white focus:outline-none">
         <USGMarketListProvider>
           <USGModalMarketList />
         </USGMarketListProvider>

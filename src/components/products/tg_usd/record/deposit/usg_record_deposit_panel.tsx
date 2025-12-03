@@ -21,12 +21,13 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
-import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
+import { formatAddress } from "@/lib/other_formatter"
 
 export default function USGDepositContent() {
   const {
@@ -76,6 +77,7 @@ export default function USGDepositContent() {
       const tokenOptions = tokens.map((el: ZapToken) => ({
         ...el,
         value: el.name as string,
+        address: el.address as Address,
         balance: balances ? balances[el.address] : BigInt(0),
       }))
 
@@ -83,6 +85,7 @@ export default function USGDepositContent() {
         {
           ...collateralInfo,
           value: collateralInfo.name as string,
+          address: collateralInfo.address as Address,
           balance: balances ? balances[marketInfo?.collatAddress] : BigInt(0),
         },
         ...[
@@ -91,7 +94,7 @@ export default function USGDepositContent() {
             name: "Ethereum",
             value: "ETH",
             decimals: 18,
-            address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+            address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address,
             logo: "ETH" as ExistingAsset,
             displayDecimals: 5,
             balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
@@ -114,7 +117,7 @@ export default function USGDepositContent() {
       }
 
       return (
-        <PopoverCombobox
+        <AssetSelectionDialog
           className="w-full min-w-24"
           template={AssetSelectTemplate}
           value={depositAsset || collateralInfo.name}
@@ -133,19 +136,23 @@ export default function USGDepositContent() {
     symbol: string
     balance?: bigint
     decimals?: number
+    address?: Address
   }) => {
     return (
       <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
         <div className="flex w-full items-center gap-2">
           <>
             {option.symbol === "ETH" ? (
-              <TokenImage token={option.logo} size={20} />
+              <TokenImage token={option.logo} size={32} />
             ) : (
-              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={32} />}</>
+              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} /> : <TokenImage token={option.logo} size={32} />}</>
             )}
           </>
 
-          <span className="text-sm font-semibold">{option.symbol}</span>
+          <div className="flex flex-col items-start justify-start">
+            <span className="text-sm font-semibold">{option.symbol}</span>
+            <span className="text-xs text-subtitle">{formatAddress(option?.address, 4)}</span>
+          </div>
         </div>
         <span className="ml-auto text-xs text-subtitle">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
       </div>

@@ -122,7 +122,7 @@ export function RepayInput({
     <BorderPanel
       className={cn(
         isLoading ? "shimmer" : "",
-        disabled ? "bg-panel-disabled" : "bg-select-input",
+        disabled ? "bg-panel-disabled" : "bg-white bg-opacity-[3%]",
         "flex cursor-pointer flex-col p-2 transition-colors duration-200 hover:bg-white/10"
       )}
       onClick={onClickFocus}

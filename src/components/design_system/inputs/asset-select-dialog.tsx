@@ -1,7 +1,6 @@
 "use client"
 
 import Image from "next/image"
-import { cn } from "@/lib/utils"
 import { ChevronDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import AutoSizer from "react-virtualized-auto-sizer"
@@ -77,7 +76,7 @@ export default function AssetSelectionDialog<T extends OptionT>({
         <button
           disabled={disabled}
           type="button"
-          className={cn("flex min-h-10 w-full items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 py-1.5")}
+          className="flex min-h-10 w-full items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 py-1.5"
           style={{ borderWidth: 1.5 }}
         >
           <span className="flex items-center gap-2">
@@ -96,7 +95,7 @@ export default function AssetSelectionDialog<T extends OptionT>({
               <span className="truncate text-sm opacity-70">{placeholder}</span>
             )}
           </span>
-          <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+          <ChevronDown className="ml-1 h-4 w-4 opacity-80" />
         </button>
       </DialogTrigger>
 

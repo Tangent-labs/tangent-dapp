@@ -25,6 +25,7 @@ import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { USGStaticAssetSelector } from "@/components/design_system/structure/usg_static_selector"
 
 export default function USGRepayContent() {
   const { tokens, balances } = useUSGContext()
@@ -266,10 +267,7 @@ export default function USGRepayContent() {
                   <div>{usgRepayedValue && USGInfo?.price !== 0 ? tgUsdDollarRepayedValue : ""}</div>
                 </div>
               </div>
-              <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
-                <TokenImage token="USG" size={20} />
-                <span className="flex flex-col text-[15px] font-semibold">USG</span>
-              </BorderPanel>
+              <USGStaticAssetSelector />
             </div>
           </PanelRaw>
         )}

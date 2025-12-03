@@ -7,6 +7,7 @@ import { Address, zeroAddress } from "viem"
 import { ZapToken } from "../../tg_usd_type"
 import { Switch } from "@/components/ui/switch"
 import { formatBigInt } from "@/lib/number_formatter"
+import { formatAddress } from "@/lib/other_formatter"
 import { useUSGContext } from "../../tg_usd_context"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import { useUSGRecordContext } from "../tg_usd_record_context"
@@ -22,12 +23,12 @@ import BorderPanel from "@/components/design_system/structure/border_panel"
 import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
+import { USGStaticAssetSelector } from "@/components/design_system/structure/usg_static_selector"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
-import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
-import { formatAddress } from "@/lib/other_formatter"
+import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 
 export default function USGDepositContent() {
   const {
@@ -159,15 +160,6 @@ export default function USGDepositContent() {
     )
   }
 
-  const BorrowAssetDisplay = () => {
-    return (
-      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
-        <TokenImage token="USG" size={20} />
-        <span className="flex flex-col text-[15px] font-semibold">USG</span>
-      </BorderPanel>
-    )
-  }
-
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
@@ -274,7 +266,7 @@ export default function USGDepositContent() {
             borrowAmount={borrowWeiValue}
             disabled={maxBorrowCapReached}
             labelDeposit="You borrow"
-            depositSelect={<BorrowAssetDisplay />}
+            depositSelect={<USGStaticAssetSelector />}
             borrowAsset={USGInfo}
             setMaxBalance={maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue)}
             balance={maxBorrowableValue}

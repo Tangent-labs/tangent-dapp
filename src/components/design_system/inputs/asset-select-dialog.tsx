@@ -112,7 +112,7 @@ export default function AssetSelectionDialog<T extends OptionT>({
               <AutoSizer className="w-full">
                 {({ height, width }) => (
                   <List
-                    className="scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent"
+                    className="scrollbar-thin"
                     ref={listRef}
                     height={height}
                     width={width}

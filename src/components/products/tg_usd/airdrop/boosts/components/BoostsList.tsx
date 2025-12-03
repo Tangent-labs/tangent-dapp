@@ -70,7 +70,7 @@ export const BoostsList = () => {
         </div>
       </div>
 
-      <div className="scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent max-h-[560px] overflow-y-auto">
+      <div className="scrollbar-thin max-h-[560px] overflow-y-auto">
         {displayRows &&
           (displayRows as Boost[])?.map((boost: Boost) => (
             <BorderPanel

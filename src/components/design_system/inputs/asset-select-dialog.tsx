@@ -55,7 +55,7 @@ export default function AssetSelectionDialog<T extends OptionT>({
     const isSelected = value === opt.symbol || value === opt.value
 
     return (
-      <div style={style} className="px-2">
+      <div style={style}>
         <button
           type="button"
           role="option"
@@ -77,9 +77,7 @@ export default function AssetSelectionDialog<T extends OptionT>({
         <button
           disabled={disabled}
           type="button"
-          className={cn(
-            "flex min-h-10 w-full items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 py-1.5 outline-none placeholder:text-muted-foreground focus:outline-none"
-          )}
+          className={cn("flex min-h-10 w-full items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 py-1.5")}
           style={{ borderWidth: 1.5 }}
         >
           <span className="flex items-center gap-2">
@@ -102,8 +100,8 @@ export default function AssetSelectionDialog<T extends OptionT>({
         </button>
       </DialogTrigger>
 
-      <DialogContent className="h-[400px] max-w-[400px] rounded-[10px] bg-overlay-panel p-4 text-white focus:outline-none">
-        <div data-combobox className="flex min-h-56 w-full min-w-32 flex-col overflow-hidden">
+      <DialogContent className="h-[400px] max-w-[400px] rounded-[10px] bg-overlay-panel p-4 text-white">
+        <div data-combobox className="flex min-h-56 w-full min-w-32 flex-col">
           <div className="flex w-full items-center justify-start font-semibold text-white">Select a token</div>
           <div className="w-full py-2">
             <Input ref={inputRef} placeholder="Search a token name..." value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -111,9 +109,17 @@ export default function AssetSelectionDialog<T extends OptionT>({
 
           {filtered.length ? (
             <div className="h-full">
-              <AutoSizer>
+              <AutoSizer className="w-full">
                 {({ height, width }) => (
-                  <List ref={listRef} height={height} width={width} itemCount={filtered.length} itemSize={itemSize} itemKey={itemKey}>
+                  <List
+                    className="scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent"
+                    ref={listRef}
+                    height={height}
+                    width={width}
+                    itemCount={filtered.length}
+                    itemSize={itemSize}
+                    itemKey={itemKey}
+                  >
                     {Row}
                   </List>
                 )}

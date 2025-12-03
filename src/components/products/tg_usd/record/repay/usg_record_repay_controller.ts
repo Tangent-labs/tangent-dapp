@@ -61,7 +61,7 @@ export async function doRepayAndWithdraw(walletClient: WalletClient, args: USGMa
     abi: MarketExternalActions.abi as Abi,
     functionName: "repayAndWithdraw",
     address: args.marketAddress,
-    args: [args.withdrawWeiValue, args.repayWeiValue],
+    args: [args.withdrawWeiValue, args.repayWeiValue, args.isReceiptOut],
     gas: undefined as undefined | bigint,
   }
   const txHash = await executeContractCall(walletClient, txData)
@@ -71,9 +71,10 @@ export async function doRepayAndWithdraw(walletClient: WalletClient, args: USGMa
 export const doZapRepayAndWithdraw = async (
   marketAddress: Address,
   walletClient: WalletClient,
+  withdrawWeiValue: bigint,
+  isReceiptOut: boolean,
   repayData: { routerAddress: string; data: string },
-  zapMarket: ZapMarketData,
-  withdrawWeiValue: bigint
+  zapMarket: ZapMarketData
 ) => {
   const [account] = await walletClient.requestAddresses()
 
@@ -84,6 +85,7 @@ export const doZapRepayAndWithdraw = async (
     functionName: "zapRepayAndWithdraw",
     args: [
       withdrawWeiValue,
+      isReceiptOut,
       {
         tokenIn: zapMarket?.tokenIn,
         amountIn: zapMarket?.amountIn,

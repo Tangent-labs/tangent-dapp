@@ -195,7 +195,9 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
         minAmountOut: usgRepayedValue!,
       }
 
-      doZapRepayAndWithdraw(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData, withdrawWeiValue)
+      const isReceiptOut = withdrawSelectedAsset !== collateral
+
+      doZapRepayAndWithdraw(marketData?.marketAddress, walletClientRef.current!, withdrawWeiValue, isReceiptOut, repayData!, zapMarketData)
         .then(() => {
           resetAfterRepaySuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })

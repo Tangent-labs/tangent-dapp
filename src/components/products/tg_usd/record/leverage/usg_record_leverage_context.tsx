@@ -261,13 +261,13 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }, [depositAsset])
 
   useEffect(() => {
-    if (zapValue && depositWeiValue && borrowWeiValue && leveragedCollateralQuote && !isDepositLoading) {
+    if (zapValue && !isDepositLoading) {
       setCurrentAmounts({
         depositWeiValue: (depositWeiValue || 0n) + (leveragedCollateralQuote || 0n),
         borrowWeiValue: borrowWeiValue || 0n,
         zapValue: (BigInt(zapValue) || 0n) + (leveragedCollateralQuote || 0n),
       })
-    } else if (depositWeiValue && borrowWeiValue && leveragedCollateralQuote && !isDepositLoading) {
+    } else {
       setCurrentAmounts({
         depositWeiValue: (depositWeiValue || 0n) + (leveragedCollateralQuote || 0n),
         borrowWeiValue: borrowWeiValue || 0n,

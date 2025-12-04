@@ -3,11 +3,12 @@
 import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
 import { AssetDataPriced } from "@/types"
+import { SliderInput } from "./slider_input"
 import BorderPanel from "../structure/border_panel"
 import DisplayReceivePanel from "./display_recieve_panel"
 import { IconChevron } from "@/components/icons/icon_chevron"
-import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatDollar, toBigInt } from "@/lib/number_formatter"
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
 
 type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
@@ -47,6 +48,8 @@ export function DepositReceiveInput({
   setPercentage,
   ...props
 }: DepositReceiveInputProps) {
+  const inputRef = useRef<HTMLInputElement>(null)
+
   const balanceNumber = useMemo(() => {
     if (balance) {
       return Number(formatUnits(balance, 18))
@@ -55,6 +58,7 @@ export function DepositReceiveInput({
   }, [balance])
 
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
+
   const [isUserInput, setIsUserInput] = useState(false)
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,10 +105,15 @@ export function DepositReceiveInput({
     return `(${formatDollar(val)})` || ""
   }, [depositAmount, depositAsset])
 
+  const onClickFocus = () => {
+    inputRef.current?.focus()
+  }
+
   return (
     <div className={cn("flex flex-col", className)} {...props}>
       <BorderPanel
-        className={`${isLoading ? "shimmer" : ""} flex flex-col bg-white bg-opacity-[3%] p-2 transition-colors duration-200 ease-in-out hover:bg-white/10`}
+        onClick={onClickFocus}
+        className={`${isLoading ? "shimmer" : ""} flex cursor-pointer flex-col bg-white bg-opacity-[3%] p-2 transition-colors duration-200 ease-in-out hover:bg-white/10`}
       >
         <div className="text-sm text-subtitle">{labelDeposit}</div>
 
@@ -114,6 +123,7 @@ export function DepositReceiveInput({
               {...props}
               disabled={isLoading}
               type="number"
+              ref={inputRef}
               value={innerValue}
               placeholder="Amount"
               onInput={handleInputChange}
@@ -140,36 +150,9 @@ export function DepositReceiveInput({
               }}
             />
 
-            <div className="flex w-full items-center justify-between text-[10px] text-subtitle">
-              <div className="relative flex w-fit items-center justify-center">
-                0%
-                <div
-                  onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "0" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-                  className="absolute -top-1.5 left-1 mt-[1px] h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
-                ></div>
-              </div>
-
-              {[25, 50, 75].map((el) => (
-                <div key={el} className="relative flex w-fit items-center justify-center">
-                  {el}%
-                  <div
-                    onClick={
-                      !!handleSliderChange ? () => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>) : () => {}
-                    }
-                    className="absolute -top-1.5 left-2 mt-[1px] h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
-                  ></div>
-                </div>
-              ))}
-
-              <div className="relative flex w-fit items-center justify-center">
-                100%
-                <div
-                  onClick={!!handleSliderChange ? () => handleSliderChange({ target: { value: "100" } } as React.ChangeEvent<HTMLInputElement>) : () => {}}
-                  className="absolute -top-1.5 right-1 mt-[1px] h-1 w-1 cursor-pointer rounded-full bg-white hover:bg-white/30"
-                ></div>
-              </div>
-            </div>
+            <SliderInput handleSliderChange={handleSliderChange}></SliderInput>
           </div>
+
           <BorderPanel
             className="flex w-10 cursor-pointer items-center bg-button-active px-1 text-xs text-white hover:font-semibold"
             onClick={() => {

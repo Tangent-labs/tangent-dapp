@@ -4,7 +4,7 @@ import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Address, EstimateContractGasParameters, formatUnits, maxUint256, WalletClient, WriteContractParameters } from "viem"
 
-export const COMPOUNDING_PERIODS_PER_YEAR = 8760 // every hour
+export const COMPOUNDING_PERIODS_PER_YEAR = 52
 
 export function getFormState(stakeInfo: USGStakingInfo, currentFeature: "stake" | "unstake", weiValue?: bigint, expected?: bigint, isWellConnected?: boolean) {
   let isApproved = false

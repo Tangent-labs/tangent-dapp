@@ -278,7 +278,7 @@ export default function USGDepositContent() {
           handleProcess: depositAsset && depositAsset !== collateralInfo?.symbol ? getRouteAndDeposit : actionDeposit,
         }}
         formState={formState}
-        labelProcess={isDepositAndBorrow ? "Deposit & borrow" : "Deposit"}
+        labelProcess={isDepositAndBorrow ? "Deposit & Borrow" : "Deposit"}
         connect={connect}
       />
     </div>

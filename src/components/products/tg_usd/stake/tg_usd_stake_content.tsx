@@ -191,7 +191,7 @@ export default function USGStakeContent() {
             }}
             connect={connect}
             formState={formState}
-            labelProcess={currentFeature === "stake" ? "Deposit & stake" : "Unstake"}
+            labelProcess={currentFeature === "stake" ? "Deposit & Stake" : "Unstake"}
           />
         </div>
 

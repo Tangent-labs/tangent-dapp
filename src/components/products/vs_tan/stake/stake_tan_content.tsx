@@ -179,7 +179,7 @@ export default function StakeTanContent() {
             }}
             connect={connect}
             formState={formState}
-            labelProcess={currentFeature === "stake" ? "Deposit & stake" : "Unstake"}
+            labelProcess={currentFeature === "stake" ? "Deposit & Stake" : "Unstake"}
           />
         </div>
         <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px] md:w-7/12">

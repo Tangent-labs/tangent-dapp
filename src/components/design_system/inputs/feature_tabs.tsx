@@ -1,9 +1,9 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import ButtonTab from "./button_tab"
 import { motion } from "framer-motion"
 import Divider from "../structure/divider"
+import LargeButtonTab from "./large_button_tab"
 import { FeatureSelect } from "../structure/feature_select"
 
 type FeatureTabsProps = {
@@ -33,8 +33,8 @@ export const FeatureTabs = ({
     <>
       <div className="hidden w-full flex-col items-center justify-between gap-1 md:flex">
         <div className="mt-2 flex w-full justify-between gap-2">
-          <ButtonTab className="w-full !px-2" active={activeTab === "Borrow"} label={"Borrow"} onClick={() => setActiveTab("Borrow")} />
-          <ButtonTab className="w-full !px-2" active={activeTab === "Repay"} label={"Repay"} onClick={() => setActiveTab("Repay")} />
+          <LargeButtonTab className="w-full !px-2" active={activeTab === "Borrow"} label={"Borrow"} onClick={() => setActiveTab("Borrow")} />
+          <LargeButtonTab className="w-full !px-2" active={activeTab === "Repay"} label={"Repay"} onClick={() => setActiveTab("Repay")} />
         </div>
 
         <Divider className="h-0.5 w-full bg-white/10" />

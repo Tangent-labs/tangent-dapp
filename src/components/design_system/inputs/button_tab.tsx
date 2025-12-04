@@ -16,7 +16,7 @@ export default function ButtonTab({ label, active, className, ...props }: Button
       id="radix-:r0:-trigger-deposit"
       className={clsx(
         className,
-        "inline-flex items-center justify-center whitespace-nowrap rounded-[10px] border-gray-400 px-4 py-1 text-sm font-semibold transition-colors duration-200 ease-in-out disabled:cursor-not-allowed data-[state=active]:border-white data-[state=inactive]:border-opacity-30 data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-subtitle data-[state=inactive]:hover:bg-white/10 data-[state=inactive]:hover:text-white"
+        "inline-flex items-center justify-center whitespace-nowrap rounded-[10px] border-gray-400 px-4 py-1 text-xs font-semibold transition-colors duration-200 ease-in-out disabled:cursor-not-allowed data-[state=active]:border-white data-[state=inactive]:border-opacity-30 data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-subtitle data-[state=inactive]:hover:bg-white/10 data-[state=inactive]:hover:text-white"
       )}
       style={{ borderWidth: 1.5 }}
       {...props}

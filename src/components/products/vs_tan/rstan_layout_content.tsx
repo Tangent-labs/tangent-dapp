@@ -16,9 +16,9 @@ import ListRow from "@/components/design_system/list/list_row"
 import { Button } from "@/components/design_system/inputs/button"
 import Divider from "@/components/design_system/structure/divider"
 import ListHeader from "@/components/design_system/list/list_header"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
 import TokenImage from "@/components/design_system/structure/token_image"
 import USGHoverCard from "@/components/design_system/structure/usg_hover_card"
+import LargeButtonTab from "@/components/design_system/inputs/large_button_tab"
 import { FeatureSelect } from "@/components/design_system/structure/feature_select"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 
@@ -110,11 +110,16 @@ export const VsTanLayoutContent = ({
       <div className="my-4 flex w-full flex-col gap-4 xl:flex-row">
         <div className="flex w-full flex-col items-center justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
           <div className="hidden w-full items-center justify-between gap-2 md:flex">
-            <ButtonTab label="Lock" active={pathname === "/tan/lock"} onClick={() => onTabClick("lock")} className="h-8! flex w-full justify-center" />
-            <ButtonTab label="Unlock" active={pathname === "/tan/unlock"} onClick={() => onTabClick("unlock")} className="h-8! flex w-full justify-center" />
-            <ButtonTab label="Claim" active={pathname === "/tan/claim"} onClick={() => onTabClick("claim")} className="h-8! flex w-full justify-center" />
-            <ButtonTab label="Split" active={pathname === "/tan/split"} onClick={() => onTabClick("split")} className="h-8! flex w-full justify-center" />
-            <ButtonTab label="Merge" active={pathname === "/tan/merge"} onClick={() => onTabClick("merge")} className="h-8! flex w-full justify-center" />
+            <LargeButtonTab label="Lock" active={pathname === "/tan/lock"} onClick={() => onTabClick("lock")} className="h-8! flex w-full justify-center" />
+            <LargeButtonTab
+              label="Unlock"
+              active={pathname === "/tan/unlock"}
+              onClick={() => onTabClick("unlock")}
+              className="h-8! flex w-full justify-center"
+            />
+            <LargeButtonTab label="Claim" active={pathname === "/tan/claim"} onClick={() => onTabClick("claim")} className="h-8! flex w-full justify-center" />
+            <LargeButtonTab label="Split" active={pathname === "/tan/split"} onClick={() => onTabClick("split")} className="h-8! flex w-full justify-center" />
+            <LargeButtonTab label="Merge" active={pathname === "/tan/merge"} onClick={() => onTabClick("merge")} className="h-8! flex w-full justify-center" />
           </div>
 
           <div className="flex w-full flex-col items-center justify-between gap-1 md:hidden">

@@ -8,7 +8,6 @@ import { ExistingAsset, ListState } from "@/types"
 import { formatDollar } from "@/lib/number_formatter"
 import ListRow from "@/components/design_system/list/list_row"
 import ListAsset from "@/components/design_system/list/list_asset"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
 import ListHeader from "@/components/design_system/list/list_header"
 import { useUSGMaketListContext } from "./tg_usd_market_list_context"
 import InputSelect from "@/components/design_system/inputs/input_select"
@@ -18,6 +17,7 @@ import MarketListAPR from "@/components/design_system/list/market_list_apr"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { marketOptions, protocolOptions, tgUsdListHeaders } from "./tg_usd_market_controller"
+import LargeButtonTab from "@/components/design_system/inputs/large_button_tab"
 
 const listeState: ListState = {
   search: undefined,
@@ -86,8 +86,8 @@ export default function USGMarketList() {
             />
           </div>
 
-          <ButtonTab className="h-10 px-4" active={true} label="All"></ButtonTab>
-          <ButtonTab className="h-10 px-4" active={false} label="Deposits"></ButtonTab>
+          <LargeButtonTab className="h-10 px-4" active={true} label="All"></LargeButtonTab>
+          <LargeButtonTab className="h-10 px-4" active={false} label="Deposits"></LargeButtonTab>
         </div>
 
         <div className="mt-2 flex w-full items-center justify-between gap-2">
@@ -154,8 +154,8 @@ export default function USGMarketList() {
                 />
               </div>
 
-              <ButtonTab className="h-10 px-4" active={true} label="All"></ButtonTab>
-              <ButtonTab className="h-10 px-4" active={false} label="Deposits"></ButtonTab>
+              <LargeButtonTab className="h-10 px-4" active={true} label="All"></LargeButtonTab>
+              <LargeButtonTab className="h-10 px-4" active={false} label="Deposits"></LargeButtonTab>
             </div>
           </div>
         </div>

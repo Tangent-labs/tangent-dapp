@@ -9,7 +9,6 @@ import { useRootContext } from "../../root/root_context"
 import { useUSGStakeContext } from "./tg_usd_stake_context"
 import { computeProjection } from "./tg_usd_stake_controller"
 import Divider from "@/components/design_system/structure/divider"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
 import FormButtons from "@/components/design_system/form/form_actions"
 import InputSelect from "@/components/design_system/inputs/input_select"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -18,6 +17,7 @@ import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
 import PerformanceHistoryPanel from "./components/PerformanceHistoryPanel"
+import LargeButtonTab from "@/components/design_system/inputs/large_button_tab"
 
 export default function USGStakeContent() {
   const {
@@ -143,18 +143,18 @@ export default function USGStakeContent() {
       <div className="my-8 flex w-full flex-col items-stretch justify-start gap-4 lg:flex-row">
         <div className="flex w-full flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] lg:w-5/12">
           <div className="flex w-full items-center justify-between gap-4">
-            <ButtonTab
+            <LargeButtonTab
               onClick={() => setCurrentFeature("stake")}
               active={currentFeature === "stake"}
               className="flex w-full justify-center"
               label="Stake"
-            ></ButtonTab>
-            <ButtonTab
+            ></LargeButtonTab>
+            <LargeButtonTab
               onClick={() => setCurrentFeature("unstake")}
               active={currentFeature === "unstake"}
               className="flex w-full justify-center"
               label="Unstake"
-            ></ButtonTab>
+            ></LargeButtonTab>
           </div>
 
           <Divider className="h-1 w-full"></Divider>

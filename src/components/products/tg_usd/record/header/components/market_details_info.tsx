@@ -36,10 +36,10 @@ export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
       <div className="flex min-h-20 w-2/12 flex-col items-center justify-center border-r border-[#3F3F3F] px-8">
         <span className="text-[15px] text-white">Assets</span>
 
-        <div className="flex flex-col items-center justify-between gap-2 xl:flex-row">
+        <div className="mt-2 flex flex-col items-center justify-between gap-2 xl:flex-row">
           <button
             onClick={() => setSelectedToken(tokenA)}
-            className={`mt-3 flex min-w-20 items-center justify-between rounded-full border border-white px-2 py-1 text-xs transition-all ${
+            className={`flex min-w-20 items-center justify-between rounded-full border border-white px-2 py-1 text-xs transition-all ${
               selectedToken === tokenA ? "border-opacity-100 bg-white text-black" : "border-opacity-20 text-white hover:border-opacity-100"
             }`}
           >
@@ -49,7 +49,7 @@ export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
 
           <button
             onClick={() => setSelectedToken(tokenB)}
-            className={`mt-2 flex min-w-20 items-center justify-between rounded-full border border-white px-2 py-1 text-xs transition-all ${
+            className={`flex min-w-20 items-center justify-between rounded-full border border-white px-2 py-1 text-xs transition-all ${
               selectedToken === tokenB ? "border-opacity-100 bg-white text-black" : "border-opacity-20 text-white hover:border-opacity-100"
             }`}
           >

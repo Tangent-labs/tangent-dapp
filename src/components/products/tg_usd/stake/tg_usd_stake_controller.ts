@@ -4,6 +4,8 @@ import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Address, EstimateContractGasParameters, formatUnits, maxUint256, WalletClient, WriteContractParameters } from "viem"
 
+export const COMPOUNDING_PERIODS_PER_YEAR = 52
+
 export function getFormState(stakeInfo: USGStakingInfo, currentFeature: "stake" | "unstake", weiValue?: bigint, expected?: bigint, isWellConnected?: boolean) {
   let isApproved = false
   const reasons: string[] = []
@@ -117,14 +119,36 @@ export const doStakeTgUSD = async ({ walletClient, stakingAddress, weiValue }: {
   return hash
 }
 
-export const computeProjection = (stakeInfo: USGStakingInfo, timeFrame: number, apr: number, addedLiquidity?: bigint) => {
-  let projection = 0
+export const computedProjection = (amount: number, timeFrame: number, apr: number) => {
+  return amount * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeFrame)
+}
 
-  if (addedLiquidity) {
-    projection =
-      (Number(formatUnits(addedLiquidity, 18)) + Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18))) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
+export const computeProjection = (sUSGBalance: bigint, timeFrame: number, apr: number, currentFeature: "stake" | "unstake", amount?: bigint) => {
+  let projection = 0
+  const sUSGBalanceNumb = Number(formatUnits(sUSGBalance || 0n, 18))
+  const amountNumb = Number(formatUnits(amount || 0n, 18))
+
+  if (currentFeature === "stake" && !!amount && amount > 0n) {
+    projection = computedProjection(sUSGBalanceNumb + amountNumb, timeFrame, apr)
+  } else if (currentFeature === "unstake" && !!amount && amount > 0n) {
+    projection = computedProjection(sUSGBalanceNumb - amountNumb, timeFrame, apr)
   } else {
-    projection = Number(formatUnits(stakeInfo?.sUSGBalance || 0n, 18)) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
+    projection = computedProjection(amountNumb, timeFrame, apr)
   }
   return formatNumber(projection, 0)
+}
+
+export const computeSUSGAprVariation = (currentFeature: string, USGsUSGMetrics: USGStakingInfo, inputValue: bigint, currentAPY: number) => {
+  let newAPR = 0n
+  const numerator = USGsUSGMetrics?.sUSGSupply * BigInt((currentAPY * 100).toFixed(0))
+  if (currentFeature === "stake") {
+    newAPR = numerator / (USGsUSGMetrics?.sUSGSupply + inputValue || 1n)
+  } else {
+    newAPR = numerator / (USGsUSGMetrics?.sUSGSupply - inputValue || 1n)
+  }
+
+  return {
+    current: `${currentAPY.toFixed(2)}% =>`,
+    updated: `${(Number(newAPR) / 100).toFixed(2)}%`,
+  }
 }

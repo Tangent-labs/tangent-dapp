@@ -3,21 +3,21 @@
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
-import { USG_CONTRACT } from "../tg_usd_repository"
-import { ExistingAsset, SelectOption } from "@/types"
+import { ExistingAsset } from "@/types"
 import { useRootContext } from "../../root/root_context"
 import { useUSGStakeContext } from "./tg_usd_stake_context"
 import { computeProjection } from "./tg_usd_stake_controller"
 import Divider from "@/components/design_system/structure/divider"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import FormButtons from "@/components/design_system/form/form_actions"
-import InputSelect from "@/components/design_system/inputs/input_select"
 import TokenImage from "@/components/design_system/structure/token_image"
-import BorderPanel from "@/components/design_system/structure/border_panel"
-import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
 import PerformanceHistoryPanel from "./components/PerformanceHistoryPanel"
+import BorderPanel from "@/components/design_system/structure/border_panel"
+import EvolutionBox from "@/components/design_system/structure/evolution_box"
+import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
+import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_receive_input"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function USGStakeContent() {
   const {
@@ -29,7 +29,6 @@ export default function USGStakeContent() {
     setWeiValue,
     fetchsUSGHistoryAPY,
     currentFeature,
-    depositAssetOptions,
     currentAssetInfo,
     weiValue,
     expected,
@@ -40,47 +39,23 @@ export default function USGStakeContent() {
     USGsUSGMetrics,
     sUSGSelectedTab,
     apyHistory,
+    aprVariation,
   } = useUSGStakeContext()
 
   const { sUSGCurrentAPY } = useRootContext()
 
   const { connect } = useWalletConnexionContext()
 
-  const AssetSelect = () => {
-    return <InputSelect className="w-full" template={AssetSelectTemplate} value={currentAssetInfo?.current} options={depositAssetOptions} onChange={() => {}} />
-  }
-
-  const AssetSelectTemplate = (option: SelectOption) => {
-    const assetInfo = {
-      address: USG_CONTRACT.USG,
-      decimals: 18,
-      displayDecimals: 2,
-      logo: "USG",
-      name: "USG",
-      price: USGsUSGMetrics?.USGPrice,
-      symbol: "USG",
-    }
-
-    const sUSGInfo = {
-      address: USG_CONTRACT?.SUSG,
-      decimals: 18,
-      displayDecimals: 0,
-      logo: "sUSG",
-      name: "sUSG",
-      price: USGsUSGMetrics?.sUSGPrice,
-      symbol: "sUSG",
-    }
-
-    let logo = assetInfo?.logo as ExistingAsset
-    if (option.value === "sdAsset") {
-      logo = sUSGInfo.logo as ExistingAsset
-    }
+  const DepositAssetDisplay = () => {
+    if (!receivedTokenInfo) return <></>
 
     return (
-      <div className="flex items-center gap-2">
-        <TokenImage token={logo} size={20} />
-        <span className="text-sm font-semibold">{option.label}</span>
-      </div>
+      <BorderPanel className="flex w-20 items-center justify-between gap-2 bg-select-input p-2">
+        <TokenImage token={currentAssetInfo?.asset?.logo as ExistingAsset} size={20} />
+        <span className="text-sm font-semibold">
+          <span>{currentAssetInfo?.asset?.symbol}</span>
+        </span>
+      </BorderPanel>
     )
   }
 
@@ -88,7 +63,7 @@ export default function USGStakeContent() {
     if (!receivedTokenInfo) return <></>
 
     return (
-      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
+      <BorderPanel className="flex w-20 items-center justify-between gap-2 bg-select-input p-2">
         <TokenImage token={receivedTokenInfo.logo as ExistingAsset} size={20} />
         <span className="text-sm font-semibold">
           <span>{receivedTokenInfo.symbol}</span>
@@ -112,7 +87,7 @@ export default function USGStakeContent() {
           </div>
         </div>
 
-        <div className="hidden h-auto w-full flex-col items-center gap-3 md:flex xl:w-1/2">
+        <div className="flex h-auto w-full flex-col items-center gap-3 xl:w-1/2">
           <div
             style={{ fontSize: "20px", lineHeight: "20px" }}
             className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
@@ -122,7 +97,7 @@ export default function USGStakeContent() {
           </div>
 
           <div className={cn("flex w-full items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2", !!USGsUSGMetrics ? "" : "shimmer")}>
-            <TokenImage token="sUSG" size={48} />
+            <TokenImage className="hidden lg:flex" token="sUSG" size={48} />
 
             <div className="flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">Supply</span>
@@ -140,8 +115,8 @@ export default function USGStakeContent() {
         </div>
       </div>
 
-      <div className="my-8 flex w-full flex-col items-stretch justify-start gap-4 lg:flex-row">
-        <div className="flex w-full flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] lg:w-5/12">
+      <div className="mt-4 flex w-full flex-col gap-2 lg:flex-row lg:gap-4">
+        <div className="flex w-full flex-col items-center justify-start gap-1 rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] lg:w-5/12 xl:w-1/3">
           <div className="flex w-full items-center justify-between gap-4">
             <ButtonTab
               onClick={() => setCurrentFeature("stake")}
@@ -170,19 +145,51 @@ export default function USGStakeContent() {
             labelReceive={currentFeature === "stake" ? "You stake" : "You receive"}
             className="w-full"
             depositAmount={weiValue}
-            depositSelect={<AssetSelect />}
+            depositSelect={<DepositAssetDisplay />}
             disabled={false}
             receiveAssetDisplay={<ReceiveAssetDisplay />}
             depositAsset={currentAssetInfo?.asset}
             receiveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18)))?.toFixed(2)}
             balance={currentAssetInfo?.balance}
-            receiveAmount={formatBigInt(expected, 18, 2)}
-            setMaxBalance={() => setWeiValue(currentAssetInfo?.balance)}
+            receiveAmount={Number(formatUnits(expected || 0n, 18)).toFixed(0)}
+            setMaxBalance={() => {
+              setStakePercentage(100)
+              setWeiValue(currentAssetInfo?.balance)
+            }}
             onValueChange={(value: bigint | undefined) => setWeiValue(value)}
             percentage={stakePercentage}
             setPercentage={setStakePercentage}
-            displaySliderInput={true}
           />
+
+          <Accordion className="w-full" type="single" collapsible>
+            <AccordionItem value="item-1">
+              <BorderPanel className="my-2 flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
+                <AccordionTrigger>
+                  <span className="py-1.5">Recap</span>
+                </AccordionTrigger>
+
+                <AccordionContent className="w-full">
+                  <div className="flex flex-col gap-1 text-xs">
+                    <div className="flex w-full items-center justify-between">
+                      <span className="text-subtitle">APR variation : </span>
+                      <div className="flex items-center justify-center gap-1">
+                        <span className="text-white">{aprVariation.current}</span>
+                        <span className="text-tonic">{aprVariation.updated}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex w-full items-center justify-between">
+                      <span className="text-subtitle">Expected : </span>
+
+                      <span className="font-semibold text-white">
+                        {formatBigInt(expected, 18, 2)} {currentFeature === "stake" ? "sUSG" : "USG"}
+                      </span>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </BorderPanel>
+            </AccordionItem>
+          </Accordion>
 
           <FormButtons
             actions={{
@@ -193,6 +200,33 @@ export default function USGStakeContent() {
             formState={formState}
             labelProcess={currentFeature === "stake" ? "Deposit & Stake" : "Unstake"}
           />
+        </div>
+
+        <div className="flex w-full flex-col lg:hidden">
+          {!!USGsUSGMetrics && !!sUSGCurrentAPY && sUSGCurrentAPY > 0 && (
+            <div className="mt-6 flex w-full flex-col items-end justify-between gap-2 self-end sm:flex-row">
+              <EvolutionBox
+                className="w-full"
+                originalValue={formatNumber(Number(formatUnits(USGsUSGMetrics?.sUSGBalance ?? 0n, 18)), 0)}
+                label="sUSG balance"
+                newValue={formatNumber(computeProjectedValue, 0)}
+              />
+
+              <EvolutionBox
+                className="w-full"
+                originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature)}
+                label="30 days projection"
+                newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature, weiValue)}
+              />
+
+              <EvolutionBox
+                className="w-full"
+                originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature)}
+                label="1 year projection"
+                newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature, weiValue)}
+              />
+            </div>
+          )}
         </div>
 
         <PerformanceHistoryPanel

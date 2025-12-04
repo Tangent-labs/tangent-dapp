@@ -25,7 +25,7 @@ export function SlidingTabs({ labels, value, onSwitchTab }: SlidingTabsProps) {
         aria-hidden
         className={cn(
           "pointer-events-none absolute bottom-0 left-0 h-1 rounded-full",
-          "bg-gradient-to-r from-sky-400 to-blue-600",
+          "bg-button-linear",
           "transition-[transform,width] duration-300 ease-out motion-reduce:transition-none"
         )}
         style={{

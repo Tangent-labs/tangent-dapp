@@ -6,7 +6,7 @@ import { AssetDataPriced } from "@/types"
 import BorderPanel from "../structure/border_panel"
 import DisplayReceivePanel from "./display_recieve_panel"
 import { IconChevron } from "@/components/icons/icon_chevron"
-import { ReactNode, useEffect, useMemo, useState } from "react"
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
 import { formatDollar, toBigInt } from "@/lib/number_formatter"
 
 type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -47,6 +47,8 @@ export function DepositReceiveInput({
   setPercentage,
   ...props
 }: DepositReceiveInputProps) {
+  const inputRef = useRef<HTMLInputElement>(null)
+
   const balanceNumber = useMemo(() => {
     if (balance) {
       return Number(formatUnits(balance, 18))
@@ -101,10 +103,15 @@ export function DepositReceiveInput({
     return `(${formatDollar(val)})` || ""
   }, [depositAmount, depositAsset])
 
+  const onClickFocus = () => {
+    inputRef.current?.focus()
+  }
+
   return (
     <div className={cn("flex flex-col", className)} {...props}>
       <BorderPanel
-        className={`${isLoading ? "shimmer" : ""} flex flex-col bg-white bg-opacity-[3%] p-2 transition-colors duration-200 ease-in-out hover:bg-white/10`}
+        onClick={onClickFocus}
+        className={`${isLoading ? "shimmer" : ""} flex cursor-pointer flex-col bg-white bg-opacity-[3%] p-2 transition-colors duration-200 ease-in-out hover:bg-white/10`}
       >
         <div className="text-sm text-subtitle">{labelDeposit}</div>
 
@@ -114,6 +121,7 @@ export function DepositReceiveInput({
               {...props}
               disabled={isLoading}
               type="number"
+              ref={inputRef}
               value={innerValue}
               placeholder="Amount"
               onInput={handleInputChange}

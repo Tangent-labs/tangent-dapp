@@ -15,7 +15,7 @@ import PerformanceHistoryPanel from "./components/PerformanceHistoryPanel"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
-import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
+import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_receive_input"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 

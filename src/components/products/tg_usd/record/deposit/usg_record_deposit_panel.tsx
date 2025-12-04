@@ -218,7 +218,7 @@ export default function USGDepositContent() {
         </div>
       )}
 
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-start justify-between gap-2">
         <Accordion className="w-full" type="single" collapsible>
           <AccordionItem value="item-1">
             <BorderPanel className="flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary">

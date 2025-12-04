@@ -121,6 +121,9 @@ type USGRecordContextValues = {
 
   isRepayAndWithdraw: boolean
   setIsRepayAndWithdraw: (arg: boolean) => void
+
+  activeTab: string
+  setActiveTab: (arg: string) => void
 }
 
 const LEVERAGE_TRESHOLD = 0.989
@@ -167,6 +170,8 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
 
   const [currentConvexTVL, setCurrentConvexTVL] = useState<bigint>(1n)
+
+  const [activeTab, setActiveTab] = useState<string>("Borrow")
 
   const [currentAmounts, setCurrentAmounts] = useState<USGMarketAmounts>({
     depositWeiValue: 0n,
@@ -499,6 +504,9 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
 
     isRepayAndWithdraw,
     setIsRepayAndWithdraw,
+
+    activeTab,
+    setActiveTab,
   }
 
   return <USGRecordContext.Provider value={contextValue}>{children}</USGRecordContext.Provider>

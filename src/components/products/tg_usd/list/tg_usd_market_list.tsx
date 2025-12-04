@@ -118,33 +118,31 @@ export default function USGMarketList() {
 
       <div className="mb-4 mt-6 hidden items-end justify-between xl:flex">
         <div className="flex flex-col items-stretch justify-between gap-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <IndicatorCards
-                className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "gap-6")}
-                indicators={[
-                  { title: "USG", value: formatDollar(globalData.USGPrice, 5) },
-                  { title: "Supply", value: globalData.USGSupply },
-                ]}
-              >
-                <TokenImage token={"USG" as ExistingAsset} className="h-8 w-8" size={32} />
-              </IndicatorCards>
-              <IndicatorCards
-                className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "gap-6")}
-                indicators={[
-                  { title: "sUSG ", value: globalData.sUSGPrice },
-                  { title: "Supply", value: globalData.sUSGSupply },
-                  { title: "APY", value: globalData.APY },
-                ]}
-              >
-                <TokenImage token={"sUSG" as ExistingAsset} className="h-8 w-8" size={32} />
-              </IndicatorCards>
-            </div>
+          <div className="flex w-full items-center gap-4">
+            <IndicatorCards
+              className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "gap-6")}
+              indicators={[
+                { title: "USG", value: formatDollar(globalData.USGPrice, 5) },
+                { title: "Supply", value: globalData.USGSupply },
+              ]}
+            >
+              <TokenImage token={"USG" as ExistingAsset} className="h-8 w-8" size={32} />
+            </IndicatorCards>
+            <IndicatorCards
+              className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "gap-6")}
+              indicators={[
+                { title: "sUSG ", value: globalData.sUSGPrice },
+                { title: "Supply", value: globalData.sUSGSupply },
+                { title: "APY", value: globalData.APY },
+              ]}
+            >
+              <TokenImage token={"sUSG" as ExistingAsset} className="h-8 w-8" size={32} />
+            </IndicatorCards>
           </div>
 
           <div className="flex w-full items-stretch justify-between">
             <div className="flex w-full items-end justify-start gap-2">
-              <div className="flex w-full flex-col items-center justify-center">
+              <div className="flex w-full min-w-96 flex-col items-center justify-center">
                 <div className="mb-1 text-xs text-subtitle"> Search </div>
                 <InputSearch
                   placeholder=""

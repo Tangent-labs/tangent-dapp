@@ -147,8 +147,8 @@ export default function USGSwapContent() {
             disabled={false}
             isLoading={isLoading || isSwapLoading}
             receiveSelect={<ReceiveAssetSelect options={computedAssets?.receiveAssets} />}
-            labelDeposit={"You Sell"}
-            labelReceive={"You Buy"}
+            labelDeposit={"You sell"}
+            labelReceive={"You buy"}
             setIsBuying={setIsBuying}
             isBuying={isBuying}
             toggleTokensSwitch={toggleTokensSwitch}

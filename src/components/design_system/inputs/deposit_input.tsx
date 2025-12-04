@@ -30,7 +30,7 @@ export function DepositInput({
   depositAmount,
   balance,
   depositAsset,
-  labelDeposit = "You Deposit",
+  labelDeposit = "You deposit",
   setMaxBalance,
   onValueChange,
   depositSelect = <></>,

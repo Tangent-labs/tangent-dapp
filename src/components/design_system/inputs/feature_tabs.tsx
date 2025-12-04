@@ -13,7 +13,8 @@ type FeatureTabsProps = {
   canLeverage: boolean
   isRepayAndWithdraw: boolean
   isDepositAndBorrow: boolean
-  setActiveTab: (v: string) => void
+  onClickBorrow: () => void
+  onClickRepay: () => void
   onTabClick: (v: string) => void
   onTabClickLeverage: () => void
 }
@@ -25,16 +26,31 @@ export const FeatureTabs = ({
   canLeverage,
   isRepayAndWithdraw,
   isDepositAndBorrow,
-  setActiveTab,
+  onClickBorrow,
+  onClickRepay,
   onTabClick,
   onTabClickLeverage,
 }: FeatureTabsProps) => {
+  const MotionDiv = () => {
+    return (
+      <motion.div
+        layoutId="activeSubNavigationTab"
+        className="absolute inset-0 rounded-[10px] bg-white"
+        transition={{
+          type: "spring",
+          stiffness: 350,
+          damping: 30,
+        }}
+      />
+    )
+  }
+
   return (
     <>
       <div className="hidden w-full flex-col items-center justify-between gap-1 md:flex">
         <div className="mt-2 flex w-full justify-between gap-2">
-          <LargeButtonTab className="w-full !px-2" active={activeTab === "Borrow"} label={"Borrow"} onClick={() => setActiveTab("Borrow")} />
-          <LargeButtonTab className="w-full !px-2" active={activeTab === "Repay"} label={"Repay"} onClick={() => setActiveTab("Repay")} />
+          <LargeButtonTab className="w-full !px-2" active={activeTab === "Borrow"} label={"Borrow"} onClick={onClickBorrow} />
+          <LargeButtonTab className="w-full !px-2" active={activeTab === "Repay"} label={"Repay"} onClick={onClickRepay} />
         </div>
 
         <Divider className="h-0.5 w-full bg-white/10" />
@@ -49,17 +65,7 @@ export const FeatureTabs = ({
                   feature === collateral && isDepositAndBorrow ? "text-black" : "text-white"
                 )}
               >
-                {feature === collateral && isDepositAndBorrow && (
-                  <motion.div
-                    layoutId="activeSubNavigationTab"
-                    className="absolute inset-0 rounded-[10px] bg-white"
-                    transition={{
-                      type: "spring",
-                      stiffness: 350,
-                      damping: 30,
-                    }}
-                  />
-                )}
+                {feature === collateral && isDepositAndBorrow && <MotionDiv />}
                 <span className="relative z-20">Deposit & Borrow</span>
               </div>
 
@@ -71,17 +77,7 @@ export const FeatureTabs = ({
                   canLeverage ? "cursor-pointer" : "cursor-not-allowed"
                 )}
               >
-                {feature === "leverage" && (
-                  <motion.div
-                    layoutId="activeSubNavigationTab"
-                    className="absolute inset-0 rounded-[10px] bg-white"
-                    transition={{
-                      type: "spring",
-                      stiffness: 350,
-                      damping: 30,
-                    }}
-                  />
-                )}
+                {feature === "leverage" && <MotionDiv />}
                 <span className="relative z-20">Leverage</span>
               </div>
 
@@ -92,17 +88,7 @@ export const FeatureTabs = ({
                   feature === collateral && !isDepositAndBorrow ? "text-black" : "text-white"
                 )}
               >
-                {feature === collateral && !isDepositAndBorrow && (
-                  <motion.div
-                    layoutId="activeSubNavigationTab"
-                    className="absolute inset-0 rounded-[10px] bg-white"
-                    transition={{
-                      type: "spring",
-                      stiffness: 350,
-                      damping: 30,
-                    }}
-                  />
-                )}
+                {feature === collateral && !isDepositAndBorrow && <MotionDiv />}
                 <span className="relative z-20">Deposit</span>
               </div>
 
@@ -113,17 +99,7 @@ export const FeatureTabs = ({
                   feature === "borrow" ? "text-black" : "text-white"
                 )}
               >
-                {feature === "borrow" && (
-                  <motion.div
-                    layoutId="activeSubNavigationTab"
-                    className="absolute inset-0 rounded-[10px] bg-white"
-                    transition={{
-                      type: "spring",
-                      stiffness: 350,
-                      damping: 30,
-                    }}
-                  />
-                )}
+                {feature === "borrow" && <MotionDiv />}
                 <span className="relative z-20">Borrow</span>
               </div>
             </div>
@@ -136,17 +112,7 @@ export const FeatureTabs = ({
                   feature === "repay" && isRepayAndWithdraw ? "text-black" : "text-white"
                 )}
               >
-                {feature === "repay" && isRepayAndWithdraw && (
-                  <motion.div
-                    layoutId="activeSubNavigationTab"
-                    className="absolute inset-0 rounded-[10px] bg-white"
-                    transition={{
-                      type: "spring",
-                      stiffness: 350,
-                      damping: 30,
-                    }}
-                  />
-                )}
+                {feature === "repay" && isRepayAndWithdraw && <MotionDiv />}
                 <span className="relative z-20">Repay & Withdraw</span>
               </div>
 
@@ -157,17 +123,7 @@ export const FeatureTabs = ({
                   feature === "liquidate" ? "text-black" : "text-white"
                 )}
               >
-                {feature === "liquidate" && (
-                  <motion.div
-                    layoutId="activeSubNavigationTab"
-                    className="absolute inset-0 rounded-[10px] bg-white"
-                    transition={{
-                      type: "spring",
-                      stiffness: 350,
-                      damping: 30,
-                    }}
-                  />
-                )}
+                {feature === "liquidate" && <MotionDiv />}
                 <span className="relative z-20">Liquidate</span>
               </div>
 
@@ -178,17 +134,7 @@ export const FeatureTabs = ({
                   feature === "repay" && !isRepayAndWithdraw ? "text-black" : "text-white"
                 )}
               >
-                {feature === "repay" && !isRepayAndWithdraw && (
-                  <motion.div
-                    layoutId="activeSubNavigationTab"
-                    className="absolute inset-0 rounded-[10px] bg-white"
-                    transition={{
-                      type: "spring",
-                      stiffness: 350,
-                      damping: 30,
-                    }}
-                  />
-                )}
+                {feature === "repay" && !isRepayAndWithdraw && <MotionDiv />}
                 <span className="relative z-20">Repay</span>
               </div>
 
@@ -199,17 +145,7 @@ export const FeatureTabs = ({
                   feature === "withdraw" ? "text-black" : "text-white"
                 )}
               >
-                {feature === "withdraw" && (
-                  <motion.div
-                    layoutId="activeSubNavigationTab"
-                    className="absolute inset-0 rounded-[10px] bg-white"
-                    transition={{
-                      type: "spring",
-                      stiffness: 350,
-                      damping: 30,
-                    }}
-                  />
-                )}
+                {feature === "withdraw" && <MotionDiv />}
                 <span className="relative z-20">Withdraw</span>
               </div>
             </div>

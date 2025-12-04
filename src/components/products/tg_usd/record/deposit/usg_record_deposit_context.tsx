@@ -12,8 +12,8 @@ import { useRootContext } from "@/components/products/root/root_context"
 import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { computeAprVariation, computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit } from "./usg_record_deposit_controller"
+import { computeAprVariation, computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 
 type USGDepositContextProps = {
   children: ReactNode
@@ -472,7 +472,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
       if (depositAsset && depositAsset !== collateralInfo?.symbol) {
         futureDeposited =
           marketData?.collateralInfos?.positionCollateralUSDValue +
-          (BigInt(zapValue || 0n) * BigInt(1000000 - Math.round(slippage * 10000)) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 24)
+          (computedMinAmountOut(zapValue || 0n, slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18)
       } else {
         futureDeposited =
           marketData?.collateralInfos?.positionCollateralUSDValue + (deposit * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18)
@@ -487,9 +487,12 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     return 0n
   }, [marketData, depositWeiValue, depositAsset, depositAssetInfo, zapValue, slippage])
 
+  // TODO Verify for a market that doesn't have a 18 decimals collateral
   const estimatedZapDollarValue = useMemo(() => {
     if (zapValue && marketData) {
-      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * BigInt(1000000 - Math.round(slippage * 10000)) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 24), 18))})`
+      const result = `~(${formatDollar(
+        formatUnits((computedMinAmountOut(zapValue, slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), 18)
+      )})`
       return result
     }
 

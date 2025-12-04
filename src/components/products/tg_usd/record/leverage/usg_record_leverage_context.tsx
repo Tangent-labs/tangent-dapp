@@ -10,11 +10,11 @@ import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
-import { computeAprVariation, computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
+import { computeAprVariation, computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
 
 type USGLeverageContextProps = {
   children: ReactNode
@@ -253,13 +253,13 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   useEffect(() => {
     if (zapValue && borrowWeiValue && leveragedCollateralQuote && !isDepositLoading) {
       setCurrentAmounts({
-        depositWeiValue: (depositWeiValue || 0n) + (leveragedCollateralQuote || 0n),
+        depositWeiValue: (depositWeiValue || 0n) + leveragedCollateralQuote,
         borrowWeiValue: borrowWeiValue || 0n,
-        zapValue: (BigInt(zapValue) || 0n) + (leveragedCollateralQuote || 0n),
+        zapValue: (BigInt(zapValue) || 0n) + leveragedCollateralQuote,
       })
     } else if (borrowWeiValue && leveragedCollateralQuote && !isDepositLoading) {
       setCurrentAmounts({
-        depositWeiValue: (depositWeiValue || 0n) + (leveragedCollateralQuote || 0n),
+        depositWeiValue: (depositWeiValue || 0n) + leveragedCollateralQuote,
         borrowWeiValue: borrowWeiValue || 0n,
         zapValue: 0n,
       })
@@ -278,7 +278,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     setIsDepositLoading(true)
     const walletClient = getWalletClient()
     if (walletClient && depositWeiValue)
-      doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue || 0n)
+      doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue)
         .then(() => {
           fetchBalanceAllowanceData(depositAssetInfo?.address)
           setIsDepositLoading(false)
@@ -403,17 +403,17 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
     if (marketData) {
       if (zapValue && leveragedCollateralQuote) {
-        quoteDetail.sum = ` ${formatBigIntAsNumber(zapValue || 0n, 18, 3)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 3)}  ~= `
-        quoteDetail.result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + BigInt(zapValue || 0n), 18, 3)}  ${collateralInfo?.symbol}`
+        quoteDetail.sum = ` ${formatBigIntAsNumber(zapValue, 18, 3)} + ${formatBigIntAsNumber(leveragedCollateralQuote, 18, 3)}  ~= `
+        quoteDetail.result = `${formatBigIntAsNumber(leveragedCollateralQuote + BigInt(zapValue || 0n), 18, 3)}  ${collateralInfo?.symbol}`
       } else if (depositWeiValue && leveragedCollateralQuote && !isLeverageAllPosition) {
-        quoteDetail.sum = ` ${formatBigIntAsNumber(depositWeiValue || 0n, 18, 3)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 3)}  ~= `
-        quoteDetail.result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + (depositWeiValue || 0n), 18, 3)}  ${collateralInfo?.symbol}`
+        quoteDetail.sum = ` ${formatBigIntAsNumber(depositWeiValue, 18, 3)} + ${formatBigIntAsNumber(leveragedCollateralQuote, 18, 3)}  ~= `
+        quoteDetail.result = `${formatBigIntAsNumber(leveragedCollateralQuote + depositWeiValue, 18, 3)}  ${collateralInfo?.symbol}`
       } else if (leveragedCollateralQuote && isDepositDisabled) {
-        quoteDetail.sum = ` ${formatBigIntAsNumber(marketData?.collateralInfos?.positionCollateralAmount || 0n, 18, 3)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 3)}  ~= `
-        quoteDetail.result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + (marketData?.collateralInfos?.positionCollateralAmount || 0n), 18, 3)}  ${collateralInfo?.symbol}`
+        quoteDetail.sum = ` ${formatBigIntAsNumber(marketData?.collateralInfos?.positionCollateralAmount || 0n, 18, 3)} + ${formatBigIntAsNumber(leveragedCollateralQuote, 18, 3)}  ~= `
+        quoteDetail.result = `${formatBigIntAsNumber(leveragedCollateralQuote + (marketData?.collateralInfos?.positionCollateralAmount || 0n), 18, 3)}  ${collateralInfo?.symbol}`
       } else if (depositWeiValue && leveragedCollateralQuote && isLeverageAllPosition) {
-        quoteDetail.sum = ` ${formatBigIntAsNumber(marketData?.collateralInfos?.positionCollateralAmount + (depositWeiValue || 0n), 18, 3)} + ${formatBigIntAsNumber(leveragedCollateralQuote || 0n, 18, 3)}  ~= `
-        quoteDetail.result = `${formatBigIntAsNumber((leveragedCollateralQuote || 0n) + (marketData?.collateralInfos?.positionCollateralAmount + (depositWeiValue || 0n)), 18, 3)}  ${collateralInfo?.symbol}`
+        quoteDetail.sum = ` ${formatBigIntAsNumber(marketData?.collateralInfos?.positionCollateralAmount + depositWeiValue, 18, 3)} + ${formatBigIntAsNumber(leveragedCollateralQuote, 18, 3)}  ~= `
+        quoteDetail.result = `${formatBigIntAsNumber(leveragedCollateralQuote + (marketData?.collateralInfos?.positionCollateralAmount + depositWeiValue), 18, 3)}  ${collateralInfo?.symbol}`
       }
     }
     return quoteDetail

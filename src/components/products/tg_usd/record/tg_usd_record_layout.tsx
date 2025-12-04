@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect } from "react"
+import { usePathname, useRouter } from "next/navigation"
 import { Switch } from "@/components/ui/switch"
 import USGMarketInfo from "./tg_usd_market_info"
 import USGLoanDetail from "./tg_usd_loan_detail"
@@ -43,11 +43,13 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     setIsRepayAndWithdraw,
     isDepositAndBorrow,
     isRepayAndWithdraw,
+    setActiveTab,
+    activeTab,
   } = useUSGRecordContext()
 
-  const [activeTab, setActiveTab] = useState<string>("Borrow")
-
   const router = useRouter()
+
+  const path = usePathname()
 
   const onTabClick = (feat: string) => {
     if (feat.toLowerCase() === "deposit") {
@@ -67,23 +69,38 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     }
   }
 
+  const onClickBorrow = () => {
+    setActiveTab("Borrow")
+    router.push(`/${collateral}`)
+    setIsDepositAndBorrow(true)
+  }
+
+  const onClickRepay = () => {
+    setActiveTab("Repay")
+    router.push(`/${collateral}/repay`)
+    setIsRepayAndWithdraw(true)
+  }
+
   const onTabClickLeverage = () => {
     if (canLeverage) {
       onTabClick("leverage")
     }
   }
 
-  useEffect(() => {
-    if (activeTab === "Borrow") {
-      router.push(`/${collateral}`)
-      setIsDepositAndBorrow(true)
-    }
+  const setupNavigationOnInit = () => {
+    const lastIndexOfSlash = path?.lastIndexOf("/") + 1
+    const feat = path.substring(lastIndexOfSlash, path.length)
 
-    if (activeTab === "Repay") {
-      router.push(`/${collateral}/repay`)
+    if (feat === "repay" || feat === "withdraw" || feat === "liquidate") {
+      setIsDepositAndBorrow(false)
       setIsRepayAndWithdraw(true)
+      setActiveTab("Repay")
     }
-  }, [activeTab])
+  }
+
+  useEffect(() => {
+    setupNavigationOnInit()
+  }, [])
 
   return (
     <>
@@ -103,7 +120,8 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
               canLeverage={canLeverage}
               onTabClick={onTabClick}
               onTabClickLeverage={onTabClickLeverage}
-              setActiveTab={setActiveTab}
+              onClickBorrow={onClickBorrow}
+              onClickRepay={onClickRepay}
             ></FeatureTabs>
 
             <div className="mt-2">{children}</div>

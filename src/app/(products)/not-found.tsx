@@ -1,7 +1,12 @@
+"use client"
+
+import { Button } from "@/components/design_system/inputs/button"
 import Image from "next/image"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export default function NotFound() {
+  const router = useRouter()
+
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-4">
       <div className="flex items-center justify-center gap-4">
@@ -10,11 +15,9 @@ export default function NotFound() {
         <div className="flex flex-col items-center justify-center gap-4">
           <h2>This page does not exist</h2>
 
-          <div className="rounded-[10px] bg-overlay-panel px-6 py-2 backdrop-blur-[60px] hover:bg-white/10">
-            <Link className="text-lg font-semibold text-white" href="/">
-              Return Home
-            </Link>
-          </div>
+          <Button className="flex w-full justify-center text-lg font-semibold text-white" onClick={() => router.push("/")}>
+            Return Home
+          </Button>
         </div>
       </div>
     </div>

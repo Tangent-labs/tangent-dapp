@@ -28,7 +28,7 @@ export function BorrowInput({
   borrowAmount,
   balance,
   borrowAsset,
-  labelDeposit = "You Deposit",
+  labelDeposit = "You deposit",
   setMaxBalance,
   onValueChange,
   depositSelect = <></>,

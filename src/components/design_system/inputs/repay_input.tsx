@@ -29,7 +29,7 @@ export function RepayInput({
   depositAmount,
   balance,
   depositAsset,
-  labelDeposit = "You Deposit",
+  labelDeposit = "You deposit",
   setMaxBalance,
   onValueChange,
   depositSelect = <></>,

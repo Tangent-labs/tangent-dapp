@@ -27,7 +27,7 @@ type InputSelectLockPositionProps = React.InputHTMLAttributes<HTMLInputElement> 
 export const InputSelectLockPosition = ({
   depositAmount,
   balance = BigInt(0),
-  labelDeposit = "You Deposit",
+  labelDeposit = "You deposit",
   setMaxBalance,
   onValueChange,
   depositSelect = <></>,

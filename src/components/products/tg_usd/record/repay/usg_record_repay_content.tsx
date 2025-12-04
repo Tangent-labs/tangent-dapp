@@ -14,12 +14,13 @@ import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
+import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { RepayInput } from "@/components/design_system/inputs/repay_input"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { SlippageInput } from "@/components/design_system/inputs/slippage"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function USGRepayContent() {
   const { tokens, balances } = useUSGContext()
@@ -223,7 +224,25 @@ export default function USGRepayContent() {
         )}
       </div>
 
-      <div className="flex items-center justify-end gap-2">
+      <div className="flex items-start justify-between gap-2">
+        <Accordion className="w-full" type="single" collapsible>
+          <AccordionItem value="item-1">
+            <BorderPanel className="flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary">
+              <AccordionTrigger>
+                <span className="py-1.5">Recap</span>
+              </AccordionTrigger>
+
+              <AccordionContent className="w-full">
+                <div className="flex w-full items-center justify-between">
+                  <span className="text-subtitle">Expected collateral: </span>
+
+                  <span className="font-semibold text-white">{usgRepayedValue}</span>
+                </div>
+              </AccordionContent>
+            </BorderPanel>
+          </AccordionItem>
+        </Accordion>
+
         <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
       </div>
 

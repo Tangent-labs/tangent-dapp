@@ -38,8 +38,8 @@ export function BuySellInput({
   depositAsset,
   receiveAsset,
   receiveAmount,
-  labelDeposit = "You Sell",
-  labelReceive = "You Buy",
+  labelDeposit = "You sell",
+  labelReceive = "You buy",
   setMaxBalance,
   onValueChange,
   onReceiveValueChange,
@@ -169,7 +169,7 @@ export function BuySellInput({
     <div className="flex w-full flex-col">
       <div className="mb-3 flex w-full items-end justify-between">
         <div className="font-semibold">
-          {labelDeposit === "You Buy" ? "Sell" : "Buy"} {receiveAsset?.symbol}
+          {labelDeposit === "You buy" ? "Sell" : "Buy"} {receiveAsset?.symbol}
         </div>
 
         <span className="text-xs text-subtitle">

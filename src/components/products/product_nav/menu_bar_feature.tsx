@@ -14,19 +14,19 @@ import { cn } from "@/lib/utils"
 import { useCallback } from "react"
 import { motion } from "framer-motion"
 import { useRootContext } from "../root/root_context"
+import { formatCompact } from "@/lib/number_formatter"
+import { IconTask } from "@/components/icons/icon_task"
 import { usePathname, useRouter } from "next/navigation"
+import { IconForum } from "@/components/icons/icon_forum"
+import { IconBoosts } from "@/components/icons/icon_boosts"
+import { IconHarvest } from "@/components/icons/icon_harvest"
 import { IconTangent } from "@/components/icons/icon_tangent"
+import { IconSnapshot } from "@/components/icons/icon_snapshot"
+import { IconReferral } from "@/components/icons/icon_referral"
 import { mapRouteToFeature } from "./menu_bar_feature_controller"
 import { IconTangentLogo } from "@/components/icons/icon_tangent_logo"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
-import { formatCompact } from "@/lib/number_formatter"
-import { IconHarvest } from "@/components/icons/icon_harvest"
-import { IconForum } from "@/components/icons/icon_forum"
-import { IconSnapshot } from "@/components/icons/icon_snapshot"
-import { IconTask } from "@/components/icons/icon_task"
-import { IconReferral } from "@/components/icons/icon_referral"
-import { IconBoosts } from "@/components/icons/icon_boosts"
 
 export default function MenuBarFeature() {
   const { USGCurrentSupply, sUSGCurrentAPY } = useRootContext()
@@ -38,6 +38,20 @@ export default function MenuBarFeature() {
   const computedFeature = useCallback(() => {
     return mapRouteToFeature(pathname.substring(1, pathname.length))
   }, [pathname])
+
+  const MotionDiv = () => {
+    return (
+      <motion.div
+        layoutId="activeNavigationTab"
+        className="absolute inset-0 rounded-lg bg-white/10"
+        transition={{
+          type: "spring",
+          stiffness: 350,
+          damping: 30,
+        }}
+      />
+    )
+  }
 
   return (
     <header className="sticky top-0 z-50 flex h-[80px] w-full font-gilroy backdrop-blur-[60px]">
@@ -62,17 +76,7 @@ export default function MenuBarFeature() {
                     pathname === "/dashboard" ? "" : "hover:bg-white/20"
                   )}
                 >
-                  {pathname === "/dashboard" && (
-                    <motion.div
-                      layoutId="activeNavigationTab"
-                      className="absolute inset-0 rounded-lg bg-white/10"
-                      transition={{
-                        type: "spring",
-                        stiffness: 350,
-                        damping: 30,
-                      }}
-                    />
-                  )}
+                  {pathname === "/dashboard" && <MotionDiv></MotionDiv>}
                   <span className="relative z-20">Dashboard</span>
                 </NavigationMenuItem>
 
@@ -83,17 +87,7 @@ export default function MenuBarFeature() {
                     pathname === "/" ? "" : "hover:bg-white/20"
                   )}
                 >
-                  {pathname === "/" && (
-                    <motion.div
-                      layoutId="activeNavigationTab"
-                      className="absolute inset-0 rounded-lg bg-white/10"
-                      transition={{
-                        type: "spring",
-                        stiffness: 350,
-                        damping: 30,
-                      }}
-                    />
-                  )}
+                  {pathname === "/" && <MotionDiv></MotionDiv>}
                   <span className="relative z-20">Markets</span>
                 </NavigationMenuItem>
                 <NavigationMenuItem
@@ -103,17 +97,7 @@ export default function MenuBarFeature() {
                     pathname === "/stake" ? "" : "hover:bg-white/20"
                   )}
                 >
-                  {pathname === "/stake" && (
-                    <motion.div
-                      layoutId="activeNavigationTab"
-                      className="absolute inset-0 rounded-lg bg-white/10"
-                      transition={{
-                        type: "spring",
-                        stiffness: 350,
-                        damping: 30,
-                      }}
-                    />
-                  )}
+                  {pathname === "/stake" && <MotionDiv></MotionDiv>}
                   <span className="relative z-20">Savings</span>
                 </NavigationMenuItem>
 
@@ -124,17 +108,7 @@ export default function MenuBarFeature() {
                     pathname === "/earn" ? "" : "hover:bg-white/20"
                   )}
                 >
-                  {pathname === "/earn" && (
-                    <motion.div
-                      layoutId="activeNavigationTab"
-                      className="absolute inset-0 rounded-lg bg-white/10"
-                      transition={{
-                        type: "spring",
-                        stiffness: 350,
-                        damping: 30,
-                      }}
-                    />
-                  )}
+                  {pathname === "/earn" && <MotionDiv></MotionDiv>}
                   <span className="relative z-20">Earn</span>
                 </NavigationMenuItem>
 
@@ -145,17 +119,7 @@ export default function MenuBarFeature() {
                     pathname === "/claim" ? "hover:bg-white/20" : "hover:bg-white/10"
                   )}
                 >
-                  {pathname === "/claim" && (
-                    <motion.div
-                      layoutId="activeNavigationTab"
-                      className="absolute inset-0 rounded-lg bg-white/10"
-                      transition={{
-                        type: "spring",
-                        stiffness: 350,
-                        damping: 30,
-                      }}
-                    />
-                  )}
+                  {pathname === "/claim" && <MotionDiv></MotionDiv>}
                   <span className="relative z-20">Claim</span>
                 </NavigationMenuItem>
 

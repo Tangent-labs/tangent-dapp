@@ -125,24 +125,26 @@ export const computedProjection = (amount: number, timeFrame: number, apr: numbe
 
 export const computeProjection = (sUSGBalance: bigint, timeFrame: number, apr: number, currentFeature: "stake" | "unstake", amount?: bigint) => {
   let projection = 0
+  const sUSGBalanceNumb = Number(formatUnits(sUSGBalance || 0n, 18))
+  const amountNumb = Number(formatUnits(amount || 0n, 18))
 
   if (currentFeature === "stake" && !!amount && amount > 0n) {
-    projection = computedProjection(Number(formatUnits(sUSGBalance || 0n, 18)) + Number(formatUnits(amount, 18)), timeFrame, apr)
+    projection = computedProjection(sUSGBalanceNumb + amountNumb, timeFrame, apr)
   } else if (currentFeature === "unstake" && !!amount && amount > 0n) {
-    projection = computedProjection(Number(formatUnits(sUSGBalance || 0n, 18)) - Number(formatUnits(amount, 18)), timeFrame, apr)
+    projection = computedProjection(sUSGBalanceNumb - amountNumb, timeFrame, apr)
   } else {
-    projection = computedProjection(Number(formatUnits(sUSGBalance || 0n, 18)), timeFrame, apr)
+    projection = computedProjection(amountNumb, timeFrame, apr)
   }
   return formatNumber(projection, 0)
 }
 
 export const computeSUSGAprVariation = (currentFeature: string, USGsUSGMetrics: USGStakingInfo, inputValue: bigint, currentAPY: number) => {
   let newAPR = 0n
-
+  const numerator = USGsUSGMetrics?.sUSGSupply * BigInt((currentAPY * 100).toFixed(0))
   if (currentFeature === "stake") {
-    newAPR = (USGsUSGMetrics?.sUSGSupply * BigInt((currentAPY * 100).toFixed(0))) / (USGsUSGMetrics?.sUSGSupply + inputValue || 1n)
+    newAPR = numerator / (USGsUSGMetrics?.sUSGSupply + inputValue || 1n)
   } else {
-    newAPR = (USGsUSGMetrics?.sUSGSupply * BigInt((currentAPY * 100).toFixed(0))) / (USGsUSGMetrics?.sUSGSupply - inputValue || 1n)
+    newAPR = numerator / (USGsUSGMetrics?.sUSGSupply - inputValue || 1n)
   }
 
   return {

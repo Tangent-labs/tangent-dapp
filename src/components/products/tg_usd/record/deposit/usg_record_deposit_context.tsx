@@ -12,8 +12,8 @@ import { useRootContext } from "@/components/products/root/root_context"
 import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { computeAprVariation, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
-import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit } from "./usg_record_deposit_controller"
+import { computeAprVariation, computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
+import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit, doMarketDepositAndBorrow } from "./usg_record_deposit_controller"
 
 type USGDepositContextProps = {
   children: ReactNode
@@ -323,13 +323,46 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   }
 
   const actionDeposit = () => {
+    if (!depositWeiValue || !currentAddress || !depositAssetInfo) return
+
+    if (isDepositAndBorrow) {
+      depositAndBorrow()
+    } else {
+      deposit()
+    }
+  }
+
+  const depositAndBorrow = () => {
     setIsDepositLoading(true)
     const walletClient = getWalletClient()
 
-    const isReceiptIn = marketData?.constants?.receipt === depositAssetInfo?.address
+    if (walletClient && depositWeiValue) {
+      const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
+
+      doMarketDepositAndBorrow(walletClient, { depositWeiValue, isDepositAndBorrow, marketAddress: marketInfo?.marketAddress, borrowWeiValue, isReceiptIn })
+        .then(() => {
+          resetAfterDepositSuccess()
+          toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
+        })
+        .catch((e) => {
+          console.error(e)
+          setIsDepositLoading(false)
+          toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
+        })
+    } else {
+      setIsDepositLoading(false)
+      toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
+    }
+  }
+
+  const deposit = () => {
+    setIsDepositLoading(true)
+    const walletClient = getWalletClient()
 
     if (walletClient && depositWeiValue) {
-      doMarketDeposit(walletClient, { depositWeiValue, isDepositAndBorrow, marketAddress: marketInfo?.marketAddress, borrowWeiValue, isReceiptIn })
+      const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
+
+      doMarketDeposit(walletClient, { depositWeiValue, marketAddress: marketInfo?.marketAddress, borrowWeiValue, isReceiptIn })
         .then(() => {
           resetAfterDepositSuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
@@ -482,10 +515,10 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
       const futureDebt = marketData?.debtInfos?.userDebt
       let futureDeposited
 
-      if (isZapping) {
+      if (isZapping && zapValue) {
         futureDeposited =
           marketData?.collateralInfos?.positionCollateralUSDValue +
-          (BigInt(zapValue || 0n) * BigInt(1000000 - Math.round(slippage * 10000)) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 24)
+          (computedMinAmountOut(zapValue, slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18)
       } else {
         futureDeposited =
           marketData?.collateralInfos?.positionCollateralUSDValue + (deposit * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18)
@@ -510,17 +543,18 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   }, [zapValue])
 
   const maxDepositString = useMemo(() => {
-    if (!!balanceAllowanceData && currentAddress && isZapping) {
-      return `Max ${formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)}  ${depositAssetInfo?.symbol}`
-    }
-    if (!!balanceAllowanceData && currentAddress && depositAssetInfo?.address == marketData?.constants?.receipt) {
-      return `Max ${formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)} ${depositAssetInfo?.symbol}`
+    const asset = depositAssetInfo?.symbol
+
+    let amountDisplayed = "0"
+
+    if (!!balanceAllowanceData && currentAddress && (isZapping || depositAssetInfo?.address == marketData?.constants?.receipt)) {
+      amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
     }
     if (currentAddress && !isZapping) {
-      return `Max ${formatBigInt(marketData?.collateralBalance, depositAssetInfo?.decimals, 2)} ${depositAssetInfo?.symbol}`
+      amountDisplayed = formatBigInt(marketData?.collateralBalance, depositAssetInfo?.decimals, 2)
     }
-    return `Max 0 ${depositAssetInfo?.symbol}`
-  }, [depositAsset, collateralInfo, currentAddress, depositAssetInfo, balanceAllowanceData, isZapping])
+    return `Max ${amountDisplayed} ${asset}`
+  }, [currentAddress, depositAssetInfo, balanceAllowanceData, isZapping])
 
   const expectedCollateral = useMemo(() => {
     if (marketData) {

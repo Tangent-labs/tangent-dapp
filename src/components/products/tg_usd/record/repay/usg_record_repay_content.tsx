@@ -30,7 +30,7 @@ import { USGStaticAssetSelector } from "@/components/design_system/structure/usg
 export default function USGRepayContent() {
   const { tokens, balances } = useUSGContext()
 
-  const { USGInfo, pricedCollateralInfo, collateralInfo, marketInfo, marketData, depositAssetOptions } = useUSGRecordContext()
+  const { USGInfo, pricedCollateralInfo, collateralInfo, marketData, depositAssetOptions } = useUSGRecordContext()
 
   const { connect } = useWalletConnexionContext()
 
@@ -116,7 +116,7 @@ export default function USGRepayContent() {
           price: 1,
           symbol: "USG",
           value: "USG",
-          balance: balances ? balances[marketInfo?.collatAddress] : BigInt(0),
+          balance: balances ? balances[USG_CONTRACT.USG] : BigInt(0),
         },
         ...[
           {

@@ -414,5 +414,5 @@ export const computeLiquidationPrice = (
 }
 
 export const computedMinAmountOut = (value: bigint, slippage: number) => {
-  return (BigInt(value || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
+  return (value * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
 }

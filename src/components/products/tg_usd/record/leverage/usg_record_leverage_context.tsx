@@ -2,7 +2,7 @@
 
 import { toast } from "react-toastify"
 import { ZapToken } from "../../tg_usd_type"
-import { formatUnits, parseEther, zeroAddress } from "viem"
+import { formatUnits, parseEther } from "viem"
 import { useUSGContext } from "../../tg_usd_context"
 import { USG_CONTRACT } from "../../tg_usd_repository"
 import { useUSGRecordContext } from "../tg_usd_record_context"
@@ -381,7 +381,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       curveRoutes
     )
 
-    const isReceiptIn = marketData?.constants?.receipt === depositAssetInfo?.address
+    const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
 
     doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, isReceiptIn, leverageData!)
       .then(() => {
@@ -531,20 +531,18 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }, [zapInnerValue, isZapUserInput])
 
   const maxDepositString = useMemo(() => {
-    if (!!balanceAllowanceData && currentAddress && isZapping) {
-      return `Max ${formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)}  ${depositAssetInfo?.symbol}`
-    }
+    const asset = depositAssetInfo?.symbol
 
-    if (!!balanceAllowanceData && !!marketData && marketData?.constants?.receipt !== zeroAddress) {
-      return `Max ${formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)}  ${depositAssetInfo?.symbol}`
-    }
+    let amountDisplayed = "0"
 
+    if (!!balanceAllowanceData && currentAddress && (isZapping || depositAssetInfo?.address == marketData?.constants?.receipt)) {
+      amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
+    }
     if (currentAddress && !isZapping) {
-      return `Max ${formatBigInt(marketData?.collateralBalance, depositAssetInfo?.decimals, 2)} ${depositAssetInfo?.symbol}`
+      amountDisplayed = formatBigInt(marketData?.collateralBalance, depositAssetInfo?.decimals, 2)
     }
-
-    return `Max 0 ${depositAssetInfo?.symbol}`
-  }, [depositAsset, collateralInfo, currentAddress, depositAssetInfo, balanceAllowanceData, marketData])
+    return `Max ${amountDisplayed} ${asset}`
+  }, [currentAddress, depositAssetInfo, balanceAllowanceData, isZapping])
 
   const computedMaxLeverage = useMemo(() => {
     return marketData ? `Max leverage: x${Number((1 / (1 - Number(marketData?.constants.maxLTV) / 100000)).toFixed(0))}` : ""

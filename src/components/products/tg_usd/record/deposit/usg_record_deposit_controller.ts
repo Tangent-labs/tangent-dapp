@@ -46,27 +46,27 @@ export function getDepositFormState(
   }
 }
 
-export async function doMarketDeposit(walletClient: WalletClient, args: USGMarketDepositParams) {
-  if (!args.isDepositAndBorrow) {
-    const [account] = await walletClient.requestAddresses()
-    const txData = {
-      abi: MarketExternalActions.abi as Abi,
-      functionName: "deposit",
-      address: args.marketAddress,
-      args: [account, args.depositWeiValue, args?.isReceiptIn],
-    }
-    const txHash = await executeContractCall(walletClient, txData)
-    return await waitForTransaction(txHash)
-  } else {
-    const txData = {
-      abi: MarketExternalActions.abi as Abi,
-      functionName: "depositAndBorrow",
-      address: args.marketAddress,
-      args: [args.depositWeiValue, args.borrowWeiValue, args?.isReceiptIn],
-    }
-    const txHash = await executeContractCall(walletClient, txData)
-    return await waitForTransaction(txHash)
+export async function doMarketDepositAndBorrow(walletClient: WalletClient, args: USGMarketDepositParams) {
+  const txData = {
+    abi: MarketExternalActions.abi as Abi,
+    functionName: "depositAndBorrow",
+    address: args.marketAddress,
+    args: [args.depositWeiValue, args.borrowWeiValue, args?.isReceiptIn],
   }
+  const txHash = await executeContractCall(walletClient, txData)
+  return await waitForTransaction(txHash)
+}
+
+export async function doMarketDeposit(walletClient: WalletClient, args: USGMarketDepositParams) {
+  const [account] = await walletClient.requestAddresses()
+  const txData = {
+    abi: MarketExternalActions.abi as Abi,
+    functionName: "deposit",
+    address: args.marketAddress,
+    args: [account, args.depositWeiValue, args?.isReceiptIn],
+  }
+  const txHash = await executeContractCall(walletClient, txData)
+  return await waitForTransaction(txHash)
 }
 
 export const doZapDepositAndBorrow = async (

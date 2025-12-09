@@ -430,6 +430,8 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
 
   const depositAssetOptions = useMemo(() => {
     if (!!marketData && !!balances) {
+      const gaugeSymbol = `Gauge ${collateralInfo?.symbol}`
+
       return [
         {
           label: collateralInfo?.symbol,
@@ -439,11 +441,11 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
           symbol: collateralInfo?.symbol,
         },
         {
-          label: `Gauge ${collateralInfo?.symbol}`,
-          value: `Gauge ${collateralInfo?.symbol}`,
+          label: gaugeSymbol,
+          value: gaugeSymbol,
           address: marketData?.constants?.receipt,
           balance: balances?.[marketData?.constants?.receipt] ?? BigInt(0),
-          symbol: `Gauge ${collateralInfo?.symbol}`,
+          symbol: gaugeSymbol,
         },
       ]
     }

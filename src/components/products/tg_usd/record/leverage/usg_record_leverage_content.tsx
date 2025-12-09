@@ -105,14 +105,16 @@ export default function USGLeverageContent() {
       ]
 
       if (marketData?.constants?.receipt !== zeroAddress) {
+        const gaugeSymbol = `Gauge ${collateralInfo?.symbol}`
+
         sortedAssets.unshift({
           decimals: 18,
           displayDecimals: 5,
           logo: collateralInfo?.logo as ExistingAsset,
-          symbol: `Gauge ${collateralInfo?.symbol}`,
-          name: `Gauge ${collateralInfo?.symbol}`,
+          symbol: gaugeSymbol,
+          name: gaugeSymbol,
           address: marketData?.constants?.receipt as Address,
-          value: `Gauge ${collateralInfo?.symbol}`,
+          value: gaugeSymbol,
           balance: balances?.[marketData?.constants?.receipt] ?? BigInt(0),
         })
       }

@@ -194,9 +194,9 @@ export type MarketDetailData = {
 }
 
 export type USGMarketDepositParams = USGMarketBorrowParams & {
-  isDepositAndBorrow: boolean
   depositWeiValue: bigint
   isReceiptIn: boolean
+  isDepositAndBorrow?: boolean
 }
 
 export type USGMarketBorrowParams = {

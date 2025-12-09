@@ -38,6 +38,7 @@ export default function EvolutionBox({ label, originalValue, newValue, logo, cla
       >
         {flash && (
           <motion.div
+            layoutId="flashing-value-layout-id"
             className="pointer-events-none absolute inset-0 bg-white/20"
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, 1, 0] }}
@@ -57,14 +58,19 @@ export default function EvolutionBox({ label, originalValue, newValue, logo, cla
         <AnimatePresence mode="wait">
           {hasChanged && (
             <motion.div
-              layout
+              layoutId="changing-value-layout-id"
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.7 }}
               transition={{ duration: 0.35, type: "spring", stiffness: 500, damping: 30 }}
               className="flex items-center gap-3"
             >
-              <motion.div initial={{ rotate: 0 }} animate={{ rotate: 360 }} transition={{ duration: 0.5, ease: "easeOut" }}>
+              <motion.div
+                layoutId="arrow-updating-behaviour-layout-id"
+                initial={{ rotate: 0 }}
+                animate={{ rotate: 360 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+              >
                 <IconSingleArrow className="h-3 w-3" />
               </motion.div>
 

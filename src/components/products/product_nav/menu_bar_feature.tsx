@@ -35,7 +35,7 @@ export default function MenuBarFeature() {
   const MotionDiv = () => {
     return (
       <motion.div
-        layoutId="activeNavigationTab"
+        layoutId="header-menu-motion-div"
         className="absolute inset-0 rounded-lg bg-white/10"
         transition={{
           type: "spring",

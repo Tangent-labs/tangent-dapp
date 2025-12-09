@@ -1,10 +1,11 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { motion } from "framer-motion"
-import Divider from "../structure/divider"
-import LargeButtonTab from "./large_button_tab"
-import { FeatureSelect } from "../structure/feature_select"
+import Divider from "../../structure/divider"
+import LargeButtonTab from "../large_button_tab"
+import { FeatureSelect } from "../../structure/feature_select"
+import { FeatureTabsMotionDiv } from "./motion_div"
+import { LayoutGroup } from "framer-motion"
 
 type FeatureTabsProps = {
   feature: string
@@ -29,20 +30,6 @@ export const FeatureTabs = ({
   onTabClick,
   onTabClickLeverage,
 }: FeatureTabsProps) => {
-  const MotionDiv = () => {
-    return (
-      <motion.div
-        layoutId="activeSubNavigationTab"
-        className="absolute inset-0 rounded-[10px] bg-white"
-        transition={{
-          type: "spring",
-          stiffness: 350,
-          damping: 30,
-        }}
-      />
-    )
-  }
-
   return (
     <>
       <div className="hidden w-full flex-col items-center justify-between gap-1 md:flex">
@@ -53,7 +40,7 @@ export const FeatureTabs = ({
 
         <Divider className="h-0.5 w-full bg-white/10" />
 
-        <>
+        <LayoutGroup id="feature-tabs">
           {activeTab === "Borrow" ? (
             <div className="flex w-full items-center justify-between gap-2 rounded-[10px] bg-white bg-opacity-[3%] text-xs">
               <div
@@ -63,7 +50,7 @@ export const FeatureTabs = ({
                   feature === "deposit-borrow" && isDepositAndBorrow ? "text-black" : "text-white"
                 )}
               >
-                {feature === "deposit-borrow" && isDepositAndBorrow && <MotionDiv />}
+                {feature === "deposit-borrow" && isDepositAndBorrow && <FeatureTabsMotionDiv />}
                 <span className="relative z-20">Deposit & Borrow</span>
               </div>
 
@@ -75,7 +62,7 @@ export const FeatureTabs = ({
                   canLeverage ? "cursor-pointer" : "cursor-not-allowed"
                 )}
               >
-                {feature === "leverage" && <MotionDiv />}
+                {feature === "leverage" && <FeatureTabsMotionDiv />}
                 <span className="relative z-20">Leverage</span>
               </div>
 
@@ -86,7 +73,7 @@ export const FeatureTabs = ({
                   feature === "deposit" && !isDepositAndBorrow ? "text-black" : "text-white"
                 )}
               >
-                {feature === "deposit" && !isDepositAndBorrow && <MotionDiv />}
+                {feature === "deposit" && !isDepositAndBorrow && <FeatureTabsMotionDiv />}
                 <span className="relative z-20">Deposit</span>
               </div>
 
@@ -97,7 +84,7 @@ export const FeatureTabs = ({
                   feature === "borrow" ? "text-black" : "text-white"
                 )}
               >
-                {feature === "borrow" && <MotionDiv />}
+                {feature === "borrow" && <FeatureTabsMotionDiv />}
                 <span className="relative z-20">Borrow</span>
               </div>
             </div>
@@ -110,7 +97,7 @@ export const FeatureTabs = ({
                   feature === "repay" && isRepayAndWithdraw ? "text-black" : "text-white"
                 )}
               >
-                {feature === "repay" && isRepayAndWithdraw && <MotionDiv />}
+                {feature === "repay" && isRepayAndWithdraw && <FeatureTabsMotionDiv />}
                 <span className="relative z-20">Repay & Withdraw</span>
               </div>
 
@@ -121,7 +108,7 @@ export const FeatureTabs = ({
                   feature === "liquidate" ? "text-black" : "text-white"
                 )}
               >
-                {feature === "liquidate" && <MotionDiv />}
+                {feature === "liquidate" && <FeatureTabsMotionDiv />}
                 <span className="relative z-20">Liquidate</span>
               </div>
 
@@ -132,7 +119,7 @@ export const FeatureTabs = ({
                   feature === "repay" && !isRepayAndWithdraw ? "text-black" : "text-white"
                 )}
               >
-                {feature === "repay" && !isRepayAndWithdraw && <MotionDiv />}
+                {feature === "repay" && !isRepayAndWithdraw && <FeatureTabsMotionDiv />}
                 <span className="relative z-20">Repay</span>
               </div>
 
@@ -143,12 +130,12 @@ export const FeatureTabs = ({
                   feature === "withdraw" ? "text-black" : "text-white"
                 )}
               >
-                {feature === "withdraw" && <MotionDiv />}
+                {feature === "withdraw" && <FeatureTabsMotionDiv />}
                 <span className="relative z-20">Withdraw</span>
               </div>
             </div>
           )}
-        </>
+        </LayoutGroup>
       </div>
 
       <div className="flex w-full flex-col items-center justify-between gap-1 md:hidden">

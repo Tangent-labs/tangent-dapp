@@ -1,29 +1,22 @@
 "use client"
 
-import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { ExistingAsset } from "@/types"
-import { ZapToken } from "../../tg_usd_type"
-import { Address, zeroAddress } from "viem"
 import { Switch } from "@/components/ui/switch"
-import { formatAddress } from "@/lib/other_formatter"
-import { formatBigInt } from "@/lib/number_formatter"
-import { useUSGContext } from "../../tg_usd_context"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
-import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
-import { useUSGLeverageContext } from "./usg_record_leverage_context"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
+import { useUSGLeverageContext } from "./usg_record_leverage_context"
 import FormButtons from "@/components/design_system/form/form_actions"
+import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
+import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
@@ -47,7 +40,6 @@ export default function USGLeverageContent() {
     depositAsset,
     depositWeiValue,
     formState,
-    tokens,
     isZapLoading,
     leverageExceedsMaxLtv,
     isDepositLoading,
@@ -66,100 +58,12 @@ export default function USGLeverageContent() {
     isZapping,
   } = useUSGLeverageContext()
 
-  const { balances } = useUSGContext()
-
   const { connect } = useWalletConnexionContext()
 
-  const { collateralInfo, marketData, balanceAllowanceData, marketInfo, pricedCollateralInfo, USGInfo, maxBorrowCapReached, displayAPRVariation } =
-    useUSGRecordContext()
+  const { collateralInfo, marketData, balanceAllowanceData, pricedCollateralInfo, USGInfo, maxBorrowCapReached, displayAPRVariation } = useUSGRecordContext()
 
-  const AssetSelect = () => {
-    if (!!marketData) {
-      const tokenOptions = tokens.map((el: ZapToken) => ({
-        ...el,
-        value: el.name as string,
-        address: el.address as Address,
-        balance: balances ? balances[el.address] : BigInt(0),
-      }))
-
-      const sortedAssets = [
-        {
-          ...collateralInfo,
-          value: collateralInfo.name as string,
-          address: collateralInfo.address as Address,
-          balance: balances ? balances[marketInfo?.collatAddress] : BigInt(0),
-        },
-        ...[
-          {
-            symbol: "ETH",
-            name: "Ethereum",
-            value: "ETH",
-            decimals: 18,
-            address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address,
-            logo: "ETH" as ExistingAsset,
-            displayDecimals: 5,
-            balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
-          },
-          ...tokenOptions,
-        ].sort((a, b) => Number(b.balance) - Number(a.balance)),
-      ]
-
-      if (marketData?.constants?.receipt !== zeroAddress) {
-        const gaugeSymbol = `Gauge ${collateralInfo?.symbol}`
-
-        sortedAssets.unshift({
-          decimals: 18,
-          displayDecimals: 5,
-          logo: collateralInfo?.logo as ExistingAsset,
-          symbol: gaugeSymbol,
-          name: gaugeSymbol,
-          address: marketData?.constants?.receipt as Address,
-          value: gaugeSymbol,
-          balance: balances?.[marketData?.constants?.receipt] ?? BigInt(0),
-        })
-      }
-
-      return (
-        <AssetSelectionDialog
-          className="w-full min-w-24"
-          template={AssetSelectTemplate}
-          value={depositAsset || collateralInfo.name}
-          options={sortedAssets}
-          onChange={(v: string) => setDepositAsset(v)}
-        />
-      )
-    }
-  }
-
-  const AssetSelectTemplate = (option: {
-    logoURI?: string
-    logo?: ExistingAsset
-    value: string
-    name?: string
-    symbol: string
-    balance?: bigint
-    decimals?: number
-    address?: Address
-  }) => {
-    return (
-      <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
-        <div className="flex w-full items-center gap-2">
-          <>
-            {option.symbol === "ETH" ? (
-              <TokenImage token={option.logo} size={32} />
-            ) : (
-              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} /> : <TokenImage token={option.logo} size={32} />}</>
-            )}
-          </>
-
-          <div className="flex flex-col items-start justify-start">
-            <span className="text-sm font-semibold">{option.symbol}</span>
-            <span className="text-xs text-subtitle">{formatAddress(option?.address, 4)}</span>
-          </div>
-        </div>
-        <span className="ml-auto text-xs text-subtitle">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
-      </div>
-    )
+  const CustomAssetSelect = () => {
+    return <AssetSelector collateralInfo={collateralInfo} depositAsset={depositAsset || collateralInfo.name} setDepositAsset={setDepositAsset} />
   }
 
   return (
@@ -215,7 +119,7 @@ export default function USGLeverageContent() {
           <DepositInput
             displaySliderInput={true}
             depositAmount={depositWeiValue}
-            depositSelect={<AssetSelect />}
+            depositSelect={<CustomAssetSelect />}
             isLoading={isZapLoading}
             depositAsset={depositAssetInfo}
             balance={!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance}
@@ -336,13 +240,9 @@ export default function USGLeverageContent() {
 
       <MarketTransactionError display={!!depositWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />
 
-      <>
-        {leverageExceedsMaxLtv && (
-          <div className="flex w-full items-center justify-center text-xs text-red-500">
-            Price impact too high. Reduce your leverage or add more collateral.
-          </div>
-        )}
-      </>
+      {leverageExceedsMaxLtv && (
+        <div className="flex w-full items-center justify-center text-xs text-red-500">Reduce your leverage or add more collateral.</div>
+      )}
 
       <MaxBorrowCapReached display={(!!zapValue || !!depositWeiValue) && maxBorrowCapReached} />
 

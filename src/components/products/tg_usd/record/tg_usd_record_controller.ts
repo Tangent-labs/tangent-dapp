@@ -15,7 +15,7 @@ import GetBalances from "@/abi/USG/GetBalances.json"
 import { CollateralInfo, ExistingAsset } from "@/types"
 import { getSwapAssetPrice } from "@/services/service_price"
 import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
-import { USGMarkets, USGOracles } from "../tg_usd_repository"
+import { USG_CONTRACT, USGMarkets, USGOracles } from "../tg_usd_repository"
 import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
 import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
 import { formatBigInt, formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
@@ -44,7 +44,11 @@ export async function doApprove(walletClient: WalletClient, contract: Address, s
 }
 
 export const getUSGMarketRecordData = async (address: Address, market: Address) => {
-  return await executeChainViewUnique<ChainViewMarketRow>(MarketDetailsUI.abi as Abi, MarketDetailsUI.bytecode as Hex, [address, market])
+  return await executeChainViewUnique<ChainViewMarketRow>(MarketDetailsUI.abi as Abi, MarketDetailsUI.bytecode as Hex, [
+    address,
+    market,
+    USG_CONTRACT.MARKET_VIEWER,
+  ])
 }
 
 export const transformMarketData = (onChainData: ChainViewMarketRow, collateralInfo: CollateralInfo): MarketDetailData => {
@@ -147,15 +151,15 @@ export function getComputedFutureLoanData(
   } as USGMarketLoanDisplayData
 }
 
-export async function loadMarketServerData(collateral: string) {
-  const marketInfo = USGMarkets.find((market) => market.marketName === collateral)
+export async function loadMarketServerData(collateral: Address) {
+  const marketInfo = USGMarkets.find((market) => market.marketAddress === collateral)
   const collateralInfo = {
-    address: USGMarkets.find((market) => market.marketName === collateral)?.collatAddress as Address,
+    address: USGMarkets.find((market) => market.marketAddress === collateral)?.collatAddress as Address,
     decimals: 18,
     displayDecimals: 2,
-    symbol: collateral,
-    name: collateral,
-    logo: collateral as ExistingAsset,
+    symbol: marketInfo?.marketName as string,
+    name: marketInfo?.marketName as string,
+    logo: marketInfo?.marketName as ExistingAsset,
     price: 0,
   }
 

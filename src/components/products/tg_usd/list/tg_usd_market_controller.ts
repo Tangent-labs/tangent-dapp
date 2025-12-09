@@ -4,7 +4,7 @@ import { executeChainViewUnique } from "@/services/service_rpc"
 import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
 import { USG_CONTRACT, USGMarkets, tgUsdPegKeepers } from "../tg_usd_repository"
 import { formatBigInt, formatDollar, formatPercent } from "@/lib/number_formatter"
-import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, TgUsdGlobalData } from "../tg_usd_type"
+import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, USGGlobalData } from "../tg_usd_type"
 
 export const getUSGMarketsData = async (address: string) => {
   const markets = USGMarkets.map((market) => market.marketAddress)
@@ -16,6 +16,7 @@ export const getUSGMarketsData = async (address: string) => {
     USG_CONTRACT.SUSG,
     markets,
     tgUsdPegKeepers,
+    USG_CONTRACT.MARKET_VIEWER,
   ])
 }
 
@@ -27,7 +28,7 @@ export const transformMarketData = (data: ChainViewMarketList) => {
   })
 }
 
-export function transformGlobalData(data?: ChainViewMarketList): TgUsdGlobalData {
+export function transformGlobalData(data?: ChainViewMarketList): USGGlobalData {
   if (!data)
     return {
       USGPrice: "-",

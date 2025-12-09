@@ -1,33 +1,30 @@
 "use client"
 
 import Image from "next/image"
-import { formatUnits } from "viem"
 import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGContext } from "../../tg_usd_context"
+import { formatAddress } from "@/lib/other_formatter"
 import { USG_CONTRACT } from "../../tg_usd_repository"
 import { IconThunder, IconCircleHelp } from "@/components/icons"
+import { Address, formatUnits, zeroAddress } from "viem"
 import { useUSGRepayContext } from "./usg_record_repay_context"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import FormButtons from "@/components/design_system/form/form_actions"
+import InputSelect from "@/components/design_system/inputs/input_select"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { RepayInput } from "@/components/design_system/inputs/repay_input"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
-import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
+import { USGStaticAssetSelector } from "@/components/design_system/structure/usg_static_selector"
 
 export default function USGRepayContent() {
-  const { tokens, balances } = useUSGContext()
-
-  const { USGInfo, pricedCollateralInfo, collateralInfo, marketInfo, isRepayAndWithdraw } = useUSGRecordContext()
-
-  const { connect } = useWalletConnexionContext()
-
   const {
     actionRepay,
     setPercentage,
@@ -53,7 +50,15 @@ export default function USGRepayContent() {
     usgRepayedValue,
     isDebtBelowThreshold,
     repayAssetInfo,
+    withdrawSelectedAsset,
+    setWithdrawSelectedAsset,
   } = useUSGRepayContext()
+
+  const { tokens, balances } = useUSGContext()
+
+  const { connect } = useWalletConnexionContext()
+
+  const { USGInfo, pricedCollateralInfo, marketData, collateralInfo, isRepayAndWithdraw, depositAssetOptions } = useUSGRecordContext()
 
   const AssetSelectTemplate = (option: {
     logoURI?: string
@@ -63,19 +68,23 @@ export default function USGRepayContent() {
     symbol: string
     balance?: bigint
     decimals?: number
+    address?: Address
   }) => {
     return (
       <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
         <div className="flex w-full items-center gap-2">
           <>
             {option.symbol === "ETH" ? (
-              <TokenImage token={option.logo} size={20} />
+              <TokenImage token={option.logo} size={32} />
             ) : (
-              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={20} />}</>
+              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} /> : <TokenImage token={option.logo} size={32} />}</>
             )}
           </>
 
-          <span className="text-sm font-semibold">{option.symbol}</span>
+          <div className="flex flex-col items-start justify-start">
+            <span className="text-sm font-semibold">{option.symbol}</span>
+            <span className="text-xs text-subtitle">{formatAddress(option?.address, 4)}</span>
+          </div>
         </div>
         <span className="ml-auto text-xs text-subtitle">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
       </div>
@@ -83,61 +92,77 @@ export default function USGRepayContent() {
   }
 
   const AssetSelect = () => {
-    const tokenOptions = tokens.map((el: ZapToken) => ({
-      ...el,
-      value: el.name as string,
-      balance: balances ? balances[el.address] : BigInt(0),
-    }))
+    if (!!marketData) {
+      const tokenOptions = tokens.map((el: ZapToken) => ({
+        ...el,
+        value: el.name as string,
+        address: el.address as Address,
+        balance: balances ? balances[el.address] : BigInt(0),
+      }))
 
-    const sortedAssets = [
-      {
-        address: USG_CONTRACT.USG,
-        decimals: 18,
-        displayDecimals: 2,
-        logo: "USG" as ExistingAsset,
-        name: "USG",
-        price: 1,
-        symbol: "USG",
-        value: "USG",
-        balance: balances ? balances[marketInfo?.collatAddress] : BigInt(0),
-      },
-      ...[
+      const sortedAssets = [
         {
-          symbol: "ETH",
-          name: "Ethereum",
-          value: "ETH",
+          address: USG_CONTRACT.USG,
           decimals: 18,
-          address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-          logo: "ETH" as ExistingAsset,
-          displayDecimals: 5,
-          balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
+          displayDecimals: 2,
+          logo: "USG" as ExistingAsset,
+          name: "USG",
+          price: 1,
+          symbol: "USG",
+          value: "USG",
+          balance: balances ? balances[USG_CONTRACT.USG] : BigInt(0),
         },
-        ...tokenOptions,
-      ].sort((a, b) => Number(b.balance) - Number(a.balance)),
-    ]
+        ...[
+          {
+            symbol: "ETH",
+            name: "Ethereum",
+            value: "ETH",
+            decimals: 18,
+            address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address,
+            logo: "ETH" as ExistingAsset,
+            displayDecimals: 5,
+            balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
+          },
+          ...tokenOptions,
+        ].sort((a, b) => Number(b.balance) - Number(a.balance)),
+      ]
 
+      return (
+        <AssetSelectionDialog
+          className="w-full min-w-24"
+          template={AssetSelectTemplate}
+          value={repayAsset || "USG"}
+          options={sortedAssets}
+          onChange={(v: string) => setRepayAsset(v)}
+        />
+      )
+    }
+  }
+
+  const WithdrawAssetSelectTemplate = (option: { logo?: ExistingAsset; label: string }) => {
     return (
-      <PopoverCombobox
-        className="w-full"
-        template={AssetSelectTemplate}
-        value={repayAsset || "USG"}
-        options={sortedAssets}
-        onChange={(v: string) => setRepayAsset(v)}
-      />
+      <div className="flex w-full cursor-pointer items-center gap-2 rounded-[10px] py-1 hover:bg-white/10">
+        <TokenImage token={option?.logo} size={24} />
+        <span className="text-sm font-semibold">{option.label}</span>
+      </div>
     )
   }
 
-  const WithdrawAssetDisplay = () => {
-    return (
+  const assetSelectElement =
+    marketData?.constants?.receipt !== zeroAddress ? (
+      <InputSelect
+        className="w-full"
+        template={WithdrawAssetSelectTemplate}
+        value={withdrawSelectedAsset || collateralInfo?.symbol}
+        options={depositAssetOptions}
+        onChange={(v) => setWithdrawSelectedAsset(v)}
+      />
+    ) : (
       <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
         <TokenImage token={collateralInfo?.logo} size={32} />
-
-        <span className="flex flex-col text-sm font-semibold">
-          <span>{collateralInfo.symbol}</span>
-        </span>
+        <span className="flex flex-col text-sm font-semibold">{collateralInfo?.symbol}</span>
       </BorderPanel>
     )
-  }
 
   return (
     <div className="flex flex-col gap-2">
@@ -188,10 +213,7 @@ export default function USGRepayContent() {
                   <div>{usgRepayedValue && USGInfo?.price !== 0 ? tgUsdDollarRepayedValue : ""}</div>
                 </div>
               </div>
-              <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
-                <TokenImage token="USG" size={20} />
-                <span className="flex flex-col text-[15px] font-semibold">USG</span>
-              </BorderPanel>
+              <USGStaticAssetSelector />
             </div>
           </PanelRaw>
         )}
@@ -201,14 +223,14 @@ export default function USGRepayContent() {
             <div className="flex items-end justify-between">
               <span className="text-sm font-semibold md:text-xl">Withdraw collateral</span>
               <span className="text-xs text-subtitle">
-                Max: {formatBigInt(maxWithdrawable, 18, 2)} {collateralInfo?.symbol}
+                Max: {formatBigInt(maxWithdrawable, 18, 2)} {withdrawSelectedAsset}
               </span>
             </div>
 
             <DepositInput
               depositAmount={withdrawWeiValue}
               labelDeposit="You withdraw"
-              depositSelect={<WithdrawAssetDisplay />}
+              depositSelect={assetSelectElement}
               depositAsset={pricedCollateralInfo}
               balance={maxWithdrawable}
               displaySliderInput={true}
@@ -263,7 +285,7 @@ export default function USGRepayContent() {
           handleProcess: repayAsset && repayAsset !== "USG" ? actionZapRepay : actionRepay,
         }}
         formState={formState}
-        labelProcess={isRepayAndWithdraw ? "Repay and withdraw" : "Repay"}
+        labelProcess={isRepayAndWithdraw ? "Repay & withdraw" : "Repay"}
       />
     </div>
   )

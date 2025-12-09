@@ -37,9 +37,10 @@ export function getLiquidateFormState(
 
 export async function doMarketLiquidate(
   collatAmountToLiquidate: bigint,
-  USGToRepay: bigint,
-  minUSGOut: bigint,
-  maxUSGToBurn: bigint,
+  usgToRepay: bigint,
+  maxUsgToBurn: bigint,
+  minUsgOut: bigint,
+  isReceiptOut: boolean,
   liquidationData: { routerAddress: string; data: string },
   walletClient: WalletClient,
   market: Address
@@ -48,7 +49,10 @@ export async function doMarketLiquidate(
     abi: MarketExternalActions.abi as Abi,
     functionName: "selfLiquidate",
     address: market,
-    args: [collatAmountToLiquidate, USGToRepay, maxUSGToBurn, minUSGOut, { router: liquidationData?.routerAddress, routerCall: liquidationData?.data }],
+    args: [
+      { collatAmountToLiquidate, usgToRepay, maxUsgToBurn, minUsgOut, isReceiptOut },
+      { router: liquidationData?.routerAddress, routerCall: liquidationData?.data },
+    ],
     gas: undefined as undefined | bigint,
   }
 

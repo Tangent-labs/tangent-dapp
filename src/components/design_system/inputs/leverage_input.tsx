@@ -1,12 +1,12 @@
 "use client"
 
-import { AssetDataPriced, CollateralInfo } from "@/types"
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
-import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
-import TokenImage from "../structure/token_image"
-import { formatDollar, toBigInt } from "@/lib/number_formatter"
+import { formatUnits } from "viem"
 import BorderPanel from "../structure/border_panel"
+import { AssetDataPriced, CollateralInfo } from "@/types"
+import { formatDollar, toBigInt } from "@/lib/number_formatter"
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
+import { USGStaticAssetSelector } from "../structure/usg_static_selector"
 
 type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced | CollateralInfo
@@ -122,10 +122,7 @@ export function LeverageInput({
           <div className="text-xs text-subtitle">{dollarDepositDisplay}</div>
         </div>
 
-        <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
-          <TokenImage token="USG" size={20} />
-          <span className="flex flex-col text-[15px] font-semibold">USG</span>
-        </BorderPanel>
+        <USGStaticAssetSelector></USGStaticAssetSelector>
       </div>
 
       <div className="flex w-full items-center justify-between gap-2">

@@ -56,13 +56,13 @@ type USGLiquidateContextValues = {
 export const USGLiquidateContext = createContext<USGLiquidateContextValues | undefined>(undefined)
 
 export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => {
-  const { curveRoutes, handleQuote } = useRootContext()
-
   const { loadUSGsUSGMetrics } = useUSGContext()
 
-  const { marketData, marketInfo, loadOnChainData, marketDisplayData, setCurrentAmounts } = useUSGRecordContext()
+  const { curveRoutes, handleQuote } = useRootContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+
+  const { marketData, marketInfo, loadOnChainData, marketDisplayData, setCurrentAmounts } = useUSGRecordContext()
 
   const [liquidablePercentage, setLiquidablePercentage] = useState<number>(0)
 
@@ -127,6 +127,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         repayValue,
         computedMinAmountOut(tgUSDReceivedValue, slippage),
         maxUSGToBurn,
+        false,
         liquidationData!,
         walletClient,
         marketInfo?.marketAddress

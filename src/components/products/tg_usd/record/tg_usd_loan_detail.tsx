@@ -17,7 +17,24 @@ export default function USGLoanDetail() {
         {!!liquidationPrice && <div className="font-gilroy text-tonic"> Liquidation Price : ${formatBigInt(liquidationPrice, 18, 3)} </div>}
       </div>
       <Divider />
-      <div className="flex w-full flex-col gap-2 lg:flex-row">
+
+      <div className="hidden w-full flex-col gap-2 lg:flex lg:flex-row">
+        <div className="flex w-full gap-2">
+          <EvolutionBox
+            originalValue={marketDisplayData.collateralValue}
+            label={"Collateral value"}
+            newValue={futureMarketDisplayData.collateralValue}
+            className="flex-1"
+          />
+          <EvolutionBox originalValue={marketDisplayData.debt} label={"Debt"} newValue={futureMarketDisplayData.debt} className="flex-1" logo="USG" />
+        </div>
+        <div className="flex w-full flex-col gap-2 lg:flex-row">
+          <EvolutionBox originalValue={marketDisplayData.health} label={"Health"} newValue={futureMarketDisplayData.health} className="flex-1" />
+          <EvolutionBox originalValue={marketDisplayData.ltv} label={"LTV"} newValue={futureMarketDisplayData.ltv} className="flex-1" />
+        </div>
+      </div>
+
+      <div className="flex w-full flex-col gap-2 lg:hidden">
         <div className="flex w-full gap-2">
           <EvolutionBox
             originalValue={marketDisplayData.collateralValue}

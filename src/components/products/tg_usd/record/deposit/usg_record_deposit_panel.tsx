@@ -1,26 +1,24 @@
 "use client"
 
-import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { ExistingAsset } from "@/types"
-import { ZapToken } from "../../tg_usd_type"
-import { formatBigInt } from "@/lib/number_formatter"
-import { useUSGContext } from "../../tg_usd_context"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { useUSGDepositContext } from "./usg_record_deposit_context"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
-import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
-import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { IconThunder, IconCircleHelp, IconSingleArrow } from "@/components/icons"
+import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
+import { USGStaticAssetSelector } from "@/components/design_system/structure/usg_static_selector"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
-import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
+import { formatBigInt } from "@/lib/number_formatter"
+import FormButtons from "@/components/design_system/form/form_actions"
 
 export default function USGDepositContent() {
   const {
@@ -41,7 +39,6 @@ export default function USGDepositContent() {
     formState,
     estimatedZapDollarValue,
     borrowWeiValue,
-    tokens,
     isZapLoading,
     isDepositLoading,
     zapValue,
@@ -54,88 +51,15 @@ export default function USGDepositContent() {
     maxDepositString,
     aprVariation,
     expectedCollateral,
+    isZapping,
   } = useUSGDepositContext()
-
-  const { balances } = useUSGContext()
 
   const { connect } = useWalletConnexionContext()
 
-  const { collateralInfo, marketData, USGInfo, balanceAllowanceData, marketInfo, maxBorrowCapReached, displayAPRVariation, isDepositAndBorrow } =
-    useUSGRecordContext()
+  const { collateralInfo, isDepositAndBorrow, marketData, USGInfo, balanceAllowanceData, maxBorrowCapReached, displayAPRVariation } = useUSGRecordContext()
 
-  const AssetSelect = () => {
-    const tokenOptions = tokens.map((el: ZapToken) => ({
-      ...el,
-      value: el.name as string,
-      balance: balances ? balances[el.address] : BigInt(0),
-    }))
-
-    const sortedAssets = [
-      {
-        ...collateralInfo,
-        value: collateralInfo.name as string,
-        balance: balances ? balances[marketInfo?.collatAddress] : BigInt(0),
-      },
-      ...[
-        {
-          symbol: "ETH",
-          name: "Ethereum",
-          value: "ETH",
-          decimals: 18,
-          address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-          logo: "ETH" as ExistingAsset,
-          displayDecimals: 5,
-          balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
-        },
-        ...tokenOptions,
-      ].sort((a, b) => Number(b.balance) - Number(a.balance)),
-    ]
-
-    return (
-      <PopoverCombobox
-        className="w-full min-w-24"
-        template={AssetSelectTemplate}
-        value={depositAsset || collateralInfo.name}
-        options={sortedAssets}
-        onChange={(v: string) => setDepositAsset(v)}
-      />
-    )
-  }
-
-  const AssetSelectTemplate = (option: {
-    logoURI?: string
-    logo?: ExistingAsset
-    value: string
-    name?: string
-    symbol: string
-    balance?: bigint
-    decimals?: number
-  }) => {
-    return (
-      <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
-        <div className="flex w-full items-center gap-2">
-          <>
-            {option.symbol === "ETH" ? (
-              <TokenImage token={option.logo} size={20} />
-            ) : (
-              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={32} />}</>
-            )}
-          </>
-
-          <span className="text-sm font-semibold">{option.symbol}</span>
-        </div>
-        <span className="ml-auto text-xs text-subtitle">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
-      </div>
-    )
-  }
-
-  const BorrowAssetDisplay = () => {
-    return (
-      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
-        <TokenImage token="USG" size={20} />
-        <span className="flex flex-col text-[15px] font-semibold">USG</span>
-      </BorderPanel>
-    )
+  const CustomAssetSelect = () => {
+    return <AssetSelector collateralInfo={collateralInfo} depositAsset={depositAsset || collateralInfo.name} setDepositAsset={setDepositAsset} />
   }
 
   return (
@@ -148,11 +72,11 @@ export default function USGDepositContent() {
       <DepositInput
         displaySliderInput={true}
         depositAmount={depositWeiValue}
-        depositSelect={<AssetSelect />}
+        depositSelect={<CustomAssetSelect />}
         isLoading={isDepositLoading}
         depositAsset={depositAssetInfo}
         balance={balanceAllowanceData?.balance || marketData?.collateralBalance}
-        isZapping={!!depositAsset && depositAsset !== collateralInfo?.name}
+        isZapping={isZapping}
         onValueChange={handleDepositChange}
         percentage={depositSliderPercent}
         setPercentage={setDepositSliderPercent}
@@ -161,7 +85,7 @@ export default function USGDepositContent() {
         }}
       />
 
-      {depositAsset && depositAsset !== collateralInfo?.symbol && (
+      {depositAsset && isZapping && (
         <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-start justify-start">
@@ -203,7 +127,7 @@ export default function USGDepositContent() {
             borrowAmount={borrowWeiValue}
             disabled={maxBorrowCapReached}
             labelDeposit="You borrow"
-            depositSelect={<BorrowAssetDisplay />}
+            depositSelect={<USGStaticAssetSelector />}
             borrowAsset={USGInfo}
             setMaxBalance={maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue)}
             balance={maxBorrowableValue}
@@ -272,8 +196,8 @@ export default function USGDepositContent() {
 
       <FormButtons
         actions={{
-          handleApprove: depositAsset === "ETH" ? undefined : depositAsset && depositAsset !== collateralInfo?.symbol ? actionApproveZap : actionApprove,
-          handleProcess: depositAsset && depositAsset !== collateralInfo?.symbol ? getRouteAndDeposit : actionDeposit,
+          handleApprove: depositAsset === "ETH" ? undefined : !!depositAsset && isZapping ? actionApproveZap : actionApprove,
+          handleProcess: !!depositAsset && isZapping ? getRouteAndDeposit : actionDeposit,
         }}
         formState={formState}
         labelProcess={isDepositAndBorrow ? "Deposit & Borrow" : "Deposit"}

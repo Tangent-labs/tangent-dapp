@@ -11,25 +11,13 @@ type FeatureTabsProps = {
   feature: string
   activeTab: string
   canLeverage: boolean
-  isRepayAndWithdraw: boolean
-  isDepositAndBorrow: boolean
   onClickBorrow: () => void
   onClickRepay: () => void
   onTabClick: (v: string) => void
   onTabClickLeverage: () => void
 }
 
-export const FeatureTabs = ({
-  feature,
-  activeTab,
-  canLeverage,
-  isRepayAndWithdraw,
-  isDepositAndBorrow,
-  onClickBorrow,
-  onClickRepay,
-  onTabClick,
-  onTabClickLeverage,
-}: FeatureTabsProps) => {
+export const FeatureTabs = ({ feature, activeTab, canLeverage, onClickBorrow, onClickRepay, onTabClick, onTabClickLeverage }: FeatureTabsProps) => {
   return (
     <>
       <div className="hidden w-full flex-col items-center justify-between gap-1 md:flex">
@@ -47,10 +35,10 @@ export const FeatureTabs = ({
                 onClick={() => onTabClick("deposit&borrow")}
                 className={cn(
                   "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold transition-colors hover:bg-white/10",
-                  feature === "deposit-borrow" && isDepositAndBorrow ? "text-black" : "text-white"
+                  feature === "deposit-borrow" ? "text-black" : "text-white"
                 )}
               >
-                {feature === "deposit-borrow" && isDepositAndBorrow && <FeatureTabsMotionDiv />}
+                {feature === "deposit-borrow" && <FeatureTabsMotionDiv />}
                 <span className="relative z-20">Deposit & Borrow</span>
               </div>
 
@@ -70,10 +58,10 @@ export const FeatureTabs = ({
                 onClick={() => onTabClick("deposit")}
                 className={cn(
                   "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold text-white transition-colors hover:bg-white/10",
-                  feature === "deposit" && !isDepositAndBorrow ? "text-black" : "text-white"
+                  feature === "deposit" ? "text-black" : "text-white"
                 )}
               >
-                {feature === "deposit" && !isDepositAndBorrow && <FeatureTabsMotionDiv />}
+                {feature === "deposit" && <FeatureTabsMotionDiv />}
                 <span className="relative z-20">Deposit</span>
               </div>
 
@@ -94,10 +82,10 @@ export const FeatureTabs = ({
                 onClick={() => onTabClick("repay&withdraw")}
                 className={cn(
                   "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold text-white transition-colors hover:bg-white/10",
-                  feature === "repay" && isRepayAndWithdraw ? "text-black" : "text-white"
+                  feature === "repay-withdraw" ? "text-black" : "text-white"
                 )}
               >
-                {feature === "repay" && isRepayAndWithdraw && <FeatureTabsMotionDiv />}
+                {feature === "repay-withdraw" && <FeatureTabsMotionDiv />}
                 <span className="relative z-20">Repay & Withdraw</span>
               </div>
 
@@ -116,10 +104,10 @@ export const FeatureTabs = ({
                 onClick={() => onTabClick("repay")}
                 className={cn(
                   "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold text-white transition-colors hover:bg-white/10",
-                  feature === "repay" && !isRepayAndWithdraw ? "text-black" : "text-white"
+                  feature === "repay" ? "text-black" : "text-white"
                 )}
               >
-                {feature === "repay" && !isRepayAndWithdraw && <FeatureTabsMotionDiv />}
+                {feature === "repay" && <FeatureTabsMotionDiv />}
                 <span className="relative z-20">Repay</span>
               </div>
 

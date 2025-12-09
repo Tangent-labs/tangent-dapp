@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import TokenImage from "./token_image"
-import { IconSingleArrow } from "@/components/icons"
+import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
 import { ExistingAsset } from "@/types"
 
 type EvolutionBoxProps = {
@@ -27,7 +27,7 @@ export default function EvolutionBox({ label, originalValue, newValue, logo, cla
       const timer = setTimeout(() => setFlash(false), 400)
       return () => clearTimeout(timer)
     }
-  }, [hasChanged])
+  }, [newValue, hasChanged])
 
   return (
     <div className={className}>
@@ -38,7 +38,6 @@ export default function EvolutionBox({ label, originalValue, newValue, logo, cla
       >
         {flash && (
           <motion.div
-            layoutId="flashing-value-layout-id"
             className="pointer-events-none absolute inset-0 bg-white/20"
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, 1, 0] }}
@@ -58,19 +57,14 @@ export default function EvolutionBox({ label, originalValue, newValue, logo, cla
         <AnimatePresence mode="wait">
           {hasChanged && (
             <motion.div
-              layoutId="changing-value-layout-id"
+              layout
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.7 }}
               transition={{ duration: 0.35, type: "spring", stiffness: 500, damping: 30 }}
               className="flex items-center gap-3"
             >
-              <motion.div
-                layoutId="arrow-updating-behaviour-layout-id"
-                initial={{ rotate: 0 }}
-                animate={{ rotate: 360 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-              >
+              <motion.div initial={{ rotate: 0 }} animate={{ rotate: 360 }} transition={{ duration: 0.5, ease: "easeOut" }}>
                 <IconSingleArrow className="h-3 w-3" />
               </motion.div>
 

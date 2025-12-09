@@ -28,20 +28,18 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     feature,
     debtVAPR,
     chartData,
-    collateral,
     debtFarming,
     isLeveraged,
     canLeverage,
     onChainData,
     initialCollatAmount,
     currentTotalMarketApr,
+    marketInfo,
     setDebtVAPR,
     setDebtFarming,
     setIsLeveraged,
     setInitialCollatAmount,
     setIsRepayAndWithdraw,
-    isDepositAndBorrow,
-    isRepayAndWithdraw,
     setActiveTab,
     activeTab,
   } = useUSGRecordContext()
@@ -52,29 +50,26 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
 
   const onTabClick = (feat: string) => {
     if (feat.toLowerCase() === "deposit") {
-      router.push(`/${collateral}/deposit`)
+      router.push(`/${marketInfo?.marketAddress}/deposit`)
     } else if (feat.toLowerCase() === "deposit&borrow") {
-      router.push(`/${collateral}/deposit-borrow`)
+      router.push(`/${marketInfo?.marketAddress}/deposit-borrow`)
     } else if (feat.toLowerCase() === "repay") {
-      router.push(`/${collateral}/${feat.toLowerCase()}`)
-      setIsRepayAndWithdraw(false)
+      router.push(`/${marketInfo?.marketAddress}/repay`)
     } else if (feat.toLowerCase() === "repay&withdraw") {
-      router.push(`/${collateral}/repay`)
-      setIsRepayAndWithdraw(true)
+      router.push(`/${marketInfo?.marketAddress}/repay-withdraw`)
     } else {
-      router.push(`/${collateral}/${feat.toLowerCase()}`)
+      router.push(`/${marketInfo?.marketAddress}/${feat.toLowerCase()}`)
     }
   }
 
   const onClickBorrow = () => {
     setActiveTab("Borrow")
-    router.push(`/${collateral}/deposit-borrow`)
+    router.push(`/${marketInfo?.marketAddress}/deposit-borrow`)
   }
 
   const onClickRepay = () => {
     setActiveTab("Repay")
-    router.push(`/${collateral}/repay`)
-    setIsRepayAndWithdraw(true)
+    router.push(`/${marketInfo?.marketAddress}/repay-withdraw`)
   }
 
   const onTabClickLeverage = () => {
@@ -88,6 +83,11 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     const feat = path.substring(lastIndexOfSlash, path.length)
 
     if (feat === "repay" || feat === "withdraw" || feat === "liquidate") {
+      setIsRepayAndWithdraw(false)
+      setActiveTab("Repay")
+    }
+
+    if (feat === "repay-withdraw") {
       setIsRepayAndWithdraw(true)
       setActiveTab("Repay")
     }
@@ -109,8 +109,6 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
             <FeatureTabs
               feature={feature}
               activeTab={activeTab}
-              isRepayAndWithdraw={isRepayAndWithdraw}
-              isDepositAndBorrow={isDepositAndBorrow}
               canLeverage={canLeverage}
               onTabClick={onTabClick}
               onTabClickLeverage={onTabClickLeverage}

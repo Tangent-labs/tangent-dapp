@@ -127,7 +127,7 @@ export default function MenuBarFeature() {
                   <NavigationMenuDropdown>
                     <NavigationMenuTrigger>DAO</NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-[#070707] p-2">
+                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-dark p-2">
                         <NavigationMenuLink className="flex items-center justify-start gap-2" onClick={() => router.push("/harvest")}>
                           <IconHarvest className="w-2"></IconHarvest>
                           Harvest
@@ -151,7 +151,7 @@ export default function MenuBarFeature() {
                   <NavigationMenuDropdown>
                     <NavigationMenuTrigger>Airdrop</NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-[#070707] p-2">
+                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-dark p-2">
                         <NavigationMenuLink className="flex items-center justify-start gap-2" onClick={() => router.push("/tasks")}>
                           <IconTask className="w-3"></IconTask>
                           Task

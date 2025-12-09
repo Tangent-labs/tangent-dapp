@@ -64,7 +64,7 @@ export const WalletConnexionContent = () => {
 
         <PopoverContent align="end">
           {isConnected && currentAddress && (
-            <div data-combobox className="flex w-full min-w-80 flex-col overflow-hidden bg-[#070707] p-2 font-gilroy">
+            <div data-combobox className="flex w-full min-w-80 flex-col overflow-hidden bg-dark p-2 font-gilroy">
               <div className="flex flex-col border-b border-white/10 py-2">
                 <span onClick={() => copy(currentAddress)} className="cursor-pointer font-semibold text-white/80 hover:text-white">
                   {copied ? "Copied" : buttonLabel}

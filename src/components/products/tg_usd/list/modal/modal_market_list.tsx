@@ -90,18 +90,18 @@ export function USGModalMarketListInner() {
 
   return (
     <>
-      <div className="mt-3 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="mt-3 rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <ListHeader rowDisposition={ModalMarketListRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 
-      <div className="mt-2 max-h-[476px] overflow-y-auto">
+      <div className="max-h-[476px] overflow-y-auto">
         {displayRows?.map((item, index) => (
           <ListRow
             rowDisposition={ModalMarketListRowDisposition}
             className={cn("my-1", !!marketData.length && !!displayRows ? "" : "shimmer")}
             key={index}
             // Hack for Pendle markets
-            navigate={() => router.push("/" + item.token.trim().replaceAll("/", "~").replaceAll(" ", "_"))}
+            navigate={() => router.push("/" + item.token.trim().replaceAll("/", "~").replaceAll(" ", "_") + "/deposit-borrow")}
           >
             <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
             <MarketListAPR currentAPRDetails={item.currentAPRDetails} apr={item.apr.current} projectedApr={item.apr.projected} />

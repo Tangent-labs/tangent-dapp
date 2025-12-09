@@ -38,6 +38,7 @@ const config: Config = {
         danger: "var(--tgt-danger)",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        dark: "var(--tgt-dark)",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={gilroy.variable} suppressHydrationWarning>
-      <body className="dark relative bg-[#070707] font-gilroy antialiased" id="body" suppressHydrationWarning>
+      <body className="dark relative bg-dark font-gilroy antialiased" id="body" suppressHydrationWarning>
         <main className="mx-auto min-h-[80vh] w-full">{children}</main>
       </body>
     </html>

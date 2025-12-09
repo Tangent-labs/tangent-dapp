@@ -10,7 +10,6 @@ export default async function Layout({ params, children }: { params: { id: strin
 
   const marketCollat = collateral?.id
 
-  // Hack for Pendle markets
   const toMarketSlug = marketCollat.replaceAll("~", "/").replaceAll("_", " ")
   const { marketInfo, collateralInfo } = await loadMarketServerData(toMarketSlug)
 

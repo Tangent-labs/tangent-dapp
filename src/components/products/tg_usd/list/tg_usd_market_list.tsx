@@ -211,7 +211,7 @@ export function USGMarketListInner() {
 
   return (
     <>
-      <div className="my-2 w-full rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="mt-2 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
       {displayRows?.map((item, index) => (
@@ -219,7 +219,7 @@ export function USGMarketListInner() {
           className={cn("my-1", !!marketData.length && !!displayRows ? "" : "shimmer")}
           key={index}
           // Hack for Pendle markets
-          navigate={() => router.push(item.token.trim().replaceAll("/", "~").replaceAll(" ", "_"))}
+          navigate={() => router.push(item.token.trim().replaceAll("/", "~").replaceAll(" ", "_") + "/deposit-borrow")}
         >
           <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
           <MarketListAPR currentAPRDetails={item.currentAPRDetails} apr={item.apr.current} projectedApr={item.apr.projected} />

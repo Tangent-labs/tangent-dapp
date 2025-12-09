@@ -29,7 +29,7 @@ export default function DropdownMenu({ children, label, pathname }: DropdownMenu
           <IconChevron className="w-2" />
         </button>
       </HoverCardTrigger>
-      <HoverCardContent side="top" className="z-100 !m-0 w-fit !border-none bg-[#070707] !p-0">
+      <HoverCardContent side="top" className="z-100 !m-0 w-fit !border-none bg-dark !p-0">
         <div className="rounded-[10px] p-2">{children}</div>
       </HoverCardContent>
     </HoverCard>

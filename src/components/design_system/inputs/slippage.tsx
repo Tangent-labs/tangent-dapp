@@ -27,7 +27,7 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
             <div className="flex w-full items-center justify-start">Slippage</div>
             <input
               onChange={(e) => setSlippage(Number(e?.target?.value))}
-              value={slippage || 0}
+              value={slippage}
               placeholder="0.5"
               type="number"
               min={0.1}

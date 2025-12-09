@@ -77,7 +77,7 @@ const CustomTooltip = (props: {
   const total = props.payload.find((p) => p.dataKey === "amountWithLiquidity")
 
   return (
-    <div className="pointer-events-none rounded-xl bg-[#070707] px-3 py-2 shadow-xl ring-1 ring-white/20 backdrop-blur">
+    <div className="pointer-events-none rounded-xl bg-dark px-3 py-2 shadow-xl ring-1 ring-white/20 backdrop-blur">
       <div className="mb-1 text-[10px] uppercase tracking-wide text-white/60">{props.fmtLabel(Number(props.label))}</div>
       <div className="flex flex-col gap-1.5">
         {total && base && props.newLiquidity > 0 && Number(total?.value) > Number(base?.value) && (

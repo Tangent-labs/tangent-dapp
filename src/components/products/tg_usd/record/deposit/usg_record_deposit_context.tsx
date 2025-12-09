@@ -17,6 +17,7 @@ import { computeAprVariation, computedMinAmountOut, computeMaxBorrowable, comput
 
 type USGDepositContextProps = {
   children: ReactNode
+  isDepositAndBorrowInput: boolean
 }
 
 type USGDepositContextValues = {
@@ -75,7 +76,7 @@ type USGDepositContextValues = {
 
 export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
 
-export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
+export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDepositContextProps) => {
   const { curveRoutes, handleQuote } = useRootContext()
 
   const { tokens, loadUSGsUSGMetrics, marketAprs } = useUSGContext()
@@ -92,6 +93,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     collateralInfo,
     marketInfo,
     currentConvexTVL,
+    setIsDepositAndBorrow,
   } = useUSGRecordContext()
 
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
@@ -117,6 +119,10 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   const [isZapUserInput, setIsZapUserInput] = useState<boolean>(false)
 
   const [slippage, setSlippage] = useState<number>(0.2)
+
+  useEffect(() => {
+    setIsDepositAndBorrow(isDepositAndBorrowInput)
+  }, [])
 
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
     if (depositAsset === "ETH") {

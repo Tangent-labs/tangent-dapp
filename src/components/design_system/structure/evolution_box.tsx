@@ -27,7 +27,7 @@ export default function EvolutionBox({ label, originalValue, newValue, logo, cla
       const timer = setTimeout(() => setFlash(false), 400)
       return () => clearTimeout(timer)
     }
-  }, [newValue, hasChanged])
+  }, [hasChanged])
 
   return (
     <div className={className}>
@@ -64,7 +64,7 @@ export default function EvolutionBox({ label, originalValue, newValue, logo, cla
               transition={{ duration: 0.35, type: "spring", stiffness: 500, damping: 30 }}
               className="flex items-center gap-3"
             >
-              <motion.div initial={{ rotate: 0 }} animate={{ rotate: 720 }} transition={{ duration: 0.8, ease: "easeOut" }}>
+              <motion.div initial={{ rotate: 0 }} animate={{ rotate: 360 }} transition={{ duration: 0.5, ease: "easeOut" }}>
                 <IconSingleArrow className="h-3 w-3" />
               </motion.div>
 

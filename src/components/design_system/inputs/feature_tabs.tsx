@@ -9,7 +9,6 @@ import { FeatureSelect } from "../structure/feature_select"
 type FeatureTabsProps = {
   feature: string
   activeTab: string
-  collateral: string
   canLeverage: boolean
   isRepayAndWithdraw: boolean
   isDepositAndBorrow: boolean
@@ -22,7 +21,6 @@ type FeatureTabsProps = {
 export const FeatureTabs = ({
   feature,
   activeTab,
-  collateral,
   canLeverage,
   isRepayAndWithdraw,
   isDepositAndBorrow,
@@ -62,10 +60,10 @@ export const FeatureTabs = ({
                 onClick={() => onTabClick("deposit&borrow")}
                 className={cn(
                   "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold transition-colors hover:bg-white/10",
-                  feature === collateral && isDepositAndBorrow ? "text-black" : "text-white"
+                  feature === "deposit-borrow" && isDepositAndBorrow ? "text-black" : "text-white"
                 )}
               >
-                {feature === collateral && isDepositAndBorrow && <MotionDiv />}
+                {feature === "deposit-borrow" && isDepositAndBorrow && <MotionDiv />}
                 <span className="relative z-20">Deposit & Borrow</span>
               </div>
 
@@ -85,10 +83,10 @@ export const FeatureTabs = ({
                 onClick={() => onTabClick("deposit")}
                 className={cn(
                   "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold text-white transition-colors hover:bg-white/10",
-                  feature === collateral && !isDepositAndBorrow ? "text-black" : "text-white"
+                  feature === "deposit" && !isDepositAndBorrow ? "text-black" : "text-white"
                 )}
               >
-                {feature === collateral && !isDepositAndBorrow && <MotionDiv />}
+                {feature === "deposit" && !isDepositAndBorrow && <MotionDiv />}
                 <span className="relative z-20">Deposit</span>
               </div>
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { Address } from "viem"
-import { IconCopyPaste } from "@/components/icons/icon_copy_paste"
+import { IconCopyPaste } from "@/components/icons"
 import { formatAddress } from "@/lib/other_formatter"
 import { useClipboard } from "@/hooks/useClipboard"
 import { ToastComponent } from "@/components/design_system/toast"

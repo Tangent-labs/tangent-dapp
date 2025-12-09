@@ -1,7 +1,7 @@
-import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import BorderPanel from "../structure/border_panel"
 import ButtonTab from "./button_tab"
+import BorderPanel from "../structure/border_panel"
+import { IconGearWheel } from "@/components/icons"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 type SlippageInputProps = {
   slippage: number

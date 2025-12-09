@@ -6,7 +6,7 @@ import { AssetDataPriced } from "@/types"
 import { SliderInput } from "./slider_input"
 import BorderPanel from "../structure/border_panel"
 import DisplayReceivePanel from "./display_recieve_panel"
-import { IconChevron } from "@/components/icons/icon_chevron"
+import { IconChevron } from "@/components/icons"
 import { formatDollar, toBigInt } from "@/lib/number_formatter"
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
 

@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils"
 import React, { ReactNode } from "react"
-import { IconChevron } from "@/components/icons/icon_chevron"
+import { IconChevron } from "@/components/icons"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 type DropdownMenuProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {

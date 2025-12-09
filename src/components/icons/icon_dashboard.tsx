@@ -3,7 +3,7 @@ interface IconProps {
   active?: boolean
 }
 
-export default function IconDashboard({ className, active }: IconProps) {
+export function IconDashboard({ className, active }: IconProps) {
   return (
     <svg className={className || ""} width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
       {active && (

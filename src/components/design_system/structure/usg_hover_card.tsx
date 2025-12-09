@@ -1,6 +1,6 @@
 "use client"
 
-import { IconCircleHelp } from "@/components/icons/icon_circle_help"
+import { IconCircleHelp } from "@/components/icons"
 import React, { ReactNode } from "react"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 

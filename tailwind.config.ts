@@ -8,6 +8,9 @@ const config: Config = {
       fontFamily: {
         gilroy: ["var(--font-gilroy)", "sans-serif"],
       },
+      borderWidth: {
+        tangent: "1.5px",
+      },
       backgroundImage: {
         header: "var(--tgt-bg-header)",
         progress: "var(--tgt-bg-progress)",

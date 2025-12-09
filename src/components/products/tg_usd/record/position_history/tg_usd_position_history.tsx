@@ -3,7 +3,7 @@
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import Divider from "@/components/design_system/structure/divider"
 import Title from "@/components/design_system/structure/title"
-import { IconSortHeader } from "@/components/icons/icon_sort_header"
+import { IconSortHeader } from "@/components/icons"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { formatActionLabel, userPositionListHeaders } from "./tg_usd_position_history_controller"
 import { ListState } from "@/types"

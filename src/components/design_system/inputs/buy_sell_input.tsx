@@ -5,9 +5,9 @@ import { formatUnits } from "viem"
 import { AssetDataPriced } from "@/types"
 import { SliderInput } from "./slider_input"
 import BorderPanel from "../structure/border_panel"
-import { IconChevron } from "@/components/icons/icon_chevron"
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
 import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
+import { IconChevron } from "@/components/icons"
 
 type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced

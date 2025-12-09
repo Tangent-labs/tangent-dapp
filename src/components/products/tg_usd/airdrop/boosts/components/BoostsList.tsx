@@ -3,7 +3,7 @@
 import { ListState } from "@/types"
 import { Boost } from "../../../tg_usd_type"
 import { TaskStatus } from "../../components/TaskStatus"
-import { IconSortHeader } from "@/components/icons/icon_sort_header"
+import { IconSortHeader } from "@/components/icons"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { useListContext } from "@/components/design_system/list/list_context"
 

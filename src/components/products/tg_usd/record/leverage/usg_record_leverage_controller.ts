@@ -93,8 +93,9 @@ export const doMarketLeverage = async (
   marketAddress: Address,
   walletClient: WalletClient,
   collatToDeposit: bigint,
-  tgUSDToFlashMint: bigint,
+  usgToFlashMint: bigint,
   minCollatAmountOut: bigint,
+  isReceiptIn: boolean,
   leverageData: { routerAddress: string; data: string }
 ) => {
   const [account] = await walletClient.requestAddresses()
@@ -104,7 +105,10 @@ export const doMarketLeverage = async (
   const estimateGasData = {
     abi: MarketExternalActions.abi,
     functionName: "leverage",
-    args: [collatToDeposit, tgUSDToFlashMint, minCollatAmountOut, { router: leverageData?.routerAddress, routerCall: leverageData?.data }] as unknown[],
+    args: [
+      { collatToDeposit, usgToFlashMint, minCollatAmountOut, isReceiptIn },
+      { router: leverageData?.routerAddress, routerCall: leverageData?.data },
+    ] as unknown[],
     address: marketAddress,
     account,
   } as EstimateContractGasParameters

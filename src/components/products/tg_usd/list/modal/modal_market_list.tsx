@@ -100,8 +100,7 @@ export function USGModalMarketListInner() {
             rowDisposition={ModalMarketListRowDisposition}
             className={cn("my-1", !!marketData.length && !!displayRows ? "" : "shimmer")}
             key={index}
-            // Hack for Pendle markets
-            navigate={() => router.push(item.token.trim().replaceAll("/", "~").replaceAll(" ", "_"))}
+            navigate={() => router.push(item.address)}
           >
             <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
             <MarketListAPR currentAPRDetails={item.currentAPRDetails} apr={item.apr.current} projectedApr={item.apr.projected} />

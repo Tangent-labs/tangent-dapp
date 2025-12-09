@@ -16,7 +16,7 @@ const PopoverContent = React.forwardRef<React.ElementRef<typeof PopoverPrimitive
         align={align}
         sideOffset={sideOffset}
         className={cn(
-          "relative z-[1000] max-h-96 min-w-[8rem]",
+          "relative z-[1000] max-h-96 min-w-[240px]",
           "overflow-hidden rounded-md border border-white border-opacity-20 bg-popover text-popover-foreground backdrop-blur-xl",
           "data-[state=open]:animate-in data-[state=closed]:animate-out",
           "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",

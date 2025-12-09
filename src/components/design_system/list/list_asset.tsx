@@ -1,6 +1,7 @@
 "use client"
 
 import { Address } from "viem"
+import { Protocol } from "./protocol"
 import { ExistingAsset } from "@/types"
 import BorderPanel from "../structure/border_panel"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -24,25 +25,13 @@ const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: Li
 
         {marketData && (
           <div className="hidden items-center justify-between gap-2 md:flex">
-            {marketData?.marketType?.includes("CRV") && (
-              <BorderPanel className="flex items-center justify-center gap-1 !rounded-full bg-overlay-panel px-3 py-0.5 text-xs">
-                <TokenImage token={"CRV"} size={12} />
-                <span>Curve</span>
-              </BorderPanel>
-            )}
-            {marketData?.marketType?.startsWith("Convex_") && (
-              <BorderPanel className="flex items-center justify-center gap-1 !rounded-full bg-overlay-panel px-3 py-0.5 text-xs">
-                <TokenImage token={"CVX"} size={12} />
-                <span>Convex</span>
-              </BorderPanel>
-            )}
+            {marketData?.marketType?.includes("CRV") && <Protocol token="CRV" label="Curve" />}
 
-            {marketData?.marketType?.startsWith("Pendle") && (
-              <BorderPanel className="flex items-center justify-center gap-1 !rounded-full bg-overlay-panel px-3 py-0.5 text-xs">
-                <TokenImage token={"PENDLE"} size={12} />
-                <span>Pendle</span>
-              </BorderPanel>
-            )}
+            {marketData?.marketType?.startsWith("Convex_") && <Protocol token="CVX" label="Convex" />}
+
+            {marketData?.marketType?.startsWith("STAKEDAO") && <Protocol token="SDT" label="StakeDAO" />}
+
+            {marketData?.marketType?.startsWith("Pendle") && <Protocol token="PENDLE" label="Pendle" />}
 
             <BorderPanel
               className={`flex items-center justify-center !rounded-full px-3 py-0.5 text-xs ${marketData?.constants?.irParams.isHEC ? "bg-button-linear" : "bg-lec"}`}

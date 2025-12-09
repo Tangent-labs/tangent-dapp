@@ -43,6 +43,7 @@ export const USG_CONTRACT = {
   USG: envAddresses.tokens.USG as Address,
   SUSG: envAddresses.tokens.sUSG as Address,
   USG_ORACLE: envAddresses.oracles.USG as Address,
+  MARKET_VIEWER: envAddresses.utilities.marketViewer as Address,
   ENSO_ROUTER: "0xF75584eF6673aD213a685a1B58Cc0330B8eA22Cf",
   CURVE_ROUTER: "0x45312ea0eff7e09c83cbe249fa1d7598c4c8cd4e",
   PENDLE_ROUTER: "0x6d041EF9096F7013d27fF7a41c17971201499879",

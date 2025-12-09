@@ -141,7 +141,7 @@ export const LPTasksList = () => {
         </div>
       </div>
 
-      <div className="scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent max-h-[500px] overflow-y-auto">
+      <div className="scrollbar-thin max-h-[500px] overflow-y-auto">
         {displayRows &&
           (displayRows as UserTask[])?.map((task: UserTask) => (
             <BorderPanel

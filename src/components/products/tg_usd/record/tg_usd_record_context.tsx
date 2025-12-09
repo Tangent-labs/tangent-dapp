@@ -32,7 +32,7 @@ import { USG_CONTRACT } from "../tg_usd_repository"
 import { useRootContext } from "../../root/root_context"
 import { Address, formatUnits, zeroAddress } from "viem"
 import { ToastComponent } from "@/components/design_system/toast"
-import { AssetDataPriced, CollateralInfo, ListState } from "@/types"
+import { AssetDataPriced, CollateralInfo, ExistingAsset, ListState } from "@/types"
 import { getHistoricalMarketData, getUserPositions } from "../client_api"
 import { useUSGMaketListContext } from "../list/tg_usd_market_list_context"
 import { sortUserData } from "./position_history/tg_usd_position_history_controller"
@@ -112,6 +112,17 @@ type USGRecordContextValues = {
   computedBorrowRate: { current: string; next: string }
 
   liquidationPrice: bigint
+
+  depositAssetOptions: Array<{
+    label: string
+    value: string
+    address: Address
+    balance: bigint
+    symbol: string
+    logoURI?: string
+    logo?: ExistingAsset
+    name?: string
+  }>
 }
 
 const LEVERAGE_TRESHOLD = 0.989
@@ -121,7 +132,7 @@ export const USGRecordContext = createContext<USGRecordContextValues | undefined
 export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, children }: USGRecordContextProps) => {
   const path = usePathname()
 
-  const { marketAprs } = useUSGContext()
+  const { marketAprs, balances } = useUSGContext()
 
   const { getCachedCurrentBlock } = useRootContext()
 
@@ -417,6 +428,30 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     return 0n
   }, [marketData, currentAmounts])
 
+  const depositAssetOptions = useMemo(() => {
+    if (!!marketData && !!balances) {
+      const gaugeSymbol = `Gauge ${collateralInfo?.symbol}`
+
+      return [
+        {
+          label: collateralInfo?.symbol,
+          value: collateralInfo?.symbol,
+          address: collateralInfo?.address,
+          balance: balances?.[collateralInfo?.address] ?? BigInt(0),
+          symbol: collateralInfo?.symbol,
+        },
+        {
+          label: gaugeSymbol,
+          value: gaugeSymbol,
+          address: marketData?.constants?.receipt,
+          balance: balances?.[marketData?.constants?.receipt] ?? BigInt(0),
+          symbol: gaugeSymbol,
+        },
+      ]
+    }
+    return []
+  }, [collateralInfo, marketData, balances])
+
   const contextValue: USGRecordContextValues = {
     isLoading,
     collateral,
@@ -471,6 +506,8 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     computedBorrowRate,
 
     liquidationPrice,
+
+    depositAssetOptions,
   }
 
   return <USGRecordContext.Provider value={contextValue}>{children}</USGRecordContext.Provider>

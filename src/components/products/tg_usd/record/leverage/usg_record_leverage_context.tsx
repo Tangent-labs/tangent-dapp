@@ -84,6 +84,8 @@ type USGLeverageContextValues = {
   computedMaxLeverage: string
 
   aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
+
+  isZapping: boolean
 }
 
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
@@ -135,7 +137,22 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const [slippage, setSlippage] = useState<number>(1)
 
+  const isZapping = useMemo(() => {
+    return !!depositAsset && depositAsset !== collateralInfo?.symbol && depositAsset !== `Gauge ${collateralInfo?.symbol}`
+  }, [depositAsset, collateralInfo])
+
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
+    if (!!marketData && depositAsset === `Gauge ${collateralInfo?.symbol}`) {
+      return {
+        address: marketData?.constants?.receipt,
+        decimals: 18,
+        displayDecimals: 5,
+        symbol: `Gauge ${collateralInfo?.symbol}`,
+        name: `Gauge ${collateralInfo?.symbol}`,
+        price: Number(formatUnits(marketData?.collateralInfos.collateralUSDPrice, 18)),
+      }
+    }
+
     if (depositAsset === "ETH") {
       return {
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
@@ -244,13 +261,13 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }, [depositAsset])
 
   useEffect(() => {
-    if (zapValue && depositWeiValue && borrowWeiValue && leveragedCollateralQuote && !isDepositLoading) {
+    if (zapValue && !isDepositLoading) {
       setCurrentAmounts({
         depositWeiValue: (depositWeiValue || 0n) + (leveragedCollateralQuote || 0n),
         borrowWeiValue: borrowWeiValue || 0n,
         zapValue: (BigInt(zapValue) || 0n) + (leveragedCollateralQuote || 0n),
       })
-    } else if (depositWeiValue && borrowWeiValue && leveragedCollateralQuote && !isDepositLoading) {
+    } else {
       setCurrentAmounts({
         depositWeiValue: (depositWeiValue || 0n) + (leveragedCollateralQuote || 0n),
         borrowWeiValue: borrowWeiValue || 0n,
@@ -364,7 +381,9 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       curveRoutes
     )
 
-    doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, leverageData!)
+    const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
+
+    doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, isReceiptIn, leverageData!)
       .then(() => {
         resetAfterLeverageSuccess()
         toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
@@ -512,14 +531,18 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }, [zapInnerValue, isZapUserInput])
 
   const maxDepositString = useMemo(() => {
-    if (!!balanceAllowanceData && currentAddress && depositAsset !== collateralInfo?.name) {
-      return `Max ${formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)}  ${depositAssetInfo?.symbol}`
+    const asset = depositAssetInfo?.symbol
+
+    let amountDisplayed = "0"
+
+    if (!!balanceAllowanceData && currentAddress && (isZapping || depositAssetInfo?.address == marketData?.constants?.receipt)) {
+      amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
     }
-    if (currentAddress && depositAsset === collateralInfo?.name) {
-      return `Max ${formatBigInt(marketData?.collateralBalance, depositAssetInfo?.decimals, 2)} ${depositAssetInfo?.symbol}`
+    if (currentAddress && !isZapping) {
+      amountDisplayed = formatBigInt(marketData?.collateralBalance, depositAssetInfo?.decimals, 2)
     }
-    return `Max 0 ${depositAssetInfo?.symbol}`
-  }, [depositAsset, collateralInfo, currentAddress, depositAssetInfo, balanceAllowanceData])
+    return `Max ${amountDisplayed} ${asset}`
+  }, [currentAddress, depositAssetInfo, balanceAllowanceData, isZapping])
 
   const computedMaxLeverage = useMemo(() => {
     return marketData ? `Max leverage: x${Number((1 / (1 - Number(marketData?.constants.maxLTV) / 100000)).toFixed(0))}` : ""
@@ -590,6 +613,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     computedMaxLeverage,
 
     aprVariation,
+
+    isZapping,
   }
 
   return <USGLeverageContext.Provider value={contextValue}>{children}</USGLeverageContext.Provider>

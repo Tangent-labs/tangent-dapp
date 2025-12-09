@@ -1,16 +1,14 @@
 "use client"
 
-import { AssetDataPriced } from "@/types"
-import { ReactNode, useEffect, useMemo, useState } from "react"
-import { formatDollar, toBigInt } from "@/lib/number_formatter"
-import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
-import DisplayReceivePanel from "./display_recieve_panel"
-import { IconCircleHelp } from "@/components/icons/icon_circle_help"
-import { IconThunder } from "@/components/icons/icon_thunder"
-import BorderPanel from "../structure/border_panel"
-import { IconChevron } from "@/components/icons/icon_chevron"
+import { formatUnits } from "viem"
+import { AssetDataPriced } from "@/types"
 import { SliderInput } from "./slider_input"
+import BorderPanel from "../structure/border_panel"
+import DisplayReceivePanel from "./display_recieve_panel"
+import { IconChevron } from "@/components/icons/icon_chevron"
+import { formatDollar, toBigInt } from "@/lib/number_formatter"
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
 
 type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
@@ -27,11 +25,9 @@ type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   receiveAssetDisplay?: ReactNode
   onValueChange: (value: bigint | undefined) => void
   setMaxBalance: () => void
-  isZapping?: boolean
   isLoading?: boolean
   percentage?: number
   setPercentage?: (value: number) => void
-  displaySliderInput?: boolean
 }
 
 export function DepositReceiveInput({
@@ -47,13 +43,13 @@ export function DepositReceiveInput({
   onValueChange,
   depositSelect = <></>,
   receiveAssetDisplay = <></>,
-  isZapping = false,
   isLoading = false,
   percentage = 0,
-  displaySliderInput = false,
   setPercentage,
   ...props
 }: DepositReceiveInputProps) {
+  const inputRef = useRef<HTMLInputElement>(null)
+
   const balanceNumber = useMemo(() => {
     if (balance) {
       return Number(formatUnits(balance, 18))
@@ -62,6 +58,7 @@ export function DepositReceiveInput({
   }, [balance])
 
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
+
   const [isUserInput, setIsUserInput] = useState(false)
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,39 +105,39 @@ export function DepositReceiveInput({
     return `(${formatDollar(val)})` || ""
   }, [depositAmount, depositAsset])
 
+  const onClickFocus = () => {
+    inputRef.current?.focus()
+  }
+
   return (
-    <div className={cn("flex flex-col gap-2", className)} {...props}>
+    <div className={cn("flex flex-col", className)} {...props}>
       <BorderPanel
-        className={`${isLoading ? "shimmer" : ""} flex flex-col bg-white bg-opacity-[3%] p-2 transition-colors duration-200 ease-in-out hover:bg-white/10`}
+        onClick={onClickFocus}
+        className={`${isLoading ? "shimmer" : ""} flex cursor-pointer flex-col bg-white bg-opacity-[3%] p-2 transition-colors duration-200 ease-in-out hover:bg-white/10`}
       >
-        <div className="flex w-full justify-between">
-          <div className="text-sm text-subtitle">{labelDeposit}</div>
-          {isZapping && (
-            <div className="flex items-center justify-center gap-1">
-              <div className="text-sm text-subtitle">Zap</div>
-              <IconThunder className="h-auto w-[8px] text-row-tonic" />
-              <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
-            </div>
-          )}
-        </div>
-        <div className="mb-2 flex justify-between">
-          <div className="text-xl">
+        <div className="text-sm text-subtitle">{labelDeposit}</div>
+
+        <div className="mb-2 flex items-center justify-between">
+          <div className="flex items-center justify-center">
             <input
               {...props}
               disabled={isLoading}
               type="number"
+              ref={inputRef}
               value={innerValue}
               placeholder="Amount"
               onInput={handleInputChange}
-              className={cn(
-                "min-h-10 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30"
-              )}
+              className="auto-grow bg-transparent text-[24px] font-semibold focus:outline-none"
             />
+            <div className="text-xs text-subtitle">{dollarDepositDisplay}</div>
           </div>
+
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
-        <div className="flex justify-between text-xs text-subtitle">
-          <div>{dollarDepositDisplay}</div>
+        <div className="flex w-full items-center justify-between gap-2">
+          <div className="flex w-full flex-col">
+            <SliderInput percentage={percentage} handleSliderChange={handleSliderChange}></SliderInput>
+          </div>
 
           <BorderPanel
             className="w-10 min-w-10 cursor-pointer bg-button-active px-1 text-center text-xs text-white hover:font-semibold"
@@ -151,12 +148,6 @@ export function DepositReceiveInput({
             Max.
           </BorderPanel>
         </div>
-
-        {displaySliderInput && (
-          <>
-            <SliderInput percentage={percentage} handleSliderChange={handleSliderChange}></SliderInput>
-          </>
-        )}
       </BorderPanel>
 
       <div className="my-2 flex w-full cursor-pointer items-center justify-center border-none">

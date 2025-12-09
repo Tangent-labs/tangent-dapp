@@ -3,11 +3,11 @@
 import { toast } from "react-toastify"
 import { useUSGContext } from "../../tg_usd_context"
 import { USGMarket, ZapToken } from "../../tg_usd_type"
+import { formatUnits, parseEther, zeroAddress } from "viem"
 import { useUSGRecordContext } from "../tg_usd_record_context"
 import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
-import { formatUnits, parseEther, zeroAddress } from "viem"
 import { useRootContext } from "@/components/products/root/root_context"
 import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
@@ -87,11 +87,11 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     loadOnChainData,
     setCurrentAmounts,
     balanceAllowanceData,
+    isDepositAndBorrow,
     fetchBalanceAllowanceData,
     collateralInfo,
     marketInfo,
     currentConvexTVL,
-    isDepositAndBorrow,
   } = useUSGRecordContext()
 
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()

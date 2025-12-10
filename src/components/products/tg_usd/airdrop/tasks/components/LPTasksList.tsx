@@ -2,11 +2,10 @@
 
 import { UserTask } from "../../../tg_usd_type"
 import { ExistingAsset, ListState } from "@/types"
+import { IconSortHeader } from "@/components/icons"
 import { TaskStatus } from "../../components/TaskStatus"
 import { formatNumber, formatDollar } from "@/lib/number_formatter"
-import { IconSortHeader } from "@/components/icons"
 import TokenImage from "@/components/design_system/structure/token_image"
-import BorderPanel from "@/components/design_system/structure/border_panel"
 import { useListContext } from "@/components/design_system/list/list_context"
 
 export const lpListState: ListState = {

@@ -21,7 +21,7 @@ export const FeatureTabs = ({ feature, activeTab, canLeverage, onClickBorrow, on
   return (
     <>
       <div className="hidden w-full flex-col items-center justify-between gap-1 md:flex">
-        <div className="mt-2 flex w-full justify-between gap-2">
+        <div className="flex w-full justify-between gap-2">
           <LargeButtonTab className="w-full !px-2" active={activeTab === "Borrow"} label={"Borrow"} onClick={onClickBorrow} />
           <LargeButtonTab className="w-full !px-2" active={activeTab === "Repay"} label={"Repay"} onClick={onClickRepay} />
         </div>

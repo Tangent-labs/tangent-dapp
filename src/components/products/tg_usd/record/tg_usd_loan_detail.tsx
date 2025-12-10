@@ -14,7 +14,9 @@ export default function USGLoanDetail() {
       <div className="flex w-full items-center justify-between">
         <Title label={"Loan details"} size={"normal"} />
 
-        {!!liquidationPrice && <div className="font-gilroy text-tonic"> Liquidation Price : ${formatBigInt(liquidationPrice, 18, 3)} </div>}
+        {!!liquidationPrice && (
+          <div className="flex justify-end self-end text-sm font-semibold text-tonic"> Liquidation price : ${formatBigInt(liquidationPrice, 18, 3)} </div>
+        )}
       </div>
       <Divider />
 

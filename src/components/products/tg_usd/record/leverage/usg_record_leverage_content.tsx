@@ -166,15 +166,15 @@ export default function USGLeverageContent() {
           />
         </div>
 
-        <div className="flex items-center justify-start gap-2">
-          <Accordion className="w-full" type="single" collapsible>
+        <div className="flex items-start justify-start gap-2">
+          <Accordion className={cn("w-full", isDepositLoading ? "shimmer rounded-[10px]" : "")} type="single" collapsible>
             <AccordionItem value="item-1">
               <BorderPanel className="flex w-full cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
                 <AccordionTrigger>
                   <span className="py-1.5">Recap</span>
                 </AccordionTrigger>
                 <AccordionContent className="w-full">
-                  <div className={cn("flex flex-col gap-1 rounded-[10px] text-xs", isDepositLoading ? "shimmer" : "")}>
+                  <div className="flex flex-col gap-1 rounded-[10px] text-xs">
                     <div className="flex w-full items-center justify-between">
                       <span className="text-subtitle">Leverage : </span>
                       <span className="text-white">~{leveragePercentage.toFixed(2)}x</span>
@@ -242,7 +242,7 @@ export default function USGLeverageContent() {
         }}
         connect={connect}
         formState={formState}
-        labelProcess={depositAsset && isZapping ? "Zap and leverage" : "Leverage"}
+        labelProcess={depositAsset && isZapping ? "Zap & leverage" : "Leverage"}
       />
     </div>
   )

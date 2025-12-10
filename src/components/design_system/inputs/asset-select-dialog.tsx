@@ -99,9 +99,9 @@ export default function AssetSelectionDialog<T extends OptionT>({
         </button>
       </DialogTrigger>
 
-      <DialogContent className="h-[400px] max-w-[400px] rounded-[10px] bg-overlay-panel p-4 text-white">
+      <DialogContent className="h-[500px] w-full max-w-[500px] rounded-[10px] bg-overlay-panel p-4 text-white">
         <div data-combobox className="flex min-h-56 w-full min-w-32 flex-col">
-          <div className="flex w-full items-center justify-start font-semibold text-white">Select a token</div>
+          <div className="flex w-full items-center justify-start text-lg font-semibold text-white">Select a token</div>
           <div className="w-full py-2">
             <Input ref={inputRef} placeholder="Search a token name..." value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>

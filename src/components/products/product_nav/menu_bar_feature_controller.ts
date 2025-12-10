@@ -18,3 +18,15 @@ const ROUTE_TO_FEATURE: Record<string, string> = {
 export const mapRouteToFeature = (route: string): string => {
   return ROUTE_TO_FEATURE[route] ?? "Markets"
 }
+
+export const isOnMarket = (path: string) => {
+  return (
+    path === "/" ||
+    path.includes("deposit") ||
+    path.includes("withdraw") ||
+    path.includes("leverage") ||
+    path.includes("liquidate") ||
+    path.includes("repay") ||
+    path.includes("borrow")
+  )
+}

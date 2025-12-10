@@ -110,6 +110,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
               feature={feature}
               activeTab={activeTab}
               canLeverage={canLeverage}
+              marketAddress={marketInfo?.marketAddress}
               onTabClick={onTabClick}
               onTabClickLeverage={onTabClickLeverage}
               onClickBorrow={onClickBorrow}

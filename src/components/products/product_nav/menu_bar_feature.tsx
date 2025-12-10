@@ -12,13 +12,13 @@ import {
 
 import { cn } from "@/lib/utils"
 import { useCallback } from "react"
-import { motion } from "framer-motion"
 import { useRootContext } from "../root/root_context"
 import { formatCompact } from "@/lib/number_formatter"
 import { usePathname, useRouter } from "next/navigation"
-import { mapRouteToFeature } from "./menu_bar_feature_controller"
+import { MenuBarFeatureMotionDiv } from "./menu_bar_feature_motion_div"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
+import { isOnMarket, mapRouteToFeature } from "./menu_bar_feature_controller"
 import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
 
 export default function MenuBarFeature() {
@@ -31,20 +31,6 @@ export default function MenuBarFeature() {
   const computedFeature = useCallback(() => {
     return mapRouteToFeature(pathname.substring(1, pathname.length))
   }, [pathname])
-
-  const MotionDiv = () => {
-    return (
-      <motion.div
-        layoutId="header-menu-motion-div"
-        className="absolute inset-0 rounded-lg bg-white/10"
-        transition={{
-          type: "spring",
-          stiffness: 350,
-          damping: 30,
-        }}
-      />
-    )
-  }
 
   return (
     <header className="sticky top-0 z-50 flex h-[80px] w-full font-gilroy backdrop-blur-[60px]">
@@ -69,7 +55,7 @@ export default function MenuBarFeature() {
                     pathname === "/dashboard" ? "" : "hover:bg-white/20"
                   )}
                 >
-                  {pathname === "/dashboard" && <MotionDiv></MotionDiv>}
+                  {pathname === "/dashboard" && <MenuBarFeatureMotionDiv />}
                   <span className="relative z-20">Dashboard</span>
                 </NavigationMenuItem>
 
@@ -80,7 +66,7 @@ export default function MenuBarFeature() {
                     pathname === "/" ? "" : "hover:bg-white/20"
                   )}
                 >
-                  {pathname === "/" && <MotionDiv></MotionDiv>}
+                  {isOnMarket(pathname) && <MenuBarFeatureMotionDiv />}
                   <span className="relative z-20">Markets</span>
                 </NavigationMenuItem>
                 <NavigationMenuItem
@@ -90,7 +76,7 @@ export default function MenuBarFeature() {
                     pathname === "/stake" ? "" : "hover:bg-white/20"
                   )}
                 >
-                  {pathname === "/stake" && <MotionDiv></MotionDiv>}
+                  {pathname === "/stake" && <MenuBarFeatureMotionDiv />}
                   <span className="relative z-20">Savings</span>
                 </NavigationMenuItem>
 
@@ -101,7 +87,7 @@ export default function MenuBarFeature() {
                     pathname === "/earn" ? "" : "hover:bg-white/20"
                   )}
                 >
-                  {pathname === "/earn" && <MotionDiv></MotionDiv>}
+                  {pathname === "/earn" && <MenuBarFeatureMotionDiv />}
                   <span className="relative z-20">Earn</span>
                 </NavigationMenuItem>
 
@@ -112,7 +98,7 @@ export default function MenuBarFeature() {
                     pathname === "/claim" ? "hover:bg-white/20" : "hover:bg-white/10"
                   )}
                 >
-                  {pathname === "/claim" && <MotionDiv></MotionDiv>}
+                  {pathname === "/claim" && <MenuBarFeatureMotionDiv />}
                   <span className="relative z-20">Claim</span>
                 </NavigationMenuItem>
 

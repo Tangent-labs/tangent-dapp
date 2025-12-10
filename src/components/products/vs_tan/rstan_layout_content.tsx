@@ -122,7 +122,17 @@ export const VsTanLayoutContent = ({
           </div>
 
           <div className="flex w-full flex-col items-center justify-between gap-1 md:hidden">
-            <FeatureSelect options={["Lock", "Unlock", "Claim", "Split", "Merge"]} value={feature} onChange={(v: string) => onTabClick(v)}></FeatureSelect>
+            <FeatureSelect
+              options={[
+                { value: "Lock", key: "Lock" },
+                { value: "Unlock", key: "Unlock" },
+                { value: "Claim", key: "Claim" },
+                { value: "Split", key: "Split" },
+                { value: "Merge", key: "Merge" },
+              ]}
+              value={feature}
+              onChange={(v: string) => onTabClick(v)}
+            ></FeatureSelect>
           </div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
@@ -194,17 +204,6 @@ function LockPositionList() {
               <div className="slide-down-fade-in flex w-full flex-wrap items-center justify-between gap-3 rounded-b-lg bg-overlay-panel p-3 md:flex-row">
                 <div className="flex items-center justify-center gap-2">
                   <div className="hidden w-full text-sm text-subtitle md:flex">Unlock date</div>
-                  {/* <EvolutionBox
-                    originalValue={formatDate(new Date(), "dd/MM/yyyy")}
-                    label=""
-                    newValue={
-                      (lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655") || extendToPermaLock ? (
-                        <InfinityIcon className="mx-8 w-5"></InfinityIcon>
-                      ) : (
-                        <> {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd/MM/yyyy")}</>
-                      )
-                    }
-                  /> */}
                 </div>
 
                 {!!lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (

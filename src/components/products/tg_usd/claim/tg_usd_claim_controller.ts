@@ -1,12 +1,12 @@
-import { executeChainViewUnique, executeContractCall } from "@/services/service_rpc"
-import { Abi, Address, formatUnits, Hex, WalletClient } from "viem"
-import { USGMarkets } from "../tg_usd_repository"
 import { ClaimerInfo } from "../tg_usd_type"
 import claimUI from "../../../../abi/USG/ClaimUI.json"
+import { getTokensPrice } from "@/services/service_price"
+import { USG_CONTRACT, USGMarkets } from "../tg_usd_repository"
+import { Abi, Address, formatUnits, Hex, WalletClient } from "viem"
 import claimContract from "../../../../abi/USG/RewardAccumulator.json"
 import { AssetDataPriced, ExistingAsset, ListHeaderData } from "@/types"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
-import { getTokensPrice } from "@/services/service_price"
+import { executeChainViewUnique, executeContractCall } from "@/services/service_rpc"
 
 export async function doClaim(contractAddress: Address, markets: Address[], rewardsLength: number | undefined, walletClient: WalletClient) {
   const txData = {
@@ -21,7 +21,7 @@ export async function doClaim(contractAddress: Address, markets: Address[], rewa
 
 export async function getTgUsdClaimOnChainData(currentAddress: string) {
   const addresses: Address[] = USGMarkets.map((m) => m.marketAddress)
-  return await executeChainViewUnique<ClaimerInfo[]>(claimUI.abi as Abi, claimUI.bytecode as Hex, [currentAddress, addresses])
+  return await executeChainViewUnique<ClaimerInfo[]>(claimUI.abi as Abi, claimUI.bytecode as Hex, [currentAddress, addresses, USG_CONTRACT.MARKET_VIEWER])
 }
 
 export const computeAndReturnPrices = async (claimInfo: ClaimerInfo[]) => {

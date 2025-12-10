@@ -37,6 +37,7 @@ export default function AssetSelectionDialog<T extends OptionT>({
   const [search, setSearch] = useState("")
 
   const inputRef = useRef<HTMLInputElement>(null)
+
   const listRef = useRef<List>(null)
 
   const selected = useMemo(() => options.find((o) => o.value === value || o.symbol === value) ?? null, [options, value])
@@ -76,7 +77,7 @@ export default function AssetSelectionDialog<T extends OptionT>({
         <button
           disabled={disabled}
           type="button"
-          className="flex min-h-10 w-full items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 py-1.5"
+          className="flex min-h-10 items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 py-1.5"
           style={{ borderWidth: 1.5 }}
         >
           <span className="flex items-center gap-2">

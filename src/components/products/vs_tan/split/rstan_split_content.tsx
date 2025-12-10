@@ -208,19 +208,7 @@ export const RsTanSplitContent = () => {
                 #{splitPositionInfo?.tokenId}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-tonic py-0.5 text-xs text-black">Updated</div>
               </div>
-              {/* <EvolutionBox
-                className="w-6/12"
-                originalValue={
-                  <div className="flex items-center justify-center gap-2 text-lg">
-                    {formatBigInt(splitPositionInfo?.amount, 18, 2)} <IconVsTan className="h-5 w-5"></IconVsTan>
-                  </div>
-                }
-                newValue={
-                  <div className="flex items-center justify-center gap-2">
-                    {formatBigInt(BigInt(splitPercentage / 10) * splitPositionInfo?.amount, 19, 2)} <IconVsTan className="h-5 w-5"></IconVsTan>
-                  </div>
-                }
-              /> */}
+
               <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px]">
                 {splitPositionInfo?.endLockTime && splitPositionInfo?.endLockTime == "281474976710655" ? (
                   <InfinityIcon className="w-5"></InfinityIcon>

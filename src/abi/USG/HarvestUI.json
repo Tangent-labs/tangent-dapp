@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "HarvestUI",
-  "sourceName": "src/chainview/tgUSD/ui/HarvestUI.cv.sol",
+  "sourceName": "src/chainview/USG/ui/HarvestUI.cv.sol",
   "abi": [
     {
       "inputs": [

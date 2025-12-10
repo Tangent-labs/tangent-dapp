@@ -12,7 +12,7 @@ type IndicatorCardProps = {
 export const IndicatorCard = ({ title, value, className = "" }: IndicatorCardProps) => {
   return (
     <div className={`flex w-full flex-col justify-center lg:items-center ${className}`}>
-      <span className="text-sm font-semibold">{title}</span>
+      <span className="flex w-full justify-center text-center text-sm font-semibold">{title}</span>
       <span className="text-xs text-subtitle">{value}</span>
     </div>
   )

@@ -251,32 +251,6 @@ export default function RsTanLockContent() {
           label="vsTan"
           newValue={computedNewLockValue}
         />
-        {/* <EvolutionBox
-          className="w-full text-xs"
-          originalValue={
-            depositPositionInfo?.endLockTime && depositPositionInfo?.endLockTime == "281474976710655" ? (
-              <InfinityIcon className="w-5"></InfinityIcon>
-            ) : (
-              <>
-                {depositPositionInfo && depositPositionInfo?.endLockTime !== ""
-                  ? formatDate(new Date(Number(depositPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")
-                  : "-"}
-              </>
-            )
-          }
-          label="Unlock date"
-          newValue={
-            <div className="flex h-6 items-center">
-              {depositPositionInfo?.endLockTime && depositPositionInfo?.endLockTime == "281474976710655" ? (
-                <InfinityIcon className="h-5 w-5"></InfinityIcon>
-              ) : (
-                <>
-                  {isPermaLock ? <InfinityIcon className="h-5 w-5"></InfinityIcon> : formatDate(new Date(Number(computedNewEndLockTime) * 1000), "dd/MM/yyyy")}
-                </>
-              )}
-            </div>
-          }
-        /> */}
       </div>
 
       <div className="mt-2 flex w-full items-center justify-center gap-4 rounded-[10px] p-3 text-sm text-subtitle backdrop-blur-[60px]">

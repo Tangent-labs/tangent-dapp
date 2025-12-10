@@ -1,16 +1,18 @@
 "use client"
 
 import Image from "next/image"
+import { Address } from "viem"
 import { ExistingAsset } from "@/types"
 import { DepositReceiveAsset } from "../tg_usd_type"
+import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGSwapContext } from "./tg_usd_swap_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { BuySellInput } from "@/components/design_system/inputs/buy_sell_input"
-import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
+import { BuySellInput } from "@/components/design_system/inputs/buy_sell_input"
+import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 type AssetSelectProps = {
   options: DepositReceiveAsset[]
@@ -50,25 +52,29 @@ export default function USGSwapContent() {
   const ReceiveAssetSelect = ({ options }: AssetSelectProps) => {
     if (!options) {
       return (
-        <PopoverCombobox className="w-full" template={AssetSelectTemplate} value={receiveAsset} options={[]} onChange={(v: string) => setReceiveAsset(v)} />
+        <AssetSelectionDialog
+          className="w-full"
+          template={AssetSelectTemplate}
+          value={receiveAsset}
+          options={[]}
+          onChange={(v: string) => setReceiveAsset(v)}
+        />
       )
     }
 
     return (
-      <PopoverCombobox className="w-full" template={AssetSelectTemplate} value={receiveAsset} options={options} onChange={(v: string) => setReceiveAsset(v)} />
+      <AssetSelectionDialog
+        className="w-full"
+        template={AssetSelectTemplate}
+        value={receiveAsset}
+        options={options}
+        onChange={(v: string) => setReceiveAsset(v)}
+      />
     )
   }
 
   const DepositAssetSelect = ({ options }: AssetSelectProps) => {
-    return (
-      <PopoverCombobox
-        className="w-fit"
-        template={AssetSelectTemplate}
-        value={depositAsset || ""}
-        options={options}
-        onChange={(v: string) => setDepositAsset(v)}
-      />
-    )
+    return <AssetSelectionDialog template={AssetSelectTemplate} value={depositAsset || ""} options={options} onChange={(v: string) => setDepositAsset(v)} />
   }
 
   const AssetSelectTemplate = (option: {
@@ -79,20 +85,24 @@ export default function USGSwapContent() {
     symbol: string
     balance?: bigint
     decimals?: number
+    address?: Address
   }) => {
     return (
       <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
         <div className="flex w-full items-center gap-2">
           <>
             {option.symbol === "ETH" ? (
-              <TokenImage token={option.logo} size={20} />
+              <TokenImage token={option.logo} size={32} />
             ) : (
-              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={20} />}</>
+              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} /> : <TokenImage token={option.logo} size={32} />}</>
             )}
           </>
-          <span className="text-sm font-semibold">{option.symbol}</span>
-        </div>
 
+          <div className="flex flex-col items-start justify-start">
+            <span className="text-sm font-semibold">{option.symbol}</span>
+            <span className="text-xs text-subtitle">{formatAddress(option?.address, 4)}</span>
+          </div>
+        </div>
         <span className="ml-auto text-xs text-subtitle">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
       </div>
     )
@@ -144,7 +154,6 @@ export default function USGSwapContent() {
           <BuySellInput
             depositAmount={depositWeiValue}
             depositSelect={<DepositAssetSelect options={computedAssets?.depositAssets} />}
-            disabled={false}
             isLoading={isLoading || isSwapLoading}
             receiveSelect={<ReceiveAssetSelect options={computedAssets?.receiveAssets} />}
             labelDeposit={"You sell"}

@@ -17,10 +17,11 @@ const SelectTrigger = React.forwardRef<React.ElementRef<typeof SelectPrimitive.T
     <SelectPrimitive.Trigger
       ref={ref}
       className={cn(
-        "flex min-h-10 w-full items-center justify-between rounded-[10px] border-tangent border-white border-opacity-20 px-2.5 py-1.5 placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+        "flex min-h-10 w-full items-center justify-between rounded-[10px] border border-white border-opacity-20 px-2.5 py-1.5 placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       {...props}
+      style={{ borderWidth: "1.5px" }}
     >
       {children}
       <SelectPrimitive.Icon asChild>

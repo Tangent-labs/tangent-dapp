@@ -172,7 +172,7 @@ export function LeverageInput({
         </div>
 
         <BorderPanel
-          className="rounded-full! flex w-10 cursor-pointer items-center bg-button-active px-1 text-xs text-white hover:font-semibold"
+          className="w-10 min-w-10 cursor-pointer bg-button-active px-1 text-center text-xs text-white hover:font-semibold"
           onClick={() => handleSliderChange({ target: { value: "10" } } as React.ChangeEvent<HTMLInputElement>)}
         >
           Max.

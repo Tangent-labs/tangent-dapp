@@ -151,7 +151,7 @@ export function DepositReceiveInput({
       </BorderPanel>
 
       <div className="my-2 flex w-full cursor-pointer items-center justify-center border-none">
-        <IconChevron className="h-auto w-10 rounded-[10px] border border-white border-opacity-20 bg-select-input p-3 text-white" />
+        <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-20 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
       </div>
 
       <DisplayReceivePanel

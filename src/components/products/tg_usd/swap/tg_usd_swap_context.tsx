@@ -7,13 +7,13 @@ import { getQuote, getRoute } from "../global_quote_controller"
 import { USG_CONTRACT, tgUsdTokens } from "../tg_usd_repository"
 import { ToastComponent } from "@/components/design_system/toast"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
+import { useRootContext } from "@/components/products/root/root_context"
 import { Abi, Address, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computedMinAmountOut, getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_controller"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { BalanceAllowanceData, SwapToken, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../tg_usd_type"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./tg_usd_swap_controller"
-import { useRootContext } from "../../root/root_context"
 
 type USGSwapContextProps = {
   children: ReactNode

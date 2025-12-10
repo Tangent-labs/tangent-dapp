@@ -26,7 +26,7 @@ export default function DropdownMenu({ children, label, pathname }: DropdownMenu
               {label}
             </p>
           </div>
-          <IconChevron className="w-2" />
+          <IconChevron className="w-2 stroke-white" />
         </button>
       </HoverCardTrigger>
       <HoverCardContent side="top" className="z-100 !m-0 w-fit !border-none bg-dark !p-0">

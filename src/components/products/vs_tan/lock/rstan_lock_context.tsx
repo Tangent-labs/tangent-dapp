@@ -9,13 +9,13 @@ import { useUSGContext } from "../../tg_usd/tg_usd_context"
 import { LockPosition, ZapToken } from "../../tg_usd/tg_usd_type"
 import { ToastComponent } from "@/components/design_system/toast"
 import { formatBigInt, formatDollar } from "@/lib/number_formatter"
+import { useRootContext } from "@/components/products/root/root_context"
 import { getQuote, getRoute } from "../../tg_usd/global_quote_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { AssetDataPriced, CollateralInfo, ExistingAsset, FormState } from "@/types"
 import { computedMinAmountOut, computeSwapAssetPrice } from "../../tg_usd/record/tg_usd_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { doApprove, doIncreaseLockAmount, doLock, doZapAndIncreaseLock, doZapAndLock, getLockFormState } from "./rstan_lock_controller"
-import { useRootContext } from "../../root/root_context"
 
 type RsTanLockContextProps = {
   children: ReactNode

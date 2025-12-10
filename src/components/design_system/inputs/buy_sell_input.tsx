@@ -4,17 +4,16 @@ import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
 import { AssetDataPriced } from "@/types"
 import { SliderInput } from "./slider_input"
+import { IconChevron } from "@/components/icons"
 import BorderPanel from "../structure/border_panel"
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
 import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
-import { IconChevron } from "@/components/icons"
 
 type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
   receiveAsset?: AssetDataPriced
   depositAmount?: bigint
   depositBalance?: bigint
-  disabled?: boolean
   labelDeposit?: string
   receiveAmount?: bigint
   labelReceive?: string
@@ -51,10 +50,11 @@ export function BuySellInput({
   percentage = 0,
   setPercentage,
   toggleTokensSwitch,
-  disabled,
   ...props
 }: BuySellInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const receiveInputRef = useRef<HTMLInputElement>(null)
 
   const balanceNumber = useMemo(() => {
     if (depositBalance) {
@@ -165,6 +165,10 @@ export function BuySellInput({
     inputRef.current?.focus()
   }
 
+  const onClickFocusReceiveInput = () => {
+    receiveInputRef.current?.focus()
+  }
+
   return (
     <div className="flex w-full flex-col">
       <div className="mb-3 flex w-full items-end justify-between">
@@ -178,7 +182,10 @@ export function BuySellInput({
       </div>
 
       <div className={cn("flex flex-col")} {...props}>
-        <BorderPanel onClick={onClickFocus} className={`${isLoading ? "shimmer" : ""} flex cursor-pointer flex-col p-2 hover:bg-white/10`}>
+        <BorderPanel
+          onClick={onClickFocus}
+          className={`${isLoading ? "shimmer" : ""} flex cursor-pointer flex-col p-2 transition-colors duration-200 ease-in-out hover:bg-white/10`}
+        >
           <div className="flex w-full justify-between">
             <div className="text-sm text-subtitle">{labelDeposit}</div>
           </div>
@@ -186,7 +193,6 @@ export function BuySellInput({
             <div className="flex items-center justify-start">
               <input
                 {...props}
-                disabled={disabled}
                 type="number"
                 value={innerValue ?? ""}
                 ref={inputRef}
@@ -224,10 +230,13 @@ export function BuySellInput({
           }}
           className="my-2 flex w-full cursor-pointer items-center justify-center border-none"
         >
-          <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-20 bg-select-input p-2 text-white backdrop-blur-[60px] hover:border-white hover:stroke-black" />
+          <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-20 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
         </div>
 
-        <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2 hover:bg-white/10`}>
+        <BorderPanel
+          onClick={onClickFocusReceiveInput}
+          className={`${isLoading ? "shimmer" : ""} flex cursor-pointer flex-col p-2 transition-colors duration-200 ease-in-out hover:bg-white/10`}
+        >
           <div className="text-sm text-subtitle">{labelReceive}</div>
           <div className="mb-2 flex justify-between">
             <div className="mr-4 text-xl font-medium">
@@ -235,17 +244,15 @@ export function BuySellInput({
                 type="number"
                 value={innerTangentValue ?? ""}
                 placeholder="Amount"
+                ref={receiveInputRef}
                 onChange={handleInputTangentChange}
-                className={cn(
-                  "min-h-10 max-w-28 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30 md:max-w-32"
-                )}
+                className="min-h-10 max-w-28 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none md:max-w-32"
               />
             </div>
+
             <div>{receiveSelect}</div>
           </div>
-          <div className="flex justify-between text-xs text-subtitle">
-            <div>{dollarReceiveDisplay}</div>
-          </div>
+          <div className="text-xs text-subtitle">{dollarReceiveDisplay}</div>
         </BorderPanel>
       </div>
     </div>

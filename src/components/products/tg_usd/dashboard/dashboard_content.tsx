@@ -2,11 +2,11 @@
 
 import { cn } from "@/lib/utils"
 import { ExistingAsset } from "@/types"
-import { useRootContext } from "../../root/root_context"
 import { useUSGDashboardContext } from "./dashboard_context"
 import Divider from "@/components/design_system/structure/divider"
 import { MarketDebtData, USGCollateralData } from "../tg_usd_type"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
+import { useRootContext } from "@/components/products/root/root_context"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { COLORS, formatXAxis, formatYAxis } from "./dashboard_controller"
 import InnerTooltip from "@/components/design_system/structure/inner_tooltip"

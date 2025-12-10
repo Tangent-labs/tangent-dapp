@@ -94,7 +94,7 @@ export default function PopoverCombobox<T extends OptionT>({
                 <span className="truncate text-sm opacity-70">{placeholder}</span>
               )}
             </span>
-            <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+            <ChevronDown className="ml-1 h-4 w-4 shrink-0 opacity-80" />
           </button>
         </PopoverTrigger>
 

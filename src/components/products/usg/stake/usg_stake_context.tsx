@@ -273,7 +273,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
 export const useUSGStakeContext = () => {
   const context = useContext(USGStakeContext)
   if (!context) {
-    throw new Error("useUSGStakeContext must be used within a TgUsdStakProvider")
+    throw new Error("useUSGStakeContext must be used within a USGStakeProvider")
   }
   return context
 }

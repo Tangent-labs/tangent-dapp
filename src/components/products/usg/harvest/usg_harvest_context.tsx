@@ -8,7 +8,7 @@ import { ToastComponent } from "@/components/design_system/toast"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { HarvestableMarket, HarvesterInfo, HarvesterInfoDisplay, USGStakingInfo } from "../usg_type"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { computeAndReturnPrices, doHarvest, doMultiHarvest, getTgUsdHarvestOnChainData, transformHarvestOnChainData } from "./usg_harvest_controller"
+import { computeAndReturnPrices, doHarvest, doMultiHarvest, getUSGHarvestOnChainData, transformHarvestOnChainData } from "./usg_harvest_controller"
 
 type USGHarvestContextProps = {
   children: ReactNode
@@ -60,7 +60,7 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
   }, [])
 
   const loadData = useCallback(() => {
-    getTgUsdHarvestOnChainData().then((data) => {
+    getUSGHarvestOnChainData().then((data) => {
       setHarvestInfo(data)
       setIsLoading(false)
     })

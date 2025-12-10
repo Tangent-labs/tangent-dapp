@@ -236,14 +236,14 @@ export const USGDashboardContent = () => {
                     <div className="flex h-full w-full flex-col items-center justify-center gap-1">
                       <div className="mt-4 text-xs text-subtitle">Collaterals</div>
                       <div className="text-[40px] font-semibold text-white">
-                        {userData?.tgUsdCollateralsData.filter((el: USGCollateralData) => el.value > 0)?.length}
+                        {userData?.USGCollateralsData.filter((el: USGCollateralData) => el.value > 0)?.length}
                       </div>
                     </div>
                   </div>
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
-                        data={userData?.tgUsdCollateralsData}
+                        data={userData?.USGCollateralsData}
                         cx="50%"
                         cy="50%"
                         startAngle={180}
@@ -255,11 +255,11 @@ export const USGDashboardContent = () => {
                         dataKey="value"
                         stroke="none"
                       >
-                        {userData?.tgUsdCollateralsData
-                          .sort((a: USGCollateralData, b: USGCollateralData) => (a.value > b.value ? -1 : 1))
-                          .map((_, index: number) => (
+                        {userData?.USGCollateralsData.sort((a: USGCollateralData, b: USGCollateralData) => (a.value > b.value ? -1 : 1)).map(
+                          (_, index: number) => (
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
+                          )
+                        )}
                       </Pie>
                     </PieChart>
                   </ResponsiveContainer>
@@ -268,8 +268,7 @@ export const USGDashboardContent = () => {
 
               <div className="hidden max-h-48 w-full flex-col items-start justify-start gap-1 sm:flex sm:w-6/12 md:hidden xl:flex xl:w-6/12">
                 <div className="scrollbar-thin my-4 flex max-h-full w-full flex-col gap-1 overflow-y-auto">
-                  {userData?.tgUsdCollateralsData
-                    .filter((el: USGCollateralData) => el.value > 0)
+                  {userData?.USGCollateralsData.filter((el: USGCollateralData) => el.value > 0)
                     .sort((a: USGCollateralData, b: USGCollateralData) => (a.value > b.value ? -1 : 1))
                     .map((el: USGCollateralData, index: number) => (
                       <div key={el.name} className="mb-1 flex w-full items-center justify-start gap-2 rounded-[10px] px-3 py-1 backdrop-blur-[60px]">

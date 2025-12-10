@@ -37,7 +37,7 @@ const HistoryRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
   )
 }
 
-export default function TgUsdPositionHistory() {
+export default function USGPositionHistory() {
   const { displayRows, customSort, isUserHistoryLoading } = useUSGRecordContext()
 
   return (

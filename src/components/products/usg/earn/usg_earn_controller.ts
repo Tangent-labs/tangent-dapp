@@ -2,7 +2,7 @@ import { ListHeaderData } from "@/types"
 import { EarnProtocolInput, GaugeAPR, StakeDaoAPRData } from "../usg_type"
 import { Address } from "viem"
 
-export const tgUsdEarnListHeaders: ListHeaderData[] = [
+export const USGEarnListHeaders: ListHeaderData[] = [
   { label: "Asset", key: "asset" },
   {
     label: "Protocol",

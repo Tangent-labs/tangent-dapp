@@ -11,7 +11,7 @@ import { useUSGRecordContext } from "./usg_record_context"
 import { MarketDetails } from "./header/market_details_header"
 import Divider from "@/components/design_system/structure/divider"
 import USGCollateralPrice from "./collat_price/collat_price_content"
-import TgUsdPositionHistory from "./position_history/usg_position_history"
+import USGPositionHistory from "./position_history/usg_position_history"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { CollateralPriceProvider } from "./collat_price/collat_price_context"
 import { FeatureTabs } from "@/components/design_system/inputs/feature_tabs/feature_tabs"
@@ -325,7 +325,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
 
         <Divider />
         <USGMarketInfo />
-        <TgUsdPositionHistory />
+        <USGPositionHistory />
       </div>
     </>
   )

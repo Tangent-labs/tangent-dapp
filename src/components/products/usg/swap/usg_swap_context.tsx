@@ -4,7 +4,7 @@ import { toast } from "react-toastify"
 import { useUSGContext } from "../usg_context"
 import { SwapConfig, swapConfig } from "./swap_config"
 import { getQuote, getRoute } from "../global_quote_controller"
-import { USG_CONTRACT, tgUsdTokens } from "../usg_repository"
+import { USG_CONTRACT, USGTokens } from "../usg_repository"
 import { ToastComponent } from "@/components/design_system/toast"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
@@ -115,7 +115,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const [swapData, setSwapData] = useState<SwapConfig | null>(null)
 
   const receiveAssetInfo = useMemo(() => {
-    const tgTokens: SwapToken[] = Object.entries(tgUsdTokens).flatMap(([, tokens]) => {
+    const tgTokens: SwapToken[] = Object.entries(USGTokens).flatMap(([, tokens]) => {
       return Object.entries(tokens).map(([name, address]) => ({
         name,
         symbol: name,
@@ -146,7 +146,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   }, [receiveAsset, swapedAssetPrice])
 
   const depositAssetInfo = useMemo(() => {
-    const tgTokens: SwapToken[] = Object.entries(tgUsdTokens).flatMap(([, tokens]) => {
+    const tgTokens: SwapToken[] = Object.entries(USGTokens).flatMap(([, tokens]) => {
       return Object.entries(tokens).map(([name, address]) => ({
         name,
         symbol: name,
@@ -502,7 +502,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   }
 
   const computedAssets = useMemo(() => {
-    const tgTokens = Object.entries(tgUsdTokens).flatMap(([, tokens]) => {
+    const tgTokens = Object.entries(USGTokens).flatMap(([, tokens]) => {
       return Object.entries(tokens).map(([name, address]) => ({
         name,
         symbol: name,

@@ -14,7 +14,7 @@ type USGDashboardContextValues = {
     totalUserDeposit: bigint
     totalProtocolDeposit: bigint
     totalProtocolDebt: bigint
-    tgUsdCollateralsData: USGCollateralData[]
+    USGCollateralsData: USGCollateralData[]
     marketDebtData: MarketDebtData[]
   } | null
 

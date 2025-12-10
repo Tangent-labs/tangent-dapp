@@ -2,7 +2,7 @@ import { Abi, Address, formatUnits, Hex } from "viem"
 import MarketListUI from "@/abi/USG/MarketListUI.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
-import { USG_CONTRACT, USGMarkets, tgUsdPegKeepers } from "../usg_repository"
+import { USG_CONTRACT, USGMarkets, USGPegKeepers } from "../usg_repository"
 import { formatBigInt, formatDollar, formatPercent } from "@/lib/number_formatter"
 import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, USGGlobalData } from "../usg_type"
 
@@ -15,7 +15,7 @@ export const getUSGMarketsData = async (address: string) => {
     USG_CONTRACT.USG,
     USG_CONTRACT.SUSG,
     markets,
-    tgUsdPegKeepers,
+    USGPegKeepers,
     USG_CONTRACT.MARKET_VIEWER,
   ])
 }
@@ -119,7 +119,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
   }
 }
 
-export const tgUsdListHeaders: ListHeaderData[] = [
+export const USGListHeaders: ListHeaderData[] = [
   { label: "Collateral", key: "collateral", sort: null },
   {
     label: "APR",

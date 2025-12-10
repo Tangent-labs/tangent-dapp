@@ -17,7 +17,7 @@ import MarketListAPR from "@/components/design_system/list/market_list_apr"
 import LargeButtonTab from "@/components/design_system/inputs/large_button_tab"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { marketOptions, protocolOptions, tgUsdListHeaders } from "./usg_market_controller"
+import { marketOptions, protocolOptions, USGListHeaders } from "./usg_market_controller"
 
 const listeState: ListState = {
   search: undefined,
@@ -197,7 +197,7 @@ export default function USGMarketList() {
         </div>
       </div>
 
-      <ListProvider customSort={sortMarketList} _headers={tgUsdListHeaders} _rows={displayRows!} _listState={listeState}>
+      <ListProvider customSort={sortMarketList} _headers={USGListHeaders} _rows={displayRows!} _listState={listeState}>
         <USGMarketListInner />
       </ListProvider>
     </>

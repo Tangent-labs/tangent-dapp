@@ -7,7 +7,7 @@ import { AssetDataPriced, ListState } from "@/types"
 import { ClaimableMarket, ClaimData, ClaimerInfo, USGStakingInfo } from "../usg_type"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { computeAndReturnPrices, doClaim, getTgUsdClaimOnChainData, transformClaimOnChainData } from "./usg_claim_controller"
+import { computeAndReturnPrices, doClaim, getUSGClaimOnChainData, transformClaimOnChainData } from "./usg_claim_controller"
 import { formatDollar } from "@/lib/number_formatter"
 
 type USGClaimContextProps = {
@@ -59,7 +59,7 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
   }, [currentAddress])
 
   const loadData = useCallback(() => {
-    getTgUsdClaimOnChainData(currentAddress || zeroAddress).then((data) => {
+    getUSGClaimOnChainData(currentAddress || zeroAddress).then((data) => {
       setClaimInfo(data)
     })
   }, [currentAddress])

@@ -49,7 +49,7 @@ export function getLeverageFormState(
 }
 
 export const doZapLeverage = async (
-  tgUSDToFlashMint: bigint,
+  usgToFlashMint: bigint,
   minCollatAmountOut: bigint,
   leverageData: { data: string; routerAddress: Address },
   tokenIn: Address,
@@ -69,7 +69,7 @@ export const doZapLeverage = async (
     abi: MarketExternalActions.abi,
     functionName: "zapLeverage",
     args: [
-      tgUSDToFlashMint,
+      usgToFlashMint,
       minCollatAmountOut,
       { router: leverageData?.routerAddress, routerCall: leverageData?.data },
       { tokenIn, amountIn, minAmountOut, zap },

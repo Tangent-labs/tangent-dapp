@@ -70,7 +70,7 @@ type USGRepayContextValues = {
 
   isDebtBelowThreshold: boolean
 
-  tgUsdDollarRepayedValue: string
+  USGDollarRepayedValue: string
 
   withdrawSelectedAsset: string
   setWithdrawSelectedAsset: (v: string) => void
@@ -425,7 +425,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     return value < threshold / BigInt(10 ** 18) && value > 0n
   }, [repayWeiValue, marketValues, repayAsset, usgRepayedValue])
 
-  const tgUsdDollarRepayedValue = useMemo(() => {
+  const USGDollarRepayedValue = useMemo(() => {
     return `(~${formatDollar((Number(Number(formatUnits(usgRepayedValue || 0n, 18))) * USGInfo?.price).toFixed(2))})`
   }, [usgRepayedValue, USGInfo])
 
@@ -459,7 +459,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     isDebtBelowThreshold,
     slippage,
     setSlippage,
-    tgUsdDollarRepayedValue,
+    USGDollarRepayedValue,
     withdrawSelectedAsset,
     setWithdrawSelectedAsset,
   }
@@ -470,7 +470,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 export const useUSGRepayContext = () => {
   const context = useContext(USGRepayContext)
   if (!context) {
-    throw new Error("useUSGRepayContext must be used within a TgUsdRepayProvider")
+    throw new Error("useUSGRepayContext must be used within a USGRepayProvider")
   }
   return context
 }

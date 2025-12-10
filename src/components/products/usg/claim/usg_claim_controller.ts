@@ -19,7 +19,7 @@ export async function doClaim(contractAddress: Address, markets: Address[], rewa
   return await executeContractCall(walletClient, txData)
 }
 
-export async function getTgUsdClaimOnChainData(currentAddress: string) {
+export async function getUSGClaimOnChainData(currentAddress: string) {
   const addresses: Address[] = USGMarkets.map((m) => m.marketAddress)
   return await executeChainViewUnique<ClaimerInfo[]>(claimUI.abi as Abi, claimUI.bytecode as Hex, [currentAddress, addresses, USG_CONTRACT.MARKET_VIEWER])
 }

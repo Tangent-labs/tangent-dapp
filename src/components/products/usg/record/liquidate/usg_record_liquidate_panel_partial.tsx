@@ -24,7 +24,7 @@ export default function USGLiquidatePanelPartial() {
     maxLiquidable,
     liquidablePercentage,
     isQuoteLoading,
-    tgUSDReceivedValue,
+    USGReceivedValue,
     repayWeiValue,
     repayablePercentage,
     maxRepayable,
@@ -65,7 +65,7 @@ export default function USGLiquidatePanelPartial() {
       />
 
       <DepositInput
-        depositAmount={tgUSDReceivedValue}
+        depositAmount={USGReceivedValue}
         labelDeposit="For"
         depositSelect={<USGStaticAssetSelector />}
         disabled={true}
@@ -101,7 +101,7 @@ export default function USGLiquidatePanelPartial() {
       />
 
       <DepositInput
-        depositAmount={(tgUSDReceivedValue || 0n) - (repayWeiValue || 0n)}
+        depositAmount={(USGReceivedValue || 0n) - (repayWeiValue || 0n)}
         labelDeposit="You receive"
         depositSelect={<USGStaticAssetSelector />}
         disabled={true}

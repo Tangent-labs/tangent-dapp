@@ -26,7 +26,7 @@ type USGMaketListContextValues = {
     totalUserDeposit: bigint
     totalProtocolDeposit: bigint
     totalProtocolDebt: bigint
-    tgUsdCollateralsData: USGCollateralData[]
+    USGCollateralsData: USGCollateralData[]
     marketDebtData: MarketDebtData[]
   } | null
 
@@ -159,7 +159,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
         totalProtocolDebt += market.debtInfos.totalDebt
       })
 
-      const tgUsdCollateralsData = onChainData.rowInfos.map((market) => {
+      const USGCollateralsData = onChainData.rowInfos.map((market) => {
         const value = market.collateralInfos.totalCollateralUSDValue
 
         const percentage = totalProtocolDeposit > 0n ? (Number(formatUnits(value, 18)) / Number(formatUnits(totalProtocolDeposit, 18))) * 100 : 0
@@ -187,7 +187,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
           return a.value > b.value ? -1 : 1
         })
 
-      return { totalUserDebt, totalUserDeposit, totalProtocolDeposit, totalProtocolDebt, tgUsdCollateralsData, marketDebtData }
+      return { totalUserDebt, totalUserDeposit, totalProtocolDeposit, totalProtocolDebt, USGCollateralsData, marketDebtData }
     }
     return null
   }, [onChainData])

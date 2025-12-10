@@ -36,7 +36,7 @@ export async function doMultiHarvest(addresses: Array<Address>, walletClient: Wa
   return await executeContractCall(walletClient, txData)
 }
 
-export async function getTgUsdHarvestOnChainData() {
+export async function getUSGHarvestOnChainData() {
   const addresses: Address[] = USGMarkets.map((m) => m.marketAddress)
 
   return await executeChainViewUnique<HarvesterInfo[]>(harvestUI.abi as Abi, harvestUI.bytecode as Hex, [addresses, USG_CONTRACT.REWARD_ACCUMULATOR])

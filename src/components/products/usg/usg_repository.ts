@@ -16,9 +16,9 @@ type RawMarket = {
   marketType: string
 }
 
-export const tgUsdTokens = [envAddresses.wStables, envAddresses.lps, envAddresses.tokens]
+export const USGTokens = [envAddresses.wStables, envAddresses.lps, envAddresses.tokens]
 
-export const tgUsdPegKeepers: Address[] = Object.values(envAddresses.pegKeepers)
+export const USGPegKeepers: Address[] = Object.values(envAddresses.pegKeepers)
 
 export const USGOracles = Object.entries(envAddresses?.oracles).map(([key, address]) => {
   const trimmedName = key.replace("_", "-")

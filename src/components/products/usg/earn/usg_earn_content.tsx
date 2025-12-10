@@ -5,7 +5,7 @@ import { ExistingAsset, ListState } from "@/types"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGEarnContext } from "./usg_earn_context"
 import ListRow from "@/components/design_system/list/list_row"
-import { tgUsdEarnListHeaders } from "./usg_earn_controller"
+import { USGEarnListHeaders } from "./usg_earn_controller"
 import ListHeader from "@/components/design_system/list/list_header"
 import InputSearch from "@/components/design_system/inputs/input_search"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -77,7 +77,7 @@ export const USGEarnContent = () => {
         </div>
       </div>
 
-      <ListProvider _headers={tgUsdEarnListHeaders} _rows={displayRows!} _listState={listeState}>
+      <ListProvider _headers={USGEarnListHeaders} _rows={displayRows!} _listState={listeState}>
         <USGMEarnListInner />
       </ListProvider>
     </>

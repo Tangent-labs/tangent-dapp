@@ -46,7 +46,7 @@ export default function USGRepayContent() {
     withdrawWeiValue,
     maxWithdrawable,
     withdrawPercentage,
-    tgUsdDollarRepayedValue,
+    USGDollarRepayedValue,
     isZapLoading,
     usgRepayedValue,
     isDebtBelowThreshold,
@@ -211,7 +211,7 @@ export default function USGRepayContent() {
                 </div>
                 <div className="flex justify-between gap-2 text-xs text-subtitle">
                   <div>Minimum received</div>
-                  <div>{usgRepayedValue && USGInfo?.price !== 0 ? tgUsdDollarRepayedValue : ""}</div>
+                  <div>{usgRepayedValue && USGInfo?.price !== 0 ? USGDollarRepayedValue : ""}</div>
                 </div>
               </div>
               <USGStaticAssetSelector />

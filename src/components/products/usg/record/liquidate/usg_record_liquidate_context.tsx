@@ -34,8 +34,8 @@ type USGLiquidateContextValues = {
   isQuoteLoading: boolean
   setIsQuoteLoading: (arg: boolean) => void
 
-  tgUSDReceivedValue: bigint | undefined
-  setTgUSDReceivedValue: (arg: bigint | undefined) => void
+  USGReceivedValue: bigint | undefined
+  setUSGReceivedValue: (arg: bigint | undefined) => void
 
   repayWeiValue?: bigint
   setRepayWeiValue: (arg: bigint | undefined) => void
@@ -78,7 +78,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
 
   const [repayWeiValue, setRepayWeiValue] = useState<bigint | undefined>()
 
-  const [tgUSDReceivedValue, setTgUSDReceivedValue] = useState<bigint | undefined>()
+  const [USGReceivedValue, setUSGReceivedValue] = useState<bigint | undefined>()
 
   useEffect(() => {
     if (isFullLiquidation) {
@@ -87,7 +87,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     } else {
       setLiquidateWeiValue(0n)
       setRepayWeiValue(0n)
-      setTgUSDReceivedValue(0n)
+      setUSGReceivedValue(0n)
       setIsQuoteLoading(false)
     }
   }, [isFullLiquidation])
@@ -102,7 +102,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   const actionLiquidate = async () => {
     const walletClient = getWalletClient()
 
-    if (walletClient && liquidateWeiValue && currentAddress && tgUSDReceivedValue && marketData) {
+    if (walletClient && liquidateWeiValue && currentAddress && USGReceivedValue && marketData) {
       let repayValue = repayWeiValue || 0n
 
       // TODO : Change this into a logical value
@@ -116,7 +116,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         marketInfo?.collatAddress,
         USG_CONTRACT.USG,
         liquidateWeiValue,
-        computedMinAmountOut(tgUSDReceivedValue, slippage),
+        computedMinAmountOut(USGReceivedValue, slippage),
         currentAddress,
         USG_CONTRACT.LIQUIDATOR_PROXY,
         curveRoutes
@@ -125,7 +125,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
       doMarketLiquidate(
         liquidateWeiValue,
         repayValue,
-        computedMinAmountOut(tgUSDReceivedValue, slippage),
+        computedMinAmountOut(USGReceivedValue, slippage),
         maxUSGToBurn,
         false,
         liquidationData!,
@@ -139,7 +139,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
           setLiquidateWeiValue(0n)
           setLiquidablePercentage(0)
           setRepayWeiValue(0n)
-          setTgUSDReceivedValue(0n)
+          setUSGReceivedValue(0n)
         })
         .catch((e) => {
           console.error(e)
@@ -192,7 +192,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         handleQuote(quote)
 
         if (quote) {
-          setTgUSDReceivedValue(quote)
+          setUSGReceivedValue(quote)
         }
       } catch (error) {
         console.error(error)
@@ -223,8 +223,8 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     setLiquidablePercentage,
     isQuoteLoading,
     setIsQuoteLoading,
-    tgUSDReceivedValue,
-    setTgUSDReceivedValue,
+    USGReceivedValue,
+    setUSGReceivedValue,
     repayWeiValue,
     setRepayWeiValue,
     repayablePercentage,

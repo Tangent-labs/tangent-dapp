@@ -238,7 +238,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
 export const useStakeTanContext = () => {
   const context = useContext(StakeTanContext)
   if (!context) {
-    throw new Error("StakeTanContext must be used within a TgUsdStakProvider")
+    throw new Error("StakeTanContext must be used within a TanStakeProvider")
   }
   return context
 }

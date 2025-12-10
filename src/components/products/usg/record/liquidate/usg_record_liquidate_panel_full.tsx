@@ -11,7 +11,7 @@ import { USGStaticAssetSelector } from "@/components/design_system/structure/usg
 export default function USGLiquidatePanelFull() {
   const { USGInfo, collateralInfo, marketData } = useUSGRecordContext()
 
-  const { isQuoteLoading, tgUSDReceivedValue, repayWeiValue } = useUSGLiquidateContext()
+  const { isQuoteLoading, USGReceivedValue, repayWeiValue } = useUSGLiquidateContext()
 
   const LiquidateAssetDisplay = () => {
     return (
@@ -47,7 +47,7 @@ export default function USGLiquidatePanelFull() {
         />
 
         <DepositInput
-          depositAmount={tgUSDReceivedValue}
+          depositAmount={USGReceivedValue}
           labelDeposit="For"
           depositSelect={<USGStaticAssetSelector />}
           disabled={true}
@@ -76,7 +76,7 @@ export default function USGLiquidatePanelFull() {
         />
 
         <DepositInput
-          depositAmount={(tgUSDReceivedValue || 0n) - (repayWeiValue || 0n)}
+          depositAmount={(USGReceivedValue || 0n) - (repayWeiValue || 0n)}
           labelDeposit="You receive"
           depositSelect={<USGStaticAssetSelector />}
           disabled={true}

@@ -21,10 +21,10 @@ type MarketDetailsInfosProps = {
 
 export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
   const [tokenA, tokenB] = useMemo(() => {
-    return marketData.collateralInfo.name.split("-") as [ExistingAsset, ExistingAsset]
+    return marketData.collateralInfo.name.split("-") as [ExistingAsset, ExistingAsset | string]
   }, [marketData?.collateralInfo?.name])
 
-  const [selectedToken, setSelectedToken] = useState<ExistingAsset>(tokenA)
+  const [selectedToken, setSelectedToken] = useState<ExistingAsset | string>(tokenA)
 
   const currentInfo = useMemo(() => {
     const info = typedTokenInfos[selectedToken]
@@ -32,14 +32,12 @@ export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
   }, [selectedToken])
 
   return (
-    <div className="mt-4 hidden h-28 items-center rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px] md:flex">
+    <div className="mt-4 hidden h-24 items-center rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px] md:flex">
       <div className="flex min-h-20 w-2/12 flex-col items-center justify-center border-r border-[#3F3F3F] px-8">
-        <span className="text-[15px] text-white">Assets</span>
-
-        <div className="mt-2 flex flex-col items-center justify-between gap-2 xl:flex-row">
+        <div className="flex flex-col items-center justify-between gap-2">
           <button
             onClick={() => setSelectedToken(tokenA)}
-            className={`flex min-w-20 items-center justify-between rounded-full border border-white px-2 py-1 text-xs transition-all ${
+            className={`mt-2 flex min-w-20 items-center justify-between rounded-full border border-white px-2 py-1 text-xs transition-all ${
               selectedToken === tokenA ? "border-opacity-100 bg-white text-black" : "border-opacity-20 text-white hover:border-opacity-100"
             }`}
           >
@@ -47,15 +45,17 @@ export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
             {tokenA}
           </button>
 
-          <button
-            onClick={() => setSelectedToken(tokenB)}
-            className={`flex min-w-20 items-center justify-between rounded-full border border-white px-2 py-1 text-xs transition-all ${
-              selectedToken === tokenB ? "border-opacity-100 bg-white text-black" : "border-opacity-20 text-white hover:border-opacity-100"
-            }`}
-          >
-            <TokenImage token={tokenB as ExistingAsset} size={8} className="w-4" />
-            {tokenB}
-          </button>
+          {tokenB && tokenB !== "" && (
+            <button
+              onClick={() => setSelectedToken(tokenB)}
+              className={`mt-1 flex min-w-20 items-center justify-between rounded-full border border-white px-2 py-1 text-xs transition-all ${
+                selectedToken === tokenB ? "border-opacity-100 bg-white text-black" : "border-opacity-20 text-white hover:border-opacity-100"
+              }`}
+            >
+              <TokenImage token={tokenB as ExistingAsset} size={8} className="w-4" />
+              {tokenB}
+            </button>
+          )}
         </div>
       </div>
 

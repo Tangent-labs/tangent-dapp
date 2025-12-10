@@ -53,7 +53,7 @@ const CustomsUSGPerformanceTooltip = (props: {
   const value = Number(props?.payload ? props?.payload[0]?.value : 0)
 
   return (
-    <div className="pointer-events-none flex flex-col items-start justify-between gap-3 rounded-[10px] bg-[#070707] px-3 py-2 text-[10px]">
+    <div className="pointer-events-none flex flex-col items-start justify-between gap-3 rounded-[10px] bg-dark px-3 py-2 text-[10px]">
       <div className="flex gap-1">
         <div className="font-extralight text-white">{date.toDateString()}</div>
       </div>

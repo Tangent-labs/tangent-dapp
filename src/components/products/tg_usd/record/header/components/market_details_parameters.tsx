@@ -12,7 +12,7 @@ export default function MarketDetailsParameters() {
   const currentMarketApr = marketAprs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())
 
   return (
-    <div className="mt-4 hidden h-28 items-center justify-evenly rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px] md:flex">
+    <div className="mt-4 hidden h-24 items-center justify-evenly rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px] md:flex">
       <RecordPageHeader
         apr={currentMarketApr!}
         indicators={[
@@ -28,16 +28,16 @@ export default function MarketDetailsParameters() {
                 <span className="text-sm text-subtitle"> Proj:</span> <span> {computedBorrowRate.next} </span>
               </div>
             ),
-            indicator: "Interest rate that borrowers pay on their outstanding debt",
+            indicator: "Interest rate that borrowers pay on their outstanding debt.",
           },
           {
             title: "Rewards cut",
             value: marketDisplayData.rewardsCutCurrent,
             subValue: marketDisplayData.rewardsCutNext,
-            indicator: "Rewards deduction. The percentage of collateral's rewards that are deducted.",
+            indicator: "The percentage of collateral's rewards that are deducted.",
           },
           {
-            title: "LTV",
+            title: "Max LTV",
             value: marketDisplayData.maxLtv,
             subValue: null,
             indicator: "Maximum Loan-to-value: represents the maximum borrowable amount compared to the collateral's value.",
@@ -46,7 +46,7 @@ export default function MarketDetailsParameters() {
             title: "LT",
             value: marketDisplayData.lt,
             subValue: null,
-            indicator: "Liquidation-threshold: the LTV level at which your position becomes eligible for liquidation.",
+            indicator: "Liquidation-threshold: the LTV at which your position becomes eligible for liquidation.",
           },
         ]}
       />

@@ -13,7 +13,8 @@ export function getDepositFormState(
   isWellConnected?: boolean,
   depositAssetInfo?: Address,
   collateralInfo?: CollateralInfo,
-  balanceAllowanceData?: BalanceAllowanceData
+  balanceAllowanceData?: BalanceAllowanceData,
+  maxBorrowableValue?: bigint
 ) {
   const isZapMode = depositAssetInfo !== collateralInfo?.address
 
@@ -36,6 +37,10 @@ export function getDepositFormState(
     if (isDepositAndBorrow) {
       const borrowReasons = getBorrowCommonFormState(marketData, borrowWeiValue)
       reasons.push(...borrowReasons)
+    }
+
+    if (borrowWeiValue! > maxBorrowableValue!) {
+      reasons.push("Loan exceeds max LTV")
     }
   }
 

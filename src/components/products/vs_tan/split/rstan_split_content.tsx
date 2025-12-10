@@ -1,17 +1,15 @@
 "use client"
 
-import InputSelect from "@/components/design_system/inputs/input_select"
-import { useVsTanContext } from "../rstan_layout_context"
-import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
-import { IconVsTan } from "@/components/icons/icon_vstan"
-import { formatBigInt } from "@/lib/number_formatter"
-import { useRsTanSplitContext } from "./rstan_split_context"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
-import EvolutionBox from "@/components/design_system/structure/evolution_box"
-import { formatDate } from "@/lib/other_formatter"
 import { InfinityIcon } from "lucide-react"
+import { formatDate } from "@/lib/other_formatter"
+import { formatBigInt } from "@/lib/number_formatter"
+import { useVsTanContext } from "../rstan_layout_context"
+import { useRsTanSplitContext } from "./rstan_split_context"
+import { IconOpenOutside, IconVsTan } from "@/components/icons"
+import PanelRaw from "@/components/design_system/structure/panel_raw"
+import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
 import FormButtons from "@/components/design_system/form/form_actions"
-import { IconOpenOutside } from "@/components/icons/icon_open_outside"
+import InputSelect from "@/components/design_system/inputs/input_select"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export const RsTanSplitContent = () => {
@@ -161,7 +159,7 @@ export const RsTanSplitContent = () => {
                 max="90"
                 value={splitPercentage}
                 onChange={(e) => setSplitPercentage(Number(e.target.value))}
-                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]"
+                className="h-2 w-full cursor-pointer appearance-none rounded-[10px] bg-dark"
                 style={{
                   background: `linear-gradient(to right, #3b82f6 ${visualPercentage}%, #4b5563 ${visualPercentage}%)`,
                 }}
@@ -210,19 +208,7 @@ export const RsTanSplitContent = () => {
                 #{splitPositionInfo?.tokenId}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-tonic py-0.5 text-xs text-black">Updated</div>
               </div>
-              <EvolutionBox
-                className="w-6/12"
-                originalValue={
-                  <div className="flex items-center justify-center gap-2 text-lg">
-                    {formatBigInt(splitPositionInfo?.amount, 18, 2)} <IconVsTan className="h-5 w-5"></IconVsTan>
-                  </div>
-                }
-                newValue={
-                  <div className="flex items-center justify-center gap-2">
-                    {formatBigInt(BigInt(splitPercentage / 10) * splitPositionInfo?.amount, 19, 2)} <IconVsTan className="h-5 w-5"></IconVsTan>
-                  </div>
-                }
-              />
+
               <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px]">
                 {splitPositionInfo?.endLockTime && splitPositionInfo?.endLockTime == "281474976710655" ? (
                   <InfinityIcon className="w-5"></InfinityIcon>
@@ -237,7 +223,7 @@ export const RsTanSplitContent = () => {
                 #{computedNewPositionIds?.newPositionId2}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-button-active py-0.5 text-xs text-black">New</div>
               </div>
-
+              {/* 
               <EvolutionBox
                 className="w-6/12"
                 originalValue={
@@ -250,7 +236,7 @@ export const RsTanSplitContent = () => {
                     {formatBigInt(BigInt((100 - splitPercentage) / 10) * splitPositionInfo?.amount, 19, 2)} <IconVsTan className="h-5 w-5"></IconVsTan>
                   </div>
                 }
-              />
+              /> */}
               <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px]">
                 {splitPositionInfo?.endLockTime && splitPositionInfo?.endLockTime == "281474976710655" ? (
                   <InfinityIcon className="w-5"></InfinityIcon>

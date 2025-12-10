@@ -20,6 +20,15 @@ export const tgUsdTokens = [envAddresses.wStables, envAddresses.lps, envAddresse
 
 export const tgUsdPegKeepers: Address[] = Object.values(envAddresses.pegKeepers)
 
+export const USGOracles = Object.entries(envAddresses?.oracles).map(([key, address]) => {
+  const trimmedName = key.replace("_", "-")
+
+  return {
+    token: trimmedName,
+    address: address as `0x${string}`,
+  }
+})
+
 export const USGMarkets: USGMarket[] = envAddresses.markets.map((market: RawMarket) => ({
   marketAddress: market.marketAddress as Address,
   marketName: market.collatName.replace("_", "-"),

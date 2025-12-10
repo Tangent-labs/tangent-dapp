@@ -10,10 +10,7 @@
     --tgt-background: #000;
     --tgt-foreground: #fff;
     --tgt-row-tonic: #0075ff;
-    --tgt-bg-button-linear: linear-gradient(135deg, #0075ff 0%, #00c2ff 100%);
     --tgt-bg-button-inactive: radial-gradient(77.27% 104.46% at 50% 100%, #8c8c8c 0%, #444444 100%);
-    --tgt-bg-button-active: radial-gradient(81.44% 110.1% at 50% 100%, #00c2ff 0%, #0075ff 100%);
-    --tgt-bg-button-active-hover: radial-gradient(90.14% 121.85% at 50% 100%, #0086b2 0%, #084377 100%);
     --tgt-bg-top-performing-lps: radial-gradient(139.72% 99.23% at 50% 100%, #0075ff 0%, rgba(0, 0, 0, 0) 100%);
     --tgt-bg-earn-action: linear-gradient(135deg, rgba(0, 117, 255, 0.5) 0%, rgba(0, 194, 255, 0.5) 100%);
     --tgt-bg-progress: linear-gradient(90deg, #000000 0%, #0075ff 100%);
@@ -27,11 +24,14 @@
     --tgt-bg-panel-disabled: #ffffff26;
     --tgt-bg-tab: linear-gradient(135deg, #0075ff 0%, #00c2ff 100%);
     --tgt-bg-lec: linear-gradient(135deg, #ff8800 0%, #f79f61 100%);
+    --tgt-button-active: #0075ff;
+    --tgt-button-active-hover: #0060d2;
     --tgt-light-tonic: #fbf911;
     --tgt-tonic: #d9fb0b;
     --tgt-success: #99ff00;
     --tgt-subtitle: #9b9b9b;
     --tgt-danger: #ff0300;
+    --tgt-dark: #070707;
     --tgt-list-row-hover: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), linear-gradient(90deg, #0075ff 0%, rgba(0, 0, 0, 0) 50%);
     --tgt-panel-title-gradient:
       linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), linear-gradient(90deg, #0075ff 0%, rgba(0, 0, 0, 0) 50%);

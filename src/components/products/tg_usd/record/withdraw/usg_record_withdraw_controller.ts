@@ -9,13 +9,13 @@ export function getWithdrawFormState(marketData: MarketDetailData, withdrawWeiVa
   if (!marketData) return { canProcess: false, cantProcessReasons: ["No market data"], haveToApprove: false }
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    reasons.push("No connected wallet")
   } else {
     if (withdrawWeiValue === 0n || !withdrawWeiValue) {
-      reasons.push("Amount must be greater than zero.")
+      reasons.push("Amount must be greater than zero")
     }
     if (maxWithdrawable < withdrawWeiValue) {
-      reasons.push("Value is greater than maxWithdrawable.")
+      reasons.push("Value is greater than max withdrawable")
     }
   }
   return { canProcess: reasons.length === 0, cantProcessReasons: reasons, haveToApprove: false }

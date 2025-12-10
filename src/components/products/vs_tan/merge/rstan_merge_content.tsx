@@ -1,18 +1,16 @@
 "use client"
 
-import InputSelect from "@/components/design_system/inputs/input_select"
-import { useVsTanContext } from "../rstan_layout_context"
-import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
-import { IconVsTan } from "@/components/icons/icon_vstan"
-import { formatBigInt } from "@/lib/number_formatter"
-import { useRsTanMergeContext } from "./rstan_merge_context"
-import EvolutionBox from "@/components/design_system/structure/evolution_box"
-import { formatDate } from "@/lib/other_formatter"
 import { InfinityIcon } from "lucide-react"
-import FormButtons from "@/components/design_system/form/form_actions"
-import TokenImage from "@/components/design_system/structure/token_image"
 import { Switch } from "@/components/ui/switch"
-import { IconOpenOutside } from "@/components/icons/icon_open_outside"
+import { formatDate } from "@/lib/other_formatter"
+import { formatBigInt } from "@/lib/number_formatter"
+import { useVsTanContext } from "../rstan_layout_context"
+import { useRsTanMergeContext } from "./rstan_merge_context"
+import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
+import FormButtons from "@/components/design_system/form/form_actions"
+import InputSelect from "@/components/design_system/inputs/input_select"
+import TokenImage from "@/components/design_system/structure/token_image"
+import { IconVsTan, IconOpenOutside } from "@/components/icons"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export const RsTanMergeContent = () => {
@@ -152,20 +150,7 @@ export const RsTanMergeContent = () => {
                 #{firstPositionToMergeInfo?.tokenId}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-tonic py-0.5 text-xs text-black">Updated</div>
               </div>
-              <EvolutionBox
-                className="w-4/6 sm:w-1/2"
-                originalValue={
-                  <div className="flex items-center justify-center font-semibold">
-                    {formatBigInt(firstPositionToMergeInfo?.amount, 18, 2)} <IconVsTan className="ml-1 h-5 w-5"></IconVsTan>
-                  </div>
-                }
-                newValue={
-                  <div className="flex h-full items-center justify-center font-semibold">
-                    {formatBigInt(secondPositionToMergeInfo?.amount + firstPositionToMergeInfo?.amount, 18, 2)}
-                    <IconVsTan className="ml-1 h-5 w-5"></IconVsTan>
-                  </div>
-                }
-              />
+
               <div className="hidden h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px] sm:flex">
                 {(firstPositionToMergeInfo?.endLockTime && firstPositionToMergeInfo?.endLockTime == "281474976710655") ||
                 (secondPositionToMergeInfo?.endLockTime && secondPositionToMergeInfo?.endLockTime == "281474976710655") ? (
@@ -181,19 +166,7 @@ export const RsTanMergeContent = () => {
                 #{secondPositionToMergeInfo?.tokenId}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-danger py-0.5 text-xs text-black">Deleted</div>
               </div>
-              <EvolutionBox
-                className="w-4/6 sm:w-1/2"
-                originalValue={
-                  <div className="flex items-center justify-center font-semibold">
-                    {formatBigInt(secondPositionToMergeInfo?.amount, 18, 2)} <IconVsTan className="ml-1 h-5 w-5"></IconVsTan>
-                  </div>
-                }
-                newValue={
-                  <div className="flex h-full items-center justify-center font-semibold">
-                    - <IconVsTan className="ml-4 h-5 w-5"></IconVsTan>
-                  </div>
-                }
-              />
+
               <div className="hidden h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px] sm:flex">-</div>
             </div>
 

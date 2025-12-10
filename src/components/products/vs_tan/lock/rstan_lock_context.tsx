@@ -9,13 +9,13 @@ import { useUSGContext } from "../../tg_usd/tg_usd_context"
 import { LockPosition, ZapToken } from "../../tg_usd/tg_usd_type"
 import { ToastComponent } from "@/components/design_system/toast"
 import { formatBigInt, formatDollar } from "@/lib/number_formatter"
+import { useRootContext } from "@/components/products/root/root_context"
 import { getQuote, getRoute } from "../../tg_usd/global_quote_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { AssetDataPriced, CollateralInfo, ExistingAsset, FormState } from "@/types"
-import { computeSwapAssetPrice } from "../../tg_usd/record/tg_usd_record_controller"
+import { computedMinAmountOut, computeSwapAssetPrice } from "../../tg_usd/record/tg_usd_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { doApprove, doIncreaseLockAmount, doLock, doZapAndIncreaseLock, doZapAndLock, getLockFormState } from "./rstan_lock_controller"
-import { useRootContext } from "../../root/root_context"
 
 type RsTanLockContextProps = {
   children: ReactNode
@@ -101,7 +101,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
 
   const [swapAssetPrice, setSwapAssetPrice] = useState<number>(0)
 
-  const [slippage, setSlippage] = useState<number>(1)
+  const [slippage, setSlippage] = useState<number>(0.2)
 
   const [depositPosition, setDepositPosition] = useState<string>("New")
 
@@ -211,21 +211,23 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
   }
 
   const actionZapAndLock = async () => {
+    if (!zapValue || !depositWeiValue) return
+
     setIsLoading(true)
     const walletClient = getWalletClient()
 
-    if (walletClient && depositWeiValue) {
+    if (walletClient) {
       const zapMarketData = {
         tokenIn: depositAssetInfo?.address,
         amountIn: depositWeiValue,
-        minAmountOut: (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        minAmountOut: computedMinAmountOut(zapValue, slippage),
       }
 
       const zapAndLockData = await getRoute(
         depositAssetInfo?.address,
         VSTAN_CONTRACT.TAN,
         depositWeiValue,
-        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        computedMinAmountOut(zapValue, slippage),
         VSTAN_CONTRACT.VSTAN,
         currentAddress!,
         curveRoutes

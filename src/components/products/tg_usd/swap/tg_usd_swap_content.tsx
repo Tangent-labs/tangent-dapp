@@ -1,18 +1,17 @@
 "use client"
 
 import Image from "next/image"
+import { Address } from "viem"
 import { ExistingAsset } from "@/types"
 import { DepositReceiveAsset } from "../tg_usd_type"
+import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGSwapContext } from "./tg_usd_swap_context"
-import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
-import BorderPanel from "@/components/design_system/structure/border_panel"
+import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { BuySellInput } from "@/components/design_system/inputs/buy_sell_input"
-import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 type AssetSelectProps = {
@@ -53,25 +52,29 @@ export default function USGSwapContent() {
   const ReceiveAssetSelect = ({ options }: AssetSelectProps) => {
     if (!options) {
       return (
-        <PopoverCombobox className="w-full" template={AssetSelectTemplate} value={receiveAsset} options={[]} onChange={(v: string) => setReceiveAsset(v)} />
+        <AssetSelectionDialog
+          className="w-full"
+          template={AssetSelectTemplate}
+          value={receiveAsset}
+          options={[]}
+          onChange={(v: string) => setReceiveAsset(v)}
+        />
       )
     }
 
     return (
-      <PopoverCombobox className="w-full" template={AssetSelectTemplate} value={receiveAsset} options={options} onChange={(v: string) => setReceiveAsset(v)} />
+      <AssetSelectionDialog
+        className="w-full"
+        template={AssetSelectTemplate}
+        value={receiveAsset}
+        options={options}
+        onChange={(v: string) => setReceiveAsset(v)}
+      />
     )
   }
 
   const DepositAssetSelect = ({ options }: AssetSelectProps) => {
-    return (
-      <PopoverCombobox
-        className="w-fit"
-        template={AssetSelectTemplate}
-        value={depositAsset || ""}
-        options={options}
-        onChange={(v: string) => setDepositAsset(v)}
-      />
-    )
+    return <AssetSelectionDialog template={AssetSelectTemplate} value={depositAsset || ""} options={options} onChange={(v: string) => setDepositAsset(v)} />
   }
 
   const AssetSelectTemplate = (option: {
@@ -82,20 +85,24 @@ export default function USGSwapContent() {
     symbol: string
     balance?: bigint
     decimals?: number
+    address?: Address
   }) => {
     return (
       <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
         <div className="flex w-full items-center gap-2">
           <>
             {option.symbol === "ETH" ? (
-              <TokenImage token={option.logo} size={20} />
+              <TokenImage token={option.logo} size={32} />
             ) : (
-              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={20} width={20} /> : <TokenImage token={option.logo} size={20} />}</>
+              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} /> : <TokenImage token={option.logo} size={32} />}</>
             )}
           </>
-          <span className="text-sm font-semibold">{option.symbol}</span>
-        </div>
 
+          <div className="flex flex-col items-start justify-start">
+            <span className="text-sm font-semibold">{option.symbol}</span>
+            <span className="text-xs text-subtitle">{formatAddress(option?.address, 4)}</span>
+          </div>
+        </div>
         <span className="ml-auto text-xs text-subtitle">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
       </div>
     )
@@ -147,11 +154,10 @@ export default function USGSwapContent() {
           <BuySellInput
             depositAmount={depositWeiValue}
             depositSelect={<DepositAssetSelect options={computedAssets?.depositAssets} />}
-            disabled={false}
             isLoading={isLoading || isSwapLoading}
             receiveSelect={<ReceiveAssetSelect options={computedAssets?.receiveAssets} />}
-            labelDeposit={"You Sell"}
-            labelReceive={"You Buy"}
+            labelDeposit={"You sell"}
+            labelReceive={"You buy"}
             setIsBuying={setIsBuying}
             isBuying={isBuying}
             toggleTokensSwitch={toggleTokensSwitch}
@@ -167,37 +173,7 @@ export default function USGSwapContent() {
           />
 
           <div className="mt-2 flex w-full items-end justify-end gap-2">
-            <Popover>
-              <PopoverTrigger asChild>
-                <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2 font-gilroy">
-                  <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
-                  <button type="button" title="Slippage">
-                    <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
-                      <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
-                    </div>
-                  </button>
-                </BorderPanel>
-              </PopoverTrigger>
-              <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none font-gilroy">
-                <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
-                  <div className="flex w-full flex-col items-center justify-between gap-2">
-                    <div className="flex w-full items-center justify-start">Slippage</div>
-                    <input
-                      onChange={(e) => setSlippage(Number(e?.target?.value))}
-                      value={slippage || 0}
-                      placeholder="0.5"
-                      type="number"
-                      className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
-                    />
-                    <div className="mt-2 flex w-full items-center justify-between gap-2">
-                      <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />
-                      <ButtonTab onClick={() => setSlippage(1)} label={"1.0%"} active={slippage === 1} className="rounded-full !px-2 !py-1" />
-                      <ButtonTab onClick={() => setSlippage(2)} label={"2.0%"} active={slippage === 2} className="rounded-full !px-2 !py-1" />
-                    </div>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
+            <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
           </div>
 
           <div className="mt-2 flex w-full">

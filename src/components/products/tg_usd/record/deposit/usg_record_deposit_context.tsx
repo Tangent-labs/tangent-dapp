@@ -13,17 +13,16 @@ import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_f
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computeAprVariation, computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../tg_usd_record_controller"
-import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit, doMarketDepositAndBorrow } from "./usg_record_deposit_controller"
+import { doMarketDeposit, doMarketDepositAndBorrow, doZapDeposit, doZapDepositAndBorrow, getDepositFormState } from "./usg_record_deposit_controller"
 
 type USGDepositContextProps = {
   children: ReactNode
+  isDepositAndBorrowInput: boolean
 }
 
 type USGDepositContextValues = {
   marketInfo: USGMarket
   collateralInfo: CollateralInfo
-  isDepositAndBorrow: boolean
-  setIsDepositAndBorrow: (arg: boolean) => void
   depositWeiValue?: bigint
   setDepositWeiValue: (arg: bigint | undefined) => void
   actionDeposit: () => void
@@ -79,17 +78,25 @@ type USGDepositContextValues = {
 
 export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
 
-export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
+export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDepositContextProps) => {
   const { curveRoutes, handleQuote } = useRootContext()
 
   const { tokens, loadUSGsUSGMetrics, marketAprs } = useUSGContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, balanceAllowanceData, fetchBalanceAllowanceData, collateralInfo, marketInfo, currentConvexTVL } =
-    useUSGRecordContext()
-
-  const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(true)
+  const {
+    marketData,
+    loadOnChainData,
+    setCurrentAmounts,
+    balanceAllowanceData,
+    isDepositAndBorrow,
+    fetchBalanceAllowanceData,
+    collateralInfo,
+    marketInfo,
+    currentConvexTVL,
+    setIsDepositAndBorrow,
+  } = useUSGRecordContext()
 
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
 
@@ -113,7 +120,11 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
 
   const [isZapUserInput, setIsZapUserInput] = useState<boolean>(false)
 
-  const [slippage, setSlippage] = useState<number>(1)
+  const [slippage, setSlippage] = useState<number>(0.2)
+
+  useEffect(() => {
+    setIsDepositAndBorrow(isDepositAndBorrowInput)
+  }, [])
 
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
     if (!!marketData && depositAsset === `Gauge ${collateralInfo?.symbol}`) {
@@ -199,6 +210,8 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
 
     if (!!depositAssetInfo && isZapping) {
       fetchZapValue()
+    } else if (!value || value == 0n) {
+      setZapValue(0n)
     }
   }
 
@@ -284,11 +297,25 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   }, [depositAsset])
 
   useEffect(() => {
-    setCurrentAmounts({
-      depositWeiValue: depositWeiValue || 0n,
-      borrowWeiValue: borrowWeiValue || 0n,
-      zapValue: zapValue || 0n,
-    })
+    if (depositWeiValue && depositAsset !== collateralInfo?.symbol && zapValue) {
+      setCurrentAmounts({
+        depositWeiValue: depositWeiValue,
+        borrowWeiValue: borrowWeiValue || 0n,
+        zapValue: zapValue,
+      })
+    } else if (depositWeiValue && depositAssetInfo?.symbol === collateralInfo?.symbol) {
+      setCurrentAmounts({
+        depositWeiValue: depositWeiValue || 0n,
+        borrowWeiValue: borrowWeiValue || 0n,
+        zapValue: 0n,
+      })
+    } else {
+      setCurrentAmounts({
+        depositWeiValue: 0n,
+        borrowWeiValue: 0n,
+        zapValue: 0n,
+      })
+    }
   }, [depositWeiValue, borrowWeiValue, zapValue])
 
   const actionApproveZap = async () => {
@@ -378,21 +405,6 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     }
   }
 
-  const formState = useMemo(
-    () =>
-      getDepositFormState(
-        marketData,
-        depositWeiValue,
-        borrowWeiValue,
-        isDepositAndBorrow,
-        isWellConnected,
-        depositAssetInfo?.address,
-        collateralInfo!,
-        balanceAllowanceData!
-      ),
-    [marketData, isDepositAndBorrow, borrowWeiValue, depositWeiValue, isWellConnected, currentAddress, depositAssetInfo, balanceAllowanceData, isDepositLoading]
-  )
-
   useEffect(() => {
     if (depositAssetInfo) {
       fetchBalanceAllowanceData(depositAssetInfo?.address)
@@ -426,7 +438,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   }
 
   const zapAndDepositAndBorrow = async () => {
-    if (!depositWeiValue || !currentAddress || !depositAssetInfo || !borrowWeiValue) return
+    if (!depositWeiValue || !currentAddress || !depositAssetInfo || !borrowWeiValue || !zapValue) return
 
     setIsZapLoading(true)
     setIsDepositLoading(true)
@@ -436,7 +448,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
         depositAssetInfo?.address,
         collateralInfo?.address,
         depositWeiValue,
-        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        computedMinAmountOut(zapValue, slippage),
         marketInfo?.marketAddress,
         currentAddress,
         curveRoutes
@@ -445,7 +457,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
       const zapMarketData = {
         tokenIn: depositAssetInfo?.address,
         amountIn: depositWeiValue,
-        minAmountOut: (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        minAmountOut: computedMinAmountOut(zapValue, slippage),
       }
 
       const walletClient = getWalletClient()
@@ -455,7 +467,8 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
           resetAfterDepositSuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
         })
-        .catch(() => {
+        .catch((e) => {
+          console.error(e)
           setIsZapLoading(false)
           setIsDepositLoading(false)
           toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
@@ -466,7 +479,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
   }
 
   const zapAndDeposit = async () => {
-    if (!depositWeiValue || !currentAddress || !depositAssetInfo) return
+    if (!depositWeiValue || !currentAddress || !depositAssetInfo || !zapValue) return
 
     setIsZapLoading(true)
     setIsDepositLoading(true)
@@ -476,7 +489,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
         depositAssetInfo?.address,
         collateralInfo?.address,
         depositWeiValue,
-        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        computedMinAmountOut(zapValue, slippage),
         marketInfo?.marketAddress,
         currentAddress,
         curveRoutes
@@ -485,7 +498,7 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
       const zapMarketData = {
         tokenIn: depositAssetInfo?.address,
         amountIn: depositWeiValue,
-        minAmountOut: (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        minAmountOut: computedMinAmountOut(zapValue, slippage),
       }
 
       const walletClient = getWalletClient()
@@ -495,7 +508,8 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
           resetAfterDepositSuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
         })
-        .catch(() => {
+        .catch((e) => {
+          console.error(e)
           setIsZapLoading(false)
           setIsDepositLoading(false)
           toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
@@ -533,14 +547,17 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     return 0n
   }, [marketData, depositWeiValue, depositAsset, depositAssetInfo, zapValue, slippage, isZapping])
 
+  // TODO Verify for a market that doesn't have a 18 decimals collateral
   const estimatedZapDollarValue = useMemo(() => {
     if (zapValue && marketData) {
-      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), 18))})`
+      const result = `~(${formatDollar(
+        formatUnits((computedMinAmountOut(zapValue, slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), 18)
+      )})`
       return result
     }
 
     return ""
-  }, [zapValue])
+  }, [zapValue, slippage])
 
   const maxDepositString = useMemo(() => {
     const asset = depositAssetInfo?.symbol
@@ -582,11 +599,25 @@ export const USGDepositProvider = ({ children }: USGDepositContextProps) => {
     return result
   }, [zapValue, depositWeiValue, collateralInfo?.symbol, marketAprs, marketData, currentConvexTVL, isZapping])
 
+  const formState = useMemo(
+    () =>
+      getDepositFormState(
+        marketData,
+        depositWeiValue,
+        borrowWeiValue,
+        isDepositAndBorrow,
+        isWellConnected,
+        depositAssetInfo?.address,
+        collateralInfo!,
+        balanceAllowanceData!,
+        maxBorrowableValue || 0n
+      ),
+    [marketData, isDepositAndBorrow, borrowWeiValue, depositWeiValue, isWellConnected, currentAddress, depositAssetInfo, balanceAllowanceData, isDepositLoading]
+  )
+
   const contextValue: USGDepositContextValues = {
     marketInfo,
     collateralInfo,
-    isDepositAndBorrow,
-    setIsDepositAndBorrow,
     depositWeiValue,
     setDepositWeiValue,
     actionApprove,

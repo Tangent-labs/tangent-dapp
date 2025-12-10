@@ -26,7 +26,7 @@ type USGLiquidateContextValues = {
   setLiquidateWeiValue: (arg: bigint | undefined) => void
   isFullLiquidation: boolean
   setIsFullLiquidation: (arg: boolean) => void
-  onChangeIsFullLiquidation: (arg: boolean) => void
+
   maxLiquidable: bigint
   liquidablePercentage: number
   setLiquidablePercentage: (arg: number) => void
@@ -68,7 +68,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
 
   const [repayablePercentage, setRepayablePercentage] = useState<number>(0)
 
-  const [slippage, setSlippage] = useState<number>(1)
+  const [slippage, setSlippage] = useState<number>(0.2)
 
   const [isQuoteLoading, setIsQuoteLoading] = useState<boolean>(false)
 
@@ -79,15 +79,6 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   const [repayWeiValue, setRepayWeiValue] = useState<bigint | undefined>()
 
   const [tgUSDReceivedValue, setTgUSDReceivedValue] = useState<bigint | undefined>()
-
-  const onChangeIsFullLiquidation = (liquidateFull: boolean) => {
-    setIsFullLiquidation(liquidateFull)
-
-    if (!liquidateFull) {
-      setLiquidateWeiValue(0n)
-      setLiquidablePercentage(0)
-    }
-  }
 
   useEffect(() => {
     if (isFullLiquidation) {
@@ -134,17 +125,19 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
       doMarketLiquidate(
         liquidateWeiValue,
         repayValue,
-        maxUSGToBurn,
         computedMinAmountOut(tgUSDReceivedValue, slippage),
+        maxUSGToBurn,
         false,
         liquidationData!,
         walletClient,
         marketInfo?.marketAddress
       )
         .then(() => {
+          toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
           loadUSGsUSGMetrics()
           loadOnChainData()
           setLiquidateWeiValue(0n)
+          setLiquidablePercentage(0)
           setRepayWeiValue(0n)
           setTgUSDReceivedValue(0n)
         })
@@ -238,7 +231,6 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     setRepayablePercentage,
     maxRepayable,
     handleLiquidateValueChange,
-    onChangeIsFullLiquidation,
     slippage,
     setSlippage,
     maxLiquidateString,

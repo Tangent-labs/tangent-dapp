@@ -3,7 +3,7 @@ import { USGRepayProvider } from "@/components/products/tg_usd/record/repay/usg_
 
 export default function USGRecordRepayPage() {
   return (
-    <USGRepayProvider>
+    <USGRepayProvider isRepayAndWithdrawInput={false}>
       <USGRepayContent />
     </USGRepayProvider>
   )

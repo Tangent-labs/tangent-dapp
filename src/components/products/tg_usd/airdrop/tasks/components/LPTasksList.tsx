@@ -2,11 +2,10 @@
 
 import { UserTask } from "../../../tg_usd_type"
 import { ExistingAsset, ListState } from "@/types"
+import { IconSortHeader } from "@/components/icons"
 import { TaskStatus } from "../../components/TaskStatus"
 import { formatNumber, formatDollar } from "@/lib/number_formatter"
-import { IconSortHeader } from "@/components/icons/icon_sort_header"
 import TokenImage from "@/components/design_system/structure/token_image"
-import BorderPanel from "@/components/design_system/structure/border_panel"
 import { useListContext } from "@/components/design_system/list/list_context"
 
 export const lpListState: ListState = {
@@ -74,7 +73,7 @@ export const LPTasksList = () => {
 
   return (
     <>
-      <div className="mb-1 mt-6 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="mb-1 mt-6 rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <div className={`hidden p-4 leading-[10px] xl:block`}>
           <LpTaskListDisposition>
             {!!headers?.at(0)?.key && (
@@ -144,10 +143,10 @@ export const LPTasksList = () => {
       <div className="scrollbar-thin max-h-[500px] overflow-y-auto">
         {displayRows &&
           (displayRows as UserTask[])?.map((task: UserTask) => (
-            <BorderPanel
+            <div
               onClick={() => window.open(task.url, "_blank")}
               key={task?.taskId}
-              className="mb-2 bg-overlay-panel px-2 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover lg:px-5"
+              className="mb-2 bg-overlay-panel px-2 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:rounded-[10px] hover:before:bg-list-row-hover lg:px-5"
             >
               <div className="hidden items-center justify-between md:flex">
                 <div className="flex w-2/12 items-center gap-2 xl:gap-4">
@@ -207,7 +206,7 @@ export const LPTasksList = () => {
                 </div>
                 <div className="flex w-full items-center justify-center"> {task?.description}</div>
               </div>
-            </BorderPanel>
+            </div>
           ))}
       </div>
     </>

@@ -4,14 +4,14 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
 import { ExistingAsset } from "@/types"
-import { useRootContext } from "../../root/root_context"
 import { useUSGStakeContext } from "./tg_usd_stake_context"
 import { computeProjection } from "./tg_usd_stake_controller"
 import Divider from "@/components/design_system/structure/divider"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
+import { useRootContext } from "@/components/products/root/root_context"
 import PerformanceHistoryPanel from "./components/PerformanceHistoryPanel"
+import LargeButtonTab from "@/components/design_system/inputs/large_button_tab"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
@@ -107,7 +107,7 @@ export default function USGStakeContent() {
               <span className="text-sm text-subtitle">sUSG</span>
               <span className="text-lg font-semibold">{formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 2)}</span>
             </div>
-            <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-1">
+            <div className="flex flex-col items-center justify-center rounded-[10px] bg-button-active px-8 py-1">
               <span className="text-black">APY</span>
               <span className="text-lg font-semibold">{sUSGCurrentAPY.toFixed(2)}%</span>
             </div>
@@ -118,18 +118,18 @@ export default function USGStakeContent() {
       <div className="mt-4 flex w-full flex-col gap-2 lg:flex-row lg:gap-4">
         <div className="flex w-full flex-col items-center justify-start gap-1 rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] lg:w-5/12 xl:w-1/3">
           <div className="flex w-full items-center justify-between gap-4">
-            <ButtonTab
+            <LargeButtonTab
               onClick={() => setCurrentFeature("stake")}
               active={currentFeature === "stake"}
               className="flex w-full justify-center"
               label="Stake"
-            ></ButtonTab>
-            <ButtonTab
+            ></LargeButtonTab>
+            <LargeButtonTab
               onClick={() => setCurrentFeature("unstake")}
               active={currentFeature === "unstake"}
               className="flex w-full justify-center"
               label="Unstake"
-            ></ButtonTab>
+            ></LargeButtonTab>
           </div>
 
           <Divider className="h-1 w-full"></Divider>

@@ -37,6 +37,7 @@ export default function AssetSelectionDialog<T extends OptionT>({
   const [search, setSearch] = useState("")
 
   const inputRef = useRef<HTMLInputElement>(null)
+
   const listRef = useRef<List>(null)
 
   const selected = useMemo(() => options.find((o) => o.value === value || o.symbol === value) ?? null, [options, value])
@@ -76,7 +77,7 @@ export default function AssetSelectionDialog<T extends OptionT>({
         <button
           disabled={disabled}
           type="button"
-          className="flex min-h-10 w-full items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 py-1.5"
+          className="flex min-h-10 items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 py-1.5"
           style={{ borderWidth: 1.5 }}
         >
           <span className="flex items-center gap-2">
@@ -99,9 +100,9 @@ export default function AssetSelectionDialog<T extends OptionT>({
         </button>
       </DialogTrigger>
 
-      <DialogContent className="h-[400px] max-w-[400px] rounded-[10px] bg-overlay-panel p-4 text-white">
+      <DialogContent className="h-[500px] w-full max-w-[500px] rounded-[10px] bg-overlay-panel p-4 text-white">
         <div data-combobox className="flex min-h-56 w-full min-w-32 flex-col">
-          <div className="flex w-full items-center justify-start font-semibold text-white">Select a token</div>
+          <div className="flex w-full items-center justify-start text-lg font-semibold text-white">Select a token</div>
           <div className="w-full py-2">
             <Input ref={inputRef} placeholder="Search a token name..." value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>

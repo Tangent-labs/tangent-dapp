@@ -6,7 +6,7 @@ import { AssetDataPriced } from "@/types"
 import { SliderInput } from "./slider_input"
 import BorderPanel from "../structure/border_panel"
 import DisplayReceivePanel from "./display_recieve_panel"
-import { IconChevron } from "@/components/icons/icon_chevron"
+import { IconChevron } from "@/components/icons"
 import { formatDollar, toBigInt } from "@/lib/number_formatter"
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
 
@@ -37,8 +37,8 @@ export function DepositReceiveInput({
   depositAsset,
   receiveAmount,
   receiveDollarValue,
-  labelDeposit = "You Deposit",
-  labelReceive = "You Stake",
+  labelDeposit = "You deposit",
+  labelReceive = "You stake",
   setMaxBalance,
   onValueChange,
   depositSelect = <></>,
@@ -134,27 +134,13 @@ export function DepositReceiveInput({
 
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
-
-        <div className="flex w-full cursor-pointer items-center gap-2">
+        <div className="flex w-full items-center justify-between gap-2">
           <div className="flex w-full flex-col">
-            <input
-              type="range"
-              min="0"
-              step="1"
-              max="100"
-              value={percentage}
-              onChange={handleSliderChange}
-              className="mt-3 h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]"
-              style={{
-                background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
-              }}
-            />
-
-            <SliderInput handleSliderChange={handleSliderChange}></SliderInput>
+            <SliderInput percentage={percentage} handleSliderChange={handleSliderChange}></SliderInput>
           </div>
 
           <BorderPanel
-            className="flex w-10 cursor-pointer items-center bg-button-active px-1 text-xs text-white hover:font-semibold"
+            className="w-10 min-w-10 cursor-pointer bg-button-active px-1 text-center text-xs text-white hover:font-semibold"
             onClick={() => {
               if (setMaxBalance) setMaxBalance()
             }}
@@ -165,7 +151,7 @@ export function DepositReceiveInput({
       </BorderPanel>
 
       <div className="my-2 flex w-full cursor-pointer items-center justify-center border-none">
-        <IconChevron className="h-10 w-10 rounded-[10px] border border-white border-opacity-20 bg-select-input p-3 text-white" />
+        <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-20 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
       </div>
 
       <DisplayReceivePanel

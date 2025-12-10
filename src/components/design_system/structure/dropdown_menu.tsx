@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils"
 import React, { ReactNode } from "react"
-import { IconChevron } from "@/components/icons/icon_chevron"
+import { IconChevron } from "@/components/icons"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 type DropdownMenuProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -26,10 +26,10 @@ export default function DropdownMenu({ children, label, pathname }: DropdownMenu
               {label}
             </p>
           </div>
-          <IconChevron className="w-2" />
+          <IconChevron className="w-2 stroke-white" />
         </button>
       </HoverCardTrigger>
-      <HoverCardContent side="top" className="z-100 !m-0 w-fit !border-none bg-[#070707] !p-0">
+      <HoverCardContent side="top" className="z-100 !m-0 w-fit !border-none bg-dark !p-0">
         <div className="rounded-[10px] p-2">{children}</div>
       </HoverCardContent>
     </HoverCard>

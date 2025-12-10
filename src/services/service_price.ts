@@ -2,7 +2,7 @@ import { ADDR_TOKEN, TOKEN_ADDR } from "@/services/repo_asset_addresses"
 import { AssetConfigKey } from "@/services/repo_asset_infos"
 import { dappConfig } from "@/dapp_config"
 import { Address } from "viem"
-import { revalidateTag, unstable_cache } from "next/cache"
+import { unstable_cache } from "next/cache"
 import { ExistingAsset } from "@/types"
 
 const CACHE_PRICE_TAG = "tan-price"
@@ -44,10 +44,6 @@ const _fetchAndReturnPrices = async (list: Address[]): Promise<Record<AssetConfi
 const _getPrice = async (): Promise<Record<AssetConfigKey, number> | undefined> => {
   const list = Object.values(TOKEN_ADDR)
   return _fetchAndReturnPrices(list)
-}
-
-export const resetPricesCache = () => {
-  revalidateTag(CACHE_PRICE_TAG)
 }
 
 export const getPrices = unstable_cache(

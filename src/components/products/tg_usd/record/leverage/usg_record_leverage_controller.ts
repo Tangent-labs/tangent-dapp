@@ -25,9 +25,7 @@ export function getLeverageFormState(
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
   } else {
-    if (borrowWeiValue === 0n) {
-      reasons.push("No amount.")
-    } else if (!isZapMode && (depositWeiValue || 0n) > (marketData?.collateralBalance || 0n)) {
+    if (!isZapMode && (depositWeiValue || 0n) > (marketData?.collateralBalance || 0n)) {
       reasons.push("Not enough balance.")
     } else if (isZapMode && (depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
       reasons.push("Not enough balance.")

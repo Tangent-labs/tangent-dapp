@@ -3,8 +3,7 @@
 import { ListState } from "@/types"
 import { Boost } from "../../../tg_usd_type"
 import { TaskStatus } from "../../components/TaskStatus"
-import { IconSortHeader } from "@/components/icons/icon_sort_header"
-import BorderPanel from "@/components/design_system/structure/border_panel"
+import { IconSortHeader } from "@/components/icons"
 import { useListContext } from "@/components/design_system/list/list_context"
 
 export const boostsListState: ListState = {
@@ -31,7 +30,7 @@ export const BoostsList = () => {
 
   return (
     <>
-      <div className="mb-1 mt-6 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="mb-1 mt-6 rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <div className={`hidden p-4 leading-[10px] xl:block`}>
           <BoostRowLayout>
             {!!headers?.at(0)?.key && (
@@ -73,9 +72,9 @@ export const BoostsList = () => {
       <div className="scrollbar-thin max-h-[560px] overflow-y-auto">
         {displayRows &&
           (displayRows as Boost[])?.map((boost: Boost) => (
-            <BorderPanel
+            <div
               key={boost?.type}
-              className="mb-2 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
+              className="mb-1 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
             >
               <div className="hidden items-center justify-between md:flex">
                 <div className="flex w-1/3 items-center gap-2 xl:gap-4">
@@ -107,7 +106,7 @@ export const BoostsList = () => {
                   </div>
                 </div>
               </div>
-            </BorderPanel>
+            </div>
           ))}
       </div>
     </>

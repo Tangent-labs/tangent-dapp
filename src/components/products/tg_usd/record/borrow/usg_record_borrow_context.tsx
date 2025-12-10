@@ -47,7 +47,8 @@ export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
           setBorrowPercentage(0)
           loadUSGsUSGMetrics()
         })
-        .catch(() => {
+        .catch((e) => {
+          console.error(e)
           toast.error(ToastComponent, { data: { type: "Error", content: "Borrow failed." } })
         })
   }

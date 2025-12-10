@@ -83,7 +83,7 @@ export default function USGClaimContent() {
       <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
         <div className="flex w-full flex-col md:w-9/12">
           <div className="flex w-full flex-col items-start justify-between sm:flex-row sm:items-end">
-            <div className="mt-0 flex items-center justify-between md:mt-10">
+            <div className="mt-0 flex w-80 items-center justify-between md:mt-10">
               <IndicatorCards
                 className="gap-6"
                 indicators={[
@@ -136,7 +136,7 @@ export default function USGClaimContent() {
             {marketsToClaim.length > 0 && (
               <>
                 {isWellConnected ? (
-                  <Button label="CLAIM" className="flex w-full items-center justify-center" onClick={() => onClickClaim(marketsToClaim)} />
+                  <Button label="Claim" className="flex w-full items-center justify-center" onClick={() => onClickClaim(marketsToClaim)} />
                 ) : (
                   <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
                 )}
@@ -156,12 +156,12 @@ function ClaimList() {
 
   return (
     <>
-      <div className="my-2 w-full rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="mb-0.5 mt-2 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <ListHeader rowDisposition={ClaimRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 
       {(displayRows as ClaimData[])?.map((item: ClaimData) => (
-        <div key={item.marketAddress} className="my-1 rounded-[10px] bg-overlay-panel px-4 py-2.5 backdrop-blur-[60px]">
+        <div key={item.marketAddress} className="my-0.5 bg-overlay-panel px-4 py-2.5 backdrop-blur-[60px]">
           <div className="flex items-center justify-between max-xl:flex-col">
             <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
               <div className="xl:w-2/3">

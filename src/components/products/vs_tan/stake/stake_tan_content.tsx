@@ -120,7 +120,7 @@ export default function StakeTanContent() {
               <span className="text-sm text-subtitle">sTan</span>
               <span className="text-lg font-semibold">{formatDollar(formatBigInt(TANsTANMetrics.sTanPrice, 12, 6), 6)}</span>
             </div>
-            <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-2">
+            <div className="flex flex-col items-center justify-center rounded-[10px] bg-button-active px-8 py-2">
               <span className="font-semibold text-black">APR</span>
               <span className="text-lg font-semibold">15.32%</span>
             </div>

@@ -76,8 +76,7 @@ export default function PopoverCombobox<T extends OptionT>({
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="flex min-h-10 w-full items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 py-1.5 placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-            style={{ borderWidth: 1.5 }}
+            className="flex min-h-10 w-full items-center justify-between rounded-[10px] border-tangent border-white/20 bg-select-input px-2.5 py-1.5 placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           >
             <span className="flex items-center gap-2">
               {selected ? (
@@ -95,7 +94,7 @@ export default function PopoverCombobox<T extends OptionT>({
                 <span className="truncate text-sm opacity-70">{placeholder}</span>
               )}
             </span>
-            <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+            <ChevronDown className="ml-1 h-4 w-4 shrink-0 opacity-80" />
           </button>
         </PopoverTrigger>
 

@@ -2,21 +2,18 @@
 
 import { cn } from "@/lib/utils"
 import { Switch } from "@/components/ui/switch"
-import { IconThunder } from "@/components/icons/icon_thunder"
+
 import { useUSGRecordContext } from "../tg_usd_record_context"
-import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
-import { IconCircleHelp } from "@/components/icons/icon_circle_help"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import { useUSGLeverageContext } from "./usg_record_leverage_context"
 import FormButtons from "@/components/design_system/form/form_actions"
-import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
 import TokenImage from "@/components/design_system/structure/token_image"
+import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
+import { IconThunder, IconCircleHelp, IconSingleArrow } from "@/components/icons"
 import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
@@ -26,6 +23,7 @@ export default function USGLeverageContent() {
   const {
     setDepositAsset,
     setIsDepositDisabled,
+    setIsLeverageAllPosition,
     setDepositWeiValue,
     actionApprove,
     handleDepositChange,
@@ -37,6 +35,7 @@ export default function USGLeverageContent() {
     updateBorrowWeiValue,
     actionZapLeverage,
     actionApproveZap,
+    isLeverageAllPosition,
     depositAsset,
     depositWeiValue,
     formState,
@@ -55,6 +54,7 @@ export default function USGLeverageContent() {
     maxDepositString,
     computedMaxLeverage,
     aprVariation,
+    computedDepositAmount,
     isZapping,
   } = useUSGLeverageContext()
 
@@ -68,46 +68,27 @@ export default function USGLeverageContent() {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex w-full items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-subtitle">Leverage only</span>
-          <Switch checked={isDepositDisabled} onCheckedChange={(v) => setIsDepositDisabled(v)} />
-        </div>
+      {!!marketData?.collateralInfos?.positionCollateralAmount && marketData?.collateralInfos?.positionCollateralAmount > 0n && (
+        <div className="flex w-full items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
+            {!!marketData?.collateralInfos?.positionCollateralAmount &&
+              marketData?.collateralInfos?.positionCollateralAmount > 0n &&
+              !isLeverageAllPosition && (
+                <>
+                  <span className="text-sm text-subtitle">Leverage only</span>
+                  <Switch checked={isDepositDisabled} onCheckedChange={(v) => setIsDepositDisabled(v)} />
+                </>
+              )}
 
-        <div className="flex items-center justify-start gap-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2">
-                <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
-                <button type="button" title="Slippage">
-                  <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
-                    <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
-                  </div>
-                </button>
-              </BorderPanel>
-            </PopoverTrigger>
-            <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none">
-              <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
-                <div className="flex w-full flex-col items-center justify-between gap-2">
-                  <div className="flex w-full items-center justify-start">Slippage</div>
-                  <input
-                    onChange={(e) => setSlippage(Number(e?.target?.value))}
-                    value={slippage || 0}
-                    placeholder="0.5"
-                    type="number"
-                    className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
-                  />
-                  <div className="mt-2 flex w-full items-center justify-between gap-2">
-                    <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />
-                    <ButtonTab onClick={() => setSlippage(1)} label={"1.0%"} active={slippage === 1} className="rounded-full !px-2 !py-1" />
-                    <ButtonTab onClick={() => setSlippage(2)} label={"2.0%"} active={slippage === 2} className="rounded-full !px-2 !py-1" />
-                  </div>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+            {!!marketData?.collateralInfos?.positionCollateralAmount && marketData?.collateralInfos?.positionCollateralAmount > 0n && !isDepositDisabled && (
+              <>
+                <span className="text-sm text-subtitle">Leverage all</span>
+                <Switch checked={isLeverageAllPosition} onCheckedChange={(v) => setIsLeverageAllPosition(v)} />
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {!isDepositDisabled && (
         <>
@@ -167,75 +148,83 @@ export default function USGLeverageContent() {
       )}
 
       <>
-        <div className="flex w-full items-end justify-between">
-          <span className="flex items-start justify-start text-sm font-semibold md:text-xl">Borrow amount</span>
+        <div className="flex flex-col gap-1">
+          <div className="flex w-full items-end justify-between gap-1">
+            <span className="flex items-start justify-start text-sm font-semibold md:text-xl">Borrow USG</span>
 
-          <div className="flex items-end justify-end text-xs text-subtitle">{computedMaxLeverage}</div>
+            <div className="flex items-end justify-end text-xs text-subtitle">{computedMaxLeverage}</div>
+          </div>
+
+          <LeverageInput
+            label="You borrow"
+            depositAmount={computedDepositAmount}
+            borrowAsset={USGInfo}
+            depositAsset={pricedCollateralInfo}
+            percentage={leveragePercentage}
+            setPercentage={setLeveragePercentage}
+            onValueChange={(e) => updateBorrowWeiValue(e)}
+          />
         </div>
 
-        <LeverageInput
-          label="You borrow"
-          depositAmount={!!zapValue ? zapValue : depositWeiValue}
-          borrowAsset={USGInfo}
-          depositAsset={pricedCollateralInfo}
-          percentage={isDepositDisabled ? 0 : leveragePercentage}
-          setPercentage={isDepositDisabled ? undefined : setLeveragePercentage}
-          onValueChange={(e) => updateBorrowWeiValue(e)}
-        />
-
-        <Accordion className="w-full" type="single" collapsible>
-          <AccordionItem value="item-1">
-            <BorderPanel className="flex w-full cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
-              <AccordionTrigger>
-                <span className="py-1.5">Recap</span>
-              </AccordionTrigger>
-              <AccordionContent className="w-full">
-                <div className={cn("flex flex-col gap-1 text-xs", isDepositLoading ? "shimmer" : "")}>
-                  {!isDepositDisabled && (
+        <div className="flex items-start justify-start gap-2">
+          <Accordion className={cn("w-full", isDepositLoading ? "shimmer rounded-[10px]" : "")} type="single" collapsible>
+            <AccordionItem value="item-1">
+              <BorderPanel className="flex w-full cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
+                <AccordionTrigger>
+                  <span className="py-1.5">Recap</span>
+                </AccordionTrigger>
+                <AccordionContent className="w-full">
+                  <div className="flex flex-col gap-1 rounded-[10px] text-xs">
                     <div className="flex w-full items-center justify-between">
                       <span className="text-subtitle">Leverage : </span>
                       <span className="text-white">~{leveragePercentage.toFixed(2)}x</span>
                     </div>
-                  )}
 
-                  {displayAPRVariation && (
-                    <>
-                      <div className="flex w-full items-center justify-between">
-                        <span className="text-subtitle">APR variation : </span>
-                      </div>
-
-                      <div className="flex w-full items-center justify-between">
-                        <span className="ml-4 italic text-subtitle">Current </span>
-                        <div className="flex items-center justify-center gap-1">
-                          <span className="text-white">{aprVariation.current}</span>
-                          <IconSingleArrow></IconSingleArrow>
-                          <span className="text-tonic">{aprVariation.currentUpdated}</span>
+                    {displayAPRVariation && (
+                      <>
+                        <div className="flex w-full items-center justify-between">
+                          <span className="text-subtitle">APR variation : </span>
                         </div>
-                      </div>
 
-                      <div className="flex w-full items-center justify-between">
-                        <span className="ml-4 italic text-subtitle">Projected </span>
-                        <div className="flex items-center justify-center gap-1">
-                          <span className="text-white">{aprVariation.projected}</span>
-                          <IconSingleArrow></IconSingleArrow>
-                          <span className="text-tonic">{aprVariation.projectedUpdated}</span>
+                        <div className="flex w-full items-center justify-between">
+                          <span className="ml-4 italic text-subtitle">Current </span>
+                          <div className="flex items-center justify-center gap-1">
+                            <span className="text-white">{aprVariation.current}</span>
+                            <IconSingleArrow></IconSingleArrow>
+                            <span className="text-tonic">{aprVariation.currentUpdated}</span>
+                          </div>
                         </div>
-                      </div>
-                    </>
-                  )}
 
-                  <div className={cn(displayAPRVariation ? "mt-2 border-t border-white/30 pt-2" : "", "flex w-full items-center justify-between")}>
-                    <span className="text-subtitle">Expected : </span>
-                    <span className="text-white">
-                      {expectedCollateral?.sum}
-                      <span className="font-semibold text-white">{expectedCollateral?.result}</span>
-                    </span>
+                        <div className="flex w-full items-center justify-between">
+                          <span className="ml-4 italic text-subtitle">Projected </span>
+                          <div className="flex items-center justify-center gap-1">
+                            <span className="text-white">{aprVariation.projected}</span>
+                            <IconSingleArrow></IconSingleArrow>
+                            <span className="text-tonic">{aprVariation.projectedUpdated}</span>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    <div
+                      className={cn(
+                        displayAPRVariation ? "mt-2 border-t border-white/30 pt-2" : "",
+                        "flex w-full flex-col items-start justify-start md:flex-row md:items-center md:justify-between"
+                      )}
+                    >
+                      <span className="text-subtitle">Expected collateral: </span>
+                      <span className="text-white">
+                        {expectedCollateral?.sum}
+                        <span className="font-semibold text-white">{expectedCollateral?.result}</span>
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </AccordionContent>
-            </BorderPanel>
-          </AccordionItem>
-        </Accordion>
+                </AccordionContent>
+              </BorderPanel>
+            </AccordionItem>
+          </Accordion>
+          <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
+        </div>
       </>
 
       <MarketTransactionError display={!!depositWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />
@@ -253,7 +242,7 @@ export default function USGLeverageContent() {
         }}
         connect={connect}
         formState={formState}
-        labelProcess={depositAsset && isZapping ? "Zap and leverage" : "Leverage"}
+        labelProcess={depositAsset && isZapping ? "Zap & leverage" : "Leverage"}
       />
     </div>
   )

@@ -3,8 +3,8 @@
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { generateCode, getReferralStatus, validateReferralCode } from "../client_api"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { useRootContext } from "../../root/root_context"
 
 export type UserStatus = {
@@ -73,7 +73,6 @@ export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
       const message = `I am using the following referral code ${referralStatus?.referralCode}`
 
       if (walletClient && currentAddress) {
-        // Sign the message
         const signature = await walletClient.signMessage({
           account: currentAddress,
           message,

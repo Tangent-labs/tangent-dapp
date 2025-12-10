@@ -36,7 +36,7 @@ export const MarketMetadata = ({ marketData }: MarketMetadataProps) => {
           )}
 
           <BorderPanel
-            className={`flex items-center justify-center !rounded-full px-3 py-0.5 text-xs ${marketData?.constants?.irParams.isHEC ? "bg-button-linear" : "bg-lec"}`}
+            className={`flex items-center justify-center !rounded-full px-3 py-0.5 text-xs ${marketData?.constants?.irParams.isHEC ? "bg-button-active" : "bg-lec"}`}
           >
             {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
           </BorderPanel>

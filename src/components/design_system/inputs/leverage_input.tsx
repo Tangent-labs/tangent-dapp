@@ -87,7 +87,7 @@ export function LeverageInput({
   }, [innerValue, depositAsset])
 
   const dollarDepositDisplay = useMemo(() => {
-    if (innerValue && borrowAsset?.decimals && borrowAsset?.price) {
+    if (Number(innerValue) && borrowAsset?.decimals && borrowAsset?.price) {
       const val = Number(formatUnits(toBigInt(Number(innerValue), 18), borrowAsset.decimals)) * borrowAsset.price
       return `(${formatDollar(val)})`
     }
@@ -99,15 +99,19 @@ export function LeverageInput({
   }
 
   return (
-    <BorderPanel onClick={onClickFocus} className={`${isLoading ? "shimmer" : ""} flex cursor-pointer flex-col bg-white bg-opacity-[3%] p-2`}>
+    <BorderPanel
+      onClick={onClickFocus}
+      className={`${isLoading ? "shimmer" : ""} flex cursor-pointer flex-col bg-white bg-opacity-[3%] p-2 transition-colors duration-200 hover:bg-white/10`}
+    >
       <div className="flex w-full justify-between">
         <div className="text-sm text-subtitle">{label}</div>
       </div>
-      <div className="mb-1 flex justify-between">
+      <div className="flex justify-between">
         <div className="flex items-center justify-start">
           <input
             {...props}
-            type="string"
+            type="number"
+            step="any"
             ref={inputRef}
             value={innerValue}
             onInput={handleInputChange}
@@ -130,7 +134,7 @@ export function LeverageInput({
             max="10"
             value={percentage}
             onChange={handleSliderChange}
-            className="mt-3 h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]"
+            className="mt-3 h-1.5 w-full cursor-pointer appearance-none rounded-[10px] bg-dark"
             style={{
               background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage * 10}%)`,
             }}
@@ -168,7 +172,7 @@ export function LeverageInput({
         </div>
 
         <BorderPanel
-          className="rounded-full! flex w-10 cursor-pointer items-center bg-button-active px-1 text-xs text-white hover:font-semibold"
+          className="w-10 min-w-10 cursor-pointer bg-button-active px-1 text-center text-xs text-white hover:font-semibold"
           onClick={() => handleSliderChange({ target: { value: "10" } } as React.ChangeEvent<HTMLInputElement>)}
         >
           Max.

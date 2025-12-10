@@ -81,7 +81,7 @@ export const MultiPositionSelect = ({ lockData, selectedPositions, setSelectedPo
         <button
           onClick={handleSelectAll}
           disabled={allPositions.length === 0}
-          className="flex h-full items-center justify-center rounded-lg border border-gray-600 px-4 py-1 text-white"
+          className="flex h-full items-center justify-center rounded-[10px] border border-gray-600 px-4 py-1 text-white"
         >
           Select all
         </button>

@@ -91,12 +91,12 @@ export function USGMEarnListInner() {
 
   return (
     <>
-      <div className="my-2 w-full rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="mt-2 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 
       {displayRows?.map((item, index) => (
-        <ListRow className={cn("my-2", isLoading ? "shimmer" : "")} key={index}>
+        <ListRow className={cn("my-1", isLoading ? "shimmer" : "")} key={index}>
           <div className="relative flex items-center gap-4">
             <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-12 md:w-20" />
 

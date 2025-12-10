@@ -22,6 +22,7 @@ import {
   computeVAPR,
   mapToTotalBorrow,
   computeLiquidationPrice,
+  fetchMarketContracts,
 } from "./tg_usd_record_controller"
 
 import { toast } from "react-toastify"
@@ -29,12 +30,12 @@ import { usePathname } from "next/navigation"
 import { getConvexPools } from "../server_api"
 import { useUSGContext } from "../tg_usd_context"
 import { USG_CONTRACT } from "../tg_usd_repository"
-import { useRootContext } from "../../root/root_context"
 import { Address, formatUnits, zeroAddress } from "viem"
 import { ToastComponent } from "@/components/design_system/toast"
-import { AssetDataPriced, CollateralInfo, ExistingAsset, ListState } from "@/types"
+import { useRootContext } from "@/components/products/root/root_context"
 import { getHistoricalMarketData, getUserPositions } from "../client_api"
 import { useUSGMaketListContext } from "../list/tg_usd_market_list_context"
+import { AssetDataPriced, CollateralInfo, ExistingAsset, ListState } from "@/types"
 import { sortUserData } from "./position_history/tg_usd_position_history_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
@@ -113,6 +114,17 @@ type USGRecordContextValues = {
 
   liquidationPrice: bigint
 
+  marketContracts: Array<{ name: string; address: Address }>
+
+  isDepositAndBorrow: boolean
+  setIsDepositAndBorrow: (arg: boolean) => void
+
+  isRepayAndWithdraw: boolean
+  setIsRepayAndWithdraw: (arg: boolean) => void
+
+  activeTab: string
+  setActiveTab: (arg: string) => void
+
   depositAssetOptions: Array<{
     label: string
     value: string
@@ -137,6 +149,10 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   const { getCachedCurrentBlock } = useRootContext()
 
   const { globalData } = useUSGMaketListContext()
+
+  const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(true)
+
+  const [isRepayAndWithdraw, setIsRepayAndWithdraw] = useState<boolean>(false)
 
   const { currentAddress, getWalletClient, isWalletInitialized } = useWalletConnexionContext()
 
@@ -165,6 +181,8 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
 
   const [currentConvexTVL, setCurrentConvexTVL] = useState<bigint>(1n)
+
+  const [activeTab, setActiveTab] = useState<string>("Borrow")
 
   const [currentAmounts, setCurrentAmounts] = useState<USGMarketAmounts>({
     depositWeiValue: 0n,
@@ -428,6 +446,13 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     return 0n
   }, [marketData, currentAmounts])
 
+  const marketContracts = useMemo(() => {
+    if (marketData?.collateralInfo) {
+      return fetchMarketContracts(marketData?.collateralInfo?.name)
+    }
+    return []
+  }, [marketData])
+
   const depositAssetOptions = useMemo(() => {
     if (!!marketData && !!balances) {
       const gaugeSymbol = `Gauge ${collateralInfo?.symbol}`
@@ -506,6 +531,17 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     computedBorrowRate,
 
     liquidationPrice,
+
+    marketContracts,
+
+    isDepositAndBorrow,
+    setIsDepositAndBorrow,
+
+    isRepayAndWithdraw,
+    setIsRepayAndWithdraw,
+
+    activeTab,
+    setActiveTab,
 
     depositAssetOptions,
   }

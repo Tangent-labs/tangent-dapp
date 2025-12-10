@@ -7,13 +7,13 @@ import { getQuote, getRoute } from "../global_quote_controller"
 import { USG_CONTRACT, tgUsdTokens } from "../tg_usd_repository"
 import { ToastComponent } from "@/components/design_system/toast"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
+import { useRootContext } from "@/components/products/root/root_context"
 import { Abi, Address, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { computedMinAmountOut, getBalances, getBalancesAndAllowances } from "../record/tg_usd_record_controller"
 import { BalanceAllowanceData, SwapToken, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../tg_usd_type"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./tg_usd_swap_controller"
-import { useRootContext } from "../../root/root_context"
 
 type USGSwapContextProps = {
   children: ReactNode
@@ -96,7 +96,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
   const [isSwapLoading, setIsSwapLoading] = useState(false)
 
-  const [slippage, setSlippage] = useState<number>(1)
+  const [slippage, setSlippage] = useState<number>(0.2)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
 
@@ -406,19 +406,20 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
           fetchBalanceAllowanceData(walletClient)
           setIsLoading(false)
         })
-        .catch(() => {
+        .catch((e) => {
+          console.error(e)
           toast.error(ToastComponent, { data: { type: "Error", content: "Swap failed." } })
           setIsLoading(false)
         })
     } else {
-      if (!depositWeiValue || !currentAddress) return
+      if (!depositWeiValue || !currentAddress || !receiveWeiValue) return
 
       try {
         const routeData = await getRoute(
           depositAssetInfo?.address,
           receiveAssetInfo?.address,
           depositWeiValue,
-          (BigInt(receiveWeiValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+          computedMinAmountOut(receiveWeiValue, slippage),
           currentAddress,
           currentAddress,
           curveRoutes
@@ -432,13 +433,14 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
         doSwap(walletClient!, tx)
           .then(() => {
-            setDepositWeiValue(undefined)
-            setReceiveWeiValue(undefined)
+            setDepositWeiValue(0n)
+            setReceiveWeiValue(0n)
             fetchBalanceAllowanceData(walletClient!)
             setIsLoading(false)
             toast.success(ToastComponent, { data: { type: "Success", content: "Swap successful!" } })
           })
-          .catch(() => {
+          .catch((e) => {
+            console.error(e)
             toast.error(ToastComponent, { data: { type: "Error", content: "Swap failed." } })
             setIsLoading(false)
           })

@@ -3,56 +3,44 @@
 import Image from "next/image"
 import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../tg_usd_type"
-import { Switch } from "@/components/ui/switch"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGContext } from "../../tg_usd_context"
 import { formatAddress } from "@/lib/other_formatter"
 import { USG_CONTRACT } from "../../tg_usd_repository"
+import { IconThunder, IconCircleHelp } from "@/components/icons"
 import { Address, formatUnits, zeroAddress } from "viem"
-import { IconThunder } from "@/components/icons/icon_thunder"
 import { useUSGRepayContext } from "./usg_record_repay_context"
 import { useUSGRecordContext } from "../tg_usd_record_context"
-import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
-import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import FormButtons from "@/components/design_system/form/form_actions"
 import InputSelect from "@/components/design_system/inputs/input_select"
 import TokenImage from "@/components/design_system/structure/token_image"
+import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { RepayInput } from "@/components/design_system/inputs/repay_input"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
 import { USGStaticAssetSelector } from "@/components/design_system/structure/usg_static_selector"
 
 export default function USGRepayContent() {
-  const { tokens, balances } = useUSGContext()
-
-  const { USGInfo, pricedCollateralInfo, collateralInfo, marketData, depositAssetOptions } = useUSGRecordContext()
-
-  const { connect } = useWalletConnexionContext()
-
   const {
     actionRepay,
     setPercentage,
     setWithdrawWeiValue,
-    setIsRepayAndWithdraw,
     setWithdrawPercentage,
     setRepayAsset,
     handleRepayValueChange,
     actionZapRepay,
     actionApprove,
     setSlippage,
-    onClickMax,
     slippage,
     repayWeiValue,
     repayAsset,
     maxRepayableValue,
     formState,
     percentage,
-    isRepayAndWithdraw,
     isRepayMax,
     withdrawWeiValue,
     maxWithdrawable,
@@ -65,6 +53,12 @@ export default function USGRepayContent() {
     withdrawSelectedAsset,
     setWithdrawSelectedAsset,
   } = useUSGRepayContext()
+
+  const { tokens, balances } = useUSGContext()
+
+  const { connect } = useWalletConnexionContext()
+
+  const { USGInfo, pricedCollateralInfo, marketData, collateralInfo, isRepayAndWithdraw, depositAssetOptions } = useUSGRecordContext()
 
   const AssetSelectTemplate = (option: {
     logoURI?: string
@@ -172,54 +166,6 @@ export default function USGRepayContent() {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex w-full items-center justify-between">
-        <div className="flex w-full items-start justify-start gap-2">
-          <div className="flex items-center gap-2 self-end">
-            <span className="text-sm text-subtitle">Repay and withdraw</span>
-            <Switch checked={isRepayAndWithdraw} onCheckedChange={(v) => setIsRepayAndWithdraw(v)} />
-          </div>
-
-          <div className="flex items-center gap-2 self-end">
-            <span className="text-sm text-subtitle">Repay All</span>
-            <Switch checked={isRepayMax} onCheckedChange={(v) => onClickMax(v)} />
-          </div>
-        </div>
-
-        <div className="flex items-center justify-start gap-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2">
-                <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
-                <button type="button" title="Slippage">
-                  <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
-                    <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
-                  </div>
-                </button>
-              </BorderPanel>
-            </PopoverTrigger>
-            <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none">
-              <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">
-                <div className="flex w-full flex-col items-center justify-between gap-2">
-                  <div className="flex w-full items-center justify-start">Slippage</div>
-                  <input
-                    onChange={(e) => setSlippage(Number(e?.target?.value))}
-                    value={slippage || 0}
-                    placeholder="0.5"
-                    type="number"
-                    className="w-full rounded-lg border border-white/30 bg-transparent pl-2 focus:outline-none"
-                  />
-                  <div className="mt-2 flex w-full items-center justify-between gap-2">
-                    <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />
-                    <ButtonTab onClick={() => setSlippage(1)} label={"1.0%"} active={slippage === 1} className="rounded-full !px-2 !py-1" />
-                    <ButtonTab onClick={() => setSlippage(2)} label={"2.0%"} active={slippage === 2} className="rounded-full !px-2 !py-1" />
-                  </div>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
-      </div>
-
       <div className="flex flex-col gap-2">
         <div className="flex items-end justify-between">
           <span className="text-sm font-semibold md:text-xl">Repay debt</span>
@@ -298,6 +244,29 @@ export default function USGRepayContent() {
           </>
         )}
       </div>
+
+      <div className="flex items-start justify-between gap-2">
+        <Accordion className="w-full" type="single" collapsible>
+          <AccordionItem value="item-1">
+            <BorderPanel className="flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary">
+              <AccordionTrigger>
+                <span className="py-1.5">Recap</span>
+              </AccordionTrigger>
+
+              <AccordionContent className="w-full">
+                <div className="flex w-full items-center justify-between">
+                  <span className="text-subtitle">Expected collateral: </span>
+
+                  <span className="font-semibold text-white">{usgRepayedValue}</span>
+                </div>
+              </AccordionContent>
+            </BorderPanel>
+          </AccordionItem>
+        </Accordion>
+
+        <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
+      </div>
+
       <>
         {isDebtBelowThreshold && (
           <div className="flex w-full items-center justify-center text-xs text-red-500">Remaining debt can not be lower than $3,000</div>

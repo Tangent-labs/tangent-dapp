@@ -1,6 +1,6 @@
 "use client"
 
-import { IconSearch } from "@/components/icons/icon_search"
+import { IconSearch } from "@/components/icons"
 
 type InputSearchProps = React.ParamHTMLAttributes<HTMLInputElement> & {
   placeholder?: string
@@ -16,8 +16,7 @@ const InputSearch = ({ placeholder = "Search...", value, onChange, className = "
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        style={{ borderWidth: 1.5 }}
-        className="h-10 w-full rounded-[10px] border-white border-opacity-20 bg-overlay-panel py-1 pl-10 backdrop-blur-[60px]"
+        className="h-10 w-full rounded-[10px] border-tangent border-white border-opacity-20 bg-overlay-panel py-1 pl-10 backdrop-blur-[60px]"
       />
       <IconSearch className="absolute left-3 top-2.5 w-5"></IconSearch>
       {value && (

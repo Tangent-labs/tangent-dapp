@@ -81,7 +81,7 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
             <span className="text-sm">sTAN</span>
           </div>
 
-          <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-4 py-1">
+          <div className="flex flex-col items-center justify-center rounded-[10px] bg-button-active px-4 py-1">
             <span className="text-lg font-semibold">{apr}%</span>
           </div>
         </div>

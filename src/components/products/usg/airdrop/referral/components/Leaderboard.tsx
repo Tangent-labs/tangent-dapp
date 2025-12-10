@@ -5,7 +5,7 @@ import { toast } from "react-toastify"
 import { useClipboard } from "@/hooks/useClipboard"
 import { formatNumber } from "@/lib/number_formatter"
 import { formatAddress } from "@/lib/other_formatter"
-import { IconTrophy } from "@/components/icons/icon_trophy"
+import { IconTrophy } from "@/components/icons"
 import { ToastComponent } from "@/components/design_system/toast"
 
 type LeaderboardProps = {

@@ -5,10 +5,18 @@ import { Button } from "../inputs/button"
 import { ChevronDown } from "lucide-react"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 
-export const FeatureSelect = ({ value, onChange, options }: { value: string; onChange: (f: string) => void; options: Array<string> }) => {
+export const FeatureSelect = ({
+  value,
+  onChange,
+  options,
+}: {
+  value: string
+  onChange: (f: string) => void
+  options: Array<{ key: string; value: string }>
+}) => {
   const [open, setOpen] = useState(false)
 
-  const label = options.find((option) => option.toLowerCase() === value.toLowerCase()) ?? options[0]
+  const label = options.find((option) => option.key.toLowerCase() === value.toLowerCase())?.value ?? options[0].value
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -23,14 +31,14 @@ export const FeatureSelect = ({ value, onChange, options }: { value: string; onC
         <div className="flex flex-col gap-1">
           {options.map((opt) => (
             <button
-              key={opt}
+              key={opt.key}
               onClick={() => {
-                onChange(opt)
+                onChange(opt.key)
                 setOpen(false)
               }}
               className="w-full rounded-[10px] px-3 py-1 text-left font-gilroy"
             >
-              {opt}
+              {opt.value}
             </button>
           ))}
         </div>

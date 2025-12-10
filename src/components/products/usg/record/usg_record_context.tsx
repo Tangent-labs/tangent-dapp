@@ -30,13 +30,13 @@ import { usePathname } from "next/navigation"
 import { getConvexPools } from "../server_api"
 import { useUSGContext } from "../usg_context"
 import { USG_CONTRACT } from "../usg_repository"
-import { useRootContext } from "../../root/root_context"
 import { Address, formatUnits, zeroAddress } from "viem"
 import { ToastComponent } from "@/components/design_system/toast"
-import { AssetDataPriced, CollateralInfo, ListState } from "@/types"
+import { useRootContext } from "@/components/products/root/root_context"
 import { getHistoricalMarketData, getUserPositions } from "../client_api"
 import { useUSGMaketListContext } from "../list/usg_market_list_context"
 import { sortUserData } from "./position_history/usg_position_history_controller"
+import { AssetDataPriced, CollateralInfo, ExistingAsset, ListState } from "@/types"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 
@@ -115,6 +115,26 @@ type USGRecordContextValues = {
   liquidationPrice: bigint
 
   marketContracts: Array<{ name: string; address: Address }>
+
+  isDepositAndBorrow: boolean
+  setIsDepositAndBorrow: (arg: boolean) => void
+
+  isRepayAndWithdraw: boolean
+  setIsRepayAndWithdraw: (arg: boolean) => void
+
+  activeTab: string
+  setActiveTab: (arg: string) => void
+
+  depositAssetOptions: Array<{
+    label: string
+    value: string
+    address: Address
+    balance: bigint
+    symbol: string
+    logoURI?: string
+    logo?: ExistingAsset
+    name?: string
+  }>
 }
 
 const LEVERAGE_TRESHOLD = 0.989
@@ -124,11 +144,15 @@ export const USGRecordContext = createContext<USGRecordContextValues | undefined
 export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, children }: USGRecordContextProps) => {
   const path = usePathname()
 
-  const { marketAprs } = useUSGContext()
+  const { marketAprs, balances } = useUSGContext()
 
   const { getCachedCurrentBlock } = useRootContext()
 
   const { globalData } = useUSGMaketListContext()
+
+  const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(true)
+
+  const [isRepayAndWithdraw, setIsRepayAndWithdraw] = useState<boolean>(false)
 
   const { currentAddress, getWalletClient, isWalletInitialized } = useWalletConnexionContext()
 
@@ -157,6 +181,8 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
 
   const [currentConvexTVL, setCurrentConvexTVL] = useState<bigint>(1n)
+
+  const [activeTab, setActiveTab] = useState<string>("Borrow")
 
   const [currentAmounts, setCurrentAmounts] = useState<USGMarketAmounts>({
     depositWeiValue: 0n,
@@ -427,6 +453,30 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     return []
   }, [marketData])
 
+  const depositAssetOptions = useMemo(() => {
+    if (!!marketData && !!balances) {
+      const gaugeSymbol = `Gauge ${collateralInfo?.symbol}`
+
+      return [
+        {
+          label: collateralInfo?.symbol,
+          value: collateralInfo?.symbol,
+          address: collateralInfo?.address,
+          balance: balances?.[collateralInfo?.address] ?? BigInt(0),
+          symbol: collateralInfo?.symbol,
+        },
+        {
+          label: gaugeSymbol,
+          value: gaugeSymbol,
+          address: marketData?.constants?.receipt,
+          balance: balances?.[marketData?.constants?.receipt] ?? BigInt(0),
+          symbol: gaugeSymbol,
+        },
+      ]
+    }
+    return []
+  }, [collateralInfo, marketData, balances])
+
   const contextValue: USGRecordContextValues = {
     isLoading,
     collateral,
@@ -483,6 +533,17 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     liquidationPrice,
 
     marketContracts,
+
+    isDepositAndBorrow,
+    setIsDepositAndBorrow,
+
+    isRepayAndWithdraw,
+    setIsRepayAndWithdraw,
+
+    activeTab,
+    setActiveTab,
+
+    depositAssetOptions,
   }
 
   return <USGRecordContext.Provider value={contextValue}>{children}</USGRecordContext.Provider>

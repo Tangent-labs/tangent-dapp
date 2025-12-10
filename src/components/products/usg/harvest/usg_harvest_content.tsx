@@ -127,12 +127,12 @@ function HarvestList() {
 
   return (
     <>
-      <div className="my-2 w-full rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="mb-0.5 mt-2 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <ListHeader rowDisposition={HarvestRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 
       {(displayRows as HarvesterInfoDisplay[])?.map((item: HarvesterInfoDisplay) => (
-        <div key={item.contractAddress} className="my-1 rounded-[10px] bg-overlay-panel px-4 py-2.5 backdrop-blur-[60px]">
+        <div key={item.contractAddress} className="my-0.5 bg-overlay-panel px-4 py-2.5 backdrop-blur-[60px]">
           <div className="flex items-center justify-between max-xl:flex-col">
             <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
               <div className="xl:w-1/2">

@@ -6,8 +6,8 @@ import { USGMarkets } from "../usg_repository"
 import { Address, formatUnits, zeroAddress } from "viem"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { getUSGMarketsData, transformToRows, transformGlobalData, transformMarketData } from "./usg_market_controller"
-import { ChainViewMarketList, MarketConstants, MarketDebtData, TgUsdCollateralData, TgUsdGlobalData } from "../usg_type"
+import { ChainViewMarketList, MarketConstants, MarketDebtData, USGCollateralData, USGGlobalData } from "../usg_type"
+import { getUSGMarketsData, transformGlobalData, transformMarketData, transformToRows } from "./usg_market_controller"
 
 type USGMaketListContextProps = {
   children: ReactNode
@@ -15,7 +15,7 @@ type USGMaketListContextProps = {
 
 type USGMaketListContextValues = {
   displayRows: ListRowData[]
-  globalData: TgUsdGlobalData
+  globalData: USGGlobalData
   searchValue: string | null
   setSearchValue: (value: string | null) => void
   sortMarketList: (arg: ListState) => void
@@ -26,7 +26,7 @@ type USGMaketListContextValues = {
     totalUserDeposit: bigint
     totalProtocolDeposit: bigint
     totalProtocolDebt: bigint
-    tgUsdCollateralsData: TgUsdCollateralData[]
+    tgUsdCollateralsData: USGCollateralData[]
     marketDebtData: MarketDebtData[]
   } | null
 
@@ -131,7 +131,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     return filteredRows.filter((row) => row.name.toLowerCase().includes(lowered) || row.token.toLowerCase().includes(lowered))
   }, [onChainData, searchValue, marketDataWithAPR, marketType, protocol])
 
-  const globalData = useMemo<TgUsdGlobalData>(() => {
+  const globalData = useMemo<USGGlobalData>(() => {
     return transformGlobalData(onChainData)
   }, [onChainData])
 

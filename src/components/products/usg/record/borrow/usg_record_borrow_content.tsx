@@ -4,9 +4,8 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGBorrowContext } from "./usg_record_borrow_context"
 import FormButtons from "@/components/design_system/form/form_actions"
-import TokenImage from "@/components/design_system/structure/token_image"
-import BorderPanel from "@/components/design_system/structure/border_panel"
 import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
+import { USGStaticAssetSelector } from "@/components/design_system/structure/usg_static_selector"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
@@ -17,15 +16,6 @@ export default function USGRecordBorrowContent() {
   const { USGInfo, maxBorrowCapReached } = useUSGRecordContext()
 
   const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, borrowPercentage, maxBorrowableValue } = useUSGBorrowContext()
-
-  const BorrowAssetDisplay = () => {
-    return (
-      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
-        <TokenImage token="USG" size={20} />
-        <span className="flex flex-col text-[15px] font-semibold">USG</span>
-      </BorderPanel>
-    )
-  }
 
   return (
     <div className="flex flex-col gap-2">
@@ -40,7 +30,7 @@ export default function USGRecordBorrowContent() {
           borrowAmount={borrowWeiValue}
           disabled={maxBorrowCapReached}
           labelDeposit="You borrow"
-          depositSelect={<BorrowAssetDisplay />}
+          depositSelect={<USGStaticAssetSelector />}
           borrowAsset={USGInfo}
           setMaxBalance={maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue)}
           balance={maxBorrowableValue}

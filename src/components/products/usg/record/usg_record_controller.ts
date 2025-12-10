@@ -11,14 +11,14 @@ import {
   MarketAPR,
 } from "../usg_type"
 
-import { USGMarkets } from "../usg_repository"
 import GetBalances from "@/abi/USG/GetBalances.json"
 import { CollateralInfo, ExistingAsset } from "@/types"
 import { getSwapAssetPrice } from "@/services/service_price"
 import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
+import { USG_CONTRACT, USGMarkets, USGOracles } from "../usg_repository"
 import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
-import { formatBigInt, formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
 import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
+import { formatBigInt, formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
 import { Abi, Address, formatEther, formatUnits, Hex, parseEther, WalletClient, zeroAddress } from "viem"
 
 const DENOMINATOR = 100_000n
@@ -44,7 +44,11 @@ export async function doApprove(walletClient: WalletClient, contract: Address, s
 }
 
 export const getUSGMarketRecordData = async (address: Address, market: Address) => {
-  return await executeChainViewUnique<ChainViewMarketRow>(MarketDetailsUI.abi as Abi, MarketDetailsUI.bytecode as Hex, [address, market])
+  return await executeChainViewUnique<ChainViewMarketRow>(MarketDetailsUI.abi as Abi, MarketDetailsUI.bytecode as Hex, [
+    address,
+    market,
+    USG_CONTRACT.MARKET_VIEWER,
+  ])
 }
 
 export const transformMarketData = (onChainData: ChainViewMarketRow, collateralInfo: CollateralInfo): MarketDetailData => {
@@ -68,7 +72,7 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, borrowWe
   const reasons: string[] = []
 
   if (!borrowWeiValue || borrowWeiValue === 0n) {
-    reasons.push("Amount must be greater than zero.")
+    reasons.push("Borrow amount must be greater than zero.")
   } else {
     const minLoan = BigInt(marketData?.constants?.minimumLoan || "0")
     const totalDebt = marketData?.debtInfos?.totalDebt || 0n
@@ -147,15 +151,15 @@ export function getComputedFutureLoanData(
   } as USGMarketLoanDisplayData
 }
 
-export async function loadMarketServerData(collateral: string) {
-  const marketInfo = USGMarkets.find((market) => market.marketName === collateral)
+export async function loadMarketServerData(collateral: Address) {
+  const marketInfo = USGMarkets.find((market) => market.marketAddress === collateral)
   const collateralInfo = {
-    address: USGMarkets.find((market) => market.marketName === collateral)?.collatAddress as Address,
+    address: USGMarkets.find((market) => market.marketAddress === collateral)?.collatAddress as Address,
     decimals: 18,
     displayDecimals: 2,
-    symbol: collateral,
-    name: collateral,
-    logo: collateral as ExistingAsset,
+    symbol: marketInfo?.marketName as string,
+    name: marketInfo?.marketName as string,
+    logo: marketInfo?.marketName as ExistingAsset,
     price: 0,
   }
 
@@ -410,7 +414,7 @@ export const computeLiquidationPrice = (
 }
 
 export const computedMinAmountOut = (value: bigint, slippage: number) => {
-  return (BigInt(value || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
+  return (BigInt(value) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
 }
 
 // Markets contracts
@@ -421,19 +425,15 @@ const MARKET_CONTRACTS: Record<string, MarketContract[]> = {
   "crvUSD-USDC": [
     {
       name: "Market",
-      address: "0xA3527eeFcB25E01116EE4Fc37B5C17D77B7d7b17" as Address,
+      address: USGMarkets.find((el) => el.marketName === "crvUSD-USDC")?.marketAddress as Address,
     },
     {
       name: "Collateral Token",
-      address: "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E" as Address,
-    },
-    {
-      name: "Reward Distributor",
-      address: "0x0000000000000000000000000000000000000001" as Address,
+      address: USGMarkets.find((el) => el.marketName === "crvUSD-USDC")?.collatAddress as Address,
     },
     {
       name: "Oracle",
-      address: "0x0000000000000000000000000000000000000002" as Address,
+      address: USGOracles.find((el) => el.token === "crvUSD-USDC")?.address as Address,
     },
   ],
 

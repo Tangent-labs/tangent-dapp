@@ -2,16 +2,12 @@
 
 import Image from "next/image"
 import { ExistingAsset } from "@/types"
-import { InfinityIcon } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
-import { formatDate } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
+import { useUSGContext } from "../../usg/usg_context"
 import { useVsTanContext } from "../rstan_layout_context"
 import { useVsTanLockContext } from "./rstan_lock_context"
-import { useUSGContext } from "../../usg/usg_context"
-import { IconThunder } from "@/components/icons/icon_thunder"
-import { IconCircleHelp } from "@/components/icons/icon_circle_help"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import FormButtons from "@/components/design_system/form/form_actions"
 import InputSelect from "@/components/design_system/inputs/input_select"
@@ -23,6 +19,7 @@ import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 import { InputSelectLockPosition } from "@/components/design_system/inputs/input_select_lock_position"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
+import { IconCircleHelp, IconThunder } from "@/components/icons"
 
 export default function VsTanLockContent() {
   const { lockData } = useVsTanContext()
@@ -36,7 +33,6 @@ export default function VsTanLockContent() {
     depositPositionInfo,
     depositPosition,
     computedNewLockValue,
-    computedNewEndLockTime,
     isPermaLock,
     isLoading,
     formState,
@@ -254,33 +250,6 @@ export default function VsTanLockContent() {
           originalValue={depositPositionInfo ? formatBigInt(depositPositionInfo?.amount, 18, 2) : "0"}
           label="vsTan"
           newValue={computedNewLockValue}
-        />
-        <EvolutionBox
-          className="w-full text-xs"
-          originalValue={
-            depositPositionInfo?.endLockTime && depositPositionInfo?.endLockTime == "281474976710655" ? (
-              <InfinityIcon className="w-5"></InfinityIcon>
-            ) : (
-              <>
-                {" "}
-                {depositPositionInfo && depositPositionInfo?.endLockTime !== ""
-                  ? formatDate(new Date(Number(depositPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")
-                  : "-"}
-              </>
-            )
-          }
-          label="Unlock date"
-          newValue={
-            <div className="flex h-6 items-center">
-              {depositPositionInfo?.endLockTime && depositPositionInfo?.endLockTime == "281474976710655" ? (
-                <InfinityIcon className="h-5 w-5"></InfinityIcon>
-              ) : (
-                <>
-                  {isPermaLock ? <InfinityIcon className="h-5 w-5"></InfinityIcon> : formatDate(new Date(Number(computedNewEndLockTime) * 1000), "dd/MM/yyyy")}
-                </>
-              )}
-            </div>
-          }
         />
       </div>
 

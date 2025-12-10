@@ -1,16 +1,16 @@
 "use client"
 
 import { formatUnits } from "viem"
-import { USG_CONTRACT } from "../usg_repository"
 import { useUSGContext } from "../usg_context"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../usg_type"
-import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedSUSG, getExpectedUSG, getFormState } from "./usg_stake_controller"
-import { convertRange } from "../../root/root_controller"
-import { useRootContext } from "../../root/root_context"
 import { getsUsgApyData } from "../client_api"
+import { USG_CONTRACT } from "../usg_repository"
+import { useRootContext } from "../../root/root_context"
+import { convertRange } from "../../root/root_controller"
+import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
+import { StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../usg_type"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { computeSUSGAprVariation, doApprove, doStakeUSG, doUnstakeUSG, getExpectedSUSG, getExpectedUSG, getFormState } from "./usg_stake_controller"
 
 type USGStakeContextProps = {
   children: ReactNode
@@ -26,7 +26,6 @@ type USGStakeContextValues = {
   actionStake: () => void
   actionUnstake: () => void
   currentAssetInfo?: StakingAssetInfo
-  depositAssetOptions: SelectAssetLogoOption[]
   receivedTokenInfo: AssetDataPriced
   hasToApprove: boolean
   computeProjectedValue: number
@@ -42,16 +41,18 @@ type USGStakeContextValues = {
   apyHistory: Array<{ date: number; uv: number }>
 
   fetchsUSGHistoryAPY: (s: string) => Promise<void>
+
+  aprVariation: { current: string; updated: string }
 }
 
 export const USGStakeContext = createContext<USGStakeContextValues | undefined>(undefined)
 
 export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
-  const { getCachedCurrentBlock } = useRootContext()
-
   const { getWalletClient } = useWalletConnexionContext()
 
   const { loadUSGsUSGMetrics, USGsUSGMetrics } = useUSGContext()
+
+  const { getCachedCurrentBlock, sUSGCurrentAPY } = useRootContext()
 
   const [currentFeature, setCurrentFeature] = useState<"stake" | "unstake">("stake")
 
@@ -65,23 +66,9 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
 
   const [stakePercentage, setStakePercentage] = useState<number>(0)
 
-  const depositAssetOptions = useMemo(() => {
-    return currentFeature === "stake"
-      ? ([
-          {
-            label: "USG",
-            value: "asset",
-            logo: "USG",
-          },
-        ] as SelectAssetLogoOption[])
-      : ([
-          {
-            label: "sUSG",
-            value: "sdAsset",
-            logo: "sUSG",
-          },
-        ] as SelectAssetLogoOption[])
-  }, [currentFeature])
+  useEffect(() => {
+    fetchsUSGHistoryAPY("1m")
+  }, [])
 
   const receivedTokenInfo = useMemo(() => {
     if (currentFeature === "stake") {
@@ -164,7 +151,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
       stakingAddress: USG_CONTRACT.SUSG,
       weiValue,
     }
-    await doUnstakeTgUSD(params)
+    await doUnstakeUSG(params)
     loadUSGsUSGMetrics()
     setWeiValue(0n)
     setExpected(0n)
@@ -179,7 +166,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
       stakingAddress: USG_CONTRACT.SUSG,
       weiValue,
     }
-    await doStakeTgUSD(params)
+    await doStakeUSG(params)
     loadUSGsUSGMetrics()
     setWeiValue(0n)
     setExpected(0n)
@@ -233,7 +220,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     const toIso = Number(currentBlock.timestamp) * 1000
     const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
 
-    const sUSGHistoryAPY = await getsUsgApyData(toIso, fromIso, USG_CONTRACT.USG)
+    const sUSGHistoryAPY = await getsUsgApyData(toIso, fromIso)
 
     const sUSGData = sUSGHistoryAPY.map((p) => ({
       date: new Date(p.timestamp).getTime(),
@@ -242,6 +229,19 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
 
     setAPYHistory(sUSGData)
   }
+
+  const aprVariation = useMemo(() => {
+    let result = { current: "", updated: "" }
+
+    if (USGsUSGMetrics && sUSGCurrentAPY) {
+      if (weiValue) {
+        result = computeSUSGAprVariation(currentFeature, USGsUSGMetrics, weiValue, sUSGCurrentAPY)
+      } else {
+        result = computeSUSGAprVariation(currentFeature, USGsUSGMetrics, 0n, sUSGCurrentAPY)
+      }
+    }
+    return result
+  }, [USGsUSGMetrics, weiValue, currentFeature])
 
   const contextValue: USGStakeContextValues = {
     actionStake,
@@ -254,7 +254,6 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     weiValue,
     expected,
     currentAssetInfo,
-    depositAssetOptions,
     receivedTokenInfo,
     hasToApprove,
     formState,
@@ -265,6 +264,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     setsUSGSelectedTab,
     apyHistory,
     fetchsUSGHistoryAPY,
+    aprVariation,
   }
 
   return <USGStakeContext.Provider value={contextValue}>{children}</USGStakeContext.Provider>

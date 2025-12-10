@@ -19,6 +19,17 @@
       "type": "error"
     },
     {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "collatValue",
+          "type": "uint256"
+        }
+      ],
+      "name": "CollatValueToLiquidateTooLow",
+      "type": "error"
+    },
+    {
       "inputs": [],
       "name": "DebtToRepayTooBig",
       "type": "error"
@@ -74,8 +85,30 @@
       "type": "error"
     },
     {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "collatAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "MinCollatToLiquidate",
+      "type": "error"
+    },
+    {
       "inputs": [],
       "name": "NotAMigratoor",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "collatBalance",
+          "type": "uint256"
+        }
+      ],
+      "name": "NotEnoughCollateralToLiquidate",
       "type": "error"
     },
     {
@@ -418,6 +451,25 @@
       "anonymous": false,
       "inputs": [
         {
+          "indexed": false,
+          "internalType": "enum PauseSettings.PauseEnum",
+          "name": "pauseType",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "isPaused",
+          "type": "uint64"
+        }
+      ],
+      "name": "PauseTrigger",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
           "indexed": true,
           "internalType": "address",
           "name": "account",
@@ -480,6 +532,25 @@
       "anonymous": false,
       "inputs": [
         {
+          "indexed": false,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "badDebtRepaid",
+          "type": "uint256"
+        }
+      ],
+      "name": "RepayBadDebt",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
           "indexed": true,
           "internalType": "address",
           "name": "account",
@@ -536,6 +607,84 @@
         }
       ],
       "name": "SelfLiquidate",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newLiquidationFee",
+          "type": "uint256"
+        }
+      ],
+      "name": "SetLiquidationFee",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newLiquidationThreshold",
+          "type": "uint256"
+        }
+      ],
+      "name": "SetLiquidationThreshold",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newMaxLTV",
+          "type": "uint256"
+        }
+      ],
+      "name": "SetMaxLTV",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newMaxMarketDebt",
+          "type": "uint256"
+        }
+      ],
+      "name": "SetMaxMarketDebt",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newMinimumLoan",
+          "type": "uint256"
+        }
+      ],
+      "name": "SetMinimumLoan",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "contract IPriceOracle",
+          "name": "newOracle",
+          "type": "address"
+        }
+      ],
+      "name": "SetOracle",
       "type": "event"
     },
     {
@@ -774,32 +923,6 @@
     },
     {
       "inputs": [],
-      "name": "DENOMINATOR",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "RAY",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "badDebt",
       "outputs": [
         {
@@ -929,6 +1052,11 @@
           "internalType": "uint256",
           "name": "depositedAmount",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isReceiptIn",
+          "type": "bool"
         }
       ],
       "name": "deposit",
@@ -947,6 +1075,11 @@
           "internalType": "uint256",
           "name": "debtBorrow",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isReceiptIn",
+          "type": "bool"
         }
       ],
       "name": "depositAndBorrow",
@@ -979,19 +1112,23 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        }
-      ],
-      "name": "healthRatio",
+      "inputs": [],
+      "name": "getPausedSettings",
       "outputs": [
         {
-          "internalType": "uint256",
+          "internalType": "uint64",
           "name": "",
-          "type": "uint256"
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
         }
       ],
       "stateMutability": "view",
@@ -1011,73 +1148,33 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "isBorrowPaused",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "isDepositPaused",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "isInitialized",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "isLeveragePaused",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "collatToDeposit",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "USGToFlashMint",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "minCollatAmountOut",
-          "type": "uint256"
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "collatToDeposit",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "usgToFlashMint",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minCollatAmountOut",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isReceiptIn",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct LeverageIn",
+          "name": "leverageIn",
+          "type": "tuple"
         },
         {
           "components": [
@@ -1105,24 +1202,53 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "collatToLiquidate",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "maxUSGToBurn",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "minUSGOut",
-          "type": "uint256"
+          "components": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "collatAmountToLiquidate",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "minUsgOut",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "maxUsgToBurn",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "minCollatAmountToLiquidate",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "bool",
+                  "name": "isReceiptOut",
+                  "type": "bool"
+                }
+              ],
+              "internalType": "struct PostLiquidate",
+              "name": "postLiquidate",
+              "type": "tuple"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minCollatValueToLiquidate",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct LiquidateIn",
+          "name": "liquidateIn",
+          "type": "tuple"
         },
         {
           "components": [
@@ -1163,25 +1289,6 @@
     {
       "inputs": [],
       "name": "liquidationThreshold",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        }
-      ],
-      "name": "maxBorrowable",
       "outputs": [
         {
           "internalType": "uint256",
@@ -1308,38 +1415,6 @@
     },
     {
       "inputs": [],
-      "name": "pendingInterests",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        }
-      ],
-      "name": "positionValue",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "reeantrancyOff",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -1385,8 +1460,13 @@
         },
         {
           "internalType": "uint256",
-          "name": "USGToRepay",
+          "name": "usgToRepay",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isReceiptOut",
+          "type": "bool"
         }
       ],
       "name": "repayAndWithdraw",
@@ -1436,24 +1516,36 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "collatAmountToLiquidate",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "USGToRepay",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "maxUSGToBurn",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "minUSGOut",
-          "type": "uint256"
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "collatAmountToLiquidate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "usgToRepay",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxUsgToBurn",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minUsgOut",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isReceiptOut",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct SelfLiquidateIn",
+          "name": "selfLiquidateIn",
+          "type": "tuple"
         },
         {
           "components": [
@@ -1487,45 +1579,6 @@
         }
       ],
       "name": "setCollatOracle",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bool",
-          "name": "_isBorrowPaused",
-          "type": "bool"
-        }
-      ],
-      "name": "setIsBorrowPaused",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bool",
-          "name": "_isDepositPaused",
-          "type": "bool"
-        }
-      ],
-      "name": "setIsDepositPaused",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bool",
-          "name": "_isLeveragePaused",
-          "type": "bool"
-        }
-      ],
-      "name": "setIsLeveragePaused",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -1596,21 +1649,26 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "totalCollateral",
-      "outputs": [
+      "inputs": [
         {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
+          "internalType": "enum PauseSettings.PauseEnum",
+          "name": "pauseType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint64",
+          "name": "isPaused",
+          "type": "uint64"
         }
       ],
-      "stateMutability": "view",
+      "name": "setPause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
       "inputs": [],
-      "name": "totalDebt",
+      "name": "totalCollateral",
       "outputs": [
         {
           "internalType": "uint256",
@@ -1651,25 +1709,6 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "account",
-          "type": "address"
-        }
-      ],
-      "name": "userDebt",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
           "name": "",
           "type": "address"
         }
@@ -1686,24 +1725,16 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "usg",
-      "outputs": [
-        {
-          "internalType": "contract IUSG",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "uint256",
           "name": "withdrawAmount",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isReceiptOut",
+          "type": "bool"
         }
       ],
       "name": "withdraw",
@@ -1819,7 +1850,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "USGToFlashMint",
+          "name": "usgToFlashMint",
           "type": "uint256"
         },
         {
@@ -1947,6 +1978,11 @@
           "internalType": "uint256",
           "name": "withdrawAmount",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isReceiptOut",
+          "type": "bool"
         },
         {
           "components": [

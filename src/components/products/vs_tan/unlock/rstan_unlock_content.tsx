@@ -1,15 +1,14 @@
 "use client"
 
-import InputSelect from "@/components/design_system/inputs/input_select"
+import { Switch } from "@/components/ui/switch"
+import { formatBigInt } from "@/lib/number_formatter"
 import { useVsTanContext } from "../rstan_layout_context"
 import { useVsTanUnlockContext } from "./rstan_unlock_context"
-import { LockPositionSelectTemplate } from "../../usg/usg_type"
-import { IconVsTan } from "@/components/icons/icon_vstan"
+import { IconOpenOutside, IconVsTan } from "@/components/icons"
 import { Button } from "@/components/design_system/inputs/button"
-import { formatBigInt } from "@/lib/number_formatter"
+import InputSelect from "@/components/design_system/inputs/input_select"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { Switch } from "@/components/ui/switch"
-import { IconOpenOutside } from "@/components/icons/icon_open_outside"
+import { LockPositionSelectTemplate } from "../../usg/usg_type"
 
 export const VsTanUnlockContent = () => {
   const { lockData } = useVsTanContext()

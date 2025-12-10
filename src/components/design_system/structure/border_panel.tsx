@@ -7,7 +7,7 @@ interface BorderPanelProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export default function BorderPanel({ children, className, ...props }: BorderPanelProps) {
   return (
-    <div style={{ borderWidth: 1.5 }} className={`rounded-[10px] border-white border-opacity-20 ${className}`} {...props}>
+    <div className={`rounded-[10px] border-tangent border-white border-opacity-20 ${className}`} {...props}>
       {children}
     </div>
   )

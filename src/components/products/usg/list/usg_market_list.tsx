@@ -8,13 +8,13 @@ import { ExistingAsset, ListState } from "@/types"
 import { formatDollar } from "@/lib/number_formatter"
 import ListRow from "@/components/design_system/list/list_row"
 import ListAsset from "@/components/design_system/list/list_asset"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
 import ListHeader from "@/components/design_system/list/list_header"
 import { useUSGMaketListContext } from "./usg_market_list_context"
 import InputSelect from "@/components/design_system/inputs/input_select"
 import InputSearch from "@/components/design_system/inputs/input_search"
 import TokenImage from "@/components/design_system/structure/token_image"
 import MarketListAPR from "@/components/design_system/list/market_list_apr"
+import LargeButtonTab from "@/components/design_system/inputs/large_button_tab"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { marketOptions, protocolOptions, tgUsdListHeaders } from "./usg_market_controller"
@@ -86,8 +86,8 @@ export default function USGMarketList() {
             />
           </div>
 
-          <ButtonTab className="h-10 px-4" active={true} label="All"></ButtonTab>
-          <ButtonTab className="h-10 px-4" active={false} label="Deposits"></ButtonTab>
+          <LargeButtonTab className="h-10 px-4" active={true} label="All"></LargeButtonTab>
+          <LargeButtonTab className="h-10 px-4" active={false} label="Deposits"></LargeButtonTab>
         </div>
 
         <div className="mt-2 flex w-full items-center justify-between gap-2">
@@ -118,33 +118,31 @@ export default function USGMarketList() {
 
       <div className="mb-4 mt-6 hidden items-end justify-between xl:flex">
         <div className="flex flex-col items-stretch justify-between gap-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <IndicatorCards
-                className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "gap-6")}
-                indicators={[
-                  { title: "USG", value: formatDollar(globalData.USGPrice, 5) },
-                  { title: "Supply", value: globalData.USGSupply },
-                ]}
-              >
-                <TokenImage token={"USG" as ExistingAsset} className="h-8 w-8" size={32} />
-              </IndicatorCards>
-              <IndicatorCards
-                className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "gap-6")}
-                indicators={[
-                  { title: "sUSG ", value: globalData.sUSGPrice },
-                  { title: "Supply", value: globalData.sUSGSupply },
-                  { title: "APY", value: globalData.APY },
-                ]}
-              >
-                <TokenImage token={"sUSG" as ExistingAsset} className="h-8 w-8" size={32} />
-              </IndicatorCards>
-            </div>
+          <div className="flex w-full items-center gap-4">
+            <IndicatorCards
+              className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "gap-6")}
+              indicators={[
+                { title: "USG", value: formatDollar(globalData.USGPrice, 5) },
+                { title: "Supply", value: globalData.USGSupply },
+              ]}
+            >
+              <TokenImage token={"USG" as ExistingAsset} className="h-8 w-8" size={32} />
+            </IndicatorCards>
+            <IndicatorCards
+              className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "gap-6")}
+              indicators={[
+                { title: "sUSG ", value: globalData.sUSGPrice },
+                { title: "Supply", value: globalData.sUSGSupply },
+                { title: "APY", value: globalData.APY },
+              ]}
+            >
+              <TokenImage token={"sUSG" as ExistingAsset} className="h-8 w-8" size={32} />
+            </IndicatorCards>
           </div>
 
           <div className="flex w-full items-stretch justify-between">
             <div className="flex w-full items-end justify-start gap-2">
-              <div className="flex w-full flex-col items-center justify-center">
+              <div className="flex w-full min-w-96 flex-col items-center justify-center">
                 <div className="mb-1 text-xs text-subtitle"> Search </div>
                 <InputSearch
                   placeholder=""
@@ -154,8 +152,8 @@ export default function USGMarketList() {
                 />
               </div>
 
-              <ButtonTab className="h-10 px-4" active={true} label="All"></ButtonTab>
-              <ButtonTab className="h-10 px-4" active={false} label="Deposits"></ButtonTab>
+              <LargeButtonTab className="h-10 px-4" active={true} label="All"></LargeButtonTab>
+              <LargeButtonTab className="h-10 px-4" active={false} label="Deposits"></LargeButtonTab>
             </div>
           </div>
         </div>
@@ -176,7 +174,7 @@ export default function USGMarketList() {
             <div className="flex w-full flex-col items-center justify-center md:w-fit">
               <div className="mb-1 text-xs text-subtitle"> Type </div>
               <InputSelect
-                className="w-full min-w-40"
+                className="w-full min-w-48"
                 template={MarketListSelectTemplate}
                 value={marketType || ""}
                 options={marketOptions}
@@ -188,7 +186,7 @@ export default function USGMarketList() {
               <div className="mb-1 text-xs text-subtitle"> Protocol </div>
 
               <InputSelect
-                className="w-full min-w-40"
+                className="w-full min-w-48"
                 template={MarketListSelectTemplate}
                 value={protocol || ""}
                 options={protocolOptions}
@@ -213,15 +211,14 @@ export function USGMarketListInner() {
 
   return (
     <>
-      <div className="my-2 w-full rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="mt-2 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
       {displayRows?.map((item, index) => (
         <ListRow
           className={cn("my-1", !!marketData.length && !!displayRows ? "" : "shimmer")}
           key={index}
-          // Hack for Pendle markets
-          navigate={() => router.push(item.token.trim().replaceAll("/", "~").replaceAll(" ", "_"))}
+          navigate={() => router.push("/" + item.address + "/deposit-borrow")}
         >
           <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
           <MarketListAPR currentAPRDetails={item.currentAPRDetails} apr={item.apr.current} projectedApr={item.apr.projected} />

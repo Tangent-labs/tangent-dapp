@@ -25,9 +25,7 @@ export function getLeverageFormState(
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
   } else {
-    if (borrowWeiValue === 0n) {
-      reasons.push("No amount.")
-    } else if (!isZapMode && (depositWeiValue || 0n) > (marketData?.collateralBalance || 0n)) {
+    if (!isZapMode && (depositWeiValue || 0n) > (marketData?.collateralBalance || 0n)) {
       reasons.push("Not enough balance.")
     } else if (isZapMode && (depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
       reasons.push("Not enough balance.")
@@ -93,8 +91,9 @@ export const doMarketLeverage = async (
   marketAddress: Address,
   walletClient: WalletClient,
   collatToDeposit: bigint,
-  tgUSDToFlashMint: bigint,
+  usgToFlashMint: bigint,
   minCollatAmountOut: bigint,
+  isReceiptIn: boolean,
   leverageData: { routerAddress: string; data: string }
 ) => {
   const [account] = await walletClient.requestAddresses()
@@ -104,7 +103,10 @@ export const doMarketLeverage = async (
   const estimateGasData = {
     abi: MarketExternalActions.abi,
     functionName: "leverage",
-    args: [collatToDeposit, tgUSDToFlashMint, minCollatAmountOut, { router: leverageData?.routerAddress, routerCall: leverageData?.data }] as unknown[],
+    args: [
+      { collatToDeposit, usgToFlashMint, minCollatAmountOut, isReceiptIn },
+      { router: leverageData?.routerAddress, routerCall: leverageData?.data },
+    ] as unknown[],
     address: marketAddress,
     account,
   } as EstimateContractGasParameters

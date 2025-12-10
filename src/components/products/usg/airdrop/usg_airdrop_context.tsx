@@ -1,11 +1,11 @@
 "use client"
 
 import { toast } from "react-toastify"
-import { useRootContext } from "../../root/root_context"
 import { ToastComponent } from "@/components/design_system/toast"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { generateCode, getReferralStatus, validateReferralCode } from "../client_api"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { useRootContext } from "../../root/root_context"
 
 export type UserStatus = {
   generatedCode: string | null

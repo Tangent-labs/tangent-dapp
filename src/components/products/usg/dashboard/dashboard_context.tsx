@@ -2,7 +2,7 @@
 
 import { createContext, ReactNode, useContext, useMemo } from "react"
 import { useUSGMaketListContext } from "../list/usg_market_list_context"
-import { TgUsdCollateralData, MarketDebtData, TgUsdGlobalData } from "../usg_type"
+import { MarketDebtData, USGCollateralData, USGGlobalData } from "../usg_type"
 
 type USGDashboardContextProps = {
   children: ReactNode
@@ -14,11 +14,11 @@ type USGDashboardContextValues = {
     totalUserDeposit: bigint
     totalProtocolDeposit: bigint
     totalProtocolDebt: bigint
-    tgUsdCollateralsData: TgUsdCollateralData[]
+    tgUsdCollateralsData: USGCollateralData[]
     marketDebtData: MarketDebtData[]
   } | null
 
-  globalData: TgUsdGlobalData
+  globalData: USGGlobalData
 
   marketDebtMaxValue: number
 }

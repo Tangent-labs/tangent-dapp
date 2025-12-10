@@ -1,19 +1,19 @@
 "use client"
 
-import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import Divider from "@/components/design_system/structure/divider"
-import Title from "@/components/design_system/structure/title"
-import { IconSortHeader } from "@/components/icons/icon_sort_header"
-import { useUSGRecordContext } from "../usg_record_context"
-import { formatActionLabel, userPositionListHeaders } from "./usg_position_history_controller"
+import moment from "moment"
+import { cn } from "@/lib/utils"
+import { formatUnits } from "viem"
 import { ListState } from "@/types"
 import { UserPosition } from "../../usg_type"
+import { useUSGRecordContext } from "../usg_record_context"
+import Title from "@/components/design_system/structure/title"
 import Loader from "@/components/design_system/structure/loader"
+import Divider from "@/components/design_system/structure/divider"
 import { formatBigInt, formatDollar } from "@/lib/number_formatter"
-import moment from "moment"
+import { IconSortHeader } from "@/components/icons/icon_sort_header"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { formatUnits } from "viem"
-import { cn } from "@/lib/utils"
+import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import { formatActionLabel, userPositionListHeaders } from "./usg_position_history_controller"
 
 const listeState: ListState = {
   search: undefined,
@@ -71,8 +71,8 @@ function PositionList() {
 
   return (
     <>
-      <div className="mt-6 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
-        <div className={`hidden p-4 leading-[10px] xl:block`}>
+      <div className="mt-6 rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
+        <div className={`hidden p-4 xl:block`}>
           <HistoryRowDisposition>
             {!!headers?.at(0)?.key && (
               <div className="flex-1">
@@ -81,7 +81,11 @@ function PositionList() {
             )}
             {!!headers?.at(1)?.key && (
               <div key={headers?.at(1)?.label} className="flex-1">
-                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(headers?.at(1)?.key as string)}>
+                <button
+                  className="flex w-full items-center justify-center gap-2"
+                  type="button"
+                  onClick={() => udpateSort && udpateSort(headers?.at(1)?.key as string)}
+                >
                   <span>{headers?.at(1)?.label} </span>
                   <div className="text-row-tonic">
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction) || "none"} />
@@ -91,7 +95,11 @@ function PositionList() {
             )}
             {!!headers?.at(2)?.key && (
               <div key={headers?.at(2)?.label} className="flex-1">
-                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(headers?.at(2)?.key as string)}>
+                <button
+                  className="flex w-full items-center justify-center gap-2"
+                  type="button"
+                  onClick={() => udpateSort && udpateSort(headers?.at(2)?.key as string)}
+                >
                   <span>{headers?.at(2)?.label} </span>
                   <div className="text-row-tonic">
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction) || "none"} />
@@ -101,7 +109,11 @@ function PositionList() {
             )}
             {!!headers?.at(3)?.key && (
               <div key={headers?.at(3)?.label} className="flex-1">
-                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(headers?.at(3)?.key as string)}>
+                <button
+                  className="flex w-full items-center justify-center gap-2"
+                  type="button"
+                  onClick={() => udpateSort && udpateSort(headers?.at(3)?.key as string)}
+                >
                   <span>{headers?.at(3)?.label} </span>
                   <div className="text-row-tonic">
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction) || "none"} />
@@ -114,7 +126,7 @@ function PositionList() {
         </div>
       </div>
 
-      <div className="scrollbar-thin mt-0 h-full max-h-[200px] overflow-y-auto rounded-[10px] bg-overlay-panel backdrop-blur-[60px] lg:mt-2">
+      <div className="scrollbar-thin mt-0 h-full max-h-[200px] overflow-y-auto bg-overlay-panel backdrop-blur-[60px] lg:mt-1">
         {displayRows &&
           (displayRows as UserPosition[])?.map((pos: UserPosition) => (
             <div key={pos.txHash} className="px-5 py-2 text-[15px] hover:cursor-pointer hover:before:bg-list-row-hover">

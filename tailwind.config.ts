@@ -8,6 +8,9 @@ const config: Config = {
       fontFamily: {
         gilroy: ["var(--font-gilroy)", "sans-serif"],
       },
+      borderWidth: {
+        tangent: "1.5px",
+      },
       backgroundImage: {
         header: "var(--tgt-bg-header)",
         progress: "var(--tgt-bg-progress)",
@@ -38,6 +41,7 @@ const config: Config = {
         danger: "var(--tgt-danger)",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        dark: "var(--tgt-dark)",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",

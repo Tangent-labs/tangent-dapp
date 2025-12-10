@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
 import BorderPanel from "../structure/border_panel"
 import { AssetDataPriced, CollateralInfo } from "@/types"
-import { IconThunder } from "@/components/icons/icon_thunder"
+import { IconThunder } from "@/components/icons"
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
 import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { SliderInput } from "./slider_input"
@@ -30,7 +30,7 @@ export function DepositInput({
   depositAmount,
   balance,
   depositAsset,
-  labelDeposit = "You Deposit",
+  labelDeposit = "You deposit",
   setMaxBalance,
   onValueChange,
   depositSelect = <></>,
@@ -122,7 +122,7 @@ export function DepositInput({
             value={innerValue}
             placeholder="Amount"
             onChange={handleInputChange}
-            className={cn("auto-grow bg-transparent text-[24px] font-semibold focus:outline-none")}
+            className="auto-grow bg-transparent text-[24px] font-semibold focus:outline-none"
             ref={inputRef}
             step="any"
           />
@@ -135,29 +135,17 @@ export function DepositInput({
           <div className="order-1 lg:order-2">{depositSelect}</div>
         </div>
       </div>
+
       <div className="flex w-full cursor-pointer items-center gap-2">
         {displaySliderInput && (
           <div className="flex w-full flex-col">
-            <input
-              type="range"
-              min="0"
-              step="1"
-              max="100"
-              disabled={disabled}
-              value={percentage}
-              onChange={handleSliderChange}
-              className={cn("mt-3 h-1.5 w-full cursor-pointer appearance-none rounded-[10px] bg-[#070707]", disabled ? "cursor-default" : "cursor-pointer")}
-              style={{
-                background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
-              }}
-            />
-            <SliderInput handleSliderChange={handleSliderChange}></SliderInput>
+            <SliderInput disabled={disabled} percentage={percentage} handleSliderChange={handleSliderChange}></SliderInput>
           </div>
         )}
 
         {!disabled && (
           <BorderPanel
-            className="flex w-10 cursor-pointer items-center bg-button-active px-1 text-xs text-white hover:font-semibold"
+            className="w-10 min-w-10 cursor-pointer bg-button-active px-1 text-center text-xs text-white hover:font-semibold"
             onClick={() => {
               if (setMaxBalance) {
                 setPercentage(100)

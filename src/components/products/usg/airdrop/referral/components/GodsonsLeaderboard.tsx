@@ -4,9 +4,9 @@ import { toast } from "react-toastify"
 import { useClipboard } from "@/hooks/useClipboard"
 import { formatAddress } from "@/lib/other_formatter"
 import { formatNumber } from "@/lib/number_formatter"
-import { GodsonLeaderboard } from "../../../usg_type"
-import { IconTrophy } from "@/components/icons/icon_trophy"
+import { IconTrophy } from "@/components/icons"
 import { ToastComponent } from "@/components/design_system/toast"
+import { GodsonLeaderboard } from "../../../usg_type"
 
 type GodsonsLeaderboardProps = {
   godsonsLeaderboard: GodsonLeaderboard

@@ -4,15 +4,14 @@ import { USGRecordProvider } from "@/components/products/usg/record/usg_record_c
 import { USGMarketListProvider } from "@/components/products/usg/list/usg_market_list_context"
 import { loadMarketServerData } from "@/components/products/usg/record/usg_record_controller"
 import NotFound from "../../not-found"
+import { Address } from "viem"
 
-export default async function Layout({ params, children }: { params: { id: string }; children: ReactNode }) {
+export default async function Layout({ params, children }: { params: { id: Address }; children: ReactNode }) {
   const collateral = await params
 
-  const marketCollat = collateral?.id
+  const collateralAddress = collateral?.id
 
-  // Hack for Pendle markets
-  const toMarketSlug = marketCollat.replaceAll("~", "/").replaceAll("_", " ")
-  const { marketInfo, collateralInfo } = await loadMarketServerData(toMarketSlug)
+  const { marketInfo, collateralInfo } = await loadMarketServerData(collateralAddress)
 
   if (!marketInfo) {
     return <NotFound></NotFound>
@@ -20,7 +19,7 @@ export default async function Layout({ params, children }: { params: { id: strin
 
   return (
     <USGMarketListProvider>
-      <USGRecordProvider collateral={marketCollat} collateralInfo={collateralInfo} marketInfo={marketInfo!}>
+      <USGRecordProvider collateral={marketInfo?.marketName} collateralInfo={collateralInfo} marketInfo={marketInfo!}>
         <USGRecordLayout>{children}</USGRecordLayout>
       </USGRecordProvider>
     </USGMarketListProvider>

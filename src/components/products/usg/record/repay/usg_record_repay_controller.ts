@@ -1,8 +1,8 @@
-import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
-import { BalanceAllowanceData, MarketDetailData, TgUsdtMarketRepayParams, ZapMarketData } from "../../usg_type"
+import { formatBigInt } from "@/lib/number_formatter"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import { formatBigInt } from "@/lib/number_formatter"
+import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
+import { BalanceAllowanceData, MarketDetailData, USGMarketRepayParams, ZapMarketData } from "../../usg_type"
 
 export function getRepayFormState(
   marketData?: MarketDetailData,
@@ -42,7 +42,7 @@ export function getRepayFormState(
   }
 }
 
-export async function doRepay(walletClient: WalletClient, args: TgUsdtMarketRepayParams) {
+export async function doRepay(walletClient: WalletClient, args: USGMarketRepayParams) {
   const [account] = await walletClient.requestAddresses()
 
   const txData = {
@@ -56,12 +56,12 @@ export async function doRepay(walletClient: WalletClient, args: TgUsdtMarketRepa
   return await waitForTransaction(txHash)
 }
 
-export async function doRepayAndWithdraw(walletClient: WalletClient, args: TgUsdtMarketRepayParams) {
+export async function doRepayAndWithdraw(walletClient: WalletClient, args: USGMarketRepayParams) {
   const txData = {
     abi: MarketExternalActions.abi as Abi,
     functionName: "repayAndWithdraw",
     address: args.marketAddress,
-    args: [args.withdrawWeiValue, args.repayWeiValue],
+    args: [args.withdrawWeiValue, args.repayWeiValue, args.isReceiptOut],
     gas: undefined as undefined | bigint,
   }
   const txHash = await executeContractCall(walletClient, txData)
@@ -71,9 +71,10 @@ export async function doRepayAndWithdraw(walletClient: WalletClient, args: TgUsd
 export const doZapRepayAndWithdraw = async (
   marketAddress: Address,
   walletClient: WalletClient,
+  withdrawWeiValue: bigint,
+  isReceiptOut: boolean,
   repayData: { routerAddress: string; data: string },
-  zapMarket: ZapMarketData,
-  withdrawWeiValue: bigint
+  zapMarket: ZapMarketData
 ) => {
   const [account] = await walletClient.requestAddresses()
 
@@ -84,6 +85,7 @@ export const doZapRepayAndWithdraw = async (
     functionName: "zapRepayAndWithdraw",
     args: [
       withdrawWeiValue,
+      isReceiptOut,
       {
         tokenIn: zapMarket?.tokenIn,
         amountIn: zapMarket?.amountIn,

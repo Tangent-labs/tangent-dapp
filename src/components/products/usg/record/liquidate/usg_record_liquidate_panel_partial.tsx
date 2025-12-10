@@ -7,8 +7,8 @@ import Divider from "@/components/design_system/structure/divider"
 import { useUSGRecordContext } from "../usg_record_context"
 import { formatBigInt } from "@/lib/number_formatter"
 import BorderPanel from "@/components/design_system/structure/border_panel"
-import { USGStaticAssetSelector } from "./usg_record_liquidate_panel"
 import { useUSGLiquidateContext } from "./usg_record_liquidate_context"
+import { USGStaticAssetSelector } from "@/components/design_system/structure/usg_static_selector"
 
 export default function USGLiquidatePanelPartial() {
   const { USGInfo, collateralInfo } = useUSGRecordContext()

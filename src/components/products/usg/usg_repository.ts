@@ -20,6 +20,15 @@ export const tgUsdTokens = [envAddresses.wStables, envAddresses.lps, envAddresse
 
 export const tgUsdPegKeepers: Address[] = Object.values(envAddresses.pegKeepers)
 
+export const USGOracles = Object.entries(envAddresses?.oracles).map(([key, address]) => {
+  const trimmedName = key.replace("_", "-")
+
+  return {
+    token: trimmedName,
+    address: address as `0x${string}`,
+  }
+})
+
 export const USGMarkets: USGMarket[] = envAddresses.markets.map((market: RawMarket) => ({
   marketAddress: market.marketAddress as Address,
   marketName: market.collatName.replace("_", "-"),
@@ -43,6 +52,7 @@ export const USG_CONTRACT = {
   USG: envAddresses.tokens.USG as Address,
   SUSG: envAddresses.tokens.sUSG as Address,
   USG_ORACLE: envAddresses.oracles.USG as Address,
+  MARKET_VIEWER: envAddresses.utilities.marketViewer as Address,
   ENSO_ROUTER: "0xF75584eF6673aD213a685a1B58Cc0330B8eA22Cf",
   CURVE_ROUTER: "0x45312ea0eff7e09c83cbe249fa1d7598c4c8cd4e",
   PENDLE_ROUTER: "0x6d041EF9096F7013d27fF7a41c17971201499879",

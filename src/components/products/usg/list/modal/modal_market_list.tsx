@@ -76,8 +76,8 @@ export default function USGModalMarketList() {
 const ModalMarketListRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
     <div className="flex items-center justify-between">
-      <div className="flex w-1/2 items-center justify-start">{children?.at(0)}</div>
-      <div className="flex w-1/2 items-center justify-center md:w-1/4">{children?.at(1)}</div>
+      <div className="flex w-2/3 items-center justify-start md:w-1/2">{children?.at(0)}</div>
+      <div className="flex w-1/3 items-center justify-end md:justify-center">{children?.at(1)}</div>
       <div className="hidden w-1/4 items-center justify-center md:flex">{children?.at(2)}</div>
     </div>
   )
@@ -90,18 +90,17 @@ export function USGModalMarketListInner() {
 
   return (
     <>
-      <div className="mt-3 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="mt-3 rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <ListHeader rowDisposition={ModalMarketListRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 
-      <div className="mt-2 max-h-[476px] overflow-y-auto">
+      <div className="max-h-[476px] overflow-y-auto">
         {displayRows?.map((item, index) => (
           <ListRow
             rowDisposition={ModalMarketListRowDisposition}
             className={cn("my-1", !!marketData.length && !!displayRows ? "" : "shimmer")}
             key={index}
-            // Hack for Pendle markets
-            navigate={() => router.push("/" + item.token.trim().replaceAll("/", "~").replaceAll(" ", "_"))}
+            navigate={() => router.push("/" + item.address + "/deposit-borrow")}
           >
             <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
             <MarketListAPR currentAPRDetails={item.currentAPRDetails} apr={item.apr.current} projectedApr={item.apr.projected} />

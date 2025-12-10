@@ -3,6 +3,7 @@
 import { MarketDetailData } from "../usg_type"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
+import { MobileProtocol } from "@/components/design_system/list/mobile_protocol"
 
 type MarketMetadataProps = {
   marketData: MarketDetailData
@@ -15,21 +16,22 @@ export const MarketMetadata = ({ marketData }: MarketMetadataProps) => {
         <>
           {marketData?.marketType?.includes("CRV") && (
             <>
-              <div className="hidden items-center justify-center gap-1 rounded-full bg-overlay-panel px-3 py-0.5 text-xs md:flex">
-                <TokenImage token={"CRV"} size={16} />
-                <span className="flex text-sm">Curve</span>
-              </div>
-
+              <MobileProtocol token="CRV" label="Curve" />
               <TokenImage className="flex text-sm md:hidden" token={"CRV"} size={20} />
             </>
           )}
+
           {marketData?.marketType?.startsWith("Convex_") && (
             <>
-              <div className="hidden items-center justify-center gap-1 rounded-full bg-overlay-panel px-3 py-0.5 text-xs md:flex">
-                <TokenImage token={"CVX"} size={16} />
-                <span className="flex text-sm">Convex</span>
-              </div>
+              <MobileProtocol token="CVX" label="Convex" />
               <TokenImage className="flex text-sm md:hidden" token={"CVX"} size={20} />
+            </>
+          )}
+
+          {marketData?.marketType?.startsWith("STAKEDAO") && (
+            <>
+              <MobileProtocol token="SDT" label="StakeDAO" />
+              <TokenImage className="flex text-sm md:hidden" token={"SDT"} size={20} />
             </>
           )}
 

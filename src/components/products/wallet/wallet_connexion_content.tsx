@@ -1,12 +1,11 @@
 "use client"
 
 import { useMemo } from "react"
+import { useUSGContext } from "../usg/usg_context"
 import { useClipboard } from "@/hooks/useClipboard"
 import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
-import { useUSGContext } from "../usg/usg_context"
-import { IconCross } from "@/components/icons/icon_cross"
-import { IconVsTan } from "@/components/icons/icon_vstan"
+import { IconCross, IconVsTan } from "@/components/icons"
 import { Button } from "@/components/design_system/inputs/button"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -64,7 +63,7 @@ export const WalletConnexionContent = () => {
 
         <PopoverContent align="end">
           {isConnected && currentAddress && (
-            <div data-combobox className="flex w-full min-w-80 flex-col overflow-hidden bg-[#070707] p-2 font-gilroy">
+            <div data-combobox className="flex w-full min-w-80 flex-col overflow-hidden bg-dark p-2 font-gilroy">
               <div className="flex flex-col border-b border-white/10 py-2">
                 <span onClick={() => copy(currentAddress)} className="cursor-pointer font-semibold text-white/80 hover:text-white">
                   {copied ? "Copied" : buttonLabel}

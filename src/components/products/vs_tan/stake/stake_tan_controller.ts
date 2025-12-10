@@ -87,7 +87,7 @@ export const doApprove = async (walletClient: WalletClient, assetAddress: Addres
   return await waitForTransaction(hash)
 }
 
-export const doUnstakeTgUSD = async ({ walletClient, stakingAddress, weiValue }: { walletClient: WalletClient; stakingAddress: Address; weiValue: bigint }) => {
+export const doUnstakeUSG = async ({ walletClient, stakingAddress, weiValue }: { walletClient: WalletClient; stakingAddress: Address; weiValue: bigint }) => {
   const [account] = await walletClient.requestAddresses()
 
   const params = [weiValue, account, account]
@@ -108,7 +108,7 @@ export const doUnstakeTgUSD = async ({ walletClient, stakingAddress, weiValue }:
   return hash
 }
 
-export const doStakeTgUSD = async ({ walletClient, stakingAddress, weiValue }: { walletClient: WalletClient; stakingAddress: Address; weiValue: bigint }) => {
+export const doStakeUSG = async ({ walletClient, stakingAddress, weiValue }: { walletClient: WalletClient; stakingAddress: Address; weiValue: bigint }) => {
   const [account] = await walletClient.requestAddresses()
 
   const params = [weiValue, account]

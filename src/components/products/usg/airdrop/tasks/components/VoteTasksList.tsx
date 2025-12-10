@@ -3,9 +3,8 @@
 import { ListState } from "@/types"
 import { VoteTask } from "../../../usg_type"
 import { formatNumber } from "@/lib/number_formatter"
-import { IconSortHeader } from "@/components/icons/icon_sort_header"
+import { IconSortHeader } from "@/components/icons"
 import TokenImage from "@/components/design_system/structure/token_image"
-import BorderPanel from "@/components/design_system/structure/border_panel"
 import { useListContext } from "@/components/design_system/list/list_context"
 
 export const voteListState: ListState = {
@@ -67,7 +66,7 @@ export const VoteTasksList = () => {
 
   return (
     <>
-      <div className="mb-1 mt-6 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="mb-1 mt-6 rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <div className={`hidden p-4 leading-[10px] xl:block`}>
           <AirdropRowDisposition>
             {!!headers?.at(0)?.key && (
@@ -110,12 +109,12 @@ export const VoteTasksList = () => {
         </div>
       </div>
 
-      <div className="scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent max-h-[500px] overflow-y-auto">
+      <div className="scrollbar-thin max-h-[500px] overflow-y-auto">
         {displayRows &&
           (displayRows as VoteTask[])?.map((task: VoteTask) => (
-            <BorderPanel
+            <div
               key={task?.taskId}
-              className="mb-2 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
+              className="mb-1 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:rounded-[10px] before:opacity-70 hover:cursor-pointer hover:rounded-[10px] hover:before:bg-list-row-hover"
             >
               <div className="hidden items-center justify-between md:flex">
                 <div className="flex w-3/12 items-center gap-2 xl:gap-4">
@@ -163,7 +162,7 @@ export const VoteTasksList = () => {
                 </div>
                 <div className="flex w-full items-center justify-center"> {task?.description}</div>
               </div>
-            </BorderPanel>
+            </div>
           ))}
       </div>
     </>

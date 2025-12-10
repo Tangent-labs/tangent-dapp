@@ -1,20 +1,20 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 import { Switch } from "@/components/ui/switch"
 import USGMarketInfo from "./usg_market_info"
 import USGLoanDetail from "./usg_loan_detail"
 import { formatBigInt } from "@/lib/number_formatter"
+import { usePathname, useRouter } from "next/navigation"
 import USGRecordPageHeader from "./usg_record_page_header"
 import { useUSGRecordContext } from "./usg_record_context"
 import { MarketDetails } from "./header/market_details_header"
 import Divider from "@/components/design_system/structure/divider"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
 import USGCollateralPrice from "./collat_price/collat_price_content"
+import TgUsdPositionHistory from "./position_history/usg_position_history"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { CollateralPriceProvider } from "./collat_price/collat_price_context"
-import TgUsdPositionHistory from "./position_history/usg_position_history"
-import { FeatureSelect } from "@/components/design_system/structure/feature_select"
+import { FeatureTabs } from "@/components/design_system/inputs/feature_tabs/feature_tabs"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
@@ -28,27 +28,48 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     feature,
     debtVAPR,
     chartData,
-    collateral,
     debtFarming,
     isLeveraged,
     canLeverage,
     onChainData,
     initialCollatAmount,
     currentTotalMarketApr,
+    marketInfo,
     setDebtVAPR,
     setDebtFarming,
     setIsLeveraged,
     setInitialCollatAmount,
+    setIsRepayAndWithdraw,
+    setActiveTab,
+    activeTab,
   } = useUSGRecordContext()
 
   const router = useRouter()
 
+  const path = usePathname()
+
   const onTabClick = (feat: string) => {
     if (feat.toLowerCase() === "deposit") {
-      router.push(`/${collateral}`)
+      router.push(`/${marketInfo?.marketAddress}/deposit`)
+    } else if (feat.toLowerCase() === "deposit&borrow") {
+      router.push(`/${marketInfo?.marketAddress}/deposit-borrow`)
+    } else if (feat.toLowerCase() === "repay") {
+      router.push(`/${marketInfo?.marketAddress}/repay`)
+    } else if (feat.toLowerCase() === "repay&withdraw") {
+      router.push(`/${marketInfo?.marketAddress}/repay-withdraw`)
     } else {
-      router.push(`/${collateral}/${feat.toLowerCase()}`)
+      router.push(`/${marketInfo?.marketAddress}/${feat.toLowerCase()}`)
     }
+  }
+
+  const onClickBorrow = () => {
+    setActiveTab("Borrow")
+    router.push(`/${marketInfo?.marketAddress}/deposit-borrow`)
+  }
+
+  const onClickRepay = () => {
+    setActiveTab("Repay")
+    router.push(`/${marketInfo?.marketAddress}/repay-withdraw`)
   }
 
   const onTabClickLeverage = () => {
@@ -56,6 +77,25 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
       onTabClick("leverage")
     }
   }
+
+  const setupNavigationOnInit = () => {
+    const lastIndexOfSlash = path?.lastIndexOf("/") + 1
+    const feat = path.substring(lastIndexOfSlash, path.length)
+
+    if (feat === "repay" || feat === "withdraw" || feat === "liquidate") {
+      setIsRepayAndWithdraw(false)
+      setActiveTab("Repay")
+    }
+
+    if (feat === "repay-withdraw") {
+      setIsRepayAndWithdraw(true)
+      setActiveTab("Repay")
+    }
+  }
+
+  useEffect(() => {
+    setupNavigationOnInit()
+  }, [])
 
   return (
     <>
@@ -65,33 +105,18 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
 
       <div className="my-4 flex flex-col gap-4">
         <div className="relative flex items-start justify-start gap-4 max-xl:flex-col">
-          <div className="w-full rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] xl:w-5/12">
-            <div className="hidden w-full flex-col items-center justify-between gap-1 md:flex">
-              <div className="flex w-full justify-between gap-1">
-                <ButtonTab className="w-full !px-2" active={feature === collateral} label={"Deposit"} onClick={() => onTabClick("deposit")} />
-                <ButtonTab className="w-full !px-2" active={feature === "borrow"} label={"Borrow"} onClick={() => onTabClick("borrow")} />
-                <ButtonTab
-                  disabled={!canLeverage}
-                  className="w-full !px-2"
-                  active={feature === "leverage"}
-                  label={"Leverage"}
-                  onClick={() => onTabClickLeverage()}
-                />
-                <ButtonTab className="w-full !px-2" active={feature === "repay"} label={"Repay"} onClick={() => onTabClick("repay")} />
-                <ButtonTab className="w-full !px-2" active={feature === "withdraw"} label={"Withdraw"} onClick={() => onTabClick("withdraw")} />
-                <ButtonTab className="w-full !px-2" active={feature === "liquidate"} label={"Liquidate"} onClick={() => onTabClick("liquidate")} />
-              </div>
-            </div>
+          <div className="w-full rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
+            <FeatureTabs
+              feature={feature}
+              activeTab={activeTab}
+              canLeverage={canLeverage}
+              marketAddress={marketInfo?.marketAddress}
+              onTabClick={onTabClick}
+              onTabClickLeverage={onTabClickLeverage}
+              onClickBorrow={onClickBorrow}
+              onClickRepay={onClickRepay}
+            ></FeatureTabs>
 
-            <div className="flex w-full flex-col items-center justify-between gap-1 md:hidden">
-              <FeatureSelect
-                options={["Deposit", "Borrow", "Withdraw", "Repay", "Leverage", "Liquidate"]}
-                value={feature}
-                onChange={(v: string) => onTabClick(v)}
-              ></FeatureSelect>
-            </div>
-
-            <Divider />
             <div className="mt-2">{children}</div>
           </div>
 

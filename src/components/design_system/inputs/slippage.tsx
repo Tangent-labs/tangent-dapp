@@ -1,7 +1,7 @@
-import { IconGearWheel } from "@/components/icons/icon_gear_wheel"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import BorderPanel from "../structure/border_panel"
 import ButtonTab from "./button_tab"
+import BorderPanel from "../structure/border_panel"
+import { IconGearWheel } from "@/components/icons"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 type SlippageInputProps = {
   slippage: number
@@ -27,7 +27,7 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
             <div className="flex w-full items-center justify-start">Slippage</div>
             <input
               onChange={(e) => setSlippage(Number(e?.target?.value))}
-              value={slippage || 0}
+              value={slippage}
               placeholder="0.5"
               type="number"
               min={0.1}

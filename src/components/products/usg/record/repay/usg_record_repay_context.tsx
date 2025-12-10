@@ -18,13 +18,13 @@ import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepa
 
 type USGRepayContextProps = {
   children: ReactNode
+  isRepayAndWithdrawInput: boolean
 }
 
 type USGRepayContextValues = {
   actionRepay: () => void
   formState: FormState
 
-  onClickMax: (e: boolean) => void
   repayWeiValue?: bigint
   setRepayWeiValue: (arg: bigint | undefined) => void
 
@@ -35,8 +35,6 @@ type USGRepayContextValues = {
 
   percentage: number
   setPercentage: (arg: number) => void
-  isRepayAndWithdraw: boolean
-  setIsRepayAndWithdraw: (arg: boolean) => void
 
   maxWithdrawable: bigint
 
@@ -73,18 +71,31 @@ type USGRepayContextValues = {
   isDebtBelowThreshold: boolean
 
   tgUsdDollarRepayedValue: string
+
+  withdrawSelectedAsset: string
+  setWithdrawSelectedAsset: (v: string) => void
 }
 
 export const USGRepayContext = createContext<USGRepayContextValues | undefined>(undefined)
 
-export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
+export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepayContextProps) => {
   const { curveRoutes, handleQuote } = useRootContext()
 
   const { tokens, loadUSGsUSGMetrics } = useUSGContext()
 
   const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
 
-  const { marketData, USGInfo, balanceAllowanceData, loadOnChainData, setCurrentAmounts, fetchBalanceAllowanceData } = useUSGRecordContext()
+  const {
+    marketData,
+    USGInfo,
+    balanceAllowanceData,
+    setIsRepayAndWithdraw,
+    loadOnChainData,
+    setCurrentAmounts,
+    fetchBalanceAllowanceData,
+    collateral,
+    isRepayAndWithdraw,
+  } = useUSGRecordContext()
 
   const [isZapLoading, setIsZapLoading] = useState(false)
 
@@ -102,13 +113,17 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
 
   const [isRepayMax, setIsRepayMax] = useState<boolean>(false)
 
-  const [isRepayAndWithdraw, setIsRepayAndWithdraw] = useState<boolean>(false)
-
   const [withdrawPercentage, setWithdrawPercentage] = useState<number>(0)
 
   const [usgRepayedValue, setUsgRepayedValue] = useState<bigint | undefined>()
 
+  const [withdrawSelectedAsset, setWithdrawSelectedAsset] = useState<string>(collateral)
+
   const walletClientRef = useRef<ReturnType<typeof getWalletClient> | null>(null)
+
+  useEffect(() => {
+    setIsRepayAndWithdraw(isRepayAndWithdrawInput)
+  }, [])
 
   useEffect(() => {
     if (!isRepayAndWithdraw) {
@@ -190,7 +205,9 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
         minAmountOut: usgRepayedValue!,
       }
 
-      doZapRepayAndWithdraw(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData, withdrawWeiValue)
+      const isReceiptOut = withdrawSelectedAsset !== collateral
+
+      doZapRepayAndWithdraw(marketData?.marketAddress, walletClientRef.current!, withdrawWeiValue, isReceiptOut, repayData!, zapMarketData)
         .then(() => {
           resetAfterRepaySuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
@@ -272,6 +289,7 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
       repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
     }).then(() => {
       resetAfterRepaySuccess()
+      toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
     })
   }
 
@@ -280,8 +298,10 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
       marketAddress: marketData!.marketAddress,
       repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
       withdrawWeiValue,
+      isReceiptOut: withdrawSelectedAsset !== collateral,
     }).then(() => {
       resetAfterRepaySuccess()
+      toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
     })
   }
 
@@ -325,11 +345,8 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
   const maxWithdrawable = useMemo(() => {
     if (marketData && currentAddress) {
       const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice
-
       const computedRepayWeiValue = !!repayAsset && repayAsset === "USG" ? repayWeiValue : usgRepayedValue
-
       const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n) - (computedRepayWeiValue || 0n)
-
       const futureDeposited = BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n)
       const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
       const maxWithDrawable = collateralPriceRaw !== 0n ? futureDeposited - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
@@ -339,27 +356,6 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
 
     return 0n
   }, [marketData, repayWeiValue, usgRepayedValue, currentAddress])
-
-  const onClickMax = (isChecked: boolean) => {
-    if (isChecked) {
-      if (repayAsset !== "USG" && repayAssetInfo && marketData) {
-        setIsRepayMax(true)
-        setPercentage(100)
-
-        handleRepayValueChange(marketValues?.maxRepayableValue)
-      } else {
-        setIsRepayMax(true)
-        setPercentage(100)
-        setRepayWeiValue(marketValues?.maxRepayableValue)
-      }
-    } else {
-      setIsRepayMax(false)
-      setRepayWeiValue(0n)
-      setWithdrawWeiValue(0n)
-      setPercentage(0)
-      setWithdrawPercentage(0)
-    }
-  }
 
   const handleRepayValueChange = (value: bigint | undefined) => {
     setRepayWeiValue(value)
@@ -441,8 +437,6 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
     maxRepayableValue: marketValues?.maxRepayableValue,
     percentage,
     setPercentage,
-    isRepayAndWithdraw,
-    setIsRepayAndWithdraw,
     withdrawWeiValue,
     setWithdrawWeiValue,
     maxWithdrawable,
@@ -459,7 +453,6 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
     swapAssetPrice,
     zapRepay,
     actionApprove,
-    onClickMax,
     actionZapRepay,
     isRepayMax,
     setIsRepayMax,
@@ -467,6 +460,8 @@ export const USGRepayProvider = ({ children }: USGRepayContextProps) => {
     slippage,
     setSlippage,
     tgUsdDollarRepayedValue,
+    withdrawSelectedAsset,
+    setWithdrawSelectedAsset,
   }
 
   return <USGRepayContext.Provider value={contextValue}>{children}</USGRepayContext.Provider>

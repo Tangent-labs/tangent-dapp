@@ -281,7 +281,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     <RootContext.Provider value={contextValue}>
       <ToastContainer
         position="top-right"
-        autoClose={4000}
+        autoClose={3000}
         hideProgressBar
         newestOnTop={false}
         closeOnClick={true}

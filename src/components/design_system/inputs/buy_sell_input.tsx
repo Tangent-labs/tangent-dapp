@@ -3,18 +3,17 @@
 import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
 import { AssetDataPriced } from "@/types"
-import BorderPanel from "../structure/border_panel"
-import { IconChevron } from "@/components/icons/icon_chevron"
-import { ReactNode, useEffect, useMemo, useState } from "react"
-import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { SliderInput } from "./slider_input"
+import { IconChevron } from "@/components/icons"
+import BorderPanel from "../structure/border_panel"
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
+import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
 
 type BuySellInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
   receiveAsset?: AssetDataPriced
   depositAmount?: bigint
   depositBalance?: bigint
-  disabled?: boolean
   labelDeposit?: string
   receiveAmount?: bigint
   labelReceive?: string
@@ -38,8 +37,8 @@ export function BuySellInput({
   depositAsset,
   receiveAsset,
   receiveAmount,
-  labelDeposit = "You Sell",
-  labelReceive = "You Buy",
+  labelDeposit = "You sell",
+  labelReceive = "You buy",
   setMaxBalance,
   onValueChange,
   onReceiveValueChange,
@@ -51,9 +50,12 @@ export function BuySellInput({
   percentage = 0,
   setPercentage,
   toggleTokensSwitch,
-  disabled,
   ...props
 }: BuySellInputProps) {
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const receiveInputRef = useRef<HTMLInputElement>(null)
+
   const balanceNumber = useMemo(() => {
     if (depositBalance) {
       return Number(formatUnits(depositBalance, depositAsset?.decimals || 18))
@@ -159,11 +161,19 @@ export function BuySellInput({
     return `(${formatDollar(val)})`
   }, [receiveAmount, receiveAsset])
 
+  const onClickFocus = () => {
+    inputRef.current?.focus()
+  }
+
+  const onClickFocusReceiveInput = () => {
+    receiveInputRef.current?.focus()
+  }
+
   return (
     <div className="flex w-full flex-col">
       <div className="mb-3 flex w-full items-end justify-between">
         <div className="font-semibold">
-          {labelDeposit === "You Buy" ? "Sell" : "Buy"} {receiveAsset?.symbol}
+          {labelDeposit === "You buy" ? "Sell" : "Buy"} {receiveAsset?.symbol}
         </div>
 
         <span className="text-xs text-subtitle">
@@ -172,31 +182,37 @@ export function BuySellInput({
       </div>
 
       <div className={cn("flex flex-col")} {...props}>
-        <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2 hover:bg-white/10`}>
+        <BorderPanel
+          onClick={onClickFocus}
+          className={`${isLoading ? "shimmer" : ""} flex cursor-pointer flex-col p-2 transition-colors duration-200 ease-in-out hover:bg-white/10`}
+        >
           <div className="flex w-full justify-between">
             <div className="text-sm text-subtitle">{labelDeposit}</div>
           </div>
-          <div className="mb-2 flex w-full justify-between">
-            <input
-              {...props}
-              disabled={disabled}
-              type="number"
-              value={innerValue ?? ""}
-              placeholder="Amount"
-              onChange={handleInputChange}
-              className={cn(
-                "min-h-10 max-w-28 rounded-[10px] border-opacity-20 bg-transparent text-xl font-semibold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30 md:max-w-32"
-              )}
-            />
+          <div className="mb-2 flex justify-between">
+            <div className="flex items-center justify-start">
+              <input
+                {...props}
+                type="number"
+                value={innerValue ?? ""}
+                ref={inputRef}
+                placeholder="Amount"
+                onChange={handleInputChange}
+                className="auto-grow bg-transparent text-[24px] font-semibold focus:outline-none"
+              />
+              <div className="text-xs text-subtitle">{dollarDepositDisplay}</div>
+            </div>
 
             {depositSelect}
           </div>
-          <div className="flex justify-between text-xs text-subtitle">
-            <div>{dollarDepositDisplay}</div>
+          <div className="flex w-full justify-between text-xs text-subtitle">
+            <div className="flex w-full cursor-pointer items-center justify-between gap-2">
+              <div className="flex w-full flex-col">
+                <SliderInput percentage={percentage} handleSliderChange={handleSliderChange}></SliderInput>
+              </div>
 
-            <div className="flex cursor-pointer items-center">
               <BorderPanel
-                className="flex w-10 cursor-pointer items-center rounded-full bg-button-active px-1.5 py-0.5 text-xs text-white hover:font-semibold"
+                className="w-10 min-w-10 cursor-pointer bg-button-active px-1 text-center text-xs text-white hover:font-semibold"
                 onClick={() => {
                   if (setMaxBalance) setMaxBalance()
                 }}
@@ -205,21 +221,6 @@ export function BuySellInput({
               </BorderPanel>
             </div>
           </div>
-
-          <input
-            type="range"
-            min="0"
-            step="1"
-            max="100"
-            value={percentage}
-            onChange={handleSliderChange}
-            className="mt-3 h-1.5 w-full cursor-pointer appearance-none rounded-[10px] bg-[#070707]"
-            style={{
-              background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
-            }}
-          />
-
-          <SliderInput handleSliderChange={handleSliderChange}></SliderInput>
         </BorderPanel>
 
         <div
@@ -229,10 +230,13 @@ export function BuySellInput({
           }}
           className="my-2 flex w-full cursor-pointer items-center justify-center border-none"
         >
-          <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-20 bg-select-input p-2 text-white backdrop-blur-[60px] hover:border-white hover:stroke-black" />
+          <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-20 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
         </div>
 
-        <BorderPanel className={`${isLoading ? "shimmer" : ""} flex flex-col p-2 hover:bg-white/10`}>
+        <BorderPanel
+          onClick={onClickFocusReceiveInput}
+          className={`${isLoading ? "shimmer" : ""} flex cursor-pointer flex-col p-2 transition-colors duration-200 ease-in-out hover:bg-white/10`}
+        >
           <div className="text-sm text-subtitle">{labelReceive}</div>
           <div className="mb-2 flex justify-between">
             <div className="mr-4 text-xl font-medium">
@@ -240,17 +244,15 @@ export function BuySellInput({
                 type="number"
                 value={innerTangentValue ?? ""}
                 placeholder="Amount"
+                ref={receiveInputRef}
                 onChange={handleInputTangentChange}
-                className={cn(
-                  "min-h-10 max-w-28 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none disabled:bg-gray-400 disabled:bg-opacity-30 md:max-w-32"
-                )}
+                className="min-h-10 max-w-28 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none md:max-w-32"
               />
             </div>
+
             <div>{receiveSelect}</div>
           </div>
-          <div className="flex justify-between text-xs text-subtitle">
-            <div>{dollarReceiveDisplay}</div>
-          </div>
+          <div className="text-xs text-subtitle">{dollarReceiveDisplay}</div>
         </BorderPanel>
       </div>
     </div>

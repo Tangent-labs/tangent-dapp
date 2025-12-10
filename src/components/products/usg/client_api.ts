@@ -392,9 +392,9 @@ export const getGodsonsLeaderboard = async (
   }
 }
 
-export const getsUsgApyData = async (dateTo: number, dateFrom: number | null, tokenAddress: string): Promise<Array<{ timestamp: Date; amount: string }>> => {
+export const getsUsgApyData = async (dateTo: number, dateFrom: number | null): Promise<Array<{ timestamp: Date; amount: string }>> => {
   try {
-    const url = `${baseUrl}/susg/apy/${dateTo}/${dateFrom}/${tokenAddress}`
+    const url = `${baseUrl}/susg/apy/${dateTo}/${dateFrom}`
 
     const response = await fetch(url, {
       method: "GET",
@@ -404,13 +404,13 @@ export const getsUsgApyData = async (dateTo: number, dateFrom: number | null, to
     })
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch total supply of : ${tokenAddress}`)
+      throw new Error(`Failed to fetch susg apy`)
     }
 
     const data: Array<{ timestamp: Date; amount: string }> = await response.json()
     return data
   } catch (error) {
-    console.error("Failed to fetch historical market data:", error)
+    console.error("Failed to fetch historical susg apy:", error)
     return []
   }
 }

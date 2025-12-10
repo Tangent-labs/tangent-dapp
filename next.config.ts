@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
-    domains: ["raw.githubusercontent.com"],
+    domains: ["raw.githubusercontent.com", "files.cow.fi"],
   },
 
   /* config options here */

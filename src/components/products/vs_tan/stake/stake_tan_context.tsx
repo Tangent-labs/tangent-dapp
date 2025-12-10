@@ -7,7 +7,7 @@ import { StakingAssetInfo, StakingDepositType, TANStakingInfo } from "../rstan_t
 import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedsTAN, getExpectedTAN, getFormState } from "./stake_tan_controller"
+import { doApprove, doStakeUSG, doUnstakeUSG, getExpectedsTAN, getExpectedTAN, getFormState } from "./stake_tan_controller"
 
 type StakeTanContextProps = {
   children: ReactNode
@@ -154,7 +154,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
       stakingAddress: VSTAN_CONTRACT.STAN,
       weiValue,
     }
-    await doUnstakeTgUSD(params)
+    await doUnstakeUSG(params)
     loadTanSTANMetrics()
     setWeiValue(0n)
     setExpected(0n)
@@ -170,7 +170,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
       stakingAddress: VSTAN_CONTRACT.STAN,
       weiValue,
     }
-    await doStakeTgUSD(params)
+    await doStakeUSG(params)
     loadTanSTANMetrics()
     setWeiValue(0n)
     setExpected(0n)

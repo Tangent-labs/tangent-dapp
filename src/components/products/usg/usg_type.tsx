@@ -45,7 +45,7 @@ export type USGGlobalData = {
   globalTvl: string
 }
 
-export type USGMarketType = "Convex_CRV" | "Convex_FXN" | "Pendle_PT"
+export type USGMarketType = "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | "STAKEDAO_CRV_Vault"
 
 export type ClaimerInfoDisplay = {
   asset: ExistingAsset // Address
@@ -287,7 +287,7 @@ export type USGMarket = {
   marketAddress: Address
   marketName: ExistingAsset
   collatAddress: Address
-  marketType: "Convex_CRV" | "Convex_FXN" | "Pendle_PT"
+  marketType: "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | "STAKEDAO_CRV_Vault"
 }
 
 export type USGStakingInfo = {

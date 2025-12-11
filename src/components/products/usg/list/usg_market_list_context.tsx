@@ -1,8 +1,8 @@
 "use client"
 
-import { ListRowData, ListState } from "@/types"
-import { useUSGContext } from "../usg_context"
 import { USGMarkets } from "../usg_repository"
+import { useUSGContext } from "../usg_context"
+import { ListRowData, ListState } from "@/types"
 import { Address, formatUnits, zeroAddress } from "viem"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -20,7 +20,11 @@ type USGMaketListContextValues = {
   setSearchValue: (value: string | null) => void
   sortMarketList: (arg: ListState) => void
 
-  marketData: Array<{ marketType: "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | undefined; marketAddress: Address; constants: MarketConstants }>
+  marketData: Array<{
+    marketType: "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | "STAKEDAO_CRV_Vault" | undefined
+    marketAddress: Address
+    constants: MarketConstants
+  }>
   userData: {
     totalUserDebt: bigint
     totalUserDeposit: bigint
@@ -136,7 +140,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
   }, [onChainData])
 
   const marketData = useMemo<
-    Array<{ marketType: "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | undefined; marketAddress: Address; constants: MarketConstants }>
+    Array<{ marketType: "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | "STAKEDAO_CRV_Vault" | undefined; marketAddress: Address; constants: MarketConstants }>
   >(() => {
     if (onChainData) {
       return transformMarketData(onChainData)
@@ -159,33 +163,47 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
         totalProtocolDebt += market.debtInfos.totalDebt
       })
 
-      const USGCollateralsData = onChainData.rowInfos.map((market) => {
-        const value = market.collateralInfos.totalCollateralUSDValue
+      const USGCollateralsData = onChainData.rowInfos
+        .map((market) => {
+          const collateralValue = market.collateralInfos.totalCollateralUSDValue
+          const collateralFormatted = Number(formatUnits(collateralValue, 18))
+          const totalDepositFormatted = Number(formatUnits(totalProtocolDeposit, 18))
 
-        const percentage = totalProtocolDeposit > 0n ? (Number(formatUnits(value, 18)) / Number(formatUnits(totalProtocolDeposit, 18))) * 100 : 0
+          const percentage = totalDepositFormatted > 0 ? (collateralFormatted / totalDepositFormatted) * 100 : 0
 
-        return {
-          name: market.collateralInfos.collateralToken.symbol,
-          value: Number(percentage.toFixed(2)),
-        }
-      })
+          const marketConfig = USGMarkets.find((m) => m.marketAddress === market.marketAddress)
+
+          const displayName = (marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + marketConfig?.marketName
+
+          return {
+            name: displayName,
+            value: Number(percentage.toFixed(2)),
+          }
+        })
+        .sort((a, b) => b.value - a.value)
 
       const marketDebtData = onChainData.rowInfos
         .map((market, index) => {
           const debtValue = market.debtInfos.totalDebt
+          const debtFormatted = Number(formatUnits(debtValue, 18))
+          const totalDebtFormatted = Number(formatUnits(totalProtocolDebt, 18))
 
-          const percentage = totalProtocolDebt > 0 ? (Number(formatUnits(debtValue, 18)) / Number(formatUnits(totalProtocolDebt, 18))) * 100 : 0
+          const percentage = totalDebtFormatted > 0 ? (debtFormatted / totalDebtFormatted) * 100 : 0
+
+          const marketConfig = USGMarkets.find((m) => m.marketAddress === market.marketAddress)
+
+          const displayName =
+            (marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + (marketConfig?.marketName || market.collateralInfos?.collateralToken?.symbol)
 
           return {
             id: index + 1,
+            name: displayName,
             value: Number(percentage.toFixed(2)),
             rawValue: debtValue,
-            name: market?.collateralInfos?.collateralToken?.symbol,
+            marketAddress: market.marketAddress,
           }
         })
-        .sort((a, b) => {
-          return a.value > b.value ? -1 : 1
-        })
+        .sort((a, b) => b.value - a.value)
 
       return { totalUserDebt, totalUserDeposit, totalProtocolDeposit, totalProtocolDebt, USGCollateralsData, marketDebtData }
     }

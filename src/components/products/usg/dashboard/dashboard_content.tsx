@@ -97,7 +97,7 @@ export const USGDashboardContent = () => {
 
       <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
         <div className="flex w-full items-start justify-start">
-          <div className="mt-1 flex h-full max-h-80 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
+          <div className="mt-1 flex h-full max-h-[340px] w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
             <div className="flex w-full items-center justify-end sm:justify-between">
               <div className="hidden text-xl font-semibold sm:flex">Total Supply </div>
 
@@ -226,7 +226,7 @@ export const USGDashboardContent = () => {
 
       <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
         <div className="flex w-full items-start justify-start md:w-1/2">
-          <div className="mt-3 flex h-full max-h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+          <div className="mt-2 flex h-full max-h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
             <div className="text-xl font-semibold">USG collaterals</div>
             <Divider className="h-0.5 w-full bg-white/10" />
 
@@ -287,7 +287,7 @@ export const USGDashboardContent = () => {
         </div>
 
         <div className="flex w-full items-start justify-start md:w-1/2">
-          <div className="mt-3 flex h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+          <div className="mt-2 flex h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
             <div className="text-xl font-semibold">Market debt</div>
             <Divider className="h-0.5 w-full bg-white/10" />
             <div className="mb-2 flex items-center justify-start gap-2 text-xs">

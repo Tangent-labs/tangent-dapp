@@ -78,7 +78,7 @@ export type ClaimAsset = {
 
 export type ClaimData = {
   marketAddress: Address
-  marketName: ExistingAsset
+  marketName: string
   claimable: ClaimAsset[]
   totalClaimableValue: string
   deposited: ClaimAsset

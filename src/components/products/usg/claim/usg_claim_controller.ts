@@ -88,11 +88,13 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
       valueInUsd: depositedValueInUsd.toFixed(2),
     }
 
-    const marketName = claimer.collatStaked.symbol
+    const marketConfig = USGMarkets.find((m) => m.marketAddress === claimer.marketAddress)
+
+    const displayName = (marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + marketConfig?.marketName
 
     return {
       marketAddress: claimer.marketAddress,
-      marketName,
+      marketName: displayName,
       claimable,
       totalClaimableValue: totalClaimableValue.toFixed(2),
       deposited,

@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { formatUnits } from "viem"
-import { ListState } from "@/types"
+import { ExistingAsset, ListState } from "@/types"
 import { Switch } from "@/components/ui/switch"
 import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import { claimListHeaders } from "./usg_claim_controller"
@@ -165,7 +165,7 @@ function ClaimList() {
           <div className="flex items-center justify-between max-xl:flex-col">
             <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
               <div className="xl:w-2/3">
-                <ListAsset name={item?.marketName} token={item.marketName} assetsEarned={[]} />
+                <ListAsset name={item?.marketName} token={item.marketName as ExistingAsset} assetsEarned={[]} />
               </div>
               <div className="flex justify-center xl:w-1/3">
                 <div className="flex min-w-16 flex-col items-center justify-center gap-2">
@@ -205,7 +205,7 @@ function ClaimList() {
                   checked={!!marketsToClaim.find((market) => market.marketName === item.marketName)}
                   onCheckedChange={() =>
                     addToClaimableMarkets({
-                      marketName: item.marketName,
+                      marketName: item.marketName as ExistingAsset,
                       claimable: item.totalClaimableValue,
                       marketAddress: item.marketAddress,
                     })

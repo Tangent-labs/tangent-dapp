@@ -7,7 +7,7 @@ import { useUSGContext } from "../../usg_context"
 import { AssetDataPriced, FormState } from "@/types"
 import { USG_CONTRACT } from "../../usg_repository"
 import { useUSGRecordContext } from "../usg_record_context"
-import { formatBigIntAsNumber, formatDollar, toBigInt } from "@/lib/number_formatter"
+import { formatDollar, toBigInt } from "@/lib/number_formatter"
 import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
@@ -70,9 +70,6 @@ type USGRepayContextValues = {
 
   isDebtBelowThreshold: boolean
 
-  currentQuotePriceImpact: bigint | undefined
-
-  expectedUSG: string
   USGDollarRepayedValue: string
 
   withdrawSelectedAsset: string
@@ -119,8 +116,6 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   const [withdrawPercentage, setWithdrawPercentage] = useState<number>(0)
 
   const [usgRepayedValue, setUsgRepayedValue] = useState<bigint | undefined>()
-
-  const [currentQuotePriceImpact, setCurrentQuotePriceImpact] = useState<bigint | undefined>(undefined)
 
   const [withdrawSelectedAsset, setWithdrawSelectedAsset] = useState<string>(collateral)
 
@@ -370,13 +365,12 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
       setIsZapLoading(true)
       try {
-        const { quote, priceImpact } = await getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address, curveRoutes)
+        const { quote } = await getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address, curveRoutes)
 
         handleQuote(quote)
 
         if (quote) {
           setUsgRepayedValue(quote)
-          setCurrentQuotePriceImpact(priceImpact)
         }
       } catch (error) {
         console.error(error)
@@ -435,17 +429,6 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     return `(~${formatDollar((Number(Number(formatUnits(usgRepayedValue || 0n, 18))) * USGInfo?.price).toFixed(2))})`
   }, [usgRepayedValue, USGInfo])
 
-  const expectedUSG = useMemo(() => {
-    if (marketData) {
-      if (usgRepayedValue && repayAsset && repayAsset !== "USG") {
-        return `${formatBigIntAsNumber(BigInt(usgRepayedValue || 0n), 18, 2)} USG`
-      } else if (repayAsset && repayAsset === "USG" && repayWeiValue) {
-        return `${formatBigIntAsNumber(repayWeiValue || 0n, 18, 2)}  USG`
-      }
-    }
-    return "0 USG"
-  }, [usgRepayedValue, repayWeiValue, repayAsset, marketData])
-
   const contextValue: USGRepayContextValues = {
     actionRepay,
     formState,
@@ -476,8 +459,6 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     isDebtBelowThreshold,
     slippage,
     setSlippage,
-    currentQuotePriceImpact,
-    expectedUSG,
     USGDollarRepayedValue,
     withdrawSelectedAsset,
     setWithdrawSelectedAsset,

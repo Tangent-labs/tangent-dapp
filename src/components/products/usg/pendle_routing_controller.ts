@@ -114,7 +114,7 @@ export const getCustomPendleQuote = async (
 ) => {
   const { bestQuote } = await returnCustomPendleQuoteData(customCurveRoutes, tokenIn, tokenOut, amount, swapDirection)
 
-  return { bestQuote: bestQuote as bigint, priceImpact: 0n }
+  return bestQuote as bigint
 }
 
 export const getPendleCustomRouterRoute = async (

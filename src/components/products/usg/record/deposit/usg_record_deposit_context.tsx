@@ -73,8 +73,6 @@ type USGDepositContextValues = {
 
   aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
 
-  currentQuotePriceImpact: bigint
-
   isZapping: boolean
 }
 
@@ -111,8 +109,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   const [depositSliderPercent, setDepositSliderPercent] = useState<number>(0)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
-
-  const [currentQuotePriceImpact, setCurrentQuotePriceImpact] = useState<bigint>(0n)
 
   const [isDepositLoading, setIsDepositLoading] = useState(false)
 
@@ -198,13 +194,12 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
       setIsZapLoading(true)
       try {
-        const { quote, priceImpact } = await getQuote(value, currentAddress || zeroAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
+        const { quote } = await getQuote(value, currentAddress || zeroAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
 
         handleQuote(quote)
 
         if (quote) {
           setZapValue(quote)
-          setCurrentQuotePriceImpact(priceImpact)
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)
@@ -233,19 +228,12 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       setIsDepositLoading(true)
 
       try {
-        const { quote, priceImpact } = await getQuote(
-          parseEther(e?.target?.value),
-          currentAddress,
-          depositAssetInfo?.address,
-          marketInfo?.collatAddress,
-          curveRoutes
-        )
+        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
 
         handleQuote(quote)
 
         if (quote) {
           setDepositWeiValue(BigInt(quote))
-          setCurrentQuotePriceImpact(priceImpact)
         }
       } catch (error) {
         console.error("Error fetching depositWeiValue:", error)
@@ -683,8 +671,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     aprVariation,
 
     expectedCollateral,
-
-    currentQuotePriceImpact,
 
     isZapping,
   }

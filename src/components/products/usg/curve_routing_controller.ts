@@ -1,7 +1,7 @@
 import { USG_CONTRACT } from "./usg_repository"
 import CurveRouterABI from "../../../abi/USG/CurveRouter.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
-import QuotesCurveRouterImpact from "../../../abi/USG/QuotesCurveRouterImpact.json"
+import QuotesCurveRouter from "../../../abi/USG/QuotesCurveRouter.json"
 import { Abi, Address, encodeFunctionData, Hex, zeroAddress } from "viem"
 import { CustomCurveRoutes } from "./global_quote_controller"
 
@@ -14,38 +14,23 @@ const returnCustomQuoteData = async (customCurveRoutes: CustomCurveRoutes, token
       _pools: [zeroAddress, zeroAddress, zeroAddress, zeroAddress, zeroAddress],
     })) ?? []
 
-  const abi = QuotesCurveRouterImpact.abi
-  const bytecode = QuotesCurveRouterImpact.bytecode
+  const abi = QuotesCurveRouter.abi
+  const bytecode = QuotesCurveRouter.bytecode
 
-  const quotesAndPriceImpacts = await executeChainViewUnique<Array<{ quote: bigint; priceImpact: bigint }>>(abi as Abi, bytecode as Hex, [matchingRoutes])
+  const quotes = await executeChainViewUnique<bigint[]>(abi as Abi, bytecode as Hex, [matchingRoutes])
 
-  if (quotesAndPriceImpacts) {
-    const bestQuote: bigint = quotesAndPriceImpacts.length > 0 ? quotesAndPriceImpacts.map((el) => el.quote)!.reduce((a, b) => (a > b ? a : b)) : 0n
+  if (quotes) {
+    const bestQuote: bigint = quotes.length > 0 ? quotes!.reduce((a, b) => (a > b ? a : b)) : 0n
 
-    const bestQuoteAndPriceImpact: {
-      quote: bigint
-      priceImpact: bigint
-    } = quotesAndPriceImpacts.find((el) => el.quote === bestQuote) || {
-      quote: 0n,
-      priceImpact: 0n,
-    }
-
-    return { matchingRoutes, quotesAndPriceImpacts, bestQuoteAndPriceImpact }
+    return { matchingRoutes, quotes, bestQuote }
   }
-  return {
-    matchingRoutes,
-    quotesAndPriceImpacts: [],
-    bestQuoteAndPriceImpact: {
-      quote: 0n,
-      priceImpact: 0n,
-    },
-  }
+  return { matchingRoutes, quotes: [], bestQuote: 0n }
 }
 
 export const getCustomQuote = async (customCurveRoutes: CustomCurveRoutes, tokenIn: Address, tokenOut: Address, amount: bigint) => {
-  const { bestQuoteAndPriceImpact } = await returnCustomQuoteData(customCurveRoutes, tokenIn, tokenOut, amount)
+  const { bestQuote } = await returnCustomQuoteData(customCurveRoutes, tokenIn, tokenOut, amount)
 
-  return bestQuoteAndPriceImpact
+  return bestQuote
 }
 
 export const getCustomRouterRoute = async (
@@ -56,9 +41,9 @@ export const getCustomRouterRoute = async (
   minAmountOut: bigint,
   receiver: Address
 ) => {
-  const { matchingRoutes, quotesAndPriceImpacts, bestQuoteAndPriceImpact } = await returnCustomQuoteData(customCurveRoutes, tokenIn, tokenOut, amount)
+  const { matchingRoutes, quotes, bestQuote } = await returnCustomQuoteData(customCurveRoutes, tokenIn, tokenOut, amount)
 
-  const biggestValueIndex = quotesAndPriceImpacts?.indexOf(bestQuoteAndPriceImpact) as number
+  const biggestValueIndex = quotes?.indexOf(bestQuote) as number
 
   const matchingRoute = matchingRoutes[biggestValueIndex]
 

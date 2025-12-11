@@ -5,15 +5,15 @@ import { Switch } from "@/components/ui/switch"
 import { formatDate } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useVsTanContext } from "../rstan_layout_context"
-import { useRsTanMergeContext } from "./rstan_merge_context"
-import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
+import { useVsTanMergeContext } from "./rstan_merge_context"
+import { LockPositionSelectTemplate } from "../../usg/usg_type"
+import { IconVsTan, IconOpenOutside } from "@/components/icons"
 import FormButtons from "@/components/design_system/form/form_actions"
 import InputSelect from "@/components/design_system/inputs/input_select"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { IconVsTan, IconOpenOutside } from "@/components/icons"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
-export const RsTanMergeContent = () => {
+export const VsTanMergeContent = () => {
   const { lockData } = useVsTanContext()
 
   const { connect } = useWalletConnexionContext()
@@ -30,7 +30,7 @@ export const RsTanMergeContent = () => {
     firstPositionToMergeInfo,
     secondPositionToMergeInfo,
     computedNewUnlockDate,
-  } = useRsTanMergeContext()
+  } = useVsTanMergeContext()
 
   const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {
     return (

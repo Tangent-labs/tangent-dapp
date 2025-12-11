@@ -2,12 +2,12 @@
 
 import { formatUnits } from "viem"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { useUSGContext } from "../../tg_usd/tg_usd_context"
+import { useUSGContext } from "../../usg/usg_context"
 import { StakingAssetInfo, StakingDepositType, TANStakingInfo } from "../rstan_types"
 import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doApprove, doStakeTgUSD, doUnstakeTgUSD, getExpectedsTAN, getExpectedTAN, getFormState } from "./stake_tan_controller"
+import { doApprove, doStakeUSG, doUnstakeUSG, getExpectedsTAN, getExpectedTAN, getFormState } from "./stake_tan_controller"
 
 type StakeTanContextProps = {
   children: ReactNode
@@ -154,7 +154,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
       stakingAddress: VSTAN_CONTRACT.STAN,
       weiValue,
     }
-    await doUnstakeTgUSD(params)
+    await doUnstakeUSG(params)
     loadTanSTANMetrics()
     setWeiValue(0n)
     setExpected(0n)
@@ -170,7 +170,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
       stakingAddress: VSTAN_CONTRACT.STAN,
       weiValue,
     }
-    await doStakeTgUSD(params)
+    await doStakeUSG(params)
     loadTanSTANMetrics()
     setWeiValue(0n)
     setExpected(0n)
@@ -238,7 +238,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
 export const useStakeTanContext = () => {
   const context = useContext(StakeTanContext)
   if (!context) {
-    throw new Error("StakeTanContext must be used within a TgUsdStakProvider")
+    throw new Error("StakeTanContext must be used within a TanStakeProvider")
   }
   return context
 }

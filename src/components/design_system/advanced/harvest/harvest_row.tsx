@@ -9,7 +9,7 @@ import TokenImage from "../../structure/token_image"
 import ListIndicator from "../../list/list_indicator"
 import USGHoverCard from "../../structure/usg_hover_card"
 import { formatDollar, formatPercent } from "@/lib/number_formatter"
-import { HarvesterInfoDisplay } from "@/components/products/tg_usd/tg_usd_type"
+import { HarvesterInfoDisplay } from "@/components/products/usg/usg_type"
 
 type HarvestRowProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
   info: HarvesterInfoDisplay

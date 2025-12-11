@@ -1,6 +1,6 @@
 "use client"
 
-import { LockData, LockPositionSelectTemplate } from "@/components/products/tg_usd/tg_usd_type"
+import { LockData, LockPositionSelectTemplate } from "@/components/products/usg/usg_type"
 import { ReactNode } from "react"
 import { Button } from "./button"
 import InputSelect from "./input_select"

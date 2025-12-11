@@ -1,6 +1,6 @@
 import VsTan from "../../../../abi/USG/VsTAN.json"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { LockPosition, ZapMarketData } from "../../tg_usd/tg_usd_type"
+import { LockPosition, ZapMarketData } from "../../usg/usg_type"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { executeApprove, executeContractCall, getCurrentBlock, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 

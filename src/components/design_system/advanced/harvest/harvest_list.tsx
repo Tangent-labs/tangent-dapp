@@ -2,7 +2,7 @@
 
 import HarvestRow from "./harvest_row"
 import { Address } from "viem"
-import { HarvesterInfoDisplay } from "@/components/products/tg_usd/tg_usd_type"
+import { HarvesterInfoDisplay } from "@/components/products/usg/usg_type"
 
 type HarverListProps = React.ButtonHTMLAttributes<HTMLDivElement> & {
   rows: HarvesterInfoDisplay[]

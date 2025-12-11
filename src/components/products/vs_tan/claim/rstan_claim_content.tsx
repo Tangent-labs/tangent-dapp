@@ -1,18 +1,18 @@
 "use client"
 
 import { useVsTanContext } from "../rstan_layout_context"
-import { LockPosition, LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
+import { LockPosition, LockPositionSelectTemplate } from "../../usg/usg_type"
 import { Button } from "@/components/design_system/inputs/button"
-import { useRsTanClaimContext } from "./rstan_claim_context"
+import { useVsTanClaimContext } from "./rstan_claim_context"
 import { formatBigInt } from "@/lib/number_formatter"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { MultiPositionSelect } from "@/components/design_system/inputs/input_multiselect"
 import { Switch } from "@/components/ui/switch"
 
-export const RsTanClaimContent = () => {
+export const VsTanClaimContent = () => {
   const { lockData } = useVsTanContext()
 
-  const { claimAsSUSG, selectedPositions, hasDuplicates, selectedPositionsData, actionClaim, setClaimAsSUSG, setSelectedPositions } = useRsTanClaimContext()
+  const { claimAsSUSG, selectedPositions, hasDuplicates, selectedPositionsData, actionClaim, setClaimAsSUSG, setSelectedPositions } = useVsTanClaimContext()
 
   const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {
     return (

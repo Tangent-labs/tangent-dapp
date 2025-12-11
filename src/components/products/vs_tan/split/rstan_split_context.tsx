@@ -3,16 +3,16 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useVsTanContext } from "../rstan_layout_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { LockPosition } from "../../tg_usd/tg_usd_type"
+import { LockPosition } from "../../usg/usg_type"
 import { doSplit, getSplitFormState } from "./rstan_split_controller"
 import { formatBigInt } from "@/lib/number_formatter"
 import { FormState } from "@/types"
 
-type RsTanSplitContextProps = {
+type VsTanSplitContextProps = {
   children: ReactNode
 }
 
-type RsTanSplitContextValues = {
+type VsTanSplitContextValues = {
   isLoading: boolean
   setIsLoading: (arg: boolean) => void
 
@@ -35,9 +35,9 @@ type RsTanSplitContextValues = {
   computedNewPositionIds: { newPositionId1: string; newPositionId2: string }
 }
 
-export const RsTanSplitContext = createContext<RsTanSplitContextValues | undefined>(undefined)
+export const VsTanSplitContext = createContext<VsTanSplitContextValues | undefined>(undefined)
 
-export const RsTanSplitProvider = ({ children }: RsTanSplitContextProps) => {
+export const VsTanSplitProvider = ({ children }: VsTanSplitContextProps) => {
   const { getWalletClient, isWellConnected } = useWalletConnexionContext()
 
   const { loadData, lockData } = useVsTanContext()
@@ -121,7 +121,7 @@ export const RsTanSplitProvider = ({ children }: RsTanSplitContextProps) => {
     }
   }, [splitPositionInfo, lockData])
 
-  const contextValue: RsTanSplitContextValues = {
+  const contextValue: VsTanSplitContextValues = {
     isLoading,
     setIsLoading,
     splitPosition,
@@ -136,13 +136,13 @@ export const RsTanSplitProvider = ({ children }: RsTanSplitContextProps) => {
     formState,
   }
 
-  return <RsTanSplitContext.Provider value={contextValue}>{children}</RsTanSplitContext.Provider>
+  return <VsTanSplitContext.Provider value={contextValue}>{children}</VsTanSplitContext.Provider>
 }
 
-export const useRsTanSplitContext = () => {
-  const context = useContext(RsTanSplitContext)
+export const useVsTanSplitContext = () => {
+  const context = useContext(VsTanSplitContext)
   if (!context) {
-    throw new Error("useRsTanSplitContext must be used within a RsTanSplitProvider")
+    throw new Error("useVsTanSplitContext must be used within a VsTanSplitProvider")
   }
   return context
 }

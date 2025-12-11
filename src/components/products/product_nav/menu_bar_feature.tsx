@@ -17,9 +17,9 @@ import { formatCompact } from "@/lib/number_formatter"
 import { usePathname, useRouter } from "next/navigation"
 import { MenuBarFeatureMotionDiv } from "./menu_bar_feature_motion_div"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 import { isOnMarket, mapRouteToFeature } from "./menu_bar_feature_controller"
 import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
+import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 
 export default function MenuBarFeature() {
   const { USGCurrentSupply, sUSGCurrentAPY } = useRootContext()

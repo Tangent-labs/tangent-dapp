@@ -3,18 +3,18 @@
 import { Switch } from "@/components/ui/switch"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useVsTanContext } from "../rstan_layout_context"
-import { useRsTanUnlockContext } from "./rstan_unlock_context"
+import { useVsTanUnlockContext } from "./rstan_unlock_context"
 import { IconOpenOutside, IconVsTan } from "@/components/icons"
 import { Button } from "@/components/design_system/inputs/button"
-import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
 import InputSelect from "@/components/design_system/inputs/input_select"
 import TokenImage from "@/components/design_system/structure/token_image"
+import { LockPositionSelectTemplate } from "../../usg/usg_type"
 
-export const RsTanUnlockContent = () => {
+export const VsTanUnlockContent = () => {
   const { lockData } = useVsTanContext()
 
   const { unlockPosition, tanReceived, unlockPositionInfo, claimAsSUSG, setClaimAsSUSG, setUnlockPosition, actionUnlock, actionRageQuit } =
-    useRsTanUnlockContext()
+    useVsTanUnlockContext()
 
   const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {
     return (

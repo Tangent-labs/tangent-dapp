@@ -1,5 +1,5 @@
 import { Abi, Address, Hex } from "viem"
-import { USG_CONTRACT } from "../tg_usd/tg_usd_repository"
+import { USG_CONTRACT } from "../usg/usg_repository"
 import { VSTAN_CONTRACT } from "../vs_tan/rs_tan_repository"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import GetBalancesWithVsTan from "../../../abi/USG/GetBalancesWithVsTan.json"

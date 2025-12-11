@@ -1,18 +1,19 @@
 "use client"
 
-import { InfinityIcon } from "lucide-react"
-import { formatDate } from "@/lib/other_formatter"
-import { formatBigInt } from "@/lib/number_formatter"
-import { useVsTanContext } from "../rstan_layout_context"
-import { useRsTanSplitContext } from "./rstan_split_context"
-import { IconOpenOutside, IconVsTan } from "@/components/icons"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
-import { LockPositionSelectTemplate } from "../../tg_usd/tg_usd_type"
-import FormButtons from "@/components/design_system/form/form_actions"
 import InputSelect from "@/components/design_system/inputs/input_select"
+import { useVsTanContext } from "../rstan_layout_context"
+import { LockPositionSelectTemplate } from "../../usg/usg_type"
+import { IconVsTan } from "@/components/icons/icon_vstan"
+import { formatBigInt } from "@/lib/number_formatter"
+import { useVsTanSplitContext } from "./rstan_split_context"
+import PanelRaw from "@/components/design_system/structure/panel_raw"
+import { formatDate } from "@/lib/other_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { IconOpenOutside } from "@/components/icons"
+import FormButtons from "@/components/design_system/form/form_actions"
+import { InfinityIcon } from "lucide-react"
 
-export const RsTanSplitContent = () => {
+export const VsTanSplitContent = () => {
   const { lockData } = useVsTanContext()
 
   const { connect } = useWalletConnexionContext()
@@ -28,7 +29,7 @@ export const RsTanSplitContent = () => {
     setSplitPosition,
     actionSplit,
     setSplitPercentage,
-  } = useRsTanSplitContext()
+  } = useVsTanSplitContext()
 
   const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {
     return (

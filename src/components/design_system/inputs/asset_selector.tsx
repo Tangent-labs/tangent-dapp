@@ -5,11 +5,11 @@ import { Address, zeroAddress } from "viem"
 import TokenImage from "../structure/token_image"
 import { CollateralInfo, ExistingAsset } from "@/types"
 import AssetSelectionDialog from "./asset-select-dialog"
-import { ZapToken } from "@/components/products/tg_usd/tg_usd_type"
-import { useUSGContext } from "@/components/products/tg_usd/tg_usd_context"
-import { useUSGRecordContext } from "@/components/products/tg_usd/record/tg_usd_record_context"
 import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
+import { useUSGContext } from "@/components/products/usg/usg_context"
+import { useUSGRecordContext } from "@/components/products/usg/record/usg_record_context"
+import { ZapToken } from "@/components/products/usg/usg_type"
 
 type AssetSelectProps = {
   collateralInfo: CollateralInfo

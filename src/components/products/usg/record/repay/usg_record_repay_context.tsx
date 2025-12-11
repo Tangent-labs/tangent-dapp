@@ -1,0 +1,476 @@
+"use client"
+
+import { toast } from "react-toastify"
+import { ZapToken } from "../../usg_type"
+import { formatUnits, maxUint256 } from "viem"
+import { useUSGContext } from "../../usg_context"
+import { AssetDataPriced, FormState } from "@/types"
+import { USG_CONTRACT } from "../../usg_repository"
+import { useUSGRecordContext } from "../usg_record_context"
+import { formatDollar, toBigInt } from "@/lib/number_formatter"
+import { ToastComponent } from "@/components/design_system/toast"
+import { getQuote, getRoute } from "../../global_quote_controller"
+import { useRootContext } from "@/components/products/root/root_context"
+import { computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
+
+type USGRepayContextProps = {
+  children: ReactNode
+  isRepayAndWithdrawInput: boolean
+}
+
+type USGRepayContextValues = {
+  actionRepay: () => void
+  formState: FormState
+
+  repayWeiValue?: bigint
+  setRepayWeiValue: (arg: bigint | undefined) => void
+
+  maxRepayableValue: bigint
+
+  withdrawWeiValue?: bigint
+  setWithdrawWeiValue: (arg: bigint | undefined) => void
+
+  percentage: number
+  setPercentage: (arg: number) => void
+
+  maxWithdrawable: bigint
+
+  withdrawPercentage: number
+  setWithdrawPercentage: (arg: number) => void
+
+  setRepayAsset: (arg: string) => void
+  repayAsset: string
+
+  slippage: number
+  setSlippage: (arg: number) => void
+
+  isZapLoading: boolean
+  setIsZapLoading: (arg: boolean) => void
+
+  handleRepayValueChange: (arg: bigint | undefined) => void
+
+  usgRepayedValue: bigint | undefined
+  setUsgRepayedValue: (arg: bigint | undefined) => void
+
+  repayAssetInfo: AssetDataPriced | null
+
+  swapAssetPrice: number | null
+
+  zapRepay: () => void
+
+  actionApprove: () => void
+
+  actionZapRepay: () => void
+
+  isRepayMax: boolean
+  setIsRepayMax: (arg: boolean) => void
+
+  isDebtBelowThreshold: boolean
+
+  USGDollarRepayedValue: string
+
+  withdrawSelectedAsset: string
+  setWithdrawSelectedAsset: (v: string) => void
+}
+
+export const USGRepayContext = createContext<USGRepayContextValues | undefined>(undefined)
+
+export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepayContextProps) => {
+  const { curveRoutes, handleQuote } = useRootContext()
+
+  const { tokens, loadUSGsUSGMetrics } = useUSGContext()
+
+  const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+
+  const {
+    marketData,
+    USGInfo,
+    balanceAllowanceData,
+    setIsRepayAndWithdraw,
+    loadOnChainData,
+    setCurrentAmounts,
+    fetchBalanceAllowanceData,
+    collateral,
+    isRepayAndWithdraw,
+  } = useUSGRecordContext()
+
+  const [isZapLoading, setIsZapLoading] = useState(false)
+
+  const [repayWeiValue, setRepayWeiValue] = useState<bigint | undefined>()
+
+  const [swapAssetPrice, setSwapAssetPrice] = useState<number>(0)
+
+  const [withdrawWeiValue, setWithdrawWeiValue] = useState<bigint | undefined>()
+
+  const [repayAsset, setRepayAsset] = useState<string>("USG")
+
+  const [percentage, setPercentage] = useState<number>(0)
+
+  const [slippage, setSlippage] = useState<number>(0.2)
+
+  const [isRepayMax, setIsRepayMax] = useState<boolean>(false)
+
+  const [withdrawPercentage, setWithdrawPercentage] = useState<number>(0)
+
+  const [usgRepayedValue, setUsgRepayedValue] = useState<bigint | undefined>()
+
+  const [withdrawSelectedAsset, setWithdrawSelectedAsset] = useState<string>(collateral)
+
+  const walletClientRef = useRef<ReturnType<typeof getWalletClient> | null>(null)
+
+  useEffect(() => {
+    setIsRepayAndWithdraw(isRepayAndWithdrawInput)
+  }, [])
+
+  useEffect(() => {
+    if (!isRepayAndWithdraw) {
+      setWithdrawWeiValue(0n)
+      setWithdrawPercentage(0)
+    }
+  }, [isRepayAndWithdraw])
+
+  useEffect(() => {
+    if (isWellConnected && currentAddress) {
+      walletClientRef.current = getWalletClient()
+    } else {
+      walletClientRef.current = null
+    }
+  }, [isWellConnected, currentAddress, getWalletClient])
+
+  const repayAssetInfo = useMemo<AssetDataPriced | null>(() => {
+    if (repayAsset === "ETH") {
+      return {
+        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        decimals: 18,
+        displayDecimals: 5,
+        symbol: "ETH",
+        name: "ETH",
+        price: swapAssetPrice,
+      }
+    }
+
+    const assetInfo = tokens.find((el: ZapToken) => el.name === repayAsset || el.symbol === repayAsset) || undefined
+
+    if (!swapAssetPrice || !assetInfo) return null
+
+    const asset: AssetDataPriced = {
+      address: assetInfo?.address,
+      decimals: assetInfo?.decimals,
+      displayDecimals: 2,
+      symbol: assetInfo?.symbol,
+      name: assetInfo?.name,
+      price: swapAssetPrice,
+    }
+
+    return asset
+  }, [repayAsset, swapAssetPrice])
+
+  useEffect(() => {
+    setCurrentAmounts({
+      repayWeiValue: !!repayAsset && repayAsset === "USG" ? repayWeiValue || 0n : usgRepayedValue || 0n,
+      withdrawWeiValue: withdrawWeiValue || 0n,
+    })
+  }, [repayWeiValue, withdrawWeiValue, usgRepayedValue])
+
+  const actionZapRepay = () => {
+    if (!!withdrawWeiValue && withdrawWeiValue > 0) {
+      zapRepayAndWithdraw()
+    } else {
+      zapRepay()
+    }
+  }
+
+  const zapRepayAndWithdraw = async () => {
+    if (!repayWeiValue || !repayAssetInfo || !marketData || !withdrawWeiValue) return
+
+    setIsZapLoading(true)
+
+    try {
+      const repayData = await getRoute(
+        repayAssetInfo?.address,
+        USG_CONTRACT?.USG,
+        repayWeiValue,
+        usgRepayedValue!,
+        currentAddress!,
+        USG_CONTRACT.ZAPPER,
+        curveRoutes
+      )
+
+      const zapMarketData = {
+        tokenIn: repayAssetInfo?.address,
+        amountIn: repayWeiValue,
+        minAmountOut: usgRepayedValue!,
+      }
+
+      const isReceiptOut = withdrawSelectedAsset !== collateral
+
+      doZapRepayAndWithdraw(marketData?.marketAddress, walletClientRef.current!, withdrawWeiValue, isReceiptOut, repayData!, zapMarketData)
+        .then(() => {
+          resetAfterRepaySuccess()
+          toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
+        })
+        .catch((e) => {
+          console.error(e)
+          toast.error(ToastComponent, { data: { type: "Error", content: "Transaction failed." } })
+          setIsZapLoading(false)
+        })
+    } catch (error) {
+      setIsZapLoading(false)
+      console.error("Error in getRouteAndDeposit:", error)
+    }
+  }
+
+  const zapRepay = async () => {
+    if (!repayWeiValue || !repayAssetInfo || !marketData || !usgRepayedValue) return
+
+    setIsZapLoading(true)
+
+    try {
+      const repayData = await getRoute(
+        repayAssetInfo?.address,
+        USG_CONTRACT?.USG,
+        repayWeiValue,
+        computedMinAmountOut(usgRepayedValue, slippage),
+        currentAddress!,
+        USG_CONTRACT.ZAPPER,
+        curveRoutes
+      )
+
+      const zapMarketData = {
+        tokenIn: repayAssetInfo?.address,
+        amountIn: repayWeiValue,
+        minAmountOut: computedMinAmountOut(usgRepayedValue, slippage),
+      }
+
+      doZapRepay(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData)
+        .then(() => {
+          resetAfterRepaySuccess()
+          toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
+        })
+        .catch((e) => {
+          console.error(e)
+          toast.error(ToastComponent, { data: { type: "Error", content: "Transaction failed." } })
+          setIsZapLoading(false)
+        })
+    } catch (error) {
+      setIsZapLoading(false)
+      console.error("Error in getRouteAndDeposit:", error)
+    }
+  }
+
+  const actionApprove = async () => {
+    if (!repayWeiValue || !repayAssetInfo || !marketData) return
+
+    doApprove(walletClientRef.current!, repayAssetInfo?.address, marketData?.marketAddress, repayWeiValue)
+      .then(() => {
+        loadOnChainData()
+        fetchBalanceAllowanceData(repayAssetInfo?.address)
+      })
+      .catch((err) => {
+        const errorMessage = err.message.includes("User denied transaction signature") ? "Transaction aborted" : "Something went wrong"
+        toast.error(ToastComponent, { data: { content: errorMessage, type: "Error" } })
+      })
+  }
+
+  const actionRepay = () => {
+    if (!!withdrawWeiValue && withdrawWeiValue > 0) {
+      marketRepayAndWithdraw()
+    } else {
+      marketRepay()
+    }
+  }
+
+  const marketRepay = () => {
+    doRepay(walletClientRef.current!, {
+      marketAddress: marketData!.marketAddress,
+      repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
+    }).then(() => {
+      resetAfterRepaySuccess()
+      toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
+    })
+  }
+
+  const marketRepayAndWithdraw = () => {
+    doRepayAndWithdraw(walletClientRef.current!, {
+      marketAddress: marketData!.marketAddress,
+      repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
+      withdrawWeiValue,
+      isReceiptOut: withdrawSelectedAsset !== collateral,
+    }).then(() => {
+      resetAfterRepaySuccess()
+      toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
+    })
+  }
+
+  const resetAfterRepaySuccess = () => {
+    loadOnChainData()
+    setPercentage(0)
+    setWithdrawPercentage(0)
+    setIsZapLoading(false)
+    setRepayWeiValue(0n)
+    setWithdrawWeiValue(0n)
+    setUsgRepayedValue(0n)
+    loadUSGsUSGMetrics()
+  }
+
+  const formState = useMemo(() => {
+    if (marketData) {
+      return getRepayFormState(marketData, repayWeiValue, isWellConnected, balanceAllowanceData!, repayAsset)
+    }
+
+    return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+  }, [marketData, repayWeiValue, isWellConnected, currentAddress, balanceAllowanceData, repayAsset])
+
+  const marketValues = useMemo(() => {
+    if (marketData && currentAddress) {
+      if (repayAsset === "USG") {
+        const maxRepayableValue = marketData.debtInfos?.userDebt || 0n
+        const minimumLoan = marketData.constants.minimumLoan || 0n
+        return { maxRepayableValue, minimumLoan }
+      } else if (marketData && repayAssetInfo) {
+        const maxRepayableInZapAsset = (marketData.debtInfos?.userDebt / toBigInt(repayAssetInfo?.price, 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
+        const minimumLoanInZapAsset =
+          (marketData.constants.minimumLoan / toBigInt(repayAssetInfo?.price, repayAssetInfo?.decimals || 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
+
+        return { maxRepayableValue: maxRepayableInZapAsset, minimumLoan: minimumLoanInZapAsset }
+      }
+    }
+
+    return { maxRepayableValue: 0n, minimumLoan: 0n }
+  }, [marketData, repayAssetInfo, currentAddress])
+
+  const maxWithdrawable = useMemo(() => {
+    if (marketData && currentAddress) {
+      const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice
+      const computedRepayWeiValue = !!repayAsset && repayAsset === "USG" ? repayWeiValue : usgRepayedValue
+      const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n) - (computedRepayWeiValue || 0n)
+      const futureDeposited = BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n)
+      const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
+      const maxWithDrawable = collateralPriceRaw !== 0n ? futureDeposited - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
+
+      return maxWithDrawable > 0n ? maxWithDrawable : 0n
+    }
+
+    return 0n
+  }, [marketData, repayWeiValue, usgRepayedValue, currentAddress])
+
+  const handleRepayValueChange = (value: bigint | undefined) => {
+    setRepayWeiValue(value)
+
+    const fetchZapValue = async () => {
+      if (!value || !currentAddress || !marketData || !repayAssetInfo) return
+
+      setIsZapLoading(true)
+      try {
+        const { quote } = await getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address, curveRoutes)
+
+        handleQuote(quote)
+
+        if (quote) {
+          setUsgRepayedValue(quote)
+        }
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setIsZapLoading(false)
+      }
+    }
+
+    if (!!repayAssetInfo && repayAssetInfo?.symbol !== "USG") {
+      fetchZapValue()
+    }
+  }
+
+  useEffect(() => {
+    const address = repayAssetInfo?.address || USG_CONTRACT.USG
+    if (walletClientRef) {
+      fetchBalanceAllowanceData(address)
+    }
+  }, [repayAssetInfo?.address, walletClientRef])
+
+  useEffect(() => {
+    if (!repayAsset) return
+
+    const fetchSwapAssetData = async () => {
+      setIsZapLoading(true)
+      try {
+        const data = await computeSwapAssetPrice(tokens, repayAsset)
+        setSwapAssetPrice(data || 0)
+      } catch (error) {
+        console.error("Error fetching Enso data:", error)
+      } finally {
+        setIsZapLoading(false)
+      }
+    }
+
+    fetchSwapAssetData()
+  }, [repayAsset])
+
+  const isDebtBelowThreshold = useMemo(() => {
+    if (!repayWeiValue || !marketValues?.maxRepayableValue || repayWeiValue === 0n) return false
+    if (repayAsset === "USG" && marketValues?.maxRepayableValue === repayWeiValue) return false
+
+    const threshold = marketValues?.minimumLoan
+    let adjustedRepayValue = repayWeiValue
+
+    if (repayAsset !== "USG") {
+      adjustedRepayValue = usgRepayedValue || 0n
+    }
+
+    const value = marketValues?.maxRepayableValue / BigInt(10 ** (repayAssetInfo?.decimals || 18)) - adjustedRepayValue / BigInt(10 ** 18)
+
+    return value < threshold / BigInt(10 ** 18) && value > 0n
+  }, [repayWeiValue, marketValues, repayAsset, usgRepayedValue])
+
+  const USGDollarRepayedValue = useMemo(() => {
+    return `(~${formatDollar((Number(Number(formatUnits(usgRepayedValue || 0n, 18))) * USGInfo?.price).toFixed(2))})`
+  }, [usgRepayedValue, USGInfo])
+
+  const contextValue: USGRepayContextValues = {
+    actionRepay,
+    formState,
+    repayWeiValue,
+    setRepayWeiValue,
+    maxRepayableValue: marketValues?.maxRepayableValue,
+    percentage,
+    setPercentage,
+    withdrawWeiValue,
+    setWithdrawWeiValue,
+    maxWithdrawable,
+    withdrawPercentage,
+    setWithdrawPercentage,
+    repayAsset,
+    setRepayAsset,
+    isZapLoading,
+    setIsZapLoading,
+    handleRepayValueChange,
+    usgRepayedValue,
+    setUsgRepayedValue,
+    repayAssetInfo,
+    swapAssetPrice,
+    zapRepay,
+    actionApprove,
+    actionZapRepay,
+    isRepayMax,
+    setIsRepayMax,
+    isDebtBelowThreshold,
+    slippage,
+    setSlippage,
+    USGDollarRepayedValue,
+    withdrawSelectedAsset,
+    setWithdrawSelectedAsset,
+  }
+
+  return <USGRepayContext.Provider value={contextValue}>{children}</USGRepayContext.Provider>
+}
+
+export const useUSGRepayContext = () => {
+  const context = useContext(USGRepayContext)
+  if (!context) {
+    throw new Error("useUSGRepayContext must be used within a USGRepayProvider")
+  }
+  return context
+}

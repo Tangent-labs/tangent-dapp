@@ -38,8 +38,23 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
 }
 
 export default function TokenImage({ token, size, ...props }: TokenImageProps) {
-  const fallbackSrc = "/medias/tokens/crvUSD-USDC.webp"
-  const url = token ? `/medias/tokens/${token}.webp` : "/medias/tokens/crvUSD-USDC.webp"
+  const fallbackSrc = "/medias/fallback_token_image.webp"
+
+  const tokenStartsWith = token?.substring(0, token.indexOf(" "))
+
+  if (tokenStartsWith === "USDe") {
+    return (
+      <div className="px-2">
+        <ImageWithFallback {...props} fallback={fallbackSrc} src={`/medias/tokens/USDe.webp`} alt={token || "Token image"} width={48} height={48} />
+      </div>
+    )
+  }
+
+  if (tokenStartsWith === "sUSDe") {
+    return <ImageWithFallback {...props} fallback={fallbackSrc} src={`/medias/tokens/sUSDe.webp`} alt={token || "Token image"} width={48} height={48} />
+  }
+
+  const url = token ? `/medias/tokens/${token}.webp` : fallbackSrc
 
   return <ImageWithFallback {...props} fallback={fallbackSrc} src={url} alt={token || "Token image"} width={size} height={size} />
 }

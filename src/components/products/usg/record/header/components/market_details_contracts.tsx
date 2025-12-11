@@ -22,7 +22,7 @@ export const MarketDetailsContracts = ({ marketContracts }: MarketDetailsContrac
   return (
     <div className="mt-4 hidden h-24 flex-wrap items-center justify-center gap-6 rounded-[10px] bg-overlay-panel p-4 text-sm backdrop-blur-[60px] md:flex">
       {marketContracts.map((c) => (
-        <div key={c?.address} className="flex w-fit items-center justify-center gap-3 rounded-[10px] bg-overlay-panel px-4 py-2">
+        <div key={c?.address} className="flex w-fit items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-2">
           <div
             onClick={() => window.open(`https://etherscan.io/address/${c?.address}`)}
             className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] px-2 py-1 hover:bg-white/10"

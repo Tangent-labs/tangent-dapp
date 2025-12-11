@@ -37,7 +37,7 @@ export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
         <div className="flex flex-col items-center justify-between gap-2">
           <button
             onClick={() => setSelectedToken(tokenA)}
-            className={`mt-2 flex min-w-20 items-center justify-between rounded-full border border-white px-2 py-1 text-xs transition-all ${
+            className={`mt-2 flex min-w-20 items-center justify-between gap-2 rounded-full border border-white px-2 py-1 text-xs transition-all ${
               selectedToken === tokenA ? "border-opacity-100 bg-white text-black" : "border-opacity-20 text-white hover:border-opacity-100"
             }`}
           >

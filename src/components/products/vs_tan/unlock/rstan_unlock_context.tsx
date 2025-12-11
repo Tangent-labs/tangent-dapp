@@ -1,17 +1,17 @@
 "use client"
 
 import { doUnlock } from "./rstan_unlock_controller"
-import { LockPosition } from "../../tg_usd/tg_usd_type"
+import { LockPosition } from "../../usg/usg_type"
 import { getCurrentBlock } from "@/services/service_rpc"
 import { useVsTanContext } from "../rstan_layout_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
-type RsTanUnlockContextProps = {
+type VsTanUnlockContextProps = {
   children: ReactNode
 }
 
-type RsTanUnlockContextValues = {
+type VsTanUnlockContextValues = {
   isLoading: boolean
   setIsLoading: (arg: boolean) => void
 
@@ -30,9 +30,9 @@ type RsTanUnlockContextValues = {
   setClaimAsSUSG: (arg: boolean) => void
 }
 
-export const RsTanUnlockContext = createContext<RsTanUnlockContextValues | undefined>(undefined)
+export const VsTanUnlockContext = createContext<VsTanUnlockContextValues | undefined>(undefined)
 
-export const RsTanUnlockProvider = ({ children }: RsTanUnlockContextProps) => {
+export const VsTanUnlockProvider = ({ children }: VsTanUnlockContextProps) => {
   const { getWalletClient } = useWalletConnexionContext()
 
   const { loadData, lockData } = useVsTanContext()
@@ -105,7 +105,7 @@ export const RsTanUnlockProvider = ({ children }: RsTanUnlockContextProps) => {
     }
   }
 
-  const contextValue: RsTanUnlockContextValues = {
+  const contextValue: VsTanUnlockContextValues = {
     isLoading,
     setIsLoading,
     unlockPosition,
@@ -118,13 +118,13 @@ export const RsTanUnlockProvider = ({ children }: RsTanUnlockContextProps) => {
     setClaimAsSUSG,
   }
 
-  return <RsTanUnlockContext.Provider value={contextValue}>{children}</RsTanUnlockContext.Provider>
+  return <VsTanUnlockContext.Provider value={contextValue}>{children}</VsTanUnlockContext.Provider>
 }
 
-export const useRsTanUnlockContext = () => {
-  const context = useContext(RsTanUnlockContext)
+export const useVsTanUnlockContext = () => {
+  const context = useContext(VsTanUnlockContext)
   if (!context) {
-    throw new Error("useRsTanUnlockContext must be used within a RsTanUnlockProvider")
+    throw new Error("useVsTanUnlockContext must be used within a VsTanUnlockProvider")
   }
   return context
 }

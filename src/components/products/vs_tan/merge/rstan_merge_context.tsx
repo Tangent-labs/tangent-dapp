@@ -3,15 +3,15 @@
 import { createContext, ReactNode, useContext, useMemo, useState } from "react"
 import { useVsTanContext } from "../rstan_layout_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { LockPosition } from "../../tg_usd/tg_usd_type"
+import { LockPosition } from "../../usg/usg_type"
 import { doMerge, getMergeFormState } from "./rstan_merge_controller"
 import { FormState } from "@/types"
 
-type RsTanMergeContextProps = {
+type VsTanMergeContextProps = {
   children: ReactNode
 }
 
-type RsTanMergeContextValues = {
+type VsTanMergeContextValues = {
   isLoading: boolean
   setIsLoading: (arg: boolean) => void
 
@@ -37,9 +37,9 @@ type RsTanMergeContextValues = {
   computedNewUnlockDate: string
 }
 
-export const RsTanMergeContext = createContext<RsTanMergeContextValues | undefined>(undefined)
+export const VsTanMergeContext = createContext<VsTanMergeContextValues | undefined>(undefined)
 
-export const RsTanMergeProvider = ({ children }: RsTanMergeContextProps) => {
+export const VsTanMergeProvider = ({ children }: VsTanMergeContextProps) => {
   const { getWalletClient } = useWalletConnexionContext()
 
   const { loadData, lockData } = useVsTanContext()
@@ -107,7 +107,7 @@ export const RsTanMergeProvider = ({ children }: RsTanMergeContextProps) => {
     }
   }
 
-  const contextValue: RsTanMergeContextValues = {
+  const contextValue: VsTanMergeContextValues = {
     isLoading,
     setIsLoading,
     actionMerge,
@@ -124,13 +124,13 @@ export const RsTanMergeProvider = ({ children }: RsTanMergeContextProps) => {
     setClaimAsSUSG,
   }
 
-  return <RsTanMergeContext.Provider value={contextValue}>{children}</RsTanMergeContext.Provider>
+  return <VsTanMergeContext.Provider value={contextValue}>{children}</VsTanMergeContext.Provider>
 }
 
-export const useRsTanMergeContext = () => {
-  const context = useContext(RsTanMergeContext)
+export const useVsTanMergeContext = () => {
+  const context = useContext(VsTanMergeContext)
   if (!context) {
-    throw new Error("useRsTanMergeContext must be used within a RsTanMergeProvider")
+    throw new Error("useVsTanMergeContext must be used within a VsTanMergeProvider")
   }
   return context
 }

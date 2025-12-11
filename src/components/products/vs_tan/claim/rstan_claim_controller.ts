@@ -1,7 +1,7 @@
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
 import VsTAN from "../../../../abi/USG/VsTAN.json"
 import { Abi, WalletClient } from "viem"
-import { LockPosition } from "../../tg_usd/tg_usd_type"
+import { LockPosition } from "../../usg/usg_type"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 
 export const doClaim = async (positions: LockPosition[], walletClient: WalletClient, claimAsSUSG: boolean) => {

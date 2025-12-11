@@ -2,7 +2,7 @@
 
 import { ListHeaderData, ListRowData, ListSort, ListState } from "@/types"
 import React, { createContext, useContext, useState, ReactNode, useMemo } from "react"
-import { Boost, ClaimData, EarnTask, HarvesterInfoDisplay, UserPosition, UserTask, VoteTask } from "@/components/products/tg_usd/tg_usd_type"
+import { Boost, ClaimData, EarnTask, HarvesterInfoDisplay, UserPosition, UserTask, VoteTask } from "@/components/products/usg/usg_type"
 
 //  Defined what is injected into the Provider ( mosty via server execution)
 interface ListProviderProps {

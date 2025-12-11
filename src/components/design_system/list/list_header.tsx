@@ -2,7 +2,7 @@
 
 import USGHoverCard from "../structure/usg_hover_card"
 import { ListHeaderData, ListSort, SortedState } from "@/types"
-import { IconSortHeader } from "@/components/icons/icon_sort_header"
+import { IconSortHeader } from "@/components/icons"
 import ListRowDisposition from "@/components/design_system/list/list_row_disposition"
 import { cn } from "@/lib/utils"
 

@@ -5,23 +5,23 @@ import { formatUnits, parseEther } from "viem"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { getCurrentBlock } from "@/services/service_rpc"
 import { useVsTanContext } from "../rstan_layout_context"
-import { useUSGContext } from "../../tg_usd/tg_usd_context"
-import { LockPosition, ZapToken } from "../../tg_usd/tg_usd_type"
+import { useUSGContext } from "../../usg/usg_context"
+import { LockPosition, ZapToken } from "../../usg/usg_type"
 import { ToastComponent } from "@/components/design_system/toast"
 import { formatBigInt, formatDollar } from "@/lib/number_formatter"
-import { getQuote, getRoute } from "../../tg_usd/global_quote_controller"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { getQuote, getRoute } from "../../usg/global_quote_controller"
+import { useRootContext } from "@/components/products/root/root_context"
 import { AssetDataPriced, CollateralInfo, ExistingAsset, FormState } from "@/types"
-import { computeSwapAssetPrice } from "../../tg_usd/record/tg_usd_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { computedMinAmountOut, computeSwapAssetPrice } from "../../usg/record/usg_record_controller"
 import { doApprove, doIncreaseLockAmount, doLock, doZapAndIncreaseLock, doZapAndLock, getLockFormState } from "./rstan_lock_controller"
-import { useRootContext } from "../../root/root_context"
 
-type RsTanLockContextProps = {
+type VsTanLockContextProps = {
   children: ReactNode
 }
 
-type RsTanLockContextValues = {
+type VsTanLockContextValues = {
   isLoading: boolean
   setIsLoading: (arg: boolean) => void
 
@@ -78,9 +78,9 @@ type RsTanLockContextValues = {
   setSlippage: (arg: number) => void
 }
 
-export const RsTanLockContext = createContext<RsTanLockContextValues | undefined>(undefined)
+export const VsTanLockContext = createContext<VsTanLockContextValues | undefined>(undefined)
 
-export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
+export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
   const { curveRoutes, handleQuote } = useRootContext()
 
   const { getWalletClient, isWellConnected, currentAddress } = useWalletConnexionContext()
@@ -101,7 +101,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
 
   const [swapAssetPrice, setSwapAssetPrice] = useState<number>(0)
 
-  const [slippage, setSlippage] = useState<number>(1)
+  const [slippage, setSlippage] = useState<number>(0.2)
 
   const [depositPosition, setDepositPosition] = useState<string>("New")
 
@@ -211,21 +211,23 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
   }
 
   const actionZapAndLock = async () => {
+    if (!zapValue || !depositWeiValue) return
+
     setIsLoading(true)
     const walletClient = getWalletClient()
 
-    if (walletClient && depositWeiValue) {
+    if (walletClient) {
       const zapMarketData = {
         tokenIn: depositAssetInfo?.address,
         amountIn: depositWeiValue,
-        minAmountOut: (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        minAmountOut: computedMinAmountOut(zapValue, slippage),
       }
 
       const zapAndLockData = await getRoute(
         depositAssetInfo?.address,
         VSTAN_CONTRACT.TAN,
         depositWeiValue,
-        (BigInt(zapValue || 0n) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100),
+        computedMinAmountOut(zapValue, slippage),
         VSTAN_CONTRACT.VSTAN,
         currentAddress!,
         curveRoutes
@@ -469,7 +471,7 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     }
   }, [depositAssetInfo])
 
-  const contextValue: RsTanLockContextValues = {
+  const contextValue: VsTanLockContextValues = {
     isLoading,
     setIsLoading,
     depositWeiValue,
@@ -504,13 +506,13 @@ export const RsTanLockProvider = ({ children }: RsTanLockContextProps) => {
     setSlippage,
   }
 
-  return <RsTanLockContext.Provider value={contextValue}>{children}</RsTanLockContext.Provider>
+  return <VsTanLockContext.Provider value={contextValue}>{children}</VsTanLockContext.Provider>
 }
 
-export const useRsTanLockContext = () => {
-  const context = useContext(RsTanLockContext)
+export const useVsTanLockContext = () => {
+  const context = useContext(VsTanLockContext)
   if (!context) {
-    throw new Error("useRsTanLockContext must be used within a RsTanLockProvider")
+    throw new Error("useVsTanLockContext must be used within a VsTanLockProvider")
   }
   return context
 }

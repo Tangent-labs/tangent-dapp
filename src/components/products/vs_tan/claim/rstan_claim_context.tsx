@@ -3,14 +3,14 @@
 import { createContext, ReactNode, useContext, useMemo, useState } from "react"
 import { useVsTanContext } from "../rstan_layout_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { LockPosition } from "../../tg_usd/tg_usd_type"
+import { LockPosition } from "../../usg/usg_type"
 import { doClaim } from "./rstan_claim_controller"
 
-type RsTanClaimContextProps = {
+type VsTanClaimContextProps = {
   children: ReactNode
 }
 
-type RsTanClaimContextValues = {
+type VsTanClaimContextValues = {
   isLoading: boolean
   setIsLoading: (arg: boolean) => void
 
@@ -27,9 +27,9 @@ type RsTanClaimContextValues = {
   hasDuplicates: boolean
 }
 
-export const RsTanClaimContext = createContext<RsTanClaimContextValues | undefined>(undefined)
+export const VsTanClaimContext = createContext<VsTanClaimContextValues | undefined>(undefined)
 
-export const RsTanClaimProvider = ({ children }: RsTanClaimContextProps) => {
+export const VsTanClaimProvider = ({ children }: VsTanClaimContextProps) => {
   const { getWalletClient } = useWalletConnexionContext()
 
   const { loadData, lockData } = useVsTanContext()
@@ -74,7 +74,7 @@ export const RsTanClaimProvider = ({ children }: RsTanClaimContextProps) => {
     }
   }
 
-  const contextValue: RsTanClaimContextValues = {
+  const contextValue: VsTanClaimContextValues = {
     isLoading,
     setIsLoading,
     actionClaim,
@@ -86,13 +86,13 @@ export const RsTanClaimProvider = ({ children }: RsTanClaimContextProps) => {
     hasDuplicates,
   }
 
-  return <RsTanClaimContext.Provider value={contextValue}>{children}</RsTanClaimContext.Provider>
+  return <VsTanClaimContext.Provider value={contextValue}>{children}</VsTanClaimContext.Provider>
 }
 
-export const useRsTanClaimContext = () => {
-  const context = useContext(RsTanClaimContext)
+export const useVsTanClaimContext = () => {
+  const context = useContext(VsTanClaimContext)
   if (!context) {
-    throw new Error("useRsTanClaimContext must be used within a RsTanClaimProvider")
+    throw new Error("useVsTanClaimContext must be used within a VsTanClaimProvider")
   }
   return context
 }

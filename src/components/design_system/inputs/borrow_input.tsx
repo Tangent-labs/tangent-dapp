@@ -28,7 +28,7 @@ export function BorrowInput({
   borrowAmount,
   balance,
   borrowAsset,
-  labelDeposit = "You Deposit",
+  labelDeposit = "You deposit",
   setMaxBalance,
   onValueChange,
   depositSelect = <></>,
@@ -107,8 +107,8 @@ export function BorrowInput({
     <BorderPanel
       className={cn(
         isLoading ? "shimmer" : "",
-        disabled ? "bg-panel-disabled" : "bg-white bg-opacity-[3%]",
-        "flex cursor-pointer flex-col p-2 transition-colors duration-200 hover:bg-white/10"
+        disabled ? "bg-panel-disabled" : "cursor-pointer bg-white bg-opacity-[3%] hover:bg-white/10",
+        "flex flex-col p-2 transition-colors duration-200"
       )}
       onClick={onClickFocus}
     >
@@ -136,26 +136,12 @@ export function BorrowInput({
       <div className="flex w-full cursor-pointer items-center gap-2">
         {displaySliderInput && (
           <div className="flex w-full flex-col">
-            <input
-              type="range"
-              min="0"
-              step="1"
-              max="100"
-              disabled={disabled}
-              value={percentage}
-              onChange={handleSliderChange}
-              className={cn("mt-3 h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-[#070707]", disabled ? "cursor-default" : "cursor-pointer")}
-              style={{
-                background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage}%)`,
-              }}
-            />
-
-            <SliderInput handleSliderChange={handleSliderChange}></SliderInput>
+            <SliderInput disabled={disabled} percentage={percentage} handleSliderChange={handleSliderChange}></SliderInput>
           </div>
         )}
 
         <BorderPanel
-          className="rounded-full! ml-1 flex w-10 cursor-pointer items-center bg-button-active px-1 text-xs text-white hover:font-semibold"
+          className="w-10 min-w-10 cursor-pointer bg-button-active px-1 text-center text-xs text-white hover:font-semibold"
           onClick={() => {
             if (setMaxBalance) {
               setPercentage(100)

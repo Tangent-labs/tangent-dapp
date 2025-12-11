@@ -1,10 +1,7 @@
 "use client"
 
 import { MenuModal } from "@/components/design_system/structure/menu_modal"
-import IconDashboard from "@/components/icons/icon_dashboard"
-import { IconEarn } from "@/components/icons/icon_earn"
-import { IconMarket } from "@/components/icons/icon_market"
-import { IconSavings } from "@/components/icons/icon_savings"
+import { IconSavings, IconMarket, IconEarn, IconDashboard } from "@/components/icons"
 import { usePathname, useRouter } from "next/navigation"
 
 export default function MobileMenuBarFeature() {

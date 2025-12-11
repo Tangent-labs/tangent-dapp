@@ -1,6 +1,6 @@
 "use client"
 
-import { LockData, LockPositionSelectTemplate } from "@/components/products/tg_usd/tg_usd_type"
+import { LockData, LockPositionSelectTemplate } from "@/components/products/usg/usg_type"
 import { ReactNode } from "react"
 import { Button } from "./button"
 import InputSelect from "./input_select"
@@ -81,7 +81,7 @@ export const MultiPositionSelect = ({ lockData, selectedPositions, setSelectedPo
         <button
           onClick={handleSelectAll}
           disabled={allPositions.length === 0}
-          className="flex h-full items-center justify-center rounded-lg border border-gray-600 px-4 py-1 text-white"
+          className="flex h-full items-center justify-center rounded-[10px] border border-gray-600 px-4 py-1 text-white"
         >
           Select all
         </button>

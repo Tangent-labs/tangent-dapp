@@ -25,7 +25,7 @@ interface IndicatorCardsProps {
 const IndicatorV2 = ({ indicators, className = "", children }: IndicatorCardsProps) => {
   return (
     <div
-      className={`flex w-full min-w-24 items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px] md:min-w-32 ${className}`}
+      className={`flex w-full min-w-24 items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px] md:min-w-36 ${className}`}
     >
       {children}
       {indicators.map((indicator, index) => (

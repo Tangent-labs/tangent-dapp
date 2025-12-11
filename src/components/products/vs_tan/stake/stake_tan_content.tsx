@@ -15,7 +15,7 @@ import InputSelect from "@/components/design_system/inputs/input_select"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
-import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_recieve_input"
+import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_receive_input"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export default function StakeTanContent() {
@@ -120,7 +120,7 @@ export default function StakeTanContent() {
               <span className="text-sm text-subtitle">sTan</span>
               <span className="text-lg font-semibold">{formatDollar(formatBigInt(TANsTANMetrics.sTanPrice, 12, 6), 6)}</span>
             </div>
-            <div className="flex flex-col items-center justify-center rounded-lg bg-button-active px-8 py-2">
+            <div className="flex flex-col items-center justify-center rounded-[10px] bg-button-active px-8 py-2">
               <span className="font-semibold text-black">APR</span>
               <span className="text-lg font-semibold">15.32%</span>
             </div>
@@ -169,7 +169,6 @@ export default function StakeTanContent() {
             onValueChange={(value: bigint | undefined) => setWeiValue(value)}
             percentage={stakePercentage}
             setPercentage={setStakePercentage}
-            displaySliderInput={true}
           />
 
           <FormButtons
@@ -190,7 +189,7 @@ export default function StakeTanContent() {
           <ForecastGraph
             initialInvestment={Number(formatUnits(TANsTANMetrics?.sTanBalance || 0n, 18))}
             apr={15}
-            additionalLiquidity={currentFeature === "stake" ? (weiValue ? Number(formatUnits(weiValue!, 18)) : 0) : 0}
+            additionalLiquidity={weiValue ? Number(formatUnits(weiValue!, 18)) : 0}
           ></ForecastGraph>
 
           <div className="flex w-full items-center justify-between gap-2">

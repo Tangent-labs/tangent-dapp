@@ -10,15 +10,16 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 
+import { cn } from "@/lib/utils"
 import { useCallback } from "react"
 import { useRootContext } from "../root/root_context"
-import { usePathname, useRouter } from "next/navigation"
-import { IconTangent } from "@/components/icons/icon_tangent"
-import { mapRouteToFeature } from "./menu_bar_feature_controller"
-import { IconTangentLogo } from "@/components/icons/icon_tangent_logo"
-import TokenImage from "@/components/design_system/structure/token_image"
-import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 import { formatCompact } from "@/lib/number_formatter"
+import { usePathname, useRouter } from "next/navigation"
+import { MenuBarFeatureMotionDiv } from "./menu_bar_feature_motion_div"
+import TokenImage from "@/components/design_system/structure/token_image"
+import { isOnMarket, mapRouteToFeature } from "./menu_bar_feature_controller"
+import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
+import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 
 export default function MenuBarFeature() {
   const { USGCurrentSupply, sUSGCurrentAPY } = useRootContext()
@@ -39,9 +40,8 @@ export default function MenuBarFeature() {
             <div onClick={() => router.push("/")} className="hidden cursor-pointer items-center gap-2 text-xl text-white md:flex">
               <IconTangent className="mb-2 w-32"></IconTangent>
             </div>
-
             <div onClick={() => router.push("/")} className="flex cursor-pointer items-center gap-4 text-xl text-white md:hidden">
-              <IconTangentLogo className="mb-2 w-12 border-r border-white/30 px-2"></IconTangentLogo>
+              <IconTangentLogo className="mb-2 mr-2 w-12 border-r border-white/30 px-2"></IconTangentLogo>
 
               {computedFeature()}
             </div>
@@ -49,43 +49,78 @@ export default function MenuBarFeature() {
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem
-                  className={pathname === "/dashboard" ? "bg-tab bg-clip-text font-semibold text-transparent" : ""}
                   onClick={() => router.push("/dashboard")}
+                  className={cn(
+                    "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
+                    pathname === "/dashboard" ? "" : "hover:bg-white/20"
+                  )}
                 >
-                  Dashboard
+                  {pathname === "/dashboard" && <MenuBarFeatureMotionDiv />}
+                  <span className="relative z-20">Dashboard</span>
                 </NavigationMenuItem>
-                <NavigationMenuItem className={pathname === "/" ? "bg-tab bg-clip-text font-semibold text-transparent" : ""} onClick={() => router.push("/")}>
-                  Markets
+
+                <NavigationMenuItem
+                  onClick={() => router.push("/")}
+                  className={cn(
+                    "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
+                    pathname === "/" ? "" : "hover:bg-white/20"
+                  )}
+                >
+                  {isOnMarket(pathname) && <MenuBarFeatureMotionDiv />}
+                  <span className="relative z-20">Markets</span>
                 </NavigationMenuItem>
                 <NavigationMenuItem
-                  className={pathname === "/stake" ? "bg-tab bg-clip-text font-semibold text-transparent" : ""}
                   onClick={() => router.push("/stake")}
+                  className={cn(
+                    "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
+                    pathname === "/stake" ? "" : "hover:bg-white/20"
+                  )}
                 >
-                  Savings
+                  {pathname === "/stake" && <MenuBarFeatureMotionDiv />}
+                  <span className="relative z-20">Savings</span>
                 </NavigationMenuItem>
 
                 <NavigationMenuItem
-                  className={pathname === "/earn" ? "bg-tab bg-clip-text font-semibold text-transparent" : ""}
                   onClick={() => router.push("/earn")}
+                  className={cn(
+                    "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
+                    pathname === "/earn" ? "" : "hover:bg-white/20"
+                  )}
                 >
-                  Earn
+                  {pathname === "/earn" && <MenuBarFeatureMotionDiv />}
+                  <span className="relative z-20">Earn</span>
                 </NavigationMenuItem>
 
                 <NavigationMenuItem
-                  className={pathname === "/claim" ? "bg-tab bg-clip-text font-semibold text-transparent" : ""}
                   onClick={() => router.push("/claim")}
+                  className={cn(
+                    "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
+                    pathname === "/claim" ? "hover:bg-white/20" : "hover:bg-white/10"
+                  )}
                 >
-                  Claim
+                  {pathname === "/claim" && <MenuBarFeatureMotionDiv />}
+                  <span className="relative z-20">Claim</span>
                 </NavigationMenuItem>
 
                 <NavigationMenu>
                   <NavigationMenuDropdown>
                     <NavigationMenuTrigger>DAO</NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-[#070707] p-2">
-                        <NavigationMenuLink onClick={() => router.push("/harvest")}>Harvest</NavigationMenuLink>
-                        <NavigationMenuLink>Forum</NavigationMenuLink>
-                        <NavigationMenuLink>Snapshot</NavigationMenuLink>
+                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-dark p-2">
+                        <NavigationMenuLink className="flex items-center justify-start gap-2" onClick={() => router.push("/harvest")}>
+                          <IconHarvest className="w-2"></IconHarvest>
+                          Harvest
+                        </NavigationMenuLink>
+
+                        <NavigationMenuLink className="flex items-center justify-start gap-2">
+                          <IconForum className="w-3"></IconForum>
+                          Forum
+                        </NavigationMenuLink>
+
+                        <NavigationMenuLink className="flex items-center justify-start gap-2">
+                          <IconSnapshot className="w-3"></IconSnapshot>
+                          Snapshot
+                        </NavigationMenuLink>
                       </div>
                     </NavigationMenuContent>
                   </NavigationMenuDropdown>
@@ -95,10 +130,21 @@ export default function MenuBarFeature() {
                   <NavigationMenuDropdown>
                     <NavigationMenuTrigger>Airdrop</NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-[#070707] p-2">
-                        <NavigationMenuLink onClick={() => router.push("/tasks")}>Task</NavigationMenuLink>
-                        <NavigationMenuLink onClick={() => router.push("/referral")}>Referral</NavigationMenuLink>
-                        <NavigationMenuLink onClick={() => router.push("/boosts")}>Boosts</NavigationMenuLink>
+                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-dark p-2">
+                        <NavigationMenuLink className="flex items-center justify-start gap-2" onClick={() => router.push("/tasks")}>
+                          <IconTask className="w-3"></IconTask>
+                          Task
+                        </NavigationMenuLink>
+
+                        <NavigationMenuLink className="flex items-center justify-start gap-2" onClick={() => router.push("/referral")}>
+                          <IconReferral className="w-3"></IconReferral>
+                          Referral
+                        </NavigationMenuLink>
+
+                        <NavigationMenuLink className="flex items-center justify-start gap-2" onClick={() => router.push("/boosts")}>
+                          <IconBoosts className="w-3"></IconBoosts>
+                          Boosts
+                        </NavigationMenuLink>
                       </div>
                     </NavigationMenuContent>
                   </NavigationMenuDropdown>
@@ -122,7 +168,7 @@ export default function MenuBarFeature() {
 
             <button
               onClick={() => router.push("/swap")}
-              className="gradient-border-btn hidden cursor-pointer px-4 py-2.5 font-gilroy text-sm font-semibold xl:flex"
+              className="hidden cursor-pointer rounded-[10px] border border-button-active px-4 py-[9px] font-gilroy text-sm font-semibold transition-colors duration-200 ease-in-out hover:border-black hover:bg-button-active xl:flex"
             >
               Swap
             </button>

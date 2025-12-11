@@ -5,21 +5,19 @@ import { ListState } from "@/types"
 import { InfinityIcon } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
 import { formatDate } from "@/lib/other_formatter"
-import { LockPosition } from "../tg_usd/tg_usd_type"
+import { LockPosition } from "../usg/usg_type"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useVsTanContext } from "./rstan_layout_context"
 import { usePathname, useRouter } from "next/navigation"
-import { IconVsTan } from "@/components/icons/icon_vstan"
+import { IconVsTan, IconChevron } from "@/components/icons"
 import { lockListHeaders } from "./rstan_layout_controller"
-import { IconChevron } from "@/components/icons/icon_chevron"
 import ListRow from "@/components/design_system/list/list_row"
 import { Button } from "@/components/design_system/inputs/button"
 import Divider from "@/components/design_system/structure/divider"
 import ListHeader from "@/components/design_system/list/list_header"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
 import TokenImage from "@/components/design_system/structure/token_image"
-import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import USGHoverCard from "@/components/design_system/structure/usg_hover_card"
+import LargeButtonTab from "@/components/design_system/inputs/large_button_tab"
 import { FeatureSelect } from "@/components/design_system/structure/feature_select"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 
@@ -100,7 +98,7 @@ export const VsTanLayoutContent = ({
               <div className="text-md font-semibold text-white">$1.23</div>
             </div>
 
-            <div className="flex w-full flex-col items-center justify-center rounded-lg bg-button-active py-2">
+            <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-button-active py-2">
               <div className="text-xs font-semibold text-black">APR</div>
               <div className="text-md font-semibold text-white">{formatBigInt(lockData?.tanAPR, 18, 2)}%</div>
             </div>
@@ -111,15 +109,30 @@ export const VsTanLayoutContent = ({
       <div className="my-4 flex w-full flex-col gap-4 xl:flex-row">
         <div className="flex w-full flex-col items-center justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
           <div className="hidden w-full items-center justify-between gap-2 md:flex">
-            <ButtonTab label="Lock" active={pathname === "/tan/lock"} onClick={() => onTabClick("lock")} className="h-8! flex w-full justify-center" />
-            <ButtonTab label="Unlock" active={pathname === "/tan/unlock"} onClick={() => onTabClick("unlock")} className="h-8! flex w-full justify-center" />
-            <ButtonTab label="Claim" active={pathname === "/tan/claim"} onClick={() => onTabClick("claim")} className="h-8! flex w-full justify-center" />
-            <ButtonTab label="Split" active={pathname === "/tan/split"} onClick={() => onTabClick("split")} className="h-8! flex w-full justify-center" />
-            <ButtonTab label="Merge" active={pathname === "/tan/merge"} onClick={() => onTabClick("merge")} className="h-8! flex w-full justify-center" />
+            <LargeButtonTab label="Lock" active={pathname === "/tan/lock"} onClick={() => onTabClick("lock")} className="h-8! flex w-full justify-center" />
+            <LargeButtonTab
+              label="Unlock"
+              active={pathname === "/tan/unlock"}
+              onClick={() => onTabClick("unlock")}
+              className="h-8! flex w-full justify-center"
+            />
+            <LargeButtonTab label="Claim" active={pathname === "/tan/claim"} onClick={() => onTabClick("claim")} className="h-8! flex w-full justify-center" />
+            <LargeButtonTab label="Split" active={pathname === "/tan/split"} onClick={() => onTabClick("split")} className="h-8! flex w-full justify-center" />
+            <LargeButtonTab label="Merge" active={pathname === "/tan/merge"} onClick={() => onTabClick("merge")} className="h-8! flex w-full justify-center" />
           </div>
 
           <div className="flex w-full flex-col items-center justify-between gap-1 md:hidden">
-            <FeatureSelect options={["Lock", "Unlock", "Claim", "Split", "Merge"]} value={feature} onChange={(v: string) => onTabClick(v)}></FeatureSelect>
+            <FeatureSelect
+              options={[
+                { value: "Lock", key: "Lock" },
+                { value: "Unlock", key: "Unlock" },
+                { value: "Claim", key: "Claim" },
+                { value: "Split", key: "Split" },
+                { value: "Merge", key: "Merge" },
+              ]}
+              value={feature}
+              onChange={(v: string) => onTabClick(v)}
+            ></FeatureSelect>
           </div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
@@ -191,17 +204,6 @@ function LockPositionList() {
               <div className="slide-down-fade-in flex w-full flex-wrap items-center justify-between gap-3 rounded-b-lg bg-overlay-panel p-3 md:flex-row">
                 <div className="flex items-center justify-center gap-2">
                   <div className="hidden w-full text-sm text-subtitle md:flex">Unlock date</div>
-                  <EvolutionBox
-                    originalValue={formatDate(new Date(), "dd/MM/yyyy")}
-                    label=""
-                    newValue={
-                      (lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655") || extendToPermaLock ? (
-                        <InfinityIcon className="mx-8 w-5"></InfinityIcon>
-                      ) : (
-                        <> {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd/MM/yyyy")}</>
-                      )
-                    }
-                  />
                 </div>
 
                 {!!lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (

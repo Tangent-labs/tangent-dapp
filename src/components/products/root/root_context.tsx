@@ -2,13 +2,13 @@
 
 import { convertRange } from "./root_controller"
 import { toast, ToastContainer } from "react-toastify"
-import * as swapRoutes from "../tg_usd/swapRoutes.json"
+import * as swapRoutes from "../usg/swapRoutes.json"
 import { getPublicClient } from "@/services/service_rpc"
-import { SavingAccountsApy } from "../tg_usd/tg_usd_type"
-import { USG_CONTRACT } from "../tg_usd/tg_usd_repository"
+import { SavingAccountsApy } from "../usg/usg_type"
+import { USG_CONTRACT } from "../usg/usg_repository"
 import { ToastComponent } from "@/components/design_system/toast"
-import { getSavingsAPY, getTotalSupply } from "../tg_usd/client_api"
-import { CustomCurveRoutes } from "../tg_usd/global_quote_controller"
+import { getSavingsAPY, getTotalSupply } from "../usg/client_api"
+import { CustomCurveRoutes } from "../usg/global_quote_controller"
 import { useContext, useEffect, useState, createContext, ReactNode, useMemo } from "react"
 
 export type RootContextValues = {
@@ -281,7 +281,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     <RootContext.Provider value={contextValue}>
       <ToastContainer
         position="top-right"
-        autoClose={4000}
+        autoClose={3000}
         hideProgressBar
         newestOnTop={false}
         closeOnClick={true}

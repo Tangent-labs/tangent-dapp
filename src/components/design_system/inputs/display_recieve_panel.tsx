@@ -18,14 +18,16 @@ const DisplayReceivePanel: React.FC<DisplayReceivePanelProps> = ({
   className = "",
 }) => {
   return (
-    <PanelRaw className={cn("flex flex-col gap-1 !bg-opacity-20 p-2", className)}>
+    <PanelRaw className={cn("flex flex-col gap-1 p-2", className)}>
       <div className="text-sm text-subtitle">{labelReceive}</div>
       <div className="mb-2 flex justify-between">
-        <div className="text-xl font-semibold">{receiveAmount}</div>
+        <div className="flex items-center justify-center gap-3">
+          <div className="text-[24px] font-semibold">{receiveAmount}</div>
+
+          <div className="flex justify-between text-xs text-subtitle">({formatDollar(receiveDollarValue)})</div>
+        </div>
+
         <div>{receiveAssetDisplay}</div>
-      </div>
-      <div className="flex justify-between text-xs text-subtitle">
-        <div>({formatDollar(receiveDollarValue)})</div>
       </div>
     </PanelRaw>
   )

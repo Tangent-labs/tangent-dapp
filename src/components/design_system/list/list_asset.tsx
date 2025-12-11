@@ -1,10 +1,11 @@
 "use client"
 
 import { Address } from "viem"
+import { Protocol } from "./protocol"
 import { ExistingAsset } from "@/types"
 import BorderPanel from "../structure/border_panel"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { MarketConstants } from "@/components/products/tg_usd/tg_usd_type"
+import { MarketConstants } from "@/components/products/usg/usg_type"
 
 interface ListAssetProps {
   name: string
@@ -17,40 +18,42 @@ interface ListAssetProps {
 const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: ListAssetProps) => {
   return (
     <div className={`relative flex items-center gap-2 ${className}`}>
-      <TokenImage token={token} size={48} className="w-8 xl:w-16" />
+      <TokenImage token={token} size={48} className="hidden sm:flex md:w-8 xl:w-16" />
 
-      <div className="flex flex-col gap-1 leading-8">
+      <div className="flex flex-row items-center justify-start gap-1 md:flex-col md:items-start">
         <span className="text-sm font-semibold md:text-xl">{name}</span>
 
         {marketData && (
-          <div className="hidden items-center justify-between gap-2 md:flex">
-            {marketData?.marketType?.includes("CRV") && (
-              <BorderPanel className="flex items-center justify-center gap-1 !rounded-full bg-overlay-panel px-3 py-0.5 text-xs">
-                <TokenImage token={"CRV"} size={12} />
-                <span>Curve</span>
-              </BorderPanel>
-            )}
-            {marketData?.marketType?.startsWith("Convex_") && (
-              <BorderPanel className="flex items-center justify-center gap-1 !rounded-full bg-overlay-panel px-3 py-0.5 text-xs">
-                <TokenImage token={"CVX"} size={12} />
-                <span>Convex</span>
-              </BorderPanel>
-            )}
+          <>
+            <div className="ml-2 flex items-center justify-between gap-2 md:hidden">
+              {marketData?.marketType?.includes("CRV") && <TokenImage token={"CRV"} size={12} />}
+              {marketData?.marketType?.startsWith("Convex_") && <TokenImage token={"CVX"} size={12} />}
 
-            {marketData?.marketType?.startsWith("Pendle") && (
-              <BorderPanel className="flex items-center justify-center gap-1 !rounded-full bg-overlay-panel px-3 py-0.5 text-xs">
-                <TokenImage token={"PENDLE"} size={12} />
-                <span>Pendle</span>
-              </BorderPanel>
-            )}
+              {marketData?.marketType?.startsWith("Pendle") && <TokenImage token={"PENDLE"} size={12} />}
 
-            <BorderPanel
-              className={`flex items-center justify-center !rounded-full px-3 py-0.5 text-xs ${marketData?.constants?.irParams.isHEC ? "bg-button-linear" : "bg-lec"}`}
-            >
-              {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
-            </BorderPanel>
-            <TokenImage token={"ETH"} size={20} />
-          </div>
+              <span
+                className={`mt-0.5 flex items-center justify-center bg-clip-text text-xs font-semibold text-transparent ${marketData?.constants?.irParams.isHEC ? "bg-button-active" : "bg-lec"}`}
+              >
+                {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
+              </span>
+            </div>
+            <div className="hidden items-center justify-between gap-2 md:flex">
+              {marketData?.marketType?.includes("CRV") && <Protocol token="CRV" label="Curve" />}
+
+              {marketData?.marketType?.startsWith("Convex_") && <Protocol token="CVX" label="Convex" />}
+
+              {marketData?.marketType?.startsWith("STAKEDAO") && <Protocol token="SDT" label="StakeDAO" />}
+
+              {marketData?.marketType?.startsWith("Pendle") && <Protocol token="PENDLE" label="Pendle" />}
+
+              <BorderPanel
+                className={`flex items-center justify-center !rounded-full px-3 py-0.5 text-xs ${marketData?.constants?.irParams.isHEC ? "bg-button-active" : "bg-lec"}`}
+              >
+                {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
+              </BorderPanel>
+              <TokenImage token={"ETH"} size={20} />
+            </div>
+          </>
         )}
 
         {assetsEarned && assetsEarned?.length > 0 && (

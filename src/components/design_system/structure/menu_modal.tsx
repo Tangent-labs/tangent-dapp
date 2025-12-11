@@ -1,6 +1,6 @@
 "use client"
 
-import { IconMenuMore } from "@/components/icons/icon_menu_more"
+import { IconMenuMore } from "@/components/icons"
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import { usePathname, useRouter } from "next/navigation"

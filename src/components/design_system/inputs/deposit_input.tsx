@@ -107,8 +107,8 @@ export function DepositInput({
     <BorderPanel
       className={cn(
         isLoading ? "shimmer" : "",
-        disabled ? "bg-panel-disabled" : "bg-white bg-opacity-[3%]",
-        "flex cursor-pointer flex-col p-2 transition-colors duration-200 hover:bg-white/10"
+        disabled ? "bg-panel-disabled" : "cursor-pointer bg-white bg-opacity-[3%] hover:bg-white/10",
+        "flex flex-col p-2 transition-colors duration-200"
       )}
       onClick={onClickFocus}
     >

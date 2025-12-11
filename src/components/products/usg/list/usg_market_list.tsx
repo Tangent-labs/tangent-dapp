@@ -37,6 +37,25 @@ export default function USGMarketList() {
 
   return (
     <>
+      <div className="flex w-full rounded-[10px] bg-panel-title-gradient xl:hidden">
+        <div className="flex items-center justify-center">
+          <Image height={120} width={120} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "160px", maxHeight: "160px" }} />
+        </div>
+        <div className="flex flex-col items-start justify-center gap-2 px-4">
+          <span className="text-[24px] font-semibold">USG</span>
+          <p className="text-sm">
+            Borrow USG against accepted LP tokens. Tangent features two kinds of markets.
+            <span className="inline-block cursor-pointer underline hover:text-white/40">Learn more</span>
+          </p>
+        </div>
+      </div>
+
+      <div className="items-strech my-4 flex w-full gap-2 xl:hidden">
+        <IndicatorCards className={cn(globalData.globalTvl === "-" ? "shimmer" : "")} indicators={[{ title: "Global TVL ", value: globalData.globalTvl }]} />
+        <IndicatorCards className={cn(globalData.globalDebt === "-" ? "shimmer" : "")} indicators={[{ title: "Global Debt ", value: globalData.globalDebt }]} />
+        <IndicatorCards className={cn(globalData.globalCr === "-" ? "shimmer" : "")} indicators={[{ title: "Global CR ", value: globalData.globalCr }]} />
+      </div>
+
       <div className="flex items-stretch justify-between gap-6">
         <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
@@ -51,7 +70,7 @@ export default function USGMarketList() {
           </div>
         </div>
 
-        <div className="hidden h-auto w-full flex-col items-center gap-1 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] md:flex xl:w-1/2">
+        <div className="hidden h-auto w-full flex-col items-center gap-1 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] xl:flex xl:w-1/2">
           <div
             style={{ fontSize: "20px", lineHeight: "20px" }}
             className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
@@ -70,48 +89,6 @@ export default function USGMarketList() {
               <span className="text-xs text-subtitle">Your Collateral Deposits</span>
               <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDeposit || 0n, 18), 0)} USD</span>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-3 flex w-full flex-col items-end justify-between xl:hidden">
-        <div className="flex w-full items-end justify-start gap-2">
-          <div className="flex w-full flex-col items-center justify-center">
-            <div className="mb-1 text-xs text-subtitle"> Search </div>
-            <InputSearch
-              placeholder=""
-              className="flex w-full flex-col items-center justify-center"
-              value={searchValue ?? ""}
-              onChange={(e) => setSearchValue(e as string)}
-            />
-          </div>
-
-          <LargeButtonTab className="h-10 px-4" active={true} label="All"></LargeButtonTab>
-          <LargeButtonTab className="h-10 px-4" active={false} label="Deposits"></LargeButtonTab>
-        </div>
-
-        <div className="mt-2 flex w-full items-center justify-between gap-2">
-          <div className="flex w-full flex-col items-center justify-center md:w-fit">
-            <div className="mb-1 text-xs text-subtitle"> Type </div>
-            <InputSelect
-              className="w-full min-w-32"
-              template={MarketListSelectTemplate}
-              value={marketType || ""}
-              options={marketOptions}
-              onChange={(e) => setMarketType(e)}
-            />
-          </div>
-
-          <div className="flex w-full flex-col items-center justify-center md:w-fit">
-            <div className="mb-1 text-xs text-subtitle"> Protocol </div>
-
-            <InputSelect
-              className="w-full min-w-32"
-              template={MarketListSelectTemplate}
-              value={protocol || ""}
-              options={protocolOptions}
-              onChange={(e) => setProtocol(e)}
-            />
           </div>
         </div>
       </div>

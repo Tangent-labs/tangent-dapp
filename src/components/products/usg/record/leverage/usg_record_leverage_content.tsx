@@ -115,7 +115,7 @@ export default function USGLeverageContent() {
       )}
 
       {!isDepositDisabled && depositAsset && isZapping && (
-        <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 !bg-opacity-20 p-2`}>
+        <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-start justify-start">
               <div className="flex items-center justify-center gap-1">

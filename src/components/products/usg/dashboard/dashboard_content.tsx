@@ -88,7 +88,7 @@ export const USGDashboardContent = () => {
           indicators={[
             { title: "sUSG ", value: globalData.sUSGPrice },
             { title: "Supply", value: globalData.sUSGSupply },
-            { title: "APY", value: `${sUSGCurrentAPY}%` },
+            { title: "APY", value: `${sUSGCurrentAPY.toFixed(2)}%` },
           ]}
         >
           <TokenImage token="sUSG" className="h-8 w-8" size={32} />
@@ -98,8 +98,8 @@ export const USGDashboardContent = () => {
       <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
         <div className="flex w-full items-start justify-start">
           <div className="mt-1 flex h-full max-h-80 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
-            <div className="flex w-full items-center justify-between">
-              <div className="text-xl font-semibold">Total Supply </div>
+            <div className="flex w-full items-center justify-end sm:justify-between">
+              <div className="hidden text-xl font-semibold sm:flex">Total Supply </div>
 
               <div className="flex gap-2">
                 <ButtonTab onClick={() => fetchTotalSupplyData("1w")} label={"1w"} active={totalSupplySelectedTab === "1w"} className="rounded-full !py-1" />
@@ -113,14 +113,15 @@ export const USGDashboardContent = () => {
             <Divider className="h-0.5 w-full bg-white/10" />
 
             <div className="flex w-full items-stretch justify-start gap-2 text-xs">
-              <div className="flex flex-col items-start justify-start gap-2 self-stretch rounded-[10px] bg-overlay-panel p-2">
-                <div className="text-xs text-subtitle">Total</div>
+              <div className="flex flex-row items-start justify-start gap-2 self-stretch rounded-[10px] bg-overlay-panel p-2 md:flex-col">
+                <div className="flex text-xs text-subtitle sm:hidden">Total supply </div>
+                <div className="hidden text-xs text-subtitle sm:flex">Total </div>
 
                 <div className="text-xs font-semibold text-white"> {formatDollar(sUSGCurrentSupply + USGCurrentSupply, 0)}</div>
               </div>
 
               {USGCurrentSupply > 0 && (
-                <div className="flex flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2">
+                <div className="hidden flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2 md:flex">
                   <div className="flex w-full items-center justify-between gap-2">
                     <div className="flex h-2 w-2 rounded-full bg-button-active"></div>
 
@@ -139,7 +140,7 @@ export const USGDashboardContent = () => {
               )}
 
               {sUSGCurrentSupply > 0 && (
-                <div className="flex flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2">
+                <div className="hidden flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2 md:flex">
                   <div className="flex w-full items-center justify-between gap-2">
                     <div className="flex h-2 w-2 rounded-full bg-tonic"></div>
 

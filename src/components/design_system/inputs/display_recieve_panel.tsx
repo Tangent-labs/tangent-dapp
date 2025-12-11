@@ -18,7 +18,7 @@ const DisplayReceivePanel: React.FC<DisplayReceivePanelProps> = ({
   className = "",
 }) => {
   return (
-    <PanelRaw className={cn("flex flex-col gap-1 !bg-opacity-20 p-2", className)}>
+    <PanelRaw className={cn("flex flex-col gap-1 p-2", className)}>
       <div className="text-sm text-subtitle">{labelReceive}</div>
       <div className="mb-2 flex justify-between">
         <div className="flex items-center justify-center gap-3">

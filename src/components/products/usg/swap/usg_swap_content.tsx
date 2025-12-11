@@ -94,7 +94,13 @@ export default function USGSwapContent() {
             {option.symbol === "ETH" ? (
               <TokenImage token={option.logo} size={32} />
             ) : (
-              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} /> : <TokenImage token={option.logo} size={32} />}</>
+              <>
+                {option.logoURI ? (
+                  <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} />
+                ) : (
+                  <TokenImage token={option.symbol as ExistingAsset} size={32} />
+                )}
+              </>
             )}
           </>
 

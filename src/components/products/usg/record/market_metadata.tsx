@@ -42,7 +42,6 @@ export const MarketMetadata = ({ marketData }: MarketMetadataProps) => {
           </BorderPanel>
         </>
       )}
-      <TokenImage token={"ETH"} size={20} />
     </>
   )
 }

@@ -36,6 +36,7 @@ export default function USGRepayContent() {
     actionZapRepay,
     actionApprove,
     setSlippage,
+    setWithdrawSelectedAsset,
     slippage,
     repayWeiValue,
     repayAsset,
@@ -52,7 +53,7 @@ export default function USGRepayContent() {
     isDebtBelowThreshold,
     repayAssetInfo,
     withdrawSelectedAsset,
-    setWithdrawSelectedAsset,
+    expectedUSG,
   } = useUSGRepayContext()
 
   const { tokens, balances } = useUSGContext()
@@ -143,7 +144,7 @@ export default function USGRepayContent() {
   const WithdrawAssetSelectTemplate = (option: { logo?: ExistingAsset; label: string }) => {
     return (
       <div className="flex w-full cursor-pointer items-center gap-2 rounded-[10px] py-1 hover:bg-white/10">
-        <TokenImage token={option?.logo} size={24} />
+        <TokenImage token={option?.logo} size={32} />
         <span className="text-sm font-semibold">{option.label}</span>
       </div>
     )
@@ -258,7 +259,7 @@ export default function USGRepayContent() {
                 <div className="flex w-full items-center justify-between">
                   <span className="text-subtitle">Expected collateral: </span>
 
-                  <span className="font-semibold text-white">{usgRepayedValue}</span>
+                  <span className="font-semibold text-white">{expectedUSG}</span>
                 </div>
               </AccordionContent>
             </BorderPanel>

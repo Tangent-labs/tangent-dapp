@@ -43,15 +43,11 @@ export default function TokenImage({ token, size, ...props }: TokenImageProps) {
   const tokenStartsWith = token?.substring(0, token.indexOf(" "))
 
   if (tokenStartsWith === "USDe") {
-    return (
-      <div className="px-2">
-        <ImageWithFallback {...props} fallback={fallbackSrc} src={`/medias/tokens/USDe.webp`} alt={token || "Token image"} width={48} height={48} />
-      </div>
-    )
+    return <ImageWithFallback {...props} fallback={fallbackSrc} src={`/medias/tokens/USDe.webp`} alt={token || "Token image"} width={size} height={size} />
   }
 
   if (tokenStartsWith === "sUSDe") {
-    return <ImageWithFallback {...props} fallback={fallbackSrc} src={`/medias/tokens/sUSDe.webp`} alt={token || "Token image"} width={48} height={48} />
+    return <ImageWithFallback {...props} fallback={fallbackSrc} src={`/medias/tokens/sUSDe.webp`} alt={token || "Token image"} width={size} height={size} />
   }
 
   const url = token ? `/medias/tokens/${token}.webp` : fallbackSrc

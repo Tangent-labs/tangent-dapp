@@ -23,7 +23,6 @@ const OFFCHAIN_BOOST_INFOS: NumMap = {
 
 const ONCHAIN_BOOST_INFOS: NumMap = {
   STAKING: 1,
-  LOCKED_LP: 0.5,
 }
 
 type BoostMetadata = {
@@ -59,10 +58,6 @@ const BOOST_METADATA: Record<string, BoostMetadata> = {
   STAKING: {
     title: "Staking Boost",
     description: "Stake tokens to earn rewards and boost your power.",
-  },
-  LOCKED_LP: {
-    title: "Locked LP Boost",
-    description: "Provide locked liquidity to earn this boost.",
   },
 }
 

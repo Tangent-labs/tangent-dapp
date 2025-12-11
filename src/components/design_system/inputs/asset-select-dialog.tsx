@@ -88,7 +88,7 @@ export default function AssetSelectionDialog<T extends OptionT>({
                 ) : selected?.logoURI ? (
                   <Image src={selected.logoURI} alt={selected.symbol} height={20} width={20} />
                 ) : (
-                  <TokenImage token={selected.logo} size={20} />
+                  <TokenImage token={selected.logo} size={32} />
                 )}
                 <span className="truncate text-sm font-semibold">{selected.symbol}</span>
               </>

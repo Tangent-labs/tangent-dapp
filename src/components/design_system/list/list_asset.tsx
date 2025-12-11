@@ -6,6 +6,7 @@ import { ExistingAsset } from "@/types"
 import BorderPanel from "../structure/border_panel"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { MarketConstants } from "@/components/products/usg/usg_type"
+import { cn } from "@/lib/utils"
 
 interface ListAssetProps {
   name: string
@@ -22,7 +23,14 @@ interface ListAssetProps {
 const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: ListAssetProps) => {
   return (
     <div className={`relative flex items-center gap-2 ${className}`}>
-      <TokenImage token={token} size={64} className="hidden sm:flex" />
+      <div
+        className={cn(
+          "hidden md:flex",
+          token?.substring(0, token.indexOf(" ")) === "USDe" || token?.substring(0, token.indexOf(" ")) === "sUSDe" ? "px-2" : ""
+        )}
+      >
+        <TokenImage token={token} size={32} className="md:w-8 xl:w-16" />
+      </div>
 
       <div className="flex flex-row items-center justify-start gap-1 md:flex-col md:items-start">
         <span className="text-sm font-semibold md:text-xl">{name}</span>
@@ -55,7 +63,6 @@ const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: Li
               >
                 {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
               </BorderPanel>
-              <TokenImage token={"ETH"} size={20} />
             </div>
           </>
         )}

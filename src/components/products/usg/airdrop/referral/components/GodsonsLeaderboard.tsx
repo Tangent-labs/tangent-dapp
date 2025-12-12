@@ -41,10 +41,10 @@ export const GodsonsLeaderboard = ({ godsonsLeaderboard }: GodsonsLeaderboardPro
             <div onClick={() => onClickAddress(el?.address)} className="flex w-4/12 items-start justify-start font-semibold">
               {formatAddress(el.address, 4)}
             </div>
-            <div className="flex w-3/12 items-center justify-center bg-pink bg-clip-text text-xs font-semibold text-transparent">
+            <div className="flex w-3/12 items-center justify-center bg-tonic bg-clip-text text-xs font-semibold text-transparent">
               {formatNumber(el.lpPoints, 0)}
             </div>
-            <div className="flex w-3/12 items-center justify-center bg-tonic bg-clip-text text-xs font-semibold text-transparent">
+            <div className="flex w-3/12 items-center justify-center bg-pink bg-clip-text text-xs font-semibold text-transparent">
               {formatNumber(el.votePts, 0)}
             </div>
           </div>

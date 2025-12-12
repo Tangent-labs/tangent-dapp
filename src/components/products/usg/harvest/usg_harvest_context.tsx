@@ -70,6 +70,7 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
     if (!harvestInfo || !rewardsInfo) return []
 
     const rows = transformHarvestOnChainData(harvestInfo, rewardsInfo)
+
     return rows
   }, [harvestInfo, rewardsInfo])
 

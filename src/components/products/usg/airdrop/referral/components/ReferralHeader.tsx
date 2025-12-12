@@ -29,7 +29,7 @@ export const ReferralHeader = ({
         <div className="relative flex w-full max-w-none flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px] md:max-w-80">
           <div className="absolute -top-2 left-0 flex w-full">
             <div className="mx-4 flex w-full items-center justify-end rounded-full pl-3">
-              <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Vote</div>
+              <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Vote</div>
             </div>
           </div>
 
@@ -42,14 +42,14 @@ export const ReferralHeader = ({
         <div className="relative flex w-full max-w-none flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px] md:max-w-80">
           <div className="absolute -top-2 left-0 flex w-full">
             <div className="mx-4 flex w-full items-center justify-end rounded-full pl-3">
-              <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Liquidity</div>
+              <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Liquidity</div>
             </div>
           </div>
 
           <span className="text-sm text-subtitle">Liquidity points</span>
           <div className="flex items-end justify-center gap-1">
             <span className="text-sm font-semibold text-white">{formatNumber(lpUserPoints?.lpTotalPoints, 0)} pts</span>
-            <span className="text-xs text-tonic">({formatNumber(lpUserPoints?.lpDailyRate, 0)}pts/day)</span>
+            <span className="bg-tonic bg-clip-text text-xs font-semibold text-transparent">({formatNumber(lpUserPoints?.lpDailyRate, 0)}pts/day)</span>
           </div>
         </div>
       </div>

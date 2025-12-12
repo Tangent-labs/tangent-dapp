@@ -122,8 +122,13 @@ export default function USGClaimContent() {
           <div className="flex w-full flex-col">
             {marketsToClaim.map((el: ClaimableMarket) => (
               <div key={el.marketName} className="my-1 flex w-full items-center justify-between">
-                <div className={`relative flex items-center gap-4`}>
-                  <TokenImage token={el.marketName} size={16} className="w-8" />
+                <div className="relative flex items-center gap-4">
+                  {el.marketName?.substring(0, el.marketName.indexOf(" ")) === "USDe" || el.marketName?.substring(0, el.marketName.indexOf(" ")) === "sUSDe" ? (
+                    <TokenImage token={el.marketName as ExistingAsset} size={24} className="ml-1 w-6" />
+                  ) : (
+                    <TokenImage token={el.marketName as ExistingAsset} size={32} className="w-8" />
+                  )}
+
                   <span className="text-[12px] font-semibold">{el.marketName}</span>
                 </div>
 

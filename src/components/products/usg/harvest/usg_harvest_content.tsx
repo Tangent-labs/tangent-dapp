@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { ListState } from "@/types"
+import { ExistingAsset, ListState } from "@/types"
 import { Switch } from "@/components/ui/switch"
 import { useUSGHarvestContext } from "./usg_harvest_context"
 import { harvestListHeaders } from "./usg_harvest_controller"
@@ -102,7 +102,12 @@ export default function USGHarvestContent() {
             {marketsToHarvest.map((el: HarvestableMarket) => (
               <div key={el.marketName} className="my-1 flex w-full items-center justify-between">
                 <div className={`relative flex items-center gap-4`}>
-                  <TokenImage token={el.marketName} size={16} className="w-8" />
+                  {el.marketName?.substring(0, el.marketName.indexOf(" ")) === "USDe" || el.marketName?.substring(0, el.marketName.indexOf(" ")) === "sUSDe" ? (
+                    <TokenImage token={el.marketName as ExistingAsset} size={24} className="ml-1 w-6" />
+                  ) : (
+                    <TokenImage token={el.marketName as ExistingAsset} size={32} className="w-8" />
+                  )}
+
                   <span className="text-[12px] font-semibold">{el.marketName}</span>
                 </div>
 

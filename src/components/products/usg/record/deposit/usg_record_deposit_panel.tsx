@@ -1,24 +1,23 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { ExistingAsset } from "@/types"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGDepositContext } from "./usg_record_deposit_context"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import FormButtons from "@/components/design_system/form/form_actions"
-import TokenImage from "@/components/design_system/structure/token_image"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
-import { IconThunder, IconCircleHelp, IconSingleArrow } from "@/components/icons"
 import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
+import { IconThunder, IconCircleHelp, IconSingleArrow } from "@/components/icons"
 import { USGStaticAssetSelector } from "@/components/design_system/structure/usg_static_selector"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
+import { CustomCollatAssetDisplay } from "@/components/design_system/structure/custom_collat_asset_display"
 
 export default function USGDepositContent() {
   const {
@@ -108,10 +107,8 @@ export default function USGDepositContent() {
                 <div> {zapValue && !!marketData?.collateralInfos ? estimatedZapDollarValue : ""}</div>
               </div>
             </div>
-            <BorderPanel className="flex items-center justify-center gap-2 bg-select-input px-2.5 py-2">
-              <TokenImage token={collateralInfo?.logo as ExistingAsset} size={32} />
-              <div className="font-semibold">{collateralInfo?.symbol}</div>
-            </BorderPanel>
+
+            <CustomCollatAssetDisplay collateralInfo={collateralInfo} />
           </div>
         </PanelRaw>
       )}

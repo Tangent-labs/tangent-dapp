@@ -50,11 +50,11 @@ export const UsgReferralCode = () => {
         <div className="flex w-full flex-wrap items-center justify-between md:flex-nowrap">
           <div className="flex w-full flex-col items-center justify-center">
             <span className="text-sm text-subtitle">Referees voting points</span>
-            <span className="bg-tonic bg-clip-text text-lg font-semibold text-transparent"> {formatNumber(refereesPoints.votePoints, 0)} </span>
+            <span className="bg-pink bg-clip-text text-lg font-semibold text-transparent"> {formatNumber(refereesPoints.votePoints, 0)} </span>
           </div>
           <div className="flex w-full flex-col items-center justify-center">
             <span className="text-sm text-subtitle">Referees Liquidity points</span>
-            <span className="bg-pink bg-clip-text text-lg font-semibold text-transparent"> {formatNumber(refereesPoints.lpPoints, 0)} </span>
+            <span className="bg-tonic bg-clip-text text-lg font-semibold text-transparent"> {formatNumber(refereesPoints.lpPoints, 0)} </span>
           </div>
           <div className="flex w-full flex-col items-center justify-center">
             <span className="text-sm text-subtitle">Your Referees</span>
@@ -138,7 +138,7 @@ export const UsgReferralCode = () => {
 
           <Divider className="h-0.5 w-full bg-white/10" />
 
-          <Leaderboard leaderboard={voteLeaderboard} />
+          <Leaderboard leaderboard={voteLeaderboard} feature="vote" />
         </div>
 
         <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">

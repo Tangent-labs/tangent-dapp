@@ -131,8 +131,8 @@ type USGRecordContextValues = {
     address: Address
     balance: bigint
     symbol: string
-    logoURI?: string
     logo?: ExistingAsset
+    logoURI?: string
     name?: string
   }>
 }
@@ -464,6 +464,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
           address: collateralInfo?.address,
           balance: balances?.[collateralInfo?.address] ?? BigInt(0),
           symbol: collateralInfo?.symbol,
+          logo: collateralInfo?.symbol as ExistingAsset,
         },
         {
           label: gaugeSymbol,
@@ -471,6 +472,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
           address: marketData?.constants?.receipt,
           balance: balances?.[marketData?.constants?.receipt] ?? BigInt(0),
           symbol: gaugeSymbol,
+          logo: collateralInfo?.symbol as ExistingAsset,
         },
       ]
     }

@@ -35,6 +35,13 @@ export const MarketMetadata = ({ marketData }: MarketMetadataProps) => {
             </>
           )}
 
+          {marketData?.marketType?.includes("Pendle_PT") && (
+            <>
+              <MobileProtocol token="PENDLE" label="PENDLE" />
+              <TokenImage className="flex text-sm md:hidden" token={"PENDLE"} size={20} />
+            </>
+          )}
+
           <BorderPanel
             className={`flex items-center justify-center !rounded-full px-3 py-0.5 text-xs ${marketData?.constants?.irParams.isHEC ? "bg-button-active" : "bg-lec"}`}
           >
@@ -42,7 +49,6 @@ export const MarketMetadata = ({ marketData }: MarketMetadataProps) => {
           </BorderPanel>
         </>
       )}
-      <TokenImage token={"ETH"} size={20} />
     </>
   )
 }

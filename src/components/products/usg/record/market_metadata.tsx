@@ -30,7 +30,7 @@ export const MarketMetadata = ({ marketData }: MarketMetadataProps) => {
 
           {marketData?.marketType?.startsWith("STAKEDAO") && (
             <>
-              <MobileProtocol token="SDT" label="StakeDAO" />
+              <MobileProtocol token="SDT" label="Stake DAO" />
               <TokenImage className="flex text-sm md:hidden" token={"SDT"} size={20} />
             </>
           )}

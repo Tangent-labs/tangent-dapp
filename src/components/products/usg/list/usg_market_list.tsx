@@ -208,7 +208,7 @@ export function USGMarketListInner() {
               >
                 <span className="flex items-center justify-center gap-2">
                   <span className={cn("flex text-xs text-subtitle md:text-xl xl:hidden", indicator?.key === "tvl" ? "uppercase" : "")}>{indicator?.label}</span>
-                  <span className="text-xs md:text-xl">{indicator?.value}</span>
+                  <span className="text-xs md:text-lg">{indicator?.value}</span>
                 </span>
               </div>
             ))}

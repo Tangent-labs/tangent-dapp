@@ -45,7 +45,7 @@ const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: Li
             <div className="hidden items-center justify-between gap-2 md:flex">
               {marketData?.marketType?.includes("CRV") && <Protocol token="CRV" label="Curve" />}
               {marketData?.marketType?.startsWith("Convex_") && <Protocol token="CVX" label="Convex" />}
-              {marketData?.marketType?.startsWith("STAKEDAO") && <Protocol token="SDT" label="StakeDAO" />}
+              {marketData?.marketType?.startsWith("STAKEDAO") && <Protocol token="SDT" label="Stake DAO" />}
               {marketData?.marketType?.startsWith("Pendle") && <Protocol token="PENDLE" label="Pendle" />}
 
               <BorderPanel

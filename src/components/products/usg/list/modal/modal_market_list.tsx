@@ -76,8 +76,8 @@ export default function USGModalMarketList() {
 const ModalMarketListRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
     <div className="flex items-center justify-between">
-      <div className="flex w-2/3 items-center justify-start md:w-1/2">{children?.at(0)}</div>
-      <div className="flex w-1/3 items-center justify-end md:justify-center">{children?.at(1)}</div>
+      <div className="flex w-1/2 items-center justify-start md:w-1/2">{children?.at(0)}</div>
+      <div className="flex w-1/4 items-center justify-end md:justify-center">{children?.at(1)}</div>
       <div className="hidden w-1/4 items-center justify-center md:flex">{children?.at(2)}</div>
     </div>
   )
@@ -107,7 +107,7 @@ export function USGModalMarketListInner() {
 
             <span className="hidden items-center justify-center gap-2 md:flex">
               <span className={cn("flex text-xs text-subtitle md:text-xl xl:hidden")}>{item.indicators[0]?.label}</span>
-              <span className="text-xs md:text-xl">{item.indicators[0]?.value}</span>
+              <span className="text-xs md:text-lg">{item.indicators[0]?.value}</span>
             </span>
 
             {item.userHasDeposited && (

@@ -41,7 +41,7 @@ export const mapTasks = (tasks: EarnProtocolInput[], poolsData?: Array<GaugeAPR>
 export const mapPoolsAndTasks = (curvePools: GaugeAPR[], convexPools: GaugeAPR[], stakeDaoPools: StakeDaoAPRData[], tasks: EarnProtocolInput[]) => {
   const allCurvePoolsAddresses = tasks.filter((t) => t.protocolName === "Curve").map((t) => t.address)
   const allConvexPoolsAddresses = tasks.filter((t) => t.protocolName === "Convex").map((t) => t.address)
-  const allStakeDaoPoolsPoolsAddresses = tasks.filter((t) => t.protocolName === "StakeDAO").map((t) => t.address)
+  const allStakeDaoPoolsPoolsAddresses = tasks.filter((t) => t.protocolName === "Stake DAO").map((t) => t.address)
 
   const curvePoolsOfInterest = curvePools
     .filter((p: GaugeAPR) => allCurvePoolsAddresses.includes(p.address))
@@ -62,7 +62,7 @@ export const mapPoolsAndTasks = (curvePools: GaugeAPR[], convexPools: GaugeAPR[]
       const gaugeCrvApy = el.apr.current.total
       const gaugeFutureCrvApy = el.apr.projected.total
 
-      return { protocol: "StakeDAO", address, gaugeCrvApy: [gaugeCrvApy], gaugeFutureCrvApy: [gaugeFutureCrvApy] }
+      return { protocol: "Stake DAO", address, gaugeCrvApy: [gaugeCrvApy], gaugeFutureCrvApy: [gaugeFutureCrvApy] }
     })
 
   return curvePoolsOfInterest.concat(convexPoolsOfInterest).concat(stakeDaoPoolsOfInterest)

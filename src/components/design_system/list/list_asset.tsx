@@ -6,7 +6,7 @@ import { ExistingAsset } from "@/types"
 import BorderPanel from "../structure/border_panel"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { MarketConstants } from "@/components/products/usg/usg_type"
-import { cn } from "@/lib/utils"
+import { CustomAssetDisplay } from "./custom_asset_display"
 
 interface ListAssetProps {
   name: string
@@ -23,14 +23,7 @@ interface ListAssetProps {
 const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: ListAssetProps) => {
   return (
     <div className={`relative flex items-center gap-2 ${className}`}>
-      <div
-        className={cn(
-          "hidden md:flex",
-          token?.substring(0, token.indexOf(" ")) === "USDe" || token?.substring(0, token.indexOf(" ")) === "sUSDe" ? "px-2" : ""
-        )}
-      >
-        <TokenImage token={token} size={32} className="md:w-8 xl:w-16" />
-      </div>
+      <CustomAssetDisplay token={token} />
 
       <div className="flex flex-row items-center justify-start gap-1 md:flex-col md:items-start">
         <span className="text-sm font-semibold md:text-xl">{name}</span>
@@ -40,7 +33,7 @@ const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: Li
             <div className="ml-2 flex items-center justify-between gap-2 md:hidden">
               {marketData?.marketType?.includes("CRV") && <TokenImage token={"CRV"} size={12} />}
               {marketData?.marketType?.startsWith("Convex_") && <TokenImage token={"CVX"} size={12} />}
-
+              {marketData?.marketType?.startsWith("STAKEDAO") && <TokenImage token={"SDT"} size={12} />}
               {marketData?.marketType?.startsWith("Pendle") && <TokenImage token={"PENDLE"} size={12} />}
 
               <span
@@ -51,11 +44,8 @@ const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: Li
             </div>
             <div className="hidden items-center justify-between gap-2 md:flex">
               {marketData?.marketType?.includes("CRV") && <Protocol token="CRV" label="Curve" />}
-
               {marketData?.marketType?.startsWith("Convex_") && <Protocol token="CVX" label="Convex" />}
-
               {marketData?.marketType?.startsWith("STAKEDAO") && <Protocol token="SDT" label="StakeDAO" />}
-
               {marketData?.marketType?.startsWith("Pendle") && <Protocol token="PENDLE" label="Pendle" />}
 
               <BorderPanel

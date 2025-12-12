@@ -49,7 +49,7 @@ export const ReferralHeader = ({
           <span className="text-sm text-subtitle">Liquidity points</span>
           <div className="flex items-end justify-center gap-1">
             <span className="text-sm font-semibold text-white">{formatNumber(lpUserPoints?.lpTotalPoints, 0)} pts</span>
-            <span className="text-xs text-tonic">({formatNumber(lpUserPoints?.lpDailyRate, 0)}pts/day)</span>
+            <span className="bg-pink bg-clip-text text-xs font-semibold text-transparent">({formatNumber(lpUserPoints?.lpDailyRate, 0)}pts/day)</span>
           </div>
         </div>
       </div>

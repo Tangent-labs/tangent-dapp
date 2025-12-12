@@ -1,4 +1,4 @@
-import { ListHeaderData } from "@/types"
+import { ExistingAsset, ListHeaderData } from "@/types"
 import { UserTask } from "../../usg_type"
 import { Abi, Address, Hex } from "viem"
 import { executeChainViewUnique } from "@/services/service_rpc"
@@ -19,9 +19,8 @@ export const mapAirdropData = (tasks: UserTask[]) => {
 }
 
 export const lpListHeaders: ListHeaderData[] = [
-  { label: "Assets", key: "asset" },
+  { label: "Incentive", key: "incentive" },
   { label: "Protocol", key: "protocol" },
-  { label: "Action", key: "action" },
   { label: "Pts/Day/USD", key: "pointRate" },
   { label: "Owned", key: "balanceUsd" },
   { label: "Points", key: "points" },
@@ -38,4 +37,16 @@ export const voteListHeaders: ListHeaderData[] = [
 
 export async function getUserBalancesAndDebtForLpTasks(address: Address, markets: Address[], tokens: Address[]) {
   return await executeChainViewUnique<bigint[]>(TaskListUI.abi as Abi, TaskListUI.bytecode as Hex, [address, markets, tokens])
+}
+
+export const formatToken = (token: string): ExistingAsset => {
+  if (token.includes("LP USDe") || token.includes("PT USDe") || token.includes("YT USDe")) {
+    return "USDe" as ExistingAsset
+  }
+
+  if (token.includes("LP sUSDe") || token.includes("PT sUSDe") || token.includes("YT sUSDe")) {
+    return "sUSDe" as ExistingAsset
+  }
+
+  return token.replaceAll("_", "-") as ExistingAsset
 }

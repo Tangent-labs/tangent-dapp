@@ -47,10 +47,12 @@ export function transformHarvestOnChainData(harvesterInfos: HarvesterInfo[], ass
     const stakingInfo = Object.values(USGMarkets).find((i) => i.marketAddress === info.marketAddress)
     if (!stakingInfo) return
 
+    const displayName = (stakingInfo?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + stakingInfo?.marketName
+
     const rewards = getPricesFromTokenAmounts(info.tokenAmounts, assetInfos)
     const percentage = Number(info.harvesterFeePercentage) / 1000
     return {
-      asset: stakingInfo.marketName,
+      asset: displayName,
       percentage,
       harvesterFees: (rewards.data.totalDollar * percentage) / 100,
       rewards: rewards?.data,

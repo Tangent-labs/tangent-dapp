@@ -3,6 +3,7 @@
 import { UserTask } from "../../../usg_type"
 import { ExistingAsset, ListState } from "@/types"
 import { IconSortHeader } from "@/components/icons"
+import { formatToken } from "../usg_tasks_controller"
 import { TaskStatus } from "../../components/TaskStatus"
 import { formatNumber, formatDollar } from "@/lib/number_formatter"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -57,13 +58,12 @@ const computeProtocolDisplay = (protocol: string) => {
 const LpTaskListDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
     <div className="flex w-full items-center justify-evenly px-2">
-      <div className="flex w-2/12 items-center justify-center">{children?.at(0)} </div>
+      <div className="flex w-5/12 items-center justify-center">{children?.at(0)} </div>
       <div className="hidden w-2/12 items-center justify-center lg:flex">{children?.at(1)} </div>
-      <div className="flex w-3/12 items-center justify-center">{children?.at(2)} </div>
+      <div className="flex w-1/12 items-center justify-center">{children?.at(2)} </div>
       <div className="flex w-1/12 items-center justify-center">{children?.at(3)} </div>
       <div className="flex w-2/12 items-center justify-center">{children?.at(4)} </div>
       <div className="flex w-1/12 items-center justify-center">{children?.at(5)} </div>
-      <div className="flex w-1/12 items-center justify-center">{children?.at(6)} </div>
     </div>
   )
 }
@@ -125,17 +125,6 @@ export const LPTasksList = () => {
                 </button>
               </div>
             )}
-
-            {!!headers?.at(6)?.key && (
-              <div key={headers?.at(6)?.label} className="flex w-full items-center justify-center">
-                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(6)?.key))}>
-                  <span>{headers?.at(6)?.label} </span>
-                  <div className="text-row-tonic">
-                    <IconSortHeader sort={(listState?.sort?.key === headers?.at(6)?.key && listState?.sort?.direction) || "none"} />
-                  </div>
-                </button>
-              </div>
-            )}
           </LpTaskListDisposition>
         </div>
       </div>
@@ -146,30 +135,30 @@ export const LPTasksList = () => {
             <div
               onClick={() => window.open(task.url, "_blank")}
               key={task?.taskId}
-              className="mb-2 bg-overlay-panel px-2 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover lg:px-5"
+              className="mb-1 bg-overlay-panel px-2 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover lg:px-5"
             >
               <div className="hidden items-center justify-between md:flex">
-                <div className="flex w-2/12 items-center gap-2 xl:gap-4">
-                  <TokenImage token={task.asset as ExistingAsset} size={48} />
+                <div className="flex w-5/12 items-center gap-2 xl:gap-4">
+                  <TokenImage token={formatToken(task.asset)} className="w-12" size={48} />
 
-                  <span className="flex text-xl font-semibold">{task.asset}</span>
+                  <div className="flex h-full flex-col items-start justify-between gap-1">
+                    <span className="flex text-xl font-semibold">{task.asset.replaceAll("_", "-")}</span>
+
+                    <span className="flex items-center justify-center rounded-full border-tangent border-white border-opacity-20 bg-button-active px-3 py-0.5 text-xs">
+                      <span className="flex text-sm">{task.description}</span>
+                    </span>
+                  </div>
                 </div>
 
                 <div className="hidden w-2/12 justify-center lg:flex">
                   <div>{computeProtocolDisplay(task?.protocol)}</div>
                 </div>
 
-                <div className="flex w-3/12 justify-center">
-                  <div className="flex items-center justify-center rounded-[10px] bg-overlay-panel px-6 py-2 text-center text-xs backdrop-blur-[60px]">
-                    {task?.description}
-                  </div>
-                </div>
-
                 <div className="flex w-1/12 items-center justify-center">{(task?.pointRate * 86400).toFixed(0)}</div>
 
-                <div className="flex w-2/12 items-center justify-center">{formatDollar(task?.balanceUsd)}</div>
+                <div className="flex w-1/12 items-center justify-center">{formatDollar(task?.balanceUsd)}</div>
 
-                <div className="flex w-1/12 items-center justify-center">{formatNumber(task?.points, 0)}</div>
+                <div className="flex w-2/12 items-center justify-center">{formatNumber(task?.points, 0)}</div>
 
                 <div className="flex w-1/12 flex-col items-center justify-center">
                   <div className="flex h-12 w-12 flex-col items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
@@ -181,7 +170,7 @@ export const LPTasksList = () => {
               <div className="flex flex-col items-center justify-between md:hidden">
                 <div className="flex w-full items-start justify-between gap-1 border-b border-white border-opacity-20 pb-2">
                   <div className="flex items-center justify-center gap-2">
-                    <TokenImage token={task.asset as ExistingAsset} size={48} />
+                    <TokenImage token={task.asset as ExistingAsset} className="w-8" size={48} />
 
                     <span className="flex text-sm font-semibold">{task.asset}</span>
                   </div>

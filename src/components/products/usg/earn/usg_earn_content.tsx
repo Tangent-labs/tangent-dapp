@@ -98,7 +98,7 @@ export function USGMEarnListInner() {
       {displayRows?.map((item, index) => (
         <ListRow className={cn("my-1", isLoading ? "shimmer" : "")} key={index}>
           <div className="relative flex items-center gap-4">
-            <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-12 md:w-20" />
+            <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-12 lg:w-16" />
 
             <div className="flex flex-col leading-8">
               <span className="text-sm font-semibold md:text-xl">{item?.asset}</span>
@@ -110,19 +110,19 @@ export function USGMEarnListInner() {
 
           <div className="flex items-center justify-center rounded-full bg-overlay-panel px-3 py-2">
             {item.protocolName === "Curve" && (
-              <div className="flex items-center justify-center gap-2 px-3 py-0.5 text-sm">
+              <div className="flex items-center justify-center gap-2 px-2 py-0.5 text-xs lg:px-3 lg:text-sm">
                 <TokenImage token={"CRV"} size={16} />
                 <span>Curve</span>
               </div>
             )}
             {item.protocolName === "Convex" && (
-              <div className="flex items-center justify-center gap-2 px-3 py-0.5 text-sm">
+              <div className="flex items-center justify-center gap-2 px-2 py-0.5 text-xs lg:px-3 lg:text-sm">
                 <TokenImage token={"CVX"} size={16} />
                 <span>Convex</span>
               </div>
             )}
             {item.protocolName === "StakeDAO" && (
-              <div className="flex items-center justify-center gap-2 px-3 py-0.5 text-sm">
+              <div className="flex items-center justify-center gap-2 px-2 py-0.5 text-xs lg:px-3 lg:text-sm">
                 <TokenImage token={"SDT"} size={16} />
                 <span>Stake DAO</span>
               </div>

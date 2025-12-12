@@ -24,7 +24,7 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
       <WalletConnexionProvider>
         <USGProvider tokens={tokens}>
           <MenuBarFeature />
-          <div className="usg-container mx-auto flex min-h-[80vh] w-full bg-repeat px-4 md:px-8">
+          <div className="usg-container mx-auto flex min-h-[80vh] w-full bg-repeat px-2 md:px-8 lg:px-4">
             <div className="w-full">{children}</div>
           </div>
           <MobileMenuBarFeature />

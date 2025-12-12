@@ -9,6 +9,7 @@ import TokenImage from "../structure/token_image"
 import { FixedSizeList as List } from "react-window"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { DepositReceiveAsset } from "@/components/products/usg/usg_type"
+import { ExistingAsset } from "@/types"
 
 type OptionT = DepositReceiveAsset
 
@@ -24,6 +25,31 @@ interface AssetSelectionDialogProps<T extends OptionT> {
 }
 
 const ITEM_HEIGHT = 40
+
+const RenderAsset = <T extends OptionT>({ selected, placeholder }: { selected: T | null; placeholder: string }) => {
+  return (
+    <>
+      {selected ? (
+        <>
+          {selected?.symbol === "USG" ||
+          selected?.symbol === "ETH" ||
+          selected?.symbol === "TAN" ||
+          selected?.symbol.includes("SUSDe") ||
+          selected?.symbol.includes("USDe") ? (
+            <TokenImage token={selected.symbol as ExistingAsset} size={20} />
+          ) : selected?.logoURI ? (
+            <Image src={selected.logoURI} alt={selected.symbol} height={20} width={20} />
+          ) : (
+            <TokenImage token={selected.logo} size={32} />
+          )}
+          <span className="text-sm font-semibold">{selected.symbol}</span>
+        </>
+      ) : (
+        <span className="text-sm opacity-70">{placeholder}</span>
+      )}
+    </>
+  )
+}
 
 export default function AssetSelectionDialog<T extends OptionT>({
   options,
@@ -81,20 +107,7 @@ export default function AssetSelectionDialog<T extends OptionT>({
           style={{ borderWidth: 1.5 }}
         >
           <span className="flex items-center gap-2">
-            {selected ? (
-              <>
-                {selected?.symbol === "USG" || selected?.symbol === "ETH" || selected?.symbol === "TAN" ? (
-                  <TokenImage token={selected.symbol} size={20} />
-                ) : selected?.logoURI ? (
-                  <Image src={selected.logoURI} alt={selected.symbol} height={20} width={20} />
-                ) : (
-                  <TokenImage token={selected.logo} size={32} />
-                )}
-                <span className="truncate text-sm font-semibold">{selected.symbol}</span>
-              </>
-            ) : (
-              <span className="truncate text-sm opacity-70">{placeholder}</span>
-            )}
+            <RenderAsset selected={selected} placeholder={placeholder} />
           </span>
           <ChevronDown className="ml-1 h-4 w-4 opacity-80" />
         </button>

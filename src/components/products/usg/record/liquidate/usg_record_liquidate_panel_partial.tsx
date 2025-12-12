@@ -1,14 +1,13 @@
 "use client"
 
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
-import TokenImage from "@/components/design_system/structure/token_image"
-import Divider from "@/components/design_system/structure/divider"
-import { useUSGRecordContext } from "../usg_record_context"
 import { formatBigInt } from "@/lib/number_formatter"
-import BorderPanel from "@/components/design_system/structure/border_panel"
+import { useUSGRecordContext } from "../usg_record_context"
+import Divider from "@/components/design_system/structure/divider"
 import { useUSGLiquidateContext } from "./usg_record_liquidate_context"
+import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { USGStaticAssetSelector } from "@/components/design_system/structure/usg_static_selector"
+import { CustomCollatAssetDisplay } from "@/components/design_system/structure/custom_collat_asset_display"
 
 export default function USGLiquidatePanelPartial() {
   const { USGInfo, collateralInfo } = useUSGRecordContext()
@@ -32,15 +31,7 @@ export default function USGLiquidatePanelPartial() {
   } = useUSGLiquidateContext()
 
   const LiquidateAssetDisplay = () => {
-    return (
-      <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
-        <TokenImage token={collateralInfo?.logo} size={32} />
-
-        <span className="flex flex-col text-sm font-semibold">
-          <span>{collateralInfo.symbol}</span>
-        </span>
-      </BorderPanel>
-    )
+    return <CustomCollatAssetDisplay collateralInfo={collateralInfo} />
   }
 
   return (

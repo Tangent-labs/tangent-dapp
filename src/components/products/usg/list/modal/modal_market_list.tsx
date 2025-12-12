@@ -29,7 +29,7 @@ export default function USGModalMarketList() {
   const { displayRows, searchValue, setSearchValue, sortMarketList, marketType, setMarketType, protocol, setProtocol } = useUSGMaketListContext()
 
   return (
-    <div className="p-4">
+    <div className="p-0 lg:p-4">
       <div className="flex w-full flex-col-reverse items-center justify-between gap-2 md:flex-row">
         <div className="flex w-full flex-col items-center justify-center md:w-fit">
           <div className="mb-1 text-xs text-subtitle"> Search </div>

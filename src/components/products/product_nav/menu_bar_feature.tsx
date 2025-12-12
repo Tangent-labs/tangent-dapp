@@ -34,7 +34,7 @@ export default function MenuBarFeature() {
   return (
     <header className="sticky top-0 z-50 flex h-[80px] w-full font-gilroy backdrop-blur-[60px]">
       <div className="mx-auto flex w-full">
-        <div className="mx-4 flex w-full items-center justify-between">
+        <div className="mx-2 flex w-full items-center justify-between lg:mx-4">
           <div className="flex w-full items-center justify-start gap-3">
             <div onClick={() => router.push("/")} className="hidden cursor-pointer items-center gap-2 text-xl text-white md:flex">
               <IconTangent className="mb-2 w-32"></IconTangent>

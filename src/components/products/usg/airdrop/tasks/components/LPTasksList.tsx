@@ -48,8 +48,9 @@ const computeProtocolDisplay = (protocol: string) => {
   }
 
   return (
-    <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
+    <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-xs backdrop-blur-[60px] md:text-sm">
       <TokenImage token={token} size={16} />
+
       <span>{label}</span>
     </div>
   )
@@ -170,22 +171,12 @@ export const LPTasksList = () => {
               <div className="flex flex-col items-center justify-between md:hidden">
                 <div className="flex w-full items-start justify-between gap-1 border-b border-white border-opacity-20 pb-2">
                   <div className="flex items-center justify-center gap-2">
-                    <TokenImage token={task.asset as ExistingAsset} className="w-8" size={48} />
+                    <TokenImage token={formatToken(task.asset)} className="w-8" size={48} />
 
                     <span className="flex text-sm font-semibold">{task.asset}</span>
                   </div>
 
-                  <div className="flex flex-col items-center justify-start">
-                    <span className="text-xs text-subtitle">Pts/Day/USD</span>
-
-                    <span className="flex text-sm">{(task.pointRate * 86400).toFixed(0)}</span>
-                  </div>
-
-                  <div className="flex flex-col items-center justify-center">
-                    <span className="text-xs text-subtitle">Protocol</span>
-
-                    <span className="flex text-sm">{computeProtocolDisplay(task?.protocol)}</span>
-                  </div>
+                  <div className="flex flex-col items-center justify-center text-sm">{computeProtocolDisplay(task?.protocol)}</div>
 
                   <div className="flex flex-col items-center justify-center">
                     <span className="text-xs text-subtitle">Points</span>
@@ -193,7 +184,7 @@ export const LPTasksList = () => {
                     <span className="flex text-sm">{task.points}</span>
                   </div>
                 </div>
-                <div className="flex w-full items-center justify-center"> {task?.description}</div>
+                <div className="flex w-full items-center justify-center text-sm"> {task?.description}</div>
               </div>
             </div>
           ))}

@@ -107,7 +107,7 @@ export function USGModalMarketListInner() {
 
             <span className="hidden items-center justify-center gap-2 md:flex">
               <span className={cn("flex text-xs text-subtitle md:text-xl xl:hidden")}>{item.indicators[0]?.label}</span>
-              <span className="text-xs md:text-xl">{item.indicators[0]?.value}</span>
+              <span className="text-xs md:text-lg">{item.indicators[0]?.value}</span>
             </span>
 
             {item.userHasDeposited && (

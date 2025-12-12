@@ -121,7 +121,7 @@ export function USGMEarnListInner() {
                 <span>Convex</span>
               </div>
             )}
-            {item.protocolName === "StakeDAO" && (
+            {item.protocolName === "Stake DAO" && (
               <div className="flex items-center justify-center gap-2 px-2 py-0.5 text-xs lg:px-3 lg:text-sm">
                 <TokenImage token={"SDT"} size={16} />
                 <span>Stake DAO</span>

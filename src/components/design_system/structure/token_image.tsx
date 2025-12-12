@@ -39,7 +39,6 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
 
 export default function TokenImage({ token, size, ...props }: TokenImageProps) {
   const fallbackSrc = "/medias/fallback_token_image.webp"
-
   const tokenStartsWith = token?.substring(0, token.indexOf(" "))
 
   if (tokenStartsWith === "USDe") {

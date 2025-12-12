@@ -7,6 +7,7 @@ import { formatNumber } from "@/lib/number_formatter"
 import { formatAddress } from "@/lib/other_formatter"
 import { IconTrophy } from "@/components/icons"
 import { ToastComponent } from "@/components/design_system/toast"
+import { cn } from "@/lib/utils"
 
 type LeaderboardProps = {
   leaderboard: Array<{
@@ -14,9 +15,10 @@ type LeaderboardProps = {
     address: Address
     pts: number
   }>
+  feature?: string
 }
 
-export const Leaderboard = ({ leaderboard }: LeaderboardProps) => {
+export const Leaderboard = ({ leaderboard, feature }: LeaderboardProps) => {
   const { copy } = useClipboard()
 
   const onClickAddress = (address: string) => {
@@ -45,7 +47,11 @@ export const Leaderboard = ({ leaderboard }: LeaderboardProps) => {
             <div onClick={() => onClickAddress(el?.address)} className="flex w-5/12 cursor-pointer items-start justify-start font-semibold">
               {formatAddress(el.address, 4)}
             </div>
-            <div className="flex w-1/3 items-start justify-start bg-pink bg-clip-text font-semibold text-transparent">{formatNumber(el.pts, 0)}</div>
+            <div
+              className={cn("flex w-1/3 items-start justify-start bg-clip-text font-semibold text-transparent", feature === "vote" ? "bg-pink" : "bg-tonic")}
+            >
+              {formatNumber(el.pts, 0)}
+            </div>
           </div>
         ))}
     </>

@@ -31,16 +31,12 @@ const RenderAsset = <T extends OptionT>({ selected, placeholder }: { selected: T
     <>
       {selected ? (
         <>
-          {selected?.symbol === "USG" ||
-          selected?.symbol === "ETH" ||
-          selected?.symbol === "TAN" ||
-          selected?.symbol.includes("SUSDe") ||
-          selected?.symbol.includes("USDe") ? (
+          {!selected?.symbol.includes("-") ? (
             <TokenImage token={selected.symbol as ExistingAsset} size={20} />
           ) : selected?.logoURI ? (
             <Image src={selected.logoURI} alt={selected.symbol} height={20} width={20} />
           ) : (
-            <TokenImage token={selected.logo} size={32} />
+            <TokenImage token={selected.symbol as ExistingAsset} size={32} />
           )}
           <span className="text-sm font-semibold">{selected.symbol}</span>
         </>

@@ -251,7 +251,7 @@ export const USGDashboardContent = () => {
                         endAngle={0}
                         innerRadius={80}
                         cornerRadius={200}
-                        outerRadius={88}
+                        outerRadius={90}
                         paddingAngle={0}
                         dataKey="value"
                         stroke="none"

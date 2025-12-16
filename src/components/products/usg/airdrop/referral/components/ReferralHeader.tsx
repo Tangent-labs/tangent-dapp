@@ -12,6 +12,7 @@ type ReferralHeaderProps = {
   lpUserPoints: LpUserPoints
   voteUserPoints: VoteUserPoints
   isConnected: boolean
+  userBoost: number
 }
 
 export const ReferralHeader = ({
@@ -22,11 +23,12 @@ export const ReferralHeader = ({
   lpUserPoints,
   voteUserPoints,
   isConnected,
+  userBoost,
 }: ReferralHeaderProps) => {
   return (
     <div className="mt-4 flex w-full flex-col items-center justify-between gap-4 xl:flex-row">
-      <div className="flex w-full flex-col items-center justify-center gap-4 sm:flex-row xl:flex-1 xl:justify-start">
-        <div className="relative flex w-full max-w-none flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px] md:max-w-80">
+      <div className="flex h-full w-full flex-col items-center justify-stretch gap-4 sm:flex-row">
+        <div className="relative flex h-full w-full max-w-none flex-col items-center justify-center gap-3 rounded-[10px] bg-overlay-panel px-8 py-4 backdrop-blur-[60px] md:max-w-80">
           <div className="absolute -top-2 left-0 flex w-full">
             <div className="mx-4 flex w-full items-center justify-end rounded-full pl-3">
               <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Vote</div>
@@ -39,7 +41,7 @@ export const ReferralHeader = ({
           </div>
         </div>
 
-        <div className="relative flex w-full max-w-none flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px] md:max-w-80">
+        <div className="relative flex h-full w-full max-w-none flex-col items-center justify-center gap-3 rounded-[10px] bg-overlay-panel px-8 py-4 backdrop-blur-[60px] md:max-w-80">
           <div className="absolute -top-2 left-0 flex w-full">
             <div className="mx-4 flex w-full items-center justify-end rounded-full pl-3">
               <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Liquidity</div>
@@ -51,6 +53,11 @@ export const ReferralHeader = ({
             <span className="text-sm font-semibold text-white">{formatNumber(lpUserPoints?.lpTotalPoints, 0)} pts</span>
             <span className="bg-tonic bg-clip-text text-xs font-semibold text-transparent">({formatNumber(lpUserPoints?.lpDailyRate, 0)}pts/day)</span>
           </div>
+        </div>
+
+        <div className="flex w-fit min-w-32 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-4">
+          <span className="text-center text-sm text-subtitle">Your boost</span>
+          <span className="text-center text-xl font-semibold text-white">x{userBoost}</span>
         </div>
       </div>
 

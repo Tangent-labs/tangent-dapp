@@ -23,6 +23,16 @@ const OFFCHAIN_BOOST_INFOS: NumMap = {
 
 const ONCHAIN_BOOST_INFOS: NumMap = {
   STAKING: 1,
+  LLAMA_NFT_HOLDER: 0.5,
+  VECRV_HOLDER: 0.25,
+  VLCVX_HOLDER: 0.25,
+  VESDT_HOLDER: 0.25,
+  VEFXN_HOLDER: 0.25,
+  VEPENDLE_HOLDER: 0.25,
+  VEYFI_HOLDER: 0.25,
+  SINV_HOLDER: 0.25,
+  STRESOLV_HOLDER: 0.25,
+  STRSUP_HOLDER: 0.25,
 }
 
 type BoostMetadata = {
@@ -58,6 +68,46 @@ const BOOST_METADATA: Record<string, BoostMetadata> = {
   STAKING: {
     title: "Staking Boost",
     description: "Stake tokens to earn rewards and boost your power.",
+  },
+  LLAMA_NFT_HOLDER: {
+    title: "Llama NFT Holder",
+    description: "Llama NFT Holder",
+  },
+  VECRV_HOLDER: {
+    title: "veCRV Holder",
+    description: "veCRV Holder",
+  },
+  VLCVX_HOLDER: {
+    title: "vlCVX Holder",
+    description: "vlCVX Holder",
+  },
+  VESDT_HOLDER: {
+    title: "veSDT Holder",
+    description: "veSDT Holder",
+  },
+  VEFXN_HOLDER: {
+    title: "veFXN Holder",
+    description: "veFXN Holder",
+  },
+  VEPENDLE_HOLDER: {
+    title: "vePENDLE Holder",
+    description: "vePENDLE Holder",
+  },
+  VEYFI_HOLDER: {
+    title: "veYFI Holder",
+    description: "veYFI Holder",
+  },
+  SINV_HOLDER: {
+    title: "sINV Holder",
+    description: "sINV Holder",
+  },
+  STRESOLV_HOLDER: {
+    title: "stRESOLV Holder",
+    description: "stRESOLV Holder",
+  },
+  STRSUP_HOLDER: {
+    title: "stRSUP Holder",
+    description: "stRSUP Holder",
   },
 }
 

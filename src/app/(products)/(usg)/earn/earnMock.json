@@ -32,7 +32,7 @@
       "asset": "crvUSD-USDC",
       "address": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
       "link": "https://www.curve.finance/dex/ethereum/pools",
-      "protocolName": "StakeDAO",
+      "protocolName": "Stake DAO",
       "actionLabel": "Stake crvUSD-USDC",
       "bonusPts": 20
     }

@@ -53,11 +53,11 @@ export const UsgReferralCode = () => {
             <span className="bg-pink bg-clip-text text-lg font-semibold text-transparent"> {formatNumber(refereesPoints.votePoints, 0)} </span>
           </div>
           <div className="flex w-full flex-col items-center justify-center">
-            <span className="text-sm text-subtitle">Referees Liquidity points</span>
+            <span className="text-sm text-subtitle">Referees liquidity points</span>
             <span className="bg-tonic bg-clip-text text-lg font-semibold text-transparent"> {formatNumber(refereesPoints.lpPoints, 0)} </span>
           </div>
           <div className="flex w-full flex-col items-center justify-center">
-            <span className="text-sm text-subtitle">Your Referees</span>
+            <span className="text-sm text-subtitle">Your referees</span>
             <span className="text-lg font-semibold">{referralStatus?.friends}</span>
           </div>
 

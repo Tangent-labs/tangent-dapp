@@ -1,19 +1,19 @@
 "use client"
 
 import { useEffect } from "react"
-import { Switch } from "@/components/ui/switch"
-import USGMarketInfo from "./usg_market_info"
 import USGLoanDetail from "./usg_loan_detail"
+import { Switch } from "@/components/ui/switch"
 import { formatBigInt } from "@/lib/number_formatter"
+import { MarketDetails } from "./header/market_details"
 import { usePathname, useRouter } from "next/navigation"
 import USGRecordPageHeader from "./usg_record_page_header"
 import { useUSGRecordContext } from "./usg_record_context"
-import { MarketDetails } from "./header/market_details_header"
 import Divider from "@/components/design_system/structure/divider"
 import USGCollateralPrice from "./collat_price/collat_price_content"
 import USGPositionHistory from "./position_history/usg_position_history"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { CollateralPriceProvider } from "./collat_price/collat_price_context"
+import MarketDetailsParameters from "./header/components/market_details_parameters"
 import { FeatureTabs } from "@/components/design_system/inputs/feature_tabs/feature_tabs"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
@@ -101,9 +101,9 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     <>
       <USGRecordPageHeader />
 
-      <MarketDetails />
+      <MarketDetailsParameters />
 
-      <div className="my-4 flex flex-col gap-4">
+      <div className="flex flex-col gap-4">
         <div className="relative flex items-start justify-start gap-4 max-xl:flex-col">
           <div className="w-full rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
             <FeatureTabs
@@ -324,7 +324,9 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
         </Accordion>
 
         <Divider />
-        <USGMarketInfo />
+
+        <MarketDetails />
+
         <USGPositionHistory />
       </div>
     </>

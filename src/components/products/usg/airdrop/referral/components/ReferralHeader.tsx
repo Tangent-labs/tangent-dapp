@@ -27,8 +27,8 @@ export const ReferralHeader = ({
 }: ReferralHeaderProps) => {
   return (
     <div className="mt-4 flex w-full flex-col items-center justify-between gap-4 xl:flex-row">
-      <div className="flex h-full w-full flex-col items-center justify-stretch gap-4 sm:flex-row">
-        <div className="relative flex h-full w-full max-w-none flex-col items-center justify-center gap-3 rounded-[10px] bg-overlay-panel px-8 py-4 backdrop-blur-[60px] md:max-w-80">
+      <div className="flex w-full flex-col items-center justify-center gap-4 sm:flex-row xl:flex-1 xl:justify-start">
+        <div className="relative flex h-full w-full max-w-none flex-col items-center justify-center gap-3 rounded-[10px] bg-overlay-panel px-8 py-2 backdrop-blur-[60px] md:max-w-80">
           <div className="absolute -top-2 left-0 flex w-full">
             <div className="mx-4 flex w-full items-center justify-end rounded-full pl-3">
               <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Vote</div>
@@ -41,7 +41,7 @@ export const ReferralHeader = ({
           </div>
         </div>
 
-        <div className="relative flex h-full w-full max-w-none flex-col items-center justify-center gap-3 rounded-[10px] bg-overlay-panel px-8 py-4 backdrop-blur-[60px] md:max-w-80">
+        <div className="relative flex h-full w-full max-w-none flex-col items-center justify-center gap-3 rounded-[10px] bg-overlay-panel px-8 py-2 backdrop-blur-[60px] md:max-w-80">
           <div className="absolute -top-2 left-0 flex w-full">
             <div className="mx-4 flex w-full items-center justify-end rounded-full pl-3">
               <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Liquidity</div>
@@ -55,7 +55,7 @@ export const ReferralHeader = ({
           </div>
         </div>
 
-        <div className="flex w-fit min-w-32 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-4">
+        <div className="hidden w-fit min-w-32 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-4 py-2 lg:flex">
           <span className="text-center text-sm text-subtitle">Your boost</span>
           <span className="text-center text-xl font-semibold text-white">x{userBoost}</span>
         </div>
@@ -77,7 +77,7 @@ export const ReferralHeader = ({
             <Input
               disabled={!isConnected}
               placeholder="Type a referral code"
-              className="px-auto mx-auto flex max-w-36 items-center justify-center"
+              className="px-auto mx-auto flex w-full max-w-36 items-center justify-center"
               onChange={(e) => setReferralStatus({ ...referralStatus, referralCode: e?.target?.value })}
               value={referralStatus?.referralCode as string}
             />

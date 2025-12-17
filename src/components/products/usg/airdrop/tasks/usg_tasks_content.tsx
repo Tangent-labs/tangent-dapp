@@ -49,7 +49,7 @@ export default function UsgTasksContent() {
           </div>
 
           <div className="flex w-full flex-col items-center justify-between gap-4 md:flex-row">
-            <div className="relative flex h-full w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-2 py-2 backdrop-blur-[60px]">
+            <div className="relative flex h-full w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-2 backdrop-blur-[60px]">
               <div className="absolute -top-2 left-0 flex w-full">
                 <div className="mx-4 flex w-full items-center justify-end rounded-full pl-3">
                   <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Vote</div>
@@ -62,7 +62,7 @@ export default function UsgTasksContent() {
               </div>
             </div>
 
-            <div className="relative flex h-full w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-2 py-2 backdrop-blur-[60px]">
+            <div className="relative flex h-full w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-2 backdrop-blur-[60px]">
               <div className="absolute -top-2 left-0 flex w-full">
                 <div className="mx-4 flex w-full items-center justify-end rounded-full pl-3">
                   <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Liquidity</div>
@@ -76,7 +76,7 @@ export default function UsgTasksContent() {
               </div>
             </div>
 
-            <div className="flex w-fit min-w-32 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-4">
+            <div className="hidden w-fit min-w-32 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-4 py-2 lg:flex">
               <span className="text-center text-sm text-subtitle">Your boost</span>
               <span className="text-center text-xl font-semibold text-white">x{userBoost}</span>
             </div>

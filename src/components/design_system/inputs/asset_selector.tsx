@@ -34,7 +34,13 @@ const AssetSelectTemplate = (option: {
           {option.symbol === "ETH" ? (
             <TokenImage token={option.logo} size={32} />
           ) : (
-            <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} /> : <TokenImage token={option.logo} size={32} />}</>
+            <>
+              {!!option.logoURI && option.logoURI !== "" ? (
+                <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} />
+              ) : (
+                <TokenImage token={option.logo} size={32} />
+              )}
+            </>
           )}
         </>
 

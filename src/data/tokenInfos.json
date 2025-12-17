@@ -1,150 +1,92 @@
 {
   "USDC": {
-    "info": "USDC is a fully-reserved stablecoin issued by Circle. It is pegged 1:1 to the US dollar and backed by cash and short-term U.S. Treasury bonds held in regulated financial institutions. Monthly attestations by Grant Thornton confirm reserves.",
-    "risk": "Very low risk – fully collateralized, audited, and regulated. Subject to Circle's operational and compliance risks."
+    "info": "USDC is a fiat-redeemable stablecoin issued by Circle. USDC is backed by short-term U.S. Treasury bonds and other cash-equivalent reserves.",
+    "risk": "Very low risk – fully collateralized, audited, and regulated.",
+    "link": "https://www.circle.com/transparency"
   },
-  "CVX": {
-    "info": "CVX is the governance and revenue-sharing token of Convex Finance, a yield optimizer on Curve. Holders earn a share of Curve trading fees and boosted rewards by staking cvxCRV or locking CVX.",
-    "risk": "Moderate risk – tied to Curve ecosystem health, smart contract risk in Convex, and volatility of CRV price."
+  "USDT": {
+    "info": "USDT is a fiat-redeemable stablecoin issued by Tether. USDT is backed by short-term U.S. Treasury bonds, cash-equivalent reserves, precious metals, Bitcoin, and secured loans.",
+    "risk": "Very low risk – fully collateralized, audited, and regulated.",
+    "link": "https://tether.to/en/transparency/?tab=reports"
   },
-  "CRV": {
-    "info": "CRV is the native token of Curve Finance, a decentralized exchange optimized for stablecoin swaps. veCRV holders vote on gauge weights and earn trading fees and boosted rewards.",
-    "risk": "Moderate risk – governance token with price volatility. Exposed to Curve protocol usage and potential smart contract exploits."
+  "frxUSD": {
+    "info": "frxUSD is a fiat-redeemable stablecoin issued by Frax. frxUSD is backed by tokenized short-term U.S. Treasury bonds.",
+    "risk": "Very low risk – fully collateralized, audited, and regulated.",
+    "link": "https://frax.com/frxUSD"
   },
-  "FXN": {
-    "info": "FXN is the governance token of Aladdin DAO and fxProtocol, used in concentrated liquidity and leveraged yield strategies on Curve and Convex.",
-    "risk": "High risk – complex DeFi strategy token with smart contract, liquidation, and oracle risks."
+  "PYUSD": {
+    "info": "PYUSD is a fiat-redeemable stablecoin issued by Paypal. PYUSD is backed by short-term U.S. Treasury bonds and other cash-equivalent reserves.",
+    "risk": "Very low risk – fully collateralized, audited, and regulated.",
+    "link": "https://www.paypal.com/us/digital-wallet/manage-money/crypto/pyusd"
   },
-  "BAL": {
-    "info": "BAL is the governance token of Balancer, a programmable liquidity protocol. It is distributed to liquidity providers and used for protocol governance.",
-    "risk": "Moderate risk – depends on Balancer pool usage and smart contract integrity. Price volatility."
+  "RLUSD": {
+    "info": "RLUSD is a fiat-redeemable stablecoin issued by Paypal. RLUSD is backed by cash and other cash-equivalent reserves.",
+    "risk": "Very low risk – fully collateralized, audited, and regulated.",
+    "link": "https://ripple.com/solutions/stablecoin/"
   },
-  "PENDLE": {
-    "info": "PENDLE is the governance token of Pendle Finance, a protocol that tokenizes and trades future yield. PT (Principal Token) and YT (Yield Token) allow separated trading of principal and yield.",
-    "risk": "High risk – complex yield tokenization, smart contract risk, and dependency on underlying yield-bearing assets."
-  },
-  "CRVUSD": {
-    "info": "crvUSD is Curve's over-collateralized stablecoin, minted by depositing crypto assets (e.g., WBTC, WETH) into LLAMMA lending markets. It uses a unique peg-stability mechanism.",
-    "risk": "Moderate risk – backed by volatile crypto. Peg stability depends on liquidation mechanism and market conditions."
-  },
-  "CVGCVX": {
-    "info": "cvgCVX is a Converge-wrapped version of cvxCRV, used within the Converge ecosystem for enhanced yield aggregation and voting power concentration.",
-    "risk": "High risk – wrapped token with additional smart contract layer. Depends on Converge protocol security."
-  },
-  "CVGSDT": {
-    "info": "cvgSDT is a Converge-wrapped StakeDAO SDT LP token, used for concentrated liquidity and yield optimization within the Converge protocol.",
-    "risk": "High risk – multi-layer wrapping, smart contract risk, and dependency on StakeDAO and Curve."
-  },
-  "ETH": {
-    "info": "ETH is the native cryptocurrency of Ethereum, used for transaction fees, staking, and as a store of value. It powers the largest smart contract platform.",
-    "risk": "High volatility – market risk. No counterparty risk as native asset."
-  },
-  "SDT": {
-    "info": "SDT is the governance token of StakeDAO, a multi-chain liquid locker and yield aggregator. It captures value from locked assets across protocols.",
-    "risk": "Moderate risk – depends on locked asset performance and StakeDAO smart contracts."
-  },
-  "WETH": {
-    "info": "WETH is an ERC-20 wrapper for ETH, enabling it to be used in DeFi protocols that require standard token interfaces (e.g., Uniswap, Aave).",
-    "risk": "Same as ETH – price volatility. Minimal additional risk from wrapping contract (canonical)."
-  },
-  "wstETH": {
-    "info": "wstETH is Lido's wrapped staked ETH. It accrues staking rewards automatically and is widely used in DeFi as a liquid staking derivative.",
-    "risk": "Moderate risk – staking rewards + smart contract risk (Lido). No slashing risk passed to holder."
-  },
-  "TRICRV": {
-    "info": "3CRV is the LP token for Curve's DAI+USDC+USDT pool (3pool88). One of the most liquid and battle-tested stablecoin pools in DeFi.",
-    "risk": "Low risk – highly liquid, stablecoin-backed. Minor depeg and smart contract risk."
-  },
-  "crvUSD-USDC": {
-    "info": "Curve LP token for the crvUSD/USDC pool. Provides liquidity for Curve's native stablecoin paired with the most trusted stablecoin.",
-    "risk": "Low risk – stablecoin pair. Minimal IL due to pegged assets. Smart contract risk."
-  },
-  "crvUSD-USDT": {
-    "info": "Curve LP token for crvUSD/USDT. High liquidity pool enabling efficient swaps between Curve's stablecoin and Tether.",
-    "risk": "Low risk – stablecoin pair. Minor counterparty risk from USDT. Smart contract risk."
-  },
-  "USDC-fxUSD": {
-    "info": "Curve pool pairing USDC with fxUSD (from fxProtocol). Used in advanced yield and basis trading strategies.",
-    "risk": "Moderate risk – fxUSD introduces additional protocol risk. Potential for temporary depegs."
-  },
-  "USDC-USDT": {
-    "info": "Classic Curve stablecoin pool (2pool). Extremely high liquidity and low slippage for USDC↔USDT swaps.",
-    "risk": "Very low risk – both assets are top-tier stablecoins. Minimal IL and smart contract risk."
-  },
-  "frxUSD-USDe": {
-    "info": "Frax Finance pool pairing frxUSD (Frax v3) with USDe (Ethena synthetic dollar). Used in advanced stablecoin arbitrage.",
-    "risk": "Moderate risk – USDe is synthetic and backed by delta-neutral hedging. frxUSD has FRAX governance risk."
-  },
-  "frxETH-WETH": {
-    "info": "Frax ETH pool pairing frxETH (Frax's liquid staked ETH) with WETH. Enables efficient ETH exposure swaps.",
-    "risk": "Moderate risk – frxETH has staking + Frax smart contract risk. Price tracks ETH."
-  },
-  "pxETH-stETH": {
-    "info": "Pendle pool for pxETH (Pendle’s ETH yield token) and stETH. Used for yield trading and leverage.",
-    "risk": "High risk – complex yield tokenization. Smart contract, oracle, and liquidation risks."
-  },
-  "pxETH-WETH": {
-    "info": "Pendle ETH pool pairing pxETH with WETH. Enables trading of future yield on ETH staking.",
-    "risk": "High risk – yield tokenization, smart contract, and market volatility."
-  },
-  "cbBTC-WBTC": {
-    "info": "Curve pool pairing Coinbase Wrapped Bitcoin (cbBTC) with Wrapped Bitcoin (WBTC). Enables efficient BTC exposure swaps.",
-    "risk": "Moderate risk – both are wrapped BTC. cbBTC introduces Coinbase custody risk."
-  },
-  "crvUSD-ETH-CRV": {
-    "info": "Curve tricrypto pool with crvUSD, WETH, and CRV. Higher yield but increased volatility and impermanent loss.",
-    "risk": "High risk – volatile assets (ETH, CRV). Significant IL potential."
-  },
-  "GHO-cbBTC-WETH": {
-    "info": "Curve pool with Aave's GHO stablecoin, cbBTC, and WETH. Advanced pool for cross-asset liquidity.",
-    "risk": "High risk – GHO borrowing risk, BTC volatility, and IL across volatile assets."
-  },
-  "USDC-WBTC-WETH": {
-    "info": "Curve tricrypto pool (crypto2) with USDC, WBTC, WETH. High liquidity for crypto-stable swaps.",
-    "risk": "High risk – volatile assets (WBTC, WETH). Significant impermanent loss potential."
-  },
-  "USDT-WBTC-WETH": {
-    "info": "Curve pool with USDT, WBTC, WETH. Similar to crypto2 but with USDT as the stable leg.",
-    "risk": "High risk – USDT counterparty + BTC/ETH volatility. High IL risk."
-  },
-  "USR-RLP": {
-    "info": "USR-RLP is a liquidity provider token from a custom stablecoin pool (likely internal or partner protocol). Represents share in a stable pool.",
-    "risk": "Unknown risk – depends on underlying assets and pool design. Assume moderate until audited."
-  },
-  "CVX-ETH": {
-    "info": "Curve pool pairing CVX and WETH. Used for CVX/ETH basis trading and yield optimization.",
-    "risk": "High risk – both assets are volatile governance tokens. High IL and smart contract risk."
-  },
-  "sUSG": {
-    "info": "sUSG is a staked version of USG, likely from a yield-bearing stablecoin vault. Accrues rewards over time.",
-    "risk": "Moderate risk – depends on USG peg and vault strategy. Smart contract risk."
-  },
-  "USG": {
-    "info": "USG is a yield-bearing stablecoin (possibly from a partner protocol). Designed to maintain $1 peg while generating yield.",
-    "risk": "Moderate risk – stablecoin with yield mechanism. Peg stability and collateral risk apply."
-  },
-  "wcrvUSD": {
-    "info": "wcrvUSD is a wrapped version of crvUSD, likely for use in external protocols requiring ERC-20 compliance or modified behavior.",
-    "risk": "Same as crvUSD – moderate. Additional wrapper contract risk."
-  },
-  "scrvUSD": {
-    "info": "scrvUSD is a staked or locked version of crvUSD, possibly for governance or boosted yield within a partner protocol.",
-    "risk": "Moderate risk – depends on locking mechanism and reward source."
+  "USDe": {
+    "info": "USDe is a synthetic stablecoin issued by Ethena, partly redeemable for USDC, and USDT. USDe is backed with crypto assets and corresponding short futures positions.",
+    "risk": "Moderate risk – subject to funding rates fluctuations, liquidation, custodial, and management risks.",
+    "link": "https://docs.ethena.fi/"
   },
   "crvUSD": {
-    "info": "crvUSD is Curve's native over-collateralized stablecoin. Minted via LLAMMA with crypto collateral (WBTC, WETH, etc.).",
-    "risk": "Moderate risk – backed by volatile assets. Peg maintained via soft liquidations."
+    "info": "crvUSD is a CDP stablecoin issued by Curve. crvUSD is overcollateralized with crypto assets.",
+    "risk": "Moderate risk – subject to smart contract risk, and price fluctuations due to market's volatility.",
+    "link": "https://resources.curve.finance/crvusd/overview/"
   },
-  "sTAN": {
-    "info": "sTAN is the staked version of TAN, likely from a liquid staking or vault protocol. Automatically compounds rewards.",
-    "risk": "Moderate risk – depends on TAN's underlying asset and staking contract."
+  "GHO": {
+    "info": "GHO is a CDP stablecoin issued by AAVE. GHO is overcollateralized with crypto assets.",
+    "risk": "Moderate risk – subject to smart contract risk, and price fluctuations due to market's volatility.",
+    "link": "https://aave.com/gho"
   },
-  "TAN": {
-    "info": "TAN is a yield-bearing token, possibly from a custom vault or strategy. Represents tokenized position in a yield farm.",
-    "risk": "High risk – depends on strategy. Assume smart contract and impermanent loss risk."
+  "fxUSD": {
+    "info": "fxUSD is a CDP stablecoin issued by Protocol f(x). fxUSD is overcollateralized with crypto assets.",
+    "risk": "Moderate risk – subject to smart contract risk, and price fluctuations due to market's volatility.",
+    "link": "https://fx.aladdin.club/"
   },
-  "vsTAN": {
-    "info": "vsTAN is a vote-escrowed or locked version of TAN, used for governance and boosted rewards in its ecosystem.",
-    "risk": "Moderate to high risk – illiquid during lock period. Depends on protocol health."
+  "reUSD": {
+    "info": "reUSD is a CDP stablecoin issued by Resupply. REUSD is overcollateralized with crvUSD and frxUSD deposited in lending markets.",
+    "risk": "Moderate risk – subject to smart contract risk, and price fluctuations due to market's volatility.",
+    "link": "https://resupply.fi/"
+  },
+  "USDS": {
+    "info": "USDS is a stablecoin issued by Sky. USDS is collateralized with crypto assets and RWAs.",
+    "risk": "Moderate risk – subject to smart contract risk, price fluctuations due to market's volatility, and management.",
+    "link": "https://sky.money/"
+  },
+  "msUSD": {
+    "info": "msUSD is a CDP stablecoin issued by Metronome. msUSD is overcollateralized with crypto assets.",
+    "risk": "Moderate risk – subject to smart contract risk, and price fluctuations due to market's volatility.",
+    "link": "https://metronome.io/"
+  },
+  "WETH": {
+    "info": "WETH is ETH wrapped as en ERC20.",
+    "risk": "Very low risk.",
+    "link": "https://ethereum.org/wrapped-eth/"
+  },
+  "ETH+": {
+    "info": "ETH+ is an LST-aggregator issued by Reserve. ETH+ is backed by other ETH LSTs. ",
+    "risk": "Moderate risk – subject to smart contract risk.",
+    "link": "https://app.reserve.org/ethereum/token/0xe72b141df173b999ae7c1adcbf60cc9833ce56a8/overview"
+  },
+  "tBTC": {
+    "info": "tBTC is a tokenized version of BTC on Ethereum issued by Threshold Network. tBTC is baked 1:1 by BTC. ",
+    "risk": "Moderate risk – subject to smart contract risk.",
+    "link": "https://www.threshold.network/"
+  },
+  "cbBTC": {
+    "info": "cbBTC is a tokenized version of BTC on Ethereum issued by Coinbase. tBTC is baked 1:1 by BTC. ",
+    "risk": "Moderate risk – subject to smart contract risk, and management.",
+    "link": "https://www.coinbase.com/fr-fr/cbbtc"
+  },
+  "PAXG": {
+    "info": "PAXG is a tokenized version of an ounce of Gold on Ethereum issued by Paxos. Each PAXG is baked by a physical ounce of Gold. ",
+    "risk": "Moderate risk – subject to smart contract risk, and management.",
+    "link": "https://www.paxos.com/pax-gold"
+  },
+  "XAUt": {
+    "info": "XAUt is a tokenized version of an ounce of Gold on Ethereum issued by Tether. Each XAUt is baked by a physical ounce of Gold. ",
+    "risk": "Moderate risk – subject to smart contract risk, and management.",
+    "link": "https://gold.tether.to/"
   }
 }

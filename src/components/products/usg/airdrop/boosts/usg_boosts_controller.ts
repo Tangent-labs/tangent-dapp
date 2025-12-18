@@ -22,17 +22,16 @@ const OFFCHAIN_BOOST_INFOS: NumMap = {
 }
 
 const ONCHAIN_BOOST_INFOS: NumMap = {
-  STAKING: 1,
-  LLAMA_NFT_HOLDER: 0.5,
-  VECRV_HOLDER: 0.25,
-  VLCVX_HOLDER: 0.25,
-  VESDT_HOLDER: 0.25,
-  VEFXN_HOLDER: 0.25,
-  VEPENDLE_HOLDER: 0.25,
-  VEYFI_HOLDER: 0.25,
-  SINV_HOLDER: 0.25,
-  STRESOLV_HOLDER: 0.25,
-  STRSUP_HOLDER: 0.25,
+  LLAMA_NFT: 0.5,
+  VECRV: 0.25,
+  VLCVX: 0.25,
+  VESDT: 0.25,
+  VEFXN: 0.25,
+  VEPENDLE: 0.25,
+  VEYFI: 0.25,
+  SINV: 0.25,
+  STRESOLV: 0.25,
+  STRSUP: 0.25,
 }
 
 type BoostMetadata = {
@@ -47,11 +46,11 @@ const BOOST_METADATA: Record<string, BoostMetadata> = {
   },
   LP_DEALS: {
     title: "LP Deals Boost",
-    description: "Access exclusive liquidity provider deals.",
+    description: "You are a member of our private lp deals.",
   },
   CVG_PEPE: {
     title: "Pepe Booster",
-    description: "Hold CVG Pepe assets to receive this boost.",
+    description: "Hold a CVG Pepe NFT to receive this boost.",
   },
   DEWHALE_MEMBERS: {
     title: "Dewhales Boost",
@@ -63,49 +62,45 @@ const BOOST_METADATA: Record<string, BoostMetadata> = {
   },
   ONBOARDED: {
     title: "Onboarded User",
-    description: "You used a referral code.",
+    description: "Get a referral code.",
   },
-  STAKING: {
-    title: "Staking Boost",
-    description: "Stake tokens to earn rewards and boost your power.",
-  },
-  LLAMA_NFT_HOLDER: {
+  LLAMA_NFT: {
     title: "Llama NFT Holder",
     description: "Llama NFT Holder",
   },
-  VECRV_HOLDER: {
+  VECRV: {
     title: "veCRV Holder",
     description: "veCRV Holder",
   },
-  VLCVX_HOLDER: {
+  VLCVX: {
     title: "vlCVX Holder",
     description: "vlCVX Holder",
   },
-  VESDT_HOLDER: {
+  VESDT: {
     title: "veSDT Holder",
     description: "veSDT Holder",
   },
-  VEFXN_HOLDER: {
+  VEFXN: {
     title: "veFXN Holder",
     description: "veFXN Holder",
   },
-  VEPENDLE_HOLDER: {
+  VEPENDLE: {
     title: "vePENDLE Holder",
     description: "vePENDLE Holder",
   },
-  VEYFI_HOLDER: {
+  VEYFI: {
     title: "veYFI Holder",
     description: "veYFI Holder",
   },
-  SINV_HOLDER: {
+  SINV: {
     title: "sINV Holder",
     description: "sINV Holder",
   },
-  STRESOLV_HOLDER: {
+  STRESOLV: {
     title: "stRESOLV Holder",
     description: "stRESOLV Holder",
   },
-  STRSUP_HOLDER: {
+  STRSUP: {
     title: "stRSUP Holder",
     description: "stRSUP Holder",
   },

@@ -200,6 +200,7 @@ export default function PerformanceHistoryPanel({
                 originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature)}
                 label="30 days projection"
                 newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature, weiValue)}
+                logo="sUSG"
               />
 
               <EvolutionBox
@@ -207,6 +208,7 @@ export default function PerformanceHistoryPanel({
                 originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature)}
                 label="1 year projection"
                 newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature, weiValue)}
+                logo="sUSG"
               />
             </div>
           </>

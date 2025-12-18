@@ -5,6 +5,7 @@ import { ExistingAsset, ListState } from "@/types"
 import { IconSortHeader } from "@/components/icons"
 import { formatToken } from "../usg_tasks_controller"
 import { TaskStatus } from "../../components/TaskStatus"
+import { LpTaskCustomAssetDisplay } from "./custom_token_display"
 import { formatNumber, formatDollar } from "@/lib/number_formatter"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { useListContext } from "@/components/design_system/list/list_context"
@@ -140,7 +141,7 @@ export const LPTasksList = () => {
             >
               <div className="hidden items-center justify-between md:flex">
                 <div className="flex w-5/12 items-center gap-2 xl:gap-4">
-                  <TokenImage token={formatToken(task.asset)} className="w-12" size={48} />
+                  <LpTaskCustomAssetDisplay token={task.asset.replaceAll("_", "-") as ExistingAsset} />
 
                   <div className="flex h-full flex-col items-start justify-between gap-1">
                     <span className="flex text-xl font-semibold">{task.asset.replaceAll("_", "-")}</span>

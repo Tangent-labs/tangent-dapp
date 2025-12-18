@@ -23,7 +23,7 @@ export const UsgReferralCode = () => {
 
   const { isLoading, lpLeaderboard, voteLeaderboard, godsonsLeaderboard } = useUsgReferralCodeContext()
 
-  const { setReferralStatus, referralStatus, signMessage, airdropDataIsLoading, generateReferralCode } = useUsgAirdropContext()
+  const { setReferralStatus, referralStatus, signMessage, airdropDataIsLoading, generateReferralCode, userBoost } = useUsgAirdropContext()
 
   return (
     <div className="flex w-full flex-col items-center justify-center">
@@ -35,11 +35,12 @@ export const UsgReferralCode = () => {
         lpUserPoints={lpUserPoints}
         voteUserPoints={voteUserPoints}
         isConnected={isConnected}
+        userBoost={userBoost}
       />
 
       <div
         className={cn(
-          "mb-2 mt-6 flex w-full flex-col items-center justify-center rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]",
+          "mt-4 flex w-full flex-col items-center justify-center rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]",
           !!airdropDataIsLoading && currentAddress ? "shimmer" : ""
         )}
       >
@@ -53,11 +54,11 @@ export const UsgReferralCode = () => {
             <span className="bg-pink bg-clip-text text-lg font-semibold text-transparent"> {formatNumber(refereesPoints.votePoints, 0)} </span>
           </div>
           <div className="flex w-full flex-col items-center justify-center">
-            <span className="text-sm text-subtitle">Referees Liquidity points</span>
+            <span className="text-sm text-subtitle">Referees liquidity points</span>
             <span className="bg-tonic bg-clip-text text-lg font-semibold text-transparent"> {formatNumber(refereesPoints.lpPoints, 0)} </span>
           </div>
           <div className="flex w-full flex-col items-center justify-center">
-            <span className="text-sm text-subtitle">Your Referees</span>
+            <span className="text-sm text-subtitle">Your referees</span>
             <span className="text-lg font-semibold">{referralStatus?.friends}</span>
           </div>
 
@@ -91,7 +92,7 @@ export const UsgReferralCode = () => {
         </div>
       </div>
 
-      <div className="my-2 hidden w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px] xl:flex">
+      <div className="mt-4 hidden w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px] xl:flex">
         <div className="mr-auto text-lg font-semibold text-white">Airdrop referral</div>
 
         <Divider className="h-0.5 w-full bg-white/10" />
@@ -102,7 +103,7 @@ export const UsgReferralCode = () => {
 
             <span className="text-lg font-semibold">Share link</span>
             <span className="mt-2 text-center text-sm text-subtitle">
-              Connect a wallet to generate a referral link. Invite your friends to register via your referral link.
+              Connect a wallet. Generate a referral link. Invite your friends to register via your referral link.
             </span>
           </div>
 
@@ -124,7 +125,7 @@ export const UsgReferralCode = () => {
         </div>
       </div>
 
-      <div className="mb-4 mt-2 flex w-full flex-wrap items-start justify-between gap-4 xl:flex-row xl:flex-nowrap">
+      <div className="mt-4 flex w-full flex-wrap items-start justify-between gap-4 xl:flex-row xl:flex-nowrap">
         <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
           <div className="mr-auto text-lg font-semibold text-white">Liquidity points leaderboard</div>
 

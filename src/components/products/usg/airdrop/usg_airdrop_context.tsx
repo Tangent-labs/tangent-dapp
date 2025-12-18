@@ -3,7 +3,7 @@
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { generateCode, getReferralStatus, validateReferralCode } from "../client_api"
+import { generateCode, getReferralStatus, getUserBoost, validateReferralCode } from "../client_api"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { useRootContext } from "../../root/root_context"
 
@@ -25,6 +25,7 @@ type UsgAirdropContextValues = {
   generateReferralCode: () => void
   referralStatus: UserStatus
   setReferralStatus: (arg: UserStatus) => void
+  userBoost: number
 }
 
 export const UsgAirdropContext = createContext<UsgAirdropContextValues | undefined>(undefined)
@@ -38,8 +39,14 @@ export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
 
   const [referralStatus, setReferralStatus] = useState<UserStatus>({ generatedCode: null, hasUsedCode: false, referralCode: "", friends: 0 })
 
+  const [userBoost, setUserBoost] = useState<number>(1)
+
   useEffect(() => {
     if (currentAddress) {
+      getUserBoost(currentAddress).then((b) => {
+        setUserBoost(b)
+      })
+
       getReferralStatus(currentAddress).then((status) => {
         if (status) {
           setReferralStatus((prev) => ({
@@ -110,6 +117,7 @@ export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
     generateReferralCode,
     referralStatus,
     setReferralStatus,
+    userBoost,
   }
 
   return <UsgAirdropContext.Provider value={contextValue}>{children}</UsgAirdropContext.Provider>

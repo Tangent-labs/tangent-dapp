@@ -5,6 +5,7 @@ import { useUSGContext } from "../../usg_context"
 import { formatNumber } from "@/lib/number_formatter"
 import { SlidingTabs } from "./components/SlidingTabs"
 import { useUsgTasksContext } from "./usg_tasks_context"
+import { useUsgAirdropContext } from "../usg_airdrop_context"
 import { Button } from "@/components/design_system/inputs/button"
 import { lpListState, LPTasksList } from "./components/LPTasksList"
 import { lpListHeaders, voteListHeaders } from "./usg_tasks_controller"
@@ -13,11 +14,13 @@ import { ListProvider } from "@/components/design_system/list/list_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export default function UsgTasksContent() {
+  const { userBoost } = useUsgAirdropContext()
+
+  const { lpUserPoints, voteUserPoints } = useUSGContext()
+
   const { isConnected, connect } = useWalletConnexionContext()
 
   const { lpTasks, voteTasks, selectedFeature, sortLpTasks, sortVoteTasks, setSelectedFeature } = useUsgTasksContext()
-
-  const { lpUserPoints, voteUserPoints } = useUSGContext()
 
   return (
     <div className="flex w-full flex-col items-center justify-between">
@@ -46,9 +49,9 @@ export default function UsgTasksContent() {
           </div>
 
           <div className="flex w-full flex-col items-center justify-between gap-4 md:flex-row">
-            <div className="relative flex w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
+            <div className="relative flex h-full w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-2 backdrop-blur-[60px]">
               <div className="absolute -top-2 left-0 flex w-full">
-                <div className="mx-4 flex w-full items-center justify-end rounded-full pl-3">
+                <div className="mx-4 flex w-full items-center justify-center rounded-full">
                   <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Vote</div>
                 </div>
               </div>
@@ -59,9 +62,9 @@ export default function UsgTasksContent() {
               </div>
             </div>
 
-            <div className="relative flex w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px]">
+            <div className="relative flex h-full w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-2 backdrop-blur-[60px]">
               <div className="absolute -top-2 left-0 flex w-full">
-                <div className="mx-4 flex w-full items-center justify-end rounded-full pl-3">
+                <div className="mx-4 flex w-full items-center justify-center rounded-full">
                   <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Liquidity</div>
                 </div>
               </div>
@@ -71,6 +74,11 @@ export default function UsgTasksContent() {
                 <span className="text-sm font-semibold text-white">{formatNumber(lpUserPoints?.lpTotalPoints, 0)} pts</span>
                 <span className="bg-tonic bg-clip-text text-xs font-semibold text-transparent">({formatNumber(lpUserPoints?.lpDailyRate, 0)}pts/day)</span>
               </div>
+            </div>
+
+            <div className="hidden w-fit min-w-32 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-4 py-2 lg:flex">
+              <span className="text-center text-sm text-subtitle">Your boost</span>
+              <span className="text-center text-xl font-semibold text-white">x{userBoost}</span>
             </div>
           </div>
         </div>

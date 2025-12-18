@@ -12,6 +12,7 @@ type ReferralHeaderProps = {
   lpUserPoints: LpUserPoints
   voteUserPoints: VoteUserPoints
   isConnected: boolean
+  userBoost: number
 }
 
 export const ReferralHeader = ({
@@ -22,13 +23,14 @@ export const ReferralHeader = ({
   lpUserPoints,
   voteUserPoints,
   isConnected,
+  userBoost,
 }: ReferralHeaderProps) => {
   return (
     <div className="mt-4 flex w-full flex-col items-center justify-between gap-4 xl:flex-row">
       <div className="flex w-full flex-col items-center justify-center gap-4 sm:flex-row xl:flex-1 xl:justify-start">
-        <div className="relative flex w-full max-w-none flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px] md:max-w-80">
+        <div className="relative flex h-full w-full max-w-none flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-4 backdrop-blur-[60px] md:max-w-80">
           <div className="absolute -top-2 left-0 flex w-full">
-            <div className="mx-4 flex w-full items-center justify-end rounded-full pl-3">
+            <div className="mx-4 flex w-full items-center justify-center rounded-full">
               <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Vote</div>
             </div>
           </div>
@@ -39,9 +41,9 @@ export const ReferralHeader = ({
           </div>
         </div>
 
-        <div className="relative flex w-full max-w-none flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-3 backdrop-blur-[60px] md:max-w-80">
+        <div className="relative flex h-full w-full max-w-none flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-4 backdrop-blur-[60px] md:max-w-80">
           <div className="absolute -top-2 left-0 flex w-full">
-            <div className="mx-4 flex w-full items-center justify-end rounded-full pl-3">
+            <div className="mx-4 flex w-full items-center justify-center rounded-full">
               <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Liquidity</div>
             </div>
           </div>
@@ -52,6 +54,11 @@ export const ReferralHeader = ({
             <span className="bg-tonic bg-clip-text text-xs font-semibold text-transparent">({formatNumber(lpUserPoints?.lpDailyRate, 0)}pts/day)</span>
           </div>
         </div>
+
+        <div className="hidden w-fit min-w-32 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-4 py-3 lg:flex">
+          <span className="text-center text-sm text-subtitle">Your boost</span>
+          <span className="text-center text-xl font-semibold text-white">x{userBoost}</span>
+        </div>
       </div>
 
       {referralStatus?.hasUsedCode ? (
@@ -60,7 +67,7 @@ export const ReferralHeader = ({
           <div className="rounded-full bg-tonic px-6 text-sm font-semibold text-black">x1.1</div>
         </div>
       ) : (
-        <div className="flex w-full flex-col items-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px] xl:w-fit xl:flex-row">
+        <div className="flex w-full flex-col items-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-5 backdrop-blur-[60px] xl:w-fit xl:flex-row">
           <div className="flex items-start justify-start border-white/10 text-xs text-subtitle xl:border-r xl:pr-3">
             Enter a code to get a x1.1 boost on all your points
           </div>
@@ -70,7 +77,7 @@ export const ReferralHeader = ({
             <Input
               disabled={!isConnected}
               placeholder="Type a referral code"
-              className="px-auto mx-auto flex max-w-36 items-center justify-center"
+              className="px-auto mx-auto flex w-full max-w-36 items-center justify-center"
               onChange={(e) => setReferralStatus({ ...referralStatus, referralCode: e?.target?.value })}
               value={referralStatus?.referralCode as string}
             />

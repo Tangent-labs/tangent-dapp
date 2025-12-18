@@ -39,17 +39,26 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
 
 export default function TokenImage({ token, size, ...props }: TokenImageProps) {
   const fallbackSrc = "/medias/fallback_token_image.webp"
-  const tokenStartsWith = token?.substring(0, token.indexOf(" "))
 
-  if (tokenStartsWith === "USDe") {
-    return <ImageWithFallback {...props} fallback={fallbackSrc} src={`/medias/tokens/USDe.webp`} alt={token || "Token image"} width={size} height={size} />
+  if (!token) {
+    return <ImageWithFallback {...props} fallback={fallbackSrc} src={fallbackSrc} alt="Token image" width={size} height={size} />
   }
 
-  if (tokenStartsWith === "sUSDe") {
-    return <ImageWithFallback {...props} fallback={fallbackSrc} src={`/medias/tokens/sUSDe.webp`} alt={token || "Token image"} width={size} height={size} />
+  const prefix = token.substring(0, token.lastIndexOf(" ") === -1 ? token.length : token.lastIndexOf(" ")).trim()
+
+  const specialImages: Record<string, string> = {
+    USDe: "USDe.webp",
+    "LP USDe": "USDe.webp",
+    "PT USDe": "PT_USDe.webp",
+    "YT USDe": "YT_USDe.webp",
+    sUSDe: "sUSDe.webp",
+    "LP sUSDe": "sUSDe.webp",
+    "PT sUSDe": "PT_sUSDe.webp",
+    "YT sUSDe": "YT_sUSDe.webp",
   }
 
-  const url = token ? `/medias/tokens/${token}.webp` : fallbackSrc
+  const imageFilename = specialImages[prefix] || `${token}.webp`
+  const src = `/medias/tokens/${imageFilename}`
 
-  return <ImageWithFallback {...props} fallback={fallbackSrc} src={url} alt={token || "Token image"} width={size} height={size} />
+  return <ImageWithFallback {...props} fallback={fallbackSrc} src={src} alt={token} width={size} height={size} />
 }

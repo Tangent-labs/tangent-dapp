@@ -69,6 +69,10 @@ function PositionList() {
 
   const { collateralInfo } = useUSGRecordContext()
 
+  const onClickTxHash = (hash: string) => {
+    window.open(`https://etherscan.io/tx/${hash}`, "_blank")
+  }
+
   return (
     <>
       <div className="mt-6 rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
@@ -153,7 +157,7 @@ function PositionList() {
                   </span>
                   <span className="flex sm:hidden"> {moment(pos.date).format("MM-DD-YYYY")}</span>
                 </div>
-                <div className="hidden w-1/12 items-center justify-center lg:flex">
+                <div onClick={() => onClickTxHash(pos.txHash)} className="hidden w-1/12 cursor-pointer items-center justify-center hover:underline lg:flex">
                   {pos.txHash.substring(0, 4) + "..." + pos.txHash.substring(pos.txHash.length - 4, pos.txHash.length)}
                 </div>
               </div>

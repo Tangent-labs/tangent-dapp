@@ -2,20 +2,10 @@
 
 import { ExistingAsset } from "@/types"
 import { useMemo, useState } from "react"
-import tokenInfos from "@/data/tokenInfos.json"
 import { MarketDetailData } from "../../../usg_type"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { IconArrow } from "@/components/icons"
-
-type TokenInfo = {
-  info: string
-  risk: string
-  link: string
-}
-
-type TokenInfosMap = Record<string, TokenInfo>
-
-const typedTokenInfos = tokenInfos as TokenInfosMap
+import { TOKEN_INFOS } from "@/data/tokenInfos"
 
 type MarketDetailsInfosProps = {
   marketData: MarketDetailData
@@ -29,12 +19,12 @@ export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
   const [selectedToken, setSelectedToken] = useState<ExistingAsset | string>(tokenA)
 
   const currentInfo = useMemo(() => {
-    const info = typedTokenInfos[selectedToken]
+    const info = TOKEN_INFOS[selectedToken]
     return info ?? { info: "No information available", risk: "—" }
   }, [selectedToken])
 
   const onClickTokenLink = (token: ExistingAsset) => {
-    const infoToDisplay = typedTokenInfos[token]
+    const infoToDisplay = TOKEN_INFOS[token]
     window.open(infoToDisplay?.link, "_blank")
   }
 

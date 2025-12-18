@@ -419,23 +419,8 @@ export const computedMinAmountOut = (value: bigint, slippage: number) => {
 
 type MarketContract = { name: string; address: Address }
 
-const MARKET_NAMES = [
-  "crvUSD-USDC",
-  "crvUSD-USDT",
-  "USDC-USDT",
-  "frxUSD-USDe",
-  "frxETH-WETH",
-  "pxETH-WETH",
-  "pxETH-stETH",
-  "USDC-fxUSD",
-  "PYUSD-USDC",
-  "RLUSD-USDC",
-  "USDe 27/11/25",
-  "sUSDe 27/11/25",
-]
-
 const MARKET_CONTRACTS = Object.fromEntries(
-  MARKET_NAMES.map((marketName) => {
+  USGMarkets.map((el) => el.marketName).map((marketName) => {
     const market = USGMarkets.find((el) => el.marketName === marketName)
     const oracle = USGOracles.find((el) => el.token === marketName)
 

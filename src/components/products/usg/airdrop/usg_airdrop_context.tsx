@@ -43,6 +43,10 @@ export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
 
   useEffect(() => {
     if (currentAddress) {
+      getUserBoost(currentAddress).then((b) => {
+        setUserBoost(b)
+      })
+
       getReferralStatus(currentAddress).then((status) => {
         if (status) {
           setReferralStatus((prev) => ({
@@ -53,14 +57,6 @@ export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
           }))
           setAirdropDataIsLoading(false)
         }
-      })
-    }
-  }, [currentAddress])
-
-  useEffect(() => {
-    if (currentAddress) {
-      getUserBoost(currentAddress).then((b) => {
-        setUserBoost(b)
       })
     }
   }, [currentAddress])

@@ -31,7 +31,7 @@ const RenderAsset = <T extends OptionT>({ selected, placeholder }: { selected: T
     <>
       {selected ? (
         <>
-          {!!selected?.logoURI && selected?.logoURI !== "" ? (
+          {!!selected?.logoURI ? (
             <Image src={selected.logoURI} alt={selected.symbol} height={20} width={20} />
           ) : !selected?.symbol.includes("-") ? (
             <TokenImage token={selected.symbol as ExistingAsset} size={20} />

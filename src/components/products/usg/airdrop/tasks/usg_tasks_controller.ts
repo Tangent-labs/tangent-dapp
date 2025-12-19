@@ -3,6 +3,7 @@ import { UserTask } from "../../usg_type"
 import { Abi, Address, Hex } from "viem"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import TaskListUI from "../../../../../abi/USG/TaskListUI.json"
+import { USG_CONTRACT } from "../../usg_repository"
 
 export const mapAirdropData = (tasks: UserTask[]) => {
   if (!tasks || tasks.length === 0) return []
@@ -36,7 +37,7 @@ export const voteListHeaders: ListHeaderData[] = [
 ]
 
 export async function getUserBalancesAndDebtForLpTasks(address: Address, markets: Address[], tokens: Address[]) {
-  return await executeChainViewUnique<bigint[]>(TaskListUI.abi as Abi, TaskListUI.bytecode as Hex, [address, markets, tokens])
+  return await executeChainViewUnique<bigint[]>(TaskListUI.abi as Abi, TaskListUI.bytecode as Hex, [address, markets, tokens, USG_CONTRACT.MARKET_VIEWER])
 }
 
 export const formatToken = (token: string): ExistingAsset => {

@@ -44,20 +44,24 @@ export default function TokenImage({ token, size, ...props }: TokenImageProps) {
     return <ImageWithFallback {...props} fallback={fallbackSrc} src={fallbackSrc} alt="Token image" width={size} height={size} />
   }
 
-  const prefix = token.substring(0, token.lastIndexOf(" ") === -1 ? token.length : token.lastIndexOf(" ")).trim()
+  const prefix = token
+    .substring(0, token.lastIndexOf(" ") === -1 ? token.length : token.lastIndexOf(" "))
+    .trim()
+    .toUpperCase()
 
   const specialImages: Record<string, string> = {
-    USDe: "USDe.webp",
-    "LP USDe": "USDe.webp",
-    "PT USDe": "PT_USDe.webp",
-    "YT USDe": "YT_USDe.webp",
-    sUSDe: "sUSDe.webp",
-    "LP sUSDe": "sUSDe.webp",
-    "PT sUSDe": "PT_sUSDe.webp",
-    "YT sUSDe": "YT_sUSDe.webp",
+    USDE: "USDE.webp",
+    "LP USDE": "USDE.webp",
+    "PT USDE": "PT_USDe.webp",
+    "YT USDE": "YT_USDe.webp",
+    SUSDE: "SUSDE.webp",
+    "LP SUSDE": "SUSDE.webp",
+    "PT SUSDE": "PT_sUSDe.webp",
+    "YT SUSDE": "YT_sUSDe.webp",
   }
 
   const imageFilename = specialImages[prefix] || `${token}.webp`
+
   const src = `/medias/tokens/${imageFilename}`
 
   return <ImageWithFallback {...props} fallback={fallbackSrc} src={src} alt={token} width={size} height={size} />

@@ -62,7 +62,7 @@ export const ReferralHeader = ({
       </div>
 
       {referralStatus?.hasUsedCode ? (
-        <div className="flex w-full max-w-96 items-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px]">
+        <div className="flex w-full max-w-96 items-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-3 backdrop-blur-[60px]">
           Enjoy a x1.1 boost on all your points thanks to your friend referral link !{" "}
           <div className="rounded-full bg-tonic px-6 text-sm font-semibold text-black">x1.1</div>
         </div>

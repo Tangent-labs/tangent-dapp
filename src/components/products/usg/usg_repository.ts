@@ -16,7 +16,22 @@ type RawMarket = {
   marketType: string
 }
 
-export const USGTokens = [envAddresses.wStables, envAddresses.lps, envAddresses.tokens]
+export const USGTokens = [
+  {
+    USG: envAddresses.tokens.USG,
+    sUSG: envAddresses.tokens.sUSG,
+  },
+  {
+    "USG-USDC": envAddresses.lps["USG-USDC"],
+    "USG-frxUSD": envAddresses.lps["USG-frxUSD"],
+  },
+  {
+    wcrvUSD: envAddresses.wStables.wcrvUSD,
+    wUSDe: envAddresses.wStables.wUSDe,
+    wDOLA: envAddresses.wStables.wDOLA,
+    wUSR: envAddresses.wStables.wUSR,
+  },
+]
 
 export const USGPegKeepers: Address[] = Object.values(envAddresses.pegKeepers)
 

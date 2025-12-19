@@ -94,6 +94,7 @@ export const WalletConnexionContent = () => {
                 </div>
               </div>
 
+              {/* 
               <div className="flex w-full items-center justify-between gap-2 border-b border-white/10 pb-3">
                 <div className="flex w-full items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
                   <TokenImage token="TAN" size={24} />
@@ -125,7 +126,7 @@ export const WalletConnexionContent = () => {
                     <span className="text-xs text-subtitle">-</span>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               <div onClick={handleButtonClick} className="flex w-full cursor-pointer items-center justify-start p-2 font-semibold text-danger">
                 {isConnected ? "Log out" : ""}

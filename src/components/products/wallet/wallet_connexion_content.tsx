@@ -5,7 +5,7 @@ import { useUSGContext } from "../usg/usg_context"
 import { useClipboard } from "@/hooks/useClipboard"
 import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
-import { IconCross, IconVsTan } from "@/components/icons"
+import { IconCross } from "@/components/icons"
 import { Button } from "@/components/design_system/inputs/button"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -14,9 +14,9 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 export const WalletConnexionContent = () => {
   const { copied, copy } = useClipboard()
 
-  const { connect, disconnect, changeNetwork, tokenInfo, isConnected, isChainConnected, currentAddress } = useWalletConnexionContext()
+  const { connect, disconnect, changeNetwork, isConnected, isChainConnected, currentAddress } = useWalletConnexionContext()
 
-  const { USGsUSGMetrics, TANsTANMetrics } = useUSGContext()
+  const { USGsUSGMetrics } = useUSGContext()
 
   const buttonLabel = useMemo(() => {
     if (!isConnected) return "Connect Wallet"

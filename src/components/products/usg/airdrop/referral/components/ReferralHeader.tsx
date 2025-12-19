@@ -51,7 +51,9 @@ export const ReferralHeader = ({
           <span className="text-sm text-subtitle">Liquidity points</span>
           <div className="flex items-end justify-center gap-1">
             <span className="text-sm font-semibold text-white">{formatNumber(lpUserPoints?.lpTotalPoints, 0)} pts</span>
-            <span className="bg-tonic bg-clip-text text-xs font-semibold text-transparent">({formatNumber(lpUserPoints?.lpDailyRate, 0)}pts/day)</span>
+            <span className="bg-tonic bg-clip-text text-xs font-semibold text-transparent">
+              ({formatNumber(lpUserPoints?.lpDailyRate * userBoost, 0)}pts/day)
+            </span>
           </div>
         </div>
 
@@ -61,31 +63,28 @@ export const ReferralHeader = ({
         </div>
       </div>
 
-      {referralStatus?.hasUsedCode ? (
-        <div className="flex w-full max-w-96 items-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-3 backdrop-blur-[60px]">
-          Enjoy a x1.1 boost on all your points thanks to your friend referral link !{" "}
-          <div className="rounded-full bg-tonic px-6 text-sm font-semibold text-black">x1.1</div>
-        </div>
-      ) : (
-        <div className="flex w-full flex-col items-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-5 backdrop-blur-[60px] xl:w-fit xl:flex-row">
-          <div className="flex items-start justify-start border-white/10 text-xs text-subtitle xl:border-r xl:pr-3">
-            Enter a code to get a x1.1 boost on all your points
-          </div>
+      {!referralStatus?.hasUsedCode && (
+        <>
+          <div className="flex w-full flex-col items-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-5 backdrop-blur-[60px] xl:w-fit xl:flex-row">
+            <div className="flex items-start justify-start border-white/10 text-xs text-subtitle xl:border-r xl:pr-3">
+              Enter a code to get a x1.1 boost on all your points
+            </div>
 
-          <div className="flex w-full items-center justify-between gap-2 pl-3">
-            <span className="text-xs font-semibold">Enter code</span>
-            <Input
-              disabled={!isConnected}
-              placeholder="Type a referral code"
-              className="px-auto mx-auto flex w-full max-w-36 items-center justify-center"
-              onChange={(e) => setReferralStatus({ ...referralStatus, referralCode: e?.target?.value })}
-              value={referralStatus?.referralCode as string}
-            />
-            <SecondaryButton onClick={signMessage} disabled={isLoading} className="flex w-full max-w-28 justify-center">
-              Enter
-            </SecondaryButton>
+            <div className="flex w-full items-center justify-between gap-2 pl-3">
+              <span className="text-xs font-semibold">Enter code</span>
+              <Input
+                disabled={!isConnected}
+                placeholder="Type a referral code"
+                className="px-auto mx-auto flex w-full max-w-36 items-center justify-center"
+                onChange={(e) => setReferralStatus({ ...referralStatus, referralCode: e?.target?.value })}
+                value={referralStatus?.referralCode as string}
+              />
+              <SecondaryButton onClick={signMessage} disabled={isLoading} className="flex w-full max-w-28 justify-center">
+                Enter
+              </SecondaryButton>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   )

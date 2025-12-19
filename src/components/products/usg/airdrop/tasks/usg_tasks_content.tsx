@@ -72,7 +72,9 @@ export default function UsgTasksContent() {
               <span className="text-sm text-subtitle">Liquidity points</span>
               <div className="flex items-center justify-center gap-1">
                 <span className="text-sm font-semibold text-white">{formatNumber(lpUserPoints?.lpTotalPoints, 0)} pts</span>
-                <span className="bg-tonic bg-clip-text text-xs font-semibold text-transparent">({formatNumber(lpUserPoints?.lpDailyRate, 0)}pts/day)</span>
+                <span className="bg-tonic bg-clip-text text-xs font-semibold text-transparent">
+                  ({formatNumber(lpUserPoints?.lpDailyRate * userBoost, 0)}pts/day)
+                </span>
               </div>
             </div>
 

@@ -28,7 +28,7 @@ export const ReferralHeader = ({
   return (
     <div className="mt-4 flex w-full flex-col items-center justify-between gap-4 xl:flex-row">
       <div className="flex w-full flex-col items-center justify-center gap-4 sm:flex-row xl:flex-1 xl:justify-start">
-        <div className="relative flex h-full w-full max-w-none flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-4 backdrop-blur-[60px] md:max-w-80">
+        <div className="relative flex h-full max-w-none flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-4 backdrop-blur-[60px] md:max-w-80">
           <div className="absolute -top-2 left-0 flex w-full">
             <div className="mx-4 flex w-full items-center justify-center rounded-full">
               <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Vote</div>

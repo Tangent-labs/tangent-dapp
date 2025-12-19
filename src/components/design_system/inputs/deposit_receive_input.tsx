@@ -28,6 +28,7 @@ type DepositReceiveInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   isLoading?: boolean
   percentage?: number
   setPercentage?: (value: number) => void
+  onClickChevron?: () => void
 }
 
 export function DepositReceiveInput({
@@ -46,6 +47,7 @@ export function DepositReceiveInput({
   isLoading = false,
   percentage = 0,
   setPercentage,
+  onClickChevron,
   ...props
 }: DepositReceiveInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -150,7 +152,7 @@ export function DepositReceiveInput({
         </div>
       </BorderPanel>
 
-      <div className="my-2 flex w-full cursor-pointer items-center justify-center border-none">
+      <div onClick={onClickChevron} className="my-2 flex w-full cursor-pointer items-center justify-center border-none">
         <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-20 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
       </div>
 

@@ -159,6 +159,7 @@ export default function USGStakeContent() {
             onValueChange={(value: bigint | undefined) => setWeiValue(value)}
             percentage={stakePercentage}
             setPercentage={setStakePercentage}
+            onClickChevron={() => setCurrentFeature(currentFeature === "stake" ? "unstake" : "stake")}
           />
 
           <Accordion className="w-full" type="single" collapsible>

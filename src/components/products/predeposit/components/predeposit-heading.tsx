@@ -1,0 +1,56 @@
+"use client"
+
+import Image from "next/image"
+import TokenImage from "@/components/design_system/structure/token_image"
+
+export const PredepositHeading = () => {
+  return (
+    <>
+      <span className="mt-4 text-4xl font-semibold text-white">Pre-deposit campaign</span>
+      <span className="text-sm text-subtitle">Deposit USDC or frxUSD and receive LP tokens to earn:</span>
+
+      <section className="mt-4 flex w-full flex-col-reverse items-center justify-center gap-2 xl:flex-row">
+        <div className="hidden w-full items-center justify-center gap-2 lg:flex">
+          <div className="flex h-44 w-full flex-col items-center justify-center rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+            <span className="p-4 text-[16px] text-white">A fixed and guaranteed share of 2% of TAN total supply.</span>
+            <Image src="/medias/fulltan.png" className="flex items-end self-end" alt="image" width={220} height={80} />
+          </div>
+          <div className="flex h-44 w-full flex-col rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+            <span className="p-4 text-[16px] text-white">Trading fee and CRV rewards if you stake your LP tokens.</span>
+            <Image src="/medias/crvtokens.png" className="flex items-end self-end" alt="image" width={200} height={80} />
+          </div>
+          <div className="flex h-44 w-full flex-col rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+            <span className="px-4 pt-4 text-[16px] text-white">A 2x boost for the point campaign.</span>
+            <Image src="/medias/timestwo.png" className="flex items-end self-end" alt="image" width={160} height={80} />
+          </div>
+        </div>
+
+        <div className="flex w-full flex-col gap-2 xl:w-fit xl:min-w-[400px]">
+          <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px]">
+            <span className="text-[20px] font-semibold">TAN allocation</span>
+            <span className="flex items-center justify-center gap-2 text-[30px] font-semibold">
+              10,000 <TokenImage token="TAN" size={12} className="w-8" />
+            </span>
+          </div>
+
+          <div className="flex w-full items-center justify-center gap-3">
+            <div className="flex w-full flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+              <span className="flex items-center justify-center gap-2 font-semibold">
+                <TokenImage token="USG-frxUSD" size={12} className="w-12" />
+                USG/frxUSD
+              </span>
+              <span>12,000</span>
+            </div>
+            <div className="flex w-full flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+              <span className="flex items-center justify-center gap-2 font-semibold">
+                <TokenImage token="USG-USDC" size={12} className="w-12" />
+                USG/USDC
+              </span>
+              <span>12,000</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}

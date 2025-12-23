@@ -40,3 +40,6 @@ export type ExistingAsset =
   | "sTAN"
   | "TAN"
   | "vsTAN"
+  | "USG-frxUSD"
+  | "USG-USDC"
+  | "frxUSD"

@@ -306,4 +306,28 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     logo: "vsTAN",
     displayDecimals: 2,
   },
+  frxUSD: {
+    symbol: "frxUSD",
+    name: "frxUSD",
+    decimals: 18,
+    address: TOKEN_ADDR["frxUSD"],
+    logo: "frxUSD",
+    displayDecimals: 2,
+  },
+  "USG-frxUSD": {
+    symbol: "USG-frxUSD",
+    name: "USG-frxUSD",
+    decimals: 18,
+    address: TOKEN_ADDR["USG-frxUSD"],
+    logo: "USG-frxUSD",
+    displayDecimals: 2,
+  },
+  "USG-USDC": {
+    symbol: "USG-USDC",
+    name: "USG-USDC",
+    decimals: 18,
+    address: TOKEN_ADDR["USG-USDC"],
+    logo: "USG-USDC",
+    displayDecimals: 2,
+  },
 }

@@ -336,6 +336,11 @@
           "internalType": "address",
           "name": "market",
           "type": "address"
+        },
+        {
+          "internalType": "contract IMarketViewer",
+          "name": "marketViewer",
+          "type": "address"
         }
       ],
       "name": "getMarketDetails",
@@ -471,6 +476,11 @@
                   "type": "uint256"
                 },
                 {
+                  "internalType": "address",
+                  "name": "receipt",
+                  "type": "address"
+                },
+                {
                   "components": [
                     {
                       "internalType": "bool",
@@ -557,6 +567,28 @@
                   ],
                   "internalType": "struct RCParams",
                   "name": "rcParams",
+                  "type": "tuple"
+                },
+                {
+                  "components": [
+                    {
+                      "internalType": "bool",
+                      "name": "isDepositPaused",
+                      "type": "bool"
+                    },
+                    {
+                      "internalType": "bool",
+                      "name": "isBorrowPaused",
+                      "type": "bool"
+                    },
+                    {
+                      "internalType": "bool",
+                      "name": "isLeveragePaused",
+                      "type": "bool"
+                    }
+                  ],
+                  "internalType": "struct GetMarketDetails.PauseStruct",
+                  "name": "pauseStruct",
                   "type": "tuple"
                 }
               ],

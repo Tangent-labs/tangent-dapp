@@ -2,8 +2,24 @@
 
 import Image from "next/image"
 import TokenImage from "@/components/design_system/structure/token_image"
+import { formatUnits } from "viem"
+import { formatNumber } from "@/lib/number_formatter"
+import { useMemo } from "react"
 
-export const PredepositHeading = () => {
+type PredepositHeadingProps = {
+  USGUSDCAccumulatedBalance: bigint
+  USGfrxUSDAccumulatedBalance: bigint
+  accumulatedBalance: bigint
+}
+
+export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumulatedBalance, accumulatedBalance }: PredepositHeadingProps) => {
+  const tanAllocation = useMemo(() => {
+    if (accumulatedBalance) {
+      return ((USGUSDCAccumulatedBalance + USGfrxUSDAccumulatedBalance) / accumulatedBalance) * 200000n
+    }
+    return 0n
+  }, [USGUSDCAccumulatedBalance, USGfrxUSDAccumulatedBalance, accumulatedBalance])
+
   return (
     <>
       <span className="mt-4 text-4xl font-semibold text-white">Pre-deposit campaign</span>
@@ -29,24 +45,24 @@ export const PredepositHeading = () => {
           <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px]">
             <span className="text-[20px] font-semibold">TAN allocation</span>
             <span className="flex items-center justify-center gap-2 text-[30px] font-semibold">
-              10,000 <TokenImage token="TAN" size={12} className="w-8" />
+              {tanAllocation} <TokenImage token="TAN" size={12} className="w-8" />
             </span>
           </div>
 
           <div className="flex w-full items-center justify-center gap-3">
             <div className="flex w-full flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
               <span className="flex items-center justify-center gap-2 font-semibold">
-                <TokenImage token="USG-frxUSD" size={12} className="w-12" />
-                USG/frxUSD
-              </span>
-              <span>12,000</span>
-            </div>
-            <div className="flex w-full flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
-              <span className="flex items-center justify-center gap-2 font-semibold">
                 <TokenImage token="USG-USDC" size={12} className="w-12" />
                 USG/USDC
               </span>
-              <span>12,000</span>
+              <span> {formatNumber(Number(formatUnits(BigInt(USGUSDCAccumulatedBalance || 0n), 18)), 0)} </span>
+            </div>
+            <div className="flex w-full flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+              <span className="flex items-center justify-center gap-2 font-semibold">
+                <TokenImage token="USG-frxUSD" size={12} className="w-12" />
+                USG/frxUSD
+              </span>
+              <span> {formatNumber(Number(formatUnits(BigInt(USGfrxUSDAccumulatedBalance || 0n), 18)), 0)} </span>
             </div>
           </div>
         </div>

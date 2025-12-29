@@ -10,7 +10,7 @@ type DynamicProgressBarProps = {
 }
 
 export const DynamicProgressBar = ({ progressBarColor, currentValue, maxValue }: DynamicProgressBarProps) => {
-  const percentage = Number((currentValue * 100n) / maxValue)
+  const percentage = !!maxValue && maxValue > 0n ? Number((currentValue * 100n) / maxValue) : 0
 
   const [dynamicPercentage, setDynamicPercentage] = useState(0)
 

@@ -24,7 +24,7 @@ export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumula
 
   return (
     <>
-      <span className="mt-4 text-4xl font-semibold text-white">Pre-deposit campaign</span>
+      <span className="mt-6 text-2xl font-semibold text-white lg:text-4xl">Pre-deposit campaign</span>
       <span className="text-sm text-subtitle">Deposit USDC or frxUSD and receive LP tokens to earn:</span>
 
       <section className="mt-4 flex w-full flex-col-reverse items-center justify-center gap-2 xl:flex-row">

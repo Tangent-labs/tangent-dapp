@@ -7,7 +7,7 @@
       "link": "https://www.curve.finance/dex/ethereum/pools/factory-crvusd-1/deposit",
       "protocolName": "Curve",
       "actionLabel": "Get crvUSD/USDT LP",
-      "bonusPts": 1.5
+      "points": 600
     },
     {
       "name": "crvUSD-USDC",
@@ -16,7 +16,7 @@
       "link": "https://www.curve.finance/dex/ethereum/pools/factory-crvusd-0/deposit",
       "protocolName": "Curve",
       "actionLabel": "Get crvUSD/USDC LP",
-      "bonusPts": 4
+      "points": 400
     },
     {
       "name": "DOLA-USR",
@@ -25,7 +25,7 @@
       "link": "https://www.curve.finance/dex/ethereum/pools",
       "protocolName": "Convex",
       "actionLabel": "Get DOLA-USR LP",
-      "bonusPts": 2
+      "points": 200
     },
     {
       "name": "crvUSD-USDC",
@@ -34,7 +34,7 @@
       "link": "https://www.curve.finance/dex/ethereum/pools",
       "protocolName": "Stake DAO",
       "actionLabel": "Stake crvUSD-USDC",
-      "bonusPts": 20
+      "points": 20000
     }
   ]
 }

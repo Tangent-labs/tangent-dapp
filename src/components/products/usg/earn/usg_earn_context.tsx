@@ -5,7 +5,6 @@ import { useUSGContext } from "../usg_context"
 import { mapPoolsAndTasks, mapTasks } from "./usg_earn_controller"
 import { getCurvePools, getConvexPools, getStakeDAOPools } from "../server_api"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { EarnTask, USGStakingInfo, LpUserPoints, EarnProtocolInput, GaugeAPR } from "../usg_type"
 
 type USGEarnContextProps = {
@@ -26,8 +25,6 @@ type USGEarnContextValues = {
 export const USGEarnContext = createContext<USGEarnContextValues | undefined>(undefined)
 
 export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
-  const { currentAddress } = useWalletConnexionContext()
-
   const { USGsUSGMetrics, lpUserPoints } = useUSGContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -74,7 +71,7 @@ export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
 
   useEffect(() => {
     fetchPoolsData()
-  }, [currentAddress])
+  }, [])
 
   const contextValue: USGEarnContextValues = {
     isLoading,

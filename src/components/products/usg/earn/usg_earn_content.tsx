@@ -144,9 +144,9 @@ export function USGMEarnListInner() {
             </div>
 
             <div className="flex w-1/2 items-center justify-center text-xl">
-              <div className="hidden xl:flex"> x{item?.bonusPts} </div>
+              <div className="hidden xl:flex"> {item?.points} </div>
 
-              <div className="flex text-xs md:text-sm xl:hidden"> x{item?.bonusPts} Points </div>
+              <div className="flex text-xs md:text-sm xl:hidden"> {item?.points} Pts/Day/$ </div>
             </div>
           </div>
         </ListRow>

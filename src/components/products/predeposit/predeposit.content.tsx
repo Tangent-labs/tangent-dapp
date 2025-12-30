@@ -8,8 +8,23 @@ import { PredepositHeading } from "./components/predeposit-heading"
 import { PredepositWalletConnect } from "../wallet/predeposit_wallet_connect"
 import { PredepositDepositSection } from "./components/predeposit-deposit-section"
 import { PredepositRetentionPhase } from "./components/predeposit-retention-phase"
+import { Address } from "viem"
+import { PredepositOpportunities } from "./components/predeposit-opportunities"
 
-export const PredepositContent = () => {
+export type PredepositContentProps = {
+  opportunitiesData: Array<{
+    protocol: string
+    address: Address
+    gaugeCrvApy: Array<number>
+    gaugeFutureCrvApy: Array<number>
+    lpTokenAddress?: Address
+    convexPoolData?: {
+      usdTotal?: number
+    }
+  }>
+}
+
+export const PredepositContent = ({ opportunitiesData }: PredepositContentProps) => {
   const { predepositStatus } = usePredepositContext()
 
   return (
@@ -61,6 +76,8 @@ export const PredepositContent = () => {
           />
 
           {predepositStatus?.predepositState === "retention" ? <PredepositRetentionPhase /> : <PredepositDepositSection />}
+
+          <PredepositOpportunities opportunitiesData={opportunitiesData} />
 
           <PredepositFAQ />
         </div>

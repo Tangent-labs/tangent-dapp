@@ -98,8 +98,8 @@ export const PredepositFAQ = () => {
 
   return (
     <>
-      <div className="mb-1 mt-4 flex w-full items-center justify-between rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
-        <span className="px-4 text-4xl font-semibold text-white lg:px-12">F.A.Q</span>
+      <div className="mb-1 mt-6 flex w-full items-center justify-between rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+        <span className="px-4 text-2xl font-semibold text-white lg:px-12 lg:text-4xl">F.A.Q</span>
         <Image className="w-56 lg:w-80" src="/medias/faq.png" alt="image" width={360} height={120} />
       </div>
 
@@ -108,13 +108,13 @@ export const PredepositFAQ = () => {
           <AccordionItem value="item-1">
             <div className="my-1 flex cursor-pointer flex-col rounded-[10px] bg-white bg-opacity-[3%] p-3">
               <AccordionTrigger>
-                <span className="py-1.5 text-xl font-semibold text-white">{el.title}</span>
+                <span className="py-1.5 text-start text-sm font-semibold text-white lg:text-xl">{el.title}</span>
               </AccordionTrigger>
 
               <AccordionContent className="w-full">
                 <div className="flex w-full flex-col items-start justify-start gap-1">
                   {el.content.map((content, j) => (
-                    <span key={j} className="mb-1 text-sm text-subtitle">
+                    <span key={j} className="mb-1 text-xs text-subtitle lg:text-sm">
                       {content}
                     </span>
                   ))}
@@ -122,7 +122,7 @@ export const PredepositFAQ = () => {
                   {!!el?.bulletPoints && (
                     <ul className="ml-4 mt-2">
                       {el.bulletPoints.map((b, index) => (
-                        <li key={index} className="flex items-start gap-2 text-sm leading-relaxed text-subtitle">
+                        <li key={index} className="flex items-start gap-2 text-xs leading-relaxed text-subtitle lg:text-sm">
                           <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-white opacity-60" />
                           <span>{b}</span>
                         </li>

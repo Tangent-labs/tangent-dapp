@@ -132,7 +132,7 @@ export const PredepositDepositSection = () => {
         {!isConnected && (
           <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[12px] bg-black/70 backdrop-blur-sm">
             <div className="flex flex-col items-center gap-4 rounded-[10px] p-6 text-center">
-              <span className="text-4xl font-semibold text-white">Pre-deposit campaign</span>
+              <span className="text-2xl font-semibold text-white lg:text-4xl">Pre-deposit campaign</span>
 
               <Button onClick={connect} className="flex h-10 items-center justify-center">
                 Connect wallet
@@ -148,7 +148,7 @@ export const PredepositDepositSection = () => {
         {isConnected && !isWhitelisted && (
           <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[12px] bg-black/70 backdrop-blur-sm">
             <div className="flex flex-col items-center gap-4 rounded-[10px] p-6 text-center">
-              <span className="text-4xl font-semibold text-white">Pre-deposit campaign</span>
+              <span className="text-2xl font-semibold text-white lg:text-4xl">Pre-deposit campaign</span>
 
               <Button state="disabled" className="flex h-10 items-center justify-center">
                 You are not whitelisted

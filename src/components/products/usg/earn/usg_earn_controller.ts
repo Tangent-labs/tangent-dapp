@@ -1,6 +1,6 @@
+import { Address } from "viem"
 import { ListHeaderData } from "@/types"
 import { EarnProtocolInput, GaugeAPR, StakeDaoAPRData } from "../usg_type"
-import { Address } from "viem"
 
 export const USGEarnListHeaders: ListHeaderData[] = [
   { label: "Asset", key: "asset" },
@@ -11,10 +11,8 @@ export const USGEarnListHeaders: ListHeaderData[] = [
   {
     label: "APR",
     key: "apr",
-    indicator:
-      "Annualized cost of borrowing, expressed as a percentage, which includes the interest rate and any additional fees or costs associated with the loan",
   },
-  { label: "Points", key: "points" },
+  { label: "Pts/Day/$", key: "points" },
 ]
 
 export const mapTasks = (tasks: EarnProtocolInput[], poolsData?: Array<GaugeAPR>) => {
@@ -30,7 +28,7 @@ export const mapTasks = (tasks: EarnProtocolInput[], poolsData?: Array<GaugeAPR>
       link: t.link,
       protocolName: t.protocolName,
       actionLabel: t.actionLabel,
-      bonusPts: t.bonusPts,
+      points: t.points,
       address: t.address,
       currentAPR,
       projectedAPR,

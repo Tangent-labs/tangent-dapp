@@ -96,3 +96,5 @@ export const mapPredepositStatus = (status: PredepositRawState): PredepositStatu
 
   return predepositStatus
 }
+
+export const formatTimeNumber = (num: number) => num.toString().padStart(2, "0")

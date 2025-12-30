@@ -39,6 +39,8 @@ export const PredepositDepositSection = () => {
     setfrxUSDDepositSliderPercent,
     actionApproveUSGfrxUSD,
     actionDepositUSGfrxUSD,
+    setDepositMaxUSGUSDC,
+    setDepositMaxUSGfrxUSD,
   } = usePredepositContext()
 
   const { connect, isConnected } = useWalletConnexionContext()
@@ -101,6 +103,7 @@ export const PredepositDepositSection = () => {
             cap={predepositStatus?.USGUSDCData?.USGUSDCCap}
             connect={connect}
             pool={predepositStatus?.USGUSDCData?.lpName as ExistingAsset}
+            setMaxBalance={setDepositMaxUSGUSDC}
           />
 
           <USGPredepositComponent
@@ -122,6 +125,7 @@ export const PredepositDepositSection = () => {
             cap={predepositStatus?.USGfrxUSDData?.USGfrxUSDCap}
             connect={connect}
             pool={predepositStatus?.USGfrxUSDData?.lpName as ExistingAsset}
+            setMaxBalance={setDepositMaxUSGfrxUSD}
           />
         </div>
 

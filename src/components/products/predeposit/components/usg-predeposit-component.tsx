@@ -31,6 +31,7 @@ type USGPredepositComponentProps = {
   cap: bigint | undefined
   connect: () => void
   pool: ExistingAsset
+  setMaxBalance: () => void
 }
 
 export const USGPredepositComponent = ({
@@ -52,6 +53,7 @@ export const USGPredepositComponent = ({
   cap,
   connect,
   pool,
+  setMaxBalance,
 }: USGPredepositComponentProps) => {
   return (
     <div className="flex w-full flex-col rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px]">
@@ -81,7 +83,7 @@ export const USGPredepositComponent = ({
         onValueChange={handleDepositChange}
         percentage={percentage}
         setPercentage={setPercentage}
-        setMaxBalance={() => {}}
+        setMaxBalance={setMaxBalance}
       />
 
       <div className={`${isLoading ? "shimmer" : ""} my-2 flex flex-col gap-1 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]`}>

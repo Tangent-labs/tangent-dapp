@@ -1,12 +1,6 @@
 import { Address } from "viem"
 import { PredepositRawState } from "../types/types"
 
-export interface UserStatus {
-  hasUsedCode: boolean
-  referralCode: string | null
-  friends: number
-}
-
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3100"
 
 export const fetchUserStatus = async (account: Address) => {

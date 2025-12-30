@@ -1,12 +1,13 @@
 "use client"
 
+import { cn } from "@/lib/utils"
 import { IconTangent } from "@/components/icons"
 import { usePredepositContext } from "./predeposit.context"
 import { PredepositFAQ } from "./components/predeposit-faq"
 import { PredepositHeading } from "./components/predeposit-heading"
 import { PredepositWalletConnect } from "../wallet/predeposit_wallet_connect"
 import { PredepositDepositSection } from "./components/predeposit-deposit-section"
-import { cn } from "@/lib/utils"
+import { PredepositRetentionPhase } from "./components/predeposit-retention-phase"
 
 export const PredepositContent = () => {
   const { predepositStatus } = usePredepositContext()
@@ -59,7 +60,7 @@ export const PredepositContent = () => {
             }
           />
 
-          <PredepositDepositSection />
+          {predepositStatus?.predepositState === "retention" ? <PredepositRetentionPhase /> : <PredepositDepositSection />}
 
           <PredepositFAQ />
         </div>

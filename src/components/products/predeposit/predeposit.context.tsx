@@ -76,6 +76,10 @@ type PredepositContextValues = {
   predepositStatus: PredepositStatus | null
 
   isWhitelisted: boolean
+
+  setDepositMaxUSGUSDC: () => void
+
+  setDepositMaxUSGfrxUSD: () => void
 }
 
 export const PredepositContext = createContext<PredepositContextValues | undefined>(undefined)
@@ -380,6 +384,32 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     }
   }
 
+  const setDepositMaxUSGUSDC = () => {
+    let valueToFill = 0n
+
+    if (!!predepositStatus?.USGUSDCData) {
+      if (USDCBalanceAllowance?.balance * 10n ** 12n <= predepositStatus?.USGUSDCData?.USGUSDCCap - predepositStatus?.USGUSDCData?.USGUSDCAccumulatedTotal) {
+        valueToFill = USDCBalanceAllowance?.balance
+      } else {
+        valueToFill = (predepositStatus?.USGUSDCData?.USGUSDCCap - predepositStatus?.USGUSDCData?.USGUSDCAccumulatedTotal) / 10n ** 12n
+      }
+    }
+    handleDepositChange(valueToFill)
+  }
+
+  const setDepositMaxUSGfrxUSD = () => {
+    let valueToFill = 0n
+
+    if (!!predepositStatus?.USGfrxUSDData) {
+      if (frxUSDBalanceAllowance?.balance <= predepositStatus?.USGfrxUSDData?.USGfrxUSDCap - predepositStatus?.USGfrxUSDData?.USGfrxUSDAccumulatedTotal) {
+        valueToFill = USDCBalanceAllowance?.balance
+      } else {
+        valueToFill = predepositStatus?.USGfrxUSDData?.USGfrxUSDCap - predepositStatus?.USGfrxUSDData?.USGfrxUSDAccumulatedTotal
+      }
+    }
+    handleDepositfrxUSDChange(valueToFill)
+  }
+
   const contextValue: PredepositContextValues = {
     isLoading,
     slippage,
@@ -414,6 +444,8 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     handleDepositfrxUSDChange,
     predepositStatus,
     isWhitelisted,
+    setDepositMaxUSGUSDC,
+    setDepositMaxUSGfrxUSD,
   }
 
   return <PredepositContext.Provider value={contextValue}>{children}</PredepositContext.Provider>

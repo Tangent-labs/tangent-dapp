@@ -1,6 +1,6 @@
+import Link from "next/link"
 import Image from "next/image"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import Link from "next/link"
 
 export const PredepositFAQ = () => {
   const faq = [

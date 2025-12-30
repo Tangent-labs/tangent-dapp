@@ -1,10 +1,10 @@
 "use client"
 
 import Image from "next/image"
-import TokenImage from "@/components/design_system/structure/token_image"
+import { useMemo } from "react"
 import { formatUnits } from "viem"
 import { formatNumber } from "@/lib/number_formatter"
-import { useMemo } from "react"
+import TokenImage from "@/components/design_system/structure/token_image"
 
 type PredepositHeadingProps = {
   USGUSDCAccumulatedBalance: bigint
@@ -12,10 +12,12 @@ type PredepositHeadingProps = {
   accumulatedBalance: bigint
 }
 
+const TOTAL_TAN_ALLOCATION = 200_000n
+
 export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumulatedBalance, accumulatedBalance }: PredepositHeadingProps) => {
   const tanAllocation = useMemo(() => {
     if (accumulatedBalance) {
-      return ((USGUSDCAccumulatedBalance + USGfrxUSDAccumulatedBalance) / accumulatedBalance) * 200000n
+      return ((USGUSDCAccumulatedBalance + USGfrxUSDAccumulatedBalance) * TOTAL_TAN_ALLOCATION) / accumulatedBalance
     }
     return 0n
   }, [USGUSDCAccumulatedBalance, USGfrxUSDAccumulatedBalance, accumulatedBalance])
@@ -45,7 +47,7 @@ export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumula
           <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px]">
             <span className="text-[20px] font-semibold">TAN allocation</span>
             <span className="flex items-center justify-center gap-2 text-[30px] font-semibold">
-              {tanAllocation} <TokenImage token="TAN" size={12} className="w-8" />
+              {formatNumber(Number(tanAllocation), 0)} <TokenImage token="TAN" size={12} className="w-8" />
             </span>
           </div>
 

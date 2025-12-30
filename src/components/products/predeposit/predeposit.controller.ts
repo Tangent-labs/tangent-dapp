@@ -1,15 +1,17 @@
-import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { getPublicClient } from "@/services/service_rpc"
+import { PredepositRawState, PredepositStatus } from "./types/types"
 import PredepositPoolsABI from "../../../abi/USG/PredepositPoolsABI.json"
 import { computedMinAmountOut } from "../usg/record/usg_record_controller"
-import { PredepositRawState, PredepositStatus } from "./types/types"
+import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 
 export const getFormState = (
   depositValue: bigint | undefined,
   balanceAllowance: {
     balance: bigint
     allowance: bigint
-  }
+  },
+  totalCap: bigint,
+  currentlyDeposited: bigint
 ) => {
   const reasons: string[] = []
 
@@ -21,10 +23,10 @@ export const getFormState = (
 
   if (!!depositValue && depositValue > balanceAllowance?.allowance) {
     reasons.push("Allowance too low")
-  }
-
-  if (!!depositValue && depositValue > balanceAllowance?.balance) {
+  } else if (!!depositValue && depositValue > balanceAllowance?.balance) {
     reasons.push("Balance too low")
+  } else if (currentlyDeposited + depositValue > totalCap) {
+    reasons.push("Deposit exceeds total cap")
   }
 
   return { canProcess: reasons.length === 0, cantProcessReasons: reasons, haveToApprove: !isApproved }

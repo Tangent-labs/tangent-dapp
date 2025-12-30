@@ -1,18 +1,18 @@
 "use client"
 
 import { toast } from "react-toastify"
+import { PredepositStatus } from "./types/types"
 import { USGTokens } from "../usg/usg_repository"
-import { fetchUserStatus, validatePredepositSignature } from "./api/client.api"
 import { AssetDataPriced, FormState } from "@/types"
-import { Address, formatUnits, WalletClient, zeroAddress } from "viem"
+import { useRootContext } from "../root/root_context"
 import { getSwapAssetPrice } from "@/services/service_price"
 import { ToastComponent } from "@/components/design_system/toast"
-import { deposit, fetchQuote, getFormState, mapPredepositStatus } from "./predeposit.controller"
+import { Address, formatUnits, WalletClient, zeroAddress } from "viem"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
+import { fetchUserStatus, validatePredepositSignature } from "./api/client.api"
 import { doApprove, getBalancesAndAllowances } from "../usg/record/usg_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { PredepositStatus } from "./types/types"
-import { useRootContext } from "../root/root_context"
+import { deposit, fetchQuote, getFormState, mapPredepositStatus } from "./predeposit.controller"
 
 type PredepositContextProps = {
   children: ReactNode
@@ -23,6 +23,9 @@ type PredepositContextValues = {
 
   slippage: number
   setSlippage: (nigger: number) => void
+
+  frxUSDslippage: number
+  setfrxUSDSlippage: (nigger: number) => void
 
   USGUSDCDepositValue: bigint | undefined
   setUSGUSDCDepositValue: (nigger: bigint | undefined) => void
@@ -92,6 +95,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [slippage, setSlippage] = useState<number>(0.2)
+  const [frxUSDslippage, setfrxUSDSlippage] = useState<number>(0.2)
 
   const [USDCDepositValue, setUSDCDepositValue] = useState<bigint>()
   const [frxUSDDepositValue, setfrxUSDDepositValue] = useState<bigint>()
@@ -126,13 +130,15 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     if (status) {
       const mappedStatus: PredepositStatus = mapPredepositStatus(status)
 
-      if (!!mappedStatus && mappedStatus?.isSigned) {
-        setPredepositStatus(mappedStatus)
+      if (!!mappedStatus && mappedStatus?.isSigned && mappedStatus?.userState === "private") {
         setIsWhitelisted(true)
-      } else if (!!mappedStatus && !mappedStatus?.isSigned) {
+      } else if (!!mappedStatus && !mappedStatus?.isSigned && mappedStatus?.userState === "private") {
         await signMessage()
-        setPredepositStatus(mappedStatus)
+      } else if (mappedStatus?.userState === "public") {
+        setIsWhitelisted(false)
       }
+
+      setPredepositStatus(mappedStatus)
     }
   }
 
@@ -254,12 +260,29 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     }
   }, [USGfrxUSDDepositValue])
 
-  const USGUSDCformState = useMemo(() => getFormState(USDCDepositValue, USDCBalanceAllowance), [USDCDepositValue, currentAddress, USDCBalanceAllowance])
+  const USGUSDCformState = useMemo(() => {
+    if (predepositStatus) {
+      return getFormState(
+        USDCDepositValue,
+        USDCBalanceAllowance,
+        predepositStatus?.USGUSDCData?.USGUSDCCap,
+        predepositStatus?.USGUSDCData?.USGUSDCAccumulatedTotal
+      )
+    }
+    return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+  }, [USDCDepositValue, predepositStatus, currentAddress, USDCBalanceAllowance])
 
-  const USGfrxUSDformState = useMemo(
-    () => getFormState(frxUSDDepositValue, frxUSDBalanceAllowance),
-    [frxUSDDepositValue, currentAddress, frxUSDBalanceAllowance]
-  )
+  const USGfrxUSDformState = useMemo(() => {
+    if (predepositStatus) {
+      return getFormState(
+        frxUSDDepositValue,
+        frxUSDBalanceAllowance,
+        predepositStatus?.USGfrxUSDData?.USGfrxUSDCap,
+        predepositStatus?.USGfrxUSDData?.USGfrxUSDAccumulatedTotal
+      )
+    }
+    return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+  }, [frxUSDDepositValue, predepositStatus, currentAddress, frxUSDBalanceAllowance])
 
   const actionApproveUSGUSDC = () => {
     setIsLoading(true)
@@ -361,6 +384,8 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     isLoading,
     slippage,
     setSlippage,
+    frxUSDslippage,
+    setfrxUSDSlippage,
     USGUSDCDepositValue,
     setUSGUSDCDepositValue,
     USDCInfo,

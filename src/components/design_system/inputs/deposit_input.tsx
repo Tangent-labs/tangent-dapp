@@ -24,6 +24,7 @@ type DepositInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   percentage: number
   setPercentage: (value: number) => void
   displaySliderInput?: boolean
+  displayBalance?: boolean
 }
 
 export function DepositInput({
@@ -40,6 +41,7 @@ export function DepositInput({
   displaySliderInput = false,
   disabled,
   setPercentage,
+  displayBalance = false,
   ...props
 }: DepositInputProps) {
   const balanceNumber = useMemo(() => {
@@ -112,13 +114,18 @@ export function DepositInput({
       )}
       onClick={onClickFocus}
     >
-      <div className="flex w-full items-center justify-between">
-        <div className="text-sm text-subtitle">{labelDeposit}</div>
-        <div className="flex items-center justify-center gap-1 text-xs text-subtitle">
-          {formatBigInt(balance, depositAsset?.decimals || 18, 2)}
-          <IconWallet className="w-3"></IconWallet>
+      {displayBalance ? (
+        <div className="flex w-full items-center justify-between">
+          <div className="text-sm text-subtitle">{labelDeposit}</div>
+          <div className="flex items-center justify-center gap-1 text-xs text-subtitle">
+            {formatBigInt(balance, depositAsset?.decimals || 18, 2)}
+            <IconWallet className="w-3"></IconWallet>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="text-sm text-subtitle">{labelDeposit}</div>
+      )}
+
       <div className="flex justify-between">
         <div className="flex items-center justify-start">
           <input

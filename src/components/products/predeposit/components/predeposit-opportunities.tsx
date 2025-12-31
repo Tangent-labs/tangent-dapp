@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import { IconArrow } from "@/components/icons"
 import { formatDollar } from "@/lib/number_formatter"
 import { PredepositContentProps } from "../predeposit.content"
 import ListRow from "@/components/design_system/list/list_row"
@@ -11,16 +12,10 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import mockJson from "../../../../app/(products)/(usg)/earn/earnMock.json"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 
-export const PredepositOpportunitiesListHeaders: ListHeaderData[] = [
+export const predepositOpportunitiesListHeaders: ListHeaderData[] = [
   { label: "Asset", key: "asset" },
-  {
-    label: "APR",
-    key: "apr",
-  },
-  {
-    label: "TVL",
-    key: "tvl",
-  },
+  { label: "APR", key: "apr" },
+  { label: "TVL", key: "tvl" },
   { label: "Pts/Day/$", key: "points" },
 ]
 
@@ -70,7 +65,7 @@ export const PredepositOpportunities = ({ opportunitiesData }: PredepositContent
         <div className="text-sm text-subtitle">View all available rewards opportunities.</div>
       </section>
 
-      <ListProvider _headers={PredepositOpportunitiesListHeaders} _rows={displayRows!} _listState={listeState}>
+      <ListProvider _headers={predepositOpportunitiesListHeaders} _rows={displayRows!} _listState={listeState}>
         <PredepositOpportunitiesListInner displayRows={displayRows} />
       </ListProvider>
     </>
@@ -106,25 +101,36 @@ export function PredepositOpportunitiesListInner({ displayRows }: PredepositOppo
           <div className="relative flex items-center gap-4">
             <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-12 lg:w-16" />
 
-            <div className="flex flex-col leading-8">
+            <div className="flex flex-col items-start justify-center leading-8">
               <span className="text-sm font-semibold md:text-xl">{item?.asset}</span>
-              <div className="flex items-center justify-center rounded-full bg-overlay-panel px-1 py-1">
+
+              <div className="flex items-center justify-center rounded-full bg-overlay-panel px-3 py-1">
                 {item.protocolName === "Curve" && (
-                  <div className="flex items-center justify-center gap-2 py-0.5 text-xs lg:text-sm">
-                    <TokenImage token={"CRV"} size={16} />
+                  <div onClick={() => window.open(item?.link, "_blank")} className="flex items-center justify-center gap-2 text-xs">
+                    <TokenImage token={"CRV"} size={12} />
                     <span>Curve</span>
+                    <IconArrow className="w-2"></IconArrow>
                   </div>
                 )}
                 {item.protocolName === "Convex" && (
-                  <div className="flex items-center justify-center gap-2 py-0.5 text-xs lg:text-sm">
-                    <TokenImage token={"CVX"} size={16} />
+                  <div onClick={() => window.open(item?.link, "_blank")} className="flex items-center justify-center gap-2 text-xs">
+                    <TokenImage token={"CVX"} size={12} />
                     <span>Convex</span>
+                    <IconArrow className="w-2"></IconArrow>
                   </div>
                 )}
                 {item.protocolName === "Stake DAO" && (
-                  <div className="flex items-center justify-center gap-2 py-0.5 text-xs lg:text-sm">
-                    <TokenImage token={"SDT"} size={16} />
+                  <div onClick={() => window.open(item?.link, "_blank")} className="flex items-center justify-center gap-2 text-xs">
+                    <TokenImage token={"SDT"} size={12} />
                     <span>Stake DAO</span>
+                    <IconArrow className="w-2"></IconArrow>
+                  </div>
+                )}
+                {item.protocolName === "Tangent" && (
+                  <div onClick={() => window.open(item?.link, "_blank")} className="flex items-center justify-center gap-2 text-xs">
+                    <TokenImage token={"USG"} size={12} />
+                    <span>Tangent</span>
+                    <IconArrow className="w-2"></IconArrow>
                   </div>
                 )}
               </div>

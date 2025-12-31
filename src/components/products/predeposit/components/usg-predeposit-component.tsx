@@ -84,6 +84,7 @@ export const USGPredepositComponent = ({
         percentage={percentage}
         setPercentage={setPercentage}
         setMaxBalance={setMaxBalance}
+        displayBalance={true}
       />
 
       <div className={`${isLoading ? "shimmer" : ""} my-2 flex flex-col gap-1 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]`}>

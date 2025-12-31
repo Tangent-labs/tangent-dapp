@@ -1,6 +1,15 @@
 {
   "tasks": [
     {
+      "name": "crvUSD-USDC",
+      "asset": "crvUSD-USDC",
+      "address": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
+      "link": "https://www.curve.finance/dex/ethereum/pools/factory-crvusd-0/deposit",
+      "protocolName": "Curve",
+      "actionLabel": "Get crvUSD/USDC LP",
+      "points": 400
+    },
+    {
       "name": "crvUSD-USDT",
       "asset": "crvUSD-USDT",
       "address": "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4",
@@ -13,28 +22,19 @@
       "name": "crvUSD-USDC",
       "asset": "crvUSD-USDC",
       "address": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
-      "link": "https://www.curve.finance/dex/ethereum/pools/factory-crvusd-0/deposit",
-      "protocolName": "Curve",
-      "actionLabel": "Get crvUSD/USDC LP",
-      "points": 400
-    },
-    {
-      "name": "DOLA-USR",
-      "asset": "DOLA-USR",
-      "address": "0x38De22a3175708D45E7c7c64CD78479C8B56f76E",
-      "link": "https://www.curve.finance/dex/ethereum/pools",
-      "protocolName": "Convex",
-      "actionLabel": "Get DOLA-USR LP",
-      "points": 200
-    },
-    {
-      "name": "crvUSD-USDC",
-      "asset": "crvUSD-USDC",
-      "address": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
       "link": "https://www.curve.finance/dex/ethereum/pools",
       "protocolName": "Stake DAO",
       "actionLabel": "Stake crvUSD-USDC",
-      "points": 20000
+      "points": 2000
+    },
+    {
+      "name": "USG-USDC",
+      "asset": "USG-USDC",
+      "address": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
+      "link": "https://www.curve.finance/dex/ethereum/pools",
+      "protocolName": "Tangent",
+      "actionLabel": "Hold USG-USDC",
+      "points": 1200
     }
   ]
 }

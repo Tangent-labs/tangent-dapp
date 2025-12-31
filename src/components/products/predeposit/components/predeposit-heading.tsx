@@ -47,7 +47,8 @@ export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumula
           <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px]">
             <span className="text-[20px] font-semibold">TAN allocation</span>
             <span className="flex items-center justify-center gap-2 text-[30px] font-semibold">
-              {formatNumber(Number(tanAllocation), 0)} <TokenImage token="TAN" size={12} className="w-8" />
+              {formatNumber(Number(tanAllocation), 0)}
+              <TokenImage token="TAN" size={12} className="w-8" />
             </span>
           </div>
 

@@ -4,12 +4,11 @@ export const metadata: Metadata = {
   description: "the tangent DAPP",
 }
 import { ReactNode } from "react"
-import { WalletConnexionProvider } from "@/components/products/wallet/wallet_connexion_context"
-import MenuBarFeature from "@/components/products/product_nav/menu_bar_feature"
-import { fetchTokens } from "@/components/products/usg/usg_controller"
-import MobileMenuBarFeature from "@/components/products/product_nav/mobile_menu_bar_feature"
+import { RouteManager } from "./components/route-manager"
 import { USGProvider } from "@/components/products/usg/usg_context"
+import { fetchTokens } from "@/components/products/usg/usg_controller"
 import { RootProvider } from "@/components/products/root/root_context"
+import { WalletConnexionProvider } from "@/components/products/wallet/wallet_connexion_context"
 
 type ProductLayoutProps = {
   children: ReactNode
@@ -23,11 +22,7 @@ export default async function RootLayout({ children }: ProductLayoutProps) {
     <RootProvider>
       <WalletConnexionProvider>
         <USGProvider tokens={tokens}>
-          <MenuBarFeature />
-          <div className="usg-container mx-auto flex min-h-[80vh] w-full bg-repeat px-2 md:px-8 lg:px-4">
-            <div className="w-full">{children}</div>
-          </div>
-          <MobileMenuBarFeature />
+          <RouteManager>{children}</RouteManager>
         </USGProvider>
       </WalletConnexionProvider>
     </RootProvider>

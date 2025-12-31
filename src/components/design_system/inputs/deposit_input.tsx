@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
 import BorderPanel from "../structure/border_panel"
 import { AssetDataPriced, CollateralInfo } from "@/types"
-import { IconThunder } from "@/components/icons"
+import { IconThunder, IconWallet } from "@/components/icons"
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
-import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
+import { formatBigInt, formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { SliderInput } from "./slider_input"
 
 type DepositInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -24,6 +24,7 @@ type DepositInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   percentage: number
   setPercentage: (value: number) => void
   displaySliderInput?: boolean
+  displayBalance?: boolean
 }
 
 export function DepositInput({
@@ -40,6 +41,7 @@ export function DepositInput({
   displaySliderInput = false,
   disabled,
   setPercentage,
+  displayBalance = false,
   ...props
 }: DepositInputProps) {
   const balanceNumber = useMemo(() => {
@@ -112,7 +114,18 @@ export function DepositInput({
       )}
       onClick={onClickFocus}
     >
-      <div className="text-sm text-subtitle">{labelDeposit}</div>
+      {displayBalance ? (
+        <div className="flex w-full items-center justify-between">
+          <div className="text-sm text-subtitle">{labelDeposit}</div>
+          <div className="flex items-center justify-center gap-1 text-xs text-subtitle">
+            {formatBigInt(balance, depositAsset?.decimals || 18, 2)}
+            <IconWallet className="w-3"></IconWallet>
+          </div>
+        </div>
+      ) : (
+        <div className="text-sm text-subtitle">{labelDeposit}</div>
+      )}
+
       <div className="flex justify-between">
         <div className="flex items-center justify-start">
           <input

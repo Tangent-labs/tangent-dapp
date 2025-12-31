@@ -325,7 +325,7 @@ export type EarnProtocolInput = {
   link: string
   protocolName: string
   actionLabel: string
-  bonusPts: number
+  points: number
   address: string
 }
 
@@ -337,7 +337,7 @@ export type EarnTask = {
   actionLabel: string
   currentAPR: number
   projectedAPR: number
-  bonusPts: number
+  points: number
   address: string
 }
 
@@ -527,6 +527,7 @@ export type GaugeAPR = {
   gaugeFutureCrvApy: Array<number>
   lpTokenAddress?: Address
   convexPoolData?: { usdTotal?: number }
+  usdTotal?: number
 }
 
 export type StakeDaoAPRData = {

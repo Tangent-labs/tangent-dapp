@@ -5,9 +5,9 @@ import { getTokensPrice } from "@/services/service_price"
 import { getPricesFromTokenAmounts } from "@/lib/asset_utils"
 import { USG_CONTRACT, USGMarkets } from "../usg_repository"
 import { HarvesterInfo, HarvesterInfoDisplay } from "../usg_type"
+import { AssetData, AssetDataPriced, ListHeaderData } from "@/types"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import rewardAccumulator from "../../../../abi/USG/RewardAccumulator.json"
-import { AssetData, AssetDataPriced, ExistingAsset, ListHeaderData } from "@/types"
 import { executeChainViewUnique, executeContractCall } from "@/services/service_rpc"
 
 export async function doHarvest(stakingAddress: Address, walletClient: WalletClient) {
@@ -65,7 +65,7 @@ export function transformHarvestOnChainData(harvesterInfos: HarvesterInfo[], ass
 }
 
 export const computeAndReturnPrices = async (harvestInfo: HarvesterInfo[]) => {
-  const tokens: ExistingAsset[] = []
+  const tokens: string[] = []
 
   harvestInfo.forEach((el) => {
     el.tokenAmounts.forEach((t) => {

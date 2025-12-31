@@ -35,7 +35,7 @@ export const computeAndReturnPrices = async (claimInfo: ClaimerInfo[]) => {
     tokensSet.add(el.collatStaked.symbol)
   })
 
-  const tokens: ExistingAsset[] = Array.from(tokensSet)
+  const tokens: string[] = Array.from(tokensSet)
 
   try {
     const prices = await getTokensPrice(tokens)

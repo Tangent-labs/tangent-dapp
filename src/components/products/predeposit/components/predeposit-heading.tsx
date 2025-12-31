@@ -9,18 +9,18 @@ import TokenImage from "@/components/design_system/structure/token_image"
 type PredepositHeadingProps = {
   USGUSDCAccumulatedBalance: bigint
   USGfrxUSDAccumulatedBalance: bigint
-  accumulatedBalance: bigint
+  accumulatedTotal: bigint
 }
 
 const TOTAL_TAN_ALLOCATION = 200_000n
 
-export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumulatedBalance, accumulatedBalance }: PredepositHeadingProps) => {
+export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumulatedBalance, accumulatedTotal }: PredepositHeadingProps) => {
   const tanAllocation = useMemo(() => {
-    if (accumulatedBalance) {
-      return ((USGUSDCAccumulatedBalance + USGfrxUSDAccumulatedBalance) * TOTAL_TAN_ALLOCATION) / accumulatedBalance
+    if (accumulatedTotal) {
+      return ((USGUSDCAccumulatedBalance + USGfrxUSDAccumulatedBalance) * TOTAL_TAN_ALLOCATION) / accumulatedTotal
     }
     return 0n
-  }, [USGUSDCAccumulatedBalance, USGfrxUSDAccumulatedBalance, accumulatedBalance])
+  }, [USGUSDCAccumulatedBalance, USGfrxUSDAccumulatedBalance, accumulatedTotal])
 
   return (
     <>

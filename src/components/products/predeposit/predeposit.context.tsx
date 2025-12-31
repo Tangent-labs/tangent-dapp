@@ -5,7 +5,7 @@ import { PredepositStatus } from "./types/types"
 import { USGTokens } from "../usg/usg_repository"
 import { AssetDataPriced, FormState } from "@/types"
 import { useRootContext } from "../root/root_context"
-import { getSwapAssetPrice } from "@/services/service_price"
+import { getTokensPrice } from "@/services/service_price"
 import { ToastComponent } from "@/components/design_system/toast"
 import { Address, formatUnits, WalletClient, zeroAddress } from "viem"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
@@ -166,11 +166,9 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
 
   useEffect(() => {
     if (walletClient) {
-      computeUSDCPrice()
+      fetchPrices()
       getUSGUSDCBalanceAllowance(walletClient)
       getUSGfrxUSDBalanceAllowance(walletClient)
-
-      computefrxUSDPrice()
 
       setIsLoading(false)
     }
@@ -188,14 +186,13 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     if (data) setfrxUSDBalanceAllowance({ balance: data[0]?.balance, allowance: data[0]?.allowances[0].allowance })
   }
 
-  const computefrxUSDPrice = async () => {
-    const data = await getSwapAssetPrice(frxUSD_ADDRESS)
-    setfrxUSDPrice(data || 1)
-  }
+  const fetchPrices = async () => {
+    const data = await getTokensPrice(["frxUSD", "USDC"])
 
-  const computeUSDCPrice = async () => {
-    const data = await getSwapAssetPrice(USDC_ADDRESS)
-    setUSDCPrice(data || 1)
+    if (data) {
+      setUSDCPrice(data["USDC"])
+      setfrxUSDPrice(data["frxUSD"])
+    }
   }
 
   const USDCInfo = useMemo(() => {
@@ -269,8 +266,8 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
       return getFormState(
         USDCDepositValue,
         USDCBalanceAllowance,
-        predepositStatus?.USGUSDCData?.USGUSDCCap,
-        predepositStatus?.USGUSDCData?.USGUSDCAccumulatedTotal
+        predepositStatus?.USGUSDCData?.USGUSDCCap / 10n ** 12n,
+        predepositStatus?.USGUSDCData?.USGUSDCAccumulatedTotal / 10n ** 12n
       )
     }
     return { canProcess: false, cantProcessReasons: [], haveToApprove: false }

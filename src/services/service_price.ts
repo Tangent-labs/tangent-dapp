@@ -59,7 +59,7 @@ export const getPrices = unstable_cache(
  * @param tokens only returns the price of some selected tokens
  * @returns
  */
-export const getTokensPrice = async (tokens: ExistingAsset[]) => {
+export const getTokensPrice = async (tokens: string[]) => {
   const selectedAddresses: Address[] = Object.entries(TOKEN_ADDR)
     .filter(([key]) => tokens.includes(key as ExistingAsset))
     .map(([, value]) => value)

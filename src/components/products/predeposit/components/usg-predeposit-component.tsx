@@ -103,10 +103,14 @@ export const USGPredepositComponent = ({
           </div>
           <BorderPanel className="flex items-center justify-center gap-2 bg-select-input px-2.5 py-2">
             <TokenImage token={pool} size={32} />
-            <div className="font-semibold">{pool}</div>
+            <div className="text-[15px] font-semibold">{pool}</div>
           </BorderPanel>
         </div>
       </div>
+
+      <span className="mb-2 flex h-4 w-full items-center justify-center">
+        {formState?.cantProcessReasons?.length > 0 && <span className="text-sm font-semibold text-danger"> {formState?.cantProcessReasons[0]} </span>}
+      </span>
 
       <FormButtons
         actions={{

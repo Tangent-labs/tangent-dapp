@@ -29,6 +29,8 @@ export const PredepositDepositSection = () => {
     predepositStatus,
     isWhitelisted,
     frxUSDslippage,
+    projectedUSDCTANAllocation,
+    projectedfrxUSDTANAllocation,
     setfrxUSDSlippage,
     actionApproveUSGUSDC,
     actionDepositUSGUSDC,
@@ -82,7 +84,7 @@ export const PredepositDepositSection = () => {
         currentValue={(predepositStatus?.USGUSDCData.USGUSDCAccumulatedTotal || 0n) + (predepositStatus?.USGfrxUSDData.USGfrxUSDAccumulatedTotal || 0n)}
       ></DynamicProgressBar>
 
-      <div className="relative mt-6">
+      <div className="relative mt-4">
         <div className="flex w-full flex-col items-center justify-center gap-2 lg:flex-row">
           <USGPredepositComponent
             predepositStatus={predepositStatus}
@@ -104,6 +106,7 @@ export const PredepositDepositSection = () => {
             connect={connect}
             pool={predepositStatus?.USGUSDCData?.lpName as ExistingAsset}
             setMaxBalance={setDepositMaxUSGUSDC}
+            tanAllocation={projectedUSDCTANAllocation}
           />
 
           <USGPredepositComponent
@@ -126,6 +129,7 @@ export const PredepositDepositSection = () => {
             connect={connect}
             pool={predepositStatus?.USGfrxUSDData?.lpName as ExistingAsset}
             setMaxBalance={setDepositMaxUSGfrxUSD}
+            tanAllocation={projectedfrxUSDTANAllocation}
           />
         </div>
 

@@ -5,26 +5,21 @@ import { useMemo } from "react"
 import { formatUnits } from "viem"
 import { formatNumber } from "@/lib/number_formatter"
 import TokenImage from "@/components/design_system/structure/token_image"
+import { TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "../predeposit.controller"
 
 type PredepositHeadingProps = {
   USGUSDCAccumulatedBalance: bigint
   USGfrxUSDAccumulatedBalance: bigint
-  accumulatedTotal: bigint
 }
 
-const TOTAL_TAN_ALLOCATION = 200_000n
-
-export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumulatedBalance, accumulatedTotal }: PredepositHeadingProps) => {
+export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumulatedBalance }: PredepositHeadingProps) => {
   const tanAllocation = useMemo(() => {
-    if (accumulatedTotal) {
-      return ((USGUSDCAccumulatedBalance + USGfrxUSDAccumulatedBalance) * TOTAL_TAN_ALLOCATION) / accumulatedTotal
-    }
-    return 0n
-  }, [USGUSDCAccumulatedBalance, USGfrxUSDAccumulatedBalance, accumulatedTotal])
+    return ((USGUSDCAccumulatedBalance + USGfrxUSDAccumulatedBalance) * TOTAL_TAN_ALLOCATION) / (TOTAL_DEPOSIT_CAP * 10n ** 18n)
+  }, [USGUSDCAccumulatedBalance, USGfrxUSDAccumulatedBalance])
 
   return (
     <>
-      <span className="mt-6 text-2xl font-semibold text-white lg:text-4xl">Pre-deposit campaign</span>
+      <span className="mt-4 text-2xl font-semibold text-white lg:text-4xl">Pre-deposit campaign</span>
       <span className="text-sm text-subtitle">Deposit USDC or frxUSD and receive LP tokens to earn:</span>
 
       <section className="mt-4 flex w-full flex-col-reverse items-center justify-center gap-2 xl:flex-row">

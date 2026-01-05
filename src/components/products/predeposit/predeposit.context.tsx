@@ -12,7 +12,7 @@ import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { fetchUserStatus, validatePredepositSignature } from "./api/client.api"
 import { doApprove, getBalancesAndAllowances } from "../usg/record/usg_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { deposit, fetchQuote, getFormState, mapPredepositStatus } from "./predeposit.controller"
+import { deposit, fetchQuote, getFormState, mapPredepositStatus, TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "./predeposit.controller"
 
 type PredepositContextProps = {
   children: ReactNode
@@ -80,6 +80,10 @@ type PredepositContextValues = {
   setDepositMaxUSGUSDC: () => void
 
   setDepositMaxUSGfrxUSD: () => void
+
+  projectedfrxUSDTANAllocation: bigint
+
+  projectedUSDCTANAllocation: bigint
 }
 
 export const PredepositContext = createContext<PredepositContextValues | undefined>(undefined)
@@ -407,6 +411,20 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     handleDepositfrxUSDChange(valueToFill)
   }
 
+  const projectedUSDCTANAllocation = useMemo(() => {
+    if (USDCDepositValue) {
+      return (USDCDepositValue * 10n ** 12n * TOTAL_TAN_ALLOCATION) / (TOTAL_DEPOSIT_CAP * 10n ** 18n)
+    }
+    return 0n
+  }, [USDCDepositValue])
+
+  const projectedfrxUSDTANAllocation = useMemo(() => {
+    if (frxUSDDepositValue) {
+      return (frxUSDDepositValue * TOTAL_TAN_ALLOCATION) / (TOTAL_DEPOSIT_CAP * 10n ** 18n)
+    }
+    return 0n
+  }, [frxUSDDepositValue])
+
   const contextValue: PredepositContextValues = {
     isLoading,
     slippage,
@@ -443,6 +461,8 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     isWhitelisted,
     setDepositMaxUSGUSDC,
     setDepositMaxUSGfrxUSD,
+    projectedUSDCTANAllocation,
+    projectedfrxUSDTANAllocation,
   }
 
   return <PredepositContext.Provider value={contextValue}>{children}</PredepositContext.Provider>

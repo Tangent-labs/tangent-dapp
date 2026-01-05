@@ -32,6 +32,7 @@ type USGPredepositComponentProps = {
   connect: () => void
   pool: ExistingAsset
   setMaxBalance: () => void
+  tanAllocation: bigint
 }
 
 export const USGPredepositComponent = ({
@@ -54,6 +55,7 @@ export const USGPredepositComponent = ({
   connect,
   pool,
   setMaxBalance,
+  tanAllocation,
 }: USGPredepositComponentProps) => {
   return (
     <div className="flex w-full flex-col rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px]">
@@ -108,7 +110,15 @@ export const USGPredepositComponent = ({
         </div>
       </div>
 
-      <span className="mb-2 flex h-4 w-full items-center justify-center">
+      <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel px-3 py-1 backdrop-blur-[60px]">
+        <span className="text-xs font-semibold text-subtitle">TAN allocation</span>
+        <span className="flex items-center justify-center gap-2 text-xl font-semibold">
+          {formatNumber(Number(tanAllocation), 0)}
+          <TokenImage token="tan" size={12} className="w-4" />
+        </span>
+      </div>
+
+      <span className="my-2 flex h-4 w-full items-center justify-center">
         {formState?.cantProcessReasons?.length > 0 && <span className="text-sm font-semibold text-danger"> {formState?.cantProcessReasons[0]} </span>}
       </span>
 

@@ -145,8 +145,6 @@ export function PredepositOpportunitiesListInner({ displayRows }: PredepositOppo
               <span className="whitespace-nowrap text-xs text-subtitle">
                 {!!item?.projectedAPR && item?.projectedAPR !== 0 ? <>Proj: {item?.projectedAPR.toFixed(2)}%</> : <>Proj: 0%</>}
               </span>
-
-              <span className="hidden text-xs md:flex">Up to {(item?.projectedAPR * 10).toFixed(2)}% at 10x</span>
             </div>
           </div>
 

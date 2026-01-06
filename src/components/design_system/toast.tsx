@@ -15,13 +15,13 @@ export const ToastComponent = ({ data, closeToast }: ToastContentProps) => {
   const computedTitleClass = () => {
     switch (data.type) {
       case "Error":
-        return "bg-danger"
+        return "text-danger"
       case "Notification":
-        return "bg-tonic"
+        return "text-tonic"
       case "Success":
-        return "bg-success"
+        return "text-success"
       case "Pending Transaction":
-        return "bg-light-tonic"
+        return "text-tonic"
     }
   }
 
@@ -34,14 +34,14 @@ export const ToastComponent = ({ data, closeToast }: ToastContentProps) => {
       case "Success":
         return <IconBell className="mr-2 w-4 fill-success" />
       case "Pending Transaction":
-        return <IconBell className="mr-2 w-4 fill-light-tonic" />
+        return <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-tonic border-t-white/40" aria-label="Loading" />
     }
   }
 
   return (
     <div className="flex w-full flex-col rounded-[10px] border-2 border-white border-opacity-20 bg-dark">
       <div className="flex items-center justify-between border-b border-b-white border-opacity-20">
-        <div className={`flex min-w-56 items-center justify-start bg-clip-text px-2 py-1 text-lg font-semibold text-transparent ` + ` ${computedTitleClass()}`}>
+        <div className={`flex min-w-56 items-center justify-start px-2 py-1 text-lg font-semibold ` + ` ${computedTitleClass()}`}>
           {computedIcon()}
           {data?.type}
         </div>

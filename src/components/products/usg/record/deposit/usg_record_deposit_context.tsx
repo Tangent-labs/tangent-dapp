@@ -331,7 +331,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
           fetchBalanceAllowanceData(depositAssetInfo.address)
           return { type: "Success", content: `${depositAssetInfo?.symbol} approved successfully.` }
         },
-        error: () => ({ type: "Error", content: "Error" }),
       })
     } catch (e) {
       console.error(e)
@@ -352,7 +351,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
           setIsDepositLoading(false)
           return { type: "Success", content: `${depositAssetInfo?.symbol} approved successfully.` }
         },
-        error: () => ({ type: "Error", content: "Error" }),
       })
     }
   }
@@ -530,7 +528,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
         error: () => {
           setIsDepositLoading(false)
           setIsZapLoading(false)
-
           return { type: "Error", content: "Unable to proceed with the transaction." }
         },
       })
@@ -538,7 +535,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       console.error("Error in zapAndDeposit:", error)
       setIsZapLoading(false)
       setIsDepositLoading(false)
-      toast.error(ToastComponent, { data: { type: "Error", content: "Transation failed." } })
     }
   }
 

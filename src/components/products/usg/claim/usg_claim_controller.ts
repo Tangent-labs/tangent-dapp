@@ -6,7 +6,7 @@ import { Abi, Address, formatUnits, Hex, WalletClient } from "viem"
 import claimContract from "../../../../abi/USG/RewardAccumulator.json"
 import { AssetDataPriced, ExistingAsset, ListHeaderData } from "@/types"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
-import { executeChainViewUnique, executeContractCall } from "@/services/service_rpc"
+import { executeChainViewUnique, executeContractCall, waitForTransaction } from "@/services/service_rpc"
 
 export async function doClaim(contractAddress: Address, markets: Address[], rewardsLength: number | undefined, walletClient: WalletClient) {
   const txData = {
@@ -16,7 +16,9 @@ export async function doClaim(contractAddress: Address, markets: Address[], rewa
     address: contractAddress,
     gas: undefined as undefined | bigint,
   }
-  return await executeContractCall(walletClient, txData)
+
+  const txHash = await executeContractCall(walletClient, txData)
+  return await waitForTransaction(txHash)
 }
 
 export async function getUSGClaimOnChainData(currentAddress: string) {

@@ -69,14 +69,8 @@ type ToastTxConfig<T> = {
   onError?: (err: unknown) => void | Promise<void>
 }
 
-const defaultErrorMapper = (err: unknown): AppToastData => {
-  // Common wallet rejection codes/messages (MetaMask + some providers)
-  if (typeof err === "object" && err && "code" in err && err.code === 4001) {
-    return { type: "Notification", content: "Transaction rejected in wallet." }
-  }
-
-  const msg = err instanceof Error ? err.message : "Transaction failed"
-  return { type: "Error", content: msg }
+const defaultErrorMapper = (): AppToastData => {
+  return { type: "Error", content: "Error" }
 }
 
 export const toastTx = async <T,>(promise: Promise<T>, cfg: ToastTxConfig<T>): Promise<T> => {
@@ -90,7 +84,7 @@ export const toastTx = async <T,>(promise: Promise<T>, cfg: ToastTxConfig<T>): P
     success: {
       render: ({ data, closeToast }) => {
         const result = data as T
-        void cfg.onSuccess?.(result)
+        cfg.onSuccess?.(result)
 
         const successData = typeof cfg.success === "function" ? cfg.success(result) : cfg.success
         return <ToastComponent closeToast={closeToast} data={successData} />
@@ -99,7 +93,7 @@ export const toastTx = async <T,>(promise: Promise<T>, cfg: ToastTxConfig<T>): P
 
     error: {
       render: ({ data, closeToast }) => {
-        void cfg.onError?.(data)
+        cfg.onError?.(data)
         return <ToastComponent closeToast={closeToast} data={mapError(data)} />
       },
     },

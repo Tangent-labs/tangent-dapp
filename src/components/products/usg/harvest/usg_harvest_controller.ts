@@ -8,7 +8,7 @@ import { HarvesterInfo, HarvesterInfoDisplay } from "../usg_type"
 import { AssetData, AssetDataPriced, ListHeaderData } from "@/types"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import rewardAccumulator from "../../../../abi/USG/RewardAccumulator.json"
-import { executeChainViewUnique, executeContractCall } from "@/services/service_rpc"
+import { executeChainViewUnique, executeContractCall, waitForTransaction } from "@/services/service_rpc"
 
 export async function doHarvest(stakingAddress: Address, walletClient: WalletClient) {
   const [account] = await walletClient.requestAddresses()
@@ -20,7 +20,8 @@ export async function doHarvest(stakingAddress: Address, walletClient: WalletCli
     address: USG_CONTRACT.REWARD_ACCUMULATOR,
     gas: undefined as undefined | bigint,
   }
-  return await executeContractCall(walletClient, txData)
+  const txHash = await executeContractCall(walletClient, txData)
+  return await waitForTransaction(txHash)
 }
 
 export async function doMultiHarvest(addresses: Array<Address>, walletClient: WalletClient) {
@@ -33,7 +34,9 @@ export async function doMultiHarvest(addresses: Array<Address>, walletClient: Wa
     address: USG_CONTRACT.REWARD_ACCUMULATOR,
     gas: undefined as undefined | bigint,
   }
-  return await executeContractCall(walletClient, txData)
+
+  const txHash = await executeContractCall(walletClient, txData)
+  return await waitForTransaction(txHash)
 }
 
 export async function getUSGHarvestOnChainData() {

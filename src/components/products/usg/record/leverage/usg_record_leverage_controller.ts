@@ -3,7 +3,7 @@ import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getBorrowCommonFormState } from "../usg_record_controller"
 import { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { MarketDetailData } from "../../usg_type"
-import { getPublicClient } from "@/services/service_rpc"
+import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 
 export function getLeverageFormState(
   marketData?: MarketDetailData,
@@ -79,12 +79,9 @@ export const doZapLeverage = async (
   } as EstimateContractGasParameters
 
   const gas = await publicClient.estimateContractGas(estimateGasData)
-
   const txData = { ...estimateGasData, gas }
-
   const hash = await walletClient.writeContract(txData as WriteContractParameters)
-
-  return hash
+  return await waitForTransaction(hash)
 }
 
 export const doMarketLeverage = async (
@@ -114,5 +111,5 @@ export const doMarketLeverage = async (
   const gas = await publicClient.estimateContractGas(estimateGasData)
   const txData = { ...estimateGasData, gas }
   const hash = await walletClient.writeContract(txData as WriteContractParameters)
-  return hash
+  return await waitForTransaction(hash)
 }

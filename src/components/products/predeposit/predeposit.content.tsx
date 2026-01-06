@@ -70,7 +70,6 @@ export const PredepositContent = ({ opportunitiesData }: PredepositContentProps)
           <PredepositHeading
             USGUSDCAccumulatedBalance={predepositStatus?.USGUSDCData.USGUSDCAccumulatedBalance || 0n}
             USGfrxUSDAccumulatedBalance={predepositStatus?.USGfrxUSDData.USGfrxUSDAccumulatedBalance || 0n}
-            accumulatedTotal={(predepositStatus?.USGUSDCData.USGUSDCAccumulatedTotal || 0n) + (predepositStatus?.USGfrxUSDData.USGfrxUSDAccumulatedTotal || 0n)}
           />
 
           {predepositStatus?.predepositState === "retention" ? <PredepositRetentionPhase /> : <PredepositDepositSection />}

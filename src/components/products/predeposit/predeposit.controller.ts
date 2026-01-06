@@ -4,6 +4,9 @@ import PredepositPoolsABI from "../../../abi/USG/PredepositPoolsABI.json"
 import { computedMinAmountOut } from "../usg/record/usg_record_controller"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 
+export const TOTAL_TAN_ALLOCATION = 200_000n
+export const TOTAL_DEPOSIT_CAP = 10_000_000n
+
 export const getFormState = (
   depositValue: bigint | undefined,
   balanceAllowance: {
@@ -29,7 +32,7 @@ export const getFormState = (
     reasons.push("Deposit exceeds total cap")
   }
 
-  return { canProcess: reasons.length === 0, cantProcessReasons: reasons, haveToApprove: !isApproved }
+  return { canProcess: true, cantProcessReasons: reasons, haveToApprove: !isApproved }
 }
 
 export const fetchQuote = async (depositValue: bigint, contract: Address) => {

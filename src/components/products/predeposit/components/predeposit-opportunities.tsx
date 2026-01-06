@@ -60,7 +60,7 @@ export const PredepositOpportunities = ({ opportunitiesData }: PredepositContent
 
   return (
     <>
-      <section className="mt-6 flex w-full flex-col items-start justify-start lg:mt-12">
+      <section className="mt-4 flex w-full flex-col items-start justify-start lg:mt-12">
         <div className="text-2xl font-semibold text-white lg:text-4xl">Opportunities</div>
         <div className="text-sm text-subtitle">View all available rewards opportunities.</div>
       </section>

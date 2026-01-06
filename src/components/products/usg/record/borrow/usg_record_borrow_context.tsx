@@ -1,14 +1,13 @@
 "use client"
 
 import { FormState } from "@/types"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { useUSGRecordContext } from "../usg_record_context"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doMarketBorrow, getBorrowFormState } from "./usg_record_borrow_controller"
-import { toast } from "react-toastify"
-import { ToastComponent } from "@/components/design_system/toast"
-import { computeMaxBorrowable } from "../usg_record_controller"
 import { useUSGContext } from "../../usg_context"
+import { toastTx } from "@/components/design_system/toast"
+import { useUSGRecordContext } from "../usg_record_context"
+import { computeMaxBorrowable } from "../usg_record_controller"
+import { doMarketBorrow, getBorrowFormState } from "./usg_record_borrow_controller"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 type USGBorrowContextProps = {
   children: ReactNode
@@ -37,20 +36,22 @@ export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
 
   const [borrowPercentage, setBorrowPercentage] = useState<number>(0)
 
-  const actionBorrow = () => {
+  const actionBorrow = async () => {
     const walletClient = getWalletClient()
     if (walletClient)
-      doMarketBorrow(walletClient, { marketAddress: marketData!.marketAddress, borrowWeiValue })
-        .then(() => {
+      await toastTx(doMarketBorrow(walletClient, { marketAddress: marketData!.marketAddress, borrowWeiValue }), {
+        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+        success: () => {
           setBorrowWeiValue(0n)
           loadOnChainData()
           setBorrowPercentage(0)
           loadUSGsUSGMetrics()
-        })
-        .catch((e) => {
-          console.error(e)
-          toast.error(ToastComponent, { data: { type: "Error", content: "Borrow failed." } })
-        })
+          return { type: "Success", content: "Borrow successfull." }
+        },
+        error: () => {
+          return { type: "Error", content: "Borrow failed." }
+        },
+      })
   }
 
   useEffect(() => {

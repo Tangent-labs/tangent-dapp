@@ -70,7 +70,7 @@ export const doCustomSwap = async (walletClient: WalletClient, abi: Abi, method:
   const txData = { ...estimateGasData, gas }
 
   const hash = await walletClient.writeContract(txData as WriteContractParameters)
-  return hash
+  return await waitForTransaction(hash)
 }
 
 export function getSwapFormState(

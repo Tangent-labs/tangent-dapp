@@ -326,7 +326,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       if (!walletClient || !depositAssetInfo) throw new Error("Wallet not available")
 
       await toastTx(doApprove(walletClient, depositAssetInfo.address, marketInfo.marketAddress, depositWeiValue ?? 0n), {
-        pending: { type: "Pending Transaction", content: "Waiting for approval confirmation…" },
+        pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
         success: () => {
           fetchBalanceAllowanceData(depositAssetInfo.address)
           return { type: "Success", content: `${depositAssetInfo?.symbol} approved successfully.` }
@@ -344,7 +344,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     const walletClient = getWalletClient()
     if (walletClient && depositWeiValue) {
       await toastTx(doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue), {
-        pending: { type: "Pending Transaction", content: "Waiting for approval confirmation…" },
+        pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
         success: () => {
           fetchBalanceAllowanceData(depositAssetInfo?.address)
           loadOnChainData()

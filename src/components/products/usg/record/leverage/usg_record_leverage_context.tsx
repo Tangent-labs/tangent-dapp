@@ -6,7 +6,7 @@ import { formatUnits, parseEther } from "viem"
 import { useUSGContext } from "../../usg_context"
 import { USG_CONTRACT } from "../../usg_repository"
 import { useUSGRecordContext } from "../usg_record_context"
-import { ToastComponent } from "@/components/design_system/toast"
+import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
@@ -291,27 +291,31 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     })
   }, [])
 
-  const actionApproveZap = () => {
+  const actionApproveZap = async () => {
     setIsDepositLoading(true)
     const walletClient = getWalletClient()
-    if (walletClient && depositWeiValue)
-      doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue)
-        .then(() => {
+    if (walletClient && depositWeiValue) {
+      await toastTx(doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue), {
+        pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
+        success: () => {
           fetchBalanceAllowanceData(depositAssetInfo?.address)
           setIsDepositLoading(false)
-        })
-        .catch((error) => {
-          console.error("Error during approval:", error)
-          setIsDepositLoading(false)
-        })
+          return { type: "Success", content: `${depositAssetInfo?.symbol} approved successfully.` }
+        },
+      })
+    }
   }
 
-  const actionApprove = () => {
+  const actionApprove = async () => {
     setIsDepositLoading(true)
     const walletClient = getWalletClient()
     if (walletClient && depositWeiValue)
-      doApprove(walletClient, marketInfo?.collatAddress, marketInfo?.marketAddress, depositWeiValue).then(() => {
-        loadOnChainData()
+      await toastTx(doApprove(walletClient, marketInfo?.collatAddress, marketInfo?.marketAddress, depositWeiValue), {
+        pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
+        success: () => {
+          loadOnChainData()
+          return { type: "Success", content: `${depositAssetInfo?.symbol} approved successfully.` }
+        },
       })
   }
 
@@ -319,7 +323,10 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     try {
       const walletClient = getWalletClient()
 
-      if (!walletClient || !currentAddress || !depositWeiValue || !borrowWeiValue || !depositAssetInfo || !leveragedCollateralQuote || !zapValue) return
+      if (!walletClient || !currentAddress || !depositWeiValue || !borrowWeiValue || !depositAssetInfo || !leveragedCollateralQuote || !zapValue) {
+        toast.error(ToastComponent, { data: { type: "Error", content: "Error while computing leverage data." } })
+        return
+      }
 
       setIsDepositLoading(true)
 

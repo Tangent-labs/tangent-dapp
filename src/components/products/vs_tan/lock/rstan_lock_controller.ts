@@ -44,7 +44,7 @@ export const doZapAndIncreaseLock = async (
   const gas = await publicClient.estimateContractGas(estimateGasData)
   const txData = { ...estimateGasData, gas }
   const hash = await walletClient.writeContract(txData as WriteContractParameters)
-  return hash
+  return await waitForTransaction(hash)
 }
 
 export const doZapAndLock = async (
@@ -82,7 +82,7 @@ export const doZapAndLock = async (
   const gas = await publicClient.estimateContractGas(estimateGasData)
   const txData = { ...estimateGasData, gas }
   const hash = await walletClient.writeContract(txData as WriteContractParameters)
-  return hash
+  return await waitForTransaction(hash)
 }
 
 export const doLock = async (depositWeiValue: bigint, walletClient: WalletClient, isPermaLock: boolean) => {

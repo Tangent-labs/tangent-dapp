@@ -95,7 +95,7 @@ export const doUnstakeUSG = async ({ walletClient, stakingAddress, weiValue }: {
   txData.gas = gas
 
   const hash = await walletClient.writeContract(txData as unknown as WriteContractParameters)
-  return hash
+  return await waitForTransaction(hash)
 }
 
 export const doStakeUSG = async ({ walletClient, stakingAddress, weiValue }: { walletClient: WalletClient; stakingAddress: Address; weiValue: bigint }) => {
@@ -116,7 +116,7 @@ export const doStakeUSG = async ({ walletClient, stakingAddress, weiValue }: { w
   txData.gas = gas
 
   const hash = await walletClient.writeContract(txData as unknown as WriteContractParameters)
-  return hash
+  return await waitForTransaction(hash)
 }
 
 export const computedProjection = (amount: number, timeFrame: number, apr: number) => {

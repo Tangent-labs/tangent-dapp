@@ -18,7 +18,7 @@ import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
 import { USG_CONTRACT, USGMarkets, USGOracles } from "../usg_repository"
 import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
 import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
-import { formatBigInt, formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
+import { formatBigInt, formatBigIntAsNumber, formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
 import { Abi, Address, formatEther, formatUnits, Hex, parseEther, WalletClient, zeroAddress } from "viem"
 
 const DENOMINATOR = 100_000n
@@ -78,7 +78,7 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, borrowWe
     const totalDebt = marketData?.debtInfos?.totalDebt || 0n
 
     if (borrowWeiValue + totalDebt < minLoan) {
-      reasons.push(`Min debt is ${formatEther(minLoan)} USG`)
+      reasons.push(`Min debt is ${formatBigIntAsNumber(minLoan, 18, 0)} USG`)
     } else if (BigInt(marketData?.debtInfos?.userDebt || 0n) + BigInt(borrowWeiValue || 0n) > (marketData?.constants?.maxMarketDebt || 0n)) {
       reasons.push("Max market debt reached.")
     }

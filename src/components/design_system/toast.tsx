@@ -62,11 +62,8 @@ export type AppToastData = {
 type ToastTxConfig<T> = {
   pending: AppToastData
 
-  success: (err: T) => AppToastData
+  success: (result: T) => AppToastData
   error?: (err: unknown) => AppToastData
-
-  onSuccess?: (result: T) => AppToastData | Promise<AppToastData>
-  onError?: (err: unknown) => void | Promise<void>
 }
 
 const defaultErrorMapper = (): AppToastData => {
@@ -82,20 +79,11 @@ export const toastTx = async <T,>(promise: Promise<T>, cfg: ToastTxConfig<T>): P
     },
 
     success: {
-      render: ({ data, closeToast }) => {
-        const result = data as T
-        cfg.onSuccess?.(result)
-
-        const successData = typeof cfg.success === "function" ? cfg.success(result) : cfg.success
-        return <ToastComponent closeToast={closeToast} data={successData} />
-      },
+      render: ({ data, closeToast }) => <ToastComponent closeToast={closeToast} data={cfg.success(data)} />,
     },
 
     error: {
-      render: ({ data, closeToast }) => {
-        cfg.onError?.(data)
-        return <ToastComponent closeToast={closeToast} data={mapError(data)} />
-      },
+      render: ({ data, closeToast }) => <ToastComponent closeToast={closeToast} data={mapError(data)} />,
     },
   })) as T
 }

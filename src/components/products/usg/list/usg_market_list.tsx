@@ -4,20 +4,22 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
 import { useRouter } from "next/navigation"
+import { useUSGContext } from "../usg_context"
 import { ExistingAsset, ListState } from "@/types"
-import { formatDollar } from "@/lib/number_formatter"
 import ListRow from "@/components/design_system/list/list_row"
+import Divider from "@/components/design_system/structure/divider"
 import ListAsset from "@/components/design_system/list/list_asset"
-import ListHeader from "@/components/design_system/list/list_header"
 import { useUSGMaketListContext } from "./usg_market_list_context"
+import { formatDollar, formatNumber } from "@/lib/number_formatter"
+import ListHeader from "@/components/design_system/list/list_header"
 import InputSelect from "@/components/design_system/inputs/input_select"
 import InputSearch from "@/components/design_system/inputs/input_search"
 import TokenImage from "@/components/design_system/structure/token_image"
 import MarketListAPR from "@/components/design_system/list/market_list_apr"
 import LargeButtonTab from "@/components/design_system/inputs/large_button_tab"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
-import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { marketOptions, protocolOptions, USGListHeaders } from "./usg_market_controller"
+import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 
 const listeState: ListState = {
   search: undefined,
@@ -35,6 +37,8 @@ export default function USGMarketList() {
   const { displayRows, globalData, searchValue, setSearchValue, userData, sortMarketList, marketType, protocol, setMarketType, setProtocol } =
     useUSGMaketListContext()
 
+  const { lpUserPoints, voteUserPoints } = useUSGContext()
+
   return (
     <>
       <div className="flex w-full rounded-[10px] bg-panel-title-gradient xl:hidden">
@@ -50,13 +54,7 @@ export default function USGMarketList() {
         </div>
       </div>
 
-      <div className="items-strech my-4 flex w-full gap-2 xl:hidden">
-        <IndicatorCards className={cn(globalData.globalTvl === "-" ? "shimmer" : "")} indicators={[{ title: "Global TVL ", value: globalData.globalTvl }]} />
-        <IndicatorCards className={cn(globalData.globalDebt === "-" ? "shimmer" : "")} indicators={[{ title: "Global Debt ", value: globalData.globalDebt }]} />
-        <IndicatorCards className={cn(globalData.globalCr === "-" ? "shimmer" : "")} indicators={[{ title: "Global CR ", value: globalData.globalCr }]} />
-      </div>
-
-      <div className="flex items-stretch justify-between gap-6">
+      <div className="mb-4 flex items-stretch justify-between gap-6">
         <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
             <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
@@ -79,22 +77,35 @@ export default function USGMarketList() {
             <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
           </div>
 
-          <div className="mt-auto flex w-full items-center justify-between gap-3 p-2">
-            <div className={cn("flex min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}>
+          <div className="mt-auto flex w-full items-center justify-between gap-2 p-2">
+            <div
+              className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
+            >
               <span className="text-xs text-subtitle">Your Debt</span>
               <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDebt || 0n, 18), 0)} USD</span>
             </div>
 
-            <div className={cn("flex min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}>
+            <div
+              className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
+            >
               <span className="text-xs text-subtitle">Your Collateral Deposits</span>
               <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDeposit || 0n, 18), 0)} USD</span>
+            </div>
+
+            <div
+              className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
+            >
+              <span className="text-xs text-subtitle">Your Total Points</span>
+              <span className="text-sm font-semibold">{formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} </span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mb-4 mt-6 hidden items-end justify-between xl:flex">
-        <div className="flex flex-col items-stretch justify-between gap-3">
+      <Divider className="border-white/10!" />
+
+      <div className="mt-4 flex w-full flex-col items-center justify-center gap-6 lg:flex-row">
+        <div className="hidden w-full items-center justify-center md:flex lg:w-1/2">
           <div className="flex w-full items-center gap-4">
             <IndicatorCards
               className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "gap-6")}
@@ -116,26 +127,11 @@ export default function USGMarketList() {
               <TokenImage token={"sUSG" as ExistingAsset} className="h-8 w-8" size={32} />
             </IndicatorCards>
           </div>
-
-          <div className="flex w-full items-stretch justify-between">
-            <div className="flex w-full items-end justify-start gap-2">
-              <div className="flex w-full min-w-96 flex-col items-center justify-center">
-                <div className="mb-1 text-xs text-subtitle"> Search </div>
-                <InputSearch
-                  placeholder=""
-                  className="flex w-full flex-col items-center justify-center"
-                  value={searchValue ?? ""}
-                  onChange={(e) => setSearchValue(e as string)}
-                />
-              </div>
-
-              <LargeButtonTab className="h-10 px-4" active={true} label="All"></LargeButtonTab>
-              <LargeButtonTab className="h-10 px-4" active={false} label="Deposits"></LargeButtonTab>
-            </div>
-          </div>
         </div>
-        <div className="flex flex-col items-stretch justify-end gap-3">
-          <div className="items-strech flex w-full gap-2">
+
+        <div className="flex w-full items-center justify-center lg:w-1/2">
+          <div className="flex w-full gap-2">
+            <IndicatorCards className={cn(globalData.globalCr === "-" ? "shimmer" : "")} indicators={[{ title: "Global CR ", value: globalData.globalCr }]} />
             <IndicatorCards
               className={cn(globalData.globalTvl === "-" ? "shimmer" : "")}
               indicators={[{ title: "Global TVL ", value: globalData.globalTvl }]}
@@ -144,9 +140,28 @@ export default function USGMarketList() {
               className={cn(globalData.globalDebt === "-" ? "shimmer" : "")}
               indicators={[{ title: "Global Debt ", value: globalData.globalDebt }]}
             />
-            <IndicatorCards className={cn(globalData.globalCr === "-" ? "shimmer" : "")} indicators={[{ title: "Global CR ", value: globalData.globalCr }]} />
           </div>
+        </div>
+      </div>
 
+      <div className="my-4 hidden items-end justify-between xl:flex">
+        <div className="flex flex-col items-stretch justify-between gap-3">
+          <div className="flex w-full items-end justify-start gap-2">
+            <div className="flex w-full min-w-96 flex-col items-center justify-center">
+              <div className="mb-1 text-xs text-subtitle"> Search </div>
+              <InputSearch
+                placeholder=""
+                className="flex w-full flex-col items-center justify-center"
+                value={searchValue ?? ""}
+                onChange={(e) => setSearchValue(e as string)}
+              />
+            </div>
+
+            <LargeButtonTab className="h-10 px-4" active={true} label="All"></LargeButtonTab>
+            <LargeButtonTab className="h-10 px-4" active={false} label="Deposits"></LargeButtonTab>
+          </div>
+        </div>
+        <div className="flex flex-col items-stretch justify-end gap-3">
           <div className="flex w-full items-stretch justify-center gap-2">
             <div className="flex w-full flex-col items-center justify-center md:w-fit">
               <div className="mb-1 text-xs text-subtitle"> Type </div>
@@ -188,7 +203,7 @@ export function USGMarketListInner() {
 
   return (
     <>
-      <div className="mt-2 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="mt-4 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
       {displayRows?.map((item, index) => (

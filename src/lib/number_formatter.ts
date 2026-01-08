@@ -91,6 +91,16 @@ export const formatBigIntAsNumber = (value: bigint, decimals: number, displayDec
   return formatNumber(Number(formatUnits(value || 0n, decimals)), displayDecimals)
 }
 
+export const formatMarketListCompact = (value: string | number): string => {
+  const number = typeof value === "string" ? parseFloat(value) : value
+
+  if (isNaN(number)) return "0"
+
+  if (number >= 1_000_000) {
+    return `$${(number / 1_000_000).toFixed(2)}M`
+  } else return `$${formatNumber(number, 0)}`
+}
+
 export const formatCompact = (value: string | number): string => {
   const number = typeof value === "string" ? parseFloat(value) : value
 

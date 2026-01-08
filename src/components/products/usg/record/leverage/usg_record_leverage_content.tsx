@@ -23,7 +23,6 @@ export default function USGLeverageContent() {
     setDepositAsset,
     setIsDepositDisabled,
     setIsLeverageAllPosition,
-    setDepositWeiValue,
     actionApprove,
     handleDepositChange,
     setSlippage,
@@ -108,7 +107,7 @@ export default function USGLeverageContent() {
             percentage={depositSliderPercent}
             setPercentage={setDepositSliderPercent}
             setMaxBalance={() => {
-              setDepositWeiValue(marketData?.collateralBalance || 0n)
+              handleDepositChange(marketData?.collateralBalance || 0n)
             }}
           />
         </>

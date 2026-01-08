@@ -211,7 +211,7 @@ export default function VsTanLockContent() {
                 <input
                   type="number"
                   disabled={isZapLoading}
-                  className="flex w-fit max-w-[120px] justify-start bg-transparent text-xl font-semibold focus:outline-none"
+                  className="flex w-fit max-w-[140px] justify-start bg-transparent text-xl font-semibold focus:outline-none"
                   value={zapInnerValue ?? ""}
                   onChange={handleZapInputChange}
                 />

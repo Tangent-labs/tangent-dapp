@@ -219,7 +219,7 @@ export default function USGRepayContent() {
         )}
 
         {isRepayAndWithdraw && (
-          <>
+          <div className="flex flex-col gap-1">
             <div className="flex items-end justify-between">
               <span className="text-sm font-semibold md:text-xl">Withdraw collateral</span>
               <span className="text-xs text-subtitle">
@@ -241,7 +241,7 @@ export default function USGRepayContent() {
               percentage={withdrawPercentage}
               setPercentage={setWithdrawPercentage}
             />
-          </>
+          </div>
         )}
       </div>
 

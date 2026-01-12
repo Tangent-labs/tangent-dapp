@@ -14,7 +14,7 @@ import { ListProvider } from "@/components/design_system/list/list_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export default function UsgTasksContent() {
-  const { userBoost } = useUsgAirdropContext()
+  const { userBoostFactor } = useUsgAirdropContext()
 
   const { lpUserPoints, voteUserPoints } = useUSGContext()
 
@@ -73,14 +73,14 @@ export default function UsgTasksContent() {
               <div className="flex items-center justify-center gap-1">
                 <span className="text-sm font-semibold text-white">{formatNumber(lpUserPoints?.lpTotalPoints, 0)} pts</span>
                 <span className="bg-tonic bg-clip-text text-xs font-semibold text-transparent">
-                  ({formatNumber(lpUserPoints?.lpDailyRate * userBoost, 0)}pts/day)
+                  ({formatNumber(lpUserPoints?.lpDailyRate * userBoostFactor, 0)}pts/day)
                 </span>
               </div>
             </div>
 
             <div className="hidden w-fit min-w-32 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-4 py-2 lg:flex">
               <span className="text-center text-sm text-subtitle">Your boost</span>
-              <span className="text-center text-xl font-semibold text-white">x{userBoost}</span>
+              <span className="text-center text-xl font-semibold text-white">x{userBoostFactor}</span>
             </div>
           </div>
         </div>

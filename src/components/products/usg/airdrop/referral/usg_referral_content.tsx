@@ -23,7 +23,7 @@ export const UsgReferralCode = () => {
 
   const { isLoading, lpLeaderboard, voteLeaderboard, godsonsLeaderboard } = useUsgReferralCodeContext()
 
-  const { setReferralStatus, referralStatus, signMessage, airdropDataIsLoading, generateReferralCode, userBoost } = useUsgAirdropContext()
+  const { setReferralStatus, referralStatus, signMessage, airdropDataIsLoading, generateReferralCode, userBoostFactor } = useUsgAirdropContext()
 
   return (
     <div className="flex w-full flex-col items-center justify-center">
@@ -35,7 +35,7 @@ export const UsgReferralCode = () => {
         lpUserPoints={lpUserPoints}
         voteUserPoints={voteUserPoints}
         isConnected={isConnected}
-        userBoost={userBoost}
+        userBoost={userBoostFactor}
       />
 
       <div

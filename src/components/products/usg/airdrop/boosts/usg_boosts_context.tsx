@@ -2,11 +2,10 @@
 
 import { ListState } from "@/types"
 import { Boost } from "../../usg_type"
-import { getUserBoosts } from "../../client_api"
 import { useUSGContext } from "../../usg_context"
-import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { useUsgAirdropContext } from "../usg_airdrop_context"
+import { createContext, ReactNode, useContext, useEffect } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { mapUserBoosts } from "./usg_boosts_controller"
 
 type UsgBoostsContextProps = {
   children: ReactNode
@@ -24,16 +23,11 @@ export const UsgBoostsProvider = ({ children }: UsgBoostsContextProps) => {
 
   const { refetchPoints } = useUSGContext()
 
-  const [userBoosts, setUserBoosts] = useState<Array<Boost>>([])
+  const { userBoosts } = useUsgAirdropContext()
 
   useEffect(() => {
     if (currentAddress) {
       refetchPoints()
-
-      getUserBoosts(currentAddress).then((b) => {
-        const mappedBoosts = mapUserBoosts(b)
-        setUserBoosts(mappedBoosts)
-      })
     }
   }, [currentAddress])
 

@@ -57,6 +57,7 @@ export async function doMarketDepositAndBorrow(walletClient: WalletClient, args:
     functionName: "depositAndBorrow",
     address: args.marketAddress,
     args: [args.depositWeiValue, args.borrowWeiValue, args?.isReceiptIn],
+    gas: undefined,
   }
   const txHash = await executeContractCall(walletClient, txData)
   return await waitForTransaction(txHash)
@@ -110,7 +111,7 @@ export const doZapDepositAndBorrow = async (
   const gas = await publicClient.estimateContractGas(estimateGasData)
   const txData = { ...estimateGasData, gas }
   const hash = await walletClient.writeContract(txData as WriteContractParameters)
-  return hash
+  return await waitForTransaction(hash)
 }
 
 export const doZapDeposit = async (marketAddress: Address, walletClient: WalletClient, router: string, routerCall: string, zapMarket: ZapMarketData) => {
@@ -142,5 +143,5 @@ export const doZapDeposit = async (marketAddress: Address, walletClient: WalletC
   const gas = await publicClient.estimateContractGas(estimateGasData)
   const txData = { ...estimateGasData, gas }
   const hash = await walletClient.writeContract(txData as WriteContractParameters)
-  return hash
+  return await waitForTransaction(hash)
 }

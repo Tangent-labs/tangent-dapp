@@ -57,6 +57,8 @@ export default function TokenImage({ token, size, ...props }: TokenImageProps) {
     "LP SUSDE": "SUSDE.webp",
     "PT SUSDE": "PT_sUSDe.webp",
     "YT SUSDE": "YT_sUSDe.webp",
+    REUSD: "reUSD.webp",
+    WSTUSR: "USR.webp",
   }
 
   const imageFilename = specialImages[prefix] || `${token}.webp`

@@ -3,7 +3,7 @@ import MarketListUI from "@/abi/USG/MarketListUI.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
 import { USG_CONTRACT, USGMarkets, USGPegKeepers } from "../usg_repository"
-import { formatBigInt, formatDollar, formatPercent } from "@/lib/number_formatter"
+import { formatBigInt, formatMarketListCompact, formatDollar, formatPercent } from "@/lib/number_formatter"
 import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, USGGlobalData } from "../usg_type"
 
 export const getUSGMarketsData = async (address: string) => {
@@ -110,10 +110,10 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
       {
         key: "tvl",
         label: "Tvl",
-        value: formatDollar(formatUnits(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0n, 18), 0),
+        value: formatMarketListCompact(formatUnits(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0n, 18)),
         raw: Number(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0),
       },
-      { key: "borrowed", label: "Borrowed", value: formatDollar(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18), 0) || "-", raw: 0 },
+      { key: "borrowed", label: "Borrowed", value: formatMarketListCompact(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18)) || "-", raw: 0 },
     ],
     userHasDeposited: !!onChainRow?.collateralInfos?.positionCollateralUSDValue && onChainRow?.collateralInfos?.positionCollateralUSDValue > 0n,
   }

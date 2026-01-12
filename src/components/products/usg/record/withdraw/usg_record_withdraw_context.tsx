@@ -2,6 +2,7 @@
 
 import { FormState } from "@/types"
 import { useUSGContext } from "../../usg_context"
+import { toastTx } from "@/components/design_system/toast"
 import { useUSGRecordContext } from "../usg_record_context"
 import { doMarketWithdraw, getWithdrawFormState } from "./usg_record_withdraw_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
@@ -44,19 +45,30 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
     })
   }, [withdrawWeiValue])
 
-  const actionWithdraw = () => {
+  const actionWithdraw = async () => {
     const walletClient = getWalletClient()
-    if (walletClient)
-      doMarketWithdraw(walletClient, {
-        marketAddress: marketData!.marketAddress,
-        withdrawWeiValue,
-        isReceiptOut: selectedAsset !== collateral,
-      }).then(() => {
-        loadUSGsUSGMetrics()
-        loadOnChainData()
-        setWithdrawWeiValue(0n)
-        setWithdrawPercentage(0)
-      })
+    if (walletClient) {
+      await toastTx(
+        doMarketWithdraw(walletClient, {
+          marketAddress: marketData!.marketAddress,
+          withdrawWeiValue,
+          isReceiptOut: selectedAsset !== collateral,
+        }),
+        {
+          pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+          success: () => {
+            loadUSGsUSGMetrics()
+            loadOnChainData()
+            setWithdrawWeiValue(0n)
+            setWithdrawPercentage(0)
+            return { type: "Success", content: "Transaction successful." }
+          },
+          error: () => {
+            return { type: "Error", content: "Transaction failed." }
+          },
+        }
+      )
+    }
   }
 
   const maxWithdrawable = useMemo(() => {

@@ -1,11 +1,10 @@
 "use client"
 
-import { toast } from "react-toastify"
 import { useUSGContext } from "../usg_context"
 import { SwapConfig, swapConfig } from "./swap_config"
 import { getQuote, getRoute } from "../global_quote_controller"
 import { USG_CONTRACT, USGTokens } from "../usg_repository"
-import { ToastComponent } from "@/components/design_system/toast"
+import { toastTx } from "@/components/design_system/toast"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
 import { Abi, Address, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
@@ -374,15 +373,14 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
         spender = USG_CONTRACT.ENSO_ROUTER as Address
       }
 
-      await doApprove(walletClient, depositAssetInfo?.address, depositWeiValue || 0n, spender)
-        .then(() => {
+      await toastTx(doApprove(walletClient, depositAssetInfo?.address, depositWeiValue || 0n, spender), {
+        pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
+        success: () => {
           fetchBalanceAllowanceData(walletClient)
           setIsLoading(false)
-        })
-        .catch((error) => {
-          console.error("Error during approval:", error)
-          setIsLoading(false)
-        })
+          return { type: "Success", content: `${depositAssetInfo?.symbol} approved successfully.` }
+        },
+      })
     }
   }
 
@@ -399,18 +397,21 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
       const contractSymbol = swapData?.contract
       const swapContractToken = [depositAssetInfo, receiveAssetInfo].find((el) => el.symbol === contractSymbol)?.address as Address
 
-      doCustomSwap(walletClient, contract?.abi as Abi, swapFn, depositWeiValue || 0n, swapContractToken, quoteType === "enso")
-        .then(() => {
+      await toastTx(doCustomSwap(walletClient, contract?.abi as Abi, swapFn, depositWeiValue || 0n, swapContractToken, quoteType === "enso"), {
+        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+        success: () => {
           setDepositWeiValue(0n)
           setReceiveWeiValue(undefined)
           fetchBalanceAllowanceData(walletClient)
           setIsLoading(false)
-        })
-        .catch((e) => {
-          console.error(e)
-          toast.error(ToastComponent, { data: { type: "Error", content: "Swap failed." } })
+          return { type: "Success", content: "Transaction successful." }
+        },
+        error: () => {
           setIsLoading(false)
-        })
+
+          return { type: "Error", content: "Transaction failed." }
+        },
+      })
     } else {
       if (!depositWeiValue || !currentAddress || !receiveWeiValue) return
 
@@ -431,19 +432,21 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
           value: 0n,
         } as SendTransactionParameters
 
-        doSwap(walletClient!, tx)
-          .then(() => {
+        await toastTx(doSwap(walletClient!, tx), {
+          pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+          success: () => {
             setDepositWeiValue(0n)
             setReceiveWeiValue(0n)
             fetchBalanceAllowanceData(walletClient!)
             setIsLoading(false)
-            toast.success(ToastComponent, { data: { type: "Success", content: "Swap successful!" } })
-          })
-          .catch((e) => {
-            console.error(e)
-            toast.error(ToastComponent, { data: { type: "Error", content: "Swap failed." } })
+            return { type: "Success", content: "Transaction successful." }
+          },
+          error: () => {
             setIsLoading(false)
-          })
+
+            return { type: "Error", content: "Transaction failed." }
+          },
+        })
       } catch (error) {
         console.error("Error in actionSwap:", error)
         setIsLoading(false)

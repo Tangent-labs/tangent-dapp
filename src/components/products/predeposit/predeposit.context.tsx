@@ -6,7 +6,7 @@ import { USGTokens } from "../usg/usg_repository"
 import { AssetDataPriced, FormState } from "@/types"
 import { useRootContext } from "../root/root_context"
 import { getTokensPrice } from "@/services/service_price"
-import { ToastComponent } from "@/components/design_system/toast"
+import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { Address, formatUnits, WalletClient, zeroAddress } from "viem"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { fetchUserStatus, validatePredepositSignature } from "./api/client.api"
@@ -309,43 +309,48 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     }
   }
 
-  const actionDepositUSGUSDC = () => {
+  const actionDepositUSGUSDC = async () => {
     if (USDCDepositValue) {
       setIsLoading(true)
 
-      deposit(walletClient!, USDCDepositValue, slippage, USGTokens[1]["USG-USDC"])
-        .then(() => {
-          toast.success(ToastComponent, { data: { type: "Success", content: "USDC deposit successful." } })
+      await toastTx(deposit(walletClient!, USDCDepositValue, slippage, USGTokens[1]["USG-USDC"]), {
+        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+        success: () => {
           getUSGUSDCBalanceAllowance(walletClient!)
           setUSDCDepositValue(0n)
           setUSDCDepositSliderPercent(0)
           setUSGUSDCDepositValue(0n)
           setIsLoading(false)
-        })
-        .catch(() => {
-          toast.error(ToastComponent, { data: { type: "Error", content: "USDC deposit failed." } })
+          return { type: "Success", content: "USDC successfully deposited." }
+        },
+        error: () => {
           setIsLoading(false)
-        })
+          return { type: "Error", content: "Unable to proceed with the deposit." }
+        },
+      })
     }
   }
 
-  const actionDepositUSGfrxUSD = () => {
+  const actionDepositUSGfrxUSD = async () => {
     if (frxUSDDepositValue) {
       setIsLoading(true)
 
-      deposit(walletClient!, frxUSDDepositValue, slippage, USGTokens[1]["USG-frxUSD"])
-        .then(() => {
-          toast.success(ToastComponent, { data: { type: "Success", content: "frxUSD deposit successful." } })
+      await toastTx(deposit(walletClient!, frxUSDDepositValue, slippage, USGTokens[1]["USG-frxUSD"]), {
+        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+        success: () => {
           getUSGfrxUSDBalanceAllowance(walletClient!)
           setfrxUSDDepositValue(0n)
           setfrxUSDDepositSliderPercent(0)
           setUSGfrxUSDDepositValue(0n)
           setIsLoading(false)
-        })
-        .catch(() => {
-          toast.error(ToastComponent, { data: { type: "Error", content: "frxUSD deposit failed." } })
+
+          return { type: "Success", content: "frxUSD successfully deposited." }
+        },
+        error: () => {
           setIsLoading(false)
-        })
+          return { type: "Error", content: "Unable to proceed with the deposit." }
+        },
+      })
     }
   }
 
@@ -358,6 +363,16 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
       const message = `I, owner of wallet ${currentAddress?.toLowerCase()} assess to participate to the predeposit campaign.`
 
       if (walletClient && currentAddress) {
+        const pendingToastId = toast.info(ToastComponent, {
+          data: {
+            type: "Pending Transaction",
+            content: "Pending signature awaiting validation...",
+          },
+          autoClose: false,
+          closeOnClick: false,
+          draggable: false,
+        })
+
         const signature = await walletClient.signMessage({
           account: currentAddress,
           message,
@@ -369,8 +384,30 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
         validatePredepositSignature(signature, currentAddress, now)
           .then((resp) => {
             if (resp) {
+              toast.update(pendingToastId, {
+                render: ToastComponent,
+                data: {
+                  type: "Success",
+                  content: "You are whitelisted.",
+                },
+                autoClose: 3000,
+                closeOnClick: true,
+                draggable: true,
+              })
+
               setIsWhitelisted(true)
             } else {
+              toast.update(pendingToastId, {
+                render: ToastComponent,
+                data: {
+                  type: "Error",
+                  content: "Something went wrong.",
+                },
+                autoClose: 3000,
+                closeOnClick: true,
+                draggable: true,
+              })
+
               setIsWhitelisted(false)
             }
           })

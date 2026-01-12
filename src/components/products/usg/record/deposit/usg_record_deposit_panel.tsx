@@ -22,7 +22,6 @@ import { CustomCollatAssetDisplay } from "@/components/design_system/structure/c
 export default function USGDepositContent() {
   const {
     setDepositAsset,
-    setDepositWeiValue,
     actionApprove,
     actionDeposit,
     setBorrowWeiValue,
@@ -80,7 +79,7 @@ export default function USGDepositContent() {
         percentage={depositSliderPercent}
         setPercentage={setDepositSliderPercent}
         setMaxBalance={() => {
-          setDepositWeiValue(balanceAllowanceData?.balance || marketData?.collateralBalance)
+          handleDepositChange(balanceAllowanceData?.balance || marketData?.collateralBalance)
         }}
       />
 
@@ -97,7 +96,7 @@ export default function USGDepositContent() {
                 <input
                   type="number"
                   disabled={isZapLoading}
-                  className="flex w-fit max-w-[120px] justify-start bg-transparent text-xl font-semibold focus:outline-none"
+                  className="flex w-fit max-w-[140px] justify-start bg-transparent text-xl font-semibold focus:outline-none"
                   value={zapInnerValue ?? ""}
                   onChange={handleZapInputChange}
                 />

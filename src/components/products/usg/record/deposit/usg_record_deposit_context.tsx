@@ -4,7 +4,7 @@ import { toast } from "react-toastify"
 import { useUSGContext } from "../../usg_context"
 import { USGMarket, ZapToken } from "../../usg_type"
 import { useUSGRecordContext } from "../usg_record_context"
-import { ToastComponent } from "@/components/design_system/toast"
+import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
@@ -320,31 +320,37 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const actionApproveZap = async () => {
     setIsDepositLoading(true)
-    const walletClient = getWalletClient()
-    if (!walletClient || !depositAssetInfo) {
-      console.error("Wallet client is not available.")
-      return
-    }
 
-    await doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue || 0n)
-      .then(() => {
-        fetchBalanceAllowanceData(depositAssetInfo?.address)
-        setIsDepositLoading(false)
+    try {
+      const walletClient = getWalletClient()
+      if (!walletClient || !depositAssetInfo) throw new Error("Wallet not available")
+
+      await toastTx(doApprove(walletClient, depositAssetInfo.address, marketInfo.marketAddress, depositWeiValue ?? 0n), {
+        pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
+        success: () => {
+          fetchBalanceAllowanceData(depositAssetInfo.address)
+          return { type: "Success", content: `${depositAssetInfo?.symbol} approved successfully.` }
+        },
       })
-      .catch((error) => {
-        console.error("Error during approval:", error)
-        setIsDepositLoading(false)
-      })
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setIsDepositLoading(false)
+    }
   }
 
-  const actionApprove = () => {
+  const actionApprove = async () => {
     setIsDepositLoading(true)
     const walletClient = getWalletClient()
     if (walletClient && depositWeiValue) {
-      doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue).then(() => {
-        fetchBalanceAllowanceData(depositAssetInfo?.address)
-        loadOnChainData()
-        setIsDepositLoading(false)
+      await toastTx(doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue), {
+        pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
+        success: () => {
+          fetchBalanceAllowanceData(depositAssetInfo?.address)
+          loadOnChainData()
+          setIsDepositLoading(false)
+          return { type: "Success", content: `${depositAssetInfo?.symbol} approved successfully.` }
+        },
       })
     }
   }
@@ -359,46 +365,51 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     }
   }
 
-  const depositAndBorrow = () => {
+  const depositAndBorrow = async () => {
     setIsDepositLoading(true)
     const walletClient = getWalletClient()
 
     if (walletClient && depositWeiValue) {
       const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
 
-      doMarketDepositAndBorrow(walletClient, { depositWeiValue, isDepositAndBorrow, marketAddress: marketInfo?.marketAddress, borrowWeiValue, isReceiptIn })
-        .then(() => {
-          resetAfterDepositSuccess()
-          toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
-        })
-        .catch((e) => {
-          console.error(e)
-          setIsDepositLoading(false)
-          toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
-        })
+      await toastTx(
+        doMarketDepositAndBorrow(walletClient, { depositWeiValue, isDepositAndBorrow, marketAddress: marketInfo?.marketAddress, borrowWeiValue, isReceiptIn }),
+        {
+          pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+          success: () => {
+            resetAfterDepositSuccess()
+            return { type: "Success", content: "Position successfully created." }
+          },
+          error: () => {
+            setIsDepositLoading(false)
+            return { type: "Error", content: "Unable to proceed with the transaction." }
+          },
+        }
+      )
     } else {
       setIsDepositLoading(false)
       toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
     }
   }
 
-  const deposit = () => {
+  const deposit = async () => {
     setIsDepositLoading(true)
     const walletClient = getWalletClient()
 
     if (walletClient && depositWeiValue) {
       const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
 
-      doMarketDeposit(walletClient, { depositWeiValue, marketAddress: marketInfo?.marketAddress, borrowWeiValue, isReceiptIn })
-        .then(() => {
+      await toastTx(doMarketDeposit(walletClient, { depositWeiValue, marketAddress: marketInfo?.marketAddress, borrowWeiValue, isReceiptIn }), {
+        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+        success: () => {
           resetAfterDepositSuccess()
-          toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
-        })
-        .catch((e) => {
-          console.error(e)
+          return { type: "Success", content: "Position successfully created." }
+        },
+        error: () => {
           setIsDepositLoading(false)
-          toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
-        })
+          return { type: "Error", content: "Unable to proceed with the transaction." }
+        },
+      })
     } else {
       setIsDepositLoading(false)
       toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
@@ -462,17 +473,22 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
       const walletClient = getWalletClient()
 
-      doZapDepositAndBorrow(marketInfo?.marketAddress, walletClient!, zapData?.routerAddress, zapData?.data as string, zapMarketData, borrowWeiValue)
-        .then(() => {
-          resetAfterDepositSuccess()
-          toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
-        })
-        .catch((e) => {
-          console.error(e)
-          setIsZapLoading(false)
-          setIsDepositLoading(false)
-          toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
-        })
+      await toastTx(
+        doZapDepositAndBorrow(marketInfo?.marketAddress, walletClient!, zapData?.routerAddress, zapData?.data as string, zapMarketData, borrowWeiValue),
+        {
+          pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+          success: () => {
+            resetAfterDepositSuccess()
+            return { type: "Success", content: "Position successfully created." }
+          },
+          error: () => {
+            setIsDepositLoading(false)
+            setIsZapLoading(false)
+
+            return { type: "Error", content: "Unable to proceed with the transaction." }
+          },
+        }
+      )
     } catch (error) {
       console.error("Error in getRouteAndDeposit:", error)
     }
@@ -503,22 +519,22 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
       const walletClient = getWalletClient()
 
-      doZapDeposit(marketInfo?.marketAddress, walletClient!, zapData?.routerAddress, zapData?.data as string, zapMarketData)
-        .then(() => {
+      await toastTx(doZapDeposit(marketInfo?.marketAddress, walletClient!, zapData?.routerAddress, zapData?.data as string, zapMarketData), {
+        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+        success: () => {
           resetAfterDepositSuccess()
-          toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
-        })
-        .catch((e) => {
-          console.error(e)
-          setIsZapLoading(false)
+          return { type: "Success", content: "Position successfully created." }
+        },
+        error: () => {
           setIsDepositLoading(false)
-          toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
-        })
+          setIsZapLoading(false)
+          return { type: "Error", content: "Unable to proceed with the transaction." }
+        },
+      })
     } catch (error) {
       console.error("Error in zapAndDeposit:", error)
       setIsZapLoading(false)
       setIsDepositLoading(false)
-      toast.error(ToastComponent, { data: { type: "Error", content: "Transation failed." } })
     }
   }
 

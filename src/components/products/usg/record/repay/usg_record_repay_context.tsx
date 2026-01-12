@@ -7,10 +7,10 @@ import { useUSGContext } from "../../usg_context"
 import { AssetDataPriced, FormState } from "@/types"
 import { USG_CONTRACT } from "../../usg_repository"
 import { useUSGRecordContext } from "../usg_record_context"
-import { formatBigIntAsNumber, formatDollar, toBigInt } from "@/lib/number_formatter"
-import { ToastComponent } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
+import { ToastComponent, toastTx } from "@/components/design_system/toast"
+import { formatBigIntAsNumber, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
@@ -266,15 +266,14 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   const actionApprove = async () => {
     if (!repayWeiValue || !repayAssetInfo || !marketData) return
 
-    doApprove(walletClientRef.current!, repayAssetInfo?.address, marketData?.marketAddress, repayWeiValue)
-      .then(() => {
+    await toastTx(doApprove(walletClientRef.current!, repayAssetInfo?.address, marketData?.marketAddress, repayWeiValue), {
+      pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
+      success: () => {
         loadOnChainData()
         fetchBalanceAllowanceData(repayAssetInfo?.address)
-      })
-      .catch((err) => {
-        const errorMessage = err.message.includes("User denied transaction signature") ? "Transaction aborted" : "Something went wrong"
-        toast.error(ToastComponent, { data: { content: errorMessage, type: "Error" } })
-      })
+        return { type: "Success", content: `${repayAssetInfo?.symbol} approved successfully.` }
+      },
+    })
   }
 
   const actionRepay = () => {
@@ -285,26 +284,44 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     }
   }
 
-  const marketRepay = () => {
-    doRepay(walletClientRef.current!, {
-      marketAddress: marketData!.marketAddress,
-      repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
-    }).then(() => {
-      resetAfterRepaySuccess()
-      toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
-    })
+  const marketRepay = async () => {
+    await toastTx(
+      doRepay(walletClientRef.current!, {
+        marketAddress: marketData!.marketAddress,
+        repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
+      }),
+      {
+        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+        success: () => {
+          resetAfterRepaySuccess()
+          return { type: "Success", content: "Transaction successful." }
+        },
+        error: () => {
+          return { type: "Error", content: "Transaction failed." }
+        },
+      }
+    )
   }
 
-  const marketRepayAndWithdraw = () => {
-    doRepayAndWithdraw(walletClientRef.current!, {
-      marketAddress: marketData!.marketAddress,
-      repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
-      withdrawWeiValue,
-      isReceiptOut: withdrawSelectedAsset !== collateral,
-    }).then(() => {
-      resetAfterRepaySuccess()
-      toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
-    })
+  const marketRepayAndWithdraw = async () => {
+    await toastTx(
+      doRepayAndWithdraw(walletClientRef.current!, {
+        marketAddress: marketData!.marketAddress,
+        repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
+        withdrawWeiValue,
+        isReceiptOut: withdrawSelectedAsset !== collateral,
+      }),
+      {
+        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+        success: () => {
+          resetAfterRepaySuccess()
+          return { type: "Success", content: "Transaction successful." }
+        },
+        error: () => {
+          return { type: "Error", content: "Transaction failed." }
+        },
+      }
+    )
   }
 
   const resetAfterRepaySuccess = () => {

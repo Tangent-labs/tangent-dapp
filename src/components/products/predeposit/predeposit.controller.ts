@@ -1,4 +1,4 @@
-import { getPublicClient } from "@/services/service_rpc"
+import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { PredepositRawState, PredepositStatus } from "./types/types"
 import PredepositPoolsABI from "../../../abi/USG/PredepositPoolsABI.json"
 import { computedMinAmountOut } from "../usg/record/usg_record_controller"
@@ -67,7 +67,7 @@ export const deposit = async (walletClient: WalletClient, amount: bigint, slippa
   const gas = await publicClient.estimateContractGas(estimateGasData)
   const txData = { ...estimateGasData, gas }
   const hash = await walletClient.writeContract(txData as WriteContractParameters)
-  return hash
+  return await waitForTransaction(hash)
 }
 
 export const mapPredepositStatus = (status: PredepositRawState): PredepositStatus => {

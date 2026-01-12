@@ -6,6 +6,7 @@ import { getsUsgApyData } from "../client_api"
 import { USG_CONTRACT } from "../usg_repository"
 import { useRootContext } from "../../root/root_context"
 import { convertRange } from "../../root/root_controller"
+import { toastTx } from "@/components/design_system/toast"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
 import { StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../usg_type"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
@@ -151,10 +152,19 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
       stakingAddress: USG_CONTRACT.SUSG,
       weiValue,
     }
-    await doUnstakeUSG(params)
-    loadUSGsUSGMetrics()
-    setWeiValue(0n)
-    setExpected(0n)
+
+    await toastTx(doUnstakeUSG(params), {
+      pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+      success: () => {
+        loadUSGsUSGMetrics()
+        setWeiValue(0n)
+        setExpected(0n)
+        return { type: "Success", content: "Position successfully created." }
+      },
+      error: () => {
+        return { type: "Error", content: "Unable to proceed with the transaction." }
+      },
+    })
   }
 
   const actionStake = async () => {
@@ -166,14 +176,30 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
       stakingAddress: USG_CONTRACT.SUSG,
       weiValue,
     }
-    await doStakeUSG(params)
-    loadUSGsUSGMetrics()
-    setWeiValue(0n)
-    setExpected(0n)
+
+    await toastTx(doStakeUSG(params), {
+      pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+      success: () => {
+        loadUSGsUSGMetrics()
+        setWeiValue(0n)
+        setExpected(0n)
+        return { type: "Success", content: "Position successfully created." }
+      },
+      error: () => {
+        return { type: "Error", content: "Unable to proceed with the transaction." }
+      },
+    })
   }
 
   const actionApprove = async () => {
-    if (!currentAssetInfo?.address) return
+    await toastTx(doApprove(getWalletClient()!, USG_CONTRACT.USG, weiValue || 0n, USG_CONTRACT.SUSG), {
+      pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
+      success: () => {
+        loadUSGsUSGMetrics()
+        return { type: "Success", content: "USG approved successfully." }
+      },
+    })
+
     await doApprove(getWalletClient()!, USG_CONTRACT.USG, weiValue || 0n, USG_CONTRACT.SUSG).then(loadUSGsUSGMetrics)
   }
 

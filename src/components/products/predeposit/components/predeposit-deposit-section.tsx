@@ -1,8 +1,8 @@
 "use client"
 
+import { ReactNode } from "react"
 import { formatUnits } from "viem"
 import { ExistingAsset } from "@/types"
-import { IconArrow } from "@/components/icons"
 import { DynamicProgressBar } from "./dynamic-progress-bar"
 import { usePredepositContext } from "../predeposit.context"
 import { Button } from "@/components/design_system/inputs/button"
@@ -10,7 +10,35 @@ import { formatDollar, formatNumber } from "@/lib/number_formatter"
 import { USGPredepositComponent } from "./usg-predeposit-component"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
-export const PredepositDepositSection = () => {
+type BlurrySectionProps = {
+  children: ReactNode
+  scrollToFaq: () => void
+}
+
+const BlurrySection = ({ children, scrollToFaq }: BlurrySectionProps) => {
+  return (
+    <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[12px] bg-black/70 backdrop-blur-sm">
+      <div className="flex flex-col items-center gap-4 rounded-[10px] p-6 text-center">
+        <span className="text-2xl font-semibold text-white lg:text-4xl">Pre-deposit campaign</span>
+
+        {children}
+
+        <span
+          onClick={scrollToFaq}
+          className="flex cursor-pointer items-center justify-center gap-1 text-sm text-subtitle transition hover:text-white hover:underline"
+        >
+          Frequently Asked Questions
+        </span>
+      </div>
+    </div>
+  )
+}
+
+type PredepositDepositSectionProps = {
+  scrollToFaq: () => void
+}
+
+export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSectionProps) => {
   const {
     USDCInfo,
     slippage,
@@ -134,35 +162,19 @@ export const PredepositDepositSection = () => {
         </div>
 
         {!isConnected && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[12px] bg-black/70 backdrop-blur-sm">
-            <div className="flex flex-col items-center gap-4 rounded-[10px] p-6 text-center">
-              <span className="text-2xl font-semibold text-white lg:text-4xl">Pre-deposit campaign</span>
-
-              <Button onClick={connect} className="flex h-10 items-center justify-center">
-                Connect wallet
-              </Button>
-
-              <span className="flex items-center justify-center gap-1 text-sm text-subtitle">
-                Frequently Asked Questions <IconArrow className="w-3"></IconArrow>
-              </span>
-            </div>
-          </div>
+          <BlurrySection scrollToFaq={scrollToFaq}>
+            <Button onClick={connect} className="flex h-10 items-center justify-center">
+              Connect wallet
+            </Button>
+          </BlurrySection>
         )}
 
         {isConnected && !isWhitelisted && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[12px] bg-black/70 backdrop-blur-sm">
-            <div className="flex flex-col items-center gap-4 rounded-[10px] p-6 text-center">
-              <span className="text-2xl font-semibold text-white lg:text-4xl">Pre-deposit campaign</span>
-
-              <Button state="disabled" className="flex h-10 items-center justify-center">
-                You are not whitelisted
-              </Button>
-
-              <span className="flex items-center justify-center gap-1 text-sm text-subtitle">
-                Frequently Asked Questions <IconArrow className="w-3"></IconArrow>
-              </span>
-            </div>
-          </div>
+          <BlurrySection scrollToFaq={scrollToFaq}>
+            <Button state="disabled" className="flex h-10 items-center justify-center">
+              You are not whitelisted
+            </Button>
+          </BlurrySection>
         )}
       </div>
     </section>

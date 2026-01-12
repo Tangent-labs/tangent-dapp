@@ -1,8 +1,8 @@
-import { Abi, Address, WalletClient } from "viem"
 import { MarketDetailData } from "../../usg_type"
-import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
-import { executeContractCall } from "@/services/service_rpc"
 import { formatBigInt } from "@/lib/number_formatter"
+import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
+import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 
 export function getLiquidateFormState(
   marketData: MarketDetailData,
@@ -45,7 +45,9 @@ export async function doMarketLiquidate(
   walletClient: WalletClient,
   market: Address
 ) {
-  const txData = {
+  const publicClient = getPublicClient()
+
+  const estimateGasData = {
     abi: MarketExternalActions.abi as Abi,
     functionName: "selfLiquidate",
     address: market,
@@ -54,7 +56,10 @@ export async function doMarketLiquidate(
       { router: liquidationData?.routerAddress, routerCall: liquidationData?.data },
     ],
     gas: undefined as undefined | bigint,
-  }
+  } as EstimateContractGasParameters
 
-  return await executeContractCall(walletClient, txData)
+  const gas = await publicClient.estimateContractGas(estimateGasData)
+  const txData = { ...estimateGasData, gas }
+  const hash = await walletClient.writeContract(txData as WriteContractParameters)
+  return await waitForTransaction(hash)
 }

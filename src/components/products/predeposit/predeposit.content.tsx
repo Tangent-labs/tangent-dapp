@@ -1,5 +1,6 @@
 "use client"
 
+import { useRef } from "react"
 import { cn } from "@/lib/utils"
 import { IconTangent } from "@/components/icons"
 import { usePredepositContext } from "./predeposit.context"
@@ -26,6 +27,14 @@ export type PredepositContentProps = {
 
 export const PredepositContent = ({ opportunitiesData }: PredepositContentProps) => {
   const { predepositStatus } = usePredepositContext()
+  const faqRef = useRef<HTMLDivElement | null>(null)
+
+  const scrollToFaq = () => {
+    faqRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    })
+  }
 
   return (
     <>
@@ -72,11 +81,13 @@ export const PredepositContent = ({ opportunitiesData }: PredepositContentProps)
             USGfrxUSDAccumulatedBalance={predepositStatus?.USGfrxUSDData.USGfrxUSDAccumulatedBalance || 0n}
           />
 
-          {predepositStatus?.predepositState === "retention" ? <PredepositRetentionPhase /> : <PredepositDepositSection />}
+          {predepositStatus?.predepositState === "retention" ? <PredepositRetentionPhase /> : <PredepositDepositSection scrollToFaq={scrollToFaq} />}
 
           <PredepositOpportunities opportunitiesData={opportunitiesData} />
 
-          <PredepositFAQ />
+          <div className="flex w-full flex-col" ref={faqRef}>
+            <PredepositFAQ />
+          </div>
         </div>
       </div>
     </>

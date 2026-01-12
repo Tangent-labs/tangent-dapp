@@ -17,7 +17,7 @@ const MarketListAPR = ({ currentAPRDetails, apr, projectedApr, className = "" }:
   return (
     <div className={`flex min-w-16 flex-row items-center justify-center gap-2 text-center md:flex-col md:gap-0 ${className}`}>
       <span className="flex items-center justify-center bg-button-active bg-clip-text text-sm font-semibold leading-4 text-transparent md:text-xl">
-        {apr}%
+        {apr?.toFixed(2)}%
         <AprIndicator>
           <div className="flex flex-col gap-2">
             {rewardEntries.length > 0 ? (

@@ -101,7 +101,7 @@ export const doZapRepayAndWithdraw = async (
   const gas = await publicClient.estimateContractGas(estimateGasData)
   const txData = { ...estimateGasData, gas }
   const hash = await walletClient.writeContract(txData as WriteContractParameters)
-  return hash
+  return await waitForTransaction(hash)
 }
 
 export const doZapRepay = async (
@@ -134,5 +134,5 @@ export const doZapRepay = async (
   const gas = await publicClient.estimateContractGas(estimateGasData)
   const txData = { ...estimateGasData, gas }
   const hash = await walletClient.writeContract(txData as WriteContractParameters)
-  return hash
+  return await waitForTransaction(hash)
 }

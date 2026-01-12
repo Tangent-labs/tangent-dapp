@@ -7,10 +7,10 @@ import { useUSGContext } from "../../usg_context"
 import { AssetDataPriced, FormState } from "@/types"
 import { USG_CONTRACT } from "../../usg_repository"
 import { useUSGRecordContext } from "../usg_record_context"
-import { formatBigIntAsNumber, formatDollar, toBigInt } from "@/lib/number_formatter"
-import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
+import { ToastComponent, toastTx } from "@/components/design_system/toast"
+import { formatBigIntAsNumber, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
@@ -272,9 +272,6 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
         loadOnChainData()
         fetchBalanceAllowanceData(repayAssetInfo?.address)
         return { type: "Success", content: `${repayAssetInfo?.symbol} approved successfully.` }
-      },
-      error: () => {
-        return { type: "Error", content: "Approved failed." }
       },
     })
   }

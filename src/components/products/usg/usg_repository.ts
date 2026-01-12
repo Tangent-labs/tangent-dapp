@@ -73,3 +73,5 @@ export const USG_CONTRACT = {
   PENDLE_ROUTER: "0x6d041EF9096F7013d27fF7a41c17971201499879",
   DAO: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
 }
+
+export const specialTokensList = ["USDe", "sUSDe", "reUSD", "wstUSR"]

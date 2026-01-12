@@ -17,7 +17,7 @@ export const UsgBoostsContent = () => {
 
   const { isConnected, connect } = useWalletConnexionContext()
 
-  const { airdropDataIsLoading, referralStatus, setReferralStatus, signMessage, userBoost } = useUsgAirdropContext()
+  const { airdropDataIsLoading, referralStatus, setReferralStatus, signMessage, userBoostFactor } = useUsgAirdropContext()
 
   return (
     <div className="flex w-full flex-col items-center justify-center">
@@ -29,7 +29,7 @@ export const UsgBoostsContent = () => {
         lpUserPoints={lpUserPoints}
         voteUserPoints={voteUserPoints}
         isConnected={isConnected}
-        userBoost={userBoost}
+        userBoost={userBoostFactor}
       />
 
       {isConnected && (

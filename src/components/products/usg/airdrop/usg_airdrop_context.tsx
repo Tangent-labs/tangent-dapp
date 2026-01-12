@@ -3,9 +3,11 @@
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { generateCode, getReferralStatus, getUserBoost, validateReferralCode } from "../client_api"
+import { generateCode, getReferralStatus, getUserBoosts, validateReferralCode } from "../client_api"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { useRootContext } from "../../root/root_context"
+import { Boost } from "../usg_type"
+import { mapUserBoosts } from "./boosts/usg_boosts_controller"
 
 export type UserStatus = {
   generatedCode: string | null
@@ -25,7 +27,8 @@ type UsgAirdropContextValues = {
   generateReferralCode: () => void
   referralStatus: UserStatus
   setReferralStatus: (arg: UserStatus) => void
-  userBoost: number
+  userBoostFactor: number
+  userBoosts: Array<Boost>
 }
 
 export const UsgAirdropContext = createContext<UsgAirdropContextValues | undefined>(undefined)
@@ -39,12 +42,17 @@ export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
 
   const [referralStatus, setReferralStatus] = useState<UserStatus>({ generatedCode: null, hasUsedCode: false, referralCode: "", friends: 0 })
 
-  const [userBoost, setUserBoost] = useState<number>(1)
+  const [userBoostFactor, setUserBoostFactor] = useState<number>(1)
+
+  const [userBoosts, setUserBoosts] = useState<Array<Boost>>([])
 
   useEffect(() => {
     if (currentAddress) {
-      getUserBoost(currentAddress).then((b) => {
-        setUserBoost(b)
+      getUserBoosts(currentAddress).then((b) => {
+        const mappedBoosts = mapUserBoosts(b?.result)
+
+        setUserBoosts(mappedBoosts)
+        setUserBoostFactor(b.boost)
       })
 
       getReferralStatus(currentAddress).then((status) => {
@@ -117,7 +125,8 @@ export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
     generateReferralCode,
     referralStatus,
     setReferralStatus,
-    userBoost,
+    userBoostFactor,
+    userBoosts,
   }
 
   return <UsgAirdropContext.Provider value={contextValue}>{children}</UsgAirdropContext.Provider>

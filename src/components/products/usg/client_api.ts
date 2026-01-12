@@ -295,31 +295,7 @@ export const getLpUserPoints = async (account: Address, dateFrom: string): Promi
   }
 }
 
-export const getUserBoost = async (account: Address): Promise<number> => {
-  try {
-    const url = `${baseUrl}/user-boost/${account}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch boosts")
-    }
-
-    const boost: number = await response.json()
-
-    return boost
-  } catch (error) {
-    console.error("Failed to fetch user boost:", error)
-    return 1
-  }
-}
-
-export const getUserBoosts = async (account: Address): Promise<Array<string>> => {
+export const getUserBoosts = async (account: Address): Promise<{ boost: number; result: Array<string> }> => {
   try {
     const url = `${baseUrl}/boosts/${account}`
 
@@ -334,12 +310,12 @@ export const getUserBoosts = async (account: Address): Promise<Array<string>> =>
       throw new Error("Failed to fetch boosts")
     }
 
-    const boosts: Array<string> = await response.json()
+    const boosts: { boost: number; result: Array<string> } = await response.json()
 
     return boosts
   } catch (error) {
     console.error("Failed to fetch boosts:", error)
-    return []
+    return { boost: 1, result: [] }
   }
 }
 

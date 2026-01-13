@@ -146,9 +146,9 @@ export function getComputedFutureLoanData(
 
   return {
     collateralValue: formatDollar(futureDepositedDollar, 0),
-    debt: futureDebt > 0n ? formatBigInt(futureDebt, collateralInfo.decimals, collateralInfo.displayDecimals) : "0",
-    health: health > 0n ? formatNumber(etherValueToNumber(health), 2) : "0",
-    ltv: ltv > 0 ? formatNumber(collateralValueToNumber(ltv || 0), 2) + "%" : "0%",
+    debt: futureDebt > 0n ? formatBigInt(futureDebt, 18, collateralInfo.displayDecimals) : "0",
+    health: health > 0n ? formatNumber(Number(formatUnits(health, collateralInfo.decimals)), 2) : "0",
+    ltv: ltv > 0 ? formatNumber(Number(formatUnits(BigInt(ltv), 18)), 2) + "%" : "0%",
     maxBorrowable: formatDollarBigInt(maxBorrowable, collateralInfo.decimals, 0),
     maxWithdrawable: formatDollarBigInt(maxWithDrawable, collateralInfo.decimals, 0),
   } as USGMarketLoanDisplayData
@@ -399,6 +399,7 @@ export const computeAprVariation = (marketAprs: MarketAPR[], currentConvexTVL: b
  *
  */
 export const computeLiquidationPrice = (
+  collateralInfo: CollateralInfo,
   marketData: MarketDetailData,
   amounts?: {
     depositWeiValue?: bigint
@@ -428,7 +429,7 @@ export const computeLiquidationPrice = (
   const ltRaw = marketData.constants.liquidationThreshold
 
   if (futureDebt <= 0n || futureCollat <= 0n) return 0n
-  return (futureDebt * 10n ** 18n) / ((futureCollat || 1n) * (ltRaw / BigInt(1000n)))
+  return (futureDebt * BigInt(10 ** collateralInfo?.decimals)) / ((futureCollat || 1n) * (ltRaw / BigInt(1000n)))
 }
 
 export const computedMinAmountOut = (value: bigint, slippage: number) => {

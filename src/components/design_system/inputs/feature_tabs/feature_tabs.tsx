@@ -40,12 +40,12 @@ export const FeatureTabs = ({
         <Divider className="h-0.5 w-full bg-white/10" />
 
         {activeTab === "Borrow" ? (
-          <div className="flex w-full items-center justify-between gap-2 rounded-[10px] bg-white bg-opacity-[3%] text-xs">
+          <div className="flex w-full items-center justify-between gap-2.5 rounded-[10px] bg-white bg-opacity-[3%] text-xs">
             <LayoutGroup id={`feature-tabs-${marketAddress}`}>
               <div
                 onClick={() => onTabClick("deposit&borrow")}
                 className={cn(
-                  "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold transition-colors duration-200 ease-in-out hover:bg-white/10",
+                  "relative z-10 flex w-[128px] cursor-pointer items-center justify-center rounded-[10px] px-1 py-1.5 font-semibold transition-colors duration-200 ease-in-out hover:bg-white/10",
                   feature === "deposit-borrow" ? "text-black" : "text-white"
                 )}
               >
@@ -55,7 +55,7 @@ export const FeatureTabs = ({
               <div
                 onClick={() => onTabClickLeverage()}
                 className={cn(
-                  "relative z-10 rounded-[10px] px-4 py-1.5 font-semibold transition-colors duration-200 ease-in-out hover:bg-white/10",
+                  "relative z-10 flex w-[128px] items-center justify-center rounded-[10px] px-1 py-1.5 font-semibold transition-colors duration-200 ease-in-out hover:bg-white/10",
                   feature === "leverage" ? "text-black" : "text-white",
                   canLeverage ? "cursor-pointer" : "cursor-not-allowed"
                 )}
@@ -66,7 +66,7 @@ export const FeatureTabs = ({
               <div
                 onClick={() => onTabClick("deposit")}
                 className={cn(
-                  "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white/10",
+                  "relative z-10 flex w-[128px] cursor-pointer items-center justify-center rounded-[10px] px-1 py-1.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white/10",
                   feature === "deposit" ? "text-black" : "text-white"
                 )}
               >
@@ -76,7 +76,7 @@ export const FeatureTabs = ({
               <div
                 onClick={() => onTabClick("borrow")}
                 className={cn(
-                  "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white/10",
+                  "relative z-10 flex w-[128px] cursor-pointer items-center justify-center rounded-[10px] px-1 py-1.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white/10",
                   feature === "borrow" ? "text-black" : "text-white"
                 )}
               >
@@ -86,11 +86,11 @@ export const FeatureTabs = ({
             </LayoutGroup>
           </div>
         ) : (
-          <div className="flex w-full items-center justify-between gap-2 rounded-[10px] bg-white bg-opacity-[3%] text-xs">
+          <div className="flex w-full items-center justify-between gap-2.5 rounded-[10px] bg-white bg-opacity-[3%] text-xs">
             <div
               onClick={() => onTabClick("repay&withdraw")}
               className={cn(
-                "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white/10",
+                "relative z-10 flex w-[128px] cursor-pointer items-center justify-center rounded-[10px] px-1 py-1.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white/10",
                 feature === "repay-withdraw" ? "text-black" : "text-white"
               )}
             >
@@ -101,7 +101,7 @@ export const FeatureTabs = ({
             <div
               onClick={() => onTabClick("liquidate")}
               className={cn(
-                "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white/10",
+                "relative z-10 flex w-[128px] cursor-pointer items-center justify-center rounded-[10px] px-1 py-1.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white/10",
                 feature === "liquidate" ? "text-black" : "text-white"
               )}
             >
@@ -112,7 +112,7 @@ export const FeatureTabs = ({
             <div
               onClick={() => onTabClick("repay")}
               className={cn(
-                "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white/10",
+                "relative z-10 flex w-[128px] cursor-pointer items-center justify-center rounded-[10px] px-1 py-1.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white/10",
                 feature === "repay" ? "text-black" : "text-white"
               )}
             >
@@ -123,7 +123,7 @@ export const FeatureTabs = ({
             <div
               onClick={() => onTabClick("withdraw")}
               className={cn(
-                "relative z-10 cursor-pointer rounded-[10px] px-4 py-1.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white/10",
+                "relative z-10 flex w-[128px] cursor-pointer items-center justify-center rounded-[10px] px-1 py-1.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white/10",
                 feature === "withdraw" ? "text-black" : "text-white"
               )}
             >

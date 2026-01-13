@@ -166,14 +166,16 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
       const USGCollateralsData = onChainData.rowInfos
         .map((market) => {
           const collateralValue = market.collateralInfos.totalCollateralUSDValue
-          const collateralFormatted = Number(formatUnits(collateralValue, 18))
+          const collateralFormatted = Number(formatUnits(collateralValue, Number(market.collateralInfos?.collateralToken?.decimals)))
           const totalDepositFormatted = Number(formatUnits(totalProtocolDeposit, 18))
 
           const percentage = totalDepositFormatted > 0 ? (collateralFormatted / totalDepositFormatted) * 100 : 0
 
           const marketConfig = USGMarkets.find((m) => m.marketAddress === market.marketAddress)
 
-          const displayName = (marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + marketConfig?.marketName
+          const marketNameIsDuplicated = marketConfig != null && USGMarkets.filter((m) => m.marketName === marketConfig.marketName).length > 1
+
+          const displayName = (marketNameIsDuplicated && marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + marketConfig?.marketName
 
           return {
             name: displayName,
@@ -192,8 +194,11 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
 
           const marketConfig = USGMarkets.find((m) => m.marketAddress === market.marketAddress)
 
+          const marketNameIsDuplicated = marketConfig != null && USGMarkets.filter((m) => m.marketName === marketConfig.marketName).length > 1
+
           const displayName =
-            (marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + (marketConfig?.marketName || market.collateralInfos?.collateralToken?.symbol)
+            (marketNameIsDuplicated && marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") +
+            (marketConfig?.marketName || market.collateralInfos?.collateralToken?.symbol)
 
           return {
             id: index + 1,

@@ -50,7 +50,9 @@ export function transformHarvestOnChainData(harvesterInfos: HarvesterInfo[], ass
     const stakingInfo = Object.values(USGMarkets).find((i) => i.marketAddress === info.marketAddress)
     if (!stakingInfo) return
 
-    const displayName = (stakingInfo?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + stakingInfo?.marketName
+    const marketNameIsDuplicated = stakingInfo != null && USGMarkets.filter((m) => m.marketName === stakingInfo?.marketName).length > 1
+
+    const displayName = (marketNameIsDuplicated && stakingInfo?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + stakingInfo?.marketName
 
     const rewards = getPricesFromTokenAmounts(info.tokenAmounts, assetInfos)
     const percentage = Number(info.harvesterFeePercentage) / 1000

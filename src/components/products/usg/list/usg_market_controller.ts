@@ -110,7 +110,9 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
       {
         key: "tvl",
         label: "Tvl",
-        value: formatMarketListCompact(formatUnits(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0n, 18)),
+        value: formatMarketListCompact(
+          formatUnits(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0n, Number(onChainRow?.collateralInfos?.collateralToken?.decimals) || 18)
+        ),
         raw: Number(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0),
       },
       { key: "borrowed", label: "Borrowed", value: formatMarketListCompact(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18)) || "-", raw: 0 },

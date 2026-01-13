@@ -548,7 +548,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       if (isZapping && zapValue) {
         futureDeposited =
           marketData?.collateralInfos?.positionCollateralUSDValue +
-          (computedMinAmountOut(zapValue, slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18)
+          (computedMinAmountOut(zapValue, slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** collateralInfo?.decimals)
       } else {
         futureDeposited =
           marketData?.collateralInfos?.positionCollateralUSDValue + (deposit * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18)

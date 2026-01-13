@@ -82,7 +82,7 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
 
     const totalClaimableValue = claimable.reduce((sum, token) => sum + parseFloat(token.valueInUsd), 0)
 
-    const depositedValueInUsd = parseFloat(formatUnits(claimer.collatStakedUsdValue, Number(claimer.collatStaked.decimals)))
+    const depositedValueInUsd = parseFloat(formatUnits(claimer.collatStakedUsdValue, 18))
 
     const deposited = {
       symbol: claimer.collatStaked.symbol,
@@ -92,7 +92,9 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
 
     const marketConfig = USGMarkets.find((m) => m.marketAddress === claimer.marketAddress)
 
-    const displayName = (marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + marketConfig?.marketName
+    const marketNameIsDuplicated = marketConfig != null && USGMarkets.filter((m) => m.marketName === marketConfig.marketName).length > 1
+
+    const displayName = (marketNameIsDuplicated && marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + marketConfig?.marketName
 
     return {
       marketAddress: claimer.marketAddress,

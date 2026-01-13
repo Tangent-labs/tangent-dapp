@@ -4,16 +4,16 @@ import { toast } from "react-toastify"
 import { useUSGContext } from "../../usg_context"
 import { USGMarket, ZapToken } from "../../usg_type"
 import { useUSGRecordContext } from "../usg_record_context"
-import { ToastComponent, toastTx } from "@/components/design_system/toast"
+import { formatUnits, parseEther, zeroAddress } from "viem"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
+import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computeAprVariation, computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit, doMarketDepositAndBorrow } from "./usg_record_deposit_controller"
-import { formatUnits, parseEther, zeroAddress } from "viem"
 
 type USGDepositContextProps = {
   children: ReactNode
@@ -253,7 +253,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   useEffect(() => {
     if (zapValue !== undefined) {
-      const updatedValue = Number(Number(formatUnits(zapValue || 0n, 18)).toFixed(3))
+      const updatedValue = Number(Number(formatUnits(zapValue || 0n, collateralInfo?.decimals)).toFixed(3))
       setZapInnerValue(updatedValue)
       setIsZapUserInput(false)
     } else {
@@ -567,7 +567,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   const estimatedZapDollarValue = useMemo(() => {
     if (zapValue && marketData) {
       const result = `~(${formatDollar(
-        formatUnits((computedMinAmountOut(zapValue, slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), 18)
+        formatUnits((computedMinAmountOut(zapValue, slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), collateralInfo?.decimals)
       )})`
       return result
     }

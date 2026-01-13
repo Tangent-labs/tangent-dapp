@@ -17,9 +17,9 @@ import { getSwapAssetPrice } from "@/services/service_price"
 import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
 import { USG_CONTRACT, USGMarkets, USGOracles } from "../usg_repository"
 import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
-import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
+import { Abi, Address, erc20Abi, formatEther, formatUnits, Hex, parseEther, WalletClient, zeroAddress } from "viem"
+import { executeApprove, executeChainViewUnique, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { formatBigInt, formatBigIntAsNumber, formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
-import { Abi, Address, formatEther, formatUnits, Hex, parseEther, WalletClient, zeroAddress } from "viem"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
@@ -117,8 +117,11 @@ export function getComputedFutureLoanData(
   }
 
   const etherValueToNumber = (value: bigint) => Number(formatEther(value))
+
   const collateralPriceRaw = BigInt(marketData?.collateralInfos?.collateralUSDPrice || 0n)
+
   const collateralprice = etherValueToNumber(collateralPriceRaw)
+
   const liquidationThresholdRaw = BigInt(marketData?.constants?.liquidationThreshold || 0n)
 
   const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n) + BigInt(amounts.borrowWeiValue!) - BigInt(amounts.repayWeiValue!)
@@ -151,11 +154,26 @@ export function getComputedFutureLoanData(
   } as USGMarketLoanDisplayData
 }
 
-export async function loadMarketServerData(collateral: Address) {
-  const marketInfo = USGMarkets.find((market) => market.marketAddress === collateral)
+export async function loadMarketServerData(marketAddress: Address) {
+  const marketInfo = USGMarkets.find((m) => m.marketAddress.toLowerCase() === marketAddress.toLowerCase())
+
+  const serverPublicClient = getPublicClient()
+
+  if (!marketInfo) {
+    return { marketInfo: undefined, collateralInfo: undefined }
+  }
+
+  const tokenAddress = marketInfo.collatAddress as Address
+
+  const decimals = await serverPublicClient.readContract({
+    address: tokenAddress,
+    abi: erc20Abi,
+    functionName: "decimals",
+  })
+
   const collateralInfo = {
-    address: USGMarkets.find((market) => market.marketAddress === collateral)?.collatAddress as Address,
-    decimals: 18,
+    address: tokenAddress,
+    decimals: Number(decimals),
     displayDecimals: 2,
     symbol: marketInfo?.marketName as string,
     name: marketInfo?.marketName as string,

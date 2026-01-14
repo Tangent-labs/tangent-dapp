@@ -134,7 +134,7 @@ export const CollateralGraph = ({ graphData, isPending, liquidationPrice }: Coll
 
       const h = container.getBoundingClientRect().height
 
-      const outOfView = y === null || y <= 0 || y >= h
+      const outOfView = y === null || y < 0 || y > h
 
       setShowBackupBadge(outOfView)
     }

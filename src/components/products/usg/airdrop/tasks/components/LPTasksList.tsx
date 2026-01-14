@@ -131,65 +131,63 @@ export const LPTasksList = () => {
         </div>
       </div>
 
-      <div className="scrollbar-thin max-h-[500px] overflow-y-auto">
-        {displayRows &&
-          (displayRows as UserTask[])?.map((task: UserTask) => (
-            <div
-              onClick={() => window.open(task.url, "_blank")}
-              key={task?.taskId}
-              className="mb-1 bg-overlay-panel px-2 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover lg:px-5"
-            >
-              <div className="hidden items-center justify-between md:flex">
-                <div className="flex w-5/12 items-center gap-2 xl:gap-4">
-                  <LpTaskCustomAssetDisplay token={task.asset.replaceAll("_", "-") as ExistingAsset} />
+      {displayRows &&
+        (displayRows as UserTask[])?.map((task: UserTask) => (
+          <div
+            onClick={() => window.open(task.url, "_blank")}
+            key={task?.taskId}
+            className="mb-1 bg-overlay-panel px-2 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover lg:px-5"
+          >
+            <div className="hidden items-center justify-between md:flex">
+              <div className="flex w-5/12 items-center gap-2 xl:gap-4">
+                <LpTaskCustomAssetDisplay token={task.asset.replaceAll("_", "-") as ExistingAsset} />
 
-                  <div className="flex h-full flex-col items-start justify-between gap-1">
-                    <span className="flex text-xl font-semibold">{task.asset.replaceAll("_", "-")}</span>
+                <div className="flex h-full flex-col items-start justify-between gap-1">
+                  <span className="flex text-xl font-semibold">{task.asset.replaceAll("_", "-")}</span>
 
-                    <span className="flex items-center justify-center rounded-full border-tangent border-white border-opacity-20 bg-button-active px-3 py-0.5 text-xs">
-                      <span className="flex text-sm">{task.description}</span>
-                    </span>
-                  </div>
-                </div>
-
-                <div className="hidden w-2/12 justify-center lg:flex">
-                  <div>{computeProtocolDisplay(task?.protocol)}</div>
-                </div>
-
-                <div className="flex w-1/12 items-center justify-center">{(task?.pointRate * 86400).toFixed(0)}</div>
-
-                <div className="flex w-1/12 items-center justify-center">{formatDollar(task?.balanceUsd)}</div>
-
-                <div className="flex w-2/12 items-center justify-center">{formatNumber(task?.points, 0)}</div>
-
-                <div className="flex w-1/12 flex-col items-center justify-center">
-                  <div className="flex h-12 w-12 flex-col items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
-                    <TaskStatus status={task?.status} />
-                  </div>
+                  <span className="flex items-center justify-center rounded-full border-tangent border-white border-opacity-20 bg-button-active px-3 py-0.5 text-xs">
+                    <span className="flex text-sm">{task.description}</span>
+                  </span>
                 </div>
               </div>
 
-              <div className="flex flex-col items-center justify-between md:hidden">
-                <div className="flex w-full items-start justify-between gap-1 border-b border-white border-opacity-20 pb-2">
-                  <div className="flex items-center justify-center gap-2">
-                    <TokenImage token={formatToken(task.asset)} className="w-8" size={48} />
+              <div className="hidden w-2/12 justify-center lg:flex">
+                <div>{computeProtocolDisplay(task?.protocol)}</div>
+              </div>
 
-                    <span className="flex text-sm font-semibold">{task.asset}</span>
-                  </div>
+              <div className="flex w-1/12 items-center justify-center">{(task?.pointRate * 86400).toFixed(0)}</div>
 
-                  <div className="flex flex-col items-center justify-center text-sm">{computeProtocolDisplay(task?.protocol)}</div>
+              <div className="flex w-1/12 items-center justify-center">{formatDollar(task?.balanceUsd)}</div>
 
-                  <div className="flex flex-col items-center justify-center">
-                    <span className="text-xs text-subtitle">Points</span>
+              <div className="flex w-2/12 items-center justify-center">{formatNumber(task?.points, 0)}</div>
 
-                    <span className="flex text-sm">{task.points}</span>
-                  </div>
+              <div className="flex w-1/12 flex-col items-center justify-center">
+                <div className="flex h-12 w-12 flex-col items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
+                  <TaskStatus status={task?.status} />
                 </div>
-                <div className="flex w-full items-center justify-center text-sm"> {task?.description}</div>
               </div>
             </div>
-          ))}
-      </div>
+
+            <div className="flex flex-col items-center justify-between md:hidden">
+              <div className="flex w-full items-start justify-between gap-1 border-b border-white border-opacity-20 pb-2">
+                <div className="flex items-center justify-center gap-2">
+                  <TokenImage token={formatToken(task.asset)} className="w-8" size={48} />
+
+                  <span className="flex text-sm font-semibold">{task.asset}</span>
+                </div>
+
+                <div className="flex flex-col items-center justify-center text-sm">{computeProtocolDisplay(task?.protocol)}</div>
+
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-xs text-subtitle">Points</span>
+
+                  <span className="flex text-sm">{task.points}</span>
+                </div>
+              </div>
+              <div className="flex w-full items-center justify-center text-sm"> {task?.description}</div>
+            </div>
+          </div>
+        ))}
     </>
   )
 }

@@ -109,62 +109,60 @@ export const VoteTasksList = () => {
         </div>
       </div>
 
-      <div className="scrollbar-thin max-h-[500px] overflow-y-auto">
-        {displayRows &&
-          (displayRows as VoteTask[])?.map((task: VoteTask) => (
-            <div
-              key={task?.taskId}
-              className="mb-1 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
-            >
-              <div className="hidden items-center justify-between md:flex">
-                <div className="flex w-3/12 items-center gap-2 xl:gap-4">
-                  <span className="flex text-xl font-semibold">{task.organisation}</span>
-                </div>
-                <div className="hidden w-2/12 justify-center lg:flex">
-                  <div onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}>{computeProtocolDisplay(task?.protocol)}</div>
-                </div>
-                <div className="flex w-4/12 justify-center lg:w-3/12">
-                  <div
-                    className="flex items-center justify-center rounded-[10px] bg-overlay-panel px-6 py-2 text-center text-xs backdrop-blur-[60px]"
-                    onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}
-                  >
-                    {task?.description}
-                  </div>
-                </div>
-                <div className="flex w-2/12 items-center justify-center">1</div>
-
-                <div className="flex w-2/12 items-center justify-center">{formatNumber(task?.points, 0)}</div>
+      {displayRows &&
+        (displayRows as VoteTask[])?.map((task: VoteTask) => (
+          <div
+            key={task?.taskId}
+            className="mb-1 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
+          >
+            <div className="hidden items-center justify-between md:flex">
+              <div className="flex w-3/12 items-center gap-2 xl:gap-4">
+                <span className="flex text-xl font-semibold">{task.organisation}</span>
               </div>
-
-              <div className="flex flex-col items-center justify-between md:hidden">
-                <div className="flex w-full items-start justify-between gap-1 border-b border-white border-opacity-20 pb-2">
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="flex text-sm font-semibold">{task.organisation}</span>
-                  </div>
-
-                  <div className="flex flex-col items-center justify-start">
-                    <span className="text-xs text-subtitle">Pts/VotingPower</span>
-
-                    <span className="flex text-sm">1</span>
-                  </div>
-
-                  <div className="flex flex-col items-center justify-center">
-                    <span className="text-xs text-subtitle">Protocol</span>
-
-                    <span className="flex text-sm">{computeProtocolDisplay(task?.protocol)}</span>
-                  </div>
-
-                  <div className="flex flex-col items-center justify-center">
-                    <span className="text-xs text-subtitle">Points</span>
-
-                    <span className="flex text-sm">{task.points}</span>
-                  </div>
-                </div>
-                <div className="flex w-full items-center justify-center"> {task?.description}</div>
+              <div className="hidden w-2/12 justify-center lg:flex">
+                <div onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}>{computeProtocolDisplay(task?.protocol)}</div>
               </div>
+              <div className="flex w-4/12 justify-center lg:w-3/12">
+                <div
+                  className="flex items-center justify-center rounded-[10px] bg-overlay-panel px-6 py-2 text-center text-xs backdrop-blur-[60px]"
+                  onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}
+                >
+                  {task?.description}
+                </div>
+              </div>
+              <div className="flex w-2/12 items-center justify-center">1</div>
+
+              <div className="flex w-2/12 items-center justify-center">{formatNumber(task?.points, 0)}</div>
             </div>
-          ))}
-      </div>
+
+            <div className="flex flex-col items-center justify-between md:hidden">
+              <div className="flex w-full items-start justify-between gap-1 border-b border-white border-opacity-20 pb-2">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="flex text-sm font-semibold">{task.organisation}</span>
+                </div>
+
+                <div className="flex flex-col items-center justify-start">
+                  <span className="text-xs text-subtitle">Pts/VotingPower</span>
+
+                  <span className="flex text-sm">1</span>
+                </div>
+
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-xs text-subtitle">Protocol</span>
+
+                  <span className="flex text-sm">{computeProtocolDisplay(task?.protocol)}</span>
+                </div>
+
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-xs text-subtitle">Points</span>
+
+                  <span className="flex text-sm">{task.points}</span>
+                </div>
+              </div>
+              <div className="flex w-full items-center justify-center"> {task?.description}</div>
+            </div>
+          </div>
+        ))}
     </>
   )
 }

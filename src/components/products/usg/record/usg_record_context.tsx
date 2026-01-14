@@ -30,11 +30,11 @@ import { usePathname } from "next/navigation"
 import { getConvexPools } from "../server_api"
 import { useUSGContext } from "../usg_context"
 import { USG_CONTRACT } from "../usg_repository"
-import { Address, formatUnits, zeroAddress } from "viem"
 import { ToastComponent } from "@/components/design_system/toast"
+import { Address, formatUnits, parseEther, zeroAddress } from "viem"
 import { useRootContext } from "@/components/products/root/root_context"
-import { getHistoricalMarketData, getUserPositions } from "../client_api"
 import { useUSGMaketListContext } from "../list/usg_market_list_context"
+import { getHistoricalMarketData, getUserPositions } from "../client_api"
 import { sortUserData } from "./position_history/usg_position_history_controller"
 import { AssetDataPriced, CollateralInfo, ExistingAsset, ListState } from "@/types"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -125,6 +125,12 @@ type USGRecordContextValues = {
   activeTab: string
   setActiveTab: (arg: string) => void
 
+  simulatedCollatAmount: number
+  setSimulatedCollatAmount: (n: number) => void
+
+  simulatedDebtAmount: number
+  setSimulatedDebtAmount: (n: number) => void
+
   depositAssetOptions: Array<{
     label: string
     value: string
@@ -173,6 +179,10 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   const [debtVAPR, setDebtVAPR] = useState<number>(0)
 
   const [initialCollatAmount, setInitialCollatAmount] = useState<number>(0)
+
+  const [simulatedCollatAmount, setSimulatedCollatAmount] = useState<number>(0)
+
+  const [simulatedDebtAmount, setSimulatedDebtAmount] = useState<number>(0)
 
   const [isUserHistoryLoading, setIsUserHistoryLoading] = useState<boolean>(true)
 
@@ -337,8 +347,8 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
         .map((price) => {
           const vAPR = computeVAPR(
             BigInt(Math.round(currentTotalMarketApr * 10 ** 18)) / BigInt(100),
-            onChainData?.collateralInfos?.positionCollateralUSDValue,
-            onChainData?.debtInfos.userDebt,
+            onChainData?.collateralInfos?.positionCollateralUSDValue || parseEther(simulatedCollatAmount.toFixed(0)),
+            onChainData?.debtInfos.userDebt || parseEther(simulatedDebtAmount.toFixed(0)),
             computeIR(BigInt(Math.round(price * 10 ** 18)), irParams),
             debtFarming,
             debtVAPR / 100,
@@ -352,16 +362,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
 
       setChartData(data)
     }
-  }, [isLeveraged, debtFarming, debtVAPR, marketData, onChainData, initialCollatAmount, currentTotalMarketApr])
-
-  useEffect(() => {
-    if (isLeveraged) {
-      setDebtFarming(0)
-      setDebtVAPR(0)
-    } else {
-      setInitialCollatAmount(0)
-    }
-  }, [isLeveraged])
+  }, [isLeveraged, debtFarming, debtVAPR, marketData, onChainData, initialCollatAmount, currentTotalMarketApr, simulatedCollatAmount, simulatedDebtAmount])
 
   const feature = useMemo(() => {
     const lastIndexOfSlash = path.lastIndexOf("/") + 1
@@ -546,6 +547,12 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     setActiveTab,
 
     depositAssetOptions,
+
+    simulatedCollatAmount,
+    setSimulatedCollatAmount,
+
+    simulatedDebtAmount,
+    setSimulatedDebtAmount,
   }
 
   return <USGRecordContext.Provider value={contextValue}>{children}</USGRecordContext.Provider>

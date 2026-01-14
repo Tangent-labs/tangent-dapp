@@ -219,8 +219,8 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     const { key, direction } = listState.sort!
 
     displayRows.sort((elementA: ListRowData, elementB: ListRowData) => {
-      const aValue = Number(elementA.indicators.find((el) => el.key === key)?.raw)
-      const bValue = Number(elementB.indicators.find((el) => el.key === key)?.raw)
+      const aValue = key === "apr" ? Number(elementA.apr?.current) : Number(elementA.indicators.find((el) => el.key === key)?.raw)
+      const bValue = key === "apr" ? Number(elementB.apr?.current) : Number(elementB.indicators.find((el) => el.key === key)?.raw)
 
       if (aValue < bValue) return direction === "asc" ? -1 : 1
       if (aValue > bValue) return direction === "asc" ? 1 : -1

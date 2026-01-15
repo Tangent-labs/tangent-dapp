@@ -121,6 +121,15 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
   }
 }
 
+export const computeCollatData = (market: ChainViewMarketRow, totalFormatted: number, amountFormatted: number) => {
+  const percentage = totalFormatted > 0 ? (amountFormatted / totalFormatted) * 100 : 0
+  const marketConfig = USGMarkets.find((m) => m.marketAddress === market.marketAddress)
+  const marketNameIsDuplicated = marketConfig != null && USGMarkets.filter((m) => m.marketName === marketConfig.marketName).length > 1
+  const displayName = (marketNameIsDuplicated && marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + marketConfig?.marketName
+
+  return { displayName, percentage }
+}
+
 export const USGListHeaders: ListHeaderData[] = [
   { label: "Collateral", key: "collateral", sort: null },
   {

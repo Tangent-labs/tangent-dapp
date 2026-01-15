@@ -1,5 +1,5 @@
 import { USG_CONTRACT } from "./usg_repository"
-import { PendlePools } from "@tangent/defi-resources"
+import { PENDLE_POOLS } from "@tangent/defi-resources"
 import PendlePTRouter from "../../../abi/USG/PendlePTRouter.json"
 import QuoteTokenToPT from "../../../abi/USG/QuoteTokenToPT.json"
 import QuotePTToToken from "../../../abi/USG/QuotePTToToken.json"
@@ -27,7 +27,7 @@ const returnCustomPendleQuoteData = async (
 
   const pendlePT = swapDirection === "tokenToPT" ? tokenOut : tokenIn
 
-  const underlyingPool = Object.values(PendlePools).find((pool) => pool.PT.toLowerCase() === pendlePT.toLowerCase())
+  const underlyingPool = Object.values(PENDLE_POOLS).find((pool) => pool.PT.toLowerCase() === pendlePT.toLowerCase())
 
   let underlyings
   let abi
@@ -136,7 +136,7 @@ export const getPendleCustomRouterRoute = async (
 
   const pendlePT = swapDirection === "tokenToPT" ? tokenOut : tokenIn
 
-  const underlyingPool = Object.values(PendlePools).find((pool) => pool.PT.toLowerCase() === pendlePT.toLowerCase())
+  const underlyingPool = Object.values(PENDLE_POOLS).find((pool) => pool.PT.toLowerCase() === pendlePT.toLowerCase())
 
   if (fn === "swapTokenForPT") {
     const data = encodeFunctionData({

@@ -138,12 +138,13 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     if (status) {
       const mappedStatus: PredepositStatus = mapPredepositStatus(status)
 
-      if (!!mappedStatus && mappedStatus?.isSigned && mappedStatus?.userState === "private") {
+      const userCanSignAndAccessPredeposit =
+        (mappedStatus?.predepositState === "deposit_private" && mappedStatus?.userState === "private") || mappedStatus?.predepositState === "deposit_public"
+
+      if (!!mappedStatus && mappedStatus?.isSigned && (mappedStatus?.userState === "private" || mappedStatus?.predepositState === "deposit_public")) {
         setIsWhitelisted(true)
-      } else if (!!mappedStatus && !mappedStatus?.isSigned && mappedStatus?.userState === "private") {
+      } else if (!!mappedStatus && userCanSignAndAccessPredeposit && !mappedStatus?.isSigned) {
         await signMessage()
-      } else if (mappedStatus?.userState === "public") {
-        setIsWhitelisted(false)
       }
 
       setPredepositStatus(mappedStatus)
@@ -397,17 +398,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
 
               setIsWhitelisted(true)
             } else {
-              toast.update(pendingToastId, {
-                render: ToastComponent,
-                data: {
-                  type: "Error",
-                  content: "Something went wrong.",
-                },
-                autoClose: 3000,
-                closeOnClick: true,
-                draggable: true,
-              })
-
+              toast.dismiss(pendingToastId)
               setIsWhitelisted(false)
             }
           })

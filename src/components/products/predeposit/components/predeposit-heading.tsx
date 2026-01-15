@@ -20,9 +20,9 @@ export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumula
   return (
     <>
       <span className="mt-4 text-2xl font-semibold text-white lg:text-4xl">Pre-deposit campaign</span>
-      <span className="text-sm text-subtitle">Deposit USDC or frxUSD and receive LP tokens to earn:</span>
+      <span className="hidden text-sm text-subtitle xl:flex">Deposit USDC or frxUSD and receive LP tokens to earn:</span>
 
-      <section className="mt-4 flex w-full flex-col-reverse items-center justify-center gap-2 xl:flex-row">
+      <section className="mt-4 flex w-full flex-col-reverse items-center justify-center gap-4 xl:flex-row">
         <div className="hidden w-full items-center justify-center gap-2 lg:flex">
           <div className="flex h-44 w-full flex-col items-center justify-center rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
             <span className="p-4 text-[16px] text-white">A fixed and guaranteed share of 2% of TAN total supply.</span>
@@ -38,9 +38,9 @@ export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumula
           </div>
         </div>
 
-        <div className="flex w-full flex-col gap-2 xl:w-fit xl:min-w-[400px]">
+        <div className="flex w-full flex-col gap-2 pl-0 xl:w-fit xl:min-w-[400px] xl:border-l xl:border-l-white/30 xl:pl-4">
           <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px]">
-            <span className="text-[20px] font-semibold">TAN allocation</span>
+            <span className="text-[20px] font-semibold">Your TAN allocation</span>
             <span className="flex items-center justify-center gap-2 text-[30px] font-semibold">
               {formatNumber(Number(tanAllocation), 0)}
               <TokenImage token="tan" size={12} className="w-8" />

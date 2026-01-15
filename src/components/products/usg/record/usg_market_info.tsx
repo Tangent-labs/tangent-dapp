@@ -59,12 +59,8 @@ export default function USGMarketInfo() {
 
           <div className="ml-3 flex flex-1 items-center justify-between">
             <div className="flex w-full flex-col">
-              <div className="flex w-full gap-2">
-                <span>Interest rate model</span>
-              </div>
-              <div className="flex h-[300px] w-full border-0 p-4">
-                <InterestRateGraph />
-              </div>
+              Interest rate model
+              <InterestRateGraph />
             </div>
           </div>
         </div>

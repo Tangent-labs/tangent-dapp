@@ -22,36 +22,36 @@ type PredepositContextValues = {
   isLoading: boolean
 
   slippage: number
-  setSlippage: (nigger: number) => void
+  setSlippage: (v: number) => void
 
   frxUSDslippage: number
-  setfrxUSDSlippage: (nigger: number) => void
+  setfrxUSDSlippage: (v: number) => void
 
   USGUSDCDepositValue: bigint | undefined
-  setUSGUSDCDepositValue: (nigger: bigint | undefined) => void
+  setUSGUSDCDepositValue: (v: bigint | undefined) => void
 
   USGfrxUSDDepositValue: bigint | undefined
-  setUSGfrxUSDDepositValue: (nigger: bigint) => void
+  setUSGfrxUSDDepositValue: (v: bigint) => void
 
   USDCInfo: AssetDataPriced
 
   frxUSDInfo: AssetDataPriced
 
   USDCDepositSliderPercent: number
-  setUSDCDepositSliderPercent: (nigger: number) => void
+  setUSDCDepositSliderPercent: (v: number) => void
 
   frxUSDDepositSliderPercent: number
-  setfrxUSDDepositSliderPercent: (nigger: number) => void
+  setfrxUSDDepositSliderPercent: (v: number) => void
 
   USDCBalanceAllowance: { balance: bigint; allowance: bigint }
 
   frxUSDBalanceAllowance: { balance: bigint; allowance: bigint }
 
   USDCDepositValue: bigint | undefined
-  setUSDCDepositValue: (nigger: bigint | undefined) => void
+  setUSDCDepositValue: (v: bigint | undefined) => void
 
   frxUSDDepositValue: bigint | undefined
-  setfrxUSDDepositValue: (nigger: bigint | undefined) => void
+  setfrxUSDDepositValue: (v: bigint | undefined) => void
 
   handleDepositChange: (arg: bigint | undefined) => void
 

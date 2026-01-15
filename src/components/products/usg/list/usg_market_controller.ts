@@ -105,18 +105,29 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
           !!onChainRow?.debtInfos.currentBorrowRate && onChainRow?.debtInfos.currentBorrowRate >= 0n
             ? ((Math.exp(Number(formatBigInt(onChainRow?.debtInfos.currentBorrowRate, 18, 4))) - 1) * 100).toFixed(2) + "%"
             : "0%",
-        raw: 0,
+        raw: Number(formatBigInt(onChainRow?.debtInfos.currentBorrowRate, 18, 4)),
       },
       {
         key: "tvl",
         label: "Tvl",
-        value: formatMarketListCompact(formatUnits(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0n, 18)),
+        value: formatMarketListCompact(
+          formatUnits(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0n, Number(onChainRow?.collateralInfos?.collateralToken?.decimals) || 18)
+        ),
         raw: Number(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0),
       },
       { key: "borrowed", label: "Borrowed", value: formatMarketListCompact(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18)) || "-", raw: 0 },
     ],
     userHasDeposited: !!onChainRow?.collateralInfos?.positionCollateralUSDValue && onChainRow?.collateralInfos?.positionCollateralUSDValue > 0n,
   }
+}
+
+export const computeCollatData = (market: ChainViewMarketRow, totalFormatted: number, amountFormatted: number) => {
+  const percentage = totalFormatted > 0 ? (amountFormatted / totalFormatted) * 100 : 0
+  const marketConfig = USGMarkets.find((m) => m.marketAddress === market.marketAddress)
+  const marketNameIsDuplicated = marketConfig != null && USGMarkets.filter((m) => m.marketName === marketConfig.marketName).length > 1
+  const displayName = (marketNameIsDuplicated && marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + marketConfig?.marketName
+
+  return { displayName, percentage }
 }
 
 export const USGListHeaders: ListHeaderData[] = [

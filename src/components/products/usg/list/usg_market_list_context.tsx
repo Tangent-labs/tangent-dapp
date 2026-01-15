@@ -7,7 +7,7 @@ import { Address, formatUnits, zeroAddress } from "viem"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { ChainViewMarketList, MarketConstants, MarketDebtData, USGCollateralData, USGGlobalData } from "../usg_type"
-import { getUSGMarketsData, transformGlobalData, transformMarketData, transformToRows } from "./usg_market_controller"
+import { computeCollatData, getUSGMarketsData, transformGlobalData, transformMarketData, transformToRows } from "./usg_market_controller"
 
 type USGMaketListContextProps = {
   children: ReactNode
@@ -166,14 +166,10 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
       const USGCollateralsData = onChainData.rowInfos
         .map((market) => {
           const collateralValue = market.collateralInfos.totalCollateralUSDValue
-          const collateralFormatted = Number(formatUnits(collateralValue, 18))
+          const collateralFormatted = Number(formatUnits(collateralValue, Number(market.collateralInfos?.collateralToken?.decimals)))
           const totalDepositFormatted = Number(formatUnits(totalProtocolDeposit, 18))
 
-          const percentage = totalDepositFormatted > 0 ? (collateralFormatted / totalDepositFormatted) * 100 : 0
-
-          const marketConfig = USGMarkets.find((m) => m.marketAddress === market.marketAddress)
-
-          const displayName = (marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + marketConfig?.marketName
+          const { displayName, percentage } = computeCollatData(market, totalDepositFormatted, collateralFormatted)
 
           return {
             name: displayName,
@@ -188,12 +184,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
           const debtFormatted = Number(formatUnits(debtValue, 18))
           const totalDebtFormatted = Number(formatUnits(totalProtocolDebt, 18))
 
-          const percentage = totalDebtFormatted > 0 ? (debtFormatted / totalDebtFormatted) * 100 : 0
-
-          const marketConfig = USGMarkets.find((m) => m.marketAddress === market.marketAddress)
-
-          const displayName =
-            (marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + (marketConfig?.marketName || market.collateralInfos?.collateralToken?.symbol)
+          const { displayName, percentage } = computeCollatData(market, totalDebtFormatted, debtFormatted)
 
           return {
             id: index + 1,
@@ -214,8 +205,8 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     const { key, direction } = listState.sort!
 
     displayRows.sort((elementA: ListRowData, elementB: ListRowData) => {
-      const aValue = Number(elementA.indicators.find((el) => el.key === key)?.raw)
-      const bValue = Number(elementB.indicators.find((el) => el.key === key)?.raw)
+      const aValue = key === "apr" ? Number(elementA.apr?.current) : Number(elementA.indicators.find((el) => el.key === key)?.raw)
+      const bValue = key === "apr" ? Number(elementB.apr?.current) : Number(elementB.indicators.find((el) => el.key === key)?.raw)
 
       if (aValue < bValue) return direction === "asc" ? -1 : 1
       if (aValue > bValue) return direction === "asc" ? 1 : -1

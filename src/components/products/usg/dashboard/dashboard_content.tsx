@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { ExistingAsset } from "@/types"
+import { specialTokensList } from "../usg_repository"
 import { useUSGDashboardContext } from "./dashboard_context"
 import { MarketDebtData, USGCollateralData } from "../usg_type"
 import Divider from "@/components/design_system/structure/divider"
@@ -274,7 +274,13 @@ export const USGDashboardContent = () => {
                     .map((el: USGCollateralData, index: number) => (
                       <div key={el.name} className="mb-1 flex w-full items-center justify-start gap-2 rounded-[10px] px-3 py-1 backdrop-blur-[60px]">
                         <div className="h-1 w-1 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
-                        <TokenImage token={el.name as ExistingAsset} size={16} className="w-7" />
+
+                        {specialTokensList.some((item) => el.name.includes(item)) ? (
+                          <TokenImage token={el.name} size={16} className="w-6" />
+                        ) : (
+                          <TokenImage token={el.name} size={16} className="w-7" />
+                        )}
+
                         <div className="text-subtitle">{el.name}</div>
                         <div>-</div>
                         <div className="font-semibold text-white">{el.value}%</div>

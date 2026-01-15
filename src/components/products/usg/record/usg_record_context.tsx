@@ -443,7 +443,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   }, [marketDisplayData])
 
   const liquidationPrice = useMemo(() => {
-    if (marketData) return computeLiquidationPrice(marketData, currentAmounts) * 100n
+    if (marketData && collateralInfo) return computeLiquidationPrice(collateralInfo, marketData, currentAmounts) * 100n
     return 0n
   }, [marketData, currentAmounts])
 

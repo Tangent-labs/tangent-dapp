@@ -20,10 +20,9 @@ export default function RecordPageHeader({ apr, indicators }: RecordPageHeaderPr
   return (
     <>
       <RecordPageHeaderIndicator
-        title="vAPR"
+        title="Collateral vAPR"
         value={`${totalCurrentAPR ? `${totalCurrentAPR?.toFixed(2)}%` : "-"}`}
         subValue={<div className="flex items-center text-xs text-subtitle">{`Proj: ${totalProjectedAPR ? `${totalProjectedAPR?.toFixed(2)}%` : "-"}`}</div>}
-        indicator="vAPR of the collateral"
       />
 
       {indicators?.map((i, index) => (
@@ -52,12 +51,15 @@ export const RecordPageHeaderIndicator = ({ title, value, subValue, indicator, c
     >
       <div className="flex items-center justify-center gap-1">
         {title}
-        <USGHoverCard iconClassName="h-auto w-[12px] text-white" title="">
-          {indicator}
-        </USGHoverCard>
+
+        {!!indicator && (
+          <USGHoverCard iconClassName="h-auto w-[12px] text-white" title="">
+            {indicator}
+          </USGHoverCard>
+        )}
       </div>
 
-      <span className={cn("text-[20px] font-semibold", className, title === "vAPR" ? "text-row-tonic" : "")}>{value}</span>
+      <span className={cn("text-[20px] font-semibold", className, title === "Collateral vAPR" ? "text-row-tonic" : "")}>{value}</span>
       <span className="text-xs text-subtitle">{subValue}</span>
     </div>
   )

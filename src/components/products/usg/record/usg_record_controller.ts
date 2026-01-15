@@ -326,12 +326,12 @@ export const computeVAPR = (
       result = (collatVApr * collatAmount - userDebt * debtRate + debtFarmingBigInt * debtVAPRBigInt) / collatAmount
     }
 
-    const vAPR = Number(result) * 100
+    const vAPR = result * 100n
 
-    if (!isFinite(vAPR)) {
+    if (!isFinite(Number(vAPR))) {
       return 0
     }
-    return vAPR
+    return Number(formatBigInt(vAPR, 18, 3))
   } catch {
     return 0
   }

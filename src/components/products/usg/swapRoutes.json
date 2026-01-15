@@ -935,6 +935,33 @@
           "display": "USG* >> USG-frxUSD* >> frxUSD >> crvUSD/frxUSD >> crvUSD >> crvUSD/ETH/CRV >> WETH >> OETH/WETH >> OETH >> msETH/OETH >> msETH/OETH"
         }
       ],
+      "0x1202f5c7b4b9e47a1a484e8b270be34dbbc75055": [
+        {
+          "params": {
+            "routeAddresses": [
+              "0x88B1d1c6F4E930efe66dc65EAC1331350C1a5745",
+              "0x57a1ef037E0A5eEbADdE1A6d38A07Dc614f8213f",
+              "0xcacd6fd266af91b8aed52accc382b4e165586e29",
+              "0x81A2612F6dEA269a6Dd1F6DeAb45C5424EE2c4b7",
+              "0xa3931d71877c0e7a3148cb7eb4463524fec27fbd",
+              "0x8b83c4aA949254895507D09365229BC3a8c7f710",
+              "0x865377367054516e17014CcdED1e7d814EDC9ce4",
+              "0x64273624eb57c5cA961d366CBF3968e760Bf0452",
+              "0x1202f5c7b4b9e47a1a484e8b270be34dbbc75055",
+              "0x0000000000000000000000000000000000000000",
+              "0x0000000000000000000000000000000000000000"
+            ],
+            "swapParamsFull": [
+              [1, 0, 1, 1, 2],
+              [0, 1, 1, 1, 2],
+              [1, 0, 1, 1, 2],
+              [0, 1, 1, 1, 2],
+              [0, 0, 0, 0, 0]
+            ]
+          },
+          "display": "USG* >> USG-frxUSD* >> frxUSD >> frxUSD/sUSDS >> sUSDS >> DOLA/sUSDS >> DOLA >> DOLA/wstUSR >> wstUSR"
+        }
+      ],
       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": [
         {
           "params": {
@@ -2081,5 +2108,5 @@
       ]
     }
   },
-  "errors": []
+  "errors": ["wstUSR >> DOLA/wstUSR >> DOLA >> DOLA/sUSDS >> sUSDS >> frxUSD/sUSDS >> frxUSD >> USG-frxUSD* >> USG*"]
 }

@@ -1,10 +1,17 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { formatTimeNumber } from "../predeposit.controller"
+import { formatBigInt, formatBigIntAsNumber } from "@/lib/number_formatter"
+import { formatTimeNumber, TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "../predeposit.controller"
 
-export const PredepositRetentionPhase = () => {
+type PredepositRetentionPhaseProps = {
+  amount: bigint
+}
+
+const PREDEPOSIT_CAP = 6_500_000n * 10n ** 18n
+
+export const PredepositRetentionPhase = ({ amount }: PredepositRetentionPhaseProps) => {
   const targetDate = new Date("2026-02-22T00:00:00").getTime()
 
   const computeTimeLeft = () => {
@@ -33,10 +40,15 @@ export const PredepositRetentionPhase = () => {
     return () => clearInterval(timer)
   }, [])
 
+  const tanAllocation = useMemo(() => {
+    return (amount * TOTAL_TAN_ALLOCATION) / TOTAL_DEPOSIT_CAP
+  }, [amount])
+
   return (
     <section className="mt-12 flex w-full flex-col items-center justify-center">
-      <div className="text-center text-4xl text-subtitle">Cap reached</div>
-      <div className="text-[80px] font-semibold text-white lg:text-[120px]">$6,500,00</div>
+      {amount === PREDEPOSIT_CAP && <div className="text-center text-4xl text-subtitle">Cap reached</div>}
+
+      <div className="text-[80px] font-semibold text-white lg:text-[120px]"> ${formatBigInt(amount, 18, 0)} </div>
       <div className="flex items-center gap-0 lg:gap-12">
         <div className="flex w-24 flex-col items-center justify-center">
           <div className="text-4xl font-light tracking-wider text-white">{formatTimeNumber(timeLeft.days)}</div>
@@ -62,7 +74,7 @@ export const PredepositRetentionPhase = () => {
       <div className="my-8 flex w-full max-w-[640px] items-center justify-between rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px]">
         <span className="text-[20px] font-semibold">TAN distributed</span>
         <span className="flex items-center justify-center gap-2 text-[30px] font-semibold">
-          200,000 <TokenImage token="tan" size={12} className="w-8" />
+          {formatBigIntAsNumber(tanAllocation, 18, 0)} <TokenImage token="tan" size={12} className="w-8" />
         </span>
       </div>
     </section>

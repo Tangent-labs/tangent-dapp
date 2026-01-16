@@ -71,7 +71,7 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
 
     const rows = transformHarvestOnChainData(harvestInfo, rewardsInfo)
 
-    return rows
+    return rows.filter((market) => market?.rewards?.totalDollar > 0)
   }, [harvestInfo, rewardsInfo])
 
   const actionHarvest = () => {

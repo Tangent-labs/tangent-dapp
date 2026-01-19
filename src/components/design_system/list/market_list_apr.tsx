@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import AprIndicator from "./apr_indicator"
 
 interface ListAPRProps {
@@ -7,17 +8,26 @@ interface ListAPRProps {
   apr?: number
   projectedApr?: number
   className?: string
+  rewardToken?: string
 }
 
-const MarketListAPR = ({ currentAPRDetails, apr, projectedApr, className = "" }: ListAPRProps) => {
+const MarketListAPR = ({ rewardToken, currentAPRDetails, apr, projectedApr, className = "" }: ListAPRProps) => {
   const rewardEntries = Object.entries(currentAPRDetails ?? {})
     .filter(([k, v]) => k !== "APY" && typeof v === "number")
     .sort((a, b) => b[1] - a[1])
 
+  const computedAPR = useMemo(() => {
+    if (currentAPRDetails && rewardToken && projectedApr) {
+      return Number(currentAPRDetails[rewardToken]) === 0 ? projectedApr.toFixed(2) : apr?.toFixed(2)
+    }
+
+    return apr?.toFixed(2)
+  }, [rewardToken, currentAPRDetails, projectedApr])
+
   return (
     <div className={`flex min-w-16 flex-row items-center justify-center gap-2 text-center md:flex-col md:gap-0 ${className}`}>
       <span className="flex items-center justify-center bg-button-active bg-clip-text text-sm font-semibold leading-4 text-transparent md:text-xl">
-        {apr?.toFixed(2)}%
+        {computedAPR}%
         <AprIndicator>
           <div className="flex flex-col gap-2">
             {rewardEntries.length > 0 ? (
@@ -25,7 +35,7 @@ const MarketListAPR = ({ currentAPRDetails, apr, projectedApr, className = "" }:
                 {currentAPRDetails && (
                   <div className="flex min-w-44 items-center justify-between">
                     <span>Base APY</span>
-                    <span className="flex items-center justify-center">{currentAPRDetails["APY"]?.toFixed(2)}%</span>
+                    <span className="flex items-center justify-center">{computedAPR}%</span>
                   </div>
                 )}
 
@@ -41,7 +51,7 @@ const MarketListAPR = ({ currentAPRDetails, apr, projectedApr, className = "" }:
                 {currentAPRDetails && (
                   <div className="mt-2 flex min-w-44 items-center justify-between">
                     <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">Net vAPR</span>
-                    <span className="flex items-center justify-center rounded-[10px] bg-button-active px-2 py-0.5 font-semibold">{apr?.toFixed(2)}%</span>
+                    <span className="flex items-center justify-center rounded-[10px] bg-button-active px-2 py-0.5 font-semibold">{computedAPR}%</span>
                   </div>
                 )}
               </>
@@ -57,7 +67,7 @@ const MarketListAPR = ({ currentAPRDetails, apr, projectedApr, className = "" }:
         </span>
       )}
 
-      {apr && <span className="hidden text-xs md:flex">Up to {(apr * 10).toFixed(2)} % at 10x</span>}
+      {computedAPR && <span className="hidden text-xs md:flex">Up to {(Number(computedAPR) * 10).toFixed(2)} % at 10x</span>}
     </div>
   )
 }

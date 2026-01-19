@@ -73,6 +73,28 @@ export function transformToRows(datas: Array<MarketListAPRData>, onChainData: Ch
   return list
 }
 
+type RewardsApr = Record<string, number>
+
+const IGNORED_KEYS = new Set(["APY"])
+const BASE_TOKENS = new Set(["CRV", "CVX", "FXN"])
+
+export function getRewardTokenFromAprDetails(aprDetails: RewardsApr, protocol: string): string {
+  if (protocol === "Pendle_PT") {
+    return "APY"
+  } else {
+    if (!aprDetails) return "CRV"
+
+    const tokens = Object.keys(aprDetails).filter((k) => !IGNORED_KEYS.has(k))
+
+    const extraToken = tokens.find((t) => !BASE_TOKENS.has(t))
+    if (extraToken) return extraToken
+
+    if (tokens.includes("FXN")) return "FXN"
+
+    return "CRV"
+  }
+}
+
 function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainViewMarketRow): ListRowData {
   let totalCurrentAPR = 0
   let totalProjectedAPR = 0
@@ -85,6 +107,8 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
   const protocol = (USGMarkets.find((m) => m.marketAddress === onChainRow?.marketAddress)?.marketType || "Curve") as string
 
   const type = onChainRow?.constants.irParams.isHEC ? "HEC" : "LEC"
+
+  const rewardToken = getRewardTokenFromAprDetails(data?.currentAPR, protocol)
 
   return {
     token: data.collateral as ExistingAsset,
@@ -117,7 +141,10 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
       },
       { key: "borrowed", label: "Borrowed", value: formatMarketListCompact(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18)) || "-", raw: 0 },
     ],
+
     userHasDeposited: !!onChainRow?.collateralInfos?.positionCollateralUSDValue && onChainRow?.collateralInfos?.positionCollateralUSDValue > 0n,
+
+    rewardToken,
   }
 }
 

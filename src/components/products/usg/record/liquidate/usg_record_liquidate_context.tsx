@@ -125,8 +125,8 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
       doMarketLiquidate(
         liquidateWeiValue,
         repayValue,
-        computedMinAmountOut(USGReceivedValue, slippage),
         maxUSGToBurn,
+        computedMinAmountOut(USGReceivedValue, slippage),
         false,
         liquidationData!,
         walletClient,

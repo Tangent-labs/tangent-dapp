@@ -69,7 +69,8 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
     const rows = transformClaimOnChainData(claimInfo, rewardsInfo)
     setIsLoading(false)
     setMarketsToClaim([])
-    return rows
+
+    return rows.filter((market) => Number(market?.totalDepositedValue) > 0)
   }, [claimInfo, rewardsInfo])
 
   const actionClaim = useCallback(

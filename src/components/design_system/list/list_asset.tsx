@@ -47,6 +47,7 @@ const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: Li
               {marketData?.marketType?.startsWith("Convex_") && <Protocol token="CVX" label="Convex" />}
               {marketData?.marketType?.startsWith("STAKEDAO") && <Protocol token="SDT" label="Stake DAO" />}
               {marketData?.marketType?.startsWith("Pendle") && <Protocol token="PENDLE" label="Pendle" />}
+              {marketData?.marketType?.includes("FXN") && <Protocol token="FXN" label="FXN" />}
 
               <BorderPanel
                 className={`flex items-center justify-center !rounded-full px-3 py-0.5 text-xs ${marketData?.constants?.irParams.isHEC ? "bg-button-active" : "bg-lec"}`}

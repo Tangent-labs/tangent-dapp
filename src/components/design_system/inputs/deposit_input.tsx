@@ -57,14 +57,23 @@ export function DepositInput({
 
   const [isUserInput, setIsUserInput] = useState(false)
 
+  const sliderDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!!setPercentage) {
-      const newPercentage = Number(e.target.value)
-      setPercentage(newPercentage)
+    if (!setPercentage) return
+
+    const newPercentage = Number(e.target.value)
+    setPercentage(newPercentage)
+
+    if (sliderDebounceRef.current) {
+      clearTimeout(sliderDebounceRef.current)
+    }
+
+    sliderDebounceRef.current = setTimeout(() => {
       const newValue = newPercentage === 100 ? balanceNumber : Number(((newPercentage / 100) * balanceNumber).toFixed(0))
       setInnerValue(formatDisplayValue(newValue))
       onValueChange(!!newValue ? toBigInt(newValue, depositAsset?.decimals || 18) : undefined)
-    }
+    }, 300)
   }
 
   useEffect(() => {

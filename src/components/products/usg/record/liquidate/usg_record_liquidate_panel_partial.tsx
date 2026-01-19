@@ -10,7 +10,7 @@ import { USGStaticAssetSelector } from "@/components/design_system/structure/usg
 import { CustomCollatAssetDisplay } from "@/components/design_system/structure/custom_collat_asset_display"
 
 export default function USGLiquidatePanelPartial() {
-  const { USGInfo, collateralInfo } = useUSGRecordContext()
+  const { USGInfo, collateralInfo, pricedCollateralInfo } = useUSGRecordContext()
 
   const { canInteract } = useWalletConnexionContext()
 
@@ -49,7 +49,7 @@ export default function USGLiquidatePanelPartial() {
         displaySliderInput={true}
         percentage={liquidablePercentage}
         setPercentage={setLiquidablePercentage}
-        depositAsset={collateralInfo}
+        depositAsset={pricedCollateralInfo}
         setMaxBalance={() => handleLiquidateValueChange(maxLiquidable)}
         balance={maxLiquidable}
         onValueChange={handleLiquidateValueChange}

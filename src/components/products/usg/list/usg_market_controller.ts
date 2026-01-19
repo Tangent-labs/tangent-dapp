@@ -82,12 +82,10 @@ export function getRewardTokenFromAprDetails(aprDetails: RewardsApr, protocol: s
   if (protocol === "Pendle_PT") {
     return "APY"
   } else {
-    if (!aprDetails) return "CRV"
-
     const tokens = Object.keys(aprDetails).filter((k) => !IGNORED_KEYS.has(k))
 
-    const extraToken = tokens.find((t) => !BASE_TOKENS.has(t))
-    if (extraToken) return extraToken
+    const specialToken = tokens.find((t) => !BASE_TOKENS.has(t))
+    if (specialToken) return specialToken
 
     if (tokens.includes("FXN")) return "FXN"
 
@@ -141,9 +139,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
       },
       { key: "borrowed", label: "Borrowed", value: formatMarketListCompact(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18)) || "-", raw: 0 },
     ],
-
     userHasDeposited: !!onChainRow?.collateralInfos?.positionCollateralUSDValue && onChainRow?.collateralInfos?.positionCollateralUSDValue > 0n,
-
     rewardToken,
   }
 }

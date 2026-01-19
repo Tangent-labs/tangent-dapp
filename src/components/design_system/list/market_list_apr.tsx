@@ -25,7 +25,7 @@ const MarketListAPR = ({ currentAPRDetails, apr, projectedApr, className = "" }:
                 {currentAPRDetails && (
                   <div className="flex min-w-44 items-center justify-between">
                     <span>Base APY</span>
-                    <span className="flex items-center justify-center">{currentAPRDetails["APY"]}%</span>
+                    <span className="flex items-center justify-center">{currentAPRDetails["APY"]?.toFixed(2)}%</span>
                   </div>
                 )}
 
@@ -33,7 +33,7 @@ const MarketListAPR = ({ currentAPRDetails, apr, projectedApr, className = "" }:
                   {rewardEntries.map(([token, value]) => (
                     <div className="flex items-center justify-between" key={token}>
                       <span>{token} APR</span>
-                      <span>{value}%</span>
+                      <span>{value?.toFixed(2)}%</span>
                     </div>
                   ))}
                 </div>
@@ -41,7 +41,7 @@ const MarketListAPR = ({ currentAPRDetails, apr, projectedApr, className = "" }:
                 {currentAPRDetails && (
                   <div className="mt-2 flex min-w-44 items-center justify-between">
                     <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">Net vAPR</span>
-                    <span className="flex items-center justify-center rounded-[10px] bg-button-active px-2 py-0.5 font-semibold">{apr}%</span>
+                    <span className="flex items-center justify-center rounded-[10px] bg-button-active px-2 py-0.5 font-semibold">{apr?.toFixed(2)}%</span>
                   </div>
                 )}
               </>

@@ -2,13 +2,13 @@ import { useMemo } from "react"
 import AprIndicator from "./apr_indicator"
 
 interface ListAPRProps {
+  rewardToken: string
   currentAPRDetails?: {
     [rewardToken: string]: number
   }
   apr?: number
   projectedApr?: number
   className?: string
-  rewardToken?: string
 }
 
 const MarketListAPR = ({ rewardToken, currentAPRDetails, apr, projectedApr, className = "" }: ListAPRProps) => {
@@ -30,38 +30,33 @@ const MarketListAPR = ({ rewardToken, currentAPRDetails, apr, projectedApr, clas
         {computedAPR}%
         <AprIndicator>
           <div className="flex flex-col gap-2">
-            {rewardEntries.length > 0 ? (
-              <>
-                {currentAPRDetails && (
-                  <div className="flex min-w-44 items-center justify-between">
-                    <span>Base APY</span>
-                    <span className="flex items-center justify-center">{computedAPR}%</span>
-                  </div>
-                )}
+            <div className="flex min-w-44 items-center justify-between">
+              <span>Base APY</span>
+              <span className="flex items-center justify-center">{computedAPR}%</span>
+            </div>
 
-                <div className="flex flex-col gap-2">
-                  {rewardEntries.map(([token, value]) => (
-                    <div className="flex items-center justify-between" key={token}>
-                      <span>{token} APR</span>
-                      <span>{value?.toFixed(2)}%</span>
-                    </div>
-                  ))}
-                </div>
-
-                {currentAPRDetails && (
-                  <div className="mt-2 flex min-w-44 items-center justify-between">
-                    <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">Net vAPR</span>
-                    <span className="flex items-center justify-center rounded-[10px] bg-button-active px-2 py-0.5 font-semibold">{computedAPR}%</span>
+            {rewardEntries.length > 0 && (
+              <div className="flex flex-col gap-2">
+                {rewardEntries.map(([token, value]) => (
+                  <div className="flex items-center justify-between" key={token}>
+                    <span>{token} APR</span>
+                    <span>{value?.toFixed(2)}%</span>
                   </div>
-                )}
-              </>
-            ) : (
-              <div className="p-2 text-xs text-subtitle">No rewards data</div>
+                ))}
+              </div>
+            )}
+
+            {currentAPRDetails && (
+              <div className="mt-2 flex min-w-44 items-center justify-between">
+                <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">Net vAPR</span>
+                <span className="flex items-center justify-center rounded-[10px] bg-button-active px-2 py-0.5 font-semibold">{computedAPR}%</span>
+              </div>
             )}
           </div>
         </AprIndicator>
       </span>
-      {projectedApr && (
+
+      {projectedApr && !!currentAPRDetails && Number(currentAPRDetails[rewardToken]) !== 0 && (
         <span className="whitespace-nowrap text-xs text-subtitle">
           Proj: <span>{projectedApr.toFixed(2)}%</span>
         </span>

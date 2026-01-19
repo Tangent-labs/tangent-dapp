@@ -116,7 +116,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
     address: onChainRow?.marketAddress as Address,
     apr: {
       current: Number(totalCurrentAPR),
-      projected: Number(totalProjectedAPR),
+      projected: protocol === "Pendle_PT" ? undefined : Number(totalProjectedAPR),
     },
     currentAPRDetails: data?.currentAPR,
     indicators: [

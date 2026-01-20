@@ -462,6 +462,7 @@ export type VoteTask = {
   description: string
   pointRate: number
   points: number
+  lastVotingPower: number
 }
 
 export type LpUserPoints = {

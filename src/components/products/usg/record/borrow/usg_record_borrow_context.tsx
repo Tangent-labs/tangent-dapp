@@ -28,7 +28,7 @@ export const USGBorrowContext = createContext<USGBorrowContextValues | undefined
 export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
   const { loadUSGsUSGMetrics } = useUSGContext()
 
-  const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+  const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
   const { marketData, loadOnChainData, setCurrentAmounts } = useUSGRecordContext()
 
@@ -37,7 +37,6 @@ export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
   const [borrowPercentage, setBorrowPercentage] = useState<number>(0)
 
   const actionBorrow = async () => {
-    const walletClient = getWalletClient()
     if (walletClient)
       await toastTx(doMarketBorrow(walletClient, { marketAddress: marketData!.marketAddress, borrowWeiValue }), {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },

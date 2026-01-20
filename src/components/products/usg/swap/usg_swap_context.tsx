@@ -83,7 +83,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
   const { tokens, USGsUSGMetrics, lpUserPoints } = useUSGContext()
 
-  const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+  const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -176,11 +176,10 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   }, [depositAsset, swapAssetPrice])
 
   useEffect(() => {
-    const walletClient = getWalletClient()
     if (depositAssetInfo && receiveAssetInfo && walletClient) {
       fetchBalanceAllowanceData(walletClient)
     }
-  }, [depositAssetInfo, receiveAssetInfo, getWalletClient])
+  }, [depositAssetInfo, receiveAssetInfo, walletClient])
 
   const fetchBalanceAllowanceData = async (walletClient: WalletClient) => {
     if (!depositAssetInfo || !receiveAssetInfo) return
@@ -362,7 +361,6 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
   const actionApprove = async () => {
     setIsLoading(true)
-    const walletClient = getWalletClient()
 
     if (walletClient && receiveAssetInfo && depositAssetInfo) {
       let spender = "" as Address
@@ -388,7 +386,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     setIsLoading(true)
 
     if (!depositAssetInfo || !receiveAssetInfo || !depositWeiValue) return
-    const walletClient = getWalletClient()
+
     const swapFn = swapData?.swap
 
     if (swapFn && walletClient) {

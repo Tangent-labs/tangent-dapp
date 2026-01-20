@@ -30,7 +30,7 @@ type VsTanClaimContextValues = {
 export const VsTanClaimContext = createContext<VsTanClaimContextValues | undefined>(undefined)
 
 export const VsTanClaimProvider = ({ children }: VsTanClaimContextProps) => {
-  const { getWalletClient } = useWalletConnexionContext()
+  const { walletClient } = useWalletConnexionContext()
 
   const { loadData, lockData } = useVsTanContext()
 
@@ -60,7 +60,6 @@ export const VsTanClaimProvider = ({ children }: VsTanClaimContextProps) => {
 
   const actionClaim = async () => {
     setIsLoading(true)
-    const walletClient = getWalletClient()
 
     if (walletClient) {
       const positionsToClaim = selectedPositionsData?.filter((pos) => pos.claimable !== 0n)

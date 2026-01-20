@@ -40,7 +40,7 @@ type VsTanMergeContextValues = {
 export const VsTanMergeContext = createContext<VsTanMergeContextValues | undefined>(undefined)
 
 export const VsTanMergeProvider = ({ children }: VsTanMergeContextProps) => {
-  const { getWalletClient } = useWalletConnexionContext()
+  const { walletClient } = useWalletConnexionContext()
 
   const { loadData, lockData } = useVsTanContext()
 
@@ -95,7 +95,7 @@ export const VsTanMergeProvider = ({ children }: VsTanMergeContextProps) => {
 
   const actionMerge = async () => {
     setIsLoading(true)
-    const walletClient = getWalletClient()
+
     if (walletClient && firstPositionToMergeInfo && secondPositionToMergeInfo) {
       await doMerge(walletClient, firstPositionToMergeInfo?.tokenId, secondPositionToMergeInfo?.tokenId, claimAsSUSG)
       loadData()

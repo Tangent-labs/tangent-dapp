@@ -33,7 +33,7 @@ type VsTanUnlockContextValues = {
 export const VsTanUnlockContext = createContext<VsTanUnlockContextValues | undefined>(undefined)
 
 export const VsTanUnlockProvider = ({ children }: VsTanUnlockContextProps) => {
-  const { getWalletClient } = useWalletConnexionContext()
+  const { walletClient } = useWalletConnexionContext()
 
   const { loadData, lockData } = useVsTanContext()
 
@@ -79,7 +79,6 @@ export const VsTanUnlockProvider = ({ children }: VsTanUnlockContextProps) => {
 
   const actionUnlock = async () => {
     setIsLoading(true)
-    const walletClient = getWalletClient()
 
     if (walletClient && unlockPositionInfo) {
       await doUnlock(unlockPositionInfo?.tokenId, walletClient, "unlock", claimAsSUSG)
@@ -93,7 +92,6 @@ export const VsTanUnlockProvider = ({ children }: VsTanUnlockContextProps) => {
 
   const actionRageQuit = async () => {
     setIsLoading(true)
-    const walletClient = getWalletClient()
 
     if (walletClient && unlockPositionInfo) {
       await doUnlock(unlockPositionInfo?.tokenId, walletClient, "rageQuit", claimAsSUSG)

@@ -34,7 +34,7 @@ export const USGClaimContext = createContext<USGClaimContextValues | undefined>(
 export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
   const { USGsUSGMetrics } = useUSGContext()
 
-  const { getWalletClient, currentAddress } = useWalletConnexionContext()
+  const { walletClient, currentAddress } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
@@ -75,7 +75,6 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
 
   const actionClaim = useCallback(
     (contractAddress: Address, markets: Address[]) => {
-      const walletClient = getWalletClient()
       doClaim(contractAddress, markets, rewardsInfo?.length, walletClient!).then(() => {
         setIsLoading(true)
         loadData()

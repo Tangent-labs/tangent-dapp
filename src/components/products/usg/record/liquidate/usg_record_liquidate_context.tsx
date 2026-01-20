@@ -60,7 +60,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
 
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+  const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
   const { marketData, marketInfo, loadOnChainData, marketDisplayData, setCurrentAmounts } = useUSGRecordContext()
 
@@ -100,8 +100,6 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   }, [liquidateWeiValue, repayWeiValue])
 
   const actionLiquidate = async () => {
-    const walletClient = getWalletClient()
-
     if (walletClient && liquidateWeiValue && currentAddress && USGReceivedValue && marketData) {
       let repayValue = repayWeiValue || 0n
 

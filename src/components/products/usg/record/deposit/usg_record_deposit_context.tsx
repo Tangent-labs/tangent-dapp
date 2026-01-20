@@ -83,7 +83,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const { tokens, loadUSGsUSGMetrics, marketAprs } = useUSGContext()
 
-  const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+  const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
   const {
     marketData,
@@ -322,7 +322,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     setIsDepositLoading(true)
 
     try {
-      const walletClient = getWalletClient()
       if (!walletClient || !depositAssetInfo) throw new Error("Wallet not available")
 
       await toastTx(doApprove(walletClient, depositAssetInfo.address, marketInfo.marketAddress, depositWeiValue ?? 0n), {
@@ -341,7 +340,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const actionApprove = async () => {
     setIsDepositLoading(true)
-    const walletClient = getWalletClient()
     if (walletClient && depositWeiValue) {
       await toastTx(doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue), {
         pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
@@ -367,7 +365,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const depositAndBorrow = async () => {
     setIsDepositLoading(true)
-    const walletClient = getWalletClient()
 
     if (walletClient && depositWeiValue) {
       const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
@@ -394,7 +391,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const deposit = async () => {
     setIsDepositLoading(true)
-    const walletClient = getWalletClient()
 
     if (walletClient && depositWeiValue) {
       const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
@@ -471,8 +467,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
         minAmountOut: computedMinAmountOut(zapValue, slippage),
       }
 
-      const walletClient = getWalletClient()
-
       await toastTx(
         doZapDepositAndBorrow(marketInfo?.marketAddress, walletClient!, zapData?.routerAddress, zapData?.data as string, zapMarketData, borrowWeiValue),
         {
@@ -516,8 +510,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
         amountIn: depositWeiValue,
         minAmountOut: computedMinAmountOut(zapValue, slippage),
       }
-
-      const walletClient = getWalletClient()
 
       await toastTx(doZapDeposit(marketInfo?.marketAddress, walletClient!, zapData?.routerAddress, zapData?.data as string, zapMarketData), {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },

@@ -11,9 +11,9 @@ import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { formatBigIntAsNumber, formatDollar, toBigInt } from "@/lib/number_formatter"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
 
 type USGRepayContextProps = {
@@ -85,7 +85,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   const { tokens, loadUSGsUSGMetrics } = useUSGContext()
 
-  const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+  const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
   const {
     marketData,
@@ -121,8 +121,6 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   const [withdrawSelectedAsset, setWithdrawSelectedAsset] = useState<string>(collateral)
 
-  const walletClientRef = useRef<ReturnType<typeof getWalletClient> | null>(null)
-
   useEffect(() => {
     setIsRepayAndWithdraw(isRepayAndWithdrawInput)
   }, [])
@@ -133,14 +131,6 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
       setWithdrawPercentage(0)
     }
   }, [isRepayAndWithdraw])
-
-  useEffect(() => {
-    if (isWellConnected && currentAddress) {
-      walletClientRef.current = getWalletClient()
-    } else {
-      walletClientRef.current = null
-    }
-  }, [isWellConnected, currentAddress, getWalletClient])
 
   const repayAssetInfo = useMemo<AssetDataPriced | null>(() => {
     if (repayAsset === "ETH") {
@@ -209,7 +199,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
       const isReceiptOut = withdrawSelectedAsset !== collateral
 
-      doZapRepayAndWithdraw(marketData?.marketAddress, walletClientRef.current!, withdrawWeiValue, isReceiptOut, repayData!, zapMarketData)
+      doZapRepayAndWithdraw(marketData?.marketAddress, walletClient!, withdrawWeiValue, isReceiptOut, repayData!, zapMarketData)
         .then(() => {
           resetAfterRepaySuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
@@ -247,7 +237,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
         minAmountOut: computedMinAmountOut(usgRepayedValue, slippage),
       }
 
-      doZapRepay(marketData?.marketAddress, walletClientRef.current!, repayData!, zapMarketData)
+      doZapRepay(marketData?.marketAddress, walletClient!, repayData!, zapMarketData)
         .then(() => {
           resetAfterRepaySuccess()
           toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
@@ -266,7 +256,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   const actionApprove = async () => {
     if (!repayWeiValue || !repayAssetInfo || !marketData) return
 
-    await toastTx(doApprove(walletClientRef.current!, repayAssetInfo?.address, marketData?.marketAddress, repayWeiValue), {
+    await toastTx(doApprove(walletClient!, repayAssetInfo?.address, marketData?.marketAddress, repayWeiValue), {
       pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
       success: () => {
         loadOnChainData()
@@ -286,7 +276,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   const marketRepay = async () => {
     await toastTx(
-      doRepay(walletClientRef.current!, {
+      doRepay(walletClient!, {
         marketAddress: marketData!.marketAddress,
         repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
       }),
@@ -305,7 +295,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   const marketRepayAndWithdraw = async () => {
     await toastTx(
-      doRepayAndWithdraw(walletClientRef.current!, {
+      doRepayAndWithdraw(walletClient!, {
         marketAddress: marketData!.marketAddress,
         repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
         withdrawWeiValue,
@@ -405,10 +395,10 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   useEffect(() => {
     const address = repayAssetInfo?.address || USG_CONTRACT.USG
-    if (walletClientRef) {
+    if (walletClient) {
       fetchBalanceAllowanceData(address)
     }
-  }, [repayAssetInfo?.address, walletClientRef])
+  }, [repayAssetInfo?.address, walletClient])
 
   useEffect(() => {
     if (!repayAsset) return

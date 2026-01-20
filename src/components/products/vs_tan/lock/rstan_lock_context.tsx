@@ -83,7 +83,7 @@ export const VsTanLockContext = createContext<VsTanLockContextValues | undefined
 export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { getWalletClient, isWellConnected, currentAddress } = useWalletConnexionContext()
+  const { walletClient, isWellConnected, currentAddress } = useWalletConnexionContext()
 
   const { tokens } = useUSGContext()
 
@@ -181,7 +181,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
 
   const actionApproveZap = async () => {
     setIsLoading(true)
-    const walletClient = getWalletClient()
+
     if (walletClient && depositWeiValue) {
       await doApprove(walletClient, depositAssetInfo?.address, VSTAN_CONTRACT.VSTAN, depositWeiValue)
         .then(() => {
@@ -197,7 +197,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
 
   const actionApprove = () => {
     setIsLoading(true)
-    const walletClient = getWalletClient()
+
     if (walletClient && depositWeiValue)
       doApprove(walletClient, VSTAN_CONTRACT.TAN, VSTAN_CONTRACT.VSTAN, depositWeiValue)
         .then(() => {
@@ -214,7 +214,6 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
     if (!zapValue || !depositWeiValue) return
 
     setIsLoading(true)
-    const walletClient = getWalletClient()
 
     if (walletClient) {
       const zapMarketData = {
@@ -267,7 +266,6 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
 
   const actionLock = async () => {
     setIsLoading(true)
-    const walletClient = getWalletClient()
 
     if (walletClient && depositWeiValue) {
       if (depositPositionInfo && depositPositionInfo?.tokenId !== 0n) {

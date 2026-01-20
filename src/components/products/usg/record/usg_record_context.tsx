@@ -160,7 +160,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
 
   const [isRepayAndWithdraw, setIsRepayAndWithdraw] = useState<boolean>(false)
 
-  const { currentAddress, getWalletClient, isWalletInitialized } = useWalletConnexionContext()
+  const { currentAddress, walletClient, isWalletInitialized } = useWalletConnexionContext()
 
   const [chartData, setChartData] = useState<Array<{ price: number; vAPR: number }>>([])
 
@@ -273,8 +273,6 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     if (!depositAssetInfo) return
 
     try {
-      const walletClient = getWalletClient()
-
       if (walletClient) {
         const data = await getBalancesAndAllowances(walletClient!, depositAssetInfo, marketInfo?.marketAddress)
 

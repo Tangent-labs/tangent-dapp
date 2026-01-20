@@ -49,7 +49,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
 
   const [stakePercentage, setStakePercentage] = useState<number>(0)
 
-  const { getWalletClient, currentAddress } = useWalletConnexionContext()
+  const { walletClient, currentAddress } = useWalletConnexionContext()
 
   useEffect(() => {
     loadTanSTANMetrics()
@@ -150,7 +150,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
     if (!currentAssetInfo?.current) return
 
     const params = {
-      walletClient: getWalletClient()!,
+      walletClient: walletClient!,
       stakingAddress: VSTAN_CONTRACT.STAN,
       weiValue,
     }
@@ -166,7 +166,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
     if (!currentAssetInfo?.current) return
 
     const params = {
-      walletClient: getWalletClient()!,
+      walletClient: walletClient!,
       stakingAddress: VSTAN_CONTRACT.STAN,
       weiValue,
     }
@@ -179,7 +179,7 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
 
   const actionApprove = async () => {
     if (!currentAssetInfo?.address) return
-    await doApprove(getWalletClient()!, VSTAN_CONTRACT.TAN, weiValue || 0n, VSTAN_CONTRACT.STAN).then(loadTanSTANMetrics)
+    await doApprove(walletClient!, VSTAN_CONTRACT.TAN, weiValue || 0n, VSTAN_CONTRACT.STAN).then(loadTanSTANMetrics)
   }
 
   useEffect(() => {
@@ -187,14 +187,14 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
     ;(async () => {
       if (currentFeature === "stake") {
         try {
-          const sTanAmountOut = await getExpectedsTAN(getWalletClient()!, weiValue, VSTAN_CONTRACT?.STAN)
+          const sTanAmountOut = await getExpectedsTAN(walletClient!, weiValue, VSTAN_CONTRACT?.STAN)
           setExpected(sTanAmountOut)
         } catch (error) {
           console.error("Error while estimating deposit preview :", error)
         }
       } else {
         try {
-          const tanAmountOut = await getExpectedTAN(getWalletClient()!, weiValue, VSTAN_CONTRACT?.STAN)
+          const tanAmountOut = await getExpectedTAN(walletClient!, weiValue, VSTAN_CONTRACT?.STAN)
           setExpected(tanAmountOut)
         } catch (error) {
           console.error("Error while estimating redeem preview :", error)

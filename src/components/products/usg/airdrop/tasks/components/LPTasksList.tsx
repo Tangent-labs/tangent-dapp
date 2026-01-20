@@ -49,7 +49,7 @@ const computeProtocolDisplay = (protocol: string) => {
   }
 
   return (
-    <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-xs backdrop-blur-[60px] md:text-sm">
+    <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-2 text-xs backdrop-blur-[60px] md:text-sm">
       <TokenImage token={token} size={16} />
 
       <span>{label}</span>
@@ -168,8 +168,10 @@ export const LPTasksList = () => {
               </div>
             </div>
 
-            <div className="flex flex-col items-center justify-between md:hidden">
-              <div className="flex w-full items-start justify-between gap-1 border-b border-white border-opacity-20 pb-2">
+            <div className="flex w-full flex-col items-center justify-center md:hidden">
+              <div className="mb-1 flex w-full items-center justify-center text-sm font-semibold"> {task?.description}</div>
+
+              <div className="flex w-full items-center justify-between gap-1 border-t border-white border-opacity-20 py-2">
                 <div className="flex items-center justify-center gap-2">
                   <TokenImage token={formatToken(task.asset)} className="w-8" size={48} />
 
@@ -181,10 +183,9 @@ export const LPTasksList = () => {
                 <div className="flex flex-col items-center justify-center">
                   <span className="text-xs text-subtitle">Points</span>
 
-                  <span className="flex text-sm">{task.points}</span>
+                  <span className="flex text-sm">{formatNumber(task.points, 0)}</span>
                 </div>
               </div>
-              <div className="flex w-full items-center justify-center text-sm"> {task?.description}</div>
             </div>
           </div>
         ))}

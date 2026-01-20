@@ -2,14 +2,14 @@
 
 import Image from "next/image"
 import { formatUnits } from "viem"
-import { ExistingAsset, ListState } from "@/types"
 import { Switch } from "@/components/ui/switch"
-import { formatBigInt, formatDollar } from "@/lib/number_formatter"
+import { ExistingAsset, ListState } from "@/types"
 import { claimListHeaders } from "./usg_claim_controller"
 import { useUSGClaimContext } from "./usg_claim_context"
 import { Button } from "@/components/design_system/inputs/button"
 import ListAsset from "@/components/design_system/list/list_asset"
 import Divider from "@/components/design_system/structure/divider"
+import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import ListHeader from "@/components/design_system/list/list_header"
 import { ClaimableMarket, ClaimAsset, ClaimData } from "../usg_type"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -40,7 +40,8 @@ const ClaimRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
 }
 
 export default function USGClaimContent() {
-  const { displayRows, onClickClaim, marketsToClaim, customSort, onClickClaimAll, USGsUSGMetrics, totalDeposited, totalClaimable } = useUSGClaimContext()
+  const { displayRows, onClickClaim, marketsToClaim, customSort, isLoading, onClickClaimAll, USGsUSGMetrics, totalDeposited, totalClaimable } =
+    useUSGClaimContext()
 
   const { isWellConnected, connect } = useWalletConnexionContext()
 
@@ -99,7 +100,7 @@ export default function USGClaimContent() {
               />
             </div>
 
-            <div className="flex gap-2">
+            <div className="mt-2 flex gap-2">
               <span className="text-sm text-subtitle">Claim all</span>
               <Switch onClick={() => onClickClaimAll()}></Switch>
             </div>
@@ -108,6 +109,10 @@ export default function USGClaimContent() {
           <ListProvider customSort={customSort} _headers={claimListHeaders} _rows={displayRows} _listState={listeState}>
             <ClaimList></ClaimList>
           </ListProvider>
+
+          {!isLoading && displayRows?.length === 0 && (
+            <div className="mt-24 flex w-full items-center justify-center text-sm text-subtitle">Nothing to claim for now</div>
+          )}
         </div>
 
         <div className="mt-32 flex h-full min-h-52 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-5 backdrop-blur-[60px] md:w-3/12">

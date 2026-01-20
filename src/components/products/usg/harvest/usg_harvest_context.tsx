@@ -33,7 +33,7 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
 
   const { walletClient } = useWalletConnexionContext()
 
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const [harvestInfo, setHarvestInfo] = useState<HarvesterInfo[] | undefined>()
 
@@ -42,7 +42,6 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
   const [marketsToHarvest, setMarketsToHarvest] = useState<HarvestableMarket[]>([])
 
   useEffect(() => {
-    setIsLoading(true)
     loadPrices()
   }, [harvestInfo])
 
@@ -55,7 +54,6 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
   }
 
   useEffect(() => {
-    setIsLoading(true)
     loadData()
   }, [])
 
@@ -70,6 +68,7 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
     if (!harvestInfo || !rewardsInfo) return []
 
     const rows = transformHarvestOnChainData(harvestInfo, rewardsInfo)
+    setIsLoading(false)
 
     return rows.filter((market) => market?.rewards?.totalDollar > 0)
   }, [harvestInfo, rewardsInfo])

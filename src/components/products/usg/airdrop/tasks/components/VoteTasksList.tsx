@@ -19,36 +19,36 @@ const computeProtocolDisplay = (protocol: string) => {
   switch (protocol.toLowerCase()) {
     case "tangent":
       return (
-        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
+        <>
           <TokenImage token={"USG"} size={16} />
           <span>Tangent</span>
-        </div>
+        </>
       )
 
     case "cvx.eth":
     case "convex":
       return (
-        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
+        <>
           <TokenImage token={"CVX"} size={16} />
           <span>Convex</span>
-        </div>
+        </>
       )
 
     case "curve":
     case "crv":
       return (
-        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
+        <>
           <TokenImage token={"CRV"} size={16} />
           <span>Curve</span>
-        </div>
+        </>
       )
 
     case "fxn":
       return (
-        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
+        <>
           <TokenImage token={"FXN"} size={16} />
           <span>FXN</span>
-        </div>
+        </>
       )
 
     case "sdcrv.eth":
@@ -56,10 +56,10 @@ const computeProtocolDisplay = (protocol: string) => {
     case "sdpendle.eth":
     case "stakedao":
       return (
-        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
+        <>
           <TokenImage token={"SDT"} size={16} />
           <span>Stake DAO</span>
-        </div>
+        </>
       )
   }
 }
@@ -135,7 +135,11 @@ export const VoteTasksList = () => {
               <div className="flex w-3/12 items-center gap-2 xl:gap-4">
                 <span className="flex text-xl font-semibold">{task.description}</span>
               </div>
-              <div className="hidden w-2/12 justify-center lg:flex">{computeProtocolDisplay(task.organisation)}</div>
+              <div className="hidden w-2/12 justify-center lg:flex">
+                <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-2 text-sm backdrop-blur-[60px]">
+                  {computeProtocolDisplay(task.organisation)}
+                </div>
+              </div>
               <div className="flex w-4/12 justify-center lg:w-3/12">
                 <div className="text flex items-center justify-center">{task?.pointRate}</div>
               </div>
@@ -145,21 +149,23 @@ export const VoteTasksList = () => {
             </div>
 
             <div className="flex flex-col items-center justify-between md:hidden">
-              <div className="flex w-full items-start justify-between gap-1 border-b border-white border-opacity-20 pb-2">
+              <div className="mb-1 flex w-full items-center justify-center text-sm font-semibold"> {task?.description}</div>
+
+              <div className="flex w-full items-center justify-between gap-1 border-t border-white border-opacity-20 py-2">
                 <div className="flex flex-col items-center justify-center">
-                  <span className="text-xs text-subtitle">Protocol</span>
+                  <span className="text-xs text-subtitle">Current Vote</span>
+                  <span className="flex text-sm">{task.lastVotingPower}</span>
+                </div>
+
+                <div className="flex flex-col items-center justify-center">
                   <span className="flex text-sm">{computeProtocolDisplay(task?.protocol)}</span>
                 </div>
-                <div className="flex flex-col items-center justify-start">
-                  <span className="text-xs text-subtitle">Pts/VotingPower</span>
-                  <span className="flex text-sm">{task.pointRate}</span>
-                </div>
+
                 <div className="flex flex-col items-center justify-center">
                   <span className="text-xs text-subtitle">Points</span>
                   <span className="flex text-sm">{task.points}</span>
                 </div>
               </div>
-              <div className="flex w-full items-center justify-center"> {task?.description}</div>
             </div>
           </div>
         ))}

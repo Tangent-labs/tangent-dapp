@@ -1,8 +1,8 @@
 "use client"
 
 import Image from "next/image"
-import { ExistingAsset, ListState } from "@/types"
 import { Switch } from "@/components/ui/switch"
+import { ExistingAsset, ListState } from "@/types"
 import { useUSGHarvestContext } from "./usg_harvest_context"
 import { harvestListHeaders } from "./usg_harvest_controller"
 import { Button } from "@/components/design_system/inputs/button"
@@ -37,7 +37,7 @@ const HarvestRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
 }
 
 export default function USGHarvestContent() {
-  const { displayRows, USGsUSGMetrics, marketsToHarvest, customSort, onClickSelectAll, onClickHarvest } = useUSGHarvestContext()
+  const { displayRows, USGsUSGMetrics, marketsToHarvest, isLoading, customSort, onClickSelectAll, onClickHarvest } = useUSGHarvestContext()
 
   return (
     <>
@@ -87,6 +87,10 @@ export default function USGHarvestContent() {
           <ListProvider customSort={customSort} _headers={harvestListHeaders} _rows={displayRows} _listState={listeState}>
             <HarvestList></HarvestList>
           </ListProvider>
+
+          {!isLoading && displayRows?.length === 0 && (
+            <div className="mt-24 flex w-full items-center justify-center text-sm text-subtitle">Nothing to harvest for now</div>
+          )}
         </div>
 
         <div className="flex h-full min-h-52 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-5 backdrop-blur-[60px] md:w-3/12">

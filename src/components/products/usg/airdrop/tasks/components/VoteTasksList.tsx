@@ -25,6 +25,7 @@ const computeProtocolDisplay = (protocol: string) => {
         </div>
       )
 
+    case "cvx.eth":
     case "convex":
       return (
         <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
@@ -32,13 +33,27 @@ const computeProtocolDisplay = (protocol: string) => {
           <span>Convex</span>
         </div>
       )
+
     case "curve":
+    case "crv":
       return (
         <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
           <TokenImage token={"CRV"} size={16} />
           <span>Curve</span>
         </div>
       )
+
+    case "fxn":
+      return (
+        <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
+          <TokenImage token={"FXN"} size={16} />
+          <span>FXN</span>
+        </div>
+      )
+
+    case "sdcrv.eth":
+    case "sdfxn.eth":
+    case "sdpendle.eth":
     case "stakedao":
       return (
         <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-1 text-sm backdrop-blur-[60px]">
@@ -49,7 +64,7 @@ const computeProtocolDisplay = (protocol: string) => {
   }
 }
 
-const AirdropRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
+const VoteTaskListDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
     <div className="flex w-full items-center justify-evenly px-2">
       <div className="flex w-3/12 items-center justify-center">{children?.at(0)} </div>
@@ -68,7 +83,7 @@ export const VoteTasksList = () => {
     <>
       <div className="mb-1 mt-6 rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <div className={`hidden p-4 leading-[10px] xl:block`}>
-          <AirdropRowDisposition>
+          <VoteTaskListDisposition>
             {!!headers?.at(0)?.key && (
               <div className="flex w-full">
                 <span>{headers?.at(0)?.label}</span>
@@ -105,7 +120,7 @@ export const VoteTasksList = () => {
                 </button>
               </div>
             )}
-          </AirdropRowDisposition>
+          </VoteTaskListDisposition>
         </div>
       </div>
 
@@ -115,48 +130,33 @@ export const VoteTasksList = () => {
             <div
               key={task?.taskId}
               className="mb-1 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
+              onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}
             >
               <div className="hidden items-center justify-between md:flex">
                 <div className="flex w-3/12 items-center gap-2 xl:gap-4">
-                  <span className="flex text-xl font-semibold">{task.organisation}</span>
+                  <span className="flex text-xl font-semibold">{task.description}</span>
                 </div>
-                <div className="hidden w-2/12 justify-center lg:flex">
-                  <div onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}>{computeProtocolDisplay(task?.protocol)}</div>
-                </div>
+                <div className="hidden w-2/12 justify-center lg:flex">{computeProtocolDisplay(task.organisation)}</div>
                 <div className="flex w-4/12 justify-center lg:w-3/12">
-                  <div
-                    className="flex items-center justify-center rounded-[10px] bg-overlay-panel px-6 py-2 text-center text-xs backdrop-blur-[60px]"
-                    onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}
-                  >
-                    {task?.description}
-                  </div>
+                  <div className="text flex items-center justify-center">{task?.pointRate}</div>
                 </div>
-                <div className="flex w-2/12 items-center justify-center">1</div>
+                <div className="flex w-2/12 items-center justify-center">{formatNumber(task.points, 0)}</div>
 
-                <div className="flex w-2/12 items-center justify-center">{formatNumber(task?.points, 0)}</div>
+                <div className="flex w-2/12 items-center justify-center">{formatNumber(task.lastVotingPower, 0)}</div>
               </div>
 
               <div className="flex flex-col items-center justify-between md:hidden">
                 <div className="flex w-full items-start justify-between gap-1 border-b border-white border-opacity-20 pb-2">
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="flex text-sm font-semibold">{task.organisation}</span>
-                  </div>
-
-                  <div className="flex flex-col items-center justify-start">
-                    <span className="text-xs text-subtitle">Pts/VotingPower</span>
-
-                    <span className="flex text-sm">1</span>
-                  </div>
-
                   <div className="flex flex-col items-center justify-center">
                     <span className="text-xs text-subtitle">Protocol</span>
-
                     <span className="flex text-sm">{computeProtocolDisplay(task?.protocol)}</span>
                   </div>
-
+                  <div className="flex flex-col items-center justify-start">
+                    <span className="text-xs text-subtitle">Pts/VotingPower</span>
+                    <span className="flex text-sm">{task.pointRate}</span>
+                  </div>
                   <div className="flex flex-col items-center justify-center">
                     <span className="text-xs text-subtitle">Points</span>
-
                     <span className="flex text-sm">{task.points}</span>
                   </div>
                 </div>

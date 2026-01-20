@@ -29,11 +29,11 @@ export const lpListHeaders: ListHeaderData[] = [
 ]
 
 export const voteListHeaders: ListHeaderData[] = [
-  { label: "Organisation", key: "organisation" },
+  { label: "Incentive", key: "incentive" },
   { label: "Protocol", key: "protocol" },
-  { label: "Vote", key: "vote" },
-  { label: "Pts/VotingPower", key: "pointRate" },
+  { label: "Pts/Epoch/Ve", key: "pointRate" },
   { label: "Points", key: "points" },
+  { label: "Current vote", key: "lastVote" },
 ]
 
 export async function getUserBalancesAndDebtForLpTasks(address: Address, markets: Address[], tokens: Address[]) {

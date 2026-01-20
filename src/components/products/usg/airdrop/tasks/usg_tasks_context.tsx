@@ -54,6 +54,7 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
   useEffect(() => {
     if (tasks.length !== 0) {
       const tokens = tasks.map((t) => t.tokenAddress) as Address[]
+      // Fetch current balance on the LP tasks
       getUserBalancesAndDebtForLpTasks(
         currentAddress as Address,
         USGMarkets.map((m) => m.marketAddress),

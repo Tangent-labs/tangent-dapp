@@ -98,9 +98,15 @@ const returnCustomPendleQuoteData = async (
     }
   })
 
-  const quotes = await executeChainViewUnique<bigint[]>(abi as Abi, bytecode as Hex, [params])
+  const quotes = await executeChainViewUnique<Array<{ quote: bigint; priceImpact: bigint }>>(abi as Abi, bytecode as Hex, [params])
 
-  const bestQuote = quotes?.reduce((a, b) => (a > b ? a : b))
+  if (!!quotes && quotes?.length > 0) {
+    const bestQuote = quotes?.reduce((a, b) => (a?.quote > b?.quote ? a : b))
+
+    return { matchingRoutes, quotes, bestQuote }
+  }
+
+  const bestQuote = { quote: 0n, priceImpact: 0n }
 
   return { matchingRoutes, quotes, bestQuote }
 }
@@ -114,7 +120,7 @@ export const getCustomPendleQuote = async (
 ) => {
   const { bestQuote } = await returnCustomPendleQuoteData(customCurveRoutes, tokenIn, tokenOut, amount, swapDirection)
 
-  return bestQuote as bigint
+  return bestQuote?.quote as bigint
 }
 
 export const getPendleCustomRouterRoute = async (

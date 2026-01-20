@@ -29,20 +29,19 @@ export const chain: Chain = {
   name: dappConfig.chain.name,
 }
 
-export const getCurrentBlock = async () => {
-  const publicClient = getPublicClient()
-  return publicClient.getBlock({ blockTag: "latest" })
-}
+const publicClient = createPublicClient({
+  chain,
+  transport: http(chain.rpcUrls.default.http[0], {
+    retryCount: 0,
+    timeout: 30_000,
+  }),
+})
 
-export const getPublicClient = () => {
-  const publicClient = createPublicClient({
-    chain,
-    transport: http(chain.rpcUrls.default.http[0], {
-      retryCount: 0,
-      timeout: 30000,
-    }),
-  })
-  return publicClient
+// Make getPublicClient great again (singleton version)
+export const getPublicClient = () => publicClient
+
+export const getCurrentBlock = async () => {
+  return publicClient.getBlock({ blockTag: "latest" })
 }
 
 export type ApproveTxResult = EncodeFunctionDataParameters & { gas: undefined | bigint; address: Address }

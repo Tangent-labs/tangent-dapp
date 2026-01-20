@@ -23,7 +23,7 @@ export const getQuote = async (
   tokenOut: Address,
   tokenIn: Address,
   curveRoutes: CustomCurveRoutes
-): Promise<{ quote: bigint }> => {
+): Promise<{ quote: bigint; priceImpact?: bigint }> => {
   const data = await getEnsoData(depositWeiValue, tokenIn, tokenOut, currentAddress, currentAddress, 0n)
   if (data) {
     return { quote: data?.amountOut }
@@ -38,7 +38,7 @@ export const getQuote = async (
     }
 
     const quote = await getCustomPendleQuote(curveRoutes, tokenIn, tokenOut, depositWeiValue, swapDirection)
-    return { quote }
+    return { quote, priceImpact: 0n }
   } else {
     const quote = await getCustomQuote(curveRoutes, tokenIn, tokenOut, depositWeiValue)
     return { quote }

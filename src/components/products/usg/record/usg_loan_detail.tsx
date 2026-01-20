@@ -1,22 +1,17 @@
 "use client"
 
-import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "./usg_record_context"
 import Title from "@/components/design_system/structure/title"
 import Divider from "@/components/design_system/structure/divider"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 
 export default function USGLoanDetail() {
-  const { marketDisplayData, futureMarketDisplayData, liquidationPrice } = useUSGRecordContext()
+  const { marketDisplayData, futureMarketDisplayData } = useUSGRecordContext()
 
   return (
     <div className="flex flex-col rounded-[10px] bg-overlay-panel px-3 py-2 backdrop-blur-[60px]">
       <div className="flex w-full items-center justify-between">
         <Title label={"Loan details"} size={"normal"} />
-
-        {!!liquidationPrice && (
-          <div className="flex justify-end self-end text-sm font-semibold text-tonic"> Liquidation price : ${formatBigInt(liquidationPrice, 18, 3)} </div>
-        )}
       </div>
       <Divider />
 

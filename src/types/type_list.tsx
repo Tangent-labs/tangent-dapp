@@ -40,4 +40,5 @@ export type ListRowData = {
   userHasDeposited: boolean
   protocol: string
   type: string
+  rewardToken: string
 }

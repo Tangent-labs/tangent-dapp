@@ -3,7 +3,6 @@
 import { useEffect } from "react"
 import USGLoanDetail from "./usg_loan_detail"
 import { Switch } from "@/components/ui/switch"
-import { formatBigInt } from "@/lib/number_formatter"
 import { MarketDetails } from "./header/market_details"
 import { usePathname, useRouter } from "next/navigation"
 import USGRecordPageHeader from "./usg_record_page_header"
@@ -29,9 +28,9 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     debtVAPR,
     chartData,
     debtFarming,
+    onChainData,
     isLeveraged,
     canLeverage,
-    onChainData,
     initialCollatAmount,
     currentTotalMarketApr,
     marketInfo,
@@ -42,6 +41,10 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     setIsRepayAndWithdraw,
     setActiveTab,
     activeTab,
+    simulatedCollatAmount,
+    setSimulatedCollatAmount,
+    simulatedDebtAmount,
+    setSimulatedDebtAmount,
   } = useUSGRecordContext()
 
   const router = useRouter()
@@ -133,7 +136,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
 
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
-            <BorderPanel className="flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
+            <BorderPanel className="hidden cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px] lg:flex">
               <AccordionTrigger className="flex w-full justify-between">
                 <span className="py-2 text-sm text-white">vAPR Calculator</span>
               </AccordionTrigger>
@@ -145,17 +148,47 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                     accurate only for leveraged positions where all the debt has been converted to collateral. If you&lsquo;re using your debt to farm
                     elsewhere, you will need to regularly update your debt info (amount used to farm and vAPR) so the calculator displays a correct result.
                   </div>
-                  <div className="flex w-full flex-col lg:flex-row">
-                    <div className="mt-3 flex w-full flex-wrap items-center justify-center sm:flex-row sm:flex-nowrap lg:w-2/12 lg:flex-col">
+                  <div className="flex w-full">
+                    <div className="mt-3 flex w-2/12 flex-col flex-wrap items-start justify-start">
                       <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel px-2 py-1 backdrop-blur-[60px]">
-                        <span>Current vAPR</span>
+                        Current vAPR
                         <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">
-                          {currentTotalMarketApr} %
+                          {currentTotalMarketApr.toFixed(2)} %
                         </span>
                       </div>
-                      <div className="my-2 flex w-full items-center justify-center gap-1 lg:justify-end">
+                      <div className="my-2 flex w-full items-center justify-end gap-1">
                         Leverage <Switch checked={isLeveraged} onCheckedChange={(v) => setIsLeveraged(v)} />
                       </div>
+
+                      {onChainData?.collateralInfos?.positionCollateralUSDValue === 0n && (
+                        <>
+                          <div className="flex w-full flex-col items-start justify-center">
+                            <div className="mb-1 text-xs font-semibold text-subtitle">Simulated Collat Amount (USD)</div>
+                            <input
+                              placeholder=""
+                              type="number"
+                              step={1}
+                              className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                              value={simulatedCollatAmount}
+                              onChange={(e) => setSimulatedCollatAmount(Number(e?.target?.value))}
+                            />
+                          </div>
+
+                          <div className="mt-1 flex w-full flex-col items-start justify-center">
+                            <div className="mb-1 text-xs font-semibold text-subtitle">Simulated Debt Amount (USD)</div>
+                            <input
+                              placeholder=""
+                              type="number"
+                              step={1}
+                              className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                              value={simulatedDebtAmount}
+                              onChange={(e) => setSimulatedDebtAmount(Number(e?.target?.value))}
+                            />
+                          </div>
+
+                          <Divider className="h-0.5 w-full bg-white/10" />
+                        </>
+                      )}
 
                       {isLeveraged ? (
                         <div className="flex w-full flex-col items-center justify-center lg:items-start">
@@ -171,7 +204,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                         </div>
                       ) : (
                         <>
-                          <div className="flex w-full flex-col items-center justify-center lg:items-start">
+                          <div className="flex w-full flex-col items-start justify-center">
                             <div className="mb-1 text-xs font-semibold text-subtitle">Debt Farming (USD)</div>
                             <input
                               placeholder=""
@@ -182,7 +215,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                               onChange={(e) => setDebtFarming(Number(e?.target?.value))}
                             />
                           </div>
-                          <div className="ml-2 mt-0 flex w-full flex-col items-center justify-center lg:ml-0 lg:mt-3 lg:items-start">
+                          <div className="ml-0 mt-2 flex w-full flex-col items-start justify-center">
                             <div className="mb-1 text-xs font-semibold text-subtitle">Debt vAPR (%)</div>
                             <input
                               placeholder=""
@@ -196,126 +229,121 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                         </>
                       )}
                     </div>
-                    {!!chartData && !!onChainData?.collateralInfos?.positionCollateralUSDValue && !!onChainData?.debtInfos.userDebt ? (
-                      <div className="mt-8 flex w-full pr-6 lg:w-10/12">
-                        <div className="relative hidden h-full items-start justify-start lg:flex">
-                          <div className="absolute -top-6 left-16 text-lg font-semibold text-white">vAPR</div>
-                        </div>
-                        {chartData && (
-                          <>
-                            <ResponsiveContainer width="100%" height={300}>
-                              <LineChart data={chartData}>
-                                <CartesianGrid horizontal vertical={false} />
 
-                                <XAxis
-                                  dataKey="price"
-                                  domain={[1.005, 0.9897]}
-                                  name="Price"
-                                  type="number"
-                                  tickFormatter={(value) => `$${value}`}
-                                  reversed={true}
-                                  ticks={Array.from({ length: 12 }, (_, i) => Number((0.988 + (i * (1.005 - 0.988)) / 12).toFixed(4)))}
-                                />
+                    <div className="mt-8 flex w-full pr-6 lg:w-10/12">
+                      <div className="relative hidden h-full items-start justify-start lg:flex">
+                        <div className="absolute -top-6 left-16 text-lg font-semibold text-white">vAPR</div>
+                      </div>
+                      {chartData && (
+                        <>
+                          <ResponsiveContainer width="100%" height={300}>
+                            <LineChart data={chartData}>
+                              <CartesianGrid horizontal vertical={false} />
 
-                                <YAxis
-                                  name="vAPR"
-                                  tickFormatter={(v) => {
-                                    const formatted = formatBigInt(v < 0 ? -v : v, 18, 2)
-                                    const symbol = v < 0 ? "-" : ""
-                                    return `${symbol}${formatted}%`
-                                  }}
-                                  type="number"
-                                  domain={[0, Number(Math.max(...chartData.map((d) => d.vAPR))) * 1.5 + 1]}
-                                />
+                              <XAxis
+                                dataKey="price"
+                                domain={[1.005, 0.9897]}
+                                name="Price"
+                                type="number"
+                                tickFormatter={(value) => `$${value}`}
+                                reversed={true}
+                                ticks={Array.from({ length: 12 }, (_, i) => Number((0.988 + (i * (1.005 - 0.988)) / 12).toFixed(4)))}
+                              />
 
-                                <Line strokeWidth="3px" type="monotone" dataKey="vAPR" stroke="url(#gradientColor)" name="vAPR (%)" dot={false} />
+                              <YAxis
+                                name="vAPR"
+                                tickFormatter={(v) => {
+                                  const formatted = v < 0 ? -v : v
+                                  const symbol = v < 0 ? "-" : ""
+                                  return `${symbol}${formatted?.toFixed(2)}%`
+                                }}
+                                type="number"
+                                domain={[0, Number(Math.max(...chartData.map((d) => d.vAPR))) * 1.5 + 1]}
+                              />
 
-                                <Legend formatter={(v) => (v === "vAPR" ? "vAPR (%)" : v)} />
+                              <Line strokeWidth="3px" type="monotone" dataKey="vAPR" stroke="url(#gradientColor)" name="vAPR (%)" dot={false} />
 
-                                <ReferenceLine
-                                  y={"0"}
-                                  stroke="red"
-                                  strokeDasharray="4 4"
-                                  strokeWidth={2}
-                                  ifOverflow="hidden"
-                                  label={({ viewBox }) => {
-                                    return (
-                                      <text
-                                        x={Number(viewBox?.x)}
-                                        y={viewBox?.y + 4}
-                                        dx={6}
-                                        fill="red"
-                                        fontSize={14}
-                                        textAnchor="start"
-                                        dominantBaseline="hanging"
-                                      >
-                                        0%
-                                      </text>
-                                    )
-                                  }}
-                                />
+                              <Legend formatter={(v) => (v === "vAPR" ? "vAPR (%)" : v)} />
 
-                                <Tooltip
-                                  content={({ active, payload, label }) =>
-                                    active && payload?.length ? (
-                                      <div className="flex min-w-28 flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-input p-2 text-white backdrop-blur-[60px]">
-                                        <div className="flex w-full items-center justify-between">
-                                          <p className="font-semibold">vAPR:</p>
-                                          <p>{(Number(payload[0]?.value?.toString()) / 10 ** 18).toFixed(2)}%</p>
-                                        </div>
-                                        <div className="flex w-full items-center justify-between">
-                                          <p className="font-semibold">Price:</p>
-                                          <p>${label}</p>
-                                        </div>
+                              <ReferenceLine
+                                y={"0"}
+                                stroke="red"
+                                strokeDasharray="4 4"
+                                strokeWidth={2}
+                                ifOverflow="hidden"
+                                label={({ viewBox }) => {
+                                  return (
+                                    <text
+                                      x={Number(viewBox?.x)}
+                                      y={viewBox?.y + 4}
+                                      dx={6}
+                                      fill="red"
+                                      fontSize={14}
+                                      textAnchor="start"
+                                      dominantBaseline="hanging"
+                                    >
+                                      0%
+                                    </text>
+                                  )
+                                }}
+                              />
+
+                              <Tooltip
+                                content={({ active, payload, label }) =>
+                                  active && payload?.length ? (
+                                    <div className="flex min-w-28 flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-input p-2 text-white backdrop-blur-[60px]">
+                                      <div className="flex w-full items-center justify-between">
+                                        <p className="font-semibold">vAPR:</p>
+                                        <p>{Number(payload[0]?.value).toFixed(2)}%</p>
                                       </div>
-                                    ) : null
-                                  }
-                                />
+                                      <div className="flex w-full items-center justify-between">
+                                        <p className="font-semibold">Price:</p>
+                                        <p>${label}</p>
+                                      </div>
+                                    </div>
+                                  ) : null
+                                }
+                              />
 
-                                <ReferenceLine
-                                  x={String(Number(USGInfo?.price) + 0.0001)}
-                                  stroke="white"
-                                  strokeDasharray="4 4"
-                                  strokeWidth={2}
-                                  ifOverflow="hidden"
-                                  label={({ viewBox }) => {
-                                    return (
-                                      <text
-                                        x={Number(viewBox?.x)}
-                                        y={(viewBox?.y ?? 0) + 8}
-                                        dx={6}
-                                        fill="white"
-                                        fontSize={14}
-                                        textAnchor="start"
-                                        dominantBaseline="hanging"
-                                      >
-                                        ${(USGInfo?.price).toFixed(4)} (USG Price)
-                                      </text>
-                                    )
-                                  }}
-                                />
-                              </LineChart>
-                            </ResponsiveContainer>
+                              <ReferenceLine
+                                x={String(Number(USGInfo?.price) + 0.0001)}
+                                stroke="white"
+                                strokeDasharray="4 4"
+                                strokeWidth={2}
+                                ifOverflow="hidden"
+                                label={({ viewBox }) => {
+                                  return (
+                                    <text
+                                      x={Number(viewBox?.x)}
+                                      y={(viewBox?.y ?? 0) + 8}
+                                      dx={6}
+                                      fill="white"
+                                      fontSize={14}
+                                      textAnchor="start"
+                                      dominantBaseline="hanging"
+                                    >
+                                      ${(USGInfo?.price).toFixed(4)} (USG Price)
+                                    </text>
+                                  )
+                                }}
+                              />
+                            </LineChart>
+                          </ResponsiveContainer>
 
-                            <svg width="0" height="0">
-                              <defs>
-                                <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
-                                  <stop offset="0%" stopColor="#0075ff" />
-                                  <stop offset="100%" stopColor="#00c2ff" />
-                                </linearGradient>
-                              </defs>
-                            </svg>
-                          </>
-                        )}
-                        <div className="hidden h-full items-end justify-end lg:relative lg:flex">
-                          <div className="absolute -right-4 bottom-0 text-lg font-semibold text-white">Price</div>
-                        </div>
+                          <svg width="0" height="0">
+                            <defs>
+                              <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#0075ff" />
+                                <stop offset="100%" stopColor="#00c2ff" />
+                              </linearGradient>
+                            </defs>
+                          </svg>
+                        </>
+                      )}
+                      <div className="hidden h-full items-end justify-end lg:relative lg:flex">
+                        <div className="absolute -right-4 bottom-0 text-lg font-semibold text-white">Price</div>
                       </div>
-                    ) : (
-                      <div className="mt-8 flex w-full pr-6 lg:w-10/12">
-                        <div className="flex w-full items-center justify-center">You need active positions to be able to compute your vAPR</div>
-                      </div>
-                    )}
+                    </div>
                   </div>
                 </div>
               </AccordionContent>

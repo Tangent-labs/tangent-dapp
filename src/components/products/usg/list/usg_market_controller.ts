@@ -73,6 +73,26 @@ export function transformToRows(datas: Array<MarketListAPRData>, onChainData: Ch
   return list
 }
 
+type RewardsApr = Record<string, number>
+
+const IGNORED_KEYS = new Set(["APY"])
+const BASE_TOKENS = new Set(["CRV", "CVX", "FXN"])
+
+export function getRewardTokenFromAprDetails(aprDetails: RewardsApr, protocol: string): string {
+  if (protocol === "Pendle_PT") {
+    return "APY"
+  } else {
+    const tokens = Object.keys(aprDetails).filter((k) => !IGNORED_KEYS.has(k))
+
+    const specialToken = tokens.find((t) => !BASE_TOKENS.has(t))
+    if (specialToken) return specialToken
+
+    if (tokens.includes("FXN")) return "FXN"
+
+    return "CRV"
+  }
+}
+
 function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainViewMarketRow): ListRowData {
   let totalCurrentAPR = 0
   let totalProjectedAPR = 0
@@ -86,6 +106,8 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
 
   const type = onChainRow?.constants.irParams.isHEC ? "HEC" : "LEC"
 
+  const rewardToken = getRewardTokenFromAprDetails(data?.currentAPR, protocol)
+
   return {
     token: data.collateral as ExistingAsset,
     protocol,
@@ -94,7 +116,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
     address: onChainRow?.marketAddress as Address,
     apr: {
       current: Number(totalCurrentAPR),
-      projected: Number(totalProjectedAPR),
+      projected: protocol === "Pendle_PT" ? undefined : Number(totalProjectedAPR),
     },
     currentAPRDetails: data?.currentAPR,
     indicators: [
@@ -105,18 +127,30 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
           !!onChainRow?.debtInfos.currentBorrowRate && onChainRow?.debtInfos.currentBorrowRate >= 0n
             ? ((Math.exp(Number(formatBigInt(onChainRow?.debtInfos.currentBorrowRate, 18, 4))) - 1) * 100).toFixed(2) + "%"
             : "0%",
-        raw: 0,
+        raw: Number(formatBigInt(onChainRow?.debtInfos.currentBorrowRate, 18, 4)),
       },
       {
         key: "tvl",
         label: "Tvl",
-        value: formatMarketListCompact(formatUnits(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0n, 18)),
+        value: formatMarketListCompact(
+          formatUnits(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0n, Number(onChainRow?.collateralInfos?.collateralToken?.decimals) || 18)
+        ),
         raw: Number(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0),
       },
       { key: "borrowed", label: "Borrowed", value: formatMarketListCompact(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18)) || "-", raw: 0 },
     ],
     userHasDeposited: !!onChainRow?.collateralInfos?.positionCollateralUSDValue && onChainRow?.collateralInfos?.positionCollateralUSDValue > 0n,
+    rewardToken,
   }
+}
+
+export const computeCollatData = (market: ChainViewMarketRow, totalFormatted: number, amountFormatted: number) => {
+  const percentage = totalFormatted > 0 ? (amountFormatted / totalFormatted) * 100 : 0
+  const marketConfig = USGMarkets.find((m) => m.marketAddress === market.marketAddress)
+  const marketNameIsDuplicated = marketConfig != null && USGMarkets.filter((m) => m.marketName === marketConfig.marketName).length > 1
+  const displayName = (marketNameIsDuplicated && marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + marketConfig?.marketName
+
+  return { displayName, percentage }
 }
 
 export const USGListHeaders: ListHeaderData[] = [

@@ -24,7 +24,7 @@ export type WalletConnexionContextValues = {
   connect: () => void
   disconnect: () => void
   changeNetwork: () => void
-  getWalletClient: () => WalletClient | undefined
+  walletClient: WalletClient | undefined
   canInteract: boolean
   userBalances: Array<{ balance: bigint; token: string; address: Address }>
   tokenInfo: (t: string) => { balance: bigint; token: string; address: Address } | undefined
@@ -64,23 +64,6 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
     web3Onboard.setChain({ chainId: dappConfig.chain.id })
   }
 
-  const getWalletClient = (): WalletClient | undefined => {
-    if (!currentWallet) return
-
-    const client = createWalletClient({
-      chain,
-      transport: custom(currentWallet.provider),
-      account: currentAddress,
-    })
-
-    return client as WalletClient
-  }
-
-  const disconnect = async () => {
-    if (!currentWallet) return
-    await web3Onboard.disconnectWallet({ label: currentWallet?.label })
-  }
-
   // is there an actual wallet connect on the DAPP
   const isConnected = useMemo<boolean>(() => {
     return !!currentAccount?.address || false
@@ -99,6 +82,21 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
   const isWellConnected = useMemo<boolean>(() => {
     return isConnected && isChainConnected
   }, [isConnected, isChainConnected])
+
+  const walletClient: WalletClient | undefined = useMemo(() => {
+    if (!currentWallet || !currentAddress) return undefined
+
+    return createWalletClient({
+      chain,
+      transport: custom(currentWallet.provider),
+      account: currentAddress,
+    }) as WalletClient
+  }, [currentWallet, currentAddress])
+
+  const disconnect = async () => {
+    if (!currentWallet) return
+    await web3Onboard.disconnectWallet({ label: currentWallet?.label })
+  }
 
   useEffect(() => {
     const state = web3Onboard.state.select("wallets")
@@ -177,7 +175,7 @@ export const WalletConnexionProvider = ({ children }: WalletConnexionProviderPro
     isConnected,
     isChainConnected,
     isWellConnected,
-    getWalletClient,
+    walletClient,
     connect,
     disconnect,
     changeNetwork,

@@ -31,7 +31,7 @@ export const USGHarvestContext = createContext<USGHarvestContextValues | undefin
 export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
   const { USGsUSGMetrics } = useUSGContext()
 
-  const { getWalletClient } = useWalletConnexionContext()
+  const { walletClient } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -75,7 +75,6 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
   }, [harvestInfo, rewardsInfo])
 
   const actionHarvest = () => {
-    const walletClient = getWalletClient()
     doHarvest(marketsToHarvest[0].marketAddress, walletClient!).then(() => {
       loadData()
       setMarketsToHarvest([])
@@ -84,8 +83,6 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
   }
 
   const actionHarvestMultipleMarkets = () => {
-    const walletClient = getWalletClient()
-
     const marketAddresses = marketsToHarvest.map((el) => el.marketAddress)
 
     doMultiHarvest(marketAddresses, walletClient!).then(() => {

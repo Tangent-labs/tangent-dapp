@@ -45,7 +45,7 @@ export const VsTanContext = createContext<VsTanContextValues | undefined>(undefi
 export const VsTanProvider = ({ children }: VsTanContextProps) => {
   const path = usePathname()
 
-  const { currentAddress, getWalletClient, isWalletInitialized } = useWalletConnexionContext()
+  const { currentAddress, walletClient, isWalletInitialized } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -99,8 +99,6 @@ export const VsTanProvider = ({ children }: VsTanContextProps) => {
   const onClickExtend = async () => {
     setIsLoading(true)
 
-    const walletClient = getWalletClient()
-
     if (walletClient && selectedPosition) {
       if (extendToPermaLock) {
         await doTogglePermaLock(selectedPosition?.tokenId, walletClient)
@@ -115,8 +113,6 @@ export const VsTanProvider = ({ children }: VsTanContextProps) => {
   }
 
   const onClickRemovePermaLock = async () => {
-    const walletClient = getWalletClient()
-
     if (walletClient && selectedPosition) {
       await doTogglePermaLock(selectedPosition?.tokenId, walletClient)
       loadData()
@@ -128,8 +124,6 @@ export const VsTanProvider = ({ children }: VsTanContextProps) => {
     if (!depositAssetInfo) return
 
     try {
-      const walletClient = getWalletClient()
-
       const data = await getBalancesAndAllowances(walletClient!, depositAssetInfo, VSTAN_CONTRACT?.VSTAN)
 
       setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)

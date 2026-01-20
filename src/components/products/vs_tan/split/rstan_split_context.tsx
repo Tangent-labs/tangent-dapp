@@ -38,7 +38,7 @@ type VsTanSplitContextValues = {
 export const VsTanSplitContext = createContext<VsTanSplitContextValues | undefined>(undefined)
 
 export const VsTanSplitProvider = ({ children }: VsTanSplitContextProps) => {
-  const { getWalletClient, isWellConnected } = useWalletConnexionContext()
+  const { walletClient, isWellConnected } = useWalletConnexionContext()
 
   const { loadData, lockData } = useVsTanContext()
 
@@ -91,7 +91,6 @@ export const VsTanSplitProvider = ({ children }: VsTanSplitContextProps) => {
 
   const actionSplit = async () => {
     setIsLoading(true)
-    const walletClient = getWalletClient()
 
     if (walletClient && splitPositionInfo) {
       const amountToRemove = (splitPositionInfo.amount * BigInt(100 - splitPercentage)) / BigInt(100)

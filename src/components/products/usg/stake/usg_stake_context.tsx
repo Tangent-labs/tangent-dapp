@@ -49,7 +49,7 @@ type USGStakeContextValues = {
 export const USGStakeContext = createContext<USGStakeContextValues | undefined>(undefined)
 
 export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
-  const { getWalletClient } = useWalletConnexionContext()
+  const { walletClient } = useWalletConnexionContext()
 
   const { loadUSGsUSGMetrics, USGsUSGMetrics } = useUSGContext()
 
@@ -148,7 +148,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     if (!currentAssetInfo?.current) return
 
     const params = {
-      walletClient: getWalletClient()!,
+      walletClient: walletClient!,
       stakingAddress: USG_CONTRACT.SUSG,
       weiValue,
     }
@@ -172,7 +172,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     if (!currentAssetInfo?.current) return
 
     const params = {
-      walletClient: getWalletClient()!,
+      walletClient: walletClient!,
       stakingAddress: USG_CONTRACT.SUSG,
       weiValue,
     }
@@ -192,7 +192,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   }
 
   const actionApprove = async () => {
-    await toastTx(doApprove(getWalletClient()!, USG_CONTRACT.USG, weiValue || 0n, USG_CONTRACT.SUSG), {
+    await toastTx(doApprove(walletClient!, USG_CONTRACT.USG, weiValue || 0n, USG_CONTRACT.SUSG), {
       pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
       success: () => {
         loadUSGsUSGMetrics()
@@ -200,7 +200,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
       },
     })
 
-    await doApprove(getWalletClient()!, USG_CONTRACT.USG, weiValue || 0n, USG_CONTRACT.SUSG).then(loadUSGsUSGMetrics)
+    await doApprove(walletClient!, USG_CONTRACT.USG, weiValue || 0n, USG_CONTRACT.SUSG).then(loadUSGsUSGMetrics)
   }
 
   useEffect(() => {
@@ -208,14 +208,14 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     ;(async () => {
       if (currentFeature === "stake") {
         try {
-          const sdAssetAmountOut = await getExpectedSUSG(getWalletClient()!, weiValue, USG_CONTRACT?.SUSG)
+          const sdAssetAmountOut = await getExpectedSUSG(walletClient!, weiValue, USG_CONTRACT?.SUSG)
           setExpected(sdAssetAmountOut)
         } catch (error) {
           console.error("Error while estimating deposit preview :", error)
         }
       } else {
         try {
-          const assetAmountOut = await getExpectedUSG(getWalletClient()!, weiValue, USG_CONTRACT?.SUSG)
+          const assetAmountOut = await getExpectedUSG(walletClient!, weiValue, USG_CONTRACT?.SUSG)
           setExpected(assetAmountOut)
         } catch (error) {
           console.error("Error while estimating redeem preview :", error)

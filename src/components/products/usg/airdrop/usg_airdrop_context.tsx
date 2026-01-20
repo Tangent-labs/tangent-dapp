@@ -36,7 +36,7 @@ export const UsgAirdropContext = createContext<UsgAirdropContextValues | undefin
 export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
   const { getCachedCurrentBlock } = useRootContext()
 
-  const { currentAddress, getWalletClient } = useWalletConnexionContext()
+  const { currentAddress, walletClient } = useWalletConnexionContext()
 
   const [airdropDataIsLoading, setAirdropDataIsLoading] = useState<boolean>(true)
 
@@ -83,8 +83,6 @@ export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
     setAirdropDataIsLoading(true)
 
     try {
-      const walletClient = getWalletClient()
-
       const message = `I am using the following referral code ${referralStatus?.referralCode}`
 
       if (walletClient && currentAddress) {

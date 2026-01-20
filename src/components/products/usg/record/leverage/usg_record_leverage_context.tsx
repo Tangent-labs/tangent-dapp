@@ -112,7 +112,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const { tokens, loadUSGsUSGMetrics, marketAprs } = useUSGContext()
 
-  const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+  const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
   const [isDepositDisabled, setIsDepositDisabled] = useState<boolean>(false)
 
@@ -293,7 +293,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const actionApproveZap = async () => {
     setIsDepositLoading(true)
-    const walletClient = getWalletClient()
     if (walletClient && depositWeiValue) {
       await toastTx(doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue), {
         pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
@@ -308,7 +307,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const actionApprove = async () => {
     setIsDepositLoading(true)
-    const walletClient = getWalletClient()
     if (walletClient && depositWeiValue)
       await toastTx(doApprove(walletClient, marketInfo?.collatAddress, marketInfo?.marketAddress, depositWeiValue), {
         pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
@@ -321,8 +319,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const actionZapLeverage = async () => {
     try {
-      const walletClient = getWalletClient()
-
       if (!walletClient || !currentAddress || !depositWeiValue || !borrowWeiValue || !depositAssetInfo || !leveragedCollateralQuote || !zapValue) {
         toast.error(ToastComponent, { data: { type: "Error", content: "Error while computing leverage data." } })
         return
@@ -381,8 +377,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const actionLeverage = async () => {
     setIsDepositLoading(true)
-
-    const walletClient = getWalletClient()
 
     if (!walletClient || !currentAddress || !leveragedCollateralQuote || !borrowWeiValue) return
 

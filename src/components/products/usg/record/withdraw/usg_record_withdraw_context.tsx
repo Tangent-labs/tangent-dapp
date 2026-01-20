@@ -31,7 +31,7 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
 
   const { marketData, loadOnChainData, setCurrentAmounts, collateral } = useUSGRecordContext()
 
-  const { isWellConnected, getWalletClient, currentAddress } = useWalletConnexionContext()
+  const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
   const [withdrawWeiValue, setWithdrawWeiValue] = useState<bigint | undefined>()
 
@@ -46,7 +46,6 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
   }, [withdrawWeiValue])
 
   const actionWithdraw = async () => {
-    const walletClient = getWalletClient()
     if (walletClient) {
       await toastTx(
         doMarketWithdraw(walletClient, {

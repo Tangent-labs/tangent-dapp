@@ -92,13 +92,9 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   const USDC_ADDRESS = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
   const frxUSD_ADDRESS = "0xcacd6fd266af91b8aed52accc382b4e165586e29"
 
-  const { currentAddress, getWalletClient, isWalletInitialized } = useWalletConnexionContext()
+  const { currentAddress, walletClient, isWalletInitialized } = useWalletConnexionContext()
 
   const { getCachedCurrentBlock } = useRootContext()
-
-  const walletClient = useMemo(() => {
-    return getWalletClient()
-  }, [currentAddress])
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -359,8 +355,6 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     setIsLoading(true)
 
     try {
-      const walletClient = getWalletClient()
-
       const message = `I, owner of wallet ${currentAddress?.toLowerCase()} assess to participate to the predeposit campaign.`
 
       if (walletClient && currentAddress) {

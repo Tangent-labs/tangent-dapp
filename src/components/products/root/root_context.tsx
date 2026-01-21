@@ -35,6 +35,8 @@ export type RootContextValues = {
 
   sUSGCurrentAPY: number
 
+  protocolCurrentTVL: number
+
   getCachedCurrentBlock: (d?: number) => Promise<Block>
 
   USGsUSGTotalSupplyData: {
@@ -291,6 +293,15 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     return 0
   }, [totalSupplies])
 
+  const protocolCurrentTVL = useMemo(() => {
+    if (tvl && tvl.length > 0) {
+      const latestSupplyValue = tvl.reduce((latest, current) => (current.timestamp > latest.timestamp ? current : latest))
+
+      return latestSupplyValue?.markets + latestSupplyValue?.wts + latestSupplyValue?.pegKeepers + latestSupplyValue?.susg
+    }
+    return 0
+  }, [tvl])
+
   const sUSGCurrentSupply = useMemo(() => {
     if (totalSupplies.sUSGTotalSupply && totalSupplies.sUSGTotalSupply.length > 0) {
       const latestSupplyValue = totalSupplies.sUSGTotalSupply.reduce((latest, current) => (current.date > latest.date ? current : latest))
@@ -324,6 +335,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     tvl,
     tvlSelectedTab,
     fetchTVLData,
+    protocolCurrentTVL,
   }
 
   return (

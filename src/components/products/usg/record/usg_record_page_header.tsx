@@ -1,15 +1,11 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { CollateralCard } from "./collateral_selection"
 import { useUSGRecordContext } from "./usg_record_context"
-import BorderPanel from "@/components/design_system/structure/border_panel"
 import IndicatorV2 from "@/components/design_system/structure/indicators_v2"
 
 export default function USGRecordPageHeader() {
   const { collateralInfo, marketDisplayData, marketData } = useUSGRecordContext()
-
-  const router = useRouter()
 
   return (
     <>
@@ -21,12 +17,12 @@ export default function USGRecordPageHeader() {
           <IndicatorV2 indicators={[{ title: "Borrowed", value: marketDisplayData.borrowed }]} />
           <IndicatorV2 indicators={[{ title: "Cap", value: marketDisplayData.cap }]} />
 
-          <BorderPanel
+          {/* <BorderPanel
             onClick={() => router.push("/")}
             className="hidden h-10 cursor-pointer items-center rounded-[10px] bg-overlay-panel px-9 text-xs font-semibold backdrop-blur-[60px] transition-colors duration-200 ease-in-out hover:bg-white/10 xl:flex"
           >
             Back
-          </BorderPanel>
+          </BorderPanel> */}
         </div>
 
         <div className="mt-4 flex items-end gap-1 md:hidden xl:mt-0">

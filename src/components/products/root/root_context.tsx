@@ -4,10 +4,10 @@ import { convertRange } from "./root_controller"
 import { toast, ToastContainer } from "react-toastify"
 import * as swapRoutes from "../usg/swapRoutes.json"
 import { getPublicClient } from "@/services/service_rpc"
-import { SavingAccountsApy } from "../usg/usg_type"
+import { SavingAccountsApy, TVLData } from "../usg/usg_type"
 import { USG_CONTRACT } from "../usg/usg_repository"
 import { ToastComponent } from "@/components/design_system/toast"
-import { getSavingsAPY, getTotalSupply } from "../usg/client_api"
+import { getSavingsAPY, getTotalSupply, getTVL } from "../usg/client_api"
 import { CustomCurveRoutes } from "../usg/global_quote_controller"
 import { useContext, useEffect, useState, createContext, ReactNode, useMemo } from "react"
 
@@ -22,6 +22,8 @@ export type RootContextValues = {
   }
 
   totalSupplySelectedTab: string
+
+  tvlSelectedTab: string
 
   fetchTotalSupplyData: (r: string) => Promise<void>
 
@@ -40,6 +42,10 @@ export type RootContextValues = {
     usg?: number | null
     susg?: number | null
   }[]
+
+  tvl: Array<TVLData>
+
+  fetchTVLData: (r: string) => void
 }
 
 const RootContext = createContext<RootContextValues | undefined>(undefined)
@@ -150,6 +156,8 @@ export const RootProvider = ({ children }: RootProviderProps) => {
 
   const [totalSupplySelectedTab, setTotalSupplySelectedTab] = useState<string>("1m")
 
+  const [tvlSelectedTab, setTvlSelectedTab] = useState<string>("1m")
+
   const [totalSupplies, setTotalSupplies] = useState<{
     USGTotalSupply: Array<{ date: number; uv: number }>
     sUSGTotalSupply: Array<{ date: number; uv: number }>
@@ -157,6 +165,8 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     USGTotalSupply: [],
     sUSGTotalSupply: [],
   })
+
+  const [tvl, setTvl] = useState<Array<TVLData>>([])
 
   const fetchTotalSupplyData = async (range: string) => {
     setTotalSupplySelectedTab(range)
@@ -179,6 +189,41 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     }))
 
     setTotalSupplies({ USGTotalSupply: USGData, sUSGTotalSupply: sUSGData })
+  }
+
+  const fetchTVLData = async (range: string) => {
+    setTvlSelectedTab(range)
+
+    fetchAndSetTvl(range)
+  }
+
+  const fetchAndSetTvl = async (range?: string) => {
+    let toIso
+    let fromIso
+
+    const currentBlock = await getCachedCurrentBlock()
+
+    if (range) {
+      const rangeInMilliseconds = convertRange(range)
+      toIso = Number(currentBlock.timestamp) * 1000
+      fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
+    } else {
+      const date = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
+      toIso = new Date(date).getTime()
+      fromIso = new Date(date).getTime() - 30 * 24 * 60 * 60 * 1000
+    }
+
+    const tvl = await getTVL(toIso, fromIso)
+
+    const tvlData = tvl.map((p) => ({
+      timestamp: new Date(p.timestamp).getTime(),
+      markets: Number(p.markets),
+      pegKeepers: Number(p.pegKeepers),
+      wts: Number(p.wts),
+      susg: Number(p.susg),
+    }))
+
+    setTvl(tvlData)
   }
 
   const USGsUSGTotalSupplyData = useMemo(() => {
@@ -233,6 +278,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
   useEffect(() => {
     setIsLoading(true)
     fetchTotalSupplies()
+    fetchAndSetTvl()
     fetchSavingsAPY()
   }, [])
 
@@ -275,6 +321,9 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     sUSGCurrentAPY,
     getCachedCurrentBlock,
     USGsUSGTotalSupplyData,
+    tvl,
+    tvlSelectedTab,
+    fetchTVLData,
   }
 
   return (

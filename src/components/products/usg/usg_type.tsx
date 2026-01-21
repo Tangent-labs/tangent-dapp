@@ -549,3 +549,11 @@ export type SavingAccountsApy = {
   key: string
   tokenAddress: string
 }
+
+export type TVLData = {
+  timestamp: number
+  markets: number
+  wts: number
+  pegKeepers: number
+  susg: number
+}

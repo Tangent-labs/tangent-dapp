@@ -3,7 +3,7 @@ import MarketListUI from "@/abi/USG/MarketListUI.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
 import { USG_CONTRACT, USGMarkets, USGPegKeepers } from "../usg_repository"
-import { formatBigInt, formatMarketListCompact, formatDollar, formatPercent } from "@/lib/number_formatter"
+import { formatBigInt, formatMarketListCompact, formatDollar } from "@/lib/number_formatter"
 import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, USGGlobalData } from "../usg_type"
 
 export const getUSGMarketsData = async (address: string) => {
@@ -38,7 +38,6 @@ export function transformGlobalData(data?: ChainViewMarketList): USGGlobalData {
       globalCr: "-",
       globalTvl: "-",
       globalDebt: "-",
-      APY: "-",
     }
 
   const USGPrice = Number(formatBigInt(data?.USGPrice || "0", 18, 5))
@@ -59,7 +58,6 @@ export function transformGlobalData(data?: ChainViewMarketList): USGGlobalData {
     globalCr: totalDebt !== 0n ? ((Number(totalTVL) / Number(totalDebt)) * 100).toFixed(2) + "%" : "N/A",
     globalTvl: formatDollar(formatUnits(totalTVL, 18), 0),
     globalDebt: formatDollar(formatUnits(totalDebt, 18), 0),
-    APY: formatPercent(Number(formatBigInt(data?.USGPercentageInSUSG || "0", 18, 2)) * 100, 2),
   }
 }
 

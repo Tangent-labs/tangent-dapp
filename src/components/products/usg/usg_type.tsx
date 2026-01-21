@@ -39,7 +39,6 @@ export type USGGlobalData = {
   USGSupply: string
   sUSGPrice: string
   sUSGSupply: string
-  APY: string
   globalCr: string
   globalDebt: string
   globalTvl: string

@@ -148,7 +148,7 @@ export const USGDashboardContent = () => {
           indicators={[
             { title: "sUSG ", value: globalData.sUSGPrice },
             { title: "Supply", value: globalData.sUSGSupply },
-            { title: "APY", value: `${sUSGCurrentAPY.toFixed(2)}%` },
+            { title: "APY", value: sUSGCurrentAPY.toFixed(2) + "%" },
           ]}
         >
           <TokenImage token="sUSG" className="h-8 w-8" size={32} />

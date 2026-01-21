@@ -6,6 +6,7 @@ import { formatUnits } from "viem"
 import { useRouter } from "next/navigation"
 import { useUSGContext } from "../usg_context"
 import { ExistingAsset, ListState } from "@/types"
+import { useRootContext } from "../../root/root_context"
 import ListRow from "@/components/design_system/list/list_row"
 import Divider from "@/components/design_system/structure/divider"
 import ListAsset from "@/components/design_system/list/list_asset"
@@ -34,10 +35,12 @@ const MarketListSelectTemplate = (option: { label: string; value: string }) => {
 }
 
 export default function USGMarketList() {
-  const { displayRows, globalData, searchValue, setSearchValue, userData, sortMarketList, marketType, protocol, setMarketType, setProtocol } =
-    useUSGMaketListContext()
+  const { sUSGCurrentAPY } = useRootContext()
 
   const { lpUserPoints, voteUserPoints } = useUSGContext()
+
+  const { displayRows, globalData, searchValue, setSearchValue, userData, sortMarketList, marketType, protocol, setMarketType, setProtocol } =
+    useUSGMaketListContext()
 
   return (
     <>
@@ -121,7 +124,7 @@ export default function USGMarketList() {
               indicators={[
                 { title: "sUSG ", value: globalData.sUSGPrice },
                 { title: "Supply", value: globalData.sUSGSupply },
-                { title: "APY", value: globalData.APY },
+                { title: "APY", value: sUSGCurrentAPY.toFixed(2) + "%" },
               ]}
             >
               <TokenImage token={"sUSG" as ExistingAsset} className="h-8 w-8" size={32} />

@@ -21,7 +21,7 @@ import { isOnMarket, mapRouteToFeature } from "./menu_bar_feature_controller"
 import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
 
 export default function MenuBarFeature() {
-  const { USGCurrentSupply, sUSGCurrentAPY } = useRootContext()
+  const { USGCurrentSupply, sUSGCurrentAPY, protocolCurrentTVL } = useRootContext()
 
   const router = useRouter()
 
@@ -149,7 +149,7 @@ export default function MenuBarFeature() {
 
           <div className="flex w-full items-center justify-end gap-3">
             <div className="hidden items-center justify-center rounded-[10px] bg-overlay-panel px-1 py-2.5 text-xs backdrop-blur-[60px] xl:flex">
-              <span className="border-r border-white/30 px-2">TVL: $69M</span>
+              <span className="border-r border-white/30 px-2">TVL: ${formatCompact(protocolCurrentTVL?.total)} </span>
               <span className="flex items-center justify-center gap-1 border-r border-white/30 px-2">
                 <TokenImage token="USG" size={20} />
                 {formatCompact(USGCurrentSupply)}

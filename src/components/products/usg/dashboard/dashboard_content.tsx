@@ -13,16 +13,78 @@ import InnerTooltip from "@/components/design_system/structure/inner_tooltip"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { formatBigInt, formatCompact, formatDollar } from "@/lib/number_formatter"
 import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip, TooltipProps } from "recharts"
+import { returnTVLType } from "./utils"
 
 export const USGDashboardContent = () => {
   const { globalData, userData, marketDebtMaxValue } = useUSGDashboardContext()
 
-  const { USGsUSGTotalSupplyData, USGCurrentSupply, sUSGCurrentSupply, sUSGCurrentAPY, totalSupplySelectedTab, fetchTotalSupplyData } = useRootContext()
+  const {
+    tvl,
+    protocolCurrentTVL,
+    sUSGCurrentAPY,
+    tvlSelectedTab,
+    USGCurrentSupply,
+    sUSGCurrentSupply,
+    totalSupplySelectedTab,
+    USGsUSGTotalSupplyData,
+    fetchTVLData,
+    fetchTotalSupplyData,
+  } = useRootContext()
 
   type PayloadItem = {
     dataKey?: string
     value?: number
     payload?: { date?: number | undefined }
+  }
+
+  const CustomTVLTooltip = ({ active, payload }: TooltipProps<number, string>) => {
+    if (!active || !payload || payload.length === 0) return null
+
+    const marketsItem = payload.find((p) => p.dataKey === "markets")
+    const wtsItem = payload.find((p) => p.dataKey === "wts")
+    const pegKeepersItem = payload.find((p) => p.dataKey === "pegkeepers")
+    const susgItem = payload.find((p) => p.dataKey === "susg")
+
+    const m = (marketsItem?.value as number) ?? 0
+    const wts = (wtsItem?.value as number) ?? 0
+    const pk = (pegKeepersItem?.value as number) ?? 0
+    const susg = (susgItem?.value as number) ?? 0
+
+    const total = m + wts + pk + susg
+
+    const ts = marketsItem?.payload?.date as number
+    const dateLabel = new Date(ts).toDateString()
+
+    return (
+      <div className="flex min-w-40 flex-col items-start justify-center gap-1 rounded-[10px] border border-white border-opacity-20 bg-input p-3 backdrop-blur-[60px]">
+        <div className="mb-3 text-xs font-medium text-slate-300">{dateLabel}</div>
+
+        <div className="mb-2 flex w-full items-center justify-between text-xs">
+          <span className="font-semibold text-white"> Total </span>
+          <span className="font-semibold text-white">${formatCompact(total)}</span>
+        </div>
+
+        <div className="flex w-full items-center justify-between text-xs">
+          <span className="text-row-tonic">Markets</span>
+          <span className="text-white">${formatCompact(m)}</span>
+        </div>
+
+        <div className="flex w-full items-center justify-between text-xs">
+          <span className="text-row-success">WTS</span>
+          <span className="text-white">${formatCompact(wts)}</span>
+        </div>
+
+        <div className="flex w-full items-center justify-between text-xs">
+          <span className="text-row-danger">Peg Keepers</span>
+          <span className="text-white">${formatCompact(pk)}</span>
+        </div>
+
+        <div className="flex w-full items-center justify-between text-xs">
+          <span className="text-row-warning">sUSG</span>
+          <span className="text-white">${formatCompact(susg)}</span>
+        </div>
+      </div>
+    )
   }
 
   const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
@@ -39,7 +101,7 @@ export const USGDashboardContent = () => {
     const dateLabel = new Date(ts).toDateString()
 
     return (
-      <div className="rounded-[10px] border border-white border-opacity-20 bg-input p-3 backdrop-blur-[60px]">
+      <div className="min-w-32 rounded-[10px] border border-white border-opacity-20 bg-input p-3 backdrop-blur-[60px]">
         <div className="mb-3 text-xs font-medium text-slate-300">{dateLabel}</div>
 
         <div className="mb-2 flex items-center justify-between text-xs">
@@ -88,7 +150,7 @@ export const USGDashboardContent = () => {
           indicators={[
             { title: "sUSG ", value: globalData.sUSGPrice },
             { title: "Supply", value: globalData.sUSGSupply },
-            { title: "APY", value: `${sUSGCurrentAPY.toFixed(2)}%` },
+            { title: "APY", value: sUSGCurrentAPY.toFixed(2) + "%" },
           ]}
         >
           <TokenImage token="sUSG" className="h-8 w-8" size={32} />
@@ -216,6 +278,134 @@ export const USGDashboardContent = () => {
                     }}
                     allowEscapeViewBox={{ x: false, y: false }}
                     content={<CustomTooltip />}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
+        <div className="flex w-full items-start justify-start">
+          <div className="mt-1 flex h-full max-h-[340px] w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
+            <div className="flex w-full items-center justify-end sm:justify-between">
+              <div className="hidden text-xl font-semibold sm:flex">TVL </div>
+
+              <div className="flex gap-2">
+                <ButtonTab onClick={() => fetchTVLData("1w")} label={"1w"} active={tvlSelectedTab === "1w"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTVLData("1m")} label={"1m"} active={tvlSelectedTab === "1m"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTVLData("3m")} label={"3m"} active={tvlSelectedTab === "3m"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTVLData("1y")} label={"1y"} active={tvlSelectedTab === "1y"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTVLData("all")} label={"all"} active={tvlSelectedTab === "all"} className="rounded-full !py-1" />
+              </div>
+            </div>
+
+            <Divider className="h-0.5 w-full bg-white/10" />
+
+            {protocolCurrentTVL && protocolCurrentTVL?.total > 0 && (
+              <div className="flex w-full items-stretch justify-start gap-2 text-xs">
+                <div className="flex flex-row items-start justify-start gap-2 self-stretch rounded-[10px] bg-overlay-panel p-2 md:flex-col">
+                  <div className="flex text-xs text-subtitle">TVL </div>
+
+                  <div className="text-xs font-semibold text-white"> {formatDollar(protocolCurrentTVL?.total, 0)}</div>
+                </div>
+
+                {[
+                  { label: "Markets", name: "markets" },
+                  { label: "WTS", name: "wts" },
+                  { label: "Peg Keepers", name: "pegkeepers" },
+                  { label: "sUSG", name: "susg" },
+                ].map((el) => (
+                  <div key={el?.name} className="hidden flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2 md:flex">
+                    <div className="flex w-full items-center justify-between gap-2">
+                      <div className={cn("flex h-2 w-2 rounded-full", returnTVLType(el?.name))}></div>
+                      <div className="flex items-center justify-center gap-1">{el?.label}</div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-2 font-semibold">
+                      {formatCompact(protocolCurrentTVL[el?.name as keyof typeof protocolCurrentTVL])}
+                      <span className="h-1 w-1 rounded-full bg-white"></span>
+                      <span>{((protocolCurrentTVL[el?.name as keyof typeof protocolCurrentTVL] / protocolCurrentTVL?.total) * 100).toFixed(2)}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="mb-8 flex h-56 min-h-56 w-full items-center justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  width={500}
+                  height={400}
+                  data={tvl}
+                  margin={{
+                    top: 10,
+                    right: 20,
+                    left: 20,
+                    bottom: 10,
+                  }}
+                >
+                  <defs>
+                    <linearGradient id="marketsGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#0075ff" stopOpacity={0.6} />
+                      <stop offset="95%" stopColor="#0075ff" stopOpacity={0} />
+                    </linearGradient>
+
+                    <linearGradient id="pegKeepersGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#FF005B" stopOpacity={0.6} />
+                      <stop offset="95%" stopColor="#FF005B" stopOpacity={0} />
+                    </linearGradient>
+
+                    <linearGradient id="wtsGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#95FF00" stopOpacity={0.6} />
+                      <stop offset="95%" stopColor="#95FF00" stopOpacity={0} />
+                    </linearGradient>
+
+                    <linearGradient id="susgGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#FF8800" stopOpacity={0.6} />
+                      <stop offset="95%" stopColor="#FF8800" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+
+                  <XAxis dataKey="date" tickFormatter={formatXAxis} scale="point" padding={{ left: 10, right: 10 }} />
+
+                  <YAxis tickFormatter={formatYAxis} />
+
+                  <Area type="monotone" dataKey="susg" stackId="1" stroke="#FF8800" strokeWidth={1.5} fill="url(#susgGradient)" name="SUSG" connectNulls />
+
+                  <Area
+                    type="monotone"
+                    dataKey="pegkeepers"
+                    stackId="1"
+                    stroke="#FF005B"
+                    strokeWidth={1.5}
+                    fill="url(#pegKeepersGradient)"
+                    name="Peg Keepers"
+                    connectNulls
+                  />
+
+                  <Area type="monotone" dataKey="wts" stackId="1" stroke="#95FF00" strokeWidth={1.5} fill="url(#wtsGradient)" name="WTS" connectNulls />
+
+                  <Area
+                    type="monotone"
+                    dataKey="markets"
+                    stackId="1"
+                    stroke="#0075ff"
+                    strokeWidth={1.5}
+                    fill="url(#marketsGradient)"
+                    name="Markets"
+                    connectNulls
+                  />
+
+                  <Tooltip
+                    cursor={{
+                      stroke: "rgba(255,255,255,0.7)",
+                      strokeWidth: 2,
+                      strokeDasharray: "4 4",
+                    }}
+                    allowEscapeViewBox={{ x: false, y: false }}
+                    content={<CustomTVLTooltip />}
                   />
                 </AreaChart>
               </ResponsiveContainer>

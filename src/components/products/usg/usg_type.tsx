@@ -39,7 +39,6 @@ export type USGGlobalData = {
   USGSupply: string
   sUSGPrice: string
   sUSGSupply: string
-  APY: string
   globalCr: string
   globalDebt: string
   globalTvl: string
@@ -548,4 +547,13 @@ export type SavingAccountsApy = {
   value: number
   key: string
   tokenAddress: string
+}
+
+export type TVLData = {
+  date: number
+  markets: number
+  wts: number
+  pegkeepers: number
+  susg: number
+  total: number
 }

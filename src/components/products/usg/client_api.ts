@@ -1,6 +1,6 @@
 import { Address } from "viem"
 
-import { MarketHistoricalData, LpUserPoints, UserTask, VoteTask, VoteUserPoints, RefereesPoints, MarketAPR, SavingAccountsApy } from "./usg_type"
+import { MarketHistoricalData, LpUserPoints, UserTask, VoteTask, VoteUserPoints, RefereesPoints, MarketAPR, SavingAccountsApy, TVLData } from "./usg_type"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -411,6 +411,29 @@ export const getsUsgApyData = async (dateTo: number, dateFrom: number | null): P
     return data
   } catch (error) {
     console.error("Failed to fetch historical susg apy:", error)
+    return []
+  }
+}
+
+export const getTVL = async (dateTo: number, dateFrom: number | null): Promise<Array<TVLData>> => {
+  try {
+    const url = `${baseUrl}/tvl/${dateTo}/${dateFrom}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch tvl")
+    }
+
+    const data: Array<TVLData> = await response.json()
+    return data
+  } catch (error) {
+    console.error("Failed to fetch tvl : ", error)
     return []
   }
 }

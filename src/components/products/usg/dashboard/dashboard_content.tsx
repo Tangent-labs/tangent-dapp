@@ -13,12 +13,14 @@ import InnerTooltip from "@/components/design_system/structure/inner_tooltip"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { formatBigInt, formatCompact, formatDollar } from "@/lib/number_formatter"
 import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip, TooltipProps } from "recharts"
+import { returnTVLType } from "./utils"
 
 export const USGDashboardContent = () => {
   const { globalData, userData, marketDebtMaxValue } = useUSGDashboardContext()
 
   const {
     tvl,
+    protocolCurrentTVL,
     sUSGCurrentAPY,
     tvlSelectedTab,
     USGCurrentSupply,
@@ -40,7 +42,7 @@ export const USGDashboardContent = () => {
 
     const marketsItem = payload.find((p) => p.dataKey === "markets")
     const wtsItem = payload.find((p) => p.dataKey === "wts")
-    const pegKeepersItem = payload.find((p) => p.dataKey === "pegKeepers")
+    const pegKeepersItem = payload.find((p) => p.dataKey === "pegkeepers")
     const susgItem = payload.find((p) => p.dataKey === "susg")
 
     const m = (marketsItem?.value as number) ?? 0
@@ -50,7 +52,7 @@ export const USGDashboardContent = () => {
 
     const total = m + wts + pk + susg
 
-    const ts = marketsItem?.payload?.timestamp as number
+    const ts = marketsItem?.payload?.date as number
     const dateLabel = new Date(ts).toDateString()
 
     return (
@@ -301,11 +303,35 @@ export const USGDashboardContent = () => {
 
             <Divider className="h-0.5 w-full bg-white/10" />
 
-            <div className="flex w-full items-stretch justify-start gap-2 text-xs">
-              <div className="flex flex-row items-start justify-start gap-2 self-stretch rounded-[10px] bg-overlay-panel p-2 md:flex-col">
-                <div className="flex text-xs text-subtitle">TVL </div>
+            {protocolCurrentTVL && protocolCurrentTVL?.total > 0 && (
+              <div className="flex w-full items-stretch justify-start gap-2 text-xs">
+                <div className="flex flex-row items-start justify-start gap-2 self-stretch rounded-[10px] bg-overlay-panel p-2 md:flex-col">
+                  <div className="flex text-xs text-subtitle">TVL </div>
+
+                  <div className="text-xs font-semibold text-white"> {formatDollar(protocolCurrentTVL?.total, 0)}</div>
+                </div>
+
+                {[
+                  { label: "Markets", name: "markets" },
+                  { label: "WTS", name: "wts" },
+                  { label: "Peg Keepers", name: "pegkeepers" },
+                  { label: "sUSG", name: "susg" },
+                ].map((el) => (
+                  <div key={el?.name} className="hidden flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2 md:flex">
+                    <div className="flex w-full items-center justify-between gap-2">
+                      <div className={cn("flex h-2 w-2 rounded-full", returnTVLType(el?.name))}></div>
+                      <div className="flex items-center justify-center gap-1">{el?.label}</div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-2 font-semibold">
+                      {formatCompact(protocolCurrentTVL[el?.name as keyof typeof protocolCurrentTVL])}
+                      <span className="h-1 w-1 rounded-full bg-white"></span>
+                      <span>{((protocolCurrentTVL[el?.name as keyof typeof protocolCurrentTVL] / protocolCurrentTVL?.total) * 100).toFixed(2)}%</span>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
+            )}
 
             <div className="mb-8 flex h-56 min-h-56 w-full items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
@@ -342,7 +368,7 @@ export const USGDashboardContent = () => {
                     </linearGradient>
                   </defs>
 
-                  <XAxis dataKey="timestamp" tickFormatter={formatXAxis} scale="point" padding={{ left: 10, right: 10 }} />
+                  <XAxis dataKey="date" tickFormatter={formatXAxis} scale="point" padding={{ left: 10, right: 10 }} />
 
                   <YAxis tickFormatter={formatYAxis} />
 
@@ -350,7 +376,7 @@ export const USGDashboardContent = () => {
 
                   <Area
                     type="monotone"
-                    dataKey="pegKeepers"
+                    dataKey="pegkeepers"
                     stackId="1"
                     stroke="#FF005B"
                     strokeWidth={1.5}

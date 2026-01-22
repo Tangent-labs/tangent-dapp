@@ -35,7 +35,7 @@ export type RootContextValues = {
 
   sUSGCurrentAPY: number
 
-  protocolCurrentTVL: number
+  protocolCurrentTVL: TVLData
 
   getCachedCurrentBlock: (d?: number) => Promise<Block>
 
@@ -218,11 +218,12 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     const tvl = await getTVL(toIso, fromIso)
 
     const tvlData = tvl.map((p) => ({
-      timestamp: new Date(p.timestamp).getTime(),
-      markets: Number(p.markets),
-      pegKeepers: Number(p.pegKeepers),
-      wts: Number(p.wts),
-      susg: Number(p.susg),
+      date: new Date(p.date).getTime(),
+      markets: p.markets,
+      pegkeepers: p.pegkeepers,
+      wts: p.wts,
+      susg: p.susg,
+      total: p.total,
     }))
 
     setTvl(tvlData)
@@ -295,11 +296,11 @@ export const RootProvider = ({ children }: RootProviderProps) => {
 
   const protocolCurrentTVL = useMemo(() => {
     if (tvl && tvl.length > 0) {
-      const latestSupplyValue = tvl.reduce((latest, current) => (current.timestamp > latest.timestamp ? current : latest))
+      const latestSupplyValue = tvl.reduce((latest, current) => (current.date > latest.date ? current : latest))
 
-      return latestSupplyValue?.markets + latestSupplyValue?.wts + latestSupplyValue?.pegKeepers + latestSupplyValue?.susg
+      return latestSupplyValue
     }
-    return 0
+    return { date: 0, markets: 0, wts: 0, pegkeepers: 0, susg: 0, total: 0 }
   }, [tvl])
 
   const sUSGCurrentSupply = useMemo(() => {

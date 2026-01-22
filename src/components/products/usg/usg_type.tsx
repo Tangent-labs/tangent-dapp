@@ -550,9 +550,10 @@ export type SavingAccountsApy = {
 }
 
 export type TVLData = {
-  timestamp: number
+  date: number
   markets: number
   wts: number
-  pegKeepers: number
+  pegkeepers: number
   susg: number
+  total: number
 }

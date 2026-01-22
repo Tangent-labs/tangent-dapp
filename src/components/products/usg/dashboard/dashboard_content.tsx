@@ -315,12 +315,11 @@ export const USGDashboardContent = () => {
                   data={tvl}
                   margin={{
                     top: 10,
-                    right: 30, // give a bit more space for legend/tooltip
+                    right: 20,
                     left: 20,
                     bottom: 10,
                   }}
                 >
-                  {/* Gradients – one per series (adjust colors to your taste) */}
                   <defs>
                     <linearGradient id="marketsGradient" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#0075ff" stopOpacity={0.6} />
@@ -380,7 +379,7 @@ export const USGDashboardContent = () => {
                       strokeDasharray: "4 4",
                     }}
                     allowEscapeViewBox={{ x: false, y: false }}
-                    content={<CustomTVLTooltip />} // ← make sure your tooltip shows all 4 values!
+                    content={<CustomTVLTooltip />}
                   />
                 </AreaChart>
               </ResponsiveContainer>

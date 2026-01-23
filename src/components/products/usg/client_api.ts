@@ -319,7 +319,9 @@ export const getUserBoosts = async (account: Address): Promise<{ boost: number; 
   }
 }
 
-export const getLeaderboards = async (): Promise<{
+export const getLeaderboards = async (
+  user: Address
+): Promise<{
   lpLeaderboard: Array<{
     rank: number
     address: Address
@@ -332,7 +334,7 @@ export const getLeaderboards = async (): Promise<{
   }>
 }> => {
   try {
-    const url = `${baseUrl}/leaderboards`
+    const url = `${baseUrl}/leaderboards/${user}`
 
     const response = await fetch(url, {
       method: "GET",

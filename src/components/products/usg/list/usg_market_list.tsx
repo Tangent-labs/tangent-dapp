@@ -7,20 +7,24 @@ import { useRouter } from "next/navigation"
 import { useUSGContext } from "../usg_context"
 import { ExistingAsset, ListState } from "@/types"
 import { useRootContext } from "../../root/root_context"
-import ListRow from "@/components/design_system/list/list_row"
 import Divider from "@/components/design_system/structure/divider"
 import ListAsset from "@/components/design_system/list/list_asset"
 import { useUSGMaketListContext } from "./usg_market_list_context"
 import { formatDollar, formatNumber } from "@/lib/number_formatter"
-import ListHeader from "@/components/design_system/list/list_header"
 import InputSelect from "@/components/design_system/inputs/input_select"
 import InputSearch from "@/components/design_system/inputs/input_search"
 import TokenImage from "@/components/design_system/structure/token_image"
 import MarketListAPR from "@/components/design_system/list/market_list_apr"
 import LargeButtonTab from "@/components/design_system/inputs/large_button_tab"
+import { MarketListRow } from "@/components/design_system/list/market_list_row"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
+import { MarketListHeader } from "@/components/design_system/list/market_list_header"
 import { marketOptions, protocolOptions, USGListHeaders } from "./usg_market_controller"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+
+interface ListRowDispositionProps {
+  children: React.ReactNode[]
+}
 
 const listeState: ListState = {
   search: undefined,
@@ -32,6 +36,20 @@ const listeState: ListState = {
 
 const MarketListSelectTemplate = (option: { label: string; value: string }) => {
   return <span className="flex w-full cursor-pointer items-center rounded-[10px] px-3 text-sm font-semibold text-white hover:bg-white/10">{option?.label}</span>
+}
+
+const CustomMarketListRow = ({ children }: ListRowDispositionProps) => {
+  return (
+    <div className="flex items-center justify-between max-xl:flex-col">
+      <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
+        <div className="xl:w-1/2">{children?.at(0)}</div>
+        <div className="xl:w-1/4">{children?.at(1)}</div>
+        <div className="xl:w-1/4">{children?.at(2)}</div>
+      </div>
+      <hr className="my-2 w-full opacity-20 xl:hidden" />
+      <div className="flex w-full flex-wrap items-center justify-evenly gap-2 xl:w-1/2">{children?.at(3)}</div>
+    </div>
+  )
 }
 
 export default function USGMarketList() {
@@ -209,28 +227,64 @@ export function USGMarketListInner() {
   return (
     <>
       <div className="mt-4 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
-        <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
+        <MarketListHeader rowDisposition={CustomMarketListRow} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
+
       {displayRows?.map((item, index) => (
-        <ListRow
+        <MarketListRow
+          rowDisposition={CustomMarketListRow}
           className={cn("my-1", !!marketData.length && !!displayRows ? "" : "shimmer")}
           key={index}
           navigate={() => router.push("/" + item.address + "/deposit-borrow")}
         >
           <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
-          <MarketListAPR rewardToken={item?.rewardToken} currentAPRDetails={item.currentAPRDetails} apr={item.apr.current} projectedApr={item.apr.projected} />
+
+          <MarketListAPR
+            rewardToken={item?.rewardToken}
+            maxLeverage={1}
+            currentAPRDetails={item.currentAPRDetails}
+            apr={item.apr.current}
+            projectedApr={item.apr.projected}
+          />
+
+          <MarketListAPR
+            rewardToken={item?.rewardToken}
+            maxLeverage={1 / (1 - item?.maxLTV) || 1}
+            currentAPRDetails={item.currentAPRDetails}
+            apr={item.apr.current}
+            projectedApr={item.apr.projected}
+          />
+
           <>
             {item.indicators.map((indicator, index) => (
-              <div
-                key={indicator.key}
-                style={{ fontWeight: 300 }}
-                className={cn("flex basis-[48%] flex-col items-center text-xl leading-5 md:flex-1", index >= 2 ? "hidden xl:block" : "")}
-              >
-                <span className="flex items-center justify-center gap-2">
-                  <span className={cn("flex text-xs text-subtitle md:text-xl xl:hidden", indicator?.key === "tvl" ? "uppercase" : "")}>{indicator?.label}</span>
-                  <span className="text-xs md:text-lg">{indicator?.value}</span>
-                </span>
-              </div>
+              <>
+                {indicator?.key === "borrowed" ? (
+                  <div
+                    key={indicator.key}
+                    style={{ fontWeight: 300 }}
+                    className={cn("hidden basis-[48%] flex-col items-center text-xl leading-5 md:flex-1 xl:block")}
+                  >
+                    <span className="flex flex-col items-center justify-center">
+                      <span className={cn("flex text-xs text-subtitle md:text-xl xl:hidden")}>{indicator?.label}</span>
+                      <span className="text-xs md:text-lg">{indicator?.value}</span>
+                      <span className="hidden text-xs text-subtitle md:flex md:text-xs">/{formatNumber(indicator?.raw, 0)}</span>
+                    </span>
+                  </div>
+                ) : (
+                  <div
+                    key={indicator.key}
+                    style={{ fontWeight: 300 }}
+                    className={cn("flex basis-[48%] flex-col items-center text-xl leading-5 md:flex-1", index >= 2 ? "hidden xl:block" : "")}
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <span className={cn("flex text-xs text-subtitle md:text-xl xl:hidden", indicator?.key === "tvl" ? "uppercase" : "")}>
+                        {indicator?.label}
+                      </span>
+                      <span className="text-xs md:text-lg">{indicator?.value}</span>
+                    </span>
+                  </div>
+                )}
+              </>
             ))}
 
             {item.userHasDeposited && (
@@ -239,7 +293,7 @@ export function USGMarketListInner() {
               </div>
             )}
           </>
-        </ListRow>
+        </MarketListRow>
       ))}
     </>
   )

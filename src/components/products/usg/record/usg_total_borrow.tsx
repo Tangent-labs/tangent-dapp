@@ -21,9 +21,7 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
               <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
             </linearGradient>
           </defs>
-
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-
           <XAxis
             dataKey="timestamp"
             tickFormatter={(str) =>
@@ -34,7 +32,11 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
             }
           />
 
-          <YAxis orientation="right" tickFormatter={(value) => `$${formatCompact(value)}`} />
+          <YAxis
+            domain={[0, Number(Math.max(...totalBorrow.map((d) => Number(d?.value)))) * 1.1]}
+            orientation="right"
+            tickFormatter={(value) => `$${formatCompact(value)}`}
+          />
 
           <Tooltip
             content={({ active, payload, label }) => {
@@ -52,11 +54,11 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
                   <div className="flex flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-input p-2 text-white backdrop-blur-[60px]">
                     <div className="flex w-full items-center justify-between">
                       <p className="min-w-24 font-semibold">Total Borrow:</p>
-                      <p>{formattedValue}</p>
+                      {formattedValue}
                     </div>
                     <div className="flex w-full items-center justify-between">
                       <p className="min-w-24 font-semibold">Date:</p>
-                      <p>{formattedDate}</p>
+                      {formattedDate}
                     </div>
                   </div>
                 )
@@ -65,7 +67,6 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
               return null
             }}
           />
-
           <Area type="monotone" dataKey="value" stroke="#1568ed" strokeWidth={3} fill="url(#borrowGradient)" dot={false} />
         </AreaChart>
       </ResponsiveContainer>

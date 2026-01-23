@@ -103,11 +103,13 @@ export function USGModalMarketListInner() {
             navigate={() => router.push("/" + item.address + "/deposit-borrow")}
           >
             <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
+
             <MarketListAPR
               rewardToken={item?.rewardToken}
               currentAPRDetails={item.currentAPRDetails}
               apr={item.apr.current}
               projectedApr={item.apr.projected}
+              maxLeverage={1}
             />
 
             <span className="hidden items-center justify-center gap-2 md:flex">

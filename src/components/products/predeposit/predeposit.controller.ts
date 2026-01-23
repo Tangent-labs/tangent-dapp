@@ -1,6 +1,7 @@
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { PredepositRawState, PredepositStatus } from "./types/types"
 import PredepositPoolsABI from "../../../abi/USG/PredepositPoolsABI.json"
+import OGPredepositPoolsABI from "../../../abi/USG/OGPredepositPoolsABI.json"
 import { computedMinAmountOut } from "../usg/record/usg_record_controller"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 
@@ -39,7 +40,7 @@ export const fetchQuote = async (depositValue: bigint, contract: Address) => {
   const publicClient = getPublicClient()
 
   const txData = {
-    abi: PredepositPoolsABI.abi as Abi,
+    abi: OGPredepositPoolsABI.abi as Abi,
     functionName: "calc_token_amount",
     args: [[depositValue, 0n], true],
     address: contract,

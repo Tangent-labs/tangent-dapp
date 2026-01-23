@@ -24,9 +24,7 @@ export const getFormState = (
     return { canProcess: false, cantProcessReasons: reasons, haveToApprove: false }
   }
 
-  if (!!depositValue && depositValue > balanceAllowance?.allowance) {
-    reasons.push("Allowance too low")
-  } else if (!!depositValue && depositValue > balanceAllowance?.balance) {
+  if (!!depositValue && depositValue > balanceAllowance?.balance) {
     reasons.push("Balance too low")
   } else if (currentlyDeposited + depositValue > totalCap) {
     reasons.push("Deposit exceeds total cap")

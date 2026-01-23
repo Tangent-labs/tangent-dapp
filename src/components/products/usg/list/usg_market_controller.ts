@@ -57,7 +57,7 @@ export function transformGlobalData(data?: ChainViewMarketList): USGGlobalData {
     sUSGSupply: formatBigInt(data?.sUSGSupply || "0", 18, 0),
     globalCr: totalDebt !== 0n ? formatNumber((Number(totalTVL) / Number(totalDebt)) * 100, 2) + "%" : "N/A",
     globalTvl: formatDollar(formatUnits(totalTVL, 18), 0),
-    globalDebt: formatDollar(formatUnits(totalDebt, 18), 0),
+    globalDebt: formatNumber(Number(formatUnits(totalDebt, 18)), 0) + " USG",
   }
 }
 

@@ -103,21 +103,21 @@ export default function USGMarketList() {
               className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
             >
               <span className="text-xs text-subtitle">Your Debt</span>
-              <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDebt || 0n, 18), 0)} USD</span>
+              <span className="text-sm font-semibold">{formatNumber(Number(formatUnits(userData?.totalUserDebt || 0n, 18)), 0)} USG</span>
             </div>
 
             <div
               className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
             >
               <span className="text-xs text-subtitle">Your Collateral Deposits</span>
-              <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDeposit || 0n, 18), 0)} USD</span>
+              <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDeposit || 0n, 18), 0)} </span>
             </div>
 
             <div
               className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
             >
               <span className="text-xs text-subtitle">Your Total Points</span>
-              <span className="text-sm font-semibold">{formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} </span>
+              <span className="text-sm font-semibold">{formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts </span>
             </div>
           </div>
         </div>

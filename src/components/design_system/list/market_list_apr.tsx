@@ -44,7 +44,7 @@ const MarketListAPR = ({ rewardToken, maxLeverage, currentAPRDetails, apr, proje
                     {rewardEntries.map(([token, value]) => (
                       <div className="flex items-center justify-between" key={token}>
                         <span>{token} APR</span>
-                        <span>{value?.toFixed(2)}%</span>
+                        <span>{(value * maxLeverage)?.toFixed(2)}%</span>
                       </div>
                     ))}
                   </div>

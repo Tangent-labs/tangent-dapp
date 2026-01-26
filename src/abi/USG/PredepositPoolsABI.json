@@ -176,7 +176,7 @@
       "type": "function",
       "name": "calc_token_amount",
       "inputs": [
-        { "name": "_amounts", "type": "uint256[2]" },
+        { "name": "_amounts", "type": "uint256[]" },
         { "name": "_is_deposit", "type": "bool" }
       ],
       "outputs": [{ "name": "", "type": "uint256" }]

@@ -1,9 +1,8 @@
-import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { PredepositRawState, PredepositStatus } from "./types/types"
 import PredepositPoolsABI from "../../../abi/USG/PredepositPoolsABI.json"
-// TODO : delete OGPredepositPoolsABI
 import OGPredepositPoolsABI from "../../../abi/USG/OGPredepositPoolsABI.json"
 import { computedMinAmountOut } from "../usg/record/usg_record_controller"
+import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 
 export const TOTAL_TAN_ALLOCATION = 200_000n
@@ -35,10 +34,10 @@ export const getFormState = (
   return { canProcess: true, cantProcessReasons: reasons, haveToApprove: !isApproved }
 }
 
-// TODO : delete
 export const fetchQuote = async (depositValue: bigint, contract: Address) => {
   const publicClient = getPublicClient()
 
+  // TODO : replace by PredepositPoolsABI
   const txData = {
     abi: OGPredepositPoolsABI.abi as Abi,
     functionName: "calc_token_amount",
@@ -51,10 +50,10 @@ export const fetchQuote = async (depositValue: bigint, contract: Address) => {
   return previewCustomeQuote as bigint
 }
 
+// TODO : delete
 export const fetchfrxUSDQuote = async (depositValue: bigint, contract: Address) => {
   const publicClient = getPublicClient()
 
-  // TODO : replace by PredepositPoolsABI
   const txData = {
     abi: PredepositPoolsABI.abi as Abi,
     functionName: "calc_token_amount",

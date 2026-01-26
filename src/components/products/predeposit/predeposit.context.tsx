@@ -245,7 +245,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
       setfrxUSDDepositValue(value)
 
       const getfrxUSDPredepositQuote = async (depositValue: bigint) => {
-        // TODO replace by fetchQuote
+        // TODO replace by fetchQuote //
         const quote = await fetchfrxUSDQuote(depositValue, USGTokens[1]["USG-frxUSD"])
         setUSGfrxUSDDepositValue(quote)
       }

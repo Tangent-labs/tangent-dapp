@@ -1,7 +1,8 @@
-import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { PredepositRawState, PredepositStatus } from "./types/types"
 import PredepositPoolsABI from "../../../abi/USG/PredepositPoolsABI.json"
+import OGPredepositPoolsABI from "../../../abi/USG/OGPredepositPoolsABI.json"
 import { computedMinAmountOut } from "../usg/record/usg_record_controller"
+import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 
 export const TOTAL_TAN_ALLOCATION = 200_000n
@@ -36,6 +37,23 @@ export const getFormState = (
 export const fetchQuote = async (depositValue: bigint, contract: Address) => {
   const publicClient = getPublicClient()
 
+  // TODO : replace by PredepositPoolsABI
+  const txData = {
+    abi: OGPredepositPoolsABI.abi as Abi,
+    functionName: "calc_token_amount",
+    args: [[depositValue, 0n], true],
+    address: contract,
+  }
+
+  const previewCustomeQuote = await publicClient.readContract(txData)
+
+  return previewCustomeQuote as bigint
+}
+
+// TODO : delete
+export const fetchfrxUSDQuote = async (depositValue: bigint, contract: Address) => {
+  const publicClient = getPublicClient()
+
   const txData = {
     abi: PredepositPoolsABI.abi as Abi,
     functionName: "calc_token_amount",
@@ -56,6 +74,27 @@ export const deposit = async (walletClient: WalletClient, amount: bigint, slippa
 
   const estimateGasData = {
     abi: PredepositPoolsABI.abi as Abi,
+    functionName: "add_liquidity",
+    args: [[amount, 0n], minOut],
+    address: contract,
+    account,
+  } as EstimateContractGasParameters
+
+  const gas = await publicClient.estimateContractGas(estimateGasData)
+  const txData = { ...estimateGasData, gas }
+  const hash = await walletClient.writeContract(txData as WriteContractParameters)
+  return await waitForTransaction(hash)
+}
+
+// TODO : delete
+export const depositUSDC = async (walletClient: WalletClient, amount: bigint, slippage: number, contract: Address) => {
+  const publicClient = getPublicClient()
+  const [account] = await walletClient.requestAddresses()
+
+  const minOut = computedMinAmountOut(amount, slippage)
+
+  const estimateGasData = {
+    abi: OGPredepositPoolsABI.abi as Abi,
     functionName: "add_liquidity",
     args: [[amount, 0n], minOut],
     address: contract,

@@ -12,7 +12,16 @@ import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { fetchUserStatus, validatePredepositSignature } from "./api/client.api"
 import { doApprove, getBalancesAndAllowances } from "../usg/record/usg_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { deposit, fetchQuote, getFormState, mapPredepositStatus, TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "./predeposit.controller"
+import {
+  deposit,
+  depositUSDC,
+  fetchQuote,
+  fetchfrxUSDQuote,
+  getFormState,
+  mapPredepositStatus,
+  TOTAL_DEPOSIT_CAP,
+  TOTAL_TAN_ALLOCATION,
+} from "./predeposit.controller"
 
 type PredepositContextProps = {
   children: ReactNode
@@ -236,7 +245,8 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
       setfrxUSDDepositValue(value)
 
       const getfrxUSDPredepositQuote = async (depositValue: bigint) => {
-        const quote = await fetchQuote(depositValue, USGTokens[1]["USG-frxUSD"])
+        // TODO replace by fetchQuote //
+        const quote = await fetchfrxUSDQuote(depositValue, USGTokens[1]["USG-frxUSD"])
         setUSGfrxUSDDepositValue(quote)
       }
 
@@ -310,7 +320,8 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     if (USDCDepositValue) {
       setIsLoading(true)
 
-      await toastTx(deposit(walletClient!, USDCDepositValue, slippage, USGTokens[1]["USG-USDC"]), {
+      // TODO : replace by deposit()
+      await toastTx(depositUSDC(walletClient!, USDCDepositValue, slippage, USGTokens[1]["USG-USDC"]), {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
         success: () => {
           getUSGUSDCBalanceAllowance(walletClient!)

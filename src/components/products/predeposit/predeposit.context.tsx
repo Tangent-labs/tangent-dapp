@@ -276,25 +276,27 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     if (predepositStatus) {
       return getFormState(
         USDCDepositValue,
+        (USGUSDCDepositValue || 0n) / 10n ** 12n,
         USDCBalanceAllowance,
         predepositStatus?.USGUSDCData?.USGUSDCCap / 10n ** 12n,
         predepositStatus?.USGUSDCData?.USGUSDCAccumulatedTotal / 10n ** 12n
       )
     }
     return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
-  }, [USDCDepositValue, predepositStatus, currentAddress, USDCBalanceAllowance])
+  }, [USDCDepositValue, predepositStatus, currentAddress, USDCBalanceAllowance, USGUSDCDepositValue])
 
   const USGfrxUSDformState = useMemo(() => {
     if (predepositStatus) {
       return getFormState(
         frxUSDDepositValue,
+        USGfrxUSDDepositValue,
         frxUSDBalanceAllowance,
         predepositStatus?.USGfrxUSDData?.USGfrxUSDCap,
         predepositStatus?.USGfrxUSDData?.USGfrxUSDAccumulatedTotal
       )
     }
     return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
-  }, [frxUSDDepositValue, predepositStatus, currentAddress, frxUSDBalanceAllowance])
+  }, [frxUSDDepositValue, predepositStatus, currentAddress, frxUSDBalanceAllowance, USGfrxUSDDepositValue])
 
   const actionApproveUSGUSDC = () => {
     setIsLoading(true)

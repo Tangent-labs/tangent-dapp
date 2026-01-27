@@ -174,6 +174,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
           return {
             name: displayName,
             value: Number(percentage.toFixed(2)),
+            rawValue: collateralValue,
           }
         })
         .sort((a, b) => b.value - a.value)

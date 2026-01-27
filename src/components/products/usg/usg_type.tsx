@@ -408,6 +408,7 @@ export type MarketDebtData = {
 export type USGCollateralData = {
   name: string
   value: number
+  rawValue: bigint
 }
 
 export interface IrParams {

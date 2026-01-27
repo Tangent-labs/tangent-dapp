@@ -49,7 +49,7 @@ const web3Onboard = init({
     mobile: { enabled: false },
   },
   connect: {
-    autoConnectAllPreviousWallet: true,
+    autoConnectLastWallet: true,
   },
 })
 

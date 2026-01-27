@@ -2,7 +2,6 @@
 
 import { useMemo } from "react"
 import { formatAddress } from "@/lib/other_formatter"
-import { IconCross } from "@/components/icons"
 import { Button } from "@/components/design_system/inputs/button"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
@@ -41,11 +40,11 @@ export const PredepositWalletConnect = () => {
     <>
       {isConnected ? (
         <Button onClick={handleDisconnect} className="flex h-10 items-center justify-center">
-          {buttonLabel} {isConnected}
+          {buttonLabel}
         </Button>
       ) : (
         <Button onClick={handleButtonClick} className="flex h-10 items-center justify-center">
-          {buttonLabel} {isConnected && <IconCross className="ml-2 mt-0.5 w-3"></IconCross>}
+          {buttonLabel}
         </Button>
       )}
     </>

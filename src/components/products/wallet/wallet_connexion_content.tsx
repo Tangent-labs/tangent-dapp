@@ -5,7 +5,6 @@ import { useUSGContext } from "../usg/usg_context"
 import { useClipboard } from "@/hooks/useClipboard"
 import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
-import { IconCross } from "@/components/icons"
 import { Button } from "@/components/design_system/inputs/button"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -14,7 +13,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 export const WalletConnexionContent = () => {
   const { copied, copy } = useClipboard()
 
-  const { connect, disconnect, changeNetwork, isConnected, isChainConnected, currentAddress } = useWalletConnexionContext()
+  const { connect, disconnect, isConnected, isChainConnected, currentAddress } = useWalletConnexionContext()
 
   const { USGsUSGMetrics } = useUSGContext()
 
@@ -32,32 +31,16 @@ export const WalletConnexionContent = () => {
     await disconnect()
   }
 
-  const handleSwitchNetwork = async () => {
-    await changeNetwork()
-  }
-
-  const handleButtonClick = () => {
-    if (!isConnected) {
-      handleConnect()
-    } else if (!isChainConnected) {
-      handleSwitchNetwork()
-    } else if (isConnected) {
-      handleDisconnect()
-    }
-  }
-
   return (
     <>
       <Popover>
         {isConnected ? (
           <PopoverTrigger asChild>
-            <Button className="flex h-10 items-center justify-center">
-              {buttonLabel} {isConnected}
-            </Button>
+            <Button className="flex h-10 items-center justify-center">{buttonLabel}</Button>
           </PopoverTrigger>
         ) : (
           <Button onClick={handleConnect} className="flex h-10 items-center justify-center">
-            {buttonLabel} {isConnected && <IconCross className="ml-2 mt-0.5 w-3"></IconCross>}
+            Connect wallet
           </Button>
         )}
 
@@ -128,9 +111,11 @@ export const WalletConnexionContent = () => {
                 </div>
               </div> */}
 
-              <div onClick={handleButtonClick} className="flex w-full cursor-pointer items-center justify-start p-2 font-semibold text-danger">
-                {isConnected ? "Log out" : ""}
-              </div>
+              {isConnected && (
+                <div onClick={() => handleDisconnect()} className="flex w-full cursor-pointer items-center justify-start p-2 font-semibold text-danger">
+                  Log out
+                </div>
+              )}
             </div>
           )}
         </PopoverContent>

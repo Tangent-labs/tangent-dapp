@@ -1,8 +1,8 @@
 "use client"
 
-import { Address } from "viem"
+import { Address, zeroAddress } from "viem"
 import { useUSGContext } from "../../usg_context"
-import { getGodsonsLeaderboard } from "../../client_api"
+import { getGodsonsLeaderboard, getLeaderboards } from "../../client_api"
 import { useUsgAirdropContext } from "../usg_airdrop_context"
 import { GodsonLeaderboard, Leaderboard } from "../../usg_type"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
@@ -17,8 +17,6 @@ export type UserStatus = {
 
 type UsgReferralCodeContextProps = {
   children: ReactNode
-  lpLeaderboard: Leaderboard
-  voteLeaderboard: Leaderboard
   code: string | undefined
 }
 
@@ -32,21 +30,16 @@ type UsgReferralCodeContextValues = {
 
 export const UsgReferralCodeContext = createContext<UsgReferralCodeContextValues | undefined>(undefined)
 
-export const UsgReferralCodeProvider = ({ children, code, lpLeaderboard, voteLeaderboard }: UsgReferralCodeContextProps) => {
-  const { currentAddress } = useWalletConnexionContext()
+export const UsgReferralCodeProvider = ({ children, code }: UsgReferralCodeContextProps) => {
+  const { currentAddress, isWalletInitialized } = useWalletConnexionContext()
 
   const { refetchPoints } = useUSGContext()
 
   const { setReferralStatus, referralStatus } = useUsgAirdropContext()
 
-  useEffect(() => {
-    if (code) {
-      setReferralStatus({
-        ...referralStatus,
-        referralCode: code,
-      })
-    }
-  }, [code])
+  const [lpLeaderboard, setLpLeaderboard] = useState<Leaderboard>([])
+
+  const [voteLeaderboard, setVoteLeaderboard] = useState<Leaderboard>([])
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -60,12 +53,46 @@ export const UsgReferralCodeProvider = ({ children, code, lpLeaderboard, voteLea
   >([])
 
   useEffect(() => {
+    if (code) {
+      setReferralStatus({
+        ...referralStatus,
+        referralCode: code,
+      })
+    }
+  }, [code])
+
+  useEffect(() => {
     if (currentAddress) {
       getGodsonsLeaderboard(currentAddress).then((l) => {
         setGodsonsLeaderboard(l)
       })
 
       refetchPoints()
+    }
+  }, [currentAddress])
+
+  const fetchLeaderboards = async (user: Address) => {
+    getLeaderboards(user)?.then((res) => {
+      setLpLeaderboard(res?.lpLeaderboard)
+      setVoteLeaderboard(res?.voteLeaderboard)
+    })
+  }
+
+  /**
+   * On init
+   */
+  useEffect(() => {
+    if (isWalletInitialized) {
+      fetchLeaderboards(currentAddress || zeroAddress)
+    }
+  }, [isWalletInitialized])
+
+  /**
+   * On user logs in/logs out
+   */
+  useEffect(() => {
+    if (isWalletInitialized && currentAddress) {
+      fetchLeaderboards(currentAddress)
     }
   }, [currentAddress])
 

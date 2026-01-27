@@ -555,7 +555,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     return 0n
   }, [marketData, depositWeiValue, depositAsset, depositAssetInfo, zapValue, slippage, isZapping])
 
-  // TODO Verify for a market that doesn't have a 18 decimals collateral
   const estimatedZapDollarValue = useMemo(() => {
     if (zapValue && marketData) {
       const result = `~(${formatDollar(

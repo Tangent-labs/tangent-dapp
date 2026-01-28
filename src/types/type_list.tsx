@@ -28,6 +28,8 @@ export type ListRowData = {
     current?: number
     projected?: number
   }
+  maxLTV: number
+  maxBorrowable: string
   currentAPRDetails: {
     [rewardToken: string]: number
   }

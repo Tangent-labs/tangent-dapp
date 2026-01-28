@@ -57,7 +57,7 @@ export function transformGlobalData(data?: ChainViewMarketList): USGGlobalData {
     sUSGSupply: formatBigInt(data?.sUSGSupply || "0", 18, 0),
     globalCr: totalDebt !== 0n ? formatNumber((Number(totalTVL) / Number(totalDebt)) * 100, 2) + "%" : "N/A",
     globalTvl: formatDollar(formatUnits(totalTVL, 18), 0),
-    globalDebt: formatDollar(formatUnits(totalDebt, 18), 0),
+    globalDebt: formatNumber(Number(formatUnits(totalDebt, 18)), 0) + " USG",
   }
 }
 
@@ -106,6 +106,10 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
 
   const rewardToken = getRewardTokenFromAprDetails(data?.currentAPR, protocol)
 
+  const maxLTV = Number(onChainRow?.constants?.maxLTV) / 100000
+
+  const maxBorrowable = onChainRow?.constants?.maxMarketDebt?.toString() || "0"
+
   return {
     token: data.collateral as ExistingAsset,
     protocol,
@@ -116,6 +120,8 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
       current: Number(totalCurrentAPR),
       projected: protocol === "Pendle_PT" ? undefined : Number(totalProjectedAPR),
     },
+    maxLTV,
+    maxBorrowable,
     currentAPRDetails: data?.currentAPR,
     indicators: [
       {
@@ -135,7 +141,12 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
         ),
         raw: Number(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0),
       },
-      { key: "borrowed", label: "Borrowed", value: formatMarketListCompact(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18)) || "-", raw: 0 },
+      {
+        key: "borrowed",
+        label: "Borrowed",
+        value: formatMarketListCompact(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18)).substring(1, 9) || "-",
+        raw: Number(formatUnits(onChainRow?.constants?.maxMarketDebt || 0n, 18)),
+      },
     ],
     userHasDeposited: !!onChainRow?.collateralInfos?.positionCollateralUSDValue && onChainRow?.collateralInfos?.positionCollateralUSDValue > 0n,
     rewardToken,
@@ -154,9 +165,15 @@ export const computeCollatData = (market: ChainViewMarketRow, totalFormatted: nu
 export const USGListHeaders: ListHeaderData[] = [
   { label: "Collateral", key: "collateral", sort: null },
   {
-    label: "APR",
-    key: "apr",
+    label: "vAPR",
+    key: "vapr",
     indicator: "vAPR of the collateral",
+    sort: "sort",
+  },
+  {
+    label: "Max vAPR",
+    key: "maxvapr",
+    indicator: "vAPR of the collateral at max leverage",
     sort: "sort",
   },
   {
@@ -185,8 +202,8 @@ export const protocolOptions = [
 export const USGMarketModalListHeaders: ListHeaderData[] = [
   { label: "LP", key: "lp", sort: null },
   {
-    label: "APR",
-    key: "apr",
+    label: "vAPR",
+    key: "vapr",
     indicator: "vAPR of the collateral",
     sort: "sort",
   },

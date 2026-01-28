@@ -3,6 +3,7 @@ import AprIndicator from "./apr_indicator"
 
 interface ListAPRProps {
   rewardToken: string
+  maxLeverage: number
   currentAPRDetails?: {
     [rewardToken: string]: number
   }
@@ -11,17 +12,17 @@ interface ListAPRProps {
   className?: string
 }
 
-const MarketListAPR = ({ rewardToken, currentAPRDetails, apr, projectedApr, className = "" }: ListAPRProps) => {
+const MarketListAPR = ({ rewardToken, maxLeverage, currentAPRDetails, apr, projectedApr, className = "" }: ListAPRProps) => {
   const rewardEntries = Object.entries(currentAPRDetails ?? {})
     .filter(([k, v]) => k !== "APY" && typeof v === "number")
     .sort((a, b) => b[1] - a[1])
 
   const computedAPR = useMemo(() => {
     if (currentAPRDetails && rewardToken && projectedApr) {
-      return Number(currentAPRDetails[rewardToken]) === 0 ? projectedApr.toFixed(2) : apr?.toFixed(2)
+      return Number(currentAPRDetails[rewardToken]) === 0 ? projectedApr : apr
     }
 
-    return apr?.toFixed(2)
+    return apr
   }, [rewardToken, currentAPRDetails, projectedApr])
 
   return (
@@ -29,12 +30,13 @@ const MarketListAPR = ({ rewardToken, currentAPRDetails, apr, projectedApr, clas
       {!!computedAPR && Number(computedAPR) > 0 && (
         <>
           <span className="flex items-center justify-center bg-button-active bg-clip-text text-sm font-semibold leading-4 text-transparent md:text-xl">
-            {computedAPR}%
-            <AprIndicator>
+            <AprIndicator isMax={maxLeverage !== 1}>
+              <div>{(computedAPR * maxLeverage).toFixed(2)}%</div>
+
               <div className="flex flex-col gap-2">
                 <div className="flex min-w-44 items-center justify-between">
                   <span>Base APY</span>
-                  <span className="flex items-center justify-center">{computedAPR}%</span>
+                  <span className="flex items-center justify-center">{(computedAPR * maxLeverage).toFixed(2)}%</span>
                 </div>
 
                 {rewardEntries.length > 0 && (
@@ -42,7 +44,7 @@ const MarketListAPR = ({ rewardToken, currentAPRDetails, apr, projectedApr, clas
                     {rewardEntries.map(([token, value]) => (
                       <div className="flex items-center justify-between" key={token}>
                         <span>{token} APR</span>
-                        <span>{value?.toFixed(2)}%</span>
+                        <span>{(value * maxLeverage)?.toFixed(2)}%</span>
                       </div>
                     ))}
                   </div>
@@ -51,7 +53,9 @@ const MarketListAPR = ({ rewardToken, currentAPRDetails, apr, projectedApr, clas
                 {currentAPRDetails && (
                   <div className="mt-2 flex min-w-44 items-center justify-between">
                     <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">Net vAPR</span>
-                    <span className="flex items-center justify-center rounded-[10px] bg-button-active px-2 py-0.5 font-semibold">{computedAPR}%</span>
+                    <span className="flex items-center justify-center rounded-[10px] bg-button-active px-2 py-0.5 font-semibold">
+                      {(computedAPR * maxLeverage).toFixed(2)}%
+                    </span>
                   </div>
                 )}
               </div>
@@ -60,11 +64,9 @@ const MarketListAPR = ({ rewardToken, currentAPRDetails, apr, projectedApr, clas
 
           {projectedApr && !!currentAPRDetails && Number(currentAPRDetails[rewardToken]) !== 0 && (
             <span className="whitespace-nowrap text-xs text-subtitle">
-              Proj: <span>{projectedApr.toFixed(2)}%</span>
+              Proj: <span>{(projectedApr * maxLeverage).toFixed(2)}%</span>
             </span>
           )}
-
-          {computedAPR && <span className="hidden text-xs md:flex">Up to {(Number(computedAPR) * 10).toFixed(2)} % at 10x</span>}
         </>
       )}
     </div>

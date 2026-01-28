@@ -14,14 +14,14 @@ export default function USGMarketInfo() {
   return (
     <>
       <div className="mt-4 rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
-        <Title label={"Markets info"} size={"normal"} />
+        <Title label="Markets info" size="normal" />
         <Divider />
         <div className="flex flex-col justify-between xl:flex-row">
           <div className="flex flex-1 items-center justify-between border-r border-r-white border-opacity-20 pr-3">
             <div className="flex w-full flex-col">
               <div className="flex w-full items-center justify-between gap-2">
                 <div className="flex items-center justify-center gap-2">
-                  <span>Total borrow</span>
+                  Total borrow
                   <span className="bg-button-active bg-clip-text text-xl font-semibold text-transparent">${formatCompact(totalBorrow?.latestTotalDebt)}</span>
                 </div>
                 <div className="flex gap-2">

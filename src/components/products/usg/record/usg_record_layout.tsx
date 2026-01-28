@@ -106,7 +106,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
 
       <MarketDetailsParameters />
 
-      <div className="flex flex-col gap-4">
+      <div className="mt-2 flex flex-col gap-4">
         <div className="relative flex items-start justify-start gap-4 max-xl:flex-col">
           <div className="w-full rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
             <FeatureTabs

@@ -48,16 +48,6 @@ export default function MenuBarFeature() {
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem
-                  onClick={() => router.push("/dashboard")}
-                  className={cn(
-                    "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
-                    pathname === "/dashboard" ? "bg-white/10 hover:bg-white/20" : ""
-                  )}
-                >
-                  <span className="relative z-20">Dashboard</span>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem
                   onClick={() => router.push("/")}
                   className={cn(
                     "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
@@ -94,6 +84,16 @@ export default function MenuBarFeature() {
                   )}
                 >
                   <span className="relative z-20">Claim</span>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem
+                  onClick={() => router.push("/dashboard")}
+                  className={cn(
+                    "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
+                    pathname === "/dashboard" ? "bg-white/10 hover:bg-white/20" : ""
+                  )}
+                >
+                  <span className="relative z-20">Dashboard</span>
                 </NavigationMenuItem>
 
                 <NavigationMenu>

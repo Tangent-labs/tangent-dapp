@@ -1,17 +1,30 @@
+import { cn } from "@/lib/utils"
 import { ReactNode } from "react"
-import USGHoverCard from "../structure/usg_hover_card"
+import { IconStars } from "@/components/icons/icon_stars"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 interface ListAprIndicatorProps {
-  children: ReactNode
+  children: ReactNode[]
+  isMax: boolean
   className?: string
 }
 
-export default function AprIndicator({ children, className = "" }: ListAprIndicatorProps) {
+export default function AprIndicator({ children, isMax, className = "" }: ListAprIndicatorProps) {
   return (
     <div className={`ml-1 flex items-center gap-1 text-white ${className}`}>
-      <USGHoverCard iconClassName="h-auto w-[14px] text-row-tonic" title="">
-        {children}
-      </USGHoverCard>
+      <HoverCard>
+        <HoverCardTrigger asChild>
+          <button className="flex items-center justify-center gap-1 text-lg" type="button">
+            {children[0]}
+            <IconStars className={cn(isMax ? "fill-[#95FF00]" : "fill-row-tonic", "w-4")}></IconStars>
+          </button>
+        </HoverCardTrigger>
+        <HoverCardContent side="top" className="z-100 w-fit max-w-56 !border-none text-xs">
+          <div className="grid gap-4 !border-none">
+            <div className="space-y-2">{children[1]}</div>
+          </div>
+        </HoverCardContent>
+      </HoverCard>
     </div>
   )
 }

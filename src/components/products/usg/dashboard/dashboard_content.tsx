@@ -1,22 +1,21 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { specialTokensList } from "../usg_repository"
+import { returnTVLType } from "./utils"
+import { MarketDebt } from "./market_debt"
+import { USGCollaterals } from "./usg_collaterals"
 import { useUSGDashboardContext } from "./dashboard_context"
-import { MarketDebtData, USGCollateralData } from "../usg_type"
 import Divider from "@/components/design_system/structure/divider"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
 import { useRootContext } from "@/components/products/root/root_context"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { COLORS, formatXAxis, formatYAxis } from "./dashboard_controller"
-import InnerTooltip from "@/components/design_system/structure/inner_tooltip"
+import { formatXAxis, formatYAxis } from "./dashboard_controller"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
-import { formatBigInt, formatCompact, formatDollar } from "@/lib/number_formatter"
-import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip, TooltipProps } from "recharts"
-import { returnTVLType } from "./utils"
+import { formatCompact, formatDollar } from "@/lib/number_formatter"
+import { ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip, TooltipProps } from "recharts"
 
 export const USGDashboardContent = () => {
-  const { globalData, userData, marketDebtMaxValue } = useUSGDashboardContext()
+  const { globalData, userData, marketDebtMaxValue, marketTVLMaxValue } = useUSGDashboardContext()
 
   const {
     tvl,
@@ -415,107 +414,13 @@ export const USGDashboardContent = () => {
       </div>
 
       <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
-        <div className="flex w-full items-start justify-start md:w-1/2">
-          <div className="mt-2 flex h-full max-h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
-            <div className="text-xl font-semibold">USG collaterals</div>
-            <Divider className="h-0.5 w-full bg-white/10" />
+        {userData && (
+          <>
+            <USGCollaterals userData={userData} marketTVLMaxValue={marketTVLMaxValue} />
 
-            <div className="flex h-[calc(100%-2.5rem)] w-full items-start justify-between">
-              <div className="mt-6 flex w-full items-center justify-center sm:w-6/12 md:w-full xl:w-6/12">
-                <div className="relative flex h-48 w-full items-center justify-center">
-                  <div className="absolute left-0 top-0 flex h-48 w-full">
-                    <div className="flex h-full w-full flex-col items-center justify-center gap-1">
-                      <div className="mt-4 text-xs text-subtitle">Collaterals</div>
-                      <div className="text-[40px] font-semibold text-white">
-                        {userData?.USGCollateralsData.filter((el: USGCollateralData) => el.value > 0)?.length}
-                      </div>
-                    </div>
-                  </div>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={userData?.USGCollateralsData}
-                        cx="50%"
-                        cy="50%"
-                        startAngle={180}
-                        endAngle={0}
-                        innerRadius={80}
-                        cornerRadius={200}
-                        outerRadius={90}
-                        paddingAngle={0}
-                        dataKey="value"
-                        stroke="none"
-                      >
-                        {userData?.USGCollateralsData.sort((a: USGCollateralData, b: USGCollateralData) => (a.value > b.value ? -1 : 1)).map(
-                          (_, index: number) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          )
-                        )}
-                      </Pie>
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-              <div className="hidden max-h-48 w-full flex-col items-start justify-start gap-1 sm:flex sm:w-6/12 md:hidden xl:flex xl:w-6/12">
-                <div className="scrollbar-thin my-4 flex max-h-full w-full flex-col gap-1 overflow-y-auto">
-                  {userData?.USGCollateralsData.filter((el: USGCollateralData) => el.value > 0)
-                    .sort((a: USGCollateralData, b: USGCollateralData) => (a.value > b.value ? -1 : 1))
-                    .map((el: USGCollateralData, index: number) => (
-                      <div key={el.name} className="mb-1 flex w-full items-center justify-start gap-2 rounded-[10px] px-3 py-1 backdrop-blur-[60px]">
-                        <div className="h-1 w-1 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
-
-                        {specialTokensList.some((item) => el.name.includes(item)) ? (
-                          <TokenImage token={el.name} size={16} className="w-6" />
-                        ) : (
-                          <TokenImage token={el.name} size={16} className="w-7" />
-                        )}
-
-                        <div className="text-subtitle">{el.name}</div>
-                        <div>-</div>
-                        <div className="font-semibold text-white">{el.value}%</div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex w-full items-start justify-start md:w-1/2">
-          <div className="mt-2 flex h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
-            <div className="text-xl font-semibold">Market debt</div>
-            <Divider className="h-0.5 w-full bg-white/10" />
-            <div className="mb-2 flex items-center justify-start gap-2 text-xs">
-              <div className="text-subtitle">Markets: </div>
-              <div className="text-white">{userData?.marketDebtData?.filter((el: MarketDebtData) => el.value > 0).length}</div>
-            </div>
-
-            <div className="scrollbar-thin flex w-full flex-col gap-1 overflow-y-auto">
-              {userData?.marketDebtData
-                ?.filter((el: MarketDebtData) => el.value > 0)
-                .map((data: MarketDebtData) => (
-                  <InnerTooltip
-                    innerContent={
-                      <div className="flex min-w-24 items-center justify-center gap-2 px-4">
-                        <div className="text-subtitle">Debt:</div>
-                        <div className="text-white">${formatBigInt(data.rawValue, 18, 2)}</div>
-                      </div>
-                    }
-                    key={data.id}
-                  >
-                    <div key={data.id} className="flex w-full cursor-pointer items-center justify-start gap-2">
-                      <div className="h-2 flex-grow rounded-full bg-blue-500" style={{ maxWidth: `${(data.value / (marketDebtMaxValue + 20)) * 100}%` }}></div>
-                      <div className="flex min-w-[120px] flex-shrink-0 items-center justify-start gap-1 text-xs">
-                        <span className="font-semibold">{data.value}%</span>
-                        <span>{data.name}</span>
-                      </div>
-                    </div>
-                  </InnerTooltip>
-                ))}
-            </div>
-          </div>
-        </div>
+            <MarketDebt userData={userData} marketDebtMaxValue={marketDebtMaxValue} />
+          </>
+        )}
       </div>
     </div>
   )

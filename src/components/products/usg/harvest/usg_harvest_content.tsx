@@ -115,7 +115,7 @@ export default function USGHarvestContent() {
                   <span className="text-[12px] font-semibold">{el.marketName}</span>
                 </div>
 
-                <span className="text-[12px] font-semibold">${el.harvestable}</span>
+                <span className="text-[12px] font-semibold">{formatDollar(el.harvestable, 2)}</span>
               </div>
             ))}
           </div>
@@ -147,7 +147,7 @@ function HarvestList() {
               <div className="xl:w-1/2">
                 <ListAsset name={item?.asset} token={item.asset} assetsEarned={[]} />
               </div>
-              <div className="text-md flex justify-center gap-2 md:text-xl xl:w-1/2">
+              <div className="text-md flex justify-center gap-2 md:text-lg xl:w-1/2">
                 {formatDollar(item?.rewards?.totalDollar || 0)}
 
                 <USGHoverCard iconClassName="text-row-tonic" title={`${item?.asset} Rewards Breakdown`}>
@@ -167,9 +167,11 @@ function HarvestList() {
             </div>
             <hr className="my-2 w-full opacity-20 xl:hidden" />
             <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-1/2">
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center gap-2 text-sm md:text-xl">{formatPercent(item?.harvesterFees)}</div>
+              <div className="flex w-full flex-1 cursor-pointer items-center justify-center gap-2 text-sm md:text-lg">{formatPercent(item?.percentage)}</div>
 
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center text-sm md:text-xl">{formatDollar(item?.rewards.totalDollar)}</div>
+              <div className="flex w-full flex-1 cursor-pointer items-center justify-center text-sm md:text-lg">
+                {formatDollar((item?.rewards.totalDollar * item?.percentage) / 100)}
+              </div>
 
               <div className="flex w-full flex-1 cursor-pointer flex-col items-center justify-center">
                 <Switch

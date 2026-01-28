@@ -32,7 +32,7 @@ type USGClaimContextValues = {
 export const USGClaimContext = createContext<USGClaimContextValues | undefined>(undefined)
 
 export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
-  const { USGsUSGMetrics } = useUSGContext()
+  const { USGsUSGMetrics, marketAprs } = useUSGContext()
 
   const { walletClient, currentAddress } = useWalletConnexionContext()
 
@@ -65,13 +65,13 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
   }, [currentAddress])
 
   const displayRows = useMemo(() => {
-    if (!claimInfo || !rewardsInfo) return []
-    const rows = transformClaimOnChainData(claimInfo, rewardsInfo)
+    if (!claimInfo || !rewardsInfo || !marketAprs) return []
+    const rows = transformClaimOnChainData(claimInfo, rewardsInfo, marketAprs)
     setIsLoading(false)
     setMarketsToClaim([])
 
     return rows.filter((market) => Number(market?.totalDepositedValue) > 0)
-  }, [claimInfo, rewardsInfo])
+  }, [claimInfo, rewardsInfo, marketAprs])
 
   const actionClaim = useCallback(
     (contractAddress: Address, markets: Address[]) => {

@@ -1,7 +1,7 @@
-import { ClaimerInfo } from "../usg_type"
-import { USG_CONTRACT, USGMarkets } from "../usg_repository"
+import { ClaimerInfo, MarketAPR } from "../usg_type"
 import claimUI from "../../../../abi/USG/ClaimUI.json"
 import { getTokensPrice } from "@/services/service_price"
+import { USG_CONTRACT, USGMarkets } from "../usg_repository"
 import { Abi, Address, formatUnits, Hex, WalletClient } from "viem"
 import claimContract from "../../../../abi/USG/RewardAccumulator.json"
 import { AssetDataPriced, ExistingAsset, ListHeaderData } from "@/types"
@@ -61,7 +61,7 @@ export const computeAndReturnPrices = async (claimInfo: ClaimerInfo[]) => {
   }
 }
 
-export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfos: AssetDataPriced[]) {
+export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfos: AssetDataPriced[], marketAprs: MarketAPR[]) {
   const getPriceBySymbol = (symbol: string): number => {
     const asset = assetInfos.find((info) => info.symbol === symbol)
     return asset ? asset.price : 0
@@ -94,6 +94,17 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
 
     const marketNameIsDuplicated = marketConfig != null && USGMarkets.filter((m) => m.marketName === marketConfig.marketName).length > 1
 
+    // APR Computing Section
+    let totalCurrentAPR = 0
+    let totalProjectedAPR = 0
+
+    const marketDataApr = marketAprs?.find((el) => el?.marketAddress?.toLowerCase() === marketConfig?.marketAddress?.toLowerCase())
+
+    if (marketDataApr && marketDataApr?.currentAPR && marketDataApr?.projectedAPR) {
+      totalCurrentAPR = Object.values(marketDataApr?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+      totalProjectedAPR = Object.values(marketDataApr?.projectedAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+    }
+
     const displayName = (marketNameIsDuplicated && marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + marketConfig?.marketName
 
     return {
@@ -103,6 +114,8 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
       totalClaimableValue: totalClaimableValue.toFixed(2),
       deposited,
       totalDepositedValue: deposited.valueInUsd,
+      totalCurrentAPR,
+      totalProjectedAPR,
     }
   })
 

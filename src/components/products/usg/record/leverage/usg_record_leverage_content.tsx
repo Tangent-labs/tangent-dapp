@@ -69,19 +69,17 @@ export default function USGLeverageContent() {
       {!!marketData?.collateralInfos?.positionCollateralAmount && marketData?.collateralInfos?.positionCollateralAmount > 0n && (
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center justify-between gap-2">
-            {!!marketData?.collateralInfos?.positionCollateralAmount &&
-              marketData?.collateralInfos?.positionCollateralAmount > 0n &&
-              !isLeverageAllPosition && (
-                <>
-                  <span className="text-sm text-subtitle">Leverage only</span>
-                  <Switch checked={isDepositDisabled} onCheckedChange={(v) => setIsDepositDisabled(v)} />
-                </>
-              )}
+            {!!marketData?.collateralInfos?.positionCollateralAmount && marketData?.collateralInfos?.positionCollateralAmount > 0n && (
+              <>
+                <span className="text-sm text-subtitle">Leverage only</span>
+                <Switch disabled={isLeverageAllPosition} checked={isDepositDisabled} onCheckedChange={(v) => setIsDepositDisabled(v)} />
+              </>
+            )}
 
-            {!!marketData?.collateralInfos?.positionCollateralAmount && marketData?.collateralInfos?.positionCollateralAmount > 0n && !isDepositDisabled && (
+            {!!marketData?.collateralInfos?.positionCollateralAmount && marketData?.collateralInfos?.positionCollateralAmount > 0n && (
               <>
                 <span className="text-sm text-subtitle">Leverage all</span>
-                <Switch checked={isLeverageAllPosition} onCheckedChange={(v) => setIsLeverageAllPosition(v)} />
+                <Switch disabled={isDepositDisabled} checked={isLeverageAllPosition} onCheckedChange={(v) => setIsLeverageAllPosition(v)} />
               </>
             )}
           </div>
@@ -99,7 +97,7 @@ export default function USGLeverageContent() {
             displaySliderInput={true}
             depositAmount={depositWeiValue}
             depositSelect={<CustomAssetSelect />}
-            isLoading={isZapLoading}
+            isLoading={false}
             depositAsset={depositAssetInfo}
             balance={!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance}
             isZapping={isZapping}
@@ -144,7 +142,7 @@ export default function USGLeverageContent() {
       )}
 
       <>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-2">
           <div className="flex w-full items-end justify-between gap-1">
             <span className="flex items-start justify-start text-sm font-semibold md:text-xl">Borrow USG</span>
 

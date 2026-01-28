@@ -178,19 +178,21 @@ function ClaimList() {
                 <ListAsset name={item?.marketName} token={item.marketName as ExistingAsset} assetsEarned={[]} />
               </div>
               <div className="flex justify-center xl:w-1/3">
-                <div className="flex min-w-16 flex-col items-center justify-center gap-2">
-                  <span className="bg-button-active bg-clip-text text-lg font-semibold leading-4 text-transparent md:text-xl">12%</span>
+                <div className="flex min-w-16 flex-col items-center justify-center">
+                  <span className="bg-button-active bg-clip-text text-lg font-semibold leading-4 text-transparent md:text-lg">
+                    {item?.totalCurrentAPR?.toFixed(2)}%
+                  </span>
 
                   <span className="whitespace-nowrap text-xs">
-                    Proj: <span>10%</span>
+                    Proj: <span> {item?.totalProjectedAPR?.toFixed(2)} %</span>
                   </span>
                 </div>
               </div>
             </div>
             <hr className="my-2 w-full opacity-20 xl:hidden" />
             <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-1/2">
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center gap-2 text-sm md:text-xl">
-                {formatDollar(item?.totalClaimableValue || 0, 0)}
+              <div className="flex w-full flex-1 cursor-pointer items-center justify-center gap-2 text-sm md:text-lg">
+                {formatDollar(item?.totalClaimableValue || 0, 2)}
 
                 <USGHoverCard iconClassName="text-row-tonic" title={`${item?.marketName} Rewards Breakdown`}>
                   {(item?.claimable as ClaimAsset[]).map((reward: ClaimAsset) => (
@@ -206,7 +208,7 @@ function ClaimList() {
                 </USGHoverCard>
               </div>
 
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center text-sm md:text-xl">
+              <div className="flex w-full flex-1 cursor-pointer items-center justify-center text-sm md:text-lg">
                 {formatDollar(item?.totalDepositedValue || 0, 0)}
               </div>
 

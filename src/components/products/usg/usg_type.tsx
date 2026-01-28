@@ -82,6 +82,8 @@ export type ClaimData = {
   totalClaimableValue: string
   deposited: ClaimAsset
   totalDepositedValue: string
+  totalCurrentAPR: number
+  totalProjectedAPR: number
 }
 
 export type ClaimableMarket = {

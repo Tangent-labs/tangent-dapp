@@ -156,6 +156,16 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     }
   }
 
+  useEffect(() => {
+    if (currentAddress) {
+      const timer = setInterval(() => {
+        getUserStatus()
+      }, 15000)
+
+      return () => clearInterval(timer)
+    }
+  }, [currentAddress])
+
   /**
    * On init
    */

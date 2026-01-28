@@ -43,11 +43,19 @@ const CustomMarketListRow = ({ children }: ListRowDispositionProps) => {
     <div className="flex items-center justify-between max-xl:flex-col">
       <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
         <div className="xl:w-1/2">{children?.at(0)}</div>
-        <div className="xl:w-1/4">{children?.at(1)}</div>
-        <div className="xl:w-1/4">{children?.at(2)}</div>
+        <div className="hidden items-center justify-center xl:flex xl:w-1/4">{children?.at(1)}</div>
+        <div className="hidden items-center justify-center xl:flex xl:w-1/4">{children?.at(2)}</div>
       </div>
       <hr className="my-2 w-full opacity-20 xl:hidden" />
-      <div className="flex w-full flex-wrap items-center justify-evenly gap-2 xl:w-1/2">{children?.at(3)}</div>
+      <div className="flex w-full items-center justify-evenly gap-2 xl:w-1/2">
+        <div className="flex w-full flex-col items-center justify-evenly gap-2 xl:hidden">
+          {children?.at(1)}
+          {children?.at(2)}
+          {children?.at(3)}
+        </div>
+
+        <div className="hidden w-full items-center justify-evenly gap-2 xl:flex">{children?.at(3)}</div>
+      </div>
     </div>
   )
 }
@@ -265,7 +273,7 @@ export function USGMarketListInner() {
                     className={cn("hidden basis-[48%] flex-col items-center text-xl leading-5 md:flex-1 xl:block")}
                   >
                     <span className="flex flex-col items-center justify-center">
-                      <span className={cn("flex text-xs text-subtitle md:text-xl xl:hidden")}>{indicator?.label}</span>
+                      <span className={cn("flex text-sm text-subtitle md:text-xl xl:hidden")}>{indicator?.label}</span>
                       <span className="text-xs md:text-lg">{indicator?.value}</span>
                       <span className="hidden text-xs text-subtitle md:flex md:text-xs">/{formatNumber(indicator?.raw, 0)}</span>
                     </span>
@@ -274,13 +282,16 @@ export function USGMarketListInner() {
                   <div
                     key={indicator.key}
                     style={{ fontWeight: 300 }}
-                    className={cn("flex basis-[48%] flex-col items-center text-xl leading-5 md:flex-1", index >= 2 ? "hidden xl:block" : "")}
+                    className={cn(
+                      "flex w-full basis-[48%] flex-col items-center justify-between text-xl leading-5 md:flex-1",
+                      index >= 2 ? "hidden xl:block" : ""
+                    )}
                   >
-                    <span className="flex items-center justify-center gap-2">
-                      <span className={cn("flex text-xs text-subtitle md:text-xl xl:hidden", indicator?.key === "tvl" ? "uppercase" : "")}>
+                    <span className="flex w-full items-center justify-between gap-2 xl:justify-center">
+                      <span className={cn("flex text-sm text-subtitle xl:hidden xl:text-xl", indicator?.key === "tvl" ? "uppercase" : "")}>
                         {indicator?.label}
                       </span>
-                      <span className="text-xs md:text-lg">{indicator?.value}</span>
+                      <span className="text-sm xl:text-lg">{indicator?.value}</span>
                     </span>
                   </div>
                 )}

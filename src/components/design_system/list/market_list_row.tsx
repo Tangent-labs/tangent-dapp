@@ -10,7 +10,7 @@ export const MarketListRow = ({ children, navigate, className = "", rowDispositi
   return (
     <div
       onClick={() => navigate && navigate()}
-      className={`relative bg-overlay-panel px-2 py-1.5 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover lg:px-4 ${isSelected ? "before:bg-list-row-hover" : ""} // Selected state styling ${className} `}
+      className={`relative bg-overlay-panel p-2 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover lg:px-4 ${isSelected ? "before:bg-list-row-hover" : ""} // Selected state styling ${className} `}
     >
       <CustomRowDisposition>
         <> {children?.at(0)}</>

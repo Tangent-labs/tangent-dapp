@@ -160,14 +160,14 @@ export default function USGMarketList() {
 
         <div className="flex w-full items-center justify-center lg:w-1/2">
           <div className="flex w-full gap-2">
-            <IndicatorCards className={cn(globalData.globalCr === "-" ? "shimmer" : "")} indicators={[{ title: "Global CR ", value: globalData.globalCr }]} />
+            <IndicatorCards className={cn(globalData.globalCr === "-" ? "shimmer" : "")} indicators={[{ title: "Markets CR ", value: globalData.globalCr }]} />
             <IndicatorCards
               className={cn(globalData.globalTvl === "-" ? "shimmer" : "")}
-              indicators={[{ title: "Global TVL ", value: globalData.globalTvl }]}
+              indicators={[{ title: "Markets TVL ", value: globalData.globalTvl }]}
             />
             <IndicatorCards
               className={cn(globalData.globalDebt === "-" ? "shimmer" : "")}
-              indicators={[{ title: "Global Debt ", value: globalData.globalDebt }]}
+              indicators={[{ title: "Markets Debt ", value: globalData.globalDebt }]}
             />
           </div>
         </div>

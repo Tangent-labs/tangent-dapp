@@ -69,46 +69,44 @@ export const BoostsList = () => {
         </div>
       </div>
 
-      <div className="scrollbar-thin max-h-[560px] overflow-y-auto">
-        {displayRows &&
-          (displayRows as Boost[])?.map((boost: Boost) => (
-            <div
-              key={boost?.type}
-              className="mb-1 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
-            >
-              <div className="hidden items-center justify-between md:flex">
-                <div className="flex w-1/3 items-center gap-2 xl:gap-4">
-                  <span className="flex text-xl font-semibold">{boost?.type}</span>
-                </div>
-                <div className="flex w-1/3 justify-center">
-                  <div className="flex w-full items-center justify-center rounded-[10px] bg-overlay-panel px-6 py-2 text-center backdrop-blur-[60px]">
-                    {boost?.description}
-                  </div>
-                </div>
-                <div className="flex w-1/6 justify-center">+{boost?.boost}</div>
-                <div className="flex w-1/6 items-center justify-center">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
-                    <TaskStatus status={boost?.status} />
-                  </div>
+      {displayRows &&
+        (displayRows as Boost[])?.map((boost: Boost) => (
+          <div
+            key={boost?.type}
+            className="mb-1 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
+          >
+            <div className="hidden items-center justify-between md:flex">
+              <div className="flex w-1/3 items-center gap-2 xl:gap-4">
+                <span className="flex text-xl font-semibold">{boost?.type}</span>
+              </div>
+              <div className="flex w-1/3 justify-center">
+                <div className="flex w-full items-center justify-center rounded-[10px] bg-overlay-panel px-6 py-2 text-center backdrop-blur-[60px]">
+                  {boost?.description}
                 </div>
               </div>
-
-              <div className="flex items-center justify-between md:hidden">
-                <div className="flex w-1/2 items-center gap-2 xl:gap-4">
-                  <span className="flex text-sm font-semibold">{boost?.type}</span>
-                </div>
-
-                <div className="flex w-1/6 justify-center">+{boost?.boost}</div>
-
-                <div className="flex w-1/6 items-center justify-center">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
-                    <TaskStatus status={boost?.status} />
-                  </div>
+              <div className="flex w-1/6 justify-center">+{boost?.boost}</div>
+              <div className="flex w-1/6 items-center justify-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
+                  <TaskStatus status={boost?.status} />
                 </div>
               </div>
             </div>
-          ))}
-      </div>
+
+            <div className="flex items-center justify-between md:hidden">
+              <div className="flex w-1/2 items-center gap-2 xl:gap-4">
+                <span className="flex text-sm font-semibold">{boost?.type}</span>
+              </div>
+
+              <div className="flex w-1/6 justify-center">+{boost?.boost}</div>
+
+              <div className="flex w-1/6 items-center justify-center">
+                <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
+                  <TaskStatus status={boost?.status} />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
     </>
   )
 }

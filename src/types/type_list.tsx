@@ -33,6 +33,10 @@ export type ListRowData = {
   currentAPRDetails: {
     [rewardToken: string]: number
   }
+  projectedAPRDetails: {
+    [rewardToken: string]: number
+  }
+
   indicators: {
     key: string
     label: string

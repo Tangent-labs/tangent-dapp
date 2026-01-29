@@ -29,11 +29,11 @@ export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumula
             <Image src="/medias/fulltan.png" className="flex items-end self-end" alt="image" width={220} height={80} />
           </div>
           <div className="flex h-44 w-full flex-col rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
-            <span className="p-4 text-[16px] text-white">Trading fee and CRV rewards if you stake your LP tokens.</span>
+            <span className="p-4 text-[16px] text-white">Trading fees and CRV rewards if you stake your LP tokens.</span>
             <Image src="/medias/crvtokens.png" className="flex items-end self-end" alt="image" width={200} height={80} />
           </div>
           <div className="flex h-44 w-full flex-col rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
-            <span className="px-4 pt-4 text-[16px] text-white">A 2x boost for the point campaign.</span>
+            <span className="px-4 pt-4 text-[16px] text-white">2x boost for the point campaign.</span>
             <Image src="/medias/timestwo.png" className="flex items-end self-end" alt="image" width={160} height={80} />
           </div>
         </div>

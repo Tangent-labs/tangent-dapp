@@ -83,12 +83,12 @@ export const PredepositFAQ = () => {
         <>
           Read more here:{" "}
           <Link
-            href="https://docs.tangent.finance/docs/usg/peg-stability."
+            href="https://docs.tangent.finance/docs/usg/peg-stability"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-400 underline hover:text-blue-300"
           >
-            https://docs.tangent.finance/docs/usg/peg-stability.
+            https://docs.tangent.finance/docs/usg/peg-stability
           </Link>
           .
         </>,

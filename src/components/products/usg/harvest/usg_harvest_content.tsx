@@ -14,6 +14,7 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import USGHoverCard from "@/components/design_system/structure/usg_hover_card"
 import { formatBigInt, formatDollar, formatPercent } from "@/lib/number_formatter"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 
 const listeState: ListState = {
   search: undefined,
@@ -37,6 +38,8 @@ const HarvestRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
 }
 
 export default function USGHarvestContent() {
+  const { isConnected, connect } = useWalletConnexionContext()
+
   const { displayRows, USGsUSGMetrics, marketsToHarvest, isLoading, customSort, onClickSelectAll, onClickHarvest } = useUSGHarvestContext()
 
   return (
@@ -52,7 +55,7 @@ export default function USGHarvestContent() {
           </div>
         </div>
 
-        <div className="flex h-auto w-full flex-col items-center gap-1 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] xl:w-1/2">
+        <div className="flex h-auto w-full flex-col items-center gap-2 xl:w-1/2">
           <div
             style={{ fontSize: "20px", lineHeight: "20px" }}
             className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
@@ -61,7 +64,7 @@ export default function USGHarvestContent() {
             <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
           </div>
 
-          <div className="mt-auto flex w-full items-center justify-center gap-3 p-3">
+          <div className="mt-auto flex w-full items-center justify-center gap-3 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
             <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 xl:min-w-48">
               <span className="text-xs text-subtitle">USG Balance</span>
               <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)}</span>
@@ -121,7 +124,11 @@ export default function USGHarvestContent() {
           </div>
 
           <div className="mt-8 flex w-full">
-            {marketsToHarvest.length > 0 && <Button label="Harvest" className="flex w-full items-center justify-center" onClick={() => onClickHarvest()} />}
+            {marketsToHarvest.length > 0 && isConnected && (
+              <Button label="Harvest" className="flex w-full items-center justify-center" onClick={() => onClickHarvest()} />
+            )}
+
+            {!isConnected && <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />}
           </div>
         </div>
       </div>
@@ -181,6 +188,7 @@ function HarvestList() {
                       marketName: item.asset,
                       harvestable: item.rewards.totalDollar,
                       marketAddress: item.contractAddress,
+                      percentage: item?.percentage,
                     })
                   }
                 />

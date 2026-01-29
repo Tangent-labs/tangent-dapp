@@ -97,7 +97,7 @@ export default function USGMarketList() {
           </div>
         </div>
 
-        <div className="hidden h-auto w-full flex-col items-center gap-1 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] xl:flex xl:w-1/2">
+        <div className="hidden h-auto w-full flex-col items-center gap-2 xl:flex xl:w-1/2">
           <div
             style={{ fontSize: "20px", lineHeight: "20px" }}
             className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
@@ -106,23 +106,23 @@ export default function USGMarketList() {
             <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
           </div>
 
-          <div className="mt-auto flex w-full items-center justify-between gap-2 p-2">
+          <div className="mt-auto flex w-full items-center justify-between gap-2 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
             <div
-              className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
+              className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
             >
               <span className="text-xs text-subtitle">Your Debt</span>
               <span className="text-sm font-semibold">{formatNumber(Number(formatUnits(userData?.totalUserDebt || 0n, 18)), 0)} USG</span>
             </div>
 
             <div
-              className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
+              className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
             >
               <span className="text-xs text-subtitle">Your Collateral Deposits</span>
               <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDeposit || 0n, 18), 0)} </span>
             </div>
 
             <div
-              className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
+              className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
             >
               <span className="text-xs text-subtitle">Your Total Points</span>
               <span className="text-sm font-semibold">{formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts </span>
@@ -251,6 +251,7 @@ export function USGMarketListInner() {
             rewardToken={item?.rewardToken}
             maxLeverage={1}
             currentAPRDetails={item.currentAPRDetails}
+            projectedAPRDetails={item.projectedAPRDetails}
             apr={item.apr.current}
             projectedApr={item.apr.projected}
           />
@@ -259,6 +260,7 @@ export function USGMarketListInner() {
             rewardToken={item?.rewardToken}
             maxLeverage={1 / (1 - item?.maxLTV) || 1}
             currentAPRDetails={item.currentAPRDetails}
+            projectedAPRDetails={item.projectedAPRDetails}
             apr={item.apr.current}
             projectedApr={item.apr.projected}
           />

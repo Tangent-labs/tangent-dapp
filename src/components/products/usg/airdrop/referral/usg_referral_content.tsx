@@ -40,7 +40,7 @@ export const UsgReferralCode = () => {
 
       <div
         className={cn(
-          "mt-4 flex w-full flex-col items-center justify-center rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]",
+          "mt-4 flex w-full flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-5 py-3 backdrop-blur-[60px]",
           !!airdropDataIsLoading && currentAddress ? "shimmer" : ""
         )}
       >

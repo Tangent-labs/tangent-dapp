@@ -96,7 +96,12 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
       setMarketsToHarvest([])
     } else {
       const markets = displayRows.map((el) => {
-        return { marketName: el.asset, harvestable: el.rewards.totalDollar, marketAddress: el.contractAddress } satisfies HarvestableMarket
+        return {
+          marketName: el.asset,
+          harvestable: (el.rewards.totalDollar * el?.percentage) / 100,
+          marketAddress: el.contractAddress,
+          percentage: el.percentage,
+        } satisfies HarvestableMarket
       })
       setMarketsToHarvest(markets)
     }
@@ -123,7 +128,15 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
       if (market) {
         return prevMarkets.filter((m) => m.marketName !== market.marketName)
       } else {
-        return [...prevMarkets, { marketName: rowData.marketName, harvestable: rowData.harvestable, marketAddress: rowData.marketAddress }]
+        return [
+          ...prevMarkets,
+          {
+            marketName: rowData.marketName,
+            harvestable: (rowData.harvestable * rowData?.percentage) / 100,
+            marketAddress: rowData.marketAddress,
+            percentage: rowData?.percentage,
+          },
+        ]
       }
     })
   }

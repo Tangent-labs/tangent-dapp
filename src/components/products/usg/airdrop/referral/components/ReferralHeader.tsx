@@ -26,9 +26,9 @@ export const ReferralHeader = ({
   userBoost,
 }: ReferralHeaderProps) => {
   return (
-    <div className="mt-4 flex w-full flex-col items-center justify-between gap-4 xl:flex-row">
-      <div className="flex w-full flex-col items-center justify-center gap-4 sm:flex-row xl:flex-1 xl:justify-start">
-        <div className="relative flex h-full w-full max-w-none flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-4 backdrop-blur-[60px] md:max-w-56">
+    <div className="mt-4 flex w-full flex-col items-center justify-between gap-3 xl:flex-row">
+      <div className="flex w-full flex-col items-center justify-between gap-4 sm:flex-row xl:w-1/2 xl:justify-start">
+        <div className="relative flex h-full w-full max-w-none flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-4 backdrop-blur-[60px] xl:max-w-56">
           <div className="absolute -top-2 left-0 flex w-full">
             <div className="mx-4 flex w-full items-center justify-center rounded-full">
               <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Vote</div>
@@ -41,7 +41,7 @@ export const ReferralHeader = ({
           </div>
         </div>
 
-        <div className="relative flex h-full w-full max-w-none flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-4 backdrop-blur-[60px] md:max-w-80">
+        <div className="relative flex h-full w-full max-w-none flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-8 py-4 backdrop-blur-[60px] xl:max-w-80">
           <div className="absolute -top-2 left-0 flex w-full">
             <div className="mx-4 flex w-full items-center justify-center rounded-full">
               <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Liquidity</div>
@@ -65,21 +65,21 @@ export const ReferralHeader = ({
 
       {!referralStatus?.hasUsedCode && (
         <>
-          <div className="flex w-full flex-col items-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-5 backdrop-blur-[60px] xl:w-fit xl:flex-row">
+          <div className="flex w-full flex-col items-center justify-end gap-2 rounded-[10px] bg-overlay-panel px-3 py-5 backdrop-blur-[60px] xl:w-fit xl:flex-row">
             <div className="flex items-start justify-start border-white/10 text-xs text-subtitle xl:border-r xl:pr-3">
               Enter a code to get a x1.1 boost on all your points
             </div>
 
-            <div className="flex w-full items-center justify-between gap-2 pl-3">
+            <div className="flex items-center justify-between gap-3 pl-3">
               <span className="text-xs font-semibold">Enter code</span>
               <Input
                 disabled={!isConnected}
                 placeholder="Type a referral code"
-                className="px-auto mx-auto flex w-full max-w-36 items-center justify-center"
+                className="px-auto mx-auto flex max-w-36 items-center justify-center"
                 onChange={(e) => setReferralStatus({ ...referralStatus, referralCode: e?.target?.value })}
                 value={referralStatus?.referralCode as string}
               />
-              <SecondaryButton onClick={signMessage} disabled={isLoading} className="flex w-full max-w-28 justify-center">
+              <SecondaryButton onClick={signMessage} disabled={isLoading} className="flex max-w-28 justify-center">
                 Enter
               </SecondaryButton>
             </div>

@@ -42,7 +42,7 @@ export const PredepositContent = ({ opportunitiesData }: PredepositContentProps)
         <div className="mx-auto flex w-full">
           <div className="flex w-full items-center justify-between bg-overlay-panel backdrop-blur-[60px]">
             <div className="mx-2 flex w-full items-center justify-between lg:mx-4">
-              <div className="flex cursor-pointer items-center justify-start gap-2 text-xl text-white">
+              <div className="flex items-center justify-start gap-2 text-xl text-white">
                 <IconTangent className="mb-2 w-32"></IconTangent>
               </div>
 

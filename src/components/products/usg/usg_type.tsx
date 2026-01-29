@@ -96,6 +96,7 @@ export type HarvestableMarket = {
   marketName: ExistingAsset
   marketAddress: Address
   harvestable: number
+  percentage: number
 }
 
 export interface ChainViewMarketRow {

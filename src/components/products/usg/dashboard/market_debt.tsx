@@ -20,7 +20,7 @@ type MarketDebtProps = {
 export const MarketDebt = ({ userData, marketDebtMaxValue }: MarketDebtProps) => {
   return (
     <div className="flex w-full items-start justify-start md:w-1/2">
-      <div className="mt-2 flex h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+      <div className="flex h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
         <div className="text-xl font-semibold">Market debt</div>
         <Divider className="h-0.5 w-full bg-white/10" />
         <div className="mb-2 flex items-center justify-start gap-2 text-xs">

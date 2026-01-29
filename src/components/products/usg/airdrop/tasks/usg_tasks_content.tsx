@@ -23,7 +23,7 @@ export default function UsgTasksContent() {
   const { lpTasks, voteTasks, selectedFeature, sortLpTasks, sortVoteTasks, setSelectedFeature } = useUsgTasksContext()
 
   return (
-    <div className="flex w-full flex-col items-center justify-between">
+    <>
       <div className="flex w-full items-stretch justify-between gap-6">
         <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
@@ -37,15 +37,13 @@ export default function UsgTasksContent() {
           </div>
         </div>
 
-        <div className="flex h-auto w-full flex-col items-stretch justify-between gap-6 xl:w-1/2">
-          <div className="flex h-full w-full flex-col items-start justify-start gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
-            <div
-              style={{ fontSize: "20px", lineHeight: "20px" }}
-              className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !font-semibold italic"
-            >
-              Points campaign
-              <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
-            </div>
+        <div className="flex h-auto w-full flex-col items-center gap-4 xl:w-1/2">
+          <div
+            style={{ fontSize: "20px", lineHeight: "20px" }}
+            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
+          >
+            Points campaign
+            <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
           </div>
 
           <div className="flex w-full flex-col items-center justify-between gap-4 md:flex-row">
@@ -114,6 +112,6 @@ export default function UsgTasksContent() {
           )}
         </div>
       </div>
-    </div>
+    </>
   )
 }

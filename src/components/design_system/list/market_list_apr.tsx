@@ -7,15 +7,28 @@ interface ListAPRProps {
   currentAPRDetails?: {
     [rewardToken: string]: number
   }
+  projectedAPRDetails?: {
+    [rewardToken: string]: number
+  }
   apr?: number
   projectedApr?: number
   className?: string
 }
 
-const MarketListAPR = ({ rewardToken, maxLeverage, currentAPRDetails, apr, projectedApr, className = "" }: ListAPRProps) => {
-  const rewardEntries = Object.entries(currentAPRDetails ?? {})
-    .filter(([k, v]) => k !== "APY" && typeof v === "number")
-    .sort((a, b) => b[1] - a[1])
+const MarketListAPR = ({ rewardToken, maxLeverage, currentAPRDetails, projectedAPRDetails, apr, projectedApr, className = "" }: ListAPRProps) => {
+  const computedAPRDetails = useMemo(() => {
+    if (currentAPRDetails && projectedAPRDetails && rewardToken) {
+      return Number(currentAPRDetails[rewardToken]) === 0 ? projectedAPRDetails : currentAPRDetails
+    }
+
+    return currentAPRDetails
+  }, [rewardToken, currentAPRDetails, projectedAPRDetails])
+
+  const rewardEntries = useMemo(() => {
+    return Object.entries(computedAPRDetails ?? {})
+      .filter(([k, v]) => k !== "APY" && typeof v === "number")
+      .sort((a, b) => b[1] - a[1])
+  }, [computedAPRDetails])
 
   const computedAPR = useMemo(() => {
     if (currentAPRDetails && rewardToken && projectedApr) {
@@ -38,8 +51,8 @@ const MarketListAPR = ({ rewardToken, maxLeverage, currentAPRDetails, apr, proje
 
                 <div className="flex flex-col gap-2">
                   <div className="flex min-w-44 items-center justify-between">
-                    <span>Base APY</span>
-                    <span className="flex items-center justify-center">{(computedAPR * maxLeverage).toFixed(2)}%</span>
+                    Base APY
+                    <span className="flex items-center justify-center">{((computedAPRDetails?.APY ?? 0) * maxLeverage).toFixed(2)}%</span>
                   </div>
 
                   {rewardEntries.length > 0 && (

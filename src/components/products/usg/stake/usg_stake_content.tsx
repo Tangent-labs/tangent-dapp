@@ -87,7 +87,7 @@ export default function USGStakeContent() {
           </div>
         </div>
 
-        <div className="flex h-auto w-full flex-col items-center gap-3 xl:w-1/2">
+        <div className="flex h-auto w-full flex-col items-center gap-2 xl:w-1/2">
           <div
             style={{ fontSize: "20px", lineHeight: "20px" }}
             className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
@@ -96,7 +96,7 @@ export default function USGStakeContent() {
             <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
           </div>
 
-          <div className={cn("flex w-full items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2", !!USGsUSGMetrics ? "" : "shimmer")}>
+          <div className={cn("flex w-full items-center justify-between gap-3 rounded-[10px] bg-overlay-panel px-6 py-4", !!USGsUSGMetrics ? "" : "shimmer")}>
             <TokenImage className="hidden lg:flex" token="sUSG" size={48} />
 
             <div className="flex flex-col items-center justify-center font-semibold">
@@ -108,7 +108,7 @@ export default function USGStakeContent() {
               <span className="text-lg font-semibold">{formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 2)}</span>
             </div>
             <div className="flex flex-col items-center justify-center rounded-[10px] bg-button-active px-8 py-1">
-              <span className="text-black">APY</span>
+              <span className="text-sm font-semibold text-black">APY</span>
               <span className="text-lg font-semibold">{sUSGCurrentAPY.toFixed(2)}%</span>
             </div>
           </div>

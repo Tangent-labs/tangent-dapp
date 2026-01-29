@@ -123,6 +123,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
     maxLTV,
     maxBorrowable,
     currentAPRDetails: data?.currentAPR,
+    projectedAPRDetails: data?.projectedAPR,
     indicators: [
       {
         key: "borrowRate",

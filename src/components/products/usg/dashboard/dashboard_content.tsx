@@ -122,8 +122,8 @@ export const USGDashboardContent = () => {
   }
 
   return (
-    <div className="flex w-full flex-col items-start justify-start gap-2">
-      <div className="mb-2 flex h-full w-full flex-col items-start justify-start gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+    <div className="flex w-full flex-col items-start justify-start gap-3">
+      <div className="flex h-full w-full flex-col items-start justify-start gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <div
           style={{ fontSize: "20px", lineHeight: "20px" }}
           className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+40px)_center] bg-no-repeat px-6 !font-semibold italic"
@@ -156,9 +156,9 @@ export const USGDashboardContent = () => {
         </IndicatorCards>
       </div>
 
-      <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
+      <div className="flex w-full flex-col items-start justify-start gap-3 md:flex-row">
         <div className="flex w-full items-start justify-start">
-          <div className="mt-1 flex h-full max-h-[340px] w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
+          <div className="flex h-full max-h-[340px] w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
             <div className="flex w-full items-center justify-end sm:justify-between">
               <div className="hidden text-xl font-semibold sm:flex">Total Supply </div>
 
@@ -192,7 +192,7 @@ export const USGDashboardContent = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-2 font-semibold">
+                  <div className="flex w-full items-center justify-between gap-2 font-semibold">
                     <span>{formatCompact(USGCurrentSupply)}</span>
                     <span className="h-1 w-1 rounded-full bg-white"></span>
                     <span>{((USGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(2)}%</span>
@@ -211,7 +211,7 @@ export const USGDashboardContent = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-2 font-semibold">
+                  <div className="flex w-full items-center justify-between gap-2 font-semibold">
                     <span>{formatCompact(sUSGCurrentSupply)}</span>
                     <span className="h-1 w-1 rounded-full bg-white"></span>
                     <span>{((sUSGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(2)}%</span>
@@ -285,9 +285,9 @@ export const USGDashboardContent = () => {
         </div>
       </div>
 
-      <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
+      <div className="flex w-full flex-col items-start justify-start gap-3 md:flex-row">
         <div className="flex w-full items-start justify-start">
-          <div className="mt-1 flex h-full max-h-[340px] w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
+          <div className="flex h-full max-h-[340px] w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
             <div className="flex w-full items-center justify-end sm:justify-between">
               <div className="hidden text-xl font-semibold sm:flex">TVL </div>
 
@@ -322,7 +322,7 @@ export const USGDashboardContent = () => {
                       <div className="flex items-center justify-center gap-1">{el?.label}</div>
                     </div>
 
-                    <div className="flex items-center justify-between gap-2 font-semibold">
+                    <div className="flex w-full items-center justify-between gap-2 font-semibold">
                       {formatCompact(protocolCurrentTVL[el?.name as keyof typeof protocolCurrentTVL])}
                       <span className="h-1 w-1 rounded-full bg-white"></span>
                       <span>{((protocolCurrentTVL[el?.name as keyof typeof protocolCurrentTVL] / protocolCurrentTVL?.total) * 100).toFixed(2)}%</span>
@@ -413,7 +413,7 @@ export const USGDashboardContent = () => {
         </div>
       </div>
 
-      <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
+      <div className="flex w-full flex-col items-start justify-start gap-3 md:flex-row">
         {userData && (
           <>
             <USGCollaterals userData={userData} marketTVLMaxValue={marketTVLMaxValue} />

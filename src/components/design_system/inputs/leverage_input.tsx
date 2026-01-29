@@ -136,7 +136,7 @@ export function LeverageInput({
             onChange={handleSliderChange}
             className="mt-3 h-1.5 w-full cursor-pointer appearance-none rounded-[10px] bg-dark"
             style={{
-              background: `linear-gradient(to right, #3b82f6 ${percentage}%, #4b5563 ${percentage * 10}%)`,
+              background: `linear-gradient(to right, #3b82f6 ${((percentage - 1) / 9) * 100}%, #4b5563 ${((percentage - 1) / 9) * 100}%)`,
             }}
           />
 

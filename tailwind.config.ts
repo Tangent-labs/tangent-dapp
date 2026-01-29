@@ -90,6 +90,11 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        breathe: {
+          "0%, 70%": { outlineOffset: "3px" },
+          "35%": { outlineOffset: "6px" },
+          "71%, 100%": { outlineOffset: "3px" },
+        },
         "accordion-down": {
           from: {
             height: "0",
@@ -108,6 +113,7 @@ const config: Config = {
         },
       },
       animation: {
+        breathe: "breathe 3s ease-in-out infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },

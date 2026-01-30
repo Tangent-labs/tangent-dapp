@@ -14,7 +14,8 @@ export function getLeverageFormState(
   isWellConnected?: boolean,
   depositAssetInfo?: AssetDataPriced,
   collateralInfo?: CollateralInfo,
-  balanceAllowanceData?: { balance: bigint; allowance: bigint }
+  balanceAllowanceData?: { balance: bigint; allowance: bigint },
+  leverage?: number
 ) {
   const isZapMode = depositAssetInfo?.address !== collateralInfo?.address
 
@@ -29,10 +30,12 @@ export function getLeverageFormState(
       reasons.push("Not enough balance.")
     } else if (isZapMode && (depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
       reasons.push("Not enough balance.")
+    } else if (!!leverage && leverage > 1 / (1 - Number(marketData?.constants.maxLTV) / 100000)) {
+      reasons.push("Reduce leverage.")
     }
 
     if (leverageExceedsMaxLtv) {
-      reasons.push("Max LTV reached")
+      reasons.push("Reduce your leverage or add more collateral.")
     }
 
     if (isDepositAndBorrow) {

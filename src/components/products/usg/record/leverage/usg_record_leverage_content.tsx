@@ -38,7 +38,6 @@ export default function USGLeverageContent() {
     depositWeiValue,
     formState,
     isZapLoading,
-    leverageExceedsMaxLtv,
     isDepositLoading,
     isDepositDisabled,
     zapValue,
@@ -222,10 +221,6 @@ export default function USGLeverageContent() {
       </>
 
       <MarketTransactionError display={!!depositWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />
-
-      {leverageExceedsMaxLtv && (
-        <div className="flex w-full items-center justify-center text-xs text-red-500">Reduce your leverage or add more collateral.</div>
-      )}
 
       <MaxBorrowCapReached display={(!!zapValue || !!depositWeiValue) && maxBorrowCapReached} />
 

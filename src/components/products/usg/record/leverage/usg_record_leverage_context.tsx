@@ -78,8 +78,6 @@ type USGLeverageContextValues = {
 
   estimatedZapDollarValue: string
 
-  leverageExceedsMaxLtv: boolean
-
   updateBorrowWeiValue: (value: bigint) => Promise<void>
 
   maxDepositString: string
@@ -491,7 +489,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         isWellConnected,
         depositAssetInfo!,
         collateralInfo!,
-        leverageBalanceAllowanceData!
+        leverageBalanceAllowanceData!,
+        leveragePercentage!
       ),
     [
       marketData,
@@ -503,6 +502,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       depositAssetInfo,
       leverageBalanceAllowanceData,
       leverageExceedsMaxLtv,
+      leveragePercentage,
     ]
   )
 
@@ -640,8 +640,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     estimatedZapDollarValue,
 
     expectedCollateral,
-
-    leverageExceedsMaxLtv,
 
     updateBorrowWeiValue,
 

@@ -142,15 +142,10 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
               </AccordionTrigger>
 
               <AccordionContent>
-                <div className="flex w-full flex-col items-center justify-center text-primary">
-                  <div className="flex w-full items-start justify-start">
-                    This calculator allows you to compute your position&lsquo;s net vAPR depending on USG&lsquo;s price. Note that the result will always be
-                    accurate only for leveraged positions where all the debt has been converted to collateral. If you&lsquo;re using your debt to farm
-                    elsewhere, you will need to regularly update your debt info (amount used to farm and vAPR) so the calculator displays a correct result.
-                  </div>
+                <div className="flex w-full items-center justify-center text-primary">
                   <div className="flex w-full">
-                    <div className="mt-3 flex w-2/12 flex-col flex-wrap items-start justify-start">
-                      <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel px-2 py-1 backdrop-blur-[60px]">
+                    <div className="flex w-2/12 flex-col flex-wrap items-start justify-start rounded-[10px] bg-overlay-panel p-3">
+                      <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel px-2 py-1 font-semibold">
                         Current vAPR
                         <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">
                           {currentTotalMarketApr.toFixed(2)} %
@@ -230,9 +225,15 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                       )}
                     </div>
 
-                    <div className="mt-8 flex w-full pr-6 lg:w-10/12">
-                      <div className="relative hidden h-full items-start justify-start lg:flex">
-                        <div className="absolute -top-6 left-16 text-lg font-semibold text-white">vAPR</div>
+                    <div className="flex w-full flex-col lg:w-10/12">
+                      <div className="flex w-full items-start justify-start pl-16">
+                        This calculator allows you to compute your position&lsquo;s net vAPR depending on USG&lsquo;s price. Note that the result will always be
+                        accurate only for leveraged positions where all the debt has been converted to collateral. If you&lsquo;re using your debt to farm
+                        elsewhere, you will need to regularly update your debt info (amount used to farm and vAPR) so the calculator displays a correct result.
+                      </div>
+
+                      <div className="relative mt-8 hidden h-full items-start justify-start lg:flex">
+                        <div className="absolute -top-7 left-16 text-lg font-semibold text-white">vAPR</div>
                       </div>
                       {chartData && (
                         <>
@@ -322,7 +323,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                                       textAnchor="start"
                                       dominantBaseline="hanging"
                                     >
-                                      ${(USGInfo?.price).toFixed(4)} (USG Price)
+                                      ${(USGInfo?.price).toFixed(3)} (USG Price)
                                     </text>
                                   )
                                 }}
@@ -341,7 +342,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                         </>
                       )}
                       <div className="hidden h-full items-end justify-end lg:relative lg:flex">
-                        <div className="absolute -right-4 bottom-0 text-lg font-semibold text-white">Price</div>
+                        <div className="absolute bottom-0 right-2 text-lg font-semibold text-white">Price</div>
                       </div>
                     </div>
                   </div>

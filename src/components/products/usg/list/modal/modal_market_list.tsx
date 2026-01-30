@@ -106,10 +106,11 @@ export function USGModalMarketListInner() {
 
             <MarketListAPR
               rewardToken={item?.rewardToken}
+              maxLeverage={1}
               currentAPRDetails={item.currentAPRDetails}
+              projectedAPRDetails={item.projectedAPRDetails}
               apr={item.apr.current}
               projectedApr={item.apr.projected}
-              maxLeverage={1}
             />
 
             <span className="hidden items-center justify-center gap-2 md:flex">

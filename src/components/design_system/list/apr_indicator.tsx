@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils"
 import { ReactNode } from "react"
 import { IconStars } from "@/components/icons/icon_stars"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
-import * as HoverCardPrimitive from "@radix-ui/react-hover-card"
 
 interface AprIndicatorProps {
   children: ReactNode[]
@@ -20,13 +19,11 @@ export default function AprIndicator({ children, isMax, className = "" }: AprInd
             <IconStars className={cn(isMax ? "fill-[#95FF00]" : "fill-row-tonic", "w-4")}></IconStars>
           </button>
         </HoverCardTrigger>
-        <HoverCardPrimitive.Portal>
-          <HoverCardContent side="top" align="center" className="z-[9999] w-fit max-w-56 border border-white/10 text-xs">
-            <div className="grid gap-4 !border-none">
-              <div className="space-y-2">{children[1]}</div>
-            </div>
-          </HoverCardContent>
-        </HoverCardPrimitive.Portal>
+        <HoverCardContent side="top" align="center" className="z-[9999] w-fit max-w-56 border border-white/10 text-xs">
+          <div className="grid gap-4 !border-none">
+            <div className="space-y-2">{children[1]}</div>
+          </div>
+        </HoverCardContent>
       </HoverCard>
     </div>
   )

@@ -7,7 +7,7 @@ import { Address, formatUnits, zeroAddress } from "viem"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { ChainViewMarketList, MarketConstants, MarketDebtData, USGCollateralData, USGGlobalData } from "../usg_type"
-import { computeCollatData, getUSGMarketsData, transformGlobalData, transformMarketData, transformToRows } from "./usg_market_controller"
+import { computeCollatData, getUSGMarketsData, sortMarketListByType, transformGlobalData, transformMarketData, transformToRows } from "./usg_market_controller"
 
 type USGMaketListContextProps = {
   children: ReactNode
@@ -207,13 +207,22 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     const { key, direction } = listState.sort!
 
     displayRows.sort((elementA: ListRowData, elementB: ListRowData) => {
-      const aValue = key === "vapr" || key === "maxvapr" ? Number(elementA.apr?.current) : Number(elementA.indicators.find((el) => el.key === key)?.raw)
-      const bValue = key === "vapr" || key === "maxvapr" ? Number(elementB.apr?.current) : Number(elementB.indicators.find((el) => el.key === key)?.raw)
+      if (key === "vapr") {
+        return sortMarketListByType(elementA, elementB, direction)
+      } else if (key === "maxvapr") {
+        const elementAMaxLeverage = 1 / (1 - elementA?.maxLTV)
+        const elementBMaxLeverage = 1 / (1 - elementB?.maxLTV)
 
-      if (aValue < bValue) return direction === "asc" ? -1 : 1
-      if (aValue > bValue) return direction === "asc" ? 1 : -1
+        return sortMarketListByType(elementA, elementB, direction, elementAMaxLeverage, elementBMaxLeverage)
+      } else {
+        const aValue = Number(elementA.indicators.find((el) => el.key === key)?.raw)
+        const bValue = Number(elementB.indicators.find((el) => el.key === key)?.raw)
 
-      return 0
+        if (aValue < bValue) return direction === "asc" ? -1 : 1
+        if (aValue > bValue) return direction === "asc" ? 1 : -1
+
+        return 0
+      }
     })
   }
 

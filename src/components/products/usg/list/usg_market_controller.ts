@@ -215,3 +215,25 @@ export const USGMarketModalListHeaders: ListHeaderData[] = [
     sort: "sort",
   },
 ]
+
+export const sortMarketListByType = (elementA: ListRowData, elementB: ListRowData, direction: string, maxLeverageA = 1, maxLeverageB = 1) => {
+  let computedAPRA = 0
+  let computedAPRB = 0
+
+  if (elementA?.protocol === "Pendle_PT") {
+    computedAPRA = Number(elementA?.apr?.current)
+  } else {
+    computedAPRA = Number(elementA?.currentAPRDetails[elementA?.rewardToken]) === 0 ? Number(elementA?.apr?.projected) : Number(elementA?.apr?.current)
+  }
+
+  if (elementB?.protocol === "Pendle_PT") {
+    computedAPRB = Number(elementB?.apr?.current)
+  } else {
+    computedAPRB = Number(elementB?.currentAPRDetails[elementB?.rewardToken]) === 0 ? Number(elementB?.apr?.projected) : Number(elementB?.apr?.current)
+  }
+
+  if (computedAPRA * maxLeverageA < computedAPRB * maxLeverageB) return direction === "asc" ? -1 : 1
+  if (computedAPRA * maxLeverageA > computedAPRB * maxLeverageB) return direction === "asc" ? 1 : -1
+
+  return 0
+}

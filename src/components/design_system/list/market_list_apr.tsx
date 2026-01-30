@@ -36,7 +36,7 @@ const MarketListAPR = ({ rewardToken, maxLeverage, currentAPRDetails, projectedA
     }
 
     return apr
-  }, [rewardToken, currentAPRDetails, projectedApr])
+  }, [rewardToken, currentAPRDetails, projectedApr, apr])
 
   return (
     <div className="flex w-full items-center justify-between gap-2 xl:justify-center">
@@ -80,7 +80,7 @@ const MarketListAPR = ({ rewardToken, maxLeverage, currentAPRDetails, projectedA
 
             {projectedApr && !!currentAPRDetails && Number(currentAPRDetails[rewardToken]) !== 0 && (
               <span className="hidden text-xs text-subtitle xl:flex">
-                Proj: <span>{(projectedApr! * maxLeverage).toFixed(2)}%</span>
+                Proj: <span className="ml-1">{(projectedApr! * maxLeverage).toFixed(2)}%</span>
               </span>
             )}
           </>

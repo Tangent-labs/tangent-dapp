@@ -84,6 +84,23 @@ export type ClaimData = {
   totalDepositedValue: string
   totalCurrentAPR: number
   totalProjectedAPR: number
+  rewardToken: string
+  currentAPRDetails:
+    | {
+        [rewardToken: string]: number
+      }
+    | undefined
+  projectedAPRDetails:
+    | {
+        [rewardToken: string]: number
+      }
+    | undefined
+  apr:
+    | {
+        current?: number
+        projected?: number
+      }
+    | undefined
 }
 
 export type ClaimableMarket = {

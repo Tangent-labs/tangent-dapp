@@ -12,9 +12,9 @@ interface AprIndicatorProps {
 export default function AprIndicator({ children, isMax, className = "" }: AprIndicatorProps) {
   return (
     <div className={`flex items-center gap-1 text-white ${className}`}>
-      <HoverCard>
+      <HoverCard openDelay={0} closeDelay={100}>
         <HoverCardTrigger asChild>
-          <button className="flex items-center justify-center gap-1 text-sm xl:text-lg" type="button">
+          <button className="flex items-center justify-center gap-1 text-sm xl:text-lg">
             {children[0]}
             <IconStars className={cn(isMax ? "fill-[#95FF00]" : "fill-row-tonic", "w-4")}></IconStars>
           </button>

@@ -11,7 +11,14 @@ interface MarketListRowProps {
 export const MarketListRow = ({ children, route, className = "", rowDisposition: CustomRowDisposition, isSelected = false }: MarketListRowProps) => {
   return (
     <div
-      className={`relative cursor-pointer bg-overlay-panel p-2 backdrop-blur-[60px] transition-all duration-200 ease-out before:absolute before:inset-0 before:-z-10 before:opacity-60 before:transition-all before:duration-300 hover:-translate-y-[1px] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:before:bg-list-row-hover hover:before:opacity-80 ${isSelected ? "before:bg-list-row-hover" : ""} // Selected state styling ${className} `}
+      /* prettier-ignore */
+      className={`
+        relative 
+        cursor-pointer bg-overlay-panel p-2 backdrop-blur-[60px] 
+        transition-all duration-200 ease-out 
+        before:absolute before:inset-0 before:-z-10 before:opacity-60 before:transition-all before:duration-300 
+        hover:-translate-y-[1px] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:before:bg-list-row-hover hover:before:opacity-80 
+        ${isSelected ? "before:bg-list-row-hover" : ""} ${className} `}
     >
       <Link href={route}>
         <CustomRowDisposition>

@@ -273,7 +273,7 @@ export function USGMarketListInner() {
 
           <>
             {item.indicators.map((indicator, index) => (
-              <>
+              <div key={index}>
                 {indicator?.key === "borrowed" ? (
                   <div
                     key={indicator.key}
@@ -303,7 +303,7 @@ export function USGMarketListInner() {
                     </span>
                   </div>
                 )}
-              </>
+              </div>
             ))}
 
             {item.userHasDeposited && (

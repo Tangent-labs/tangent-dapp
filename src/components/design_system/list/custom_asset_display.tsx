@@ -7,10 +7,10 @@ export const CustomAssetDisplay = ({ token }: { token: ExistingAsset }) => {
     <>
       {specialTokensList.includes(token?.substring(0, token.indexOf(" ")).trim()) ? (
         <div className="px-1 md:px-2">
-          <TokenImage token={token} size={32} className="w-6 md:w-12" />
+          <TokenImage token={token} size={32} className="w-6 md:w-10" />
         </div>
       ) : (
-        <TokenImage token={token} size={32} className="w-8 md:w-16" />
+        <TokenImage token={token} size={32} className="w-8 md:w-14" />
       )}
     </>
   )

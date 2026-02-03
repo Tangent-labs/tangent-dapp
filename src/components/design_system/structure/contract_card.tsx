@@ -3,6 +3,7 @@ import { Address } from "viem"
 import { formatAddress } from "@/lib/other_formatter"
 import { dappConfig } from "@/dapp_config"
 import PanelRaw from "./panel_raw"
+import Link from "next/link"
 
 const url = dappConfig.chain.explorerContractUrl
 
@@ -17,9 +18,9 @@ export default function ContractCard({ address, label }: ContractCardProps) {
       <div className="flex flex-col">
         <span className="text-base">{label}</span>
         <span className="text-sm">
-          <a href={`${url}{address}`} target="_blank" rel="noreferrer">
+          <Link href={`${url}{address}`} target="_blank" rel="noreferrer">
             {formatAddress(address, 7)}
-          </a>
+          </Link>
         </span>
       </div>
     </PanelRaw>

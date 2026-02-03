@@ -150,3 +150,19 @@ input[type="range"]::-moz-range-thumb {
 .auto-grow:focus {
   outline: none;
 }
+
+.usg-container {
+  width: 100%;
+}
+
+@media (min-width: 1280px) {
+  .usg-container {
+    max-width: 1380px;
+  }
+}
+
+@media (min-width: 2036px) {
+  .usg-container {
+    max-width: 1536px;
+  }
+}

@@ -96,7 +96,7 @@ export function USGMEarnListInner() {
       </div>
 
       {displayRows?.map((item, index) => (
-        <ListRow className={cn("my-1", isLoading ? "shimmer" : "")} key={index}>
+        <ListRow route={item.link} className={cn("my-1", isLoading ? "shimmer" : "")} key={index}>
           <div className="relative flex items-center gap-4">
             <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-12 lg:w-16" />
 

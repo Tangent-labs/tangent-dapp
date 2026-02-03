@@ -3,7 +3,6 @@
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
-import { useRouter } from "next/navigation"
 import { useUSGContext } from "../usg_context"
 import { ExistingAsset, ListState } from "@/types"
 import { useRootContext } from "../../root/root_context"
@@ -145,6 +144,15 @@ export default function USGMarketList() {
             >
               <TokenImage token={"USG" as ExistingAsset} className="h-8 w-8" size={32} />
             </IndicatorCards>
+            {/* <div className="relative isolate inline-flex items-center gap-2 overflow-hidden rounded-[10px] bg-neutral-950/70 px-5 py-2.5 text-sm font-medium text-white/90 backdrop-blur-md">
+              <div className="flex">caca</div>
+             
+              <span className="absolute bottom-[-10px] left-1/2 size-4 -translate-x-1/2 rounded-full bg-[#0075ff] opacity-90 mix-blend-screen shadow-[0_0_200px_2px_#0075ff33] shadow-[0_0_60px_8px_#0075ff] blur-sm" />{" "}
+              <span className="pointer-events-none absolute -bottom-20 left-1/2 h-48 w-[160%] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_50%_100%,#0075ff_0%,#0075ff33_30%,transparent_70%)] opacity-70 blur-3xl" />{" "}
+              <div className="pointer-events-none absolute inset-0 rounded-[10px]" />
+              <div className="from-white/8 pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t to-transparent" />
+            </div> 
+            */}
             <IndicatorCards
               className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "gap-6")}
               indicators={[
@@ -230,8 +238,6 @@ export function USGMarketListInner() {
 
   const { displayRows, marketData } = useUSGMaketListContext()
 
-  const router = useRouter()
-
   return (
     <>
       <div className="mt-4 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
@@ -243,7 +249,7 @@ export function USGMarketListInner() {
           rowDisposition={CustomMarketListRow}
           className={cn("my-1", !!marketData.length && !!displayRows ? "" : "shimmer")}
           key={index}
-          navigate={() => router.push("/" + item.address + "/deposit-borrow")}
+          route={"/" + item.address + "/deposit-borrow"}
         >
           <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
 

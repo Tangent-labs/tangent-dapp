@@ -1,7 +1,6 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { useRouter } from "next/navigation"
 import { ListState } from "@/types"
 import ListRow from "@/components/design_system/list/list_row"
 import ListAsset from "@/components/design_system/list/list_asset"
@@ -86,7 +85,6 @@ const ModalMarketListRowDisposition = ({ children }: { children: React.ReactNode
 export function USGModalMarketListInner() {
   const { headers, listState, udpateSort } = useListContext()
   const { displayRows, marketData } = useUSGMaketListContext()
-  const router = useRouter()
 
   return (
     <>
@@ -100,7 +98,7 @@ export function USGModalMarketListInner() {
             rowDisposition={ModalMarketListRowDisposition}
             className={cn("my-1", !!marketData.length && !!displayRows ? "" : "shimmer")}
             key={index}
-            navigate={() => router.push("/" + item.address + "/deposit-borrow")}
+            route={"/" + item.address + "/deposit-borrow"}
           >
             <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
 

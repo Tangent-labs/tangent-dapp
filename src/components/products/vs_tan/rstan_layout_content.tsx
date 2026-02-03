@@ -169,7 +169,8 @@ function LockPositionList() {
         {lockData?.positions.map((lockPosition: LockPosition) => (
           <div className="flex w-full flex-col" key={lockPosition?.tokenId}>
             <ListRow
-              navigate={() => setSelectedPosition(!!selectedPosition && lockPosition === selectedPosition ? undefined : lockPosition)}
+              route=""
+              // navigate={() => setSelectedPosition(!!selectedPosition && lockPosition === selectedPosition ? undefined : lockPosition)}
               className="mt-2 w-full"
               rowDisposition={LockRowDisposition}
               isSelected={lockPosition == selectedPosition}

@@ -97,7 +97,7 @@ export function PredepositOpportunitiesListInner({ displayRows }: PredepositOppo
       </div>
 
       {displayRows?.map((item, index) => (
-        <ListRow className="mt-1 w-full" key={index}>
+        <ListRow route={item.link} className="mt-1 w-full" key={index}>
           <div className="relative flex items-center gap-4">
             <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-12 lg:w-16" />
 

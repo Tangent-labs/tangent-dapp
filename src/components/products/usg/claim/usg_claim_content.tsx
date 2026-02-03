@@ -17,6 +17,7 @@ import USGHoverCard from "@/components/design_system/structure/usg_hover_card"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import MarketListAPR from "@/components/design_system/list/market_list_apr"
 
 const listeState: ListState = {
   search: undefined,
@@ -83,7 +84,7 @@ export default function USGClaimContent() {
 
       <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
         <div className="flex w-full flex-col md:w-9/12">
-          <div className="flex w-full flex-col items-start justify-between sm:flex-row sm:items-end">
+          <div className="mt-2 flex w-full flex-col items-start justify-between sm:flex-row sm:items-end">
             <div className="mt-0 flex w-80 items-center justify-between md:mt-10">
               <IndicatorCards
                 className="gap-6"
@@ -177,18 +178,19 @@ function ClaimList() {
               <div className="xl:w-2/3">
                 <ListAsset name={item?.marketName} token={item.marketName as ExistingAsset} assetsEarned={[]} />
               </div>
-              <div className="flex justify-center xl:w-1/3">
-                <div className="flex min-w-16 flex-col items-center justify-center">
-                  <span className="bg-button-active bg-clip-text text-lg font-semibold leading-4 text-transparent md:text-lg">
-                    {item?.totalCurrentAPR?.toFixed(2)}%
-                  </span>
 
-                  <span className="whitespace-nowrap text-xs">
-                    Proj: <span> {item?.totalProjectedAPR?.toFixed(2)} %</span>
-                  </span>
-                </div>
+              <div className="flex justify-center xl:w-1/3">
+                <MarketListAPR
+                  rewardToken={item?.rewardToken}
+                  maxLeverage={1}
+                  currentAPRDetails={item.currentAPRDetails}
+                  projectedAPRDetails={item.projectedAPRDetails}
+                  apr={item?.apr?.current}
+                  projectedApr={item?.apr?.projected}
+                />
               </div>
             </div>
+
             <hr className="my-2 w-full opacity-20 xl:hidden" />
             <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-1/2">
               <div className="flex w-full flex-1 cursor-pointer items-center justify-center gap-2 text-sm md:text-lg">

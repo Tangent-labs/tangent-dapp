@@ -7,6 +7,7 @@ import claimContract from "../../../../abi/USG/RewardAccumulator.json"
 import { AssetDataPriced, ExistingAsset, ListHeaderData } from "@/types"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import { executeChainViewUnique, executeContractCall, waitForTransaction } from "@/services/service_rpc"
+import { getRewardTokenFromAprDetails } from "../list/usg_market_controller"
 
 export async function doClaim(contractAddress: Address, markets: Address[], rewardsLength: number | undefined, walletClient: WalletClient) {
   const txData = {
@@ -97,12 +98,15 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
     // APR Computing Section
     let totalCurrentAPR = 0
     let totalProjectedAPR = 0
+    let rewardToken = "CRV"
 
     const marketDataApr = marketAprs?.find((el) => el?.marketAddress?.toLowerCase() === marketConfig?.marketAddress?.toLowerCase())
 
     if (marketDataApr && marketDataApr?.currentAPR && marketDataApr?.projectedAPR) {
       totalCurrentAPR = Object.values(marketDataApr?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
       totalProjectedAPR = Object.values(marketDataApr?.projectedAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+
+      rewardToken = getRewardTokenFromAprDetails(marketDataApr?.currentAPR, marketConfig?.marketType || "Curve")
     }
 
     const displayName = (marketNameIsDuplicated && marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + marketConfig?.marketName
@@ -116,6 +120,13 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
       totalDepositedValue: deposited.valueInUsd,
       totalCurrentAPR,
       totalProjectedAPR,
+      rewardToken,
+      apr: {
+        current: Number(totalCurrentAPR),
+        projected: marketConfig?.marketType === "Pendle_PT" ? undefined : Number(totalProjectedAPR),
+      },
+      currentAPRDetails: marketDataApr?.currentAPR,
+      projectedAPRDetails: marketDataApr?.projectedAPR,
     }
   })
 

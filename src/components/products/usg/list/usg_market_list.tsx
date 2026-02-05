@@ -4,7 +4,7 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
 import { useUSGContext } from "../usg_context"
-import { ExistingAsset, ListState } from "@/types"
+import { ListState } from "@/types"
 import { useRootContext } from "../../root/root_context"
 import Divider from "@/components/design_system/structure/divider"
 import ListAsset from "@/components/design_system/list/list_asset"
@@ -16,10 +16,11 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import MarketListAPR from "@/components/design_system/list/market_list_apr"
 import LargeButtonTab from "@/components/design_system/inputs/large_button_tab"
 import { MarketListRow } from "@/components/design_system/list/market_list_row"
-import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { MarketListHeader } from "@/components/design_system/list/market_list_header"
 import { marketOptions, protocolOptions, USGListHeaders } from "./usg_market_controller"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import { Fragment, ReactNode } from "react"
+import Link from "next/link"
 
 interface ListRowDispositionProps {
   children: React.ReactNode[]
@@ -59,6 +60,160 @@ const CustomMarketListRow = ({ children }: ListRowDispositionProps) => {
   )
 }
 
+export function NeonLightCard(props: { color1: string; color2: string; className: string; children: ReactNode }) {
+  return (
+    <div className={`flex overflow-hidden rounded-lg ${props.className}`}>
+      <div
+        className="shadow-2x relative w-full rounded-lg px-4 py-2"
+        style={{
+          background: `
+          linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), radial-gradient(50.04% 50% at 50.04% 100%, ${props.color1} 0%,rgba(0, 0, 0, 0) 100%)`,
+        }}
+      >
+        <div
+          className="pointer-events-none absolute inset-0 rounded-lg"
+          style={{
+            padding: "1px",
+            background: `
+            radial-gradient(49.97% 49.97% at 50.03% 100%, #FFFFFF 0%,
+            ${props.color2} 19.71%, rgba(0, 0, 0, 0) 100%), linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%,
+            rgba(255, 255, 255, 0.1) 100%)`,
+            WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+            WebkitMaskComposite: "xor",
+            maskComposite: "exclude",
+          }}
+        />
+
+        {props.children}
+      </div>
+    </div>
+  )
+}
+
+interface KeyValue {
+  key: string
+  value: string
+}
+export function ThreeCardRowWithMask(props: { contents: [KeyValue, KeyValue, KeyValue] }) {
+  const color1 = "#0077ff67"
+  const color2 = "#0075FF"
+
+  return (
+    <div className="relative w-full pt-2">
+      {/* Cards with individual backgrounds positioned to create continuity */}
+      <div className="relative grid grid-cols-3 gap-4">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="relative overflow-hidden rounded-lg">
+            {/* Continuous background image - positioned to align across all cards */}
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: 'url("./medias/card_bg_blocks.png")',
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                opacity: 0.2,
+                // Make background span the full width and shift it
+                left: `calc(-${i * 100}% - ${i * 1}rem)`,
+                width: "calc(300% + 2rem)",
+              }}
+            />
+
+            {/* Continuous gradient - centered at 50% of the TOTAL width (middle card) */}
+            <div
+              className="absolute inset-0"
+              style={{
+                left: `calc(-${i * 100}% - ${i * 1}rem)`,
+                width: "calc(300% + 2rem)",
+                background: `
+                  linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), 
+                  radial-gradient(50.04% 50% at 50% 100%, ${color1} 0%, rgba(0, 0, 0, 0) 100%)
+                `,
+              }}
+            />
+
+            {/* Border gradient for this card - ALSO continuous */}
+            <div
+              className="pointer-events-none absolute inset-0 rounded-lg"
+              style={{
+                padding: "1px",
+                left: `calc(-${i * 100}% - ${i * 1}rem)`,
+                width: "calc(300% + 2rem)",
+                background: `
+                  radial-gradient(49.97% 49.97% at 50% 100%, #FFFFFF 0%,
+                  ${color2} 19.71%, rgba(0, 0, 0, 0) 100%), 
+                  linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%,
+                  rgba(255, 255, 255, 0.1) 100%)
+                `,
+                WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                WebkitMaskComposite: "xor",
+                maskComposite: "exclude",
+              }}
+            />
+
+            <div className="relative z-10 px-4 py-4 text-center">
+              <h3 className="mb-1 text-xs text-subtitle">{props.contents[i].key}</h3>
+              <p className="font-semibold text-white">{props.contents[i].value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+interface DivProps {
+  children: React.ReactNode
+  className?: string
+}
+export function ReliefCard({ children, className = "" }: DivProps) {
+  return (
+    <div className={`relative overflow-hidden rounded-lg backdrop-blur-[60px] ${className}`}>
+      {/* Gradient border effect */}
+      <div
+        className="pointer-events-none absolute inset-0 rounded-lg"
+        style={{
+          border: "1px solid transparent",
+          background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
+          WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
+          WebkitMaskComposite: "xor",
+          maskComposite: "exclude",
+        }}
+      />
+
+      {children}
+    </div>
+  )
+}
+
+export function GradientCard({ children, className = "" }: DivProps) {
+  return (
+    <div className={`relative overflow-hidden rounded-lg backdrop-blur-[60px] ${className}`}>
+      {/* Background gradients */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), radial-gradient(49.96% 50% at 50.04% 100%, #0075FF 0%, rgba(0, 0, 0, 0) 100%)",
+        }}
+      />
+
+      {/* Border gradients */}
+      <div
+        className="pointer-events-none absolute inset-0 rounded-lg"
+        style={{
+          border: "1px solid transparent",
+          background:
+            "radial-gradient(49.97% 49.97% at 50.03% 100%, #FFFFFF 0%, #0075FF 19.71%, rgba(0, 0, 0, 0) 100%), linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
+          WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
+          WebkitMaskComposite: "xor",
+          maskComposite: "exclude",
+        }}
+      />
+
+      {/* Content */}
+      <div className="relative z-10">{children}</div>
+    </div>
+  )
+}
 export default function USGMarketList() {
   const { sUSGCurrentAPY } = useRootContext()
 
@@ -69,116 +224,118 @@ export default function USGMarketList() {
 
   return (
     <>
-      <div className="flex w-full rounded-[10px] bg-panel-title-gradient xl:hidden">
-        <div className="flex items-center justify-center">
-          <Image height={120} width={120} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "160px", maxHeight: "160px" }} />
-        </div>
-        <div className="flex flex-col items-start justify-center gap-2 px-4">
-          <span className="text-[24px] font-semibold">USG</span>
-          <p className="text-sm">
-            Borrow USG against accepted LP tokens. Tangent features two kinds of markets.
-            <span className="inline-block cursor-pointer underline hover:text-white/40">Learn more</span>
-          </p>
-        </div>
-      </div>
-
       <div className="mb-4 flex items-stretch justify-between gap-6">
-        <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
-          <div className="flex items-center justify-center">
-            <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+        <ReliefCard className="hidden w-1/2 xl:flex">
+          <div className="flex overflow-hidden rounded-lg bg-panel-title-gradient">
+            <div className="flex items-center justify-center">
+              <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+            </div>
+            <div className="flex flex-col items-start justify-center gap-3 px-6">
+              <h2 className="text-4xl font-semibold">USG</h2>
+              <p className="text-[15px]">
+                Borrow USG against accepted LP tokens. Tangent features two kinds of markets.
+                <Link href="/" className="inline-block cursor-pointer underline hover:text-white/40">
+                  Learn more
+                </Link>
+              </p>
+            </div>
           </div>
-          <div className="flex flex-col items-start justify-center gap-3 px-6">
-            <span className="text-4xl font-semibold">USG</span>
-            <p className="text-[15px]">
-              Borrow USG against accepted LP tokens. Tangent features two kinds of markets.
-              <span className="inline-block cursor-pointer underline hover:text-white/40">Learn more</span>
-            </p>
-          </div>
-        </div>
+        </ReliefCard>
 
         <div className="hidden h-auto w-full flex-col items-center gap-2 xl:flex xl:w-1/2">
-          <div
-            style={{ fontSize: "20px", lineHeight: "20px" }}
-            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
-          >
-            Points campaign
-            <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
-          </div>
-
-          <div className="mt-auto flex w-full items-center justify-between gap-2 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+          <ReliefCard className="w-full">
             <div
-              className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
+              style={{ fontSize: "20px", lineHeight: "20px" }}
+              className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
             >
-              <span className="text-xs text-subtitle">Your Debt</span>
-              <span className="text-sm font-semibold">{formatNumber(Number(formatUnits(userData?.totalUserDebt || 0n, 18)), 0)} USG</span>
+              Points campaign
+              <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
             </div>
+          </ReliefCard>
 
-            <div
-              className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
-            >
-              <span className="text-xs text-subtitle">Your Collateral Deposits</span>
-              <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDeposit || 0n, 18), 0)} </span>
-            </div>
-
-            <div
-              className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
-            >
-              <span className="text-xs text-subtitle">Your Total Points</span>
-              <span className="text-sm font-semibold">{formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts </span>
-            </div>
-          </div>
+          <ThreeCardRowWithMask
+            contents={[
+              { key: "Your Debt", value: `${formatNumber(Number(formatUnits(userData?.totalUserDebt || 0n, 18)), 0)} USG` },
+              { key: "Your Collateral Deposits", value: `${formatNumber(Number(formatUnits(userData?.totalUserDeposit || 0n, 18)), 0)} USG` },
+              { key: "Your Total Points", value: `${formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts` },
+            ]}
+          ></ThreeCardRowWithMask>
         </div>
       </div>
 
       <Divider className="border-white/10!" />
 
-      <div className="mt-4 flex w-full flex-col items-center justify-center gap-6 lg:flex-row">
-        <div className="hidden w-full items-center justify-center md:flex lg:w-1/2">
-          <div className="flex w-full items-center gap-4">
-            <IndicatorCards
-              className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "gap-6")}
-              indicators={[
-                { title: "USG", value: formatDollar(globalData.USGPrice, 5) },
-                { title: "Supply", value: globalData.USGSupply },
-              ]}
-            >
-              <TokenImage token={"USG" as ExistingAsset} className="h-8 w-8" size={32} />
-            </IndicatorCards>
-            {/* <div className="relative isolate inline-flex items-center gap-2 overflow-hidden rounded-[10px] bg-neutral-950/70 px-5 py-2.5 text-sm font-medium text-white/90 backdrop-blur-md">
-              <div className="flex">caca</div>
-             
-              <span className="absolute bottom-[-10px] left-1/2 size-4 -translate-x-1/2 rounded-full bg-[#0075ff] opacity-90 mix-blend-screen shadow-[0_0_200px_2px_#0075ff33] shadow-[0_0_60px_8px_#0075ff] blur-sm" />{" "}
-              <span className="pointer-events-none absolute -bottom-20 left-1/2 h-48 w-[160%] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_50%_100%,#0075ff_0%,#0075ff33_30%,transparent_70%)] opacity-70 blur-3xl" />{" "}
-              <div className="pointer-events-none absolute inset-0 rounded-[10px]" />
-              <div className="from-white/8 pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t to-transparent" />
-            </div> 
-            */}
-            <IndicatorCards
-              className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "gap-6")}
-              indicators={[
-                { title: "sUSG ", value: globalData.sUSGPrice },
-                { title: "Supply", value: globalData.sUSGSupply },
-                { title: "APY", value: sUSGCurrentAPY.toFixed(2) + "%" },
-              ]}
-            >
-              <TokenImage token={"sUSG" as ExistingAsset} className="h-8 w-8" size={32} />
-            </IndicatorCards>
+      <div className="mt-4 flex w-full flex-col items-stretch justify-center gap-6 lg:flex-row">
+        <div className="hidden w-full justify-center md:flex lg:w-1/2">
+          <div className="flex h-full w-full items-stretch gap-4">
+            <div className="basis-[40%]">
+              <NeonLightCard className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "h-full w-full")} color1="#0077ffa3" color2="#0075FF">
+                <div className="flex h-full items-center gap-2 xl:gap-4">
+                  <div className="flex-shrink-0">
+                    <TokenImage token="USG" className="h-10 w-10" size={32} />
+                  </div>
+                  <div className="flex flex-1 items-center justify-center gap-10 xl:gap-14">
+                    {[
+                      { key: "USG", value: formatDollar(globalData.USGPrice, 5) },
+                      { key: "Supply", value: globalData.USGSupply },
+                    ].map((item, index) => (
+                      <div className="text-center" key={index}>
+                        <div className="text-center text-xs text-subtitle">{item.key}</div>
+                        <div className="text-center text-sm font-semibold">{item.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </NeonLightCard>
+            </div>
+            <div className="basis-[60%]">
+              <NeonLightCard className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "h-full w-full")} color1="#95ff006d" color2="#95FF00">
+                <div className="flex h-full items-center gap-5">
+                  <div className="flex-shrink-0">
+                    <TokenImage token="SUSG" className="h-10 w-10" size={32} />
+                  </div>
+                  <div className="flex flex-1 items-center justify-center gap-10 xl:gap-14">
+                    <div className="text-center">
+                      <div className="text-xs text-subtitle">sUSG</div>
+                      <div className="text-sm font-semibold">{globalData.sUSGPrice}</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs text-subtitle">Supply</div>
+                      <div className="text-sm font-semibold">{globalData.sUSGSupply}</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs text-subtitle">APY</div>
+                      <div className="text-sm font-semibold text-[#95FF00]">{sUSGCurrentAPY.toFixed(2) + "%"}</div>
+                    </div>
+                  </div>
+                </div>
+              </NeonLightCard>
+            </div>
           </div>
         </div>
 
-        <div className="flex w-full items-center justify-center lg:w-1/2">
-          <div className="flex w-full gap-2">
-            <IndicatorCards className={cn(globalData.globalCr === "-" ? "shimmer" : "")} indicators={[{ title: "Markets CR ", value: globalData.globalCr }]} />
-            <IndicatorCards
-              className={cn(globalData.globalTvl === "-" ? "shimmer" : "")}
-              indicators={[{ title: "Markets TVL ", value: globalData.globalTvl }]}
-            />
-            <IndicatorCards
-              className={cn(globalData.globalDebt === "-" ? "shimmer" : "")}
-              indicators={[{ title: "Markets Debt ", value: globalData.globalDebt }]}
-            />
+        <ReliefCard className={cn(globalData.globalCr === "-" ? "shimmer" : "", "flex items-center bg-white/[0.03] py-2 lg:w-1/2")}>
+          <div className="flex w-1/3 flex-col items-center justify-center">
+            <div className="whitespace-nowrap text-xs text-subtitle">Global CR</div>
+            <div className="whitespace-nowrap text-sm font-semibold">{globalData.globalCr}</div>
           </div>
-        </div>
+
+          {/* Séparateur */}
+          <div className="h-10 w-px flex-shrink-0 bg-white/10" />
+
+          <div className="flex w-1/3 flex-col items-center justify-center">
+            <div className="whitespace-nowrap text-xs text-subtitle">Global TVL</div>
+            <div className="whitespace-nowrap text-sm font-semibold">{globalData.globalTvl}</div>
+          </div>
+
+          {/* Séparateur */}
+          <div className="h-10 w-px flex-shrink-0 bg-white/10" />
+
+          <div className="flex w-1/3 flex-col items-center justify-center">
+            <div className="whitespace-nowrap text-xs text-subtitle">Global Debt</div>
+            <div className="whitespace-nowrap text-sm font-semibold">{globalData.globalDebt}</div>
+          </div>
+        </ReliefCard>
       </div>
 
       <div className="my-4 hidden items-end justify-between xl:flex">
@@ -273,7 +430,7 @@ export function USGMarketListInner() {
 
           <>
             {item.indicators.map((indicator, index) => (
-              <div key={index}>
+              <Fragment key={indicator.key}>
                 {indicator?.key === "borrowed" ? (
                   <div
                     key={indicator.key}
@@ -303,7 +460,7 @@ export function USGMarketListInner() {
                     </span>
                   </div>
                 )}
-              </div>
+              </Fragment>
             ))}
 
             {item.userHasDeposited && (

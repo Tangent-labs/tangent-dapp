@@ -109,19 +109,17 @@ export default function MenuBarFeature() {
                     <NavigationMenuTrigger>DAO</NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-dark p-2">
-                        <Link href="/harvest">
-                          <NavigationMenuLink className="flex items-center justify-start gap-2">
-                            <IconHarvest className="w-2"></IconHarvest>
-                            Harvest
-                          </NavigationMenuLink>
-                        </Link>
+                        <NavigationMenuLink href="/harvest" className="flex items-center justify-start gap-2">
+                          <IconHarvest className="w-2"></IconHarvest>
+                          Harvest
+                        </NavigationMenuLink>
 
-                        <NavigationMenuLink className="flex items-center justify-start gap-2">
+                        <NavigationMenuLink href="/forum" className="flex items-center justify-start gap-2">
                           <IconForum className="w-3"></IconForum>
                           Forum
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink className="flex items-center justify-start gap-2">
+                        <NavigationMenuLink href="/snapshot" className="flex items-center justify-start gap-2">
                           <IconSnapshot className="w-3"></IconSnapshot>
                           Snapshot
                         </NavigationMenuLink>
@@ -135,26 +133,20 @@ export default function MenuBarFeature() {
                     <NavigationMenuTrigger>Airdrop</NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-dark p-2">
-                        <Link href="/tasks">
-                          <NavigationMenuLink className="flex items-center justify-start gap-2">
-                            <IconTask className="w-3"></IconTask>
-                            Task
-                          </NavigationMenuLink>
-                        </Link>
+                        <NavigationMenuLink href="/tasks" className="flex items-center justify-start gap-2">
+                          <IconTask className="w-3"></IconTask>
+                          Task
+                        </NavigationMenuLink>
 
-                        <Link href="/referral">
-                          <NavigationMenuLink className="flex items-center justify-start gap-2">
-                            <IconReferral className="w-3"></IconReferral>
-                            Referral
-                          </NavigationMenuLink>
-                        </Link>
+                        <NavigationMenuLink href="/referral" className="flex items-center justify-start gap-2">
+                          <IconReferral className="w-3"></IconReferral>
+                          Referral
+                        </NavigationMenuLink>
 
-                        <Link href="/boosts">
-                          <NavigationMenuLink className="flex items-center justify-start gap-2">
-                            <IconBoosts className="w-3"></IconBoosts>
-                            Boosts
-                          </NavigationMenuLink>
-                        </Link>
+                        <NavigationMenuLink href="/boosts" className="flex items-center justify-start gap-2">
+                          <IconBoosts className="w-3"></IconBoosts>
+                          Boosts
+                        </NavigationMenuLink>
                       </div>
                     </NavigationMenuContent>
                   </NavigationMenuDropdown>

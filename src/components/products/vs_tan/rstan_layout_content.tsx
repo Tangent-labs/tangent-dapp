@@ -157,7 +157,7 @@ export const VsTanLayoutContent = ({
 function LockPositionList() {
   const { headers, listState, udpateSort } = useListContext()
 
-  const { lockData, selectedPosition, extendToPermaLock, setSelectedPosition, onClickExtend, setExtendToPermaLock, onClickRemovePermaLock } = useVsTanContext()
+  const { lockData, selectedPosition, extendToPermaLock, onClickExtend, setExtendToPermaLock, onClickRemovePermaLock } = useVsTanContext()
 
   return (
     <>

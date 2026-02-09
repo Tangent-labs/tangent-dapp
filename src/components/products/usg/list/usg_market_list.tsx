@@ -300,9 +300,7 @@ export function USGMarketListInner() {
 
   return (
     <>
-      <div className="mt-4 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
-        <MarketListHeader rowDisposition={CustomMarketListRow} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
-      </div>
+      <MarketListHeader rowDisposition={CustomMarketListRow} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
 
       {displayRows?.map((item, index) => (
         <MarketListRow

@@ -14,11 +14,12 @@ const SelectValue = SelectPrimitive.Value
 
 const SelectTrigger = React.forwardRef<React.ElementRef<typeof SelectPrimitive.Trigger>, React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>>(
   ({ className, children, ...props }, ref) => (
-    <div className="relative">
+    <div className="group relative">
       <SelectPrimitive.Trigger
         ref={ref}
         className={cn(
-          "flex min-h-10 w-full items-center justify-between rounded-[10px] bg-white/[0.03] px-2.5 py-1.5 backdrop-blur-[60px] placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+          "flex min-h-10 w-full items-center justify-between rounded-[10px] bg-white/[0.03] px-2.5 py-1.5 backdrop-blur-[60px] placeholder:text-muted-foreground",
+          "transition-all duration-200 ease-out",
           className
         )}
         {...props}
@@ -31,7 +32,7 @@ const SelectTrigger = React.forwardRef<React.ElementRef<typeof SelectPrimitive.T
 
       {/* Gradient border effect */}
       <div
-        className="pointer-events-none absolute inset-0 rounded-[10px]"
+        className="pointer-events-none absolute inset-0 rounded-[10px] transition-all duration-200 group-hover:brightness-125"
         style={{
           border: "1px solid transparent",
           background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
@@ -40,6 +41,9 @@ const SelectTrigger = React.forwardRef<React.ElementRef<typeof SelectPrimitive.T
           maskComposite: "exclude",
         }}
       />
+
+      {/* Hover overlay */}
+      <div className="pointer-events-none absolute inset-0 rounded-[10px] bg-white opacity-0 transition-opacity duration-200 group-hover:opacity-[0.03]" />
     </div>
   )
 )

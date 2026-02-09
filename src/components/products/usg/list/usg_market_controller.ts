@@ -164,7 +164,11 @@ export const computeCollatData = (market: ChainViewMarketRow, totalFormatted: nu
 }
 
 export const USGListHeaders: ListHeaderData[] = [
-  { label: "Collateral", key: "collateral", sort: null },
+  {
+    label: "Collateral",
+    key: "collateral",
+    sort: "sort",
+  },
   {
     label: "vAPR",
     key: "vapr",
@@ -184,7 +188,7 @@ export const USGListHeaders: ListHeaderData[] = [
     sort: "sort",
   },
   { label: "TVL", key: "tvl", sort: "sort" },
-  { label: "Borrowed", key: "borrowed", sort: null },
+  { label: "Borrowed", key: "borrowed", sort: "sort" },
 ]
 
 export const marketOptions = [

@@ -14,20 +14,33 @@ const SelectValue = SelectPrimitive.Value
 
 const SelectTrigger = React.forwardRef<React.ElementRef<typeof SelectPrimitive.Trigger>, React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>>(
   ({ className, children, ...props }, ref) => (
-    <SelectPrimitive.Trigger
-      ref={ref}
-      className={cn(
-        "flex min-h-10 w-full items-center justify-between rounded-[10px] border border-white border-opacity-20 px-2.5 py-1.5 placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
-        className
-      )}
-      {...props}
-      style={{ borderWidth: "1.5px" }}
-    >
-      {children}
-      <SelectPrimitive.Icon asChild>
-        <ChevronDown className="h-4 w-4" />
-      </SelectPrimitive.Icon>
-    </SelectPrimitive.Trigger>
+    <div className="relative">
+      <SelectPrimitive.Trigger
+        ref={ref}
+        className={cn(
+          "flex min-h-10 w-full items-center justify-between rounded-[10px] bg-white/[0.03] px-2.5 py-1.5 backdrop-blur-[60px] placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+          className
+        )}
+        {...props}
+      >
+        {children}
+        <SelectPrimitive.Icon asChild>
+          <ChevronDown className="h-4 w-4" />
+        </SelectPrimitive.Icon>
+      </SelectPrimitive.Trigger>
+
+      {/* Gradient border effect */}
+      <div
+        className="pointer-events-none absolute inset-0 rounded-[10px]"
+        style={{
+          border: "1px solid transparent",
+          background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
+          WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
+          WebkitMaskComposite: "xor",
+          maskComposite: "exclude",
+        }}
+      />
+    </div>
   )
 )
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
@@ -89,6 +102,8 @@ const SelectItem = React.forwardRef<React.ElementRef<typeof SelectPrimitive.Item
     <SelectPrimitive.Item
       ref={ref}
       className={cn(
+        "hover:bg-white/10 hover:text-accent-foreground", // Important : le hover ici
+        "focus:bg-white/10",
         "flex w-full cursor-default items-center rounded-[10px] px-2 py-1 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}
@@ -100,6 +115,7 @@ const SelectItem = React.forwardRef<React.ElementRef<typeof SelectPrimitive.Item
     </SelectPrimitive.Item>
   )
 )
+
 SelectItem.displayName = SelectPrimitive.Item.displayName
 
 const SelectSeparator = React.forwardRef<React.ElementRef<typeof SelectPrimitive.Separator>, React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>>(

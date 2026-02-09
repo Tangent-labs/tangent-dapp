@@ -214,6 +214,19 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
         const elementBMaxLeverage = 1 / (1 - elementB?.maxLTV)
 
         return sortMarketListByType(elementA, elementB, direction, elementAMaxLeverage, elementBMaxLeverage)
+      } else if (key === "collateral") {
+        const aValue = elementA.token || ""
+        const bValue = elementB.token || ""
+
+        const comparison = aValue.localeCompare(bValue)
+        return direction === "asc" ? comparison : -comparison
+      } else if (key === "borrowed") {
+        const aValue = Number(elementA.indicators[2].value)
+        const bValue = Number(elementB.indicators[2].value)
+        if (aValue < bValue) return direction === "asc" ? -1 : 1
+        if (aValue > bValue) return direction === "asc" ? 1 : -1
+
+        return 0
       } else {
         const aValue = Number(elementA.indicators.find((el) => el.key === key)?.raw)
         const bValue = Number(elementB.indicators.find((el) => el.key === key)?.raw)

@@ -19,8 +19,10 @@ import { MarketListRow } from "@/components/design_system/list/market_list_row"
 import { MarketListHeader } from "@/components/design_system/list/market_list_header"
 import { marketOptions, protocolOptions, USGListHeaders } from "./usg_market_controller"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { Fragment, ReactNode } from "react"
+import { Fragment } from "react"
 import Link from "next/link"
+import { NeonLightCard } from "@/components/design_system/structure/neon_light_card"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 interface ListRowDispositionProps {
   children: React.ReactNode[]
@@ -32,10 +34,6 @@ const listeState: ListState = {
     key: "collateral",
     direction: "asc",
   },
-}
-
-const MarketListSelectTemplate = (option: { label: string; value: string }) => {
-  return <span className="flex w-full cursor-pointer items-center rounded-[10px] px-3 text-sm font-semibold text-white hover:bg-white/10">{option?.label}</span>
 }
 
 const CustomMarketListRow = ({ children }: ListRowDispositionProps) => {
@@ -55,36 +53,6 @@ const CustomMarketListRow = ({ children }: ListRowDispositionProps) => {
         </div>
 
         <div className="hidden w-full items-center justify-evenly gap-2 xl:flex">{children?.at(3)}</div>
-      </div>
-    </div>
-  )
-}
-
-export function NeonLightCard(props: { color1: string; color2: string; className: string; children: ReactNode }) {
-  return (
-    <div className={`flex overflow-hidden rounded-lg ${props.className}`}>
-      <div
-        className="shadow-2x relative w-full rounded-lg px-4 py-2"
-        style={{
-          background: `
-          linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), radial-gradient(50.04% 50% at 50.04% 100%, ${props.color1} 0%,rgba(0, 0, 0, 0) 100%)`,
-        }}
-      >
-        <div
-          className="pointer-events-none absolute inset-0 rounded-lg"
-          style={{
-            padding: "1px",
-            background: `
-            radial-gradient(49.97% 49.97% at 50.03% 100%, #FFFFFF 0%,
-            ${props.color2} 19.71%, rgba(0, 0, 0, 0) 100%), linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%,
-            rgba(255, 255, 255, 0.1) 100%)`,
-            WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-            WebkitMaskComposite: "xor",
-            maskComposite: "exclude",
-          }}
-        />
-
-        {props.children}
       </div>
     </div>
   )
@@ -160,60 +128,7 @@ export function ThreeCardRowWithMask(props: { contents: [KeyValue, KeyValue, Key
     </div>
   )
 }
-interface DivProps {
-  children: React.ReactNode
-  className?: string
-}
-export function ReliefCard({ children, className = "" }: DivProps) {
-  return (
-    <div className={`relative overflow-hidden rounded-lg backdrop-blur-[60px] ${className}`}>
-      {/* Gradient border effect */}
-      <div
-        className="pointer-events-none absolute inset-0 rounded-lg"
-        style={{
-          border: "1px solid transparent",
-          background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
-          WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
-          WebkitMaskComposite: "xor",
-          maskComposite: "exclude",
-        }}
-      />
 
-      {children}
-    </div>
-  )
-}
-
-export function GradientCard({ children, className = "" }: DivProps) {
-  return (
-    <div className={`relative overflow-hidden rounded-lg backdrop-blur-[60px] ${className}`}>
-      {/* Background gradients */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), radial-gradient(49.96% 50% at 50.04% 100%, #0075FF 0%, rgba(0, 0, 0, 0) 100%)",
-        }}
-      />
-
-      {/* Border gradients */}
-      <div
-        className="pointer-events-none absolute inset-0 rounded-lg"
-        style={{
-          border: "1px solid transparent",
-          background:
-            "radial-gradient(49.97% 49.97% at 50.03% 100%, #FFFFFF 0%, #0075FF 19.71%, rgba(0, 0, 0, 0) 100%), linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
-          WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
-          WebkitMaskComposite: "xor",
-          maskComposite: "exclude",
-        }}
-      />
-
-      {/* Content */}
-      <div className="relative z-10">{children}</div>
-    </div>
-  )
-}
 export default function USGMarketList() {
   const { sUSGCurrentAPY } = useRootContext()
 
@@ -359,25 +274,13 @@ export default function USGMarketList() {
           <div className="flex w-full items-stretch justify-center gap-2">
             <div className="flex w-full flex-col items-center justify-center md:w-fit">
               <div className="mb-1 text-xs text-subtitle"> Type </div>
-              <InputSelect
-                className="w-full min-w-48"
-                template={MarketListSelectTemplate}
-                value={marketType || ""}
-                options={marketOptions}
-                onChange={(e) => setMarketType(e)}
-              />
+              <InputSelect className="w-full min-w-48" value={marketType || ""} options={marketOptions} onChange={(e) => setMarketType(e)} />
             </div>
 
             <div className="flex w-full flex-col items-center justify-center md:w-fit">
               <div className="mb-1 text-xs text-subtitle"> Protocol </div>
 
-              <InputSelect
-                className="w-full min-w-48"
-                template={MarketListSelectTemplate}
-                value={protocol || ""}
-                options={protocolOptions}
-                onChange={(e) => setProtocol(e)}
-              />
+              <InputSelect className="w-full min-w-48" value={protocol || ""} options={protocolOptions} onChange={(e) => setProtocol(e)} />
             </div>
           </div>
         </div>

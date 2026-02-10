@@ -20,6 +20,7 @@ import USGHoverCard from "@/components/design_system/structure/usg_hover_card"
 import LargeButtonTab from "@/components/design_system/inputs/large_button_tab"
 import { FeatureSelect } from "@/components/design_system/structure/feature_select"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
 
 const listeState: ListState = {
   search: undefined,
@@ -77,13 +78,7 @@ export const VsTanLayoutContent = ({
         </div>
 
         <div className="hidden h-auto w-full flex-col items-center justify-between gap-3 md:flex xl:w-1/2">
-          <div
-            style={{ fontSize: "20px", lineHeight: "20px" }}
-            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
-          >
-            Points campaign
-            <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
-          </div>
+          <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
           <div className="justify-bewteen flex w-full items-center rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
             <IconVsTan className="h-10 w-32"></IconVsTan>

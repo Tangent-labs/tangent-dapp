@@ -23,6 +23,7 @@ import { Fragment } from "react"
 import Link from "next/link"
 import { NeonLightCard } from "@/components/design_system/structure/neon_light_card"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
 
 interface ListRowDispositionProps {
   children: React.ReactNode[]
@@ -158,15 +159,7 @@ export default function USGMarketList() {
         </ReliefCard>
 
         <div className="hidden h-auto w-full flex-col items-center gap-2 xl:flex xl:w-1/2">
-          <ReliefCard className="w-full">
-            <div
-              style={{ fontSize: "20px", lineHeight: "20px" }}
-              className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
-            >
-              Points campaign
-              <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
-            </div>
-          </ReliefCard>
+          <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
           <ThreeCardRowWithMask
             contents={[

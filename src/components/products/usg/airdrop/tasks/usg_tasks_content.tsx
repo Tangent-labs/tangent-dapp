@@ -12,6 +12,7 @@ import { lpListHeaders, voteListHeaders } from "./usg_tasks_controller"
 import { voteListState, VoteTasksList } from "./components/VoteTasksList"
 import { ListProvider } from "@/components/design_system/list/list_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
 
 export default function UsgTasksContent() {
   const { userBoostFactor } = useUsgAirdropContext()
@@ -38,13 +39,7 @@ export default function UsgTasksContent() {
         </div>
 
         <div className="flex h-auto w-full flex-col items-center gap-4 xl:w-1/2">
-          <div
-            style={{ fontSize: "20px", lineHeight: "20px" }}
-            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
-          >
-            Points campaign
-            <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
-          </div>
+          <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
           <div className="flex w-full flex-col items-center justify-between gap-4 md:flex-row">
             <div className="relative flex h-full w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-2 py-2 backdrop-blur-[60px] lg:py-0">

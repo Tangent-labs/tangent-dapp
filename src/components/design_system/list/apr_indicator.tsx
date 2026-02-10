@@ -11,13 +11,20 @@ interface AprIndicatorProps {
 
 export default function AprIndicator({ children, isMax, className = "" }: AprIndicatorProps) {
   return (
-    <div className={`flex items-center gap-1 text-white ${className}`}>
-      <HoverCard>
+    <div
+      /* prettier-ignore */
+      className={`
+        flex items-center gap-1 
+        text-white 
+        transition duration-200
+       ${isMax ? "hover:text-[#95FF00]" : "hover:text-row-tonic"} ${className}`}
+    >
+      <HoverCard openDelay={150} closeDelay={100}>
         <HoverCardTrigger asChild>
-          <button className="flex items-center justify-center gap-1 text-sm xl:text-lg" type="button">
+          <span className="flex items-center justify-center gap-1 text-sm xl:text-lg">
             {children[0]}
             <IconStars className={cn(isMax ? "fill-[#95FF00]" : "fill-row-tonic", "w-4")}></IconStars>
-          </button>
+          </span>
         </HoverCardTrigger>
         <HoverCardContent side="top" align="center" className="z-[9999] w-fit max-w-56 border border-white/10 text-xs">
           <div className="grid gap-4 !border-none">

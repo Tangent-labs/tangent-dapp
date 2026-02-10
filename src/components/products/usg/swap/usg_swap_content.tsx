@@ -13,6 +13,7 @@ import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { BuySellInput } from "@/components/design_system/inputs/buy_sell_input"
 import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
 
 type AssetSelectProps = {
   options: DepositReceiveAsset[]
@@ -133,13 +134,7 @@ export default function USGSwapContent() {
         </div>
 
         <div className="flex h-auto w-full flex-col items-center gap-3 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] xl:w-1/2">
-          <div
-            style={{ fontSize: "20px", lineHeight: "20px" }}
-            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
-          >
-            Points campaign
-            <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
-          </div>
+          <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
           <div className="mt-auto flex w-full items-center justify-center gap-3 p-3">
             <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 xl:min-w-48">

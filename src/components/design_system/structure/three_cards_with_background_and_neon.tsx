@@ -1,0 +1,70 @@
+interface KeyValue {
+  key: string
+  value: string
+}
+export function ThreeCardRowWithMask(props: { contents: [KeyValue, KeyValue, KeyValue] }) {
+  const color1 = "#0077ff67"
+  const color2 = "#0075FF"
+
+  return (
+    <div className="relative w-full pt-2">
+      {/* Cards with individual backgrounds positioned to create continuity */}
+      <div className="relative grid grid-cols-3 gap-4">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="relative overflow-hidden rounded-lg">
+            {/* Continuous background image - positioned to align across all cards */}
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: 'url("./medias/card_bg_blocks.png")',
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                opacity: 0.2,
+                // Make background span the full width and shift it
+                left: `calc(-${i * 100}% - ${i * 1}rem)`,
+                width: "calc(300% + 2rem)",
+              }}
+            />
+
+            {/* Continuous gradient - centered at 50% of the TOTAL width (middle card) */}
+            <div
+              className="absolute inset-0"
+              style={{
+                left: `calc(-${i * 100}% - ${i * 1}rem)`,
+                width: "calc(300% + 2rem)",
+                background: `
+                  linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), 
+                  radial-gradient(50.04% 50% at 50% 100%, ${color1} 0%, rgba(0, 0, 0, 0) 100%)
+                `,
+              }}
+            />
+
+            {/* Border gradient for this card - ALSO continuous */}
+            <div
+              className="pointer-events-none absolute inset-0 rounded-lg"
+              style={{
+                padding: "1px",
+                left: `calc(-${i * 100}% - ${i * 1}rem)`,
+                width: "calc(300% + 2rem)",
+                background: `
+                  radial-gradient(49.97% 49.97% at 50% 100%, #FFFFFF 0%,
+                  ${color2} 19.71%, rgba(0, 0, 0, 0) 100%), 
+                  linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%,
+                  rgba(255, 255, 255, 0.1) 100%)
+                `,
+                WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                WebkitMaskComposite: "xor",
+                maskComposite: "exclude",
+              }}
+            />
+
+            <div className="relative z-10 px-4 py-4 text-center">
+              <h3 className="mb-1 text-xs text-subtitle">{props.contents[i].key}</h3>
+              <p className="font-semibold text-white">{props.contents[i].value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}

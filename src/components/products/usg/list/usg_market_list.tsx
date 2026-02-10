@@ -3,9 +3,8 @@
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
-import { useRouter } from "next/navigation"
 import { useUSGContext } from "../usg_context"
-import { ExistingAsset, ListState } from "@/types"
+import { ListState } from "@/types"
 import { useRootContext } from "../../root/root_context"
 import Divider from "@/components/design_system/structure/divider"
 import ListAsset from "@/components/design_system/list/list_asset"
@@ -17,10 +16,15 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import MarketListAPR from "@/components/design_system/list/market_list_apr"
 import LargeButtonTab from "@/components/design_system/inputs/large_button_tab"
 import { MarketListRow } from "@/components/design_system/list/market_list_row"
-import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { MarketListHeader } from "@/components/design_system/list/market_list_header"
 import { marketOptions, protocolOptions, USGListHeaders } from "./usg_market_controller"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import { Fragment } from "react"
+import Link from "next/link"
+import { NeonLightCard } from "@/components/design_system/structure/neon_light_card"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
+import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 
 interface ListRowDispositionProps {
   children: React.ReactNode[]
@@ -32,10 +36,6 @@ const listeState: ListState = {
     key: "collateral",
     direction: "asc",
   },
-}
-
-const MarketListSelectTemplate = (option: { label: string; value: string }) => {
-  return <span className="flex w-full cursor-pointer items-center rounded-[10px] px-3 text-sm font-semibold text-white hover:bg-white/10">{option?.label}</span>
 }
 
 const CustomMarketListRow = ({ children }: ListRowDispositionProps) => {
@@ -70,107 +70,110 @@ export default function USGMarketList() {
 
   return (
     <>
-      <div className="flex w-full rounded-[10px] bg-panel-title-gradient xl:hidden">
-        <div className="flex items-center justify-center">
-          <Image height={120} width={120} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "160px", maxHeight: "160px" }} />
-        </div>
-        <div className="flex flex-col items-start justify-center gap-2 px-4">
-          <span className="text-[24px] font-semibold">USG</span>
-          <p className="text-sm">
-            Borrow USG against accepted LP tokens. Tangent features two kinds of markets.
-            <span className="inline-block cursor-pointer underline hover:text-white/40">Learn more</span>
-          </p>
-        </div>
-      </div>
-
       <div className="mb-4 flex items-stretch justify-between gap-6">
-        <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
-          <div className="flex items-center justify-center">
-            <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+        <ReliefCard className="hidden w-1/2 xl:flex">
+          <div className="flex overflow-hidden rounded-lg bg-panel-title-gradient">
+            <div className="flex items-center justify-center">
+              <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+            </div>
+            <div className="flex flex-col items-start justify-center gap-3 px-6">
+              <h2 className="text-4xl font-semibold">USG</h2>
+              <p className="text-[15px]">
+                Borrow USG against accepted LP tokens. Tangent features two kinds of markets.
+                <Link href="/" className="inline-block cursor-pointer underline hover:text-white/40">
+                  Learn more
+                </Link>
+              </p>
+            </div>
           </div>
-          <div className="flex flex-col items-start justify-center gap-3 px-6">
-            <span className="text-4xl font-semibold">USG</span>
-            <p className="text-[15px]">
-              Borrow USG against accepted LP tokens. Tangent features two kinds of markets.
-              <span className="inline-block cursor-pointer underline hover:text-white/40">Learn more</span>
-            </p>
-          </div>
-        </div>
+        </ReliefCard>
 
         <div className="hidden h-auto w-full flex-col items-center gap-2 xl:flex xl:w-1/2">
-          <div
-            style={{ fontSize: "20px", lineHeight: "20px" }}
-            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/pointsCampaign.png')] bg-[position:calc(100%+120px)_center] bg-no-repeat px-6 !font-semibold italic"
-          >
-            Points campaign
-            <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
-          </div>
+          <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
-          <div className="mt-auto flex w-full items-center justify-between gap-2 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
-            <div
-              className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
-            >
-              <span className="text-xs text-subtitle">Your Debt</span>
-              <span className="text-sm font-semibold">{formatNumber(Number(formatUnits(userData?.totalUserDebt || 0n, 18)), 0)} USG</span>
-            </div>
-
-            <div
-              className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
-            >
-              <span className="text-xs text-subtitle">Your Collateral Deposits</span>
-              <span className="text-sm font-semibold">{formatDollar(formatUnits(userData?.totalUserDeposit || 0n, 18), 0)} </span>
-            </div>
-
-            <div
-              className={cn("flex w-full min-w-48 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-3", !!userData ? "" : "shimmer")}
-            >
-              <span className="text-xs text-subtitle">Your Total Points</span>
-              <span className="text-sm font-semibold">{formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts </span>
-            </div>
-          </div>
+          <ThreeCardRowWithMask
+            contents={[
+              { key: "Your Debt", value: `${formatNumber(Number(formatUnits(userData?.totalUserDebt || 0n, 18)), 0)} USG` },
+              { key: "Your Collateral Deposits", value: `${formatNumber(Number(formatUnits(userData?.totalUserDeposit || 0n, 18)), 0)} USG` },
+              { key: "Your Total Points", value: `${formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts` },
+            ]}
+          ></ThreeCardRowWithMask>
         </div>
       </div>
 
       <Divider className="border-white/10!" />
 
-      <div className="mt-4 flex w-full flex-col items-center justify-center gap-6 lg:flex-row">
-        <div className="hidden w-full items-center justify-center md:flex lg:w-1/2">
-          <div className="flex w-full items-center gap-4">
-            <IndicatorCards
-              className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "gap-6")}
-              indicators={[
-                { title: "USG", value: formatDollar(globalData.USGPrice, 5) },
-                { title: "Supply", value: globalData.USGSupply },
-              ]}
-            >
-              <TokenImage token={"USG" as ExistingAsset} className="h-8 w-8" size={32} />
-            </IndicatorCards>
-            <IndicatorCards
-              className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "gap-6")}
-              indicators={[
-                { title: "sUSG ", value: globalData.sUSGPrice },
-                { title: "Supply", value: globalData.sUSGSupply },
-                { title: "APY", value: sUSGCurrentAPY.toFixed(2) + "%" },
-              ]}
-            >
-              <TokenImage token={"sUSG" as ExistingAsset} className="h-8 w-8" size={32} />
-            </IndicatorCards>
+      <div className="mt-4 flex w-full flex-col items-stretch justify-center gap-6 lg:flex-row">
+        <div className="hidden w-full justify-center md:flex lg:w-1/2">
+          <div className="flex h-full w-full items-stretch gap-4">
+            <div className="basis-[40%]">
+              <NeonLightCard className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "h-full w-full")} color1="#0077ffa3" color2="#0075FF">
+                <div className="flex h-full items-center gap-2 xl:gap-4">
+                  <div className="flex-shrink-0">
+                    <TokenImage token="USG" className="h-10 w-10" size={32} />
+                  </div>
+                  <div className="flex flex-1 items-center justify-center gap-10 xl:gap-14">
+                    {[
+                      { key: "USG", value: formatDollar(globalData.USGPrice, 5) },
+                      { key: "Supply", value: globalData.USGSupply },
+                    ].map((item, index) => (
+                      <div className="text-center" key={index}>
+                        <div className="text-center text-xs text-subtitle">{item.key}</div>
+                        <div className="text-center text-sm font-semibold">{item.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </NeonLightCard>
+            </div>
+            <div className="basis-[60%]">
+              <NeonLightCard className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "h-full w-full")} color1="#95ff006d" color2="#95FF00">
+                <div className="flex h-full items-center gap-5">
+                  <div className="flex-shrink-0">
+                    <TokenImage token="sUSG" className="h-10 w-10" size={32} />
+                  </div>
+                  <div className="flex flex-1 items-center justify-center gap-10 xl:gap-14">
+                    <div className="text-center">
+                      <div className="text-xs text-subtitle">sUSG</div>
+                      <div className="text-sm font-semibold">{globalData.sUSGPrice}</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs text-subtitle">Supply</div>
+                      <div className="text-sm font-semibold">{globalData.sUSGSupply}</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs text-subtitle">APY</div>
+                      <div className="text-sm font-semibold text-[#95FF00]">{sUSGCurrentAPY.toFixed(2) + "%"}</div>
+                    </div>
+                  </div>
+                </div>
+              </NeonLightCard>
+            </div>
           </div>
         </div>
 
-        <div className="flex w-full items-center justify-center lg:w-1/2">
-          <div className="flex w-full gap-2">
-            <IndicatorCards className={cn(globalData.globalCr === "-" ? "shimmer" : "")} indicators={[{ title: "Markets CR ", value: globalData.globalCr }]} />
-            <IndicatorCards
-              className={cn(globalData.globalTvl === "-" ? "shimmer" : "")}
-              indicators={[{ title: "Markets TVL ", value: globalData.globalTvl }]}
-            />
-            <IndicatorCards
-              className={cn(globalData.globalDebt === "-" ? "shimmer" : "")}
-              indicators={[{ title: "Markets Debt ", value: globalData.globalDebt }]}
-            />
+        <ReliefCard className={cn(globalData.globalCr === "-" ? "shimmer" : "", "flex items-center bg-white/[0.03] py-2 lg:w-1/2")}>
+          <div className="flex w-1/3 flex-col items-center justify-center">
+            <div className="whitespace-nowrap text-xs text-subtitle">Global CR</div>
+            <div className="whitespace-nowrap text-sm font-semibold">{globalData.globalCr}</div>
           </div>
-        </div>
+
+          {/* Séparateur */}
+          <div className="h-10 w-px flex-shrink-0 bg-white/10" />
+
+          <div className="flex w-1/3 flex-col items-center justify-center">
+            <div className="whitespace-nowrap text-xs text-subtitle">Global TVL</div>
+            <div className="whitespace-nowrap text-sm font-semibold">{globalData.globalTvl}</div>
+          </div>
+
+          {/* Séparateur */}
+          <div className="h-10 w-px flex-shrink-0 bg-white/10" />
+
+          <div className="flex w-1/3 flex-col items-center justify-center">
+            <div className="whitespace-nowrap text-xs text-subtitle">Global Debt</div>
+            <div className="whitespace-nowrap text-sm font-semibold">{globalData.globalDebt}</div>
+          </div>
+        </ReliefCard>
       </div>
 
       <div className="my-4 hidden items-end justify-between xl:flex">
@@ -194,25 +197,13 @@ export default function USGMarketList() {
           <div className="flex w-full items-stretch justify-center gap-2">
             <div className="flex w-full flex-col items-center justify-center md:w-fit">
               <div className="mb-1 text-xs text-subtitle"> Type </div>
-              <InputSelect
-                className="w-full min-w-48"
-                template={MarketListSelectTemplate}
-                value={marketType || ""}
-                options={marketOptions}
-                onChange={(e) => setMarketType(e)}
-              />
+              <InputSelect className="w-full min-w-48" value={marketType || ""} options={marketOptions} onChange={(e) => setMarketType(e)} />
             </div>
 
             <div className="flex w-full flex-col items-center justify-center md:w-fit">
               <div className="mb-1 text-xs text-subtitle"> Protocol </div>
 
-              <InputSelect
-                className="w-full min-w-48"
-                template={MarketListSelectTemplate}
-                value={protocol || ""}
-                options={protocolOptions}
-                onChange={(e) => setProtocol(e)}
-              />
+              <InputSelect className="w-full min-w-48" value={protocol || ""} options={protocolOptions} onChange={(e) => setProtocol(e)} />
             </div>
           </div>
         </div>
@@ -230,20 +221,16 @@ export function USGMarketListInner() {
 
   const { displayRows, marketData } = useUSGMaketListContext()
 
-  const router = useRouter()
-
   return (
     <>
-      <div className="mt-4 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
-        <MarketListHeader rowDisposition={CustomMarketListRow} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
-      </div>
+      <MarketListHeader rowDisposition={CustomMarketListRow} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
 
       {displayRows?.map((item, index) => (
         <MarketListRow
           rowDisposition={CustomMarketListRow}
           className={cn("my-1", !!marketData.length && !!displayRows ? "" : "shimmer")}
           key={index}
-          navigate={() => router.push("/" + item.address + "/deposit-borrow")}
+          route={"/" + item.address + "/deposit-borrow"}
         >
           <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
 
@@ -267,7 +254,7 @@ export function USGMarketListInner() {
 
           <>
             {item.indicators.map((indicator, index) => (
-              <>
+              <Fragment key={indicator.key}>
                 {indicator?.key === "borrowed" ? (
                   <div
                     key={indicator.key}
@@ -297,7 +284,7 @@ export function USGMarketListInner() {
                     </span>
                   </div>
                 )}
-              </>
+              </Fragment>
             ))}
 
             {item.userHasDeposited && (

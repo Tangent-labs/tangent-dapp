@@ -77,19 +77,3 @@
   background: #ffffff;
   border-radius: 40px;
 }
-
-.usg-container {
-  width: 100%;
-}
-
-@media (min-width: 1280px) {
-  .usg-container {
-    max-width: 1380px;
-  }
-}
-
-@media (min-width: 1536px) {
-  .usg-container {
-    max-width: 1536px;
-  }
-}

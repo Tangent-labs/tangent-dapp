@@ -36,7 +36,7 @@ const InputSelect = <T extends SelectOption | SelectOptionAmount>({
           </SelectTrigger>
           <SelectContent>
             {options?.map((option: SelectOption) => (
-              <SelectItem value={option.value} key={option.value}>
+              <SelectItem value={option.value} key={option.value} className="cursor-pointer">
                 {template ? (
                   template(option as T)
                 ) : (

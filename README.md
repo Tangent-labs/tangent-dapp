@@ -78,3 +78,5 @@ npm run build
 ### Get path in server components (use header )
 
 adpated from https://www.propelauth.com/post/getting-url-in-next-server-components
+
+-- by yaje

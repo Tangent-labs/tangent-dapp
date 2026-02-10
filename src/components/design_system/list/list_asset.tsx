@@ -1,7 +1,6 @@
 "use client"
 
 import { Address } from "viem"
-import { Protocol } from "./protocol"
 import { ExistingAsset } from "@/types"
 import BorderPanel from "../structure/border_panel"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -43,15 +42,13 @@ const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: Li
               </span>
             </div>
             <div className="hidden items-center justify-between gap-2 md:flex">
-              {marketData?.marketType?.includes("CRV") && <Protocol token="CRV" label="Curve" />}
-              {marketData?.marketType?.startsWith("Convex_") && <Protocol token="CVX" label="Convex" />}
-              {marketData?.marketType?.startsWith("STAKEDAO") && <Protocol token="SDT" label="Stake DAO" />}
-              {marketData?.marketType?.startsWith("Pendle") && <Protocol token="PENDLE" label="Pendle" />}
-              {marketData?.marketType?.includes("FXN") && <Protocol token="FXN" label="FXN" />}
+              {marketData?.marketType?.includes("CRV") && <TokenImage token="CRV" size={12} />}
+              {marketData?.marketType?.startsWith("Convex_") && <TokenImage token="CVX" size={12} />}
+              {marketData?.marketType?.startsWith("STAKEDAO") && <TokenImage token="SDT" size={12} />}
+              {marketData?.marketType?.startsWith("Pendle") && <TokenImage token="PENDLE" size={12} />}
+              {marketData?.marketType?.includes("FXN") && <TokenImage token="FXN" size={12} />}
 
-              <BorderPanel
-                className={`flex items-center justify-center !rounded-full px-3 py-0.5 text-xs ${marketData?.constants?.irParams.isHEC ? "bg-button-active" : "bg-lec"}`}
-              >
+              <BorderPanel className={`flex items-center justify-center !rounded-full px-3 py-0.5 text-xs`}>
                 {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
               </BorderPanel>
             </div>

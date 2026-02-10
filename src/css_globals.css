@@ -37,7 +37,7 @@
     --tgt-dark: #070707;
     --tgt-list-row-hover: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), linear-gradient(90deg, #0075ff 0%, rgba(0, 0, 0, 0) 50%);
     --tgt-panel-title-gradient:
-      linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), linear-gradient(90deg, #0075ff 0%, rgba(0, 0, 0, 0) 50%);
+      linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), radial-gradient(50.04% 826.49% at 0% 50%, #0075ff 0%, rgba(0, 0, 0, 0) 100%);
     --tgt-button: linear-gradient(135deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.1) 100%);
   }
 
@@ -149,4 +149,20 @@ input[type="range"]::-moz-range-thumb {
 
 .auto-grow:focus {
   outline: none;
+}
+
+.usg-container {
+  width: 100%;
+}
+
+@media (min-width: 1280px) {
+  .usg-container {
+    max-width: 1380px;
+  }
+}
+
+@media (min-width: 2036px) {
+  .usg-container {
+    max-width: 1536px;
+  }
 }

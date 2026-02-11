@@ -1,18 +1,21 @@
 "use client"
 
 import Image from "next/image"
+import { cn } from "@/lib/utils"
+import { useUSGContext } from "../usg_context"
 import { ExistingAsset, ListState } from "@/types"
-import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGEarnContext } from "./usg_earn_context"
-import ListRow from "@/components/design_system/list/list_row"
 import { USGEarnListHeaders } from "./usg_earn_controller"
+import ListRow from "@/components/design_system/list/list_row"
+import { formatBigInt, formatNumber } from "@/lib/number_formatter"
 import ListHeader from "@/components/design_system/list/list_header"
 import InputSearch from "@/components/design_system/inputs/input_search"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { cn } from "@/lib/utils"
 import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
+import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 
 const listeState: ListState = {
   search: undefined,
@@ -25,10 +28,12 @@ const listeState: ListState = {
 export const USGEarnContent = () => {
   const { searchValue, setSearchValue, displayRows, USGsUSGMetrics } = useUSGEarnContext()
 
+  const { lpUserPoints, voteUserPoints } = useUSGContext()
+
   return (
     <>
       <div className="flex items-stretch justify-between gap-6">
-        <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
+        <ReliefCard className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
             <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
@@ -39,22 +44,18 @@ export const USGEarnContent = () => {
               trading markets.
             </p>
           </div>
-        </div>
+        </ReliefCard>
 
         <div className="flex h-auto w-full flex-col items-center gap-2 xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
-          <div className="mt-auto flex w-full items-center justify-center gap-3 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
-            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 xl:min-w-48">
-              <span className="text-xs text-subtitle">USG Balance</span>
-              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)}</span>
-            </div>
-
-            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 xl:min-w-48">
-              <span className="text-xs text-subtitle">sUSG Balance</span>
-              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)}</span>
-            </div>
-          </div>
+          <ThreeCardRowWithMask
+            contents={[
+              { key: "USG Balance", value: formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2) },
+              { key: "sUSG Balance", value: formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2) },
+              { key: "Your Total Points", value: `${formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts` },
+            ]}
+          ></ThreeCardRowWithMask>
         </div>
       </div>
 

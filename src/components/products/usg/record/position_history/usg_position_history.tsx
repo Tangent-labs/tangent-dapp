@@ -14,6 +14,7 @@ import { IconSortHeader } from "@/components/icons/icon_sort_header"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { formatActionLabel, userPositionListHeaders } from "./usg_position_history_controller"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 const listeState: ListState = {
   search: undefined,
@@ -41,7 +42,7 @@ export default function USGPositionHistory() {
   const { displayRows, customSort, isUserHistoryLoading } = useUSGRecordContext()
 
   return (
-    <div className="rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
+    <ReliefCard className="rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
       <Title label={"Transaction history"} size={"normal"} />
       <Divider />
 
@@ -60,7 +61,7 @@ export default function USGPositionHistory() {
           </div>
         )}
       </>
-    </div>
+    </ReliefCard>
   )
 }
 

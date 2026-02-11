@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { formatUnits } from "viem"
+import { useUSGContext } from "../usg_context"
 import { Switch } from "@/components/ui/switch"
 import { ExistingAsset, ListState } from "@/types"
 import { claimListHeaders } from "./usg_claim_controller"
@@ -9,16 +10,18 @@ import { useUSGClaimContext } from "./usg_claim_context"
 import { Button } from "@/components/design_system/inputs/button"
 import ListAsset from "@/components/design_system/list/list_asset"
 import Divider from "@/components/design_system/structure/divider"
-import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import ListHeader from "@/components/design_system/list/list_header"
 import { ClaimableMarket, ClaimAsset, ClaimData } from "../usg_type"
 import TokenImage from "@/components/design_system/structure/token_image"
+import MarketListAPR from "@/components/design_system/list/market_list_apr"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import USGHoverCard from "@/components/design_system/structure/usg_hover_card"
+import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
 import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import MarketListAPR from "@/components/design_system/list/market_list_apr"
 import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
+import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 
 const listeState: ListState = {
   search: undefined,
@@ -47,10 +50,12 @@ export default function USGClaimContent() {
 
   const { isWellConnected, connect } = useWalletConnexionContext()
 
+  const { lpUserPoints, voteUserPoints } = useUSGContext()
+
   return (
     <>
       <div className="flex items-stretch justify-between gap-6">
-        <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
+        <ReliefCard className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
             <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
@@ -58,29 +63,25 @@ export default function USGClaimContent() {
             <span className="text-4xl font-semibold">Claim</span>
             <p className="text-[15px]">Claim protocol-generated CRV and CVX rewards associated with your active streaming pool positions.</p>
           </div>
-        </div>
+        </ReliefCard>
 
         <div className="flex h-auto w-full flex-col items-center gap-2 xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
-          <div className="mt-auto flex w-full items-center justify-center gap-3 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
-            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 xl:min-w-48">
-              <span className="text-xs text-subtitle">USG Balance</span>
-              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)}</span>
-            </div>
-
-            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 xl:min-w-48">
-              <span className="text-xs text-subtitle">sUSG Balance</span>
-              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)}</span>
-            </div>
-          </div>
+          <ThreeCardRowWithMask
+            contents={[
+              { key: "USG Balance", value: formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2) },
+              { key: "sUSG Balance", value: formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2) },
+              { key: "Your Total Points", value: `${formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts` },
+            ]}
+          ></ThreeCardRowWithMask>
         </div>
       </div>
 
       <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
         <div className="flex w-full flex-col md:w-9/12">
           <div className="mt-2 flex w-full flex-col items-start justify-between sm:flex-row sm:items-end">
-            <div className="mt-0 flex w-80 items-center justify-between md:mt-10">
+            <ReliefCard className="mt-0 flex w-80 items-center justify-between md:mt-10">
               <IndicatorCards
                 className="gap-6"
                 indicators={[
@@ -94,7 +95,7 @@ export default function USGClaimContent() {
                   },
                 ]}
               />
-            </div>
+            </ReliefCard>
 
             <div className="mt-2 flex gap-2">
               <span className="text-sm text-subtitle">Claim all</span>
@@ -111,7 +112,7 @@ export default function USGClaimContent() {
           )}
         </div>
 
-        <div className="mt-32 flex h-full min-h-52 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-5 backdrop-blur-[60px] md:w-3/12">
+        <ReliefCard className="mt-32 flex h-full min-h-52 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-5 backdrop-blur-[60px] md:w-3/12">
           <div className="flex w-full items-center justify-between">
             <div className="flex flex-col items-start justify-start">Market</div>
 
@@ -149,7 +150,7 @@ export default function USGClaimContent() {
               </>
             )}
           </div>
-        </div>
+        </ReliefCard>
       </div>
     </>
   )

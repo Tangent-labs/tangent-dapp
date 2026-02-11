@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { useUSGContext } from "../usg_context"
 import { Switch } from "@/components/ui/switch"
 import { ExistingAsset, ListState } from "@/types"
 import { useUSGHarvestContext } from "./usg_harvest_context"
@@ -12,10 +13,12 @@ import ListHeader from "@/components/design_system/list/list_header"
 import { HarvestableMarket, HarvesterInfoDisplay } from "../usg_type"
 import TokenImage from "@/components/design_system/structure/token_image"
 import USGHoverCard from "@/components/design_system/structure/usg_hover_card"
-import { formatBigInt, formatDollar, formatPercent } from "@/lib/number_formatter"
-import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import { formatBigInt, formatDollar, formatNumber, formatPercent } from "@/lib/number_formatter"
 import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
+import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 const listeState: ListState = {
   search: undefined,
@@ -39,6 +42,8 @@ const HarvestRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
 }
 
 export default function USGHarvestContent() {
+  const { lpUserPoints, voteUserPoints } = useUSGContext()
+
   const { isConnected, connect } = useWalletConnexionContext()
 
   const { displayRows, USGsUSGMetrics, marketsToHarvest, isLoading, customSort, onClickSelectAll, onClickHarvest } = useUSGHarvestContext()
@@ -46,7 +51,7 @@ export default function USGHarvestContent() {
   return (
     <>
       <div className="flex items-stretch justify-between gap-6">
-        <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
+        <ReliefCard className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
             <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
@@ -54,22 +59,18 @@ export default function USGHarvestContent() {
             <span className="text-4xl font-semibold">Harvest</span>
             <p className="text-[15px]">Harvest protocol-generated CRV, CVX or FXN rewards.</p>
           </div>
-        </div>
+        </ReliefCard>
 
         <div className="flex h-auto w-full flex-col items-center gap-2 xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
-          <div className="mt-auto flex w-full items-center justify-center gap-3 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
-            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 xl:min-w-48">
-              <span className="text-xs text-subtitle">USG Balance</span>
-              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)}</span>
-            </div>
-
-            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 xl:min-w-48">
-              <span className="text-xs text-subtitle">sUSG Balance</span>
-              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)}</span>
-            </div>
-          </div>
+          <ThreeCardRowWithMask
+            contents={[
+              { key: "USG Balance", value: formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2) },
+              { key: "sUSG Balance", value: formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2) },
+              { key: "Your Total Points", value: `${formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts` },
+            ]}
+          ></ThreeCardRowWithMask>
         </div>
       </div>
 

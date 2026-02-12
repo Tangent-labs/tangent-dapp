@@ -92,7 +92,7 @@ export function PredepositOpportunitiesListInner({ displayRows }: PredepositOppo
 
   return (
     <>
-      <div className="mt-2 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="mt-2 w-full">
         <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 

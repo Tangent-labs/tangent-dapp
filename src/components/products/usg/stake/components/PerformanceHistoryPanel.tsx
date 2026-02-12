@@ -11,6 +11,7 @@ import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { Area, AreaChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { ForecastGraph } from "../usg_staking_forecast"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 interface PerformanceHistoryPanelProps {
   sUSGCurrentAPY: number
@@ -105,7 +106,7 @@ export default function PerformanceHistoryPanel({
         <SlidingTabs labels={["Projected earnings", "Position APR"]} value={selectedFeature} onSwitchTab={(e: string) => setSelectedFeature(e)} />
       </div>
 
-      <div className="mt-6 flex w-full flex-col rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px]">
+      <ReliefCard className="mt-6 flex w-full flex-col rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px]">
         {selectedFeature === "Projected earnings" && (
           <ForecastGraph currentFeature={currentFeature} currentInvestment={sUSGBalance} apr={sUSGCurrentAPY} newLiquidity={addLiq} />
         )}
@@ -213,7 +214,7 @@ export default function PerformanceHistoryPanel({
             </div>
           </>
         )}
-      </div>
+      </ReliefCard>
     </div>
   )
 }

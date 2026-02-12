@@ -87,9 +87,7 @@ export function USGMEarnListInner() {
 
   return (
     <>
-      <div className="mt-2 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
-        <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
-      </div>
+      <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
 
       {displayRows?.map((item, index) => (
         <ListRow route={item.link} className={cn("my-1", isLoading ? "shimmer" : "")} key={index}>

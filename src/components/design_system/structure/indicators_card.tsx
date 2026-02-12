@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react"
 import { IndicatorData } from "@/types"
+import { ReliefCard } from "./relief_card"
 
 type IndicatorCardProps = {
   title: string
@@ -26,14 +27,14 @@ interface IndicatorCardsProps {
 
 const IndicatorCards = ({ indicators, className = "", children }: IndicatorCardsProps) => {
   return (
-    <div
+    <ReliefCard
       className={`flex w-full items-center justify-between rounded-[10px] border-white border-opacity-20 bg-overlay-panel p-4 backdrop-blur-[60px] ${className}`}
     >
       {children}
       {indicators.map((indicator, index) => (
         <IndicatorCard key={index} title={indicator.title} value={indicator.value} />
       ))}
-    </div>
+    </ReliefCard>
   )
 }
 

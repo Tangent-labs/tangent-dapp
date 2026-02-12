@@ -4,6 +4,7 @@ import { MarketDebtData, USGCollateralData } from "../usg_type"
 import Divider from "@/components/design_system/structure/divider"
 import TokenImage from "@/components/design_system/structure/token_image"
 import InnerTooltip from "@/components/design_system/structure/inner_tooltip"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 type USGCollateralsProps = {
   userData: {
@@ -20,7 +21,7 @@ type USGCollateralsProps = {
 export const USGCollaterals = ({ userData, marketTVLMaxValue }: USGCollateralsProps) => {
   return (
     <div className="flex w-full items-start justify-start md:w-1/2">
-      <div className="flex h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+      <ReliefCard className="flex h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
         <div className="text-xl font-semibold">USG collaterals</div>
         <Divider className="h-0.5 w-full bg-white/10" />
         <div className="mb-2 flex items-center justify-start gap-2 text-xs">
@@ -59,7 +60,7 @@ export const USGCollaterals = ({ userData, marketTVLMaxValue }: USGCollateralsPr
             </div>
           ))}
         </div>
-      </div>
+      </ReliefCard>
     </div>
   )
 }

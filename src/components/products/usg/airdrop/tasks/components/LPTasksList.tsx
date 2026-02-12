@@ -75,8 +75,8 @@ export const LPTasksList = () => {
 
   return (
     <>
-      <div className="mb-1 mt-6 rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
-        <div className={`hidden p-4 leading-[10px] xl:block`}>
+      <div className="relative mb-1 mt-4 hidden w-full xl:block">
+        <div className={`w-full rounded-t-[10px] bg-overlay-panel p-4 leading-[10px] backdrop-blur-[60px]`}>
           <LpTaskListDisposition>
             {!!headers?.at(0)?.key && (
               <div className="flex w-full">
@@ -129,6 +129,18 @@ export const LPTasksList = () => {
             )}
           </LpTaskListDisposition>
         </div>
+
+        {/* Gradient border effect */}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-t-[10px]"
+          style={{
+            border: "1px solid transparent",
+            background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
+            WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
+            WebkitMaskComposite: "xor",
+            maskComposite: "exclude",
+          }}
+        />
       </div>
 
       {displayRows &&
@@ -136,7 +148,7 @@ export const LPTasksList = () => {
           <div
             onClick={() => window.open(task.url, "_blank")}
             key={task?.taskId}
-            className="mb-1 bg-overlay-panel px-2 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover lg:px-5"
+            className="relative mb-1 bg-overlay-panel px-2 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:opacity-70 hover:-translate-y-[1px] hover:cursor-pointer hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:before:bg-list-row-hover hover:before:opacity-80 lg:px-5"
           >
             <div className="hidden items-center justify-between md:flex">
               <div className="flex w-5/12 items-center gap-2 xl:gap-4">
@@ -187,6 +199,18 @@ export const LPTasksList = () => {
                 </div>
               </div>
             </div>
+
+            {/* Gradient border effect */}
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{
+                border: "1px solid transparent",
+                background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
+                WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
+                WebkitMaskComposite: "xor",
+                maskComposite: "exclude",
+              }}
+            />
           </div>
         ))}
     </>

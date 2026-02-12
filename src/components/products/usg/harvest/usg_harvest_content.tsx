@@ -92,7 +92,7 @@ export default function USGHarvestContent() {
           )}
         </div>
 
-        <div className="flex h-full min-h-52 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-5 backdrop-blur-[60px] md:w-3/12">
+        <ReliefCard className="flex h-full min-h-52 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-5 backdrop-blur-[60px] md:w-3/12">
           <div className="flex w-full items-center justify-between">
             <div className="flex flex-col items-start justify-start">Market</div>
 
@@ -126,7 +126,7 @@ export default function USGHarvestContent() {
 
             {!isConnected && <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />}
           </div>
-        </div>
+        </ReliefCard>
       </div>
     </>
   )
@@ -139,7 +139,7 @@ function HarvestList() {
 
   return (
     <>
-      <div className="mb-0.5 mt-2 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="mb-0.5 mt-2 w-full">
         <ListHeader rowDisposition={HarvestRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 

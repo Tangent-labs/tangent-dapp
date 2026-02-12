@@ -156,7 +156,7 @@ function LockPositionList() {
 
   return (
     <>
-      <div className="mb-2 w-full rounded-[10px] backdrop-blur-[60px]">
+      <div className="mb-2 w-full">
         <ListHeader rowDisposition={LockRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 

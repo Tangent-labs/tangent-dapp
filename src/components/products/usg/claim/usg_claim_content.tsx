@@ -163,7 +163,7 @@ function ClaimList() {
 
   return (
     <>
-      <div className="mb-0.5 mt-2 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="mb-0.5 mt-2 w-full">
         <ListHeader rowDisposition={ClaimRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 

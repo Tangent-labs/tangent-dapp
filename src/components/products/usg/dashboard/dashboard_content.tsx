@@ -14,6 +14,7 @@ import IndicatorCards from "@/components/design_system/structure/indicators_card
 import { formatCompact, formatDollar } from "@/lib/number_formatter"
 import { ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip, TooltipProps } from "recharts"
 import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 export const USGDashboardContent = () => {
   const { globalData, userData, marketDebtMaxValue, marketTVLMaxValue } = useUSGDashboardContext()
@@ -153,7 +154,7 @@ export const USGDashboardContent = () => {
 
       <div className="flex w-full flex-col items-start justify-start gap-3 md:flex-row">
         <div className="flex w-full items-start justify-start">
-          <div className="flex h-full max-h-[340px] w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
+          <ReliefCard className="flex h-full max-h-[340px] w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
             <div className="flex w-full items-center justify-end sm:justify-between">
               <div className="hidden text-xl font-semibold sm:flex">Total Supply </div>
 
@@ -276,13 +277,13 @@ export const USGDashboardContent = () => {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </ReliefCard>
         </div>
       </div>
 
       <div className="flex w-full flex-col items-start justify-start gap-3 md:flex-row">
         <div className="flex w-full items-start justify-start">
-          <div className="flex h-full max-h-[340px] w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
+          <ReliefCard className="flex h-full max-h-[340px] w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
             <div className="flex w-full items-center justify-end sm:justify-between">
               <div className="hidden text-xl font-semibold sm:flex">TVL </div>
 
@@ -404,7 +405,7 @@ export const USGDashboardContent = () => {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </ReliefCard>
         </div>
       </div>
 

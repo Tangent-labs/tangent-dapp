@@ -4,11 +4,12 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGBorrowContext } from "./usg_record_borrow_context"
 import FormButtons from "@/components/design_system/form/form_actions"
-import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
-import { USGStaticAssetSelector } from "@/components/design_system/structure/usg_static_selector"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
+import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
+import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 
 export default function USGRecordBorrowContent() {
   const { connect } = useWalletConnexionContext()
@@ -25,20 +26,21 @@ export default function USGRecordBorrowContent() {
           <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} USG</span>
         </div>
 
-        <BorrowInput
+        <GenericInputAssetAmount
           displaySliderInput={true}
-          borrowAmount={borrowWeiValue}
+          inputWeiValue={borrowWeiValue}
           disabled={maxBorrowCapReached}
-          labelDeposit="You borrow"
-          depositSelect={<USGStaticAssetSelector />}
-          borrowAsset={USGInfo}
+          label="You borrow"
+          depositSelect={<StaticCardAssetInput asset="USG" />}
+          asset={USGInfo}
           setMaxBalance={maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue)}
           balance={maxBorrowableValue}
           onValueChange={(value: bigint | undefined) => {
             setBorrowWeiValue(value)
           }}
-          percentage={borrowPercentage}
-          setPercentage={maxBorrowCapReached ? () => {} : setBorrowPercentage}
+          sliderPercentage={borrowPercentage}
+          setSliderPercentage={maxBorrowCapReached ? () => {} : setBorrowPercentage}
+          sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
         />
       </div>
 

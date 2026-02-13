@@ -9,9 +9,9 @@ import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGWithdrawContext } from "./usg_record_withdraw_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 
 export default function USGWithdrawContent() {
   const { connect } = useWalletConnexionContext()
@@ -87,17 +87,17 @@ export default function USGWithdrawContent() {
             </span>
           </div>
 
-          <DepositInput
-            depositAmount={withdrawWeiValue}
-            labelDeposit="You withdraw"
+          <GenericInputAssetAmount
+            inputWeiValue={withdrawWeiValue}
+            label="You withdraw"
             depositSelect={<AssetSelect />}
-            depositAsset={pricedCollateralInfo}
+            asset={pricedCollateralInfo}
             balance={maxWithdrawable}
             displaySliderInput={true}
             setMaxBalance={() => setWithdrawWeiValue(maxWithdrawable)}
             onValueChange={setWithdrawWeiValue}
-            percentage={withdrawPercentage}
-            setPercentage={setWithdrawPercentage}
+            sliderPercentage={withdrawPercentage}
+            setSliderPercentage={setWithdrawPercentage}
           />
         </div>
 

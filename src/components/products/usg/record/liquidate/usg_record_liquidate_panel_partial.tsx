@@ -4,10 +4,10 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import Divider from "@/components/design_system/structure/divider"
 import { useUSGLiquidateContext } from "./usg_record_liquidate_context"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { USGStaticAssetSelector } from "@/components/design_system/structure/usg_static_selector"
 import { CustomCollatAssetDisplay } from "@/components/design_system/structure/custom_collat_asset_display"
+import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 
 export default function USGLiquidatePanelPartial() {
   const { USGInfo, collateralInfo, pricedCollateralInfo } = useUSGRecordContext()
@@ -41,32 +41,32 @@ export default function USGLiquidatePanelPartial() {
         <span className="text-xs text-subtitle">{maxLiquidateString}</span>
       </div>
 
-      <DepositInput
-        depositAmount={liquidateWeiValue}
-        labelDeposit="You liquidate"
+      <GenericInputAssetAmount
+        inputWeiValue={liquidateWeiValue}
+        label="You liquidate"
         depositSelect={<LiquidateAssetDisplay />}
         disabled={!canInteract}
         displaySliderInput={true}
-        percentage={liquidablePercentage}
-        setPercentage={setLiquidablePercentage}
-        depositAsset={pricedCollateralInfo}
+        sliderPercentage={liquidablePercentage}
+        setSliderPercentage={setLiquidablePercentage}
+        asset={pricedCollateralInfo}
         setMaxBalance={() => handleLiquidateValueChange(maxLiquidable)}
         balance={maxLiquidable}
         onValueChange={handleLiquidateValueChange}
       />
 
-      <DepositInput
-        depositAmount={USGReceivedValue}
-        labelDeposit="For"
-        depositSelect={<USGStaticAssetSelector />}
+      <GenericInputAssetAmount
+        inputWeiValue={USGReceivedValue}
+        label="For"
+        depositSelect={<StaticCardAssetInput asset="USG" />}
         disabled={true}
         displaySliderInput={false}
-        depositAsset={USGInfo}
+        asset={USGInfo}
         setMaxBalance={() => {}}
         onValueChange={() => {}}
         isLoading={isQuoteLoading}
-        percentage={0}
-        setPercentage={() => {}}
+        sliderPercentage={0}
+        setSliderPercentage={() => {}}
       />
 
       <Divider />
@@ -75,15 +75,15 @@ export default function USGLiquidatePanelPartial() {
         <span className="text-xs text-subtitle">Max: {formatBigInt(maxRepayable, 18, 2)} USG</span>
       </div>
 
-      <DepositInput
-        depositAmount={repayWeiValue}
-        labelDeposit="You repay"
-        depositSelect={<USGStaticAssetSelector />}
+      <GenericInputAssetAmount
+        inputWeiValue={repayWeiValue}
+        label="You repay"
+        depositSelect={<StaticCardAssetInput asset="USG" />}
         disabled={!canInteract}
         displaySliderInput={true}
-        percentage={repayablePercentage}
-        setPercentage={setRepayablePercentage}
-        depositAsset={USGInfo}
+        sliderPercentage={repayablePercentage}
+        setSliderPercentage={setRepayablePercentage}
+        asset={USGInfo}
         setMaxBalance={() => setRepayWeiValue(maxRepayable)}
         balance={maxRepayable}
         onValueChange={(value: bigint | undefined) => {
@@ -91,18 +91,18 @@ export default function USGLiquidatePanelPartial() {
         }}
       />
 
-      <DepositInput
-        depositAmount={(USGReceivedValue || 0n) - (repayWeiValue || 0n)}
-        labelDeposit="You receive"
-        depositSelect={<USGStaticAssetSelector />}
+      <GenericInputAssetAmount
+        inputWeiValue={(USGReceivedValue || 0n) - (repayWeiValue || 0n)}
+        label="You receive"
+        depositSelect={<StaticCardAssetInput asset="USG" />}
         disabled={true}
         displaySliderInput={false}
-        depositAsset={USGInfo}
+        asset={USGInfo}
         setMaxBalance={() => {}}
         onValueChange={() => {}}
         isLoading={isQuoteLoading}
-        percentage={0}
-        setPercentage={() => {}}
+        sliderPercentage={0}
+        setSliderPercentage={() => {}}
       />
     </>
   )

@@ -17,14 +17,13 @@ import FormButtons from "@/components/design_system/form/form_actions"
 import InputSelect from "@/components/design_system/inputs/input_select"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
-import { RepayInput } from "@/components/design_system/inputs/repay_input"
 import BorderPanel from "@/components/design_system/structure/border_panel"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { USGStaticAssetSelector } from "@/components/design_system/structure/usg_static_selector"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CustomCollatAssetDisplay } from "@/components/design_system/structure/custom_collat_asset_display"
+import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 
 export default function USGRepayContent() {
   const {
@@ -175,18 +174,18 @@ export default function USGRepayContent() {
           </span>
         </div>
 
-        <RepayInput
-          depositAmount={repayWeiValue}
-          labelDeposit="You repay"
+        <GenericInputAssetAmount
+          inputWeiValue={repayWeiValue}
+          label="You repay"
           depositSelect={<AssetSelect />}
           disabled={isRepayMax}
           isZapping={!!repayAsset && repayAsset !== "USG"}
-          depositAsset={repayAssetInfo || USGInfo}
+          asset={repayAssetInfo || USGInfo}
           balance={maxRepayableValue}
           setMaxBalance={() => handleRepayValueChange(maxRepayableValue)}
           displaySliderInput={true}
-          percentage={percentage}
-          setPercentage={setPercentage}
+          sliderPercentage={percentage}
+          setSliderPercentage={setPercentage}
           onValueChange={handleRepayValueChange}
         />
 
@@ -213,7 +212,7 @@ export default function USGRepayContent() {
                   <div>{usgRepayedValue && USGInfo?.price !== 0 ? USGDollarRepayedValue : ""}</div>
                 </div>
               </div>
-              <USGStaticAssetSelector />
+              <StaticCardAssetInput asset="USG" />
             </div>
           </PanelRaw>
         )}
@@ -227,19 +226,19 @@ export default function USGRepayContent() {
               </span>
             </div>
 
-            <DepositInput
-              depositAmount={withdrawWeiValue}
-              labelDeposit="You withdraw"
+            <GenericInputAssetAmount
+              inputWeiValue={withdrawWeiValue}
+              label="You withdraw"
               depositSelect={assetSelectElement}
-              depositAsset={pricedCollateralInfo}
+              asset={pricedCollateralInfo}
               balance={maxWithdrawable}
               displaySliderInput={true}
               setMaxBalance={() => setWithdrawWeiValue(maxWithdrawable)}
               onValueChange={(value: bigint | undefined) => {
                 setWithdrawWeiValue(value)
               }}
-              percentage={withdrawPercentage}
-              setPercentage={setWithdrawPercentage}
+              sliderPercentage={withdrawPercentage}
+              setSliderPercentage={setWithdrawPercentage}
             />
           </div>
         )}

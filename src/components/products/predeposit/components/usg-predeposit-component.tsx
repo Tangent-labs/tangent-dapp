@@ -2,7 +2,6 @@
 
 import { formatUnits } from "viem"
 import { PredepositStatus } from "../types/types"
-import { StaticAssetSelector } from "./usdc-selector"
 import { DynamicProgressBar } from "./dynamic-progress-bar"
 import { formatDollar, formatNumber } from "@/lib/number_formatter"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
@@ -10,7 +9,9 @@ import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import BorderPanel from "@/components/design_system/structure/border_panel"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { StaticCardAssetInput } from "./StaticCardAssetInput"
+import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 
 type USGPredepositComponentProps = {
   predepositStatus: PredepositStatus | null
@@ -74,19 +75,21 @@ export const USGPredepositComponent = ({
         <SlippageInput slippage={slippage} setSlippage={setSlippage} />
       </div>
 
-      <DepositInput
+      <GenericInputAssetAmount
         displaySliderInput={true}
-        depositAmount={depositWeiValue}
-        depositSelect={<StaticAssetSelector asset={assetInfo?.symbol as ExistingAsset} />}
+        inputWeiValue={depositWeiValue}
+        depositSelect={<StaticCardAssetInput asset={assetInfo?.symbol as ExistingAsset} />}
         isLoading={isLoading}
-        depositAsset={assetInfo}
+        label="You deposit"
+        asset={assetInfo}
         balance={balance}
         isZapping={false}
         onValueChange={handleDepositChange}
-        percentage={percentage}
-        setPercentage={setPercentage}
+        sliderPercentage={percentage}
+        setSliderPercentage={setPercentage}
         setMaxBalance={setMaxBalance}
         displayBalance={true}
+        sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
       />
 
       <div className={`${isLoading ? "shimmer" : ""} my-2 flex flex-col gap-1 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]`}>

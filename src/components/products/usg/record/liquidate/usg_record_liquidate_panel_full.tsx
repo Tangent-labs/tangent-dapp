@@ -3,9 +3,10 @@
 import { useUSGRecordContext } from "../usg_record_context"
 import Divider from "@/components/design_system/structure/divider"
 import { useUSGLiquidateContext } from "./usg_record_liquidate_context"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
-import { USGStaticAssetSelector } from "@/components/design_system/structure/usg_static_selector"
 import { CustomCollatAssetDisplay } from "@/components/design_system/structure/custom_collat_asset_display"
+import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
+import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 
 export default function USGLiquidatePanelFull() {
   const { USGInfo, collateralInfo, marketData } = useUSGRecordContext()
@@ -23,61 +24,65 @@ export default function USGLiquidatePanelFull() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <DepositInput
-          depositAmount={marketData?.collateralInfos?.positionCollateralAmount}
-          labelDeposit="You liquidate"
+        <GenericInputAssetAmount
+          inputWeiValue={marketData?.collateralInfos?.positionCollateralAmount}
+          label="You liquidate"
           depositSelect={<LiquidateAssetDisplay />}
           disabled={true}
           displaySliderInput={false}
-          depositAsset={collateralInfo}
+          asset={collateralInfo}
           setMaxBalance={() => {}}
           onValueChange={() => {}}
           isLoading={isQuoteLoading}
-          percentage={0}
-          setPercentage={() => {}}
+          sliderPercentage={0}
+          setSliderPercentage={() => {}}
+          sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
         />
 
-        <DepositInput
-          depositAmount={USGReceivedValue}
-          labelDeposit="For"
-          depositSelect={<USGStaticAssetSelector />}
+        <GenericInputAssetAmount
+          inputWeiValue={USGReceivedValue}
+          label="For"
+          depositSelect={<StaticCardAssetInput asset="USG" />}
           disabled={true}
           displaySliderInput={false}
-          depositAsset={USGInfo}
+          asset={USGInfo}
           setMaxBalance={() => {}}
           onValueChange={() => {}}
           isLoading={isQuoteLoading}
-          percentage={0}
-          setPercentage={() => {}}
+          sliderPercentage={0}
+          setSliderPercentage={() => {}}
+          sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
         />
 
         <Divider />
 
-        <DepositInput
-          depositAmount={repayWeiValue}
-          labelDeposit="You repay"
-          depositSelect={<USGStaticAssetSelector />}
+        <GenericInputAssetAmount
+          inputWeiValue={repayWeiValue}
+          label="You repay"
+          depositSelect={<StaticCardAssetInput asset="USG" />}
           disabled={true}
           displaySliderInput={false}
-          depositAsset={USGInfo}
+          asset={USGInfo}
           setMaxBalance={() => {}}
           onValueChange={() => {}}
-          percentage={0}
-          setPercentage={() => {}}
+          sliderPercentage={0}
+          setSliderPercentage={() => {}}
+          sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
         />
 
-        <DepositInput
-          depositAmount={(USGReceivedValue || 0n) - (repayWeiValue || 0n)}
-          labelDeposit="You receive"
-          depositSelect={<USGStaticAssetSelector />}
+        <GenericInputAssetAmount
+          inputWeiValue={(USGReceivedValue || 0n) - (repayWeiValue || 0n)}
+          label="You receive"
+          depositSelect={<StaticCardAssetInput asset="USG" />}
           disabled={true}
           displaySliderInput={false}
-          depositAsset={USGInfo}
+          asset={USGInfo}
           setMaxBalance={() => {}}
           onValueChange={() => {}}
           isLoading={isQuoteLoading}
-          percentage={0}
-          setPercentage={() => {}}
+          sliderPercentage={0}
+          setSliderPercentage={() => {}}
+          sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
         />
       </div>
     </>

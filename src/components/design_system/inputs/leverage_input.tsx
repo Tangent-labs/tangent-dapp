@@ -6,7 +6,7 @@ import BorderPanel from "../structure/border_panel"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { formatDollar, toBigInt } from "@/lib/number_formatter"
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
-import { USGStaticAssetSelector } from "../structure/usg_static_selector"
+import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 
 type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced | CollateralInfo
@@ -122,7 +122,7 @@ export function LeverageInput({
           <div className="text-xs text-subtitle">{dollarDepositDisplay}</div>
         </div>
 
-        <USGStaticAssetSelector></USGStaticAssetSelector>
+        <StaticCardAssetInput asset="USG" />
       </div>
 
       <div className="flex w-full items-center justify-between gap-2">

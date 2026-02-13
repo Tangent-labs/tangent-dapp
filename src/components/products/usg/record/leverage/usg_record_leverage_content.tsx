@@ -1,6 +1,6 @@
 "use client"
 
-import { cn } from "@/lib/utils"
+import { cn, PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { Switch } from "@/components/ui/switch"
 import { useUSGRecordContext } from "../usg_record_context"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
@@ -8,7 +8,6 @@ import { useUSGLeverageContext } from "./usg_record_leverage_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import BorderPanel from "@/components/design_system/structure/border_panel"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
 import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
 import { IconThunder, IconCircleHelp, IconSingleArrow } from "@/components/icons"
@@ -17,6 +16,7 @@ import { MaxBorrowCapReached } from "@/components/design_system/notifications/ma
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { CustomCollatAssetDisplay } from "@/components/design_system/structure/custom_collat_asset_display"
+import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 
 export default function USGLeverageContent() {
   const {
@@ -92,20 +92,22 @@ export default function USGLeverageContent() {
             <span className="text-xs text-subtitle">{maxDepositString}</span>
           </div>
 
-          <DepositInput
-            displaySliderInput={true}
-            depositAmount={depositWeiValue}
+          <GenericInputAssetAmount
+            inputWeiValue={depositWeiValue}
+            onValueChange={handleDepositChange}
             depositSelect={<CustomAssetSelect />}
             isLoading={false}
-            depositAsset={depositAssetInfo}
+            asset={depositAssetInfo}
+            label="You deposit"
             balance={!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance}
             isZapping={isZapping}
-            onValueChange={handleDepositChange}
-            percentage={depositSliderPercent}
-            setPercentage={setDepositSliderPercent}
+            sliderPercentage={depositSliderPercent}
+            setSliderPercentage={setDepositSliderPercent}
+            displaySliderInput={true}
             setMaxBalance={() => {
               handleDepositChange(marketData?.collateralBalance || 0n)
             }}
+            sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
           />
         </>
       )}

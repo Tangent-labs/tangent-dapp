@@ -21,9 +21,9 @@ import BorderPanel from "@/components/design_system/structure/border_panel"
 import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { CustomCollatAssetDisplay } from "@/components/design_system/structure/custom_collat_asset_display"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
+import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 
 export default function USGRepayContent() {
   const {
@@ -160,7 +160,7 @@ export default function USGRepayContent() {
         onChange={(v) => setWithdrawSelectedAsset(v)}
       />
     ) : (
-      <CustomCollatAssetDisplay collateralInfo={collateralInfo} />
+      <StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />
     )
 
   return (
@@ -182,11 +182,12 @@ export default function USGRepayContent() {
           isZapping={!!repayAsset && repayAsset !== "USG"}
           asset={repayAssetInfo || USGInfo}
           balance={maxRepayableValue}
-          setMaxBalance={() => handleRepayValueChange(maxRepayableValue)}
+          setMaxAmount={() => handleRepayValueChange(maxRepayableValue)}
           displaySliderInput={true}
           sliderPercentage={percentage}
           setSliderPercentage={setPercentage}
           onValueChange={handleRepayValueChange}
+          sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
         />
 
         {repayAsset && repayAsset !== "USG" && (
@@ -233,12 +234,13 @@ export default function USGRepayContent() {
               asset={pricedCollateralInfo}
               balance={maxWithdrawable}
               displaySliderInput={true}
-              setMaxBalance={() => setWithdrawWeiValue(maxWithdrawable)}
+              setMaxAmount={() => setWithdrawWeiValue(maxWithdrawable)}
               onValueChange={(value: bigint | undefined) => {
                 setWithdrawWeiValue(value)
               }}
               sliderPercentage={withdrawPercentage}
               setSliderPercentage={setWithdrawPercentage}
+              sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
             />
           </div>
         )}

@@ -3,19 +3,15 @@
 import { useUSGRecordContext } from "../usg_record_context"
 import Divider from "@/components/design_system/structure/divider"
 import { useUSGLiquidateContext } from "./usg_record_liquidate_context"
-import { CustomCollatAssetDisplay } from "@/components/design_system/structure/custom_collat_asset_display"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
+import { ExistingAsset } from "@/types"
 
 export default function USGLiquidatePanelFull() {
   const { USGInfo, collateralInfo, marketData } = useUSGRecordContext()
 
   const { isQuoteLoading, USGReceivedValue, repayWeiValue } = useUSGLiquidateContext()
-
-  const LiquidateAssetDisplay = () => {
-    return <CustomCollatAssetDisplay collateralInfo={collateralInfo} />
-  }
 
   return (
     <>
@@ -27,11 +23,11 @@ export default function USGLiquidatePanelFull() {
         <GenericInputAssetAmount
           inputWeiValue={marketData?.collateralInfos?.positionCollateralAmount}
           label="You liquidate"
-          depositSelect={<LiquidateAssetDisplay />}
+          depositSelect={<StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />}
           disabled={true}
           displaySliderInput={false}
           asset={collateralInfo}
-          setMaxBalance={() => {}}
+          setMaxAmount={() => {}}
           onValueChange={() => {}}
           isLoading={isQuoteLoading}
           sliderPercentage={0}
@@ -46,12 +42,9 @@ export default function USGLiquidatePanelFull() {
           disabled={true}
           displaySliderInput={false}
           asset={USGInfo}
-          setMaxBalance={() => {}}
+          setMaxAmount={() => {}}
           onValueChange={() => {}}
           isLoading={isQuoteLoading}
-          sliderPercentage={0}
-          setSliderPercentage={() => {}}
-          sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
         />
 
         <Divider />
@@ -63,11 +56,8 @@ export default function USGLiquidatePanelFull() {
           disabled={true}
           displaySliderInput={false}
           asset={USGInfo}
-          setMaxBalance={() => {}}
+          setMaxAmount={() => {}}
           onValueChange={() => {}}
-          sliderPercentage={0}
-          setSliderPercentage={() => {}}
-          sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
         />
 
         <GenericInputAssetAmount
@@ -77,7 +67,7 @@ export default function USGLiquidatePanelFull() {
           disabled={true}
           displaySliderInput={false}
           asset={USGInfo}
-          setMaxBalance={() => {}}
+          setMaxAmount={() => {}}
           onValueChange={() => {}}
           isLoading={isQuoteLoading}
           sliderPercentage={0}

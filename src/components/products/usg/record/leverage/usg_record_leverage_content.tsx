@@ -59,10 +59,6 @@ export default function USGLeverageContent() {
 
   const { collateralInfo, marketData, balanceAllowanceData, pricedCollateralInfo, USGInfo, maxBorrowCapReached, displayAPRVariation } = useUSGRecordContext()
 
-  const CustomAssetSelect = () => {
-    return <AssetSelector collateralInfo={collateralInfo} depositAsset={depositAsset || collateralInfo.name} setDepositAsset={setDepositAsset} />
-  }
-
   return (
     <div className="flex flex-col gap-2">
       {!!marketData?.collateralInfos?.positionCollateralAmount && marketData?.collateralInfos?.positionCollateralAmount > 0n && (
@@ -95,7 +91,9 @@ export default function USGLeverageContent() {
           <GenericInputAssetAmount
             inputWeiValue={depositWeiValue}
             onValueChange={handleDepositChange}
-            depositSelect={<CustomAssetSelect />}
+            depositSelect={
+              <AssetSelector collateralInfo={collateralInfo} depositAsset={depositAsset || collateralInfo.name} setDepositAsset={setDepositAsset} />
+            }
             isLoading={false}
             asset={depositAssetInfo}
             label="You deposit"
@@ -104,7 +102,7 @@ export default function USGLeverageContent() {
             sliderPercentage={depositSliderPercent}
             setSliderPercentage={setDepositSliderPercent}
             displaySliderInput={true}
-            setMaxBalance={() => {
+            setMaxAmount={() => {
               handleDepositChange(marketData?.collateralBalance || 0n)
             }}
             sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}

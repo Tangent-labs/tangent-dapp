@@ -87,7 +87,7 @@ export const USGPredepositComponent = ({
         onValueChange={handleDepositChange}
         sliderPercentage={percentage}
         setSliderPercentage={setPercentage}
-        setMaxBalance={setMaxBalance}
+        setMaxAmount={setMaxBalance}
         displayBalance={true}
         sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
       />

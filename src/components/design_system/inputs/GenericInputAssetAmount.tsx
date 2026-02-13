@@ -11,14 +11,14 @@ import { SliderInput } from "./slider_input"
 
 type GenericInputAssetAmountProps = React.InputHTMLAttributes<HTMLInputElement> & {
   inputWeiValue?: bigint
+  onValueChange: (value: bigint | undefined) => void
+
   asset?: AssetDataPriced | CollateralInfo
 
   disabled?: boolean
   label: string
   depositSelect: ReactNode
-  depositInput?: ReactNode
-  onValueChange: (value: bigint | undefined) => void
-  setMaxBalance: () => void
+  setMaxAmount: () => void
   isZapping?: boolean
   isLoading?: boolean
 
@@ -26,8 +26,8 @@ type GenericInputAssetAmountProps = React.InputHTMLAttributes<HTMLInputElement> 
   displayBalance?: boolean
 
   displaySliderInput?: boolean
-  sliderPercentage: number
-  setSliderPercentage: (value: number) => void
+  sliderPercentage?: number
+  setSliderPercentage?: (value: number) => void
   sliderLegendValues?: string[]
 }
 
@@ -36,7 +36,7 @@ export function GenericInputAssetAmount({
   balance,
   asset,
   label,
-  setMaxBalance,
+  setMaxAmount = () => {},
   onValueChange,
   depositSelect = <></>,
   isZapping = false,
@@ -44,7 +44,7 @@ export function GenericInputAssetAmount({
   sliderPercentage = 0,
   displaySliderInput = false,
   disabled,
-  setSliderPercentage,
+  setSliderPercentage = () => {},
   displayBalance = false,
   sliderLegendValues,
   ...props
@@ -171,7 +171,7 @@ export function GenericInputAssetAmount({
 
         <div className="flex items-center justify-center gap-2">
           <div className="flex gap-1">{isZapping && <IconThunder className="h-auto w-[8px] text-row-tonic" />}</div>
-          <div className="no-parent-hover order-1 rounded-md transition-all duration-200 hover:scale-105 hover:bg-white/5 lg:order-2">{depositSelect}</div>
+          <div className="no-parent-hover order-1 rounded-md lg:order-2">{depositSelect}</div>
         </div>
       </div>
 
@@ -183,17 +183,57 @@ export function GenericInputAssetAmount({
         )}
 
         {!disabled && (
-          <BorderPanel
-            className="no-parent-hover hover:bg-button-active/90 w-10 min-w-10 cursor-pointer bg-button-active px-1 text-center text-xs text-white transition-all duration-200 hover:scale-105 hover:font-semibold active:scale-95"
-            onClick={() => {
-              if (setMaxBalance) {
-                setSliderPercentage(100)
-                setMaxBalance()
+          <>
+            <style jsx>{`
+              @keyframes pulse-glow {
+                0%,
+                100% {
+                  opacity: 0.85;
+                }
+                50% {
+                  opacity: 1;
+                }
               }
-            }}
-          >
-            Max.
-          </BorderPanel>
+
+              .pulse-bg {
+                animation: pulse-glow 2s ease-in-out infinite;
+              }
+            `}</style>
+
+            <div
+              className="relative h-5 w-10 min-w-10 cursor-pointer overflow-hidden rounded-[10px] transition-all duration-200 hover:scale-105 active:scale-95"
+              onClick={() => {
+                if (setMaxAmount) {
+                  setSliderPercentage(100)
+                  setMaxAmount()
+                }
+              }}
+            >
+              {/* Background bleu avec pulse */}
+              <div
+                className="pulse-bg absolute inset-0 rounded-[10px]"
+                style={{
+                  background: `linear-gradient(135deg, #0055ff 0%, #0088ff 50%, #0055ff 100%)`,
+                }}
+              />
+
+              {/* Bordure  */}
+              <div
+                className="pointer-events-none absolute inset-0 rounded-[10px]"
+                style={{
+                  padding: "1px",
+                  background: `
+          linear-gradient(0deg, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, 0.2) 100%)`,
+                  WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                  WebkitMaskComposite: "xor",
+                  maskComposite: "exclude",
+                }}
+              />
+
+              {/* Texte */}
+              <span className="relative z-10 flex h-full items-center justify-center text-xs font-medium text-white hover:font-bold">Max.</span>
+            </div>
+          </>
         )}
       </div>
     </BorderPanel>

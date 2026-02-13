@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode } from "react"
+import { useState } from "react"
 
 type SliderInputProps = {
   handleSliderChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -11,6 +11,8 @@ type SliderInputProps = {
 }
 
 export const SliderInput = ({ className, handleSliderChange, legendValues, percentage, disabled }: SliderInputProps) => {
+  const [isBarHovered, setIsBarHovered] = useState(false)
+
   return (
     <>
       <style jsx>{`
@@ -32,7 +34,6 @@ export const SliderInput = ({ className, handleSliderChange, legendValues, perce
           appearance: none;
           width: 16px;
           height: 6px;
-          border-radius: "2px 10px 10px 2px";
           background: #ffffff;
           cursor: pointer;
           transition: all 0.2s ease;
@@ -61,78 +62,88 @@ export const SliderInput = ({ className, handleSliderChange, legendValues, perce
         }
       `}</style>
 
-      {/* SLIDER */}
-
-      <div className="no-parent-hover relative mt-3 h-1.5 w-full overflow-visible rounded-[10px] bg-[#4b5563]">
-        {/* Partie colorée avec effet neon */}
+      <div>
+        {/* SLIDER */}
         <div
-          className="absolute left-0 top-0 h-full overflow-hidden rounded-[10px]"
-          style={{
-            width: `${percentage}%`,
-          }}
+          className="no-parent-hover relative mt-3 h-1.5 w-full overflow-visible rounded-[10px] bg-[#4b5563]"
+          onMouseEnter={() => setIsBarHovered(true)}
+          onMouseLeave={() => setIsBarHovered(false)}
         >
-          {/* Background de base */}
+          {/* Partie colorée avec effet neon */}
           <div
-            className="absolute inset-0 rounded-[10px]"
+            className="absolute left-0 top-0 h-full overflow-hidden rounded-[10px] transition-all duration-300"
             style={{
-              background: `linear-gradient(0deg, rgba(59, 130, 246, 0.4), rgba(59, 130, 246, 0.4))`,
+              width: `${percentage}%`,
+              filter: isBarHovered ? "brightness(1.3)" : "brightness(1)",
             }}
-          />
+          >
+            {/* Background de base */}
+            <div
+              className="absolute inset-0 rounded-[10px]"
+              style={{
+                background: `linear-gradient(0deg, rgba(59, 130, 246, 0.4), rgba(59, 130, 246, 0.4))`,
+              }}
+            />
 
-          {/* Ellipse animée qui se déplace */}
-          <div
-            className="neon-slide absolute inset-0"
-            style={{
-              background: `radial-gradient(ellipse 40% 100% at 50% 50%, #0077ff 0%, rgba(0, 119, 255, 0.5) 40%, rgba(0, 0, 0, 0) 100%)`,
-            }}
-          />
+            {/* Ellipse animée qui se déplace */}
+            <div
+              className="neon-slide absolute inset-0"
+              style={{
+                background: `radial-gradient(ellipse 40% 100% at 50% 50%, #0077ff 0%, rgba(0, 119, 255, 0.5) 40%, rgba(0, 0, 0, 0) 100%)`,
+              }}
+            />
 
-          {/* Bordure néon avec gradient radial de gauche à droite */}
-          <div
-            className="pointer-events-none absolute inset-0 rounded-[10px]"
+            {/* Bordure néon avec gradient radial de gauche à droite */}
+            <div
+              className="pointer-events-none absolute inset-0 rounded-[10px]"
+              style={{
+                padding: "2px",
+                background: `
+              radial-gradient(100% 50% at 0% 50%, #FFFFFF 0%, #0075FF 19.71%, rgba(0, 0, 0, 0) 100%), 
+              linear-gradient(0deg, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, 0.2) 100%)`,
+                WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                WebkitMaskComposite: "xor",
+                maskComposite: "exclude",
+              }}
+            />
+          </div>
+
+          {/* Input slider invisible mais fonctionnel */}
+          <input
+            type="range"
+            min="0"
+            step="1"
+            max="100"
+            disabled={disabled}
+            value={percentage}
+            onChange={handleSliderChange}
+            className={"slider-input absolute inset-0 h-full w-full cursor-pointer appearance-none rounded-[10px] bg-transparent " + className}
             style={{
-              padding: "2px",
-              background: `
-            radial-gradient(100% 50% at 0% 50%, #FFFFFF 0%, #0075FF 19.71%, rgba(0, 0, 0, 0) 100%), 
-            linear-gradient(0deg, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, 0.2) 100%)`,
-              WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-              WebkitMaskComposite: "xor",
-              maskComposite: "exclude",
+              background: "transparent",
             }}
           />
         </div>
-
-        {/* Input slider invisible mais fonctionnel */}
-        <input
-          type="range"
-          min="0"
-          step="1"
-          max="100"
-          disabled={disabled}
-          value={percentage}
-          onChange={handleSliderChange}
-          className={"slider-input absolute inset-0 h-full w-full cursor-pointer appearance-none rounded-[10px] bg-transparent " + className}
-          style={{
-            background: "transparent",
-          }}
-        />
+        {/* LEGEND */}
+        {legendValues && (
+          <div className="flex w-full select-none items-center justify-between text-[10px] text-subtitle">
+            {legendValues.map((el) => (
+              <div key={el} className="relative flex w-fit items-center justify-center">
+                <span className="transition-colors duration-200" style={{ color: isBarHovered ? "#ffffff" : undefined }}>
+                  {el}%
+                </span>
+                <div
+                  onClick={
+                    !!handleSliderChange ? () => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>) : () => {}
+                  }
+                  onMouseEnter={() => setIsBarHovered(true)}
+                  onMouseLeave={() => setIsBarHovered(false)}
+                  className="no-parent-hover absolute -top-1.5 mt-[1px] h-1 w-1 cursor-pointer rounded-full bg-white"
+                ></div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-      {/* LEGEND */}
-      {legendValues && (
-        <div className="flex w-full items-center justify-between text-[10px] text-subtitle">
-          {legendValues.map((el) => (
-            <div key={el} className="relative flex w-fit items-center justify-center">
-              <span>{el}%</span>
-              <div
-                onClick={
-                  !!handleSliderChange ? () => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>) : () => {}
-                }
-                className="absolute -top-1.5 mt-[1px] h-1 w-1 cursor-pointer rounded-full bg-white"
-              ></div>
-            </div>
-          ))}
-        </div>
-      )}
     </>
   )
 }

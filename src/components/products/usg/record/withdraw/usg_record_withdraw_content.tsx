@@ -12,6 +12,7 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 
 export default function USGWithdrawContent() {
   const { connect } = useWalletConnexionContext()
@@ -89,15 +90,16 @@ export default function USGWithdrawContent() {
 
           <GenericInputAssetAmount
             inputWeiValue={withdrawWeiValue}
+            onValueChange={setWithdrawWeiValue}
             label="You withdraw"
             depositSelect={<AssetSelect />}
             asset={pricedCollateralInfo}
             balance={maxWithdrawable}
             displaySliderInput={true}
-            setMaxBalance={() => setWithdrawWeiValue(maxWithdrawable)}
-            onValueChange={setWithdrawWeiValue}
+            setMaxAmount={() => setWithdrawWeiValue(maxWithdrawable)}
             sliderPercentage={withdrawPercentage}
             setSliderPercentage={setWithdrawPercentage}
+            sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
           />
         </div>
 

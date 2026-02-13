@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 
 interface TokenImageProps extends React.HTMLAttributes<HTMLImageElement> {
   token?: string
-  size: 8 | 12 | 16 | 20 | 24 | 32 | 48 | 64 | 96 | 128 | 256 | 384
+  size: 8 | 12 | 16 | 20 | 24 | 30 | 32 | 48 | 64 | 96 | 128 | 256 | 384
 }
 
 interface ImageWithFallbackProps extends Omit<ImageProps, "src"> {

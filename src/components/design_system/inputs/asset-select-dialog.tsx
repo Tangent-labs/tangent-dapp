@@ -24,7 +24,7 @@ interface AssetSelectionDialogProps<T extends OptionT> {
   disabled?: boolean
 }
 
-const ITEM_HEIGHT = 40
+const ITEM_HEIGHT = 38
 
 const RenderAsset = <T extends OptionT>({ selected, placeholder }: { selected: T | null; placeholder: string }) => {
   return (
@@ -99,7 +99,7 @@ export default function AssetSelectionDialog<T extends OptionT>({
         <button
           disabled={disabled}
           type="button"
-          className="flex min-h-10 items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 py-1.5"
+          className="flex h-[38px] items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 transition-all duration-200 hover:scale-105 hover:bg-white/5"
           style={{ borderWidth: 1.5 }}
         >
           <span className="flex items-center gap-2">

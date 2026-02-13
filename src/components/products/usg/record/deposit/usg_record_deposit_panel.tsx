@@ -53,11 +53,7 @@ export default function USGDepositContent() {
 
   const { connect } = useWalletConnexionContext()
 
-  const { collateralInfo, isDepositAndBorrow, marketData, USGInfo, balanceAllowanceData, maxBorrowCapReached, displayAPRVariation } = useUSGRecordContext()
-
-  const CustomAssetSelect = () => {
-    return <AssetSelector collateralInfo={collateralInfo} depositAsset={depositAsset || collateralInfo.name} setDepositAsset={setDepositAsset} />
-  }
+  const { collateralInfo, isDepositAndBorrow, marketData, balanceAllowanceData, maxBorrowCapReached, displayAPRVariation } = useUSGRecordContext()
 
   return (
     <div className="flex flex-col gap-2">
@@ -69,13 +65,13 @@ export default function USGDepositContent() {
       <GenericInputAssetAmount
         inputWeiValue={depositWeiValue}
         onValueChange={handleDepositChange}
-        depositSelect={<CustomAssetSelect />}
+        depositSelect={<AssetSelector collateralInfo={collateralInfo} depositAsset={depositAsset || collateralInfo.name} setDepositAsset={setDepositAsset} />}
         isLoading={isDepositLoading}
         asset={depositAssetInfo}
         label="You deposit"
         balance={balanceAllowanceData?.balance || marketData?.collateralBalance}
         isZapping={isZapping}
-        setMaxBalance={() => {
+        setMaxAmount={() => {
           handleDepositChange(balanceAllowanceData?.balance || marketData?.collateralBalance)
         }}
         sliderPercentage={depositSliderPercent}
@@ -127,7 +123,7 @@ export default function USGDepositContent() {
             disabled={maxBorrowCapReached}
             label="You borrow"
             depositSelect={<StaticCardAssetInput asset="USG" />}
-            setMaxBalance={maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue)}
+            setMaxAmount={maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue)}
             balance={maxBorrowableValue}
             displaySliderInput={true}
             sliderPercentage={borrowSliderPercent}

@@ -33,7 +33,7 @@ export default function USGRecordBorrowContent() {
           label="You borrow"
           depositSelect={<StaticCardAssetInput asset="USG" />}
           asset={USGInfo}
-          setMaxBalance={maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue)}
+          setMaxAmount={maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue)}
           balance={maxBorrowableValue}
           onValueChange={(value: bigint | undefined) => {
             setBorrowWeiValue(value)

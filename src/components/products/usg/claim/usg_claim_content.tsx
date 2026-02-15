@@ -57,7 +57,7 @@ export default function USGClaimContent() {
       <div className="flex items-stretch justify-between gap-6">
         <ReliefCard className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
-            <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+            <Image height={150} width={150} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Claim</span>
@@ -65,7 +65,7 @@ export default function USGClaimContent() {
           </div>
         </ReliefCard>
 
-        <div className="flex h-auto w-full flex-col items-center gap-2 xl:w-1/2">
+        <div className="flex h-auto w-full flex-col justify-between gap-2 xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
           <ThreeCardRowWithMask

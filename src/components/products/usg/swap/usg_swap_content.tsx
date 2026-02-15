@@ -4,7 +4,7 @@ import Image from "next/image"
 import { Address } from "viem"
 import { ExistingAsset } from "@/types"
 import { DepositReceiveAsset } from "../usg_type"
-import { formatBigInt } from "@/lib/number_formatter"
+import { formatBigInt, formatNumber } from "@/lib/number_formatter"
 import { useUSGSwapContext } from "./usg_swap_context"
 import { formatAddress } from "@/lib/other_formatter"
 import FormButtons from "@/components/design_system/form/form_actions"
@@ -14,6 +14,9 @@ import { BuySellInput } from "@/components/design_system/inputs/buy_sell_input"
 import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
+import { useUSGContext } from "../usg_context"
 
 type AssetSelectProps = {
   options: DepositReceiveAsset[]
@@ -47,6 +50,8 @@ export default function USGSwapContent() {
     slippage,
     USGsUSGMetrics,
   } = useUSGSwapContext()
+
+  const { lpUserPoints, voteUserPoints } = useUSGContext()
 
   const { connect } = useWalletConnexionContext()
 
@@ -118,7 +123,7 @@ export default function USGSwapContent() {
   return (
     <>
       <div className="flex items-stretch justify-between gap-6">
-        <div className="relative hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
+        <ReliefCard className="relative hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="absolute -top-2 left-20 h-full min-h-24">
             <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
@@ -131,27 +136,23 @@ export default function USGSwapContent() {
               Swap any asset for USG and other Tangent&apos;s assets, including Curve LPs and Wrapped Tangent Stablecoins. Learn more
             </p>
           </div>
-        </div>
+        </ReliefCard>
 
-        <div className="flex h-auto w-full flex-col items-center gap-3 rounded-[10px] bg-overlay-panel backdrop-blur-[60px] xl:w-1/2">
+        <div className="flex h-auto w-full flex-col justify-between gap-2 xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
-          <div className="mt-auto flex w-full items-center justify-center gap-3 p-3">
-            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 xl:min-w-48">
-              <span className="text-xs text-subtitle">USG Balance</span>
-              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)}</span>
-            </div>
-
-            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 xl:min-w-48">
-              <span className="text-xs text-subtitle">sUSG Balance</span>
-              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)}</span>
-            </div>
-          </div>
+          <ThreeCardRowWithMask
+            contents={[
+              { key: "USG Balance", value: formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2) },
+              { key: "sUSG Balance", value: formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2) },
+              { key: "Your Total Points", value: `${formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts` },
+            ]}
+          ></ThreeCardRowWithMask>
         </div>
       </div>
 
-      <div className="mt-6 flex w-full flex-col items-center justify-center">
-        <div className="mt-2 flex w-full max-w-[450px] flex-col items-center justify-center rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px]">
+      <div className="mt-4 flex w-full flex-col items-center justify-center">
+        <ReliefCard className="flex w-full max-w-[450px] flex-col items-center justify-center rounded-[10px] bg-overlay-panel p-4">
           <BuySellInput
             depositAmount={depositWeiValue}
             depositSelect={<DepositAssetSelect options={computedAssets?.depositAssets} />}
@@ -188,7 +189,7 @@ export default function USGSwapContent() {
               labelProcess="Swap"
             />
           </div>
-        </div>
+        </ReliefCard>
       </div>
     </>
   )

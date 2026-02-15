@@ -7,7 +7,7 @@ export function ThreeCardRowWithMask(props: { contents: [KeyValue, KeyValue, Key
   const color2 = "#0075FF"
 
   return (
-    <div className="relative w-full pt-2">
+    <div className="relative w-full">
       {/* Cards with individual backgrounds positioned to create continuity */}
       <div className="relative grid grid-cols-3 gap-4">
         {[0, 1, 2].map((i) => (
@@ -58,7 +58,7 @@ export function ThreeCardRowWithMask(props: { contents: [KeyValue, KeyValue, Key
               }}
             />
 
-            <div className="relative z-10 px-4 py-4 text-center">
+            <div className="relative z-10 p-2 text-center xl:p-4">
               <h3 className="mb-1 text-xs text-subtitle">{props.contents[i].key}</h3>
               <p className="font-semibold text-white">{props.contents[i].value}</p>
             </div>

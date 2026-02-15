@@ -56,22 +56,35 @@ export const ReferralHeader = ({
 
       {!referralStatus?.hasUsedCode && (
         <>
-          <ReliefCard className="relative flex w-full flex-col items-center justify-between gap-2 rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px] xl:w-1/2 xl:flex-row">
+          <ReliefCard className="relative mb-2 flex w-full flex-col items-center justify-between gap-2 rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px] md:flex-row xl:mb-0 xl:w-1/2">
             <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: 'url("./medias/card_bg_blocks.png")' }} />
 
             <div className="flex w-full items-start justify-start border-white/10 px-2 py-0.5 text-xs text-subtitle xl:border-r xl:pr-3">
               Enter a code to get a x1.1 boost on all your points
             </div>
 
-            <span className="w-full max-w-16 text-xs font-semibold">Enter code</span>
+            <span className="hidden w-full max-w-16 text-xs font-semibold md:flex">Enter code</span>
+            <div className="flex w-full items-center justify-between gap-2 xl:hidden">
+              <input
+                disabled={!isConnected}
+                placeholder="Type a referral code"
+                className="relative mx-auto flex h-[30px] w-full items-center justify-center rounded-[10px] border-tangent border-white/20 bg-transparent text-center text-xs backdrop-blur-[60px] backdrop-filter focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                onChange={(e) => setReferralStatus({ ...referralStatus, referralCode: e?.target?.value })}
+                value={referralStatus?.referralCode as string}
+              />
+              <SecondaryButton onClick={signMessage} disabled={isLoading} className="relative flex w-full min-w-10 max-w-40 justify-center">
+                Enter
+              </SecondaryButton>
+            </div>
+
             <input
               disabled={!isConnected}
               placeholder="Type a referral code"
-              className="relative mx-auto flex h-[30px] w-full max-w-44 items-center justify-center rounded-[10px] border-tangent border-white/20 bg-transparent p-2.5 text-center text-xs backdrop-blur-[60px] backdrop-filter focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              className="relative mx-auto hidden h-[30px] w-full max-w-48 items-center justify-center rounded-[10px] border-tangent border-white/20 bg-transparent p-2.5 text-center text-xs backdrop-blur-[60px] backdrop-filter focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 xl:flex"
               onChange={(e) => setReferralStatus({ ...referralStatus, referralCode: e?.target?.value })}
               value={referralStatus?.referralCode as string}
             />
-            <SecondaryButton onClick={signMessage} disabled={isLoading} className="relative flex w-full min-w-10 max-w-40 justify-center">
+            <SecondaryButton onClick={signMessage} disabled={isLoading} className="relative hidden w-full min-w-10 max-w-40 justify-center xl:flex">
               Enter
             </SecondaryButton>
           </ReliefCard>

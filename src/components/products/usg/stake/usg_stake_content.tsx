@@ -82,7 +82,7 @@ export default function USGStakeContent() {
       <div className="flex items-stretch justify-between gap-6">
         <ReliefCard className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
-            <Image height={140} width={140} src="/medias/tokens/SUSG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+            <Image height={150} width={150} src="/medias/tokens/SUSG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Savings account</span>
@@ -92,19 +92,19 @@ export default function USGStakeContent() {
           </div>
         </ReliefCard>
 
-        <div className="flex h-auto w-full flex-col items-center gap-2 xl:w-1/2">
+        <div className="flex h-auto w-full flex-col justify-between gap-2 xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
           <div
             className={cn(
-              "relative flex w-full items-center justify-between gap-3 rounded-[10px] bg-overlay-panel px-6 py-3",
+              "relative flex w-full items-center justify-between gap-3 rounded-[10px] bg-overlay-panel px-6 py-2.5",
               !!USGsUSGMetrics ? "" : "shimmer"
             )}
           >
-            <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: 'url("./medias/card_bg_blocks.png")' }} />
+            <div className="absolute inset-0 rounded-[10px] bg-cover bg-center opacity-20" style={{ backgroundImage: 'url("./medias/card_bg_blocks.png")' }} />
 
             <div
-              className="absolute inset-0"
+              className="absolute inset-0 rounded-[10px]"
               style={{
                 left: 0,
                 width: "100%",

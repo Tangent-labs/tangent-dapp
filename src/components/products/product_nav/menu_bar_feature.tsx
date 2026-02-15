@@ -108,20 +108,26 @@ export default function MenuBarFeature() {
                   <NavigationMenuDropdown>
                     <NavigationMenuTrigger>DAO</NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-dark p-2">
-                        <NavigationMenuLink href="/harvest" className="flex items-center justify-start gap-2">
-                          <IconHarvest className="w-2"></IconHarvest>
-                          Harvest
+                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] border border-white/10 bg-dark p-2">
+                        <NavigationMenuLink asChild>
+                          <Link href="/harvest" className="flex items-center justify-start gap-2">
+                            <IconHarvest className="w-2" />
+                            Harvest
+                          </Link>
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink href="/forum" className="flex items-center justify-start gap-2">
-                          <IconForum className="w-3"></IconForum>
-                          Forum
+                        <NavigationMenuLink asChild>
+                          <Link href="/forum" className="flex items-center justify-start gap-2">
+                            <IconForum className="w-3" />
+                            Forum
+                          </Link>
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink href="/snapshot" className="flex items-center justify-start gap-2">
-                          <IconSnapshot className="w-3"></IconSnapshot>
-                          Snapshot
+                        <NavigationMenuLink asChild>
+                          <Link href="/snapshot" className="flex items-center justify-start gap-2">
+                            <IconSnapshot className="w-3" />
+                            Snapshot
+                          </Link>
                         </NavigationMenuLink>
                       </div>
                     </NavigationMenuContent>
@@ -132,20 +138,26 @@ export default function MenuBarFeature() {
                   <NavigationMenuDropdown>
                     <NavigationMenuTrigger>Airdrop</NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-dark p-2">
-                        <NavigationMenuLink href="/tasks" className="flex items-center justify-start gap-2">
-                          <IconTask className="w-3"></IconTask>
-                          Task
+                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] border border-white/10 bg-dark p-2">
+                        <NavigationMenuLink asChild>
+                          <Link href="/tasks" className="flex items-center justify-start gap-2">
+                            <IconTask className="w-3" />
+                            Tasks
+                          </Link>
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink href="/referral" className="flex items-center justify-start gap-2">
-                          <IconReferral className="w-3"></IconReferral>
-                          Referral
+                        <NavigationMenuLink asChild>
+                          <Link href="/referral" className="flex items-center justify-start gap-2">
+                            <IconReferral className="w-3" />
+                            Referral
+                          </Link>
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink href="/boosts" className="flex items-center justify-start gap-2">
-                          <IconBoosts className="w-3"></IconBoosts>
-                          Boosts
+                        <NavigationMenuLink asChild>
+                          <Link href="/boosts" className="flex items-center justify-start gap-2">
+                            <IconBoosts className="w-3" />
+                            Boosts
+                          </Link>
                         </NavigationMenuLink>
                       </div>
                     </NavigationMenuContent>
@@ -155,7 +167,7 @@ export default function MenuBarFeature() {
             </NavigationMenu>
           </div>
 
-          <div className="flex w-full items-center justify-end gap-5">
+          <div className="flex w-full items-center justify-end gap-4">
             <ReliefCard className="hidden items-center justify-center rounded-[10px] bg-overlay-panel px-1 py-2.5 text-xs backdrop-blur-[60px] xl:flex">
               <span className="border-r border-white/30 px-2">TVL: ${formatCompact(protocolCurrentTVL?.total)} </span>
               <span className="flex items-center justify-center gap-2 border-r border-white/30 px-2">

@@ -13,14 +13,11 @@ export default function MobileMenuBarFeature() {
     <header className="sticky bottom-0 z-50 flex w-full font-gilroy lg:hidden">
       <div className="flex w-full p-4">
         <div className="flex w-full items-center justify-between rounded-[10px] border border-white border-opacity-20 p-2 text-[10px] backdrop-blur-[60px]">
-          <div onClick={() => router.push("/dashboard")} className="flex w-12 cursor-pointer flex-col items-center justify-center">
-            <IconDashboard active={pathname === "/dashboard"} className="w-6"></IconDashboard>
-            Dashboard
-          </div>
           <div onClick={() => router.push("/")} className="flex w-12 cursor-pointer flex-col items-center justify-center">
             <IconMarket active={pathname === "/"} className="w-6"></IconMarket>
             Markets
           </div>
+
           <div onClick={() => router.push("/stake")} className="flex w-12 cursor-pointer flex-col items-center justify-center">
             <IconSavings active={pathname === "/stake"} className="w-6"></IconSavings>
             Savings
@@ -29,6 +26,12 @@ export default function MobileMenuBarFeature() {
             <IconEarn active={pathname === "/earn"} className="w-6"></IconEarn>
             Earn
           </div>
+
+          <div onClick={() => router.push("/dashboard")} className="flex w-12 cursor-pointer flex-col items-center justify-center">
+            <IconDashboard active={pathname === "/dashboard"} className="w-6"></IconDashboard>
+            Dashboard
+          </div>
+
           <div className="flex w-12 cursor-pointer flex-col items-center justify-center">
             <MenuModal></MenuModal>
           </div>

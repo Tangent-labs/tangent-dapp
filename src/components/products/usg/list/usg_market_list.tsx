@@ -70,11 +70,11 @@ export default function USGMarketList() {
 
   return (
     <>
-      <div className="mb-4 flex items-stretch justify-between gap-6">
-        <ReliefCard className="hidden w-1/2 xl:flex">
+      <div className="mb-4 hidden items-stretch justify-between gap-6 xl:flex">
+        <ReliefCard className="w-1/2">
           <div className="flex overflow-hidden rounded-lg bg-panel-title-gradient">
             <div className="flex items-center justify-center">
-              <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+              <Image height={150} width={150} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
             </div>
             <div className="flex flex-col items-start justify-center gap-3 px-6">
               <h2 className="text-4xl font-semibold">USG</h2>
@@ -88,7 +88,7 @@ export default function USGMarketList() {
           </div>
         </ReliefCard>
 
-        <div className="hidden h-auto w-full flex-col items-center gap-2 xl:flex xl:w-1/2">
+        <div className="flex h-auto w-full flex-col justify-between gap-2 xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
           <ThreeCardRowWithMask
@@ -103,7 +103,7 @@ export default function USGMarketList() {
 
       <Divider className="border-white/10! hidden xl:flex" />
 
-      <div className="mb-2 mt-4 flex w-full flex-col items-stretch justify-center gap-6 lg:flex-row xl:mb-0">
+      <div className="mb-2 mt-0 flex w-full flex-col items-stretch justify-center gap-6 lg:flex-row xl:mb-0 xl:mt-4">
         <div className="hidden w-full justify-center md:flex lg:w-1/2">
           <div className="flex h-full w-full items-stretch gap-4">
             <div className="basis-[40%]">

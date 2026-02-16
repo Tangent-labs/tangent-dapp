@@ -168,7 +168,7 @@ export default function MenuBarFeature() {
           </div>
 
           <div className="flex w-full items-center justify-end gap-4">
-            <ReliefCard className="hidden items-center justify-center rounded-[10px] bg-overlay-panel px-1 py-2.5 text-xs backdrop-blur-[60px] xl:flex">
+            <ReliefCard className="hidden items-center justify-center px-1 py-2.5 text-xs xl:flex">
               <span className="border-r border-white/30 px-2">TVL: ${formatCompact(protocolCurrentTVL?.total)} </span>
               <span className="flex items-center justify-center gap-2 border-r border-white/30 px-2">
                 <TokenImage token="USG" size={20} />

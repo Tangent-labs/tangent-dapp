@@ -14,7 +14,7 @@ export default function USGMarketInfo() {
 
   return (
     <>
-      <ReliefCard className="mt-4 rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
+      <ReliefCard className="mt-4 px-4 py-2">
         <Title label="Markets info" size="normal" />
         <Divider />
         <div className="flex flex-col justify-between xl:flex-row">

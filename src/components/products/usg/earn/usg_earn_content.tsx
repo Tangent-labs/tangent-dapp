@@ -33,7 +33,7 @@ export const USGEarnContent = () => {
   return (
     <>
       <div className="flex items-stretch justify-between gap-6">
-        <ReliefCard className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
+        <ReliefCard className="hidden w-1/2 bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
             <Image height={150} width={150} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>

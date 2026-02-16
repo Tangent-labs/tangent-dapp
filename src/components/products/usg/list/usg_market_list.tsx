@@ -164,7 +164,7 @@ export default function USGMarketList() {
           </div>
         </div>
 
-        <ReliefCard className={cn(globalData.globalCr === "-" ? "shimmer" : "", "flex items-center bg-white/[0.03] py-2 lg:w-1/2")}>
+        <ReliefCard className={cn(globalData.globalCr === "-" ? "shimmer" : "", "flex items-center py-2 lg:w-1/2")}>
           <div className="flex w-1/3 flex-col items-center justify-center">
             <div className="whitespace-nowrap text-xs text-subtitle">Global CR</div>
             <div className="whitespace-nowrap text-sm font-semibold">{globalData.globalCr}</div>

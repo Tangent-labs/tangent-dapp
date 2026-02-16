@@ -21,7 +21,7 @@ type USGCollateralsProps = {
 export const USGCollaterals = ({ userData, marketTVLMaxValue }: USGCollateralsProps) => {
   return (
     <div className="flex w-full items-start justify-start md:w-1/2">
-      <ReliefCard className="flex h-64 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+      <ReliefCard className="flex h-64 w-full flex-col items-start justify-start p-3">
         <div className="text-xl font-semibold">USG collaterals</div>
         <Divider className="h-0.5 w-full bg-white/10" />
         <div className="mb-2 flex items-center justify-start gap-2 text-xs">

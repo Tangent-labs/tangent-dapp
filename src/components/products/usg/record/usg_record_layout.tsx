@@ -109,7 +109,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
 
       <div className="mt-2 flex flex-col gap-4">
         <div className="relative flex items-start justify-start gap-4 max-xl:flex-col">
-          <ReliefCard className="w-full rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
+          <ReliefCard className="w-full p-3 xl:w-5/12">
             <FeatureTabs
               feature={feature}
               activeTab={activeTab}

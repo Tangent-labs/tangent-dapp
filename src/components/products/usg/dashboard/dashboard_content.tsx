@@ -154,7 +154,7 @@ export const USGDashboardContent = () => {
 
       <div className="flex w-full flex-col items-start justify-start gap-3 md:flex-row">
         <div className="flex w-full items-start justify-start">
-          <ReliefCard className="flex h-full max-h-[340px] w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
+          <ReliefCard className="flex h-full max-h-[340px] w-full flex-col items-start justify-start p-3">
             <div className="flex w-full items-center justify-end sm:justify-between">
               <div className="hidden text-xl font-semibold sm:flex">Total Supply </div>
 
@@ -283,7 +283,7 @@ export const USGDashboardContent = () => {
 
       <div className="flex w-full flex-col items-start justify-start gap-3 md:flex-row">
         <div className="flex w-full items-start justify-start">
-          <ReliefCard className="flex h-full max-h-[340px] w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur">
+          <ReliefCard className="flex h-full max-h-[340px] w-full flex-col items-start justify-start p-3">
             <div className="flex w-full items-center justify-end sm:justify-between">
               <div className="hidden text-xl font-semibold sm:flex">TVL </div>
 

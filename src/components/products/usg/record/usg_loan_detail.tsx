@@ -10,7 +10,7 @@ export default function USGLoanDetail() {
   const { marketDisplayData, futureMarketDisplayData } = useUSGRecordContext()
 
   return (
-    <ReliefCard className="flex flex-col rounded-[10px] bg-overlay-panel px-3 py-2 backdrop-blur-[60px]">
+    <ReliefCard className="flex flex-col px-3 py-2">
       <div className="flex w-full items-center justify-between">
         <Title label={"Loan details"} size={"normal"} />
       </div>

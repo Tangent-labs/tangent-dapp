@@ -48,7 +48,7 @@ export const ReferralHeader = ({
           className="h-full"
         />
 
-        <ReliefCard className="hidden w-fit min-w-32 flex-col items-center justify-center gap-1 self-end rounded-[10px] bg-overlay-panel px-4 py-2 lg:flex">
+        <ReliefCard className="hidden w-fit min-w-32 flex-col items-center justify-center gap-1 self-end px-4 py-2 lg:flex">
           <span className="text-center text-sm text-subtitle">Your boost</span>
           <span className="text-center text-xl font-semibold text-white">x{userBoost}</span>
         </ReliefCard>
@@ -56,7 +56,7 @@ export const ReferralHeader = ({
 
       {!referralStatus?.hasUsedCode && (
         <>
-          <ReliefCard className="relative mb-2 flex w-full flex-col items-center justify-between gap-2 rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px] md:flex-row xl:mb-0 xl:w-1/2">
+          <ReliefCard className="relative mb-2 flex w-full flex-col items-center justify-between gap-2 px-3 py-4 md:flex-row xl:mb-0 xl:w-1/2">
             <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: 'url("./medias/card_bg_blocks.png")' }} />
 
             <div className="flex w-full items-start justify-start border-white/10 px-2 py-0.5 text-xs text-subtitle xl:border-r xl:pr-3">

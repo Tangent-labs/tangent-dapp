@@ -42,7 +42,7 @@ export default function USGPositionHistory() {
   const { displayRows, customSort, isUserHistoryLoading } = useUSGRecordContext()
 
   return (
-    <ReliefCard className="rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
+    <ReliefCard className="px-4 py-2">
       <Title label={"Transaction history"} size={"normal"} />
       <Divider />
 

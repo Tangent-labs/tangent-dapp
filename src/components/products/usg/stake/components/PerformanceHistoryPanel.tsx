@@ -106,7 +106,7 @@ export default function PerformanceHistoryPanel({
         <SlidingTabs labels={["Projected earnings", "Position APR"]} value={selectedFeature} onSwitchTab={(e: string) => setSelectedFeature(e)} />
       </div>
 
-      <ReliefCard className="mt-6 flex w-full flex-col rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px]">
+      <ReliefCard className="mt-6 flex w-full flex-col p-4">
         {selectedFeature === "Projected earnings" && (
           <ForecastGraph currentFeature={currentFeature} currentInvestment={sUSGBalance} apr={sUSGCurrentAPY} newLiquidity={addLiq} />
         )}

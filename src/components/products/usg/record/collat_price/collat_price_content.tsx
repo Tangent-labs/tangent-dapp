@@ -13,7 +13,7 @@ export default function USGCollateralPrice() {
   const { liquidationPrice } = useUSGRecordContext()
 
   return (
-    <ReliefCard className="hidden w-full flex-col justify-between rounded-[10px] bg-overlay-panel px-3 py-2 backdrop-blur-[60px] xl:flex">
+    <ReliefCard className="hidden w-full flex-col justify-between px-3 py-2 xl:flex">
       <div className="mb-2 flex items-center justify-between">
         <Title label="Collateral price" size={"normal"} />
         <div className="flex gap-2">

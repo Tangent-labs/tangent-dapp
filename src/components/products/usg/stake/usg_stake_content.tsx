@@ -80,7 +80,7 @@ export default function USGStakeContent() {
   return (
     <>
       <div className="flex items-stretch justify-between gap-6">
-        <ReliefCard className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
+        <ReliefCard className="hidden w-1/2 bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
             <Image height={150} width={150} src="/medias/tokens/SUSG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
@@ -152,7 +152,7 @@ export default function USGStakeContent() {
       </div>
 
       <div className="mt-4 flex w-full flex-col gap-2 lg:flex-row lg:items-start lg:gap-4">
-        <ReliefCard className="flex w-full flex-col items-center justify-start gap-1 rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] lg:w-5/12 xl:w-1/3">
+        <ReliefCard className="flex w-full flex-col items-center justify-start gap-1 p-4 lg:w-5/12 xl:w-1/3">
           <div className="flex w-full items-center justify-between gap-4">
             <LargeButtonTab
               onClick={() => setCurrentFeature("stake")}

@@ -123,7 +123,7 @@ export default function USGSwapContent() {
   return (
     <>
       <div className="flex items-stretch justify-between gap-6">
-        <ReliefCard className="relative hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
+        <ReliefCard className="relative hidden w-1/2 bg-panel-title-gradient xl:flex">
           <div className="absolute -top-2 left-20 h-full min-h-24">
             <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
@@ -152,7 +152,7 @@ export default function USGSwapContent() {
       </div>
 
       <div className="mt-4 flex w-full flex-col items-center justify-center">
-        <ReliefCard className="flex w-full max-w-[450px] flex-col items-center justify-center rounded-[10px] bg-overlay-panel p-4">
+        <ReliefCard className="flex w-full max-w-[450px] flex-col items-center justify-center p-4">
           <BuySellInput
             depositAmount={depositWeiValue}
             depositSelect={<DepositAssetSelect options={computedAssets?.depositAssets} />}

@@ -9,6 +9,7 @@ import { LpTaskCustomAssetDisplay } from "./custom_token_display"
 import { formatNumber, formatDollar } from "@/lib/number_formatter"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { useListContext } from "@/components/design_system/list/list_context"
+import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 
 export const lpListState: ListState = {
   search: undefined,
@@ -130,17 +131,7 @@ export const LPTasksList = () => {
           </LpTaskListDisposition>
         </div>
 
-        {/* Gradient border effect */}
-        <div
-          className="pointer-events-none absolute inset-0 rounded-t-[10px]"
-          style={{
-            border: "1px solid transparent",
-            background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
-            WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
-            WebkitMaskComposite: "xor",
-            maskComposite: "exclude",
-          }}
-        />
+        <ListGradientBorder classname={"rounded-t-[10px]"} />
       </div>
 
       {displayRows &&
@@ -148,7 +139,7 @@ export const LPTasksList = () => {
           <div
             onClick={() => window.open(task.url, "_blank")}
             key={task?.taskId}
-            className="relative mb-1 bg-overlay-panel px-2 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:opacity-70 hover:-translate-y-[1px] hover:cursor-pointer hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:before:bg-list-row-hover hover:before:opacity-80 lg:px-5"
+            className="relative mb-1 bg-overlay-panel px-2 py-3 backdrop-blur-[60px] hover-lift-row lg:px-5"
           >
             <div className="hidden items-center justify-between md:flex">
               <div className="flex w-5/12 items-center gap-2 xl:gap-4">
@@ -200,17 +191,7 @@ export const LPTasksList = () => {
               </div>
             </div>
 
-            {/* Gradient border effect */}
-            <div
-              className="pointer-events-none absolute inset-0"
-              style={{
-                border: "1px solid transparent",
-                background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
-                WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
-                WebkitMaskComposite: "xor",
-                maskComposite: "exclude",
-              }}
-            />
+            <ListGradientBorder />
           </div>
         ))}
     </>

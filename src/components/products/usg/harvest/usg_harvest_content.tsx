@@ -51,7 +51,7 @@ export default function USGHarvestContent() {
   return (
     <>
       <div className="flex items-stretch justify-between gap-6">
-        <ReliefCard className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
+        <ReliefCard className="hidden w-1/2 bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
             <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
@@ -92,7 +92,7 @@ export default function USGHarvestContent() {
           )}
         </div>
 
-        <ReliefCard className="flex h-full min-h-52 w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-5 backdrop-blur-[60px] md:w-3/12">
+        <ReliefCard className="flex h-full min-h-52 w-full flex-col items-start justify-start p-5 md:w-3/12">
           <div className="flex w-full items-center justify-between">
             <div className="flex flex-col items-start justify-start">Market</div>
 

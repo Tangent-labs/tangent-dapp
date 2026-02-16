@@ -28,22 +28,22 @@ export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumula
 
       <section className="mt-4 flex w-full flex-col-reverse items-center justify-center gap-4 xl:flex-row">
         <div className="hidden w-full items-center justify-center gap-2 lg:flex">
-          <ReliefCard className="flex h-44 w-full flex-col items-center justify-center rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+          <ReliefCard className="flex h-44 w-full flex-col items-center justify-center">
             <span className="p-4 text-[16px] text-white">A fixed and guaranteed share of 2% of TAN total supply.</span>
             <Image src="/medias/fulltan.png" className="flex items-end self-end" alt="image" width={220} height={80} />
           </ReliefCard>
-          <ReliefCard className="flex h-44 w-full flex-col rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+          <ReliefCard className="flex h-44 w-full flex-col">
             <span className="p-4 text-[16px] text-white">Trading fees and CRV rewards if you stake your LP tokens.</span>
             <Image src="/medias/crvtokens.png" className="flex items-end self-end" alt="image" width={200} height={80} />
           </ReliefCard>
-          <ReliefCard className="flex h-44 w-full flex-col rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+          <ReliefCard className="flex h-44 w-full flex-col">
             <span className="px-4 pt-4 text-[16px] text-white">2x boost for the point campaign.</span>
             <Image src="/medias/timestwo.png" className="flex items-end self-end" alt="image" width={160} height={80} />
           </ReliefCard>
         </div>
 
         <div className="flex w-full flex-col gap-2 pl-0 xl:w-fit xl:min-w-[400px] xl:border-l xl:border-l-white/30 xl:pl-4">
-          <ReliefCard className="relative flex w-full items-center justify-between rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px]">
+          <ReliefCard className="relative flex w-full items-center justify-between px-3 py-4">
             <div className="absolute inset-0 rounded-[10px] bg-cover bg-center opacity-20" style={{ backgroundImage: 'url("./medias/card_bg_blocks.png")' }} />
 
             <div
@@ -84,14 +84,14 @@ export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumula
           </ReliefCard>
 
           <div className="flex w-full items-center justify-center gap-3">
-            <ReliefCard className="flex w-full flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+            <ReliefCard className="flex w-full flex-col items-center justify-center gap-2 p-3">
               <span className="flex items-center justify-center gap-2 font-semibold">
                 <TokenImage token="USG-USDC" size={12} className="w-12" />
                 USG/USDC
               </span>
               <span> {formatNumber(Number(formatUnits(BigInt(USGUSDCAccumulatedBalance || 0n), 18)), 0)} </span>
             </ReliefCard>
-            <ReliefCard className="flex w-full flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+            <ReliefCard className="flex w-full flex-col items-center justify-center gap-2 p-3">
               <span className="flex items-center justify-center gap-2 font-semibold">
                 <TokenImage token="USG-frxUSD" size={12} className="w-12" />
                 USG/frxUSD

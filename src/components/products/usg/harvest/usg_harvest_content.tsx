@@ -76,12 +76,12 @@ export default function USGHarvestContent() {
 
       <div className="mt-6 flex w-full flex-col items-start justify-start gap-4 md:flex-row">
         <div className="flex w-full flex-col md:w-9/12">
-          <div className="flex w-full items-center justify-end">
-            <div className="flex gap-2">
+          {displayRows?.length > 0 && (
+            <div className="mb-2 flex w-full items-center justify-end gap-2">
               <span className="text-sm text-subtitle">Harvest all</span>
               <Switch onClick={() => onClickSelectAll()}></Switch>
             </div>
-          </div>
+          )}
 
           <ListProvider customSort={customSort} _headers={harvestListHeaders} _rows={displayRows} _listState={listeState}>
             <HarvestList></HarvestList>
@@ -139,7 +139,7 @@ function HarvestList() {
 
   return (
     <>
-      <div className="mb-0.5 mt-2 w-full">
+      <div className="mb-0.5 w-full">
         <ListHeader rowDisposition={HarvestRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 

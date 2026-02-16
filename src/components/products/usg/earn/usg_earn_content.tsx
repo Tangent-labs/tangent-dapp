@@ -59,7 +59,7 @@ export const USGEarnContent = () => {
         </div>
       </div>
 
-      <div className="mt-6 flex w-full items-end justify-between">
+      <div className="mb-2 mt-6 flex w-full items-end justify-between">
         <div className="flex w-full items-end justify-start gap-2">
           <div className="flex w-full max-w-80 flex-col items-center justify-center">
             <div className="mb-1 text-xs text-subtitle"> Search </div>

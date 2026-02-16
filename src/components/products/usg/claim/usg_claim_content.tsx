@@ -97,10 +97,12 @@ export default function USGClaimContent() {
               />
             </ReliefCard>
 
-            <div className="mt-2 flex gap-2">
-              <span className="text-sm text-subtitle">Claim all</span>
-              <Switch onClick={() => onClickClaimAll()}></Switch>
-            </div>
+            {displayRows?.length > 0 && (
+              <div className="mt-2 flex gap-2">
+                <span className="text-sm text-subtitle">Claim all</span>
+                <Switch onClick={() => onClickClaimAll()}></Switch>
+              </div>
+            )}
           </div>
 
           <ListProvider customSort={customSort} _headers={claimListHeaders} _rows={displayRows} _listState={listeState}>

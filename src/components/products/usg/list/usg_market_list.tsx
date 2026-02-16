@@ -65,8 +65,20 @@ export default function USGMarketList() {
 
   const { lpUserPoints, voteUserPoints } = useUSGContext()
 
-  const { displayRows, globalData, searchValue, setSearchValue, userData, sortMarketList, marketType, protocol, setMarketType, setProtocol } =
-    useUSGMaketListContext()
+  const {
+    displayRows,
+    globalData,
+    searchValue,
+    setSearchValue,
+    userData,
+    sortMarketList,
+    marketType,
+    protocol,
+    setMarketType,
+    setProtocol,
+    filteredBy,
+    setFilteredBy,
+  } = useUSGMaketListContext()
 
   return (
     <>
@@ -189,8 +201,18 @@ export default function USGMarketList() {
               />
             </div>
 
-            <LargeButtonTab className="h-10 px-4" active={true} label="All"></LargeButtonTab>
-            <LargeButtonTab className="h-10 px-4" active={false} label="Deposits"></LargeButtonTab>
+            <LargeButtonTab
+              onClick={() => setFilteredBy("all")}
+              className="h-10 px-4"
+              active={!filteredBy || filteredBy === "all"}
+              label="All"
+            ></LargeButtonTab>
+            <LargeButtonTab
+              onClick={() => setFilteredBy("deposits")}
+              className="h-10 px-4"
+              active={filteredBy === "deposits"}
+              label="Deposits"
+            ></LargeButtonTab>
           </div>
         </div>
         <div className="flex flex-col items-stretch justify-end gap-3">

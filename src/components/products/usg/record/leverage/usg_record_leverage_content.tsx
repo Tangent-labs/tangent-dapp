@@ -1,6 +1,6 @@
 "use client"
 
-import { cn, PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 import { Switch } from "@/components/ui/switch"
 import { useUSGRecordContext } from "../usg_record_context"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
@@ -8,7 +8,6 @@ import { useUSGLeverageContext } from "./usg_record_leverage_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import BorderPanel from "@/components/design_system/structure/border_panel"
-import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
 import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
 import { IconThunder, IconCircleHelp, IconSingleArrow } from "@/components/icons"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -17,6 +16,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { CustomCollatAssetDisplay } from "@/components/design_system/structure/custom_collat_asset_display"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 
 export default function USGLeverageContent() {
   const {
@@ -57,7 +57,7 @@ export default function USGLeverageContent() {
 
   const { connect } = useWalletConnexionContext()
 
-  const { collateralInfo, marketData, balanceAllowanceData, pricedCollateralInfo, USGInfo, maxBorrowCapReached, displayAPRVariation } = useUSGRecordContext()
+  const { collateralInfo, marketData, balanceAllowanceData, USGInfo, maxBorrowCapReached, displayAPRVariation } = useUSGRecordContext()
 
   return (
     <div className="flex flex-col gap-2">
@@ -97,15 +97,17 @@ export default function USGLeverageContent() {
             isLoading={false}
             asset={depositAssetInfo}
             label="You deposit"
-            balance={!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance}
             isZapping={isZapping}
-            sliderPercentage={depositSliderPercent}
-            setSliderPercentage={setDepositSliderPercent}
-            displaySliderInput={true}
-            setMaxAmount={() => {
-              handleDepositChange(marketData?.collateralBalance || 0n)
+            maxAmountParams={{
+              maxWeiValue: (!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance) || 0n,
+              setMaxAmount: () => {
+                handleDepositChange(marketData?.collateralBalance || 0n)
+              },
             }}
-            sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
+            sliderParams={{
+              sliderPercentage: depositSliderPercent,
+              setSliderPercentage: setDepositSliderPercent,
+            }}
           />
         </>
       )}
@@ -148,14 +150,20 @@ export default function USGLeverageContent() {
             <div className="flex items-end justify-end text-xs text-subtitle">{computedMaxLeverage}</div>
           </div>
 
-          <LeverageInput
+          <GenericInputAssetAmount
+            inputWeiValue={computedDepositAmount}
+            onValueChange={updateBorrowWeiValue}
+            depositSelect={<StaticCardAssetInput asset="USG" />}
             label="You borrow"
-            depositAmount={computedDepositAmount}
-            borrowAsset={USGInfo}
-            depositAsset={pricedCollateralInfo}
-            percentage={leveragePercentage}
-            setPercentage={setLeveragePercentage}
-            onValueChange={(e) => updateBorrowWeiValue(e)}
+            asset={USGInfo}
+            maxAmountParams={{ maxWeiValue: 0n, setMaxAmount: () => setLeveragePercentage(10) }}
+            sliderParams={{
+              sliderPercentage: leveragePercentage,
+              setSliderPercentage: setLeveragePercentage,
+              sliderLegendValues: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+              startEndRange: ["1", "10", "0.1"],
+              unit: "x",
+            }}
           />
         </div>
 

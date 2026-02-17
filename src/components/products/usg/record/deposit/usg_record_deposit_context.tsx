@@ -4,7 +4,7 @@ import { toast } from "react-toastify"
 import { useUSGContext } from "../../usg_context"
 import { USGMarket, ZapToken } from "../../usg_type"
 import { useUSGRecordContext } from "../usg_record_context"
-import { formatUnits, parseEther, zeroAddress } from "viem"
+import { formatEther, formatUnits, parseEther, zeroAddress } from "viem"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
@@ -60,8 +60,7 @@ type USGDepositContextValues = {
 
   borrowSliderPercent: number
   setBorrowSliderPercent: (arg: number) => void
-
-  handleZapInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleZapInputChange: (arg: bigint | undefined) => void
 
   maxBorrowableValue: bigint
 
@@ -245,9 +244,10 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     return () => clearTimeout(debounceTimeout)
   }
 
-  const handleZapInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value ? Number(e.target.value) : undefined
-    setZapInnerValue(value)
+  const handleZapInputChange = (v: bigint | undefined) => {
+    const value = v || 0n
+    const zapValueNumber = Number(formatEther(value))
+    setZapInnerValue(zapValueNumber)
     setIsZapUserInput(true)
   }
 

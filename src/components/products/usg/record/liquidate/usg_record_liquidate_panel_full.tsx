@@ -5,7 +5,6 @@ import Divider from "@/components/design_system/structure/divider"
 import { useUSGLiquidateContext } from "./usg_record_liquidate_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
-import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { ExistingAsset } from "@/types"
 
 export default function USGLiquidatePanelFull() {
@@ -25,14 +24,9 @@ export default function USGLiquidatePanelFull() {
           label="You liquidate"
           depositSelect={<StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />}
           disabled={true}
-          displaySliderInput={false}
           asset={collateralInfo}
-          setMaxAmount={() => {}}
           onValueChange={() => {}}
           isLoading={isQuoteLoading}
-          sliderPercentage={0}
-          setSliderPercentage={() => {}}
-          sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
         />
 
         <GenericInputAssetAmount
@@ -40,9 +34,7 @@ export default function USGLiquidatePanelFull() {
           label="For"
           depositSelect={<StaticCardAssetInput asset="USG" />}
           disabled={true}
-          displaySliderInput={false}
           asset={USGInfo}
-          setMaxAmount={() => {}}
           onValueChange={() => {}}
           isLoading={isQuoteLoading}
         />
@@ -54,9 +46,7 @@ export default function USGLiquidatePanelFull() {
           label="You repay"
           depositSelect={<StaticCardAssetInput asset="USG" />}
           disabled={true}
-          displaySliderInput={false}
           asset={USGInfo}
-          setMaxAmount={() => {}}
           onValueChange={() => {}}
         />
 
@@ -65,14 +55,9 @@ export default function USGLiquidatePanelFull() {
           label="You receive"
           depositSelect={<StaticCardAssetInput asset="USG" />}
           disabled={true}
-          displaySliderInput={false}
           asset={USGInfo}
-          setMaxAmount={() => {}}
           onValueChange={() => {}}
           isLoading={isQuoteLoading}
-          sliderPercentage={0}
-          setSliderPercentage={() => {}}
-          sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
         />
       </div>
     </>

@@ -1,9 +1,9 @@
 "use client"
 
-import { cn } from "@/lib/utils"
+import { cn, PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { formatUnits } from "viem"
 import { AssetDataPriced } from "@/types"
-import { SliderInput } from "./slider_input"
+import { SliderInput } from "./SliderInput"
 import BorderPanel from "../structure/border_panel"
 import DisplayReceivePanel from "./display_recieve_panel"
 import { IconChevron } from "@/components/icons"
@@ -138,7 +138,13 @@ export function DepositReceiveInput({
         </div>
         <div className="flex w-full items-center justify-between gap-2">
           <div className="flex w-full flex-col">
-            <SliderInput percentage={percentage} handleSliderChange={handleSliderChange}></SliderInput>
+            <SliderInput
+              percentage={percentage}
+              handleSliderChange={handleSliderChange}
+              legendValues={PERCENTAGE_INPUT_AMOUNT}
+              startEndRange={["0", "100", "1"]}
+              unit="%"
+            ></SliderInput>
           </div>
 
           <BorderPanel

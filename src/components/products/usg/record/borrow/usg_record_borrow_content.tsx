@@ -9,7 +9,6 @@ import { MaxBorrowCapReached } from "@/components/design_system/notifications/ma
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
-import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 
 export default function USGRecordBorrowContent() {
   const { connect } = useWalletConnexionContext()
@@ -27,20 +26,22 @@ export default function USGRecordBorrowContent() {
         </div>
 
         <GenericInputAssetAmount
-          displaySliderInput={true}
           inputWeiValue={borrowWeiValue}
+          onValueChange={(value: bigint | undefined) => {
+            setBorrowWeiValue(value)
+          }}
           disabled={maxBorrowCapReached}
           label="You borrow"
           depositSelect={<StaticCardAssetInput asset="USG" />}
           asset={USGInfo}
-          setMaxAmount={maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue)}
-          balance={maxBorrowableValue}
-          onValueChange={(value: bigint | undefined) => {
-            setBorrowWeiValue(value)
+          maxAmountParams={{
+            maxWeiValue: maxBorrowableValue,
+            setMaxAmount: maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue),
           }}
-          sliderPercentage={borrowPercentage}
-          setSliderPercentage={maxBorrowCapReached ? () => {} : setBorrowPercentage}
-          sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
+          sliderParams={{
+            sliderPercentage: borrowPercentage,
+            setSliderPercentage: maxBorrowCapReached ? () => {} : setBorrowPercentage,
+          }}
         />
       </div>
 

@@ -7,12 +7,11 @@ import { useUSGContext } from "../../usg_context"
 import { USG_CONTRACT } from "../../usg_repository"
 import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
-import { Address, formatUnits, zeroAddress } from "viem"
+import { Address, zeroAddress } from "viem"
 import { useUSGRecordContext } from "../usg_record_context"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import { useUSGRepayContext } from "./usg_record_repay_context"
 import { IconCircleHelp } from "@/components/icons/icon_circle_help"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
 import FormButtons from "@/components/design_system/form/form_actions"
 import InputSelect from "@/components/design_system/inputs/input_select"
 import TokenImage from "@/components/design_system/structure/token_image"
@@ -181,41 +180,57 @@ export default function USGRepayContent() {
           disabled={isRepayMax}
           isZapping={!!repayAsset && repayAsset !== "USG"}
           asset={repayAssetInfo || USGInfo}
-          balance={maxRepayableValue}
-          setMaxAmount={() => handleRepayValueChange(maxRepayableValue)}
-          displaySliderInput={true}
-          sliderPercentage={percentage}
-          setSliderPercentage={setPercentage}
           onValueChange={handleRepayValueChange}
-          sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
+          maxAmountParams={{ maxWeiValue: maxRepayableValue, setMaxAmount: () => handleRepayValueChange(maxRepayableValue) }}
+          sliderParams={{
+            sliderPercentage: percentage,
+            setSliderPercentage: setPercentage,
+          }}
         />
 
         {repayAsset && repayAsset !== "USG" && (
-          <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col items-start justify-start">
-                <div className="flex items-center justify-center gap-1">
-                  <div className="text-sm text-subtitle">Zap</div>
-                  <IconThunder className="h-auto w-[8px] text-row-tonic" />
-                  <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
-                </div>
-                <div className="flex items-center justify-center gap-2">
-                  <input
-                    type="string"
-                    placeholder="0"
-                    disabled={true}
-                    className="flex justify-start bg-transparent text-xl font-semibold focus:outline-none"
-                    value={Number(formatUnits(usgRepayedValue || 0n, 18)).toFixed(2) ?? ""}
-                  />
-                </div>
-                <div className="flex justify-between gap-2 text-xs text-subtitle">
-                  <div>Minimum received</div>
-                  <div>{usgRepayedValue && USGInfo?.price !== 0 ? USGDollarRepayedValue : ""}</div>
-                </div>
+          <GenericInputAssetAmount
+            inputWeiValue={usgRepayedValue}
+            label={
+              <div className="flex items-center gap-1">
+                <div className="text-sm text-subtitle">Zap</div>
+                <IconThunder className="h-auto w-[8px] text-row-tonic" />
+                <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
               </div>
-              <StaticCardAssetInput asset="USG" />
-            </div>
-          </PanelRaw>
+            }
+            isLoading={isZapLoading}
+            depositSelect={<StaticCardAssetInput asset="USG" />}
+            disabled={isRepayMax}
+            asset={repayAssetInfo || USGInfo}
+            bottomPart={
+              <div className="flex justify-between gap-2 text-xs text-subtitle">
+                <div>Minimum received</div>
+                <div>{usgRepayedValue && USGInfo?.price !== 0 ? USGDollarRepayedValue : ""}</div>
+              </div>
+            }
+          />
+
+          // <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
+          //   <div className="flex items-center justify-between">
+          //     <div className="flex flex-col items-start justify-start">
+
+          //       <div className="flex items-center justify-center gap-2">
+          //         <input
+          //           type="string"
+          //           placeholder="0"
+          //           disabled={true}
+          //           className="flex justify-start bg-transparent text-xl font-semibold focus:outline-none"
+          //           value={Number(formatUnits(usgRepayedValue || 0n, 18)).toFixed(2) ?? ""}
+          //         />
+          //       </div>
+          //       <div className="flex justify-between gap-2 text-xs text-subtitle">
+          //         <div>Minimum received</div>
+          //         <div>{usgRepayedValue && USGInfo?.price !== 0 ? USGDollarRepayedValue : ""}</div>
+          //       </div>
+          //     </div>
+          //     <StaticCardAssetInput asset="USG" />
+          //   </div>
+          // </PanelRaw>
         )}
 
         {isRepayAndWithdraw && (
@@ -232,15 +247,15 @@ export default function USGRepayContent() {
               label="You withdraw"
               depositSelect={assetSelectElement}
               asset={pricedCollateralInfo}
-              balance={maxWithdrawable}
-              displaySliderInput={true}
-              setMaxAmount={() => setWithdrawWeiValue(maxWithdrawable)}
               onValueChange={(value: bigint | undefined) => {
                 setWithdrawWeiValue(value)
               }}
-              sliderPercentage={withdrawPercentage}
-              setSliderPercentage={setWithdrawPercentage}
-              sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
+              maxAmountParams={{ maxWeiValue: maxWithdrawable, setMaxAmount: () => setWithdrawWeiValue(maxWithdrawable) }}
+              sliderParams={{
+                sliderPercentage: withdrawPercentage,
+                setSliderPercentage: setWithdrawPercentage,
+                sliderLegendValues: PERCENTAGE_INPUT_AMOUNT,
+              }}
             />
           </div>
         )}

@@ -4,7 +4,6 @@ import { cn, PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGDepositContext } from "./usg_record_deposit_context"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import BorderPanel from "@/components/design_system/structure/border_panel"
@@ -14,9 +13,9 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
-import { CustomCollatAssetDisplay } from "@/components/design_system/structure/custom_collat_asset_display"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
+import { ExistingAsset } from "@/types"
 
 export default function USGDepositContent() {
   const {
@@ -41,7 +40,7 @@ export default function USGDepositContent() {
     zapValue,
     depositAssetInfo,
     slippage,
-    zapInnerValue,
+    // zapInnerValue,
     depositSliderPercent,
     borrowSliderPercent,
     maxBorrowableValue,
@@ -69,44 +68,42 @@ export default function USGDepositContent() {
         isLoading={isDepositLoading}
         asset={depositAssetInfo}
         label="You deposit"
-        balance={balanceAllowanceData?.balance || marketData?.collateralBalance}
         isZapping={isZapping}
-        setMaxAmount={() => {
-          handleDepositChange(balanceAllowanceData?.balance || marketData?.collateralBalance)
+        maxAmountParams={{
+          maxWeiValue: balanceAllowanceData?.balance || 0n,
+          setMaxAmount: () => {
+            handleDepositChange(balanceAllowanceData?.balance || 0n)
+          },
         }}
-        sliderPercentage={depositSliderPercent}
-        setSliderPercentage={setDepositSliderPercent}
-        displaySliderInput={true}
-        sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
+        sliderParams={{
+          sliderPercentage: depositSliderPercent,
+          setSliderPercentage: setDepositSliderPercent,
+        }}
       />
 
       {depositAsset && isZapping && (
-        <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col items-start justify-start">
-              <div className="flex items-center justify-center gap-1">
-                <div className="text-sm text-subtitle">Zap</div>
-                <IconThunder className="h-auto w-[8px] text-row-tonic" />
-                <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
-              </div>
-              <div className="flex items-center justify-center gap-2">
-                <input
-                  type="number"
-                  disabled={isZapLoading}
-                  className="flex w-fit max-w-[140px] justify-start bg-transparent text-[24px] font-semibold focus:outline-none"
-                  value={zapInnerValue ?? ""}
-                  onChange={handleZapInputChange}
-                />
-              </div>
-              <div className="flex items-center justify-start gap-2 text-xs text-subtitle">
-                <div className="hidden md:flex">Minimum received </div>
-                <div> {zapValue && !!marketData?.collateralInfos ? estimatedZapDollarValue : ""}</div>
-              </div>
+        <GenericInputAssetAmount
+          inputWeiValue={zapValue || 0n}
+          onValueChange={(e) => {
+            handleZapInputChange(e)
+          }}
+          isLoading={isZapLoading}
+          label={
+            <div className="flex items-center gap-1">
+              <div className="text-sm text-subtitle">Zap</div>
+              <IconThunder className="h-auto w-[8px] text-row-tonic" />
+              <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
             </div>
-
-            <CustomCollatAssetDisplay collateralInfo={collateralInfo} />
-          </div>
-        </PanelRaw>
+          }
+          depositSelect={<StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />}
+          // asset={repayAssetInfo || USGInfo}
+          bottomPart={
+            <div className="flex gap-2 text-xs text-subtitle">
+              <div>Minimum received</div>
+              <div>{zapValue && !!marketData?.collateralInfos ? estimatedZapDollarValue : ""}</div>
+            </div>
+          }
+        />
       )}
 
       {isDepositAndBorrow && (
@@ -123,12 +120,12 @@ export default function USGDepositContent() {
             disabled={maxBorrowCapReached}
             label="You borrow"
             depositSelect={<StaticCardAssetInput asset="USG" />}
-            setMaxAmount={maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue)}
-            balance={maxBorrowableValue}
-            displaySliderInput={true}
-            sliderPercentage={borrowSliderPercent}
-            setSliderPercentage={maxBorrowCapReached ? () => {} : setBorrowSliderPercent}
-            sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
+            maxAmountParams={{ maxWeiValue: maxBorrowableValue, setMaxAmount: maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue) }}
+            sliderParams={{
+              sliderPercentage: borrowSliderPercent,
+              setSliderPercentage: maxBorrowCapReached ? () => {} : setBorrowSliderPercent,
+              sliderLegendValues: PERCENTAGE_INPUT_AMOUNT,
+            }}
           />
         </div>
       )}

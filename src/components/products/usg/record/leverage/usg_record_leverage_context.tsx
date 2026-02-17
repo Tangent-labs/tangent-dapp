@@ -78,7 +78,7 @@ type USGLeverageContextValues = {
 
   estimatedZapDollarValue: string
 
-  updateBorrowWeiValue: (value: bigint) => Promise<void>
+  updateBorrowWeiValue: (value: bigint | undefined) => Promise<void>
 
   maxDepositString: string
 

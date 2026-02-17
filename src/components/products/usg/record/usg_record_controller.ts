@@ -221,7 +221,7 @@ export function getMarketDisplayData(usgPrice: number, marketData?: MarketDetail
     depositedDollar: formatDollar(Number(formatEther(BigInt(marketData?.collateralInfos.positionCollateralUSDValue || 0n))), 0),
     borrowRateCurrent: Number(formatEther(marketData?.debtInfos.currentBorrowRate || 0n)),
     borrowRateNext: Number(formatEther(marketData?.debtInfos.futureBorrowRate || 0n)),
-    lt: formatNumber(Number(formatEther(BigInt(marketData?.constants.liquidationThreshold || 0n))), 2) + "%",
+    lt: formatNumber(Number(formatUnits(BigInt(marketData?.constants.liquidationThreshold || 0n), 3)), 2) + "%",
     ltDollar: "-",
     maxLtv: formatNumber(Number(BigInt(marketData?.constants.maxLTV || 0n)) / 1000, 2) + "%",
     maxLtvDollar: formatDollar(Number(formatEther(BigInt(marketData?.constants.maxMarketDebt || 0n))), 2),

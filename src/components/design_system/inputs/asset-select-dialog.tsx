@@ -99,7 +99,7 @@ export default function AssetSelectionDialog<T extends OptionT>({
         <button
           disabled={disabled}
           type="button"
-          className="flex h-[38px] items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 transition-all duration-200 hover:scale-105 hover:bg-white/5"
+          className="flex h-[38px] items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 transition-all duration-200 hover:scale-[1.02] hover:bg-white/5 active:scale-[0.99]"
           style={{ borderWidth: 1.5 }}
         >
           <span className="flex items-center gap-2">

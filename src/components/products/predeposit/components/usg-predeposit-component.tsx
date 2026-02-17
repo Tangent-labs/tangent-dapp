@@ -11,7 +11,6 @@ import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "./StaticCardAssetInput"
-import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 
 type USGPredepositComponentProps = {
   predepositStatus: PredepositStatus | null
@@ -76,20 +75,19 @@ export const USGPredepositComponent = ({
       </div>
 
       <GenericInputAssetAmount
-        displaySliderInput={true}
         inputWeiValue={depositWeiValue}
         depositSelect={<StaticCardAssetInput asset={assetInfo?.symbol as ExistingAsset} />}
         isLoading={isLoading}
         label="You deposit"
         asset={assetInfo}
-        balance={balance}
         isZapping={false}
         onValueChange={handleDepositChange}
-        sliderPercentage={percentage}
-        setSliderPercentage={setPercentage}
-        setMaxAmount={setMaxBalance}
         displayBalance={true}
-        sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
+        maxAmountParams={{ maxWeiValue: balance, setMaxAmount: setMaxBalance }}
+        sliderParams={{
+          sliderPercentage: percentage,
+          setSliderPercentage: setPercentage,
+        }}
       />
 
       <div className={`${isLoading ? "shimmer" : ""} my-2 flex flex-col gap-1 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]`}>

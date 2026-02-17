@@ -12,7 +12,7 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
-import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
+import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 
 export default function USGWithdrawContent() {
   const { connect } = useWalletConnexionContext()
@@ -62,19 +62,22 @@ export default function USGWithdrawContent() {
     )
   }
 
-  const AssetSelect = () => {
-    const disabled = marketData?.constants?.receipt === zeroAddress
+  const AssetSelectWithdraw = () => {
+    const isReceipt = marketData?.constants?.receipt !== zeroAddress
 
-    return (
-      <AssetSelectionDialog
-        disabled={disabled}
-        className="w-full min-w-24"
-        template={AssetSelectTemplate}
-        value={selectedAsset || collateralInfo?.symbol}
-        options={depositAssetOptions}
-        onChange={(v) => setSelectedAsset(v)}
-      />
-    )
+    if (isReceipt) {
+      return (
+        <AssetSelectionDialog
+          className="w-full min-w-24"
+          template={AssetSelectTemplate}
+          value={selectedAsset || collateralInfo?.symbol}
+          options={depositAssetOptions}
+          onChange={(v) => setSelectedAsset(v)}
+        />
+      )
+    } else {
+      return <StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />
+    }
   }
 
   return (
@@ -92,14 +95,13 @@ export default function USGWithdrawContent() {
             inputWeiValue={withdrawWeiValue}
             onValueChange={setWithdrawWeiValue}
             label="You withdraw"
-            depositSelect={<AssetSelect />}
+            depositSelect={<AssetSelectWithdraw />}
             asset={pricedCollateralInfo}
-            balance={maxWithdrawable}
-            displaySliderInput={true}
-            setMaxAmount={() => setWithdrawWeiValue(maxWithdrawable)}
-            sliderPercentage={withdrawPercentage}
-            setSliderPercentage={setWithdrawPercentage}
-            sliderLegendValues={PERCENTAGE_INPUT_AMOUNT}
+            maxAmountParams={{ maxWeiValue: maxWithdrawable, setMaxAmount: () => setWithdrawWeiValue(maxWithdrawable) }}
+            sliderParams={{
+              sliderPercentage: withdrawPercentage,
+              setSliderPercentage: setWithdrawPercentage,
+            }}
           />
         </div>
 

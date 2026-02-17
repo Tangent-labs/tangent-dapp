@@ -2,7 +2,6 @@
 
 import { MarketDetailData } from "../usg_type"
 import TokenImage from "@/components/design_system/structure/token_image"
-import BorderPanel from "@/components/design_system/structure/border_panel"
 import { MobileProtocol } from "@/components/design_system/list/mobile_protocol"
 
 type MarketMetadataProps = {
@@ -42,11 +41,9 @@ export const MarketMetadata = ({ marketData }: MarketMetadataProps) => {
             </>
           )}
 
-          <BorderPanel
-            className={`flex items-center justify-center !rounded-full px-3 py-0.5 text-xs ${marketData?.constants?.irParams.isHEC ? "bg-button-active" : "bg-lec"}`}
-          >
+          <div className={`flex items-center justify-center px-3 py-0.5 text-xs ${marketData?.constants?.irParams.isHEC ? "bg-button-active" : "bg-lec"}`}>
             {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
-          </BorderPanel>
+          </div>
         </>
       )}
     </>

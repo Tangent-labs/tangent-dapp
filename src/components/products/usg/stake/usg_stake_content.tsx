@@ -1,7 +1,6 @@
 "use client"
 
 import Image from "next/image"
-import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
 import { ExistingAsset } from "@/types"
 import { useUSGStakeContext } from "./usg_stake_context"
@@ -20,11 +19,9 @@ import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_r
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 
 export default function USGStakeContent() {
-  const color1 = "#0077ff67"
-  const color2 = "#0075FF"
-
   const {
     actionStake,
     actionUnstake,
@@ -95,59 +92,13 @@ export default function USGStakeContent() {
         <div className="flex h-auto w-full flex-col justify-between gap-2 xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
-          <div
-            className={cn(
-              "relative flex w-full items-center justify-between gap-3 rounded-[10px] bg-overlay-panel px-6 py-2.5",
-              !!USGsUSGMetrics ? "" : "shimmer"
-            )}
-          >
-            <div className="absolute inset-0 rounded-[10px] bg-cover bg-center opacity-20" style={{ backgroundImage: 'url("./medias/card_bg_blocks.png")' }} />
-
-            <div
-              className="absolute inset-0 rounded-[10px]"
-              style={{
-                left: 0,
-                width: "100%",
-                background: `
-                  linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), 
-                  radial-gradient(50.04% 50% at 50% 100%, ${color1} 0%, rgba(0, 0, 0, 0) 100%)
-                `,
-              }}
-            />
-
-            <div
-              className="pointer-events-none absolute inset-0 rounded-lg"
-              style={{
-                padding: "1px",
-                left: 0,
-                width: "100%",
-                background: `
-                  radial-gradient(49.97% 49.97% at 50% 100%, #FFFFFF 0%,
-                  ${color2} 19.71%, rgba(0, 0, 0, 0) 100%), 
-                  linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%,
-                  rgba(255, 255, 255, 0.1) 100%)
-                `,
-                WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                WebkitMaskComposite: "xor",
-                maskComposite: "exclude",
-              }}
-            />
-
-            <TokenImage className="relative hidden lg:flex" token="sUSG" size={48} />
-
-            <div className="relative flex flex-col items-center justify-center font-semibold">
-              <span className="text-sm text-subtitle">Supply</span>
-              <span className="text-lg font-semibold">{formatNumber(Number(formatUnits(USGsUSGMetrics?.sUSGSupply || 0n, 18)), 0)} </span>
-            </div>
-            <div className="relative flex flex-col items-center justify-center font-semibold">
-              <span className="text-sm text-subtitle">sUSG</span>
-              <span className="text-lg font-semibold">{formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 2)}</span>
-            </div>
-            <div className="relative flex flex-col items-center justify-center rounded-[10px] bg-button-active bg-opacity-100 px-8 py-1">
-              <span className="text-sm font-semibold text-black">APY</span>
-              <span className="text-lg font-semibold">{sUSGCurrentAPY.toFixed(2)}%</span>
-            </div>
-          </div>
+          <ThreeCardRowWithMask
+            contents={[
+              { key: "Supply", value: formatNumber(Number(formatUnits(USGsUSGMetrics?.sUSGSupply || 0n, 18)), 0) },
+              { key: "sUSG", value: formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 2) },
+              { key: "APY", value: `${sUSGCurrentAPY.toFixed(2)}%` },
+            ]}
+          ></ThreeCardRowWithMask>
         </div>
       </div>
 

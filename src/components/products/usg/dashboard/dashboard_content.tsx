@@ -5,16 +5,15 @@ import { returnTVLType } from "./utils"
 import { MarketDebt } from "./market_debt"
 import { USGCollaterals } from "./usg_collaterals"
 import { useUSGDashboardContext } from "./dashboard_context"
+import { formatXAxis, formatYAxis } from "./dashboard_controller"
 import Divider from "@/components/design_system/structure/divider"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
+import { formatCompact, formatDollar } from "@/lib/number_formatter"
 import { useRootContext } from "@/components/products/root/root_context"
 import TokenImage from "@/components/design_system/structure/token_image"
-import { formatXAxis, formatYAxis } from "./dashboard_controller"
-import IndicatorCards from "@/components/design_system/structure/indicators_card"
-import { formatCompact, formatDollar } from "@/lib/number_formatter"
-import { ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip, TooltipProps } from "recharts"
-import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import IndicatorCards from "@/components/design_system/structure/indicators_card"
+import { ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip, TooltipProps } from "recharts"
 
 export const USGDashboardContent = () => {
   const { globalData, userData, marketDebtMaxValue, marketTVLMaxValue } = useUSGDashboardContext()
@@ -126,7 +125,15 @@ export const USGDashboardContent = () => {
   return (
     <div className="flex w-full flex-col items-start justify-start gap-3">
       <div className="flex h-full w-full flex-col items-start justify-start gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
-        <PointsCampaignLiveCard></PointsCampaignLiveCard>
+        <ReliefCard className="w-full">
+          <div
+            style={{ fontSize: "20px", lineHeight: "20px" }}
+            className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/fulltan.png')] bg-[size:30%] bg-[position:calc(100%)_bottom] bg-no-repeat px-6 !font-semibold italic"
+          >
+            Points campaign
+            <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
+          </div>
+        </ReliefCard>
       </div>
 
       <div className="flex w-full flex-col justify-between gap-4 md:flex-row md:justify-start">

@@ -1,18 +1,21 @@
 "use client"
 
 import Image from "next/image"
+import { cn } from "@/lib/utils"
+import { useUSGContext } from "../usg_context"
 import { ExistingAsset, ListState } from "@/types"
-import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGEarnContext } from "./usg_earn_context"
-import ListRow from "@/components/design_system/list/list_row"
 import { USGEarnListHeaders } from "./usg_earn_controller"
+import ListRow from "@/components/design_system/list/list_row"
+import { formatBigInt, formatNumber } from "@/lib/number_formatter"
 import ListHeader from "@/components/design_system/list/list_header"
 import InputSearch from "@/components/design_system/inputs/input_search"
 import TokenImage from "@/components/design_system/structure/token_image"
 import BorderPanel from "@/components/design_system/structure/border_panel"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { cn } from "@/lib/utils"
 import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
+import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 
 const listeState: ListState = {
   search: undefined,
@@ -25,12 +28,14 @@ const listeState: ListState = {
 export const USGEarnContent = () => {
   const { searchValue, setSearchValue, displayRows, USGsUSGMetrics } = useUSGEarnContext()
 
+  const { lpUserPoints, voteUserPoints } = useUSGContext()
+
   return (
     <>
       <div className="flex items-stretch justify-between gap-6">
-        <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
+        <ReliefCard className="hidden w-1/2 bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
-            <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+            <Image height={150} width={150} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Earn</span>
@@ -39,26 +44,22 @@ export const USGEarnContent = () => {
               trading markets.
             </p>
           </div>
-        </div>
+        </ReliefCard>
 
-        <div className="flex h-auto w-full flex-col items-center gap-2 xl:w-1/2">
+        <div className="flex h-auto w-full flex-col justify-between gap-2 xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
-          <div className="mt-auto flex w-full items-center justify-center gap-3 rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
-            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 xl:min-w-48">
-              <span className="text-xs text-subtitle">USG Balance</span>
-              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)}</span>
-            </div>
-
-            <div className="flex w-full min-w-24 flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-2 xl:min-w-48">
-              <span className="text-xs text-subtitle">sUSG Balance</span>
-              <span className="text-sm font-semibold">{formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)}</span>
-            </div>
-          </div>
+          <ThreeCardRowWithMask
+            contents={[
+              { key: "USG Balance", value: formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2) },
+              { key: "sUSG Balance", value: formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2) },
+              { key: "Your Total Points", value: `${formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts` },
+            ]}
+          ></ThreeCardRowWithMask>
         </div>
       </div>
 
-      <div className="mt-6 flex w-full items-end justify-between">
+      <div className="mb-2 mt-6 flex w-full items-end justify-between">
         <div className="flex w-full items-end justify-start gap-2">
           <div className="flex w-full max-w-80 flex-col items-center justify-center">
             <div className="mb-1 text-xs text-subtitle"> Search </div>
@@ -73,25 +74,23 @@ export const USGEarnContent = () => {
       </div>
 
       <ListProvider _headers={USGEarnListHeaders} _rows={displayRows!} _listState={listeState}>
-        <USGMEarnListInner />
+        <USGEarnListInner />
       </ListProvider>
     </>
   )
 }
 
-export function USGMEarnListInner() {
+export function USGEarnListInner() {
   const { headers, listState, udpateSort } = useListContext()
 
   const { displayRows, isLoading } = useUSGEarnContext()
 
   return (
     <>
-      <div className="mt-2 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
-        <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
-      </div>
+      <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
 
       {displayRows?.map((item, index) => (
-        <ListRow route={item.link} className={cn("my-1", isLoading ? "shimmer" : "")} key={index}>
+        <ListRow route={item.link} className={cn(isLoading ? "shimmer" : "")} key={index}>
           <div className="relative flex items-center gap-4">
             <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-12 lg:w-16" />
 

@@ -1,10 +1,10 @@
-interface DivProps {
-  children: React.ReactNode
-  className?: string
-}
-export function ReliefCard({ children, className = "" }: DivProps) {
+import * as React from "react"
+
+type ReliefCardProps = React.HTMLAttributes<HTMLDivElement>
+
+export const ReliefCard = React.forwardRef<HTMLDivElement, ReliefCardProps>(({ children, className = "", ...props }, ref) => {
   return (
-    <div className={`relative overflow-hidden rounded-lg backdrop-blur-[60px] ${className}`}>
+    <div ref={ref} {...props} className={`relative overflow-hidden rounded-lg bg-overlay-panel backdrop-blur-[60px] ${className}`}>
       {/* Gradient border effect */}
       <div
         className="pointer-events-none absolute inset-0 rounded-lg"
@@ -20,4 +20,6 @@ export function ReliefCard({ children, className = "" }: DivProps) {
       {children}
     </div>
   )
-}
+})
+
+ReliefCard.displayName = "ReliefCard"

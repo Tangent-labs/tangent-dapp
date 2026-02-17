@@ -92,16 +92,14 @@ export function PredepositOpportunitiesListInner({ displayRows }: PredepositOppo
 
   return (
     <>
-      <div className="mt-2 w-full rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
-        <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
-      </div>
+      <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
 
       {displayRows?.map((item, index) => (
-        <ListRow route={item.link} className="mt-1 w-full" key={index}>
-          <div className="relative flex items-center gap-4">
+        <ListRow route={item.link} key={index}>
+          <div className="relative flex w-full items-center gap-4">
             <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-12 lg:w-16" />
 
-            <div className="flex flex-col items-start justify-center leading-8">
+            <div className="flex flex-col items-start justify-center">
               <span className="text-sm font-semibold md:text-xl">{item?.asset}</span>
 
               <div className="flex items-center justify-center rounded-full bg-overlay-panel px-3 py-1">
@@ -137,7 +135,7 @@ export function PredepositOpportunitiesListInner({ displayRows }: PredepositOppo
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex w-full items-center justify-center gap-2">
             <div className="flex flex-row items-center justify-center gap-2 text-center md:flex-col md:gap-0">
               <span className="flex items-center justify-center bg-button-active bg-clip-text text-sm font-semibold leading-4 text-transparent md:text-xl">
                 {item?.currentAPR.toFixed(2)}%

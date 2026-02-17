@@ -20,6 +20,7 @@ import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 import { isOnMarket, mapRouteToFeature } from "./menu_bar_feature_controller"
 import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
 import Link from "next/link"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 export default function MenuBarFeature() {
   const { USGCurrentSupply, sUSGCurrentAPY, protocolCurrentTVL } = useRootContext()
@@ -40,12 +41,11 @@ export default function MenuBarFeature() {
                 <IconTangent className="mb-2 w-32"></IconTangent>
               </Link>
             </div>
-            <div className="flex cursor-pointer items-center gap-4 text-xl text-white md:hidden">
-              <Link href="/">
-                <IconTangentLogo className="mb-2 mr-2 w-12 border-r border-white/30 px-2"></IconTangentLogo>
-                {computedFeature()}
-              </Link>
-            </div>
+
+            <Link className="flex cursor-pointer items-center gap-4 text-xl text-white md:hidden" href="/">
+              <IconTangentLogo className="mb-2 mr-2 w-12 border-r border-white/30 px-2"></IconTangentLogo>
+              {computedFeature()}
+            </Link>
 
             <NavigationMenu>
               <NavigationMenuList>
@@ -108,20 +108,26 @@ export default function MenuBarFeature() {
                   <NavigationMenuDropdown>
                     <NavigationMenuTrigger>DAO</NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-dark p-2">
-                        <NavigationMenuLink href="/harvest" className="flex items-center justify-start gap-2">
-                          <IconHarvest className="w-2"></IconHarvest>
-                          Harvest
+                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] border border-white/10 bg-dark p-2">
+                        <NavigationMenuLink asChild>
+                          <Link href="/harvest" className="flex items-center justify-start gap-2">
+                            <IconHarvest className="w-2" />
+                            Harvest
+                          </Link>
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink href="/forum" className="flex items-center justify-start gap-2">
-                          <IconForum className="w-3"></IconForum>
-                          Forum
+                        <NavigationMenuLink asChild>
+                          <Link href="/forum" className="flex items-center justify-start gap-2">
+                            <IconForum className="w-3" />
+                            Forum
+                          </Link>
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink href="/snapshot" className="flex items-center justify-start gap-2">
-                          <IconSnapshot className="w-3"></IconSnapshot>
-                          Snapshot
+                        <NavigationMenuLink asChild>
+                          <Link href="/snapshot" className="flex items-center justify-start gap-2">
+                            <IconSnapshot className="w-3" />
+                            Snapshot
+                          </Link>
                         </NavigationMenuLink>
                       </div>
                     </NavigationMenuContent>
@@ -132,20 +138,26 @@ export default function MenuBarFeature() {
                   <NavigationMenuDropdown>
                     <NavigationMenuTrigger>Airdrop</NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-dark p-2">
-                        <NavigationMenuLink href="/tasks" className="flex items-center justify-start gap-2">
-                          <IconTask className="w-3"></IconTask>
-                          Task
+                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] border border-white/10 bg-dark p-2">
+                        <NavigationMenuLink asChild>
+                          <Link href="/tasks" className="flex items-center justify-start gap-2">
+                            <IconTask className="w-3" />
+                            Tasks
+                          </Link>
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink href="/referral" className="flex items-center justify-start gap-2">
-                          <IconReferral className="w-3"></IconReferral>
-                          Referral
+                        <NavigationMenuLink asChild>
+                          <Link href="/referral" className="flex items-center justify-start gap-2">
+                            <IconReferral className="w-3" />
+                            Referral
+                          </Link>
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink href="/boosts" className="flex items-center justify-start gap-2">
-                          <IconBoosts className="w-3"></IconBoosts>
-                          Boosts
+                        <NavigationMenuLink asChild>
+                          <Link href="/boosts" className="flex items-center justify-start gap-2">
+                            <IconBoosts className="w-3" />
+                            Boosts
+                          </Link>
                         </NavigationMenuLink>
                       </div>
                     </NavigationMenuContent>
@@ -155,18 +167,18 @@ export default function MenuBarFeature() {
             </NavigationMenu>
           </div>
 
-          <div className="flex w-full items-center justify-end gap-3">
-            <div className="hidden items-center justify-center rounded-[10px] bg-overlay-panel px-1 py-2.5 text-xs backdrop-blur-[60px] xl:flex">
+          <div className="flex w-full items-center justify-end gap-4">
+            <ReliefCard className="hidden items-center justify-center px-1 py-2.5 text-xs xl:flex">
               <span className="border-r border-white/30 px-2">TVL: ${formatCompact(protocolCurrentTVL?.total)} </span>
-              <span className="flex items-center justify-center gap-1 border-r border-white/30 px-2">
+              <span className="flex items-center justify-center gap-2 border-r border-white/30 px-2">
                 <TokenImage token="USG" size={20} />
                 {formatCompact(USGCurrentSupply)}
               </span>
-              <span className="flex items-center justify-center gap-1 px-2">
+              <span className="flex items-center justify-center gap-2 px-2">
                 <TokenImage token="sUSG" size={20} />
                 {sUSGCurrentAPY.toFixed(2)}% APY
               </span>
-            </div>
+            </ReliefCard>
 
             <Link href="/swap">
               <button className="hidden cursor-pointer rounded-[10px] border border-button-active px-4 py-[9px] font-gilroy text-sm font-semibold transition-colors duration-200 ease-in-out hover:border-black hover:bg-button-active xl:flex">

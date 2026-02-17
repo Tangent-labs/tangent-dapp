@@ -5,14 +5,15 @@ import { useClipboard } from "@/hooks/useClipboard"
 import { useUSGContext } from "../../usg_context"
 import { formatNumber } from "@/lib/number_formatter"
 import { Leaderboard } from "./components/Leaderboard"
-import { IconShare, IconTrophy, IconCompleted } from "@/components/icons"
 import { ReferralHeader } from "./components/ReferralHeader"
 import { useUsgAirdropContext } from "../usg_airdrop_context"
 import Divider from "@/components/design_system/structure/divider"
 import { useUsgReferralCodeContext } from "./usg_referral_context"
 import { GodsonsLeaderboard } from "./components/GodsonsLeaderboard"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { IconShare, IconTrophy, IconCompleted } from "@/components/icons"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { SecondaryButton } from "@/components/design_system/inputs/secondary_button"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export const UsgReferralCode = () => {
   const { isConnected, currentAddress } = useWalletConnexionContext()
@@ -38,12 +39,7 @@ export const UsgReferralCode = () => {
         userBoost={userBoostFactor}
       />
 
-      <div
-        className={cn(
-          "mt-4 flex w-full flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-5 py-3 backdrop-blur-[60px]",
-          !!airdropDataIsLoading && currentAddress ? "shimmer" : ""
-        )}
-      >
+      <ReliefCard className={cn("mt-4 flex w-full flex-col items-center justify-center px-5 py-3", !!airdropDataIsLoading && currentAddress ? "shimmer" : "")}>
         <div className="mr-auto text-lg font-semibold text-white">Your referral</div>
 
         <Divider className="h-0.5 w-full bg-white/10" />
@@ -90,15 +86,15 @@ export const UsgReferralCode = () => {
             )}
           </div>
         </div>
-      </div>
+      </ReliefCard>
 
-      <div className="mt-4 hidden w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px] xl:flex">
+      <ReliefCard className="mt-4 hidden w-full flex-col items-center justify-center p-3 xl:flex">
         <div className="mr-auto text-lg font-semibold text-white">Airdrop referral</div>
 
         <Divider className="h-0.5 w-full bg-white/10" />
 
         <div className="flex w-full items-center justify-between gap-4">
-          <div className="flex w-full flex-col items-center justify-center rounded-[10px] p-3 backdrop-blur-[60px]">
+          <div className="flex w-full flex-col items-center justify-center">
             <IconShare></IconShare>
 
             <span className="text-lg font-semibold">Share link</span>
@@ -107,7 +103,7 @@ export const UsgReferralCode = () => {
             </span>
           </div>
 
-          <div className="flex w-full flex-col items-center justify-center rounded-[10px] p-3 backdrop-blur-[60px]">
+          <div className="flex w-full flex-col items-center justify-center">
             <IconCompleted></IconCompleted>
             <span className="text-lg font-semibold">Complete tasks</span>
             <span className="mt-2 text-center text-sm text-subtitle">
@@ -115,7 +111,7 @@ export const UsgReferralCode = () => {
             </span>
           </div>
 
-          <div className="flex w-full flex-col items-center justify-center rounded-[10px] p-3 backdrop-blur-[60px]">
+          <div className="flex w-full flex-col items-center justify-center">
             <IconTrophy className="w-12 fill-row-tonic"></IconTrophy>
             <span className="text-lg font-semibold">Earn points</span>
             <span className="mt-2 text-center text-sm text-subtitle">
@@ -123,32 +119,32 @@ export const UsgReferralCode = () => {
             </span>
           </div>
         </div>
-      </div>
+      </ReliefCard>
 
       <div className="mt-4 flex w-full flex-wrap items-start justify-between gap-4 xl:flex-row xl:flex-nowrap">
-        <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
+        <ReliefCard className="flex w-full flex-col items-start justify-start p-3">
           <div className="mr-auto text-lg font-semibold text-white">Liquidity points leaderboard</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
 
           <Leaderboard leaderboard={lpLeaderboard} />
-        </div>
+        </ReliefCard>
 
-        <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
+        <ReliefCard className="flex w-full flex-col items-center justify-center p-3">
           <div className="mr-auto text-lg font-semibold text-white">Vote points leaderboard</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
 
           <Leaderboard leaderboard={voteLeaderboard} feature="vote" />
-        </div>
+        </ReliefCard>
 
-        <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-white bg-opacity-[5%] p-3 backdrop-blur-[60px]">
+        <ReliefCard className="flex w-full flex-col items-center justify-center p-3">
           <div className="mr-auto text-lg font-semibold text-white">My referees</div>
 
           <Divider className="h-0.5 w-full bg-white/10" />
 
           <GodsonsLeaderboard godsonsLeaderboard={godsonsLeaderboard} />
-        </div>
+        </ReliefCard>
       </div>
     </div>
   )

@@ -1,5 +1,6 @@
 "use client"
 
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { useUSGContext } from "../../../usg_context"
 import { useUSGRecordContext } from "../../usg_record_context"
 import RecordPageHeader from "@/components/design_system/structure/record_page_header"
@@ -12,7 +13,7 @@ export default function MarketDetailsParameters() {
   const currentMarketApr = marketAprs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())
 
   return (
-    <div className="my-4 hidden h-24 items-center justify-evenly rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px] md:flex">
+    <ReliefCard className="my-4 hidden h-24 items-center justify-evenly py-2 md:flex">
       <RecordPageHeader
         apr={currentMarketApr!}
         indicators={[
@@ -50,6 +51,6 @@ export default function MarketDetailsParameters() {
           },
         ]}
       />
-    </div>
+    </ReliefCard>
   )
 }

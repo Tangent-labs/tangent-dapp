@@ -11,16 +11,20 @@ import FormButtons from "@/components/design_system/form/form_actions"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { useRootContext } from "@/components/products/root/root_context"
 import PerformanceHistoryPanel from "./components/PerformanceHistoryPanel"
-import LargeButtonTab from "@/components/design_system/inputs/large_button_tab"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import EvolutionBox from "@/components/design_system/structure/evolution_box"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import LargeButtonTab from "@/components/design_system/inputs/large_button_tab"
 import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
 import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_receive_input"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function USGStakeContent() {
+  const color1 = "#0077ff67"
+  const color2 = "#0075FF"
+
   const {
     actionStake,
     actionUnstake,
@@ -76,9 +80,9 @@ export default function USGStakeContent() {
   return (
     <>
       <div className="flex items-stretch justify-between gap-6">
-        <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
+        <ReliefCard className="hidden w-1/2 bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
-            <Image height={140} width={140} src="/medias/tokens/SUSG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+            <Image height={150} width={150} src="/medias/tokens/SUSG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Savings account</span>
@@ -86,23 +90,60 @@ export default function USGStakeContent() {
               Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi. Learn more
             </p>
           </div>
-        </div>
+        </ReliefCard>
 
-        <div className="flex h-auto w-full flex-col items-center gap-2 xl:w-1/2">
+        <div className="flex h-auto w-full flex-col justify-between gap-2 xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
-          <div className={cn("flex w-full items-center justify-between gap-3 rounded-[10px] bg-overlay-panel px-6 py-4", !!USGsUSGMetrics ? "" : "shimmer")}>
-            <TokenImage className="hidden lg:flex" token="sUSG" size={48} />
+          <div
+            className={cn(
+              "relative flex w-full items-center justify-between gap-3 rounded-[10px] bg-overlay-panel px-6 py-2.5",
+              !!USGsUSGMetrics ? "" : "shimmer"
+            )}
+          >
+            <div className="absolute inset-0 rounded-[10px] bg-cover bg-center opacity-20" style={{ backgroundImage: 'url("./medias/card_bg_blocks.png")' }} />
 
-            <div className="flex flex-col items-center justify-center font-semibold">
+            <div
+              className="absolute inset-0 rounded-[10px]"
+              style={{
+                left: 0,
+                width: "100%",
+                background: `
+                  linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), 
+                  radial-gradient(50.04% 50% at 50% 100%, ${color1} 0%, rgba(0, 0, 0, 0) 100%)
+                `,
+              }}
+            />
+
+            <div
+              className="pointer-events-none absolute inset-0 rounded-lg"
+              style={{
+                padding: "1px",
+                left: 0,
+                width: "100%",
+                background: `
+                  radial-gradient(49.97% 49.97% at 50% 100%, #FFFFFF 0%,
+                  ${color2} 19.71%, rgba(0, 0, 0, 0) 100%), 
+                  linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%,
+                  rgba(255, 255, 255, 0.1) 100%)
+                `,
+                WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                WebkitMaskComposite: "xor",
+                maskComposite: "exclude",
+              }}
+            />
+
+            <TokenImage className="relative hidden lg:flex" token="sUSG" size={48} />
+
+            <div className="relative flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">Supply</span>
               <span className="text-lg font-semibold">{formatNumber(Number(formatUnits(USGsUSGMetrics?.sUSGSupply || 0n, 18)), 0)} </span>
             </div>
-            <div className="flex flex-col items-center justify-center font-semibold">
+            <div className="relative flex flex-col items-center justify-center font-semibold">
               <span className="text-sm text-subtitle">sUSG</span>
               <span className="text-lg font-semibold">{formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 2)}</span>
             </div>
-            <div className="flex flex-col items-center justify-center rounded-[10px] bg-button-active px-8 py-1">
+            <div className="relative flex flex-col items-center justify-center rounded-[10px] bg-button-active bg-opacity-100 px-8 py-1">
               <span className="text-sm font-semibold text-black">APY</span>
               <span className="text-lg font-semibold">{sUSGCurrentAPY.toFixed(2)}%</span>
             </div>
@@ -111,7 +152,7 @@ export default function USGStakeContent() {
       </div>
 
       <div className="mt-4 flex w-full flex-col gap-2 lg:flex-row lg:items-start lg:gap-4">
-        <div className="flex w-full flex-col items-center justify-start gap-1 rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] lg:w-5/12 xl:w-1/3">
+        <ReliefCard className="flex w-full flex-col items-center justify-start gap-1 p-4 lg:w-5/12 xl:w-1/3">
           <div className="flex w-full items-center justify-between gap-4">
             <LargeButtonTab
               onClick={() => setCurrentFeature("stake")}
@@ -196,7 +237,7 @@ export default function USGStakeContent() {
             formState={formState}
             labelProcess={currentFeature === "stake" ? "Deposit & Stake" : "Unstake"}
           />
-        </div>
+        </ReliefCard>
 
         <div className="flex w-full flex-col lg:hidden">
           {!!USGsUSGMetrics && !!sUSGCurrentAPY && sUSGCurrentAPY > 0 && (

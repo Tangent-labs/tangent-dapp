@@ -6,6 +6,7 @@ import { MarketDetailData } from "../../../usg_type"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { IconArrow } from "@/components/icons"
 import { TOKEN_INFOS } from "@/data/tokenInfos"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 type MarketDetailsInfosProps = {
   marketData: MarketDetailData
@@ -29,7 +30,7 @@ export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
   }
 
   return (
-    <div className="mt-4 hidden h-24 items-center rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px] md:flex">
+    <ReliefCard className="mt-4 hidden h-24 items-center py-2 md:flex">
       <div className="flex min-h-20 w-2/12 flex-col items-center justify-center border-r border-[#3F3F3F] px-8">
         <div className="flex flex-col items-center justify-between gap-2">
           <div className="mt-2 flex items-center justify-between gap-2">
@@ -89,6 +90,6 @@ export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
 
         <span className="mt-2 text-xs text-subtitle">{currentInfo.risk}</span>
       </div>
-    </div>
+    </ReliefCard>
   )
 }

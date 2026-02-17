@@ -5,6 +5,7 @@ import { Boost } from "../../../usg_type"
 import { TaskStatus } from "../../components/TaskStatus"
 import { IconSortHeader } from "@/components/icons"
 import { useListContext } from "@/components/design_system/list/list_context"
+import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 
 export const boostsListState: ListState = {
   search: undefined,
@@ -30,8 +31,8 @@ export const BoostsList = () => {
 
   return (
     <>
-      <div className="mb-1 mt-6 rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
-        <div className={`hidden p-4 leading-[10px] xl:block`}>
+      <div className="relative mb-1 mt-4 hidden w-full xl:block">
+        <div className={`w-full rounded-t-[10px] bg-overlay-panel p-4 leading-[10px] backdrop-blur-[60px]`}>
           <BoostRowLayout>
             {!!headers?.at(0)?.key && (
               <div className="flex w-full">
@@ -67,14 +68,12 @@ export const BoostsList = () => {
             )}
           </BoostRowLayout>
         </div>
+        <ListGradientBorder classname={"rounded-t-[10px]"} />
       </div>
 
       {displayRows &&
         (displayRows as Boost[])?.map((boost: Boost) => (
-          <div
-            key={boost?.type}
-            className="mb-1 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
-          >
+          <div key={boost?.type} className="relative mb-1 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] hover-lift-row">
             <div className="hidden items-center justify-between md:flex">
               <div className="flex w-1/3 items-center gap-2 xl:gap-4">
                 <span className="flex text-xl font-semibold">{boost?.type}</span>
@@ -105,6 +104,7 @@ export const BoostsList = () => {
                 </div>
               </div>
             </div>
+            <ListGradientBorder />
           </div>
         ))}
     </>

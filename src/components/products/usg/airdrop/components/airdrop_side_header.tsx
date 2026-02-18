@@ -1,11 +1,54 @@
 "use client"
 
+import { cn } from "@/lib/utils"
 import { UserStatus } from "../usg_airdrop_context"
 import { formatNumber } from "@/lib/number_formatter"
+import { LpUserPoints, VoteUserPoints } from "../../usg_type"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { SecondaryButton } from "@/components/design_system/inputs/secondary_button"
 import { NeonMetricsCard } from "@/components/design_system/structure/neon_metrics_card"
-import { LpUserPoints, VoteUserPoints } from "../../usg_type"
+
+type ReferralFormProps = {
+  customInputClass: string
+  customButtonClass: string
+  isConnected: boolean
+  setReferralStatus: (s: UserStatus) => void
+  referralStatus: UserStatus
+  signMessage: () => void
+  airdropDataIsLoading: boolean
+}
+
+const ReferralForm = ({
+  customInputClass,
+  customButtonClass,
+  isConnected,
+  setReferralStatus,
+  referralStatus,
+  signMessage,
+  airdropDataIsLoading,
+}: ReferralFormProps) => {
+  return (
+    <>
+      <input
+        disabled={!isConnected}
+        placeholder="Type a referral code"
+        className={cn(
+          customInputClass +
+            " auto relative h-[30px] w-full items-center justify-center rounded-[10px] border-tangent border-white/20 bg-transparent text-center text-xs backdrop-blur-[60px] backdrop-filter focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+        )}
+        onChange={(e) => setReferralStatus({ ...referralStatus, referralCode: e?.target?.value })}
+        value={referralStatus?.referralCode as string}
+      />
+      <SecondaryButton
+        onClick={signMessage}
+        disabled={airdropDataIsLoading}
+        className={cn("relative w-full min-w-10 max-w-40 justify-center " + customButtonClass)}
+      >
+        Enter
+      </SecondaryButton>
+    </>
+  )
+}
 
 type AirdropSharedHeaderProps = {
   isConnected: boolean
@@ -43,28 +86,26 @@ export const AirdropSharedHeader = ({
 
             <span className="hidden w-full max-w-16 text-xs font-semibold md:flex">Enter code</span>
             <div className="flex w-full items-center justify-between gap-2 xl:hidden">
-              <input
-                disabled={!isConnected}
-                placeholder="Type a referral code"
-                className="relative mx-auto flex h-[30px] w-full items-center justify-center rounded-[10px] border-tangent border-white/20 bg-transparent text-center text-xs backdrop-blur-[60px] backdrop-filter focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                onChange={(e) => setReferralStatus({ ...referralStatus, referralCode: e?.target?.value })}
-                value={referralStatus?.referralCode as string}
-              />
-              <SecondaryButton onClick={signMessage} disabled={airdropDataIsLoading} className="relative flex w-full min-w-10 max-w-40 justify-center">
-                Enter
-              </SecondaryButton>
+              <ReferralForm
+                isConnected={isConnected}
+                setReferralStatus={setReferralStatus}
+                referralStatus={referralStatus}
+                signMessage={signMessage}
+                airdropDataIsLoading={airdropDataIsLoading}
+                customInputClass="relative flex"
+                customButtonClass="flex"
+              ></ReferralForm>
             </div>
 
-            <input
-              disabled={!isConnected}
-              placeholder="Type a referral code"
-              className="relative mx-auto hidden h-[30px] w-full max-w-48 items-center justify-center rounded-[10px] border-tangent border-white/20 bg-transparent p-2.5 text-center text-xs backdrop-blur-[60px] backdrop-filter focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 xl:flex"
-              onChange={(e) => setReferralStatus({ ...referralStatus, referralCode: e?.target?.value })}
-              value={referralStatus?.referralCode as string}
-            />
-            <SecondaryButton onClick={signMessage} disabled={airdropDataIsLoading} className="relative hidden w-full min-w-10 max-w-40 justify-center xl:flex">
-              Enter
-            </SecondaryButton>
+            <ReferralForm
+              isConnected={isConnected}
+              setReferralStatus={setReferralStatus}
+              referralStatus={referralStatus}
+              signMessage={signMessage}
+              airdropDataIsLoading={airdropDataIsLoading}
+              customInputClass=" hidden max-w-48 p-2.5 xl:flex"
+              customButtonClass="hidden xl:flex"
+            ></ReferralForm>
           </>
         )}
       </ReliefCard>

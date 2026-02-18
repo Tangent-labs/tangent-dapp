@@ -1,7 +1,10 @@
+import { ReactNode } from "react"
+
 interface KeyValue {
   key: string
-  value: string
+  value: string | ReactNode
 }
+
 export function ThreeCardRowWithMask(props: { contents: [KeyValue, KeyValue, KeyValue] }) {
   const color1 = "#0077ff67"
   const color2 = "#0075FF"

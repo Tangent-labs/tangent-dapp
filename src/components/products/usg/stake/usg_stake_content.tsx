@@ -20,6 +20,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
+import { IconStars } from "@/components/icons/icon_stars"
 
 export default function USGStakeContent() {
   const {
@@ -96,7 +97,14 @@ export default function USGStakeContent() {
             contents={[
               { key: "Supply", value: formatNumber(Number(formatUnits(USGsUSGMetrics?.sUSGSupply || 0n, 18)), 0) },
               { key: "sUSG", value: formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 2) },
-              { key: "APY", value: `${sUSGCurrentAPY.toFixed(2)}%` },
+              {
+                key: "APY",
+                value: (
+                  <div className="flex items-center justify-center gap-1">
+                    {sUSGCurrentAPY.toFixed(2)}%<IconStars className="w-4 fill-row-tonic"></IconStars>
+                  </div>
+                ),
+              },
             ]}
           ></ThreeCardRowWithMask>
         </div>

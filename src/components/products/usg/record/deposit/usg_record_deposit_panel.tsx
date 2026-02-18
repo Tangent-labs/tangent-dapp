@@ -198,6 +198,7 @@ export default function USGDepositContent() {
         formState={formState}
         labelProcess={isDepositAndBorrow ? "Deposit & Borrow" : "Deposit"}
         connect={connect}
+        isLoading={isDepositLoading}
       />
     </div>
   )

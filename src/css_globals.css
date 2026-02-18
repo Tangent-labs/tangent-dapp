@@ -28,6 +28,7 @@
     --tgt-bg-tab: linear-gradient(135deg, #0075ff 0%, #00c2ff 100%);
     --tgt-bg-lec: linear-gradient(135deg, #ff8800 0%, #f79f61 100%);
     --tgt-button-active: #0075ff;
+    --tgt-button-active-dark: #023774;
     --tgt-button-active-hover: #0060d2;
     --tgt-light-tonic: #fbf911;
     --tgt-tonic: #d9fb0b;

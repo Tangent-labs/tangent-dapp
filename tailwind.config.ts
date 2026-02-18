@@ -32,6 +32,7 @@ const config: Config = {
       colors: {
         "button-active-hover": "var(--tgt-button-active-hover)",
         "button-active": "var(--tgt-button-active)",
+        "button-active-dark": "var(--tgt-button-active-dark)",
         "row-tonic": "var(--tgt-row-tonic)",
         "row-success": "var(--tgt-row-success)",
         "row-danger": "var(--tgt-row-danger)",
@@ -104,8 +105,13 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        ripple: {
+          "0%": { transform: "scale(0)", opacity: "0.6" },
+          "100%": { transform: "scale(1.8)", opacity: "0" },
+        },
       },
       animation: {
+        ripple: "ripple 1500ms cubic-bezier(0.16, 0.8, 0.32, 1.6) forwards",
         breathe: "breathe 3s ease-in-out infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",

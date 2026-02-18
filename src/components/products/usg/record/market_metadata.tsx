@@ -41,7 +41,7 @@ export const MarketMetadata = ({ marketData }: MarketMetadataProps) => {
             </>
           )}
 
-          <div className={`flex items-center justify-center px-3 py-0.5 text-xs ${marketData?.constants?.irParams.isHEC ? "bg-button-active" : "bg-lec"}`}>
+          <div className="flex items-center justify-center rounded-full bg-overlay-panel px-3 py-0.5 text-xs">
             {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
           </div>
         </>

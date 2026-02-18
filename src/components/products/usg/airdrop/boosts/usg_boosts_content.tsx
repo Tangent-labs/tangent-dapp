@@ -1,13 +1,15 @@
 "use client"
 
+import Image from "next/image"
 import { useUSGContext } from "../../usg_context"
 import { boostHeaders } from "./usg_boosts_controller"
 import { useUsgBoostsContext } from "./usg_boosts_context"
 import { useUsgAirdropContext } from "../usg_airdrop_context"
 import { Button } from "@/components/design_system/inputs/button"
 import { BoostsList, boostsListState } from "./components/BoostsList"
-import { ReferralHeader } from "../referral/components/ReferralHeader"
+import { AirdropSharedHeader } from "../components/airdrop_side_header"
 import { ListProvider } from "@/components/design_system/list/list_context"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export const UsgBoostsContent = () => {
@@ -17,20 +19,34 @@ export const UsgBoostsContent = () => {
 
   const { isConnected, connect } = useWalletConnexionContext()
 
-  const { airdropDataIsLoading, referralStatus, setReferralStatus, signMessage, userBoostFactor } = useUsgAirdropContext()
+  const { userBoostFactor, setReferralStatus, referralStatus, airdropDataIsLoading, signMessage } = useUsgAirdropContext()
 
   return (
-    <div className="flex w-full flex-col items-center justify-center">
-      <ReferralHeader
-        isLoading={airdropDataIsLoading}
-        referralStatus={referralStatus}
-        setReferralStatus={setReferralStatus}
-        signMessage={signMessage}
-        lpUserPoints={lpUserPoints}
-        voteUserPoints={voteUserPoints}
-        isConnected={isConnected}
-        userBoost={userBoostFactor}
-      />
+    <>
+      <div className="flex w-full items-stretch justify-between gap-6">
+        <ReliefCard className="hidden w-1/2 bg-panel-title-gradient xl:flex">
+          <div className="flex items-center justify-center">
+            <Image height={140} width={140} src="/medias/logos/boosts.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+          </div>
+          <div className="flex flex-col items-start justify-center gap-3 px-6">
+            <span className="text-4xl font-semibold">Boosts</span>
+            <p className="text-[15px]">
+              Borrow USG, provide liquidity, and vote for USG and sUSG pools to earn points. Points will be convertible for TAN tokens once the campaign ends.
+            </p>
+          </div>
+        </ReliefCard>
+
+        <AirdropSharedHeader
+          isConnected={isConnected}
+          setReferralStatus={setReferralStatus}
+          referralStatus={referralStatus}
+          signMessage={signMessage}
+          airdropDataIsLoading={airdropDataIsLoading}
+          lpUserPoints={lpUserPoints}
+          userBoostFactor={userBoostFactor}
+          voteUserPoints={voteUserPoints}
+        />
+      </div>
 
       {isConnected && (
         <div className="flex w-full items-start justify-start gap-4">
@@ -50,6 +66,6 @@ export const UsgBoostsContent = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   )
 }

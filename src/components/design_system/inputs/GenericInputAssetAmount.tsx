@@ -257,13 +257,13 @@ export function GenericInputAssetAmount({
               disabled={isLoading || disabled}
               type="text"
               value={localDisplay}
-              placeholder="Amount"
+              placeholder="0.00"
               onChange={handleInputChange}
               className={cn(
                 "auto-grow", // ta classe (supposée field-sizing: content ou JS)
                 "block w-full", // ou inline-block si tu préfères
-                "bg-transparent text-right text-[24px] font-semibold",
-                "placeholder:text-right placeholder:text-gray-400",
+                "bg-transparent text-left text-[24px] font-semibold",
+                "placeholder:text-left placeholder:text-gray-400",
                 "focus:outline-none",
                 "min-w-[80px]", // taille mini au départ
                 "max-w-full", // ← important : max-w-full sur l'input lui-même

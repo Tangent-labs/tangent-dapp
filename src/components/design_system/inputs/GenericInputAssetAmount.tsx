@@ -1,7 +1,7 @@
 "use client"
 
 import { cn, PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
-import { formatUnits } from "viem"
+import { formatUnits, parseUnits } from "viem"
 import BorderPanel from "../structure/border_panel"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { IconThunder, IconWallet } from "@/components/icons"
@@ -97,7 +97,10 @@ export function GenericInputAssetAmount({
   useEffect(() => {
     if (inputWeiValue !== undefined) {
       const decimals = asset?.decimals || 18
+
+      console.log(label, "inputWeiValue", inputWeiValue)
       const updatedValue = formatUnits(inputWeiValue, decimals)
+      console.log(label, "updatedValue", updatedValue)
       setInputNumberValue(updatedValue)
       setIsUserInput(false)
     }
@@ -107,7 +110,7 @@ export function GenericInputAssetAmount({
     if (!asset?.decimals || !isUserInput) return
 
     const handler = setTimeout(() => {
-      const val = inputNumberValue ? toBigInt(Number(inputNumberValue), asset.decimals) : undefined
+      const val = inputNumberValue ? parseUnits(inputNumberValue, asset.decimals) : undefined
       if (onValueChange) {
         onValueChange(val)
       }
@@ -143,6 +146,7 @@ export function GenericInputAssetAmount({
 
     if (newValue === "" || /^[0-9]*\.?[0-9]*$/.test(newValue)) {
       setInputNumberValue(newValue)
+      console.log(label, "newValue", newValue)
       if (!!setSliderPercentage) {
         setSliderPercentage(newValue !== "" && maxNumber > 0 ? (Number(newValue) / maxNumber) * 100 : 0)
       }
@@ -166,10 +170,10 @@ export function GenericInputAssetAmount({
     sliderDebounceRef.current = setTimeout(() => {
       const newValue =
         newPercentage === Number(sliderStartEndRange[1]) ? maxNumber : Number(((newPercentage / Number(sliderStartEndRange[1])) * maxNumber).toFixed(0))
-
+      console.log(label, "handleSliderChange", newValue)
       setInputNumberValue(formatDisplayValue(newValue))
       if (onValueChange) {
-        onValueChange(!!newValue ? toBigInt(newValue, asset?.decimals || 18) : undefined)
+        onValueChange(!!newValue ? parseUnits(newValue.toString(), asset?.decimals || 18) : undefined)
       }
     }, 300)
   }
@@ -184,7 +188,7 @@ export function GenericInputAssetAmount({
         isLoading ? "shimmer" : "",
         disabled
           ? "bg-panel-disabled"
-          : "cursor-text bg-white bg-opacity-[3%] hover:bg-white/[0.08] hover:shadow-lg [&:has(.no-parent-hover:hover)]:!bg-white/[0.03] [&:has(.no-parent-hover:hover)]:!shadow-none",
+          : "cursor-text bg-white bg-opacity-[3%] ease-out focus-within:border-blue-500 hover:bg-white/[0.08] hover:shadow-lg [&:has(.no-parent-hover:hover)]:!bg-white/[0.03] [&:has(.no-parent-hover:hover)]:!shadow-none",
         "flex flex-col p-2 transition-all duration-200"
       )}
       onClick={onClickFocus}

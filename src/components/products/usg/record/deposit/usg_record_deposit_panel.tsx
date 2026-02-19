@@ -63,7 +63,9 @@ export default function USGDepositContent() {
 
       <GenericInputAssetAmount
         inputWeiValue={depositWeiValue}
-        onValueChange={handleDepositChange}
+        onValueChange={(e) => {
+          handleDepositChange(e)
+        }}
         depositSelect={<AssetSelector collateralInfo={collateralInfo} depositAsset={depositAsset || collateralInfo.name} setDepositAsset={setDepositAsset} />}
         isLoading={isDepositLoading}
         asset={depositAssetInfo}

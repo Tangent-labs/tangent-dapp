@@ -345,27 +345,31 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         currentAddress!
       )
 
-      doZapLeverage(
-        borrowWeiValue,
-        computedMinAmountOut(leveragedCollateralQuote, slippage),
-        leverageData!,
-        depositAssetInfo?.address,
-        depositWeiValue,
-        computedMinAmountOut(zapValue, slippage),
-        zapData!,
-        walletClient,
-        marketInfo?.marketAddress
+      await toastTx(
+        doZapLeverage(
+          borrowWeiValue,
+          computedMinAmountOut(leveragedCollateralQuote, slippage),
+          leverageData!,
+          depositAssetInfo?.address,
+          depositWeiValue,
+          computedMinAmountOut(zapValue, slippage),
+          zapData!,
+          walletClient,
+          marketInfo?.marketAddress
+        ),
+        {
+          pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+          success: () => {
+            resetAfterLeverageSuccess()
+            setIsDepositLoading(false)
+            return { type: "Success", content: "Position successfully created." }
+          },
+          error: () => {
+            setIsDepositLoading(false)
+            return { type: "Error", content: "Something went wrong." }
+          },
+        }
       )
-        .then(() => {
-          resetAfterLeverageSuccess()
-          toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
-          setIsDepositLoading(false)
-        })
-        .catch((err) => {
-          console.error("ERROR : ", err)
-          setIsDepositLoading(false)
-          toast.error(ToastComponent, { data: { type: "Error", content: "Something went wrong." } })
-        })
     } catch (err) {
       console.error("ERROR : ", err)
       setIsDepositLoading(false)
@@ -390,14 +394,22 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
     const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
 
-    doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, isReceiptIn, leverageData!)
-      .then(() => {
-        resetAfterLeverageSuccess()
-        toast.success(ToastComponent, { data: { type: "Success", content: "Position successfully created." } })
-      })
-      .catch((err) => {
-        console.error("ERROR : ", err)
-      })
+    await toastTx(
+      doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, isReceiptIn, leverageData!),
+      {
+        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+        success: () => {
+          resetAfterLeverageSuccess()
+          setIsDepositLoading(false)
+
+          return { type: "Success", content: "Position successfully  created." }
+        },
+        error: () => {
+          setIsDepositLoading(false)
+          return { type: "Error", content: "Something went wrong." }
+        },
+      }
+    )
   }
 
   const resetAfterLeverageSuccess = () => {

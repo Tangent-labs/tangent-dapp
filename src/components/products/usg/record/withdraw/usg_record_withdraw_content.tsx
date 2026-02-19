@@ -28,6 +28,7 @@ export default function USGWithdrawContent() {
     setWithdrawPercentage,
     setSelectedAsset,
     selectedAsset,
+    withdrawLoading,
   } = useUSGWithdrawContext()
 
   const AssetSelectTemplate = (option: {
@@ -107,7 +108,13 @@ export default function USGWithdrawContent() {
           )}
         </>
 
-        <FormButtons connect={connect} actions={{ handleApprove: undefined, handleProcess: actionWithdraw }} formState={formState} labelProcess="Withdraw" />
+        <FormButtons
+          isLoading={withdrawLoading}
+          connect={connect}
+          actions={{ handleApprove: undefined, handleProcess: actionWithdraw }}
+          formState={formState}
+          labelProcess="Withdraw"
+        />
       </div>
     </>
   )

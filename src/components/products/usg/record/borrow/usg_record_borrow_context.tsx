@@ -21,6 +21,7 @@ type USGBorrowContextValues = {
   borrowPercentage: number
   setBorrowPercentage: (arg: number) => void
   maxBorrowableValue: bigint
+  borrowLoading: boolean
 }
 
 export const USGBorrowContext = createContext<USGBorrowContextValues | undefined>(undefined)
@@ -36,8 +37,12 @@ export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
 
   const [borrowPercentage, setBorrowPercentage] = useState<number>(0)
 
+  const [borrowLoading, setBorrowLoading] = useState<boolean>(false)
+
   const actionBorrow = async () => {
-    if (walletClient)
+    if (walletClient) {
+      setBorrowLoading(true)
+
       await toastTx(doMarketBorrow(walletClient, { marketAddress: marketData!.marketAddress, borrowWeiValue }), {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
         success: () => {
@@ -45,12 +50,15 @@ export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
           loadOnChainData()
           setBorrowPercentage(0)
           loadUSGsUSGMetrics()
+          setBorrowLoading(false)
           return { type: "Success", content: "Borrow successfull." }
         },
         error: () => {
+          setBorrowLoading(false)
           return { type: "Error", content: "Borrow failed." }
         },
       })
+    }
   }
 
   useEffect(() => {
@@ -86,6 +94,7 @@ export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
     borrowPercentage,
     setBorrowPercentage,
     maxBorrowableValue,
+    borrowLoading,
   }
 
   return <USGBorrowContext.Provider value={contextValue}>{children}</USGBorrowContext.Provider>

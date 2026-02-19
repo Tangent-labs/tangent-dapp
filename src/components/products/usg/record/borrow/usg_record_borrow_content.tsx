@@ -15,7 +15,8 @@ export default function USGRecordBorrowContent() {
 
   const { USGInfo, maxBorrowCapReached } = useUSGRecordContext()
 
-  const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, borrowPercentage, maxBorrowableValue } = useUSGBorrowContext()
+  const { actionBorrow, formState, borrowLoading, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, borrowPercentage, maxBorrowableValue } =
+    useUSGBorrowContext()
 
   return (
     <div className="flex flex-col gap-2">
@@ -28,7 +29,7 @@ export default function USGRecordBorrowContent() {
         <BorrowInput
           displaySliderInput={true}
           borrowAmount={borrowWeiValue}
-          disabled={maxBorrowCapReached}
+          disabled={maxBorrowCapReached || borrowLoading}
           labelDeposit="You borrow"
           depositSelect={<USGStaticAssetSelector />}
           borrowAsset={USGInfo}
@@ -46,7 +47,13 @@ export default function USGRecordBorrowContent() {
 
       <MaxBorrowCapReached display={!borrowWeiValue && maxBorrowCapReached} />
 
-      <FormButtons connect={connect} actions={{ handleApprove: undefined, handleProcess: actionBorrow }} formState={formState} labelProcess="Borrow" />
+      <FormButtons
+        isLoading={borrowLoading}
+        connect={connect}
+        actions={{ handleApprove: undefined, handleProcess: actionBorrow }}
+        formState={formState}
+        labelProcess="Borrow"
+      />
     </div>
   )
 }

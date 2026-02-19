@@ -232,6 +232,7 @@ export default function USGLeverageContent() {
         connect={connect}
         formState={formState}
         labelProcess={depositAsset && isZapping ? "Zap & leverage" : "Leverage"}
+        isLoading={isDepositLoading}
       />
     </div>
   )

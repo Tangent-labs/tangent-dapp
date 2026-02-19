@@ -55,6 +55,7 @@ export default function USGRepayContent() {
     repayAssetInfo,
     withdrawSelectedAsset,
     expectedUSG,
+    repayLoading,
   } = useUSGRepayContext()
 
   const { tokens, balances } = useUSGContext()
@@ -286,6 +287,7 @@ export default function USGRepayContent() {
         }}
         formState={formState}
         labelProcess={isRepayAndWithdraw ? "Repay & withdraw" : "Repay"}
+        isLoading={repayLoading || isZapLoading}
       />
     </div>
   )

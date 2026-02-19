@@ -22,6 +22,7 @@ type USGWithdrawContextValues = {
   maxWithdrawable: bigint
   selectedAsset: string
   setSelectedAsset: (v: string) => void
+  withdrawLoading: boolean
 }
 
 export const USGWithdrawContext = createContext<USGWithdrawContextValues | undefined>(undefined)
@@ -29,15 +30,17 @@ export const USGWithdrawContext = createContext<USGWithdrawContextValues | undef
 export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
   const { loadUSGsUSGMetrics } = useUSGContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, collateral } = useUSGRecordContext()
-
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
+
+  const { marketData, loadOnChainData, setCurrentAmounts, collateral } = useUSGRecordContext()
 
   const [withdrawWeiValue, setWithdrawWeiValue] = useState<bigint | undefined>()
 
   const [withdrawPercentage, setWithdrawPercentage] = useState<number>(0)
 
   const [selectedAsset, setSelectedAsset] = useState<string>(collateral)
+
+  const [withdrawLoading, setWithdrawLoading] = useState<boolean>(false)
 
   useEffect(() => {
     setCurrentAmounts({
@@ -46,6 +49,8 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
   }, [withdrawWeiValue])
 
   const actionWithdraw = async () => {
+    setWithdrawLoading(true)
+
     if (walletClient) {
       await toastTx(
         doMarketWithdraw(walletClient, {
@@ -60,9 +65,11 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
             loadOnChainData()
             setWithdrawWeiValue(0n)
             setWithdrawPercentage(0)
+            setWithdrawLoading(false)
             return { type: "Success", content: "Transaction successful." }
           },
           error: () => {
+            setWithdrawLoading(false)
             return { type: "Error", content: "Transaction failed." }
           },
         }
@@ -106,6 +113,7 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
     setWithdrawPercentage,
     setSelectedAsset,
     selectedAsset,
+    withdrawLoading,
   }
 
   return <USGWithdrawContext.Provider value={contextValue}>{children}</USGWithdrawContext.Provider>

@@ -128,13 +128,13 @@ export function getComputedFutureLoanData(
 
   const futureDeposited = !!amounts?.zapValue
     ? BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) +
-      BigInt(amounts.zapValue!) -
-      BigInt(amounts.withdrawWeiValue!) -
-      BigInt(amounts.liquidateValue!)
+    BigInt(amounts.zapValue!) -
+    BigInt(amounts.withdrawWeiValue!) -
+    BigInt(amounts.liquidateValue!)
     : BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) +
-      BigInt(amounts.depositWeiValue!) -
-      BigInt(amounts.withdrawWeiValue!) -
-      BigInt(amounts.liquidateValue!)
+    BigInt(amounts.depositWeiValue!) -
+    BigInt(amounts.withdrawWeiValue!) -
+    BigInt(amounts.liquidateValue!)
 
   const futureDepositedDollarRaw = (futureDeposited * collateralPriceRaw) / DECIMALS
   const futureDepositedDollar = collateralValueToNumber(futureDeposited) * collateralprice
@@ -433,7 +433,7 @@ export const computeLiquidationPrice = (
 }
 
 export const computedMinAmountOut = (value: bigint, slippage: number) => {
-  return (BigInt(value) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
+  return (BigInt(value) * (BigInt(100000 - slippage * 1000) / 100n)) / BigInt(1000)
 }
 
 type MarketContract = { name: string; address: Address }

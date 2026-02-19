@@ -33,14 +33,13 @@ export default function USGDepositContent() {
     depositAsset,
     depositWeiValue,
     formState,
-    estimatedZapDollarValue,
+    minValueReceivedFromZap,
     borrowWeiValue,
     isZapLoading,
     isDepositLoading,
     zapValue,
     depositAssetInfo,
     slippage,
-    // zapInnerValue,
     depositSliderPercent,
     borrowSliderPercent,
     maxBorrowableValue,
@@ -52,7 +51,8 @@ export default function USGDepositContent() {
 
   const { connect } = useWalletConnexionContext()
 
-  const { collateralInfo, isDepositAndBorrow, marketData, balanceAllowanceData, maxBorrowCapReached, displayAPRVariation } = useUSGRecordContext()
+  const { collateralInfo, isDepositAndBorrow, marketData, balanceAllowanceData, maxBorrowCapReached, displayAPRVariation, USGInfo, pricedCollateralInfo } =
+    useUSGRecordContext()
 
   return (
     <div className="flex flex-col gap-2">
@@ -89,6 +89,7 @@ export default function USGDepositContent() {
           onValueChange={(e) => {
             handleZapInputChange(e)
           }}
+          asset={pricedCollateralInfo}
           isLoading={isZapLoading}
           label={
             <div className="flex items-center gap-1">
@@ -102,7 +103,7 @@ export default function USGDepositContent() {
           bottomPart={
             <div className="flex gap-2 text-xs text-subtitle">
               <div>Minimum received</div>
-              <div>{zapValue && !!marketData?.collateralInfos ? estimatedZapDollarValue : ""}</div>
+              <div>{zapValue && !!marketData?.collateralInfos ? minValueReceivedFromZap : ""}</div>
             </div>
           }
         />
@@ -119,6 +120,7 @@ export default function USGDepositContent() {
             onValueChange={(value: bigint | undefined) => {
               setBorrowWeiValue(value)
             }}
+            asset={USGInfo}
             disabled={maxBorrowCapReached}
             label="You borrow"
             depositSelect={<StaticCardAssetInput asset="USG" />}

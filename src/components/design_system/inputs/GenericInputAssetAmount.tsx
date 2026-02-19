@@ -6,7 +6,7 @@ import BorderPanel from "../structure/border_panel"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { IconThunder, IconWallet } from "@/components/icons"
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
-import { formatBigInt, formatDollar } from "@/lib/number_formatter"
+import { formatBigInt, formatDollar, truncateTo6Decimals } from "@/lib/number_formatter"
 import { SliderInput } from "./SliderInput"
 import MaxButton from "./MaxButton"
 
@@ -136,7 +136,7 @@ export function GenericInputAssetAmount({
   // Calculates the USD equivalent of the current input value
   // ---------------------------
   const dollarDepositDisplay = useMemo(() => {
-    const val = Number(formatUnits(inputWeiValue || BigInt(0), asset?.decimals || 0)) * (asset?.price || 0)
+    const val = Number(formatUnits(inputWeiValue || BigInt(0), asset?.decimals || 18)) * (asset?.price || 0)
     return `(${formatDollar(val)})`
   }, [inputWeiValue, asset])
 
@@ -225,14 +225,6 @@ export function GenericInputAssetAmount({
     inputRef.current?.focus()
   }
 
-  // ---------------------------
-  // TRUNCATE TO 6 DECIMALS
-  // Helper function to format numbers to at most 6 decimals
-  // ---------------------------
-  function truncateTo6Decimals(str: string) {
-    const match = str.match(/^(-?\d+)(\.\d{0,6})?/)
-    return match ? match[0] : str
-  }
   return (
     <BorderPanel
       className={cn(

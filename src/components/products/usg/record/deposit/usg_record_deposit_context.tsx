@@ -9,7 +9,7 @@ import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
-import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
+import { formatBigInt, formatBigIntAsNumber, truncateTo6Decimals } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computeAprVariation, computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
@@ -64,7 +64,7 @@ type USGDepositContextValues = {
 
   maxBorrowableValue: bigint
 
-  estimatedZapDollarValue: string
+  minValueReceivedFromZap: string
 
   maxDepositString: string
 
@@ -422,8 +422,8 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     if (depositAsset) {
       setBorrowWeiValue(0n)
       setBorrowSliderPercent(0)
-      setDepositWeiValue(0n)
-      setZapValue(0n)
+      setDepositWeiValue(undefined)
+      setZapValue(null)
     }
   }, [depositAsset])
 
@@ -555,11 +555,10 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     return 0n
   }, [marketData, depositWeiValue, depositAsset, depositAssetInfo, zapValue, slippage, isZapping])
 
-  const estimatedZapDollarValue = useMemo(() => {
+  const minValueReceivedFromZap = useMemo(() => {
     if (zapValue && marketData) {
-      const result = `~(${formatDollar(
-        formatUnits((computedMinAmountOut(zapValue, slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), collateralInfo?.decimals)
-      )})`
+      const minAmountOutWei = computedMinAmountOut(zapValue, slippage)
+      const result = `(${truncateTo6Decimals(formatUnits(minAmountOutWei, collateralInfo?.decimals))})`
       return result
     }
 
@@ -671,7 +670,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
     maxBorrowableValue,
 
-    estimatedZapDollarValue,
+    minValueReceivedFromZap,
 
     maxDepositString,
 

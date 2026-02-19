@@ -42,29 +42,36 @@ export const LoadingButton = ({ label, state = "active", className, disabled, ch
   }
 
   return (
-    <button
-      ref={buttonRef}
-      {...props}
-      onClick={createRippleEffect}
-      disabled={state === "inactive" || disabled || isLoading}
-      data-state={state}
+    <div
       className={cn(
-        "group relative flex min-w-[120px] items-center justify-center gap-2 overflow-hidden rounded-[10px] p-2 px-4 font-gilroy text-[15px] font-semibold transition-all duration-200 active:scale-[0.97] disabled:cursor-not-allowed",
-        {
-          "bg-button-active hover:bg-button-active-hover": state === "active",
-          "bg-button-inactive": state === "inactive",
-          "cursor-not-allowed bg-button-inactive": state === "disabled",
-        },
-        className
+        "relative inline-flex w-full rounded-[11px] p-[1px]",
+        state === "active" ? "bg-gradient-to-b from-[rgba(0,194,255,0.5)] to-[#00c2ff00]" : ""
       )}
     >
-      <span className="relative z-10 flex items-center justify-center">
-        <span
-          className={cn("absolute -left-6 top-0.5 mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-white/40", !isLoading && "invisible")}
-          aria-label={isLoading ? "Loading" : undefined}
-        />
-        {children || label}
-      </span>
-    </button>
+      <button
+        ref={buttonRef}
+        {...props}
+        onClick={createRippleEffect}
+        disabled={state === "inactive" || disabled || isLoading}
+        data-state={state}
+        className={cn(
+          "group relative flex min-w-[120px] items-center justify-center gap-2 overflow-hidden rounded-[10px] p-2 px-4 font-gilroy text-[15px] font-semibold transition-all duration-200 active:scale-[0.97] disabled:cursor-not-allowed",
+          {
+            "bg-button-active hover:bg-button-active-hover": state === "active",
+            "bg-button-inactive": state === "inactive",
+            "cursor-not-allowed bg-button-inactive": state === "disabled",
+          },
+          className
+        )}
+      >
+        <span className="relative z-10 flex items-center justify-center">
+          <span
+            className={cn("absolute -left-6 top-0.5 mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-white/40", !isLoading && "invisible")}
+            aria-label={isLoading ? "Loading" : undefined}
+          />
+          {children || label}
+        </span>
+      </button>
+    </div>
   )
 }

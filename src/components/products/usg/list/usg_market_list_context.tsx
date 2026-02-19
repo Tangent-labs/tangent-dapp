@@ -40,6 +40,9 @@ type USGMaketListContextValues = {
 
   protocol: string
   setProtocol: (s: string) => void
+
+  filteredBy: string
+  setFilteredBy: (s: string) => void
 }
 
 export const USGMaketListContext = createContext<USGMaketListContextValues | undefined>(undefined)
@@ -56,6 +59,8 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
   const [marketType, setMarketType] = useState<string>("All")
 
   const [protocol, setProtocol] = useState<string>("All")
+
+  const [filteredBy, setFilteredBy] = useState<string>("all")
 
   /**
    * On init
@@ -127,6 +132,12 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
         }
         return true
       })
+      .filter((deposits) => {
+        if (filteredBy !== "all") {
+          return deposits.userHasDeposited
+        }
+        return true
+      })
 
     if (!searchValue || searchValue.trim() === "") {
       return filteredRows
@@ -134,7 +145,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
 
     const lowered = searchValue.toLowerCase()
     return filteredRows.filter((row) => row.name.toLowerCase().includes(lowered) || row.token.toLowerCase().includes(lowered))
-  }, [onChainData, searchValue, marketDataWithAPR, marketType, protocol])
+  }, [onChainData, searchValue, marketDataWithAPR, marketType, protocol, filteredBy])
 
   const globalData = useMemo<USGGlobalData>(() => {
     return transformGlobalData(onChainData)
@@ -251,6 +262,8 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     setMarketType,
     protocol,
     setProtocol,
+    filteredBy,
+    setFilteredBy,
   }
 
   return <USGMaketListContext.Provider value={contextValue}>{children}</USGMaketListContext.Provider>

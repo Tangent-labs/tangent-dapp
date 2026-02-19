@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss"
+import plugin from "tailwindcss/plugin" // ← correct import
 
 const config: Config = {
   darkMode: ["class"],
@@ -96,20 +97,12 @@ const config: Config = {
           "71%, 100%": { outlineOffset: "3px" },
         },
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       animation: {
@@ -119,7 +112,33 @@ const config: Config = {
       },
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require("tailwindcss-animate")],
+
+  plugins: [
+    require("tailwindcss-animate"),
+
+    plugin(({ addUtilities }) => {
+      addUtilities({
+        ".hover-lift-row": {
+          position: "relative",
+
+          "&::before": {
+            content: '""',
+            "@apply absolute inset-0 -z-10 opacity-70": {},
+          },
+
+          "@apply transition-all duration-150 ease-out": {},
+
+          "&:hover": {
+            "@apply -translate-y-[1px] cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.08)]": {},
+
+            "&::before": {
+              "@apply bg-list-row-hover opacity-80": {},
+            },
+          },
+        },
+      })
+    }),
+  ],
 }
+
 export default config

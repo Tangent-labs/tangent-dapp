@@ -11,6 +11,7 @@ import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "./StaticCardAssetInput"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 type USGPredepositComponentProps = {
   predepositStatus: PredepositStatus | null
@@ -58,7 +59,7 @@ export const USGPredepositComponent = ({
   tanAllocation,
 }: USGPredepositComponentProps) => {
   return (
-    <div className="flex w-full flex-col rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px]">
+    <ReliefCard className="flex w-full flex-col p-4">
       <div className="mb-2 flex w-full items-center justify-between">
         <span className="font-semibold text-white">Deposit cap</span>
         <span className="flex items-center">
@@ -132,6 +133,6 @@ export const USGPredepositComponent = ({
         formState={formState}
         labelProcess="Deposit"
       />
-    </div>
+    </ReliefCard>
   )
 }

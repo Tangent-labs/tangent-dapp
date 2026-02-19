@@ -5,6 +5,7 @@ import { ListHeaderData, ListSort, SortedState } from "@/types"
 import { IconSortHeader } from "@/components/icons"
 import ListRowDisposition from "@/components/design_system/list/list_row_disposition"
 import { cn } from "@/lib/utils"
+import { ListGradientBorder } from "./list_gradient_border"
 
 interface ListHeaderProps {
   headers: ListHeaderData[]
@@ -92,17 +93,7 @@ export const MarketListHeader = ({ headers, activeSort, onSort, rowDisposition: 
         </CustomRowDisposition>
       </div>
 
-      {/* Gradient border effect */}
-      <div
-        className="pointer-events-none absolute inset-0 rounded-t-[10px]"
-        style={{
-          border: "1px solid transparent",
-          background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
-          WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
-          WebkitMaskComposite: "xor",
-          maskComposite: "exclude",
-        }}
-      />
+      <ListGradientBorder classname={"rounded-t-[10px]"} />
     </div>
   )
 }

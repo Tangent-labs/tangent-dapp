@@ -5,6 +5,7 @@ import Title from "@/components/design_system/structure/title"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useCollateralPriceContext } from "./collat_price_context"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 export default function USGCollateralPrice() {
   const { timeWindow, graphData, isPending, marketInfo, selectTab } = useCollateralPriceContext()
@@ -12,7 +13,7 @@ export default function USGCollateralPrice() {
   const { liquidationPrice } = useUSGRecordContext()
 
   return (
-    <div className="hidden w-full flex-col justify-between rounded-[10px] bg-overlay-panel px-3 py-2 backdrop-blur-[60px] xl:flex">
+    <ReliefCard className="hidden w-full flex-col justify-between px-3 py-2 xl:flex">
       <div className="mb-2 flex items-center justify-between">
         <Title label="Collateral price" size={"normal"} />
         <div className="flex gap-2">
@@ -37,6 +38,6 @@ export default function USGCollateralPrice() {
       <div className="w-full rounded-[10px]">
         <CollateralGraph liquidationPrice={liquidationPrice} isPending={isPending} graphData={graphData} />
       </div>
-    </div>
+    </ReliefCard>
   )
 }

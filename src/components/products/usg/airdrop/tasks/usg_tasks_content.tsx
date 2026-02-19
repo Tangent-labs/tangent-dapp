@@ -2,7 +2,6 @@
 
 import Image from "next/image"
 import { useUSGContext } from "../../usg_context"
-import { formatNumber } from "@/lib/number_formatter"
 import { SlidingTabs } from "./components/SlidingTabs"
 import { useUsgTasksContext } from "./usg_tasks_context"
 import { useUsgAirdropContext } from "../usg_airdrop_context"
@@ -11,24 +10,25 @@ import { lpListState, LPTasksList } from "./components/LPTasksList"
 import { lpListHeaders, voteListHeaders } from "./usg_tasks_controller"
 import { voteListState, VoteTasksList } from "./components/VoteTasksList"
 import { ListProvider } from "@/components/design_system/list/list_context"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
+import { AirdropSharedHeader } from "../components/airdrop_side_header"
 
 export default function UsgTasksContent() {
-  const { userBoostFactor } = useUsgAirdropContext()
-
   const { lpUserPoints, voteUserPoints } = useUSGContext()
 
   const { isConnected, connect } = useWalletConnexionContext()
 
   const { lpTasks, voteTasks, selectedFeature, sortLpTasks, sortVoteTasks, setSelectedFeature } = useUsgTasksContext()
 
+  const { userBoostFactor, setReferralStatus, referralStatus, airdropDataIsLoading, signMessage } = useUsgAirdropContext()
+
   return (
     <>
       <div className="flex w-full items-stretch justify-between gap-6">
-        <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
+        <ReliefCard className="hidden w-1/2 bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
-            <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+            <Image height={140} width={140} src="/medias/logos/tasks.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Tasks</span>
@@ -36,47 +36,18 @@ export default function UsgTasksContent() {
               Borrow USG, provide liquidity, and vote for USG and sUSG pools to earn points. Points will be convertible for TAN tokens once the campaign ends.
             </p>
           </div>
-        </div>
+        </ReliefCard>
 
-        <div className="flex h-auto w-full flex-col items-center gap-4 xl:w-1/2">
-          <PointsCampaignLiveCard></PointsCampaignLiveCard>
-
-          <div className="flex w-full flex-col items-center justify-between gap-4 md:flex-row">
-            <div className="relative flex h-full w-full min-w-56 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-2 py-2 backdrop-blur-[60px] lg:py-0">
-              <div className="absolute -top-2 left-0 flex w-full">
-                <div className="mx-4 flex w-full items-center justify-center rounded-full">
-                  <div className="rounded-full bg-pink px-6 text-xs font-semibold text-black">Vote</div>
-                </div>
-              </div>
-
-              <span className="text-sm text-subtitle">Voting points</span>
-              <div className="flex items-center justify-center gap-1">
-                <span className="text-sm font-semibold text-white">{formatNumber(voteUserPoints?.voteTotalPoints, 0)} pts</span>
-              </div>
-            </div>
-
-            <div className="relative flex h-full w-full min-w-72 flex-col items-center justify-center rounded-[10px] bg-overlay-panel px-2 py-2 backdrop-blur-[60px] lg:py-0">
-              <div className="absolute -top-2 left-0 flex w-full">
-                <div className="mx-4 flex w-full items-center justify-center rounded-full">
-                  <div className="rounded-full bg-tonic px-6 text-xs font-semibold text-black">Liquidity</div>
-                </div>
-              </div>
-
-              <span className="text-sm text-subtitle">Liquidity points</span>
-              <div className="flex items-center justify-center gap-1">
-                <span className="text-sm font-semibold text-white">{formatNumber(lpUserPoints?.lpTotalPoints, 0)} pts</span>
-                <span className="bg-tonic bg-clip-text text-xs font-semibold text-transparent">
-                  ({formatNumber(lpUserPoints?.lpDailyRate * userBoostFactor, 0)}pts/day)
-                </span>
-              </div>
-            </div>
-
-            <div className="hidden w-fit min-w-32 flex-col items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-4 py-2 lg:flex">
-              <span className="text-center text-sm text-subtitle">Your boost</span>
-              <span className="text-center text-xl font-semibold text-white">x{userBoostFactor}</span>
-            </div>
-          </div>
-        </div>
+        <AirdropSharedHeader
+          isConnected={isConnected}
+          setReferralStatus={setReferralStatus}
+          referralStatus={referralStatus}
+          signMessage={signMessage}
+          airdropDataIsLoading={airdropDataIsLoading}
+          lpUserPoints={lpUserPoints}
+          userBoostFactor={userBoostFactor}
+          voteUserPoints={voteUserPoints}
+        />
       </div>
 
       <div className="my-2 w-full">

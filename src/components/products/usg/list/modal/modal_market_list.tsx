@@ -88,7 +88,7 @@ export function USGModalMarketListInner() {
 
   return (
     <>
-      <div className="mt-3 rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="mt-3">
         <ListHeader rowDisposition={ModalMarketListRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 

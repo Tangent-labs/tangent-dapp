@@ -11,6 +11,7 @@ import Divider from "@/components/design_system/structure/divider"
 import USGCollateralPrice from "./collat_price/collat_price_content"
 import USGPositionHistory from "./position_history/usg_position_history"
 import BorderPanel from "@/components/design_system/structure/border_panel"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { CollateralPriceProvider } from "./collat_price/collat_price_context"
 import MarketDetailsParameters from "./header/components/market_details_parameters"
 import { FeatureTabs } from "@/components/design_system/inputs/feature_tabs/feature_tabs"
@@ -108,7 +109,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
 
       <div className="mt-2 flex flex-col gap-4">
         <div className="relative flex items-start justify-start gap-4 max-xl:flex-col">
-          <div className="w-full rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
+          <ReliefCard className="w-full p-3 xl:w-5/12">
             <FeatureTabs
               feature={feature}
               activeTab={activeTab}
@@ -121,7 +122,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
             ></FeatureTabs>
 
             <div className="mt-2">{children}</div>
-          </div>
+          </ReliefCard>
 
           <div className="flex w-full flex-col gap-2 self-start xl:sticky xl:top-24 xl:w-7/12">
             <USGLoanDetail />

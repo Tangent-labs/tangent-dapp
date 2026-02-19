@@ -20,6 +20,7 @@ import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 import { isOnMarket, mapRouteToFeature } from "./menu_bar_feature_controller"
 import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
 import Link from "next/link"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 export default function MenuBarFeature() {
   const { USGCurrentSupply, sUSGCurrentAPY, protocolCurrentTVL } = useRootContext()
@@ -40,12 +41,11 @@ export default function MenuBarFeature() {
                 <IconTangent className="mb-2 w-32"></IconTangent>
               </Link>
             </div>
-            <div className="flex cursor-pointer items-center gap-4 text-xl text-white md:hidden">
-              <Link href="/">
-                <IconTangentLogo className="mb-2 mr-2 w-12 border-r border-white/30 px-2"></IconTangentLogo>
-                {computedFeature()}
-              </Link>
-            </div>
+
+            <Link className="flex cursor-pointer items-center gap-4 text-xl text-white md:hidden" href="/">
+              <IconTangentLogo className="mb-2 mr-2 w-12 border-r border-white/30 px-2"></IconTangentLogo>
+              {computedFeature()}
+            </Link>
 
             <NavigationMenu>
               <NavigationMenuList>
@@ -167,18 +167,18 @@ export default function MenuBarFeature() {
             </NavigationMenu>
           </div>
 
-          <div className="flex w-full items-center justify-end gap-3">
-            <div className="hidden items-center justify-center rounded-[10px] bg-overlay-panel px-1 py-2.5 text-xs backdrop-blur-[60px] xl:flex">
+          <div className="flex w-full items-center justify-end gap-4">
+            <ReliefCard className="hidden items-center justify-center px-1 py-2.5 text-xs xl:flex">
               <span className="border-r border-white/30 px-2">TVL: ${formatCompact(protocolCurrentTVL?.total)} </span>
-              <span className="flex items-center justify-center gap-1 border-r border-white/30 px-2">
+              <span className="flex items-center justify-center gap-2 border-r border-white/30 px-2">
                 <TokenImage token="USG" size={20} />
                 {formatCompact(USGCurrentSupply)}
               </span>
-              <span className="flex items-center justify-center gap-1 px-2">
+              <span className="flex items-center justify-center gap-2 px-2">
                 <TokenImage token="sUSG" size={20} />
                 {sUSGCurrentAPY.toFixed(2)}% APY
               </span>
-            </div>
+            </ReliefCard>
 
             <Link href="/swap">
               <button className="hidden cursor-pointer rounded-[10px] border border-button-active px-4 py-[9px] font-gilroy text-sm font-semibold transition-colors duration-200 ease-in-out hover:border-black hover:bg-button-active xl:flex">

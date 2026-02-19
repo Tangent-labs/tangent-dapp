@@ -9,6 +9,7 @@ import { Button } from "@/components/design_system/inputs/button"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 export const WalletConnexionContent = () => {
   const { copied, copy } = useClipboard()
@@ -54,27 +55,27 @@ export const WalletConnexionContent = () => {
               </div>
 
               <div className="my-3 flex w-full items-center justify-between gap-2">
-                <div className="flex w-full items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
+                <ReliefCard className="flex w-full items-center justify-center gap-3 p-2">
                   <TokenImage token="USG" size={24} />
 
-                  <div className="flex flex-col">
+                  <div className="flex flex-col items-start justify-center">
                     <span className="text-xs"> {formatBigInt(USGsUSGMetrics?.USGBalance, 18, 2)} </span>
                     <span className="text-xs text-subtitle">
                       ${formatBigInt(((USGsUSGMetrics?.USGBalance || 0n) * (USGsUSGMetrics?.USGPrice || 0n)) / BigInt(10 ** 18), 18, 2)}
                     </span>
                   </div>
-                </div>
+                </ReliefCard>
 
-                <div className="flex w-full items-center justify-center gap-1 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
+                <ReliefCard className="flex w-full items-center justify-center gap-3 p-2">
                   <TokenImage token="sUSG" size={24} />
 
-                  <div className="flex flex-col">
+                  <div className="flex flex-col items-start justify-center">
                     <span className="text-xs"> {formatBigInt(USGsUSGMetrics?.sUSGBalance, 18, 2)} </span>
                     <span className="text-xs text-subtitle">
                       ${formatBigInt(((USGsUSGMetrics?.sUSGBalance || 0n) * (USGsUSGMetrics?.sUSGPrice || 0n)) / BigInt(10 ** 18), 18, 2)}
                     </span>
                   </div>
-                </div>
+                </ReliefCard>
               </div>
 
               {/* 

@@ -7,13 +7,14 @@ import { useUSGRecordContext } from "./usg_record_context"
 import Title from "@/components/design_system/structure/title"
 import Divider from "@/components/design_system/structure/divider"
 import ButtonTab from "@/components/design_system/inputs/button_tab"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 export default function USGMarketInfo() {
   const { totalBorrow, totalBorrowTimeWindow, setTotalBorrowTimeWindow } = useUSGRecordContext()
 
   return (
     <>
-      <div className="mt-4 rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px]">
+      <ReliefCard className="mt-4 px-4 py-2">
         <Title label="Markets info" size="normal" />
         <Divider />
         <div className="flex flex-col justify-between xl:flex-row">
@@ -64,7 +65,7 @@ export default function USGMarketInfo() {
             </div>
           </div>
         </div>
-      </div>
+      </ReliefCard>
     </>
   )
 }

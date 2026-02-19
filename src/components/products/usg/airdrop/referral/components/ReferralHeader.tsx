@@ -30,19 +30,19 @@ export const ReferralHeader = ({
     <div className="mt-4 flex w-full flex-col items-center justify-between gap-4 xl:flex-row">
       <div className="flex w-full flex-col items-center justify-between gap-4 sm:flex-row xl:w-1/2 xl:justify-start">
         <NeonMetricsCard
-          title="Vote"
-          subtitle="Voting points"
-          value={`${formatNumber(voteUserPoints?.voteTotalPoints, 0)} pts`}
-          color1="#FA00FF"
-          color2="rgba(251, 0, 255, 0.2)"
-          className="h-full"
-        />
-
-        <NeonMetricsCard
           title="Liquidity"
           subtitle="Liquidity points"
           value={`${formatNumber(lpUserPoints?.lpTotalPoints, 0)} pts`}
           extra={`(${formatNumber(lpUserPoints?.lpDailyRate * userBoost, 0)}pts/day)`}
+          color1="#0075FF"
+          color2="rgba(0, 119, 255, 0.2)"
+          className="h-full"
+        />
+
+        <NeonMetricsCard
+          title="Vote"
+          subtitle="Voting points"
+          value={`${formatNumber(voteUserPoints?.voteTotalPoints, 0)} pts`}
           color1="#95FF00"
           color2="rgba(149, 255, 0, 0.2)"
           className="h-full"
@@ -54,11 +54,13 @@ export const ReferralHeader = ({
         </ReliefCard>
       </div>
 
-      {!referralStatus?.hasUsedCode && (
-        <>
-          <ReliefCard className="relative mb-2 flex w-full flex-col items-center justify-between gap-2 px-3 py-4 md:flex-row xl:mb-0 xl:w-1/2">
-            <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: 'url("./medias/card_bg_blocks.png")' }} />
+      <ReliefCard className="relative mb-2 flex w-full flex-col items-center justify-between gap-2 px-3 py-4 md:flex-row xl:mb-0 xl:w-1/2">
+        <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: 'url("./medias/card_bg_blocks.png")' }} />
 
+        {!isLoading && referralStatus?.hasUsedCode ? (
+          <div className="flex py-1.5">Referral code applied — enjoy a permanent +0.1 points boost multiplicator.</div>
+        ) : (
+          <>
             <div className="flex w-full items-start justify-start border-white/10 px-2 py-0.5 text-xs text-subtitle xl:border-r xl:pr-3">
               Enter a code to get a x1.1 boost on all your points
             </div>
@@ -87,9 +89,9 @@ export const ReferralHeader = ({
             <SecondaryButton onClick={signMessage} disabled={isLoading} className="relative hidden w-full min-w-10 max-w-40 justify-center xl:flex">
               Enter
             </SecondaryButton>
-          </ReliefCard>
-        </>
-      )}
+          </>
+        )}
+      </ReliefCard>
     </div>
   )
 }

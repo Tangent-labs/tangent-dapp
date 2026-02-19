@@ -155,7 +155,7 @@ input[type="range"]::-moz-range-thumb {
   width: 100%;
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1200px) {
   .usg-container {
     max-width: 1380px;
   }

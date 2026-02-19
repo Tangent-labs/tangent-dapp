@@ -2,11 +2,11 @@
 
 import Image from "next/image"
 import { formatUnits } from "viem"
-import { useUSGContext } from "../usg_context"
 import { Switch } from "@/components/ui/switch"
 import { ExistingAsset, ListState } from "@/types"
-import { claimListHeaders } from "./usg_claim_controller"
+import { formatDollar } from "@/lib/number_formatter"
 import { useUSGClaimContext } from "./usg_claim_context"
+import { claimListHeaders } from "./usg_claim_controller"
 import { Button } from "@/components/design_system/inputs/button"
 import ListAsset from "@/components/design_system/list/list_asset"
 import Divider from "@/components/design_system/structure/divider"
@@ -16,12 +16,10 @@ import TokenImage from "@/components/design_system/structure/token_image"
 import MarketListAPR from "@/components/design_system/list/market_list_apr"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import USGHoverCard from "@/components/design_system/structure/usg_hover_card"
-import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
-import IndicatorCards from "@/components/design_system/structure/indicators_card"
+import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
-import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 
 const listeState: ListState = {
   search: undefined,
@@ -45,19 +43,19 @@ const ClaimRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
 }
 
 export default function USGClaimContent() {
-  const { displayRows, onClickClaim, marketsToClaim, customSort, isLoading, onClickClaimAll, USGsUSGMetrics, totalDeposited, totalClaimable } =
-    useUSGClaimContext()
+  const color1 = "#0077ff67"
+  const color2 = "#0075FF"
+
+  const { displayRows, onClickClaim, marketsToClaim, customSort, isLoading, onClickClaimAll, totalDeposited, totalClaimable } = useUSGClaimContext()
 
   const { isWellConnected, connect } = useWalletConnexionContext()
-
-  const { lpUserPoints, voteUserPoints } = useUSGContext()
 
   return (
     <>
       <div className="flex items-stretch justify-between gap-6">
         <ReliefCard className="hidden w-1/2 bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
-            <Image height={150} width={150} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+            <Image height={150} width={150} src="/medias/logos/claim.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Claim</span>
@@ -68,43 +66,54 @@ export default function USGClaimContent() {
         <div className="flex h-auto w-full flex-col justify-between gap-2 xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
-          <ThreeCardRowWithMask
-            contents={[
-              { key: "USG Balance", value: formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2) },
-              { key: "sUSG Balance", value: formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2) },
-              { key: "Your Total Points", value: `${formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts` },
-            ]}
-          ></ThreeCardRowWithMask>
+          <ReliefCard className="relative flex w-full items-center justify-between px-3 py-4">
+            <div className="absolute inset-0 rounded-[10px] bg-cover bg-center opacity-20" style={{ backgroundImage: 'url("./medias/card_bg_blocks.png")' }} />
+
+            <div
+              className="absolute inset-0 rounded-[10px]"
+              style={{
+                left: 0,
+                width: "100%",
+                background: `
+                  linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), 
+                  radial-gradient(50.04% 50% at 50% 100%, ${color1} 0%, rgba(0, 0, 0, 0) 100%)
+                `,
+              }}
+            />
+
+            <div
+              className="pointer-events-none absolute inset-0 rounded-lg"
+              style={{
+                padding: "1px",
+                left: 0,
+                width: "100%",
+                background: `
+                  radial-gradient(49.97% 49.97% at 50% 100%, #FFFFFF 0%,
+                  ${color2} 19.71%, rgba(0, 0, 0, 0) 100%), 
+                  linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%,
+                  rgba(255, 255, 255, 0.1) 100%)
+                `,
+                WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                WebkitMaskComposite: "xor",
+                maskComposite: "exclude",
+              }}
+            />
+
+            <div className="relative z-10 w-full text-center">
+              <h3 className="mb-1 text-xs text-subtitle">Total deposited</h3>
+              <p className="font-semibold text-white">{totalDeposited}</p>
+            </div>
+
+            <div className="relative z-10 w-full text-center">
+              <h3 className="mb-1 text-xs text-subtitle">Total claimable</h3>
+              <p className="font-semibold text-white">{totalClaimable}</p>
+            </div>
+          </ReliefCard>
         </div>
       </div>
 
-      <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
+      <div className="mt-3 flex w-full flex-col items-start justify-start gap-3 md:flex-row">
         <div className="flex w-full flex-col md:w-9/12">
-          <div className="mt-2 flex w-full flex-col items-start justify-between sm:flex-row sm:items-end">
-            <ReliefCard className="mt-0 flex w-80 items-center justify-between md:mt-10">
-              <IndicatorCards
-                className="gap-6"
-                indicators={[
-                  {
-                    title: "Total deposited",
-                    value: totalDeposited,
-                  },
-                  {
-                    title: "Total claimable",
-                    value: totalClaimable,
-                  },
-                ]}
-              />
-            </ReliefCard>
-
-            {displayRows?.length > 0 && (
-              <div className="mt-2 flex gap-2">
-                <span className="text-sm text-subtitle">Claim all</span>
-                <Switch onClick={() => onClickClaimAll()}></Switch>
-              </div>
-            )}
-          </div>
-
           <ListProvider customSort={customSort} _headers={claimListHeaders} _rows={displayRows} _listState={listeState}>
             <ClaimList></ClaimList>
           </ListProvider>
@@ -114,45 +123,59 @@ export default function USGClaimContent() {
           )}
         </div>
 
-        <ReliefCard className="mt-32 flex h-full min-h-52 w-full flex-col items-start justify-start p-5 md:w-3/12">
-          <div className="flex w-full items-center justify-between">
-            <div className="flex flex-col items-start justify-start">Market</div>
+        <div className="flex w-full flex-col items-center justify-center md:w-3/12">
+          <div className="relative hidden w-full xl:block">
+            <div className="flex w-full gap-3 rounded-t-[10px] bg-overlay-panel px-4 py-2 leading-[10px] backdrop-blur-[60px]">
+              <span className="text-sm text-subtitle">Claim all</span>
+              <Switch onClick={() => onClickClaimAll()}></Switch>
+            </div>
 
-            <div className="flex flex-col items-start justify-start">Claimable</div>
+            <ListGradientBorder classname={"rounded-t-[10px]"} />
           </div>
 
-          <Divider className="h-0.5 w-full bg-white/10" />
+          <div className="relative mt-1 flex h-full min-h-52 w-full cursor-pointer flex-col items-start justify-start p-2 backdrop-blur-[60px] transition-all duration-200 ease-out before:absolute before:inset-0 before:-z-10 before:opacity-60 before:transition-all before:duration-300">
+            <div className="flex w-full items-center justify-between">
+              <div className="flex flex-col items-start justify-start">Market</div>
 
-          <div className="flex w-full flex-col">
-            {marketsToClaim.map((el: ClaimableMarket) => (
-              <div key={el.marketName} className="my-1 flex w-full items-center justify-between">
-                <div className="relative flex items-center gap-4">
-                  {el.marketName?.substring(0, el.marketName.indexOf(" ")) === "USDe" || el.marketName?.substring(0, el.marketName.indexOf(" ")) === "sUSDe" ? (
-                    <TokenImage token={el.marketName as ExistingAsset} size={24} className="ml-1 w-6" />
-                  ) : (
-                    <TokenImage token={el.marketName as ExistingAsset} size={32} className="w-8" />
-                  )}
+              <div className="flex flex-col items-start justify-start">Claimable</div>
+            </div>
 
-                  <span className="text-[12px] font-semibold">{el.marketName}</span>
+            <Divider className="h-0.5 w-full bg-white/10" />
+
+            <div className="flex w-full flex-col">
+              {marketsToClaim.map((el: ClaimableMarket) => (
+                <div key={el.marketName} className="my-1 flex w-full items-center justify-between">
+                  <div className="relative flex items-center gap-4">
+                    {el.marketName?.substring(0, el.marketName.indexOf(" ")) === "USDe" ||
+                    el.marketName?.substring(0, el.marketName.indexOf(" ")) === "sUSDe" ? (
+                      <TokenImage token={el.marketName as ExistingAsset} size={24} className="ml-1 w-6" />
+                    ) : (
+                      <TokenImage token={el.marketName as ExistingAsset} size={32} className="w-8" />
+                    )}
+
+                    <span className="text-[12px] font-semibold">{el.marketName}</span>
+                  </div>
+
+                  <span className="text-[12px] font-semibold">${el.claimable}</span>
                 </div>
+              ))}
+            </div>
 
-                <span className="text-[12px] font-semibold">${el.claimable}</span>
-              </div>
-            ))}
-          </div>
+            <div className="mt-8 flex w-full">
+              {marketsToClaim.length > 0 && (
+                <>
+                  {isWellConnected ? (
+                    <Button label="Claim" className="flex w-full items-center justify-center" onClick={() => onClickClaim(marketsToClaim)} />
+                  ) : (
+                    <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
+                  )}
+                </>
+              )}
+            </div>
 
-          <div className="mt-8 flex w-full">
-            {marketsToClaim.length > 0 && (
-              <>
-                {isWellConnected ? (
-                  <Button label="Claim" className="flex w-full items-center justify-center" onClick={() => onClickClaim(marketsToClaim)} />
-                ) : (
-                  <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
-                )}
-              </>
-            )}
+            <ListGradientBorder />
           </div>
-        </ReliefCard>
+        </div>
       </div>
     </>
   )
@@ -165,7 +188,7 @@ function ClaimList() {
 
   return (
     <>
-      <div className="mb-0.5 mt-2 w-full">
+      <div className="mb-0.5 w-full">
         <ListHeader rowDisposition={ClaimRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 

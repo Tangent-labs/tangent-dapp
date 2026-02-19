@@ -48,7 +48,10 @@ export const Leaderboard = ({ leaderboard, feature }: LeaderboardProps) => {
               {formatAddress(el.address, 4)}
             </div>
             <div
-              className={cn("flex w-1/3 items-start justify-start bg-clip-text font-semibold text-transparent", feature === "vote" ? "bg-pink" : "bg-tonic")}
+              className={cn(
+                "flex w-1/3 items-start justify-start bg-clip-text font-semibold text-transparent",
+                feature === "vote" ? "bg-tonic" : "bg-row-tonic"
+              )}
             >
               {formatNumber(el.pts, 0)}
             </div>

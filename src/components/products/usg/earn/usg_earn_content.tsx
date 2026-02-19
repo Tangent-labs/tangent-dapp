@@ -35,7 +35,7 @@ export const USGEarnContent = () => {
       <div className="flex items-stretch justify-between gap-6">
         <ReliefCard className="hidden w-1/2 bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
-            <Image height={150} width={150} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+            <Image height={165} width={165} src="/medias/logos/earn.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px", paddingLeft: "16px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Earn</span>

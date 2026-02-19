@@ -124,11 +124,7 @@ export default function USGSwapContent() {
     <>
       <div className="flex items-stretch justify-between gap-6">
         <ReliefCard className="relative hidden w-1/2 bg-panel-title-gradient xl:flex">
-          <div className="absolute -top-2 left-20 h-full min-h-24">
-            <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
-          </div>
-
-          <Image className="mr-24 mt-5" height={140} width={140} src="/medias/tokens/SUSG.png" alt="token" />
+          <Image height={140} width={140} src="/medias/logos/swap.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
 
           <div className="flex flex-col items-start justify-center gap-3 pr-6">
             <span className="text-5xl font-semibold">Swap</span>

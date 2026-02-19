@@ -65,7 +65,7 @@ export const SliderInput = ({ className, handleSliderChange, legendValues, perce
       <div>
         {/* SLIDER */}
         <div
-          className="no-parent-hover relative mt-3 h-1.5 w-full overflow-visible rounded-[10px] bg-[#4b5563]"
+          className="stop-focus no-parent-hover relative mt-3 h-1.5 w-full overflow-visible rounded-[10px] bg-[#4b5563]"
           onMouseEnter={() => setIsBarHovered(true)}
           onMouseLeave={() => setIsBarHovered(false)}
         >
@@ -78,12 +78,7 @@ export const SliderInput = ({ className, handleSliderChange, legendValues, perce
             }}
           >
             {/* Background de base */}
-            <div
-              className="absolute inset-0 rounded-[10px]"
-              style={{
-                background: `rgba(0, 117, 255, 1)`,
-              }}
-            />
+            <div className="absolute inset-0 rounded-[10px] bg-[--tgt-button-active]" />
 
             {/* Ellipse animée qui se déplace */}
             <div

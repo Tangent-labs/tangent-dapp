@@ -1,8 +1,11 @@
+import { cn } from "@/lib/utils"
+
 type ButtonTabProps = {
   onClick: () => void
+  className?: string
 }
 
-export default function MaxButton({ onClick }: ButtonTabProps) {
+export default function MaxButton({ onClick, className }: ButtonTabProps) {
   return (
     <>
       <style jsx>{`
@@ -22,7 +25,10 @@ export default function MaxButton({ onClick }: ButtonTabProps) {
       `}</style>
 
       <div
-        className="no-parent-hover relative h-5 w-10 min-w-10 cursor-pointer overflow-hidden rounded-[10px] text-xs transition-all duration-200 hover:scale-[1.03] hover:font-bold active:scale-95"
+        className={cn(
+          "no-parent-hover relative h-5 w-10 min-w-10 cursor-pointer overflow-hidden rounded-[10px] text-xs transition-all duration-200 hover:scale-[1.03] hover:font-bold active:scale-95",
+          className
+        )}
         onClick={() => {
           onClick()
         }}

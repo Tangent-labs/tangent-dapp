@@ -6,7 +6,7 @@ import BorderPanel from "../structure/border_panel"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { IconThunder, IconWallet } from "@/components/icons"
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
-import { formatBigInt, formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
+import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import { SliderInput } from "./SliderInput"
 import MaxButton from "./MaxButton"
 
@@ -50,17 +50,18 @@ export function GenericInputAssetAmount({
   displayBalance = false,
   bottomPart,
   disabled,
+  maxAmountParams,
+  sliderParams,
 
   ...props
 }: GenericInputAssetAmountProps) {
-  // STATE PARAMS
-  const [inputNumberValue, setInputNumberValue] = useState<string>(inputWeiValue !== undefined ? formatUnits(inputWeiValue, asset?.decimals || 18) : "")
-  const [isUserInput, setIsUserInput] = useState(false)
-
   const inputRef = useRef<HTMLInputElement>(null)
   const sliderDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // SLIDER PARAMS
+  // ---------------------------
+  // SLIDER PARAMS INITIALIZATION
+  // Determines whether the slider is displayed and its initial values
+  // ---------------------------
 
   let isSliderDisplay = false
   let setSliderPercentage: (value: number) => void
@@ -69,129 +70,179 @@ export function GenericInputAssetAmount({
   let sliderStartEndRange: [string, string, string] = ["0", "100", "1"]
   let sliderUnit = "%"
 
-  if (props.sliderParams) {
-    const _sliderP = props.sliderParams
-
+  if (sliderParams) {
     isSliderDisplay = true
-    setSliderPercentage = _sliderP.setSliderPercentage
-    sliderPercentage = _sliderP.sliderPercentage
-    sliderLegendValues = _sliderP.sliderLegendValues ? _sliderP.sliderLegendValues : PERCENTAGE_INPUT_AMOUNT
-    sliderStartEndRange = _sliderP.startEndRange ? _sliderP.startEndRange : sliderStartEndRange
-    sliderUnit = _sliderP.unit ? _sliderP.unit : "%"
+    setSliderPercentage = sliderParams.setSliderPercentage
+    sliderPercentage = sliderParams.sliderPercentage
+    sliderLegendValues = sliderParams.sliderLegendValues ? sliderParams.sliderLegendValues : PERCENTAGE_INPUT_AMOUNT
+    sliderStartEndRange = sliderParams.startEndRange ? sliderParams.startEndRange : sliderStartEndRange
+    sliderUnit = sliderParams.unit ? sliderParams.unit : "%"
   }
 
-  // MAX BUTTON PARAMS
+  // ---------------------------
+  // MAX BUTTON PARAMS INITIALIZATION
+  // Determines whether the max button is displayed and its values
+  // ---------------------------
 
   let isMaxButtonDisplay = false
   let maxWeiValue = 0n
   let setMaxAmount: () => void
-  if (props.maxAmountParams) {
+  if (maxAmountParams) {
     isMaxButtonDisplay = true
-    maxWeiValue = props.maxAmountParams.maxWeiValue
-    setMaxAmount = props.maxAmountParams.setMaxAmount
+    maxWeiValue = maxAmountParams.maxWeiValue
+    setMaxAmount = maxAmountParams.setMaxAmount
   }
 
-  /**
-   *
-   */
+  const decimals = asset?.decimals ?? 18
+
+  // State for the input field displayed value as a human-readable string
+  const [localDisplay, setLocalDisplay] = useState(() => (inputWeiValue !== undefined ? formatUnits(inputWeiValue, decimals) : ""))
+
+  // ---------------------------
+  // SYNC WITH PARENT VALUE
+  // Updates local input display when parent value changes
+  // ---------------------------
   useEffect(() => {
-    if (inputWeiValue !== undefined) {
-      const decimals = asset?.decimals || 18
-
-      console.log(label, "inputWeiValue", inputWeiValue)
-      const updatedValue = formatUnits(inputWeiValue, decimals)
-      console.log(label, "updatedValue", updatedValue)
-      setInputNumberValue(updatedValue)
-      setIsUserInput(false)
+    if (inputWeiValue === undefined) {
+      setLocalDisplay("")
+      return
     }
-  }, [inputWeiValue, asset])
+
+    if (document.activeElement !== inputRef.current) {
+      setLocalDisplay(truncateTo6Decimals(formatUnits(inputWeiValue, decimals)))
+    }
+  }, [inputWeiValue, decimals])
+
+  // ---------------------------
+  // SYNC SLIDER WITH INPUT
+  // Updates the slider percentage based on the input value
+  // ---------------------------
 
   useEffect(() => {
-    if (!asset?.decimals || !isUserInput) return
-
-    const handler = setTimeout(() => {
-      const val = inputNumberValue ? parseUnits(inputNumberValue, asset.decimals) : undefined
-      if (onValueChange) {
-        onValueChange(val)
-      }
-    }, 500)
-
-    return () => clearTimeout(handler)
-  }, [inputNumberValue, asset, isUserInput, onValueChange])
-
-  /**
-   * Format the balance amount of the active asset
-   * Updated when asset or balance is changed
-   */
-  const maxNumber = useMemo(() => {
-    if (maxWeiValue) {
-      return Number(formatUnits(maxWeiValue, asset?.decimals || 18))
+    if (!sliderParams) return
+    if (!maxWeiValue || maxWeiValue === 0n) return
+    if (inputWeiValue === undefined) {
+      setSliderPercentage(0)
+      return
     }
-    return 0
-  }, [maxWeiValue, asset])
 
-  /**
-   * Updated when input or asset changes
-   */
+    const percentage = Number((inputWeiValue * 100n) / maxWeiValue)
+
+    setSliderPercentage(Math.min(100, Math.max(0, percentage)))
+  }, [inputWeiValue, maxWeiValue])
+
+  // ---------------------------
+  // DOLLAR VALUE DISPLAY
+  // Calculates the USD equivalent of the current input value
+  // ---------------------------
   const dollarDepositDisplay = useMemo(() => {
     const val = Number(formatUnits(inputWeiValue || BigInt(0), asset?.decimals || 0)) * (asset?.price || 0)
     return `(${formatDollar(val)})`
   }, [inputWeiValue, asset])
 
-  /**
-   * Triggered on the user input with keyboard
-   */
+  // ---------------------------
+  // HANDLE INPUT CHANGE
+  // Updates local display and calls parent callback with debounce
+  // ---------------------------
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value.replace(",", ".")
+    let val = e.target.value.replace(",", ".").trim()
 
-    if (newValue === "" || /^[0-9]*\.?[0-9]*$/.test(newValue)) {
-      setInputNumberValue(newValue)
-      console.log(label, "newValue", newValue)
-      if (!!setSliderPercentage) {
-        setSliderPercentage(newValue !== "" && maxNumber > 0 ? (Number(newValue) / maxNumber) * 100 : 0)
-      }
+    // Allow empty string or valid numeric input
+    if (val === "" || /^\d*\.?\d*$/.test(val)) {
+      setLocalDisplay(val)
+
+      // Debounce updates to parent to avoid too many renders
+      if (sliderDebounceRef.current) clearTimeout(sliderDebounceRef.current)
+
+      sliderDebounceRef.current = setTimeout(() => {
+        if (val === "") {
+          onValueChange?.(undefined)
+        } else {
+          try {
+            const wei = parseUnits(val, decimals)
+            onValueChange?.(wei)
+          } catch (err) {
+            console.warn("Invalid amount", val)
+          }
+        }
+      }, 400)
     }
-    setIsUserInput(true)
   }
 
-  /**
-   * Triggered with the slider
-   */
+  // ---------------------------
+  // HANDLE SLIDER CHANGE
+  // Updates input value and calls parent callback when slider moves
+  // ---------------------------
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!setSliderPercentage) return
+    const percentage = Number(e.target.value)
 
-    const newPercentage = Number(e.target.value)
-    setSliderPercentage(newPercentage)
+    // Immediate visual update
+    setSliderPercentage(percentage)
 
+    // Cancel previous debounce
     if (sliderDebounceRef.current) {
       clearTimeout(sliderDebounceRef.current)
     }
 
     sliderDebounceRef.current = setTimeout(() => {
-      const newValue =
-        newPercentage === Number(sliderStartEndRange[1]) ? maxNumber : Number(((newPercentage / Number(sliderStartEndRange[1])) * maxNumber).toFixed(0))
-      console.log(label, "handleSliderChange", newValue)
-      setInputNumberValue(formatDisplayValue(newValue))
-      if (onValueChange) {
-        onValueChange(!!newValue ? parseUnits(newValue.toString(), asset?.decimals || 18) : undefined)
+      if (percentage === 100 && maxWeiValue > 0n) {
+        onValueChange?.(maxWeiValue)
+        return
       }
-    }, 300)
+
+      if (maxWeiValue === 0n) {
+        onValueChange?.(undefined)
+        return
+      }
+
+      const wei = (BigInt(Math.round(percentage)) * maxWeiValue) / 100n
+      onValueChange?.(wei)
+
+      setLocalDisplay(truncateTo6Decimals(formatUnits(wei, decimals)))
+    }, 300) // <= delay here
   }
 
-  const onClickFocus = () => {
+  // ---------------------------
+  // HANDLE MAX BUTTON CLICK
+  // Sets input to max value and slider to 100%
+  // ---------------------------
+  const handleMaxClick = () => {
+    setMaxAmount()
+    setSliderPercentage(100)
+    setLocalDisplay(truncateTo6Decimals(formatUnits(maxWeiValue, decimals)))
+  }
+
+  // ---------------------------
+  // HANDLE PANEL CLICK
+  // Focuses input when clicking on the panel except for interactive elements
+  // ---------------------------
+  const handlePanelClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement
+
+    // Prevent to get focus whend clicked on interractive element in the input
+    if (target.closest(".stop-focus")) return
+
     inputRef.current?.focus()
   }
 
+  // ---------------------------
+  // TRUNCATE TO 6 DECIMALS
+  // Helper function to format numbers to at most 6 decimals
+  // ---------------------------
+  function truncateTo6Decimals(str: string) {
+    const match = str.match(/^(-?\d+)(\.\d{0,6})?/)
+    return match ? match[0] : str
+  }
   return (
     <BorderPanel
       className={cn(
         isLoading ? "shimmer" : "",
         disabled
           ? "bg-panel-disabled"
-          : "cursor-text bg-white bg-opacity-[3%] ease-out focus-within:border-blue-500 hover:bg-white/[0.08] hover:shadow-lg [&:has(.no-parent-hover:hover)]:!bg-white/[0.03] [&:has(.no-parent-hover:hover)]:!shadow-none",
+          : "cursor-text bg-white bg-opacity-[3%] ease-out focus-within:border-[--tgt-button-active] hover:bg-white/[0.08] hover:shadow-lg [&:has(.no-parent-hover:hover)]:!bg-white/[0.03] [&:has(.no-parent-hover:hover)]:!shadow-none",
         "flex flex-col p-2 transition-all duration-200"
       )}
-      onClick={onClickFocus}
+      onClick={handlePanelClick}
     >
       {displayBalance ? (
         <div className="flex w-full items-center justify-between">
@@ -207,24 +258,35 @@ export function GenericInputAssetAmount({
 
       <div className="flex justify-between">
         <div className="flex items-center justify-start">
-          <input
-            {...props}
-            lang="en"
-            disabled={isLoading || disabled}
-            type="text"
-            value={inputNumberValue}
-            placeholder="Amount"
-            onChange={handleInputChange}
-            className="auto-grow bg-transparent text-[24px] font-semibold focus:outline-none"
-            ref={inputRef}
-            step="any"
-            inputMode="decimal"
-          />
+          <div className="relative inline-block w-full max-w-[250px]">
+            <input
+              {...props}
+              lang="en"
+              disabled={isLoading || disabled}
+              type="text"
+              value={localDisplay}
+              placeholder="Amount"
+              onChange={handleInputChange}
+              className={cn(
+                "auto-grow", // ta classe (supposée field-sizing: content ou JS)
+                "block w-full", // ou inline-block si tu préfères
+                "bg-transparent text-right text-[24px] font-semibold",
+                "placeholder:text-right placeholder:text-gray-400",
+                "focus:outline-none",
+                "min-w-[80px]", // taille mini au départ
+                "max-w-full", // ← important : max-w-full sur l'input lui-même
+                "truncate" // coupe visuellement si overflow (fallback)
+              )}
+              ref={inputRef}
+              step="any"
+              inputMode="decimal"
+            />
+          </div>
 
           <div className="text-xs text-subtitle">{dollarDepositDisplay}</div>
         </div>
 
-        <div className="flex items-center justify-center gap-2">
+        <div className="stop-focus flex items-center justify-center gap-2">
           <div className="flex gap-1">{isZapping && <IconThunder className="h-auto w-[8px] text-row-tonic" />}</div>
           <div className="no-parent-hover order-1 rounded-md lg:order-2">{depositSelect}</div>
         </div>
@@ -243,14 +305,7 @@ export function GenericInputAssetAmount({
             />
           </div>
         )}
-        {isMaxButtonDisplay && (
-          <MaxButton
-            onClick={() => {
-              setMaxAmount()
-              setSliderPercentage(100)
-            }}
-          />
-        )}
+        {isMaxButtonDisplay && <MaxButton className="stop-focus" onClick={() => handleMaxClick()} />}
       </div>
 
       {bottomPart}

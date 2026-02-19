@@ -116,8 +116,8 @@ export const AirdropSharedHeader = ({
           subtitle="Liquidity points"
           value={`${formatNumber(lpUserPoints?.lpTotalPoints, 0)} pts`}
           extra={`(${formatNumber(lpUserPoints?.lpDailyRate * userBoostFactor, 0)}pts/day)`}
-          color1="#0075FF"
-          color2="rgba(0, 119, 255, 0.2)"
+          color1="#0077ffa3"
+          color2="#0075FF"
           className="h-full"
         />
 
@@ -125,8 +125,8 @@ export const AirdropSharedHeader = ({
           title="Vote"
           subtitle="Voting points"
           value={`${formatNumber(voteUserPoints?.voteTotalPoints, 0)} pts`}
-          color1="#95FF00"
-          color2="rgba(149, 255, 0, 0.2)"
+          color1="#95ff006d"
+          color2="#95FF00"
           className="h-full"
         />
 

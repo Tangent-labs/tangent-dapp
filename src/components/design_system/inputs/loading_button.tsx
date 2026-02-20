@@ -55,7 +55,7 @@ export const LoadingButton = ({ label, state = "active", className, disabled, ch
         disabled={state === "inactive" || disabled || isLoading}
         data-state={state}
         className={cn(
-          "group relative flex min-w-[120px] items-center justify-center gap-2 overflow-hidden rounded-[10px] p-2 px-4 font-gilroy text-[15px] font-semibold transition-all duration-200 active:scale-[0.97] disabled:cursor-not-allowed",
+          "group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[10px] p-2 px-4 font-gilroy text-[15px] font-semibold disabled:cursor-not-allowed",
           {
             "bg-button-active hover:bg-button-active-hover": state === "active",
             "bg-button-inactive": state === "inactive",

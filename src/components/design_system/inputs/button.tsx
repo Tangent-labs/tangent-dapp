@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { ButtonHTMLAttributes } from "react"
+import React, { ButtonHTMLAttributes, useRef } from "react"
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   label?: string
@@ -9,24 +9,62 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   state?: "active" | "inactive" | "disabled"
 }
 
-export function Button({ label, state = "active", className, disabled, children, ...props }: ButtonProps) {
+export const Button = ({ label, state = "active", className, disabled, children, onClick, ...props }: ButtonProps) => {
+  const buttonRef = useRef<HTMLButtonElement>(null)
+
+  const createRippleEffect = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (state !== "active" || !buttonRef.current) return
+
+    const btn = buttonRef.current
+    const rect = btn.getBoundingClientRect()
+
+    const diameter = Math.max(rect.width, rect.height) / 2
+    const radius = diameter / 2
+
+    const x = e.clientX - rect.left - radius
+    const y = e.clientY - rect.top - radius
+
+    const ripple = document.createElement("span")
+    ripple.className = "absolute z-0 rounded-full pointer-events-none bg-button-active-dark animate-ripple"
+    ripple.style.width = ripple.style.height = `${diameter}px`
+    ripple.style.left = `${x}px`
+    ripple.style.top = `${y}px`
+
+    btn.appendChild(ripple)
+    setTimeout(() => ripple.remove(), 1500)
+  }
+
+  const isDisabled = state !== "active" || disabled
+
   return (
-    <button
-      {...props}
-      onClick={state === "active" ? props?.onClick : () => {}}
-      disabled={state === "inactive" || disabled}
-      data-state={state}
+    <div
       className={cn(
-        "flex items-center rounded-[10px] p-2 px-4 font-gilroy text-[15px] font-semibold transition-all duration-200 disabled:cursor-not-allowed",
-        {
-          "bg-button-active hover:bg-button-active-hover": state === "active",
-          "bg-button-inactive": state === "inactive",
-          "cursor-not-allowed bg-button-inactive": state === "disabled",
-        },
+        "relative inline-flex w-full rounded-[11px] p-[1px]",
+        state === "active" ? "bg-gradient-to-b from-[rgba(0,194,255,0.5)] to-[#00c2ff00]" : "",
         className
       )}
     >
-      {children || <span>{label}</span>}
-    </button>
+      <button
+        {...props}
+        ref={buttonRef}
+        disabled={isDisabled}
+        data-state={state}
+        onClick={(e) => {
+          if (isDisabled) return
+          createRippleEffect(e)
+          onClick?.(e)
+        }}
+        className={cn(
+          "group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[10px] p-2 px-4 font-gilroy text-[15px] font-semibold disabled:cursor-not-allowed",
+          {
+            "bg-button-active hover:bg-button-active-hover": state === "active",
+            "bg-button-inactive": state !== "active",
+            "cursor-not-allowed": state !== "active",
+          }
+        )}
+      >
+        {children || <span>{label}</span>}
+      </button>
+    </div>
   )
 }

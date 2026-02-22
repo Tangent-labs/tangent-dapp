@@ -19,6 +19,7 @@ import { formatBigInt, formatDollar, formatNumber, formatPercent } from "@/lib/n
 import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 
 const listeState: ListState = {
   search: undefined,
@@ -53,7 +54,7 @@ export default function USGHarvestContent() {
       <div className="flex items-stretch justify-between gap-6">
         <ReliefCard className="hidden w-1/2 bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
-            <Image height={140} width={140} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+            <Image height={150} width={150} src="/medias/logos/claim.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Harvest</span>
@@ -74,15 +75,8 @@ export default function USGHarvestContent() {
         </div>
       </div>
 
-      <div className="mt-6 flex w-full flex-col items-start justify-start gap-4 md:flex-row">
+      <div className="mt-3 flex w-full flex-col items-start justify-start gap-3 md:flex-row">
         <div className="flex w-full flex-col md:w-9/12">
-          {displayRows?.length > 0 && (
-            <div className="mb-2 flex w-full items-center justify-end gap-2">
-              <span className="text-sm text-subtitle">Harvest all</span>
-              <Switch onClick={() => onClickSelectAll()}></Switch>
-            </div>
-          )}
-
           <ListProvider customSort={customSort} _headers={harvestListHeaders} _rows={displayRows} _listState={listeState}>
             <HarvestList></HarvestList>
           </ListProvider>
@@ -92,41 +86,54 @@ export default function USGHarvestContent() {
           )}
         </div>
 
-        <ReliefCard className="flex h-full min-h-52 w-full flex-col items-start justify-start p-5 md:w-3/12">
-          <div className="flex w-full items-center justify-between">
-            <div className="flex flex-col items-start justify-start">Market</div>
+        <div className="flex w-full flex-col items-center justify-center md:w-3/12">
+          <div className="relative hidden w-full xl:block">
+            <div className="flex w-full gap-3 rounded-t-[10px] bg-overlay-panel px-4 py-2 leading-[10px] backdrop-blur-[60px]">
+              <span className="text-sm text-subtitle">Harvest all</span>
+              <Switch onClick={() => onClickSelectAll()}></Switch>
+            </div>
 
-            <div className="flex flex-col items-start justify-start">Harvestable</div>
+            <ListGradientBorder classname={"rounded-t-[10px]"} />
           </div>
 
-          <Divider className="h-0.5 w-full bg-white/10" />
+          <div className="relative mt-1 flex h-full min-h-52 w-full cursor-pointer flex-col items-start justify-start p-2 backdrop-blur-[60px] transition-all duration-200 ease-out before:absolute before:inset-0 before:-z-10 before:opacity-60 before:transition-all before:duration-300">
+            <div className="flex w-full items-center justify-between">
+              <div className="flex flex-col items-start justify-start">Market</div>
 
-          <div className="flex w-full flex-col">
-            {marketsToHarvest.map((el: HarvestableMarket) => (
-              <div key={el.marketName} className="my-1 flex w-full items-center justify-between">
-                <div className={`relative flex items-center gap-4`}>
-                  {el.marketName?.substring(0, el.marketName.indexOf(" ")) === "USDe" || el.marketName?.substring(0, el.marketName.indexOf(" ")) === "sUSDe" ? (
-                    <TokenImage token={el.marketName as ExistingAsset} size={24} className="ml-1 w-6" />
-                  ) : (
-                    <TokenImage token={el.marketName as ExistingAsset} size={32} className="w-8" />
-                  )}
+              <div className="flex flex-col items-start justify-start">Harvestable</div>
+            </div>
 
-                  <span className="text-[12px] font-semibold">{el.marketName}</span>
+            <Divider className="h-0.5 w-full bg-white/10" />
+
+            <div className="flex w-full flex-col">
+              {marketsToHarvest.map((el: HarvestableMarket) => (
+                <div key={el.marketName} className="my-1 flex w-full items-center justify-between">
+                  <div className={`relative flex items-center gap-4`}>
+                    {el.marketName?.substring(0, el.marketName.indexOf(" ")) === "USDe" ||
+                    el.marketName?.substring(0, el.marketName.indexOf(" ")) === "sUSDe" ? (
+                      <TokenImage token={el.marketName as ExistingAsset} size={24} className="ml-1 w-6" />
+                    ) : (
+                      <TokenImage token={el.marketName as ExistingAsset} size={32} className="w-8" />
+                    )}
+
+                    <span className="text-[12px] font-semibold">{el.marketName}</span>
+                  </div>
+
+                  <span className="text-[12px] font-semibold">{formatDollar(el.harvestable, 2)}</span>
                 </div>
+              ))}
+            </div>
 
-                <span className="text-[12px] font-semibold">{formatDollar(el.harvestable, 2)}</span>
-              </div>
-            ))}
+            <div className="mt-8 flex w-full">
+              {marketsToHarvest.length > 0 && isConnected && (
+                <Button label="Harvest" className="flex w-full items-center justify-center" onClick={() => onClickHarvest()} />
+              )}
+
+              {!isConnected && <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />}
+            </div>
+            <ListGradientBorder />
           </div>
-
-          <div className="mt-8 flex w-full">
-            {marketsToHarvest.length > 0 && isConnected && (
-              <Button label="Harvest" className="flex w-full items-center justify-center" onClick={() => onClickHarvest()} />
-            )}
-
-            {!isConnected && <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />}
-          </div>
-        </ReliefCard>
+        </div>
       </div>
     </>
   )

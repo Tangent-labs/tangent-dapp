@@ -2,7 +2,6 @@
 
 import { useMemo } from "react"
 import { FormState, FormAction } from "@/types"
-import { LoadingButton } from "../inputs/loading_button"
 import { Button } from "@/components/design_system/inputs/button"
 
 type FormButtonsProps = {
@@ -30,9 +29,23 @@ export default function FormButtons({ formState, labelApprove = "Approve", label
       ) : (
         <>
           {!!actions.handleApprove && formState?.haveToApprove ? (
-            <LoadingButton isLoading={isLoading} label={labelApprove} onClick={actions.handleApprove} state={approveState} className="w-full justify-center" />
+            <Button
+              hasLoadingState={true}
+              isLoading={isLoading}
+              label={labelApprove}
+              onClick={actions.handleApprove}
+              state={approveState}
+              className="w-full justify-center"
+            />
           ) : (
-            <LoadingButton isLoading={isLoading} label={labelProcess} onClick={actions.handleProcess} state={processState} className="w-full justify-center" />
+            <Button
+              hasLoadingState={true}
+              isLoading={isLoading}
+              label={labelProcess}
+              onClick={actions.handleProcess}
+              state={processState}
+              className="w-full justify-center"
+            />
           )}
         </>
       )}

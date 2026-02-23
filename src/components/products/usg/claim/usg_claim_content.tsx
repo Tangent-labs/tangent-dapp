@@ -197,7 +197,7 @@ function ClaimList() {
           <div className="flex items-center justify-between max-xl:flex-col">
             <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
               <div className="xl:w-2/3">
-                <ListAsset name={item?.marketName} token={item.marketName as ExistingAsset} assetsEarned={[]} />
+                <ListAsset name={item?.marketName} token={item.marketName as ExistingAsset} />
               </div>
 
               <div className="flex justify-center xl:w-1/3">

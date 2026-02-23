@@ -155,7 +155,7 @@ function HarvestList() {
           <div className="flex items-center justify-between max-xl:flex-col">
             <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
               <div className="xl:w-1/2">
-                <ListAsset name={item?.asset} token={item.asset} assetsEarned={[]} />
+                <ListAsset name={item?.asset} token={item.asset} />
               </div>
               <div className="text-md flex justify-center gap-2 md:text-lg xl:w-1/2">
                 {formatDollar(item?.rewards?.totalDollar || 0)}

@@ -3,13 +3,13 @@
 import Image from "next/image"
 import { Address, zeroAddress } from "viem"
 import TokenImage from "../structure/token_image"
-import { CollateralInfo, ExistingAsset } from "@/types"
-import AssetSelectionDialog from "./asset-select-dialog"
 import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
+import { CollateralInfo, ExistingAsset } from "@/types"
+import AssetSelectionDialog from "./asset-select-dialog"
+import { ZapToken } from "@/components/products/usg/usg_type"
 import { useUSGContext } from "@/components/products/usg/usg_context"
 import { useUSGRecordContext } from "@/components/products/usg/record/usg_record_context"
-import { ZapToken } from "@/components/products/usg/usg_type"
 
 type AssetSelectProps = {
   collateralInfo: CollateralInfo
@@ -54,45 +54,68 @@ const AssetSelectTemplate = (option: {
   )
 }
 
+const tokenOrder = ["ETH", "USDT", "USDC", "USDS", "USDe", "DAI", "frxUSD", "crvUSD", "DOLA", "reUSD", "fxUSD", "WETH", "WBTC"]
+
+type PrioritySymbol = (typeof tokenOrder)[number]
+
+// Return the index of the token in the ordered list if it exists
+const getTokenSymbolPriorityIndex = (symbol: string): number => {
+  const idx = tokenOrder.indexOf(symbol as PrioritySymbol)
+  return idx === -1 ? tokenOrder?.length + 1 : idx
+}
+
 export const AssetSelector = ({ collateralInfo, depositAsset, setDepositAsset }: AssetSelectProps) => {
   const { marketData, marketInfo } = useUSGRecordContext()
 
   const { tokens, balances } = useUSGContext()
 
   if (!!marketData) {
-    const tokenOptions = tokens.map((el: ZapToken) => ({
-      ...el,
-      value: el.name as string,
-      address: el.address as Address,
-      balance: balances ? balances[el.address] : BigInt(0),
-    }))
+    const tokenOptions = tokens
+      .map((el: ZapToken) => ({
+        ...el,
+        value: el.name as string,
+        address: el.address as Address,
+        balance: balances ? balances[el.address] : BigInt(0),
+      }))
+      .sort((a, b) => {
+        const aPriority = getTokenSymbolPriorityIndex(a.symbol)
+        const bPriority = getTokenSymbolPriorityIndex(b.symbol)
 
-    const sortedAssets = [
+        if (aPriority !== bPriority) {
+          return aPriority - bPriority
+        }
+
+        if (Number(a.balance) > 0 !== Number(b.balance) > 0) {
+          return Number(a.balance) > 0 ? -1 : 1 // true (-1) comes before false
+        }
+
+        return Number(b.balance) - Number(a.balance)
+      })
+
+    const allAssets = [
       {
         ...collateralInfo,
         value: collateralInfo.name as string,
         address: collateralInfo.address as Address,
         balance: balances ? balances[marketInfo?.collatAddress] : BigInt(0),
       },
-      ...[
-        {
-          symbol: "ETH",
-          name: "Ethereum",
-          value: "ETH",
-          decimals: 18,
-          address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address,
-          logo: "ETH" as ExistingAsset,
-          displayDecimals: 5,
-          balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
-        },
-        ...tokenOptions,
-      ].sort((a, b) => Number(b.balance) - Number(a.balance)),
+      {
+        symbol: "ETH",
+        name: "Ethereum",
+        value: "ETH",
+        decimals: 18,
+        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address,
+        logo: "ETH" as ExistingAsset,
+        displayDecimals: 5,
+        balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
+      },
+      ...tokenOptions,
     ]
 
     if (marketData?.constants?.receipt !== zeroAddress) {
       const gaugeSymbol = `Gauge ${collateralInfo?.symbol}`
 
-      sortedAssets.unshift({
+      allAssets.unshift({
         decimals: 18,
         displayDecimals: 5,
         logo: collateralInfo?.logo as ExistingAsset,
@@ -109,7 +132,7 @@ export const AssetSelector = ({ collateralInfo, depositAsset, setDepositAsset }:
         className="w-full min-w-24"
         template={AssetSelectTemplate}
         value={depositAsset}
-        options={sortedAssets}
+        options={allAssets}
         onChange={(v: string) => setDepositAsset(v)}
       />
     )

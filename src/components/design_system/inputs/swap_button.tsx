@@ -34,13 +34,15 @@ export const SwapButton = () => {
 
   return (
     <Link className="hidden xl:flex" href="/swap">
-      <button
-        ref={buttonRef}
-        onClick={createRippleEffect}
-        className="relative flex w-full max-w-24 items-center justify-center rounded-[10px] border border-[#0075FF] bg-dark p-2 px-4 font-gilroy text-[15px] font-semibold hover:bg-[#0060D2]"
-      >
-        Swap
-      </button>
+      <div className="overflow-hidden rounded-[10px]">
+        <button
+          ref={buttonRef}
+          onClick={createRippleEffect}
+          className="relative flex w-full max-w-24 items-center justify-center rounded-[10px] border border-[#0075FF] bg-dark px-4 py-2 font-gilroy text-[15px] font-semibold hover:bg-[#0060D2]"
+        >
+          Swap
+        </button>
+      </div>
     </Link>
   )
 }

@@ -259,7 +259,7 @@ export function USGMarketListInner() {
           key={index}
           route={"/" + item.address + "/deposit-borrow"}
         >
-          <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} assetsEarned={[]} />
+          <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} />
 
           <MarketListAPR
             rewardToken={item?.rewardToken}

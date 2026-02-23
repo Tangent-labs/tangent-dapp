@@ -141,11 +141,15 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .auto-grow {
-  min-width: 20px;
+  min-width: 32px;
   max-width: 100%;
-  padding: 0 8px 0 0;
   width: auto;
-  field-sizing: content;
+}
+
+@supports (field-sizing: content) {
+  .auto-grow {
+    field-sizing: content;
+  }
 }
 
 .auto-grow:focus {

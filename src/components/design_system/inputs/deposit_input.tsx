@@ -8,6 +8,7 @@ import { IconThunder, IconWallet } from "@/components/icons"
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
 import { formatBigInt, formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { SliderInput } from "./slider_input"
+import { useAutoGrowInputWidth } from "@/hooks/useAutoGrowInputWidth"
 
 type DepositInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced | CollateralInfo
@@ -51,9 +52,12 @@ export function DepositInput({
     return 0
   }, [balance, depositAsset])
 
-  const inputRef = useRef<HTMLInputElement>(null)
-
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 18) : "")
+
+  const { inputRef, measureRef } = useAutoGrowInputWidth(innerValue, {
+    placeholder: "Amount",
+    minPx: 32,
+  })
 
   const [isUserInput, setIsUserInput] = useState(false)
 
@@ -137,6 +141,8 @@ export function DepositInput({
 
       <div className="flex justify-between">
         <div className="flex items-center justify-start">
+          <span ref={measureRef} className="invisible absolute whitespace-pre bg-transparent text-[24px] font-semibold" aria-hidden="true" />
+
           <input
             {...props}
             disabled={isLoading || disabled}
@@ -149,7 +155,7 @@ export function DepositInput({
             step="any"
           />
 
-          <div className="text-xs text-subtitle">{dollarDepositDisplay}</div>
+          <div className="ml-2 text-xs text-subtitle">{dollarDepositDisplay}</div>
         </div>
 
         <div className="flex items-center justify-center gap-2">

@@ -298,8 +298,8 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   }, [frxUSDDepositValue, predepositStatus, currentAddress, frxUSDBalanceAllowance])
 
   const actionApproveUSGUSDC = () => {
-    setIsUSDCDepositLoading(true)
     if (walletClient && USDCDepositValue) {
+      setIsUSDCDepositLoading(true)
       doApprove(walletClient, USDCInfo?.address, USGTokens[1]["USG-USDC"], USDCDepositValue).then(() => {
         getUSGUSDCBalanceAllowance(walletClient)
         setIsUSDCDepositLoading(false)
@@ -308,8 +308,8 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   }
 
   const actionApproveUSGfrxUSD = () => {
-    setIsfrxUSDDepositLoading(true)
     if (walletClient && frxUSDDepositValue) {
+      setIsfrxUSDDepositLoading(true)
       doApprove(walletClient, frxUSDInfo?.address, USGTokens[1]["USG-frxUSD"], frxUSDDepositValue).then(() => {
         getUSGfrxUSDBalanceAllowance(walletClient)
         setIsfrxUSDDepositLoading(false)

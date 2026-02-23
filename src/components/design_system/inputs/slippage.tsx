@@ -1,7 +1,7 @@
 import ButtonTab from "./button_tab"
-import BorderPanel from "../structure/border_panel"
 import { IconGearWheel } from "@/components/icons"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { ReliefCard } from "../structure/relief_card"
 
 type SlippageInputProps = {
   slippage: number
@@ -12,14 +12,14 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <BorderPanel className="flex h-[30px] cursor-pointer items-center justify-between bg-button-gradient py-2 font-gilroy">
-          <span className="w-9 px-2 text-xs text-subtitle"> {slippage}%</span>
+        <ReliefCard className="flex h-[30px] w-[88px] cursor-pointer items-center justify-between py-2 font-gilroy">
+          <span className="px-2 text-xs text-subtitle"> {slippage}%</span>
           <button type="button" title="Slippage">
-            <div className="h-[30px] cursor-pointer rounded-[10px] border-l border-white/30 bg-button-gradient p-2 hover:bg-white/20">
+            <div className="h-[30px] cursor-pointer rounded-[10px] bg-button-gradient px-2.5 py-2 hover:bg-white/10">
               <IconGearWheel className="h-auto w-[12px] text-row-tonic" />
             </div>
           </button>
-        </BorderPanel>
+        </ReliefCard>
       </PopoverTrigger>
       <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none font-gilroy">
         <div className="rounded-[10px] border-none bg-white bg-opacity-[3%] p-3 backdrop-blur-[60px]">

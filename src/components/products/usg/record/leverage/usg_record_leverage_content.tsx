@@ -7,7 +7,7 @@ import PanelRaw from "@/components/design_system/structure/panel_raw"
 import { useUSGLeverageContext } from "./usg_record_leverage_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
-import BorderPanel from "@/components/design_system/structure/border_panel"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { LeverageInput } from "@/components/design_system/inputs/leverage_input"
 import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
@@ -162,7 +162,7 @@ export default function USGLeverageContent() {
         <div className="flex items-start justify-start gap-2">
           <Accordion className={cn("w-full", isDepositLoading ? "shimmer rounded-[10px]" : "")} type="single" collapsible>
             <AccordionItem value="item-1">
-              <BorderPanel className="flex w-full cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
+              <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary">
                 <AccordionTrigger>
                   <span className="py-1.5">Recap</span>
                 </AccordionTrigger>
@@ -213,7 +213,7 @@ export default function USGLeverageContent() {
                     </div>
                   </div>
                 </AccordionContent>
-              </BorderPanel>
+              </ReliefCard>
             </AccordionItem>
           </Accordion>
           <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>

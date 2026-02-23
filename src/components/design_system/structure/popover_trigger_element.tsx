@@ -10,7 +10,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 export function PopoverTriggerElement({ children, className, ...props }: ButtonProps) {
   return (
-    <button {...props} className={cn("flex items-center justify-center", className)}>
+    <button {...props} className={cn("flex w-full items-center justify-center", className)}>
       {children}
     </button>
   )

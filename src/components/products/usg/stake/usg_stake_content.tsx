@@ -1,9 +1,11 @@
 "use client"
 
+import Link from "next/link"
 import Image from "next/image"
 import { formatUnits } from "viem"
 import { ExistingAsset } from "@/types"
 import { useUSGStakeContext } from "./usg_stake_context"
+import { IconStars } from "@/components/icons/icon_stars"
 import { computeProjection } from "./usg_stake_controller"
 import Divider from "@/components/design_system/structure/divider"
 import FormButtons from "@/components/design_system/form/form_actions"
@@ -20,8 +22,6 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
-import { IconStars } from "@/components/icons/icon_stars"
-import Link from "next/link"
 
 export default function USGStakeContent() {
   const {
@@ -168,7 +168,7 @@ export default function USGStakeContent() {
 
           <Accordion className="w-full" type="single" collapsible>
             <AccordionItem value="item-1">
-              <BorderPanel className="my-2 flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
+              <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary">
                 <AccordionTrigger>
                   <span className="py-1.5">Recap</span>
                 </AccordionTrigger>
@@ -192,7 +192,7 @@ export default function USGStakeContent() {
                     </div>
                   </div>
                 </AccordionContent>
-              </BorderPanel>
+              </ReliefCard>
             </AccordionItem>
           </Accordion>
 

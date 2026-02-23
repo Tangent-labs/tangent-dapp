@@ -7,8 +7,8 @@ import { useUSGDepositContext } from "./usg_record_deposit_context"
 import PanelRaw from "@/components/design_system/structure/panel_raw"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
-import BorderPanel from "@/components/design_system/structure/border_panel"
 import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
 import { IconThunder, IconCircleHelp, IconSingleArrow } from "@/components/icons"
@@ -139,7 +139,7 @@ export default function USGDepositContent() {
       <div className="flex items-start justify-between gap-2">
         <Accordion className="w-full" type="single" collapsible>
           <AccordionItem value="item-1">
-            <BorderPanel className="flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary">
+            <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary">
               <AccordionTrigger>
                 <span className="py-1.5">Recap</span>
               </AccordionTrigger>
@@ -179,7 +179,7 @@ export default function USGDepositContent() {
                   </div>
                 </div>
               </AccordionContent>
-            </BorderPanel>
+            </ReliefCard>
           </AccordionItem>
         </Accordion>
 

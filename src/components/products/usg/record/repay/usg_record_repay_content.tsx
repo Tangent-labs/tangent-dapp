@@ -18,7 +18,7 @@ import InputSelect from "@/components/design_system/inputs/input_select"
 import TokenImage from "@/components/design_system/structure/token_image"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { RepayInput } from "@/components/design_system/inputs/repay_input"
-import BorderPanel from "@/components/design_system/structure/border_panel"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -249,7 +249,7 @@ export default function USGRepayContent() {
       <div className="flex items-start justify-between gap-2">
         <Accordion className="w-full" type="single" collapsible>
           <AccordionItem value="item-1">
-            <BorderPanel className="flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary">
+            <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary">
               <AccordionTrigger>
                 <span className="py-1.5">Recap</span>
               </AccordionTrigger>
@@ -261,7 +261,7 @@ export default function USGRepayContent() {
                   <span className="font-semibold text-white">{expectedUSG}</span>
                 </div>
               </AccordionContent>
-            </BorderPanel>
+            </ReliefCard>
           </AccordionItem>
         </Accordion>
 

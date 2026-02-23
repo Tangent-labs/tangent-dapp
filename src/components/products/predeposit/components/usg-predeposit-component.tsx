@@ -131,6 +131,7 @@ export const USGPredepositComponent = ({
         connect={connect}
         formState={formState}
         labelProcess="Deposit"
+        isLoading={isLoading}
       />
     </ReliefCard>
   )

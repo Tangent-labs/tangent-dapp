@@ -5,6 +5,8 @@ import { ExistingAsset } from "@/types"
 import { CustomAssetDisplay } from "./custom_asset_display"
 import { MarketConstants } from "@/components/products/usg/usg_type"
 import TokenImage from "@/components/design_system/structure/token_image"
+import TokenImageHighlighted from "../structure/token_image_highlighted"
+import { CollateralEmissionLabel } from "./collat_emission_label"
 
 interface ListAssetProps {
   name: string
@@ -29,23 +31,22 @@ const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: Li
         {marketData && (
           <>
             <div className="ml-2 flex items-center justify-between gap-2 md:hidden">
-              {marketData?.marketType?.includes("CRV") && <TokenImage token={"CRV"} size={12} />}
-              {marketData?.marketType?.startsWith("Convex_") && <TokenImage token={"CVX"} size={12} />}
-              {marketData?.marketType?.startsWith("STAKEDAO") && <TokenImage token={"SDT"} size={12} />}
-              {marketData?.marketType?.startsWith("Pendle") && <TokenImage token={"PENDLE"} size={12} />}
+              {marketData?.marketType?.includes("CRV") && <TokenImageHighlighted token={"CRV"} size={24} />}
+              {marketData?.marketType?.startsWith("Convex_") && <TokenImageHighlighted token={"CVX"} size={24} />}
+              {marketData?.marketType?.startsWith("STAKEDAO") && <TokenImageHighlighted token={"SDT"} size={24} />}
+              {marketData?.marketType?.startsWith("Pendle") && <TokenImageHighlighted token={"PENDLE"} size={24} />}
+              {marketData?.marketType?.includes("FXN") && <TokenImageHighlighted token="FXN" size={24} />}
 
-              <span className="mt-0.5 flex items-center justify-center text-xs font-semibold">{marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}</span>
+              <CollateralEmissionLabel isHEC={marketData?.constants?.irParams.isHEC}></CollateralEmissionLabel>
             </div>
             <div className="hidden items-center justify-between gap-2 md:flex">
-              {marketData?.marketType?.includes("CRV") && <TokenImage token="CRV" size={12} />}
-              {marketData?.marketType?.startsWith("Convex_") && <TokenImage token="CVX" size={12} />}
-              {marketData?.marketType?.startsWith("STAKEDAO") && <TokenImage token="SDT" size={12} />}
-              {marketData?.marketType?.startsWith("Pendle") && <TokenImage token="PENDLE" size={12} />}
-              {marketData?.marketType?.includes("FXN") && <TokenImage token="FXN" size={12} />}
+              {marketData?.marketType?.includes("CRV") && <TokenImageHighlighted token="CRV" size={24} />}
+              {marketData?.marketType?.startsWith("Convex_") && <TokenImageHighlighted token="CVX" size={24} />}
+              {marketData?.marketType?.startsWith("STAKEDAO") && <TokenImageHighlighted token="SDT" size={24} />}
+              {marketData?.marketType?.startsWith("Pendle") && <TokenImageHighlighted token="PENDLE" size={24} />}
+              {marketData?.marketType?.includes("FXN") && <TokenImageHighlighted token="FXN" size={24} />}
 
-              <span className={`flex items-center justify-center rounded-full bg-overlay-panel px-3 py-0.5 text-xs backdrop-blur-[60px]`}>
-                {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
-              </span>
+              <CollateralEmissionLabel isHEC={marketData?.constants?.irParams.isHEC}></CollateralEmissionLabel>
             </div>
           </>
         )}

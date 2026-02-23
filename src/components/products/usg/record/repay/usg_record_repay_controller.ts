@@ -51,6 +51,8 @@ export async function doRepay(walletClient: WalletClient, args: USGMarketRepayPa
     address: args.marketAddress,
     args: [account, args.repayWeiValue],
     gas: undefined as undefined | bigint,
+    walletClient: walletClient
+
   }
   const txHash = await executeContractCall(walletClient, txData)
   return await waitForTransaction(txHash)
@@ -63,6 +65,7 @@ export async function doRepayAndWithdraw(walletClient: WalletClient, args: USGMa
     address: args.marketAddress,
     args: [args.withdrawWeiValue, args.repayWeiValue, args.isReceiptOut],
     gas: undefined as undefined | bigint,
+    walletClient: walletClient
   }
   const txHash = await executeContractCall(walletClient, txData)
   return await waitForTransaction(txHash)

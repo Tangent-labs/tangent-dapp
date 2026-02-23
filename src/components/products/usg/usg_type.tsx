@@ -35,6 +35,7 @@ export type USGMarketDataUser = {
 }
 
 export type USGGlobalData = {
+  usgPriceWei: bigint
   USGPrice: string
   USGSupply: string
   sUSGPrice: string
@@ -141,7 +142,8 @@ export interface DebtInfos {
   totalDebt: bigint
   positionDebt: bigint
   userDebt: bigint
-  healthRatio: string
+  healthRatio: bigint
+  usgBalance: bigint
   currentBorrowRate: bigint
   futureBorrowRate: bigint
   currentRewardCut: string

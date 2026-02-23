@@ -10,7 +10,7 @@ import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { formatBigInt, formatBigIntAsNumber, truncateTo6Decimals } from "@/lib/number_formatter"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computeAprVariation, computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit, doMarketDepositAndBorrow } from "./usg_record_deposit_controller"
@@ -185,33 +185,33 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     fetchBalanceAllowanceData(depositAssetInfo?.address)
   }
 
+  const latestRequestRef = useRef(0)
+
   const handleDepositChange = (value: bigint | undefined) => {
     setDepositWeiValue(value)
 
-    const fetchZapValue = async () => {
-      if (!value || !depositAssetInfo) return
+    if (!value || !depositAssetInfo || !isZapping) {
+      if (!value || value === 0n) setZapValue(0n)
+      return
+    }
 
-      setIsZapLoading(true)
-      try {
-        const { quote } = await getQuote(value, currentAddress || zeroAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
+    const requestId = ++latestRequestRef.current
+    setIsZapLoading(true)
 
+    getQuote(value, currentAddress || zeroAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
+      .then(({ quote }) => {
+        // Do nothing when price is stale
+        if (requestId !== latestRequestRef.current) return // stale
         handleQuote(quote)
-
-        if (quote) {
-          setZapValue(quote)
-        }
-      } catch (error) {
+        if (quote) setZapValue(quote)
+      })
+      .catch((error) => {
+        if (requestId !== latestRequestRef.current) return
         console.error("Error fetching zap value:", error)
-      } finally {
-        setIsZapLoading(false)
-      }
-    }
-
-    if (!!depositAssetInfo && isZapping) {
-      fetchZapValue()
-    } else if (!value || value == 0n) {
-      setZapValue(0n)
-    }
+      })
+      .finally(() => {
+        if (requestId === latestRequestRef.current) setIsZapLoading(false)
+      })
   }
 
   const handleZapChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -574,7 +574,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
     }
     if (currentAddress && !isZapping) {
-      amountDisplayed = formatBigInt(marketData?.collateralBalance, depositAssetInfo?.decimals, 2)
+      amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
     }
     return `Max ${amountDisplayed} ${asset}`
   }, [currentAddress, depositAssetInfo, balanceAllowanceData, isZapping])

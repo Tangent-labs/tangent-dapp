@@ -2,7 +2,7 @@
 
 import { toast } from "react-toastify"
 import { ZapToken } from "../../usg_type"
-import { formatUnits, parseEther } from "viem"
+import { formatEther, formatUnits, parseEther } from "viem"
 import { useUSGContext } from "../../usg_context"
 import { USG_CONTRACT } from "../../usg_repository"
 import { useUSGRecordContext } from "../usg_record_context"
@@ -10,11 +10,12 @@ import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
-import { formatBigInt, formatBigIntAsNumber, formatDollar } from "@/lib/number_formatter"
+import { formatBigInt, formatBigIntAsNumber, formatDollar, truncateTo6Decimals } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
 import { computeAprVariation, computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
+import { useUSGMaketListContext } from "../../list/usg_market_list_context"
 
 type USGLeverageContextProps = {
   children: ReactNode
@@ -56,16 +57,13 @@ type USGLeverageContextValues = {
   slippage: number
   setSlippage: (arg: number) => void
 
-  zapInnerValue: number | undefined
-  setZapInnerValue: (arg: number | undefined) => void
-
   depositSliderPercent: number
   setDepositSliderPercent: (arg: number) => void
 
   leveragePercentage: number
   setLeveragePercentage: (arg: number) => void
 
-  handleZapInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleZapInputChange: (arg: bigint | undefined) => void
 
   actionLeverage: () => void
 
@@ -76,9 +74,8 @@ type USGLeverageContextValues = {
 
   expectedCollateral: { sum: string; result: string }
 
-  estimatedZapDollarValue: string
-
-  updateBorrowWeiValue: (value: bigint | undefined) => Promise<void>
+  minValueReceivedFromZap: string
+  minCollatReceivedFromUSGDump: string
 
   maxDepositString: string
 
@@ -89,6 +86,10 @@ type USGLeverageContextValues = {
   computedDepositAmount: bigint
 
   isZapping: boolean
+
+  handleLeverageSliderChange: (arg: number) => void
+
+  handleBorrowChange: (arg: bigint | undefined) => Promise<void>
 }
 
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
@@ -106,6 +107,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     setCurrentAmounts,
   } = useUSGRecordContext()
 
+  const { globalData } = useUSGMaketListContext()
+
   const { curveRoutes, handleQuote } = useRootContext()
 
   const { tokens, loadUSGsUSGMetrics, marketAprs } = useUSGContext()
@@ -120,8 +123,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const [depositAsset, setDepositAsset] = useState<string | undefined>(undefined)
 
-  const [isZapUserInput, setIsZapUserInput] = useState<boolean>(false)
-
   const [swapAssetPrice, setSwapAssetPrice] = useState<number>(0)
 
   const [leveragePercentage, setLeveragePercentage] = useState<number>(1)
@@ -135,8 +136,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   const [isZapLoading, setIsZapLoading] = useState(false)
 
   const [zapValue, setZapValue] = useState<bigint | null>(null)
-
-  const [zapInnerValue, setZapInnerValue] = useState<number | undefined>(zapValue !== undefined ? Number(formatUnits(zapValue || BigInt(0), 18)) : undefined)
 
   const [leveragedCollateralQuote, setLeveragedCollateralQuote] = useState<bigint | undefined>()
 
@@ -189,56 +188,95 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     return asset
   }, [depositAsset, swapAssetPrice, marketData])
 
-  const handleDepositChange = useCallback(
-    (value: bigint | undefined) => {
-      setDepositWeiValue(value)
-      if (!value || !currentAddress || !depositAssetInfo) return
-      if (depositAssetInfo.address === marketInfo?.collatAddress) return
+  function computeBorrowValue(depositedCollateralWei: bigint, leverageValue: number) {
+    const collatToBuy = (depositedCollateralWei * BigInt(leverageValue * 10)) / 10n - depositedCollateralWei
+    const expectedCollateralFinalDollarValue = (collatToBuy * marketData?.collateralInfos.collateralUSDPrice!) / parseEther("1")
+    return (expectedCollateralFinalDollarValue * parseEther("1")) / globalData.usgPriceWei
+  }
+  const activeInputRef = useRef<"deposit" | "zap" | null>(null)
+  const requestIdRef = useRef<number>(0)
 
-      setIsZapLoading(true)
+  function handleDepositChange(value: bigint | undefined) {
+    activeInputRef.current = "deposit"
+    const valueWei = BigInt(value || 0n)
+    setDepositWeiValue(valueWei)
 
-      getQuote(value, currentAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
-        .then(({ quote }) => {
-          if (quote) setZapValue(quote as bigint)
-        })
-        .catch((e) => console.error("Error fetching zap value:", e))
-        .finally(() => setIsZapLoading(false))
-    },
-    [currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress]
-  )
+    if (!value || !currentAddress || !depositAssetInfo) {
+      updateBorrowWeiValue(computeBorrowValue(valueWei, leveragePercentage))
+      return
+    }
 
-  const handleZapChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e?.target?.value
-    setZapValue(parseEther(value))
+    if (depositAssetInfo.address === marketInfo?.collatAddress) {
+      updateBorrowWeiValue(computeBorrowValue(valueWei, leveragePercentage))
+      return
+    }
 
-    if (value === "") {
+    const requestId = ++requestIdRef.current
+    setIsZapLoading(true)
+
+    getQuote(value, currentAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
+      .then(({ quote }) => {
+        if (requestId !== requestIdRef.current) return
+        if (quote) {
+          setZapValue(quote as bigint)
+          updateBorrowWeiValue(computeBorrowValue(quote as bigint, leveragePercentage))
+        }
+      })
+      .catch((e) => {
+        if (requestId !== requestIdRef.current) return
+        console.error("Error fetching zap value:", e)
+      })
+      .finally(() => {
+        if (requestId === requestIdRef.current) setIsZapLoading(false)
+      })
+  }
+
+  function handleZapInputChange(value: bigint | undefined) {
+    activeInputRef.current = "zap"
+    setZapValue(value ?? 0n)
+
+    if (!value || !currentAddress || !depositAssetInfo) {
       setDepositWeiValue(undefined)
       return
     }
 
-    ;(async () => {
-      if (!currentAddress || !depositAssetInfo) return
-      setIsDepositLoading(true)
-      try {
-        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
+    const requestId = ++requestIdRef.current
+    setIsDepositLoading(true)
 
+    getQuote(value, currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
+      .then(({ quote }) => {
+        if (requestId !== requestIdRef.current) return
         handleQuote(quote)
-
-        if (quote) {
-          setDepositWeiValue(quote)
-        }
-      } catch (err) {
+        if (quote) setDepositWeiValue(quote)
+      })
+      .catch((err) => {
+        if (requestId !== requestIdRef.current) return
         console.error("Error fetching depositWeiValue:", err)
-      } finally {
-        setIsDepositLoading(false)
-      }
-    })()
+      })
+      .finally(() => {
+        if (requestId === requestIdRef.current) setIsDepositLoading(false)
+      })
   }
 
-  const handleZapInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value ? Number(e.target.value) : undefined
-    setIsZapUserInput(true)
-    setZapInnerValue(value)
+  async function handleBorrowChange(borrowValue: bigint | undefined) {
+    await updateBorrowWeiValue(borrowValue)
+    const depositDollarValueWei = ((depositWeiValue || 0n) * marketData?.collateralInfos.collateralUSDPrice!) / parseEther("1")
+    const totalCollatDollarValue = depositDollarValueWei + (borrowValue || 0n)
+    const leverageMultiplicator = Number(formatEther((totalCollatDollarValue * parseEther("1")) / depositDollarValueWei))
+    setLeveragePercentage(leverageMultiplicator)
+  }
+
+  const leverageDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  function handleLeverageSliderChange(leverageValue: number) {
+    setLeveragePercentage(leverageValue)
+
+    if (leverageDebounceRef.current) clearTimeout(leverageDebounceRef.current)
+
+    leverageDebounceRef.current = setTimeout(() => {
+      const collateralAmount = isZapping && zapValue ? BigInt(zapValue) : BigInt(depositWeiValue || 0n)
+      updateBorrowWeiValue(computeBorrowValue(collateralAmount, leverageValue))
+    }, 400)
   }
 
   useEffect(() => {
@@ -260,7 +298,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     setBorrowWeiValue(0n)
     setDepositWeiValue(0n)
     setDepositSliderPercent(0)
-    setLeveragePercentage(0)
+    setLeveragePercentage(1)
     setLeveragedCollateralQuote(0n)
     setZapValue(0n)
   }, [depositAsset])
@@ -410,7 +448,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     setLeveragedCollateralQuote(0n)
     setDepositSliderPercent(0)
     setIsDepositLoading(false)
-    setLeveragePercentage(0)
+    setLeveragePercentage(1)
     loadUSGsUSGMetrics()
     loadOnChainData()
     fetchBalanceAllowanceData(depositAssetInfo?.address)
@@ -452,14 +490,25 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     return apr
   }, [zapValue, depositWeiValue, leveragedCollateralQuote, marketData, currentConvexTVL])
 
-  const estimatedZapDollarValue = useMemo(() => {
+  const minValueReceivedFromZap = useMemo(() => {
     if (zapValue && marketData) {
-      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18), 18))})`
+      const minAmountOutWei = computedMinAmountOut(zapValue, slippage)
+      const result = `(${truncateTo6Decimals(formatUnits(minAmountOutWei, collateralInfo?.decimals))})`
       return result
     }
 
     return ""
-  }, [zapValue])
+  }, [zapValue, slippage])
+
+  const minCollatReceivedFromUSGDump = useMemo(() => {
+    if (leveragedCollateralQuote) {
+      const minAmountOutWei = computedMinAmountOut(leveragedCollateralQuote, slippage)
+      const result = `(${truncateTo6Decimals(formatUnits(minAmountOutWei, collateralInfo?.decimals))})`
+      return result
+    }
+
+    return ""
+  }, [leveragedCollateralQuote, slippage])
 
   const leverageExceedsMaxLtv = useMemo(() => {
     const computedLtv = futureMarketDisplayData.ltv.substring(0, futureMarketDisplayData.ltv.length - 1)
@@ -528,27 +577,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     }
   }
 
-  useEffect(() => {
-    if (zapValue !== undefined) {
-      const updatedValue = Number(Number(formatUnits(zapValue || 0n, 18)).toFixed(3))
-      setZapInnerValue(updatedValue)
-    } else {
-      setZapInnerValue(undefined)
-    }
-  }, [zapValue])
-
-  useEffect(() => {
-    if (zapInnerValue === undefined) {
-      /* reset */ return
-    }
-
-    if (!isZapUserInput) return
-    const handler = setTimeout(() => {
-      handleZapChange({ target: { value: zapInnerValue.toString() } } as React.ChangeEvent<HTMLInputElement>)
-    }, 500)
-    return () => clearTimeout(handler)
-  }, [zapInnerValue, isZapUserInput])
-
   const maxDepositString = useMemo(() => {
     const asset = depositAssetInfo?.symbol
 
@@ -558,7 +586,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
     }
     if (currentAddress && !isZapping) {
-      amountDisplayed = formatBigInt(marketData?.collateralBalance, depositAssetInfo?.decimals, 2)
+      amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
     }
     return `Max ${amountDisplayed} ${asset}`
   }, [currentAddress, depositAssetInfo, balanceAllowanceData, isZapping])
@@ -630,18 +658,14 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
     handleZapInputChange,
 
-    zapInnerValue,
-    setZapInnerValue,
-
     actionZapLeverage,
 
     actionApproveZap,
 
-    estimatedZapDollarValue,
+    minValueReceivedFromZap,
+    minCollatReceivedFromUSGDump,
 
     expectedCollateral,
-
-    updateBorrowWeiValue,
 
     maxDepositString,
 
@@ -655,6 +679,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     computedDepositAmount,
 
     isZapping,
+    handleLeverageSliderChange,
+    handleBorrowChange,
   }
 
   return <USGLeverageContext.Provider value={contextValue}>{children}</USGLeverageContext.Provider>

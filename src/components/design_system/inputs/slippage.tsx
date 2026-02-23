@@ -2,6 +2,7 @@ import ButtonTab from "./button_tab"
 import BorderPanel from "../structure/border_panel"
 import { IconGearWheel } from "@/components/icons"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { useEffect, useState } from "react"
 
 type SlippageInputProps = {
   slippage: number
@@ -9,6 +10,22 @@ type SlippageInputProps = {
 }
 
 export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => {
+  const [localValue, setLocalValue] = useState(slippage.toString())
+
+  useEffect(() => {
+    if (document.activeElement?.tagName === "INPUT") return
+    setLocalValue(slippage.toString())
+  }, [slippage])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replaceAll(",", ".").trim()
+    if (val === "" || /^\d*\.?\d{0,2}$/.test(val)) {
+      setLocalValue(val)
+      const num = parseFloat(val)
+      if (!isNaN(num) && num >= 0) setSlippage(num)
+    }
+  }
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -26,10 +43,11 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
           <div className="flex w-full flex-col items-center justify-between gap-2">
             <div className="flex w-full items-center justify-start">Slippage</div>
             <input
-              onChange={(e) => setSlippage(Number(e?.target?.value))}
-              value={slippage}
-              placeholder="0.5"
-              type="number"
+              onChange={handleChange}
+              value={localValue}
+              placeholder="0"
+              type="text"
+              inputMode="decimal"
               min={0.1}
               step={0.1}
               className="w-full rounded-[10px] border border-white/30 bg-transparent pl-2 focus:outline-none"

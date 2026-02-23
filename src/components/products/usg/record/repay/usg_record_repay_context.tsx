@@ -274,11 +274,26 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     }
   }
 
+  function repayValue(repayWeiValue: bigint | undefined) {
+    let repayValue = repayWeiValue
+    if (!repayValue) return
+
+    if (isRepayMax || percentage === 100) {
+      const usgBalance = marketData?.debtInfos.usgBalance!
+
+      if (usgBalance < repayValue) {
+        repayValue = maxUint256
+      }
+    }
+
+    return repayValue
+  }
+
   const marketRepay = async () => {
     await toastTx(
       doRepay(walletClient!, {
         marketAddress: marketData!.marketAddress,
-        repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
+        repayWeiValue: repayValue(repayWeiValue),
       }),
       {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
@@ -297,7 +312,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     await toastTx(
       doRepayAndWithdraw(walletClient!, {
         marketAddress: marketData!.marketAddress,
-        repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
+        repayWeiValue: repayValue(repayWeiValue),
         withdrawWeiValue,
         isReceiptOut: withdrawSelectedAsset !== collateral,
       }),
@@ -335,12 +350,17 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   const marketValues = useMemo(() => {
     if (marketData && currentAddress) {
+      const userDebt = marketData.debtInfos?.userDebt
+
       if (repayAsset === "USG") {
-        const maxRepayableValue = marketData.debtInfos?.userDebt || 0n
+        const usgBalance = marketData.debtInfos.usgBalance
+
+        const maxRepayableValue = usgBalance < userDebt ? usgBalance : userDebt
+
         const minimumLoan = marketData.constants.minimumLoan || 0n
         return { maxRepayableValue, minimumLoan }
       } else if (marketData && repayAssetInfo) {
-        const maxRepayableInZapAsset = (marketData.debtInfos?.userDebt / toBigInt(repayAssetInfo?.price, 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
+        const maxRepayableInZapAsset = (userDebt / toBigInt(repayAssetInfo?.price, 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
         const minimumLoanInZapAsset =
           (marketData.constants.minimumLoan / toBigInt(repayAssetInfo?.price, repayAssetInfo?.decimals || 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
 

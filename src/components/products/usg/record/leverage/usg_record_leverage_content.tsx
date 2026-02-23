@@ -3,20 +3,19 @@
 import { cn } from "@/lib/utils"
 import { Switch } from "@/components/ui/switch"
 import { useUSGRecordContext } from "../usg_record_context"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
 import { useUSGLeverageContext } from "./usg_record_leverage_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import BorderPanel from "@/components/design_system/structure/border_panel"
 import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
-import { IconThunder, IconCircleHelp, IconSingleArrow } from "@/components/icons"
+import { IconThunder, IconSingleArrow } from "@/components/icons"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
-import { CustomCollatAssetDisplay } from "@/components/design_system/structure/custom_collat_asset_display"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
+import { ExistingAsset } from "@/types"
 
 export default function USGLeverageContent() {
   const {
@@ -28,11 +27,11 @@ export default function USGLeverageContent() {
     setSlippage,
     handleZapInputChange,
     setDepositSliderPercent,
-    setLeveragePercentage,
     actionLeverage,
-    updateBorrowWeiValue,
+    handleBorrowChange,
     actionZapLeverage,
     actionApproveZap,
+    handleLeverageSliderChange,
     isLeverageAllPosition,
     depositAsset,
     depositWeiValue,
@@ -42,16 +41,17 @@ export default function USGLeverageContent() {
     isDepositDisabled,
     zapValue,
     depositAssetInfo,
+    borrowWeiValue,
+    leveragedCollateralQuote,
     slippage,
-    estimatedZapDollarValue,
+    minValueReceivedFromZap,
+    minCollatReceivedFromUSGDump,
     expectedCollateral,
-    zapInnerValue,
     depositSliderPercent,
     leveragePercentage,
     maxDepositString,
     computedMaxLeverage,
     aprVariation,
-    computedDepositAmount,
     isZapping,
   } = useUSGLeverageContext()
 
@@ -113,33 +113,25 @@ export default function USGLeverageContent() {
       )}
 
       {!isDepositDisabled && depositAsset && isZapping && (
-        <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col items-start justify-start">
-              <div className="flex items-center justify-center gap-1">
-                <div className="text-sm text-subtitle">Zap</div>
-                <IconThunder className="h-auto w-[8px] text-row-tonic" />
-                <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
-              </div>
-              <div className="flex items-center justify-center gap-2">
-                <input
-                  type="number"
-                  disabled={isZapLoading}
-                  className="flex w-fit max-w-28 justify-start bg-transparent text-xl font-semibold focus:outline-none"
-                  value={zapInnerValue ?? ""}
-                  onChange={handleZapInputChange}
-                />
-              </div>
-
-              <div className="flex justify-between gap-2 text-xs text-subtitle">
-                <div>Minimum received</div>
-                <div>{zapValue && !!marketData?.collateralInfos ? estimatedZapDollarValue : ""}</div>
-              </div>
+        <GenericInputAssetAmount
+          inputWeiValue={zapValue || 0n}
+          onValueChange={(e) => handleZapInputChange(e)}
+          asset={collateralInfo}
+          isLoading={isZapLoading}
+          label={
+            <div className="flex items-center gap-1">
+              <div className="text-sm text-subtitle">Zap</div>
+              <IconThunder className="h-auto w-[8px] text-row-tonic" />
             </div>
-
-            <CustomCollatAssetDisplay collateralInfo={collateralInfo} />
-          </div>
-        </PanelRaw>
+          }
+          depositSelect={<StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />}
+          bottomPart={
+            <div className="flex gap-2 text-xs text-subtitle">
+              <div>Minimum received</div>
+              <div>{zapValue && !!marketData?.collateralInfos ? minValueReceivedFromZap : ""}</div>
+            </div>
+          }
+        />
       )}
 
       <>
@@ -151,21 +143,37 @@ export default function USGLeverageContent() {
           </div>
 
           <GenericInputAssetAmount
-            inputWeiValue={computedDepositAmount}
-            onValueChange={updateBorrowWeiValue}
+            inputWeiValue={borrowWeiValue}
+            onValueChange={(e) => handleBorrowChange(e)}
             depositSelect={<StaticCardAssetInput asset="USG" />}
             label="You borrow"
             asset={USGInfo}
-            maxAmountParams={{ maxWeiValue: 0n, setMaxAmount: () => setLeveragePercentage(10) }}
+            maxAmountParams={{ maxWeiValue: 0n, setMaxAmount: () => handleLeverageSliderChange(10) }}
             sliderParams={{
               sliderPercentage: leveragePercentage,
-              setSliderPercentage: setLeveragePercentage,
-              sliderLegendValues: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-              startEndRange: ["1", "10", "0.1"],
+              setSliderPercentage: (e) => handleLeverageSliderChange(e),
+              sliderLegendValues: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"], // TODO Need to be dynamic
+              startEndRange: ["1", "10", "0.1"], // NeedTODO  to be dynamic
               unit: "x",
             }}
           />
         </div>
+
+        <GenericInputAssetAmount
+          inputWeiValue={leveragedCollateralQuote}
+          label="You Buy"
+          depositSelect={<StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />}
+          disabled={true}
+          asset={collateralInfo}
+          onValueChange={() => {}}
+          // isLoading={isQuoteLoading}
+          bottomPart={
+            <div className="flex gap-2 text-xs text-subtitle">
+              <div>Minimum received</div>
+              <div>{leveragedCollateralQuote && !!marketData?.collateralInfos ? minCollatReceivedFromUSGDump : ""}</div>
+            </div>
+          }
+        />
 
         <div className="flex items-start justify-start gap-2">
           <Accordion className={cn("w-full", isDepositLoading ? "shimmer rounded-[10px]" : "")} type="single" collapsible>

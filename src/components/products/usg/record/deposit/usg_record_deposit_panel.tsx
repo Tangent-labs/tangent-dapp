@@ -51,8 +51,7 @@ export default function USGDepositContent() {
 
   const { connect } = useWalletConnexionContext()
 
-  const { collateralInfo, isDepositAndBorrow, marketData, balanceAllowanceData, maxBorrowCapReached, displayAPRVariation, USGInfo, pricedCollateralInfo } =
-    useUSGRecordContext()
+  const { collateralInfo, isDepositAndBorrow, marketData, balanceAllowanceData, maxBorrowCapReached, displayAPRVariation, USGInfo } = useUSGRecordContext()
 
   return (
     <div className="flex flex-col gap-2">
@@ -89,17 +88,15 @@ export default function USGDepositContent() {
           onValueChange={(e) => {
             handleZapInputChange(e)
           }}
-          asset={pricedCollateralInfo}
+          asset={collateralInfo}
           isLoading={isZapLoading}
           label={
             <div className="flex items-center gap-1">
               <div className="text-sm text-subtitle">Zap</div>
               <IconThunder className="h-auto w-[8px] text-row-tonic" />
-              <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
             </div>
           }
           depositSelect={<StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />}
-          // asset={repayAssetInfo || USGInfo}
           bottomPart={
             <div className="flex gap-2 text-xs text-subtitle">
               <div>Minimum received</div>

@@ -122,13 +122,12 @@ export function GenericInputAssetAmount({
     if (!sliderParams) return
     if (!maxWeiValue || maxWeiValue === 0n) return
     if (inputWeiValue === undefined) {
-      setSliderPercentage(0)
+      setSliderPercentage(Number(sliderStartEndRange[0]))
       return
     }
-
     const percentage = Number((inputWeiValue * 100n) / maxWeiValue)
 
-    setSliderPercentage(Math.min(100, Math.max(0, percentage)))
+    setSliderPercentage(Math.min(Number(sliderStartEndRange[1]), Math.max(Number(sliderStartEndRange[0]), percentage)))
   }, [inputWeiValue, maxWeiValue])
 
   // ---------------------------
@@ -184,6 +183,10 @@ export function GenericInputAssetAmount({
       clearTimeout(sliderDebounceRef.current)
     }
 
+    // When maxWeiValue is 0, the slider is externally controlled (e.g. leverage multiplier).
+    // setSliderPercentage already handles the update, so skip the wei conversion.
+    if (!maxWeiValue || maxWeiValue === 0n) return
+
     sliderDebounceRef.current = setTimeout(() => {
       if (percentage === 100 && maxWeiValue > 0n) {
         onValueChange?.(maxWeiValue)
@@ -199,7 +202,7 @@ export function GenericInputAssetAmount({
       onValueChange?.(wei)
 
       setLocalDisplay(truncateTo6Decimals(formatUnits(wei, decimals)))
-    }, 300) // <= delay here
+    }, 300)
   }
 
   // ---------------------------
@@ -208,7 +211,7 @@ export function GenericInputAssetAmount({
   // ---------------------------
   const handleMaxClick = () => {
     setMaxAmount()
-    setSliderPercentage(100)
+    setSliderPercentage(Number(sliderStartEndRange[1]))
     setLocalDisplay(truncateTo6Decimals(formatUnits(maxWeiValue, decimals)))
   }
 
@@ -289,7 +292,7 @@ export function GenericInputAssetAmount({
           <div className="group flex w-full flex-col">
             <SliderInput
               disabled={disabled}
-              percentage={sliderPercentage}
+              value={sliderPercentage}
               handleSliderChange={handleSliderChange}
               legendValues={sliderLegendValues}
               startEndRange={sliderStartEndRange}

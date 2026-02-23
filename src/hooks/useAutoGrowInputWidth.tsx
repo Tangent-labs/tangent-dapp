@@ -4,11 +4,11 @@ export function useAutoGrowInputWidth(value: string | number, options?: { placeh
   const { placeholder = "Amount", minPx = 32 } = options || {}
 
   const inputRef = useRef<HTMLInputElement | null>(null)
-  const measureRef = useRef<HTMLSpanElement | null>(null)
+  const inputSpanRef = useRef<HTMLSpanElement | null>(null)
 
   useLayoutEffect(() => {
     const input = inputRef.current
-    const measurer = measureRef.current
+    const measurer = inputSpanRef.current
     if (!input || !measurer) return
 
     // If browser supports field-sizing, basically do nothing
@@ -26,5 +26,5 @@ export function useAutoGrowInputWidth(value: string | number, options?: { placeh
     input.style.width = `${Math.max(width, minPx)}px`
   }, [value, placeholder, minPx])
 
-  return { inputRef, measureRef }
+  return { inputRef, inputSpanRef }
 }

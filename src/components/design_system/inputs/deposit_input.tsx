@@ -54,7 +54,7 @@ export function DepositInput({
 
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 18) : "")
 
-  const { inputRef, measureRef } = useAutoGrowInputWidth(innerValue, {
+  const { inputRef, inputSpanRef } = useAutoGrowInputWidth(innerValue, {
     placeholder: "Amount",
     minPx: 32,
   })
@@ -139,9 +139,9 @@ export function DepositInput({
         <div className="text-sm text-subtitle">{labelDeposit}</div>
       )}
 
-      <div className="flex justify-between">
+      <div className="flex items-center justify-between">
         <div className="flex items-center justify-start">
-          <span ref={measureRef} className="invisible absolute whitespace-pre bg-transparent text-[24px] font-semibold" aria-hidden="true" />
+          <span ref={inputSpanRef} className="invisible absolute whitespace-pre bg-transparent text-[24px] font-semibold" aria-hidden="true" />
 
           <input
             {...props}

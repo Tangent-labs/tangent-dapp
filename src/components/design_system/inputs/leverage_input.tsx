@@ -5,8 +5,9 @@ import { formatUnits } from "viem"
 import BorderPanel from "../structure/border_panel"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { formatDollar, toBigInt } from "@/lib/number_formatter"
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
+import { ReactNode, useEffect, useMemo, useState } from "react"
 import { USGStaticAssetSelector } from "../structure/usg_static_selector"
+import { useAutoGrowInputWidth } from "@/hooks/useAutoGrowInputWidth"
 
 type LeverageInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced | CollateralInfo
@@ -39,9 +40,12 @@ export function LeverageInput({
     return 0
   }, [depositAmount])
 
-  const inputRef = useRef<HTMLInputElement>(null)
-
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "0")
+
+  const { inputRef, inputSpanRef } = useAutoGrowInputWidth(innerValue, {
+    placeholder: "Amount",
+    minPx: 32,
+  })
 
   useEffect(() => {
     if (depositAmount === 0n) {
@@ -106,8 +110,10 @@ export function LeverageInput({
       <div className="flex w-full justify-between">
         <div className="text-sm text-subtitle">{label}</div>
       </div>
-      <div className="flex justify-between">
+      <div className="flex items-center justify-between">
         <div className="flex items-center justify-start">
+          <span ref={inputSpanRef} className="invisible absolute whitespace-pre bg-transparent text-[24px] font-semibold" aria-hidden="true" />
+
           <input
             {...props}
             type="number"
@@ -119,7 +125,7 @@ export function LeverageInput({
             className={cn("auto-grow bg-transparent text-[24px] font-semibold focus:outline-none")}
           />
 
-          <div className="text-xs text-subtitle">{dollarDepositDisplay}</div>
+          <div className="ml-2 text-xs text-subtitle">{dollarDepositDisplay}</div>
         </div>
 
         <USGStaticAssetSelector></USGStaticAssetSelector>

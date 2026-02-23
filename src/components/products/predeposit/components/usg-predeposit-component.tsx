@@ -94,15 +94,13 @@ export const USGPredepositComponent = ({
         <div className="flex items-center justify-between">
           <div className="flex flex-col items-start justify-start">
             <div className="flex items-center justify-center text-xs font-semibold text-subtitle">You receive</div>
-            <div className="flex items-center justify-center gap-2">
-              <input
-                type="number"
-                disabled={isLoading}
-                readOnly={true}
-                className="auto-grow bg-transparent text-[24px] font-semibold focus:outline-none"
-                value={innerValue ?? ""}
-              />
-            </div>
+            <input
+              type="number"
+              disabled={isLoading}
+              readOnly={true}
+              className="w-full max-w-36 bg-transparent text-[24px] font-semibold focus:outline-none"
+              value={innerValue ?? ""}
+            />
           </div>
           <BorderPanel className="flex items-center justify-center gap-2 bg-select-input px-2.5 py-2">
             <TokenImage token={pool} size={32} />

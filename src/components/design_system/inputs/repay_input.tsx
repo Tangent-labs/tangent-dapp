@@ -3,11 +3,12 @@
 import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
 import { AssetDataPriced } from "@/types"
-import BorderPanel from "../structure/border_panel"
-import { IconThunder } from "@/components/icons"
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
-import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { SliderInput } from "./slider_input"
+import { IconThunder } from "@/components/icons"
+import BorderPanel from "../structure/border_panel"
+import { ReactNode, useEffect, useMemo, useState } from "react"
+import { useAutoGrowInputWidth } from "@/hooks/useAutoGrowInputWidth"
+import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
 
 type RepayInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   depositAsset?: AssetDataPriced
@@ -41,9 +42,12 @@ export function RepayInput({
   setPercentage,
   ...props
 }: RepayInputProps) {
-  const inputRef = useRef<HTMLInputElement>(null)
-
   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 0) : "")
+
+  const { inputRef, inputSpanRef } = useAutoGrowInputWidth(innerValue, {
+    placeholder: "Amount",
+    minPx: 32,
+  })
 
   const [isUserInput, setIsUserInput] = useState(false)
 
@@ -135,8 +139,10 @@ export function RepayInput({
       <div className="flex w-full justify-between">
         <div className="text-sm text-subtitle">{labelDeposit}</div>
       </div>
-      <div className="flex justify-between">
+      <div className="flex items-center justify-between">
         <div className="flex items-center justify-start">
+          <span ref={inputSpanRef} className="invisible absolute whitespace-pre bg-transparent text-[24px] font-semibold" aria-hidden="true" />
+
           <input
             {...props}
             disabled={isLoading || disabled}
@@ -148,7 +154,7 @@ export function RepayInput({
             className={cn("auto-grow bg-transparent text-[24px] font-semibold focus:outline-none")}
           />
 
-          <div className="text-xs text-subtitle">{dollarDepositDisplay}</div>
+          <div className="ml-2 text-xs text-subtitle">{dollarDepositDisplay}</div>
         </div>
 
         <div className="flex items-center justify-center gap-2">

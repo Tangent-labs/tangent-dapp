@@ -1,12 +1,13 @@
 "use client"
 
-import { AssetDataPriced } from "@/types"
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
-import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
-import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
-import BorderPanel from "../structure/border_panel"
+import { formatUnits } from "viem"
+import { AssetDataPriced } from "@/types"
 import { SliderInput } from "./slider_input"
+import BorderPanel from "../structure/border_panel"
+import { ReactNode, useEffect, useMemo, useState } from "react"
+import { useAutoGrowInputWidth } from "@/hooks/useAutoGrowInputWidth"
+import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
 
 type BorrowInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   borrowAsset?: AssetDataPriced
@@ -46,9 +47,12 @@ export function BorrowInput({
     return 0
   }, [balance, borrowAsset])
 
-  const inputRef = useRef<HTMLInputElement>(null)
-
   const [innerValue, setInnerValue] = useState<string>(borrowAmount !== undefined ? formatUnits(borrowAmount, borrowAsset?.decimals || 18) : "")
+
+  const { inputRef, inputSpanRef } = useAutoGrowInputWidth(innerValue, {
+    placeholder: "Amount",
+    minPx: 32,
+  })
 
   const [isUserInput, setIsUserInput] = useState(false)
 
@@ -115,20 +119,20 @@ export function BorrowInput({
       <div className="text-sm text-subtitle">{labelDeposit}</div>
       <div className="flex justify-between">
         <div className="flex items-center justify-start">
-          <div className="text-xl">
-            <input
-              {...props}
-              disabled={isLoading || disabled}
-              type="number"
-              value={innerValue}
-              placeholder="Amount"
-              onChange={handleInputChange}
-              className={cn("auto-grow bg-transparent text-[24px] font-semibold focus:outline-none")}
-              step="any"
-              ref={inputRef}
-            />
-          </div>
-          <div className="text-xs text-subtitle">{dollarDepositDisplay}</div>
+          <span ref={inputSpanRef} className="invisible absolute whitespace-pre bg-transparent text-[24px] font-semibold" aria-hidden="true" />
+
+          <input
+            {...props}
+            disabled={isLoading || disabled}
+            type="number"
+            value={innerValue}
+            placeholder="Amount"
+            onChange={handleInputChange}
+            className={cn("auto-grow bg-transparent text-[24px] font-semibold focus:outline-none")}
+            step="any"
+            ref={inputRef}
+          />
+          <div className="ml-2 text-xs text-subtitle">{dollarDepositDisplay}</div>
         </div>
 
         <div className="order-1 lg:order-2">{depositSelect}</div>

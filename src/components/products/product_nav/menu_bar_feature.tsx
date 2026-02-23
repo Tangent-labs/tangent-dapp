@@ -10,18 +10,18 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 
+import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useCallback } from "react"
+import { usePathname } from "next/navigation"
 import { useRootContext } from "../root/root_context"
 import { formatCompact } from "@/lib/number_formatter"
-import { usePathname } from "next/navigation"
 import TokenImage from "@/components/design_system/structure/token_image"
+import { SwapButton } from "@/components/design_system/inputs/swap_button"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 import { isOnMarket, mapRouteToFeature } from "./menu_bar_feature_controller"
-import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
-import Link from "next/link"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import { SwapButton } from "@/components/design_system/inputs/swap_button"
+import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
 
 export default function MenuBarFeature() {
   const { USGCurrentSupply, sUSGCurrentAPY, protocolCurrentTVL } = useRootContext()
@@ -110,19 +110,25 @@ export default function MenuBarFeature() {
                     <NavigationMenuTrigger>DAO</NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <div className="flex w-[120px] flex-col gap-1 rounded-[10px] border border-white/10 bg-dark p-2">
-                        <NavigationMenuLink href="/harvest" className="flex items-center justify-start gap-2">
-                          <IconHarvest className="w-2" />
-                          Harvest
+                        <NavigationMenuLink asChild>
+                          <Link href="/harvest" className="flex items-center justify-start gap-2">
+                            <IconHarvest className="w-2" />
+                            Harvest
+                          </Link>
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink href="/forum" className="flex items-center justify-start gap-2">
-                          <IconForum className="w-3" />
-                          Forum
+                        <NavigationMenuLink asChild>
+                          <Link href="/forum" className="flex items-center justify-start gap-2">
+                            <IconForum className="w-3" />
+                            Forum
+                          </Link>
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink href="/snapshot" className="flex items-center justify-start gap-2">
-                          <IconSnapshot className="w-3" />
-                          Snapshot
+                        <NavigationMenuLink asChild>
+                          <Link href="/snapshot" className="flex items-center justify-start gap-2">
+                            <IconSnapshot className="w-3" />
+                            Snapshot
+                          </Link>
                         </NavigationMenuLink>
                       </div>
                     </NavigationMenuContent>
@@ -134,19 +140,25 @@ export default function MenuBarFeature() {
                     <NavigationMenuTrigger>Airdrop</NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <div className="flex w-[120px] flex-col gap-1 rounded-[10px] border border-white/10 bg-dark p-2">
-                        <NavigationMenuLink href="/tasks" className="flex items-center justify-start gap-2">
-                          <IconTask className="w-3" />
-                          Tasks
+                        <NavigationMenuLink asChild>
+                          <Link href="/tasks" className="flex items-center justify-start gap-2">
+                            <IconTask className="w-3" />
+                            Tasks
+                          </Link>
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink href="/referral" className="flex items-center justify-start gap-2">
-                          <IconReferral className="w-3" />
-                          Referral
+                        <NavigationMenuLink asChild>
+                          <Link href="/referral" className="flex items-center justify-start gap-2">
+                            <IconReferral className="w-3" />
+                            Referral
+                          </Link>
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink href="/boosts" className="flex items-center justify-start gap-2">
-                          <IconBoosts className="w-3" />
-                          Boosts
+                        <NavigationMenuLink asChild>
+                          <Link href="/boosts" className="flex items-center justify-start gap-2">
+                            <IconBoosts className="w-3" />
+                            Boosts
+                          </Link>
                         </NavigationMenuLink>
                       </div>
                     </NavigationMenuContent>

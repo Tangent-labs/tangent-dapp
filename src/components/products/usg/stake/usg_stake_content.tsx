@@ -21,6 +21,7 @@ import PointsCampaignLiveCard from "@/components/design_system/structure/points_
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 import { IconStars } from "@/components/icons/icon_stars"
+import Link from "next/link"
 
 export default function USGStakeContent() {
   const {
@@ -85,7 +86,15 @@ export default function USGStakeContent() {
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Savings account</span>
             <p className="text-[15px]">
-              Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi. Learn more
+              Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi.{" "}
+              <Link
+                className="ml-1 inline-block cursor-pointer underline hover:text-white/40"
+                href="https://docs.tangent.finance/docs/usg/susg"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Learn more
+              </Link>
             </p>
           </div>
         </ReliefCard>

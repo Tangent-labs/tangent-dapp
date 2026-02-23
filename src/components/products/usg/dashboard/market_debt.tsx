@@ -37,7 +37,7 @@ export const MarketDebt = ({ userData, marketDebtMaxValue }: MarketDebtProps) =>
                 <InnerTooltip
                   innerContent={
                     <div className="flex min-w-24 items-center justify-center gap-1 px-4">
-                      <div className="text-subtitle">Debt -</div>
+                      <div className="text-subtitle">Debt: </div>
                       <div className="text-white">{formatBigInt(data.rawValue, 18, 2)} USG </div>
                     </div>
                   }

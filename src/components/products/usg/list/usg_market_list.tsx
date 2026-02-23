@@ -92,7 +92,12 @@ export default function USGMarketList() {
               <h2 className="text-4xl font-semibold">USG</h2>
               <p className="text-[15px]">
                 Borrow USG against accepted LP tokens. Tangent features two kinds of markets.
-                <Link href="/" className="inline-block cursor-pointer underline hover:text-white/40">
+                <Link
+                  className="ml-1 inline-block cursor-pointer underline hover:text-white/40"
+                  href="https://docs.tangent.finance/docs/overview"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Learn more
                 </Link>
               </p>

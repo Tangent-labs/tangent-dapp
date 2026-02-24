@@ -2,9 +2,9 @@
 
 import Image from "next/image"
 import { Address, zeroAddress } from "viem"
-import TokenImage from "../structure/token_image"
+import { TokenImage } from "../structure/token_image"
 import { CollateralInfo, ExistingAsset } from "@/types"
-import AssetSelectionDialog from "./asset-select-dialog"
+import { AssetSelectionDialog } from "./asset-select-dialog"
 import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGContext } from "@/components/products/usg/usg_context"

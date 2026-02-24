@@ -7,16 +7,17 @@ import { DepositReceiveAsset } from "../usg_type"
 import { formatBigInt, formatNumber } from "@/lib/number_formatter"
 import { useUSGSwapContext } from "./usg_swap_context"
 import { formatAddress } from "@/lib/other_formatter"
-import FormButtons from "@/components/design_system/form/form_actions"
-import TokenImage from "@/components/design_system/structure/token_image"
-import { SlippageInput } from "@/components/design_system/inputs/slippage"
-import { BuySellInput } from "@/components/design_system/inputs/buy_sell_input"
-import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
+import { FormButtons } from "@/components/design_system/form/form_actions"
+import { TokenImage } from "@/components/design_system/structure/token_image"
+import { SlippageInput } from "@/components/design_system/inputs/Slippage"
+import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
+import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 import { useUSGContext } from "../usg_context"
+import { IconChevron } from "@/components/icons"
+import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 
 type AssetSelectProps = {
   options: DepositReceiveAsset[]
@@ -49,6 +50,7 @@ export default function USGSwapContent() {
     depositSliderPercent,
     slippage,
     USGsUSGMetrics,
+    minValueReceivedFromZap,
   } = useUSGSwapContext()
 
   const { lpUserPoints, voteUserPoints } = useUSGContext()
@@ -149,26 +151,48 @@ export default function USGSwapContent() {
 
       <div className="mt-4 flex w-full flex-col items-center justify-center">
         <ReliefCard className="flex w-full max-w-[450px] flex-col items-center justify-center p-4">
-          <BuySellInput
-            depositAmount={depositWeiValue}
-            depositSelect={<DepositAssetSelect options={computedAssets?.depositAssets} />}
-            isLoading={isLoading || isSwapLoading}
-            receiveSelect={<ReceiveAssetSelect options={computedAssets?.receiveAssets} />}
-            labelDeposit={"You sell"}
-            labelReceive={"You buy"}
-            setIsBuying={setIsBuying}
-            isBuying={isBuying}
-            toggleTokensSwitch={toggleTokensSwitch}
-            depositAsset={depositAssetInfo!}
-            depositBalance={balanceAllowanceData?.balance ?? 0n}
-            receiveAmount={receiveWeiValue}
-            receiveAsset={receiveAssetInfo!}
-            setMaxBalance={() => handleDepositChange(balanceAllowanceData?.balance)}
-            onValueChange={handleDepositChange}
-            onReceiveValueChange={handleReceiveChange}
-            percentage={depositSliderPercent}
-            setPercentage={setDepositSliderPercent}
-          />
+          <div className="mb-3 flex w-full items-end justify-end">
+            <span className="text-xs text-subtitle">
+              Max: {formatBigInt(balanceAllowanceData?.balance ?? 0n, depositAssetInfo?.decimals || 18, 2)} {depositAssetInfo?.symbol}
+            </span>
+          </div>
+          <div className="w-full">
+            <GenericInputAssetAmount
+              inputWeiValue={depositWeiValue}
+              onValueChange={handleDepositChange}
+              depositSelect={<DepositAssetSelect options={computedAssets?.depositAssets} />}
+              asset={depositAssetInfo!}
+              label={"You sell"}
+              maxAmountParams={{
+                maxWeiValue: balanceAllowanceData?.balance ?? 0n,
+                setMaxAmount: () => () => handleDepositChange(balanceAllowanceData?.balance),
+              }}
+              sliderParams={{
+                sliderPercentage: depositSliderPercent,
+                setSliderPercentage: setDepositSliderPercent,
+              }}
+            />
+
+            <div
+              onClick={() => {
+                toggleTokensSwitch()
+                setIsBuying(!isBuying)
+              }}
+              className="my-2 flex w-full cursor-pointer items-center justify-center border-none"
+            >
+              <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-20 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
+            </div>
+
+            <GenericInputAssetAmount
+              inputWeiValue={receiveWeiValue}
+              onValueChange={handleReceiveChange}
+              depositSelect={<ReceiveAssetSelect options={computedAssets?.receiveAssets} />}
+              asset={receiveAssetInfo!}
+              label={"You buy"}
+              isLoading={isLoading || isSwapLoading}
+              bottomPart={<div className="flex select-none gap-2 text-xs text-subtitle">Minimum received {receiveWeiValue ? minValueReceivedFromZap : ""}</div>}
+            />
+          </div>
 
           <div className="mt-2 flex w-full items-end justify-end gap-2">
             <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>

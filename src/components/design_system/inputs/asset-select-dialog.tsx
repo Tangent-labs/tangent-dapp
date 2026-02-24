@@ -1,12 +1,13 @@
 "use client"
 
-import Image from "next/image"
-import { ChevronDown } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import AutoSizer from "react-virtualized-auto-sizer"
 import { useMemo, useRef, useState } from "react"
-import TokenImage from "../structure/token_image"
+import Image from "next/image"
+import AutoSizer from "react-virtualized-auto-sizer"
 import { FixedSizeList as List } from "react-window"
+import { ChevronDown } from "lucide-react"
+
+import { TokenImage } from "../structure/token_image"
+import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { DepositReceiveAsset } from "@/components/products/usg/usg_type"
 import { ExistingAsset } from "@/types"
@@ -47,7 +48,7 @@ const RenderAsset = <T extends OptionT>({ selected, placeholder }: { selected: T
   )
 }
 
-export default function AssetSelectionDialog<T extends OptionT>({
+export function AssetSelectionDialog<T extends OptionT>({
   options,
   value,
   onChange,

@@ -7,9 +7,9 @@ import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGWithdrawContext } from "./usg_record_withdraw_context"
-import FormButtons from "@/components/design_system/form/form_actions"
-import TokenImage from "@/components/design_system/structure/token_image"
-import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
+import { FormButtons } from "@/components/design_system/form/form_actions"
+import { TokenImage } from "@/components/design_system/structure/token_image"
+import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
@@ -17,7 +17,7 @@ import { StaticCardAssetInput } from "@/components/products/predeposit/component
 export default function USGWithdrawContent() {
   const { connect } = useWalletConnexionContext()
 
-  const { pricedCollateralInfo, collateralInfo, marketData, depositAssetOptions } = useUSGRecordContext()
+  const { collateralInfo, marketData, depositAssetOptions } = useUSGRecordContext()
 
   const {
     formState,
@@ -96,7 +96,7 @@ export default function USGWithdrawContent() {
             onValueChange={setWithdrawWeiValue}
             label="You withdraw"
             depositSelect={<AssetSelectWithdraw />}
-            asset={pricedCollateralInfo}
+            asset={collateralInfo}
             maxAmountParams={{ maxWeiValue: maxWithdrawable, setMaxAmount: () => setWithdrawWeiValue(maxWithdrawable) }}
             sliderParams={{
               sliderPercentage: withdrawPercentage,

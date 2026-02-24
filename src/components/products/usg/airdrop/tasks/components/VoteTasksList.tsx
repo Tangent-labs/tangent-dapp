@@ -4,7 +4,7 @@ import { ListState } from "@/types"
 import { VoteTask } from "../../../usg_type"
 import { formatNumber } from "@/lib/number_formatter"
 import { IconSortHeader } from "@/components/icons"
-import TokenImage from "@/components/design_system/structure/token_image"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 import { useListContext } from "@/components/design_system/list/list_context"
 
 export const voteListState: ListState = {

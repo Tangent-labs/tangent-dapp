@@ -4,7 +4,7 @@ import { Address } from "viem"
 import { ExistingAsset } from "@/types"
 import { CustomAssetDisplay } from "./custom_asset_display"
 import { MarketConstants } from "@/components/products/usg/usg_type"
-import TokenImage from "@/components/design_system/structure/token_image"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 
 interface ListAssetProps {
   name: string
@@ -18,7 +18,7 @@ interface ListAssetProps {
   className?: string
 }
 
-const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: ListAssetProps) => {
+export const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: ListAssetProps) => {
   return (
     <div className={`relative flex items-center gap-2 ${className}`}>
       <CustomAssetDisplay token={token} />
@@ -65,5 +65,3 @@ const ListAsset = ({ name, token, assetsEarned, marketData, className = "" }: Li
     </div>
   )
 }
-
-export default ListAsset

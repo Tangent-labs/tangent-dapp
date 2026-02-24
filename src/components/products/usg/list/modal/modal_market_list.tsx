@@ -2,14 +2,14 @@
 
 import { cn } from "@/lib/utils"
 import { ListState } from "@/types"
-import ListRow from "@/components/design_system/list/list_row"
-import ListAsset from "@/components/design_system/list/list_asset"
-import ListHeader from "@/components/design_system/list/list_header"
+import { ListRow } from "@/components/design_system/list/list_row"
+import { ListAsset } from "@/components/design_system/list/list_asset"
+import { ListHeader } from "@/components/design_system/list/list_header"
 import { useUSGMaketListContext } from "../usg_market_list_context"
-import InputSearch from "@/components/design_system/inputs/input_search"
-import MarketListAPR from "@/components/design_system/list/market_list_apr"
+import { InputSearch } from "@/components/design_system/inputs/input_search"
+import { MarketListAPR } from "@/components/design_system/list/market_list_apr"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import InputSelect from "@/components/design_system/inputs/input_select"
+import { InputSelect } from "@/components/design_system/inputs/input_select"
 import { marketOptions, protocolOptions, USGMarketModalListHeaders } from "../usg_market_controller"
 
 const MarketListSelectTemplate = (option: { label: string; value: string }) => {
@@ -24,7 +24,7 @@ const listeState: ListState = {
   },
 }
 
-export default function USGModalMarketList() {
+export function USGModalMarketList() {
   const { displayRows, searchValue, setSearchValue, sortMarketList, marketType, setMarketType, protocol, setProtocol } = useUSGMaketListContext()
 
   return (

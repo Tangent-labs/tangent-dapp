@@ -4,7 +4,7 @@ import Image from "next/image"
 import { useMemo } from "react"
 import { formatUnits } from "viem"
 import { formatNumber } from "@/lib/number_formatter"
-import TokenImage from "@/components/design_system/structure/token_image"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 import { TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "../predeposit.controller"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 

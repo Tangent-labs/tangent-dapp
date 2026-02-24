@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils"
 import { Switch } from "@/components/ui/switch"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGLeverageContext } from "./usg_record_leverage_context"
-import FormButtons from "@/components/design_system/form/form_actions"
-import { SlippageInput } from "@/components/design_system/inputs/slippage"
-import BorderPanel from "@/components/design_system/structure/border_panel"
+import { FormButtons } from "@/components/design_system/form/form_actions"
+import { SlippageInput } from "@/components/design_system/inputs/Slippage"
+import { BorderPanel } from "@/components/design_system/structure/border_panel"
 import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
 import { IconThunder, IconSingleArrow } from "@/components/icons"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -126,9 +126,8 @@ export default function USGLeverageContent() {
           }
           depositSelect={<StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />}
           bottomPart={
-            <div className="flex gap-2 text-xs text-subtitle">
-              <div>Minimum received</div>
-              <div>{zapValue && !!marketData?.collateralInfos ? minValueReceivedFromZap : ""}</div>
+            <div className="flex select-none gap-2 text-xs text-subtitle">
+              Minimum received {zapValue && !!marketData?.collateralInfos ? minValueReceivedFromZap : ""}
             </div>
           }
         />
@@ -168,9 +167,8 @@ export default function USGLeverageContent() {
           onValueChange={() => {}}
           // isLoading={isQuoteLoading}
           bottomPart={
-            <div className="flex gap-2 text-xs text-subtitle">
-              <div>Minimum received</div>
-              <div>{leveragedCollateralQuote && !!marketData?.collateralInfos ? minCollatReceivedFromUSGDump : ""}</div>
+            <div className="flex select-none gap-2 text-xs text-subtitle">
+              Minimum received {leveragedCollateralQuote && !!marketData?.collateralInfos ? minCollatReceivedFromUSGDump : ""}
             </div>
           }
         />

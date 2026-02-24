@@ -4,11 +4,11 @@ import { formatUnits } from "viem"
 import { useMemo, useState } from "react"
 import { USGStakingInfo } from "../../usg_type"
 import { formatNumber } from "@/lib/number_formatter"
-import Divider from "@/components/design_system/structure/divider"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
+import { Divider } from "@/components/design_system/structure/divider"
+import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { SlidingTabs } from "../../airdrop/tasks/components/SlidingTabs"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
-import EvolutionBox from "@/components/design_system/structure/evolution_box"
+import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
 import { Area, AreaChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { ForecastGraph } from "../usg_staking_forecast"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
@@ -73,7 +73,7 @@ const formatXAxis = (tick: string) => {
   return `${date.toLocaleString("en-US", { month: "short" })} ${date.getDate()}`
 }
 
-export default function PerformanceHistoryPanel({
+export function PerformanceHistoryPanel({
   USGsUSGMetrics,
   currentFeature,
   weiValue,

@@ -8,7 +8,7 @@ type InputSearchProps = React.ParamHTMLAttributes<HTMLInputElement> & {
   onChange: (value: string) => void
 }
 
-const InputSearch = ({ placeholder = "Search...", value, onChange, className = "" }: InputSearchProps) => {
+export const InputSearch = ({ placeholder = "Search...", value, onChange, className = "" }: InputSearchProps) => {
   return (
     <div className={`relative flex items-center ${className}`}>
       <input
@@ -34,5 +34,3 @@ const InputSearch = ({ placeholder = "Search...", value, onChange, className = "
     </div>
   )
 }
-
-export default InputSearch

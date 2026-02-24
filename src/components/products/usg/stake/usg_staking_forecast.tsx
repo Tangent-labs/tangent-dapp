@@ -3,10 +3,10 @@
 import { ReactNode, useMemo, useState } from "react"
 import { formatDollar } from "@/lib/number_formatter"
 import type { LineDot } from "recharts/types/cartesian/Line"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
-import TokenImage from "@/components/design_system/structure/token_image"
+import { ButtonTab } from "@/components/design_system/inputs/button_tab"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
-import USGHoverCard from "@/components/design_system/structure/usg_hover_card"
+import { USGHoverCard } from "@/components/design_system/structure/usg_hover_card"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer, Tooltip } from "recharts"
 import { computedProjection } from "./usg_stake_controller"
 

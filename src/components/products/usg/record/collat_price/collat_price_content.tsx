@@ -1,13 +1,13 @@
 "use client"
 
 import { CollateralGraph } from "../usg_collateral_price"
-import Title from "@/components/design_system/structure/title"
+import { Title } from "@/components/design_system/structure/title"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useCollateralPriceContext } from "./collat_price_context"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
+import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
-export default function USGCollateralPrice() {
+export function USGCollateralPrice() {
   const { timeWindow, graphData, isPending, marketInfo, selectTab } = useCollateralPriceContext()
 
   const { liquidationPrice } = useUSGRecordContext()

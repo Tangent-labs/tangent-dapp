@@ -1,4 +1,4 @@
-export default function Loader() {
+export function Loader() {
   return (
     <div className="flex h-full min-h-[80vh] animate-pulse flex-col items-center justify-center gap-2 text-subtitle">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 150" className="w-1/3">

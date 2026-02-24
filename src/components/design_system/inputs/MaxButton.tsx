@@ -5,7 +5,7 @@ type ButtonTabProps = {
   className?: string
 }
 
-export default function MaxButton({ onClick, className }: ButtonTabProps) {
+export function MaxButton({ onClick, className }: ButtonTabProps) {
   return (
     <>
       <style jsx>{`

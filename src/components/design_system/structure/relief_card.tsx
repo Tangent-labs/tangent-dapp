@@ -1,8 +1,8 @@
-import * as React from "react"
+import { HTMLAttributes, forwardRef } from "react"
 
-type ReliefCardProps = React.HTMLAttributes<HTMLDivElement>
+type ReliefCardProps = HTMLAttributes<HTMLDivElement>
 
-export const ReliefCard = React.forwardRef<HTMLDivElement, ReliefCardProps>(({ children, className = "", ...props }, ref) => {
+export const ReliefCard = forwardRef<HTMLDivElement, ReliefCardProps>(({ children, className = "", ...props }, ref) => {
   return (
     <div ref={ref} {...props} className={`relative overflow-hidden rounded-lg bg-overlay-panel backdrop-blur-[60px] ${className}`}>
       {/* Gradient border effect */}

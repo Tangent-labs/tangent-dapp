@@ -36,7 +36,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   )
 }
 
-export default function TokenImage({ token, size, ...props }: TokenImageProps) {
+export function TokenImage({ token, size, ...props }: TokenImageProps) {
   const fallbackSrc = "/medias/fallback_token_image.webp"
 
   if (!token) {

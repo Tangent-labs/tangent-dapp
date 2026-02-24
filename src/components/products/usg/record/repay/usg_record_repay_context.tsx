@@ -10,7 +10,7 @@ import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
-import { formatBigIntAsNumber, formatDollar, toBigInt } from "@/lib/number_formatter"
+import { formatBigIntAsNumber, formatDollar, toBigInt, truncateTo6Decimals } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -76,6 +76,8 @@ type USGRepayContextValues = {
 
   withdrawSelectedAsset: string
   setWithdrawSelectedAsset: (v: string) => void
+
+  minValueReceivedFromZap: string
 }
 
 export const USGRepayContext = createContext<USGRepayContextValues | undefined>(undefined)
@@ -386,6 +388,15 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     return 0n
   }, [marketData, repayWeiValue, usgRepayedValue, currentAddress])
 
+  const minValueReceivedFromZap = useMemo(() => {
+    if (usgRepayedValue) {
+      const minAmountOutWei = computedMinAmountOut(usgRepayedValue, slippage)
+      const result = `(${truncateTo6Decimals(formatUnits(minAmountOutWei, USGInfo?.decimals!))})`
+      return result
+    }
+    return ""
+  }, [usgRepayedValue, slippage])
+
   const handleRepayValueChange = (value: bigint | undefined) => {
     setRepayWeiValue(value)
 
@@ -455,7 +466,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   }, [repayWeiValue, marketValues, repayAsset, usgRepayedValue])
 
   const USGDollarRepayedValue = useMemo(() => {
-    return `(~${formatDollar((Number(Number(formatUnits(usgRepayedValue || 0n, 18))) * USGInfo?.price).toFixed(2))})`
+    return `(${formatDollar((Number(Number(formatUnits(usgRepayedValue || 0n, 18))) * USGInfo?.price).toFixed(2))})`
   }, [usgRepayedValue, USGInfo])
 
   const expectedUSG = useMemo(() => {
@@ -503,6 +514,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     withdrawSelectedAsset,
     setWithdrawSelectedAsset,
     expectedUSG,
+    minValueReceivedFromZap,
   }
 
   return <USGRepayContext.Provider value={contextValue}>{children}</USGRepayContext.Provider>

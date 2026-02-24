@@ -11,13 +11,12 @@ import { Address, zeroAddress } from "viem"
 import { useUSGRecordContext } from "../usg_record_context"
 import { IconThunder } from "@/components/icons/icon_thunder"
 import { useUSGRepayContext } from "./usg_record_repay_context"
-import { IconCircleHelp } from "@/components/icons/icon_circle_help"
-import FormButtons from "@/components/design_system/form/form_actions"
-import InputSelect from "@/components/design_system/inputs/input_select"
-import TokenImage from "@/components/design_system/structure/token_image"
-import { SlippageInput } from "@/components/design_system/inputs/slippage"
-import BorderPanel from "@/components/design_system/structure/border_panel"
-import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
+import { FormButtons } from "@/components/design_system/form/form_actions"
+import { InputSelect } from "@/components/design_system/inputs/input_select"
+import { TokenImage } from "@/components/design_system/structure/token_image"
+import { SlippageInput } from "@/components/design_system/inputs/Slippage"
+import { BorderPanel } from "@/components/design_system/structure/border_panel"
+import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
@@ -53,13 +52,14 @@ export default function USGRepayContent() {
     repayAssetInfo,
     withdrawSelectedAsset,
     expectedUSG,
+    minValueReceivedFromZap,
   } = useUSGRepayContext()
 
   const { tokens, balances } = useUSGContext()
 
   const { connect } = useWalletConnexionContext()
 
-  const { USGInfo, pricedCollateralInfo, marketData, collateralInfo, isRepayAndWithdraw, depositAssetOptions } = useUSGRecordContext()
+  const { USGInfo, collateralInfo, marketData, isRepayAndWithdraw, depositAssetOptions } = useUSGRecordContext()
 
   const AssetSelectTemplate = (option: {
     logoURI?: string
@@ -195,42 +195,18 @@ export default function USGRepayContent() {
               <div className="flex items-center gap-1">
                 <div className="text-sm text-subtitle">Zap</div>
                 <IconThunder className="h-auto w-[8px] text-row-tonic" />
-                <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
               </div>
             }
             isLoading={isZapLoading}
             depositSelect={<StaticCardAssetInput asset="USG" />}
             disabled={isRepayMax}
-            asset={repayAssetInfo || USGInfo}
+            asset={USGInfo}
             bottomPart={
-              <div className="flex justify-between gap-2 text-xs text-subtitle">
-                <div>Minimum received</div>
-                <div>{usgRepayedValue && USGInfo?.price !== 0 ? USGDollarRepayedValue : ""}</div>
+              <div className="flex select-none justify-between gap-2 text-xs text-subtitle">
+                Minimum received {usgRepayedValue && USGInfo?.price !== 0 ? minValueReceivedFromZap : ""}
               </div>
             }
           />
-
-          // <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
-          //   <div className="flex items-center justify-between">
-          //     <div className="flex flex-col items-start justify-start">
-
-          //       <div className="flex items-center justify-center gap-2">
-          //         <input
-          //           type="string"
-          //           placeholder="0"
-          //           disabled={true}
-          //           className="flex justify-start bg-transparent text-xl font-semibold focus:outline-none"
-          //           value={Number(formatUnits(usgRepayedValue || 0n, 18)).toFixed(2) ?? ""}
-          //         />
-          //       </div>
-          //       <div className="flex justify-between gap-2 text-xs text-subtitle">
-          //         <div>Minimum received</div>
-          //         <div>{usgRepayedValue && USGInfo?.price !== 0 ? USGDollarRepayedValue : ""}</div>
-          //       </div>
-          //     </div>
-          //     <StaticCardAssetInput asset="USG" />
-          //   </div>
-          // </PanelRaw>
         )}
 
         {isRepayAndWithdraw && (
@@ -246,7 +222,7 @@ export default function USGRepayContent() {
               inputWeiValue={withdrawWeiValue}
               label="You withdraw"
               depositSelect={assetSelectElement}
-              asset={pricedCollateralInfo}
+              asset={collateralInfo}
               onValueChange={(value: bigint | undefined) => {
                 setWithdrawWeiValue(value)
               }}

@@ -1,6 +1,6 @@
 "use client"
 
-import ListRowDisposition from "@/components/design_system/list/list_row_disposition"
+import { ListRowDisposition } from "@/components/design_system/list/list_row_disposition"
 import Link from "next/link"
 import { ListGradientBorder } from "./list_gradient_border"
 
@@ -12,7 +12,7 @@ interface ListRowProps {
   isSelected?: boolean
 }
 
-const ListRow = ({ children, route, className = "", rowDisposition: CustomRowDisposition = ListRowDisposition, isSelected = false }: ListRowProps) => {
+export const ListRow = ({ children, route, className = "", rowDisposition: CustomRowDisposition = ListRowDisposition, isSelected = false }: ListRowProps) => {
   return (
     <div className="group relative mt-1 w-full">
       <div
@@ -31,5 +31,3 @@ const ListRow = ({ children, route, className = "", rowDisposition: CustomRowDis
     </div>
   )
 }
-
-export default ListRow

@@ -1,8 +1,10 @@
-import ButtonTab from "./button_tab"
-import BorderPanel from "../structure/border_panel"
+import { useEffect, useState } from "react"
+
+import { ButtonTab } from "./button_tab"
+import { BorderPanel } from "../structure/border_panel"
+
 import { IconGearWheel } from "@/components/icons"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { useEffect, useState } from "react"
 
 type SlippageInputProps = {
   slippage: number
@@ -20,9 +22,14 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.replaceAll(",", ".").trim()
     if (val === "" || /^\d*\.?\d{0,2}$/.test(val)) {
-      setLocalValue(val)
       const num = parseFloat(val)
-      if (!isNaN(num) && num >= 0) setSlippage(num)
+      if (val !== "" && num > 100) return
+      setLocalValue(val)
+      if (val === "") {
+        setSlippage(0)
+      } else if (!isNaN(num) && num >= 0) {
+        setSlippage(num)
+      }
     }
   }
 

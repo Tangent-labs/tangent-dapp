@@ -40,7 +40,7 @@ type USGDepositContextValues = {
   swapAssetPrice: number | null
   getRouteAndDeposit: () => void
   actionApproveZap: () => void
-  zapValue: bigint | null
+  zapValue: bigint | undefined
   setZapValue: (arg: bigint) => void
   handleDepositChange: (arg: bigint | undefined) => void
   handleZapChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -113,7 +113,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const [isZapLoading, setIsZapLoading] = useState(false)
 
-  const [zapValue, setZapValue] = useState<bigint | null>(null)
+  const [zapValue, setZapValue] = useState<bigint | undefined>()
 
   const [zapInnerValue, setZapInnerValue] = useState<number | undefined>(zapValue !== undefined ? Number(formatUnits(zapValue || BigInt(0), 18)) : undefined)
 
@@ -174,9 +174,9 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const resetAfterDepositSuccess = () => {
     loadOnChainData()
-    setDepositWeiValue(0n)
-    setBorrowWeiValue(0n)
-    setZapValue(null)
+    setDepositWeiValue(undefined)
+    setBorrowWeiValue(undefined)
+    setZapValue(undefined)
     setIsZapLoading(false)
     setBorrowSliderPercent(0)
     setDepositSliderPercent(0)
@@ -264,7 +264,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   useEffect(() => {
     if (zapInnerValue === undefined) {
       setDepositWeiValue(undefined)
-      setZapValue(0n)
+      setZapValue(undefined)
       return
     }
 
@@ -420,16 +420,16 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   useEffect(() => {
     if (depositAsset) {
-      setBorrowWeiValue(0n)
+      setBorrowWeiValue(undefined)
       setBorrowSliderPercent(0)
       setDepositWeiValue(undefined)
-      setZapValue(null)
+      setZapValue(undefined)
     }
   }, [depositAsset])
 
   useEffect(() => {
     if (!isDepositAndBorrow) {
-      setBorrowWeiValue(0n)
+      setBorrowWeiValue(undefined)
       setBorrowSliderPercent(0)
     }
   }, [isDepositAndBorrow])

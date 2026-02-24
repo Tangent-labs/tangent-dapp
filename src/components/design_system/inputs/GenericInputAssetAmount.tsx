@@ -2,13 +2,13 @@
 
 import { cn, PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { formatUnits, parseUnits } from "viem"
-import BorderPanel from "../structure/border_panel"
+import { BorderPanel } from "../structure/border_panel"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { IconThunder, IconWallet } from "@/components/icons"
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
 import { formatBigInt, formatDollar, truncateTo6Decimals } from "@/lib/number_formatter"
 import { SliderInput } from "./SliderInput"
-import MaxButton from "./MaxButton"
+import { MaxButton } from "./MaxButton"
 
 type SliderParams = {
   sliderPercentage: number
@@ -240,7 +240,7 @@ export function GenericInputAssetAmount({
       onClick={handlePanelClick}
     >
       {displayBalance ? (
-        <div className="flex w-full items-center justify-between">
+        <div className="flex w-full select-none items-center justify-between">
           <div className="text-sm text-subtitle">{label}</div>
           <div className="flex items-center justify-center gap-1 text-xs text-subtitle">
             {formatBigInt(maxWeiValue, asset?.decimals || 18, 2)}
@@ -248,7 +248,7 @@ export function GenericInputAssetAmount({
           </div>
         </div>
       ) : (
-        <div className="text-sm text-subtitle">{label}</div>
+        <div className="select-none text-sm text-subtitle">{label}</div>
       )}
 
       <div className="flex justify-between">
@@ -278,10 +278,10 @@ export function GenericInputAssetAmount({
             />
           </div>
 
-          <div className="text-xs text-subtitle">{dollarDepositDisplay}</div>
+          <div className="select-none text-xs text-subtitle">{dollarDepositDisplay}</div>
         </div>
 
-        <div className="stop-focus flex items-center justify-center gap-2">
+        <div className="stop-focus flex select-none items-center justify-center gap-2">
           <div className="flex gap-1">{isZapping && <IconThunder className="h-auto w-[8px] text-row-tonic" />}</div>
           <div className="no-parent-hover order-1 rounded-md lg:order-2">{depositSelect}</div>
         </div>

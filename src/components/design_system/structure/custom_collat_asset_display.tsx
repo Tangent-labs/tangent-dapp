@@ -1,5 +1,5 @@
-import TokenImage from "./token_image"
-import BorderPanel from "./border_panel"
+import { TokenImage } from "./token_image"
+import { BorderPanel } from "./border_panel"
 import { CollateralInfo } from "@/types"
 import { specialTokensList } from "@/components/products/usg/usg_repository"
 

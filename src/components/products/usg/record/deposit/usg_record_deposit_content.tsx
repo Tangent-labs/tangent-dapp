@@ -4,11 +4,11 @@ import { cn, PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGDepositContext } from "./usg_record_deposit_context"
-import FormButtons from "@/components/design_system/form/form_actions"
-import { SlippageInput } from "@/components/design_system/inputs/slippage"
-import BorderPanel from "@/components/design_system/structure/border_panel"
+import { FormButtons } from "@/components/design_system/form/form_actions"
+import { BorderPanel } from "@/components/design_system/structure/border_panel"
+import { SlippageInput } from "@/components/design_system/inputs/Slippage"
 import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
-import { IconThunder, IconCircleHelp, IconSingleArrow } from "@/components/icons"
+import { IconThunder, IconSingleArrow } from "@/components/icons"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -60,6 +60,7 @@ export default function USGDepositContent() {
         <span className="text-xs text-subtitle">{maxDepositString}</span>
       </div>
 
+      {/* DEPOSIT INPUT */}
       <GenericInputAssetAmount
         inputWeiValue={depositWeiValue}
         onValueChange={(e) => {
@@ -82,6 +83,8 @@ export default function USGDepositContent() {
         }}
       />
 
+      {/* ZAPPING RESULT INPUT */}
+
       {depositAsset && isZapping && (
         <GenericInputAssetAmount
           inputWeiValue={zapValue || 0n}
@@ -98,13 +101,14 @@ export default function USGDepositContent() {
           }
           depositSelect={<StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />}
           bottomPart={
-            <div className="flex gap-2 text-xs text-subtitle">
-              <div>Minimum received</div>
-              <div>{zapValue && !!marketData?.collateralInfos ? minValueReceivedFromZap : ""}</div>
+            <div className="flex select-none gap-2 text-xs text-subtitle">
+              Minimum received {zapValue && !!marketData?.collateralInfos ? minValueReceivedFromZap : ""}
             </div>
           }
         />
       )}
+
+      {/* BORROW INPUT */}
 
       {isDepositAndBorrow && (
         <div className="flex flex-col gap-1">
@@ -130,6 +134,8 @@ export default function USGDepositContent() {
           />
         </div>
       )}
+
+      {/* RECAP */}
 
       <div className="flex items-start justify-between gap-2">
         <Accordion className="w-full" type="single" collapsible>

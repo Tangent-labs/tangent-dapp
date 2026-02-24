@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -15,11 +17,10 @@ import { useCallback } from "react"
 import { useRootContext } from "../root/root_context"
 import { formatCompact } from "@/lib/number_formatter"
 import { usePathname } from "next/navigation"
-import TokenImage from "@/components/design_system/structure/token_image"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 import { isOnMarket, mapRouteToFeature } from "./menu_bar_feature_controller"
 import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
-import Link from "next/link"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 export default function MenuBarFeature() {

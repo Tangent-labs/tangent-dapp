@@ -1,6 +1,6 @@
 import { ReliefCard } from "./relief_card"
 
-export default function PointsCampaignLiveCard() {
+export function PointsCampaignLiveCard() {
   return (
     <ReliefCard className="w-full">
       <div

@@ -1,18 +1,18 @@
 "use client"
 
 import { IconCircleHelp } from "@/components/icons"
-import React, { ReactNode } from "react"
+import { ReactNode, ButtonHTMLAttributes } from "react"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
-type USGHoverCardProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+type USGHoverCardProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   title: string
   iconClassName?: string
   children: ReactNode
 }
 
-export default function USGHoverCard({ children, title, iconClassName }: USGHoverCardProps) {
+export function USGHoverCard({ children, title, iconClassName }: USGHoverCardProps) {
   return (
-    <HoverCard>
+    <HoverCard openDelay={150} closeDelay={100}>
       <HoverCardTrigger asChild>
         <button type="button">
           <IconCircleHelp className={iconClassName} />

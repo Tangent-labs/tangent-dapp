@@ -6,7 +6,6 @@ import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGDepositContext } from "./usg_record_deposit_context"
 import { FormButtons } from "@/components/design_system/form/form_actions"
 import { BorderPanel } from "@/components/design_system/structure/border_panel"
-import { SlippageInput } from "@/components/design_system/inputs/Slippage"
 import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
 import { IconSingleArrow } from "@/components/icons"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -16,6 +15,7 @@ import { MarketTransactionError } from "@/components/design_system/notifications
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 import { ExistingAsset } from "@/types"
+import { SlippageInput } from "@/components/design_system/inputs/Slippage"
 
 export default function USGDepositContent() {
   const {

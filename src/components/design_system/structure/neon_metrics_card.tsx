@@ -15,7 +15,7 @@ export function NeonMetricsCard({ title, subtitle, value, extra, color1, color2,
   return (
     <div className={`relative w-full ${className ?? ""}`}>
       <div className="absolute -top-2 left-0 z-20 flex w-full justify-center">
-        <div style={{ background: color1 }} className="rounded-full px-6 text-xs font-semibold text-black">
+        <div style={{ background: color2 }} className="rounded-full px-6 text-xs font-semibold text-black">
           {title}
         </div>
       </div>

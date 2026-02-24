@@ -31,7 +31,7 @@ export const SliderInput = ({ className, handleSliderChange, legendValues, value
         }
 
         .neon-slide {
-          animation: neon-slide 3s ease infinite;
+          animation: neon-slide 2s ease infinite;
         }
 
         .slider-input::-webkit-slider-thumb {
@@ -86,7 +86,7 @@ export const SliderInput = ({ className, handleSliderChange, legendValues, value
           <div
             className="neon-slide absolute inset-0"
             style={{
-              background: `radial-gradient(ellipse 40% 100% at 50% 50%, #0077ff 0%, rgba(0, 119, 255, 0.5) 40%, rgba(0, 0, 0, 0) 100%)`,
+              background: `radial-gradient(ellipse 40% 100% at 50% 50%, #0077ff 0%, rgba(0, 119, 255, 0.5) 40%, #2e8fffb8 0%`,
             }}
           />
         </div>

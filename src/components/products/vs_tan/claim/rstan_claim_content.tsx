@@ -5,7 +5,7 @@ import { LockPosition, LockPositionSelectTemplate } from "../../usg/usg_type"
 import { Button } from "@/components/design_system/inputs/button"
 import { useVsTanClaimContext } from "./rstan_claim_context"
 import { formatBigInt } from "@/lib/number_formatter"
-import TokenImage from "@/components/design_system/structure/token_image"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 import { MultiPositionSelect } from "@/components/design_system/inputs/input_multiselect"
 import { Switch } from "@/components/ui/switch"
 

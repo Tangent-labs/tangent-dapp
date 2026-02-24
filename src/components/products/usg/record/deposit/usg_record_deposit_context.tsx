@@ -9,7 +9,7 @@ import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
-import { formatBigInt, formatBigIntAsNumber, truncateTo6Decimals } from "@/lib/number_formatter"
+import { formatBigInt, formatBigIntAsNumber, truncateDecimals } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computeAprVariation, computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
@@ -191,7 +191,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     setDepositWeiValue(value)
 
     if (!value || !depositAssetInfo || !isZapping) {
-      if (!value || value === 0n) setZapValue(0n)
+      if (!value || value === 0n) setZapValue(undefined)
       return
     }
 
@@ -558,7 +558,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   const minValueReceivedFromZap = useMemo(() => {
     if (zapValue && marketData) {
       const minAmountOutWei = computedMinAmountOut(zapValue, slippage)
-      const result = `(${truncateTo6Decimals(formatUnits(minAmountOutWei, collateralInfo?.decimals))})`
+      const result = `(${(truncateDecimals(formatUnits(minAmountOutWei, collateralInfo?.decimals)), collateralInfo.displayDecimals)})`
       return result
     }
 

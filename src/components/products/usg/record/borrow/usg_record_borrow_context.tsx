@@ -41,7 +41,7 @@ export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
       await toastTx(doMarketBorrow(walletClient, { marketAddress: marketData!.marketAddress, borrowWeiValue }), {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
         success: () => {
-          setBorrowWeiValue(0n)
+          setBorrowWeiValue(undefined)
           loadOnChainData()
           setBorrowPercentage(0)
           loadUSGsUSGMetrics()

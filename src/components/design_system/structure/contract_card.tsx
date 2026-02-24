@@ -2,7 +2,7 @@ import { Address } from "viem"
 
 import { formatAddress } from "@/lib/other_formatter"
 import { dappConfig } from "@/dapp_config"
-import PanelRaw from "./panel_raw"
+import { PanelRaw } from "./panel_raw"
 import Link from "next/link"
 
 const url = dappConfig.chain.explorerContractUrl

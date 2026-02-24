@@ -6,7 +6,7 @@ import { BorderPanel } from "../structure/border_panel"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { IconThunder, IconWallet } from "@/components/icons"
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
-import { formatBigInt, formatDollar, truncateTo6Decimals } from "@/lib/number_formatter"
+import { formatBigInt, formatDollar, truncateDecimals } from "@/lib/number_formatter"
 import { SliderInput } from "./SliderInput"
 import { MaxButton } from "./MaxButton"
 
@@ -109,7 +109,7 @@ export function GenericInputAssetAmount({
     }
 
     if (document.activeElement !== inputRef.current) {
-      setLocalDisplay(truncateTo6Decimals(formatUnits(inputWeiValue, decimals)))
+      setLocalDisplay(truncateDecimals(formatUnits(inputWeiValue, decimals), asset?.displayDecimals))
     }
   }, [inputWeiValue, decimals])
 
@@ -146,6 +146,9 @@ export function GenericInputAssetAmount({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value.replace(",", ".").trim()
 
+    // Remove leading zeros (but keep "0." for decimals)
+    val = val.replace(/^0+(\d)/, "$1")
+
     // Allow empty string or valid numeric input
     if (val === "" || /^\d*\.?\d*$/.test(val)) {
       setLocalDisplay(val)
@@ -161,7 +164,8 @@ export function GenericInputAssetAmount({
             const wei = parseUnits(val, decimals)
             onValueChange?.(wei)
           } catch (err) {
-            console.warn("Invalid amount", val)
+            // eslint-disable-next-line no-console
+            console.warn("Invalid amount", val, err)
           }
         }
       }, 400)
@@ -201,7 +205,7 @@ export function GenericInputAssetAmount({
       const wei = (BigInt(Math.round(percentage)) * maxWeiValue) / 100n
       onValueChange?.(wei)
 
-      setLocalDisplay(truncateTo6Decimals(formatUnits(wei, decimals)))
+      setLocalDisplay(truncateDecimals(formatUnits(wei, decimals), asset?.displayDecimals))
     }, 300)
   }
 
@@ -212,7 +216,7 @@ export function GenericInputAssetAmount({
   const handleMaxClick = () => {
     setMaxAmount()
     setSliderPercentage(Number(sliderStartEndRange[1]))
-    setLocalDisplay(truncateTo6Decimals(formatUnits(maxWeiValue, decimals)))
+    setLocalDisplay(truncateDecimals(formatUnits(maxWeiValue, decimals), asset?.displayDecimals))
   }
 
   // ---------------------------
@@ -234,7 +238,11 @@ export function GenericInputAssetAmount({
         isLoading ? "shimmer" : "",
         disabled
           ? "bg-panel-disabled"
-          : "cursor-text bg-white bg-opacity-[3%] ease-out focus-within:border-[--tgt-button-active] hover:bg-white/[0.08] hover:shadow-lg [&:has(.no-parent-hover:hover)]:!bg-white/[0.03] [&:has(.no-parent-hover:hover)]:!shadow-none",
+          : cn(
+              "cursor-text bg-white bg-opacity-[3%] ease-out",
+              "focus-within:border-[--tgt-button-active] focus-within:shadow-[0_0_6px_1px_var(--tgt-button-active)]",
+              "hover:bg-white/[0.08] hover:shadow-lg [&:has(.no-parent-hover:hover)]:!bg-white/[0.03] [&:has(.no-parent-hover:hover)]:!shadow-none"
+            ),
         "flex flex-col p-2 transition-all duration-200"
       )}
       onClick={handlePanelClick}
@@ -263,14 +271,14 @@ export function GenericInputAssetAmount({
               placeholder="0.00"
               onChange={handleInputChange}
               className={cn(
-                "auto-grow", // ta classe (supposée field-sizing: content ou JS)
-                "block w-full", // ou inline-block si tu préfères
+                "auto-grow",
+                "block w-full",
                 "bg-transparent text-left text-[24px] font-semibold",
                 "placeholder:text-left placeholder:text-gray-400",
                 "focus:outline-none",
-                "min-w-[80px]", // taille mini au départ
-                "max-w-full", // ← important : max-w-full sur l'input lui-même
-                "truncate" // coupe visuellement si overflow (fallback)
+                "min-w-[80px]",
+                "max-w-full",
+                "truncate"
               )}
               ref={inputRef}
               step="any"

@@ -1,7 +1,6 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { Switch } from "@/components/ui/switch"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGLeverageContext } from "./usg_record_leverage_context"
 import { FormButtons } from "@/components/design_system/form/form_actions"
@@ -20,8 +19,6 @@ import { ExistingAsset } from "@/types"
 export default function USGLeverageContent() {
   const {
     setDepositAsset,
-    setIsDepositDisabled,
-    setIsLeverageAllPosition,
     actionApprove,
     handleDepositChange,
     setSlippage,
@@ -32,7 +29,6 @@ export default function USGLeverageContent() {
     actionZapLeverage,
     actionApproveZap,
     handleLeverageSliderChange,
-    isLeverageAllPosition,
     depositAsset,
     depositWeiValue,
     formState,
@@ -61,26 +57,6 @@ export default function USGLeverageContent() {
 
   return (
     <div className="flex flex-col gap-2">
-      {!!marketData?.collateralInfos?.positionCollateralAmount && marketData?.collateralInfos?.positionCollateralAmount > 0n && (
-        <div className="flex w-full items-center justify-between">
-          <div className="flex items-center justify-between gap-2">
-            {!!marketData?.collateralInfos?.positionCollateralAmount && marketData?.collateralInfos?.positionCollateralAmount > 0n && (
-              <>
-                <span className="text-sm text-subtitle">Leverage only</span>
-                <Switch disabled={isLeverageAllPosition} checked={isDepositDisabled} onCheckedChange={(v) => setIsDepositDisabled(v)} />
-              </>
-            )}
-
-            {!!marketData?.collateralInfos?.positionCollateralAmount && marketData?.collateralInfos?.positionCollateralAmount > 0n && (
-              <>
-                <span className="text-sm text-subtitle">Leverage all</span>
-                <Switch disabled={isDepositDisabled} checked={isLeverageAllPosition} onCheckedChange={(v) => setIsLeverageAllPosition(v)} />
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
       {!isDepositDisabled && (
         <>
           <div className="flex w-full items-end justify-between gap-2">
@@ -145,7 +121,7 @@ export default function USGLeverageContent() {
             inputWeiValue={borrowWeiValue}
             onValueChange={(e) => handleBorrowChange(e)}
             depositSelect={<StaticCardAssetInput asset="USG" />}
-            label="You borrow"
+            label="You borrow and sell"
             asset={USGInfo}
             maxAmountParams={{ maxWeiValue: 0n, setMaxAmount: () => handleLeverageSliderChange(10) }}
             sliderParams={{
@@ -160,7 +136,7 @@ export default function USGLeverageContent() {
 
         <GenericInputAssetAmount
           inputWeiValue={leveragedCollateralQuote}
-          label="You Buy"
+          label="You buy and deposit"
           depositSelect={<StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />}
           disabled={true}
           asset={collateralInfo}

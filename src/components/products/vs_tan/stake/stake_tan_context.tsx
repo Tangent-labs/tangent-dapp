@@ -156,8 +156,8 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
     }
     await doUnstakeUSG(params)
     loadTanSTANMetrics()
-    setWeiValue(0n)
-    setExpected(0n)
+    setWeiValue(undefined)
+    setExpected(undefined)
     setIsLoading(false)
   }
 
@@ -172,8 +172,8 @@ export const StakeTanProvider = ({ children }: StakeTanContextProps) => {
     }
     await doStakeUSG(params)
     loadTanSTANMetrics()
-    setWeiValue(0n)
-    setExpected(0n)
+    setWeiValue(undefined)
+    setExpected(undefined)
     setIsLoading(false)
   }
 

@@ -56,7 +56,7 @@ type VsTanLockContextValues = {
   isZapLoading: boolean
   setIsZapLoading: (arg: boolean) => void
 
-  zapValue: bigint | null
+  zapValue: bigint | undefined
   setZapValue: (arg: bigint) => void
 
   zapInnerValue: number | undefined
@@ -109,7 +109,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
 
   const [isZapLoading, setIsZapLoading] = useState(false)
 
-  const [zapValue, setZapValue] = useState<bigint | null>(null)
+  const [zapValue, setZapValue] = useState<bigint | undefined>()
 
   const [zapInnerValue, setZapInnerValue] = useState<number | undefined>(zapValue !== undefined ? Number(formatUnits(zapValue || BigInt(0), 18)) : undefined)
 
@@ -237,8 +237,8 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
           .then(() => {
             loadData()
             setIsLoading(false)
-            setDepositWeiValue(0n)
-            setZapValue(null)
+            setDepositWeiValue(undefined)
+            setZapValue(undefined)
             setZapInnerValue(0)
             toast.success(ToastComponent, { data: { type: "Success", content: "Successfully increased lock position." } })
           })
@@ -250,8 +250,8 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
           .then(() => {
             loadData()
             setIsLoading(false)
-            setDepositWeiValue(0n)
-            setZapValue(null)
+            setDepositWeiValue(undefined)
+            setZapValue(undefined)
             setZapInnerValue(0)
             toast.success(ToastComponent, { data: { type: "Success", content: "Successfully created lock position." } })
           })
@@ -278,7 +278,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
         loadData()
         setIsLoading(false)
         toast.success(ToastComponent, { data: { type: "Success", content: "Successfully created lock position." } })
-        setDepositWeiValue(0n)
+        setDepositWeiValue(undefined)
       }
     } else {
       setIsLoading(false)
@@ -409,7 +409,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
   useEffect(() => {
     if (zapInnerValue === undefined) {
       setDepositWeiValue(undefined)
-      setZapValue(0n)
+      setZapValue(undefined)
       return
     }
 
@@ -465,7 +465,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
     }
 
     if (depositAsset !== depositAssetInfo?.symbol) {
-      setDepositWeiValue(0n)
+      setDepositWeiValue(undefined)
     }
   }, [depositAssetInfo])
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { formatEther, formatUnits, parseEther } from "viem"
+import { formatEther, formatUnits } from "viem"
 import { useUSGContext } from "../usg_context"
 import { getsUsgApyData } from "../client_api"
 import { USG_CONTRACT } from "../usg_repository"
@@ -160,8 +160,8 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
       pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
       success: () => {
         loadUSGsUSGMetrics()
-        setWeiValue(0n)
-        setExpected(0n)
+        setWeiValue(undefined)
+        setExpected(undefined)
         return { type: "Success", content: "Position successfully created." }
       },
       error: () => {
@@ -184,8 +184,8 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
       pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
       success: () => {
         loadUSGsUSGMetrics()
-        setWeiValue(0n)
-        setExpected(0n)
+        setWeiValue(undefined)
+        setExpected(undefined)
         return { type: "Success", content: "Position successfully created." }
       },
       error: () => {

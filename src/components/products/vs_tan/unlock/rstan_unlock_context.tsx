@@ -68,7 +68,7 @@ export const VsTanUnlockProvider = ({ children }: VsTanUnlockContextProps) => {
         setTanReceived(totalTanReceived)
       } catch (error) {
         console.error("Error calculating tanReceived:", error)
-        setTanReceived(0n)
+        setTanReceived(undefined)
       }
     }
 

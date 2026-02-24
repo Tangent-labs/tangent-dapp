@@ -9,7 +9,6 @@ import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { Address, zeroAddress } from "viem"
 import { useUSGRecordContext } from "../usg_record_context"
-import { IconThunder } from "@/components/icons/icon_thunder"
 import { useUSGRepayContext } from "./usg_record_repay_context"
 import { FormButtons } from "@/components/design_system/form/form_actions"
 import { InputSelect } from "@/components/design_system/inputs/input_select"
@@ -45,7 +44,6 @@ export default function USGRepayContent() {
     withdrawWeiValue,
     maxWithdrawable,
     withdrawPercentage,
-    USGDollarRepayedValue,
     isZapLoading,
     usgRepayedValue,
     isDebtBelowThreshold,
@@ -60,6 +58,8 @@ export default function USGRepayContent() {
   const { connect } = useWalletConnexionContext()
 
   const { USGInfo, collateralInfo, marketData, isRepayAndWithdraw, depositAssetOptions } = useUSGRecordContext()
+
+  const isZapping = !!repayAsset && repayAsset !== "USG"
 
   const AssetSelectTemplate = (option: {
     logoURI?: string
@@ -175,10 +175,10 @@ export default function USGRepayContent() {
 
         <GenericInputAssetAmount
           inputWeiValue={repayWeiValue}
-          label="You repay"
+          label={isZapping ? "You sell" : "You repay"}
           depositSelect={<AssetSelect />}
           disabled={isRepayMax}
-          isZapping={!!repayAsset && repayAsset !== "USG"}
+          isZapping={isZapping}
           asset={repayAssetInfo || USGInfo}
           onValueChange={handleRepayValueChange}
           maxAmountParams={{ maxWeiValue: maxRepayableValue, setMaxAmount: () => handleRepayValueChange(maxRepayableValue) }}
@@ -191,12 +191,7 @@ export default function USGRepayContent() {
         {repayAsset && repayAsset !== "USG" && (
           <GenericInputAssetAmount
             inputWeiValue={usgRepayedValue}
-            label={
-              <div className="flex items-center gap-1">
-                <div className="text-sm text-subtitle">Zap</div>
-                <IconThunder className="h-auto w-[8px] text-row-tonic" />
-              </div>
-            }
+            label={"You buy and repay"}
             isLoading={isZapLoading}
             depositSelect={<StaticCardAssetInput asset="USG" />}
             disabled={isRepayMax}

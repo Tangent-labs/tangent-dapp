@@ -1,7 +1,7 @@
 "use client"
 
 import { ExistingAsset } from "@/types"
-import TokenImage from "@/components/design_system/structure/token_image"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useCallback } from "react"
 

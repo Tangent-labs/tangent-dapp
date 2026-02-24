@@ -56,7 +56,7 @@ export async function doMarketLiquidate(
       { router: liquidationData?.routerAddress, routerCall: liquidationData?.data },
     ],
     gas: undefined as undefined | bigint,
-    account: walletClient.account
+    account: walletClient.account,
   } as EstimateContractGasParameters
 
   const gas = await publicClient.estimateContractGas(estimateGasData)

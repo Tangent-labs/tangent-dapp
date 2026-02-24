@@ -48,7 +48,7 @@ export const getUSGMarketRecordData = async (address: Address, market: Address) 
     address,
     market,
     USG_CONTRACT.MARKET_VIEWER,
-    USG_CONTRACT.USG
+    USG_CONTRACT.USG,
   ])
 }
 
@@ -129,13 +129,13 @@ export function getComputedFutureLoanData(
 
   const futureDeposited = !!amounts?.zapValue
     ? BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) +
-    BigInt(amounts.zapValue!) -
-    BigInt(amounts.withdrawWeiValue!) -
-    BigInt(amounts.liquidateValue!)
+      BigInt(amounts.zapValue!) -
+      BigInt(amounts.withdrawWeiValue!) -
+      BigInt(amounts.liquidateValue!)
     : BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) +
-    BigInt(amounts.depositWeiValue!) -
-    BigInt(amounts.withdrawWeiValue!) -
-    BigInt(amounts.liquidateValue!)
+      BigInt(amounts.depositWeiValue!) -
+      BigInt(amounts.withdrawWeiValue!) -
+      BigInt(amounts.liquidateValue!)
 
   const futureDepositedDollarRaw = (futureDeposited * collateralPriceRaw) / DECIMALS
   const futureDepositedDollar = collateralValueToNumber(futureDeposited) * collateralprice
@@ -436,7 +436,7 @@ export const computeLiquidationPrice = (
 export const computedMinAmountOut = (value: bigint | string, slippagePercentage: number) => {
   const percentageToString = (slippagePercentage / 100).toFixed(4)
   const mul = parseUnits("1", 5) - parseUnits(percentageToString, 5)
-  return BigInt(value) * mul / parseUnits("1", 5)
+  return (BigInt(value) * mul) / parseUnits("1", 5)
 }
 
 type MarketContract = { name: string; address: Address }

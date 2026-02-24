@@ -20,7 +20,7 @@ export function getDepositFormState(
 
   const reasons: string[] = []
   const isApproved =
-    (!isZapMode && (depositWeiValue || 0n) <= (marketData?.collateralAllowance || 0n)) ||
+    (!isZapMode && (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n)) ||
     (isZapMode && (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n))
 
   if (!isWellConnected) {
@@ -28,7 +28,7 @@ export function getDepositFormState(
   } else {
     if (depositWeiValue === 0n) {
       reasons.push("No amount.")
-    } else if (!isZapMode && (depositWeiValue || 0n) > (marketData?.collateralBalance || 0n)) {
+    } else if (!isZapMode && (depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
       reasons.push("Not enough balance.")
     } else if (isZapMode && (depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
       reasons.push("Not enough balance.")

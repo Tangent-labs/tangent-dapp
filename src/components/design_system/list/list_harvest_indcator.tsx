@@ -1,6 +1,6 @@
 "use client"
 
-import Panel from "@/components/design_system/structure/panel"
+import { Panel } from "@/components/design_system/structure/panel"
 import { IconCircleHelp, IconHourGlass } from "@/components/icons"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 
@@ -10,7 +10,7 @@ interface ListHarvestIndicatorProps {
   className?: string
 }
 
-export default function ListHarvestIndicator({ isHarvested, helpMessage, className = "" }: ListHarvestIndicatorProps) {
+export function ListHarvestIndicator({ isHarvested, helpMessage, className = "" }: ListHarvestIndicatorProps) {
   return (
     <div className={`flex items-center gap-1 ${className}`}>
       <Popover>

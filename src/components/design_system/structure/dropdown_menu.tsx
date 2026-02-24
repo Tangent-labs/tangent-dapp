@@ -13,7 +13,7 @@ type DropdownMenuProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 
 export default function DropdownMenu({ children, label, pathname }: DropdownMenuProps) {
   return (
-    <HoverCard>
+    <HoverCard openDelay={150} closeDelay={100}>
       <HoverCardTrigger asChild>
         <button className="flex items-center justify-center gap-1" type="button">
           <div className="transition-all duration-200 hover:text-row-tonic data-[active=true]:text-row-tonic">

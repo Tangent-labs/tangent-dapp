@@ -5,7 +5,7 @@ type TitleProps = Partial<React.HTMLAttributes<HTMLSpanElement>> & {
   size: "normal" | "big" | "small"
 }
 
-export default function Title({ label, size = "normal", className, ...props }: TitleProps) {
+export function Title({ label, size = "normal", className, ...props }: TitleProps) {
   const cssSizeClass = {
     small: "text-xl",
     normal: "text-[24px]",

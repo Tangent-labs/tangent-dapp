@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import USGMarketInfo from "../usg_market_info"
+import { USGMarketInfo } from "../usg_market_info"
 import { useUSGRecordContext } from "../usg_record_context"
 import { MarketDetailsInfos } from "./components/market_details_info"
 import { SlidingTabs } from "../../airdrop/tasks/components/SlidingTabs"

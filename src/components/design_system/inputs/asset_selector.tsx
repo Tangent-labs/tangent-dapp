@@ -2,12 +2,12 @@
 
 import Image from "next/image"
 import { Address, zeroAddress } from "viem"
-import TokenImage from "../structure/token_image"
+import { TokenImage } from "../structure/token_image"
 import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { CollateralInfo, ExistingAsset } from "@/types"
-import AssetSelectionDialog from "./asset-select-dialog"
 import { ZapToken } from "@/components/products/usg/usg_type"
+import { AssetSelectionDialog } from "./asset-select-dialog"
 import { useUSGContext } from "@/components/products/usg/usg_context"
 import { useUSGRecordContext } from "@/components/products/usg/record/usg_record_context"
 

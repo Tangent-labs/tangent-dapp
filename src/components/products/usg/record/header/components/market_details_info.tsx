@@ -3,7 +3,7 @@
 import { ExistingAsset } from "@/types"
 import { useMemo, useState } from "react"
 import { MarketDetailData } from "../../../usg_type"
-import TokenImage from "@/components/design_system/structure/token_image"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 import { IconArrow } from "@/components/icons"
 import { TOKEN_INFOS } from "@/data/tokenInfos"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"

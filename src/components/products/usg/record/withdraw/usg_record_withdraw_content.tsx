@@ -8,15 +8,16 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGWithdrawContext } from "./usg_record_withdraw_context"
 import FormButtons from "@/components/design_system/form/form_actions"
-import TokenImage from "@/components/design_system/structure/token_image"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
-import AssetSelectionDialog from "@/components/design_system/inputs/asset-select-dialog"
+import { TokenImage } from "@/components/design_system/structure/token_image"
+import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 
 export default function USGWithdrawContent() {
   const { connect } = useWalletConnexionContext()
 
-  const { pricedCollateralInfo, collateralInfo, marketData, depositAssetOptions } = useUSGRecordContext()
+  const { collateralInfo, marketData, depositAssetOptions } = useUSGRecordContext()
 
   const {
     formState,
@@ -62,19 +63,22 @@ export default function USGWithdrawContent() {
     )
   }
 
-  const AssetSelect = () => {
-    const disabled = marketData?.constants?.receipt === zeroAddress
+  const AssetSelectWithdraw = () => {
+    const isReceipt = marketData?.constants?.receipt !== zeroAddress
 
-    return (
-      <AssetSelectionDialog
-        disabled={disabled}
-        className="w-full min-w-24"
-        template={AssetSelectTemplate}
-        value={selectedAsset || collateralInfo?.symbol}
-        options={depositAssetOptions}
-        onChange={(v) => setSelectedAsset(v)}
-      />
-    )
+    if (isReceipt) {
+      return (
+        <AssetSelectionDialog
+          className="w-full min-w-24"
+          template={AssetSelectTemplate}
+          value={selectedAsset || collateralInfo?.symbol}
+          options={depositAssetOptions}
+          onChange={(v) => setSelectedAsset(v)}
+        />
+      )
+    } else {
+      return <StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />
+    }
   }
 
   return (
@@ -88,17 +92,17 @@ export default function USGWithdrawContent() {
             </span>
           </div>
 
-          <DepositInput
-            depositAmount={withdrawWeiValue}
-            labelDeposit="You withdraw"
-            depositSelect={<AssetSelect />}
-            depositAsset={pricedCollateralInfo}
-            balance={maxWithdrawable}
-            displaySliderInput={true}
-            setMaxBalance={() => setWithdrawWeiValue(maxWithdrawable)}
+          <GenericInputAssetAmount
+            inputWeiValue={withdrawWeiValue}
             onValueChange={setWithdrawWeiValue}
-            percentage={withdrawPercentage}
-            setPercentage={setWithdrawPercentage}
+            label="You withdraw"
+            depositSelect={<AssetSelectWithdraw />}
+            asset={collateralInfo}
+            maxAmountParams={{ maxWeiValue: maxWithdrawable, setMaxAmount: () => setWithdrawWeiValue(maxWithdrawable) }}
+            sliderParams={{
+              sliderPercentage: withdrawPercentage,
+              setSliderPercentage: setWithdrawPercentage,
+            }}
           />
         </div>
 

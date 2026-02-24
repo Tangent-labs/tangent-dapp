@@ -76,8 +76,6 @@ type USGRecordContextValues = {
   isLeveraged: boolean
   setIsLeveraged: (v: boolean) => void
 
-  pricedCollateralInfo: CollateralInfo
-
   debtFarming: number
   setDebtFarming: (v: number) => void
 
@@ -481,7 +479,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   const contextValue: USGRecordContextValues = {
     isLoading,
     collateral,
-    collateralInfo,
+    collateralInfo: pricedCollateralInfo,
     marketData,
     loadOnChainData,
     USGInfo,
@@ -500,7 +498,6 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     setIsUserHistoryLoading,
     isLeveraged,
     setIsLeveraged,
-    pricedCollateralInfo,
 
     debtFarming,
     setDebtFarming,

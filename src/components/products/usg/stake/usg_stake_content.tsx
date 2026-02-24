@@ -3,25 +3,24 @@
 import Link from "next/link"
 import Image from "next/image"
 import { formatUnits } from "viem"
-import { ExistingAsset } from "@/types"
+import { IconChevron } from "@/components/icons"
 import { useUSGStakeContext } from "./usg_stake_context"
 import { IconStars } from "@/components/icons/icon_stars"
 import { computeProjection } from "./usg_stake_controller"
-import Divider from "@/components/design_system/structure/divider"
-import FormButtons from "@/components/design_system/form/form_actions"
-import TokenImage from "@/components/design_system/structure/token_image"
+import { Divider } from "@/components/design_system/structure/divider"
 import { useRootContext } from "@/components/products/root/root_context"
-import PerformanceHistoryPanel from "./components/PerformanceHistoryPanel"
-import BorderPanel from "@/components/design_system/structure/border_panel"
-import EvolutionBox from "@/components/design_system/structure/evolution_box"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import LargeButtonTab from "@/components/design_system/inputs/large_button_tab"
+import { PerformanceHistoryPanel } from "./components/PerformanceHistoryPanel"
 import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
-import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_receive_input"
+import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
+import { LargeButtonTab } from "@/components/design_system/inputs/large_button_tab"
+import { StaticCardAssetInput } from "../../predeposit/components/StaticCardAssetInput"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import PointsCampaignLiveCard from "@/components/design_system/structure/points_campaign_live_card"
+import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
+import FormButtons from "@/components/design_system/form/form_actions"
 
 export default function USGStakeContent() {
   const {
@@ -49,32 +48,6 @@ export default function USGStakeContent() {
   const { sUSGCurrentAPY } = useRootContext()
 
   const { connect } = useWalletConnexionContext()
-
-  const DepositAssetDisplay = () => {
-    if (!receivedTokenInfo) return <></>
-
-    return (
-      <BorderPanel className="flex w-20 items-center justify-between gap-2 bg-select-input p-2">
-        <TokenImage token={currentAssetInfo?.asset?.logo as ExistingAsset} size={20} />
-        <span className="text-sm font-semibold">
-          <span>{currentAssetInfo?.asset?.symbol}</span>
-        </span>
-      </BorderPanel>
-    )
-  }
-
-  const ReceiveAssetDisplay = () => {
-    if (!receivedTokenInfo) return <></>
-
-    return (
-      <BorderPanel className="flex w-20 items-center justify-between gap-2 bg-select-input p-2">
-        <TokenImage token={receivedTokenInfo.logo as ExistingAsset} size={20} />
-        <span className="text-sm font-semibold">
-          <span>{receivedTokenInfo.symbol}</span>
-        </span>
-      </BorderPanel>
-    )
-  }
 
   return (
     <>
@@ -143,28 +116,42 @@ export default function USGStakeContent() {
               Max: {formatBigInt(currentAssetInfo?.balance, 18, 2)} {currentFeature === "stake" ? "USG" : "sUSG"}{" "}
             </span>
           </div>
+          <div className="w-full">
+            <GenericInputAssetAmount
+              inputWeiValue={weiValue}
+              onValueChange={(value: bigint | undefined) => setWeiValue(value)}
+              depositSelect={<StaticCardAssetInput asset={"stake" === currentFeature ? "USG" : "sUSG"} />}
+              asset={currentAssetInfo?.asset}
+              label={currentFeature === "stake" ? "You deposit" : "You unstake"}
+              maxAmountParams={{
+                maxWeiValue: currentAssetInfo?.balance || 0n,
+                setMaxAmount: () => {
+                  setStakePercentage(100)
+                  setWeiValue(currentAssetInfo?.balance)
+                },
+              }}
+              sliderParams={{
+                sliderPercentage: stakePercentage,
+                setSliderPercentage: setStakePercentage,
+              }}
+            />
 
-          <DepositReceiveInput
-            labelDeposit={currentFeature === "stake" ? "You deposit" : "You unstake"}
-            labelReceive={currentFeature === "stake" ? "You stake" : "You receive"}
-            className="w-full"
-            depositAmount={weiValue}
-            depositSelect={<DepositAssetDisplay />}
-            disabled={false}
-            receiveAssetDisplay={<ReceiveAssetDisplay />}
-            depositAsset={currentAssetInfo?.asset}
-            receiveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18)))?.toFixed(2)}
-            balance={currentAssetInfo?.balance}
-            receiveAmount={Number(formatUnits(expected || 0n, 18)).toFixed(0)}
-            setMaxBalance={() => {
-              setStakePercentage(100)
-              setWeiValue(currentAssetInfo?.balance)
-            }}
-            onValueChange={(value: bigint | undefined) => setWeiValue(value)}
-            percentage={stakePercentage}
-            setPercentage={setStakePercentage}
-            onClickChevron={() => setCurrentFeature(currentFeature === "stake" ? "unstake" : "stake")}
-          />
+            <div
+              onClick={() => setCurrentFeature(currentFeature === "stake" ? "unstake" : "stake")}
+              className="my-2 flex w-full cursor-pointer items-center justify-center border-none"
+            >
+              <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-20 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
+            </div>
+
+            <GenericInputAssetAmount
+              inputWeiValue={expected}
+              onValueChange={(value: bigint | undefined) => setWeiValue(value)}
+              depositSelect={<StaticCardAssetInput asset={"stake" === currentFeature ? "sUSG" : "USG"} />}
+              asset={receivedTokenInfo}
+              label={currentFeature === "stake" ? "You stake" : "You receive"}
+              disabled={true}
+            />
+          </div>
 
           <Accordion className="w-full" type="single" collapsible>
             <AccordionItem value="item-1">

@@ -6,7 +6,7 @@ import { computeIR } from "./usg_record_controller"
 import { useUSGRecordContext } from "./usg_record_context"
 import { ResponsiveContainer, AreaChart, XAxis, YAxis, CartesianGrid, Legend, Area, Tooltip } from "recharts"
 
-export default function InterestRateGraph() {
+export function InterestRateGraph() {
   const { marketData } = useUSGRecordContext()
 
   interface RCParams {

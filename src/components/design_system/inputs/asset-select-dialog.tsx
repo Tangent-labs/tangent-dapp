@@ -1,12 +1,13 @@
 "use client"
 
-import Image from "next/image"
-import { ChevronDown } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import AutoSizer from "react-virtualized-auto-sizer"
 import { useMemo, useRef, useState } from "react"
-import TokenImage from "../structure/token_image"
+import Image from "next/image"
+import AutoSizer from "react-virtualized-auto-sizer"
 import { FixedSizeList as List } from "react-window"
+import { ChevronDown } from "lucide-react"
+
+import { TokenImage } from "../structure/token_image"
+import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { DepositReceiveAsset } from "@/components/products/usg/usg_type"
 import { ExistingAsset } from "@/types"
@@ -24,7 +25,7 @@ interface AssetSelectionDialogProps<T extends OptionT> {
   disabled?: boolean
 }
 
-const ITEM_HEIGHT = 40
+const ITEM_HEIGHT = 38
 
 const RenderAsset = <T extends OptionT>({ selected, placeholder }: { selected: T | null; placeholder: string }) => {
   return (
@@ -47,7 +48,7 @@ const RenderAsset = <T extends OptionT>({ selected, placeholder }: { selected: T
   )
 }
 
-export default function AssetSelectionDialog<T extends OptionT>({
+export function AssetSelectionDialog<T extends OptionT>({
   options,
   value,
   onChange,
@@ -57,7 +58,7 @@ export default function AssetSelectionDialog<T extends OptionT>({
   disabled,
 }: AssetSelectionDialogProps<T>) {
   const [search, setSearch] = useState("")
-
+  const [open, setOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const listRef = useRef<List>(null)
@@ -72,6 +73,12 @@ export default function AssetSelectionDialog<T extends OptionT>({
 
   const itemKey = (index: number) => filtered[index]?.value ?? filtered[index]?.symbol ?? index
 
+  const handleSelect = (symbol: string) => {
+    onChange(symbol)
+    setOpen(false) // ← close dialog
+    setSearch("") // optional: reset search
+  }
+
   const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const opt = filtered[index]
     const isSelected = value === opt.symbol || value === opt.value
@@ -84,7 +91,7 @@ export default function AssetSelectionDialog<T extends OptionT>({
           aria-selected={isSelected}
           className="relative flex w-full cursor-pointer items-center text-sm"
           onClick={() => {
-            onChange(opt.symbol)
+            handleSelect(opt.symbol)
           }}
         >
           {template(opt)}
@@ -94,12 +101,12 @@ export default function AssetSelectionDialog<T extends OptionT>({
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button
           disabled={disabled}
           type="button"
-          className="flex min-h-10 items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 py-1.5"
+          className="flex h-[38px] items-center justify-between rounded-[10px] border-white/20 bg-select-input px-2.5 transition-all duration-200 hover:scale-[1.02] hover:bg-white/5 active:scale-[0.99]"
           style={{ borderWidth: 1.5 }}
         >
           <span className="flex items-center gap-2">

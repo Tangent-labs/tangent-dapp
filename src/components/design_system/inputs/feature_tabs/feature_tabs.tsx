@@ -3,8 +3,8 @@
 import { Address } from "viem"
 import { cn } from "@/lib/utils"
 import { LayoutGroup } from "framer-motion"
-import Divider from "../../structure/divider"
-import LargeButtonTab from "../large_button_tab"
+import { Divider } from "../../structure/divider"
+import { LargeButtonTab } from "../large_button_tab"
 import { FeatureTabsMotionDiv } from "./motion_div"
 import { FeatureSelect } from "../../structure/feature_select"
 

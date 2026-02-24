@@ -1,8 +1,8 @@
 "use client"
 
-import ButtonTab from "@/components/design_system/inputs/button_tab"
-import Panel from "@/components/design_system/structure/panel"
-import TokenImage from "@/components/design_system/structure/token_image"
+import { ButtonTab } from "@/components/design_system/inputs/button_tab"
+import { Panel } from "@/components/design_system/structure/panel"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 import React, { useMemo, useState } from "react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from "recharts"
 

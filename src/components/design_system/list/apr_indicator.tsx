@@ -9,7 +9,7 @@ interface AprIndicatorProps {
   className?: string
 }
 
-export default function AprIndicator({ children, isMax, className = "" }: AprIndicatorProps) {
+export function AprIndicator({ children, isMax, className = "" }: AprIndicatorProps) {
   return (
     <div
       /* prettier-ignore */

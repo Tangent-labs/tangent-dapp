@@ -1,23 +1,21 @@
 "use client"
 
-import { cn } from "@/lib/utils"
+import { cn, PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGDepositContext } from "./usg_record_deposit_context"
-import PanelRaw from "@/components/design_system/structure/panel_raw"
-import FormButtons from "@/components/design_system/form/form_actions"
-import { SlippageInput } from "@/components/design_system/inputs/slippage"
-import { BorrowInput } from "@/components/design_system/inputs/borrow_input"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
 import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
-import { IconThunder, IconCircleHelp, IconSingleArrow } from "@/components/icons"
-import { USGStaticAssetSelector } from "@/components/design_system/structure/usg_static_selector"
+import { IconSingleArrow } from "@/components/icons"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
-import { CustomCollatAssetDisplay } from "@/components/design_system/structure/custom_collat_asset_display"
+import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
+import { ExistingAsset } from "@/types"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { SlippageInput } from "@/components/design_system/inputs/slippage"
+import FormButtons from "@/components/design_system/form/form_actions"
 
 export default function USGDepositContent() {
   const {
@@ -35,14 +33,13 @@ export default function USGDepositContent() {
     depositAsset,
     depositWeiValue,
     formState,
-    estimatedZapDollarValue,
+    minValueReceivedFromZap,
     borrowWeiValue,
     isZapLoading,
     isDepositLoading,
     zapValue,
     depositAssetInfo,
     slippage,
-    zapInnerValue,
     depositSliderPercent,
     borrowSliderPercent,
     maxBorrowableValue,
@@ -54,11 +51,7 @@ export default function USGDepositContent() {
 
   const { connect } = useWalletConnexionContext()
 
-  const { collateralInfo, isDepositAndBorrow, marketData, USGInfo, balanceAllowanceData, maxBorrowCapReached, displayAPRVariation } = useUSGRecordContext()
-
-  const CustomAssetSelect = () => {
-    return <AssetSelector collateralInfo={collateralInfo} depositAsset={depositAsset || collateralInfo.name} setDepositAsset={setDepositAsset} />
-  }
+  const { collateralInfo, isDepositAndBorrow, marketData, balanceAllowanceData, maxBorrowCapReached, displayAPRVariation, USGInfo } = useUSGRecordContext()
 
   return (
     <div className="flex flex-col gap-2">
@@ -67,50 +60,50 @@ export default function USGDepositContent() {
         <span className="text-xs text-subtitle">{maxDepositString}</span>
       </div>
 
-      <DepositInput
-        displaySliderInput={true}
-        depositAmount={depositWeiValue}
-        depositSelect={<CustomAssetSelect />}
+      {/* DEPOSIT INPUT */}
+      <GenericInputAssetAmount
+        inputWeiValue={depositWeiValue}
+        onValueChange={(e) => {
+          handleDepositChange(e)
+        }}
+        depositSelect={<AssetSelector collateralInfo={collateralInfo} depositAsset={depositAsset || collateralInfo.name} setDepositAsset={setDepositAsset} />}
         isLoading={isDepositLoading}
-        depositAsset={depositAssetInfo}
-        balance={balanceAllowanceData?.balance || marketData?.collateralBalance}
+        asset={depositAssetInfo}
+        label={isZapping ? "You sell" : "You deposit"}
         isZapping={isZapping}
-        onValueChange={handleDepositChange}
-        percentage={depositSliderPercent}
-        setPercentage={setDepositSliderPercent}
-        setMaxBalance={() => {
-          handleDepositChange(balanceAllowanceData?.balance || marketData?.collateralBalance)
+        maxAmountParams={{
+          maxWeiValue: balanceAllowanceData?.balance || 0n,
+          setMaxAmount: () => {
+            handleDepositChange(balanceAllowanceData?.balance || 0n)
+          },
+        }}
+        sliderParams={{
+          sliderPercentage: depositSliderPercent,
+          setSliderPercentage: setDepositSliderPercent,
         }}
       />
 
-      {depositAsset && isZapping && (
-        <PanelRaw className={`${isZapLoading ? "shimmer" : ""} flex flex-col gap-1 p-2`}>
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col items-start justify-start">
-              <div className="flex items-center justify-center gap-1">
-                <div className="text-sm text-subtitle">Zap</div>
-                <IconThunder className="h-auto w-[8px] text-row-tonic" />
-                <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
-              </div>
-              <div className="flex items-center justify-center gap-2">
-                <input
-                  type="number"
-                  disabled={isZapLoading}
-                  className="flex w-fit max-w-[140px] justify-start bg-transparent text-[24px] font-semibold focus:outline-none"
-                  value={zapInnerValue ?? ""}
-                  onChange={handleZapInputChange}
-                />
-              </div>
-              <div className="flex items-center justify-start gap-2 text-xs text-subtitle">
-                <div className="hidden md:flex">Minimum received </div>
-                <div> {zapValue && !!marketData?.collateralInfos ? estimatedZapDollarValue : ""}</div>
-              </div>
-            </div>
+      {/* ZAPPING RESULT INPUT */}
 
-            <CustomCollatAssetDisplay collateralInfo={collateralInfo} />
-          </div>
-        </PanelRaw>
+      {depositAsset && isZapping && (
+        <GenericInputAssetAmount
+          inputWeiValue={zapValue || 0n}
+          onValueChange={(e) => {
+            handleZapInputChange(e)
+          }}
+          asset={collateralInfo}
+          isLoading={isZapLoading}
+          label={"You buy and deposit"}
+          depositSelect={<StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />}
+          bottomPart={
+            <div className="flex select-none gap-2 text-xs text-subtitle">
+              Minimum received {zapValue && !!marketData?.collateralInfos ? minValueReceivedFromZap : ""}
+            </div>
+          }
+        />
       )}
+
+      {/* BORROW INPUT */}
 
       {isDepositAndBorrow && (
         <div className="flex flex-col gap-1">
@@ -118,23 +111,26 @@ export default function USGDepositContent() {
             <span className="text-sm font-semibold md:text-xl">Borrow USG</span>
             <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} USG</span>
           </div>
-          <BorrowInput
-            displaySliderInput={true}
-            borrowAmount={borrowWeiValue}
-            disabled={maxBorrowCapReached}
-            labelDeposit="You borrow"
-            depositSelect={<USGStaticAssetSelector />}
-            borrowAsset={USGInfo}
-            setMaxBalance={maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue)}
-            balance={maxBorrowableValue}
-            percentage={borrowSliderPercent}
-            setPercentage={maxBorrowCapReached ? () => {} : setBorrowSliderPercent}
+          <GenericInputAssetAmount
+            inputWeiValue={borrowWeiValue}
             onValueChange={(value: bigint | undefined) => {
               setBorrowWeiValue(value)
+            }}
+            asset={USGInfo}
+            disabled={maxBorrowCapReached}
+            label="You borrow"
+            depositSelect={<StaticCardAssetInput asset="USG" />}
+            maxAmountParams={{ maxWeiValue: maxBorrowableValue, setMaxAmount: maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue) }}
+            sliderParams={{
+              sliderPercentage: borrowSliderPercent,
+              setSliderPercentage: maxBorrowCapReached ? () => {} : setBorrowSliderPercent,
+              sliderLegendValues: PERCENTAGE_INPUT_AMOUNT,
             }}
           />
         </div>
       )}
+
+      {/* RECAP */}
 
       <div className="flex items-start justify-between gap-2">
         <Accordion className="w-full" type="single" collapsible>
@@ -183,7 +179,7 @@ export default function USGDepositContent() {
           </AccordionItem>
         </Accordion>
 
-        <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
+        <SlippageInput slippage={slippage} setSlippage={setSlippage} />
       </div>
 
       <MarketTransactionError display={!!borrowWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />

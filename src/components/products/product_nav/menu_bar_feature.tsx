@@ -16,11 +16,11 @@ import { useCallback } from "react"
 import { usePathname } from "next/navigation"
 import { useRootContext } from "../root/root_context"
 import { formatCompact } from "@/lib/number_formatter"
-import TokenImage from "@/components/design_system/structure/token_image"
-import { SwapButton } from "@/components/design_system/inputs/swap_button"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 import { isOnMarket, mapRouteToFeature } from "./menu_bar_feature_controller"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { SwapButton } from "@/components/design_system/inputs/swap_button"
 import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
 
 export default function MenuBarFeature() {

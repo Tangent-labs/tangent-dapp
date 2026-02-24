@@ -1,9 +1,9 @@
 "use client"
 
-import USGHoverCard from "../structure/usg_hover_card"
+import { USGHoverCard } from "../structure/usg_hover_card"
 import { ListHeaderData, ListSort, SortedState } from "@/types"
 import { IconSortHeader } from "@/components/icons"
-import ListRowDisposition from "@/components/design_system/list/list_row_disposition"
+import { ListRowDisposition } from "@/components/design_system/list/list_row_disposition"
 import { cn } from "@/lib/utils"
 import { ListGradientBorder } from "./list_gradient_border"
 
@@ -38,7 +38,7 @@ const HeaderDisplay = ({ label, sort = "none", onSort, field, indicator, classNa
   )
 }
 
-const ListHeader = ({ headers, activeSort, onSort, rowDisposition: CustomRowDisposition = ListRowDisposition }: ListHeaderProps) => {
+export const ListHeader = ({ headers, activeSort, onSort, rowDisposition: CustomRowDisposition = ListRowDisposition }: ListHeaderProps) => {
   return (
     <div className="relative hidden w-full xl:block">
       <div className={`w-full rounded-t-[10px] bg-overlay-panel px-4 py-2 leading-[10px] backdrop-blur-[60px]`}>
@@ -85,5 +85,3 @@ const ListHeader = ({ headers, activeSort, onSort, rowDisposition: CustomRowDisp
     </div>
   )
 }
-
-export default ListHeader

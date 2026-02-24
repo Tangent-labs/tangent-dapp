@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import AprIndicator from "./apr_indicator"
+import { AprIndicator } from "./apr_indicator"
 
 interface ListAPRProps {
   rewardToken: string
@@ -15,7 +15,7 @@ interface ListAPRProps {
   className?: string
 }
 
-const MarketListAPR = ({ rewardToken, maxLeverage, currentAPRDetails, projectedAPRDetails, apr, projectedApr, className = "" }: ListAPRProps) => {
+export const MarketListAPR = ({ rewardToken, maxLeverage, currentAPRDetails, projectedAPRDetails, apr, projectedApr, className = "" }: ListAPRProps) => {
   const computedAPRDetails = useMemo(() => {
     if (currentAPRDetails && projectedAPRDetails && rewardToken) {
       return Number(currentAPRDetails[rewardToken]) === 0 ? projectedAPRDetails : currentAPRDetails
@@ -89,5 +89,3 @@ const MarketListAPR = ({ rewardToken, maxLeverage, currentAPRDetails, projectedA
     </div>
   )
 }
-
-export default MarketListAPR

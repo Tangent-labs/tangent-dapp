@@ -1,12 +1,12 @@
 "use client"
 
 import { useUSGRecordContext } from "./usg_record_context"
-import Title from "@/components/design_system/structure/title"
-import Divider from "@/components/design_system/structure/divider"
-import EvolutionBox from "@/components/design_system/structure/evolution_box"
+import { Title } from "@/components/design_system/structure/title"
+import { Divider } from "@/components/design_system/structure/divider"
+import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
-export default function USGLoanDetail() {
+export function USGLoanDetail() {
   const { marketDisplayData, futureMarketDisplayData } = useUSGRecordContext()
 
   return (

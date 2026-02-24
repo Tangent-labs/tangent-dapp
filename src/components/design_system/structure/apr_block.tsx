@@ -1,7 +1,7 @@
 import { IconCircleHelp } from "@/components/icons"
 import { AprEntry, ExistingAsset } from "@/types"
-import TokenImage from "./token_image"
-import ProgressBar from "./progress_bar"
+import { TokenImage } from "./token_image"
+import { ProgressBar } from "./progress_bar"
 import { useMemo } from "react"
 import { Address } from "viem"
 import { ADDR_TOKEN } from "@/services/repo_asset_addresses"
@@ -12,7 +12,7 @@ type AprBlockProps = {
   aprEntry?: AprEntry
 }
 
-export default function AprBlock({ title, aprEntry }: AprBlockProps) {
+export function AprBlock({ title, aprEntry }: AprBlockProps) {
   const display = useMemo(() => {
     if (!aprEntry?.totalApr) {
       return { total: 0, details: [] }

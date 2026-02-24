@@ -1,13 +1,13 @@
 "use client"
 
-import PanelRaw from "./panel_raw"
+import { PanelRaw } from "./panel_raw"
 
 interface PanelProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
   className?: string
 }
 
-export default function Panel({ children, className, ...props }: PanelProps) {
+export function Panel({ children, className, ...props }: PanelProps) {
   return (
     <PanelRaw className={`mb-2 p-4 ${className}`} {...props}>
       {children}

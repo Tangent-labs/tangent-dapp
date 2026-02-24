@@ -25,6 +25,18 @@ export function formatPercent(value?: number | string, decimals: number = 2) {
   return `${formattedValue}%`
 }
 
+// ---------------------------
+// TRUNCATE TO 6 DECIMALS
+// Helper function to format numbers to at most 6 decimals
+// ---------------------------
+export function truncateDecimals(str: string, decimalsDisplay: number = 6) {
+  // Truncate the decimals of the str passed in param
+  const match = str.match(new RegExp(`^(-?\\d+)(\\.\\d{0,${decimalsDisplay}})?`))
+  if (!match) return str
+  // Remove trailing zeros after the decimals
+  return match[0].replace(/(\.\d*?)0+$/, "$1").replace(/\.$/, "")
+}
+
 /**
  * Converts a number into a BigInt with a specified number of decimals.
  * @param num - The number to convert.

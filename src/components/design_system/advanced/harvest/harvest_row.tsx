@@ -2,12 +2,12 @@
 
 import { Address } from "viem"
 import { cn } from "@/lib/utils"
-import Panel from "../../structure/panel"
+import { Panel } from "../../structure/panel"
 import { Button } from "../../inputs/button"
 import { formatDate } from "@/lib/other_formatter"
-import TokenImage from "../../structure/token_image"
+import { TokenImage } from "../../structure/token_image"
 import ListIndicator from "../../list/list_indicator"
-import USGHoverCard from "../../structure/usg_hover_card"
+import { USGHoverCard } from "../../structure/usg_hover_card"
 import { formatDollar, formatPercent } from "@/lib/number_formatter"
 import { HarvesterInfoDisplay } from "@/components/products/usg/usg_type"
 

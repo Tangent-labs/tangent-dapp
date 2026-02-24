@@ -2,14 +2,14 @@
 
 import UsgTotalBorrow from "./usg_total_borrow"
 import { formatCompact } from "@/lib/number_formatter"
-import InterestRateGraph from "./usg_interest_rate_graph"
+import { InterestRateGraph } from "./usg_interest_rate_graph"
 import { useUSGRecordContext } from "./usg_record_context"
-import Title from "@/components/design_system/structure/title"
-import Divider from "@/components/design_system/structure/divider"
-import ButtonTab from "@/components/design_system/inputs/button_tab"
+import { Title } from "@/components/design_system/structure/title"
+import { Divider } from "@/components/design_system/structure/divider"
+import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
-export default function USGMarketInfo() {
+export function USGMarketInfo() {
   const { totalBorrow, totalBorrowTimeWindow, setTotalBorrowTimeWindow } = useUSGRecordContext()
 
   return (

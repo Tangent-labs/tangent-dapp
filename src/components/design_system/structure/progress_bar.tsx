@@ -3,7 +3,7 @@ type ProgressBarprops = {
   minPercent: number
 }
 
-export default function ProgressBar({ percent, minPercent = 0 }: ProgressBarprops) {
+export function ProgressBar({ percent, minPercent = 0 }: ProgressBarprops) {
   const percentDisplay = ((100 - minPercent) * percent) / 100 + minPercent
 
   return (

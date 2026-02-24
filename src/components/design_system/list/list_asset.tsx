@@ -3,9 +3,9 @@
 import { Address } from "viem"
 import { ExistingAsset } from "@/types"
 import { CustomAssetDisplay } from "./custom_asset_display"
+import { CollateralEmissionLabel } from "./collat_emission_label"
 import { MarketConstants } from "@/components/products/usg/usg_type"
 import TokenImageHighlighted from "../structure/token_image_highlighted"
-import { CollateralEmissionLabel } from "./collat_emission_label"
 
 interface ListAssetProps {
   name: string
@@ -18,7 +18,7 @@ interface ListAssetProps {
   className?: string
 }
 
-const ListAsset = ({ name, token, marketData, className = "" }: ListAssetProps) => {
+export const ListAsset = ({ name, token, marketData, className = "" }: ListAssetProps) => {
   return (
     <div className={`relative flex items-center gap-2 ${className}`}>
       <CustomAssetDisplay token={token} />
@@ -43,5 +43,3 @@ const ListAsset = ({ name, token, marketData, className = "" }: ListAssetProps) 
     </div>
   )
 }
-
-export default ListAsset

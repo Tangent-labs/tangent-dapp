@@ -6,7 +6,7 @@ type ButtonTabProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   active: boolean
 }
 
-export default function LargeButtonTab({ label, active, className, ...props }: ButtonTabProps) {
+export function LargeButtonTab({ label, active, className, ...props }: ButtonTabProps) {
   return (
     <div className="group relative inline w-full">
       <button

@@ -325,7 +325,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
         success: () => {
           getUSGUSDCBalanceAllowance(walletClient!)
-          setUSDCDepositValue(0n)
+          setUSDCDepositValue(undefined)
           setUSDCDepositSliderPercent(0)
           setUSGUSDCDepositValue(0n)
           setIsUSDCDepositLoading(false)
@@ -347,11 +347,10 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
         success: () => {
           getUSGfrxUSDBalanceAllowance(walletClient!)
-          setfrxUSDDepositValue(0n)
+          setfrxUSDDepositValue(undefined)
           setfrxUSDDepositSliderPercent(0)
           setUSGfrxUSDDepositValue(0n)
           setIsfrxUSDDepositLoading(false)
-
           return { type: "Success", content: "frxUSD successfully deposited." }
         },
         error: () => {

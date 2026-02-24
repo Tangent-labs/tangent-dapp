@@ -1,7 +1,10 @@
-import ButtonTab from "./button_tab"
+"use client"
+
+import { ButtonTab } from "./button_tab"
+import { useEffect, useState } from "react"
 import { IconGearWheel } from "@/components/icons"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ReliefCard } from "../structure/relief_card"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 type SlippageInputProps = {
   slippage: number
@@ -9,6 +12,27 @@ type SlippageInputProps = {
 }
 
 export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => {
+  const [localValue, setLocalValue] = useState(slippage.toString())
+
+  useEffect(() => {
+    if (document.activeElement?.tagName === "INPUT") return
+    setLocalValue(slippage.toString())
+  }, [slippage])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replaceAll(",", ".").trim()
+    if (val === "" || /^\d*\.?\d{0,2}$/.test(val)) {
+      const num = parseFloat(val)
+      if (val !== "" && num > 100) return
+      setLocalValue(val)
+      if (val === "") {
+        setSlippage(0)
+      } else if (!isNaN(num) && num >= 0) {
+        setSlippage(num)
+      }
+    }
+  }
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -26,10 +50,11 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
           <div className="flex w-full flex-col items-center justify-between gap-2">
             <div className="flex w-full items-center justify-start">Slippage</div>
             <input
-              onChange={(e) => setSlippage(Number(e?.target?.value))}
-              value={slippage}
-              placeholder="0.5"
-              type="number"
+              onChange={handleChange}
+              value={localValue}
+              placeholder="0"
+              type="text"
+              inputMode="decimal"
               min={0.1}
               step={0.1}
               className="w-full rounded-[10px] border border-white/30 bg-transparent pl-2 focus:outline-none"

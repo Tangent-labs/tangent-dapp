@@ -7,7 +7,7 @@ import { formatToken } from "../usg_tasks_controller"
 import { TaskStatus } from "../../components/TaskStatus"
 import { LpTaskCustomAssetDisplay } from "./custom_token_display"
 import { formatNumber, formatDollar } from "@/lib/number_formatter"
-import TokenImage from "@/components/design_system/structure/token_image"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 import { useListContext } from "@/components/design_system/list/list_context"
 import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 

@@ -16,3 +16,5 @@ export function assert(condition: unknown, message: string): asserts condition {
     throw new Error(message)
   }
 }
+
+export const PERCENTAGE_INPUT_AMOUNT = ["0", "25", "50", "75", "100"]

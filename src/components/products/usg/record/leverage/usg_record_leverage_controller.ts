@@ -26,9 +26,7 @@ export function getLeverageFormState(
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
   } else {
-    if (!isZapMode && (depositWeiValue || 0n) > (marketData?.collateralBalance || 0n)) {
-      reasons.push("Not enough balance.")
-    } else if (isZapMode && (depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
+    if (!isZapMode && (depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
       reasons.push("Not enough balance.")
     } else if (!!leverage && leverage > 1 / (1 - Number(marketData?.constants.maxLTV) / 100000)) {
       reasons.push("Reduce leverage.")

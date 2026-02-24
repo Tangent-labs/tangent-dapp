@@ -15,7 +15,7 @@ interface InputSelectProps<T extends SelectOption | SelectOptionAmount> {
   template?: (option: T) => ReactNode
 }
 
-const InputSelect = <T extends SelectOption | SelectOptionAmount>({
+export const InputSelect = <T extends SelectOption | SelectOptionAmount>({
   options,
   onChange,
   label,
@@ -52,5 +52,3 @@ const InputSelect = <T extends SelectOption | SelectOptionAmount>({
     </>
   )
 }
-
-export default InputSelect

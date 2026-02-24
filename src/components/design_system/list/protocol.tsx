@@ -1,6 +1,6 @@
 import { ExistingAsset } from "@/types"
-import BorderPanel from "../structure/border_panel"
-import TokenImage from "../structure/token_image"
+import { BorderPanel } from "../structure/border_panel"
+import { TokenImage } from "../structure/token_image"
 
 type ProtocolProps = {
   token: ExistingAsset

@@ -24,8 +24,6 @@ type USGLiquidateContextValues = {
   formState: FormState
   liquidateWeiValue?: bigint
   setLiquidateWeiValue: (arg: bigint | undefined) => void
-  isFullLiquidation: boolean
-  setIsFullLiquidation: (arg: boolean) => void
 
   maxLiquidable: bigint
   liquidablePercentage: number
@@ -64,33 +62,24 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
 
   const { marketData, marketInfo, loadOnChainData, marketDisplayData, setCurrentAmounts } = useUSGRecordContext()
 
-  const [liquidablePercentage, setLiquidablePercentage] = useState<number>(0)
-
-  const [repayablePercentage, setRepayablePercentage] = useState<number>(0)
-
   const [slippage, setSlippage] = useState<number>(0.2)
 
   const [isQuoteLoading, setIsQuoteLoading] = useState<boolean>(false)
 
-  const [isFullLiquidation, setIsFullLiquidation] = useState<boolean>(false)
-
   const [liquidateWeiValue, setLiquidateWeiValue] = useState<bigint | undefined>()
-
-  const [repayWeiValue, setRepayWeiValue] = useState<bigint | undefined>()
+  const [liquidablePercentage, setLiquidablePercentage] = useState<number>(0)
 
   const [USGReceivedValue, setUSGReceivedValue] = useState<bigint | undefined>()
 
+  const [repayWeiValue, setRepayWeiValue] = useState<bigint | undefined>()
+  const [repayablePercentage, setRepayablePercentage] = useState<number>(0)
+
   useEffect(() => {
-    if (isFullLiquidation) {
-      setRepayWeiValue(marketData?.debtInfos?.userDebt)
-      handleLiquidateValueChange(marketData?.collateralInfos?.positionCollateralAmount)
-    } else {
-      setLiquidateWeiValue(0n)
-      setRepayWeiValue(0n)
-      setUSGReceivedValue(0n)
-      setIsQuoteLoading(false)
-    }
-  }, [isFullLiquidation])
+    setLiquidateWeiValue(undefined)
+    setRepayWeiValue(undefined)
+    setUSGReceivedValue(undefined)
+    setIsQuoteLoading(false)
+  }, [])
 
   useEffect(() => {
     setCurrentAmounts({
@@ -134,10 +123,10 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
           toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
           loadUSGsUSGMetrics()
           loadOnChainData()
-          setLiquidateWeiValue(0n)
+          setLiquidateWeiValue(undefined)
           setLiquidablePercentage(0)
-          setRepayWeiValue(0n)
-          setUSGReceivedValue(0n)
+          setRepayWeiValue(undefined)
+          setUSGReceivedValue(undefined)
         })
         .catch((e) => {
           console.error(e)
@@ -214,8 +203,6 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     formState,
     liquidateWeiValue,
     setLiquidateWeiValue,
-    isFullLiquidation,
-    setIsFullLiquidation,
     maxLiquidable,
     liquidablePercentage,
     setLiquidablePercentage,

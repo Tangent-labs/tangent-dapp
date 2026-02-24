@@ -1,9 +1,9 @@
 import { specialTokensList } from "../usg_repository"
 import { formatBigInt } from "@/lib/number_formatter"
 import { MarketDebtData, USGCollateralData } from "../usg_type"
-import Divider from "@/components/design_system/structure/divider"
-import TokenImage from "@/components/design_system/structure/token_image"
-import InnerTooltip from "@/components/design_system/structure/inner_tooltip"
+import { Divider } from "@/components/design_system/structure/divider"
+import { TokenImage } from "@/components/design_system/structure/token_image"
+import { InnerTooltip } from "@/components/design_system/structure/inner_tooltip"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 type MarketDebtProps = {

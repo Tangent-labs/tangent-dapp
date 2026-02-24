@@ -14,7 +14,6 @@ export const localStorageUtils = {
 
   getItem<T>(key: string): T | null {
     try {
-      //Server side. console.log("localStorage", localStorage)
       if (typeof window === "undefined") return null
 
       const serializedValue = localStorage.getItem(key)

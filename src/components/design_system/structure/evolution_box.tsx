@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import TokenImage from "./token_image"
+import { TokenImage } from "./token_image"
 import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
 import { ExistingAsset } from "@/types"
 
@@ -14,7 +14,7 @@ type EvolutionBoxProps = {
   className?: string
 }
 
-export default function EvolutionBox({ label, originalValue, newValue, logo, className = "" }: EvolutionBoxProps) {
+export function EvolutionBox({ label, originalValue, newValue, logo, className = "" }: EvolutionBoxProps) {
   const hasChanged = useMemo(() => {
     return newValue !== undefined && newValue !== originalValue
   }, [newValue, originalValue])

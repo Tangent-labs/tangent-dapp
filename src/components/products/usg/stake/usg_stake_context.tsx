@@ -1,6 +1,6 @@
 "use client"
 
-import { formatUnits } from "viem"
+import { formatEther, formatUnits, parseEther } from "viem"
 import { useUSGContext } from "../usg_context"
 import { getsUsgApyData } from "../client_api"
 import { USG_CONTRACT } from "../usg_repository"
@@ -27,7 +27,7 @@ type USGStakeContextValues = {
   actionStake: () => void
   actionUnstake: () => void
   currentAssetInfo?: StakingAssetInfo
-  receivedTokenInfo: AssetDataPriced
+  receivedTokenInfo?: AssetDataPriced
   hasToApprove: boolean
   computeProjectedValue: number
   formState: FormState
@@ -72,6 +72,8 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   }, [])
 
   const receivedTokenInfo = useMemo(() => {
+    if (!USGsUSGMetrics?.sUSGPrice) return
+
     if (currentFeature === "stake") {
       return {
         address: USG_CONTRACT.SUSG,
@@ -79,7 +81,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
         displayDecimals: 2,
         logo: "sUSG" as ExistingAsset,
         name: "sUSG",
-        price: 0,
+        price: Number(formatEther(USGsUSGMetrics?.sUSGPrice)),
         symbol: "sUSG",
         balance: USGsUSGMetrics?.sUSGBalance,
       }
@@ -91,20 +93,21 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
       displayDecimals: 2,
       logo: "USG" as ExistingAsset,
       name: "USG",
-      price: 0,
+      price: Number(formatEther(USGsUSGMetrics?.USGPrice)),
       symbol: "USG",
       balance: USGsUSGMetrics?.USGBalance,
     }
   }, [currentFeature, USGsUSGMetrics])
 
   const currentAssetInfo = useMemo(() => {
+    if (!USGsUSGMetrics?.sUSGPrice) return
     if (currentFeature === "stake") {
       return {
         current: "asset" as StakingDepositType,
         address: USG_CONTRACT.USG,
         balance: USGsUSGMetrics?.USGBalance,
         asset: {
-          price: Number(USGsUSGMetrics?.USGPrice) / 10 ** 18,
+          price: Number(formatEther(USGsUSGMetrics?.USGPrice)),
           decimals: 18,
           address: USG_CONTRACT.USG,
           displayDecimals: 2,
@@ -120,7 +123,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
       address: USG_CONTRACT.SUSG,
       balance: USGsUSGMetrics?.sUSGBalance,
       asset: {
-        price: Number(USGsUSGMetrics?.sUSGPrice) / 10 ** 18,
+        price: Number(formatEther(USGsUSGMetrics?.sUSGPrice)),
         decimals: 18,
         address: USG_CONTRACT.SUSG,
         displayDecimals: 2,
@@ -233,8 +236,8 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   }, [currentFeature, weiValue])
 
   useEffect(() => {
-    setExpected(0n)
-    setWeiValue(0n)
+    setExpected(undefined)
+    setWeiValue(undefined)
     setStakePercentage(0)
   }, [currentFeature])
 

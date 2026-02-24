@@ -17,7 +17,7 @@ import { getSwapAssetPrice } from "@/services/service_price"
 import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
 import { USG_CONTRACT, USGMarkets, USGOracles } from "../usg_repository"
 import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
-import { Abi, Address, erc20Abi, formatEther, formatUnits, Hex, parseEther, WalletClient, zeroAddress } from "viem"
+import { Abi, Address, erc20Abi, formatEther, formatUnits, Hex, parseEther, parseUnits, WalletClient, zeroAddress } from "viem"
 import { executeApprove, executeChainViewUnique, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { formatBigInt, formatBigIntAsNumber, formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
 
@@ -48,6 +48,7 @@ export const getUSGMarketRecordData = async (address: Address, market: Address) 
     address,
     market,
     USG_CONTRACT.MARKET_VIEWER,
+    USG_CONTRACT.USG
   ])
 }
 
@@ -128,13 +129,13 @@ export function getComputedFutureLoanData(
 
   const futureDeposited = !!amounts?.zapValue
     ? BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) +
-      BigInt(amounts.zapValue!) -
-      BigInt(amounts.withdrawWeiValue!) -
-      BigInt(amounts.liquidateValue!)
+    BigInt(amounts.zapValue!) -
+    BigInt(amounts.withdrawWeiValue!) -
+    BigInt(amounts.liquidateValue!)
     : BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) +
-      BigInt(amounts.depositWeiValue!) -
-      BigInt(amounts.withdrawWeiValue!) -
-      BigInt(amounts.liquidateValue!)
+    BigInt(amounts.depositWeiValue!) -
+    BigInt(amounts.withdrawWeiValue!) -
+    BigInt(amounts.liquidateValue!)
 
   const futureDepositedDollarRaw = (futureDeposited * collateralPriceRaw) / DECIMALS
   const futureDepositedDollar = collateralValueToNumber(futureDeposited) * collateralprice
@@ -148,7 +149,7 @@ export function getComputedFutureLoanData(
     collateralValue: formatDollar(futureDepositedDollar, 0),
     debt: futureDebt > 0n ? formatBigInt(futureDebt, 18, collateralInfo.displayDecimals) : "0",
     health: health > 0n ? formatNumber(Number(formatUnits(health, collateralInfo.decimals)), 2) : "0",
-    ltv: ltv > 0 ? formatNumber(Number(formatUnits(BigInt(ltv), 18)), 2) + "%" : "0%",
+    ltv: ltv > 0 ? formatNumber(Number(formatUnits(BigInt(Math.trunc(ltv)), 18)), 2) + "%" : "0%",
     maxBorrowable: formatDollarBigInt(maxBorrowable, collateralInfo.decimals, 0),
     maxWithdrawable: formatDollarBigInt(maxWithDrawable, collateralInfo.decimals, 0),
   } as USGMarketLoanDisplayData
@@ -221,7 +222,7 @@ export function getMarketDisplayData(usgPrice: number, marketData?: MarketDetail
     depositedDollar: formatDollar(Number(formatEther(BigInt(marketData?.collateralInfos.positionCollateralUSDValue || 0n))), 0),
     borrowRateCurrent: Number(formatEther(marketData?.debtInfos.currentBorrowRate || 0n)),
     borrowRateNext: Number(formatEther(marketData?.debtInfos.futureBorrowRate || 0n)),
-    lt: formatNumber(Number(formatEther(BigInt(marketData?.constants.liquidationThreshold || 0n))), 2) + "%",
+    lt: formatNumber(Number(formatUnits(BigInt(marketData?.constants.liquidationThreshold || 0n), 3)), 2) + "%",
     ltDollar: "-",
     maxLtv: formatNumber(Number(BigInt(marketData?.constants.maxLTV || 0n)) / 1000, 2) + "%",
     maxLtvDollar: formatDollar(Number(formatEther(BigInt(marketData?.constants.maxMarketDebt || 0n))), 2),
@@ -432,8 +433,10 @@ export const computeLiquidationPrice = (
   return (futureDebt * BigInt(10 ** collateralInfo?.decimals)) / ((futureCollat || 1n) * (ltRaw / BigInt(1000n)))
 }
 
-export const computedMinAmountOut = (value: bigint, slippage: number) => {
-  return (BigInt(value) * (BigInt(10000 - Math.round(slippage * 100)) / 100n)) / BigInt(100)
+export const computedMinAmountOut = (value: bigint | string, slippagePercentage: number) => {
+  const percentageToString = (slippagePercentage / 100).toFixed(4)
+  const mul = parseUnits("1", 5) - parseUnits(percentageToString, 5)
+  return BigInt(value) * mul / parseUnits("1", 5)
 }
 
 type MarketContract = { name: string; address: Address }

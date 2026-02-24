@@ -6,12 +6,12 @@ import { formatUnits } from "viem"
 import { ListState } from "@/types"
 import { UserPosition } from "../../usg_type"
 import { useUSGRecordContext } from "../usg_record_context"
-import Title from "@/components/design_system/structure/title"
-import Loader from "@/components/design_system/structure/loader"
-import Divider from "@/components/design_system/structure/divider"
+import { Title } from "@/components/design_system/structure/title"
+import { Loader } from "@/components/design_system/structure/loader"
+import { Divider } from "@/components/design_system/structure/divider"
 import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import { IconSortHeader } from "@/components/icons/icon_sort_header"
-import TokenImage from "@/components/design_system/structure/token_image"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { formatActionLabel, userPositionListHeaders } from "./usg_position_history_controller"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
@@ -38,7 +38,7 @@ const HistoryRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
   )
 }
 
-export default function USGPositionHistory() {
+export function USGPositionHistory() {
   const { displayRows, customSort, isUserHistoryLoading } = useUSGRecordContext()
 
   return (

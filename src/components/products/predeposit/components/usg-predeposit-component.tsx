@@ -2,15 +2,15 @@
 
 import { formatUnits } from "viem"
 import { PredepositStatus } from "../types/types"
-import { StaticAssetSelector } from "./usdc-selector"
 import { DynamicProgressBar } from "./dynamic-progress-bar"
 import { formatDollar, formatNumber } from "@/lib/number_formatter"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
-import FormButtons from "@/components/design_system/form/form_actions"
-import TokenImage from "@/components/design_system/structure/token_image"
-import { SlippageInput } from "@/components/design_system/inputs/slippage"
-import BorderPanel from "@/components/design_system/structure/border_panel"
-import { DepositInput } from "@/components/design_system/inputs/deposit_input"
+import { FormButtons } from "@/components/design_system/form/form_actions"
+import { TokenImage } from "@/components/design_system/structure/token_image"
+import { SlippageInput } from "@/components/design_system/inputs/Slippage"
+import { BorderPanel } from "@/components/design_system/structure/border_panel"
+import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { StaticCardAssetInput } from "./StaticCardAssetInput"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 type USGPredepositComponentProps = {
@@ -75,19 +75,20 @@ export const USGPredepositComponent = ({
         <SlippageInput slippage={slippage} setSlippage={setSlippage} />
       </div>
 
-      <DepositInput
-        displaySliderInput={true}
-        depositAmount={depositWeiValue}
-        depositSelect={<StaticAssetSelector asset={assetInfo?.symbol as ExistingAsset} />}
+      <GenericInputAssetAmount
+        inputWeiValue={depositWeiValue}
+        depositSelect={<StaticCardAssetInput asset={assetInfo?.symbol as ExistingAsset} />}
         isLoading={isLoading}
-        depositAsset={assetInfo}
-        balance={balance}
+        label="You deposit"
+        asset={assetInfo}
         isZapping={false}
         onValueChange={handleDepositChange}
-        percentage={percentage}
-        setPercentage={setPercentage}
-        setMaxBalance={setMaxBalance}
         displayBalance={true}
+        maxAmountParams={{ maxWeiValue: balance, setMaxAmount: setMaxBalance }}
+        sliderParams={{
+          sliderPercentage: percentage,
+          setSliderPercentage: setPercentage,
+        }}
       />
 
       <div className={`${isLoading ? "shimmer" : ""} my-2 flex flex-col gap-1 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]`}>

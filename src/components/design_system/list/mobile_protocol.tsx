@@ -1,5 +1,5 @@
 import { ExistingAsset } from "@/types"
-import TokenImage from "../structure/token_image"
+import { TokenImage } from "../structure/token_image"
 
 type MobileProtocolProps = {
   token: ExistingAsset

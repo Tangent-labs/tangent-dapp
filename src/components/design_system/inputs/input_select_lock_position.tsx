@@ -6,7 +6,6 @@ import BorderPanel from "../structure/border_panel"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
-import { SliderInput } from "./slider_input"
 
 type InputSelectLockPositionProps = React.InputHTMLAttributes<HTMLInputElement> & {
   className?: string
@@ -140,7 +139,7 @@ export const InputSelectLockPosition = ({
         </div>
       </div>
 
-      <SliderInput percentage={percentage} handleSliderChange={handleSliderChange}></SliderInput>
+      {/* <SliderInput percentage={percentage} handleSliderChange={handleSliderChange} legendValues={PERCENTAGE_INPUT_AMOUNT} startEndRange={[]}></SliderInput> */}
     </BorderPanel>
   )
 }

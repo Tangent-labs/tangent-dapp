@@ -31,6 +31,7 @@ export const transformMarketData = (data: ChainViewMarketList) => {
 export function transformGlobalData(data?: ChainViewMarketList): USGGlobalData {
   if (!data)
     return {
+      usgPriceWei: 0n,
       USGPrice: "-",
       USGSupply: "-",
       sUSGPrice: "-",
@@ -51,6 +52,7 @@ export function transformGlobalData(data?: ChainViewMarketList): USGGlobalData {
   })
 
   return {
+    usgPriceWei: data?.USGPrice,
     USGPrice: USGPrice.toFixed(3),
     USGSupply: formatBigInt(data?.USGSupply || "0", 18, 0),
     sUSGPrice: formatDollar(formatBigInt(data?.sUSGPrice || "0", 18, 2), 2),

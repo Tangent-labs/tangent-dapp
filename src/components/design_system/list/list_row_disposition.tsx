@@ -4,7 +4,7 @@ interface ListRowDispositionProps {
   children: React.ReactNode[]
 }
 
-const ListRowDisposition = ({ children }: ListRowDispositionProps) => {
+export const ListRowDisposition = ({ children }: ListRowDispositionProps) => {
   return (
     <div className="flex items-center justify-between max-xl:flex-col">
       <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
@@ -16,5 +16,3 @@ const ListRowDisposition = ({ children }: ListRowDispositionProps) => {
     </div>
   )
 }
-
-export default ListRowDisposition

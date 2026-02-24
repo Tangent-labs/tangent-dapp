@@ -12,7 +12,7 @@ type FormButtonsProps = {
   connect: () => void
 }
 
-export default function FormButtons({ formState, labelApprove = "Approve", labelProcess, actions, connect }: FormButtonsProps) {
+export function FormButtons({ formState, labelApprove = "Approve", labelProcess, actions, connect }: FormButtonsProps) {
   const approveState = useMemo(() => {
     return !formState?.cantProcessReasons?.length ? (formState?.haveToApprove ? "active" : "inactive") : "disabled"
   }, [formState])

@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import Panel from "@/components/design_system/structure/panel"
+import { Panel } from "@/components/design_system/structure/panel"
 import { usePathname } from "next/navigation"
 import { dappConfig } from "@/dapp_config"
 

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 import { ReactNode } from "react"
-import USGHoverCard from "./usg_hover_card"
+import { USGHoverCard } from "./usg_hover_card"
 import { MarketAPR } from "@/components/products/usg/usg_type"
 
 type RecordPageHeaderProps = {
@@ -8,7 +8,7 @@ type RecordPageHeaderProps = {
   indicators?: RecordPageHeaderIndicatorProps[]
 }
 
-export default function RecordPageHeader({ apr, indicators }: RecordPageHeaderProps) {
+export function RecordPageHeader({ apr, indicators }: RecordPageHeaderProps) {
   let totalCurrentAPR = 0
   let totalProjectedAPR = 0
 

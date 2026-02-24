@@ -6,7 +6,7 @@ type ButtonTabProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   active: boolean
 }
 
-export default function ButtonTab({ label, active, className, ...props }: ButtonTabProps) {
+export function ButtonTab({ label, active, className, ...props }: ButtonTabProps) {
   return (
     <button
       type="button"

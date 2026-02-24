@@ -1,4 +1,4 @@
-import TokenImage from "@/components/design_system/structure/token_image"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ExistingAsset } from "@/types"
 
 export const LpTaskCustomAssetDisplay = ({ token }: { token: ExistingAsset }) => {

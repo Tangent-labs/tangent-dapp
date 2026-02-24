@@ -10,7 +10,7 @@ import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
-import { formatBigIntAsNumber, formatDollar, toBigInt } from "@/lib/number_formatter"
+import { formatBigIntAsNumber, formatDollar, toBigInt, truncateTo6Decimals } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -76,6 +76,8 @@ type USGRepayContextValues = {
 
   withdrawSelectedAsset: string
   setWithdrawSelectedAsset: (v: string) => void
+
+  minValueReceivedFromZap: string
 }
 
 export const USGRepayContext = createContext<USGRepayContextValues | undefined>(undefined)
@@ -274,11 +276,26 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     }
   }
 
+  function repayValue(repayWeiValue: bigint | undefined) {
+    let repayValue = repayWeiValue
+    if (!repayValue) return
+
+    if (isRepayMax || percentage === 100) {
+      const usgBalance = marketData?.debtInfos.usgBalance!
+
+      if (usgBalance < repayValue) {
+        repayValue = maxUint256
+      }
+    }
+
+    return repayValue
+  }
+
   const marketRepay = async () => {
     await toastTx(
       doRepay(walletClient!, {
         marketAddress: marketData!.marketAddress,
-        repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
+        repayWeiValue: repayValue(repayWeiValue),
       }),
       {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
@@ -297,7 +314,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     await toastTx(
       doRepayAndWithdraw(walletClient!, {
         marketAddress: marketData!.marketAddress,
-        repayWeiValue: isRepayMax || percentage === 100 ? maxUint256 : repayWeiValue,
+        repayWeiValue: repayValue(repayWeiValue),
         withdrawWeiValue,
         isReceiptOut: withdrawSelectedAsset !== collateral,
       }),
@@ -335,12 +352,17 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   const marketValues = useMemo(() => {
     if (marketData && currentAddress) {
+      const userDebt = marketData.debtInfos?.userDebt
+
       if (repayAsset === "USG") {
-        const maxRepayableValue = marketData.debtInfos?.userDebt || 0n
+        const usgBalance = marketData.debtInfos.usgBalance
+
+        const maxRepayableValue = usgBalance < userDebt ? usgBalance : userDebt
+
         const minimumLoan = marketData.constants.minimumLoan || 0n
         return { maxRepayableValue, minimumLoan }
       } else if (marketData && repayAssetInfo) {
-        const maxRepayableInZapAsset = (marketData.debtInfos?.userDebt / toBigInt(repayAssetInfo?.price, 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
+        const maxRepayableInZapAsset = (userDebt / toBigInt(repayAssetInfo?.price, 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
         const minimumLoanInZapAsset =
           (marketData.constants.minimumLoan / toBigInt(repayAssetInfo?.price, repayAssetInfo?.decimals || 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
 
@@ -365,6 +387,15 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
     return 0n
   }, [marketData, repayWeiValue, usgRepayedValue, currentAddress])
+
+  const minValueReceivedFromZap = useMemo(() => {
+    if (usgRepayedValue) {
+      const minAmountOutWei = computedMinAmountOut(usgRepayedValue, slippage)
+      const result = `(${truncateTo6Decimals(formatUnits(minAmountOutWei, USGInfo?.decimals!))})`
+      return result
+    }
+    return ""
+  }, [usgRepayedValue, slippage])
 
   const handleRepayValueChange = (value: bigint | undefined) => {
     setRepayWeiValue(value)
@@ -435,7 +466,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   }, [repayWeiValue, marketValues, repayAsset, usgRepayedValue])
 
   const USGDollarRepayedValue = useMemo(() => {
-    return `(~${formatDollar((Number(Number(formatUnits(usgRepayedValue || 0n, 18))) * USGInfo?.price).toFixed(2))})`
+    return `(${formatDollar((Number(Number(formatUnits(usgRepayedValue || 0n, 18))) * USGInfo?.price).toFixed(2))})`
   }, [usgRepayedValue, USGInfo])
 
   const expectedUSG = useMemo(() => {
@@ -483,6 +514,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     withdrawSelectedAsset,
     setWithdrawSelectedAsset,
     expectedUSG,
+    minValueReceivedFromZap,
   }
 
   return <USGRepayContext.Provider value={contextValue}>{children}</USGRepayContext.Provider>

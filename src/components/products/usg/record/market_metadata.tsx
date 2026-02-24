@@ -1,7 +1,7 @@
 "use client"
 
 import { MarketDetailData } from "../usg_type"
-import TokenImage from "@/components/design_system/structure/token_image"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 import { MobileProtocol } from "@/components/design_system/list/mobile_protocol"
 
 type MarketMetadataProps = {

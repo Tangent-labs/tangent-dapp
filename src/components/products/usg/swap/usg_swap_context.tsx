@@ -7,12 +7,13 @@ import { USG_CONTRACT, USGTokens } from "../usg_repository"
 import { toastTx } from "@/components/design_system/toast"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
-import { Abi, Address, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
+import { Abi, Address, formatUnits, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computedMinAmountOut, getBalances, getBalancesAndAllowances } from "../record/usg_record_controller"
 import { BalanceAllowanceData, SwapToken, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../usg_type"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./usg_swap_controller"
+import { truncateTo6Decimals } from "@/lib/number_formatter"
 
 type USGSwapContextProps = {
   children: ReactNode
@@ -74,6 +75,8 @@ type USGSwapContextValues = {
   USGsUSGMetrics: USGStakingInfo | undefined
 
   lpUserPoints: LpUserPoints
+
+  minValueReceivedFromZap: string
 }
 
 export const USGSwapContext = createContext<USGSwapContextValues | undefined>(undefined)
@@ -590,6 +593,15 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     return { depositAssets, receiveAssets }
   }, [balances, isBuying])
 
+  const minValueReceivedFromZap = useMemo(() => {
+    if (receiveWeiValue) {
+      const minAmountOutWei = computedMinAmountOut(receiveWeiValue, slippage)
+      const result = `(${truncateTo6Decimals(formatUnits(minAmountOutWei, receiveAssetInfo?.decimals!))})`
+      return result
+    }
+    return ""
+  }, [receiveWeiValue, slippage])
+
   const contextValue: USGSwapContextValues = {
     isLoading,
     depositWeiValue,
@@ -623,6 +635,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     toggleTokensSwitch,
     USGsUSGMetrics,
     lpUserPoints,
+    minValueReceivedFromZap,
   }
 
   return <USGSwapContext.Provider value={contextValue}>{children}</USGSwapContext.Provider>

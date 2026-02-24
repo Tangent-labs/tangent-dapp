@@ -3,9 +3,9 @@
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { useUSGContext } from "../../../usg_context"
 import { useUSGRecordContext } from "../../usg_record_context"
-import RecordPageHeader from "@/components/design_system/structure/record_page_header"
+import { RecordPageHeader } from "@/components/design_system/structure/record_page_header"
 
-export default function MarketDetailsParameters() {
+export function MarketDetailsParameters() {
   const { marketAprs } = useUSGContext()
 
   const { marketDisplayData, marketData, computedBorrowRate } = useUSGRecordContext()

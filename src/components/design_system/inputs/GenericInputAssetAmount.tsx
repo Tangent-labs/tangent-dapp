@@ -246,7 +246,7 @@ export function GenericInputAssetAmount({
           : cn(
               "cursor-text bg-white bg-opacity-[3%] ease-out",
               "focus-within:border-[--tgt-button-active] focus-within:shadow-[0_0_6px_1px_var(--tgt-button-active)]",
-              "hover:bg-white/[0.08] hover:shadow-lg [&:has(.no-parent-hover:hover)]:!bg-white/[0.03] [&:has(.no-parent-hover:hover)]:!shadow-none"
+              "hover:bg-white/[0.08] [&:has(.no-parent-hover:hover)]:!bg-white/[0.03] [&:has(.no-parent-hover:hover)]:!shadow-none"
             ),
         "flex flex-col p-2 transition-all duration-200"
       )}

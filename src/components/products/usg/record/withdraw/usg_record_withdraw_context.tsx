@@ -58,7 +58,7 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
           success: () => {
             loadUSGsUSGMetrics()
             loadOnChainData()
-            setWithdrawWeiValue(0n)
+            setWithdrawWeiValue(undefined)
             setWithdrawPercentage(0)
             return { type: "Success", content: "Transaction successful." }
           },
@@ -92,7 +92,7 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
   }, [marketData, withdrawWeiValue, isWellConnected, currentAddress, maxWithdrawable])
 
   useEffect(() => {
-    setWithdrawWeiValue(0n)
+    setWithdrawWeiValue(undefined)
     setWithdrawPercentage(0)
   }, [selectedAsset, marketData])
 

@@ -29,9 +29,12 @@ export function formatPercent(value?: number | string, decimals: number = 2) {
 // TRUNCATE TO 6 DECIMALS
 // Helper function to format numbers to at most 6 decimals
 // ---------------------------
-export function truncateTo6Decimals(str: string) {
-  const match = str.match(/^(-?\d+)(\.\d{0,6})?/)
-  return match ? match[0] : str
+export function truncateDecimals(str: string, decimalsDisplay: number = 6) {
+  // Truncate the decimals of the str passed in param
+  const match = str.match(new RegExp(`^(-?\\d+)(\\.\\d{0,${decimalsDisplay}})?`))
+  if (!match) return str
+  // Remove trailing zeros after the decimals
+  return match[0].replace(/(\.\d*?)0+$/, "$1").replace(/\.$/, "")
 }
 
 /**

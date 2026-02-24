@@ -10,7 +10,7 @@ import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
-import { formatBigIntAsNumber, formatDollar, toBigInt, truncateTo6Decimals } from "@/lib/number_formatter"
+import { formatBigIntAsNumber, formatDollar, toBigInt, truncateDecimals } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -129,7 +129,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   useEffect(() => {
     if (!isRepayAndWithdraw) {
-      setWithdrawWeiValue(0n)
+      setWithdrawWeiValue(undefined)
       setWithdrawPercentage(0)
     }
   }, [isRepayAndWithdraw])
@@ -281,7 +281,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     if (!repayValue) return
 
     if (isRepayMax || percentage === 100) {
-      const usgBalance = marketData?.debtInfos.usgBalance!
+      const usgBalance = marketData?.debtInfos.usgBalance || 0n
 
       if (usgBalance < repayValue) {
         repayValue = maxUint256
@@ -336,9 +336,9 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     setPercentage(0)
     setWithdrawPercentage(0)
     setIsZapLoading(false)
-    setRepayWeiValue(0n)
-    setWithdrawWeiValue(0n)
-    setUsgRepayedValue(0n)
+    setRepayWeiValue(undefined)
+    setWithdrawWeiValue(undefined)
+    setUsgRepayedValue(undefined)
     loadUSGsUSGMetrics()
   }
 
@@ -391,7 +391,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   const minValueReceivedFromZap = useMemo(() => {
     if (usgRepayedValue) {
       const minAmountOutWei = computedMinAmountOut(usgRepayedValue, slippage)
-      const result = `(${truncateTo6Decimals(formatUnits(minAmountOutWei, USGInfo?.decimals!))})`
+      const result = `(${truncateDecimals(formatUnits(minAmountOutWei, USGInfo?.decimals || 18), USGInfo.displayDecimals)})`
       return result
     }
     return ""

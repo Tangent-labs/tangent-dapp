@@ -10,9 +10,9 @@ import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
-import { formatBigInt, formatBigIntAsNumber, formatDollar, truncateTo6Decimals } from "@/lib/number_formatter"
+import { formatBigInt, formatBigIntAsNumber, truncateDecimals } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
 import { computeAprVariation, computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { useUSGMaketListContext } from "../../list/usg_market_list_context"
@@ -49,7 +49,7 @@ type USGLeverageContextValues = {
 
   swapAssetPrice: number | null
 
-  zapValue: bigint | null
+  zapValue: bigint | undefined
   setZapValue: (arg: bigint) => void
   handleDepositChange: (arg: bigint | undefined) => void
   depositAssetInfo: AssetDataPriced | CollateralInfo
@@ -135,7 +135,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const [isZapLoading, setIsZapLoading] = useState(false)
 
-  const [zapValue, setZapValue] = useState<bigint | null>(null)
+  const [zapValue, setZapValue] = useState<bigint | undefined>()
 
   const [leveragedCollateralQuote, setLeveragedCollateralQuote] = useState<bigint | undefined>()
 
@@ -190,7 +190,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   function computeBorrowValue(depositedCollateralWei: bigint, leverageValue: number) {
     const collatToBuy = (depositedCollateralWei * BigInt(leverageValue * 10)) / 10n - depositedCollateralWei
-    const expectedCollateralFinalDollarValue = (collatToBuy * marketData?.collateralInfos.collateralUSDPrice!) / parseEther("1")
+    const collatPrice = marketData?.collateralInfos.collateralUSDPrice || 0n
+    const expectedCollateralFinalDollarValue = (collatToBuy * collatPrice) / parseEther("1")
     return (expectedCollateralFinalDollarValue * parseEther("1")) / globalData.usgPriceWei
   }
   const activeInputRef = useRef<"deposit" | "zap" | null>(null)
@@ -260,7 +261,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   async function handleBorrowChange(borrowValue: bigint | undefined) {
     await updateBorrowWeiValue(borrowValue)
-    const depositDollarValueWei = ((depositWeiValue || 0n) * marketData?.collateralInfos.collateralUSDPrice!) / parseEther("1")
+    const collatPrice = marketData?.collateralInfos.collateralUSDPrice || 0n
+    const depositDollarValueWei = ((depositWeiValue || 0n) * collatPrice) / parseEther("1")
     const totalCollatDollarValue = depositDollarValueWei + (borrowValue || 0n)
     const leverageMultiplicator = Number(formatEther((totalCollatDollarValue * parseEther("1")) / depositDollarValueWei))
     setLeveragePercentage(leverageMultiplicator)
@@ -295,12 +297,16 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     }
 
     fetchSwapAssetData()
-    setBorrowWeiValue(0n)
-    setDepositWeiValue(0n)
+
+    setDepositWeiValue(undefined)
     setDepositSliderPercent(0)
+
+    setZapValue(undefined)
+
+    setBorrowWeiValue(undefined)
     setLeveragePercentage(1)
-    setLeveragedCollateralQuote(0n)
-    setZapValue(0n)
+
+    setLeveragedCollateralQuote(undefined)
   }, [depositAsset])
 
   useEffect(() => {
@@ -442,10 +448,10 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     setIsLeverageAllPosition(false)
     setIsDepositDisabled(false)
     setCurrentAmounts({})
-    setZapValue(0n)
-    setDepositWeiValue(0n)
-    setBorrowWeiValue(0n)
-    setLeveragedCollateralQuote(0n)
+    setZapValue(undefined)
+    setDepositWeiValue(undefined)
+    setBorrowWeiValue(undefined)
+    setLeveragedCollateralQuote(undefined)
     setDepositSliderPercent(0)
     setIsDepositLoading(false)
     setLeveragePercentage(1)
@@ -491,9 +497,9 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }, [zapValue, depositWeiValue, leveragedCollateralQuote, marketData, currentConvexTVL])
 
   const minValueReceivedFromZap = useMemo(() => {
-    if (zapValue && marketData) {
+    if (zapValue) {
       const minAmountOutWei = computedMinAmountOut(zapValue, slippage)
-      const result = `(${truncateTo6Decimals(formatUnits(minAmountOutWei, collateralInfo?.decimals))})`
+      const result = `(${truncateDecimals(formatUnits(minAmountOutWei, collateralInfo?.decimals), collateralInfo.displayDecimals)})`
       return result
     }
 
@@ -503,7 +509,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   const minCollatReceivedFromUSGDump = useMemo(() => {
     if (leveragedCollateralQuote) {
       const minAmountOutWei = computedMinAmountOut(leveragedCollateralQuote, slippage)
-      const result = `(${truncateTo6Decimals(formatUnits(minAmountOutWei, collateralInfo?.decimals))})`
+      const result = `(${truncateDecimals(formatUnits(minAmountOutWei, collateralInfo?.decimals), collateralInfo.displayDecimals)})`
       return result
     }
 

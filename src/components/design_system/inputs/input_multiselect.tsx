@@ -3,8 +3,8 @@
 import { LockData, LockPositionSelectTemplate } from "@/components/products/usg/usg_type"
 import { ReactNode } from "react"
 import { Button } from "./button"
-import InputSelect from "./input_select"
-import BorderPanel from "../structure/border_panel"
+import { InputSelect } from "./input_select"
+import { BorderPanel } from "../structure/border_panel"
 
 interface MultiPositionSelectProps {
   lockData?: LockData

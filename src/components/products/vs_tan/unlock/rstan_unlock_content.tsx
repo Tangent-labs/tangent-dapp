@@ -6,8 +6,8 @@ import { useVsTanContext } from "../rstan_layout_context"
 import { useVsTanUnlockContext } from "./rstan_unlock_context"
 import { IconOpenOutside, IconVsTan } from "@/components/icons"
 import { Button } from "@/components/design_system/inputs/button"
-import InputSelect from "@/components/design_system/inputs/input_select"
-import TokenImage from "@/components/design_system/structure/token_image"
+import { InputSelect } from "@/components/design_system/inputs/input_select"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 import { LockPositionSelectTemplate } from "../../usg/usg_type"
 
 export const VsTanUnlockContent = () => {

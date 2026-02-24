@@ -8,7 +8,7 @@ import { FormButtons } from "@/components/design_system/form/form_actions"
 import { BorderPanel } from "@/components/design_system/structure/border_panel"
 import { SlippageInput } from "@/components/design_system/inputs/Slippage"
 import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
-import { IconThunder, IconSingleArrow } from "@/components/icons"
+import { IconSingleArrow } from "@/components/icons"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -69,7 +69,7 @@ export default function USGDepositContent() {
         depositSelect={<AssetSelector collateralInfo={collateralInfo} depositAsset={depositAsset || collateralInfo.name} setDepositAsset={setDepositAsset} />}
         isLoading={isDepositLoading}
         asset={depositAssetInfo}
-        label="You deposit"
+        label={isZapping ? "You sell" : "You deposit"}
         isZapping={isZapping}
         maxAmountParams={{
           maxWeiValue: balanceAllowanceData?.balance || 0n,
@@ -93,12 +93,7 @@ export default function USGDepositContent() {
           }}
           asset={collateralInfo}
           isLoading={isZapLoading}
-          label={
-            <div className="flex items-center gap-1">
-              <div className="text-sm text-subtitle">Zap</div>
-              <IconThunder className="h-auto w-[8px] text-row-tonic" />
-            </div>
-          }
+          label={"You buy and deposit"}
           depositSelect={<StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />}
           bottomPart={
             <div className="flex select-none gap-2 text-xs text-subtitle">

@@ -43,7 +43,7 @@ export default function USGLiquidatePanel() {
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2">
         <div className="flex w-full items-end justify-between">
-          <span className="text-sm font-semibold md:text-xl">Liquidate partial</span>
+          <span className="text-sm font-semibold md:text-xl">Liquidate </span>
           <span className="text-xs text-subtitle">{maxLiquidateString}</span>
         </div>
 
@@ -73,8 +73,9 @@ export default function USGLiquidatePanel() {
 
         <Divider />
 
-        <div className="flex w-full items-end justify-end">
-          <span className="text-xs text-subtitle">Max: {formatBigInt(maxRepayable, 18, 2)} USG</span>
+        <div className="flex w-full items-end justify-between">
+          <span className="text-sm font-semibold md:text-xl">Repay </span>
+          <span className="text-xs text-subtitle">Max: {formatBigInt(maxRepayable, 18, 2)} USG</span>{" "}
         </div>
 
         <GenericInputAssetAmount

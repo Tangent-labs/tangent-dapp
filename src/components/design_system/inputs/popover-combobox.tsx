@@ -6,7 +6,7 @@ import { ChevronDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import AutoSizer from "react-virtualized-auto-sizer"
 import { useMemo, useRef, useState } from "react"
-import TokenImage from "../structure/token_image"
+import { TokenImage } from "../structure/token_image"
 import { FixedSizeList as List } from "react-window"
 import { DepositReceiveAsset } from "@/components/products/usg/usg_type"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -25,7 +25,7 @@ interface ComboboxProps<T extends OptionT> {
 
 const ITEM_HEIGHT = 40
 
-export default function PopoverCombobox<T extends OptionT>({
+export function PopoverCombobox<T extends OptionT>({
   options,
   value,
   onChange,

@@ -3,9 +3,9 @@
 import { cn } from "@/lib/utils"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGLeverageContext } from "./usg_record_leverage_context"
-import { FormButtons } from "@/components/design_system/form/form_actions"
-import { SlippageInput } from "@/components/design_system/inputs/Slippage"
-import { BorderPanel } from "@/components/design_system/structure/border_panel"
+import FormButtons from "@/components/design_system/form/form_actions"
+import { SlippageInput } from "@/components/design_system/inputs/slippage"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
 import { IconThunder, IconSingleArrow } from "@/components/icons"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -152,7 +152,7 @@ export default function USGLeverageContent() {
         <div className="flex items-start justify-start gap-2">
           <Accordion className={cn("w-full", isDepositLoading ? "shimmer rounded-[10px]" : "")} type="single" collapsible>
             <AccordionItem value="item-1">
-              <BorderPanel className="flex w-full cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
+              <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary">
                 <AccordionTrigger>
                   <span className="py-1.5">Recap</span>
                 </AccordionTrigger>
@@ -203,7 +203,7 @@ export default function USGLeverageContent() {
                     </div>
                   </div>
                 </AccordionContent>
-              </BorderPanel>
+              </ReliefCard>
             </AccordionItem>
           </Accordion>
           <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
@@ -222,6 +222,7 @@ export default function USGLeverageContent() {
         connect={connect}
         formState={formState}
         labelProcess={depositAsset && isZapping ? "Zap & leverage" : "Leverage"}
+        isLoading={isDepositLoading}
       />
     </div>
   )

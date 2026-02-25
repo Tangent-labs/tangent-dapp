@@ -3,19 +3,20 @@
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGBorrowContext } from "./usg_record_borrow_context"
-import { FormButtons } from "@/components/design_system/form/form_actions"
+import FormButtons from "@/components/design_system/form/form_actions"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
-import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
+import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 
 export default function USGRecordBorrowContent() {
   const { connect } = useWalletConnexionContext()
 
   const { USGInfo, maxBorrowCapReached } = useUSGRecordContext()
 
-  const { actionBorrow, formState, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, borrowPercentage, maxBorrowableValue } = useUSGBorrowContext()
+  const { actionBorrow, formState, borrowLoading, borrowWeiValue, setBorrowWeiValue, setBorrowPercentage, borrowPercentage, maxBorrowableValue } =
+    useUSGBorrowContext()
 
   return (
     <div className="flex flex-col gap-2">
@@ -49,7 +50,13 @@ export default function USGRecordBorrowContent() {
 
       <MaxBorrowCapReached display={!borrowWeiValue && maxBorrowCapReached} />
 
-      <FormButtons connect={connect} actions={{ handleApprove: undefined, handleProcess: actionBorrow }} formState={formState} labelProcess="Borrow" />
+      <FormButtons
+        isLoading={borrowLoading}
+        connect={connect}
+        actions={{ handleApprove: undefined, handleProcess: actionBorrow }}
+        formState={formState}
+        labelProcess="Borrow"
+      />
     </div>
   )
 }

@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "../inputs/button"
 import { ChevronDown } from "lucide-react"
+import { SecondaryButton } from "../inputs/secondary_button"
+import { PopoverTriggerElement } from "./popover_trigger_element"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 
 export const FeatureSelect = ({
@@ -21,10 +22,12 @@ export const FeatureSelect = ({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button className="relative w-full justify-center rounded-[10px] bg-white text-black">
-          <span className="text-sm font-semibold">{label}</span>
-          <ChevronDown className="absolute right-4 h-5 w-5" />
-        </Button>
+        <PopoverTriggerElement>
+          <SecondaryButton className="relative w-full justify-center rounded-[10px]">
+            <span className="text-sm font-semibold">{label}</span>
+            <ChevronDown className="absolute right-4 h-5 w-5" />
+          </SecondaryButton>
+        </PopoverTriggerElement>
       </PopoverTrigger>
 
       <PopoverContent align="start" className="rounded-[10px] p-1 font-gilroy">

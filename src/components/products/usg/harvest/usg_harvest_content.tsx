@@ -7,7 +7,6 @@ import { ExistingAsset, ListState } from "@/types"
 import { useUSGHarvestContext } from "./usg_harvest_context"
 import { harvestListHeaders } from "./usg_harvest_controller"
 import { Button } from "@/components/design_system/inputs/button"
-import { ListAsset } from "@/components/design_system/list/list_asset"
 import { Divider } from "@/components/design_system/structure/divider"
 import { ListHeader } from "@/components/design_system/list/list_header"
 import { HarvestableMarket, HarvesterInfoDisplay } from "../usg_type"
@@ -20,6 +19,7 @@ import { PointsCampaignLiveCard } from "@/components/design_system/structure/poi
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
+import { ListAsset } from "@/components/design_system/list/list_asset"
 
 const listeState: ListState = {
   search: undefined,
@@ -155,7 +155,7 @@ function HarvestList() {
           <div className="flex items-center justify-between max-xl:flex-col">
             <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
               <div className="xl:w-1/2">
-                <ListAsset name={item?.asset} token={item.asset} assetsEarned={[]} />
+                <ListAsset name={item?.asset} token={item.asset} />
               </div>
               <div className="text-md flex justify-center gap-2 md:text-lg xl:w-1/2">
                 {formatDollar(item?.rewards?.totalDollar || 0)}

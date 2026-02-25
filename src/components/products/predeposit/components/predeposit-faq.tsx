@@ -1,6 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 export const PredepositFAQ = () => {
   const faq = [
@@ -98,10 +99,10 @@ export const PredepositFAQ = () => {
 
   return (
     <>
-      <div className="mb-1 mt-6 flex w-full items-center justify-between rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <ReliefCard className="mb-1 mt-6 flex w-full items-center justify-between rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <span className="px-4 text-2xl font-semibold text-white lg:px-12 lg:text-4xl">F.A.Q</span>
         <Image className="w-56 lg:w-80" src="/medias/faq.png" alt="image" width={360} height={120} />
-      </div>
+      </ReliefCard>
 
       {faq.map((el) => (
         <Accordion key={el.title} className="w-full" type="single" collapsible>

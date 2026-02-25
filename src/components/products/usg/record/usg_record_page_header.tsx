@@ -14,7 +14,11 @@ export default function USGRecordPageHeader() {
       <div className="flex w-full flex-col justify-between xl:flex-row">
         <CollateralCard collateralInfo={collateralInfo} marketData={marketData}></CollateralCard>
 
-        <NeonLightCard className={cn(marketDisplayData?.tvlDollar === "-" ? "shimmer" : "", "flex h-full w-1/2")} color1="#0077ffa3" color2="#0075FF">
+        <NeonLightCard
+          className={cn(marketDisplayData?.tvlDollar === "-" ? "shimmer" : "", "mt-2 flex h-full w-full xl:mt-0 xl:w-1/2")}
+          color1="#0077ffa3"
+          color2="#0075FF"
+        >
           <div className="flex h-full items-center gap-2 xl:gap-4">
             <div className="flex w-full items-center justify-between px-6 xl:gap-8">
               {[
@@ -32,7 +36,7 @@ export default function USGRecordPageHeader() {
           </div>
         </NeonLightCard>
 
-        <div className="mt-4 flex items-end gap-1 md:hidden xl:mt-0">
+        <div className="mt-2 flex items-end gap-1 md:hidden">
           <IndicatorV2 indicators={[{ title: "APR", value: "12%" }]} />
           <IndicatorV2 indicators={[{ title: "Borrow rate", value: marketDisplayData.borrowRateCurrent }]} />
           <IndicatorV2 indicators={[{ title: "LTV", value: marketDisplayData.maxLtv }]} />

@@ -10,17 +10,17 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { Address, zeroAddress } from "viem"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGRepayContext } from "./usg_record_repay_context"
-import { FormButtons } from "@/components/design_system/form/form_actions"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { InputSelect } from "@/components/design_system/inputs/input_select"
 import { TokenImage } from "@/components/design_system/structure/token_image"
-import { SlippageInput } from "@/components/design_system/inputs/Slippage"
-import { BorderPanel } from "@/components/design_system/structure/border_panel"
-import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
+import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
+import { SlippageInput } from "@/components/design_system/inputs/slippage"
+import FormButtons from "@/components/design_system/form/form_actions"
 
 export default function USGRepayContent() {
   const {
@@ -50,6 +50,7 @@ export default function USGRepayContent() {
     repayAssetInfo,
     withdrawSelectedAsset,
     expectedUSG,
+    repayLoading,
     minValueReceivedFromZap,
   } = useUSGRepayContext()
 
@@ -235,7 +236,7 @@ export default function USGRepayContent() {
       <div className="flex items-start justify-between gap-2">
         <Accordion className="w-full" type="single" collapsible>
           <AccordionItem value="item-1">
-            <BorderPanel className="flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary">
+            <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary">
               <AccordionTrigger>
                 <span className="py-1.5">Recap</span>
               </AccordionTrigger>
@@ -247,7 +248,7 @@ export default function USGRepayContent() {
                   <span className="font-semibold text-white">{expectedUSG}</span>
                 </div>
               </AccordionContent>
-            </BorderPanel>
+            </ReliefCard>
           </AccordionItem>
         </Accordion>
 
@@ -273,6 +274,7 @@ export default function USGRepayContent() {
         }}
         formState={formState}
         labelProcess={isRepayAndWithdraw ? "Repay & withdraw" : "Repay"}
+        isLoading={repayLoading || isZapLoading}
       />
     </div>
   )

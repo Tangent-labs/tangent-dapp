@@ -1,7 +1,5 @@
 "use client"
 
-import Link from "next/link"
-
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -12,16 +10,18 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 
+import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useCallback } from "react"
+import { usePathname } from "next/navigation"
 import { useRootContext } from "../root/root_context"
 import { formatCompact } from "@/lib/number_formatter"
-import { usePathname } from "next/navigation"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 import { isOnMarket, mapRouteToFeature } from "./menu_bar_feature_controller"
-import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { SwapButton } from "@/components/design_system/inputs/swap_button"
+import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
 
 export default function MenuBarFeature() {
   const { USGCurrentSupply, sUSGCurrentAPY, protocolCurrentTVL } = useRootContext()
@@ -109,24 +109,24 @@ export default function MenuBarFeature() {
                   <NavigationMenuDropdown>
                     <NavigationMenuTrigger>DAO</NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-dark p-2">
-                        <NavigationMenuLink>
+                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] border border-white/10 bg-dark p-2">
+                        <NavigationMenuLink asChild>
                           <Link href="/harvest" className="flex items-center justify-start gap-2">
-                            <IconHarvest className="w-2"></IconHarvest>
+                            <IconHarvest className="w-2" />
                             Harvest
                           </Link>
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink>
+                        <NavigationMenuLink asChild>
                           <Link href="/forum" className="flex items-center justify-start gap-2">
-                            <IconForum className="w-3"></IconForum>
+                            <IconForum className="w-3" />
                             Forum
                           </Link>
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink>
+                        <NavigationMenuLink asChild>
                           <Link href="/snapshot" className="flex items-center justify-start gap-2">
-                            <IconSnapshot className="w-3"></IconSnapshot>
+                            <IconSnapshot className="w-3" />
                             Snapshot
                           </Link>
                         </NavigationMenuLink>
@@ -139,24 +139,24 @@ export default function MenuBarFeature() {
                   <NavigationMenuDropdown>
                     <NavigationMenuTrigger>Airdrop</NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] bg-dark p-2">
-                        <NavigationMenuLink>
+                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] border border-white/10 bg-dark p-2">
+                        <NavigationMenuLink asChild>
                           <Link href="/tasks" className="flex items-center justify-start gap-2">
-                            <IconTask className="w-3"></IconTask>
-                            Task
+                            <IconTask className="w-3" />
+                            Tasks
                           </Link>
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink>
+                        <NavigationMenuLink asChild>
                           <Link href="/referral" className="flex items-center justify-start gap-2">
-                            <IconReferral className="w-3"></IconReferral>
+                            <IconReferral className="w-3" />
                             Referral
                           </Link>
                         </NavigationMenuLink>
 
-                        <NavigationMenuLink>
+                        <NavigationMenuLink asChild>
                           <Link href="/boosts" className="flex items-center justify-start gap-2">
-                            <IconBoosts className="w-3"></IconBoosts>
+                            <IconBoosts className="w-3" />
                             Boosts
                           </Link>
                         </NavigationMenuLink>
@@ -168,7 +168,7 @@ export default function MenuBarFeature() {
             </NavigationMenu>
           </div>
 
-          <div className="flex w-full items-center justify-end gap-4">
+          <div className="flex w-full items-center justify-end gap-3">
             <ReliefCard className="hidden items-center justify-center px-1 py-2.5 text-xs xl:flex">
               <span className="border-r border-white/30 px-2">TVL: ${formatCompact(protocolCurrentTVL?.total)} </span>
               <span className="flex items-center justify-center gap-2 border-r border-white/30 px-2">
@@ -181,11 +181,7 @@ export default function MenuBarFeature() {
               </span>
             </ReliefCard>
 
-            <Link href="/swap">
-              <button className="hidden cursor-pointer rounded-[10px] border border-button-active px-4 py-[9px] font-gilroy text-sm font-semibold transition-colors duration-200 ease-in-out hover:border-black hover:bg-button-active xl:flex">
-                Swap
-              </button>
-            </Link>
+            <SwapButton />
 
             <WalletConnexionContent />
           </div>

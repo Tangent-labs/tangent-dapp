@@ -39,11 +39,11 @@ export const PredepositWalletConnect = () => {
   return (
     <>
       {isConnected ? (
-        <Button onClick={handleDisconnect} className="flex h-10 items-center justify-center">
+        <Button onClick={handleDisconnect} className="flex h-10 w-40 items-center justify-center">
           {buttonLabel}
         </Button>
       ) : (
-        <Button onClick={handleButtonClick} className="flex h-10 items-center justify-center">
+        <Button onClick={handleButtonClick} className="flex h-10 w-40 items-center justify-center">
           {buttonLabel}
         </Button>
       )}

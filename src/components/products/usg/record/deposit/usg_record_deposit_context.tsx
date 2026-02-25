@@ -558,7 +558,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   const minValueReceivedFromZap = useMemo(() => {
     if (zapValue && marketData) {
       const minAmountOutWei = computedMinAmountOut(zapValue, slippage)
-      const result = `(${(truncateDecimals(formatUnits(minAmountOutWei, collateralInfo?.decimals)), collateralInfo.displayDecimals)})`
+      const result = `(${truncateDecimals(formatUnits(minAmountOutWei, collateralInfo?.decimals), collateralInfo.displayDecimals)})`
       return result
     }
 

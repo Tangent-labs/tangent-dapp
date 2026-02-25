@@ -4,8 +4,6 @@ import { cn, PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGDepositContext } from "./usg_record_deposit_context"
-import { FormButtons } from "@/components/design_system/form/form_actions"
-import { BorderPanel } from "@/components/design_system/structure/border_panel"
 import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
 import { IconSingleArrow } from "@/components/icons"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -15,7 +13,9 @@ import { MarketTransactionError } from "@/components/design_system/notifications
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 import { ExistingAsset } from "@/types"
-import { SlippageInput } from "@/components/design_system/inputs/Slippage"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { SlippageInput } from "@/components/design_system/inputs/slippage"
+import FormButtons from "@/components/design_system/form/form_actions"
 
 export default function USGDepositContent() {
   const {
@@ -135,7 +135,7 @@ export default function USGDepositContent() {
       <div className="flex items-start justify-between gap-2">
         <Accordion className="w-full" type="single" collapsible>
           <AccordionItem value="item-1">
-            <BorderPanel className="flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary">
+            <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary">
               <AccordionTrigger>
                 <span className="py-1.5">Recap</span>
               </AccordionTrigger>
@@ -175,11 +175,11 @@ export default function USGDepositContent() {
                   </div>
                 </div>
               </AccordionContent>
-            </BorderPanel>
+            </ReliefCard>
           </AccordionItem>
         </Accordion>
 
-        <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
+        <SlippageInput slippage={slippage} setSlippage={setSlippage} />
       </div>
 
       <MarketTransactionError display={!!borrowWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />
@@ -194,6 +194,7 @@ export default function USGDepositContent() {
         formState={formState}
         labelProcess={isDepositAndBorrow ? "Deposit & Borrow" : "Deposit"}
         connect={connect}
+        isLoading={isDepositLoading}
       />
     </div>
   )

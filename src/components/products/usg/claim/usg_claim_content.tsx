@@ -8,7 +8,6 @@ import { formatDollar } from "@/lib/number_formatter"
 import { useUSGClaimContext } from "./usg_claim_context"
 import { claimListHeaders } from "./usg_claim_controller"
 import { Button } from "@/components/design_system/inputs/button"
-import { ListAsset } from "@/components/design_system/list/list_asset"
 import { Divider } from "@/components/design_system/structure/divider"
 import { ListHeader } from "@/components/design_system/list/list_header"
 import { ClaimableMarket, ClaimAsset, ClaimData } from "../usg_type"
@@ -20,6 +19,7 @@ import { ListGradientBorder } from "@/components/design_system/list/list_gradien
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
+import { ListAsset } from "@/components/design_system/list/list_asset"
 
 const listeState: ListState = {
   search: undefined,
@@ -197,7 +197,7 @@ function ClaimList() {
           <div className="flex items-center justify-between max-xl:flex-col">
             <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
               <div className="xl:w-2/3">
-                <ListAsset name={item?.marketName} token={item.marketName as ExistingAsset} assetsEarned={[]} />
+                <ListAsset name={item?.marketName} token={item.marketName as ExistingAsset} />
               </div>
 
               <div className="flex justify-center xl:w-1/3">

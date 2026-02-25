@@ -597,7 +597,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     if (receiveWeiValue) {
       const minAmountOutWei = computedMinAmountOut(receiveWeiValue, slippage)
 
-      const result = `(${(truncateDecimals(formatUnits(minAmountOutWei, receiveAssetInfo?.decimals || 18)), receiveAssetInfo?.displayDecimals)})`
+      const result = `(${truncateDecimals(formatUnits(minAmountOutWei, receiveAssetInfo?.decimals || 18), receiveAssetInfo?.displayDecimals)})`
       return result
     }
     return ""

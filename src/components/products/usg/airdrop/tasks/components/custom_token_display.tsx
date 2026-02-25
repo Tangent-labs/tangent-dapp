@@ -8,10 +8,10 @@ export const LpTaskCustomAssetDisplay = ({ token }: { token: ExistingAsset }) =>
     <>
       {tokenList.some((el) => token.includes(el)) ? (
         <div className="px-1 md:px-2">
-          <TokenImage token={token} size={32} className="w-6 md:w-12" />
+          <TokenImage token={token} size={32} className="w-6 md:w-10" />
         </div>
       ) : (
-        <TokenImage token={token} size={32} className="w-8 md:w-16" />
+        <TokenImage token={token} size={32} className="w-8 md:w-14" />
       )}
     </>
   )

@@ -1,0 +1,33 @@
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import Link from "next/link"
+
+type CollateralEmissionLabelProps = {
+  isHEC: boolean
+}
+
+export const CollateralEmissionLabel = ({ isHEC }: CollateralEmissionLabelProps) => {
+  return (
+    <div className="flex items-center text-white transition duration-200">
+      <HoverCard openDelay={100} closeDelay={100}>
+        <HoverCardTrigger asChild>
+          <span className="flex items-center justify-center rounded-full bg-overlay-panel px-3 py-0.5 text-xs backdrop-blur-[60px]">
+            {isHEC ? "HEC" : "LEC"}
+          </span>
+        </HoverCardTrigger>
+        <HoverCardContent side="top" align="center" className="z-[9999] flex justify-center border border-white/10 text-sm">
+          Learn more about {isHEC ? "HEC" : "LEC"} in the
+          <Link
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            className="ml-1 inline-block cursor-pointer underline hover:text-white/40"
+            href={isHEC ? "https://docs.tangent.finance/docs/usg/Markets/hec_markets#hec-markets" : "https://docs.tangent.finance/docs/usg/Markets/lec_markets"}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            docs{" "}
+          </Link>
+        </HoverCardContent>
+      </HoverCard>
+    </div>
+  )
+}

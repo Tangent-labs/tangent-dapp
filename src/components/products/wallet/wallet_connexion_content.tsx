@@ -6,10 +6,11 @@ import { useClipboard } from "@/hooks/useClipboard"
 import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { Button } from "@/components/design_system/inputs/button"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { PopoverTriggerElement } from "@/components/design_system/structure/popover_trigger_element"
 
 export const WalletConnexionContent = () => {
   const { copied, copy } = useClipboard()
@@ -37,12 +38,12 @@ export const WalletConnexionContent = () => {
       <Popover>
         {isConnected ? (
           <PopoverTrigger asChild>
-            <Button className="flex h-10 items-center justify-center">{buttonLabel}</Button>
+            <PopoverTriggerElement className="w-full max-w-36">
+              <Button>{buttonLabel}</Button>
+            </PopoverTriggerElement>
           </PopoverTrigger>
         ) : (
-          <Button onClick={handleConnect} className="flex h-10 items-center justify-center">
-            Connect wallet
-          </Button>
+          <Button label="Connect wallet" onClick={handleConnect} className="flex w-full max-w-36 items-center justify-center" />
         )}
 
         <PopoverContent align="end">

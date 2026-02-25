@@ -7,7 +7,7 @@ import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGWithdrawContext } from "./usg_record_withdraw_context"
-import { FormButtons } from "@/components/design_system/form/form_actions"
+import FormButtons from "@/components/design_system/form/form_actions"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -29,6 +29,7 @@ export default function USGWithdrawContent() {
     setWithdrawPercentage,
     setSelectedAsset,
     selectedAsset,
+    withdrawLoading,
   } = useUSGWithdrawContext()
 
   const AssetSelectTemplate = (option: {
@@ -111,7 +112,13 @@ export default function USGWithdrawContent() {
           )}
         </>
 
-        <FormButtons connect={connect} actions={{ handleApprove: undefined, handleProcess: actionWithdraw }} formState={formState} labelProcess="Withdraw" />
+        <FormButtons
+          isLoading={withdrawLoading}
+          connect={connect}
+          actions={{ handleApprove: undefined, handleProcess: actionWithdraw }}
+          formState={formState}
+          labelProcess="Withdraw"
+        />
       </div>
     </>
   )

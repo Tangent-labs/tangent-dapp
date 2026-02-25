@@ -18,7 +18,7 @@
 // import PopoverCombobox from "@/components/design_system/inputs/popover-combobox"
 // import { InputSelectLockPosition } from "@/components/design_system/inputs/input_select_lock_position"
 // import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-// import { SlippageInput } from "@/components/design_system/inputs/Slippage"
+// import { SlippageInput } from "@/components/design_system/inputs/slippage"
 // import { IconCircleHelp, IconThunder } from "@/components/icons"
 
 // export default function VsTanLockContent() {

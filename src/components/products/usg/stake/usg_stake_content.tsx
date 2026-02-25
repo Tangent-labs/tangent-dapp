@@ -1,26 +1,26 @@
 "use client"
 
+import Link from "next/link"
 import Image from "next/image"
 import { formatUnits } from "viem"
+import { IconChevron } from "@/components/icons"
 import { useUSGStakeContext } from "./usg_stake_context"
+import { IconStars } from "@/components/icons/icon_stars"
 import { computeProjection } from "./usg_stake_controller"
 import { Divider } from "@/components/design_system/structure/divider"
-import { FormButtons } from "@/components/design_system/form/form_actions"
 import { useRootContext } from "@/components/products/root/root_context"
-import { PerformanceHistoryPanel } from "./components/PerformanceHistoryPanel"
-import { BorderPanel } from "@/components/design_system/structure/border_panel"
-import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import { LargeButtonTab } from "@/components/design_system/inputs/large_button_tab"
+import { PerformanceHistoryPanel } from "./components/PerformanceHistoryPanel"
 import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
+import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
+import { LargeButtonTab } from "@/components/design_system/inputs/large_button_tab"
+import { StaticCardAssetInput } from "../../predeposit/components/StaticCardAssetInput"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
-import { IconStars } from "@/components/icons/icon_stars"
-import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
-import { IconChevron } from "@/components/icons"
-import { StaticCardAssetInput } from "../../predeposit/components/StaticCardAssetInput"
+import FormButtons from "@/components/design_system/form/form_actions"
 
 export default function USGStakeContent() {
   const {
@@ -59,7 +59,15 @@ export default function USGStakeContent() {
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Savings account</span>
             <p className="text-[15px]">
-              Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi. Learn more
+              Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi.{" "}
+              <Link
+                className="ml-1 inline-block cursor-pointer underline hover:text-white/40"
+                href="https://docs.tangent.finance/docs/usg/susg"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Learn more
+              </Link>
             </p>
           </div>
         </ReliefCard>
@@ -147,7 +155,7 @@ export default function USGStakeContent() {
 
           <Accordion className="w-full" type="single" collapsible>
             <AccordionItem value="item-1">
-              <BorderPanel className="my-2 flex cursor-pointer flex-col bg-white bg-opacity-[3%] px-2 text-xs text-primary backdrop-blur-[60px]">
+              <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary">
                 <AccordionTrigger>
                   <span className="py-1.5">Recap</span>
                 </AccordionTrigger>
@@ -171,7 +179,7 @@ export default function USGStakeContent() {
                     </div>
                   </div>
                 </AccordionContent>
-              </BorderPanel>
+              </ReliefCard>
             </AccordionItem>
           </Accordion>
 

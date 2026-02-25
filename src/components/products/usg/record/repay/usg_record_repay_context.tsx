@@ -50,6 +50,8 @@ type USGRepayContextValues = {
   isZapLoading: boolean
   setIsZapLoading: (arg: boolean) => void
 
+  repayLoading: boolean
+
   handleRepayValueChange: (arg: bigint | undefined) => void
 
   usgRepayedValue: bigint | undefined
@@ -122,6 +124,8 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   const [usgRepayedValue, setUsgRepayedValue] = useState<bigint | undefined>()
 
   const [withdrawSelectedAsset, setWithdrawSelectedAsset] = useState<string>(collateral)
+
+  const [repayLoading, setReplayLoading] = useState<boolean>(false)
 
   useEffect(() => {
     setIsRepayAndWithdraw(isRepayAndWithdrawInput)
@@ -292,6 +296,8 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   }
 
   const marketRepay = async () => {
+    setReplayLoading(true)
+
     await toastTx(
       doRepay(walletClient!, {
         marketAddress: marketData!.marketAddress,
@@ -304,6 +310,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
           return { type: "Success", content: "Transaction successful." }
         },
         error: () => {
+          setReplayLoading(false)
           return { type: "Error", content: "Transaction failed." }
         },
       }
@@ -311,6 +318,8 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   }
 
   const marketRepayAndWithdraw = async () => {
+    setReplayLoading(true)
+
     await toastTx(
       doRepayAndWithdraw(walletClient!, {
         marketAddress: marketData!.marketAddress,
@@ -340,6 +349,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     setWithdrawWeiValue(undefined)
     setUsgRepayedValue(undefined)
     loadUSGsUSGMetrics()
+    setReplayLoading(false)
   }
 
   const formState = useMemo(() => {
@@ -514,6 +524,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     withdrawSelectedAsset,
     setWithdrawSelectedAsset,
     expectedUSG,
+    repayLoading,
     minValueReceivedFromZap,
   }
 

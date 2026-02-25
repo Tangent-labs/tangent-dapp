@@ -10,7 +10,7 @@ import { PanelRaw } from "@/components/design_system/structure/panel_raw"
 import { formatDate } from "@/lib/other_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { IconOpenOutside } from "@/components/icons"
-import { FormButtons } from "@/components/design_system/form/form_actions"
+import FormButtons from "@/components/design_system/form/form_actions"
 import { InfinityIcon } from "lucide-react"
 
 export const VsTanSplitContent = () => {

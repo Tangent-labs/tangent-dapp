@@ -133,10 +133,10 @@ export const VoteTasksList = () => {
           >
             <div className="hidden items-center justify-between md:flex">
               <div className="flex w-3/12 items-center gap-2 xl:gap-4">
-                <span className="flex text-xl font-semibold">{task.description}</span>
+                <span className="flex text-[15px] font-semibold">{task.description}</span>
               </div>
               <div className="hidden w-2/12 justify-center lg:flex">
-                <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-2 text-sm backdrop-blur-[60px]">
+                <div className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-2 py-1 text-sm backdrop-blur-[60px]">
                   {computeProtocolDisplay(task.organisation)}
                 </div>
               </div>
@@ -158,7 +158,7 @@ export const VoteTasksList = () => {
                 </div>
 
                 <div className="flex flex-col items-center justify-center">
-                  <span className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-2 text-sm backdrop-blur-[60px]">
+                  <span className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-2 py-1 text-sm backdrop-blur-[60px]">
                     {computeProtocolDisplay(task?.protocol)}
                   </span>
                 </div>

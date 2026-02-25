@@ -1,6 +1,5 @@
 "use client"
 
-import { FormButtons } from "@/components/design_system/form/form_actions"
 import { useUSGLiquidateContext } from "./usg_record_liquidate_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { useUSGRecordContext } from "../usg_record_context"
@@ -9,6 +8,7 @@ import { GenericInputAssetAmount } from "@/components/design_system/inputs/Gener
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 import { Divider } from "@/components/design_system/structure/divider"
 import { formatBigInt } from "@/lib/number_formatter"
+import FormButtons from "@/components/design_system/form/form_actions"
 
 export default function USGLiquidatePanel() {
   const { actionLiquidate, formState } = useUSGLiquidateContext()

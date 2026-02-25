@@ -9,6 +9,7 @@ import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
 import { formatBigInt, formatDollar, truncateDecimals } from "@/lib/number_formatter"
 import { SliderInput } from "./SliderInput"
 import { MaxButton } from "./MaxButton"
+import { useAutoGrowInputWidth } from "@/hooks/useAutoGrowInputWidth"
 
 type SliderParams = {
   sliderPercentage: number
@@ -55,7 +56,6 @@ export function GenericInputAssetAmount({
 
   ...props
 }: GenericInputAssetAmountProps) {
-  const inputRef = useRef<HTMLInputElement>(null)
   const sliderDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // ---------------------------
@@ -97,6 +97,11 @@ export function GenericInputAssetAmount({
 
   // State for the input field displayed value as a human-readable string
   const [localDisplay, setLocalDisplay] = useState(() => (inputWeiValue !== undefined ? formatUnits(inputWeiValue, decimals) : ""))
+
+  const { inputRef, inputSpanRef } = useAutoGrowInputWidth(localDisplay, {
+    placeholder: "Amount",
+    minPx: 32,
+  })
 
   // ---------------------------
   // SYNC WITH PARENT VALUE
@@ -241,7 +246,7 @@ export function GenericInputAssetAmount({
           : cn(
               "cursor-text bg-white bg-opacity-[3%] ease-out",
               "focus-within:border-[--tgt-button-active] focus-within:shadow-[0_0_6px_1px_var(--tgt-button-active)]",
-              "hover:bg-white/[0.08] hover:shadow-lg [&:has(.no-parent-hover:hover)]:!bg-white/[0.03] [&:has(.no-parent-hover:hover)]:!shadow-none"
+              "hover:bg-white/[0.08] [&:has(.no-parent-hover:hover)]:!bg-white/[0.03] [&:has(.no-parent-hover:hover)]:!shadow-none"
             ),
         "flex flex-col p-2 transition-all duration-200"
       )}
@@ -260,8 +265,10 @@ export function GenericInputAssetAmount({
       )}
 
       <div className="flex justify-between">
-        <div className="flex items-center justify-start">
+        <div className="flex items-center justify-start gap-2">
           <div className="relative inline-block w-full max-w-[250px]">
+            <span ref={inputSpanRef} className="invisible absolute whitespace-pre bg-transparent text-[24px] font-semibold" aria-hidden="true" />
+
             <input
               {...props}
               lang="en"

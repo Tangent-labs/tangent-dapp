@@ -516,7 +516,6 @@ export type GodsonLeaderboard = Array<{
 
 export type Boost = {
   type: string
-  description: string
   boost: number
   status: boolean
 }

@@ -18,10 +18,9 @@ export const boostsListState: ListState = {
 const BoostRowLayout = ({ children }: { children: React.ReactNode[] }) => {
   return (
     <div className="flex w-full items-center justify-evenly px-2">
-      <div className="flex w-1/3 items-center justify-center">{children?.at(0)} </div>
-      <div className="flex w-1/3 items-center justify-center">{children?.at(1)} </div>
-      <div className="flex w-1/6 items-center justify-center">{children?.at(2)} </div>
-      <div className="flex w-1/6 items-center justify-center">{children?.at(3)} </div>
+      <div className="flex w-1/2 items-center justify-center">{children?.at(0)} </div>
+      <div className="flex w-1/4 items-center justify-center">{children?.at(1)} </div>
+      <div className="flex w-1/4 items-center justify-center">{children?.at(2)} </div>
     </div>
   )
 }
@@ -39,9 +38,15 @@ export const BoostsList = () => {
                 <span>{headers?.at(0)?.label}</span>
               </div>
             )}
+
             {!!headers?.at(1)?.key && (
-              <div className="flex w-full items-center justify-center">
-                <span>{headers?.at(1)?.label}</span>
+              <div key={headers?.at(1)?.label} className="flex w-full items-center justify-center">
+                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(1)?.key))}>
+                  <span>{headers?.at(1)?.label} </span>
+                  <div className="text-row-tonic">
+                    <IconSortHeader sort={(listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction) || "none"} />
+                  </div>
+                </button>
               </div>
             )}
 
@@ -55,17 +60,6 @@ export const BoostsList = () => {
                 </button>
               </div>
             )}
-
-            {!!headers?.at(3)?.key && (
-              <div key={headers?.at(3)?.label} className="flex w-full items-center justify-center">
-                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(3)?.key))}>
-                  <span>{headers?.at(3)?.label} </span>
-                  <div className="text-row-tonic">
-                    <IconSortHeader sort={(listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction) || "none"} />
-                  </div>
-                </button>
-              </div>
-            )}
           </BoostRowLayout>
         </div>
         <ListGradientBorder classname={"rounded-t-[10px]"} />
@@ -73,19 +67,14 @@ export const BoostsList = () => {
 
       {displayRows &&
         (displayRows as Boost[])?.map((boost: Boost) => (
-          <div key={boost?.type} className="relative mb-1 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] hover-lift-row">
+          <div key={boost?.type} className="relative mb-1 bg-overlay-panel p-2 backdrop-blur-[60px] hover-lift-row xl:px-5 xl:py-3">
             <div className="hidden items-center justify-between md:flex">
-              <div className="flex w-1/3 items-center gap-2 xl:gap-4">
-                <span className="flex text-xl font-semibold">{boost?.type}</span>
+              <div className="flex w-1/2 items-center gap-2 xl:gap-4">
+                <span className="flex text-[15px] font-semibold">{boost?.type}</span>
               </div>
-              <div className="flex w-1/3 justify-center">
-                <div className="flex w-full items-center justify-center rounded-[10px] bg-overlay-panel px-6 py-2 text-center backdrop-blur-[60px]">
-                  {boost?.description}
-                </div>
-              </div>
-              <div className="flex w-1/6 justify-center">+{boost?.boost}</div>
-              <div className="flex w-1/6 items-center justify-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
+              <div className="flex w-1/4 justify-center text-[15px]">+{boost?.boost}</div>
+              <div className="flex w-1/4 items-center justify-center">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
                   <TaskStatus status={boost?.status} />
                 </div>
               </div>
@@ -96,9 +85,9 @@ export const BoostsList = () => {
                 <span className="flex text-sm font-semibold">{boost?.type}</span>
               </div>
 
-              <div className="flex w-1/6 justify-center">+{boost?.boost}</div>
+              <div className="flex w-1/4 justify-center text-[15px]">+{boost?.boost}</div>
 
-              <div className="flex w-1/6 items-center justify-center">
+              <div className="flex w-1/4 items-center justify-center">
                 <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
                   <TaskStatus status={boost?.status} />
                 </div>

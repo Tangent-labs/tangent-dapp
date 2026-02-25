@@ -49,12 +49,10 @@ export const UsgBoostsContent = () => {
       </div>
 
       {isConnected && (
-        <div className="flex w-full items-start justify-start gap-4">
-          <div className="flex w-full flex-col">
-            <ListProvider customSort={sortBoosts} _headers={boostHeaders} _rows={userBoosts} _listState={boostsListState}>
-              <BoostsList></BoostsList>
-            </ListProvider>
-          </div>
+        <div className="mt-2 flex w-full flex-col xl:mt-0">
+          <ListProvider customSort={sortBoosts} _headers={boostHeaders} _rows={userBoosts} _listState={boostsListState}>
+            <BoostsList></BoostsList>
+          </ListProvider>
         </div>
       )}
 

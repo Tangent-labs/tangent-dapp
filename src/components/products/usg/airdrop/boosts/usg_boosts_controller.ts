@@ -7,7 +7,6 @@ export type NumMap = {
 
 export const boostHeaders: ListHeaderData[] = [
   { label: "Type", key: "type" },
-  { label: "Description", key: "description" },
   { label: "Boost", key: "boost" },
   { label: "Status", key: "status" },
 ]
@@ -116,11 +115,9 @@ export const mapUserBoosts = (boosts: string[]): Boost[] => {
     const metadata = BOOST_METADATA[normalizedKey]
 
     const title = metadata?.title
-    const description = metadata?.description
 
     return {
       type: title,
-      description,
       boost,
       status: normalizedBoosts.has(normalizedKey),
     }

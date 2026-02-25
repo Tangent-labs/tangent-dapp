@@ -3,21 +3,21 @@
 import Image from "next/image"
 import { Address } from "viem"
 import { ExistingAsset } from "@/types"
-import { DepositReceiveAsset } from "../usg_type"
-import { formatBigInt, formatNumber } from "@/lib/number_formatter"
-import { useUSGSwapContext } from "./usg_swap_context"
-import { formatAddress } from "@/lib/other_formatter"
-import FormButtons from "@/components/design_system/form/form_actions"
-import { TokenImage } from "@/components/design_system/structure/token_image"
-import { SlippageInput } from "@/components/design_system/inputs/slippage"
-import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 import { useUSGContext } from "../usg_context"
 import { IconChevron } from "@/components/icons"
+import { DepositReceiveAsset } from "../usg_type"
+import { formatAddress } from "@/lib/other_formatter"
+import { useUSGSwapContext } from "./usg_swap_context"
+import { formatBigInt, formatNumber } from "@/lib/number_formatter"
+import FormButtons from "@/components/design_system/form/form_actions"
+import { SlippageInput } from "@/components/design_system/inputs/slippage"
+import { TokenImage } from "@/components/design_system/structure/token_image"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
+import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 
 type AssetSelectProps = {
   options: DepositReceiveAsset[]
@@ -205,6 +205,7 @@ export default function USGSwapContent() {
               connect={connect}
               formState={formState}
               labelProcess="Swap"
+              isLoading={isLoading}
             />
           </div>
         </ReliefCard>

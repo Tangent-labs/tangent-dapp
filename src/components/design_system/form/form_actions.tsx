@@ -33,7 +33,7 @@ export default function FormButtons({ formState, labelApprove = "Approve", label
               hasLoadingState={true}
               isLoading={isLoading}
               label={labelApprove}
-              onClick={actions.handleApprove}
+              onClick={isLoading ? () => {} : actions.handleApprove}
               state={approveState}
               className="w-full justify-center"
             />
@@ -42,7 +42,7 @@ export default function FormButtons({ formState, labelApprove = "Approve", label
               hasLoadingState={true}
               isLoading={isLoading}
               label={labelProcess}
-              onClick={actions.handleProcess}
+              onClick={isLoading ? () => {} : actions.handleProcess}
               state={processState}
               className="w-full justify-center"
             />

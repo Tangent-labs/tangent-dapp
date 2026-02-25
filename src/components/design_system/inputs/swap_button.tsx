@@ -38,7 +38,7 @@ export const SwapButton = () => {
         <button
           ref={buttonRef}
           onClick={createRippleEffect}
-          className="relative flex w-full max-w-24 items-center justify-center rounded-[10px] border border-[#0075FF] bg-dark px-4 py-2 font-gilroy text-[15px] font-semibold hover:bg-[#0060D2]"
+          className="relative flex h-10 w-full max-w-24 items-center justify-center rounded-[10px] border border-[#0075FF] bg-dark px-4 text-sm font-semibold hover:bg-[#0060D2]"
         >
           Swap
         </button>

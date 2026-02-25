@@ -43,7 +43,7 @@ export const WalletConnexionContent = () => {
             </PopoverTriggerElement>
           </PopoverTrigger>
         ) : (
-          <Button label="Connect wallet" onClick={handleConnect} className="flex h-10 w-full max-w-36 items-center justify-center" />
+          <Button label="Connect wallet" onClick={handleConnect} className="flex w-full max-w-36 items-center justify-center" />
         )}
 
         <PopoverContent align="end">

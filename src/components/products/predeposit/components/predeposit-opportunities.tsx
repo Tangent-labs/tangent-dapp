@@ -1,18 +1,19 @@
 "use client"
 
 import { useMemo } from "react"
+import { Address } from "viem"
 import { IconArrow } from "@/components/icons"
 import { formatDollar } from "@/lib/number_formatter"
 import { PredepositContentProps } from "../predeposit.content"
-import { EarnProtocolInput, EarnPoolsData } from "../../usg/usg_type"
 import { ListRow } from "@/components/design_system/list/list_row"
 import { ExistingAsset, ListHeaderData, ListState } from "@/types"
+import { EarnProtocolInput, EarnPoolsData } from "../../usg/usg_type"
 import { ListHeader } from "@/components/design_system/list/list_header"
 import mockJson from "../../../../app/(products)/(usg)/earn/earnMock.json"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { MarketListAPR } from "@/components/design_system/list/market_list_apr"
+import { CustomAssetDisplay } from "@/components/design_system/list/custom_asset_display"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { Address } from "viem"
 
 export const predepositOpportunitiesListHeaders: ListHeaderData[] = [
   { label: "Asset", key: "asset" },
@@ -153,8 +154,8 @@ export function PredepositOpportunitiesListInner({ displayRows }: PredepositOppo
 
       {displayRows?.map((item, index) => (
         <ListRow route={item.link} key={index}>
-          <div className="relative flex w-full items-center gap-4">
-            <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-12 lg:w-16" />
+          <div className="relative flex w-full items-center gap-2">
+            <CustomAssetDisplay token={item?.asset as ExistingAsset} />
 
             <div className="flex flex-col items-start justify-center">
               <span className="text-sm font-semibold md:text-xl">{item?.asset}</span>

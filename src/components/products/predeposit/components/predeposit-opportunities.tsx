@@ -4,12 +4,13 @@ import { useMemo } from "react"
 import { IconArrow } from "@/components/icons"
 import { formatDollar } from "@/lib/number_formatter"
 import { PredepositContentProps } from "../predeposit.content"
-import { ListRow } from "@/components/design_system/list/list_row"
 import { EarnProtocolInput, GaugeAPR } from "../../usg/usg_type"
+import { ListRow } from "@/components/design_system/list/list_row"
 import { ExistingAsset, ListHeaderData, ListState } from "@/types"
 import { ListHeader } from "@/components/design_system/list/list_header"
-import { TokenImage } from "@/components/design_system/structure/token_image"
 import mockJson from "../../../../app/(products)/(usg)/earn/earnMock.json"
+import { TokenImage } from "@/components/design_system/structure/token_image"
+import { MarketListAPR } from "@/components/design_system/list/market_list_apr"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 
 export const predepositOpportunitiesListHeaders: ListHeaderData[] = [
@@ -35,6 +36,13 @@ export const PredepositOpportunities = ({ opportunitiesData }: PredepositContent
       const currentAPR = currentPool?.gaugeCrvApy.reduce((sum, n) => sum + n, 0) || 0
       const projectedAPR = currentPool?.gaugeFutureCrvApy.reduce((sum, n) => sum + n, 0) || 0
 
+      // TODO : set rewardToken dynamically
+      const rewardToken = "CRV"
+
+      // TODO : fields to be set dynamically
+      const currentAPRDetails = { APY: currentPool?.gaugeCrvApy[0], CRV: currentPool?.gaugeCrvApy[1] }
+      const projectedAPRDetails = { APY: currentPool?.gaugeFutureCrvApy[0], CRV: currentPool?.gaugeFutureCrvApy[1] }
+
       return {
         name: t.name,
         asset: t.asset,
@@ -46,6 +54,9 @@ export const PredepositOpportunities = ({ opportunitiesData }: PredepositContent
         currentAPR,
         projectedAPR,
         tvl: currentPool?.usdTotal,
+        rewardToken,
+        currentAPRDetails,
+        projectedAPRDetails,
       }
     })
   }
@@ -84,6 +95,15 @@ type PredepositOpportunitiesListInnerProps = {
     currentAPR: number
     projectedAPR: number
     tvl?: number
+    rewardToken: string
+    currentAPRDetails?: {
+      APY?: number
+      CRV?: number
+    }
+    projectedAPRDetails?: {
+      APY?: number
+      CRV?: number
+    }
   }>
 }
 
@@ -136,14 +156,14 @@ export function PredepositOpportunitiesListInner({ displayRows }: PredepositOppo
           </div>
 
           <div className="flex w-full items-center justify-center gap-2">
-            <div className="flex flex-row items-center justify-center gap-2 text-center md:flex-col md:gap-0">
-              <span className="flex items-center justify-center bg-button-active bg-clip-text text-sm font-semibold leading-4 text-transparent md:text-xl">
-                {item?.currentAPR.toFixed(2)}%
-              </span>
-              <span className="whitespace-nowrap text-xs text-subtitle">
-                {!!item?.projectedAPR && item?.projectedAPR !== 0 ? <>Proj: {item?.projectedAPR.toFixed(2)}%</> : <>Proj: 0%</>}
-              </span>
-            </div>
+            <MarketListAPR
+              rewardToken={item?.rewardToken}
+              maxLeverage={1}
+              currentAPRDetails={item.currentAPRDetails}
+              projectedAPRDetails={item.projectedAPRDetails}
+              apr={item?.currentAPR}
+              projectedApr={item?.projectedAPR}
+            />
           </div>
 
           <div className="flex w-full items-center gap-2">

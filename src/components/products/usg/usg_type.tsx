@@ -360,6 +360,15 @@ export type EarnTask = {
   projectedAPR: number
   points: number
   address: string
+  rewardToken: string
+  currentAPRDetails?: {
+    APY?: number
+    CRV?: number
+  }
+  projectedAPRDetails?: {
+    APY?: number
+    CRV?: number
+  }
 }
 
 export type LockPosition = {
@@ -559,6 +568,10 @@ export type StakeDaoAPRData = {
   apr: {
     current: {
       total: number
+      details: Array<{
+        label: string
+        value: number[]
+      }>
     }
     projected: { total: number }
   }

@@ -22,6 +22,13 @@ export const mapTasks = (tasks: EarnProtocolInput[], poolsData?: Array<GaugeAPR>
     const currentAPR = currentPool?.gaugeCrvApy.reduce((sum, n) => sum + n, 0) || 0
     const projectedAPR = currentPool?.gaugeFutureCrvApy.reduce((sum, n) => sum + n, 0) || 0
 
+    // TODO : set rewardToken dynamically
+    const rewardToken = "CRV"
+
+    // TODO : fields to be set dynamically
+    const currentAPRDetails = { APY: currentPool?.gaugeCrvApy[0], CRV: currentPool?.gaugeCrvApy[1] }
+    const projectedAPRDetails = { APY: currentPool?.gaugeFutureCrvApy[0], CRV: currentPool?.gaugeFutureCrvApy[1] }
+
     return {
       name: t.name,
       asset: t.asset,
@@ -32,6 +39,9 @@ export const mapTasks = (tasks: EarnProtocolInput[], poolsData?: Array<GaugeAPR>
       address: t.address,
       currentAPR,
       projectedAPR,
+      rewardToken,
+      currentAPRDetails,
+      projectedAPRDetails,
     }
   })
 }

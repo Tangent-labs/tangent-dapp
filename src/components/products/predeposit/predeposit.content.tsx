@@ -1,27 +1,35 @@
 "use client"
 
 import { useRef } from "react"
+import { Address } from "viem"
 import { cn } from "@/lib/utils"
 import { IconTangent } from "@/components/icons"
 import { usePredepositContext } from "./predeposit.context"
 import { PredepositFAQ } from "./components/predeposit-faq"
 import { PredepositHeading } from "./components/predeposit-heading"
 import { PredepositWalletConnect } from "../wallet/predeposit_wallet_connect"
+import { PredepositOpportunities } from "./components/predeposit-opportunities"
 import { PredepositDepositSection } from "./components/predeposit-deposit-section"
 import { PredepositRetentionPhase } from "./components/predeposit-retention-phase"
-import { Address } from "viem"
-import { PredepositOpportunities } from "./components/predeposit-opportunities"
 
 export type PredepositContentProps = {
   opportunitiesData: Array<{
     protocol: string
     address: Address
-    gaugeCrvApy: Array<number>
-    gaugeFutureCrvApy: Array<number>
+    gaugeCrvApy?: Array<number> | undefined
+    gaugeFutureCrvApy?: Array<number> | undefined
     lpTokenAddress?: Address
     convexPoolData?: {
       usdTotal?: number
     }
+    usdTotal?: number
+    pendleBaseAPY?: number
+    details?: {
+      impliedApy: number
+      aggregatedApy: number
+    }
+    pt?: string
+    yt?: string
   }>
 }
 

@@ -16,6 +16,7 @@ import { MarketListAPR } from "@/components/design_system/list/market_list_apr"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
+import { CustomAssetDisplay } from "@/components/design_system/list/custom_asset_display"
 
 const listeState: ListState = {
   search: undefined,
@@ -77,8 +78,8 @@ export function USGEarnListInner() {
 
       {displayRows?.map((item, index) => (
         <ListRow route={item.link} className={cn(isLoading ? "shimmer" : "")} key={index}>
-          <div className="relative flex items-center gap-4">
-            <TokenImage token={item?.asset as ExistingAsset} size={48} className="w-12 lg:w-16" />
+          <div className="relative flex items-center gap-2">
+            <CustomAssetDisplay token={item?.asset as ExistingAsset} />
 
             <div className="flex flex-col items-start justify-start">
               <span className="text-sm font-semibold md:text-xl">{item?.asset}</span>
@@ -112,6 +113,13 @@ export function USGEarnListInner() {
                 <>
                   <TokenImage token={"SDT"} size={16} />
                   <span>Stake DAO</span>
+                </>
+              )}
+
+              {item.protocolName === "Pendle" && (
+                <>
+                  <TokenImage token={"PENDLE"} size={16} />
+                  Pendle
                 </>
               )}
             </div>

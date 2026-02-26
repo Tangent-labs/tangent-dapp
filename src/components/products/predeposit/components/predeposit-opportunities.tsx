@@ -4,7 +4,7 @@ import { useMemo } from "react"
 import { IconArrow } from "@/components/icons"
 import { formatDollar } from "@/lib/number_formatter"
 import { PredepositContentProps } from "../predeposit.content"
-import { EarnProtocolInput, GaugeAPR } from "../../usg/usg_type"
+import { EarnProtocolInput, EarnPoolsData } from "../../usg/usg_type"
 import { ListRow } from "@/components/design_system/list/list_row"
 import { ExistingAsset, ListHeaderData, ListState } from "@/types"
 import { ListHeader } from "@/components/design_system/list/list_header"
@@ -12,6 +12,7 @@ import mockJson from "../../../../app/(products)/(usg)/earn/earnMock.json"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { MarketListAPR } from "@/components/design_system/list/market_list_apr"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
+import { Address } from "viem"
 
 export const predepositOpportunitiesListHeaders: ListHeaderData[] = [
   { label: "Asset", key: "asset" },
@@ -29,34 +30,58 @@ const listeState: ListState = {
 }
 
 export const PredepositOpportunities = ({ opportunitiesData }: PredepositContentProps) => {
-  const mapOpportunities = (tasks: EarnProtocolInput[], poolsData?: Array<GaugeAPR>) => {
+  const mapOpportunities = (tasks: EarnProtocolInput[], poolsData?: Array<EarnPoolsData>) => {
     return tasks.map((t) => {
       const currentPool = poolsData?.find((el) => el.address === t.address && el.protocol === t.protocolName) || null
 
-      const currentAPR = currentPool?.gaugeCrvApy.reduce((sum, n) => sum + n, 0) || 0
-      const projectedAPR = currentPool?.gaugeFutureCrvApy.reduce((sum, n) => sum + n, 0) || 0
+      if (currentPool?.protocol === "Pendle") {
+        const currentAPR = currentPool?.pendleBaseAPY
+        const projectedAPR = currentPool?.pendleBaseAPY
+        const rewardToken = "USDe"
 
-      // TODO : set rewardToken dynamically
-      const rewardToken = "CRV"
+        const currentAPRDetails = { APY: currentPool?.pendleBaseAPY }
+        const projectedAPRDetails = { APY: currentPool?.pendleBaseAPY }
 
-      // TODO : fields to be set dynamically
-      const currentAPRDetails = { APY: currentPool?.gaugeCrvApy[0], CRV: currentPool?.gaugeCrvApy[1] }
-      const projectedAPRDetails = { APY: currentPool?.gaugeFutureCrvApy[0], CRV: currentPool?.gaugeFutureCrvApy[1] }
+        return {
+          name: t.name,
+          asset: t.asset,
+          link: t.link,
+          protocolName: t.protocolName,
+          actionLabel: t.actionLabel,
+          points: t.points,
+          address: t.address,
+          currentAPR,
+          projectedAPR,
+          rewardToken,
+          currentAPRDetails,
+          projectedAPRDetails,
+        }
+      } else {
+        const currentAPR = currentPool?.gaugeCrvApy?.reduce((sum, n) => sum + n, 0) || 0
+        const projectedAPR = currentPool?.gaugeFutureCrvApy?.reduce((sum, n) => sum + n, 0) || 0
 
-      return {
-        name: t.name,
-        asset: t.asset,
-        link: t.link,
-        protocolName: t.protocolName,
-        actionLabel: t.actionLabel,
-        points: t.points,
-        address: t.address,
-        currentAPR,
-        projectedAPR,
-        tvl: currentPool?.usdTotal,
-        rewardToken,
-        currentAPRDetails,
-        projectedAPRDetails,
+        // TODO : set rewardToken dynamically
+        const rewardToken = "CRV"
+
+        // TODO : fields to be set dynamically
+        const currentAPRDetails = { APY: currentPool?.gaugeCrvApy?.[0], CRV: currentPool?.gaugeCrvApy?.[1] }
+        const projectedAPRDetails = { APY: currentPool?.gaugeFutureCrvApy?.[0], CRV: currentPool?.gaugeFutureCrvApy?.[1] }
+
+        return {
+          name: t.name,
+          asset: t.asset,
+          link: t.link,
+          protocolName: t.protocolName,
+          actionLabel: t.actionLabel,
+          points: t.points,
+          address: t.address,
+          currentAPR,
+          projectedAPR,
+          tvl: currentPool?.usdTotal,
+          rewardToken,
+          currentAPRDetails,
+          projectedAPRDetails,
+        }
       }
     })
   }
@@ -92,9 +117,10 @@ type PredepositOpportunitiesListInnerProps = {
     actionLabel: string
     points: number
     address: string
-    currentAPR: number
-    projectedAPR: number
+    currentAPR?: number
+    projectedAPR?: number
     tvl?: number
+
     rewardToken: string
     currentAPRDetails?: {
       APY?: number
@@ -103,6 +129,17 @@ type PredepositOpportunitiesListInnerProps = {
     projectedAPRDetails?: {
       APY?: number
       CRV?: number
+    }
+    //
+    gaugeCrvApy?: Array<number>
+    gaugeFutureCrvApy?: Array<number>
+    lpTokenAddress?: Address
+    convexPoolData?: { usdTotal?: number }
+    usdTotal?: number
+    pendleBaseAPY?: number
+    details?: {
+      impliedApy: number
+      aggregatedApy: number
     }
   }>
 }

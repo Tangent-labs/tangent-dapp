@@ -74,4 +74,4 @@ export const USG_CONTRACT = {
   DAO: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
 }
 
-export const specialTokensList = ["USDe", "sUSDe", "reUSD", "wstUSR"]
+export const specialTokensList = ["USDe", "sUSDe", "LP sUSDe", "PT sUSDe", "YT sUSDe", "reUSD", "wstUSR"]

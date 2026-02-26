@@ -2,9 +2,9 @@
 
 import { useUSGContext } from "../usg_context"
 import { mapPoolsAndTasks, mapTasks } from "./usg_earn_controller"
-import { getCurvePools, getConvexPools, getStakeDAOPools } from "../server_api"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { EarnTask, USGStakingInfo, LpUserPoints, EarnProtocolInput, GaugeAPR } from "../usg_type"
+import { getCurvePools, getConvexPools, getStakeDAOPools, getPendlePools } from "../server_api"
+import { EarnTask, USGStakingInfo, LpUserPoints, EarnProtocolInput, EarnPoolsData } from "../usg_type"
 
 type USGEarnContextProps = {
   children: ReactNode
@@ -25,7 +25,7 @@ export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  const [poolsData, setPoolsData] = useState<Array<GaugeAPR>>([])
+  const [poolsData, setPoolsData] = useState<Array<EarnPoolsData>>()
 
   const displayRows = useMemo(() => {
     if (!tasks || !poolsData) return []
@@ -35,11 +35,11 @@ export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
   }, [tasks, poolsData])
 
   const fetchPoolsData = async () => {
-    const [curvePools, convexPools, stakeDaoPools] = await Promise.all([getCurvePools(), getConvexPools(), getStakeDAOPools()])
+    const [curvePools, convexPools, stakeDaoPools, pendlePools] = await Promise.all([getCurvePools(), getConvexPools(), getStakeDAOPools(), getPendlePools()])
 
-    const mappedPools = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, tasks)
+    const poolsAndTasks = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, tasks)
 
-    setPoolsData(mappedPools)
+    setPoolsData(poolsAndTasks)
     setIsLoading(false)
   }
 

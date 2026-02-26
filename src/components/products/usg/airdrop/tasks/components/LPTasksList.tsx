@@ -159,7 +159,7 @@ export const LPTasksList = () => {
                 <LpTaskCustomAssetDisplay token={task.asset.replaceAll("_", "-") as ExistingAsset} />
 
                 <div className="flex h-full flex-col items-start justify-between">
-                  <span className="flex text-[15px] font-semibold">{task.asset.replaceAll("_", "-")}</span>
+                  <span className="flex text-[15px] font-semibold">{task?.description}</span>
 
                   <ReliefCard className="flex items-center justify-center !rounded-full px-4 py-1 text-sm">Zap</ReliefCard>
                 </div>

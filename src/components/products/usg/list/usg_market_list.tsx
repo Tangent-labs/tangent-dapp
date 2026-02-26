@@ -26,6 +26,7 @@ import { NeonLightCard } from "@/components/design_system/structure/neon_light_c
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
+import { IconStars } from "@/components/icons/icon_stars"
 
 interface ListRowDispositionProps {
   children: React.ReactNode[]
@@ -161,7 +162,10 @@ export default function USGMarketList() {
                     </div>
                     <div className="text-center">
                       <div className="text-xs text-subtitle">APY</div>
-                      <div className="text-sm font-semibold text-[#95FF00]">{sUSGCurrentAPY.toFixed(2) + "%"}</div>
+                      <div className="flex items-center justify-center gap-1">
+                        <div className="text-sm font-semibold text-white">{sUSGCurrentAPY.toFixed(2) + "%"}</div>
+                        <IconStars className="w-3 fill-[#95FF00]"></IconStars>
+                      </div>
                     </div>
                   </div>
                 </div>

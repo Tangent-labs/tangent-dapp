@@ -70,17 +70,17 @@ export const USGDashboardContent = () => {
         </div>
 
         <div className="flex w-full items-center justify-between text-xs">
-          <span className="text-row-success">WTS</span>
+          <span className="text-dash-wts">WTS</span>
           <span className="text-white">${formatCompact(wts)}</span>
         </div>
 
         <div className="flex w-full items-center justify-between text-xs">
-          <span className="text-row-danger">Peg Keepers</span>
+          <span className="text-dash-keepers">Peg Keepers</span>
           <span className="text-white">${formatCompact(pk)}</span>
         </div>
 
         <div className="flex w-full items-center justify-between text-xs">
-          <span className="text-row-warning">sUSG</span>
+          <span className="text-dash-susg">sUSG</span>
           <span className="text-white">${formatCompact(susg)}</span>
         </div>
       </div>
@@ -355,8 +355,8 @@ export const USGDashboardContent = () => {
                     </linearGradient>
 
                     <linearGradient id="pegKeepersGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#FF005B" stopOpacity={0.6} />
-                      <stop offset="95%" stopColor="#FF005B" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#24DD9A" stopOpacity={0.6} />
+                      <stop offset="95%" stopColor="#24DD9A" stopOpacity={0} />
                     </linearGradient>
 
                     <linearGradient id="wtsGradient" x1="0" y1="0" x2="0" y2="1">
@@ -365,8 +365,8 @@ export const USGDashboardContent = () => {
                     </linearGradient>
 
                     <linearGradient id="susgGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#FF8800" stopOpacity={0.6} />
-                      <stop offset="95%" stopColor="#FF8800" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#4EB3DF" stopOpacity={0.6} />
+                      <stop offset="95%" stopColor="#4EB3DF" stopOpacity={0} />
                     </linearGradient>
                   </defs>
 
@@ -374,13 +374,13 @@ export const USGDashboardContent = () => {
 
                   <YAxis tickFormatter={formatYAxis} />
 
-                  <Area type="monotone" dataKey="susg" stackId="1" stroke="#FF8800" strokeWidth={1.5} fill="url(#susgGradient)" name="SUSG" connectNulls />
+                  <Area type="monotone" dataKey="susg" stackId="1" stroke="#4EB3DF" strokeWidth={1.5} fill="url(#susgGradient)" name="SUSG" connectNulls />
 
                   <Area
                     type="monotone"
                     dataKey="pegkeepers"
                     stackId="1"
-                    stroke="#FF005B"
+                    stroke="#24DD9A"
                     strokeWidth={1.5}
                     fill="url(#pegKeepersGradient)"
                     name="Peg Keepers"

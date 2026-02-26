@@ -13,6 +13,9 @@
     --tgt-row-success: #95ff00;
     --tgt-row-danger: #ff005b;
     --tgt-row-warning: #ff8800;
+    --tgt-dash-keepers: #24dd9a;
+    --tgt-dash-wts: #95ff00;
+    --tgt-dash-susg: #4eb3df;
     --tgt-bg-button-inactive: radial-gradient(77.27% 104.46% at 50% 100%, #8c8c8c 0%, #444444 100%);
     --tgt-bg-top-performing-lps: radial-gradient(139.72% 99.23% at 50% 100%, #0075ff 0%, rgba(0, 0, 0, 0) 100%);
     --tgt-bg-earn-action: linear-gradient(135deg, rgba(0, 117, 255, 0.5) 0%, rgba(0, 194, 255, 0.5) 100%);

@@ -4,7 +4,7 @@ export function NeonLightCard(props: { color1: string; color2: string; className
   return (
     <div className={`flex overflow-hidden rounded-lg ${props.className}`}>
       <div
-        className="shadow-2x relative w-full rounded-lg px-4 py-2"
+        className="shadow-2x relative w-full rounded-lg px-3 py-2"
         style={{
           background: `
           linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), radial-gradient(50.04% 50% at 50.04% 100%, ${props.color1} 0%,rgba(0, 0, 0, 0) 100%)`,

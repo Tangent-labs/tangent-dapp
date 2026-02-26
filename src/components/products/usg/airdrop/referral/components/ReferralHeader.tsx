@@ -36,7 +36,7 @@ export const ReferralHeader = ({
           extra={`(${formatNumber(lpUserPoints?.lpDailyRate * userBoost, 0)}pts/day)`}
           color1="#0077ffa3"
           color2="#0075FF"
-          className="h-full"
+          className="h-full w-full"
         />
 
         <NeonMetricsCard
@@ -45,7 +45,7 @@ export const ReferralHeader = ({
           value={`${formatNumber(voteUserPoints?.voteTotalPoints, 0)} pts`}
           color1="#95ff006d"
           color2="#95FF00"
-          className="h-full"
+          className="h-full w-full min-w-48 xl:w-auto"
         />
 
         <ReliefCard className="hidden w-fit min-w-32 flex-col items-center justify-center gap-1 self-end px-4 py-2 lg:flex">

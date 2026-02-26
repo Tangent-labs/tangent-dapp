@@ -23,12 +23,12 @@ export const ListAsset = ({ name, token, marketData, className = "" }: ListAsset
     <div className={`relative flex items-center gap-2 ${className}`}>
       <CustomAssetDisplay token={token} />
 
-      <div className="flex flex-row items-center justify-start md:flex-col md:items-start">
-        <span className="text-sm font-semibold md:text-xl">{name}</span>
+      <div className="flex h-6 flex-row items-center justify-center md:h-12 md:flex-col md:items-start">
+        {!!marketData ? (
+          <>
+            <span className="text-sm font-semibold md:text-xl">{name}</span>
 
-        <div className="ml-2 flex h-6 items-center justify-center gap-1 md:ml-0 xl:gap-2">
-          {marketData && (
-            <>
+            <div className="ml-2 flex items-center justify-center gap-1 md:ml-0 xl:gap-2">
               {marketData?.marketType?.includes("CRV") && <TokenImageHighlighted token="CRV" size={24} />}
               {marketData?.marketType?.startsWith("Convex_") && <TokenImageHighlighted token="CVX" size={24} />}
               {marketData?.marketType?.startsWith("STAKEDAO") && <TokenImageHighlighted token="SDT" size={24} />}
@@ -36,9 +36,13 @@ export const ListAsset = ({ name, token, marketData, className = "" }: ListAsset
               {marketData?.marketType?.includes("FXN") && <TokenImageHighlighted token="FXN" size={24} />}
 
               <CollateralEmissionLabel isHEC={marketData?.constants?.irParams.isHEC}></CollateralEmissionLabel>
-            </>
-          )}
-        </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <span className="text-sm font-semibold md:text-xl">{name}</span>
+          </>
+        )}
       </div>
     </div>
   )

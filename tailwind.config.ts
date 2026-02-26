@@ -37,6 +37,11 @@ const config: Config = {
         "row-success": "var(--tgt-row-success)",
         "row-danger": "var(--tgt-row-danger)",
         "row-warning": "var(--tgt-row-warning)",
+
+        "dash-keepers": "var(--tgt-dash-keepers)",
+        "dash-wts": "var(--tgt-dash-wts)",
+        "dash-susg": "var(--tgt-dash-susg)",
+
         "overlay-panel": "var(--tgt-bg-overlay-panel)",
         "panel-disabled": "var(--tgt-bg-panel-disabled)",
         tonic: "var(--tgt-tonic)",

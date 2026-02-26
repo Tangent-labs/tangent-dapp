@@ -3,10 +3,10 @@ export const returnTVLType = (type: string) => {
     case "markets":
       return "bg-row-tonic"
     case "pegkeepers":
-      return "bg-row-danger"
+      return "bg-dash-keepers"
     case "wts":
-      return "bg-row-success"
+      return "bg-dash-wts"
     case "susg":
-      return "bg-row-warning"
+      return "bg-dash-susg"
   }
 }

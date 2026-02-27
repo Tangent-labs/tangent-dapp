@@ -527,6 +527,7 @@ export type Boost = {
   type: string
   boost: number
   status: boolean
+  logo: string
 }
 
 export type MarketAPR = {

@@ -72,16 +72,11 @@ export const BoostsList = () => {
             <div className="flex items-center justify-between">
               <div className="flex w-2/3 items-center gap-2 xl:w-1/2">
                 {boost?.type === "Onboarded User" ? (
-                  <>
-                    <IconReferral className="w-7" />
-                    <span className="flex text-[15px] font-semibold">{boost?.type}</span>
-                  </>
+                  <IconReferral className="w-7" />
                 ) : (
-                  <>
-                    <Image src={`/medias/logos/${boost.logo}.webp`} alt={boost.logo} height={32} width={32} />
-                    <span className="flex text-[15px] font-semibold">{boost?.type}</span>
-                  </>
+                  <Image src={`/medias/logos/${boost.logo}.webp`} alt={boost.logo} height={32} width={32} />
                 )}
+                <span className="flex text-[15px] font-semibold">{boost?.type}</span>
               </div>
 
               <div className="flex w-1/6 justify-center text-[15px] xl:w-1/4">+{boost?.boost}</div>

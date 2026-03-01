@@ -2,7 +2,26 @@ import { Address } from "viem"
 import { ListHeaderData } from "@/types"
 import { EarnPoolsData, EarnProtocolInput, StakeDaoAPRData } from "../usg_type"
 
-export const USGEarnListHeaders: ListHeaderData[] = [
+export type APROpportunitiesData = {
+  protocol: string
+  address: Address
+  gaugeCrvApy?: Array<number> | undefined
+  gaugeFutureCrvApy?: Array<number> | undefined
+  lpTokenAddress?: Address
+  convexPoolData?: {
+    usdTotal?: number
+  }
+  usdTotal?: number
+  pendleBaseAPY?: number
+  details?: {
+    impliedApy: number
+    aggregatedApy: number
+  }
+  pt?: string
+  yt?: string
+}
+
+export const aprOpportunitiesListHeaders: ListHeaderData[] = [
   { label: "Asset", key: "asset" },
   {
     label: "Protocol",
@@ -15,7 +34,7 @@ export const USGEarnListHeaders: ListHeaderData[] = [
   { label: "Pts/Day/$", key: "points" },
 ]
 
-export const mapTasks = (tasks: EarnProtocolInput[], poolsData?: Array<EarnPoolsData>) => {
+export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Array<EarnPoolsData>) => {
   return tasks.map((t) => {
     const currentPool = poolsData?.find((el) => {
       if (el?.protocol === "Pendle") {
@@ -110,6 +129,7 @@ export const mapPoolsAndTasks = (
       return { protocol: "Stake DAO", address, gaugeCrvApy: [gaugeCrvApy], gaugeFutureCrvApy: [gaugeFutureCrvApy] }
     })
 
+  // TODO : Implement the correct behaviour/APR
   const pendleYT = pendlePools
     ?.filter((p: EarnPoolsData) => allPendlePoolsAddresses.includes(p.address))
     ?.map((pool) => {
@@ -144,3 +164,12 @@ export const mapPoolsAndTasks = (
 
   return curvePoolsOfInterest.concat(convexPoolsOfInterest).concat(stakeDaoPoolsOfInterest)?.concat(pendlePoolsOfInterest)
 }
+
+export const protocolConfig = {
+  Curve: "CRV",
+  Convex: "CVX",
+  "Stake DAO": "SDT",
+  Pendle: "PENDLE",
+} as const
+
+export type ProtocolName = keyof typeof protocolConfig

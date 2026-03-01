@@ -350,7 +350,7 @@ export type EarnProtocolInput = {
   address: string
 }
 
-export type EarnTask = {
+export type AprOpportunityItem = {
   name: string
   asset: string
   link: string

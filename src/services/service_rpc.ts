@@ -12,7 +12,6 @@ import {
   Hash,
   Hex,
   http,
-  fallback,
   WalletClient,
   WriteContractParameters,
 } from "viem"

@@ -30,19 +30,27 @@ export const chain: Chain = {
   name: dappConfig.chain.name,
 }
 
-const rpcUrls = [dappConfig.chain.rpc, "https://rpc.ankr.com/eth", "https://ethereum.publicnode.com"]
-
-export const publicClient = createPublicClient({
+const publicClient = createPublicClient({
   chain,
-  transport: fallback(
-    rpcUrls.map((url) => http(url)),
-    {
-      rank: true,
-      retryCount: 3,
-      retryDelay: 200,
-    }
-  ),
+  transport: http(chain.rpcUrls.default.http[0], {
+    retryCount: 0,
+    timeout: 30_000,
+  }),
 })
+
+// const rpcUrls = [dappConfig.chain.rpc, "https://rpc.ankr.com/eth", "https://ethereum.publicnode.com"]
+
+// export const publicClient = createPublicClient({
+//   chain,
+//   transport: fallback(
+//     rpcUrls.map((url) => http(url)),
+//     {
+//       rank: true,
+//       retryCount: 3,
+//       retryDelay: 200,
+//     }
+//   ),
+// })
 
 // Make getPublicClient great again (singleton version)
 export const getPublicClient = () => publicClient

@@ -39,7 +39,7 @@ export const MarketListAPR = ({ rewardToken, maxLeverage, currentAPRDetails, pro
   }, [rewardToken, currentAPRDetails, projectedApr, apr])
 
   return (
-    <div className="flex w-full items-center justify-between gap-2 xl:justify-center">
+    <div className="flex w-full items-center justify-center gap-2">
       <div className="flex items-center justify-center text-sm text-subtitle xl:hidden">{maxLeverage === 1 ? "vAPR" : "Max vAPR"}</div>
 
       <div className={`flex min-h-min min-w-16 items-center justify-center text-center xl:min-h-8 xl:flex-col ${className}`}>

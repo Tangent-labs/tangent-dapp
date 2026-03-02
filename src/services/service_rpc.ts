@@ -37,6 +37,20 @@ const publicClient = createPublicClient({
   }),
 })
 
+// const rpcUrls = [dappConfig.chain.rpc, "https://rpc.ankr.com/eth", "https://ethereum.publicnode.com"]
+
+// export const publicClient = createPublicClient({
+//   chain,
+//   transport: fallback(
+//     rpcUrls.map((url) => http(url)),
+//     {
+//       rank: true,
+//       retryCount: 3,
+//       retryDelay: 200,
+//     }
+//   ),
+// })
+
 // Make getPublicClient great again (singleton version)
 export const getPublicClient = () => publicClient
 

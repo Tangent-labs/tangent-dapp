@@ -36,71 +36,88 @@ const ONCHAIN_BOOST_INFOS: NumMap = {
 type BoostMetadata = {
   title: string
   description: string
+  logo: string
 }
 
 const BOOST_METADATA: Record<string, BoostMetadata> = {
   CVG_COMPENSATION: {
     title: "CVG Compensation Boost",
+    logo: "CVG",
     description: "Receive a boost for being a CVG OG.",
   },
   LP_DEALS: {
     title: "LP Deals Boost",
+    logo: "USG",
     description: "You are a member of our private lp deals.",
   },
   CVG_PEPE: {
     title: "Pepe Booster",
+    logo: "PEPE",
     description: "Hold a CVG Pepe NFT to receive this boost.",
   },
   DEWHALE_MEMBERS: {
     title: "Dewhales Boost",
+    logo: "Dewhales",
     description: "Be a Dewhales member.",
   },
   TURTLE_CLUB: {
     title: "Turtle Club Boost",
+    logo: "Turtle",
     description: "Be a Turtle Club member.",
   },
   ONBOARDED: {
     title: "Onboarded User",
+    logo: "tangent",
     description: "Get a referral code.",
   },
   LLAMA_NFT: {
     title: "Llama NFT Holder",
+    logo: "Llama",
     description: "Llama NFT Holder",
   },
   VECRV: {
     title: "veCRV Holder",
+    logo: "CRV",
     description: "veCRV Holder",
   },
   VLCVX: {
     title: "vlCVX Holder",
+    logo: "CVX",
     description: "vlCVX Holder",
   },
   VESDT: {
     title: "veSDT Holder",
+    logo: "SDT",
     description: "veSDT Holder",
   },
   VEFXN: {
     title: "veFXN Holder",
+    logo: "FX",
     description: "veFXN Holder",
   },
   VEPENDLE: {
     title: "vePENDLE Holder",
+    logo: "Pendle",
     description: "vePENDLE Holder",
   },
   VEYFI: {
     title: "veYFI Holder",
+    logo: "YFI",
     description: "veYFI Holder",
   },
   SINV: {
     title: "sINV Holder",
+    logo: "Inverse",
     description: "sINV Holder",
   },
   STRESOLV: {
     title: "stRESOLV Holder",
+    logo: "Resolv",
     description: "stRESOLV Holder",
   },
   STRSUP: {
     title: "stRSUP Holder",
+    logo: "Resupply",
     description: "stRSUP Holder",
   },
 }
@@ -115,9 +132,11 @@ export const mapUserBoosts = (boosts: string[]): Boost[] => {
     const metadata = BOOST_METADATA[normalizedKey]
 
     const title = metadata?.title
+    const logo = metadata?.logo
 
     return {
       type: title,
+      logo: logo,
       boost,
       status: normalizedBoosts.has(normalizedKey),
     }

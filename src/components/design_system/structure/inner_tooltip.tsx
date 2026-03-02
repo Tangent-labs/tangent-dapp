@@ -12,7 +12,7 @@ export function InnerTooltip({ children, innerContent }: InnerTooltipProps) {
   return (
     <HoverCard openDelay={150} closeDelay={100}>
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
-      <HoverCardContent side="top" className="z-100 w-full !border-none text-xs">
+      <HoverCardContent side="top" className="z-1001 w-full !border-none py-2 text-xs">
         {innerContent}
       </HoverCardContent>
     </HoverCard>

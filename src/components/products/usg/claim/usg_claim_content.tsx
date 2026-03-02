@@ -202,6 +202,7 @@ function ClaimList() {
 
               <div className="flex justify-center xl:w-1/3">
                 <MarketListAPR
+                  poolName={item?.marketName}
                   rewardToken={item?.rewardToken}
                   maxLeverage={1}
                   currentAPRDetails={item.currentAPRDetails}

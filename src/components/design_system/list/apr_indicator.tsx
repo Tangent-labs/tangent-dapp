@@ -26,7 +26,7 @@ export function AprIndicator({ children, isMax, className = "" }: AprIndicatorPr
             <IconStars className={cn(isMax ? "fill-[#95FF00]" : "fill-row-tonic", "w-4")}></IconStars>
           </span>
         </HoverCardTrigger>
-        <HoverCardContent side="top" align="center" className="z-[9999] w-fit max-w-56 border border-white/10 text-xs">
+        <HoverCardContent side="top" align="center" className="z-[9999] w-full border border-white/10 text-xs">
           <div className="grid gap-4 !border-none">
             <div className="space-y-2">{children[1]}</div>
           </div>

@@ -267,6 +267,7 @@ export function USGMarketListInner() {
           <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} />
 
           <MarketListAPR
+            poolName={item?.name}
             rewardToken={item?.rewardToken}
             maxLeverage={1}
             currentAPRDetails={item.currentAPRDetails}
@@ -276,6 +277,7 @@ export function USGMarketListInner() {
           />
 
           <MarketListAPR
+            poolName={item?.name}
             rewardToken={item?.rewardToken}
             maxLeverage={1 / (1 - item?.maxLTV) || 1}
             currentAPRDetails={item.currentAPRDetails}

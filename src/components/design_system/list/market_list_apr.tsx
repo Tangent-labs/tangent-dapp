@@ -1,7 +1,11 @@
 import { useMemo } from "react"
+import { cn } from "@/lib/utils"
+import { ExistingAsset } from "@/types"
 import { AprIndicator } from "./apr_indicator"
+import { TokenImage } from "../structure/token_image"
 
 interface ListAPRProps {
+  poolName: string
   rewardToken: string
   maxLeverage: number
   currentAPRDetails?: {
@@ -15,20 +19,40 @@ interface ListAPRProps {
   className?: string
 }
 
-export const MarketListAPR = ({ rewardToken, maxLeverage, currentAPRDetails, projectedAPRDetails, apr, projectedApr, className = "" }: ListAPRProps) => {
-  const computedAPRDetails = useMemo(() => {
-    if (currentAPRDetails && projectedAPRDetails && rewardToken) {
-      return Number(currentAPRDetails[rewardToken]) === 0 ? projectedAPRDetails : currentAPRDetails
-    }
+type StreamTileProps = {
+  active: boolean
+}
 
-    return currentAPRDetails
-  }, [rewardToken, currentAPRDetails, projectedAPRDetails])
+const StreamTile = ({ active }: StreamTileProps) => {
+  return (
+    <div className={cn("flex items-center justify-center rounded-full px-1 py-0.5 text-xs text-black", active ? "bg-row-success" : "bg-row-warning")}>
+      {" "}
+      Stream {active ? "active" : "inactive"}{" "}
+    </div>
+  )
+}
 
-  const rewardEntries = useMemo(() => {
-    return Object.entries(computedAPRDetails ?? {})
+export const MarketListAPR = ({
+  poolName,
+  rewardToken,
+  maxLeverage,
+  currentAPRDetails,
+  projectedAPRDetails,
+  apr,
+  projectedApr,
+  className = "",
+}: ListAPRProps) => {
+  const currentRewardEntries = useMemo(() => {
+    return Object.entries(currentAPRDetails ?? {})
       .filter(([k, v]) => k !== "APY" && typeof v === "number")
       .sort((a, b) => b[1] - a[1])
-  }, [computedAPRDetails])
+  }, [currentAPRDetails])
+
+  const projectedRewardEntries = useMemo(() => {
+    return Object.entries(projectedAPRDetails ?? {})
+      .filter(([k, v]) => k !== "APY" && typeof v === "number")
+      .sort((a, b) => b[1] - a[1])
+  }, [projectedAPRDetails])
 
   const computedAPR = useMemo(() => {
     if (currentAPRDetails && rewardToken && projectedApr) {
@@ -39,7 +63,7 @@ export const MarketListAPR = ({ rewardToken, maxLeverage, currentAPRDetails, pro
   }, [rewardToken, currentAPRDetails, projectedApr, apr])
 
   return (
-    <div className="flex w-full items-center justify-center gap-2">
+    <div className="flex w-full items-center justify-between gap-2 xl:justify-center">
       <div className="flex items-center justify-center text-sm text-subtitle xl:hidden">{maxLeverage === 1 ? "vAPR" : "Max vAPR"}</div>
 
       <div className={`flex min-h-min min-w-16 items-center justify-center text-center xl:min-h-8 xl:flex-col ${className}`}>
@@ -50,14 +74,27 @@ export const MarketListAPR = ({ rewardToken, maxLeverage, currentAPRDetails, pro
                 <div>{(computedAPR * maxLeverage).toFixed(2)}%</div>
 
                 <div className="flex flex-col gap-2 p-2">
-                  <div className="flex min-w-44 items-center justify-between">
-                    Base APY
-                    <span className="flex items-center justify-center">{((computedAPRDetails?.APY ?? 0) * maxLeverage).toFixed(2)}%</span>
+                  <div className="flex w-full items-center justify-between gap-2">
+                    <div className="flex items-center justify-start gap-2 text-xs font-semibold">
+                      <TokenImage token={poolName as ExistingAsset} size={24} />
+                      {poolName} Rewards
+                    </div>
+                    <StreamTile active={!!currentAPRDetails && Number(currentAPRDetails[rewardToken]) !== 0} />
                   </div>
 
-                  {rewardEntries.length > 0 && (
-                    <div className="flex flex-col gap-2">
-                      {rewardEntries.map(([token, value]) => (
+                  <div className="flex w-full items-center justify-between gap-2 border-b border-white/10 pb-1 font-semibold">
+                    <span>Current vAPR</span>
+                    <span> {((apr || 0) * maxLeverage).toFixed(2)}%</span>
+                  </div>
+
+                  <div className="flex min-w-44 items-center justify-between text-subtitle">
+                    Base APY
+                    <span className="flex items-center justify-center">{((currentAPRDetails?.APY ?? 0) * maxLeverage).toFixed(2)}%</span>
+                  </div>
+
+                  {currentRewardEntries.length > 0 && (
+                    <div className="flex flex-col gap-2 text-subtitle">
+                      {currentRewardEntries.map(([token, value]) => (
                         <div className="flex items-center justify-between" key={token}>
                           <span>{token} APR</span>
                           <span>{(value * maxLeverage)?.toFixed(2)}%</span>
@@ -66,12 +103,24 @@ export const MarketListAPR = ({ rewardToken, maxLeverage, currentAPRDetails, pro
                     </div>
                   )}
 
-                  {currentAPRDetails && (
-                    <div className="mt-2 flex min-w-44 items-center justify-between">
-                      <span className="flex items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">Net vAPR</span>
-                      <span className="flex items-center justify-center rounded-[10px] bg-button-active px-2 py-0.5 font-semibold">
-                        {(computedAPR * maxLeverage).toFixed(2)}%
-                      </span>
+                  <div className="mt-2 flex w-full items-center justify-between gap-2 border-b border-white/10 pb-1 font-semibold">
+                    <span>Project vAPR</span>
+                    <span> {((projectedApr || 0) * maxLeverage).toFixed(2)}%</span>
+                  </div>
+
+                  <div className="flex min-w-44 items-center justify-between text-subtitle">
+                    Base APY
+                    <span className="flex items-center justify-center">{((projectedAPRDetails?.APY ?? 0) * maxLeverage).toFixed(2)}%</span>
+                  </div>
+
+                  {projectedRewardEntries.length > 0 && (
+                    <div className="flex flex-col gap-2 text-subtitle">
+                      {projectedRewardEntries.map(([token, value]) => (
+                        <div className="flex items-center justify-between" key={token}>
+                          <span>{token} APR</span>
+                          <span>{(value * maxLeverage)?.toFixed(2)}%</span>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>

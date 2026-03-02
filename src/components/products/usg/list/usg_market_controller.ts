@@ -152,8 +152,8 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
       },
     ],
     userHasDeposited: !!onChainRow?.collateralInfos?.positionCollateralUSDValue && onChainRow?.collateralInfos?.positionCollateralUSDValue > 0n,
-    positionCollateralAmount: onChainRow?.collateralInfos?.positionCollateralAmount.toString() || "0",
-    totalCollateralAmount: onChainRow?.collateralInfos?.totalCollateralAmount?.toString() || "0",
+    positionCollateralUSDValue: onChainRow?.collateralInfos?.positionCollateralUSDValue.toString() || "0",
+    totalCollateralUSDValue: onChainRow?.collateralInfos?.totalCollateralUSDValue?.toString() || "0",
     rewardToken,
   }
 }
@@ -246,28 +246,22 @@ export const sortMarketListByType = (elementA: ListRowData, elementB: ListRowDat
   return 0
 }
 
-export function sortMarketsByUserPositionAndTVL(a: ListRowData, b: ListRowData): number {
-  const getTotal = (row: ListRowData) => BigInt(row.totalCollateralAmount) ?? 0n
+export const sortMarketsByUserPositionAndTVL = (a: ListRowData, b: ListRowData): number => {
+  const posA = BigInt(a.positionCollateralUSDValue ?? 0)
+  const posB = BigInt(b.positionCollateralUSDValue ?? 0)
 
-  const positionA = BigInt(a.positionCollateralAmount) ?? 0n
-  const positionB = BigInt(b.positionCollateralAmount) ?? 0n
-
-  const userHasCollatA = positionA > 0n
-  const userHasCollatB = positionB > 0n
-
-  if (userHasCollatA && !userHasCollatB) return -1
-  if (!userHasCollatA && userHasCollatB) return +1
-
-  if (userHasCollatA && userHasCollatB) {
-    if (positionA > positionB) return -1
-    if (positionA < positionB) return +1
+  // 1. Prority to user position
+  if (posA !== posB) {
+    return posA > posB ? -1 : 1
   }
 
-  const totalA = getTotal(a)
-  const totalB = getTotal(b)
+  // else by tvl
+  const totalA = BigInt(a.totalCollateralUSDValue ?? 0)
+  const totalB = BigInt(b.totalCollateralUSDValue ?? 0)
 
-  if (totalA > totalB) return -1
-  if (totalA < totalB) return +1
+  if (totalA !== totalB) {
+    return totalA > totalB ? -1 : 1
+  }
 
   return 0
 }

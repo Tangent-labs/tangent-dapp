@@ -254,6 +254,7 @@ export type USGMarketDisplayData = USGMarketLoanDisplayData & {
   borrowRateCurrent: number
   borrowRateNext: number
   cap: string
+  available: string
   maxLtv: string
   maxLtvDollar: string
   rewardsCutCurrent: string

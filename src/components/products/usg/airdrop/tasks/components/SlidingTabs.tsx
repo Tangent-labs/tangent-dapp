@@ -34,7 +34,7 @@ export function SlidingTabs({ labels, value, onSwitchTab }: SlidingTabsProps) {
         }}
       />
 
-      <div role="tablist" aria-orientation="horizontal" className="relative z-10 flex w-full">
+      <div role="tablist" aria-orientation="horizontal" className="relative flex w-full">
         {labels.map((label, i) => {
           const selected = i === activeTabIndex
           return (

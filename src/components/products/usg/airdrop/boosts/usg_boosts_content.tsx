@@ -30,9 +30,7 @@ export const UsgBoostsContent = () => {
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Boosts</span>
-            <p className="text-[15px]">
-              Borrow USG, provide liquidity, and vote for USG and sUSG pools to earn points. Points will be convertible for TAN tokens once the campaign ends.
-            </p>
+            <p className="text-[15px]">Boost your points by holding eligible assets or by belonging to selected communities.</p>
           </div>
         </ReliefCard>
 

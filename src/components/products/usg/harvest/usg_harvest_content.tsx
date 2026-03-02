@@ -58,7 +58,7 @@ export default function USGHarvestContent() {
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Harvest</span>
-            <p className="text-[15px]">Harvest protocol-generated CRV, CVX or FXN rewards.</p>
+            <p className="text-[15px]">Harvest markets&apos; rewards.</p>
           </div>
         </ReliefCard>
 

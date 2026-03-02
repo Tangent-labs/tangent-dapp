@@ -45,11 +45,11 @@ export const MarketListAPR = ({ rewardToken, maxLeverage, currentAPRDetails, pro
       <div className={`flex min-h-min min-w-16 items-center justify-center text-center xl:min-h-8 xl:flex-col ${className}`}>
         {!!computedAPR && Number(computedAPR) > 0 && (
           <>
-            <span className="flex items-center justify-center bg-button-active bg-clip-text text-sm font-semibold leading-4 text-transparent md:text-xl">
+            <span className="flex items-center justify-center bg-button-active bg-clip-text text-sm text-transparent md:text-xl">
               <AprIndicator isMax={maxLeverage !== 1}>
                 <div>{(computedAPR * maxLeverage).toFixed(2)}%</div>
 
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 p-2">
                   <div className="flex min-w-44 items-center justify-between">
                     Base APY
                     <span className="flex items-center justify-center">{((computedAPRDetails?.APY ?? 0) * maxLeverage).toFixed(2)}%</span>

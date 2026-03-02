@@ -44,6 +44,8 @@ export type ListRowData = {
     raw?: number // Raw numerical value for calculations
   }[]
   userHasDeposited: boolean
+  positionCollateralAmount: string
+  totalCollateralAmount: string
   protocol: string
   type: string
   rewardToken: string

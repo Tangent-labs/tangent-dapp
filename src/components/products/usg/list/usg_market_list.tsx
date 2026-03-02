@@ -133,7 +133,7 @@ export default function USGMarketList() {
                   </div>
                   <div className="flex flex-1 items-center justify-center gap-10 xl:gap-14">
                     {[
-                      { key: "USG", value: formatDollar(globalData.USGPrice, 5) },
+                      { key: "USG", value: formatDollar(globalData.USGPrice, 3) },
                       { key: "Supply", value: globalData.USGSupply },
                     ].map((item, index) => (
                       <div className="text-center" key={index}>

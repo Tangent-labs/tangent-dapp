@@ -8,16 +8,13 @@ export const PredepositFAQ = () => {
     {
       title: "How it works?",
       content: [
-        "Deposit USDC or frxUSD to participate in USG’s pre-deposit campaign.",
-        "Your deposit will be routed in the corresponding Curve pool.",
-        "In return, you will receive a LP token representing your position in the liquidity pool.",
+        "Deposit USDC or frxUSD to participate in USG’s pre-deposit campaign. Your deposit will be routed in the corresponding Curve pool. In return, you will receive a LP token representing your position in the liquidity pool.",
       ],
     },
     {
       title: "What do I get after depositing?",
       content: [
-        "By depositing, you will receive a Curve LP token that represents your participation in the liquidity pool. ",
-        "Once you receive your LP tokens, your position is comprised of a mix of USDC/frxUSD, and USG.",
+        "By depositing, you will receive a Curve LP token that represents your participation in the liquidity pool. Once you receive your LP tokens, your position is comprised of a mix of USDC/frxUSD, and USG",
         "You can keep your LP token as it is, or stake it to receive CRV rewards.",
       ],
     },
@@ -41,8 +38,7 @@ export const PredepositFAQ = () => {
     {
       title: "Do I need to keep my position until the end of the campaign?",
       content: [
-        "Yes, once the retention phase starts, you need to keep your position until the end of the campaign to be eligible for rewards.",
-        "However, there is no enforced lock-up, and you can withdraw at any time.",
+        "Yes, once the retention phase starts, you need to keep your position until the end of the campaign to be eligible for rewards. However, there is no enforced lock-up, and you can withdraw at any time.",
         "If you withdraw totally, you will lose your eligibility even if you redeposit after. If you withdraw partially, your minimum deposit will be taken into account.",
         "If you withdraw, you will keep the points you earned for the regular airdrop campaign.",
       ],
@@ -50,8 +46,7 @@ export const PredepositFAQ = () => {
     {
       title: "Do I score points for the regular airdrop campaign?",
       content: [
-        "Yes. You can choose not to stake your LP tokens to maximize your points.",
-        "By staking your LP tokens, you will earn CRV rewards, but you will receive fewer points.",
+        "Yes. You can choose not to stake your LP tokens to maximize your points. By staking your LP tokens, you will earn CRV rewards, but you will receive fewer points.",
         "Staking or not doesn’t affect your pre-deposit campaign’s rewards.",
       ],
     },
@@ -78,9 +73,8 @@ export const PredepositFAQ = () => {
     {
       title: "Can USG depeg?",
       content: [
-        " USG can slightly derive from its $1 peg. ",
-        "However, the protocol is economically built so depeg situations don’t last. ",
-        "If the stablecoin derives from its peg, liquidity providers will earn more CRV rewards, as more incentives will be driven towards vote incentives. ",
+        " USG can slightly derive from its $1 peg. However, the protocol is economically built so depeg situations don’t last.",
+        "If the stablecoin derives from its peg, liquidity providers will earn more CRV rewards, as more incentives will be driven towards vote incentives.",
         <>
           Read more here:{" "}
           <Link

@@ -80,6 +80,18 @@ export const MenuModal = () => {
               Referral
             </button>
           </DialogClose>
+
+          <DialogClose asChild>
+            <button
+              className={cn(
+                "flex items-center justify-center rounded-[10px] border border-white border-opacity-20 px-4 py-2 text-[15px] font-semibold",
+                pathname === "/boosts" ? "bg-button-active text-black" : "text-white"
+              )}
+              onClick={() => router.push("/boosts")}
+            >
+              Boosts
+            </button>
+          </DialogClose>
         </div>
       </DialogContent>
     </Dialog>

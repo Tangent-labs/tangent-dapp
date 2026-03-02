@@ -350,16 +350,25 @@ export type EarnProtocolInput = {
   address: string
 }
 
-export type EarnTask = {
+export type AprOpportunityItem = {
   name: string
   asset: string
   link: string
   protocolName: string
   actionLabel: string
-  currentAPR: number
-  projectedAPR: number
+  currentAPR: number | undefined
+  projectedAPR: number | undefined
   points: number
   address: string
+  rewardToken: string
+  currentAPRDetails?: {
+    APY?: number
+    CRV?: number
+  }
+  projectedAPRDetails?: {
+    APY?: number
+    CRV?: number
+  }
 }
 
 export type LockPosition = {
@@ -518,6 +527,7 @@ export type Boost = {
   type: string
   boost: number
   status: boolean
+  logo: string
 }
 
 export type MarketAPR = {
@@ -542,14 +552,21 @@ export type MarketListAPRData = {
   }
 }
 
-export type GaugeAPR = {
+export type EarnPoolsData = {
   protocol: string
   address: Address
-  gaugeCrvApy: Array<number>
-  gaugeFutureCrvApy: Array<number>
+  gaugeCrvApy?: Array<number>
+  gaugeFutureCrvApy?: Array<number>
   lpTokenAddress?: Address
   convexPoolData?: { usdTotal?: number }
   usdTotal?: number
+  pendleBaseAPY?: number
+  details?: {
+    impliedApy: number
+    aggregatedApy: number
+  }
+  pt?: string
+  yt?: string
 }
 
 export type StakeDaoAPRData = {
@@ -559,6 +576,10 @@ export type StakeDaoAPRData = {
   apr: {
     current: {
       total: number
+      details: Array<{
+        label: string
+        value: number[]
+      }>
     }
     projected: { total: number }
   }

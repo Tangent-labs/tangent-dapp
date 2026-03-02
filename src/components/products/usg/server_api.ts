@@ -1,7 +1,7 @@
 "use server"
 
 import { Address } from "viem"
-import { GaugeAPR, StakeDaoAPRData } from "./usg_type"
+import { EarnPoolsData, StakeDaoAPRData } from "./usg_type"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -63,7 +63,7 @@ export const getStakeDAOPools = async (): Promise<Array<StakeDaoAPRData>> => {
   }
 }
 
-export const getConvexPools = async (): Promise<Array<GaugeAPR>> => {
+export const getConvexPools = async (): Promise<Array<EarnPoolsData>> => {
   try {
     const url = `https://curve.convexfinance.com/api/curve/pools`
 
@@ -87,7 +87,7 @@ export const getConvexPools = async (): Promise<Array<GaugeAPR>> => {
   }
 }
 
-export const getCurvePools = async (): Promise<Array<GaugeAPR>> => {
+export const getCurvePools = async (): Promise<Array<EarnPoolsData>> => {
   try {
     const url = `https://api.curve.finance/v1/getPools/all/ethereum`
 
@@ -107,6 +107,30 @@ export const getCurvePools = async (): Promise<Array<GaugeAPR>> => {
     return data?.poolData
   } catch (error) {
     console.error("Failed to fetch curve pools :", error)
+    return []
+  }
+}
+
+export const getPendlePools = async () => {
+  try {
+    const url = `https://api-v2.pendle.finance/core/v1/1/markets/active`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch pendle pools`)
+    }
+
+    const { markets } = await response.json()
+
+    return markets
+  } catch (error) {
+    console.error("Failed to fetch pendle pools :", error)
     return []
   }
 }

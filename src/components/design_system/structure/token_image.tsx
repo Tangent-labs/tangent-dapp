@@ -61,7 +61,7 @@ export function TokenImage({ token, size, ...props }: TokenImageProps) {
     WSTUSR: "USR.webp",
   }
 
-  const imageFilename = specialImages[prefix] || `${token}.webp`
+  const imageFilename = specialImages[prefix] || specialImages[token?.toUpperCase()] || `${token}.webp`
 
   const src = `/medias/tokens/${imageFilename}`
 

@@ -55,7 +55,7 @@ export function transformGlobalData(data?: ChainViewMarketList): USGGlobalData {
     usgPriceWei: data?.USGPrice,
     USGPrice: USGPrice.toFixed(3),
     USGSupply: formatBigInt(data?.USGSupply || "0", 18, 0),
-    sUSGPrice: formatDollar(formatBigInt(data?.sUSGPrice || "0", 18, 2), 2),
+    sUSGPrice: formatDollar(formatBigInt(data?.sUSGPrice || "0", 18, 2), 4),
     sUSGSupply: formatBigInt(data?.sUSGSupply || "0", 18, 0),
     globalCr: totalDebt !== 0n ? formatNumber((Number(totalTVL) / Number(totalDebt)) * 100, 2) + "%" : "N/A",
     globalTvl: formatDollar(formatUnits(totalTVL, 18), 0),

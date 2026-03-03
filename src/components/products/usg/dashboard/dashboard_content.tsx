@@ -140,7 +140,7 @@ export const USGDashboardContent = () => {
         <IndicatorCards
           className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "flex w-full items-center justify-around")}
           indicators={[
-            { title: "USG", value: formatDollar(globalData.USGPrice, 5) },
+            { title: "USG", value: formatDollar(globalData.USGPrice, 4) },
             { title: "Supply", value: globalData.USGSupply },
           ]}
         >
@@ -150,7 +150,7 @@ export const USGDashboardContent = () => {
         <IndicatorCards
           className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "flex w-full items-center justify-around")}
           indicators={[
-            { title: "sUSG ", value: globalData.sUSGPrice },
+            { title: "sUSG ", value: formatDollar(globalData.sUSGPrice, 4) },
             { title: "Supply", value: globalData.sUSGSupply },
             { title: "APY", value: sUSGCurrentAPY.toFixed(2) + "%" },
           ]}

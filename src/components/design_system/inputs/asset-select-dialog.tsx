@@ -39,7 +39,7 @@ const RenderAsset = <T extends OptionT>({ selected, placeholder }: { selected: T
           ) : (
             <TokenImage token={selected.symbol as ExistingAsset} size={32} />
           )}
-          <span className="text-sm font-semibold">{selected.symbol}</span>
+          <span className="text-sm font-semibold">{selected.symbol?.replaceAll("-", "/")}</span>
         </>
       ) : (
         <span className="text-sm opacity-70">{placeholder}</span>

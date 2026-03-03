@@ -21,7 +21,7 @@ export const AprOpportunity = ({ item, index, isLoading }: AprOpportunityProps) 
         <CustomAssetDisplay token={item?.asset as ExistingAsset} />
 
         <div className="flex flex-row items-center justify-center md:flex-col md:items-start">
-          <span className="text-sm font-semibold md:text-xl">{item?.asset}</span>
+          <span className="text-sm font-semibold md:text-xl">{item?.asset?.replaceAll("-", "/")}</span>
 
           <Link
             className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-2 py-1 text-sm"

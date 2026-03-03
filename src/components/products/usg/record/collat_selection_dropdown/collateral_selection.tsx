@@ -28,7 +28,7 @@ export const CollateralCard = ({ collateralInfo, marketData }: CollateralCardPro
               <TokenImage token={collateralInfo.logo as ExistingAsset} size={32} className="w-8 md:w-16" />
             )}
 
-            <span className="text-sm font-semibold md:text-[24px]">{collateralInfo.symbol}</span>
+            <span className="text-sm font-semibold md:text-[24px]">{collateralInfo.symbol?.replaceAll("-", "/")}</span>
           </div>
 
           <div className="flex items-center justify-between gap-2">{marketData && <MarketMetadata marketData={marketData} />}</div>

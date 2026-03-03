@@ -84,7 +84,7 @@ export default function USGRepayContent() {
           </>
 
           <div className="flex flex-col items-start justify-start">
-            <span className="text-sm font-semibold">{option.symbol}</span>
+            <span className="text-sm font-semibold">{option.symbol?.replaceAll("-", "/")}</span>
             <span className="text-xs text-subtitle">{formatAddress(option?.address, 4)}</span>
           </div>
         </div>
@@ -145,7 +145,7 @@ export default function USGRepayContent() {
     return (
       <div className="flex w-full cursor-pointer items-center gap-2 rounded-[10px] py-1 hover:bg-white/10">
         <TokenImage token={option?.logo} size={32} />
-        <span className="text-sm font-semibold">{option.label}</span>
+        <span className="text-sm font-semibold">{option.label?.replaceAll("-", "/")}</span>
       </div>
     )
   }

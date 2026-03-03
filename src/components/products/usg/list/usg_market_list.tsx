@@ -27,6 +27,8 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 import { IconStars } from "@/components/icons/icon_stars"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { IconCircleHelp } from "@/components/icons"
 
 interface ListRowDispositionProps {
   children: React.ReactNode[]
@@ -113,8 +115,36 @@ export default function USGMarketList() {
           <ThreeCardRowWithMask
             contents={[
               { key: "Your Debt", value: `${formatNumber(Number(formatUnits(userData?.totalUserDebt || 0n, 18)), 0)} USG` },
-              { key: "Your Collateral Deposits", value: `${formatNumber(Number(formatUnits(userData?.totalUserDeposit || 0n, 18)), 0)} USG` },
-              { key: "Your Total Points", value: `${formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts` },
+              { key: "Your Collateral Deposits", value: `${formatDollar(Number(formatUnits(userData?.totalUserDeposit || 0n, 18)), 0)} ` },
+              {
+                key: "Your Total Points",
+                value: (
+                  <div className="flex w-full items-center justify-center gap-2 text-white transition duration-200">
+                    {formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts
+                    <HoverCard openDelay={100} closeDelay={100}>
+                      <HoverCardTrigger asChild>
+                        <button type="button">
+                          <IconCircleHelp className="w-3 fill-white" />
+                        </button>
+                      </HoverCardTrigger>
+                      <HoverCardContent
+                        side="top"
+                        align="center"
+                        className="z-[9999] flex w-full flex-col items-center justify-center border border-white/10 text-sm font-semibold"
+                      >
+                        <div className="flex w-full items-center justify-between gap-4 text-row-tonic">
+                          <span> Liquidity </span>
+                          <span>{formatNumber(lpUserPoints?.lpTotalPoints, 0)} pts</span>
+                        </div>
+                        <div className="flex w-full items-center justify-between gap-4 text-row-success">
+                          <span> Vote </span>
+                          <span>{formatNumber(voteUserPoints?.voteTotalPoints, 0)} pts</span>
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+                  </div>
+                ),
+              },
             ]}
           ></ThreeCardRowWithMask>
         </div>

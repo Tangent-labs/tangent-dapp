@@ -566,7 +566,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   }, [zapValue, slippage])
 
   const maxDepositString = useMemo(() => {
-    const asset = depositAssetInfo?.symbol
+    const asset = depositAssetInfo?.symbol?.replaceAll("-", "/")
 
     let amountDisplayed = "0"
 

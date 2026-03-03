@@ -105,7 +105,7 @@ export const USGPredepositComponent = ({
           </div>
           <BorderPanel className="flex items-center justify-center gap-2 bg-select-input px-2.5 py-2">
             <TokenImage token={pool} size={32} />
-            <div className="text-sm font-semibold">{pool}</div>
+            <div className="text-sm font-semibold">{pool?.replaceAll("-", "/")}</div>
           </BorderPanel>
         </div>
       </div>

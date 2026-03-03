@@ -19,14 +19,10 @@ export function MarketDetailsParameters() {
         indicators={[
           {
             title: "Borrow rate",
-            value: (
-              <div className="flex items-center gap-2">
-                <span>{computedBorrowRate.current}</span>
-              </div>
-            ),
+            value: <div className="flex items-center">{computedBorrowRate.current}</div>,
             subValue: (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-subtitle"> Proj:</span> <span> {computedBorrowRate.next} </span>
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-subtitle"> Proj:</span> {computedBorrowRate.next}
               </div>
             ),
             indicator: "Interest rate that borrowers pay on their outstanding debt.",
@@ -34,7 +30,11 @@ export function MarketDetailsParameters() {
           {
             title: "Rewards cut",
             value: marketDisplayData.rewardsCutCurrent,
-            subValue: marketDisplayData.rewardsCutNext,
+            subValue: (
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-subtitle"> Proj:</span> {marketDisplayData.rewardsCutNext}
+              </div>
+            ),
             indicator: "The percentage of collateral's rewards that are deducted.",
           },
           {

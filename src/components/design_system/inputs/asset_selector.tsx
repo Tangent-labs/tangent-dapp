@@ -45,7 +45,7 @@ const AssetSelectTemplate = (option: {
         </>
 
         <div className="flex flex-col items-start justify-start">
-          <span className="text-sm font-semibold">{option.symbol}</span>
+          <span className="text-sm font-semibold">{option.symbol?.replaceAll("-", "/")}</span>
           <span className="text-xs text-subtitle">{formatAddress(option?.address, 4)}</span>
         </div>
       </div>

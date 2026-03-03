@@ -48,6 +48,7 @@ export const AprOpportunity = ({ item, index, isLoading }: AprOpportunityProps) 
       <div className="flex w-full items-center gap-2">
         <div className="flex w-1/2 items-center justify-center gap-2">
           <MarketListAPR
+            poolName={item?.asset}
             rewardToken={item?.rewardToken}
             maxLeverage={1}
             currentAPRDetails={item.currentAPRDetails}

@@ -1,5 +1,15 @@
 "use client"
 
+import {
+  computeCollatData,
+  getUSGMarketsData,
+  sortMarketListByType,
+  sortMarketsByUserPositionAndTVL,
+  transformGlobalData,
+  transformMarketData,
+  transformToRows,
+} from "./usg_market_controller"
+
 import { USGMarkets } from "../usg_repository"
 import { useUSGContext } from "../usg_context"
 import { ListRowData, ListState } from "@/types"
@@ -7,7 +17,6 @@ import { Address, formatUnits, zeroAddress } from "viem"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { ChainViewMarketList, MarketConstants, MarketDebtData, USGCollateralData, USGGlobalData } from "../usg_type"
-import { computeCollatData, getUSGMarketsData, sortMarketListByType, transformGlobalData, transformMarketData, transformToRows } from "./usg_market_controller"
 
 type USGMaketListContextProps = {
   children: ReactNode
@@ -120,32 +129,19 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     const allRows = transformToRows(marketDataWithAPR, onChainData)
 
     const filteredRows = allRows
-      .filter((market) => {
-        if (marketType !== "All") {
-          return market.type === marketType
-        }
-        return true
-      })
-      .filter((marketProtocol) => {
-        if (protocol !== "All") {
-          return mapProtocol(marketProtocol.protocol) === protocol
-        }
-        return true
-      })
-      .filter((deposits) => {
-        if (filteredBy !== "all") {
-          return deposits.userHasDeposited
-        }
-        return true
-      })
+      .filter((market) => marketType === "All" || market.type === marketType)
+      .filter((market) => protocol === "All" || mapProtocol(market.protocol) === protocol)
+      .filter((row) => filteredBy === "all" || row.userHasDeposited)
 
-    if (!searchValue || searchValue.trim() === "") {
-      return filteredRows
+    let rowsToShow = filteredRows
+
+    if (searchValue?.trim()) {
+      const lowered = searchValue.toLowerCase().trim()
+      rowsToShow = filteredRows.filter((row) => row.name.toLowerCase().includes(lowered) || row.token.toLowerCase().includes(lowered))
     }
 
-    const lowered = searchValue.toLowerCase()
-    return filteredRows.filter((row) => row.name.toLowerCase().includes(lowered) || row.token.toLowerCase().includes(lowered))
-  }, [onChainData, searchValue, marketDataWithAPR, marketType, protocol, filteredBy])
+    return [...rowsToShow].sort(sortMarketsByUserPositionAndTVL)
+  }, [marketDataWithAPR, onChainData, marketType, protocol, filteredBy, searchValue])
 
   const globalData = useMemo<USGGlobalData>(() => {
     return transformGlobalData(onChainData)

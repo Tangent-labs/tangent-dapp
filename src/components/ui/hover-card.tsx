@@ -12,24 +12,39 @@ const HoverCardTrigger = HoverCardPrimitive.Trigger
 const HoverCardContent = React.forwardRef<
   React.ElementRef<typeof HoverCardPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof HoverCardPrimitive.Content>
->(({ className, align = "start", sideOffset = 6, ...props }, ref) => (
+>(({ className, align = "center", sideOffset = 6, ...props }, ref) => (
   <HoverCardPrimitive.Portal>
     <HoverCardPrimitive.Content
       ref={ref}
       align={align}
       sideOffset={sideOffset}
       className={cn(
-        "z-101 relative max-h-96 min-w-[8rem]",
-        "overflow-hidden rounded-[10px] border-2 border-white/20 bg-dark p-2 text-popover-foreground backdrop-blur-xl",
+        "relative z-50 max-h-96 min-w-[12rem] max-w-[min(90vw,20rem)] rounded-lg",
+        "overflow-visible bg-[#2f2e2e] p-0",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
-        "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
-        "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        "data-[side=bottom]:slide-in-from-top-2",
+        "data-[side=left]:slide-in-from-right-2",
+        "data-[side=right]:slide-in-from-left-2",
+        "data-[side=top]:slide-in-from-bottom-2",
         className
       )}
       {...props}
-    />
+    >
+      <div
+        className="pointer-events-none absolute inset-0 rounded-lg p-2"
+        style={{
+          border: "1px solid transparent",
+          background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
+          WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
+          WebkitMaskComposite: "xor",
+          maskComposite: "exclude",
+        }}
+      />
+
+      {props?.children}
+    </HoverCardPrimitive.Content>
   </HoverCardPrimitive.Portal>
 ))
 HoverCardContent.displayName = HoverCardPrimitive.Content.displayName

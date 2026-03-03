@@ -55,7 +55,7 @@ export function transformGlobalData(data?: ChainViewMarketList): USGGlobalData {
     usgPriceWei: data?.USGPrice,
     USGPrice: USGPrice.toFixed(3),
     USGSupply: formatBigInt(data?.USGSupply || "0", 18, 0),
-    sUSGPrice: formatDollar(formatBigInt(data?.sUSGPrice || "0", 18, 2), 2),
+    sUSGPrice: formatDollar(formatBigInt(data?.sUSGPrice || "0", 18, 2), 4),
     sUSGSupply: formatBigInt(data?.sUSGSupply || "0", 18, 0),
     globalCr: totalDebt !== 0n ? formatNumber((Number(totalTVL) / Number(totalDebt)) * 100, 2) + "%" : "N/A",
     globalTvl: formatDollar(formatUnits(totalTVL, 18), 0),
@@ -152,6 +152,8 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
       },
     ],
     userHasDeposited: !!onChainRow?.collateralInfos?.positionCollateralUSDValue && onChainRow?.collateralInfos?.positionCollateralUSDValue > 0n,
+    positionCollateralUSDValue: onChainRow?.collateralInfos?.positionCollateralUSDValue.toString() || "0",
+    totalCollateralUSDValue: onChainRow?.collateralInfos?.totalCollateralUSDValue?.toString() || "0",
     rewardToken,
   }
 }
@@ -240,6 +242,26 @@ export const sortMarketListByType = (elementA: ListRowData, elementB: ListRowDat
 
   if (computedAPRA * maxLeverageA < computedAPRB * maxLeverageB) return direction === "asc" ? -1 : 1
   if (computedAPRA * maxLeverageA > computedAPRB * maxLeverageB) return direction === "asc" ? 1 : -1
+
+  return 0
+}
+
+export const sortMarketsByUserPositionAndTVL = (a: ListRowData, b: ListRowData): number => {
+  const posA = BigInt(a.positionCollateralUSDValue ?? 0)
+  const posB = BigInt(b.positionCollateralUSDValue ?? 0)
+
+  // 1. Prority to user position
+  if (posA !== posB) {
+    return posA > posB ? -1 : 1
+  }
+
+  // else by tvl
+  const totalA = BigInt(a.totalCollateralUSDValue ?? 0)
+  const totalB = BigInt(b.totalCollateralUSDValue ?? 0)
+
+  if (totalA !== totalB) {
+    return totalA > totalB ? -1 : 1
+  }
 
   return 0
 }

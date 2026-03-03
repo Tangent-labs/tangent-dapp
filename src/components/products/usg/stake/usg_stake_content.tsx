@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { formatUnits } from "viem"
-import { IconChevron } from "@/components/icons"
+import { IconChevron, IconOpenOutside } from "@/components/icons"
 import { useUSGStakeContext } from "./usg_stake_context"
 import { IconStars } from "@/components/icons/icon_stars"
 import { computeProjection } from "./usg_stake_controller"
@@ -56,19 +56,17 @@ export default function USGStakeContent() {
           <div className="flex items-center justify-center">
             <Image height={150} width={150} src="/medias/tokens/SUSG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
-          <div className="flex flex-col items-start justify-center gap-3 px-6">
+          <div className="flex flex-col items-start justify-center px-6">
             <span className="text-4xl font-semibold">Savings account</span>
-            <p className="text-[15px]">
-              Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi.
-              <Link
-                className="ml-1 inline-block cursor-pointer underline hover:text-white/40"
-                href="https://docs.tangent.finance/docs/usg/susg"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Learn more about sUSG.
-              </Link>
-            </p>
+            <p className="mt-2 text-[15px]">Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi.</p>
+            <Link
+              className="flex cursor-pointer items-center justify-center underline hover:text-white/30"
+              href="https://docs.tangent.finance/docs/usg/susg"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Learn more about sUSG <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white"></IconOpenOutside>
+            </Link>
           </div>
         </ReliefCard>
 

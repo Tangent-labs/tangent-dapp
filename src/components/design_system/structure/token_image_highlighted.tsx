@@ -17,7 +17,7 @@ export default function TokenImageHighlighted({ token, size, ...props }: TokenIm
       link: "https://www.convexfinance.com/",
     },
     SDT: {
-      name: "StakeDAO",
+      name: "Stake DAO",
       link: "https://www.stakedao.org/",
     },
     PENDLE: {
@@ -45,7 +45,7 @@ export default function TokenImageHighlighted({ token, size, ...props }: TokenIm
             height={size}
           />
         </HoverCardTrigger>
-        <HoverCardContent side="top" align="center" className="z-[9999] flex justify-center border border-white/10 text-sm">
+        <HoverCardContent side="top" align="center" className="z-[9999] flex justify-center border border-white/10 p-2 text-sm">
           This market is built on top of
           <span
             className="ml-1 cursor-pointer text-white hover:text-white/30"

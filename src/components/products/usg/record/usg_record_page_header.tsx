@@ -25,7 +25,7 @@ export default function USGRecordPageHeader() {
                 { key: "TVL", value: marketDisplayData?.tvlDollar },
                 { key: "Borrowed", value: marketDisplayData?.borrowed },
                 { key: "Cap", value: marketDisplayData?.cap },
-                { key: "Available", value: (Number(marketDisplayData?.cap) || 0) - (Number(marketDisplayData?.borrowed) || 0) },
+                { key: "Available", value: marketDisplayData?.available },
               ].map((item, index) => (
                 <div className="text-center" key={index}>
                   <div className="text-center text-xs text-subtitle">{item.key}</div>

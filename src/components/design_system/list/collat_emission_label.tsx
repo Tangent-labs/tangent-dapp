@@ -14,7 +14,7 @@ export const CollateralEmissionLabel = ({ isHEC }: CollateralEmissionLabelProps)
             {isHEC ? "HEC" : "LEC"}
           </span>
         </HoverCardTrigger>
-        <HoverCardContent side="top" align="center" className="z-[9999] flex justify-center border border-white/10 text-sm">
+        <HoverCardContent side="top" align="center" className="z-[9999] flex justify-center border border-white/10 p-2 text-sm">
           Learn more about {isHEC ? "HEC" : "LEC"} in the
           <Link
             onClick={(e) => e.stopPropagation()}

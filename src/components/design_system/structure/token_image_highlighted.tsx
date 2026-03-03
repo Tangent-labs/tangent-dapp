@@ -10,7 +10,7 @@ export default function TokenImageHighlighted({ token, size, ...props }: TokenIm
   const tokens: Record<string, string> = {
     CRV: "Curve",
     CVX: "Convex",
-    SDT: "StakeDAO",
+    SDT: "Stake DAO",
     PENDLE: "Pendle",
     FXN: "f(x) Protocol",
   }
@@ -30,7 +30,7 @@ export default function TokenImageHighlighted({ token, size, ...props }: TokenIm
             height={size}
           />
         </HoverCardTrigger>
-        <HoverCardContent side="top" align="center" className="z-[9999] flex justify-center border border-white/10 text-sm">
+        <HoverCardContent side="top" align="center" className="z-[9999] flex justify-center border border-white/10 p-2 text-sm">
           {tokens[token]}
         </HoverCardContent>
       </HoverCard>

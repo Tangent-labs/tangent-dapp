@@ -3,27 +3,32 @@
 import { IconCircleHelp } from "@/components/icons"
 import { ReactNode, ButtonHTMLAttributes } from "react"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { cn } from "@/lib/utils"
 
 type USGHoverCardProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   title: string
   iconClassName?: string
+  contentClassName?: string
   children: ReactNode
 }
 
-export function USGHoverCard({ children, title, iconClassName }: USGHoverCardProps) {
+export function USGHoverCard({ children, title, iconClassName, contentClassName, className, ...buttonProps }: USGHoverCardProps) {
   return (
     <HoverCard openDelay={150} closeDelay={100}>
       <HoverCardTrigger asChild>
-        <button type="button">
+        <button type="button" className={cn("inline-flex items-center", className)} {...buttonProps}>
           <IconCircleHelp className={iconClassName} />
         </button>
       </HoverCardTrigger>
-      <HoverCardContent side="top" className="z-100 w-fit max-w-56 !border-none text-xs">
-        <div className="grid gap-4 !border-none">
-          <div className="space-y-2">
-            <span className="font-medium leading-none">{title}</span>
-            <div>{children}</div>
+
+      <HoverCardContent side="top" align="center" className={cn("z-1001 w-fit max-w-64 text-xs", contentClassName)}>
+        <div className="relative grid gap-3 p-3">
+          <div className="space-y-1.5">
+            <span className="font-medium leading-tight">{title}</span>
+            <div className="leading-relaxed">{children}</div>
           </div>
+
+          <div className="absolute -bottom-1.5 left-1/2 size-3 -translate-x-1/2 rotate-45 bg-[#2f2e2e]" />
         </div>
       </HoverCardContent>
     </HoverCard>

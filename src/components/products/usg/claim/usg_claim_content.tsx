@@ -59,7 +59,7 @@ export default function USGClaimContent() {
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Claim</span>
-            <p className="text-[15px]">Claim protocol-generated CRV and CVX rewards associated with your active streaming pool positions.</p>
+            <p className="text-[15px]"> Claim rewards associated with your active positions.</p>
           </div>
         </ReliefCard>
 
@@ -202,6 +202,7 @@ function ClaimList() {
 
               <div className="flex justify-center xl:w-1/3">
                 <MarketListAPR
+                  poolName={item?.marketName}
                   rewardToken={item?.rewardToken}
                   maxLeverage={1}
                   currentAPRDetails={item.currentAPRDetails}

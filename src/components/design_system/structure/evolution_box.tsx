@@ -64,9 +64,7 @@ export function EvolutionBox({ label, originalValue, newValue, logo, className =
               transition={{ duration: 0.35, type: "spring", stiffness: 500, damping: 30 }}
               className="flex items-center gap-3"
             >
-              <motion.div initial={{ rotate: 0 }} animate={{ rotate: 360 }} transition={{ duration: 0.5, ease: "easeOut" }}>
-                <IconSingleArrow className="h-3 w-3" />
-              </motion.div>
+              <IconSingleArrow className="h-3 w-3" />
 
               <div className="flex items-center gap-2 text-sm">
                 <span className="font-semibold text-tonic">{newValue}</span>

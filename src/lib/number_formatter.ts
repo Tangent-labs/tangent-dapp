@@ -10,11 +10,13 @@ import { formatUnits } from "viem"
  * @returns A string representing the value formatted as a dollar amount (e.g., "$1,234.56").
  */
 export function formatDollar(value?: number | string, decimals: number = 2) {
-  // Convert the input value to a number, or default to 0 if the conversion fails or the value is undefined.
-  const formattedDollarValue = (Number(value) || 0).toFixed(decimals)
+  const num = Number(value) || 0
 
-  // Format the number with the "en-US" locale to add thousands separators and return the result with a dollar sign.
-  return `$${new Intl.NumberFormat("en-US").format(Number(formattedDollarValue))}`
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: decimals,
+  }).format(num)
 }
 
 export function formatPercent(value?: number | string, decimals: number = 2) {

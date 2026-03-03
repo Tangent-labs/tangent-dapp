@@ -91,16 +91,16 @@ export default function USGMarketList() {
               <Image height={150} width={150} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
             </div>
             <div className="flex flex-col items-start justify-center gap-3 px-6">
-              <h2 className="text-4xl font-semibold">USG</h2>
+              <h2 className="text-4xl font-semibold">Markets</h2>
               <p className="text-[15px]">
-                Borrow USG against accepted LP tokens. Tangent features two kinds of markets.
+                Borrow USG against accepted collateral. Tangent features two kinds of markets.
                 <Link
                   className="ml-1 inline-block cursor-pointer underline hover:text-white/40"
                   href="https://docs.tangent.finance/docs/overview"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Learn more
+                  Learn more about HEC and LEC markets.
                 </Link>
               </p>
             </div>
@@ -131,9 +131,9 @@ export default function USGMarketList() {
                   <div className="flex-shrink-0">
                     <TokenImage token="USG" className="h-10 w-10" size={32} />
                   </div>
-                  <div className="flex flex-1 items-center justify-center gap-10 xl:gap-14">
+                  <div className="flex flex-1 items-center justify-center gap-10 xl:gap-10">
                     {[
-                      { key: "USG", value: formatDollar(globalData.USGPrice, 5) },
+                      { key: "USG", value: formatDollar(globalData.USGPrice, 4) },
                       { key: "Supply", value: globalData.USGSupply },
                     ].map((item, index) => (
                       <div className="text-center" key={index}>
@@ -151,7 +151,7 @@ export default function USGMarketList() {
                   <div className="flex-shrink-0">
                     <TokenImage token="sUSG" className="h-10 w-10" size={32} />
                   </div>
-                  <div className="flex flex-1 items-center justify-center gap-10 xl:gap-14">
+                  <div className="flex flex-1 items-center justify-center gap-10 xl:gap-10">
                     <div className="text-center">
                       <div className="text-xs text-subtitle">sUSG</div>
                       <div className="text-sm font-semibold">{globalData.sUSGPrice}</div>
@@ -267,6 +267,7 @@ export function USGMarketListInner() {
           <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} />
 
           <MarketListAPR
+            poolName={item?.name}
             rewardToken={item?.rewardToken}
             maxLeverage={1}
             currentAPRDetails={item.currentAPRDetails}
@@ -276,6 +277,7 @@ export function USGMarketListInner() {
           />
 
           <MarketListAPR
+            poolName={item?.name}
             rewardToken={item?.rewardToken}
             maxLeverage={1 / (1 - item?.maxLTV) || 1}
             currentAPRDetails={item.currentAPRDetails}

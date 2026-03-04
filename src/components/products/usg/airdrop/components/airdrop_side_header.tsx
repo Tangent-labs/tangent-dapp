@@ -2,8 +2,8 @@
 
 import { cn } from "@/lib/utils"
 import { UserStatus } from "../usg_airdrop_context"
-import { formatNumber } from "@/lib/number_formatter"
 import { LpUserPoints, VoteUserPoints } from "../../usg_type"
+import { formatPointsCompact, formatNumber } from "@/lib/number_formatter"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { SecondaryButton } from "@/components/design_system/inputs/secondary_button"
 import { NeonMetricsCard } from "@/components/design_system/structure/neon_metrics_card"
@@ -114,8 +114,8 @@ export const AirdropSharedHeader = ({
         <NeonMetricsCard
           title="Liquidity"
           subtitle="Liquidity points"
-          value={`${formatNumber(lpUserPoints?.lpTotalPoints, 0)} pts`}
-          extra={`(${formatNumber(lpUserPoints?.lpDailyRate * userBoostFactor, 0)}pts/day)`}
+          value={`${formatPointsCompact(lpUserPoints?.lpTotalPoints)} pts`}
+          extra={`(${formatPointsCompact(lpUserPoints?.lpDailyRate * userBoostFactor)} pts/day)`}
           color1="#0077ffa3"
           color2="#0075FF"
           className="h-full w-full"

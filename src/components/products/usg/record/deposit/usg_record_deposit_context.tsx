@@ -4,14 +4,14 @@ import { toast } from "react-toastify"
 import { useUSGContext } from "../../usg_context"
 import { USGMarket, ZapToken } from "../../usg_type"
 import { useUSGRecordContext } from "../usg_record_context"
-import { formatEther, formatUnits, parseEther, zeroAddress } from "viem"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
+import { Address, formatEther, formatUnits, parseEther, zeroAddress } from "viem"
 import { formatBigInt, formatBigIntAsNumber, truncateDecimals } from "@/lib/number_formatter"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { computeAprVariation, computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit, doMarketDepositAndBorrow } from "./usg_record_deposit_controller"
 
@@ -97,6 +97,10 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     setIsDepositAndBorrow,
   } = useUSGRecordContext()
 
+  const lastApproveRef = useRef<number>(0)
+
+  const lastDepositRef = useRef<number>(0)
+
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
 
   const [depositAsset, setDepositAsset] = useState<string | undefined>()
@@ -172,8 +176,40 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     return !!depositAsset && depositAsset !== collateralInfo?.symbol && depositAsset !== `Gauge ${collateralInfo?.symbol}`
   }, [depositAsset, collateralInfo])
 
-  const resetAfterDepositSuccess = () => {
+  /**
+   * Call back method to prevent loadDataAfterApprove
+   * to be called multiple times at once
+   */
+  const loadDataAfterApprove = useCallback((assetAddress: Address, isZap = false) => {
+    const now = Date.now()
+    if (now - lastApproveRef.current < 3000) {
+      return
+    }
+
+    lastApproveRef.current = now
+
+    if (!isZap) {
+      loadOnChainData()
+    }
+
+    fetchBalanceAllowanceData(assetAddress)
+    setIsDepositLoading(false)
+  }, [])
+
+  /**
+   * Call back method to prevent resetAfterDepositSuccess
+   * to be called multiple times at once
+   */
+  const resetAfterDepositSuccess = useCallback(() => {
+    const now = Date.now()
+    if (now - lastDepositRef.current < 3000) {
+      return
+    }
+
+    lastDepositRef.current = now
+
     loadOnChainData()
+    loadUSGsUSGMetrics()
     setDepositWeiValue(undefined)
     setBorrowWeiValue(undefined)
     setZapValue(undefined)
@@ -181,9 +217,20 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     setBorrowSliderPercent(0)
     setDepositSliderPercent(0)
     setIsDepositLoading(false)
-    loadUSGsUSGMetrics()
     fetchBalanceAllowanceData(depositAssetInfo?.address)
-  }
+  }, [
+    loadOnChainData,
+    loadUSGsUSGMetrics,
+    setDepositWeiValue,
+    setBorrowWeiValue,
+    setZapValue,
+    setIsZapLoading,
+    setBorrowSliderPercent,
+    setDepositSliderPercent,
+    setIsDepositLoading,
+    fetchBalanceAllowanceData,
+    depositAssetInfo?.address,
+  ])
 
   const latestRequestRef = useRef(0)
 
@@ -327,7 +374,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       await toastTx(doApprove(walletClient, depositAssetInfo.address, marketInfo.marketAddress, depositWeiValue ?? 0n), {
         pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
         success: () => {
-          fetchBalanceAllowanceData(depositAssetInfo.address)
+          loadDataAfterApprove(depositAssetInfo?.address, true)
           return { type: "Success", content: `${depositAssetInfo?.symbol} approved successfully.` }
         },
       })
@@ -344,9 +391,8 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       await toastTx(doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue), {
         pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
         success: () => {
-          fetchBalanceAllowanceData(depositAssetInfo?.address)
-          loadOnChainData()
-          setIsDepositLoading(false)
+          loadDataAfterApprove(depositAssetInfo?.address, false)
+
           return { type: "Success", content: `${depositAssetInfo?.symbol} approved successfully.` }
         },
       })

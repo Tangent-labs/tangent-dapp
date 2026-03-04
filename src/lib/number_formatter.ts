@@ -130,3 +130,14 @@ export const formatCompact = (value: string | number): string => {
     return `${number.toFixed(0)}`
   }
 }
+
+export const formatPointsCompact = (value: string | number): string => {
+  const number = typeof value === "string" ? parseFloat(value) : value
+
+  if (isNaN(number)) return "0"
+
+  if (number >= 1_000_000) {
+    return `${formatNumber(number / 1_000_000, 2)}M`
+  }
+  return `${formatNumber(number, 0)}`
+}

@@ -43,6 +43,7 @@ export default function USGStakeContent() {
     sUSGSelectedTab,
     apyHistory,
     aprVariation,
+    isLoading,
   } = useUSGStakeContext()
 
   const { sUSGCurrentAPY } = useRootContext()
@@ -188,6 +189,7 @@ export default function USGStakeContent() {
             }}
             connect={connect}
             formState={formState}
+            isLoading={isLoading}
             labelProcess={currentFeature === "stake" ? "Deposit & Stake" : "Unstake"}
           />
         </ReliefCard>

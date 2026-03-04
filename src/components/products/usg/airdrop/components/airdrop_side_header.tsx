@@ -127,7 +127,7 @@ export const AirdropSharedHeader = ({
           value={`${formatNumber(voteUserPoints?.voteTotalPoints, 0)} pts`}
           color1="#95ff006d"
           color2="#95FF00"
-          className="h-full w-full min-w-48 xl:w-auto"
+          className="mt-2 h-full w-full min-w-48 md:mt-0 xl:w-auto"
         />
 
         <ReliefCard className="hidden w-fit min-w-32 flex-col items-center justify-center gap-1 self-end px-4 py-2 lg:flex">

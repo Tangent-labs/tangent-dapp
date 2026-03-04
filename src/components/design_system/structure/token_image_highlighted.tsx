@@ -7,12 +7,27 @@ interface TokenImageProps extends React.HTMLAttributes<HTMLImageElement> {
 }
 
 export default function TokenImageHighlighted({ token, size, ...props }: TokenImageProps) {
-  const tokens: Record<string, string> = {
-    CRV: "Curve",
-    CVX: "Convex",
-    SDT: "Stake DAO",
-    PENDLE: "Pendle",
-    FXN: "f(x) Protocol",
+  const tokens: Record<string, { name: string; link: string }> = {
+    CRV: {
+      name: "Curve",
+      link: "https://www.curve.finance/",
+    },
+    CVX: {
+      name: "Convex",
+      link: "https://www.convexfinance.com/",
+    },
+    SDT: {
+      name: "Stake DAO",
+      link: "https://www.stakedao.org/",
+    },
+    PENDLE: {
+      name: "Pendle",
+      link: "https://app.pendle.finance/",
+    },
+    FXN: {
+      name: "f(x) Protocol",
+      link: "https://fx.aladdin.club/",
+    },
   }
 
   const src = `/medias/tokens/${token}.webp`
@@ -31,7 +46,17 @@ export default function TokenImageHighlighted({ token, size, ...props }: TokenIm
           />
         </HoverCardTrigger>
         <HoverCardContent side="top" align="center" className="z-[9999] flex justify-center border border-white/10 p-2 text-sm">
-          {tokens[token]}
+          This market is built on top of
+          <span
+            className="ml-1 cursor-pointer text-white hover:text-white/30"
+            onClick={(e) => {
+              e?.stopPropagation()
+              e?.preventDefault()
+              window.open(tokens[token]?.link, "_blank", "noopener,noreferrer")
+            }}
+          >
+            {tokens[token]?.name}.
+          </span>
         </HoverCardContent>
       </HoverCard>
     </div>

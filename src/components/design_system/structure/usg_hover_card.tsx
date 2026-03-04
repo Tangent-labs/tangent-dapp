@@ -22,13 +22,9 @@ export function USGHoverCard({ children, title, iconClassName, contentClassName,
       </HoverCardTrigger>
 
       <HoverCardContent side="top" align="center" className={cn("z-1001 w-fit max-w-64 text-xs", contentClassName)}>
-        <div className="relative grid gap-3 p-3">
-          <div className="space-y-1.5">
-            <span className="font-medium leading-tight">{title}</span>
-            <div className="leading-relaxed">{children}</div>
-          </div>
-
-          <div className="absolute -bottom-1.5 left-1/2 size-3 -translate-x-1/2 rotate-45 bg-[#2f2e2e]" />
+        <div className="grid gap-3 p-3">
+          <span className="font-medium leading-tight">{title}</span>
+          <div className="leading-relaxed">{children}</div>
         </div>
       </HoverCardContent>
     </HoverCard>

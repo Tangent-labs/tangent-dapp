@@ -27,9 +27,7 @@ export function AprIndicator({ children, isMax, className = "" }: AprIndicatorPr
           </span>
         </HoverCardTrigger>
         <HoverCardContent side="top" align="center" className="z-[9999] w-full border border-white/10 text-xs">
-          <div className="grid gap-4 !border-none">
-            <div className="space-y-2">{children[1]}</div>
-          </div>
+          {children[1]}
         </HoverCardContent>
       </HoverCard>
     </div>

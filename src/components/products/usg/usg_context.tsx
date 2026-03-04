@@ -80,6 +80,7 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
     if (isWalletInitialized) {
       loadUSGsUSGMetrics()
       loadTanSTANMetrics()
+      refetchPoints()
     }
   }, [isWalletInitialized])
 

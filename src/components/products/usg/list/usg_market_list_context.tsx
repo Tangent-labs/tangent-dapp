@@ -228,8 +228,9 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
         const comparison = aValue.localeCompare(bValue)
         return direction === "asc" ? comparison : -comparison
       } else if (key === "borrowed") {
-        const aValue = Number(elementA.indicators[2].value)
-        const bValue = Number(elementB.indicators[2].value)
+        const aValue = elementA.indicators[2].value
+        const bValue = elementB.indicators[2].value
+
         if (aValue < bValue) return direction === "asc" ? -1 : 1
         if (aValue > bValue) return direction === "asc" ? 1 : -1
 

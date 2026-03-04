@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils"
 import { ReactNode } from "react"
 import { USGHoverCard } from "./usg_hover_card"
 import { MarketAPR } from "@/components/products/usg/usg_type"
+import { IconStars } from "@/components/icons/icon_stars"
 
 type RecordPageHeaderProps = {
   apr?: MarketAPR
@@ -59,7 +60,10 @@ export const RecordPageHeaderIndicator = ({ title, value, subValue, indicator, c
         )}
       </div>
 
-      <span className={cn("text-[20px] font-semibold", className, title === "Collateral vAPR" ? "text-row-tonic" : "")}>{value}</span>
+      <span className={cn("flex items-center gap-1 text-[20px] font-semibold", className)}>
+        {value}
+        {title === "Collateral vAPR" && <IconStars className="w-4 fill-row-tonic"></IconStars>}
+      </span>
       <span className="text-xs text-subtitle">{subValue}</span>
     </div>
   )

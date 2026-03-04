@@ -104,7 +104,7 @@ export const MarketListAPR = ({
                   )}
 
                   <div className="mt-2 flex w-full items-center justify-between gap-2 border-b border-white/10 pb-1 font-semibold">
-                    <span>Project vAPR</span>
+                    Projected vAPR
                     <span> {((projectedApr || 0) * maxLeverage).toFixed(2)}%</span>
                   </div>
 

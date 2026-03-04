@@ -26,7 +26,7 @@ export const ListAsset = ({ name, token, marketData, className = "" }: ListAsset
       <div className="flex h-6 flex-row items-center justify-center md:h-12 md:flex-col md:items-start">
         {!!marketData ? (
           <>
-            <span className="text-sm font-semibold md:text-xl">{name}</span>
+            <span className="text-sm font-semibold md:text-xl">{name?.replaceAll("-", "/")}</span>
 
             <div className="ml-2 flex items-center justify-center gap-1 md:ml-0 xl:gap-2">
               {marketData?.marketType?.includes("CRV") && <TokenImageHighlighted token="CRV" size={24} />}
@@ -40,7 +40,7 @@ export const ListAsset = ({ name, token, marketData, className = "" }: ListAsset
           </>
         ) : (
           <>
-            <span className="text-sm font-semibold md:text-xl">{name}</span>
+            <span className="text-sm font-semibold md:text-xl">{name?.replaceAll("-", "/")}</span>
           </>
         )}
       </div>

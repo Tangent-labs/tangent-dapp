@@ -2,31 +2,32 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { formatUnits } from "viem"
 import { Fragment } from "react"
-
 import { cn } from "@/lib/utils"
-import { useUSGContext } from "../usg_context"
+import { formatUnits } from "viem"
 import { ListState } from "@/types"
+import { useUSGContext } from "../usg_context"
+import { IconCircleHelp, IconOpenOutside } from "@/components/icons"
 import { useRootContext } from "../../root/root_context"
-import { Divider } from "@/components/design_system/structure/divider"
-import { ListAsset } from "@/components/design_system/list/list_asset"
+import { IconStars } from "@/components/icons/icon_stars"
 import { useUSGMaketListContext } from "./usg_market_list_context"
 import { formatDollar, formatNumber } from "@/lib/number_formatter"
+import { Divider } from "@/components/design_system/structure/divider"
+import { ListAsset } from "@/components/design_system/list/list_asset"
 import { InputSelect } from "@/components/design_system/inputs/input_select"
 import { InputSearch } from "@/components/design_system/inputs/input_search"
 import { TokenImage } from "@/components/design_system/structure/token_image"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { MarketListAPR } from "@/components/design_system/list/market_list_apr"
-import { LargeButtonTab } from "@/components/design_system/inputs/large_button_tab"
 import { MarketListRow } from "@/components/design_system/list/market_list_row"
+import { LargeButtonTab } from "@/components/design_system/inputs/large_button_tab"
+import { NeonLightCard } from "@/components/design_system/structure/neon_light_card"
 import { MarketListHeader } from "@/components/design_system/list/market_list_header"
 import { marketOptions, protocolOptions, USGListHeaders } from "./usg_market_controller"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { NeonLightCard } from "@/components/design_system/structure/neon_light_card"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
-import { IconStars } from "@/components/icons/icon_stars"
 
 interface ListRowDispositionProps {
   children: React.ReactNode[]
@@ -90,19 +91,17 @@ export default function USGMarketList() {
             <div className="flex items-center justify-center">
               <Image height={150} width={150} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
             </div>
-            <div className="flex flex-col items-start justify-center gap-3 px-6">
+            <div className="flex flex-col items-start justify-center px-6">
               <h2 className="text-4xl font-semibold">Markets</h2>
-              <p className="text-[15px]">
-                Borrow USG against accepted collateral. Tangent features two kinds of markets.
-                <Link
-                  className="ml-1 inline-block cursor-pointer underline hover:text-white/40"
-                  href="https://docs.tangent.finance/docs/overview"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Learn more about HEC and LEC markets.
-                </Link>
-              </p>
+              <p className="mt-2 text-[15px]">Borrow USG against accepted collateral. Tangent features two kinds of markets.</p>
+              <Link
+                className="flex cursor-pointer items-center justify-center underline hover:text-white/30"
+                href="https://docs.tangent.finance/docs/overview"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Learn more about HEC and LEC markets <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white"></IconOpenOutside>
+              </Link>
             </div>
           </div>
         </ReliefCard>
@@ -113,8 +112,30 @@ export default function USGMarketList() {
           <ThreeCardRowWithMask
             contents={[
               { key: "Your Debt", value: `${formatNumber(Number(formatUnits(userData?.totalUserDebt || 0n, 18)), 0)} USG` },
-              { key: "Your Collateral Deposits", value: `${formatNumber(Number(formatUnits(userData?.totalUserDeposit || 0n, 18)), 0)} USG` },
-              { key: "Your Total Points", value: `${formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts` },
+              { key: "Your Collateral Deposits", value: `${formatDollar(Number(formatUnits(userData?.totalUserDeposit || 0n, 18)), 0)} ` },
+              {
+                key: "Your Total Points",
+                value: (
+                  <div className="flex w-full items-center justify-center gap-2 text-white transition duration-200">
+                    {formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts
+                    <HoverCard openDelay={100} closeDelay={100}>
+                      <HoverCardTrigger asChild>
+                        <button type="button">
+                          <IconCircleHelp className="w-3 fill-white" />
+                        </button>
+                      </HoverCardTrigger>
+                      <HoverCardContent
+                        side="top"
+                        align="center"
+                        className="z-[9999] flex w-full flex-col items-center justify-center border border-white/10 p-2 text-sm text-subtitle"
+                      >
+                        <div className="flex w-full items-center justify-center">Lp points : {formatNumber(lpUserPoints?.lpTotalPoints, 0)}</div>
+                        <div className="flex w-full items-center justify-center">Vote points {formatNumber(voteUserPoints?.voteTotalPoints, 0)}</div>
+                      </HoverCardContent>
+                    </HoverCard>
+                  </div>
+                ),
+              },
             ]}
           ></ThreeCardRowWithMask>
         </div>

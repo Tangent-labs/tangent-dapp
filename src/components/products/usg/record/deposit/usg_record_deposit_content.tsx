@@ -56,7 +56,7 @@ export default function USGDepositContent() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex w-full items-end justify-between gap-2">
-        <span className="text-sm font-semibold md:text-xl">Deposit {collateralInfo?.symbol}</span>
+        <span className="text-sm font-semibold md:text-xl">Deposit {collateralInfo?.symbol?.replaceAll("-", "/")}</span>
         <span className="text-xs text-subtitle">{maxDepositString}</span>
       </div>
 

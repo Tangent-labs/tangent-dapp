@@ -1,43 +1,56 @@
 "use client"
 
+import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { useClipboard } from "@/hooks/useClipboard"
 import { useUSGContext } from "../../usg_context"
+import { useClipboard } from "@/hooks/useClipboard"
 import { formatNumber } from "@/lib/number_formatter"
 import { Leaderboard } from "./components/Leaderboard"
-import { ReferralHeader } from "./components/ReferralHeader"
 import { useUsgAirdropContext } from "../usg_airdrop_context"
-import { Divider } from "@/components/design_system/structure/divider"
 import { useUsgReferralCodeContext } from "./usg_referral_context"
 import { GodsonsLeaderboard } from "./components/GodsonsLeaderboard"
+import { Divider } from "@/components/design_system/structure/divider"
+import { AirdropSharedHeader } from "../components/airdrop_side_header"
 import { IconShare, IconTrophy, IconCompleted } from "@/components/icons"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { SecondaryButton } from "@/components/design_system/inputs/secondary_button"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export const UsgReferralCode = () => {
-  const { isConnected, currentAddress } = useWalletConnexionContext()
-
   const { copied, copy } = useClipboard()
+
+  const { isConnected, currentAddress } = useWalletConnexionContext()
 
   const { lpUserPoints, voteUserPoints, refereesPoints } = useUSGContext()
 
-  const { isLoading, lpLeaderboard, voteLeaderboard, godsonsLeaderboard } = useUsgReferralCodeContext()
+  const { lpLeaderboard, voteLeaderboard, godsonsLeaderboard } = useUsgReferralCodeContext()
 
   const { setReferralStatus, referralStatus, signMessage, airdropDataIsLoading, generateReferralCode, userBoostFactor } = useUsgAirdropContext()
 
   return (
     <div className="flex w-full flex-col items-center justify-center">
-      <ReferralHeader
-        isLoading={isLoading}
-        referralStatus={referralStatus}
-        setReferralStatus={setReferralStatus}
-        signMessage={signMessage}
-        lpUserPoints={lpUserPoints}
-        voteUserPoints={voteUserPoints}
-        isConnected={isConnected}
-        userBoost={userBoostFactor}
-      />
+      <div className="flex w-full items-stretch justify-between gap-6">
+        <ReliefCard className="hidden w-1/2 bg-panel-title-gradient xl:flex">
+          <div className="flex items-center justify-center">
+            <Image height={140} width={140} src="/medias/logos/referral.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+          </div>
+          <div className="flex flex-col items-start justify-center gap-3 px-6">
+            <span className="text-4xl font-semibold">Referral</span>
+            <p className="text-[15px]">Refer a friend, both get bonus points to supercharge your rewards.</p>
+          </div>
+        </ReliefCard>
+
+        <AirdropSharedHeader
+          isConnected={isConnected}
+          setReferralStatus={setReferralStatus}
+          referralStatus={referralStatus}
+          signMessage={signMessage}
+          airdropDataIsLoading={airdropDataIsLoading}
+          lpUserPoints={lpUserPoints}
+          userBoostFactor={userBoostFactor}
+          voteUserPoints={voteUserPoints}
+        />
+      </div>
 
       <ReliefCard className={cn("mt-4 flex w-full flex-col items-center justify-center px-5 py-3", !!airdropDataIsLoading && currentAddress ? "shimmer" : "")}>
         <div className="mr-auto text-lg font-semibold text-white">Your referral</div>

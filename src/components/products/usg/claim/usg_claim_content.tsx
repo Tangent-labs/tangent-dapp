@@ -127,7 +127,7 @@ export default function USGClaimContent() {
           <div className="relative hidden w-full xl:block">
             <div className="flex w-full gap-3 rounded-t-[10px] bg-overlay-panel px-4 py-2 leading-[10px] backdrop-blur-[60px]">
               <span className="text-sm text-subtitle">Claim all</span>
-              <Switch onClick={() => onClickClaimAll()}></Switch>
+              <Switch checked={!!displayRows && marketsToClaim.length === displayRows.length} onClick={() => onClickClaimAll()}></Switch>
             </div>
 
             <ListGradientBorder classname={"rounded-t-[10px]"} />

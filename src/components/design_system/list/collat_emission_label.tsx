@@ -14,17 +14,17 @@ export const CollateralEmissionLabel = ({ isHEC }: CollateralEmissionLabelProps)
             {isHEC ? "HEC" : "LEC"}
           </span>
         </HoverCardTrigger>
-        <HoverCardContent side="top" align="center" className="z-[9999] flex justify-center border border-white/10 p-2 text-sm">
-          Learn more about {isHEC ? "HEC" : "LEC"} in the
+        <HoverCardContent side="top" align="center" className="z-[9999] border border-white/10 p-2 text-sm">
+          This market is an HEC market. Learn more about {isHEC ? "HEC" : "LEC"} in the
           <Link
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
-            className="ml-1 inline-block cursor-pointer underline hover:text-white/40"
+            className="ml-1 cursor-pointer underline hover:text-white/40"
             href={isHEC ? "https://docs.tangent.finance/docs/usg/Markets/hec_markets#hec-markets" : "https://docs.tangent.finance/docs/usg/Markets/lec_markets"}
             target="_blank"
             rel="noopener noreferrer"
           >
-            docs{" "}
+            docs.{" "}
           </Link>
         </HoverCardContent>
       </HoverCard>

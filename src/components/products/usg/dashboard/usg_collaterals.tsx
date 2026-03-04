@@ -49,7 +49,7 @@ export const USGCollaterals = ({ userData, marketTVLMaxValue }: USGCollateralsPr
 
               <div className="flex min-w-[120px] flex-shrink-0 items-center justify-start gap-1 text-xs">
                 <span className="font-semibold">{data.value}%</span>
-                <span>{data.name}</span>
+                <span>{data.name?.replaceAll("-", "/")}</span>
 
                 {specialTokensList.includes(data.name?.substring(0, data.name.indexOf(" ")).trim()) ? (
                   <TokenImage token={data.name} size={16} className="w-4" />

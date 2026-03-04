@@ -44,6 +44,8 @@ type USGStakeContextValues = {
   fetchsUSGHistoryAPY: (s: string) => Promise<void>
 
   aprVariation: { current: string; updated: string }
+
+  isLoading: boolean
 }
 
 export const USGStakeContext = createContext<USGStakeContextValues | undefined>(undefined)
@@ -66,6 +68,8 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   const [apyHistory, setAPYHistory] = useState<Array<{ date: number; uv: number }>>([])
 
   const [stakePercentage, setStakePercentage] = useState<number>(0)
+
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     fetchsUSGHistoryAPY("1m")
@@ -150,6 +154,8 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     if (!weiValue || weiValue === 0n) return
     if (!currentAssetInfo?.current) return
 
+    setIsLoading(true)
+
     const params = {
       walletClient: walletClient!,
       stakingAddress: USG_CONTRACT.SUSG,
@@ -162,6 +168,8 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
         loadUSGsUSGMetrics()
         setWeiValue(undefined)
         setExpected(undefined)
+
+        setIsLoading(false)
         return { type: "Success", content: "Position successfully created." }
       },
       error: () => {
@@ -173,6 +181,8 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   const actionStake = async () => {
     if (!weiValue || weiValue === 0n) return
     if (!currentAssetInfo?.current) return
+
+    setIsLoading(true)
 
     const params = {
       walletClient: walletClient!,
@@ -186,6 +196,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
         loadUSGsUSGMetrics()
         setWeiValue(undefined)
         setExpected(undefined)
+        setIsLoading(false)
         return { type: "Success", content: "Position successfully created." }
       },
       error: () => {
@@ -195,15 +206,15 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   }
 
   const actionApprove = async () => {
+    setIsLoading(true)
     await toastTx(doApprove(walletClient!, USG_CONTRACT.USG, weiValue || 0n, USG_CONTRACT.SUSG), {
       pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
       success: () => {
         loadUSGsUSGMetrics()
+        setIsLoading(false)
         return { type: "Success", content: "USG approved successfully." }
       },
     })
-
-    await doApprove(walletClient!, USG_CONTRACT.USG, weiValue || 0n, USG_CONTRACT.SUSG).then(loadUSGsUSGMetrics)
   }
 
   useEffect(() => {
@@ -294,6 +305,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     apyHistory,
     fetchsUSGHistoryAPY,
     aprVariation,
+    isLoading,
   }
 
   return <USGStakeContext.Provider value={contextValue}>{children}</USGStakeContext.Provider>

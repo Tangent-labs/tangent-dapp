@@ -61,11 +61,25 @@ export const Button = ({ label, state = "active", className, disabled, children,
           "group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[10px] px-4 py-2.5 font-gilroy text-sm font-semibold disabled:cursor-not-allowed",
           {
             "bg-button-active hover:bg-button-active-hover": state === "active",
-            "bg-button-inactive": state !== "active",
+            "bg-overlay-panel backdrop-blur-[60px] backdrop-filter": state !== "active",
             "cursor-not-allowed": state !== "active",
           }
         )}
       >
+        {/* Gradient border effect - only visible when inactive */}
+        {state !== "active" && (
+          <div
+            className="pointer-events-none absolute inset-0 rounded-[10px]"
+            style={{
+              border: "1px solid transparent",
+              background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
+              WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
+              WebkitMaskComposite: "xor",
+              maskComposite: "exclude",
+            }}
+          />
+        )}
+
         {hasLoadingState ? (
           <span className="relative z-10 flex items-center justify-center">
             <span

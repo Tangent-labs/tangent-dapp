@@ -11,13 +11,13 @@ import { formatBigInt } from "@/lib/number_formatter"
 import FormButtons from "@/components/design_system/form/form_actions"
 
 export default function USGLiquidatePanel() {
-  const { actionLiquidate, formState } = useUSGLiquidateContext()
-
   const { connect } = useWalletConnexionContext()
+
+  const { canInteract } = useWalletConnexionContext()
 
   const { USGInfo, collateralInfo } = useUSGRecordContext()
 
-  const { canInteract } = useWalletConnexionContext()
+  const { actionLiquidate, formState } = useUSGLiquidateContext()
 
   const {
     setRepayWeiValue,
@@ -33,6 +33,7 @@ export default function USGLiquidatePanel() {
     repayablePercentage,
     maxRepayable,
     maxLiquidateString,
+    isLiquidationLoading,
   } = useUSGLiquidateContext()
 
   const LiquidateAssetDisplay = () => {
@@ -105,7 +106,13 @@ export default function USGLiquidatePanel() {
         />
       </div>
 
-      <FormButtons connect={connect} actions={{ handleApprove: undefined, handleProcess: actionLiquidate }} formState={formState} labelProcess="Liquidate" />
+      <FormButtons
+        isLoading={isLiquidationLoading}
+        connect={connect}
+        actions={{ handleApprove: undefined, handleProcess: actionLiquidate }}
+        formState={formState}
+        labelProcess="Liquidate"
+      />
     </div>
   )
 }

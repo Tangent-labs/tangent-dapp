@@ -44,6 +44,7 @@ export const Button = ({ label, state = "active", className, disabled, children,
       className={cn(
         "relative inline-flex w-full rounded-[11px] p-[1px]",
         state === "active" ? "bg-gradient-to-b from-[rgba(0,194,255,0.5)] to-[#00c2ff00]" : "",
+        state === "disabled" ? "from-[rgba(104, 104, 104, 0.5)] to-[rgba(104, 104, 104, 0)] bg-gradient-to-b" : "",
         className
       )}
     >
@@ -61,7 +62,7 @@ export const Button = ({ label, state = "active", className, disabled, children,
           "group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[10px] px-4 py-2.5 font-gilroy text-sm font-semibold disabled:cursor-not-allowed",
           {
             "bg-button-active hover:bg-button-active-hover": state === "active",
-            "bg-overlay-panel backdrop-blur-[60px] backdrop-filter": state !== "active",
+            "bg-panel-hover backdrop-blur-[60px] backdrop-filter": state !== "active",
             "cursor-not-allowed": state !== "active",
           }
         )}

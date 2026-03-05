@@ -1,9 +1,9 @@
-import { AssetDataPriced, CollateralInfo } from "@/types"
-import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
-import { getBorrowCommonFormState } from "../usg_record_controller"
-import { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { MarketDetailData } from "../../usg_type"
+import { AssetDataPriced, CollateralInfo } from "@/types"
+import { getBorrowCommonFormState } from "../usg_record_controller"
+import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 
 export function getLeverageFormState(
   marketData?: MarketDetailData,

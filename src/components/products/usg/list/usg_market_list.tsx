@@ -11,7 +11,7 @@ import { IconCircleHelp, IconOpenOutside } from "@/components/icons"
 import { useRootContext } from "../../root/root_context"
 import { IconStars } from "@/components/icons/icon_stars"
 import { useUSGMaketListContext } from "./usg_market_list_context"
-import { formatDollar, formatNumber } from "@/lib/number_formatter"
+import { formatDollar, formatMillions, formatNumber } from "@/lib/number_formatter"
 import { Divider } from "@/components/design_system/structure/divider"
 import { ListAsset } from "@/components/design_system/list/list_asset"
 import { InputSelect } from "@/components/design_system/inputs/input_select"
@@ -117,7 +117,7 @@ export default function USGMarketList() {
                 key: "Your Total Points",
                 value: (
                   <div className="flex w-full items-center justify-center gap-2 text-white transition duration-200">
-                    {formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts
+                    {formatMillions(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints)} pts
                     <HoverCard openDelay={100} closeDelay={100}>
                       <HoverCardTrigger asChild>
                         <button type="button">
@@ -129,8 +129,8 @@ export default function USGMarketList() {
                         align="center"
                         className="z-[9999] flex w-full flex-col items-center justify-center border border-white/10 p-2 text-sm text-subtitle"
                       >
-                        <div className="flex w-full items-center justify-center">Lp points : {formatNumber(lpUserPoints?.lpTotalPoints, 0)}</div>
-                        <div className="flex w-full items-center justify-center">Vote points {formatNumber(voteUserPoints?.voteTotalPoints, 0)}</div>
+                        <div className="flex w-full items-center justify-center">Lp points : {formatMillions(lpUserPoints?.lpTotalPoints)}</div>
+                        <div className="flex w-full items-center justify-center">Vote points : {formatMillions(voteUserPoints?.voteTotalPoints)}</div>
                       </HoverCardContent>
                     </HoverCard>
                   </div>

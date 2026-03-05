@@ -8,7 +8,7 @@ import { IconChevron } from "@/components/icons"
 import { DepositReceiveAsset } from "../usg_type"
 import { formatAddress } from "@/lib/other_formatter"
 import { useUSGSwapContext } from "./usg_swap_context"
-import { formatBigInt, formatNumber } from "@/lib/number_formatter"
+import { formatBigInt, formatMillions } from "@/lib/number_formatter"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { TokenImage } from "@/components/design_system/structure/token_image"
@@ -141,7 +141,7 @@ export default function USGSwapContent() {
             contents={[
               { key: "USG Balance", value: formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2) },
               { key: "sUSG Balance", value: formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2) },
-              { key: "Your Total Points", value: `${formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts` },
+              { key: "Your Total Points", value: `${formatMillions(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints)} pts` },
             ]}
           ></ThreeCardRowWithMask>
         </div>

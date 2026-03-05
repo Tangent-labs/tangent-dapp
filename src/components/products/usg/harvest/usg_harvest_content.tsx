@@ -14,7 +14,7 @@ import { TokenImage } from "@/components/design_system/structure/token_image"
 import { USGHoverCard } from "@/components/design_system/structure/usg_hover_card"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { formatBigInt, formatDollar, formatNumber, formatPercent } from "@/lib/number_formatter"
+import { formatBigInt, formatDollar, formatMillions, formatPercent } from "@/lib/number_formatter"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
@@ -69,7 +69,7 @@ export default function USGHarvestContent() {
             contents={[
               { key: "USG Balance", value: formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2) },
               { key: "sUSG Balance", value: formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2) },
-              { key: "Your Total Points", value: `${formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts` },
+              { key: "Your Total Points", value: `${formatMillions(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints)} pts` },
             ]}
           ></ThreeCardRowWithMask>
         </div>

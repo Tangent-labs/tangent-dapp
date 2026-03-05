@@ -77,7 +77,7 @@ export const MarketListAPR = ({
                   <div className="flex w-full items-center justify-between gap-2">
                     <div className="flex items-center justify-start gap-2 text-xs font-semibold">
                       <TokenImage token={poolName as ExistingAsset} size={24} />
-                      {poolName} Rewards
+                      {poolName?.replaceAll("-", "/")} Rewards
                     </div>
                     <StreamTile active={!!currentAPRDetails && Number(currentAPRDetails[rewardToken]) !== 0} />
                   </div>
@@ -95,10 +95,16 @@ export const MarketListAPR = ({
                   {currentRewardEntries.length > 0 && (
                     <div className="flex flex-col gap-2 text-subtitle">
                       {currentRewardEntries.map(([token, value]) => (
-                        <div className="flex items-center justify-between" key={token}>
-                          <span>{token} APR</span>
-                          <span>{(value * maxLeverage)?.toFixed(2)}%</span>
-                        </div>
+                        <>
+                          {!!value && value >= 0.01 ? (
+                            <div className="flex items-center justify-between" key={token}>
+                              <span>{token} APR</span>
+                              <span>{(value * maxLeverage)?.toFixed(2)}%</span>
+                            </div>
+                          ) : (
+                            <></>
+                          )}
+                        </>
                       ))}
                     </div>
                   )}
@@ -116,10 +122,16 @@ export const MarketListAPR = ({
                   {projectedRewardEntries.length > 0 && (
                     <div className="flex flex-col gap-2 text-subtitle">
                       {projectedRewardEntries.map(([token, value]) => (
-                        <div className="flex items-center justify-between" key={token}>
-                          <span>{token} APR</span>
-                          <span>{(value * maxLeverage)?.toFixed(2)}%</span>
-                        </div>
+                        <>
+                          {!!value && value >= 0.01 ? (
+                            <div className="flex items-center justify-between" key={token}>
+                              <span>{token} APR</span>
+                              <span>{(value * maxLeverage)?.toFixed(2)}%</span>
+                            </div>
+                          ) : (
+                            <></>
+                          )}
+                        </>
                       ))}
                     </div>
                   )}

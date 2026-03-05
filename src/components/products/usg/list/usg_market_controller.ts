@@ -120,7 +120,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
     address: data.marketAddress as Address,
     apr: {
       current: Number(totalCurrentAPR),
-      projected: protocol === "Pendle_PT" ? undefined : Number(totalProjectedAPR),
+      projected: protocol === "Pendle_PT" ? Number(totalCurrentAPR) : Number(totalProjectedAPR),
     },
     maxLTV,
     maxBorrowable,

@@ -42,6 +42,7 @@ const config: Config = {
         "dash-wts": "var(--tgt-dash-wts)",
         "dash-susg": "var(--tgt-dash-susg)",
 
+        "panel-hover": "var(--tgt-bg-panel-hover)",
         "overlay-panel": "var(--tgt-bg-overlay-panel)",
         "panel-disabled": "var(--tgt-bg-panel-disabled)",
         tonic: "var(--tgt-tonic)",

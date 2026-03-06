@@ -1,7 +1,6 @@
 "use client"
 
 import { usePathname } from "next/navigation"
-import MobileMenuBarFeature from "@/components/products/product_nav/mobile_menu_bar_feature"
 import MenuBarFeature from "@/components/products/product_nav/menu_bar_feature"
 
 export function RouteManager({ children }: { children: React.ReactNode }) {
@@ -20,8 +19,6 @@ export function RouteManager({ children }: { children: React.ReactNode }) {
           <div className="w-full">{children}</div>
         </div>
       )}
-
-      {!isPredeposit && <MobileMenuBarFeature />}
     </>
   )
 }

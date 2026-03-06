@@ -11,8 +11,14 @@ import { TokenImage } from "@/components/design_system/structure/token_image"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { PopoverTriggerElement } from "@/components/design_system/structure/popover_trigger_element"
+import { cn } from "@/lib/utils"
 
-export const WalletConnexionContent = () => {
+type WalletConnexionContentProps = {
+  className?: string
+  classNameChild?: string
+}
+
+export function WalletConnexionContent({ className, classNameChild }: WalletConnexionContentProps) {
   const { copied, copy } = useClipboard()
 
   const { connect, disconnect, isConnected, isChainConnected, currentAddress } = useWalletConnexionContext()
@@ -39,11 +45,16 @@ export const WalletConnexionContent = () => {
         {isConnected ? (
           <PopoverTrigger asChild>
             <PopoverTriggerElement className="w-full max-w-36">
-              <Button>{buttonLabel}</Button>
+              <Button classNameChild={classNameChild}>{buttonLabel}</Button>
             </PopoverTriggerElement>
           </PopoverTrigger>
         ) : (
-          <Button label="Connect wallet" onClick={handleConnect} className="flex w-full max-w-36 items-center justify-center" />
+          <Button
+            label="Connect wallet"
+            onClick={handleConnect}
+            className={cn("flex w-full max-w-36 items-center justify-center", className)}
+            classNameChild={classNameChild}
+          />
         )}
 
         <PopoverContent align="end">

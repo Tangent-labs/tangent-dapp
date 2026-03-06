@@ -159,7 +159,7 @@ export default function MenuBarFeature() {
 
             <SwapButton />
 
-            <WalletConnexionContent classNameChild={"py-1.5"} />
+            <WalletConnexionContent classNameChild={"py-[5px] px-1"} />
           </div>
         </div>
       </div>

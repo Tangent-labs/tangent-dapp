@@ -116,7 +116,7 @@ export default function USGHarvestContent() {
                       <TokenImage token={el.marketName as ExistingAsset} size={32} className="w-8" />
                     )}
 
-                    <span className="text-[12px] font-semibold">{el.marketName}</span>
+                    <span className="text-[12px] font-semibold">{el.marketName?.replaceAll("-", "/")}</span>
                   </div>
 
                   <span className="text-[12px] font-semibold">{formatDollar(el.harvestable, 2)}</span>

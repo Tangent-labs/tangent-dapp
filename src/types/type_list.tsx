@@ -41,6 +41,7 @@ export type ListRowData = {
     key: string
     label: string
     value: string
+    subValue?: string
     raw?: number // Raw numerical value for calculations
   }[]
   userHasDeposited: boolean

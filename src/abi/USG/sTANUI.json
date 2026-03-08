@@ -341,6 +341,16 @@
           "internalType": "address",
           "name": "market",
           "type": "address"
+        },
+        {
+          "internalType": "contract IMarketViewer",
+          "name": "marketViewer",
+          "type": "address"
+        },
+        {
+          "internalType": "contract IERC20",
+          "name": "usg",
+          "type": "address"
         }
       ],
       "name": "getMarketDetails",
@@ -430,6 +440,11 @@
                 },
                 {
                   "internalType": "uint256",
+                  "name": "usgBalance",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
                   "name": "currentBorrowRate",
                   "type": "uint256"
                 },
@@ -474,6 +489,11 @@
                   "internalType": "uint256",
                   "name": "liquidationThreshold",
                   "type": "uint256"
+                },
+                {
+                  "internalType": "address",
+                  "name": "receipt",
+                  "type": "address"
                 },
                 {
                   "components": [
@@ -562,6 +582,28 @@
                   ],
                   "internalType": "struct RCParams",
                   "name": "rcParams",
+                  "type": "tuple"
+                },
+                {
+                  "components": [
+                    {
+                      "internalType": "bool",
+                      "name": "isDepositPaused",
+                      "type": "bool"
+                    },
+                    {
+                      "internalType": "bool",
+                      "name": "isBorrowPaused",
+                      "type": "bool"
+                    },
+                    {
+                      "internalType": "bool",
+                      "name": "isLeveragePaused",
+                      "type": "bool"
+                    }
+                  ],
+                  "internalType": "struct GetMarketDetails.PauseStruct",
+                  "name": "pauseStruct",
                   "type": "tuple"
                 }
               ],

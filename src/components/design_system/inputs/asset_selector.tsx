@@ -81,15 +81,13 @@ export const AssetSelector = ({ collateralInfo, depositAsset, setDepositAsset }:
         const aPriority = getTokenSymbolPriorityIndex(a.symbol)
         const bPriority = getTokenSymbolPriorityIndex(b.symbol)
 
-        if (aPriority !== bPriority) {
-          return aPriority - bPriority
-        }
-
         if (Number(a.balance) > 0 !== Number(b.balance) > 0) {
-          return Number(a.balance) > 0 ? -1 : 1 // true (-1) comes before false
+          return Number(a.balance) > 0 ? -1 : 1
+        } else if (aPriority !== bPriority) {
+          return aPriority - bPriority
+        } else {
+          return Number(b.balance) - Number(a.balance)
         }
-
-        return Number(b.balance) - Number(a.balance)
       })
 
     const allAssets = [

@@ -319,7 +319,7 @@ export function USGMarketListInner() {
                     <span className="flex flex-col items-center justify-center">
                       <span className={cn("flex text-sm text-subtitle md:text-xl xl:hidden")}>{indicator?.label}</span>
                       <span className="text-xs md:text-lg">{indicator?.value}</span>
-                      <span className="hidden text-xs text-subtitle md:flex md:text-xs">/{formatNumber(indicator?.raw, 0)}</span>
+                      <span className="hidden text-xs text-subtitle md:flex md:text-xs">/{indicator?.subValue}</span>
                     </span>
                   </div>
                 ) : (

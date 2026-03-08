@@ -70,11 +70,6 @@ export const USGDashboardContent = () => {
         </div>
 
         <div className="flex w-full items-center justify-between text-xs">
-          <span className="text-dash-wts">WTS</span>
-          <span className="text-white">${formatCompact(wts)}</span>
-        </div>
-
-        <div className="flex w-full items-center justify-between text-xs">
           <span className="text-dash-keepers">Peg Keepers</span>
           <span className="text-white">${formatCompact(pk)}</span>
         </div>
@@ -315,7 +310,6 @@ export const USGDashboardContent = () => {
 
                 {[
                   { label: "Markets", name: "markets" },
-                  { label: "WTS", name: "wts" },
                   { label: "Peg Keepers", name: "pegkeepers" },
                   { label: "sUSG", name: "susg" },
                 ].map((el) => (
@@ -359,11 +353,6 @@ export const USGDashboardContent = () => {
                       <stop offset="95%" stopColor="#24DD9A" stopOpacity={0} />
                     </linearGradient>
 
-                    <linearGradient id="wtsGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#95FF00" stopOpacity={0.6} />
-                      <stop offset="95%" stopColor="#95FF00" stopOpacity={0} />
-                    </linearGradient>
-
                     <linearGradient id="susgGradient" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#4EB3DF" stopOpacity={0.6} />
                       <stop offset="95%" stopColor="#4EB3DF" stopOpacity={0} />
@@ -386,8 +375,6 @@ export const USGDashboardContent = () => {
                     name="Peg Keepers"
                     connectNulls
                   />
-
-                  <Area type="monotone" dataKey="wts" stackId="1" stroke="#95FF00" strokeWidth={1.5} fill="url(#wtsGradient)" name="WTS" connectNulls />
 
                   <Area
                     type="monotone"

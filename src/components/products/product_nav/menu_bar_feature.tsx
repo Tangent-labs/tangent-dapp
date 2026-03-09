@@ -81,7 +81,7 @@ export default function MenuBarFeature() {
     {
       baseLabel: "Airdrop",
       routes: [
-        { route: "/tasks", label: "Tasks", logo: <IconTask className="w-2" /> },
+        { route: "/tasks", label: "Tasks", logo: <IconTask className="w-3" /> },
         { route: "/referral", label: "Referral", logo: <IconReferral className="w-3" /> },
         { route: "/boosts", label: "Boosts", logo: <IconBoosts className="w-3" /> },
       ],

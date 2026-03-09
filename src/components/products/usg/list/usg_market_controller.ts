@@ -180,13 +180,11 @@ export const USGListHeaders: ListHeaderData[] = [
   {
     label: "vAPR",
     key: "vapr",
-    indicator: "vAPR of the collateral",
     sort: "sort",
   },
   {
     label: "Max vAPR",
     key: "maxvapr",
-    indicator: "vAPR of the collateral at max leverage",
     sort: "sort",
   },
   {

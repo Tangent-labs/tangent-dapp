@@ -117,9 +117,9 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
 
   const TYPE_TO_MARKET: Record<string, string[]> = {
     Convex_CRV: ["Curve", "Convex"],
-    Convex_FXN: ["Convex", "f(x) Protocol"],
+    Convex_FXN: ["Convex", "f(x) Protocol", "Curve"],
     Pendle_PT: ["Pendle"],
-    STAKEDAO_CRV_Vault: ["Stake DAO"],
+    STAKEDAO_CRV_Vault: ["Stake DAO", "Curve"],
   }
 
   const matchProtocol = (marketProtocol: string, selectedProtocol: string) => {

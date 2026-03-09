@@ -7,10 +7,9 @@ interface MarketListRowProps {
   rowDisposition: React.ComponentType<{ children: React.ReactNode[] }>
   className?: string
   route: string
-  isSelected?: boolean
 }
 
-export const MarketListRow = ({ children, route, className = "", rowDisposition: CustomRowDisposition, isSelected = false }: MarketListRowProps) => {
+export const MarketListRow = ({ children, route, className = "", rowDisposition: CustomRowDisposition }: MarketListRowProps) => {
   return (
     <div className="group relative">
       <div

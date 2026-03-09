@@ -35,5 +35,4 @@ export const dappConfig: DappConfig = {
     explorerContractUrl: process.env.NEXT_PUBLIC_CHAIN_CONTRACT_EXPLORER || "",
   },
   apiUrl: process.env.NEXT_PUBLIC_API_URL || "",
-
 }

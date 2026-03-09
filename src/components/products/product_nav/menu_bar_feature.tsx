@@ -111,7 +111,7 @@ export default function MenuBarFeature() {
             <div className="flex w-full items-center justify-start gap-3">
               <div className="flex cursor-pointer items-center gap-2 text-xl text-white">
                 <Link href="/">
-                  <IconTangent className="md-lg:mb-2 mb-1 w-24 transition-transform duration-200 ease-out hover:scale-[1.02] active:scale-[0.98]" />
+                  <IconTangent className="mb-1 w-24 transition-transform duration-200 ease-out hover:scale-[1.02] active:scale-[0.98] md-lg:mb-2" />
                 </Link>
               </div>
 
@@ -199,7 +199,7 @@ export default function MenuBarFeature() {
               {/* Burger button - mobile only */}
               <button
                 onClick={() => setMobileMenuOpen((prev) => !prev)}
-                className="md-lg:hidden relative z-[60] flex h-9 w-9 flex-col items-center justify-center gap-[6px] rounded-lg"
+                className="relative z-[60] flex h-9 w-9 flex-col items-center justify-center gap-[6px] rounded-lg md-lg:hidden"
                 aria-label="Toggle menu"
               >
                 <span
@@ -229,7 +229,7 @@ export default function MenuBarFeature() {
         {/* Mobile menu */}
         <div
           className={cn(
-            "md-lg:hidden fixed bottom-0 left-0 right-0 z-40 flex flex-col overflow-hidden border-b border-white/10 bg-dark font-gilroy transition-all duration-300 ease-out",
+            "fixed bottom-0 left-0 right-0 z-40 flex flex-col overflow-hidden border-b border-white/10 bg-dark font-gilroy transition-all duration-300 ease-out md-lg:hidden",
             mobileMenuOpen ? "opacity-100" : "pointer-events-none opacity-0"
           )}
           style={{ top: `${headerHeight}px` }}

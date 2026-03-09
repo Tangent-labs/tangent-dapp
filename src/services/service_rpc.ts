@@ -38,13 +38,13 @@ const publicClient = createPublicClient({
 })
 
 function getRetryClients() {
-  return dappConfig.chain.fallbackRpcs.map(url => {
+  return dappConfig.chain.fallbackRpcs.map((url) => {
     return createPublicClient({
       chain,
       transport: http(url, {
         retryCount: 0,
         timeout: 30_000,
-      })
+      }),
     })
   })
 }

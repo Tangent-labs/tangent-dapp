@@ -119,6 +119,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     Convex_CRV: "Curve",
     Convex_FXN: "Convex",
     Pendle_PT: "Pendle",
+    STAKEDAO_CRV_Vault: "Stake DAO",
   }
 
   const mapProtocol = (p: string): string => {

@@ -1,15 +1,17 @@
 import { cn } from "@/lib/utils"
 import { ReactNode } from "react"
-import { USGHoverCard } from "./usg_hover_card"
-import { MarketAPR } from "@/components/products/usg/usg_type"
+import { IconCircleHelp } from "@/components/icons"
 import { IconStars } from "@/components/icons/icon_stars"
+import { MarketAPR } from "@/components/products/usg/usg_type"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 type RecordPageHeaderProps = {
+  maxLTV: number
   apr?: MarketAPR
   indicators?: RecordPageHeaderIndicatorProps[]
 }
 
-export function RecordPageHeader({ apr, indicators }: RecordPageHeaderProps) {
+export function RecordPageHeader({ apr, indicators, maxLTV }: RecordPageHeaderProps) {
   let totalCurrentAPR = 0
   let totalProjectedAPR = 0
 
@@ -18,12 +20,24 @@ export function RecordPageHeader({ apr, indicators }: RecordPageHeaderProps) {
     totalProjectedAPR = Object.values(apr?.projectedAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
   }
 
+  const maxLeverage = 1 / (1 - maxLTV)
+
   return (
     <>
       <RecordPageHeaderIndicator
         title="Collateral vAPR"
         value={`${totalCurrentAPR ? `${totalCurrentAPR?.toFixed(2)}%` : "-"}`}
         subValue={<div className="flex items-center text-xs text-subtitle">{`Proj: ${totalProjectedAPR ? `${totalProjectedAPR?.toFixed(2)}%` : "-"}`}</div>}
+        indicator="vAPR of the collateral."
+      />
+
+      <RecordPageHeaderIndicator
+        title="Max vAPR"
+        value={`${totalCurrentAPR ? `${(totalCurrentAPR * maxLeverage)?.toFixed(2)}%` : "-"}`}
+        subValue={
+          <div className="flex items-center text-xs text-subtitle">{`Proj: ${totalProjectedAPR ? `${(totalProjectedAPR * maxLeverage)?.toFixed(2)}%` : "-"}`}</div>
+        }
+        indicator="vAPR of the collateral at max leverage."
       />
 
       {indicators?.map((i, index) => (
@@ -54,15 +68,25 @@ export const RecordPageHeaderIndicator = ({ title, value, subValue, indicator, c
         {title}
 
         {!!indicator && (
-          <USGHoverCard iconClassName="h-auto w-[12px] text-white" title="">
-            {indicator}
-          </USGHoverCard>
+          <>
+            <HoverCard openDelay={100} closeDelay={100}>
+              <HoverCardTrigger asChild>
+                <button type="button">
+                  <IconCircleHelp className="h-auto w-[12px] text-white" />
+                </button>
+              </HoverCardTrigger>
+
+              <HoverCardContent side="top" align="center" className="z-101 w-fit max-w-64 p-2 text-xs">
+                {indicator}
+              </HoverCardContent>
+            </HoverCard>
+          </>
         )}
       </div>
 
       <span className={cn("flex items-center gap-1 text-[20px] font-semibold", className)}>
         {value}
-        {title === "Collateral vAPR" && <IconStars className="w-4 fill-row-tonic"></IconStars>}
+        {title?.includes("vAPR") && <IconStars className={cn("w-4", title?.includes("Max vAPR") ? "fill-row-success" : "fill-row-tonic")}></IconStars>}
       </span>
       <span className="text-xs text-subtitle">{subValue}</span>
     </div>

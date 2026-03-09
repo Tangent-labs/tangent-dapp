@@ -20,6 +20,7 @@ import { ListGradientBorder } from "@/components/design_system/list/list_gradien
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
+import { specialTokensList } from "../usg_repository"
 
 const listeState: ListState = {
   search: undefined,
@@ -115,7 +116,7 @@ export default function USGClaimContent() {
       <div className="mt-3 flex w-full flex-col items-start justify-start gap-3 md:flex-row">
         <div className="flex w-full flex-col md:w-9/12">
           <ListProvider customSort={customSort} _headers={claimListHeaders} _rows={displayRows} _listState={listeState}>
-            <ClaimList></ClaimList>
+            <ClaimList />
           </ListProvider>
 
           {!isLoading && displayRows?.length === 0 && (
@@ -136,8 +137,7 @@ export default function USGClaimContent() {
           <div className="relative mt-1 flex h-full min-h-52 w-full cursor-pointer flex-col items-start justify-start p-2 backdrop-blur-[60px] transition-all duration-200 ease-out before:absolute before:inset-0 before:-z-10 before:opacity-60 before:transition-all before:duration-300">
             <div className="flex w-full items-center justify-between">
               <div className="flex flex-col items-start justify-start">Market</div>
-
-              <div className="flex flex-col items-start justify-start">Claimable</div>
+              Claimable
             </div>
 
             <Divider className="h-0.5 w-full bg-white/10" />
@@ -146,8 +146,7 @@ export default function USGClaimContent() {
               {marketsToClaim.map((el: ClaimableMarket) => (
                 <div key={el.marketName} className="my-1 flex w-full items-center justify-between">
                   <div className="relative flex items-center gap-4">
-                    {el.marketName?.substring(0, el.marketName.indexOf(" ")) === "USDe" ||
-                    el.marketName?.substring(0, el.marketName.indexOf(" ")) === "sUSDe" ? (
+                    {specialTokensList?.includes(el.marketName?.substring(0, el.marketName.indexOf(" "))) ? (
                       <TokenImage token={el.marketName as ExistingAsset} size={24} className="ml-1 w-6" />
                     ) : (
                       <TokenImage token={el.marketName as ExistingAsset} size={32} className="w-8" />
@@ -202,6 +201,7 @@ function ClaimList() {
 
               <div className="flex justify-center xl:w-1/3">
                 <MarketListAPR
+                  marketType={item?.marketType}
                   poolName={item?.marketName}
                   rewardToken={item?.rewardToken}
                   maxLeverage={1}

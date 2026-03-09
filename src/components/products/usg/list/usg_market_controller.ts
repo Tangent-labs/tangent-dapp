@@ -4,7 +4,7 @@ import { executeChainViewUnique } from "@/services/service_rpc"
 import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
 import { USG_CONTRACT, USGMarkets, USGPegKeepers } from "../usg_repository"
 import { formatBigInt, formatMarketListCompact, formatDollar, formatNumber } from "@/lib/number_formatter"
-import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, USGGlobalData } from "../usg_type"
+import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, USGGlobalData, USGMarketType } from "../usg_type"
 
 export const getUSGMarketsData = async (address: string) => {
   const markets = USGMarkets.map((market) => market.marketAddress)
@@ -112,7 +112,10 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
 
   const maxBorrowable = onChainRow?.constants?.maxMarketDebt?.toString() || "0"
 
+  const marketType = onChainRow?.marketType as USGMarketType
+
   return {
+    marketType,
     token: data.collateral as ExistingAsset,
     protocol,
     type,
@@ -207,6 +210,7 @@ export const protocolOptions = [
   { label: "Curve", value: "Curve" },
   { label: "Convex", value: "Convex" },
   { label: "Pendle", value: "Pendle" },
+  { label: "Stake DAO", value: "Stake DAO" },
 ]
 
 export const USGMarketModalListHeaders: ListHeaderData[] = [

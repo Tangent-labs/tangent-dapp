@@ -112,6 +112,7 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
     const displayName = (marketNameIsDuplicated && marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + marketConfig?.marketName
 
     return {
+      marketType: marketConfig?.marketType,
       marketAddress: claimer.marketAddress,
       marketName: displayName,
       claimable,

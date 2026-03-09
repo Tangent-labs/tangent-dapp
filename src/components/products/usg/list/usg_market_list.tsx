@@ -295,6 +295,7 @@ export function USGMarketListInner() {
             projectedAPRDetails={item.projectedAPRDetails}
             apr={item.apr.current}
             projectedApr={item.apr.projected}
+            marketType={marketData.find((el) => el.marketAddress === item.address)?.marketType}
           />
 
           <MarketListAPR
@@ -305,6 +306,7 @@ export function USGMarketListInner() {
             projectedAPRDetails={item.projectedAPRDetails}
             apr={item.apr.current}
             projectedApr={item.apr.projected}
+            marketType={marketData.find((el) => el.marketAddress === item.address)?.marketType}
           />
 
           <>

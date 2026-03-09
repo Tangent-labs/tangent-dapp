@@ -1,49 +1,47 @@
 "use client"
 
+import { createRippleEffect } from "@/lib/animations"
 import { cn } from "@/lib/utils"
-import React, { ButtonHTMLAttributes, useRef } from "react"
+import { ButtonHTMLAttributes, useRef, ReactNode, useEffect, useState } from "react"
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   label?: string
-  children?: React.ReactNode
+  children?: ReactNode
   state?: "active" | "inactive" | "disabled"
   hasLoadingState?: boolean
   isLoading?: boolean
+  classNameChild?: string
 }
 
-export const Button = ({ label, state = "active", className, disabled, children, onClick, hasLoadingState = false, isLoading, ...props }: ButtonProps) => {
+export const Button = ({
+  label,
+  state = "active",
+  className,
+  classNameChild,
+  disabled,
+  children,
+  onClick,
+  hasLoadingState = false,
+  isLoading,
+  ...props
+}: ButtonProps) => {
+  const [mounted, setMounted] = useState(false)
+
+  // Use a consistent default during SSR
+  const effectiveState = mounted ? state : "inactive"
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const buttonRef = useRef<HTMLButtonElement>(null)
-
-  const createRippleEffect = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (state !== "active" || !buttonRef.current) return
-
-    const btn = buttonRef.current
-    const rect = btn.getBoundingClientRect()
-
-    const diameter = Math.max(rect.width, rect.height) / 2
-    const radius = diameter / 2
-
-    const x = e.clientX - rect.left - radius
-    const y = e.clientY - rect.top - radius
-
-    const ripple = document.createElement("span")
-    ripple.className = "absolute z-0 rounded-full pointer-events-none bg-button-active-dark animate-ripple"
-
-    ripple.style.width = ripple.style.height = `${diameter}px`
-    ripple.style.left = `${x}px`
-    ripple.style.top = `${y}px`
-
-    btn.appendChild(ripple)
-    setTimeout(() => ripple.remove(), 1500)
-  }
-
-  const isDisabled = state !== "active" || disabled
+  const isDisabled = effectiveState !== "active" || disabled
 
   return (
     <div
       className={cn(
         "relative inline-flex w-full rounded-[11px] p-[1px]",
-        state === "active" ? "bg-gradient-to-b from-[rgba(0,194,255,0.5)] to-[#00c2ff00]" : "",
+        effectiveState === "active" ? "bg-gradient-to-b from-[#00C2FF] to-[#00c2ff00]" : "",
         className
       )}
     >
@@ -51,23 +49,24 @@ export const Button = ({ label, state = "active", className, disabled, children,
         {...props}
         ref={buttonRef}
         disabled={isDisabled}
-        data-state={state}
+        data-state={effectiveState}
         onClick={(e) => {
           if (isDisabled) return
-          createRippleEffect(e)
+          createRippleEffect(e, buttonRef)
           onClick?.(e)
         }}
         className={cn(
           "group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[10px] px-4 py-2.5 font-gilroy text-sm font-semibold disabled:cursor-not-allowed",
           {
-            "bg-button-active hover:bg-button-active-hover": state === "active",
-            "bg-overlay-panel backdrop-blur-[60px] backdrop-filter": state !== "active",
-            "cursor-not-allowed": state !== "active",
-          }
+            "bg-button-active hover:bg-button-active-hover": effectiveState === "active",
+            "bg-overlay-panel backdrop-blur-[60px] backdrop-filter": effectiveState !== "active",
+            "cursor-not-allowed": effectiveState !== "active",
+          },
+          classNameChild ? classNameChild : ""
         )}
       >
         {/* Gradient border effect - only visible when inactive */}
-        {state !== "active" && (
+        {effectiveState !== "active" && (
           <div
             className="pointer-events-none absolute inset-0 rounded-[10px]"
             style={{

@@ -1,17 +1,13 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { ButtonHTMLAttributes } from "react"
+import { forwardRef } from "react"
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  children?: React.ReactNode
-  className?: string
-}
-
-export function PopoverTriggerElement({ children, className, ...props }: ButtonProps) {
+export const PopoverTriggerElement = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ children, className, ...props }, ref) => {
   return (
-    <button {...props} className={cn("flex w-full items-center justify-center", className)}>
+    <div ref={ref} {...props} className={cn("flex w-full items-center justify-center", className)}>
       {children}
-    </button>
+    </div>
   )
-}
+})
+PopoverTriggerElement.displayName = "PopoverTriggerElement"

@@ -12,181 +12,275 @@ import {
 
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { useCallback } from "react"
 import { usePathname } from "next/navigation"
+import { useEffect, useRef, useState } from "react"
 import { useRootContext } from "../root/root_context"
+import { useScrollDirection } from "@/lib/animations"
 import { formatCompact } from "@/lib/number_formatter"
-import { TokenImage } from "@/components/design_system/structure/token_image"
-import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
-import { isOnMarket, mapRouteToFeature } from "./menu_bar_feature_controller"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { isOnMarket } from "./menu_bar_feature_controller"
 import { SwapButton } from "@/components/design_system/inputs/swap_button"
-import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
+import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
+import { TokenImage } from "@/components/design_system/structure/token_image"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTask } from "@/components/icons"
 
 export default function MenuBarFeature() {
   const { USGCurrentSupply, sUSGCurrentAPY, protocolCurrentTVL } = useRootContext()
 
+  const isHeaderVisible = useScrollDirection()
+
   const pathname = usePathname()
 
-  const computedFeature = useCallback(() => {
-    return mapRouteToFeature(pathname.substring(1, pathname.length))
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  useEffect(() => {
+    setMobileMenuOpen(false)
   }, [pathname])
 
+  //  Hide and display navbar on scroll
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden"
+      document.body.style.position = "fixed"
+      document.body.style.width = "100%"
+      document.body.style.top = `-${window.scrollY}px`
+    } else {
+      const scrollY = document.body.style.top
+      document.body.style.overflow = ""
+      document.body.style.position = ""
+      document.body.style.width = ""
+      document.body.style.top = ""
+      window.scrollTo(0, parseInt(scrollY || "0") * -1)
+    }
+    return () => {
+      document.body.style.overflow = ""
+      document.body.style.position = ""
+      document.body.style.width = ""
+      document.body.style.top = ""
+    }
+  }, [mobileMenuOpen])
+
+  const routesMenuItem = [
+    { route: "/", label: "Markets", condition: (path: string) => isOnMarket(path) },
+    { route: "/stake", label: "Savings" },
+    { route: "/earn", label: "Earn" },
+    { route: "/claim", label: "Claim" },
+    { route: "/dashboard", label: "Dashboard" },
+    { route: "/swap", label: "Swap", mobileOnly: true },
+  ]
+
+  const routesDropdown = [
+    {
+      baseLabel: "DAO",
+      routes: [
+        { route: "https://snapshot.box/#/s:tangent-finance.eth", label: "Snapshot", logo: <IconSnapshot className="w-3" />, external: true },
+        { route: "https://tangentfinance.discourse.group/latest", label: "Forum", logo: <IconForum className="w-3" />, external: true },
+        { route: "/harvest", label: "Harvest", logo: <IconHarvest className="w-2" /> },
+      ],
+    },
+    {
+      baseLabel: "Airdrop",
+      routes: [
+        { route: "/tasks", label: "Tasks", logo: <IconTask className="w-2" /> },
+        { route: "/referral", label: "Referral", logo: <IconReferral className="w-3" /> },
+        { route: "/boosts", label: "Boosts", logo: <IconBoosts className="w-3" /> },
+      ],
+    },
+  ]
+
+  const headerRef = useRef<HTMLDivElement>(null)
+  const [headerHeight, setHeaderHeight] = useState(0)
+
+  useEffect(() => {
+    if (headerRef.current) {
+      setHeaderHeight(headerRef.current.offsetHeight)
+    }
+  }, [])
   return (
-    <header className="sticky top-0 z-50 flex h-[80px] w-full font-gilroy backdrop-blur-[60px]">
-      <div className="mx-auto flex w-full">
-        <div className="mx-2 flex w-full items-center justify-between lg:mx-4">
-          <div className="flex w-full items-center justify-start gap-3">
-            <div className="hidden cursor-pointer items-center gap-2 text-xl text-white md:flex">
-              <Link href="/">
-                <IconTangent className="mb-2 w-32"></IconTangent>
-              </Link>
+    <>
+      <header
+        ref={headerRef}
+        className={cn(
+          "sticky top-0 z-50 mb-4 flex w-full py-2 font-gilroy backdrop-blur-[60px]",
+          "transition-transform duration-300 ease-out",
+          isHeaderVisible || mobileMenuOpen ? "translate-y-0" : "-translate-y-full"
+        )}
+      >
+        <div className="mx-auto flex w-full">
+          <div className="mx-2 flex w-full items-center justify-between lg:mx-4">
+            <div className="flex w-full items-center justify-start gap-3">
+              <div className="flex cursor-pointer items-center gap-2 text-xl text-white">
+                <Link href="/">
+                  <IconTangent className="md-lg:mb-2 mb-1 w-24 transition-transform duration-200 ease-out hover:scale-[1.02] active:scale-[0.98]" />
+                </Link>
+              </div>
+
+              {/* Desktop navigation */}
+              <NavigationMenu>
+                <NavigationMenuList>
+                  {routesMenuItem
+                    .filter((r) => !r.mobileOnly)
+                    .map((route) => {
+                      return (
+                        <Link key={route.route} href={route.route} rel="noopener noreferrer" className="group/link relative pb-1">
+                          <NavigationMenuItem
+                            className={cn(
+                              "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-[--tgt-subtitle] transition-colors hover:bg-white/10",
+                              "active:scale-[0.97]",
+                              (route.condition ? route.condition(pathname) : pathname === route.route) ? "text-white" : ""
+                            )}
+                          >
+                            <span className="relative z-20">{route.label}</span>
+                          </NavigationMenuItem>
+                          <span
+                            className={cn(
+                              "absolute bottom-0 left-0 z-20 h-[2px] w-full bg-gradient-to-r from-[--tgt-row-tonic] to-blue-600 transition-transform duration-300 ease-out",
+                              (route.condition ? route.condition(pathname) : pathname === route.route)
+                                ? "origin-left scale-x-100"
+                                : "origin-left scale-x-0 group-hover/link:origin-left group-hover/link:scale-x-100"
+                            )}
+                          />
+                        </Link>
+                      )
+                    })}
+
+                  {routesDropdown.map((dropdown) => {
+                    const route = dropdown.routes.find((r) => r.route === pathname)
+                    const isSelected = route ? true : false
+
+                    return (
+                      <NavigationMenu viewport={false} key={dropdown.baseLabel} delayDuration={150}>
+                        <NavigationMenuDropdown>
+                          <NavigationMenuTrigger className="active:scale-[0.97]" isSelected={isSelected}>
+                            {dropdown.baseLabel}
+                          </NavigationMenuTrigger>
+                          <NavigationMenuContent>
+                            <div className="flex w-[120px] flex-col gap-1 rounded-[10px] border border-white/10 bg-dark p-2">
+                              {dropdown.routes.map((route) => (
+                                <NavigationMenuLink key={route.label} asChild>
+                                  <Link
+                                    href={route.route}
+                                    target={route.external ? "_blank" : ""}
+                                    rel="noopener noreferrer"
+                                    className="flex items-center justify-start gap-2"
+                                  >
+                                    {route.logo}
+                                    {route.label}
+                                  </Link>
+                                </NavigationMenuLink>
+                              ))}
+                            </div>
+                          </NavigationMenuContent>
+                        </NavigationMenuDropdown>
+                      </NavigationMenu>
+                    )
+                  })}
+                </NavigationMenuList>
+              </NavigationMenu>
             </div>
 
-            <Link className="flex cursor-pointer items-center gap-4 text-xl text-white md:hidden" href="/">
-              <IconTangentLogo className="mb-2 mr-2 w-12 border-r border-white/30 px-2"></IconTangentLogo>
-              {computedFeature()}
-            </Link>
+            <div className="flex w-full items-center justify-end gap-3">
+              <ReliefCard className="hidden items-center justify-center px-1 py-2.5 text-xs xl:flex">
+                <span className="border-r border-white/30 px-2">TVL: ${formatCompact(protocolCurrentTVL?.total)}</span>
+                <span className="flex items-center justify-center gap-2 border-r border-white/30 px-2">
+                  <TokenImage token="USG" size={20} />
+                  {formatCompact(USGCurrentSupply)}
+                </span>
+                <span className="flex items-center justify-center gap-2 px-2">
+                  <TokenImage token="sUSG" size={20} />
+                  {sUSGCurrentAPY.toFixed(2)}% APY
+                </span>
+              </ReliefCard>
 
-            <NavigationMenu>
-              <NavigationMenuList>
-                <Link href="/">
-                  <NavigationMenuItem
-                    className={cn(
-                      "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
-                      isOnMarket(pathname) ? "bg-white/10 hover:bg-white/20" : ""
-                    )}
-                  >
-                    <span className="relative z-20">Markets</span>
-                  </NavigationMenuItem>
-                </Link>
+              <SwapButton />
 
-                <Link href="/stake">
-                  <NavigationMenuItem
-                    className={cn(
-                      "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
-                      pathname === "/stake" ? "bg-white/10 hover:bg-white/20" : ""
-                    )}
-                  >
-                    <span className="relative z-20">Savings</span>
-                  </NavigationMenuItem>
-                </Link>
+              <WalletConnexionContent classNameChild={"py-[9px] px-1"} />
 
-                <Link href="/earn">
-                  <NavigationMenuItem
-                    className={cn(
-                      "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
-                      pathname === "/earn" ? "bg-white/10 hover:bg-white/20" : ""
-                    )}
-                  >
-                    <span className="relative z-20">Earn</span>
-                  </NavigationMenuItem>
-                </Link>
-
-                <Link href="/claim">
-                  <NavigationMenuItem
-                    className={cn(
-                      "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
-                      pathname === "/claim" ? "bg-white/10 hover:bg-white/20" : ""
-                    )}
-                  >
-                    <span className="relative z-20">Claim</span>
-                  </NavigationMenuItem>
-                </Link>
-
-                <Link href="/dashboard">
-                  <NavigationMenuItem
-                    className={cn(
-                      "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
-                      pathname === "/dashboard" ? "bg-white/10 hover:bg-white/20" : ""
-                    )}
-                  >
-                    <span className="relative z-20">Dashboard</span>
-                  </NavigationMenuItem>
-                </Link>
-
-                <NavigationMenu>
-                  <NavigationMenuDropdown>
-                    <NavigationMenuTrigger>DAO</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] border border-white/10 bg-dark p-2">
-                        <NavigationMenuLink asChild>
-                          <Link href="/harvest" className="flex items-center justify-start gap-2">
-                            <IconHarvest className="w-2" />
-                            Harvest
-                          </Link>
-                        </NavigationMenuLink>
-
-                        <NavigationMenuLink asChild>
-                          <Link href="/forum" className="flex items-center justify-start gap-2">
-                            <IconForum className="w-3" />
-                            Forum
-                          </Link>
-                        </NavigationMenuLink>
-
-                        <NavigationMenuLink asChild>
-                          <Link href="/snapshot" className="flex items-center justify-start gap-2">
-                            <IconSnapshot className="w-3" />
-                            Snapshot
-                          </Link>
-                        </NavigationMenuLink>
-                      </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuDropdown>
-                </NavigationMenu>
-
-                <NavigationMenu>
-                  <NavigationMenuDropdown>
-                    <NavigationMenuTrigger>Airdrop</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="flex w-[120px] flex-col gap-1 rounded-[10px] border border-white/10 bg-dark p-2">
-                        <NavigationMenuLink asChild>
-                          <Link href="/tasks" className="flex items-center justify-start gap-2">
-                            <IconTask className="w-3" />
-                            Tasks
-                          </Link>
-                        </NavigationMenuLink>
-
-                        <NavigationMenuLink asChild>
-                          <Link href="/referral" className="flex items-center justify-start gap-2">
-                            <IconReferral className="w-3" />
-                            Referral
-                          </Link>
-                        </NavigationMenuLink>
-
-                        <NavigationMenuLink asChild>
-                          <Link href="/boosts" className="flex items-center justify-start gap-2">
-                            <IconBoosts className="w-3" />
-                            Boosts
-                          </Link>
-                        </NavigationMenuLink>
-                      </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuDropdown>
-                </NavigationMenu>
-              </NavigationMenuList>
-            </NavigationMenu>
-          </div>
-
-          <div className="flex w-full items-center justify-end gap-3">
-            <ReliefCard className="hidden items-center justify-center px-1 py-2.5 text-xs xl:flex">
-              <span className="border-r border-white/30 px-2">TVL: ${formatCompact(protocolCurrentTVL?.total)} </span>
-              <span className="flex items-center justify-center gap-2 border-r border-white/30 px-2">
-                <TokenImage token="USG" size={20} />
-                {formatCompact(USGCurrentSupply)}
-              </span>
-              <span className="flex items-center justify-center gap-2 px-2">
-                <TokenImage token="sUSG" size={20} />
-                {sUSGCurrentAPY.toFixed(2)}% APY
-              </span>
-            </ReliefCard>
-
-            <SwapButton />
-
-            <WalletConnexionContent />
+              {/* Burger button - mobile only */}
+              <button
+                onClick={() => setMobileMenuOpen((prev) => !prev)}
+                className="md-lg:hidden relative z-[60] flex h-9 w-9 flex-col items-center justify-center gap-[6px] rounded-lg"
+                aria-label="Toggle menu"
+              >
+                <span
+                  className={cn("h-[2px] w-5 rounded-full bg-white transition-all duration-300 ease-out", mobileMenuOpen && "translate-y-[8px] rotate-45")}
+                />
+                <span className={cn("h-[2px] w-5 rounded-full bg-white transition-all duration-300 ease-out", mobileMenuOpen && "opacity-0")} />
+                <span
+                  className={cn("h-[2px] w-5 rounded-full bg-white transition-all duration-300 ease-out", mobileMenuOpen && "-translate-y-[8px] -rotate-45")}
+                />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Mobile menu overlay */}
+      <div
+        className={cn(
+          "fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden",
+          mobileMenuOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        )}
+        onClick={() => setMobileMenuOpen(false)}
+      />
+
+      {/* Mobile menu panel */}
+      <>
+        {/* Mobile menu */}
+        <div
+          className={cn(
+            "md-lg:hidden fixed bottom-0 left-0 right-0 z-40 flex flex-col overflow-hidden border-b border-white/10 bg-dark font-gilroy transition-all duration-300 ease-out",
+            mobileMenuOpen ? "opacity-100" : "pointer-events-none opacity-0"
+          )}
+          style={{ top: `${headerHeight}px` }}
+        >
+          <div className="flex flex-col overflow-y-auto px-4 pb-6 pt-4">
+            {routesMenuItem.map((route) => {
+              const isActive = route.condition ? route.condition(pathname) : pathname === route.route
+              return (
+                <Link
+                  key={route.route}
+                  href={route.route}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cn(
+                    "flex items-center border-b border-white/5 py-4 text-base font-semibold transition-colors",
+                    isActive ? "text-white" : "text-white/50"
+                  )}
+                >
+                  {isActive && <span className="mr-3 h-4 w-[2px] rounded-full bg-gradient-to-b from-[--tgt-row-tonic] to-blue-600" />}
+                  {route.label}
+                </Link>
+              )
+            })}
+
+            {routesDropdown.map((dropdown) => (
+              <div key={dropdown.baseLabel} className="mt-4">
+                <span className="text-xs font-semibold uppercase tracking-wider text-white/30">{dropdown.baseLabel}</span>
+                <div className="mt-2 flex flex-col">
+                  {dropdown.routes.map((route) => {
+                    const isActive = pathname === route.route
+                    return (
+                      <Link
+                        key={route.route}
+                        href={route.route}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={cn(
+                          "flex items-center gap-3 border-b border-white/5 py-3 text-sm font-semibold transition-colors",
+                          isActive ? "text-white" : "text-white/50"
+                        )}
+                      >
+                        {isActive && <span className="h-4 w-[2px] rounded-full bg-gradient-to-b from-[--tgt-row-tonic] to-blue-600" />}
+                        <span className="flex w-4 items-center justify-center">{route.logo}</span>
+                        {route.label}
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </>
+    </>
   )
 }

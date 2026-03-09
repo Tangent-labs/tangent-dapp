@@ -8,8 +8,8 @@ export const getUserBalances = async (currentAddress: Address) => {
   const tokenMap: Record<string, string> = {
     [USG_CONTRACT.USG.toLowerCase()]: "USG",
     [USG_CONTRACT.SUSG.toLowerCase()]: "sUSG",
-    [VSTAN_CONTRACT.TAN.toLowerCase()]: "TAN",
-    [VSTAN_CONTRACT.STAN.toLowerCase()]: "sTAN",
+    // [VSTAN_CONTRACT.TAN.toLowerCase()]: "TAN",
+    // [VSTAN_CONTRACT.STAN.toLowerCase()]: "sTAN",
   }
 
   const addresses = Object.keys(tokenMap)

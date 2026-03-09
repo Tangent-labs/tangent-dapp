@@ -42,7 +42,7 @@ export const Button = ({ label, state = "active", className, disabled, children,
   return (
     <div
       className={cn(
-        "relative inline-flex w-full rounded-[11px] p-[1px]",
+        "relative inline-flex w-full rounded-[11px]",
         state === "active" ? "bg-gradient-to-b from-[rgba(0,194,255,0.5)] to-[#00c2ff00]" : "",
         state === "disabled" ? "from-[rgba(104, 104, 104, 0.5)] to-[rgba(104, 104, 104, 0)] bg-gradient-to-b" : "",
         className

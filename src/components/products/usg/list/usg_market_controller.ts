@@ -211,6 +211,7 @@ export const protocolOptions = [
   { label: "Convex", value: "Convex" },
   { label: "Pendle", value: "Pendle" },
   { label: "Stake DAO", value: "Stake DAO" },
+  { label: "f(x) Protocol", value: "f(x) Protocol" },
 ]
 
 export const USGMarketModalListHeaders: ListHeaderData[] = [

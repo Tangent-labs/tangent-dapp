@@ -72,8 +72,8 @@ export default function MenuBarFeature() {
     {
       baseLabel: "DAO",
       routes: [
-        { route: "/snapshot", label: "Snapshot", logo: <IconSnapshot className="w-3" /> },
-        { route: "/forum", label: "Forum", logo: <IconForum className="w-3" /> },
+        { route: "https://snapshot.box/#/s:tangent-finance.eth", label: "Snapshot", logo: <IconSnapshot className="w-3" />, external: true },
+        { route: "https://tangentfinance.discourse.group/latest", label: "Forum", logo: <IconForum className="w-3" />, external: true },
         { route: "/harvest", label: "Harvest", logo: <IconHarvest className="w-2" /> },
       ],
     },
@@ -100,7 +100,7 @@ export default function MenuBarFeature() {
       <header
         ref={headerRef}
         className={cn(
-          "sticky top-0 z-50 mb-4 flex w-full pt-1 font-gilroy backdrop-blur-[60px]",
+          "sticky top-0 z-50 mb-4 flex w-full py-2 font-gilroy backdrop-blur-[60px]",
           "transition-transform duration-300 ease-out",
           isHeaderVisible || mobileMenuOpen ? "translate-y-0" : "-translate-y-full"
         )}
@@ -121,7 +121,7 @@ export default function MenuBarFeature() {
                     .filter((r) => !r.mobileOnly)
                     .map((route) => {
                       return (
-                        <Link key={route.route} href={route.route} className="group/link relative pb-1">
+                        <Link key={route.route} href={route.route} rel="noopener noreferrer" className="group/link relative pb-1">
                           <NavigationMenuItem
                             className={cn(
                               "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-[--tgt-subtitle] transition-colors hover:bg-white/10",
@@ -157,7 +157,12 @@ export default function MenuBarFeature() {
                             <div className="flex w-[120px] flex-col gap-1 rounded-[10px] border border-white/10 bg-dark p-2">
                               {dropdown.routes.map((route) => (
                                 <NavigationMenuLink key={route.label} asChild>
-                                  <Link href={route.route} className="flex items-center justify-start gap-2">
+                                  <Link
+                                    href={route.route}
+                                    target={route.external ? "_blank" : ""}
+                                    rel="noopener noreferrer"
+                                    className="flex items-center justify-start gap-2"
+                                  >
                                     {route.logo}
                                     {route.label}
                                   </Link>
@@ -174,7 +179,7 @@ export default function MenuBarFeature() {
             </div>
 
             <div className="flex w-full items-center justify-end gap-3">
-              <ReliefCard className="hidden items-center justify-center px-1 py-1.5 text-xs xl:flex">
+              <ReliefCard className="hidden items-center justify-center px-1 py-2.5 text-xs xl:flex">
                 <span className="border-r border-white/30 px-2">TVL: ${formatCompact(protocolCurrentTVL?.total)}</span>
                 <span className="flex items-center justify-center gap-2 border-r border-white/30 px-2">
                   <TokenImage token="USG" size={20} />
@@ -188,7 +193,7 @@ export default function MenuBarFeature() {
 
               <SwapButton />
 
-              <WalletConnexionContent classNameChild={"py-[5px] px-1"} />
+              <WalletConnexionContent classNameChild={"py-[9px] px-1"} />
 
               {/* Burger button - mobile only */}
               <button

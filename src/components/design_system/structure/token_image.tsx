@@ -40,7 +40,7 @@ export function TokenImage({ token, size, ...props }: TokenImageProps) {
   const fallbackSrc = "/medias/fallback_token_image.webp"
 
   if (!token) {
-    return <ImageWithFallback {...props} fallback={fallbackSrc} src={fallbackSrc} alt="Token image" width={size} height={size} />
+    return <ImageWithFallback {...props} fallback={fallbackSrc} src={fallbackSrc} alt="Token image" className="w-10" />
   }
 
   const prefix = token

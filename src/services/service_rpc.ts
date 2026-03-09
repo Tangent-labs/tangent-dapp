@@ -37,22 +37,22 @@ const publicClient = createPublicClient({
   }),
 })
 
-// const rpcUrls = [dappConfig.chain.rpc, "https://rpc.ankr.com/eth", "https://ethereum.publicnode.com"]
-
-// export const publicClient = createPublicClient({
-//   chain,
-//   transport: fallback(
-//     rpcUrls.map((url) => http(url)),
-//     {
-//       rank: true,
-//       retryCount: 3,
-//       retryDelay: 200,
-//     }
-//   ),
-// })
+function getRetryClients() {
+  return dappConfig.chain.fallbackRpcs.map(url => {
+    return createPublicClient({
+      chain,
+      transport: http(url, {
+        retryCount: 0,
+        timeout: 30_000,
+      })
+    })
+  })
+}
 
 // Make getPublicClient great again (singleton version)
 export const getPublicClient = () => publicClient
+
+export const getBackupClients = () => getRetryClients()
 
 export const getCurrentBlock = async () => {
   return publicClient.getBlock({ blockTag: "latest" })
@@ -119,7 +119,7 @@ export const executeChainViewUnique = async <T>(abi: Abi, byteCode: Hex, args?: 
   return data?.at(0)
 }
 
-export const executeChainView = async <T>(abi: Abi, byteCode: Hex, args?: unknown[]): Promise<T | undefined> => {
+export const executeChainView = async <T>(abi: Abi, byteCode: Hex, args?: unknown[], retryCount: number = 0): Promise<T | undefined> => {
   function isNestedErrorWithData(error: unknown): error is { cause: { cause: { cause: { data: { data: Hex } } } } } {
     return (
       typeof error === "object" &&
@@ -134,13 +134,18 @@ export const executeChainView = async <T>(abi: Abi, byteCode: Hex, args?: unknow
   }
 
   const txData = getDeployTx(abi, byteCode, args)
-  const client = getPublicClient()
+  const client = retryCount === 0 ? getPublicClient() : getBackupClients()[retryCount - 1]
+
   try {
     await client.estimateGas({ data: txData })
   } catch (e: unknown | { cause: { cause: { cause: { data: { data: Hex } } } } }) {
-    if (!isNestedErrorWithData(e)) throw e
+    if (!isNestedErrorWithData(e)) {
+      return executeChainView(abi, byteCode, args, retryCount + 1)
+    }
     const dataRaw = e.cause.cause.cause.data.data
-    if (!dataRaw) throw e
+    if (!dataRaw) {
+      return executeChainView(abi, byteCode, args, retryCount + 1)
+    }
     const v = decodeErrorResult({
       abi,
       data: dataRaw,

@@ -311,31 +311,30 @@ export function USGMarketListInner() {
             {item.indicators.map((indicator, index) => (
               <Fragment key={indicator.key}>
                 {indicator?.key === "borrowed" ? (
-                  <div
-                    key={indicator.key}
-                    style={{ fontWeight: 300 }}
-                    className={cn("hidden basis-[48%] flex-col items-center text-xl leading-5 md:flex-1 xl:block")}
-                  >
+                  <div key={indicator.key} style={{ fontWeight: 300 }} className={cn("hidden basis-[48%] flex-col items-center leading-5 md:flex-1 xl:block")}>
                     <span className="flex flex-col items-center justify-center">
+                      {/* MOBILE CARD LABEL  */}
                       <span className={cn("flex text-sm text-subtitle md:text-xl xl:hidden")}>{indicator?.label}</span>
-                      <span className="text-xs md:text-lg">{indicator?.value}</span>
-                      <span className="hidden text-xs text-subtitle md:flex md:text-xs">/{formatNumber(indicator?.raw, 0)}</span>
+
+                      {/* VALUE TOP  */}
+                      <span className="text-xs md:text-[15px]">{indicator?.value}</span>
+                      {/* VALUE DOWN */}
+                      <span className="hidden text-xs text-subtitle md:flex md:text-[10px]">/{formatNumber(indicator?.raw, 0)}</span>
                     </span>
                   </div>
                 ) : (
                   <div
                     key={indicator.key}
                     style={{ fontWeight: 300 }}
-                    className={cn(
-                      "flex w-full basis-[48%] flex-col items-center justify-between text-xl leading-5 md:flex-1",
-                      index >= 2 ? "hidden xl:block" : ""
-                    )}
+                    className={cn("flex w-full basis-[48%] flex-col items-center justify-between leading-5 md:flex-1", index >= 2 ? "hidden xl:block" : "")}
                   >
                     <span className="flex w-full items-center justify-between gap-2 xl:justify-center">
+                      {/* MOBILE CARD LABEL  */}
                       <span className={cn("flex text-sm text-subtitle xl:hidden xl:text-xl", indicator?.key === "tvl" ? "uppercase" : "")}>
                         {indicator?.label}
                       </span>
-                      <span className="text-sm xl:text-lg">{indicator?.value}</span>
+                      {/* VALUE  */}
+                      <span className="text-sm md:text-[15px]">{indicator?.value}</span>
                     </span>
                   </div>
                 )}

@@ -24,10 +24,10 @@ export const ListAsset = ({ name, token, marketData, className = "" }: ListAsset
       <CustomAssetDisplay token={token} />
 
       <div className="flex h-6 flex-row items-center justify-center md:h-12 md:flex-col md:items-start">
+        <span className="text-sm font-semibold md:text-[18px]">{name?.replaceAll("-", "/")}</span>
+
         {!!marketData ? (
           <>
-            <span className="text-sm font-semibold md:text-xl">{name?.replaceAll("-", "/")}</span>
-
             <div className="ml-2 flex items-center justify-center gap-1 md:ml-0 xl:gap-2">
               {marketData?.marketType?.includes("CRV") && <TokenImageHighlighted token="CRV" size={24} />}
               {marketData?.marketType?.startsWith("Convex_") && <TokenImageHighlighted token="CVX" size={24} />}
@@ -39,9 +39,7 @@ export const ListAsset = ({ name, token, marketData, className = "" }: ListAsset
             </div>
           </>
         ) : (
-          <>
-            <span className="text-sm font-semibold md:text-xl">{name?.replaceAll("-", "/")}</span>
-          </>
+          <></>
         )}
       </div>
     </div>

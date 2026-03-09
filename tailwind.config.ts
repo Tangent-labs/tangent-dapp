@@ -140,19 +140,24 @@ const config: Config = {
       addUtilities({
         ".hover-lift-row": {
           position: "relative",
-
+          "@apply transition-all duration-150 ease-out": {},
           "&::before": {
             content: '""',
-            "@apply absolute inset-0 -z-10 opacity-70": {},
+            "@apply absolute inset-0 -z-10 opacity-0 transition-opacity duration-150": {},
+            background: "linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.06) 100%)",
+            borderRadius: "inherit",
           },
-
-          "@apply transition-all duration-150 ease-out": {},
-
           "&:hover": {
-            "@apply -translate-y-[1px] cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.08)]": {},
-
+            "@apply cursor-pointer shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]": {},
             "&::before": {
-              "@apply bg-list-row-hover opacity-80": {},
+              "@apply opacity-100": {},
+            },
+          },
+          "&:active": {
+            "@apply scale-[0.997] duration-75": {},
+            "&::before": {
+              background: "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.08) 100%)",
+              "@apply opacity-100": {},
             },
           },
         },

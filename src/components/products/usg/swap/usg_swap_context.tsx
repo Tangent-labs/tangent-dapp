@@ -2,21 +2,23 @@
 
 import { useUSGContext } from "../usg_context"
 import { SwapConfig, swapConfig } from "./swap_config"
-import { getQuote, getRoute } from "../global_quote_controller"
-import { USG_CONTRACT, USGTokens } from "../usg_repository"
+import { truncateDecimals } from "@/lib/number_formatter"
 import { toastTx } from "@/components/design_system/toast"
+import { USG_CONTRACT, USGTokens } from "../usg_repository"
+import { getQuote, getRoute } from "../global_quote_controller"
 import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
-import { Abi, Address, formatUnits, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { Abi, Address, formatUnits, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
 import { computedMinAmountOut, getBalances, getBalancesAndAllowances } from "../record/usg_record_controller"
 import { BalanceAllowanceData, SwapToken, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../usg_type"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./usg_swap_controller"
-import { truncateDecimals } from "@/lib/number_formatter"
 
 type USGSwapContextProps = {
   children: ReactNode
+  tokenIn: string | undefined
+  tokenOut: string | undefined
 }
 
 type USGSwapContextValues = {
@@ -81,7 +83,7 @@ type USGSwapContextValues = {
 
 export const USGSwapContext = createContext<USGSwapContextValues | undefined>(undefined)
 
-export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
+export const USGSwapProvider = ({ children, tokenIn, tokenOut }: USGSwapContextProps) => {
   const { curveRoutes, handleQuote } = useRootContext()
 
   const { tokens, USGsUSGMetrics, lpUserPoints } = useUSGContext()
@@ -115,6 +117,13 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
 
   const [swapData, setSwapData] = useState<SwapConfig | null>(null)
+
+  useEffect(() => {
+    if (tokenIn && tokenOut) {
+      setDepositAsset(tokenIn)
+      setReceiveAsset(tokenOut)
+    }
+  }, [tokenIn, tokenOut])
 
   const receiveAssetInfo = useMemo(() => {
     const tgTokens: SwapToken[] = Object.entries(USGTokens).flatMap(([, tokens]) => {

@@ -28,7 +28,6 @@ export function RecordPageHeader({ apr, indicators, maxLTV }: RecordPageHeaderPr
         title="Collateral vAPR"
         value={`${totalCurrentAPR ? `${totalCurrentAPR?.toFixed(2)}%` : "-"}`}
         subValue={<div className="flex items-center text-xs text-subtitle">{`Proj: ${totalProjectedAPR ? `${totalProjectedAPR?.toFixed(2)}%` : "-"}`}</div>}
-        indicator="vAPR of the collateral."
       />
 
       <RecordPageHeaderIndicator
@@ -37,7 +36,6 @@ export function RecordPageHeader({ apr, indicators, maxLTV }: RecordPageHeaderPr
         subValue={
           <div className="flex items-center text-xs text-subtitle">{`Proj: ${totalProjectedAPR ? `${(totalProjectedAPR * maxLeverage)?.toFixed(2)}%` : "-"}`}</div>
         }
-        indicator="vAPR of the collateral at max leverage."
       />
 
       {indicators?.map((i, index) => (

@@ -1,7 +1,8 @@
-import { Abi, Address, Hex } from "viem"
+import { Abi, Address, Hex, zeroAddress } from "viem"
 import { USG_CONTRACT } from "../usg/usg_repository"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import GetBalancesWithVsTan from "../../../abi/USG/GetBalancesWithVsTan.json"
+// import { VSTAN_CONTRACT } from "../vs_tan/rs_tan_repository"
 
 export const getUserBalances = async (currentAddress: Address) => {
   const tokenMap: Record<string, string> = {
@@ -16,7 +17,7 @@ export const getUserBalances = async (currentAddress: Address) => {
   const balances = await executeChainViewUnique<Array<{ balance: bigint; token: Address }>>(
     GetBalancesWithVsTan.abi as Abi,
     GetBalancesWithVsTan.bytecode as Hex,
-    [currentAddress, addresses, "0x6dECAb8E3fcbf0e38e925aCDB72950F88Fb85F14"]
+    [currentAddress, addresses, zeroAddress]
   )
 
   if (!balances) return []

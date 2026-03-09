@@ -154,10 +154,8 @@ export default function USGStakeContent() {
 
           <Accordion className="w-full" type="single" collapsible>
             <AccordionItem value="item-1">
-              <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary">
-                <AccordionTrigger>
-                  <span className="py-1.5">Recap</span>
-                </AccordionTrigger>
+              <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary hover:bg-panel-hover">
+                <AccordionTrigger>Recap</AccordionTrigger>
 
                 <AccordionContent className="w-full">
                   <div className="flex flex-col gap-1 text-xs">

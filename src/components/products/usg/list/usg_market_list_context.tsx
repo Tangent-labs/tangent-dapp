@@ -115,14 +115,21 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     })
   }, [marketAprs])
 
-  const TYPE_TO_MARKET: Record<string, string> = {
-    Convex_CRV: "Curve",
-    Convex_FXN: "Convex",
-    Pendle_PT: "Pendle",
+  const TYPE_TO_MARKET: Record<string, string[]> = {
+    Convex_CRV: ["Curve", "Convex"],
+    Convex_FXN: ["Convex", "f(x) Protocol"],
+    Pendle_PT: ["Pendle"],
+    STAKEDAO_CRV_Vault: ["Stake DAO"],
   }
 
-  const mapProtocol = (p: string): string => {
-    return TYPE_TO_MARKET[p]
+  const matchProtocol = (marketProtocol: string, selectedProtocol: string) => {
+    if (selectedProtocol === "All") return true
+
+    const mapped = TYPE_TO_MARKET[marketProtocol]
+
+    if (!mapped) return false
+
+    return mapped.includes(selectedProtocol)
   }
 
   const displayRows = useMemo<ListRowData[]>(() => {
@@ -130,7 +137,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
 
     const filteredRows = allRows
       .filter((market) => marketType === "All" || market.type === marketType)
-      .filter((market) => protocol === "All" || mapProtocol(market.protocol) === protocol)
+      .filter((market) => matchProtocol(market.protocol, protocol))
       .filter((row) => filteredBy === "all" || row.userHasDeposited)
 
     let rowsToShow = filteredRows
@@ -228,8 +235,8 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
         const comparison = aValue.localeCompare(bValue)
         return direction === "asc" ? comparison : -comparison
       } else if (key === "borrowed") {
-        const aValue = elementA.indicators[2].value
-        const bValue = elementB.indicators[2].value
+        const aValue = Number(elementA.indicators[2].raw)
+        const bValue = Number(elementB.indicators[2].raw)
 
         if (aValue < bValue) return direction === "asc" ? -1 : 1
         if (aValue > bValue) return direction === "asc" ? 1 : -1

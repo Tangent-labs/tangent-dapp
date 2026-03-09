@@ -1,6 +1,6 @@
 import { Address } from "viem"
 import { ListHeaderData } from "@/types"
-import { EarnPoolsData, EarnProtocolInput, StakeDaoAPRData } from "../usg_type"
+import { EarnPoolsData, EarnProtocolInput, StakeDaoAPRData, USGMarketType } from "../usg_type"
 
 export type APROpportunitiesData = {
   protocol: string
@@ -53,6 +53,7 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
       const projectedAPRDetails = { APY: currentPool?.pendleBaseAPY }
 
       return {
+        marketType: t?.marketType as USGMarketType,
         name: t.name,
         asset: t.asset,
         link: t.link,
@@ -78,6 +79,7 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
       const projectedAPRDetails = { APY: currentPool?.gaugeFutureCrvApy?.[0], CRV: currentPool?.gaugeFutureCrvApy?.[1] }
 
       return {
+        marketType: t?.marketType as USGMarketType,
         name: t.name,
         asset: t.asset,
         link: t.link,

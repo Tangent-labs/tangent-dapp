@@ -182,7 +182,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
    */
   const loadDataAfterApprove = useCallback((assetAddress: Address, isZap = false) => {
     const now = Date.now()
-    if (now - lastApproveRef.current < 3000) {
+    if (now - lastApproveRef.current < 6000) {
       return
     }
 
@@ -202,7 +202,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
    */
   const resetAfterDepositSuccess = useCallback(() => {
     const now = Date.now()
-    if (now - lastDepositRef.current < 3000) {
+    if (now - lastDepositRef.current < 6000) {
       return
     }
 

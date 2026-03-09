@@ -90,6 +90,10 @@ type USGLeverageContextValues = {
   handleLeverageSliderChange: (arg: number) => void
 
   handleBorrowChange: (arg: bigint | undefined) => Promise<void>
+
+  sliderLegendValues?: string[] | undefined
+
+  startEndRange?: [string, string, string] | undefined
 }
 
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
@@ -354,6 +358,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
         success: () => {
           loadOnChainData()
+          setIsDepositLoading(false)
           return { type: "Success", content: `${depositAssetInfo?.symbol} approved successfully.` }
         },
       })
@@ -610,7 +615,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }, [currentAddress, depositAssetInfo, balanceAllowanceData, isZapping])
 
   const computedMaxLeverage = useMemo(() => {
-    return marketData ? `Max leverage: x${Number((1 / (1 - Number(marketData?.constants.maxLTV) / 100000)).toFixed(0))}` : ""
+    return marketData ? `Max leverage: x${Math.floor(Number(1 / (1 - Number(marketData?.constants.maxLTV) / 100000)))}` : ""
   }, [marketData])
 
   const computedDepositAmount = useMemo(() => {
@@ -630,6 +635,24 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
     return 0n
   }, [zapValue, depositWeiValue, isDepositDisabled, isLeverageAllPosition, marketData])
+
+  const sliderLegendValues = useMemo(() => {
+    const ltv = Number(marketData?.constants?.maxLTV) / 100000
+    const maxLeverageRaw = 1 / (1 - ltv)
+
+    const maxLeverageSafe = Math.floor(maxLeverageRaw)
+
+    return Array.from({ length: maxLeverageSafe }, (_, i) => String(i + 1))
+  }, [marketData?.constants])
+
+  const startEndRange = useMemo(() => {
+    const ltv = Number(marketData?.constants?.maxLTV) / 100000
+    const maxLeverageRaw = 1 / (1 - ltv)
+
+    const maxDisplayed = Math.floor(maxLeverageRaw)
+
+    return ["1", String(maxDisplayed), "0.1"] as [string, string, string]
+  }, [marketData?.constants])
 
   const contextValue: USGLeverageContextValues = {
     collateralInfo,
@@ -699,6 +722,10 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     isZapping,
     handleLeverageSliderChange,
     handleBorrowChange,
+
+    sliderLegendValues,
+
+    startEndRange,
   }
 
   return <USGLeverageContext.Provider value={contextValue}>{children}</USGLeverageContext.Provider>

@@ -79,7 +79,7 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
   useEffect(() => {
     if (isWalletInitialized) {
       loadUSGsUSGMetrics()
-      loadTanSTANMetrics()
+      // loadTanSTANMetrics()
       refetchPoints()
     }
   }, [isWalletInitialized])
@@ -90,7 +90,7 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
   useEffect(() => {
     if (isWalletInitialized && USGsUSGMetrics) {
       loadUSGsUSGMetrics()
-      loadTanSTANMetrics()
+      // loadTanSTANMetrics()
     }
   }, [currentAddress])
 

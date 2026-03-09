@@ -12,7 +12,7 @@ const config: Config = {
   theme: {
     extend: {
       screens: {
-        'md-lg': '930px',
+        "md-lg": "930px",
       },
       fontFamily: {
         gilroy: ["var(--font-gilroy)", "sans-serif"],
@@ -50,6 +50,7 @@ const config: Config = {
         "dash-wts": "var(--tgt-dash-wts)",
         "dash-susg": "var(--tgt-dash-susg)",
 
+        "panel-hover": "var(--tgt-bg-panel-hover)",
         "overlay-panel": "var(--tgt-bg-overlay-panel)",
         "panel-disabled": "var(--tgt-bg-panel-disabled)",
         tonic: "var(--tgt-tonic)",

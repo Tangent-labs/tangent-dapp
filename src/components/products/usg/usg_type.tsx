@@ -77,6 +77,7 @@ export type ClaimAsset = {
 }
 
 export type ClaimData = {
+  marketType: USGMarketType | undefined
   marketAddress: Address
   marketName: string
   claimable: ClaimAsset[]
@@ -349,9 +350,11 @@ export type EarnProtocolInput = {
   actionLabel: string
   points: number
   address: string
+  marketType: string
 }
 
 export type AprOpportunityItem = {
+  marketType: USGMarketType
   name: string
   asset: string
   link: string

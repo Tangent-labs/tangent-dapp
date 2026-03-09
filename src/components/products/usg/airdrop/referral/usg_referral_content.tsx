@@ -35,8 +35,8 @@ export const UsgReferralCode = () => {
             <Image height={140} width={140} src="/medias/logos/referral.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           </div>
           <div className="flex flex-col items-start justify-center gap-3 px-6">
-            <span className="text-4xl font-semibold">Referral</span>
-            <p className="text-[15px]">Refer a friend, both get bonus points to supercharge your rewards.</p>
+            <span className="text-4xl font-semibold">Referral & leaderboard</span>
+            <p className="text-[15px]">Refer your friends and earn 10% of their points.</p>
           </div>
         </ReliefCard>
 

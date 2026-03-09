@@ -1,12 +1,11 @@
-import { CustomAssetDisplay } from "@/components/design_system/list/custom_asset_display"
-import { ListRow } from "@/components/design_system/list/list_row"
 import { cn } from "@/lib/utils"
-import Link from "next/link"
-import { protocolConfig, ProtocolName } from "../usg_earn_controller"
 import { ExistingAsset } from "@/types"
+import { AprOpportunityItem } from "../../usg_type"
+import { ListRow } from "@/components/design_system/list/list_row"
+import { protocolConfig, ProtocolName } from "../usg_earn_controller"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { MarketListAPR } from "@/components/design_system/list/market_list_apr"
-import { AprOpportunityItem } from "../../usg_type"
+import { CustomAssetDisplay } from "@/components/design_system/list/custom_asset_display"
 
 type AprOpportunityProps = {
   item: AprOpportunityItem
@@ -22,15 +21,6 @@ export const AprOpportunity = ({ item, index, isLoading }: AprOpportunityProps) 
 
         <div className="flex flex-row items-center justify-center md:flex-col md:items-start">
           <span className="text-sm font-semibold md:text-xl">{item?.asset?.replaceAll("-", "/")}</span>
-
-          <Link
-            className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-2 py-1 text-sm"
-            href={item?.link}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Zap
-          </Link>
         </div>
       </div>
 
@@ -48,6 +38,7 @@ export const AprOpportunity = ({ item, index, isLoading }: AprOpportunityProps) 
       <div className="flex w-full items-center gap-2">
         <div className="flex w-1/2 items-center justify-center gap-2">
           <MarketListAPR
+            marketType={item?.marketType}
             poolName={item?.asset}
             rewardToken={item?.rewardToken}
             maxLeverage={1}

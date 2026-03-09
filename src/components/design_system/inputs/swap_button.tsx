@@ -8,7 +8,7 @@ export const SwapButton = () => {
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   return (
-    <Link className="hidden lg:flex" href="/swap">
+    <Link className="md-lg:flex hidden" href="/swap">
       <div className="overflow-hidden rounded-[10px]">
         <button
           ref={buttonRef}

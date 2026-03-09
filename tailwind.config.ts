@@ -11,6 +11,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        'md-lg': '930px',
+      },
       fontFamily: {
         gilroy: ["var(--font-gilroy)", "sans-serif"],
       },

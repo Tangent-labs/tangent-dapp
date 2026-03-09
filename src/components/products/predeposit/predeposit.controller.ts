@@ -9,6 +9,7 @@ export const TOTAL_DEPOSIT_CAP = 10_000_000n
 
 export const getFormState = (
   depositValue: bigint | undefined,
+  quotedValue: bigint | undefined,
   balanceAllowance: {
     balance: bigint
     allowance: bigint
@@ -24,8 +25,10 @@ export const getFormState = (
     return { canProcess: false, cantProcessReasons: reasons, haveToApprove: false }
   }
 
-  if (!!depositValue && depositValue > balanceAllowance?.balance) {
-    reasons.push("Balance too low")
+  if (!!quotedValue && quotedValue < (99n * depositValue) / 100n) {
+    reasons.push("Slippage is too high")
+  } else if (!!depositValue && depositValue > balanceAllowance?.balance) {
+    reasons.push("Your balance is too low")
   } else if (currentlyDeposited + depositValue > totalCap) {
     reasons.push("Deposit exceeds total cap")
   }

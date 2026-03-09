@@ -15,9 +15,11 @@ export function RecordPageHeader({ apr, indicators, maxLTV }: RecordPageHeaderPr
   let totalCurrentAPR = 0
   let totalProjectedAPR = 0
 
+  const hasZeroApr = !!apr?.currentAPR && Object.values(apr?.currentAPR)?.some((v) => Number(v) === 0)
+
   if (apr && apr?.currentAPR && apr?.projectedAPR) {
-    totalCurrentAPR = Object.values(apr?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
     totalProjectedAPR = Object.values(apr?.projectedAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
+    totalCurrentAPR = hasZeroApr ? totalProjectedAPR : (Object.values(apr?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number)
   }
 
   const maxLeverage = 1 / (1 - maxLTV)

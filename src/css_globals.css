@@ -175,3 +175,9 @@ input[type="range"]::-moz-range-thumb {
     max-width: 1536px;
   }
 }
+
+/* Hack to keep the little blue line under the NavBarItem Dropwdown when the corresponding dropdown is hovered */
+.group\/trigger:has([data-state="open"]) > span {
+  transform-origin: left;
+  transform: scaleX(1);
+}

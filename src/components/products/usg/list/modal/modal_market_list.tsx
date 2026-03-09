@@ -103,6 +103,7 @@ export function USGModalMarketListInner() {
             <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} />
 
             <MarketListAPR
+              marketType={marketData.find((el) => el.marketAddress === item.address)?.marketType}
               poolName={item?.name}
               rewardToken={item?.rewardToken}
               maxLeverage={1}

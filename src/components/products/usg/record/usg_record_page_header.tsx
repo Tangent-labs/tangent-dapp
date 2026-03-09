@@ -25,13 +25,17 @@ export default function USGRecordPageHeader() {
                 { key: "TVL", value: marketDisplayData?.tvlDollar },
                 { key: "Borrowed", value: marketDisplayData?.borrowed },
                 { key: "Cap", value: marketDisplayData?.cap },
-                { key: "Available", value: marketDisplayData?.available },
               ].map((item, index) => (
                 <div className="text-center" key={index}>
                   <div className="text-center text-xs text-subtitle">{item.key}</div>
                   <div className="mt-1 text-center text-sm font-semibold">{item.value}</div>
                 </div>
               ))}
+
+              <div className="hidden text-center xl:flex xl:flex-col">
+                <div className="text-center text-xs text-subtitle">Available</div>
+                <div className="mt-1 text-center text-sm font-semibold">{marketDisplayData?.available}</div>
+              </div>
             </div>
           </div>
         </NeonLightCard>

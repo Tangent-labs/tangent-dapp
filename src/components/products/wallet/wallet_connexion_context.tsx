@@ -2,12 +2,12 @@
 
 import { dappConfig } from "@/dapp_config"
 import { chain } from "@/services/service_rpc"
+import { registerUser } from "./register_user"
 import { WalletState } from "@web3-onboard/core"
 import web3Onboard from "@/services/config_wallet_provider"
 import { getUserBalances } from "./wallet_connexion_controller"
 import { Address, createWalletClient, custom, toHex, WalletClient } from "viem"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { registerUser } from "./register_user"
 
 export type Account = {
   address: Address

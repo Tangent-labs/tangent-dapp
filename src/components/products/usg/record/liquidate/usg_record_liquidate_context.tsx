@@ -1,19 +1,18 @@
 "use client"
 
-import { AssetDataPriced, FormState } from "@/types"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { useUSGRecordContext } from "../usg_record_context"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doMarketLiquidate, getLiquidateFormState } from "./usg_record_liquidate_controller"
-import { USG_CONTRACT } from "../../usg_repository"
-import { getQuote, getRoute } from "../../global_quote_controller"
-import { toast } from "react-toastify"
-import { ToastComponent } from "@/components/design_system/toast"
 import { maxUint256 } from "viem"
 import { useUSGContext } from "../../usg_context"
-import { useRootContext } from "@/components/products/root/root_context"
+import { USG_CONTRACT } from "../../usg_repository"
+import { AssetDataPriced, FormState } from "@/types"
 import { formatBigInt } from "@/lib/number_formatter"
+import { toastTx } from "@/components/design_system/toast"
+import { useUSGRecordContext } from "../usg_record_context"
 import { computedMinAmountOut } from "../usg_record_controller"
+import { getQuote, getRoute } from "../../global_quote_controller"
+import { useRootContext } from "@/components/products/root/root_context"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { doMarketLiquidate, getLiquidateFormState } from "./usg_record_liquidate_controller"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 type USGLiquidateContextProps = {
   children: ReactNode
@@ -49,6 +48,8 @@ type USGLiquidateContextValues = {
   handleLiquidateValueChange: (arg: bigint | undefined) => void
 
   maxLiquidateString: string
+
+  isLiquidationLoading: boolean
 }
 
 export const USGLiquidateContext = createContext<USGLiquidateContextValues | undefined>(undefined)
@@ -65,6 +66,8 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   const [slippage, setSlippage] = useState<number>(0.2)
 
   const [isQuoteLoading, setIsQuoteLoading] = useState<boolean>(false)
+
+  const [isLiquidationLoading, setIsLiquidationLoading] = useState<boolean>(false)
 
   const [liquidateWeiValue, setLiquidateWeiValue] = useState<bigint | undefined>()
   const [liquidablePercentage, setLiquidablePercentage] = useState<number>(0)
@@ -89,6 +92,8 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   }, [liquidateWeiValue, repayWeiValue])
 
   const actionLiquidate = async () => {
+    setIsLiquidationLoading(true)
+
     if (walletClient && liquidateWeiValue && currentAddress && USGReceivedValue && marketData) {
       let repayValue = repayWeiValue || 0n
 
@@ -109,29 +114,37 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         curveRoutes
       )
 
-      doMarketLiquidate(
-        liquidateWeiValue,
-        repayValue,
-        maxUSGToBurn,
-        computedMinAmountOut(USGReceivedValue, slippage),
-        false,
-        liquidationData!,
-        walletClient,
-        marketInfo?.marketAddress
+      await toastTx(
+        doMarketLiquidate(
+          liquidateWeiValue,
+          repayValue,
+          maxUSGToBurn,
+          computedMinAmountOut(USGReceivedValue, slippage),
+          false,
+          liquidationData!,
+          walletClient,
+          marketInfo?.marketAddress
+        ),
+        {
+          pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+          success: () => {
+            loadUSGsUSGMetrics()
+            loadOnChainData()
+            setLiquidateWeiValue(undefined)
+            setLiquidablePercentage(0)
+            setRepayWeiValue(undefined)
+            setUSGReceivedValue(undefined)
+
+            setIsLiquidationLoading(false)
+
+            return { type: "Success", content: "Liquidation successful." }
+          },
+          error: () => {
+            setIsLiquidationLoading(false)
+            return { type: "Error", content: "Something wrong happened." }
+          },
+        }
       )
-        .then(() => {
-          toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
-          loadUSGsUSGMetrics()
-          loadOnChainData()
-          setLiquidateWeiValue(undefined)
-          setLiquidablePercentage(0)
-          setRepayWeiValue(undefined)
-          setUSGReceivedValue(undefined)
-        })
-        .catch((e) => {
-          console.error(e)
-          toast.error(ToastComponent, { data: { type: "Error", content: "Something wrong happened" } })
-        })
     }
   }
 
@@ -219,6 +232,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     slippage,
     setSlippage,
     maxLiquidateString,
+    isLiquidationLoading,
   }
 
   return <USGLiquidateContext.Provider value={contextValue}>{children}</USGLiquidateContext.Provider>

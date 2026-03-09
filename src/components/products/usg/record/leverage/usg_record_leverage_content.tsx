@@ -49,6 +49,8 @@ export default function USGLeverageContent() {
     computedMaxLeverage,
     aprVariation,
     isZapping,
+    sliderLegendValues,
+    startEndRange,
   } = useUSGLeverageContext()
 
   const { connect } = useWalletConnexionContext()
@@ -122,8 +124,8 @@ export default function USGLeverageContent() {
             sliderParams={{
               sliderPercentage: leveragePercentage,
               setSliderPercentage: (e) => handleLeverageSliderChange(e),
-              sliderLegendValues: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"], // TODO Need to be dynamic
-              startEndRange: ["1", "10", "0.1"], // NeedTODO  to be dynamic
+              sliderLegendValues,
+              startEndRange,
               unit: "x",
             }}
           />
@@ -147,10 +149,9 @@ export default function USGLeverageContent() {
         <div className="flex items-start justify-start gap-2">
           <Accordion className={cn("w-full", isDepositLoading ? "shimmer rounded-[10px]" : "")} type="single" collapsible>
             <AccordionItem value="item-1">
-              <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary">
-                <AccordionTrigger>
-                  <span className="py-1.5">Recap</span>
-                </AccordionTrigger>
+              <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary hover:bg-panel-hover">
+                <AccordionTrigger>Recap</AccordionTrigger>
+
                 <AccordionContent className="w-full">
                   <div className="flex flex-col gap-1 rounded-[10px] text-xs">
                     <div className="flex w-full items-center justify-between">

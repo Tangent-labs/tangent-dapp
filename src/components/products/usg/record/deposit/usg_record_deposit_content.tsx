@@ -135,10 +135,8 @@ export default function USGDepositContent() {
       <div className="flex items-start justify-between gap-2">
         <Accordion className="w-full" type="single" collapsible>
           <AccordionItem value="item-1">
-            <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary">
-              <AccordionTrigger>
-                <span className="py-1.5">Recap</span>
-              </AccordionTrigger>
+            <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary hover:bg-panel-hover">
+              <AccordionTrigger>Recap</AccordionTrigger>
 
               <AccordionContent className="w-full">
                 <div className={cn("flex flex-col gap-1 rounded-[10px] text-xs", isDepositLoading ? "shimmer" : "")}>

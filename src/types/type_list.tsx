@@ -1,5 +1,6 @@
 import { Address } from "viem"
 import { ExistingAsset } from "."
+import { USGMarketType } from "@/components/products/usg/usg_type"
 
 export type SortedState = "asc" | "desc" | "none"
 
@@ -22,6 +23,7 @@ export type ListHeaderData = {
 
 export type ListRowData = {
   token: ExistingAsset
+  marketType: USGMarketType
   name: string
   address: Address
   apr: {
@@ -41,6 +43,7 @@ export type ListRowData = {
     key: string
     label: string
     value: string
+    subValue?: string
     raw?: number // Raw numerical value for calculations
   }[]
   userHasDeposited: boolean

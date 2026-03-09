@@ -4,7 +4,7 @@ import { executeChainViewUnique } from "@/services/service_rpc"
 import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
 import { USG_CONTRACT, USGMarkets, USGPegKeepers } from "../usg_repository"
 import { formatBigInt, formatMarketListCompact, formatDollar, formatNumber } from "@/lib/number_formatter"
-import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, USGGlobalData } from "../usg_type"
+import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, USGGlobalData, USGMarketType } from "../usg_type"
 
 export const getUSGMarketsData = async (address: string) => {
   const markets = USGMarkets.map((market) => market.marketAddress)
@@ -112,7 +112,10 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
 
   const maxBorrowable = onChainRow?.constants?.maxMarketDebt?.toString() || "0"
 
+  const marketType = onChainRow?.marketType as USGMarketType
+
   return {
+    marketType,
     token: data.collateral as ExistingAsset,
     protocol,
     type,
@@ -120,7 +123,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
     address: data.marketAddress as Address,
     apr: {
       current: Number(totalCurrentAPR),
-      projected: protocol === "Pendle_PT" ? undefined : Number(totalProjectedAPR),
+      projected: protocol === "Pendle_PT" ? Number(totalCurrentAPR) : Number(totalProjectedAPR),
     },
     maxLTV,
     maxBorrowable,
@@ -148,7 +151,8 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
         key: "borrowed",
         label: "Borrowed",
         value: formatMarketListCompact(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18)).substring(1, 9) || "-",
-        raw: Number(formatUnits(onChainRow?.constants?.maxMarketDebt || 0n, 18)),
+        subValue: formatNumber(Number(formatUnits(onChainRow?.constants?.maxMarketDebt || 0n, 18)), 0) || "-",
+        raw: Number(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18)),
       },
     ],
     userHasDeposited: !!onChainRow?.collateralInfos?.positionCollateralUSDValue && onChainRow?.collateralInfos?.positionCollateralUSDValue > 0n,
@@ -176,13 +180,11 @@ export const USGListHeaders: ListHeaderData[] = [
   {
     label: "vAPR",
     key: "vapr",
-    indicator: "vAPR of the collateral",
     sort: "sort",
   },
   {
     label: "Max vAPR",
     key: "maxvapr",
-    indicator: "vAPR of the collateral at max leverage",
     sort: "sort",
   },
   {
@@ -206,6 +208,8 @@ export const protocolOptions = [
   { label: "Curve", value: "Curve" },
   { label: "Convex", value: "Convex" },
   { label: "Pendle", value: "Pendle" },
+  { label: "Stake DAO", value: "Stake DAO" },
+  { label: "f(x) Protocol", value: "f(x) Protocol" },
 ]
 
 export const USGMarketModalListHeaders: ListHeaderData[] = [

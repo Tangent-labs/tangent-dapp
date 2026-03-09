@@ -58,13 +58,13 @@ export default function UsgTasksContent() {
         <div className="flex w-full flex-col">
           {isConnected && selectedFeature === "Borrow & LP" && (
             <ListProvider customSort={sortLpTasks} _headers={lpListHeaders} _rows={lpTasks} _listState={lpListState}>
-              <LPTasksList></LPTasksList>
+              <LPTasksList />
             </ListProvider>
           )}
 
           {isConnected && selectedFeature === "Vote" && (
             <ListProvider customSort={sortVoteTasks} _headers={voteListHeaders} _rows={voteTasks} _listState={voteListState}>
-              <VoteTasksList></VoteTasksList>
+              <VoteTasksList />
             </ListProvider>
           )}
 

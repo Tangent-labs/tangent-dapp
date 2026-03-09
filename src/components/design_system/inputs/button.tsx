@@ -1,7 +1,7 @@
 "use client"
 
-import { createRippleEffect } from "@/lib/animations"
 import { cn } from "@/lib/utils"
+import { createRippleEffect } from "@/lib/animations"
 import { ButtonHTMLAttributes, useRef, ReactNode, useEffect, useState } from "react"
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {

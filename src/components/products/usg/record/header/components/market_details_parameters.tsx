@@ -15,6 +15,7 @@ export function MarketDetailsParameters() {
   return (
     <ReliefCard className="my-4 hidden h-24 items-center justify-evenly py-2 md:flex">
       <RecordPageHeader
+        maxLTV={Number(marketData?.constants?.maxLTV) / 100000}
         apr={currentMarketApr!}
         indicators={[
           {

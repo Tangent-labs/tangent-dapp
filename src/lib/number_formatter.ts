@@ -134,7 +134,7 @@ export const formatCompact = (value: string | number): string => {
 export const formatMillions = (value: string | number): string => {
   const number = typeof value === "string" ? parseFloat(value) : value
 
-  if (isNaN(number)) return "0"
+  if (number === 0 || isNaN(number)) return "0"
 
   if (number >= 1_000_000) {
     return `${formatNumber(number / 1_000_000, 2).replace(/\.?0+$/, "")}M`

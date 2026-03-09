@@ -101,9 +101,9 @@ export const PredepositFAQ = () => {
       {faq.map((el) => (
         <Accordion key={el.title} className="w-full" type="single" collapsible>
           <AccordionItem value="item-1">
-            <div className="my-1 flex cursor-pointer flex-col rounded-[10px] bg-white bg-opacity-[3%] p-3">
+            <ReliefCard className="my-1 flex cursor-pointer flex-col p-3 hover:bg-panel-hover">
               <AccordionTrigger>
-                <span className="py-1.5 text-start text-sm font-semibold text-white lg:text-xl">{el.title}</span>
+                <span className="text-start text-sm font-semibold text-white lg:text-xl">{el.title}</span>
               </AccordionTrigger>
 
               <AccordionContent className="w-full">
@@ -126,7 +126,7 @@ export const PredepositFAQ = () => {
                   )}
                 </div>
               </AccordionContent>
-            </div>
+            </ReliefCard>
           </AccordionItem>
         </Accordion>
       ))}

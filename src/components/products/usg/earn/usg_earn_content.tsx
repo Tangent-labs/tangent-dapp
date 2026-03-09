@@ -6,7 +6,7 @@ import { useUSGContext } from "../usg_context"
 import { useUSGEarnContext } from "./usg_earn_context"
 import { AprOpportunity } from "./components/EarnList"
 import { aprOpportunitiesListHeaders } from "./usg_earn_controller"
-import { formatBigInt, formatNumber } from "@/lib/number_formatter"
+import { formatBigInt, formatMillions } from "@/lib/number_formatter"
 import { ListHeader } from "@/components/design_system/list/list_header"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
@@ -49,7 +49,7 @@ export const USGEarnContent = () => {
             contents={[
               { key: "USG Balance", value: formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2) },
               { key: "sUSG Balance", value: formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2) },
-              { key: "Your Total Points", value: `${formatNumber(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints, 0)} pts` },
+              { key: "Your Total Points", value: `${formatMillions(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints)} pts` },
             ]}
           ></ThreeCardRowWithMask>
         </div>

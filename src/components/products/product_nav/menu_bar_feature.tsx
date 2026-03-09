@@ -12,22 +12,25 @@ import {
 
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { useCallback, useEffect, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
+import { useEffect, useRef, useState } from "react"
 import { useRootContext } from "../root/root_context"
-import { formatCompact } from "@/lib/number_formatter"
-import { TokenImage } from "@/components/design_system/structure/token_image"
-import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
-import { isOnMarket, mapRouteToFeature } from "./menu_bar_feature_controller"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import { SwapButton } from "@/components/design_system/inputs/swap_button"
-import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
 import { useScrollDirection } from "@/lib/animations"
+import { formatCompact } from "@/lib/number_formatter"
+import { isOnMarket } from "./menu_bar_feature_controller"
+import { SwapButton } from "@/components/design_system/inputs/swap_button"
+import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
+import { TokenImage } from "@/components/design_system/structure/token_image"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTask } from "@/components/icons"
 
 export default function MenuBarFeature() {
   const { USGCurrentSupply, sUSGCurrentAPY, protocolCurrentTVL } = useRootContext()
+
   const isHeaderVisible = useScrollDirection()
+
   const pathname = usePathname()
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -55,10 +58,6 @@ export default function MenuBarFeature() {
       document.body.style.top = ""
     }
   }, [mobileMenuOpen])
-
-  const computedFeature = useCallback(() => {
-    return mapRouteToFeature(pathname.substring(1, pathname.length))
-  }, [pathname])
 
   const routesMenuItem = [
     { route: "/", label: "Markets", condition: (path: string) => isOnMarket(path) },
@@ -121,10 +120,8 @@ export default function MenuBarFeature() {
                   {routesMenuItem
                     .filter((r) => !r.mobileOnly)
                     .map((route) => {
-                      const ref = useRef(null)
-
                       return (
-                        <Link ref={ref} key={route.route} href={route.route} className="group/link relative pb-1">
+                        <Link key={route.route} href={route.route} className="group/link relative pb-1">
                           <NavigationMenuItem
                             className={cn(
                               "relative z-10 rounded-lg px-4 py-2 text-sm font-semibold text-[--tgt-subtitle] transition-colors hover:bg-white/10",

@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, RefObject } from "react"
 
-export function createRippleEffect(e: any, refButton: any) {
+export function createRippleEffect(e: React.MouseEvent<HTMLButtonElement>, refButton: RefObject<HTMLButtonElement | null>) {
   if (!refButton.current) return
 
   const btn = refButton.current

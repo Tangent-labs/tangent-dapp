@@ -111,8 +111,8 @@ export default function USGMarketList() {
 
           <ThreeCardRowWithMask
             contents={[
-              { key: "Your Debt", value: `${formatNumber(Number(formatUnits(userData?.totalUserDebt || 0n, 18)), 0)} USG` },
-              { key: "Your Collateral Deposits", value: `${formatDollar(Number(formatUnits(userData?.totalUserDeposit || 0n, 18)), 0)} ` },
+              { key: "Your Debt", value: `${formatMillions(Number(formatUnits(userData?.totalUserDebt || 0n, 18)))} USG` },
+              { key: "Your Collateral Deposits", value: `$${formatMillions(Number(formatUnits(userData?.totalUserDeposit || 0n, 18)))} ` },
               {
                 key: "Your Total Points",
                 value: (
@@ -155,7 +155,7 @@ export default function USGMarketList() {
                   <div className="flex flex-1 items-center justify-center gap-10 xl:gap-10">
                     {[
                       { key: "USG", value: formatDollar(globalData.USGPrice, 4) },
-                      { key: "Supply", value: globalData.USGSupply },
+                      { key: "Supply", value: formatMillions(globalData.USGSupply) },
                     ].map((item, index) => (
                       <div className="text-center" key={index}>
                         <div className="text-center text-xs text-subtitle">{item.key}</div>
@@ -179,7 +179,7 @@ export default function USGMarketList() {
                     </div>
                     <div className="text-center">
                       <div className="text-xs text-subtitle">Supply</div>
-                      <div className="text-sm font-semibold">{globalData.sUSGSupply}</div>
+                      <div className="text-sm font-semibold">{formatMillions(globalData.sUSGSupply)}</div>
                     </div>
                     <div className="text-center">
                       <div className="text-xs text-subtitle">APY</div>
@@ -206,7 +206,7 @@ export default function USGMarketList() {
 
           <div className="flex w-1/3 flex-col items-center justify-center">
             <div className="whitespace-nowrap text-xs text-subtitle">Global TVL</div>
-            <div className="whitespace-nowrap text-sm font-semibold">{globalData.globalTvl}</div>
+            <div className="whitespace-nowrap text-sm font-semibold">${formatMillions(globalData.globalTvl)}</div>
           </div>
 
           {/* Séparateur */}
@@ -214,7 +214,7 @@ export default function USGMarketList() {
 
           <div className="flex w-1/3 flex-col items-center justify-center">
             <div className="whitespace-nowrap text-xs text-subtitle">Global Debt</div>
-            <div className="whitespace-nowrap text-sm font-semibold">{globalData.globalDebt}</div>
+            <div className="whitespace-nowrap text-sm font-semibold">{formatMillions(globalData.globalDebt)} USG</div>
           </div>
         </ReliefCard>
       </div>

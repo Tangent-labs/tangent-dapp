@@ -58,8 +58,8 @@ export function transformGlobalData(data?: ChainViewMarketList): USGGlobalData {
     sUSGPrice: formatDollar(formatBigInt(data?.sUSGPrice || "0", 18, 2), 4),
     sUSGSupply: formatBigInt(data?.sUSGSupply || "0", 18, 0),
     globalCr: totalDebt !== 0n ? formatNumber((Number(totalTVL) / Number(totalDebt)) * 100, 2) + "%" : "N/A",
-    globalTvl: formatDollar(formatUnits(totalTVL, 18), 0),
-    globalDebt: formatNumber(Number(formatUnits(totalDebt, 18)), 0) + " USG",
+    globalTvl: formatUnits(totalTVL, 18),
+    globalDebt: formatUnits(totalDebt, 18),
   }
 }
 
@@ -82,13 +82,16 @@ export function getRewardTokenFromAprDetails(aprDetails: RewardsApr, protocol: s
   if (protocol === "Pendle_PT") {
     return "APY"
   } else {
-    const tokens = Object.keys(aprDetails).filter((k) => !IGNORED_KEYS.has(k))
+    if (aprDetails) {
+      const tokens = Object.keys(aprDetails).filter((k) => !IGNORED_KEYS.has(k))
 
-    const specialToken = tokens.find((t) => !BASE_TOKENS.has(t))
-    if (specialToken) return specialToken
+      const specialToken = tokens.find((t) => !BASE_TOKENS.has(t))
+      if (specialToken) return specialToken
 
-    if (tokens.includes("FXN")) return "FXN"
+      if (tokens.includes("FXN")) return "FXN"
 
+      return "CRV"
+    }
     return "CRV"
   }
 }

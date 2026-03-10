@@ -216,7 +216,7 @@ export function getMarketDisplayData(usgPrice: number, marketData?: MarketDetail
   return {
     ...loanData,
     tvl: formatNumber(Number(formatEther(BigInt(marketData?.collateralInfos?.totalCollateralAmount || 0n))), 0),
-    tvlDollar: formatDollar(Number(formatEther(BigInt(marketData?.collateralInfos?.totalCollateralUSDValue || 0n))), 0),
+    tvlDollar: formatEther(BigInt(marketData?.collateralInfos?.totalCollateralUSDValue || 0n)),
     borrowed: formatNumber(Number(formatEther(BigInt(marketData?.debtInfos?.totalDebt || 0n))), 0) + " USG",
     cap: formatNumber(Number(formatEther(BigInt(marketData?.constants.maxMarketDebt || 0n))), 0) + " USG",
     available: formatNumber(Number(formatEther(BigInt(marketData?.constants.maxMarketDebt - marketData?.debtInfos?.totalDebt))), 0) + " USG",

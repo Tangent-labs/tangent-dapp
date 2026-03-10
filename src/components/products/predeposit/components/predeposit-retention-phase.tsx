@@ -72,7 +72,7 @@ export const PredepositRetentionPhase = ({ amount }: PredepositRetentionPhasePro
       </div>
 
       <div className="my-8 flex w-full max-w-[640px] items-center justify-between rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px]">
-        <span className="text-[20px] font-semibold">TAN distributed</span>
+        <span className="text-xl font-semibold">TAN distributed</span>
         <span className="flex items-center justify-center gap-2 text-[30px] font-semibold">
           {formatBigIntAsNumber(tanAllocation, 18, 0)} <TokenImage token="tan" size={12} className="w-8" />
         </span>

@@ -5,6 +5,7 @@ import { useUSGRecordContext } from "./usg_record_context"
 import IndicatorV2 from "@/components/design_system/structure/indicators_v2"
 import { CollateralCard } from "./collat_selection_dropdown/collateral_selection"
 import { NeonLightCard } from "@/components/design_system/structure/neon_light_card"
+import { formatMillions } from "@/lib/number_formatter"
 
 export default function USGRecordPageHeader() {
   const { collateralInfo, marketDisplayData, marketData } = useUSGRecordContext()
@@ -21,21 +22,21 @@ export default function USGRecordPageHeader() {
         >
           <div className="flex h-full items-center gap-2 xl:gap-4">
             <div className="flex w-full items-center justify-between px-6 xl:gap-8">
+              <div className="text-center">
+                <div className="text-center text-xs text-subtitle">TVL</div>
+                <div className="mt-1 text-center text-sm font-semibold">${formatMillions(marketDisplayData?.tvlDollar)} </div>
+              </div>
+
               {[
-                { key: "TVL", value: marketDisplayData?.tvlDollar },
                 { key: "Borrowed", value: marketDisplayData?.borrowed },
                 { key: "Cap", value: marketDisplayData?.cap },
+                { key: "Available", value: marketDisplayData?.available },
               ].map((item, index) => (
                 <div className="text-center" key={index}>
                   <div className="text-center text-xs text-subtitle">{item.key}</div>
-                  <div className="mt-1 text-center text-sm font-semibold">{item.value}</div>
+                  <div className="mt-1 text-center text-sm font-semibold">{formatMillions(item.value)} USG</div>
                 </div>
               ))}
-
-              <div className="hidden text-center xl:flex xl:flex-col">
-                <div className="text-center text-xs text-subtitle">Available</div>
-                <div className="mt-1 text-center text-sm font-semibold">{marketDisplayData?.available}</div>
-              </div>
             </div>
           </div>
         </NeonLightCard>

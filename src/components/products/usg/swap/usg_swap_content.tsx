@@ -135,15 +135,15 @@ export default function USGSwapContent() {
         </ReliefCard>
 
         <div className="flex h-auto w-full flex-col justify-between gap-2 xl:w-1/2">
-          <PointsCampaignLiveCard></PointsCampaignLiveCard>
+          <PointsCampaignLiveCard />
 
           <ThreeCardRowWithMask
             contents={[
-              { key: "USG Balance", value: formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2) },
-              { key: "sUSG Balance", value: formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2) },
+              { key: "USG Balance", value: formatMillions(formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)) },
+              { key: "sUSG Balance", value: formatMillions(formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)) },
               { key: "Your Total Points", value: `${formatMillions(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints)} pts` },
             ]}
-          ></ThreeCardRowWithMask>
+          />
         </div>
       </div>
 

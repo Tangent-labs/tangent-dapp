@@ -5,6 +5,7 @@ import { formatUnits } from "viem"
 import { Switch } from "@/components/ui/switch"
 import { ExistingAsset, ListState } from "@/types"
 import { formatDollar } from "@/lib/number_formatter"
+import { specialTokensList } from "../usg_repository"
 import { useUSGClaimContext } from "./usg_claim_context"
 import { claimListHeaders } from "./usg_claim_controller"
 import { Button } from "@/components/design_system/inputs/button"
@@ -20,7 +21,6 @@ import { ListGradientBorder } from "@/components/design_system/list/list_gradien
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
-import { specialTokensList } from "../usg_repository"
 
 const listeState: ListState = {
   search: undefined,

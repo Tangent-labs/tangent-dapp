@@ -72,7 +72,7 @@ export function USGEarnListInner() {
       <ListHeader headers={headers} />
 
       {displayRows?.map((item, index) => (
-        <AprOpportunity item={item} key={item?.asset} index={index} isLoading={isLoading}></AprOpportunity>
+        <AprOpportunity item={item} key={index} index={index} isLoading={isLoading}></AprOpportunity>
       ))}
     </>
   )

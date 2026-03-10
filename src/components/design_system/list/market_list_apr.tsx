@@ -81,7 +81,8 @@ export const MarketListAPR = ({
                       <TokenImage token={poolName as ExistingAsset} size={24} />
                       {poolName?.replaceAll("-", "/")} Rewards
                     </div>
-                    <StreamTile active={!!currentAPRDetails && Number(currentAPRDetails[rewardToken]) !== 0} />
+                    {/* Display streaming label or not */}
+                    {marketType === "Pendle_PT" ? <></> : <StreamTile active={!!currentAPRDetails && Number(currentAPRDetails[rewardToken]) !== 0} />}
                   </div>
 
                   {marketType === "Pendle_PT" ? (
@@ -103,8 +104,8 @@ export const MarketListAPR = ({
 
                       {currentRewardEntries.length > 0 && (
                         <div className="flex flex-col gap-2 text-subtitle">
-                          {currentRewardEntries.map(([token, value]) => (
-                            <>
+                          {currentRewardEntries.map(([token, value], index) => (
+                            <span key={index}>
                               {!!value && value >= 0.01 ? (
                                 <div className="flex items-center justify-between" key={token}>
                                   <span>{token} APR</span>
@@ -113,7 +114,7 @@ export const MarketListAPR = ({
                               ) : (
                                 <></>
                               )}
-                            </>
+                            </span>
                           ))}
                         </div>
                       )}
@@ -130,8 +131,8 @@ export const MarketListAPR = ({
 
                       {projectedRewardEntries.length > 0 && (
                         <div className="flex flex-col gap-2 text-subtitle">
-                          {projectedRewardEntries.map(([token, value]) => (
-                            <>
+                          {projectedRewardEntries.map(([token, value], index) => (
+                            <span key={index}>
                               {!!value && value >= 0.01 ? (
                                 <div className="flex items-center justify-between" key={token}>
                                   <span>{token} APR</span>
@@ -140,7 +141,7 @@ export const MarketListAPR = ({
                               ) : (
                                 <></>
                               )}
-                            </>
+                            </span>
                           ))}
                         </div>
                       )}

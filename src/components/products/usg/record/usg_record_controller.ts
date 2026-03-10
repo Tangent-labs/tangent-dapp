@@ -8,7 +8,7 @@ import {
   USGMarketLoanDisplayData,
   TotalBorrow,
   ZapToken,
-  MarketAPR,
+  MarketAPRs,
 } from "../usg_type"
 
 import GetBalances from "@/abi/USG/GetBalances.json"
@@ -361,7 +361,7 @@ export const mapToTotalBorrow = (rows: MarketHistoricalData[]): TotalBorrow => {
   }
 }
 
-export const computeAprVariation = (marketAprs: MarketAPR[], currentConvexTVL: bigint, marketData: MarketDetailData, inputValue: bigint) => {
+export const computeAprVariation = (marketAprs: MarketAPRs[], currentConvexTVL: bigint, marketData: MarketDetailData, inputValue: bigint) => {
   let result = { current: "", currentUpdated: "-", projected: "", projectedUpdated: "-" }
 
   const currentMarketApr = marketAprs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase())

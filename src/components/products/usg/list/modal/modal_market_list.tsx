@@ -7,7 +7,7 @@ import { ListAsset } from "@/components/design_system/list/list_asset"
 import { ListHeader } from "@/components/design_system/list/list_header"
 import { useUSGMaketListContext } from "../usg_market_list_context"
 import { InputSearch } from "@/components/design_system/inputs/input_search"
-import { MarketListAPR } from "@/components/design_system/list/market_list_apr"
+import { MarketAPR } from "@/components/design_system/list/market_apr"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { InputSelect } from "@/components/design_system/inputs/input_select"
 import { marketOptions, protocolOptions, USGMarketModalListHeaders } from "../usg_market_controller"
@@ -102,7 +102,7 @@ export function USGModalMarketListInner() {
           >
             <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} />
 
-            <MarketListAPR
+            <MarketAPR
               marketType={marketData.find((el) => el.marketAddress === item.address)?.marketType}
               poolName={item?.name}
               rewardToken={item?.rewardToken}
@@ -111,6 +111,7 @@ export function USGModalMarketListInner() {
               projectedAPRDetails={item.projectedAPRDetails}
               apr={item.apr.current}
               projectedApr={item.apr.projected}
+              isMarketListDisplay={true}
             />
 
             <span className="hidden items-center justify-center gap-2 md:flex">

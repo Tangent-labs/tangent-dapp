@@ -4,8 +4,8 @@ import { AprOpportunityItem } from "../../usg_type"
 import { ListRow } from "@/components/design_system/list/list_row"
 import { protocolConfig, ProtocolName } from "../usg_earn_controller"
 import { TokenImage } from "@/components/design_system/structure/token_image"
-import { MarketListAPR } from "@/components/design_system/list/market_list_apr"
 import { CustomAssetDisplay } from "@/components/design_system/list/custom_asset_display"
+import { MarketAPR } from "@/components/design_system/list/market_apr"
 
 type AprOpportunityProps = {
   item: AprOpportunityItem
@@ -37,7 +37,7 @@ export const AprOpportunity = ({ item, index, isLoading }: AprOpportunityProps) 
 
       <div className="flex w-full items-center gap-2">
         <div className="flex w-1/2 items-center justify-center gap-2">
-          <MarketListAPR
+          <MarketAPR
             marketType={item?.marketType}
             poolName={item?.asset}
             rewardToken={item?.rewardToken}
@@ -46,6 +46,7 @@ export const AprOpportunity = ({ item, index, isLoading }: AprOpportunityProps) 
             projectedAPRDetails={item.projectedAPRDetails}
             apr={item?.currentAPR}
             projectedApr={item?.projectedAPR}
+            isMarketListDisplay={true}
           />
         </div>
 

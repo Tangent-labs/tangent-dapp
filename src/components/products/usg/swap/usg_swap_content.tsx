@@ -8,7 +8,7 @@ import { IconChevron } from "@/components/icons"
 import { DepositReceiveAsset } from "../usg_type"
 import { formatAddress } from "@/lib/other_formatter"
 import { useUSGSwapContext } from "./usg_swap_context"
-import { formatBigInt, formatMillions } from "@/lib/number_formatter"
+import { formatBigInt } from "@/lib/number_formatter"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { TokenImage } from "@/components/design_system/structure/token_image"
@@ -17,7 +17,7 @@ import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-se
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
-import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
+import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
 
 type AssetSelectProps = {
   options: DepositReceiveAsset[]
@@ -137,13 +137,7 @@ export default function USGSwapContent() {
         <div className="flex h-auto w-full flex-col justify-between gap-2 xl:w-1/2">
           <PointsCampaignLiveCard />
 
-          <ThreeCardRowWithMask
-            contents={[
-              { key: "USG Balance", value: formatMillions(formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)) },
-              { key: "sUSG Balance", value: formatMillions(formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)) },
-              { key: "Your Total Points", value: `${formatMillions(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints)} pts` },
-            ]}
-          />
+          <UsgBalanceAndTotalPoints USGsUSGMetrics={USGsUSGMetrics} lpUserPoints={lpUserPoints} voteUserPoints={voteUserPoints} />
         </div>
       </div>
 

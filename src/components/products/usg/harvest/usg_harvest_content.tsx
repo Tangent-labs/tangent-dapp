@@ -17,9 +17,9 @@ import { USGHoverCard } from "@/components/design_system/structure/usg_hover_car
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { formatBigInt, formatDollar, formatMillions, formatPercent } from "@/lib/number_formatter"
+import { formatDollar, formatPercent } from "@/lib/number_formatter"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
-import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
+import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
 
 const listeState: ListState = {
   search: undefined,
@@ -63,15 +63,9 @@ export default function USGHarvestContent() {
         </ReliefCard>
 
         <div className="flex h-auto w-full flex-col items-center gap-2 xl:w-1/2">
-          <PointsCampaignLiveCard></PointsCampaignLiveCard>
+          <PointsCampaignLiveCard />
 
-          <ThreeCardRowWithMask
-            contents={[
-              { key: "USG Balance", value: formatMillions(formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)) },
-              { key: "sUSG Balance", value: formatMillions(formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)) },
-              { key: "Your Total Points", value: `${formatMillions(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints)} pts` },
-            ]}
-          ></ThreeCardRowWithMask>
+          <UsgBalanceAndTotalPoints USGsUSGMetrics={USGsUSGMetrics} lpUserPoints={lpUserPoints} voteUserPoints={voteUserPoints} />
         </div>
       </div>
 

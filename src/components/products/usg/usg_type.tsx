@@ -534,7 +534,7 @@ export type Boost = {
   logo: string
 }
 
-export type MarketAPR = {
+export type MarketAPRs = {
   currentAPR: {
     [rewardToken: string]: number // allows any other dynamic APR components (e.g. CRV, CVX, FXN, etc.)
   }

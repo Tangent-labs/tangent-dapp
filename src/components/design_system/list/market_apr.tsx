@@ -7,6 +7,7 @@ import { USGMarketType } from "@/components/products/usg/usg_type"
 
 interface ListAPRProps {
   poolName: string
+  isMarketListDisplay: boolean
   rewardToken: string
   maxLeverage: number
   currentAPRDetails?: {
@@ -33,7 +34,7 @@ const StreamTile = ({ active }: StreamTileProps) => {
   )
 }
 
-export const MarketListAPR = ({
+export const MarketAPR = ({
   poolName,
   rewardToken,
   maxLeverage,
@@ -42,6 +43,7 @@ export const MarketListAPR = ({
   apr,
   projectedApr,
   marketType,
+  isMarketListDisplay,
   className = "",
 }: ListAPRProps) => {
   const currentRewardEntries = useMemo(() => {
@@ -66,9 +68,9 @@ export const MarketListAPR = ({
 
   return (
     <div className="flex w-full items-center justify-between gap-2 xl:justify-center">
-      <div className="flex items-center justify-center text-sm text-subtitle xl:hidden">{maxLeverage === 1 ? "vAPR" : "Max vAPR"}</div>
+      {isMarketListDisplay && <div className="flex items-center justify-center text-sm text-subtitle xl:hidden">{maxLeverage === 1 ? "vAPR" : "Max vAPR"}</div>}
 
-      <div className="flex min-h-min min-w-16 items-center justify-center text-center xl:min-h-8 xl:flex-col">
+      <div className={cn("flex min-h-min min-w-16 items-center justify-center text-center xl:min-h-8 xl:flex-col", isMarketListDisplay ? "" : "w-full")}>
         {!!computedAPR && Number(computedAPR) > 0 && (
           <>
             <span className="flex items-center justify-center bg-button-active bg-clip-text text-sm text-transparent md:text-xl">
@@ -119,7 +121,7 @@ export const MarketListAPR = ({
                         </div>
                       )}
 
-                      <div className="mt-2 flex w-full items-center justify-between gap-2 border-b border-white/10 pb-1 font-semibold">
+                      <div className="flex w-full items-center justify-between gap-2 border-b border-white/10 pb-1 font-semibold">
                         Projected vAPR
                         <span> {((projectedApr || 0) * maxLeverage).toFixed(2)}%</span>
                       </div>

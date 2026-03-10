@@ -15,7 +15,7 @@ import { Divider } from "@/components/design_system/structure/divider"
 import { ListHeader } from "@/components/design_system/list/list_header"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { TokenImage } from "@/components/design_system/structure/token_image"
-import { MarketListAPR } from "@/components/design_system/list/market_list_apr"
+import { MarketAPR } from "@/components/design_system/list/market_apr"
 import { USGHoverCard } from "@/components/design_system/structure/usg_hover_card"
 import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
@@ -200,7 +200,7 @@ function ClaimList() {
               </div>
 
               <div className="flex justify-center xl:w-1/3">
-                <MarketListAPR
+                <MarketAPR
                   marketType={item?.marketType}
                   poolName={item?.marketName}
                   rewardToken={item?.rewardToken}
@@ -209,6 +209,7 @@ function ClaimList() {
                   projectedAPRDetails={item.projectedAPRDetails}
                   apr={item?.apr?.current}
                   projectedApr={item?.apr?.projected}
+                  isMarketListDisplay={true}
                 />
               </div>
             </div>

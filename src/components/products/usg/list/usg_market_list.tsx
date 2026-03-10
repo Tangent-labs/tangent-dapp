@@ -11,14 +11,13 @@ import { IconCircleHelp, IconOpenOutside } from "@/components/icons"
 import { useRootContext } from "../../root/root_context"
 import { IconStars } from "@/components/icons/icon_stars"
 import { useUSGMaketListContext } from "./usg_market_list_context"
-import { formatDollar, formatMillions, formatNumber } from "@/lib/number_formatter"
+import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { Divider } from "@/components/design_system/structure/divider"
 import { ListAsset } from "@/components/design_system/list/list_asset"
 import { InputSelect } from "@/components/design_system/inputs/input_select"
 import { InputSearch } from "@/components/design_system/inputs/input_search"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import { MarketListAPR } from "@/components/design_system/list/market_list_apr"
 import { MarketListRow } from "@/components/design_system/list/market_list_row"
 import { LargeButtonTab } from "@/components/design_system/inputs/large_button_tab"
 import { NeonLightCard } from "@/components/design_system/structure/neon_light_card"
@@ -28,6 +27,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
+import { MarketAPR } from "@/components/design_system/list/market_apr"
 
 interface ListRowDispositionProps {
   children: React.ReactNode[]
@@ -287,7 +287,7 @@ export function USGMarketListInner() {
         >
           <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} />
 
-          <MarketListAPR
+          <MarketAPR
             poolName={item?.name}
             rewardToken={item?.rewardToken}
             maxLeverage={1}
@@ -296,9 +296,10 @@ export function USGMarketListInner() {
             apr={item.apr.current}
             projectedApr={item.apr.projected}
             marketType={marketData.find((el) => el.marketAddress === item.address)?.marketType}
+            isMarketListDisplay={true}
           />
 
-          <MarketListAPR
+          <MarketAPR
             poolName={item?.name}
             rewardToken={item?.rewardToken}
             maxLeverage={1 / (1 - item?.maxLTV) || 1}
@@ -307,6 +308,7 @@ export function USGMarketListInner() {
             apr={item.apr.current}
             projectedApr={item.apr.projected}
             marketType={marketData.find((el) => el.marketAddress === item.address)?.marketType}
+            isMarketListDisplay={true}
           />
 
           <>

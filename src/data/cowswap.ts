@@ -16,6 +16,30 @@ export const cowSwapAPIReturn = {
   },
   tokens: [
     {
+      address: "0x085780639cc2cacd35e474e71f4d000e2405d8f6",
+      chainId: 1,
+      decimals: 18,
+      logo: "fxUSD",
+      name: "fxUSD",
+      symbol: "fxUSD",
+    },
+    {
+      address: "0x57ab1e0003f623289cd798b1824be09a793e4bec",
+      chainId: 1,
+      decimals: 18,
+      logo: "reUSD",
+      name: "reUSD",
+      symbol: "reUSD",
+    },
+    {
+      address: "0x865377367054516e17014ccded1e7d814edc9ce4",
+      chainId: 1,
+      decimals: 18,
+      logo: "DOLA",
+      name: "DOLA",
+      symbol: "DOLA",
+    },
+    {
       address: "0x007115416ab6c266329a03b09a8aa39ac2ef7d9d",
       symbol: "mBTC",
       name: "Midas BTC Yield Token",

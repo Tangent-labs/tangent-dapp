@@ -120,7 +120,10 @@ export default function USGLeverageContent() {
             depositSelect={<StaticCardAssetInput asset="USG" />}
             label="You borrow and sell"
             asset={USGInfo}
-            maxAmountParams={{ maxWeiValue: 0n, setMaxAmount: () => handleLeverageSliderChange(10) }}
+            maxAmountParams={{
+              maxWeiValue: 0n,
+              setMaxAmount: () => handleLeverageSliderChange(Math.floor((1 / (1 - Number(marketData?.constants?.maxLTV) / 100000)) * 100) / 100),
+            }}
             sliderParams={{
               sliderPercentage: leveragePercentage,
               setSliderPercentage: (e) => handleLeverageSliderChange(e),

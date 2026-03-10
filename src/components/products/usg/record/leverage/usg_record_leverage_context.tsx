@@ -193,7 +193,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }, [depositAsset, swapAssetPrice, marketData])
 
   function computeBorrowValue(depositedCollateralWei: bigint, leverageValue: number) {
-    const collatToBuy = (depositedCollateralWei * BigInt(leverageValue * 10)) / 10n - depositedCollateralWei
+    const collatToBuy = (depositedCollateralWei * BigInt(leverageValue * 100)) / 100n - depositedCollateralWei
     const collatPrice = marketData?.collateralInfos.collateralUSDPrice || 0n
     const expectedCollateralFinalDollarValue = (collatToBuy * collatPrice) / parseEther("1")
     return (expectedCollateralFinalDollarValue * parseEther("1")) / globalData.usgPriceWei
@@ -615,7 +615,11 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }, [currentAddress, depositAssetInfo, balanceAllowanceData, isZapping])
 
   const computedMaxLeverage = useMemo(() => {
-    return marketData ? `Max leverage: x${Math.floor(Number(1 / (1 - Number(marketData?.constants.maxLTV) / 100000)))}` : ""
+    if (!marketData) return ""
+    const leverage = 1 / (1 - Number(marketData.constants.maxLTV) / 100000)
+    const rounded = Math.floor(leverage * 100) / 100
+
+    return `Max leverage: x${rounded}`
   }, [marketData])
 
   const computedDepositAmount = useMemo(() => {
@@ -640,18 +644,18 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     const ltv = Number(marketData?.constants?.maxLTV) / 100000
     const maxLeverageRaw = 1 / (1 - ltv)
 
-    const maxLeverageSafe = Math.floor(maxLeverageRaw)
+    const rounded = Math.floor(maxLeverageRaw * 100) / 100
 
-    return Array.from({ length: maxLeverageSafe }, (_, i) => String(i + 1))
+    return Array.from({ length: rounded }, (_, i) => String(i + 1))
   }, [marketData?.constants])
 
   const startEndRange = useMemo(() => {
     const ltv = Number(marketData?.constants?.maxLTV) / 100000
     const maxLeverageRaw = 1 / (1 - ltv)
 
-    const maxDisplayed = Math.floor(maxLeverageRaw)
+    const rounded = Math.floor(maxLeverageRaw * 100) / 100
 
-    return ["1", String(maxDisplayed), "0.1"] as [string, string, string]
+    return ["1", String(rounded), "0.1"] as [string, string, string]
   }, [marketData?.constants])
 
   const contextValue: USGLeverageContextValues = {

@@ -8,7 +8,7 @@ import { useUSGDashboardContext } from "./dashboard_context"
 import { formatXAxis, formatYAxis } from "./dashboard_controller"
 import { Divider } from "@/components/design_system/structure/divider"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
-import { formatCompact, formatDollar } from "@/lib/number_formatter"
+import { formatCompact, formatDollar, formatMillions } from "@/lib/number_formatter"
 import { useRootContext } from "@/components/products/root/root_context"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
@@ -56,7 +56,7 @@ export const USGDashboardContent = () => {
     const dateLabel = new Date(ts).toDateString()
 
     return (
-      <div className="flex min-w-40 flex-col items-start justify-center gap-1 rounded-[10px] border border-white border-opacity-20 bg-input p-3 backdrop-blur-[60px]">
+      <div className="flex min-w-40 flex-col items-start justify-center gap-1 rounded-[10px] border border-white border-opacity-10 bg-input p-3 backdrop-blur-[60px]">
         <div className="mb-3 text-xs font-medium text-slate-300">{dateLabel}</div>
 
         <div className="mb-2 flex w-full items-center justify-between text-xs">
@@ -96,7 +96,7 @@ export const USGDashboardContent = () => {
     const dateLabel = new Date(ts).toDateString()
 
     return (
-      <div className="min-w-32 rounded-[10px] border border-white border-opacity-20 bg-input p-3 backdrop-blur-[60px]">
+      <div className="min-w-32 rounded-[10px] border border-white border-opacity-10 bg-input p-3 backdrop-blur-[60px]">
         <div className="mb-3 text-xs font-medium text-slate-300">{dateLabel}</div>
 
         <div className="mb-2 flex items-center justify-between text-xs">
@@ -136,7 +136,7 @@ export const USGDashboardContent = () => {
           className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "flex w-full items-center justify-around")}
           indicators={[
             { title: "USG", value: formatDollar(globalData.USGPrice, 4) },
-            { title: "Supply", value: globalData.USGSupply },
+            { title: "Supply", value: formatMillions(globalData.USGSupply) },
           ]}
         >
           <TokenImage token="USG" className="h-8 w-8" size={32} />

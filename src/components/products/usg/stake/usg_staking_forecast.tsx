@@ -1,14 +1,15 @@
 "use client"
 
+import { IconCircleHelp } from "@/components/icons"
 import { ReactNode, useMemo, useState } from "react"
 import { formatDollar } from "@/lib/number_formatter"
+import { computedProjection } from "./usg_stake_controller"
 import type { LineDot } from "recharts/types/cartesian/Line"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
-import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
-import { USGHoverCard } from "@/components/design_system/structure/usg_hover_card"
+import { TokenImage } from "@/components/design_system/structure/token_image"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer, Tooltip } from "recharts"
-import { computedProjection } from "./usg_stake_controller"
 
 const MS_PER_YEAR = 365.25 * 24 * 60 * 60 * 1000
 
@@ -255,9 +256,17 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apr, currentFea
             <span className="text-lg font-semibold">{apr.toFixed(2)}%</span>
           </div>
 
-          <USGHoverCard iconClassName="h-auto w-[14px] text-white" title="">
-            Estimated Annual Percentage Yield based on the last rewards distribution.
-          </USGHoverCard>
+          <HoverCard openDelay={150} closeDelay={100}>
+            <HoverCardTrigger asChild>
+              <button type="button" className="inline-flex items-center">
+                <IconCircleHelp className="h-auto w-[14px] text-white" />
+              </button>
+            </HoverCardTrigger>
+
+            <HoverCardContent side="top" align="center" className="z-1001 w-fit max-w-64 p-2 text-xs">
+              Estimated Annual Percentage Yield based on the last rewards distribution.
+            </HoverCardContent>
+          </HoverCard>
         </div>
 
         <div className="hidden items-end justify-end gap-2 md:flex">

@@ -185,7 +185,7 @@ export const LPTasksList = () => {
             <div className="flex w-full flex-col items-center justify-center md:hidden">
               <div className="mb-1 flex w-full items-center justify-center text-sm font-semibold"> {task?.description}</div>
 
-              <div className="flex w-full items-center justify-between gap-1 border-t border-white border-opacity-20 py-2">
+              <div className="flex w-full items-center justify-between gap-1 border-t border-white border-opacity-10 py-2">
                 <div className="flex items-center justify-center gap-2">
                   <TokenImage token={formatToken(task.asset)} className="w-8" size={48} />
 

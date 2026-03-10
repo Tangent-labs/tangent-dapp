@@ -11,7 +11,7 @@ import { Divider } from "@/components/design_system/structure/divider"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { PerformanceHistoryPanel } from "./components/PerformanceHistoryPanel"
-import { formatBigInt, formatDollar, formatNumber } from "@/lib/number_formatter"
+import { formatBigInt, formatDollar, formatMillions, formatNumber } from "@/lib/number_formatter"
 import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
 import { LargeButtonTab } from "@/components/design_system/inputs/large_button_tab"
 import { StaticCardAssetInput } from "../../predeposit/components/StaticCardAssetInput"
@@ -76,7 +76,7 @@ export default function USGStakeContent() {
 
           <ThreeCardRowWithMask
             contents={[
-              { key: "Supply", value: formatNumber(Number(formatUnits(USGsUSGMetrics?.sUSGSupply || 0n, 18)), 0) },
+              { key: "Supply", value: formatMillions(Number(formatUnits(USGsUSGMetrics?.sUSGSupply || 0n, 18))) },
               { key: "sUSG", value: formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 2) },
               {
                 key: "APY",
@@ -139,7 +139,7 @@ export default function USGStakeContent() {
               onClick={() => setCurrentFeature(currentFeature === "stake" ? "unstake" : "stake")}
               className="my-2 flex w-full cursor-pointer items-center justify-center border-none"
             >
-              <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-20 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
+              <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-10 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
             </div>
 
             <GenericInputAssetAmount

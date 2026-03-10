@@ -135,15 +135,15 @@ export default function USGSwapContent() {
         </ReliefCard>
 
         <div className="flex h-auto w-full flex-col justify-between gap-2 xl:w-1/2">
-          <PointsCampaignLiveCard></PointsCampaignLiveCard>
+          <PointsCampaignLiveCard />
 
           <ThreeCardRowWithMask
             contents={[
-              { key: "USG Balance", value: formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2) },
-              { key: "sUSG Balance", value: formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2) },
+              { key: "USG Balance", value: formatMillions(formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)) },
+              { key: "sUSG Balance", value: formatMillions(formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)) },
               { key: "Your Total Points", value: `${formatMillions(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints)} pts` },
             ]}
-          ></ThreeCardRowWithMask>
+          />
         </div>
       </div>
 
@@ -178,7 +178,7 @@ export default function USGSwapContent() {
               }}
               className="my-2 flex w-full cursor-pointer items-center justify-center border-none"
             >
-              <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-20 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
+              <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-10 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
             </div>
 
             <GenericInputAssetAmount

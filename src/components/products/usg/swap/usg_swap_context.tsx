@@ -120,8 +120,13 @@ export const USGSwapProvider = ({ children, tokenIn, tokenOut }: USGSwapContextP
 
   useEffect(() => {
     if (tokenIn && tokenOut) {
-      setDepositAsset(tokenIn)
-      setReceiveAsset(tokenOut)
+      const tokenInName = computedAssets?.depositAssets?.find((el) => el?.address?.toLowerCase() === tokenIn?.toLowerCase())?.name
+      const tokenOutName = computedAssets?.receiveAssets?.find((el) => el?.address?.toLowerCase() === tokenOut?.toLowerCase())?.name
+
+      if (tokenInName && tokenOutName) {
+        setDepositAsset(tokenInName)
+        setReceiveAsset(tokenOutName)
+      }
     }
   }, [tokenIn, tokenOut])
 

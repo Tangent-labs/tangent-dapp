@@ -106,7 +106,7 @@
 //               value={innerValue !== undefined ? innerValue : ""}
 //               placeholder="Amount"
 //               onInput={handleInputChange}
-//               className={cn("min-h-8 rounded-[10px] border-opacity-20 bg-transparent font-semibold focus:outline-none")}
+//               className={cn("min-h-8 rounded-[10px] border-opacity-10 bg-transparent font-semibold focus:outline-none")}
 //             />
 //           </div>
 

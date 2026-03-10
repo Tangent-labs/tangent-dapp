@@ -151,7 +151,7 @@ export const VoteTasksList = () => {
             <div className="flex flex-col items-center justify-between md:hidden">
               <div className="mb-1 flex w-full items-center justify-center text-sm font-semibold"> {task?.description}</div>
 
-              <div className="flex w-full items-center justify-between gap-1 border-t border-white border-opacity-20 py-2">
+              <div className="flex w-full items-center justify-between gap-1 border-t border-white border-opacity-10 py-2">
                 <div className="flex flex-col items-center justify-center">
                   <span className="text-xs text-subtitle">Current Vote</span>
                   <span className="flex text-sm">{task.lastVotingPower}</span>

@@ -37,7 +37,7 @@ export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
             <button
               onClick={() => setSelectedToken(tokenA)}
               className={`flex min-w-20 items-center justify-between gap-2 rounded-full border border-white px-2 py-0.5 text-xs transition-all ${
-                selectedToken === tokenA ? "border-opacity-100 bg-white text-black" : "border-opacity-20 text-white hover:border-opacity-100"
+                selectedToken === tokenA ? "border-opacity-100 bg-white text-black" : "border-opacity-10 text-white hover:border-opacity-100"
               }`}
             >
               <TokenImage token={tokenA as ExistingAsset} size={8} className="w-4" />
@@ -59,7 +59,7 @@ export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
                 <button
                   onClick={() => setSelectedToken(tokenB)}
                   className={`mt-1 flex min-w-20 items-center justify-between rounded-full border border-white px-2 py-0.5 text-xs transition-all ${
-                    selectedToken === tokenB ? "border-opacity-100 bg-white text-black" : "border-opacity-20 text-white hover:border-opacity-100"
+                    selectedToken === tokenB ? "border-opacity-100 bg-white text-black" : "border-opacity-10 text-white hover:border-opacity-100"
                   }`}
                 >
                   <TokenImage token={tokenB as ExistingAsset} size={8} className="w-4" />

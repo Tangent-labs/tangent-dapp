@@ -8,18 +8,18 @@ import { useUSGHarvestContext } from "./usg_harvest_context"
 import { harvestListHeaders } from "./usg_harvest_controller"
 import { Button } from "@/components/design_system/inputs/button"
 import { Divider } from "@/components/design_system/structure/divider"
-import { ListHeader } from "@/components/design_system/list/list_header"
 import { HarvestableMarket, HarvesterInfoDisplay } from "../usg_type"
+import { ListAsset } from "@/components/design_system/list/list_asset"
+import { ListHeader } from "@/components/design_system/list/list_header"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { USGHoverCard } from "@/components/design_system/structure/usg_hover_card"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { formatBigInt, formatDollar, formatMillions, formatPercent } from "@/lib/number_formatter"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
-import { ListAsset } from "@/components/design_system/list/list_asset"
 
 const listeState: ListState = {
   search: undefined,
@@ -67,8 +67,8 @@ export default function USGHarvestContent() {
 
           <ThreeCardRowWithMask
             contents={[
-              { key: "USG Balance", value: formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2) },
-              { key: "sUSG Balance", value: formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2) },
+              { key: "USG Balance", value: formatMillions(formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)) },
+              { key: "sUSG Balance", value: formatMillions(formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)) },
               { key: "Your Total Points", value: `${formatMillions(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints)} pts` },
             ]}
           ></ThreeCardRowWithMask>

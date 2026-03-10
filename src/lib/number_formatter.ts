@@ -131,13 +131,28 @@ export const formatCompact = (value: string | number): string => {
   }
 }
 
+// export const formatMillions = (value: string | number): string => {
+//   const number = typeof value === "string" ? parseFloat(value) : value
+
+//   if (number === 0 || isNaN(number)) return "0"
+
+//   if (number >= 1_000_000) {
+//     return `${formatNumber(number / 1_000_000, 2).replace(/\.?0+$/, "")}M`
+//   }
+//   return `${formatNumber(number, 0).replace(/\.?0+$/, "")}`
+// }
+
 export const formatMillions = (value: string | number): string => {
-  const number = typeof value === "string" ? parseFloat(value) : value
+  const cleaned = typeof value === "string" ? value.replace(/,/g, "") : String(value)
+
+  const number = parseFloat(cleaned)
 
   if (number === 0 || isNaN(number)) return "0"
 
   if (number >= 1_000_000) {
-    return `${formatNumber(number / 1_000_000, 2).replace(/\.?0+$/, "")}M`
+    const millions = number / 1_000_000
+    return `${formatNumber(millions, 2).replace(/\.?0+$/, "")}M`
   }
-  return `${formatNumber(number, 0).replace(/\.?0+$/, "")}`
+
+  return formatNumber(number, 0)
 }

@@ -27,7 +27,7 @@ interface IndicatorCardsProps {
 
 const IndicatorCards = ({ indicators, className = "", children }: IndicatorCardsProps) => {
   return (
-    <ReliefCard className={`flex w-full items-center justify-between border-white border-opacity-20 p-4 ${className}`}>
+    <ReliefCard className={`flex w-full items-center justify-between border-white border-opacity-10 p-4 ${className}`}>
       {children}
       {indicators.map((indicator, index) => (
         <IndicatorCard key={index} title={indicator.title} value={indicator.value} />

@@ -99,7 +99,7 @@ export const VsTanSplitContent = () => {
                     disabled={true}
                     value={computedSplitAmounts?.firstSplit}
                     placeholder="Amount"
-                    className="min-h-10 rounded-[10px] border-opacity-20 bg-transparent py-2 font-semibold focus:outline-none"
+                    className="min-h-10 rounded-[10px] border-opacity-10 bg-transparent py-2 font-semibold focus:outline-none"
                   />
                 </div>
                 <div className="text-xs text-subtitle">($1,500)</div>
@@ -130,7 +130,7 @@ export const VsTanSplitContent = () => {
                     disabled={true}
                     value={computedSplitAmounts?.secondSplit}
                     placeholder="Amount"
-                    className="min-h-10 rounded-[10px] border-opacity-20 bg-transparent py-2 font-semibold focus:outline-none"
+                    className="min-h-10 rounded-[10px] border-opacity-10 bg-transparent py-2 font-semibold focus:outline-none"
                   />
                 </div>
                 <div className="text-xs text-subtitle">($1,500)</div>

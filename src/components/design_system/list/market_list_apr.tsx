@@ -28,8 +28,7 @@ type StreamTileProps = {
 const StreamTile = ({ active }: StreamTileProps) => {
   return (
     <div className={cn("flex items-center justify-center rounded-full px-1 py-0.5 text-xs text-black", active ? "bg-row-success" : "bg-row-warning")}>
-      {" "}
-      Stream {active ? "active" : "inactive"}{" "}
+      Stream {active ? "active" : "inactive"}
     </div>
   )
 }
@@ -69,12 +68,12 @@ export const MarketListAPR = ({
     <div className="flex w-full items-center justify-between gap-2 xl:justify-center">
       <div className="flex items-center justify-center text-sm text-subtitle xl:hidden">{maxLeverage === 1 ? "vAPR" : "Max vAPR"}</div>
 
-      <div className={`flex min-h-min min-w-16 items-center justify-center text-center xl:min-h-8 xl:flex-col ${className}`}>
+      <div className="flex min-h-min min-w-16 items-center justify-center text-center xl:min-h-8 xl:flex-col">
         {!!computedAPR && Number(computedAPR) > 0 && (
           <>
             <span className="flex items-center justify-center bg-button-active bg-clip-text text-sm text-transparent md:text-xl">
               <AprIndicator isMax={maxLeverage !== 1}>
-                <div>{(computedAPR * maxLeverage).toFixed(2)}%</div>
+                <div className={className}>{(computedAPR * maxLeverage).toFixed(2)}%</div>
 
                 <div className="flex flex-col gap-2 p-2">
                   <div className="flex w-full items-center justify-between gap-2">

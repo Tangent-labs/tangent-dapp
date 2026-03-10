@@ -76,7 +76,7 @@ export function PopoverCombobox<T extends OptionT>({
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="flex min-h-10 w-full items-center justify-between rounded-[10px] border-tangent border-white/20 bg-select-input px-2.5 py-1.5 placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex min-h-10 w-full items-center justify-between rounded-[10px] border-tangent border-white/10 bg-select-input px-2.5 py-1.5 placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           >
             <span className="flex items-center gap-2">
               {selected ? (

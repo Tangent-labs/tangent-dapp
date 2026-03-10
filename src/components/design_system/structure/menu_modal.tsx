@@ -26,7 +26,7 @@ export const MenuModal = () => {
           <DialogClose asChild>
             <button
               className={cn(
-                "flex items-center justify-center rounded-[10px] border border-white border-opacity-20 px-4 py-2 text-[15px] font-semibold",
+                "flex items-center justify-center rounded-[10px] border border-white border-opacity-10 px-4 py-2 text-[15px] font-semibold",
                 pathname === "/swap" ? "bg-button-active text-black" : "text-white"
               )}
               onClick={() => router.push("/swap")}
@@ -37,7 +37,7 @@ export const MenuModal = () => {
           <DialogClose asChild>
             <button
               className={cn(
-                "flex items-center justify-center rounded-[10px] border border-white border-opacity-20 px-4 py-2 text-[15px] font-semibold",
+                "flex items-center justify-center rounded-[10px] border border-white border-opacity-10 px-4 py-2 text-[15px] font-semibold",
                 pathname === "/claim" ? "bg-button-active text-black" : "text-white"
               )}
               onClick={() => router.push("/claim")}
@@ -48,7 +48,7 @@ export const MenuModal = () => {
           <DialogClose asChild>
             <button
               className={cn(
-                "flex items-center justify-center rounded-[10px] border border-white border-opacity-20 px-4 py-2 text-[15px] font-semibold",
+                "flex items-center justify-center rounded-[10px] border border-white border-opacity-10 px-4 py-2 text-[15px] font-semibold",
                 pathname === "/harvest" ? "bg-button-active text-black" : "text-white"
               )}
               onClick={() => router.push("/harvest")}
@@ -60,7 +60,7 @@ export const MenuModal = () => {
           <DialogClose asChild>
             <button
               className={cn(
-                "flex items-center justify-center rounded-[10px] border border-white border-opacity-20 px-4 py-2 text-[15px] font-semibold",
+                "flex items-center justify-center rounded-[10px] border border-white border-opacity-10 px-4 py-2 text-[15px] font-semibold",
                 pathname === "/tasks" ? "bg-button-active text-black" : "text-white"
               )}
               onClick={() => router.push("/tasks")}
@@ -72,7 +72,7 @@ export const MenuModal = () => {
           <DialogClose asChild>
             <button
               className={cn(
-                "flex items-center justify-center rounded-[10px] border border-white border-opacity-20 px-4 py-2 text-[15px] font-semibold",
+                "flex items-center justify-center rounded-[10px] border border-white border-opacity-10 px-4 py-2 text-[15px] font-semibold",
                 pathname === "/referral" ? "bg-button-active text-black" : "text-white"
               )}
               onClick={() => router.push("/referral")}
@@ -84,7 +84,7 @@ export const MenuModal = () => {
           <DialogClose asChild>
             <button
               className={cn(
-                "flex items-center justify-center rounded-[10px] border border-white border-opacity-20 px-4 py-2 text-[15px] font-semibold",
+                "flex items-center justify-center rounded-[10px] border border-white border-opacity-10 px-4 py-2 text-[15px] font-semibold",
                 pathname === "/boosts" ? "bg-button-active text-black" : "text-white"
               )}
               onClick={() => router.push("/boosts")}

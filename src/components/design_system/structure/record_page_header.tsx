@@ -62,10 +62,6 @@ export function RecordPageHeader({
           marketType={marketType}
           className="text-xl font-semibold"
         />
-
-        {!hasZeroApr && marketType !== "Pendle_PT" && (
-          <span className="flex items-center text-xs text-subtitle">{`Proj: ${totalProjectedAPR ? `${totalProjectedAPR?.toFixed(2)}%` : "-"}`}</span>
-        )}
       </div>
 
       <div className="flex w-full max-w-32 flex-col items-center justify-center text-[15px] xl:max-w-none xl:border-r xl:border-[#3F3F3F]">
@@ -95,10 +91,6 @@ export function RecordPageHeader({
           marketType={marketType}
           className="text-xl font-semibold"
         />
-
-        {!hasZeroApr && marketType !== "Pendle_PT" && (
-          <span className="flex items-center text-xs text-subtitle">{`Proj: ${totalProjectedAPR ? `${(totalProjectedAPR * maxLeverage)?.toFixed(2)}%` : "-"}`}</span>
-        )}
       </div>
 
       {indicators?.map((i, index) => (

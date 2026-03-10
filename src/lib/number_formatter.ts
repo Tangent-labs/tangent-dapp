@@ -131,7 +131,7 @@ export const formatCompact = (value: string | number): string => {
   }
 }
 
-export const formatMillions = (value: string | number): string => {
+export const formatMillions = (value: string | number | undefined): string => {
   const cleaned = typeof value === "string" ? value.replace(/,/g, "") : String(value)
 
   const number = parseFloat(cleaned)

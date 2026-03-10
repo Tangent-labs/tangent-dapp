@@ -6,7 +6,7 @@ import { IconSortHeader } from "@/components/icons"
 import { formatToken } from "../usg_tasks_controller"
 import { TaskStatus } from "../../components/TaskStatus"
 import { LpTaskCustomAssetDisplay } from "./custom_token_display"
-import { formatNumber, formatDollar } from "@/lib/number_formatter"
+import { formatNumber, formatMillions } from "@/lib/number_formatter"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { useListContext } from "@/components/design_system/list/list_context"
 import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
@@ -171,9 +171,9 @@ export const LPTasksList = () => {
 
               <div className="flex w-1/12 items-center justify-center text-[15px]">{(task?.pointRate * 86400).toFixed(0)}</div>
 
-              <div className="flex w-1/12 items-center justify-center text-[15px]">{formatDollar(task?.balanceUsd)}</div>
+              <div className="flex w-1/12 items-center justify-center text-[15px]">{formatMillions(task?.balanceUsd)}</div>
 
-              <div className="flex w-2/12 items-center justify-center text-[15px]">{formatNumber(task?.points, 0)}</div>
+              <div className="flex w-2/12 items-center justify-center text-[15px]">{formatMillions(task?.points)}</div>
 
               <div className="flex w-1/12 flex-col items-center justify-center">
                 <div className="flex h-10 w-10 flex-col items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">

@@ -1,15 +1,15 @@
 "use client"
 
 import { Address, zeroAddress } from "viem"
-import { TANStakingInfo } from "../vs_tan/rstan_types"
 import { getUSGsUSGMetrics } from "./usg_controller"
 import { getBalances } from "./record/usg_record_controller"
-import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { getLpUserPoints, getMarketAprs, getUserRefereesPoints, getVoteUserPoints } from "./client_api"
 import { USGStakingInfo, LpUserPoints, ZapToken, VoteUserPoints, RefereesPoints, MarketAPR } from "./usg_type"
 import { useRootContext } from "../root/root_context"
+// import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
+// import { TANStakingInfo } from "../vs_tan/rstan_types"
 
 type USGContextProps = {
   children: ReactNode
@@ -24,8 +24,8 @@ type USGContextValues = {
   refetchPoints: () => Promise<void>
   loadUSGsUSGMetrics: () => void
   USGsUSGMetrics: USGStakingInfo | undefined
-  TANsTANMetrics: TANStakingInfo | undefined
-  loadTanSTANMetrics: () => void
+  // TANsTANMetrics: TANStakingInfo | undefined
+  // loadTanSTANMetrics: () => void
   refereesPoints: RefereesPoints
   marketAprs: MarketAPR[]
 }
@@ -47,7 +47,7 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
 
   const [USGsUSGMetrics, setUSGsUSGMetrics] = useState<USGStakingInfo | undefined>()
 
-  const [TANsTANMetrics, setTANsTANMetrics] = useState<TANStakingInfo | undefined>()
+  // const [TANsTANMetrics, setTANsTANMetrics] = useState<TANStakingInfo | undefined>()
 
   const [marketAprs, setMarketAprs] = useState<Array<MarketAPR>>([])
 
@@ -67,11 +67,11 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
     })
   }
 
-  const loadTanSTANMetrics = () => {
-    getTanStakeOnChainData(currentAddress || zeroAddress).then((data) => {
-      setTANsTANMetrics(data)
-    })
-  }
+  // const loadTanSTANMetrics = () => {
+  //   getTanStakeOnChainData(currentAddress || zeroAddress).then((data) => {
+  //     setTANsTANMetrics(data)
+  //   })
+  // }
 
   /**
    * On init
@@ -118,7 +118,7 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
   }
 
   useEffect(() => {
-    const tokenAddresses: Address[] = tokens.map((el) => el.address)
+    const tokenAddresses: Address[] = tokens.map((el) => el.address) as Address[]
 
     if (currentAddress && tokenAddresses.length > 0) {
       getBalances(currentAddress, tokenAddresses).then((data) => {
@@ -142,9 +142,9 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
     lpUserPoints,
     refetchPoints,
     loadUSGsUSGMetrics,
-    loadTanSTANMetrics,
     USGsUSGMetrics,
-    TANsTANMetrics,
+    // loadTanSTANMetrics,
+    // TANsTANMetrics,
     voteUserPoints,
     refereesPoints,
     marketAprs,

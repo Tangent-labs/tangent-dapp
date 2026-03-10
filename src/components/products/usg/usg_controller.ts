@@ -5,11 +5,11 @@ import sUSGUI from "../../../abi/USG/sUSGUI.json"
 import { USG_CONTRACT } from "./usg_repository"
 import { USGStakingInfo, ZapToken } from "./usg_type"
 import { executeChainViewUnique } from "@/services/service_rpc"
+import { cowSwapAPIReturn } from "@/data/cowswap"
 
 export async function fetchTokens() {
-  const tokensData = await fetch("https://files.cow.fi/tokens/CowSwap.json")
-  const { tokens } = await tokensData.json()
-  return tokens.filter((el: ZapToken) => !!el.chainId && el.chainId === 1)
+  const tokensData = cowSwapAPIReturn.tokens
+  return tokensData.filter((el) => !!el.chainId && el.chainId === 1) as ZapToken[]
 }
 
 export async function getUSGsUSGMetrics(currentAddress: string) {

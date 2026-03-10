@@ -79,4 +79,4 @@ npm run build
 
 adpated from https://www.propelauth.com/post/getting-url-in-next-server-components
 
--- by yaje
+-- by yaj

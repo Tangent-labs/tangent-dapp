@@ -7,6 +7,7 @@ import { USGMarketType } from "@/components/products/usg/usg_type"
 
 interface ListAPRProps {
   poolName: string
+  isMarketListDisplay: boolean
   rewardToken: string
   maxLeverage: number
   currentAPRDetails?: {
@@ -33,7 +34,7 @@ const StreamTile = ({ active }: StreamTileProps) => {
   )
 }
 
-export const MarketListAPR = ({
+export const MarketAPR = ({
   poolName,
   rewardToken,
   maxLeverage,
@@ -42,6 +43,7 @@ export const MarketListAPR = ({
   apr,
   projectedApr,
   marketType,
+  isMarketListDisplay,
   className = "",
 }: ListAPRProps) => {
   const currentRewardEntries = useMemo(() => {
@@ -66,9 +68,9 @@ export const MarketListAPR = ({
 
   return (
     <div className="flex w-full items-center justify-between gap-2 xl:justify-center">
-      <div className="flex items-center justify-center text-sm text-subtitle xl:hidden">{maxLeverage === 1 ? "vAPR" : "Max vAPR"}</div>
+      {isMarketListDisplay && <div className="flex items-center justify-center text-sm text-subtitle xl:hidden">{maxLeverage === 1 ? "vAPR" : "Max vAPR"}</div>}
 
-      <div className="flex min-h-min min-w-16 items-center justify-center text-center xl:min-h-8 xl:flex-col">
+      <div className={cn("flex min-h-min min-w-16 items-center justify-center text-center xl:min-h-8 xl:flex-col", isMarketListDisplay ? "" : "w-full")}>
         {!!computedAPR && Number(computedAPR) > 0 && (
           <>
             <span className="flex items-center justify-center bg-button-active bg-clip-text text-sm text-transparent md:text-xl">
@@ -81,7 +83,8 @@ export const MarketListAPR = ({
                       <TokenImage token={poolName as ExistingAsset} size={24} />
                       {poolName?.replaceAll("-", "/")} Rewards
                     </div>
-                    <StreamTile active={!!currentAPRDetails && Number(currentAPRDetails[rewardToken]) !== 0} />
+                    {/* Display streaming label or not */}
+                    {marketType === "Pendle_PT" ? <></> : <StreamTile active={!!currentAPRDetails && Number(currentAPRDetails[rewardToken]) !== 0} />}
                   </div>
 
                   {marketType === "Pendle_PT" ? (
@@ -103,8 +106,8 @@ export const MarketListAPR = ({
 
                       {currentRewardEntries.length > 0 && (
                         <div className="flex flex-col gap-2 text-subtitle">
-                          {currentRewardEntries.map(([token, value]) => (
-                            <>
+                          {currentRewardEntries.map(([token, value], index) => (
+                            <span key={index}>
                               {!!value && value >= 0.01 ? (
                                 <div className="flex items-center justify-between" key={token}>
                                   <span>{token} APR</span>
@@ -113,12 +116,12 @@ export const MarketListAPR = ({
                               ) : (
                                 <></>
                               )}
-                            </>
+                            </span>
                           ))}
                         </div>
                       )}
 
-                      <div className="mt-2 flex w-full items-center justify-between gap-2 border-b border-white/10 pb-1 font-semibold">
+                      <div className="flex w-full items-center justify-between gap-2 border-b border-white/10 pb-1 font-semibold">
                         Projected vAPR
                         <span> {((projectedApr || 0) * maxLeverage).toFixed(2)}%</span>
                       </div>
@@ -130,8 +133,8 @@ export const MarketListAPR = ({
 
                       {projectedRewardEntries.length > 0 && (
                         <div className="flex flex-col gap-2 text-subtitle">
-                          {projectedRewardEntries.map(([token, value]) => (
-                            <>
+                          {projectedRewardEntries.map(([token, value], index) => (
+                            <span key={index}>
                               {!!value && value >= 0.01 ? (
                                 <div className="flex items-center justify-between" key={token}>
                                   <span>{token} APR</span>
@@ -140,7 +143,7 @@ export const MarketListAPR = ({
                               ) : (
                                 <></>
                               )}
-                            </>
+                            </span>
                           ))}
                         </div>
                       )}

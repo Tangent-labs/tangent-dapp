@@ -26,11 +26,11 @@ export const getFormState = (
   }
 
   if (!!quotedValue && quotedValue < (99n * depositValue) / 100n) {
-    reasons.push("Slippage is too high")
+    reasons.push("Price impact too high. Wait for Peg Keepers to take action and try again later.")
   } else if (!!depositValue && depositValue > balanceAllowance?.balance) {
-    reasons.push("Your balance is too low")
+    reasons.push("Your balance is too low.")
   } else if (currentlyDeposited + depositValue > totalCap) {
-    reasons.push("Deposit exceeds total cap")
+    reasons.push("Deposit exceeds total cap.")
   }
 
   return { canProcess: true, cantProcessReasons: reasons, haveToApprove: !isApproved }

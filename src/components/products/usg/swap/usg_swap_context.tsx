@@ -12,8 +12,9 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Abi, Address, formatUnits, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
 import { computedMinAmountOut, getBalances, getBalancesAndAllowances } from "../record/usg_record_controller"
-import { BalanceAllowanceData, SwapToken, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../usg_type"
+import { BalanceAllowanceData, SwapToken, DepositReceiveAsset, LpUserPoints, USGStakingInfo, ZapToken } from "../usg_type"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./usg_swap_controller"
+import { getTokenSymbolPriorityIndex } from "@/components/design_system/inputs/asset_selector"
 
 type USGSwapContextProps = {
   children: ReactNode
@@ -530,11 +531,25 @@ export const USGSwapProvider = ({ children, tokenIn, tokenOut }: USGSwapContextP
       }))
     })
 
-    const tokenOptions = tokens.map((el: SwapToken) => ({
-      ...el,
-      value: el.name as string,
-      balance: balances ? balances[el.address] : BigInt(0),
-    }))
+    const tokenOptions = tokens
+      .map((el: ZapToken) => ({
+        ...el,
+        value: el.name as string,
+        address: el.address as Address,
+        balance: balances ? balances[el.address] : BigInt(0),
+      }))
+      .sort((a, b) => {
+        const aPriority = getTokenSymbolPriorityIndex(a.symbol)
+        const bPriority = getTokenSymbolPriorityIndex(b.symbol)
+
+        if (Number(a.balance) > 0 !== Number(b.balance) > 0) {
+          return Number(a.balance) > 0 ? -1 : 1
+        } else if (aPriority !== bPriority) {
+          return aPriority - bPriority
+        } else {
+          return Number(b.balance) - Number(a.balance)
+        }
+      })
 
     const depositAssets = isBuying
       ? [
@@ -550,8 +565,7 @@ export const USGSwapProvider = ({ children, tokenIn, tokenOut }: USGSwapContextP
               balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
             },
             ...tokenOptions,
-            ...tgTokens,
-          ].sort((a, b) => Number(b.balance) - Number(a.balance)),
+          ],
         ]
       : [
           ...tgTokens,
@@ -567,7 +581,7 @@ export const USGSwapProvider = ({ children, tokenIn, tokenOut }: USGSwapContextP
               balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
             },
             ...tokenOptions,
-          ].sort((a, b) => Number(b.balance) - Number(a.balance)),
+          ],
         ]
 
     const receiveAssets = isBuying

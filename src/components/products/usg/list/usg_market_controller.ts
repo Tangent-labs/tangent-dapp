@@ -1,9 +1,9 @@
-import { Abi, Address, formatUnits, Hex } from "viem"
+import { Abi, Address, formatEther, formatUnits, Hex } from "viem"
 import MarketListUI from "@/abi/USG/MarketListUI.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
 import { USG_CONTRACT, USGMarkets, USGPegKeepers } from "../usg_repository"
-import { formatBigInt, formatMarketListCompact, formatDollar, formatNumber } from "@/lib/number_formatter"
+import { formatBigInt, formatMarketListCompact, formatNumber } from "@/lib/number_formatter"
 import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, USGGlobalData, USGMarketType } from "../usg_type"
 
 export const getUSGMarketsData = async (address: string) => {
@@ -41,8 +41,6 @@ export function transformGlobalData(data?: ChainViewMarketList): USGGlobalData {
       globalDebt: "-",
     }
 
-  const USGPrice = Number(formatBigInt(data?.USGPrice || "0", 18, 5))
-
   let totalTVL = 0n
   let totalDebt = 0n
 
@@ -53,9 +51,9 @@ export function transformGlobalData(data?: ChainViewMarketList): USGGlobalData {
 
   return {
     usgPriceWei: data?.USGPrice,
-    USGPrice: USGPrice.toFixed(3),
+    USGPrice: Number(formatEther(data?.USGPrice)).toFixed(4),
     USGSupply: formatBigInt(data?.USGSupply || "0", 18, 0),
-    sUSGPrice: formatDollar(formatBigInt(data?.sUSGPrice || "0", 18, 2), 4),
+    sUSGPrice: `$${Number(formatEther(data?.sUSGPrice)).toFixed(4)}`,
     sUSGSupply: formatBigInt(data?.sUSGSupply || "0", 18, 0),
     globalCr: totalDebt !== 0n ? formatNumber((Number(totalTVL) / Number(totalDebt)) * 100, 2) + "%" : "N/A",
     globalTvl: formatUnits(totalTVL, 18),

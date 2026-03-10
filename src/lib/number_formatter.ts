@@ -131,28 +131,29 @@ export const formatCompact = (value: string | number): string => {
   }
 }
 
-// export const formatMillions = (value: string | number): string => {
-//   const number = typeof value === "string" ? parseFloat(value) : value
-
-//   if (number === 0 || isNaN(number)) return "0"
-
-//   if (number >= 1_000_000) {
-//     return `${formatNumber(number / 1_000_000, 2).replace(/\.?0+$/, "")}M`
-//   }
-//   return `${formatNumber(number, 0).replace(/\.?0+$/, "")}`
-// }
-
-export const formatMillions = (value: string | number): string => {
+export const formatMillions = (value: string | number | undefined): string => {
   const cleaned = typeof value === "string" ? value.replace(/,/g, "") : String(value)
 
   const number = parseFloat(cleaned)
 
   if (number === 0 || isNaN(number)) return "0"
 
+  // MORE THAN 1 M
   if (number >= 1_000_000) {
     const millions = number / 1_000_000
-    return `${formatNumber(millions, 2).replace(/\.?0+$/, "")}M`
+    if (number > 5_000_000) {
+      if (number > 100_000_000) {
+        // More than 100 M => 0 decimals at millions
+        return `${formatNumber(millions, 0).replace(/\.?0+$/, "")}M`
+      }
+      // Between 5 and 100 M => 2 decimals at millions
+      else {
+        return `${formatNumber(millions, 2).replace(/\.?0+$/, "")}M`
+      }
+    }
+    // Between 1 and 5 M=> 3 decimals at millions
+    return `${formatNumber(millions, 3).replace(/\.?0+$/, "")}M`
   }
-
+  // Less than 1M
   return formatNumber(number, 0)
 }

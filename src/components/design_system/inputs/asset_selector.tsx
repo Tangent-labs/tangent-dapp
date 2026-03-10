@@ -59,7 +59,7 @@ const tokenOrder = ["ETH", "USDT", "USDC", "USDS", "USDe", "DAI", "frxUSD", "crv
 type PrioritySymbol = (typeof tokenOrder)[number]
 
 // Return the index of the token in the ordered list if it exists
-const getTokenSymbolPriorityIndex = (symbol: string): number => {
+export const getTokenSymbolPriorityIndex = (symbol: string): number => {
   const idx = tokenOrder.indexOf(symbol as PrioritySymbol)
   return idx === -1 ? tokenOrder?.length + 1 : idx
 }
@@ -74,7 +74,6 @@ export const AssetSelector = ({ collateralInfo, depositAsset, setDepositAsset }:
       .map((el: ZapToken) => ({
         ...el,
         value: el.name as string,
-        address: el.address as Address,
         balance: balances ? balances[el.address] : BigInt(0),
       }))
       .sort((a, b) => {

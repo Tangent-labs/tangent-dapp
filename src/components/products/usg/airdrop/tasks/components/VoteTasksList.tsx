@@ -2,7 +2,7 @@
 
 import { ListState } from "@/types"
 import { VoteTask } from "../../../usg_type"
-import { formatNumber } from "@/lib/number_formatter"
+import { formatMillions } from "@/lib/number_formatter"
 import { IconSortHeader } from "@/components/icons"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { useListContext } from "@/components/design_system/list/list_context"
@@ -143,9 +143,9 @@ export const VoteTasksList = () => {
               <div className="flex w-4/12 justify-center lg:w-3/12">
                 <div className="text flex items-center justify-center">{task?.pointRate}</div>
               </div>
-              <div className="flex w-2/12 items-center justify-center">{formatNumber(task.points, 0)}</div>
+              <div className="flex w-2/12 items-center justify-center">{formatMillions(task.points)}</div>
 
-              <div className="flex w-2/12 items-center justify-center">{formatNumber(task.lastVotingPower, 0)}</div>
+              <div className="flex w-2/12 items-center justify-center">{formatMillions(task.lastVotingPower)}</div>
             </div>
 
             <div className="flex flex-col items-center justify-between md:hidden">

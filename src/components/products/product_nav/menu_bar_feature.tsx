@@ -74,7 +74,7 @@ export default function MenuBarFeature() {
       baseLabel: "DAO",
       routes: [
         { route: "https://snapshot.box/#/s:tangent-finance.eth", label: "Snapshot", logo: <IconSnapshot className="w-3" />, external: true },
-        { route: "https://tangentfinance.discourse.group/latest", label: "Forum", logo: <IconForum className="w-3" />, external: true },
+        { route: "https://tangentfinance.discourse.group/categories", label: "Forum", logo: <IconForum className="w-3" />, external: true },
         { route: "/harvest", label: "Harvest", logo: <IconHarvest className="w-2" /> },
       ],
     },

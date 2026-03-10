@@ -1,13 +1,13 @@
 import { cn } from "@/lib/utils"
 import { ReactNode } from "react"
+import { MarketAPR } from "../list/market_apr"
 import { IconCircleHelp } from "@/components/icons"
-import { MarketListAPR } from "../list/market_list_apr"
-import { MarketAPR, USGMarketType } from "@/components/products/usg/usg_type"
+import { MarketAPRs, USGMarketType } from "@/components/products/usg/usg_type"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 type RecordPageHeaderProps = {
   maxLTV: number
-  apr?: MarketAPR
+  apr?: MarketAPRs
   indicators?: RecordPageHeaderIndicatorProps[]
   poolName: string
   marketType: USGMarketType | undefined
@@ -37,8 +37,6 @@ export function RecordPageHeader({
   let totalCurrentAPR = 0
   let totalProjectedAPR = 0
 
-  const hasZeroApr = !!apr?.currentAPR && Object.values(apr?.currentAPR)?.some((v) => Number(v) === 0)
-
   if (apr && apr?.currentAPR && apr?.projectedAPR) {
     totalProjectedAPR = Object.values(apr?.projectedAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
     totalCurrentAPR = Object.values(apr?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
@@ -51,7 +49,7 @@ export function RecordPageHeader({
       <div className="flex w-full max-w-32 flex-col items-center justify-center text-[15px] xl:max-w-none xl:border-r xl:border-[#3F3F3F]">
         <div className="flex items-center justify-center gap-1">Collateral vAPR</div>
 
-        <MarketListAPR
+        <MarketAPR
           poolName={poolName}
           rewardToken={rewardToken}
           maxLeverage={1}
@@ -61,11 +59,8 @@ export function RecordPageHeader({
           projectedApr={totalProjectedAPR}
           marketType={marketType}
           className="text-xl font-semibold"
+          isMarketListDisplay={false}
         />
-
-        {!hasZeroApr && marketType !== "Pendle_PT" && (
-          <span className="flex items-center text-xs text-subtitle">{`Proj: ${totalProjectedAPR ? `${totalProjectedAPR?.toFixed(2)}%` : "-"}`}</span>
-        )}
       </div>
 
       <div className="flex w-full max-w-32 flex-col items-center justify-center text-[15px] xl:max-w-none xl:border-r xl:border-[#3F3F3F]">
@@ -84,7 +79,7 @@ export function RecordPageHeader({
           </HoverCard>
         </div>
 
-        <MarketListAPR
+        <MarketAPR
           poolName={poolName}
           rewardToken={rewardToken}
           maxLeverage={maxLeverage}
@@ -94,11 +89,8 @@ export function RecordPageHeader({
           projectedApr={totalProjectedAPR}
           marketType={marketType}
           className="text-xl font-semibold"
+          isMarketListDisplay={false}
         />
-
-        {!hasZeroApr && marketType !== "Pendle_PT" && (
-          <span className="flex items-center text-xs text-subtitle">{`Proj: ${totalProjectedAPR ? `${(totalProjectedAPR * maxLeverage)?.toFixed(2)}%` : "-"}`}</span>
-        )}
       </div>
 
       {indicators?.map((i, index) => (

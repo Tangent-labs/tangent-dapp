@@ -70,10 +70,13 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
           // The price of USD is in the task at the index 1 as it's the task to hold USG
           tasksCopy[0].balanceUsd = tasksCopy[0].balance * tasksCopy[1].priceUSD
 
+          tasksCopy[0].status = tasksCopy[0].balanceUsd > 0.1
+
           for (let i = 1; i < tasksCopy.length; i++) {
             const t = tasksCopy[i]
             t.balance = Number(formatEther(balances[i - 1]))
             t.balanceUsd = t.balance * t.priceUSD
+            t.status = t.balanceUsd > 0.1
           }
           setTasks(tasksCopy)
         }

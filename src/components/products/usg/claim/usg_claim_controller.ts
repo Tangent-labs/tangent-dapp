@@ -1,4 +1,4 @@
-import { ClaimerInfo, MarketAPR } from "../usg_type"
+import { ClaimerInfo, MarketAPRs } from "../usg_type"
 import claimUI from "../../../../abi/USG/ClaimUI.json"
 import { getTokensPrice } from "@/services/service_price"
 import { USG_CONTRACT, USGMarkets } from "../usg_repository"
@@ -62,7 +62,7 @@ export const computeAndReturnPrices = async (claimInfo: ClaimerInfo[]) => {
   }
 }
 
-export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfos: AssetDataPriced[], marketAprs: MarketAPR[]) {
+export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfos: AssetDataPriced[], marketAprs: MarketAPRs[]) {
   const getPriceBySymbol = (symbol: string): number => {
     const asset = assetInfos.find((info) => info.symbol === symbol)
     return asset ? asset.price : 0

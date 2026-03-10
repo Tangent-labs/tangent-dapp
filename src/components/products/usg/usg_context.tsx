@@ -6,7 +6,7 @@ import { getBalances } from "./record/usg_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { getLpUserPoints, getMarketAprs, getUserRefereesPoints, getVoteUserPoints } from "./client_api"
-import { USGStakingInfo, LpUserPoints, ZapToken, VoteUserPoints, RefereesPoints, MarketAPR } from "./usg_type"
+import { USGStakingInfo, LpUserPoints, ZapToken, VoteUserPoints, RefereesPoints, MarketAPRs } from "./usg_type"
 import { useRootContext } from "../root/root_context"
 // import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
 // import { TANStakingInfo } from "../vs_tan/rstan_types"
@@ -27,7 +27,7 @@ type USGContextValues = {
   // TANsTANMetrics: TANStakingInfo | undefined
   // loadTanSTANMetrics: () => void
   refereesPoints: RefereesPoints
-  marketAprs: MarketAPR[]
+  marketAprs: MarketAPRs[]
 }
 
 export const USGContext = createContext<USGContextValues | undefined>(undefined)
@@ -49,7 +49,7 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
 
   // const [TANsTANMetrics, setTANsTANMetrics] = useState<TANStakingInfo | undefined>()
 
-  const [marketAprs, setMarketAprs] = useState<Array<MarketAPR>>([])
+  const [marketAprs, setMarketAprs] = useState<Array<MarketAPRs>>([])
 
   const fetchAprs = async () => {
     const markets = await getMarketAprs()

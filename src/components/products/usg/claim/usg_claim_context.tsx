@@ -4,7 +4,7 @@ import { Address, zeroAddress } from "viem"
 import { useUSGContext } from "../usg_context"
 import { USG_CONTRACT } from "../usg_repository"
 import { AssetDataPriced, ListState } from "@/types"
-import { formatDollar } from "@/lib/number_formatter"
+import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { ClaimableMarket, ClaimData, ClaimerInfo, USGStakingInfo } from "../usg_type"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
@@ -127,8 +127,8 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
 
   const totals = useMemo(() => {
     return {
-      totalDeposited: formatDollar(displayRows.reduce((sum, token) => sum + parseFloat(token.totalDepositedValue), 0).toFixed(0)),
-      totalClaimable: formatDollar(displayRows.reduce((sum, token) => sum + parseFloat(token.totalClaimableValue), 0).toFixed(0)),
+      totalDeposited: `$${formatMillions(displayRows.reduce((sum, token) => sum + parseFloat(token.totalDepositedValue), 0).toString())}`,
+      totalClaimable: formatDollar(displayRows.reduce((sum, token) => sum + parseFloat(token.totalClaimableValue), 0).toString(), 2),
     }
   }, [displayRows])
 

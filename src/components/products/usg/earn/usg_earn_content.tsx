@@ -6,12 +6,11 @@ import { useUSGContext } from "../usg_context"
 import { useUSGEarnContext } from "./usg_earn_context"
 import { AprOpportunity } from "./components/EarnList"
 import { aprOpportunitiesListHeaders } from "./usg_earn_controller"
-import { formatBigInt, formatMillions } from "@/lib/number_formatter"
 import { ListHeader } from "@/components/design_system/list/list_header"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
-import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
+import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
 
 const listeState: ListState = {
   search: undefined,
@@ -43,15 +42,9 @@ export const USGEarnContent = () => {
         </ReliefCard>
 
         <div className="flex h-auto w-full flex-col justify-between gap-2 xl:w-1/2">
-          <PointsCampaignLiveCard></PointsCampaignLiveCard>
+          <PointsCampaignLiveCard />
 
-          <ThreeCardRowWithMask
-            contents={[
-              { key: "USG Balance", value: formatMillions(formatBigInt(USGsUSGMetrics?.USGBalance || 0n, 18, 2)) },
-              { key: "sUSG Balance", value: formatMillions(formatBigInt(USGsUSGMetrics?.sUSGBalance || 0n, 18, 2)) },
-              { key: "Your Total Points", value: `${formatMillions(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints)} pts` },
-            ]}
-          ></ThreeCardRowWithMask>
+          <UsgBalanceAndTotalPoints USGsUSGMetrics={USGsUSGMetrics} lpUserPoints={lpUserPoints} voteUserPoints={voteUserPoints} />
         </div>
       </div>
 
@@ -72,7 +65,7 @@ export function USGEarnListInner() {
       <ListHeader headers={headers} />
 
       {displayRows?.map((item, index) => (
-        <AprOpportunity item={item} key={item?.asset} index={index} isLoading={isLoading}></AprOpportunity>
+        <AprOpportunity item={item} key={index} index={index} isLoading={isLoading}></AprOpportunity>
       ))}
     </>
   )

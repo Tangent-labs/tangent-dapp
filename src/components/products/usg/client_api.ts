@@ -1,6 +1,6 @@
 import { Address } from "viem"
 
-import { MarketHistoricalData, LpUserPoints, UserTask, VoteTask, VoteUserPoints, RefereesPoints, MarketAPR, SavingAccountsApy, TVLData } from "./usg_type"
+import { MarketHistoricalData, LpUserPoints, UserTask, VoteTask, VoteUserPoints, RefereesPoints, MarketAPRs, SavingAccountsApy, TVLData } from "./usg_type"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -486,7 +486,7 @@ export const getSavingsAPY = async (): Promise<SavingAccountsApy[]> => {
   }
 }
 
-export const getMarketAprs = async (): Promise<Array<MarketAPR>> => {
+export const getMarketAprs = async (): Promise<Array<MarketAPRs>> => {
   try {
     const url = `${baseUrl}/aprs`
 
@@ -501,7 +501,7 @@ export const getMarketAprs = async (): Promise<Array<MarketAPR>> => {
       throw new Error(`Failed to fetch aprs`)
     }
 
-    const data: Array<MarketAPR> = await response.json()
+    const data: Array<MarketAPRs> = await response.json()
 
     return data
   } catch (error) {

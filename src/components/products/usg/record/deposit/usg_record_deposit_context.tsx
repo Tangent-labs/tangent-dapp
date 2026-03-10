@@ -9,7 +9,7 @@ import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { Address, formatEther, formatUnits, parseEther, zeroAddress } from "viem"
-import { formatBigInt, formatBigIntAsNumber, truncateDecimals } from "@/lib/number_formatter"
+import { formatBigInt, formatBigIntAsNumber, formatNumber, truncateDecimals } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { computeAprVariation, computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
@@ -604,7 +604,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   const minValueReceivedFromZap = useMemo(() => {
     if (zapValue && marketData) {
       const minAmountOutWei = computedMinAmountOut(zapValue, slippage)
-      const result = `(${truncateDecimals(formatUnits(minAmountOutWei, collateralInfo?.decimals), collateralInfo.displayDecimals)})`
+      const result = `(${formatNumber(Number(truncateDecimals(formatUnits(minAmountOutWei, collateralInfo?.decimals), collateralInfo.displayDecimals)), 2)})`
       return result
     }
 

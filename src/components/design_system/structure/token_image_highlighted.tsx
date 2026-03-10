@@ -37,7 +37,7 @@ export default function TokenImageHighlighted({ token, size, ...props }: TokenIm
       <HoverCard openDelay={100} closeDelay={100}>
         <HoverCardTrigger asChild>
           <Image
-            className="flex items-center justify-center rounded-full bg-overlay-panel p-1.5 backdrop-blur-[60px]"
+            className="flex items-center justify-center rounded-full bg-overlay-panel p-1.5 backdrop-blur-[60px] hover:bg-white/10"
             {...props}
             src={src}
             alt={token}

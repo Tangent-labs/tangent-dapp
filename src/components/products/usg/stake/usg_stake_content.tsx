@@ -108,7 +108,7 @@ export default function USGStakeContent() {
             ></LargeButtonTab>
           </div>
 
-          <Divider className="h-1 w-full"></Divider>
+          <Divider className="w-full" />
 
           <div className="flex w-full items-end justify-end">
             <span className="text-xs text-subtitle">

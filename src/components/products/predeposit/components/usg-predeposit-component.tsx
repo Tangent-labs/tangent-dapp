@@ -59,7 +59,7 @@ export const USGPredepositComponent = ({
   tanAllocation,
 }: USGPredepositComponentProps) => {
   return (
-    <ReliefCard className="flex w-full flex-col p-4">
+    <ReliefCard className="flex w-full flex-col p-2 xl:p-4">
       <div className="mb-2 flex w-full items-center justify-between">
         <span className="font-semibold text-white">Deposit cap</span>
         <span className="flex items-center">

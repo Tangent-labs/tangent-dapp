@@ -130,7 +130,7 @@ export const VsTanLayoutContent = ({
             ></FeatureSelect>
           </div>
 
-          <Divider className="h-0.5 w-full bg-white/10" />
+          <Divider />
 
           {children}
         </div>
@@ -138,7 +138,7 @@ export const VsTanLayoutContent = ({
         <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-7/12">
           <div className="mr-auto text-3xl font-semibold text-white">Locked Positions</div>
 
-          <Divider className="h-0.5 w-full bg-white/10" />
+          <Divider />
 
           <ListProvider customSort={() => {}} _headers={lockListHeaders} _rows={[]} _listState={listeState}>
             <LockPositionList></LockPositionList>

@@ -141,7 +141,7 @@ export default function USGMarketList() {
         </div>
       </div>
 
-      <Divider className="border-white/10! hidden xl:flex" />
+      <Divider className="hidden xl:flex" />
 
       <div className="mb-2 mt-0 flex w-full flex-col items-stretch justify-center gap-6 lg:flex-row xl:mb-0 xl:mt-4">
         <div className="hidden w-full justify-center md:flex lg:w-1/2">

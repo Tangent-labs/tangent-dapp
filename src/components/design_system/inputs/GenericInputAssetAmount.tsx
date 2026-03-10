@@ -298,7 +298,7 @@ export function GenericInputAssetAmount({
 
         <div className="stop-focus flex select-none items-center justify-center gap-2">
           <div className="flex gap-1">{isZapping && <IconThunder className="h-auto w-[8px] text-row-tonic" />}</div>
-          <div className="no-parent-hover order-1 rounded-md lg:order-2">{depositSelect}</div>
+          <div className="no-parent-hover order-1 rounded-[10px] lg:order-2">{depositSelect}</div>
         </div>
       </div>
 

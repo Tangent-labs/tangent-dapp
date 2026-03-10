@@ -3,6 +3,7 @@
 import {
   computeCollatData,
   getUSGMarketsData,
+  matchProtocol,
   sortMarketListByType,
   sortMarketsByUserPositionAndTVL,
   transformGlobalData,
@@ -114,23 +115,6 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
       }
     })
   }, [marketAprs])
-
-  const TYPE_TO_MARKET: Record<string, string[]> = {
-    Convex_CRV: ["Curve", "Convex"],
-    Convex_FXN: ["Convex", "f(x) Protocol", "Curve"],
-    Pendle_PT: ["Pendle"],
-    STAKEDAO_CRV_Vault: ["Stake DAO", "Curve"],
-  }
-
-  const matchProtocol = (marketProtocol: string, selectedProtocol: string) => {
-    if (selectedProtocol === "All") return true
-
-    const mapped = TYPE_TO_MARKET[marketProtocol]
-
-    if (!mapped) return false
-
-    return mapped.includes(selectedProtocol)
-  }
 
   const displayRows = useMemo<ListRowData[]>(() => {
     const allRows = transformToRows(marketDataWithAPR, onChainData)

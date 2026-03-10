@@ -22,6 +22,15 @@ type UsgTasksContextValues = {
   sortVoteTasks: (arg: ListState) => void
   selectedFeature: string
   setSelectedFeature: (s: string) => void
+
+  searchValue: string | null
+  setSearchValue: (value: string | null) => void
+
+  filteredBy: string
+  setFilteredBy: (s: string) => void
+
+  protocol: string
+  setProtocol: (s: string) => void
 }
 
 export const UsgTasksContext = createContext<UsgTasksContextValues | undefined>(undefined)
@@ -36,6 +45,12 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
   const [voteTasks, setVoteTasks] = useState<VoteTask[]>([])
 
   const [selectedFeature, setSelectedFeature] = useState<string>("Borrow & LP")
+
+  const [searchValue, setSearchValue] = useState<string | null>(null)
+
+  const [filteredBy, setFilteredBy] = useState<string>("all")
+
+  const [protocol, setProtocol] = useState<string>("All")
 
   useEffect(() => {
     if (currentAddress) {
@@ -89,8 +104,19 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
 
     const rows = mapAirdropData(tasks)
 
-    return rows
-  }, [tasks])
+    const filteredRows = rows
+      .filter((row) => filteredBy === "all" || (!!row?.balance && row?.balance > 0))
+      .filter((market) => protocol === "All" || market.protocol?.replaceAll(" ", "") == protocol?.replaceAll(" ", ""))
+
+    let rowsToShow = filteredRows
+
+    if (searchValue?.trim()) {
+      const lowered = searchValue.toLowerCase().trim()
+      rowsToShow = filteredRows.filter((row) => row?.description.toLowerCase().includes(lowered))
+    }
+
+    return rowsToShow
+  }, [tasks, searchValue, filteredBy, protocol])
 
   const sortVoteTasks = (listState: ListState) => {
     const { key, direction } = listState.sort!
@@ -128,6 +154,12 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
     sortVoteTasks,
     selectedFeature,
     setSelectedFeature,
+    searchValue,
+    setSearchValue,
+    filteredBy,
+    setFilteredBy,
+    protocol,
+    setProtocol,
   }
 
   return <UsgTasksContext.Provider value={contextValue}>{children}</UsgTasksContext.Provider>

@@ -20,7 +20,7 @@ export const mapAirdropData = (tasks: UserTask[]) => {
 }
 
 export const lpListHeaders: ListHeaderData[] = [
-  { label: "Incentive", key: "incentive" },
+  { label: "Action", key: "action" },
   { label: "Protocol", key: "protocol" },
   { label: "Pts/Day/USD", key: "pointRate" },
   { label: "Owned", key: "balanceUsd" },
@@ -29,7 +29,7 @@ export const lpListHeaders: ListHeaderData[] = [
 ]
 
 export const voteListHeaders: ListHeaderData[] = [
-  { label: "Incentive", key: "incentive" },
+  { label: "Action", key: "action" },
   { label: "Protocol", key: "protocol" },
   { label: "Pts/Epoch/Ve", key: "pointRate" },
   { label: "Points", key: "points" },

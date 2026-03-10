@@ -321,7 +321,7 @@ export function USGMarketListInner() {
                       {/* VALUE TOP  */}
                       <span className="text-xs md:text-[15px]">{indicator?.value}</span>
                       {/* VALUE DOWN */}
-                      <span className="hidden text-xs text-subtitle md:flex md:text-[10px]">/{formatNumber(indicator?.raw, 0)}</span>
+                      <span className="hidden text-xs text-subtitle md:flex md:text-[10px]">/{indicator?.subValue}</span>
                     </span>
                   </div>
                 ) : (

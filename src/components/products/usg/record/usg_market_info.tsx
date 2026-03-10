@@ -18,7 +18,7 @@ export function USGMarketInfo() {
         <Title label="Markets info" size="normal" />
         <Divider />
         <div className="flex flex-col justify-between xl:flex-row">
-          <div className="flex flex-1 items-center justify-between border-r border-r-white border-opacity-20 pr-3">
+          <div className="flex flex-1 items-center justify-between border-r border-r-white border-opacity-10 pr-3">
             <div className="flex w-full flex-col">
               <div className="flex w-full items-center justify-between gap-2">
                 <div className="flex items-center justify-center gap-2">

@@ -51,7 +51,7 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
                 })
 
                 return (
-                  <div className="flex flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-input p-2 text-white backdrop-blur-[60px]">
+                  <div className="flex flex-col items-center justify-center rounded-[10px] border border-white border-opacity-10 bg-input p-2 text-white backdrop-blur-[60px]">
                     <div className="flex w-full items-center justify-between">
                       <p className="min-w-24 font-semibold">Total Borrow:</p>
                       {formattedValue}

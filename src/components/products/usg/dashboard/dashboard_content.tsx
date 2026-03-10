@@ -56,7 +56,7 @@ export const USGDashboardContent = () => {
     const dateLabel = new Date(ts).toDateString()
 
     return (
-      <div className="flex min-w-40 flex-col items-start justify-center gap-1 rounded-[10px] border border-white border-opacity-20 bg-input p-3 backdrop-blur-[60px]">
+      <div className="flex min-w-40 flex-col items-start justify-center gap-1 rounded-[10px] border border-white border-opacity-10 bg-input p-3 backdrop-blur-[60px]">
         <div className="mb-3 text-xs font-medium text-slate-300">{dateLabel}</div>
 
         <div className="mb-2 flex w-full items-center justify-between text-xs">
@@ -96,7 +96,7 @@ export const USGDashboardContent = () => {
     const dateLabel = new Date(ts).toDateString()
 
     return (
-      <div className="min-w-32 rounded-[10px] border border-white border-opacity-20 bg-input p-3 backdrop-blur-[60px]">
+      <div className="min-w-32 rounded-[10px] border border-white border-opacity-10 bg-input p-3 backdrop-blur-[60px]">
         <div className="mb-3 text-xs font-medium text-slate-300">{dateLabel}</div>
 
         <div className="mb-2 flex items-center justify-between text-xs">
@@ -146,7 +146,7 @@ export const USGDashboardContent = () => {
           className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "flex w-full items-center justify-around")}
           indicators={[
             { title: "sUSG ", value: formatDollar(globalData.sUSGPrice, 4) },
-            { title: "Supply", value: formatMillions(globalData.sUSGSupply) },
+            { title: "Supply", value: globalData.sUSGSupply },
             { title: "APY", value: sUSGCurrentAPY.toFixed(2) + "%" },
           ]}
         >

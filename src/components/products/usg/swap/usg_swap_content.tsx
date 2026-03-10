@@ -178,7 +178,7 @@ export default function USGSwapContent() {
               }}
               className="my-2 flex w-full cursor-pointer items-center justify-center border-none"
             >
-              <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-20 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
+              <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-10 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
             </div>
 
             <GenericInputAssetAmount

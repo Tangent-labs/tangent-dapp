@@ -112,7 +112,7 @@ function NavigationMenuViewport({ className, ...props }: React.ComponentProps<ty
         data-slot="navigation-menu-viewport"
         className={cn(
           "origin-top-center relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-[10px] border-tangent",
-          "border-white border-opacity-20 bg-overlay-panel shadow backdrop-blur-[60px]",
+          "border-white border-opacity-10 bg-overlay-panel shadow backdrop-blur-[60px]",
           "md:w-[var(--radix-navigation-menu-viewport-width)]",
           className
         )}

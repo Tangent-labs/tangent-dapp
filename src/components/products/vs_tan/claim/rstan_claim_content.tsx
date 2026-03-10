@@ -63,7 +63,7 @@ export const VsTanClaimContent = () => {
                 2
               )}
               placeholder="Amount"
-              className="min-h-10 rounded-[10px] border-opacity-20 bg-transparent py-2 font-semibold focus:outline-none"
+              className="min-h-10 rounded-[10px] border-opacity-10 bg-transparent py-2 font-semibold focus:outline-none"
             />
           </div>
 

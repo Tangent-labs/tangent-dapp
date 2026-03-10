@@ -34,7 +34,7 @@ const ReferralForm = ({
         placeholder="Type a referral code"
         className={cn(
           customInputClass +
-            " auto relative h-[30px] w-full items-center justify-center rounded-[10px] border-tangent border-white/20 bg-transparent text-center text-xs backdrop-blur-[60px] backdrop-filter focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            " auto relative h-[30px] w-full items-center justify-center rounded-[10px] border-tangent border-white/10 bg-transparent text-center text-xs backdrop-blur-[60px] backdrop-filter focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         )}
         onChange={(e) => setReferralStatus({ ...referralStatus, referralCode: e?.target?.value })}
         value={referralStatus?.referralCode as string}

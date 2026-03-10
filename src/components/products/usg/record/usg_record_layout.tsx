@@ -164,7 +164,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                               placeholder=""
                               type="number"
                               step={1}
-                              className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                              className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-10 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                               value={simulatedCollatAmount}
                               onChange={(e) => setSimulatedCollatAmount(Number(e?.target?.value))}
                             />
@@ -176,7 +176,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                               placeholder=""
                               type="number"
                               step={1}
-                              className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                              className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-10 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                               value={simulatedDebtAmount}
                               onChange={(e) => setSimulatedDebtAmount(Number(e?.target?.value))}
                             />
@@ -193,7 +193,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                             placeholder=""
                             type="number"
                             step={1}
-                            className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                            className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-10 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                             value={initialCollatAmount}
                             onChange={(e) => setInitialCollatAmount(Number(e?.target?.value))}
                           />
@@ -206,7 +206,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                               placeholder=""
                               type="number"
                               step={1}
-                              className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                              className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-10 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                               value={debtFarming}
                               onChange={(e) => setDebtFarming(Number(e?.target?.value))}
                             />
@@ -217,7 +217,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                               placeholder=""
                               type="number"
                               step={0.1}
-                              className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                              className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-10 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                               value={debtVAPR}
                               onChange={(e) => setDebtVAPR(Number(e?.target?.value))}
                             />
@@ -293,7 +293,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                               <Tooltip
                                 content={({ active, payload, label }) =>
                                   active && payload?.length ? (
-                                    <div className="flex min-w-28 flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-input p-2 text-white backdrop-blur-[60px]">
+                                    <div className="flex min-w-28 flex-col items-center justify-center rounded-[10px] border border-white border-opacity-10 bg-input p-2 text-white backdrop-blur-[60px]">
                                       <div className="flex w-full items-center justify-between">
                                         <p className="font-semibold">vAPR:</p>
                                         <p>{Number(payload[0]?.value).toFixed(2)}%</p>

@@ -70,7 +70,7 @@ export const ReferralHeader = ({
               <input
                 disabled={!isConnected}
                 placeholder="Type a referral code"
-                className="relative mx-auto flex h-[30px] w-full items-center justify-center rounded-[10px] border-tangent border-white/20 bg-transparent text-center text-xs backdrop-blur-[60px] backdrop-filter focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                className="relative mx-auto flex h-[30px] w-full items-center justify-center rounded-[10px] border-tangent border-white/10 bg-transparent text-center text-xs backdrop-blur-[60px] backdrop-filter focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 onChange={(e) => setReferralStatus({ ...referralStatus, referralCode: e?.target?.value })}
                 value={referralStatus?.referralCode as string}
               />
@@ -82,7 +82,7 @@ export const ReferralHeader = ({
             <input
               disabled={!isConnected}
               placeholder="Type a referral code"
-              className="relative mx-auto hidden h-[30px] w-full max-w-48 items-center justify-center rounded-[10px] border-tangent border-white/20 bg-transparent p-2.5 text-center text-xs backdrop-blur-[60px] backdrop-filter focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 xl:flex"
+              className="relative mx-auto hidden h-[30px] w-full max-w-48 items-center justify-center rounded-[10px] border-tangent border-white/10 bg-transparent p-2.5 text-center text-xs backdrop-blur-[60px] backdrop-filter focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 xl:flex"
               onChange={(e) => setReferralStatus({ ...referralStatus, referralCode: e?.target?.value })}
               value={referralStatus?.referralCode as string}
             />

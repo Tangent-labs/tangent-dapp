@@ -4,7 +4,7 @@ import Image from "next/image"
 import { formatUnits } from "viem"
 import { Switch } from "@/components/ui/switch"
 import { ExistingAsset, ListState } from "@/types"
-import { formatDollar } from "@/lib/number_formatter"
+import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { specialTokensList } from "../usg_repository"
 import { useUSGClaimContext } from "./usg_claim_context"
 import { claimListHeaders } from "./usg_claim_controller"
@@ -216,10 +216,10 @@ function ClaimList() {
 
             <hr className="my-2 w-full opacity-20 xl:hidden" />
             <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-1/2">
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center gap-2 text-sm md:text-lg">
+              <div className="flex w-full flex-1 cursor-pointer items-center justify-center gap-2 text-[15px]">
                 {formatDollar(item?.totalClaimableValue || 0, 2)}
 
-                <USGHoverCard iconClassName="text-row-tonic" title={`${item?.marketName} Rewards Breakdown`}>
+                <USGHoverCard iconClassName="w-3" title={`${item?.marketName} Rewards Breakdown`}>
                   {(item?.claimable as ClaimAsset[]).map((reward: ClaimAsset) => (
                     <div key={reward?.symbol} className="my-1 flex items-center gap-4">
                       <TokenImage token={reward.symbol} size={16} />
@@ -233,9 +233,7 @@ function ClaimList() {
                 </USGHoverCard>
               </div>
 
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center text-sm md:text-lg">
-                {formatDollar(item?.totalDepositedValue || 0, 0)}
-              </div>
+              <div className="flex w-full flex-1 cursor-pointer items-center justify-center text-[15px]">${formatMillions(item?.totalDepositedValue || 0)}</div>
 
               <div className="flex w-full flex-1 cursor-pointer items-center justify-center">
                 <Switch

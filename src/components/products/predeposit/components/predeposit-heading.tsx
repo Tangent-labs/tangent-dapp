@@ -42,7 +42,7 @@ export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumula
           </ReliefCard>
         </div>
 
-        <div className="flex w-full flex-col gap-2 pl-0 xl:w-fit xl:min-w-[400px] xl:border-l xl:border-l-white/30 xl:pl-4">
+        <div className="flex w-full flex-col gap-2 pl-0 xl:w-fit xl:min-w-[400px] xl:border-l xl:border-l-white/10 xl:pl-4">
           <ReliefCard className="relative flex w-full items-center justify-between px-3 py-4">
             <div className="absolute inset-0 rounded-[10px] bg-cover bg-center opacity-20" style={{ backgroundImage: 'url("./medias/card_bg_blocks.png")' }} />
 

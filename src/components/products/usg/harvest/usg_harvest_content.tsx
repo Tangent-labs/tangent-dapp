@@ -154,13 +154,12 @@ function HarvestList() {
               <div className="flex justify-center gap-2 text-sm md:text-[15px] xl:w-1/2">
                 {formatDollar(item?.rewards?.totalDollar || 0)}
 
-                <USGHoverCard iconClassName="text-row-tonic" title={`${item?.asset} Rewards Breakdown`}>
+                <USGHoverCard iconClassName="w-3" title={`${item?.asset} Rewards Breakdown`}>
                   <div className="flex flex-col gap-1 text-sm">
                     {item?.rewards?.details?.map((reward, index) => (
                       <div key={index} className="flex items-center gap-2">
-                        <div className="w-10">
-                          <TokenImage token={reward.logo} size={16} />
-                        </div>
+                        <TokenImage token={reward.logo} size={16} />
+
                         <span className="w-20"> {reward.logo}</span>
                         <span> {formatDollar(reward.dollarValue)}</span>
                       </div>

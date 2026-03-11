@@ -13,13 +13,34 @@ import { ListProvider } from "@/components/design_system/list/list_context"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { AirdropSharedHeader } from "../components/airdrop_side_header"
+import { InputSearch } from "@/components/design_system/inputs/input_search"
+import { LargeButtonTab } from "@/components/design_system/inputs/large_button_tab"
+import { InputSelect } from "@/components/design_system/inputs/input_select"
+import { protocolOptions } from "../../list/usg_market_controller"
 
 export default function UsgTasksContent() {
   const { lpUserPoints, voteUserPoints } = useUSGContext()
 
   const { isConnected, connect } = useWalletConnexionContext()
 
-  const { lpTasks, voteTasks, selectedFeature, sortLpTasks, sortVoteTasks, setSelectedFeature } = useUsgTasksContext()
+  const {
+    lpTasks,
+    lpTaskProtocol,
+    voteTaskProtocol,
+    voteTasks,
+    lpTaskSearchValue,
+    lpTaskFilteredBy,
+    selectedFeature,
+    voteTaskSearchValue,
+    sortLpTasks,
+    setLpTaskProtocol,
+    setVoteTaskProtocol,
+    sortVoteTasks,
+    setLpTaskFilteredBy,
+    setLpTaskSearchValue,
+    setSelectedFeature,
+    setVoteTaskSearchValue,
+  } = useUsgTasksContext()
 
   const { userBoostFactor, setReferralStatus, referralStatus, airdropDataIsLoading, signMessage } = useUsgAirdropContext()
 
@@ -57,15 +78,80 @@ export default function UsgTasksContent() {
       <div className="flex w-full items-start justify-start gap-4">
         <div className="flex w-full flex-col">
           {isConnected && selectedFeature === "Borrow & LP" && (
-            <ListProvider customSort={sortLpTasks} _headers={lpListHeaders} _rows={lpTasks} _listState={lpListState}>
-              <LPTasksList />
-            </ListProvider>
+            <>
+              <div className="mb-2 hidden items-end justify-between lg:flex xl:mb-0">
+                <div className="flex flex-col items-stretch justify-between gap-3">
+                  <div className="flex w-full items-end justify-start gap-2">
+                    <div className="flex w-full min-w-96 flex-col items-center justify-center">
+                      <div className="mb-1 text-xs text-subtitle"> Search </div>
+                      <InputSearch
+                        placeholder=""
+                        className="flex w-full flex-col items-center justify-center"
+                        value={lpTaskSearchValue ?? ""}
+                        onChange={(e) => setLpTaskSearchValue(e as string)}
+                      />
+                    </div>
+
+                    <LargeButtonTab
+                      onClick={() => setLpTaskFilteredBy("All")}
+                      className="h-10 px-4"
+                      active={!lpTaskFilteredBy || lpTaskFilteredBy === "All"}
+                      label="All"
+                    ></LargeButtonTab>
+                    <LargeButtonTab
+                      onClick={() => setLpTaskFilteredBy("deposits")}
+                      className="h-10 px-4"
+                      active={lpTaskFilteredBy === "deposits"}
+                      label="Deposits"
+                    ></LargeButtonTab>
+                  </div>
+                </div>
+                <div className="flex flex-col items-stretch justify-end gap-3">
+                  <div className="flex w-full flex-col items-center justify-center md:w-fit">
+                    <div className="mb-1 text-xs text-subtitle"> Protocol </div>
+
+                    <InputSelect className="w-full min-w-48" value={lpTaskProtocol || ""} options={protocolOptions} onChange={(e) => setLpTaskProtocol(e)} />
+                  </div>
+                </div>
+              </div>
+              <ListProvider customSort={sortLpTasks} _headers={lpListHeaders} _rows={lpTasks} _listState={lpListState}>
+                <LPTasksList />
+              </ListProvider>
+            </>
           )}
 
           {isConnected && selectedFeature === "Vote" && (
-            <ListProvider customSort={sortVoteTasks} _headers={voteListHeaders} _rows={voteTasks} _listState={voteListState}>
-              <VoteTasksList />
-            </ListProvider>
+            <>
+              <div className="mb-2 hidden items-end justify-between lg:flex xl:mb-0">
+                <div className="flex w-full items-end justify-start gap-2">
+                  <div className="flex w-full max-w-96 flex-col items-center justify-center">
+                    <div className="mb-1 text-xs text-subtitle"> Search </div>
+                    <InputSearch
+                      placeholder=""
+                      className="flex w-full flex-col items-center justify-center"
+                      value={voteTaskSearchValue ?? ""}
+                      onChange={(e) => setVoteTaskSearchValue(e as string)}
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col items-stretch justify-end gap-3">
+                  <div className="flex w-full flex-col items-center justify-center md:w-fit">
+                    <div className="mb-1 text-xs text-subtitle"> Protocol </div>
+
+                    <InputSelect
+                      className="w-full min-w-48"
+                      value={voteTaskProtocol || ""}
+                      options={protocolOptions}
+                      onChange={(e) => setVoteTaskProtocol(e)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <ListProvider customSort={sortVoteTasks} _headers={voteListHeaders} _rows={voteTasks} _listState={voteListState}>
+                <VoteTasksList />
+              </ListProvider>
+            </>
           )}
 
           {!isConnected && (

@@ -182,7 +182,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
                             />
                           </div>
 
-                          <Divider className="h-0.5 w-full bg-white/10" />
+                          <Divider />
                         </>
                       )}
 

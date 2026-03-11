@@ -1,11 +1,11 @@
 "use client"
 
-import { USGHoverCard } from "../structure/usg_hover_card"
-import { ListHeaderData, ListSort, SortedState } from "@/types"
-import { IconSortHeader } from "@/components/icons"
-import { ListRowDisposition } from "@/components/design_system/list/list_row_disposition"
 import { cn } from "@/lib/utils"
 import { ListGradientBorder } from "./list_gradient_border"
+import { ListHeaderData, ListSort, SortedState } from "@/types"
+import { IconCircleHelp, IconSortHeader } from "@/components/icons"
+import { ListRowDisposition } from "@/components/design_system/list/list_row_disposition"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 interface ListHeaderProps {
   headers: ListHeaderData[]
@@ -30,9 +30,17 @@ const MarketHeaderDisplay = ({ label, sort = "none", onSort, field, indicator, c
     <div className={cn(className, "cursor-pointer gap-2 text-sm")} onClick={() => onSort && onSort(field)}>
       <span>{label}</span>
       {indicator && (
-        <USGHoverCard iconClassName="w-[13px]" title={label as string}>
-          {indicator}
-        </USGHoverCard>
+        <HoverCard openDelay={150} closeDelay={100}>
+          <HoverCardTrigger asChild>
+            <button type="button" className="inline-flex items-center">
+              <IconCircleHelp className="w-3" />
+            </button>
+          </HoverCardTrigger>
+
+          <HoverCardContent side="top" align="center" className="z-1001 w-fit max-w-64 p-2 text-xs">
+            {indicator}
+          </HoverCardContent>
+        </HoverCard>
       )}
       {!!onSort && <IconSortHeader sort={sort} />}
     </div>

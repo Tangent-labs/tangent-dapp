@@ -91,25 +91,25 @@ export const ForecastGraph = ({ initialInvestment, apr, additionalLiquidity }: F
             onClick={() => setFilter(timeFilters.week)}
             label={"1w"}
             active={false}
-            className={`cursor-pointer rounded-[10px] border border-white/30 px-4 py-1 text-xs ${filter === timeFilters.week ? "bg-white text-black" : ""}`}
+            className={`cursor-pointer rounded-[10px] border border-white/10 px-4 py-1 text-xs ${filter === timeFilters.week ? "bg-white text-black" : ""}`}
           />
           <ButtonTab
             onClick={() => setFilter(timeFilters.month)}
             label={"1m"}
             active={false}
-            className={`cursor-pointer rounded-[10px] border border-white/30 px-4 py-1 text-xs ${filter === timeFilters.month ? "bg-white text-black" : ""}`}
+            className={`cursor-pointer rounded-[10px] border border-white/10 px-4 py-1 text-xs ${filter === timeFilters.month ? "bg-white text-black" : ""}`}
           />
           <ButtonTab
             onClick={() => setFilter(timeFilters.year)}
             label={"1y"}
             active={false}
-            className={`cursor-pointer rounded-[10px] border border-white/30 px-4 py-1 text-xs ${filter === timeFilters.year ? "bg-white text-black" : ""}`}
+            className={`cursor-pointer rounded-[10px] border border-white/10 px-4 py-1 text-xs ${filter === timeFilters.year ? "bg-white text-black" : ""}`}
           />
           <ButtonTab
             onClick={() => setFilter(timeFilters.twoYears)}
             label={"2y"}
             active={false}
-            className={`cursor-pointer rounded-[10px] border border-white/30 px-4 py-1 text-xs ${filter === timeFilters.twoYears ? "bg-white text-black" : ""}`}
+            className={`cursor-pointer rounded-[10px] border border-white/10 px-4 py-1 text-xs ${filter === timeFilters.twoYears ? "bg-white text-black" : ""}`}
           />
         </div>
       </div>

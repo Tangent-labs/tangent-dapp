@@ -1,6 +1,6 @@
-import { Abi, Address, formatEther, formatUnits, Hex } from "viem"
 import MarketListUI from "@/abi/USG/MarketListUI.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
+import { Abi, Address, formatEther, formatUnits, Hex } from "viem"
 import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
 import { USG_CONTRACT, USGMarkets, USGPegKeepers } from "../usg_repository"
 import { formatBigInt, formatMarketListCompact, formatNumber } from "@/lib/number_formatter"
@@ -271,4 +271,21 @@ export const sortMarketsByUserPositionAndTVL = (a: ListRowData, b: ListRowData):
   }
 
   return 0
+}
+
+const TYPE_TO_MARKET: Record<string, string[]> = {
+  Convex_CRV: ["Curve", "Convex"],
+  Convex_FXN: ["Convex", "f(x) Protocol", "Curve"],
+  Pendle_PT: ["Pendle"],
+  STAKEDAO_CRV_Vault: ["Stake DAO", "Curve"],
+}
+
+export const matchProtocol = (marketProtocol: string, selectedProtocol: string) => {
+  if (selectedProtocol === "All") return true
+
+  const mapped = TYPE_TO_MARKET[marketProtocol]
+
+  if (!mapped) return false
+
+  return mapped.includes(selectedProtocol)
 }

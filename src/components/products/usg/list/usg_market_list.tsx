@@ -7,12 +7,13 @@ import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
 import { ListState } from "@/types"
 import { useUSGContext } from "../usg_context"
-import { IconCircleHelp, IconOpenOutside } from "@/components/icons"
 import { useRootContext } from "../../root/root_context"
 import { IconStars } from "@/components/icons/icon_stars"
 import { useUSGMaketListContext } from "./usg_market_list_context"
+import { IconCircleHelp, IconOpenOutside } from "@/components/icons"
 import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { Divider } from "@/components/design_system/structure/divider"
+import { MarketAPR } from "@/components/design_system/list/market_apr"
 import { ListAsset } from "@/components/design_system/list/list_asset"
 import { InputSelect } from "@/components/design_system/inputs/input_select"
 import { InputSearch } from "@/components/design_system/inputs/input_search"
@@ -27,7 +28,6 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
-import { MarketAPR } from "@/components/design_system/list/market_apr"
 
 interface ListRowDispositionProps {
   children: React.ReactNode[]
@@ -141,9 +141,9 @@ export default function USGMarketList() {
         </div>
       </div>
 
-      <Divider className="border-white/10! hidden xl:flex" />
+      <Divider className="hidden xl:flex" />
 
-      <div className="mb-2 mt-0 flex w-full flex-col items-stretch justify-center gap-6 lg:flex-row xl:mb-0 xl:mt-4">
+      <div className="mb-2 mt-0 flex w-full flex-col items-stretch justify-center gap-2 lg:flex-row xl:mb-0 xl:mt-4 xl:gap-6">
         <div className="hidden w-full justify-center md:flex lg:w-1/2">
           <div className="flex h-full w-full items-stretch gap-4">
             <div className="basis-[40%]">
@@ -152,7 +152,7 @@ export default function USGMarketList() {
                   <div className="flex-shrink-0">
                     <TokenImage token="USG" className="h-10 w-10" size={32} />
                   </div>
-                  <div className="flex flex-1 items-center justify-center gap-10 xl:gap-10">
+                  <div className="flex flex-1 items-center justify-center gap-4 md:gap-10">
                     {[
                       { key: "USG", value: formatDollar(globalData.USGPrice, 4) },
                       { key: "Supply", value: formatMillions(globalData.USGSupply) },
@@ -172,7 +172,7 @@ export default function USGMarketList() {
                   <div className="flex-shrink-0">
                     <TokenImage token="sUSG" className="h-10 w-10" size={32} />
                   </div>
-                  <div className="flex flex-1 items-center justify-center gap-10 xl:gap-10">
+                  <div className="flex flex-1 items-center justify-center gap-4 md:gap-10">
                     <div className="text-center">
                       <div className="text-xs text-subtitle">sUSG</div>
                       <div className="text-sm font-semibold">{globalData.sUSGPrice}</div>

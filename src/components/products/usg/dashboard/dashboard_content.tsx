@@ -169,7 +169,7 @@ export const USGDashboardContent = () => {
               </div>
             </div>
 
-            <Divider className="h-0.5 w-full bg-white/10" />
+            <Divider />
 
             <div className="flex w-full items-stretch justify-start gap-2 text-xs">
               <div className="flex flex-row items-start justify-start gap-2 self-stretch rounded-[10px] bg-overlay-panel p-2 md:flex-col">
@@ -298,7 +298,7 @@ export const USGDashboardContent = () => {
               </div>
             </div>
 
-            <Divider className="h-0.5 w-full bg-white/10" />
+            <Divider />
 
             {protocolCurrentTVL && protocolCurrentTVL?.total > 0 && (
               <div className="flex w-full items-stretch justify-start gap-2 text-xs">

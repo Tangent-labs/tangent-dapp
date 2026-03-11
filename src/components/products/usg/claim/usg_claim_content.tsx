@@ -128,7 +128,7 @@ export default function USGClaimContent() {
           <div className="relative hidden w-full xl:block">
             <div className="flex w-full gap-3 rounded-t-[10px] bg-overlay-panel px-4 py-2 leading-[10px] backdrop-blur-[60px]">
               <span className="text-sm text-subtitle">Claim all</span>
-              <Switch checked={!!displayRows && marketsToClaim.length === displayRows.length} onClick={() => onClickClaimAll()}></Switch>
+              <Switch checked={displayRows?.length > 0 && marketsToClaim.length === displayRows.length} onClick={() => onClickClaimAll()}></Switch>
             </div>
 
             <ListGradientBorder classname={"rounded-t-[10px]"} />
@@ -140,7 +140,7 @@ export default function USGClaimContent() {
               Claimable
             </div>
 
-            <Divider className="h-0.5 w-full bg-white/10" />
+            <Divider />
 
             <div className="flex w-full flex-col">
               {marketsToClaim.map((el: ClaimableMarket) => (
@@ -192,7 +192,7 @@ function ClaimList() {
       </div>
 
       {(displayRows as ClaimData[])?.map((item: ClaimData) => (
-        <div key={item.marketAddress} className="my-0.5 bg-overlay-panel px-4 py-2.5 backdrop-blur-[60px]">
+        <div key={item.marketAddress} className="my-0.5 bg-overlay-panel px-4 py-1 backdrop-blur-[60px]">
           <div className="flex items-center justify-between max-xl:flex-col">
             <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
               <div className="xl:w-2/3">

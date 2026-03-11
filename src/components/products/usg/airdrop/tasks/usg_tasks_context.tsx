@@ -6,7 +6,7 @@ import { useUSGContext } from "../../usg_context"
 import { USGMarkets } from "../../usg_repository"
 import { UserTask, VoteTask } from "../../usg_type"
 import { getUserTasks, getUserVoteTasks } from "../../client_api"
-import { getUserBalancesAndDebtForLpTasks, mapAirdropData } from "./usg_tasks_controller"
+import { getUserBalancesAndDebtForLpTasks, mapAirdropData, mapVoteTasksProtocol } from "./usg_tasks_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
@@ -15,13 +15,28 @@ type UsgTasksContextProps = {
 }
 
 type UsgTasksContextValues = {
-  tasks: UserTask[]
   lpTasks: UserTask[]
+
   voteTasks: VoteTask[]
   sortLpTasks: (arg: ListState) => void
   sortVoteTasks: (arg: ListState) => void
   selectedFeature: string
   setSelectedFeature: (s: string) => void
+
+  lpTaskSearchValue: string | null
+  setLpTaskSearchValue: (value: string | null) => void
+
+  lpTaskFilteredBy: string
+  setLpTaskFilteredBy: (s: string) => void
+
+  voteTaskSearchValue: string | null
+  setVoteTaskSearchValue: (value: string | null) => void
+
+  lpTaskProtocol: string
+  setLpTaskProtocol: (s: string) => void
+
+  voteTaskProtocol: string
+  setVoteTaskProtocol: (s: string) => void
 }
 
 export const UsgTasksContext = createContext<UsgTasksContextValues | undefined>(undefined)
@@ -33,18 +48,28 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
 
   const [tasks, setTasks] = useState<UserTask[]>([])
 
-  const [voteTasks, setVoteTasks] = useState<VoteTask[]>([])
+  const [rawVoteTasks, setRawVoteTasks] = useState<VoteTask[]>([])
 
   const [selectedFeature, setSelectedFeature] = useState<string>("Borrow & LP")
 
+  const [lpTaskSearchValue, setLpTaskSearchValue] = useState<string | null>(null)
+
+  const [lpTaskFilteredBy, setLpTaskFilteredBy] = useState<string>("All")
+
+  const [voteTaskSearchValue, setVoteTaskSearchValue] = useState<string | null>(null)
+
+  const [lpTaskProtocol, setLpTaskProtocol] = useState<string>("All")
+
+  const [voteTaskProtocol, setVoteTaskProtocol] = useState<string>("All")
+
   useEffect(() => {
     if (currentAddress) {
-      getUserTasks(currentAddress).then((tasks) => {
-        setTasks(tasks)
+      getUserTasks(currentAddress).then((rawLpTasks) => {
+        setTasks(rawLpTasks)
       })
 
-      getUserVoteTasks(currentAddress).then((tasks) => {
-        setVoteTasks(tasks)
+      getUserVoteTasks(currentAddress).then((t) => {
+        setRawVoteTasks(t)
       })
 
       refetchPoints()
@@ -84,13 +109,37 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
     }
   }, [tasks.length])
 
+  const voteTasks = useMemo(() => {
+    if (!rawVoteTasks) return []
+
+    const rows = rawVoteTasks
+
+    let rowsToShow = rows.filter((row) => voteTaskProtocol === "All" || mapVoteTasksProtocol(row.protocol) === voteTaskProtocol)
+
+    if (voteTaskSearchValue?.trim()) {
+      const lowered = voteTaskSearchValue.toLowerCase().trim()
+      rowsToShow = rowsToShow.filter((row) => row?.description?.toLowerCase().includes(lowered))
+    }
+
+    return rowsToShow
+  }, [rawVoteTasks, voteTaskSearchValue, voteTaskProtocol])
+
   const lpTasks = useMemo(() => {
     if (!tasks) return []
 
     const rows = mapAirdropData(tasks)
 
-    return rows
-  }, [tasks])
+    let rowsToShow = rows
+      .filter((row) => lpTaskFilteredBy === "All" || (row?.balance ?? 0) > 0)
+      .filter((row) => lpTaskProtocol === "All" || row.protocol?.replaceAll(" ", "") === lpTaskProtocol?.replaceAll(" ", ""))
+
+    if (lpTaskSearchValue?.trim()) {
+      const lowered = lpTaskSearchValue.toLowerCase().trim()
+      rowsToShow = rowsToShow.filter((row) => row?.description?.toLowerCase().includes(lowered))
+    }
+
+    return rowsToShow
+  }, [tasks, lpTaskSearchValue, lpTaskFilteredBy, lpTaskProtocol])
 
   const sortVoteTasks = (listState: ListState) => {
     const { key, direction } = listState.sort!
@@ -121,13 +170,30 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
   }
 
   const contextValue: UsgTasksContextValues = {
-    tasks,
     lpTasks,
+
     voteTasks,
+
     sortLpTasks,
     sortVoteTasks,
+
     selectedFeature,
     setSelectedFeature,
+
+    lpTaskSearchValue,
+    setLpTaskSearchValue,
+
+    lpTaskFilteredBy,
+    setLpTaskFilteredBy,
+
+    voteTaskSearchValue,
+    setVoteTaskSearchValue,
+
+    lpTaskProtocol,
+    voteTaskProtocol,
+
+    setLpTaskProtocol,
+    setVoteTaskProtocol,
   }
 
   return <UsgTasksContext.Provider value={contextValue}>{children}</UsgTasksContext.Provider>

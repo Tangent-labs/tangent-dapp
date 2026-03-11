@@ -190,7 +190,7 @@ export default function USGLeverageContent() {
 
                     <div
                       className={cn(
-                        displayAPRVariation ? "mt-2 border-t border-white/30 pt-2" : "",
+                        displayAPRVariation ? "mt-2 border-t border-white/10 pt-2" : "",
                         "flex w-full flex-col items-start justify-start md:flex-row md:items-center md:justify-between"
                       )}
                     >

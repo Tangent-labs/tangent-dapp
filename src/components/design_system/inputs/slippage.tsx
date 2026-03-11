@@ -39,7 +39,7 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
         <ReliefCard className="flex w-[88px] cursor-pointer items-center justify-between font-gilroy">
           <span className="px-2 text-xs text-subtitle"> {slippage}%</span>
           <button type="button" title="Slippage">
-            <div className="cursor-pointer rounded-[10px] bg-button-gradient px-2.5 py-2 hover:bg-white/10">
+            <div className="cursor-pointer rounded-[10px] bg-button-gradient p-2 hover:bg-white/10">
               <IconGearWheel className="h-auto w-3 text-row-tonic" />
             </div>
           </button>
@@ -57,7 +57,7 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
               inputMode="decimal"
               min={0.1}
               step={0.1}
-              className="w-full rounded-[10px] border border-white/30 bg-transparent pl-2 focus:outline-none"
+              className="w-full rounded-[10px] border border-white/10 bg-transparent pl-2 focus:outline-none"
             />
             <div className="mt-2 flex w-full items-center justify-between gap-2">
               <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />

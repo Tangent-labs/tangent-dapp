@@ -55,7 +55,7 @@ export const UsgReferralCode = () => {
       <ReliefCard className={cn("mt-4 flex w-full flex-col items-center justify-center px-5 py-3", !!airdropDataIsLoading && currentAddress ? "shimmer" : "")}>
         <div className="mr-auto text-lg font-semibold text-white">Your referral</div>
 
-        <Divider className="h-0.5 w-full bg-white/10" />
+        <Divider />
 
         <div className="flex w-full flex-wrap items-center justify-between md:flex-nowrap">
           <div className="flex w-full flex-col items-center justify-center">
@@ -104,7 +104,7 @@ export const UsgReferralCode = () => {
       <ReliefCard className="mt-4 hidden w-full flex-col items-center justify-center p-3 xl:flex">
         <div className="mr-auto text-lg font-semibold text-white">Airdrop referral</div>
 
-        <Divider className="h-0.5 w-full bg-white/10" />
+        <Divider />
 
         <div className="flex w-full items-center justify-between gap-4">
           <div className="flex w-full flex-col items-center justify-center">
@@ -138,7 +138,7 @@ export const UsgReferralCode = () => {
         <ReliefCard className="flex w-full flex-col items-start justify-start p-3">
           <div className="mr-auto text-lg font-semibold text-white">Liquidity points leaderboard</div>
 
-          <Divider className="h-0.5 w-full bg-white/10" />
+          <Divider />
 
           <Leaderboard leaderboard={lpLeaderboard} />
         </ReliefCard>
@@ -146,7 +146,7 @@ export const UsgReferralCode = () => {
         <ReliefCard className="flex w-full flex-col items-center justify-center p-3">
           <div className="mr-auto text-lg font-semibold text-white">Vote points leaderboard</div>
 
-          <Divider className="h-0.5 w-full bg-white/10" />
+          <Divider />
 
           <Leaderboard leaderboard={voteLeaderboard} feature="vote" />
         </ReliefCard>
@@ -154,7 +154,7 @@ export const UsgReferralCode = () => {
         <ReliefCard className="flex w-full flex-col items-center justify-center p-3">
           <div className="mr-auto text-lg font-semibold text-white">My referees</div>
 
-          <Divider className="h-0.5 w-full bg-white/10" />
+          <Divider />
 
           <GodsonsLeaderboard godsonsLeaderboard={godsonsLeaderboard} />
         </ReliefCard>

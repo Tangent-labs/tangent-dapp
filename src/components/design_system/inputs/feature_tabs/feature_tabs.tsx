@@ -37,7 +37,7 @@ export const FeatureTabs = ({
           <LargeButtonTab className="w-full !px-2" active={activeTab === "Repay"} label={"Repay"} onClick={onClickRepay} />
         </div>
 
-        <Divider className="h-0.5 w-full bg-white/10" />
+        <Divider />
 
         {activeTab === "Borrow" ? (
           <div className="flex w-full items-center justify-between gap-2.5 rounded-[10px] bg-white bg-opacity-[3%] text-xs">

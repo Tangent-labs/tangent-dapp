@@ -84,7 +84,7 @@ export default function USGHarvestContent() {
           <div className="relative hidden w-full xl:block">
             <div className="flex w-full gap-3 rounded-t-[10px] bg-overlay-panel px-4 py-2 leading-[10px] backdrop-blur-[60px]">
               <span className="text-sm text-subtitle">Harvest all</span>
-              <Switch onClick={() => onClickSelectAll()}></Switch>
+              <Switch checked={displayRows?.length > 0 && marketsToHarvest.length === displayRows.length} onClick={() => onClickSelectAll()}></Switch>
             </div>
 
             <ListGradientBorder classname={"rounded-t-[10px]"} />
@@ -97,7 +97,7 @@ export default function USGHarvestContent() {
               <div className="flex flex-col items-start justify-start">Harvestable</div>
             </div>
 
-            <Divider className="h-0.5 w-full bg-white/10" />
+            <Divider />
 
             <div className="flex w-full flex-col">
               {marketsToHarvest.map((el: HarvestableMarket) => (
@@ -145,13 +145,13 @@ function HarvestList() {
       </div>
 
       {(displayRows as HarvesterInfoDisplay[])?.map((item: HarvesterInfoDisplay) => (
-        <div key={item.contractAddress} className="my-0.5 bg-overlay-panel px-4 py-2.5 backdrop-blur-[60px]">
+        <div key={item.contractAddress} className="my-0.5 bg-overlay-panel px-4 py-1 backdrop-blur-[60px]">
           <div className="flex items-center justify-between max-xl:flex-col">
             <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
               <div className="xl:w-1/2">
                 <ListAsset name={item?.asset} token={item.asset} />
               </div>
-              <div className="text-md flex justify-center gap-2 md:text-lg xl:w-1/2">
+              <div className="flex justify-center gap-2 text-sm md:text-[15px] xl:w-1/2">
                 {formatDollar(item?.rewards?.totalDollar || 0)}
 
                 <USGHoverCard iconClassName="text-row-tonic" title={`${item?.asset} Rewards Breakdown`}>
@@ -162,7 +162,7 @@ function HarvestList() {
                           <TokenImage token={reward.logo} size={16} />
                         </div>
                         <span className="w-20"> {reward.logo}</span>
-                        <span className=""> {formatDollar(reward.dollarValue)}</span>
+                        <span> {formatDollar(reward.dollarValue)}</span>
                       </div>
                     ))}
                   </div>
@@ -171,9 +171,11 @@ function HarvestList() {
             </div>
             <hr className="my-2 w-full opacity-20 xl:hidden" />
             <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-1/2">
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center gap-2 text-sm md:text-lg">{formatPercent(item?.percentage)}</div>
+              <div className="flex w-full flex-1 cursor-pointer items-center justify-center gap-2 text-sm md:text-[15px]">
+                {formatPercent(item?.percentage)}
+              </div>
 
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center text-sm md:text-lg">
+              <div className="flex w-full flex-1 cursor-pointer items-center justify-center text-sm md:text-[15px]">
                 {formatDollar((item?.rewards.totalDollar * item?.percentage) / 100)}
               </div>
 

@@ -187,7 +187,7 @@ export function PerformanceHistoryPanel({
 
         {!!sUSGCurrentAPY && sUSGCurrentAPY > 0 && (
           <>
-            <Divider className="h-0.5 w-full bg-white/10" />
+            <Divider />
             <div className="mt-6 flex w-full flex-col items-end justify-between gap-2 self-end sm:flex-row">
               <EvolutionBox
                 className="w-full"

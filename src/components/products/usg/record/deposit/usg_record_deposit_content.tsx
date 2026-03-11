@@ -166,7 +166,7 @@ export default function USGDepositContent() {
                     </>
                   )}
 
-                  <div className={cn(displayAPRVariation ? "mt-2 border-t border-white/30 pt-2" : "", "flex w-full items-center justify-between")}>
+                  <div className={cn(displayAPRVariation ? "mt-2 border-t border-white/10 pt-2" : "", "flex w-full items-center justify-between")}>
                     <span className="text-subtitle">Expected collateral: </span>
 
                     <span className="font-semibold text-white">{expectedCollateral}</span>

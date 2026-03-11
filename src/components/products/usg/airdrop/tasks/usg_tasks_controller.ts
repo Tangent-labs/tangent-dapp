@@ -51,3 +51,27 @@ export const formatToken = (token: string): ExistingAsset => {
 
   return token.replaceAll("_", "-") as ExistingAsset
 }
+
+export const mapVoteTasksProtocol = (protocol: string) => {
+  switch (protocol.toLowerCase()) {
+    case "tangent":
+      return "Tangent"
+
+    case "cvx.eth":
+    case "convex":
+      return "Convex"
+
+    case "curve":
+    case "crv":
+      return "Curve"
+
+    case "fxn":
+      return "f(x) Protocol"
+
+    case "sdcrv.eth":
+    case "sdfxn.eth":
+    case "sdpendle.eth":
+    case "stakedao":
+      return "Stake DAO"
+  }
+}

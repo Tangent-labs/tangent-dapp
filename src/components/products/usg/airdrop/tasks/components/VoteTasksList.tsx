@@ -6,6 +6,7 @@ import { formatMillions } from "@/lib/number_formatter"
 import { IconSortHeader } from "@/components/icons"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { useListContext } from "@/components/design_system/list/list_context"
+import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 
 export const voteListState: ListState = {
   search: undefined,
@@ -81,8 +82,8 @@ export const VoteTasksList = () => {
 
   return (
     <>
-      <div className="mb-1 mt-6 rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
-        <div className={`hidden p-4 leading-[10px] xl:block`}>
+      <div className="relative mb-1 mt-4 hidden w-full xl:block">
+        <div className={`w-full rounded-t-[10px] bg-overlay-panel p-4 leading-[10px] backdrop-blur-[60px]`}>
           <VoteTaskListDisposition>
             {!!headers?.at(0)?.key && (
               <div className="flex w-full">
@@ -122,13 +123,14 @@ export const VoteTasksList = () => {
             )}
           </VoteTaskListDisposition>
         </div>
+        <ListGradientBorder classname={"rounded-t-[10px]"} />
       </div>
 
       {displayRows &&
         (displayRows as VoteTask[])?.map((task: VoteTask) => (
           <div
             key={task?.taskId}
-            className="mb-1 bg-overlay-panel px-5 py-3 backdrop-blur-[60px] before:absolute before:inset-0 before:-z-10 before:opacity-70 hover:cursor-pointer hover:before:bg-list-row-hover"
+            className="relative mb-1 bg-overlay-panel px-2 py-3 backdrop-blur-[60px] hover-lift-row lg:px-5"
             onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}
           >
             <div className="hidden items-center justify-between md:flex">
@@ -169,6 +171,7 @@ export const VoteTasksList = () => {
                 </div>
               </div>
             </div>
+            <ListGradientBorder />
           </div>
         ))}
     </>

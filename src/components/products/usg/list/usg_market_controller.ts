@@ -1,6 +1,6 @@
-import { Abi, Address, formatEther, formatUnits, Hex } from "viem"
 import MarketListUI from "@/abi/USG/MarketListUI.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
+import { Abi, Address, formatEther, formatUnits, Hex } from "viem"
 import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
 import { USG_CONTRACT, USGMarkets, USGPegKeepers } from "../usg_repository"
 import { formatBigInt, formatMarketListCompact, formatNumber } from "@/lib/number_formatter"

@@ -12,7 +12,7 @@ export function ThreeCardRowWithMask(props: { contents: [KeyValue, KeyValue, Key
   return (
     <div className="relative w-full">
       {/* Cards with individual backgrounds positioned to create continuity */}
-      <div className="relative grid grid-cols-3 gap-4">
+      <div className="relative grid grid-cols-3 gap-[10px]">
         {[0, 1, 2].map((i) => (
           <div key={i} className="relative overflow-hidden rounded-lg">
             {/* Continuous background image - positioned to align across all cards */}

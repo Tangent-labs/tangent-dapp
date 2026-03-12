@@ -7,8 +7,8 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 export const Footer = () => {
   return (
-    <div className="mt-4 flex w-full items-center justify-between gap-3 border-t border-t-white/10 p-2">
-      <div className="flex cursor-pointer items-center gap-2 text-xl text-white">
+    <div className="mt-4 flex w-full items-center justify-between border-t border-t-white/10 p-2">
+      <div className="flex items-center justify-center">
         <IconTangent className="w-24" />
       </div>
 

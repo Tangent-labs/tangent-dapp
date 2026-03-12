@@ -3,7 +3,7 @@ import { executeChainViewUnique } from "@/services/service_rpc"
 import { Abi, Address, formatEther, formatUnits, Hex } from "viem"
 import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
 import { USG_CONTRACT, USGMarkets, USGPegKeepers } from "../usg_repository"
-import { formatBigInt, formatMarketListCompact, formatNumber } from "@/lib/number_formatter"
+import { formatBigInt, formatMillions, formatNumber } from "@/lib/number_formatter"
 import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, USGGlobalData, USGMarketType } from "../usg_type"
 
 export const getUSGMarketsData = async (address: string) => {
@@ -138,22 +138,22 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
           !!onChainRow?.debtInfos.currentBorrowRate && onChainRow?.debtInfos.currentBorrowRate >= 0n
             ? ((Math.exp(Number(formatBigInt(onChainRow?.debtInfos.currentBorrowRate, 18, 4))) - 1) * 100).toFixed(2) + "%"
             : "0%",
-        raw: Number(formatBigInt(onChainRow?.debtInfos.currentBorrowRate, 18, 4)),
+        raw: onChainRow?.debtInfos.currentBorrowRate?.toString() || "0",
       },
       {
         key: "tvl",
         label: "Tvl",
-        value: formatMarketListCompact(
-          formatUnits(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0n, Number(onChainRow?.collateralInfos?.collateralToken?.decimals) || 18)
-        ),
-        raw: Number(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0),
+        value: `$${formatMillions(
+          Number(formatUnits(onChainRow?.collateralInfos?.totalCollateralUSDValue || 0n, Number(onChainRow?.collateralInfos?.collateralToken?.decimals) || 18))
+        )}`,
+        raw: onChainRow?.collateralInfos?.totalCollateralUSDValue?.toString() || "0",
       },
       {
         key: "borrowed",
         label: "Borrowed",
-        value: formatMarketListCompact(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18)).substring(1, 9) || "-",
-        subValue: formatNumber(Number(formatUnits(onChainRow?.constants?.maxMarketDebt || 0n, 18)), 0) || "-",
-        raw: Number(formatUnits(onChainRow?.debtInfos?.totalDebt || 0n, 18)),
+        value: formatMillions(Number(formatEther(onChainRow?.debtInfos?.totalDebt || 0n))),
+        subValue: formatMillions(Number(formatEther(onChainRow?.constants?.maxMarketDebt || 0n))),
+        raw: onChainRow?.debtInfos?.totalDebt?.toString() || "0",
       },
     ],
     userHasDeposited: !!onChainRow?.collateralInfos?.positionCollateralUSDValue && onChainRow?.collateralInfos?.positionCollateralUSDValue > 0n,

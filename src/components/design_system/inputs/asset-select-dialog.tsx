@@ -27,7 +27,16 @@ interface AssetSelectionDialogProps<T extends OptionT> {
 
 const ITEM_HEIGHT = 38
 
+const receiptTokensLabelsToDelete = ["Gauge ", "Vault "]
 const RenderAsset = <T extends OptionT>({ selected, placeholder }: { selected: T | null; placeholder: string }) => {
+  let symbolURI = selected?.symbol
+  if (symbolURI) {
+    receiptTokensLabelsToDelete.forEach((labelToDel) => {
+      if (symbolURI!.includes(labelToDel)) {
+        symbolURI = symbolURI?.split(labelToDel)[1]
+      }
+    })
+  }
   return (
     <>
       {selected ? (
@@ -35,9 +44,9 @@ const RenderAsset = <T extends OptionT>({ selected, placeholder }: { selected: T
           {!!selected?.logoURI ? (
             <Image src={selected.logoURI} alt={selected.symbol} height={20} width={20} />
           ) : !selected?.symbol.includes("-") ? (
-            <TokenImage token={selected.symbol as ExistingAsset} size={20} />
+            <TokenImage token={symbolURI as ExistingAsset} size={20} />
           ) : (
-            <TokenImage token={selected.symbol as ExistingAsset} size={32} />
+            <TokenImage token={symbolURI as ExistingAsset} size={32} />
           )}
           <span className="text-sm font-semibold">{selected.symbol?.replaceAll("-", "/")}</span>
         </>

@@ -44,7 +44,7 @@ export type ListRowData = {
     label: string
     value: string
     subValue?: string
-    raw?: number // Raw numerical value for calculations
+    raw?: string // Raw numerical value for calculations
   }[]
   userHasDeposited: boolean
   positionCollateralUSDValue: string

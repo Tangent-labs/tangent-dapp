@@ -1,10 +1,11 @@
-import { specialTokensList } from "../usg_repository"
-import { formatBigInt } from "@/lib/number_formatter"
-import { MarketDebtData, USGCollateralData } from "../usg_type"
+import { specialTokensList } from "../../usg_repository"
+import { formatMillions } from "@/lib/number_formatter"
+import { MarketDebtData, USGCollateralData } from "../../usg_type"
 import { Divider } from "@/components/design_system/structure/divider"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { InnerTooltip } from "@/components/design_system/structure/inner_tooltip"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { formatEther } from "viem"
 
 type USGCollateralsProps = {
   userData: {
@@ -18,7 +19,7 @@ type USGCollateralsProps = {
   marketTVLMaxValue: number
 }
 
-export const USGCollaterals = ({ userData, marketTVLMaxValue }: USGCollateralsProps) => {
+export const GraphUSGCollaterals = ({ userData, marketTVLMaxValue }: USGCollateralsProps) => {
   return (
     <div className="flex w-full items-start justify-start md:w-1/2">
       <ReliefCard className="flex h-64 w-full flex-col items-start justify-start p-3">
@@ -36,7 +37,7 @@ export const USGCollaterals = ({ userData, marketTVLMaxValue }: USGCollateralsPr
                 innerContent={
                   <div className="flex min-w-24 items-center justify-center gap-2 px-4">
                     <div className="text-subtitle">TVL:</div>
-                    <div className="text-white">${formatBigInt(data.rawValue, 18, 2)}</div>
+                    <div className="text-white">${formatMillions(formatEther(data.rawValue))}</div>
                   </div>
                 }
                 key={data?.name}

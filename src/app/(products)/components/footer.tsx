@@ -4,6 +4,7 @@ import { IconDiscord } from "@/components/icons/icon_discord"
 import { IconTwitter } from "@/components/icons/icon_twitter"
 import { IconTelegram } from "@/components/icons/icon_telegram"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import Link from "next/link"
 
 export const Footer = () => {
   return (
@@ -13,30 +14,29 @@ export const Footer = () => {
       </div>
 
       <div className="flex items-center justify-center gap-2">
-        <ReliefCard
-          onClick={() => window?.open("https://docs.tangent.finance/docs/overview", "_blank", "noopener,noreferrer")}
-          className="cursor-pointer p-2 hover:bg-white/10"
-        >
-          <IconDocs className="w-4" />
-        </ReliefCard>
+        <Link href="https://docs.tangent.finance/docs/overview" target="_blank" rel="noopener noreferrer">
+          <ReliefCard className="cursor-pointer p-2 hover:bg-white/10">
+            <IconDocs className="w-4" />
+          </ReliefCard>
+        </Link>
 
-        <ReliefCard onClick={() => window?.open("https://x.com/Tangent_fi", "_blank", "noopener,noreferrer")} className="cursor-pointer p-2 hover:bg-white/10">
-          <IconTwitter className="w-4" />
-        </ReliefCard>
+        <Link href="https://x.com/Tangent_fi" target="_blank" rel="noopener noreferrer">
+          <ReliefCard className="cursor-pointer p-2 hover:bg-white/10">
+            <IconTwitter className="w-4" />
+          </ReliefCard>
+        </Link>
 
-        <ReliefCard
-          onClick={() => window?.open("https://t.me/+1xgNz42fNU01NGE0", "_blank", "noopener,noreferrer")}
-          className="cursor-pointer p-2 hover:bg-white/10"
-        >
-          <IconTelegram className="w-4" />
-        </ReliefCard>
+        <Link href="https://t.me/+1xgNz42fNU01NGE0" target="_blank" rel="noopener noreferrer">
+          <ReliefCard className="cursor-pointer p-2 hover:bg-white/10">
+            <IconTelegram className="w-4" />
+          </ReliefCard>
+        </Link>
 
-        <ReliefCard
-          onClick={() => window?.open("https://discord.gg/tangentfinance", "_blank", "noopener,noreferrer")}
-          className="cursor-pointer p-2 hover:bg-white/10"
-        >
-          <IconDiscord className="w-4" />
-        </ReliefCard>
+        <Link href="https://discord.gg/tangentfinance" target="_blank" rel="noopener noreferrer">
+          <ReliefCard className="cursor-pointer p-2 hover:bg-white/10">
+            <IconDiscord className="w-4" />
+          </ReliefCard>
+        </Link>
       </div>
     </div>
   )

@@ -131,29 +131,47 @@ export const formatCompact = (value: string | number): string => {
   }
 }
 
-export const formatMillions = (value: string | number | undefined): string => {
-  const cleaned = typeof value === "string" ? value.replace(/,/g, "") : String(value)
+const MILLION_FORMATTING_RULES = [
+  { threshold: 100_000_000, decimals: 0 }, // ≥ 100M
+  { threshold: 5_000_000, decimals: 2 }, // ≥ 5M
+  { threshold: 1_000_000, decimals: 3 }, // ≥ 1M
+] as const
 
-  const number = parseFloat(cleaned)
+export function formatMillions(value: string | number | undefined): string {
+  const num = normalizeToNumber(value)
+  if (num === 0 || Number.isNaN(num)) return "0"
 
-  if (number === 0 || isNaN(number)) return "0"
-
-  // MORE THAN 1 M
-  if (number >= 1_000_000) {
-    const millions = number / 1_000_000
-    if (number > 5_000_000) {
-      if (number > 100_000_000) {
-        // More than 100 M => 0 decimals at millions
-        return `${formatNumber(millions, 0).replace(/\.?0+$/, "")}M`
-      }
-      // Between 5 and 100 M => 2 decimals at millions
-      else {
-        return `${formatNumber(millions, 2).replace(/\.?0+$/, "")}M`
-      }
-    }
-    // Between 1 and 5 M=> 3 decimals at millions
-    return `${formatNumber(millions, 3).replace(/\.?0+$/, "")}M`
+  if (num < 1_000_000) {
+    return formatNumber(num, 0)
   }
-  // Less than 1M
-  return formatNumber(number, 0)
+
+  const millions = num / 1_000_000
+
+  // Première règle qui matche (la plus restrictive en premier)
+  const rule = MILLION_FORMATTING_RULES.find((r) => num >= r.threshold) ?? { decimals: 3 } // fallback (ne devrait pas arriver)
+
+  const formatted = formatNumber(millions, rule.decimals)
+  const clean = formatted.replace(/(\.\d*?)0+$/, "$1").replace(/\.$/, "")
+  return `${clean}M`
+}
+
+/**
+ * Normalise n'importe quelle entrée acceptable en number (ou NaN)
+ */
+function normalizeToNumber(value: string | number | undefined): number {
+  if (value == null) {
+    return NaN
+  }
+
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : NaN
+  }
+
+  // Chaîne → on enlève les séparateurs de milliers et on parse
+  const cleaned = String(value)
+    .replace(/,/g, "") // enlève les virgules US
+    .trim()
+
+  const parsed = parseFloat(cleaned)
+  return Number.isFinite(parsed) ? parsed : NaN
 }

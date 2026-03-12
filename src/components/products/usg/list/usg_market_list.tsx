@@ -106,7 +106,7 @@ export default function USGMarketList() {
           </div>
         </ReliefCard>
 
-        <div className="flex h-auto w-full flex-col justify-between gap-2 xl:w-1/2">
+        <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
           <ThreeCardRowWithMask

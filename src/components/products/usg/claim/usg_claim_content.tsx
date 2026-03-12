@@ -64,7 +64,7 @@ export default function USGClaimContent() {
           </div>
         </ReliefCard>
 
-        <div className="flex h-auto w-full flex-col justify-between gap-2 xl:w-1/2">
+        <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
           <ReliefCard className="relative flex w-full items-center justify-between px-3 py-4">

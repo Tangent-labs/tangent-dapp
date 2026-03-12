@@ -31,7 +31,7 @@ export const lpListHeaders: ListHeaderData[] = [
 export const voteListHeaders: ListHeaderData[] = [
   { label: "Action", key: "action" },
   { label: "Protocol", key: "protocol" },
-  { label: "Pts/Epoch/Ve", key: "pointRate" },
+  { label: "Pts/Epoch/Tkn", key: "pointRate" },
   { label: "Points", key: "points" },
   { label: "Current vote", key: "lastVote" },
 ]

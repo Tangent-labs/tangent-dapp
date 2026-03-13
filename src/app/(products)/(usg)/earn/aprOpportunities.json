@@ -82,10 +82,10 @@
       "marketType": "Convex_CRV",
       "points": 400
     },
-
     {
-      "name": "crvUSD-USDC",
+      "name": "crvUSD-USDC (unstaked) - Curve ",
       "asset": "crvUSD-USDC",
+      "subLabel": "(unstaked)",
       "address": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
       "link": "https://www.curve.finance/dex/ethereum/pools/factory-crvusd-0/deposit",
       "protocolName": "Curve",
@@ -93,14 +93,36 @@
       "points": 400
     },
     {
-      "name": "crvUSD-USDT",
+      "name": "crvUSD-USDT (unstaked) - Curve ",
       "asset": "crvUSD-USDT",
+      "subLabel": "(unstaked)",
       "address": "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4",
       "link": "https://www.curve.finance/dex/ethereum/pools/factory-crvusd-1/deposit",
       "protocolName": "Curve",
       "marketType": "Convex_CRV",
       "points": 600
     },
+    {
+      "name": "crvUSD-USDC (staked) - Curve ",
+      "asset": "crvUSD-USDC",
+      "subLabel": "(staked)",
+      "address": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
+      "link": "https://www.curve.finance/dex/ethereum/pools/factory-crvusd-0/deposit",
+      "protocolName": "Curve",
+      "marketType": "Convex_CRV",
+      "points": 400
+    },
+    {
+      "name": "crvUSD-USDT (staked) - Curve ",
+      "asset": "crvUSD-USDT",
+      "subLabel": "(staked)",
+      "address": "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4",
+      "link": "https://www.curve.finance/dex/ethereum/pools/factory-crvusd-1/deposit",
+      "protocolName": "Curve",
+      "marketType": "Convex_CRV",
+      "points": 600
+    },
+
     {
       "name": "crvUSD-USDT",
       "asset": "crvUSD-USDT",

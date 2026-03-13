@@ -29,9 +29,10 @@ export const aprOpportunitiesListHeaders: ListHeaderData[] = [
   },
   {
     label: "APR",
-    key: "apr",
+    key: "currentAPR",
+    sort: "sort",
   },
-  { label: "Pts/Day/$", key: "points" },
+  { label: "Pts/Day/$", key: "points", sort: "sort" },
 ]
 
 export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Array<EarnPoolsData>) => {
@@ -68,15 +69,20 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
         projectedAPRDetails,
       }
     } else {
-      const currentAPR = currentPool?.gaugeCrvApy?.reduce((sum, n) => sum + n, 0) || 0
-      const projectedAPR = currentPool?.gaugeFutureCrvApy?.reduce((sum, n) => sum + n, 0) || 0
+      const currentAPR = t?.subLabel === "(unstaked)" ? currentPool?.gaugeCrvApy?.[0] : currentPool?.gaugeCrvApy?.reduce((sum, n) => sum + n, 0) || 0
 
-      // TODO : set rewardToken dynamically
+      const projectedAPR =
+        t?.subLabel === "(unstaked)" ? currentPool?.gaugeFutureCrvApy?.[0] : currentPool?.gaugeFutureCrvApy?.reduce((sum, n) => sum + n, 0) || 0
+
       const rewardToken = "CRV"
 
-      // TODO : fields to be set dynamically
-      const currentAPRDetails = { APY: currentPool?.gaugeCrvApy?.[0], CRV: currentPool?.gaugeCrvApy?.[1] }
-      const projectedAPRDetails = { APY: currentPool?.gaugeFutureCrvApy?.[0], CRV: currentPool?.gaugeFutureCrvApy?.[1] }
+      const currentAPRDetails =
+        t?.subLabel === "(unstaked)" ? { APY: currentPool?.gaugeCrvApy?.[0] } : { APY: currentPool?.gaugeCrvApy?.[0], CRV: currentPool?.gaugeCrvApy?.[1] }
+
+      const projectedAPRDetails =
+        t?.subLabel === "(unstaked)"
+          ? { APY: currentPool?.gaugeFutureCrvApy?.[0] }
+          : { APY: currentPool?.gaugeFutureCrvApy?.[0], CRV: currentPool?.gaugeFutureCrvApy?.[1] }
 
       return {
         marketType: t?.marketType as USGMarketType,

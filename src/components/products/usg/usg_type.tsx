@@ -345,9 +345,9 @@ export type DepositReceiveAsset = {
 export type EarnProtocolInput = {
   name: string
   asset: string
+  subLabel?: string
   link: string
   protocolName: string
-  actionLabel: string
   points: number
   address: string
   marketType: string
@@ -357,9 +357,9 @@ export type AprOpportunityItem = {
   marketType: USGMarketType
   name: string
   asset: string
+  subLabel?: string
   link: string
   protocolName: string
-  actionLabel: string
   currentAPR: number | undefined
   projectedAPR: number | undefined
   points: number
@@ -479,6 +479,7 @@ export type UserTask = {
   asset: string
   protocol: string
   url: string
+  zapUrl: string
   description: string
   pointRate: number
   status: boolean

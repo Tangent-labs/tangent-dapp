@@ -21,7 +21,7 @@ const listeState: ListState = {
 }
 
 export const USGEarnContent = () => {
-  const { displayRows, USGsUSGMetrics } = useUSGEarnContext()
+  const { displayRows, USGsUSGMetrics, sortAprOpportunities } = useUSGEarnContext()
 
   const { lpUserPoints, voteUserPoints } = useUSGContext()
 
@@ -48,7 +48,7 @@ export const USGEarnContent = () => {
         </div>
       </div>
 
-      <ListProvider _headers={aprOpportunitiesListHeaders} _rows={displayRows!} _listState={listeState}>
+      <ListProvider _headers={aprOpportunitiesListHeaders} _rows={displayRows!} customSort={sortAprOpportunities} _listState={listeState}>
         <USGEarnListInner />
       </ListProvider>
     </>
@@ -56,13 +56,13 @@ export const USGEarnContent = () => {
 }
 
 export function USGEarnListInner() {
-  const { headers } = useListContext()
+  const { headers, udpateSort } = useListContext()
 
   const { displayRows, isLoading } = useUSGEarnContext()
 
   return (
     <>
-      <ListHeader headers={headers} />
+      <ListHeader headers={headers} onSort={udpateSort} />
 
       {displayRows?.map((item, index) => (
         <AprOpportunity item={item} key={index} index={index} isLoading={isLoading}></AprOpportunity>

@@ -1,5 +1,6 @@
 "use client"
 
+import { ListState } from "@/types"
 import { useUSGContext } from "../usg_context"
 import { mapPoolsAndTasks, mapAPROpportunities } from "./usg_earn_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
@@ -16,6 +17,7 @@ type USGEarnContextValues = {
   displayRows: AprOpportunityItem[]
   USGsUSGMetrics: USGStakingInfo | undefined
   lpUserPoints: LpUserPoints
+  sortAprOpportunities: (l: ListState) => void
 }
 
 export const USGEarnContext = createContext<USGEarnContextValues | undefined>(undefined)
@@ -47,11 +49,26 @@ export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
     fetchPoolsData()
   }, [])
 
+  const sortAprOpportunities = (l: ListState) => {
+    const { key, direction } = l.sort!
+
+    displayRows.sort((elementA: AprOpportunityItem, elementB: AprOpportunityItem) => {
+      const aValue = elementA[key as keyof AprOpportunityItem] ?? 0
+      const bValue = elementB[key as keyof AprOpportunityItem] ?? 0
+
+      if (aValue < bValue) return direction === "asc" ? -1 : 1
+      if (aValue > bValue) return direction === "asc" ? 1 : -1
+
+      return 0
+    })
+  }
+
   const contextValue: USGEarnContextValues = {
     isLoading,
     displayRows,
     USGsUSGMetrics,
     lpUserPoints,
+    sortAprOpportunities,
   }
 
   return <USGEarnContext.Provider value={contextValue}>{children}</USGEarnContext.Provider>

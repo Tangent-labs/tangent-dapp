@@ -75,7 +75,11 @@ export const MarketAPR = ({
           <>
             <span className="flex items-center justify-center bg-button-active bg-clip-text text-sm text-transparent md:text-xl">
               <AprIndicator isMax={maxLeverage !== 1}>
-                <div className={className}>{(computedAPR * maxLeverage).toFixed(2)}%</div>
+                {isMarketListDisplay ? (
+                  <div className={className}>{(computedAPR * maxLeverage).toFixed(2)}%</div>
+                ) : (
+                  <div className={className}>{((apr || 0) * maxLeverage).toFixed(2)}%</div>
+                )}
 
                 <div className="flex flex-col gap-2 p-2">
                   <div className="flex w-full items-center justify-between gap-2">
@@ -153,7 +157,7 @@ export const MarketAPR = ({
               </AprIndicator>
             </span>
 
-            {marketType !== "Pendle_PT" && projectedApr && !!currentAPRDetails && Number(currentAPRDetails[rewardToken]) !== 0 && (
+            {marketType !== "Pendle_PT" && ((projectedApr && !!currentAPRDetails && Number(currentAPRDetails[rewardToken]) !== 0) || !isMarketListDisplay) && (
               <span className="hidden text-xs text-subtitle xl:flex">
                 Proj: <span className="ml-1">{(projectedApr! * maxLeverage).toFixed(2)}%</span>
               </span>

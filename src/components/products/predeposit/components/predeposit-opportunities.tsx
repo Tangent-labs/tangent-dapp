@@ -2,19 +2,18 @@
 
 import { useMemo } from "react"
 import { ListState } from "@/types"
+import { AprOpportunityItem } from "../../usg/usg_type"
 import { PredepositContentProps } from "../predeposit.content"
 import { AprOpportunity } from "../../usg/earn/components/EarnList"
 import { ListHeader } from "@/components/design_system/list/list_header"
 import { opportunities } from "../../../../app/(products)/(usg)/earn/aprOpportunities.json"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { aprOpportunitiesListHeaders, mapAPROpportunities } from "../../usg/earn/usg_earn_controller"
-import { AprOpportunityItem } from "../../usg/usg_type"
 
-const listeState: ListState = {
+const listState: ListState = {
   search: undefined,
   sort: {
     key: "asset",
-
     direction: "asc",
   },
 }
@@ -28,6 +27,20 @@ export const PredepositOpportunities = ({ opportunitiesData }: PredepositContent
     return mappedTasks
   }, [opportunitiesData])
 
+  const sortAprOpportunities = (l: ListState) => {
+    const { key, direction } = l.sort!
+
+    displayRows.sort((elementA: AprOpportunityItem, elementB: AprOpportunityItem) => {
+      const aValue = elementA[key as keyof AprOpportunityItem] ?? 0
+      const bValue = elementB[key as keyof AprOpportunityItem] ?? 0
+
+      if (aValue < bValue) return direction === "asc" ? -1 : 1
+      if (aValue > bValue) return direction === "asc" ? 1 : -1
+
+      return 0
+    })
+  }
+
   return (
     <>
       <section className="mt-4 flex w-full flex-col items-start justify-start lg:mt-12">
@@ -35,7 +48,7 @@ export const PredepositOpportunities = ({ opportunitiesData }: PredepositContent
         <div className="text-sm text-subtitle">View all available rewards opportunities.</div>
       </section>
 
-      <ListProvider _headers={aprOpportunitiesListHeaders} _rows={displayRows!} _listState={listeState}>
+      <ListProvider _headers={aprOpportunitiesListHeaders} _rows={displayRows!} customSort={sortAprOpportunities} _listState={listState}>
         <PredepositOpportunitiesListInner displayRows={displayRows} />
       </ListProvider>
     </>

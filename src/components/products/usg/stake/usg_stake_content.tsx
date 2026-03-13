@@ -62,7 +62,7 @@ export default function USGStakeContent() {
             <p className="mt-2 text-[15px]">Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi.</p>
             <Link
               className="flex cursor-pointer items-center justify-center underline hover:text-white/30"
-              href="https://docs.tangent.finance/docs/usg/susg"
+              href="https://docs.tangent.finance/docs/usg/overview_usg#savings-account%E2%80%8B"
               target="_blank"
               rel="noopener noreferrer"
             >

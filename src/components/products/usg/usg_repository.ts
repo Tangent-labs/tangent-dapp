@@ -26,10 +26,10 @@ export const USGTokens = [
     "USG-frxUSD": envAddresses.lps["USG-frxUSD"],
   },
   {
-    wcrvUSD: envAddresses.wStables.wcrvUSD,
-    wUSDe: envAddresses.wStables.wUSDe,
-    wDOLA: envAddresses.wStables.wDOLA,
-    wUSR: envAddresses.wStables.wUSR,
+    // wcrvUSD: envAddresses.wStables.wcrvUSD,
+    // wUSDe: envAddresses.wStables.wUSDe,
+    // wDOLA: envAddresses.wStables.wDOLA,
+    // wUSR: envAddresses.wStables.wUSR,
   },
 ]
 

@@ -14,7 +14,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
-import { ExistingAsset } from "@/types"
 
 export default function USGLeverageContent() {
   const {
@@ -97,7 +96,7 @@ export default function USGLeverageContent() {
           asset={collateralInfo}
           isLoading={isZapLoading}
           label={"You deposit"}
-          depositSelect={<StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />}
+          depositSelect={<StaticCardAssetInput asset={collateralInfo.name} />}
           bottomPart={
             <div className="flex select-none gap-2 text-xs text-subtitle">
               Minimum received {zapValue && !!marketData?.collateralInfos ? minValueReceivedFromZap : ""}
@@ -137,7 +136,7 @@ export default function USGLeverageContent() {
         <GenericInputAssetAmount
           inputWeiValue={leveragedCollateralQuote}
           label="You buy and deposit"
-          depositSelect={<StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />}
+          depositSelect={<StaticCardAssetInput asset={collateralInfo.name} />}
           disabled={true}
           asset={collateralInfo}
           onValueChange={() => {}}

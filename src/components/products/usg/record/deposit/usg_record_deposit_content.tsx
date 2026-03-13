@@ -12,7 +12,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
-import { ExistingAsset } from "@/types"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import FormButtons from "@/components/design_system/form/form_actions"
@@ -94,7 +93,7 @@ export default function USGDepositContent() {
           asset={collateralInfo}
           isLoading={isZapLoading}
           label={"You buy and deposit"}
-          depositSelect={<StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />}
+          depositSelect={<StaticCardAssetInput asset={collateralInfo.name} />}
           bottomPart={
             <div className="flex select-none gap-2 text-xs text-subtitle">
               Minimum received {zapValue && !!marketData?.collateralInfos ? minValueReceivedFromZap : ""}

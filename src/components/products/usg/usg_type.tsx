@@ -1,12 +1,12 @@
 import { Address } from "viem"
-import { AprEntry, AssetData, AssetDataPriced, CollateralInfo, ERC20StaticInfos, ExistingAsset, Network, TokenAmountPriced } from "@/types"
+import { AprEntry, AssetData, AssetDataPriced, CollateralInfo, ERC20StaticInfos, Network, TokenAmountPriced } from "@/types"
 
 export type MarketPlatforms = "convex" | "curve"
 
 export type USGMarketData = {
   network: Network
   platforms: MarketPlatforms[]
-  collateral: ExistingAsset
+  collateral: string
   apr: AprEntry
   borrowRate: number
   tvl: number
@@ -17,7 +17,7 @@ export type USGMarketData = {
 
 export type USGTokenAmount = {
   token: string
-  symbol: ExistingAsset
+  symbol: string
   amount: bigint
 }
 
@@ -45,10 +45,10 @@ export type USGGlobalData = {
   globalTvl: string
 }
 
-export type USGMarketType = "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | "STAKEDAO_CRV_Vault"
+export type USGMarketType = "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | "STAKEDAO_CRV_Vault" | "CRV_Gauge"
 
 export type ClaimerInfoDisplay = {
-  asset: ExistingAsset // Address
+  asset: string // Address
   stakingAddress: Address
   rewards: TokenAmountPriced
   isProcessed: boolean
@@ -59,7 +59,7 @@ export type ClaimerInfoDisplay = {
 export type CollatStaked = {
   amount: bigint
   decimals: bigint
-  symbol: ExistingAsset
+  symbol: string
   token: Address
 }
 
@@ -73,7 +73,7 @@ export type ClaimerInfo = {
 export type ClaimAsset = {
   amount: string
   valueInUsd: string
-  symbol: ExistingAsset
+  symbol: string
 }
 
 export type ClaimData = {
@@ -106,13 +106,13 @@ export type ClaimData = {
 }
 
 export type ClaimableMarket = {
-  marketName: ExistingAsset
+  marketName: string
   marketAddress: Address
   claimable: string
 }
 
 export type HarvestableMarket = {
-  marketName: ExistingAsset
+  marketName: string
   marketAddress: Address
   harvestable: number
   percentage: number
@@ -274,7 +274,7 @@ export type USGMarketAmounts = {
 }
 
 export type HarvesterInfoDisplay = {
-  asset: ExistingAsset
+  asset: string
   contractAddress: Address
   rewards: TokenAmountPriced
   isProcessed: boolean
@@ -308,7 +308,7 @@ export type ZapMarketData = {
 
 export type USGMarket = {
   marketAddress: Address
-  marketName: ExistingAsset
+  marketName: string
   collatAddress: Address
   marketType: "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | "STAKEDAO_CRV_Vault"
 }
@@ -335,11 +335,12 @@ export type StakingAssetInfo = {
 
 export type DepositReceiveAsset = {
   logoURI?: string
-  logo?: ExistingAsset
+  logo?: string
   value: string
   name?: string
   symbol: string
   balance?: bigint
+  address?: Address
 }
 
 export type EarnProtocolInput = {
@@ -548,7 +549,7 @@ export type MarketAPRs = {
 
 export type MarketListAPRData = {
   marketAddress: Address
-  collateral: ExistingAsset
+  collateral: string
   currentAPR: {
     [rewardToken: string]: number // allows any other dynamic APR components (e.g. CRV, CVX, FXN, etc.)
   }

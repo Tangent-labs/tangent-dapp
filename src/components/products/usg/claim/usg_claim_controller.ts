@@ -4,7 +4,7 @@ import { getTokensPrice } from "@/services/service_price"
 import { USG_CONTRACT, USGMarkets } from "../usg_repository"
 import { Abi, Address, formatUnits, Hex, WalletClient } from "viem"
 import claimContract from "../../../../abi/USG/RewardAccumulator.json"
-import { AssetDataPriced, ExistingAsset, ListHeaderData } from "@/types"
+import { AssetDataPriced, ListHeaderData } from "@/types"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import { executeChainViewUnique, executeContractCall, waitForTransaction } from "@/services/service_rpc"
 import { getRewardTokenFromAprDetails } from "../list/usg_market_controller"
@@ -28,7 +28,7 @@ export async function getUSGClaimOnChainData(currentAddress: string) {
 }
 
 export const computeAndReturnPrices = async (claimInfo: ClaimerInfo[]) => {
-  const tokensSet = new Set<ExistingAsset>()
+  const tokensSet = new Set<string>()
 
   claimInfo.forEach((el) => {
     el.claimableTokens.forEach((t) => {

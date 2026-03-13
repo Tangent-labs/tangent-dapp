@@ -1,6 +1,5 @@
 "use client"
 
-import { ExistingAsset } from "@/types"
 import { useMemo, useState } from "react"
 import { MarketDetailData } from "../../../usg_type"
 import { TokenImage } from "@/components/design_system/structure/token_image"
@@ -14,17 +13,17 @@ type MarketDetailsInfosProps = {
 
 export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
   const [tokenA, tokenB] = useMemo(() => {
-    return marketData.collateralInfo.name.split("-") as [ExistingAsset, ExistingAsset | string]
+    return marketData.collateralInfo.name.split("-") as [string, string]
   }, [marketData?.collateralInfo?.name])
 
-  const [selectedToken, setSelectedToken] = useState<ExistingAsset | string>(tokenA)
+  const [selectedToken, setSelectedToken] = useState<string | string>(tokenA)
 
   const currentInfo = useMemo(() => {
     const info = TOKEN_INFOS[selectedToken]
     return info ?? { info: "No information available", risk: "—" }
   }, [selectedToken])
 
-  const onClickTokenLink = (token: ExistingAsset) => {
+  const onClickTokenLink = (token: string) => {
     const infoToDisplay = TOKEN_INFOS[token]
     window.open(infoToDisplay?.link, "_blank")
   }
@@ -40,7 +39,7 @@ export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
                 selectedToken === tokenA ? "border-opacity-100 bg-white text-black" : "border-opacity-10 text-white hover:border-opacity-100"
               }`}
             >
-              <TokenImage token={tokenA as ExistingAsset} size={8} className="w-4" />
+              <TokenImage token={tokenA} size={8} className="w-4" />
               {tokenA}
             </button>
 
@@ -62,11 +61,11 @@ export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
                     selectedToken === tokenB ? "border-opacity-100 bg-white text-black" : "border-opacity-10 text-white hover:border-opacity-100"
                   }`}
                 >
-                  <TokenImage token={tokenB as ExistingAsset} size={8} className="w-4" />
+                  <TokenImage token={tokenB} size={8} className="w-4" />
                   {tokenB}
                 </button>
                 <div
-                  onClick={() => onClickTokenLink(tokenB as ExistingAsset)}
+                  onClick={() => onClickTokenLink(tokenB)}
                   className="relative flex h-[20px] w-[20px] cursor-pointer items-center justify-center rounded-full border border-subtitle hover:border-white"
                 >
                   <div className="absolute flex items-center justify-center">

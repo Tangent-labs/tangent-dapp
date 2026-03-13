@@ -4,7 +4,7 @@ import { formatUnits } from "viem"
 import { PredepositStatus } from "../types/types"
 import { DynamicProgressBar } from "./dynamic-progress-bar"
 import { formatDollar, formatNumber } from "@/lib/number_formatter"
-import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
+import { AssetDataPriced, FormState } from "@/types"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { BorderPanel } from "@/components/design_system/structure/border_panel"
@@ -31,7 +31,7 @@ type USGPredepositComponentProps = {
   handleProcess: () => void
   cap: bigint | undefined
   connect: () => void
-  pool: ExistingAsset
+  pool: string
   setMaxBalance: () => void
   tanAllocation: bigint
 }
@@ -77,7 +77,7 @@ export const USGPredepositComponent = ({
 
       <GenericInputAssetAmount
         inputWeiValue={depositWeiValue}
-        depositSelect={<StaticCardAssetInput asset={assetInfo?.symbol as ExistingAsset} />}
+        depositSelect={<StaticCardAssetInput asset={assetInfo?.symbol} />}
         isLoading={isLoading}
         label="You deposit"
         asset={assetInfo}

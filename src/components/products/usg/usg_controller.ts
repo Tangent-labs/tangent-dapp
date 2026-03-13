@@ -9,7 +9,7 @@ import { cowSwapAPIReturn } from "@/data/cowswap"
 
 export async function fetchTokens() {
   const tokensData = cowSwapAPIReturn.tokens
-  return tokensData.filter((el) => !!el.chainId && el.chainId === 1) as ZapToken[]
+  return tokensData.filter((el) => !!el.chainId && el.chainId === 1) as unknown as ZapToken[]
 }
 
 export async function getUSGsUSGMetrics(currentAddress: string) {

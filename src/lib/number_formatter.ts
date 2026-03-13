@@ -63,7 +63,7 @@ export function toBigInt(num: number, decimals: number): bigint {
 export function formatBigInt(value: bigint | string | undefined, decimals: number, displayDecimals: number): string {
   if (value === undefined || value === null) return ""
   const bigIntValue: bigint = typeof value === "string" ? BigInt(value) : value
-  const reduceNumber = parseFloat(formatUnits(bigIntValue, decimals))
+  const reduceNumber = Number(formatUnits(bigIntValue, decimals))
   if (!isNaN(reduceNumber)) {
     return formatNumber(reduceNumber, displayDecimals)
   }

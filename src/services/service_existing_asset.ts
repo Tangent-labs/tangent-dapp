@@ -1,11 +1,11 @@
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
-import { AssetDataPriced, AssetData, ExistingAsset } from "@/types"
+import { AssetDataPriced, AssetData } from "@/types"
 import { Address } from "viem"
 import { getPrices } from "@/services/service_price"
 
 interface Market {
   marketAddress: Address
-  collatName: ExistingAsset
+  collatName: string
   collatAddress: Address
   marketType: string
 }
@@ -42,7 +42,7 @@ export const getAssetInfo = async (keys: AssetConfigKey[]): Promise<AssetDataPri
           collatName: market.collatName,
           collatAddress: market.collatAddress,
           marketType: market.marketType,
-          price: prices ? prices[k as ExistingAsset] || 0 : 0,
+          price: prices ? prices[k] || 0 : 0,
         }
       }
     })

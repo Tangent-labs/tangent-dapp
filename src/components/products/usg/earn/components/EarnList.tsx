@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils"
-import { ExistingAsset } from "@/types"
 import { AprOpportunityItem } from "../../usg_type"
 import { ListRow } from "@/components/design_system/list/list_row"
 import { protocolConfig, ProtocolName } from "../usg_earn_controller"
@@ -17,7 +16,7 @@ export const AprOpportunity = ({ item, index, isLoading }: AprOpportunityProps) 
   return (
     <ListRow route={item.link} className={cn(isLoading ? "shimmer" : "")} key={index}>
       <div className="relative flex items-center gap-2">
-        <CustomAssetDisplay token={item?.asset as ExistingAsset} />
+        <CustomAssetDisplay token={item?.asset} />
 
         <div className="flex min-h-11 flex-col items-center justify-center md:flex-col md:items-start">
           <span className="text-sm font-semibold md:text-xl">{item?.asset?.replaceAll("-", "/")}</span>

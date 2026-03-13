@@ -1,7 +1,7 @@
 import MarketListUI from "@/abi/USG/MarketListUI.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import { Abi, Address, formatEther, formatUnits, Hex } from "viem"
-import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
+import { ListHeaderData, ListRowData } from "@/types"
 import { USG_CONTRACT, USGMarkets, USGPegKeepers } from "../usg_repository"
 import { formatBigInt, formatMillions, formatNumber } from "@/lib/number_formatter"
 import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, USGGlobalData, USGMarketType } from "../usg_type"
@@ -117,7 +117,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
 
   return {
     marketType,
-    token: data.collateral as ExistingAsset,
+    token: data.collateral,
     protocol,
     type,
     name: data.collateral,

@@ -1,7 +1,6 @@
 "use client"
 
 import { Address } from "viem"
-import { ExistingAsset } from "@/types"
 import { CustomAssetDisplay } from "./custom_asset_display"
 import { CollateralEmissionLabel } from "./collat_emission_label"
 import { MarketConstants } from "@/components/products/usg/usg_type"
@@ -9,7 +8,7 @@ import TokenImageHighlighted from "../structure/token_image_highlighted"
 
 interface ListAssetProps {
   name: string
-  token: ExistingAsset
+  token: string
   marketData?: {
     marketType: "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | "STAKEDAO_CRV_Vault" | undefined
     marketAddress: Address

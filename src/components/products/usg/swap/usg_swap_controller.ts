@@ -8,9 +8,8 @@ import { Abi, Address, EstimateContractGasParameters, SendTransactionParameters,
 
 export const computeSwapAssetPrice = async (tokens: SwapToken[], depositAsset: string) => {
   try {
-    const tokenAddress = tokens.find((el: SwapToken) => el.name === depositAsset || el.symbol === depositAsset)
-      ? tokens.find((el: SwapToken) => el.name === depositAsset || el.symbol === depositAsset)?.address
-      : undefined
+    const found = tokens.find((el: SwapToken) => el.name === depositAsset || el.symbol === depositAsset)
+    const tokenAddress = found ? found.address : undefined
     if (tokenAddress) {
       const data = await getSwapAssetPrice(tokenAddress)
       return data

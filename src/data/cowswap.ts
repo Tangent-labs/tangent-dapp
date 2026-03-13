@@ -1,3 +1,6 @@
+import { CURVE_LPS } from "@tangent/defi-resources"
+import { SDT_crvUSD_USDC_VAULT } from "@tangent/defi-resources/build/ressources/erc20/stakeDao"
+
 export const cowSwapAPIReturn = {
   name: "CoW Swap",
   timestamp: "2026-02-16T10:40:00+00:00",
@@ -15,6 +18,47 @@ export const cowSwapAPIReturn = {
     },
   },
   tokens: [
+    {
+      address: "0xb1c2db5d6ca03fce73dbd304d320bf76c55ae1b1",
+      chainId: 1,
+      decimals: 18,
+      logo: "USG",
+      name: "USG",
+      symbol: "USG",
+    },
+    {
+      address: "0xf17d6f98a5c6eaa99d149079984119e0a4ef6900",
+      chainId: 1,
+      decimals: 18,
+      logo: "sUSG",
+      name: "sUSG",
+      symbol: "sUSG",
+    },
+    {
+      address: "0x97ba10115da528c113462ede9c20d7adc806d93f",
+      chainId: 1,
+      decimals: 18,
+      logo: "USG-USDC",
+      name: "USG/USDC",
+      symbol: "USG/USDC",
+    },
+    {
+      address: "0xefc056790bb19702b2164ec6ea6ba3ae01d81195",
+      chainId: 1,
+      decimals: 18,
+      logo: "USG-frxUSD",
+      name: "USG/frxUSD",
+      symbol: "USG/frxUSD",
+    },
+    {
+      symbol: "ETH",
+      name: "Ethereum",
+      value: "ETH",
+      decimals: 18,
+      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      logo: "ETH",
+      displayDecimals: 5,
+    },
     {
       address: "0x085780639cc2cacd35e474e71f4d000e2405d8f6",
       chainId: 1,
@@ -2153,6 +2197,33 @@ export const cowSwapAPIReturn = {
       decimals: 18,
       chainId: 59144,
       logoURI: "https://files.cow.fi/token-lists/images/59144/0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f/logo.png",
+    },
+
+    // CURVE LP
+    {
+      address: CURVE_LPS.crvUSD_USDC,
+      chainId: 1,
+      decimals: 18,
+      logo: "crvUSD-USDC",
+      name: "crvUSD-USDC",
+      symbol: "crvUSD-USDC",
+    },
+    {
+      address: CURVE_LPS.crvUSD_USDT,
+      chainId: 1,
+      decimals: 18,
+      logo: "crvUSD-USDT",
+      name: "crvUSD-USDT",
+      symbol: "crvUSD-USDT",
+    },
+
+    {
+      address: SDT_crvUSD_USDC_VAULT,
+      chainId: 1,
+      decimals: 18,
+      logo: "Vault crvUSD-USDT",
+      name: "Vault crvUSD-USDT",
+      symbol: "Vault crvUSD-USDT",
     },
   ],
 }

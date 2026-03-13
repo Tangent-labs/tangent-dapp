@@ -1,7 +1,6 @@
 import { TokenImage } from "@/components/design_system/structure/token_image"
-import { ExistingAsset } from "@/types"
 
-export const LpTaskCustomAssetDisplay = ({ token }: { token: ExistingAsset }) => {
+export const LpTaskCustomAssetDisplay = ({ token }: { token: string }) => {
   const tokenList = ["PT sUSDe", "YT sUSDe", "LP sUSDe", "PT USDe", "YT USDe", "LP USDe", "USG", "sUSG"]
 
   return (

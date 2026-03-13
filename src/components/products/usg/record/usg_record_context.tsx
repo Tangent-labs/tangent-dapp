@@ -36,9 +36,11 @@ import { useRootContext } from "@/components/products/root/root_context"
 import { useUSGMaketListContext } from "../list/usg_market_list_context"
 import { getHistoricalMarketData, getUserPositions } from "../client_api"
 import { sortUserData } from "./position_history/usg_position_history_controller"
-import { AssetDataPriced, CollateralInfo, ExistingAsset, ListState } from "@/types"
+import { AssetDataPriced, CollateralInfo, ListState } from "@/types"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { AssetInfos } from "@/components/design_system/inputs/asset_selector"
+import { formatNumber } from "@/lib/number_formatter"
 
 type USGRecordContextProps = {
   children: ReactNode
@@ -129,16 +131,7 @@ type USGRecordContextValues = {
   simulatedDebtAmount: number
   setSimulatedDebtAmount: (n: number) => void
 
-  depositAssetOptions: Array<{
-    label: string
-    value: string
-    address: Address
-    balance: bigint
-    symbol: string
-    logo?: ExistingAsset
-    logoURI?: string
-    name?: string
-  }>
+  depositAssetOptions: AssetInfos[]
 }
 
 const LEVERAGE_TRESHOLD = 0.989
@@ -450,26 +443,40 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     return []
   }, [marketData])
 
-  const depositAssetOptions = useMemo(() => {
+  const depositAssetOptions: AssetInfos[] = useMemo(() => {
     if (!!marketData && !!balances) {
       const gaugeSymbol = `Gauge ${collateralInfo?.symbol}`
+
+      const balCollatWei = balances?.[collateralInfo?.address] ?? 0n
+      const balCollatNumber = Number(formatUnits(balCollatWei, collateralInfo?.decimals))
+
+      const receiptCollat = balances?.[marketData?.constants?.receipt] ?? 0n
+      const receiptNumber = Number(formatUnits(receiptCollat, collateralInfo?.decimals))
 
       return [
         {
           label: collateralInfo?.symbol,
           value: collateralInfo?.symbol,
           address: collateralInfo?.address,
-          balance: balances?.[collateralInfo?.address] ?? BigInt(0),
+          balanceWei: balCollatWei,
+          balanceNumber: balCollatNumber,
+          balanceFormatted: formatNumber(balCollatNumber, 2),
           symbol: collateralInfo?.symbol,
-          logo: collateralInfo?.symbol as ExistingAsset,
+          logo: collateralInfo?.symbol,
+          decimals: collateralInfo.decimals,
+          displayDecimals: 2,
         },
         {
           label: gaugeSymbol,
           value: gaugeSymbol,
           address: marketData?.constants?.receipt,
-          balance: balances?.[marketData?.constants?.receipt] ?? BigInt(0),
+          balanceWei: receiptCollat,
+          balanceNumber: receiptNumber,
+          balanceFormatted: formatNumber(receiptNumber, 2),
           symbol: gaugeSymbol,
-          logo: collateralInfo?.symbol as ExistingAsset,
+          logo: collateralInfo?.symbol,
+          decimals: collateralInfo.decimals,
+          displayDecimals: 2,
         },
       ]
     }

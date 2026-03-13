@@ -12,7 +12,7 @@ import {
 } from "../usg_type"
 
 import GetBalances from "@/abi/USG/GetBalances.json"
-import { CollateralInfo, ExistingAsset } from "@/types"
+import { CollateralInfo } from "@/types"
 import { getSwapAssetPrice } from "@/services/service_price"
 import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
 import { USG_CONTRACT, USGMarkets, USGOracles } from "../usg_repository"
@@ -178,7 +178,7 @@ export async function loadMarketServerData(marketAddress: Address) {
     displayDecimals: 2,
     symbol: marketInfo?.marketName as string,
     name: marketInfo?.marketName as string,
-    logo: marketInfo?.marketName as ExistingAsset,
+    logo: marketInfo?.marketName,
     price: 0,
   }
 

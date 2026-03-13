@@ -3,7 +3,6 @@ import { AssetConfigKey } from "@/services/repo_asset_infos"
 import { dappConfig } from "@/dapp_config"
 import { Address } from "viem"
 import { unstable_cache } from "next/cache"
-import { ExistingAsset } from "@/types"
 
 const CACHE_PRICE_TAG = "tan-price"
 const CACHE_PRICE_OPTION = { revalidate: dappConfig.cacheTime.price * 60 }
@@ -61,7 +60,7 @@ export const getPrices = unstable_cache(
  */
 export const getTokensPrice = async (tokens: string[]) => {
   const selectedAddresses: Address[] = Object.entries(TOKEN_ADDR)
-    .filter(([key]) => tokens.includes(key as ExistingAsset))
+    .filter(([key]) => tokens.includes(key))
     .map(([, value]) => value)
 
   return _fetchAndReturnPrices(selectedAddresses)

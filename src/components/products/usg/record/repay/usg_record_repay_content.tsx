@@ -1,7 +1,6 @@
 "use client"
 
 import Image from "next/image"
-import { ExistingAsset } from "@/types"
 import { ZapToken } from "../../usg_type"
 import { useUSGContext } from "../../usg_context"
 import { USG_CONTRACT } from "../../usg_repository"
@@ -21,6 +20,7 @@ import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import FormButtons from "@/components/design_system/form/form_actions"
+import { AssetInfos } from "@/components/design_system/inputs/asset_selector"
 
 export default function USGRepayContent() {
   const {
@@ -64,7 +64,7 @@ export default function USGRepayContent() {
 
   const AssetSelectTemplate = (option: {
     logoURI?: string
-    logo?: ExistingAsset
+    logo?: string
     value: string
     name?: string
     symbol: string
@@ -107,7 +107,7 @@ export default function USGRepayContent() {
           address: USG_CONTRACT.USG,
           decimals: 18,
           displayDecimals: 2,
-          logo: "USG" as ExistingAsset,
+          logo: "USG",
           name: "USG",
           price: 1,
           symbol: "USG",
@@ -121,7 +121,7 @@ export default function USGRepayContent() {
             value: "ETH",
             decimals: 18,
             address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address,
-            logo: "ETH" as ExistingAsset,
+            logo: "ETH",
             displayDecimals: 5,
             balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
           },
@@ -141,11 +141,11 @@ export default function USGRepayContent() {
     }
   }
 
-  const WithdrawAssetSelectTemplate = (option: { logo?: ExistingAsset; label: string }) => {
+  const WithdrawAssetSelectTemplate = (option: AssetInfos) => {
     return (
       <div className="flex w-full cursor-pointer items-center gap-2 rounded-[10px] py-1 hover:bg-white/10">
         <TokenImage token={option?.logo} size={32} />
-        <span className="text-sm font-semibold">{option.label?.replaceAll("-", "/")}</span>
+        <span className="text-sm font-semibold">{option.symbol?.replaceAll("-", "/")}</span>
       </div>
     )
   }
@@ -156,11 +156,11 @@ export default function USGRepayContent() {
         className="w-full"
         template={WithdrawAssetSelectTemplate}
         value={withdrawSelectedAsset || collateralInfo?.symbol}
-        options={depositAssetOptions}
+        options={depositAssetOptions} // Cast to any to satisfy InputSelect generic
         onChange={(v) => setWithdrawSelectedAsset(v)}
       />
     ) : (
-      <StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />
+      <StaticCardAssetInput asset={collateralInfo.name} />
     )
 
   return (

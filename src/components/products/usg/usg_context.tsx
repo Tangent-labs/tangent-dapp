@@ -118,7 +118,7 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
   }
 
   useEffect(() => {
-    const tokenAddresses: Address[] = tokens.map((el) => el.address) as Address[]
+    const tokenAddresses: Address[] = tokens.map((el) => el.address)
 
     if (currentAddress && tokenAddresses.length > 0) {
       getBalances(currentAddress, tokenAddresses).then((data) => {

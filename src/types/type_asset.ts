@@ -1,5 +1,4 @@
 import { Address } from "viem"
-import { ExistingAsset } from "@/types/type_tokens"
 
 export type AssetData = {
   address: Address
@@ -7,7 +6,7 @@ export type AssetData = {
   displayDecimals: number
   symbol: string
   name?: string
-  logo?: ExistingAsset
+  logo?: string
   balance?: bigint
   displaySymbol?: string
 }
@@ -22,7 +21,7 @@ export type CollateralInfo = {
   displayDecimals: number
   symbol: string
   name: string
-  logo: ExistingAsset
+  logo: string
   price: number
 }
 
@@ -46,7 +45,7 @@ export type TokenAmountPricedRow = {
   symbol: string
   dollarValue: number
   tokenAmount: number
-  logo?: ExistingAsset
+  logo?: string
   tokenAmountFormatted?: string
 }
 

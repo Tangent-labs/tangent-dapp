@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { useUSGContext } from "../usg_context"
 import { Switch } from "@/components/ui/switch"
-import { ExistingAsset, ListState } from "@/types"
+import { ListState } from "@/types"
 import { useUSGHarvestContext } from "./usg_harvest_context"
 import { harvestListHeaders } from "./usg_harvest_controller"
 import { Button } from "@/components/design_system/inputs/button"
@@ -105,9 +105,9 @@ export default function USGHarvestContent() {
                   <div className={`relative flex items-center gap-4`}>
                     {el.marketName?.substring(0, el.marketName.indexOf(" ")) === "USDe" ||
                     el.marketName?.substring(0, el.marketName.indexOf(" ")) === "sUSDe" ? (
-                      <TokenImage token={el.marketName as ExistingAsset} size={24} className="ml-1 w-6" />
+                      <TokenImage token={el.marketName} size={24} className="ml-1 w-6" />
                     ) : (
-                      <TokenImage token={el.marketName as ExistingAsset} size={32} className="w-8" />
+                      <TokenImage token={el.marketName} size={32} className="w-8" />
                     )}
 
                     <span className="text-[12px] font-semibold">{el.marketName?.replaceAll("-", "/")}</span>

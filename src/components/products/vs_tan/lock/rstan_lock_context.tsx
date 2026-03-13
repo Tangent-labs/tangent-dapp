@@ -11,7 +11,7 @@ import { ToastComponent } from "@/components/design_system/toast"
 import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import { getQuote, getRoute } from "../../usg/global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
-import { AssetDataPriced, CollateralInfo, ExistingAsset, FormState } from "@/types"
+import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computedMinAmountOut, computeSwapAssetPrice } from "../../usg/record/usg_record_controller"
@@ -145,7 +145,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
         value: "TAN",
         decimals: 18,
         address: VSTAN_CONTRACT?.TAN,
-        logo: "TAN" as ExistingAsset,
+        logo: "TAN",
         displayDecimals: 5,
         // TODO : update to formatBigInt(lockData?.tanPrice, 18, 6)
         price: Number(formatBigInt(lockData?.tanPrice, 13, 6)),
@@ -161,7 +161,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
         value: "TAN",
         decimals: 18,
         address: VSTAN_CONTRACT?.TAN,
-        logo: "TAN" as ExistingAsset,
+        logo: "TAN",
         displayDecimals: 5,
         // TODO : update to formatBigInt(lockData?.tanPrice, 18, 6)
         price: Number(formatBigInt(lockData?.tanPrice, 13, 6)),

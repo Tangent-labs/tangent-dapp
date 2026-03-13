@@ -1,8 +1,7 @@
-import { ExistingAsset } from "@/types"
 import { TokenImage } from "../structure/token_image"
 import { specialTokensList } from "@/components/products/usg/usg_repository"
 
-export const CustomAssetDisplay = ({ token }: { token: ExistingAsset }) => {
+export const CustomAssetDisplay = ({ token }: { token: string }) => {
   return (
     <>
       {specialTokensList.includes(token?.substring(0, token.indexOf(" ")).trim()) || specialTokensList.includes(token) ? (

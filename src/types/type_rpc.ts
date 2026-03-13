@@ -1,5 +1,4 @@
 import { Abi, Address } from "viem"
-import { ExistingAsset } from "./type_tokens"
 
 export type TokenAmount = {
   token: string
@@ -69,7 +68,7 @@ export type Allowance = {
 }
 
 export type HarvestRow = {
-  asset: ExistingAsset
+  asset: string
   harvesterFees: number
   totalHarvest: number
   details: TokenAmountDollar[]

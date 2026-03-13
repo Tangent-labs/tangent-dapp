@@ -8,9 +8,8 @@ import { ChevronDown } from "lucide-react"
 
 import { TokenImage } from "../structure/token_image"
 import { Input } from "@/components/ui/input"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { DepositReceiveAsset } from "@/components/products/usg/usg_type"
-import { ExistingAsset } from "@/types"
 
 type OptionT = DepositReceiveAsset
 
@@ -30,6 +29,8 @@ const ITEM_HEIGHT = 38
 const receiptTokensLabelsToDelete = ["Gauge ", "Vault "]
 const RenderAsset = <T extends OptionT>({ selected, placeholder }: { selected: T | null; placeholder: string }) => {
   let symbolURI = selected?.symbol
+
+  // Clean "Gauge " or "Vault " prefixes
   if (symbolURI) {
     receiptTokensLabelsToDelete.forEach((labelToDel) => {
       if (symbolURI!.includes(labelToDel)) {
@@ -44,9 +45,9 @@ const RenderAsset = <T extends OptionT>({ selected, placeholder }: { selected: T
           {!!selected?.logoURI ? (
             <Image src={selected.logoURI} alt={selected.symbol} height={20} width={20} />
           ) : !selected?.symbol.includes("-") ? (
-            <TokenImage token={symbolURI as ExistingAsset} size={20} />
+            <TokenImage token={symbolURI} size={20} />
           ) : (
-            <TokenImage token={symbolURI as ExistingAsset} size={32} />
+            <TokenImage token={symbolURI} size={32} />
           )}
           <span className="text-sm font-semibold">{selected.symbol?.replaceAll("-", "/")}</span>
         </>
@@ -72,7 +73,13 @@ export function AssetSelectionDialog<T extends OptionT>({
 
   const listRef = useRef<List>(null)
 
-  const selected = useMemo(() => options.find((o) => o.value === value || o.symbol === value) ?? null, [options, value])
+  const selected = useMemo(
+    () =>
+      options.find((o) => {
+        return o.value === value || o.symbol === value
+      }) ?? null,
+    [options, value]
+  )
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -122,9 +129,9 @@ export function AssetSelectionDialog<T extends OptionT>({
         </div>
       </DialogTrigger>
 
-      <DialogContent className="h-[500px] w-full max-w-[500px] rounded-[10px] bg-overlay-panel p-4 text-white">
+      <DialogContent aria-describedby={undefined} className="h-[500px] w-full max-w-[500px] rounded-[10px] bg-overlay-panel p-4 text-white">
         <div data-combobox className="flex min-h-56 w-full min-w-32 flex-col">
-          <div className="flex w-full items-center justify-start text-lg font-semibold text-white">Select a token</div>
+          <DialogTitle className="text-lg font-semibold text-white">Select a token</DialogTitle>
           <div className="w-full py-2">
             <Input ref={inputRef} placeholder="Search a token name..." value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>

@@ -1,6 +1,5 @@
 "use client"
 
-import { ExistingAsset } from "@/types"
 import { MarketDetailData } from "../../usg_type"
 import { IconChevron } from "@/components/icons"
 import { MarketMetadata } from "../market_metadata"
@@ -23,9 +22,9 @@ export const CollateralCard = ({ collateralInfo, marketData }: CollateralCardPro
         <ReliefCard className="flex w-full cursor-pointer items-center justify-between gap-4 px-4 py-2 transition-colors duration-200 ease-in-out hover:bg-white/10 md:w-fit">
           <div className="flex items-center gap-2">
             {specialTokensList.includes(collateralInfo.logo?.substring(0, collateralInfo.logo.indexOf(" ")).trim()) ? (
-              <TokenImage token={collateralInfo.logo as ExistingAsset} size={32} className="w-6 md:w-10" />
+              <TokenImage token={collateralInfo.logo} size={32} className="w-6 md:w-10" />
             ) : (
-              <TokenImage token={collateralInfo.logo as ExistingAsset} size={32} className="w-8 md:w-16" />
+              <TokenImage token={collateralInfo.logo} size={32} className="w-8 md:w-16" />
             )}
 
             <span className="text-sm font-semibold md:text-[24px]">{collateralInfo.symbol?.replaceAll("-", "/")}</span>

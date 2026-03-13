@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { formatUnits } from "viem"
 import { Switch } from "@/components/ui/switch"
-import { ExistingAsset, ListState } from "@/types"
+import { ListState } from "@/types"
 import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { specialTokensList } from "../usg_repository"
 import { useUSGClaimContext } from "./usg_claim_context"
@@ -147,9 +147,9 @@ export default function USGClaimContent() {
                 <div key={el.marketName} className="my-1 flex w-full items-center justify-between">
                   <div className="relative flex items-center gap-4">
                     {specialTokensList?.includes(el.marketName?.substring(0, el.marketName.indexOf(" "))) ? (
-                      <TokenImage token={el.marketName as ExistingAsset} size={24} className="ml-1 w-6" />
+                      <TokenImage token={el.marketName} size={24} className="ml-1 w-6" />
                     ) : (
-                      <TokenImage token={el.marketName as ExistingAsset} size={32} className="w-8" />
+                      <TokenImage token={el.marketName} size={32} className="w-8" />
                     )}
 
                     <span className="text-[12px] font-semibold">{el.marketName?.replaceAll("-", "/")}</span>
@@ -196,7 +196,7 @@ function ClaimList() {
           <div className="flex items-center justify-between max-xl:flex-col">
             <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
               <div className="xl:w-2/3">
-                <ListAsset name={item?.marketName} token={item.marketName as ExistingAsset} />
+                <ListAsset name={item?.marketName} token={item.marketName} />
               </div>
 
               <div className="flex justify-center xl:w-1/3">
@@ -240,7 +240,7 @@ function ClaimList() {
                   checked={!!marketsToClaim.find((market) => market.marketName === item.marketName)}
                   onCheckedChange={() =>
                     addToClaimableMarkets({
-                      marketName: item.marketName as ExistingAsset,
+                      marketName: item.marketName,
                       claimable: item.totalClaimableValue,
                       marketAddress: item.marketAddress,
                     })

@@ -1,10 +1,9 @@
 "use client"
 
 import Image from "next/image"
-import { ExistingAsset } from "@/types"
-import { Address, zeroAddress } from "viem"
+import { zeroAddress } from "viem"
 import { formatAddress } from "@/lib/other_formatter"
-import { formatBigInt } from "@/lib/number_formatter"
+import { formatBigInt, formatMillions } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGWithdrawContext } from "./usg_record_withdraw_context"
 import FormButtons from "@/components/design_system/form/form_actions"
@@ -13,6 +12,7 @@ import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-se
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
+import { AssetInfos } from "@/components/design_system/inputs/asset_selector"
 
 export default function USGWithdrawContent() {
   const { connect } = useWalletConnexionContext()
@@ -32,33 +32,18 @@ export default function USGWithdrawContent() {
     withdrawLoading,
   } = useUSGWithdrawContext()
 
-  const AssetSelectTemplate = (option: {
-    logoURI?: string
-    logo?: ExistingAsset
-    value: string
-    name?: string
-    symbol: string
-    balance?: bigint
-    decimals?: number
-    address?: Address
-  }) => {
+  const AssetSelectTemplate = (option: AssetInfos) => {
     return (
       <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
         <div className="flex w-full items-center gap-2">
-          <>
-            {option.logoURI ? (
-              <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} />
-            ) : (
-              <TokenImage token={option.symbol as ExistingAsset} size={32} />
-            )}
-          </>
+          <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} /> : <TokenImage token={option.symbol} size={32} />}</>
 
           <div className="flex flex-col items-start justify-start">
             <span className="text-sm font-semibold">{option.symbol?.replaceAll("-", "/")}</span>
             <span className="text-xs text-subtitle">{formatAddress(option?.address, 4)}</span>
           </div>
         </div>
-        <span className="ml-auto text-xs text-subtitle">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
+        <span className="ml-auto text-xs text-subtitle">{formatMillions(option.balanceNumber)}</span>
       </div>
     )
   }
@@ -77,7 +62,7 @@ export default function USGWithdrawContent() {
         />
       )
     } else {
-      return <StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />
+      return <StaticCardAssetInput asset={collateralInfo.name} />
     }
   }
 

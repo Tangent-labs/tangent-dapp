@@ -1,9 +1,8 @@
 import { BorderPanel } from "@/components/design_system/structure/border_panel"
 import { TokenImage } from "@/components/design_system/structure/token_image"
-import { ExistingAsset } from "@/types"
 
 type StaticCardAssetInputProps = {
-  asset: ExistingAsset
+  asset: string
 }
 
 export const StaticCardAssetInput = ({ asset }: StaticCardAssetInputProps) => {

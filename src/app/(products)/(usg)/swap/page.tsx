@@ -1,12 +1,13 @@
 import USGSwapContent from "@/components/products/usg/swap/usg_swap_content"
 import { USGSwapProvider } from "@/components/products/usg/swap/usg_swap_context"
+import { Suspense } from "react"
 
-export default async function USGSwapPage({ searchParams }: { searchParams: { tokenIn?: string; tokenOut?: string } }) {
-  const { tokenIn, tokenOut } = await searchParams
-
+export default async function USGSwapPage() {
   return (
-    <USGSwapProvider tokenIn={tokenIn} tokenOut={tokenOut}>
-      <USGSwapContent />
-    </USGSwapProvider>
+    <Suspense>
+      <USGSwapProvider>
+        <USGSwapContent />
+      </USGSwapProvider>
+    </Suspense>
   )
 }

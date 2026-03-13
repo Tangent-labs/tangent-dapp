@@ -19,8 +19,9 @@ export const AprOpportunity = ({ item, index, isLoading }: AprOpportunityProps) 
       <div className="relative flex items-center gap-2">
         <CustomAssetDisplay token={item?.asset as ExistingAsset} />
 
-        <div className="flex flex-row items-center justify-center md:flex-col md:items-start">
+        <div className="flex min-h-11 flex-col items-center justify-center md:flex-col md:items-start">
           <span className="text-sm font-semibold md:text-xl">{item?.asset?.replaceAll("-", "/")}</span>
+          <span className="text-xs text-subtitle">{item?.subLabel}</span>
         </div>
       </div>
 

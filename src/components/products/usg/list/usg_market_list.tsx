@@ -96,7 +96,7 @@ export default function USGMarketList() {
               <p className="mt-2 text-[15px]">Borrow USG against accepted collateral. Tangent features two kinds of markets.</p>
               <Link
                 className="flex cursor-pointer items-center justify-center underline hover:text-white/30"
-                href="https://docs.tangent.finance/docs/overview"
+                href="https://docs.tangent.finance/docs/usg/overview_usg#markets%E2%80%8B"
                 target="_blank"
                 rel="noopener noreferrer"
               >

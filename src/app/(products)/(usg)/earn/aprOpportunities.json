@@ -1,13 +1,95 @@
 {
   "opportunities": [
     {
+      "name": "USG/USDC (unstaked) - Curve",
+      "asset": "USG-USDC",
+      "subLabel": "(unstaked)",
+      "address": "0x97ba10115da528c113462ede9c20d7adc806d93f",
+      "link": "https://www.curve.finance/dex/ethereum/pools/0x97ba10115da528c113462ede9c20d7adc806d93f/deposit",
+      "protocolName": "Curve",
+      "marketType": "Convex_CRV",
+      "points": 400
+    },
+
+    {
+      "name": "USG/frxUSD (unstaked) - Curve",
+      "asset": "USG-frxUSD",
+      "subLabel": "(unstaked)",
+      "address": "0xefc056790bb19702b2164ec6ea6ba3ae01d81195",
+      "link": "https://www.curve.finance/dex/ethereum/pools/0xefc056790bb19702b2164ec6ea6ba3ae01d81195/deposit",
+      "protocolName": "Curve",
+      "marketType": "Convex_CRV",
+      "points": 400
+    },
+    {
+      "name": "USG/USDC (staked) - Curve",
+      "asset": "USG-USDC",
+      "subLabel": "(staked)",
+      "address": "0x97ba10115da528c113462ede9c20d7adc806d93f",
+      "link": "https://www.curve.finance/dex/ethereum/pools/0x97ba10115da528c113462ede9c20d7adc806d93f/deposit",
+      "protocolName": "Curve",
+      "marketType": "Convex_CRV",
+      "points": 400
+    },
+
+    {
+      "name": "USG/frxUSD (staked) - Curve",
+      "asset": "USG-frxUSD",
+      "subLabel": "(staked)",
+      "address": "0xefc056790bb19702b2164ec6ea6ba3ae01d81195",
+      "link": "https://www.curve.finance/dex/ethereum/pools/0xefc056790bb19702b2164ec6ea6ba3ae01d81195/deposit",
+      "protocolName": "Curve",
+      "marketType": "Convex_CRV",
+      "points": 400
+    },
+
+    {
+      "name": "USG/USDC - Convex",
+      "asset": "USG-USDC",
+      "address": "0x52cd58c160a51c2207504a6d28975c8f981ea8e8",
+      "link": "https://curve.convexfinance.com/stake/ethereum/541",
+      "protocolName": "Convex",
+      "marketType": "Convex_CRV",
+      "points": 400
+    },
+
+    {
+      "name": "USG/frxUSD - Convex",
+      "asset": "USG-frxUSD",
+      "address": "0x39b1df92f9485a73cadf4846abde59eac0901a94",
+      "link": "https://curve.convexfinance.com/stake/ethereum/542",
+      "protocolName": "Convex",
+      "marketType": "Convex_CRV",
+      "points": 400
+    },
+
+    {
+      "name": "USG/USDC - Stake DAO",
+      "asset": "USG-USDC",
+      "address": "0x909B19F659b8B99c50128487DE14F9c8F011b3d2",
+      "link": "https://www.stakedao.org/strategy?protocol=curve&vault=1-0x909B19F659b8B99c50128487DE14F9c8F011b3d2",
+      "protocolName": "Stake DAO",
+      "marketType": "Convex_CRV",
+      "points": 400
+    },
+
+    {
+      "name": "USG/frxUSD - Stake DAO",
+      "asset": "USG-frxUSD",
+      "address": "0x247E3D3A476a537E740E90a04BC5327663a303e2",
+      "link": "https://www.stakedao.org/strategy?protocol=curve&vault=1-0x247E3D3A476a537E740E90a04BC5327663a303e2",
+      "protocolName": "Stake DAO",
+      "marketType": "Convex_CRV",
+      "points": 400
+    },
+
+    {
       "name": "crvUSD-USDC",
       "asset": "crvUSD-USDC",
       "address": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
       "link": "https://www.curve.finance/dex/ethereum/pools/factory-crvusd-0/deposit",
       "protocolName": "Curve",
       "marketType": "Convex_CRV",
-      "actionLabel": "Get crvUSD/USDC LP",
       "points": 400
     },
     {
@@ -17,7 +99,6 @@
       "link": "https://www.curve.finance/dex/ethereum/pools/factory-crvusd-1/deposit",
       "protocolName": "Curve",
       "marketType": "Convex_CRV",
-      "actionLabel": "Get crvUSD/USDT LP",
       "points": 600
     },
     {
@@ -27,7 +108,6 @@
       "link": "https://www.curve.finance/dex/ethereum/pools",
       "protocolName": "Stake DAO",
       "marketType": "STAKEDAO_CRV_Vault",
-      "actionLabel": "Stake crvUSD-USDT",
       "points": 2000
     },
     {
@@ -37,7 +117,6 @@
       "link": "https://www.curve.finance/dex/ethereum/pools",
       "protocolName": "Convex",
       "marketType": "Convex_FXN",
-      "actionLabel": "Convex USDC-fxUSD",
       "points": 20
     },
     {
@@ -47,7 +126,6 @@
       "link": "https://www.curve.finance/dex/ethereum/pools",
       "protocolName": "Pendle",
       "marketType": "Pendle_PT",
-      "actionLabel": "Pendle LP sUSDe",
       "points": 2000
     },
     {
@@ -57,7 +135,6 @@
       "link": "https://www.curve.finance/dex/ethereum/pools",
       "protocolName": "Pendle",
       "marketType": "Pendle_PT",
-      "actionLabel": "Pendle PT sUSDe",
       "points": 150
     },
     {
@@ -67,7 +144,6 @@
       "link": "https://www.curve.finance/dex/ethereum/pools",
       "protocolName": "Pendle",
       "marketType": "Pendle_PT",
-      "actionLabel": "Pendle YT sUSDe",
       "points": 200
     },
     {
@@ -77,7 +153,6 @@
       "link": "https://www.curve.finance/dex/ethereum/pools",
       "protocolName": "Pendle",
       "marketType": "Pendle_PT",
-      "actionLabel": "Pendle LP USDe",
       "points": 2000
     },
     {
@@ -87,7 +162,6 @@
       "link": "https://www.curve.finance/dex/ethereum/pools",
       "protocolName": "Pendle",
       "marketType": "Pendle_PT",
-      "actionLabel": "Pendle PT USDe",
       "points": 150
     },
     {
@@ -97,7 +171,6 @@
       "link": "https://www.curve.finance/dex/ethereum/pools",
       "protocolName": "Pendle",
       "marketType": "Pendle_PT",
-      "actionLabel": "Pendle YT USDe",
       "points": 200
     }
   ]

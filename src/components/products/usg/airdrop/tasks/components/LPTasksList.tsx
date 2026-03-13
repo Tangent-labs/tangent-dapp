@@ -2,7 +2,7 @@
 
 import { UserTask } from "../../../usg_type"
 import { ExistingAsset, ListState } from "@/types"
-import { IconSortHeader } from "@/components/icons"
+import { IconOpenOutside, IconSortHeader } from "@/components/icons"
 import { formatToken } from "../usg_tasks_controller"
 import { TaskStatus } from "../../components/TaskStatus"
 import { LpTaskCustomAssetDisplay } from "./custom_token_display"
@@ -11,6 +11,7 @@ import { TokenImage } from "@/components/design_system/structure/token_image"
 import { useListContext } from "@/components/design_system/list/list_context"
 import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { useRouter } from "next/navigation"
 
 export const lpListState: ListState = {
   search: undefined,
@@ -74,6 +75,8 @@ const LpTaskListDisposition = ({ children }: { children: React.ReactNode[] }) =>
 
 export const LPTasksList = () => {
   const { headers, listState, udpateSort, displayRows } = useListContext()
+
+  const router = useRouter()
 
   return (
     <>
@@ -161,7 +164,17 @@ export const LPTasksList = () => {
                 <div className="flex h-full flex-col items-start justify-between">
                   <span className="flex text-[15px] font-semibold">{task?.description}</span>
 
-                  <ReliefCard className="flex items-center justify-center !rounded-full px-4 py-1 text-sm">Zap</ReliefCard>
+                  <ReliefCard
+                    onClick={(e) => {
+                      e?.stopPropagation()
+                      e?.preventDefault()
+                      router.push(`/swap?tokenIn=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&tokenOut=${task?.tokenAddress}`)
+                    }}
+                    className="flex items-center justify-center !rounded-full px-2 py-1 text-sm"
+                  >
+                    Zap
+                    <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white"></IconOpenOutside>
+                  </ReliefCard>
                 </div>
               </div>
 

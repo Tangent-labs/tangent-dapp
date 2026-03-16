@@ -3,7 +3,7 @@
 import { toast } from "react-toastify"
 import { useUSGContext } from "../../usg_context"
 import { USGMarket } from "../../usg_type"
-import { useUSGRecordContext } from "../usg_record_context"
+import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
@@ -168,20 +168,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     const marketType = marketData?.marketType
     if (!depositAsset) return false
 
-    let receiptPrefix = ""
-
-    switch (marketType) {
-      case "CRV_Gauge":
-        receiptPrefix = "Gauge "
-        break
-      case "STAKEDAO_CRV_Vault":
-        receiptPrefix = "Vault "
-        break
-      default:
-        break
-    }
-
-    return ![collateralInfo?.symbol, `${receiptPrefix}${collateralInfo?.symbol}`].includes(depositAsset)
+    return ![collateralInfo?.symbol, `${getReceiptPrefix(marketType)}${collateralInfo?.symbol}`].includes(depositAsset)
   }, [depositAsset, collateralInfo?.symbol])
 
   /**

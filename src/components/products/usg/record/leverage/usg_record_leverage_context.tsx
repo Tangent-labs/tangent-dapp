@@ -4,7 +4,7 @@ import { toast } from "react-toastify"
 import { formatEther, formatUnits, parseEther } from "viem"
 import { useUSGContext } from "../../usg_context"
 import { USG_CONTRACT } from "../../usg_repository"
-import { useUSGRecordContext } from "../usg_record_context"
+import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
@@ -148,20 +148,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     const marketType = marketData?.marketType
     if (!depositAsset) return false
 
-    let receiptPrefix = ""
-
-    switch (marketType) {
-      case "CRV_Gauge":
-        receiptPrefix = "Gauge "
-        break
-      case "STAKEDAO_CRV_Vault":
-        receiptPrefix = "Vault "
-        break
-      default:
-        break
-    }
-
-    return ![collateralInfo?.symbol, `${receiptPrefix}${collateralInfo?.symbol}`].includes(depositAsset)
+    return ![collateralInfo?.symbol, `${getReceiptPrefix(marketType)}${collateralInfo?.symbol}`].includes(depositAsset)
   }, [depositAsset, collateralInfo?.symbol])
 
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {

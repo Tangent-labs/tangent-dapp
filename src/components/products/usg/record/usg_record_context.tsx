@@ -47,6 +47,23 @@ type USGRecordContextProps = {
   marketAddress: Address
 }
 
+export function getReceiptPrefix(marketType: string | undefined) {
+  let receiptPrefix = ""
+
+  switch (marketType) {
+    case "CRV_Gauge":
+      receiptPrefix = "Gauge "
+      break
+    case "STAKEDAO_CRV_Vault":
+      receiptPrefix = "Vault "
+      break
+    default:
+      break
+  }
+
+  return receiptPrefix
+}
+
 type USGRecordContextValues = {
   isLoading: boolean
   marketData?: MarketDetailData
@@ -454,19 +471,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
 
   const depositAssetOptions: AssetInfos[] = useMemo(() => {
     if (!!marketData && !!balances) {
-      let receiptPrefix = ""
-      switch (marketData.marketType) {
-        case "CRV_Gauge":
-          receiptPrefix = "Gauge "
-          break
-        case "STAKEDAO_CRV_Vault":
-          receiptPrefix = "Vault "
-          break
-        default:
-          break
-      }
-
-      const gaugeSymbol = `${receiptPrefix} ${collateralInfo?.symbol}`
+      const gaugeSymbol = `${getReceiptPrefix(marketData.marketType!)} ${collateralInfo?.symbol}`
 
       const balCollatWei = balances?.[collateralInfo?.address] ?? 0n
       const balCollatNumber = Number(formatUnits(balCollatWei, collateralInfo?.decimals))

@@ -42,19 +42,6 @@ const _fetchAndReturnPrices = async (list: Address[]): Promise<Record<AssetConfi
   }
 }
 
-const _getPrice = async (): Promise<Record<AssetConfigKey, number> | undefined> => {
-  const list = Object.values(TOKEN_ADDR)
-  return _fetchAndReturnPrices(list)
-}
-
-export const getPrices = unstable_cache(
-  async () => {
-    return _getPrice()
-  },
-  [CACHE_PRICE_TAG],
-  CACHE_PRICE_OPTION
-)
-
 /**
  *
  * @param tokens only returns the price of some selected tokens

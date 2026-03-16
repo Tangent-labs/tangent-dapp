@@ -2,12 +2,7 @@
 
 import { ADDR_TOKEN, TOKEN_ADDR } from "@/services/repo_asset_addresses"
 import { AssetConfigKey } from "@/services/repo_asset_infos"
-import { dappConfig } from "@/dapp_config"
 import { Address } from "viem"
-import { unstable_cache } from "next/cache"
-
-const CACHE_PRICE_TAG = "tan-price"
-const CACHE_PRICE_OPTION = { revalidate: dappConfig.cacheTime.price * 60 }
 
 type DefillamaTokenInfo = {
   decimals: number

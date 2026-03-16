@@ -51,8 +51,8 @@ export const AprOpportunity = ({ item, index, isLoading }: AprOpportunityProps) 
           />
         </div>
 
-        <div className="flex w-1/2 items-center justify-center text-xl">
-          <div className="hidden xl:flex"> {item?.points} </div>
+        <div className="flex w-1/2 items-center justify-center">
+          <div className="hidden text-[15px] xl:flex"> {item?.points} </div>
 
           <div className="flex text-xs md:text-sm xl:hidden"> {item?.points} Pts/Day/$ </div>
         </div>

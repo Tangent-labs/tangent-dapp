@@ -4,14 +4,13 @@ import { formatUnits } from "viem"
 import { useMemo, useState } from "react"
 import { USGStakingInfo } from "../../usg_type"
 import { formatNumber } from "@/lib/number_formatter"
-import { Divider } from "@/components/design_system/structure/divider"
+import { ForecastGraph } from "../usg_staking_forecast"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { SlidingTabs } from "../../airdrop/tasks/components/SlidingTabs"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
 import { Area, AreaChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import { ForecastGraph } from "../usg_staking_forecast"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 interface PerformanceHistoryPanelProps {
   sUSGCurrentAPY: number
@@ -106,6 +105,32 @@ export function PerformanceHistoryPanel({
         <SlidingTabs labels={["Projected earnings", "Position APR"]} value={selectedFeature} onSwitchTab={(e: string) => setSelectedFeature(e)} />
       </div>
 
+      <ReliefCard className="mt-6 flex w-full flex-col items-center justify-between gap-2 px-4 py-3 sm:flex-row">
+        <EvolutionBox
+          className="w-full"
+          originalValue={formatNumber(sUSGBalance, 0)}
+          label="sUSG balance"
+          newValue={formatNumber(computeProjectedValue, 0)}
+          logo="sUSG"
+        />
+
+        <EvolutionBox
+          className="w-full"
+          originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature)}
+          label="30 days projection"
+          newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature, weiValue)}
+          logo="sUSG"
+        />
+
+        <EvolutionBox
+          className="w-full"
+          originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature)}
+          label="1 year projection"
+          newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature, weiValue)}
+          logo="sUSG"
+        />
+      </ReliefCard>
+
       <ReliefCard className="mt-6 flex w-full flex-col p-4">
         {selectedFeature === "Projected earnings" && (
           <ForecastGraph currentFeature={currentFeature} currentInvestment={sUSGBalance} apr={sUSGCurrentAPY} newLiquidity={addLiq} />
@@ -181,36 +206,6 @@ export function PerformanceHistoryPanel({
                   />
                 </AreaChart>
               </ResponsiveContainer>
-            </div>
-          </>
-        )}
-
-        {!!sUSGCurrentAPY && sUSGCurrentAPY > 0 && (
-          <>
-            <Divider />
-            <div className="mt-6 flex w-full flex-col items-end justify-between gap-2 self-end sm:flex-row">
-              <EvolutionBox
-                className="w-full"
-                originalValue={formatNumber(sUSGBalance, 0)}
-                label="sUSG balance"
-                newValue={formatNumber(computeProjectedValue, 0)}
-              />
-
-              <EvolutionBox
-                className="w-full"
-                originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature)}
-                label="30 days projection"
-                newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature, weiValue)}
-                logo="sUSG"
-              />
-
-              <EvolutionBox
-                className="w-full"
-                originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature)}
-                label="1 year projection"
-                newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature, weiValue)}
-                logo="sUSG"
-              />
             </div>
           </>
         )}

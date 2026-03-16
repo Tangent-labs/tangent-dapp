@@ -193,28 +193,10 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }, [depositAsset, swapAssetPrice, marketData])
 
   function computeBorrowValue(depositedCollateralWei: bigint, leverageValue: number) {
-    const maxDebt = marketData?.constants?.maxMarketDebt
-
-    const currentTotalDebt = marketData?.debtInfos?.totalDebt
-
     const collatToBuy = (depositedCollateralWei * BigInt(leverageValue * 100)) / 100n - depositedCollateralWei
-
     const collatPrice = marketData?.collateralInfos.collateralUSDPrice || 0n
-
     const expectedCollateralFinalDollarValue = (collatToBuy * collatPrice) / parseEther("1")
-
-    const idealBorrowValue = (expectedCollateralFinalDollarValue * parseEther("1")) / globalData.usgPriceWei
-
-    const maxBorrowValue = (maxDebt || 0n) - (currentTotalDebt || 0n)
-
-    if (maxBorrowValue >= idealBorrowValue) {
-      return idealBorrowValue
-    }
-
-    const reducedLeverage = (maxBorrowValue * 100n) / depositedCollateralWei
-    setLeveragePercentage(Number(reducedLeverage) / 100)
-
-    return maxBorrowValue
+    return (expectedCollateralFinalDollarValue * parseEther("1")) / globalData.usgPriceWei
   }
 
   const activeInputRef = useRef<"deposit" | "zap" | null>(null)

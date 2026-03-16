@@ -28,6 +28,8 @@ type USGWithdrawContextValues = {
 export const USGWithdrawContext = createContext<USGWithdrawContextValues | undefined>(undefined)
 
 export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
+  const WITHDRAW_BUFFER = BigInt(10 ** 16)
+
   const { loadUSGsUSGMetrics } = useUSGContext()
 
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
@@ -85,7 +87,7 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
       const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
       const maxWithDrawable = collateralPriceRaw !== 0n ? futureDeposited - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
 
-      return maxWithDrawable > 0n ? maxWithDrawable : 0n
+      return maxWithDrawable > WITHDRAW_BUFFER ? maxWithDrawable - WITHDRAW_BUFFER : 0n
     }
 
     return 0n

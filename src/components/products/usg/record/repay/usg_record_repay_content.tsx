@@ -49,7 +49,7 @@ export default function USGRepayContent() {
     isDebtBelowThreshold,
     repayAssetInfo,
     withdrawSelectedAsset,
-    expectedUSG,
+    expectedRemainingDebt,
     repayLoading,
     minValueReceivedFromZap,
   } = useUSGRepayContext()
@@ -241,9 +241,9 @@ export default function USGRepayContent() {
 
               <AccordionContent className="w-full">
                 <div className="flex w-full items-center justify-between">
-                  <span className="text-subtitle">Expected collateral: </span>
+                  <span className="text-subtitle">Expected debt: </span>
 
-                  <span className="font-semibold text-white">{expectedUSG}</span>
+                  <span className="font-semibold text-white">{expectedRemainingDebt}</span>
                 </div>
               </AccordionContent>
             </ReliefCard>

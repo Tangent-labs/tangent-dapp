@@ -124,7 +124,14 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
       setMarketsToClaim([])
     } else {
       const markets = displayRows.map((el) => {
-        return { marketName: el.marketName, claimable: el.totalClaimableValue, marketAddress: el.marketAddress } as ClaimableMarket
+        const marketConfig = USGMarkets.find((m) => m.marketAddress === el.marketAddress)
+
+        return {
+          marketName: el.marketName,
+          claimable: el.totalClaimableValue,
+          marketAddress: el.marketAddress,
+          logoKey: marketConfig?.logoKey,
+        } as ClaimableMarket
       })
       setMarketsToClaim(markets)
     }

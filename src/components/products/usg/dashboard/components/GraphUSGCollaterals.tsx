@@ -31,8 +31,8 @@ export const GraphUSGCollaterals = ({ userData, marketTVLMaxValue }: USGCollater
         </div>
 
         <div className="scrollbar-thin flex w-full flex-col gap-1 overflow-y-auto">
-          {userData?.USGCollateralsData?.filter((el: USGCollateralData) => el.value > 0).map((data: USGCollateralData) => (
-            <div key={data?.name} className="flex w-full items-center justify-start gap-2">
+          {userData?.USGCollateralsData?.filter((el: USGCollateralData) => el.value > 0).map((data: USGCollateralData, index: number) => (
+            <div key={index} className="flex w-full items-center justify-start gap-2">
               <InnerTooltip
                 innerContent={
                   <div className="flex min-w-24 items-center justify-center gap-2 px-4">
@@ -53,9 +53,9 @@ export const GraphUSGCollaterals = ({ userData, marketTVLMaxValue }: USGCollater
                 <span>{data.name?.replaceAll("-", "/")}</span>
 
                 {specialTokensList.includes(data.name?.substring(0, data.name.indexOf(" ")).trim()) ? (
-                  <TokenImage token={data.name} size={16} className="w-4" />
+                  <TokenImage token={data.logoKey} size={16} className="w-4" />
                 ) : (
-                  <TokenImage token={data.name} size={16} className="w-6" />
+                  <TokenImage token={data.logoKey} size={16} className="w-6" />
                 )}
               </div>
             </div>

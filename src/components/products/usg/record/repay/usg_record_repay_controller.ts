@@ -1,3 +1,4 @@
+"use client"
 import { formatBigInt } from "@/lib/number_formatter"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"

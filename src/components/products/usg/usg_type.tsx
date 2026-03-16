@@ -80,6 +80,7 @@ export type ClaimData = {
   marketType: USGMarketType | undefined
   marketAddress: Address
   marketName: string
+  logoKey: string
   claimable: ClaimAsset[]
   totalClaimableValue: string
   deposited: ClaimAsset
@@ -109,6 +110,7 @@ export type ClaimableMarket = {
   marketName: string
   marketAddress: Address
   claimable: string
+  logoKey?: string
 }
 
 export type HarvestableMarket = {
@@ -310,7 +312,9 @@ export type USGMarket = {
   marketAddress: Address
   marketName: string
   collatAddress: Address
-  marketType: "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | "STAKEDAO_CRV_Vault"
+  marketType: USGMarketType
+  collatDecimals: number
+  logoKey: string
 }
 
 export type USGStakingInfo = {
@@ -335,7 +339,7 @@ export type StakingAssetInfo = {
 
 export type DepositReceiveAsset = {
   logoURI?: string
-  logo?: string
+  logoKey?: string
   value: string
   name?: string
   symbol: string
@@ -439,12 +443,14 @@ export type MarketDebtData = {
   value: number
   name: string
   rawValue: bigint
+  logoKey?: string
 }
 
 export type USGCollateralData = {
   name: string
   value: number
   rawValue: bigint
+  logoKey?: string
 }
 
 export interface IrParams {
@@ -550,6 +556,7 @@ export type MarketAPRs = {
 export type MarketListAPRData = {
   marketAddress: Address
   collateral: string
+  logoKey: string
   currentAPR: {
     [rewardToken: string]: number // allows any other dynamic APR components (e.g. CRV, CVX, FXN, etc.)
   }

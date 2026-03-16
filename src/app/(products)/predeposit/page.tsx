@@ -1,3 +1,4 @@
+"use client"
 import { PredepositContent } from "@/components/products/predeposit/predeposit.content"
 import { PredepositProvider } from "@/components/products/predeposit/predeposit.context"
 import { mapPoolsAndTasks } from "@/components/products/usg/earn/usg_earn_controller"

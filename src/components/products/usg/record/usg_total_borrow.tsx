@@ -1,6 +1,6 @@
 "use client"
 
-import { formatCompact, formatDollar } from "@/lib/number_formatter"
+import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 
 type UsgTotalBorrowProps = {
@@ -14,7 +14,15 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
   return (
     <div className="flex h-full w-full items-center justify-center">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={totalBorrow} margin={{ top: 20 }}>
+        <AreaChart
+          data={totalBorrow}
+          margin={{
+            top: 10,
+            right: -20,
+            left: -20,
+            bottom: 0,
+          }}
+        >
           <defs>
             <linearGradient id="borrowGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.4} />
@@ -35,7 +43,7 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
           <YAxis
             domain={[0, Number(Math.max(...totalBorrow.map((d) => Number(d?.value)))) * 1.1]}
             orientation="right"
-            tickFormatter={(value) => `$${formatCompact(value)}`}
+            tickFormatter={(value) => `$${formatMillions(value)}`}
           />
 
           <Tooltip

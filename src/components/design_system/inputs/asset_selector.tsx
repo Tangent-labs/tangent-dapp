@@ -5,17 +5,19 @@ import { Address, formatUnits, zeroAddress } from "viem"
 import { TokenImage } from "../structure/token_image"
 import { formatAddress } from "@/lib/other_formatter"
 import { CollateralInfo } from "@/types"
-import { ZapToken } from "@/components/products/usg/usg_type"
 import { AssetSelectionDialog } from "./asset-select-dialog"
 import { useUSGContext } from "@/components/products/usg/usg_context"
 import { useUSGRecordContext } from "@/components/products/usg/record/usg_record_context"
 import { useMemo } from "react"
 import { formatNumber } from "@/lib/number_formatter"
+import { Erc20Details, ERC20S } from "@/data/erc20s"
+import { USG_CONTRACT } from "@/components/products/usg/usg_repository"
 
 type AssetSelectProps = {
   collateralInfo: CollateralInfo
-  depositAsset: string
+  depositAsset: string | undefined
   setDepositAsset: (s: string) => void
+  caseType: "deposit" | "repay"
 }
 
 export type AssetInfos = {
@@ -28,9 +30,9 @@ export type AssetInfos = {
   displayDecimals: number
   symbol: string
   name?: string
-  logo?: string
-  price?: number
   logoURI?: string
+  price?: number
+  logoKey?: string
   displaySymbol?: string
   chainId?: number
 }
@@ -44,13 +46,13 @@ export const AssetSelectTemplate = (option: AssetInfos) => {
             {!!option.logoURI && option.logoURI !== "" ? (
               <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} />
             ) : (
-              <TokenImage token={option.logo} size={32} />
+              <TokenImage token={option.logoKey} size={32} />
             )}
           </>
         </>
 
         <div className="flex flex-col items-start justify-start">
-          <span className="text-sm font-semibold">{option.symbol?.replaceAll("-", "/")}</span>
+          <span className="text-sm font-semibold">{option.symbol}</span>
           <span className="text-xs text-subtitle">{formatAddress(option?.address, 4)}</span>
         </div>
       </div>
@@ -69,79 +71,55 @@ export const getTokenSymbolPriorityIndex = (symbol: string): number => {
   return idx === -1 ? tokenOrder?.length + 1 : idx
 }
 
-export const AssetSelector = ({ collateralInfo, depositAsset, setDepositAsset }: AssetSelectProps) => {
+export const ZapAssetSelector = ({ collateralInfo, depositAsset, setDepositAsset, caseType }: AssetSelectProps) => {
   const { marketData } = useUSGRecordContext()
 
-  const { tokens, balances } = useUSGContext()
+  const { balances } = useUSGContext()
 
-  // SORT THE ASSETS
+  // Prepare and format all data to display in the Asset selector ( logo, balances, decimals, address ...)
+  // Takes the static token list we have
+  const allAssets: AssetInfos[] = useMemo(() => {
+    const receiptAddress = marketData?.constants?.receipt !== zeroAddress ? marketData?.constants?.receipt?.toLowerCase() : undefined
+    const collatAddress = collateralInfo?.address.toLowerCase()
+    const assets = ERC20S.map((el: Erc20Details) => {
+      const balWei = balances?.[el.address as Address] ?? 0n
+      const balNumber = Number(formatUnits(balWei, el.decimals))
+      const formattedBal = formatNumber(balNumber, el.displayDecimals ?? 2)
+      const address = el.address.toLowerCase()
 
-  const allAssets = useMemo(() => {
-    const assets = tokens
-      .map((el: ZapToken) => {
-        const balWei = balances?.[el.address] ?? 0n
-        const balNumber = Number(formatUnits(balWei, el.decimals))
-        const formattedBal = formatNumber(balNumber, el.displayDecimals ?? 2)
-        return {
-          ...el,
-          value: el.name as string,
-          address: el.address as Address,
-          balanceWei: balWei,
-          balanceNumber: balNumber,
-          balanceFormatted: formattedBal,
+      let pinPriority = 2
+      if (caseType === "deposit") {
+        // Find receipt and collateral and pin them
+        if (receiptAddress && address === receiptAddress) {
+          pinPriority = 0
+        } else if (address === collatAddress) {
+          pinPriority = 1
         }
-      })
-      .sort((a, b) => {
-        if (a.balanceNumber !== b.balanceNumber) {
-          return b.balanceNumber - a.balanceNumber
+      } else if (caseType === "repay") {
+        if (address === USG_CONTRACT.USG.toLowerCase()) {
+          pinPriority = 0
         }
-        return getTokenSymbolPriorityIndex(a.symbol) - getTokenSymbolPriorityIndex(b.symbol)
-      })
-
-    if (marketData) {
-      // Add collateral token
-      const collatBalWei = marketData.collateralBalance ?? 0n
-
-      const collatBalNumber = Number(formatUnits(collatBalWei, collateralInfo.decimals))
-      const collatBalFormatted = formatNumber(collatBalNumber, collateralInfo.displayDecimals ?? 2)
-      assets.unshift({
-        ...collateralInfo,
-        value: collateralInfo.name,
-        address: collateralInfo.address,
-        balanceWei: collatBalWei,
-        balanceNumber: collatBalNumber,
-        balanceFormatted: collatBalFormatted,
-        logoURI: "",
-      })
-
-      // Add Receipt token
-      if (marketData.constants?.receipt !== zeroAddress) {
-        let symbol = ""
-        if (marketData?.marketType === "STAKEDAO_CRV_Vault") {
-          symbol = `Vault ${collateralInfo?.symbol}`
-        } else if (marketData?.marketType === "CRV_Gauge") {
-          symbol = `Gauge ${collateralInfo?.symbol}`
-        }
-
-        const receiptBalWei = balances?.[marketData?.constants?.receipt] ?? 0n
-        const receiptBalNumber = Number(formatUnits(receiptBalWei, collateralInfo.decimals))
-        const formattedBal = formatNumber(receiptBalNumber, collateralInfo.displayDecimals ?? 2)
-        assets.unshift({
-          decimals: 18,
-          displayDecimals: 5,
-          logo: collateralInfo?.logo,
-          symbol: symbol,
-          name: symbol,
-          address: marketData?.constants?.receipt,
-          value: symbol,
-          balanceWei: receiptBalWei,
-          balanceNumber: receiptBalNumber,
-          balanceFormatted: formattedBal,
-          logoURI: "",
-          price: collateralInfo.price,
-        })
       }
-    }
+
+      return {
+        ...el,
+        value: el.name as string,
+        address: address as Address,
+        balanceWei: balWei,
+        balanceNumber: balNumber,
+        balanceFormatted: formattedBal,
+        pinPriority,
+        displayDecimals: el.displayDecimals ?? 18,
+        logoURI: el.logoURI,
+      }
+    }).sort((a, b) => {
+      // Sort the Receipt first then the collateral
+      if (a.pinPriority !== b.pinPriority) return a.pinPriority - b.pinPriority
+      // Sort by balance then
+      if (a.balanceNumber !== b.balanceNumber) return b.balanceNumber - a.balanceNumber
+      // Finally sort per manual token order list
+      return getTokenSymbolPriorityIndex(a.symbol) - getTokenSymbolPriorityIndex(b.symbol)
+    })
 
     return assets
   }, [balances, marketData?.constants?.receipt])

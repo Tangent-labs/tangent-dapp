@@ -6,7 +6,7 @@ export type AssetData = {
   displayDecimals: number
   symbol: string
   name?: string
-  logo?: string
+  logoKey?: string
   balance?: bigint
   displaySymbol?: string
 }
@@ -21,7 +21,7 @@ export type CollateralInfo = {
   displayDecimals: number
   symbol: string
   name: string
-  logo: string
+  logoKey: string
   price: number
 }
 
@@ -45,7 +45,7 @@ export type TokenAmountPricedRow = {
   symbol: string
   dollarValue: number
   tokenAmount: number
-  logo?: string
+  logoKey?: string
   tokenAmountFormatted?: string
 }
 

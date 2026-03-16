@@ -158,9 +158,9 @@ function HarvestList() {
                   <div className="flex flex-col gap-1 text-sm">
                     {item?.rewards?.details?.map((reward, index) => (
                       <div key={index} className="flex items-center gap-2">
-                        <TokenImage token={reward.logo} size={16} />
+                        <TokenImage token={reward.logoKey} size={16} />
 
-                        <span className="w-20"> {reward.logo}</span>
+                        <span className="w-20"> {reward.logoKey}</span>
                         <span> {formatDollar(reward.dollarValue)}</span>
                       </div>
                     ))}

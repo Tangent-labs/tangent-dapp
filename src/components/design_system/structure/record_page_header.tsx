@@ -10,6 +10,7 @@ type RecordPageHeaderProps = {
   apr?: MarketAPRs
   indicators?: RecordPageHeaderIndicatorProps[]
   poolName: string
+  logoKey: string
   marketType: USGMarketType | undefined
   rewardToken: string
   currentAPRDetails:
@@ -29,6 +30,7 @@ export function RecordPageHeader({
   indicators,
   maxLTV,
   poolName,
+  logoKey,
   rewardToken,
   currentAPRDetails,
   projectedAPRDetails,
@@ -51,6 +53,7 @@ export function RecordPageHeader({
 
         <MarketAPR
           poolName={poolName}
+          logoKey={logoKey}
           rewardToken={rewardToken}
           maxLeverage={1}
           currentAPRDetails={currentAPRDetails}
@@ -82,6 +85,7 @@ export function RecordPageHeader({
         <MarketAPR
           poolName={poolName}
           rewardToken={rewardToken}
+          logoKey={logoKey}
           maxLeverage={maxLeverage}
           currentAPRDetails={currentAPRDetails}
           projectedAPRDetails={projectedAPRDetails}

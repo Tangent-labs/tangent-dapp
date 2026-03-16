@@ -1,7 +1,6 @@
 "use client"
 
 import { toast } from "react-toastify"
-import { ZapToken } from "../../usg_type"
 import { formatEther, formatUnits, parseEther } from "viem"
 import { useUSGContext } from "../../usg_context"
 import { USG_CONTRACT } from "../../usg_repository"
@@ -16,6 +15,7 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useSt
 import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
 import { computeAprVariation, computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { useUSGMaketListContext } from "../../list/usg_market_list_context"
+import { Erc20Details, ERC20S } from "@/data/erc20s"
 
 type USGLeverageContextProps = {
   children: ReactNode
@@ -39,7 +39,6 @@ type USGLeverageContextValues = {
   setBorrowWeiValue: (arg: bigint | undefined) => void
   setDepositAsset: (arg: string) => void
   depositAsset: string | undefined
-  tokens: ZapToken[]
 
   isDepositLoading: boolean
   setIsDepositLoading: (arg: boolean) => void
@@ -115,7 +114,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { tokens, loadUSGsUSGMetrics, marketAprs } = useUSGContext()
+  const { loadUSGsUSGMetrics, marketAprs } = useUSGContext()
 
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
@@ -146,8 +145,24 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   const [slippage, setSlippage] = useState<number>(0.2)
 
   const isZapping = useMemo(() => {
-    return !!depositAsset && depositAsset !== collateralInfo?.symbol && depositAsset !== `Gauge ${collateralInfo?.symbol}`
-  }, [depositAsset, collateralInfo])
+    const marketType = marketData?.marketType
+    if (!depositAsset) return false
+
+    let receiptPrefix = ""
+
+    switch (marketType) {
+      case "CRV_Gauge":
+        receiptPrefix = "Gauge "
+        break
+      case "STAKEDAO_CRV_Vault":
+        receiptPrefix = "Vault "
+        break
+      default:
+        break
+    }
+
+    return ![collateralInfo?.symbol, `${receiptPrefix}${collateralInfo?.symbol}`].includes(depositAsset)
+  }, [depositAsset, collateralInfo?.symbol])
 
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
     if (!!marketData && depositAsset === `Gauge ${collateralInfo?.symbol}`) {
@@ -161,22 +176,11 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       }
     }
 
-    if (depositAsset === "ETH") {
-      return {
-        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-        decimals: 18,
-        displayDecimals: 5,
-        symbol: "ETH",
-        name: "ETH",
-        price: swapAssetPrice,
-      }
-    }
-
     if (!!marketData && (depositAsset === undefined || depositAsset === collateralInfo?.name)) {
       return { ...collateralInfo, price: Number(formatUnits(marketData?.collateralInfos.collateralUSDPrice, 18)) }
     }
 
-    const assetInfo = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset) || undefined
+    const assetInfo = ERC20S.find((el: Erc20Details) => el.name === depositAsset || el.symbol === depositAsset) || undefined
 
     if (!swapAssetPrice || !assetInfo) return collateralInfo
 
@@ -291,7 +295,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     const fetchSwapAssetData = async () => {
       setIsZapLoading(true)
       try {
-        const data = await computeSwapAssetPrice(tokens, depositAsset)
+        const data = await computeSwapAssetPrice(depositAsset)
         setSwapAssetPrice(data || 0)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
@@ -673,7 +677,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     setBorrowWeiValue,
     setDepositAsset,
     depositAsset,
-    tokens,
 
     isDepositLoading,
     setIsDepositLoading,

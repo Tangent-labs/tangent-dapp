@@ -1,3 +1,5 @@
+"use client"
+
 export type PendleCollatApiType = {
   currency: string
   results: string

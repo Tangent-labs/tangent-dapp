@@ -26,30 +26,22 @@ interface AssetSelectionDialogProps<T extends OptionT> {
 
 const ITEM_HEIGHT = 38
 
-const receiptTokensLabelsToDelete = ["Gauge ", "Vault "]
 const RenderAsset = <T extends OptionT>({ selected, placeholder }: { selected: T | null; placeholder: string }) => {
-  let symbolURI = selected?.symbol
-
-  // Clean "Gauge " or "Vault " prefixes
-  if (symbolURI) {
-    receiptTokensLabelsToDelete.forEach((labelToDel) => {
-      if (symbolURI!.includes(labelToDel)) {
-        symbolURI = symbolURI?.split(labelToDel)[1]
-      }
-    })
-  }
   return (
     <>
       {selected ? (
         <>
+          {/* When no logoURI */}
           {!!selected?.logoURI ? (
             <Image src={selected.logoURI} alt={selected.symbol} height={20} width={20} />
-          ) : !selected?.symbol.includes("-") ? (
-            <TokenImage token={symbolURI} size={20} />
+          ) : !selected?.symbol.includes("/") ? (
+            <TokenImage token={selected.logoKey} size={20} />
           ) : (
-            <TokenImage token={symbolURI} size={32} />
+            <div>
+              <TokenImage token={selected.logoKey} size={32} />
+            </div>
           )}
-          <span className="text-sm font-semibold">{selected.symbol?.replaceAll("-", "/")}</span>
+          <span className="text-sm font-semibold">{selected.symbol}</span>
         </>
       ) : (
         <span className="text-sm opacity-70">{placeholder}</span>
@@ -72,7 +64,6 @@ export function AssetSelectionDialog<T extends OptionT>({
   const inputRef = useRef<HTMLInputElement>(null)
 
   const listRef = useRef<List>(null)
-
   const selected = useMemo(
     () =>
       options.find((o) => {
@@ -88,7 +79,6 @@ export function AssetSelectionDialog<T extends OptionT>({
   }, [options, search])
 
   const itemKey = (index: number) => filtered[index]?.value ?? filtered[index]?.symbol ?? index
-
   const handleSelect = (symbol: string) => {
     onChange(symbol)
     setOpen(false) // ← close dialog
@@ -96,21 +86,18 @@ export function AssetSelectionDialog<T extends OptionT>({
   }
 
   const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
-    const opt = filtered[index]
-    const isSelected = value === opt.symbol || value === opt.value
-
     return (
       <div style={style}>
         <button
           type="button"
           role="option"
-          aria-selected={isSelected}
+          aria-selected={value === filtered[index].symbol || value === filtered[index].value}
           className="relative flex w-full cursor-pointer items-center text-sm"
           onClick={() => {
-            handleSelect(opt.symbol)
+            handleSelect(filtered[index].symbol)
           }}
         >
-          {template(opt)}
+          {template(filtered[index])}
         </button>
       </div>
     )

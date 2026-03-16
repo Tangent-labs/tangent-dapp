@@ -1,7 +1,6 @@
 "use client"
 
 import { toast } from "react-toastify"
-import { ZapToken } from "../../usg_type"
 import { formatUnits, maxUint256 } from "viem"
 import { useUSGContext } from "../../usg_context"
 import { AssetDataPriced, FormState } from "@/types"
@@ -15,6 +14,7 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
+import { Erc20Details, ERC20S } from "@/data/erc20s"
 
 type USGRepayContextProps = {
   children: ReactNode
@@ -76,7 +76,7 @@ type USGRepayContextValues = {
 
   USGDollarRepayedValue: string
 
-  withdrawSelectedAsset: string
+  withdrawSelectedAsset: string | undefined
   setWithdrawSelectedAsset: (v: string) => void
 
   minValueReceivedFromZap: string
@@ -87,7 +87,7 @@ export const USGRepayContext = createContext<USGRepayContextValues | undefined>(
 export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepayContextProps) => {
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { tokens, loadUSGsUSGMetrics } = useUSGContext()
+  const { loadUSGsUSGMetrics } = useUSGContext()
 
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
@@ -99,7 +99,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     loadOnChainData,
     setCurrentAmounts,
     fetchBalanceAllowanceData,
-    collateral,
+    collateralInfo,
     isRepayAndWithdraw,
   } = useUSGRecordContext()
 
@@ -123,9 +123,15 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   const [usgRepayedValue, setUsgRepayedValue] = useState<bigint | undefined>()
 
-  const [withdrawSelectedAsset, setWithdrawSelectedAsset] = useState<string>(collateral)
+  const [withdrawSelectedAsset, setWithdrawSelectedAsset] = useState<string>()
 
   const [repayLoading, setReplayLoading] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (collateralInfo) {
+      setWithdrawSelectedAsset(collateralInfo.name)
+    }
+  }, [collateralInfo?.name])
 
   useEffect(() => {
     setIsRepayAndWithdraw(isRepayAndWithdrawInput)
@@ -139,18 +145,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   }, [isRepayAndWithdraw])
 
   const repayAssetInfo = useMemo<AssetDataPriced | null>(() => {
-    if (repayAsset === "ETH") {
-      return {
-        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-        decimals: 18,
-        displayDecimals: 5,
-        symbol: "ETH",
-        name: "ETH",
-        price: swapAssetPrice,
-      }
-    }
-
-    const assetInfo = tokens.find((el: ZapToken) => el.name === repayAsset || el.symbol === repayAsset) || undefined
+    const assetInfo = ERC20S.find((el: Erc20Details) => el.name === repayAsset || el.symbol === repayAsset) || undefined
 
     if (!swapAssetPrice || !assetInfo) return null
 
@@ -203,7 +198,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
         minAmountOut: usgRepayedValue!,
       }
 
-      const isReceiptOut = withdrawSelectedAsset !== collateral
+      const isReceiptOut = withdrawSelectedAsset !== collateralInfo?.name
 
       doZapRepayAndWithdraw(marketData?.marketAddress, walletClient!, withdrawWeiValue, isReceiptOut, repayData!, zapMarketData)
         .then(() => {
@@ -325,7 +320,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
         marketAddress: marketData!.marketAddress,
         repayWeiValue: repayValue(repayWeiValue),
         withdrawWeiValue,
-        isReceiptOut: withdrawSelectedAsset !== collateral,
+        isReceiptOut: withdrawSelectedAsset !== collateralInfo?.address,
       }),
       {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
@@ -447,7 +442,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     const fetchSwapAssetData = async () => {
       setIsZapLoading(true)
       try {
-        const data = await computeSwapAssetPrice(tokens, repayAsset)
+        const data = await computeSwapAssetPrice(repayAsset)
         setSwapAssetPrice(data || 0)
       } catch (error) {
         console.error("Error fetching Enso data:", error)

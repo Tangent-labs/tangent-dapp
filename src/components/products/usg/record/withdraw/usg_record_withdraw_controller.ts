@@ -1,3 +1,5 @@
+"use client"
+
 import { Abi, WalletClient } from "viem"
 import { MarketDetailData, USGMarketWitrhdrawParams } from "../../usg_type"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"

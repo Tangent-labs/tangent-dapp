@@ -1,3 +1,5 @@
+"use client"
+
 import { IconTangent } from "@/components/icons"
 import { IconDocs } from "@/components/icons/icon_docs"
 import { IconDiscord } from "@/components/icons/icon_discord"

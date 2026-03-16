@@ -24,6 +24,7 @@ export type ListRowData = {
   token: string
   marketType: USGMarketType
   name: string
+  logoKey: string
   address: Address
   apr: {
     current?: number

@@ -12,12 +12,13 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Abi, Address, formatUnits, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
 import { computedMinAmountOut, getBalances, getBalancesAndAllowances } from "../record/usg_record_controller"
-import { BalanceAllowanceData, SwapToken, DepositReceiveAsset, LpUserPoints, USGStakingInfo, ZapToken } from "../usg_type"
+import { BalanceAllowanceData, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../usg_type"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./usg_swap_controller"
 import { getTokenSymbolPriorityIndex } from "@/components/design_system/inputs/asset_selector"
 import { buildAssetInfo, resolveAssetName } from "./utils"
 import { useSearchParams } from "next/navigation"
 import { USDC } from "@tangent/defi-resources/build/ressources/erc20/common"
+import { Erc20Details, ERC20S } from "@/data/erc20s"
 
 type USGSwapContextProps = {
   children: ReactNode
@@ -40,8 +41,6 @@ type USGSwapContextValues = {
 
   sellAssetName: string | null
   buyAssetName: string | null
-
-  tokens: SwapToken[]
 
   depositSliderPercent: number
   setDepositSliderPercent: (arg: number) => void
@@ -89,7 +88,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const searchParams = useSearchParams()
 
   const { curveRoutes, handleQuote } = useRootContext()
-  const { tokens, USGsUSGMetrics, lpUserPoints } = useUSGContext()
+  const { USGsUSGMetrics, lpUserPoints } = useUSGContext()
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -102,12 +101,12 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const [buyAssetAddress, setBuyAssetAddress] = useState<string>(searchParams.get("tokenOut")?.toLowerCase() ?? USG_CONTRACT.USG.toLowerCase())
 
   // --- Resolve names from addresses (for swapConfig, computeSwapAssetPrice, getABI) ---
-  const sellAssetName = useMemo(() => resolveAssetName(tokens, sellAssetAddress), [tokens, sellAssetAddress])
-  const buyAssetName = useMemo(() => resolveAssetName(tokens, buyAssetAddress), [tokens, buyAssetAddress])
+  const sellAssetName = useMemo(() => resolveAssetName(sellAssetAddress), [sellAssetAddress])
+  const buyAssetName = useMemo(() => resolveAssetName(buyAssetAddress), [buyAssetAddress])
 
   // --- Asset info (now resolved by address) ---
-  const sellAssetInfo = useMemo(() => buildAssetInfo(tokens, sellAssetAddress, sellAssetPrice), [tokens, sellAssetAddress, sellAssetPrice])
-  const buyAssetInfo = useMemo(() => buildAssetInfo(tokens, buyAssetAddress, buyAssetPrice), [tokens, buyAssetAddress, buyAssetPrice])
+  const sellAssetInfo = useMemo(() => buildAssetInfo(sellAssetAddress, sellAssetPrice), [sellAssetAddress, sellAssetPrice])
+  const buyAssetInfo = useMemo(() => buildAssetInfo(buyAssetAddress, buyAssetPrice), [buyAssetAddress, buyAssetPrice])
 
   const [sellWeiValue, setSellWeiValue] = useState<bigint | undefined>()
   const [buyWeiValue, setBuyWeiValue] = useState<bigint | undefined>()
@@ -178,7 +177,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   }
 
   useEffect(() => {
-    const tokenAddresses: Address[] = tokens.map((el) => el.address)
+    const tokenAddresses: Address[] = ERC20S.map((el) => el.address)
 
     if (currentAddress && tokenAddresses.length > 0) {
       getBalances(currentAddress, tokenAddresses).then((data) => {
@@ -286,7 +285,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
       setIsSwapLoading(true)
       setBuyAssetPrice(1)
       try {
-        const data = await computeSwapAssetPrice(tokens, buyAssetName)
+        const data = await computeSwapAssetPrice(buyAssetName)
         setBuyAssetPrice(data ?? 1)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
@@ -304,7 +303,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     const fetchSwapAssetData = async () => {
       setIsSwapLoading(true)
       try {
-        const data = await computeSwapAssetPrice(tokens, sellAssetName)
+        const data = await computeSwapAssetPrice(sellAssetName)
         setSellAssetPrice(data)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
@@ -462,9 +461,9 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
   const computedAssets = useMemo(() => {
     return (
-      tokens
+      ERC20S
         // .filter((el) => ["USDC", "WETH", "USG", "sUSG", "ETH"].includes(el.symbol!)) cool to debug that shit
-        .map((el: ZapToken) => {
+        .map((el: Erc20Details) => {
           const balWei = balances?.[el.address] ?? 0n
           const balNumber = Number(formatUnits(balWei, el.decimals))
           const formattedBal = formatNumber(balNumber, el.displayDecimals ?? 2)
@@ -513,7 +512,6 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     sellAssetName,
     buyAssetName,
 
-    tokens,
     isSwapLoading,
     setIsSwapLoading,
 

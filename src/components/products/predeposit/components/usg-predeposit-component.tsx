@@ -77,7 +77,7 @@ export const USGPredepositComponent = ({
 
       <GenericInputAssetAmount
         inputWeiValue={depositWeiValue}
-        depositSelect={<StaticCardAssetInput asset={assetInfo?.symbol} />}
+        depositSelect={<StaticCardAssetInput assetName={assetInfo?.symbol} logoKey={assetInfo.logoKey!} />}
         isLoading={isLoading}
         label="You deposit"
         asset={assetInfo}

@@ -1,3 +1,5 @@
+"use client"
+
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import { AssetDataPriced, AssetData } from "@/types"
 import { Address } from "viem"

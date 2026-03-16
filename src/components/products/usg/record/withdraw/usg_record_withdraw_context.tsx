@@ -20,8 +20,8 @@ type USGWithdrawContextValues = {
   withdrawPercentage: number
   setWithdrawPercentage: (arg: number) => void
   maxWithdrawable: bigint
-  selectedAsset: string
-  setSelectedAsset: (v: string) => void
+  selectedAsset: string | undefined
+  setSelectedAsset: (v: string | undefined) => void
   withdrawLoading: boolean
 }
 
@@ -32,15 +32,21 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
 
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
-  const { marketData, loadOnChainData, setCurrentAmounts, collateral } = useUSGRecordContext()
+  const { marketData, loadOnChainData, setCurrentAmounts, collateralInfo } = useUSGRecordContext()
 
   const [withdrawWeiValue, setWithdrawWeiValue] = useState<bigint | undefined>()
 
   const [withdrawPercentage, setWithdrawPercentage] = useState<number>(0)
 
-  const [selectedAsset, setSelectedAsset] = useState<string>(collateral)
+  const [selectedAsset, setSelectedAsset] = useState<string>()
 
   const [withdrawLoading, setWithdrawLoading] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (collateralInfo) {
+      setSelectedAsset(collateralInfo.name)
+    }
+  }, [collateralInfo?.name])
 
   useEffect(() => {
     setCurrentAmounts({
@@ -56,7 +62,7 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
         doMarketWithdraw(walletClient, {
           marketAddress: marketData!.marketAddress,
           withdrawWeiValue,
-          isReceiptOut: selectedAsset !== collateral,
+          isReceiptOut: selectedAsset !== collateralInfo?.name,
         }),
         {
           pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },

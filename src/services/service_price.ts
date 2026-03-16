@@ -1,3 +1,5 @@
+"use client"
+
 import { ADDR_TOKEN, TOKEN_ADDR } from "@/services/repo_asset_addresses"
 import { AssetConfigKey } from "@/services/repo_asset_infos"
 import { dappConfig } from "@/dapp_config"

@@ -1,3 +1,5 @@
+"use client"
+
 import { MarketDetailData } from "../../usg_type"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { getBorrowCommonFormState } from "../usg_record_controller"

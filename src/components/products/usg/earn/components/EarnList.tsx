@@ -1,3 +1,4 @@
+"use client"
 import { cn } from "@/lib/utils"
 import { AprOpportunityItem } from "../../usg_type"
 import { ListRow } from "@/components/design_system/list/list_row"
@@ -40,6 +41,7 @@ export const AprOpportunity = ({ item, index, isLoading }: AprOpportunityProps) 
           <MarketAPR
             marketType={item?.marketType}
             poolName={item?.asset}
+            logoKey={item.asset}
             rewardToken={item?.rewardToken}
             maxLeverage={1}
             currentAPRDetails={item.currentAPRDetails}

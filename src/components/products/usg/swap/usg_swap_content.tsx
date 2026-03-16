@@ -83,7 +83,7 @@ export default function USGSwapContent() {
 
   const AssetSelectTemplate = (option: {
     logoURI?: string
-    logo?: string
+    logoKey?: string
     value: string
     name?: string
     symbol: string
@@ -94,18 +94,10 @@ export default function USGSwapContent() {
     return (
       <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
         <div className="flex w-full items-center gap-2">
-          <>
-            {option.symbol === "ETH" ? (
-              <TokenImage token={option.logo} size={32} />
-            ) : (
-              <>
-                {option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} /> : <TokenImage token={option.symbol} size={32} />}
-              </>
-            )}
-          </>
+          <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} /> : <TokenImage token={option.logoKey} size={32} />}</>
 
           <div className="flex flex-col items-start justify-start">
-            <span className="text-sm font-semibold">{option.symbol?.replaceAll("-", "/")}</span>
+            <span className="text-sm font-semibold">{option.symbol}</span>
             <span className="text-xs text-subtitle">{formatAddress(option?.address, 4)}</span>
           </div>
         </div>

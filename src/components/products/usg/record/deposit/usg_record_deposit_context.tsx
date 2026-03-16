@@ -2,7 +2,7 @@
 
 import { toast } from "react-toastify"
 import { useUSGContext } from "../../usg_context"
-import { USGMarket, ZapToken } from "../../usg_type"
+import { USGMarket } from "../../usg_type"
 import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
@@ -14,6 +14,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { computeAprVariation, computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit, doMarketDepositAndBorrow } from "./usg_record_deposit_controller"
+import { Erc20Details, ERC20S } from "@/data/erc20s"
 
 type USGDepositContextProps = {
   children: ReactNode
@@ -32,7 +33,6 @@ type USGDepositContextValues = {
   setBorrowWeiValue: (arg: bigint | undefined) => void
   setDepositAsset: (arg: string) => void
   depositAsset: string | undefined
-  tokens: ZapToken[]
   isDepositLoading: boolean
   setIsDepositLoading: (arg: boolean) => void
   isZapLoading: boolean
@@ -80,7 +80,7 @@ export const USGDepositContext = createContext<USGDepositContextValues | undefin
 export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDepositContextProps) => {
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { tokens, loadUSGsUSGMetrics, marketAprs } = useUSGContext()
+  const { loadUSGsUSGMetrics, marketAprs } = useUSGContext()
 
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
@@ -103,7 +103,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
 
-  const [depositAsset, setDepositAsset] = useState<string | undefined>()
+  const [depositAsset, setDepositAsset] = useState<string>()
 
   const [swapAssetPrice, setSwapAssetPrice] = useState<number>(0)
 
@@ -129,52 +129,60 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     setIsDepositAndBorrow(isDepositAndBorrowInput)
   }, [])
 
+  useEffect(() => {
+    if (collateralInfo) {
+      setDepositAsset(collateralInfo.name)
+    }
+  }, [collateralInfo?.name])
+
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
-    if (!!marketData && depositAsset === `Gauge ${collateralInfo?.symbol}`) {
+    // When market data is not charged
+    if (!!marketData && (depositAsset === undefined || depositAsset === collateralInfo.name)) {
       return {
-        address: marketData?.constants?.receipt,
-        decimals: 18,
-        displayDecimals: 5,
-        symbol: `Gauge ${collateralInfo?.symbol}`,
-        name: `Gauge ${collateralInfo?.symbol}`,
-        price: Number(formatUnits(marketData?.collateralInfos.collateralUSDPrice, 18)),
+        ...collateralInfo,
+        decimals: collateralInfo.decimals,
+        address: collateralInfo.address as Address,
+        logokey: collateralInfo.logoKey,
+        name: collateralInfo.name,
+        symbol: collateralInfo.symbol,
+        price: Number(formatUnits(marketData.collateralInfos.collateralUSDPrice, 18)),
       }
     }
 
-    if (depositAsset === "ETH") {
-      return {
-        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-        decimals: 18,
-        displayDecimals: 5,
-        symbol: "ETH",
-        name: "ETH",
-        price: swapAssetPrice,
-      }
-    }
-
-    if (!!marketData && (depositAsset === undefined || depositAsset === collateralInfo?.name)) {
-      return { ...collateralInfo, price: Number(formatUnits(marketData?.collateralInfos.collateralUSDPrice, 18)) }
-    }
-
-    const assetInfo = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset) || undefined
+    const assetInfo = ERC20S.find((el: Erc20Details) => el.name === depositAsset || el.symbol === depositAsset) || undefined
 
     if (!swapAssetPrice || !assetInfo) return collateralInfo
 
     const asset: AssetDataPriced = {
-      address: assetInfo?.address,
+      address: assetInfo?.address as Address,
       decimals: assetInfo?.decimals,
       displayDecimals: 2,
       symbol: assetInfo?.symbol,
       name: assetInfo?.name,
       price: swapAssetPrice,
     }
-
     return asset
   }, [depositAsset, swapAssetPrice, marketData])
 
   const isZapping = useMemo(() => {
-    return !!depositAsset && depositAsset !== collateralInfo?.symbol && depositAsset !== `Gauge ${collateralInfo?.symbol}`
-  }, [depositAsset, collateralInfo])
+    const marketType = marketData?.marketType
+    if (!depositAsset) return false
+
+    let receiptPrefix = ""
+
+    switch (marketType) {
+      case "CRV_Gauge":
+        receiptPrefix = "Gauge "
+        break
+      case "STAKEDAO_CRV_Vault":
+        receiptPrefix = "Vault "
+        break
+      default:
+        break
+    }
+
+    return ![collateralInfo?.symbol, `${receiptPrefix}${collateralInfo?.symbol}`].includes(depositAsset)
+  }, [depositAsset, collateralInfo?.symbol])
 
   /**
    * Call back method to prevent loadDataAfterApprove
@@ -300,7 +308,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   useEffect(() => {
     if (zapValue !== undefined) {
-      const updatedValue = Number(Number(formatUnits(zapValue || 0n, collateralInfo?.decimals)).toFixed(3))
+      const updatedValue = Number(Number(formatUnits(zapValue || 0n, collateralInfo!.decimals)).toFixed(3))
       setZapInnerValue(updatedValue)
       setIsZapUserInput(false)
     } else {
@@ -330,7 +338,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     const fetchSwapAssetData = async () => {
       setIsZapLoading(true)
       try {
-        const data = await computeSwapAssetPrice(tokens, depositAsset)
+        const data = await computeSwapAssetPrice(depositAsset)
 
         setSwapAssetPrice(data || 0)
       } catch (error) {
@@ -499,7 +507,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     try {
       const zapData = await getRoute(
         depositAssetInfo?.address,
-        collateralInfo?.address,
+        collateralInfo!.address,
         depositWeiValue,
         computedMinAmountOut(zapValue, slippage),
         marketInfo?.marketAddress,
@@ -679,7 +687,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     setBorrowWeiValue,
     setDepositAsset,
     depositAsset,
-    tokens,
 
     isDepositLoading,
     setIsDepositLoading,

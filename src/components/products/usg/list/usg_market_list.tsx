@@ -285,10 +285,11 @@ export function USGMarketListInner() {
           key={index}
           route={"/" + item.address + "/deposit-borrow"}
         >
-          <ListAsset name={item.name} token={item.token} marketData={marketData.find((el) => el.marketAddress === item.address)} />
+          <ListAsset name={item.name} token={item.logoKey} marketData={marketData.find((el) => el.marketAddress === item.address)} />
 
           <MarketAPR
-            poolName={item?.name}
+            poolName={item.name}
+            logoKey={item.logoKey}
             rewardToken={item?.rewardToken}
             maxLeverage={1}
             currentAPRDetails={item.currentAPRDetails}
@@ -300,7 +301,8 @@ export function USGMarketListInner() {
           />
 
           <MarketAPR
-            poolName={item?.name}
+            poolName={item.name}
+            logoKey={item.logoKey}
             rewardToken={item?.rewardToken}
             maxLeverage={1 / (1 - item?.maxLTV) || 1}
             currentAPRDetails={item.currentAPRDetails}

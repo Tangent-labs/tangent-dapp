@@ -6,7 +6,7 @@ import { useUSGLeverageContext } from "./usg_record_leverage_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
+import { ZapAssetSelector } from "@/components/design_system/inputs/asset_selector"
 import { IconSingleArrow } from "@/components/icons"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
@@ -69,7 +69,12 @@ export default function USGLeverageContent() {
             inputWeiValue={depositWeiValue}
             onValueChange={handleDepositChange}
             depositSelect={
-              <AssetSelector collateralInfo={collateralInfo} depositAsset={depositAsset || collateralInfo.name} setDepositAsset={setDepositAsset} />
+              <ZapAssetSelector
+                collateralInfo={collateralInfo!}
+                depositAsset={depositAsset || collateralInfo!.name}
+                setDepositAsset={setDepositAsset}
+                caseType="deposit"
+              />
             }
             isLoading={false}
             asset={depositAssetInfo}
@@ -96,7 +101,7 @@ export default function USGLeverageContent() {
           asset={collateralInfo}
           isLoading={isZapLoading}
           label={"You deposit"}
-          depositSelect={<StaticCardAssetInput asset={collateralInfo.name} />}
+          depositSelect={<StaticCardAssetInput assetName={collateralInfo!.name} logoKey={collateralInfo!.logoKey} />}
           bottomPart={
             <div className="flex select-none gap-2 text-xs text-subtitle">
               Minimum received {zapValue && !!marketData?.collateralInfos ? minValueReceivedFromZap : ""}
@@ -116,7 +121,7 @@ export default function USGLeverageContent() {
           <GenericInputAssetAmount
             inputWeiValue={borrowWeiValue}
             onValueChange={(e) => handleBorrowChange(e)}
-            depositSelect={<StaticCardAssetInput asset="USG" />}
+            depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
             label="You borrow and sell"
             asset={USGInfo}
             maxAmountParams={{
@@ -136,7 +141,7 @@ export default function USGLeverageContent() {
         <GenericInputAssetAmount
           inputWeiValue={leveragedCollateralQuote}
           label="You buy and deposit"
-          depositSelect={<StaticCardAssetInput asset={collateralInfo.name} />}
+          depositSelect={<StaticCardAssetInput assetName={collateralInfo!.name} logoKey={collateralInfo!.logoKey} />}
           disabled={true}
           asset={collateralInfo}
           onValueChange={() => {}}

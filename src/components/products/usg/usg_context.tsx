@@ -6,18 +6,18 @@ import { getBalances } from "./record/usg_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { getLpUserPoints, getMarketAprs, getUserRefereesPoints, getVoteUserPoints } from "./client_api"
-import { USGStakingInfo, LpUserPoints, ZapToken, VoteUserPoints, RefereesPoints, MarketAPRs } from "./usg_type"
+import { USGStakingInfo, LpUserPoints, VoteUserPoints, RefereesPoints, MarketAPRs } from "./usg_type"
 import { useRootContext } from "../root/root_context"
+import { ERC20S } from "@/data/erc20s"
+
 // import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
 // import { TANStakingInfo } from "../vs_tan/rstan_types"
 
 type USGContextProps = {
   children: ReactNode
-  tokens: ZapToken[]
 }
 
 type USGContextValues = {
-  tokens: ZapToken[]
   balances: Record<Address, bigint> | null
   lpUserPoints: LpUserPoints
   voteUserPoints: VoteUserPoints
@@ -32,7 +32,7 @@ type USGContextValues = {
 
 export const USGContext = createContext<USGContextValues | undefined>(undefined)
 
-export const USGProvider = ({ children, tokens }: USGContextProps) => {
+export const USGProvider = ({ children }: USGContextProps) => {
   const { getCachedCurrentBlock } = useRootContext()
 
   const { currentAddress, isWalletInitialized } = useWalletConnexionContext()
@@ -118,7 +118,7 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
   }
 
   useEffect(() => {
-    const tokenAddresses: Address[] = tokens.map((el) => el.address)
+    const tokenAddresses: Address[] = ERC20S.map((el) => el.address as Address)
 
     if (currentAddress && tokenAddresses.length > 0) {
       getBalances(currentAddress, tokenAddresses).then((data) => {
@@ -134,20 +134,20 @@ export const USGProvider = ({ children, tokens }: USGContextProps) => {
         }
       })
     }
-  }, [currentAddress, tokens])
+  }, [currentAddress])
 
   const contextValue: USGContextValues = {
-    tokens,
     balances,
     lpUserPoints,
     refetchPoints,
     loadUSGsUSGMetrics,
     USGsUSGMetrics,
-    // loadTanSTANMetrics,
-    // TANsTANMetrics,
     voteUserPoints,
     refereesPoints,
     marketAprs,
+
+    // loadTanSTANMetrics,
+    // TANsTANMetrics,
   }
 
   return <USGContext.Provider value={contextValue}>{children}</USGContext.Provider>

@@ -30,6 +30,7 @@ export function MarketDetailsParameters() {
       {currentMarketApr && marketData && (
         <RecordPageHeader
           poolName={marketData?.collateralInfo?.name}
+          logoKey={marketData.collateralInfo.logoKey}
           currentAPRDetails={currentMarketApr?.aprs?.currentAPR}
           projectedAPRDetails={currentMarketApr?.aprs?.projectedAPR}
           rewardToken={currentMarketApr?.rewardToken}

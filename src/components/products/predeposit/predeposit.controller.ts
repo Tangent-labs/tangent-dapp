@@ -1,3 +1,5 @@
+"use client"
+
 import { PredepositRawState, PredepositStatus } from "./types/types"
 import PredepositPoolsABI from "../../../abi/USG/PredepositPoolsABI.json"
 import { computedMinAmountOut } from "../usg/record/usg_record_controller"

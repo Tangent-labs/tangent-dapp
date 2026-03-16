@@ -2,7 +2,7 @@
 
 import { Address, zeroAddress } from "viem"
 import { useUSGContext } from "../usg_context"
-import { USG_CONTRACT } from "../usg_repository"
+import { USG_CONTRACT, USGMarkets } from "../usg_repository"
 import { AssetDataPriced, ListState } from "@/types"
 import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { ClaimableMarket, ClaimData, ClaimerInfo, USGStakingInfo } from "../usg_type"
@@ -104,12 +104,17 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
 
   const addToClaimableMarkets = (rowData: ClaimableMarket) => {
     setMarketsToClaim((prevMarkets: ClaimableMarket[]) => {
-      const market = prevMarkets.find((market) => market.marketName === rowData.marketName)
+      const market = prevMarkets.find((market) => market.marketAddress === rowData.marketAddress)
+
+      const marketConfig = USGMarkets.find((m) => m.marketAddress === rowData.marketAddress)
 
       if (market) {
-        return prevMarkets.filter((m) => m.marketName !== market.marketName)
+        return prevMarkets.filter((m) => m.marketAddress !== market.marketAddress)
       } else {
-        return [...prevMarkets, { marketName: rowData.marketName, claimable: rowData.claimable, marketAddress: rowData.marketAddress }]
+        return [
+          ...prevMarkets,
+          { marketName: rowData.marketName, claimable: rowData.claimable, marketAddress: rowData.marketAddress, logoKey: marketConfig?.logoKey },
+        ]
       }
     })
   }

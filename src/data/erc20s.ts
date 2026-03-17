@@ -1,6 +1,6 @@
-import { CURVE_LPS } from "@tangent/defi-resources"
-import { SDT_crvUSD_USDC_VAULT, SDT_crvUSD_USDT_VAULT } from "@tangent/defi-resources/build/ressources/erc20/stakeDao"
 import { Address } from "viem"
+import { CURVE_LPS, PENDLE_POOLS } from "@tangent/defi-resources"
+import { SDT_crvUSD_USDC_VAULT, SDT_crvUSD_USDT_VAULT } from "@tangent/defi-resources/build/ressources/erc20/stakeDao"
 
 export type Erc20Details = {
   address: Address
@@ -64,6 +64,137 @@ export const ERC20S: Erc20Details[] = [
     name: "crvUSD/USDT",
     symbol: "crvUSD/USDT",
   },
+  {
+    address: CURVE_LPS.DUO_USDC_USDT as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "USDC-USDT",
+    name: "USDC/USDT",
+    symbol: "USDC/USDT",
+  },
+  {
+    address: CURVE_LPS.LP_USDC_fxUSD as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "USDC-fxUSD",
+    name: "USDC/fxUSD",
+    symbol: "USDC/fxUSD",
+  },
+  {
+    address: CURVE_LPS.DUO_GHO_crvUSD as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "GHO-crvUSD",
+    name: "GHO/crvUSD",
+    symbol: "GHO/crvUSD",
+  },
+  {
+    address: CURVE_LPS.DUO_fxUSD_reUSD as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "fxUSD-reUSD",
+    name: "fxUSD/reUSD",
+    symbol: "fxUSD/reUSD",
+  },
+  {
+    address: CURVE_LPS.DUO_GHO_fxUSD as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "GHO-fxUSD",
+    name: "GHO/fxUSD/reUSD",
+    symbol: "GHO/fxUSD",
+  },
+  {
+    address: CURVE_LPS.DUO_PYUSD_USDC as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "PYUSD-USDC",
+    name: "PYUSD/USDC",
+    symbol: "PYUSD/USDC",
+  },
+  {
+    address: CURVE_LPS.DUO_RLUSD_USDC as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "RLUSD-USDC",
+    name: "RLUSD/USDC",
+    symbol: "RLUSD/USDC",
+  },
+  {
+    address: CURVE_LPS.DUO_msUSD_fxUSD as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "msUSD-fxUSD",
+    name: "msUSD/fxUSD",
+    symbol: "msUSD/fxUSD",
+  },
+
+  {
+    address: CURVE_LPS.DUO_stUSDS_USDS as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "stUSDS-USDS",
+    name: "stUSDS/USDS",
+    symbol: "stUSDS/USDS",
+  },
+
+  {
+    address: CURVE_LPS.DUO_frxUSD_msUSD as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "frxUSD-msUSD",
+    name: "frxUSD/msUSD",
+    symbol: "frxUSD/msUSD",
+  },
+  {
+    address: CURVE_LPS.DUO_msETH_OETH as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "msETH-OETH",
+    name: "msETH/OETH",
+    symbol: "msETH/OETH",
+  },
+  {
+    address: CURVE_LPS.ETHp_WETH_LP as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "ETH+-WETH",
+    name: "ETH+/WETH",
+    symbol: "ETH+/WETH",
+  },
+  {
+    address: CURVE_LPS.DUO_tBTC_cbBTC as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "tBTC-cbBTC",
+    name: "tBTC/cbBTC",
+    symbol: "tBTC/cbBTC",
+  },
+  {
+    address: PENDLE_POOLS?.["wstUSR 25/06/26"]?.MARKET,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "wstUSR 25/06/26",
+    name: "wstUSR 25/06/26",
+    symbol: "wstUSR 25/06/26",
+  },
+  {
+    address: PENDLE_POOLS?.["sUSDe 07/05/26"]?.MARKET,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "sUSDe 07/05/26",
+    name: "sUSDe 07/05/26",
+    symbol: "sUSDe 07/05/26",
+  },
+  {
+    address: PENDLE_POOLS?.["USDe 07/05/26"]?.MARKET,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "USDe 07/05/26",
+    name: "USDe 07/05/26",
+    symbol: "USDe 07/05/26",
+  },
+
   // Stake DAO VAULT LP
   {
     address: SDT_crvUSD_USDC_VAULT,

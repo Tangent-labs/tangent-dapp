@@ -10,6 +10,7 @@ import { TokenImage } from "../structure/token_image"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { DepositReceiveAsset } from "@/components/products/usg/usg_type"
+import { specialTokensList } from "@/components/products/usg/usg_repository"
 
 type OptionT = DepositReceiveAsset
 
@@ -34,12 +35,10 @@ const RenderAsset = <T extends OptionT>({ selected, placeholder }: { selected: T
           {/* When no logoURI */}
           {!!selected?.logoURI ? (
             <Image src={selected.logoURI} alt={selected.symbol} height={20} width={20} />
-          ) : !selected?.symbol.includes("/") ? (
+          ) : !selected?.symbol.includes("/") || specialTokensList.includes(selected?.symbol?.substring(0, selected?.symbol?.indexOf(" "))) ? (
             <TokenImage token={selected.logoKey} size={20} />
           ) : (
-            <div>
-              <TokenImage token={selected.logoKey} size={32} />
-            </div>
+            <TokenImage token={selected.logoKey} size={32} />
           )}
           <span className="text-sm font-semibold">{selected.symbol}</span>
         </>

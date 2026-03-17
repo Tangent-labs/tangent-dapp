@@ -1,9 +1,9 @@
 import { PredepositContent } from "@/components/products/predeposit/predeposit.content"
 import { PredepositProvider } from "@/components/products/predeposit/predeposit.context"
-import { mapPoolsAndTasks } from "@/components/products/usg/earn/usg_earn_controller"
 import { getConvexPools, getCurvePools, getPendlePools, getStakeDAOPools } from "@/components/products/usg/server_api"
 
 import { opportunities } from "../(usg)/earn/aprOpportunities.json"
+import { mapPoolsAndTasks } from "@/components/products/usg/earn/utils"
 
 const fetchPoolsData = async () => {
   const [curvePools, convexPools, stakeDaoPools, pendlePools] = await Promise.all([getCurvePools(), getConvexPools(), getStakeDAOPools(), getPendlePools()])

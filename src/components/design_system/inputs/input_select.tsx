@@ -1,10 +1,9 @@
 "use client"
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { SelectOption, SelectOptionAmount } from "@/types"
 import { ReactNode } from "react"
 
-interface InputSelectProps<T extends SelectOption | SelectOptionAmount> {
+interface InputSelectProps<T extends { value: string }> {
   options?: T[]
   onChange: (value: string) => void
   label?: string
@@ -15,7 +14,7 @@ interface InputSelectProps<T extends SelectOption | SelectOptionAmount> {
   template?: (option: T) => ReactNode
 }
 
-export const InputSelect = <T extends SelectOption | SelectOptionAmount>({
+export const InputSelect = <T extends { value: string }>({
   options,
   onChange,
   label,
@@ -35,13 +34,13 @@ export const InputSelect = <T extends SelectOption | SelectOptionAmount>({
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent>
-            {options?.map((option: SelectOption) => (
+            {options?.map((option) => (
               <SelectItem value={option.value} key={option.value} className="cursor-pointer">
                 {template ? (
-                  template(option as T)
+                  template(option)
                 ) : (
                   <div className="flex items-center">
-                    <span className="text-sm font-semibold">{option.label}</span>
+                    <span className="text-sm font-semibold">{option.value}</span>
                   </div>
                 )}
               </SelectItem>

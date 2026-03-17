@@ -1,3 +1,5 @@
+"use client"
+
 import { formatMillions } from "@/lib/number_formatter"
 
 export const formatYAxis = (tick: number) => `$${formatMillions(tick)}`

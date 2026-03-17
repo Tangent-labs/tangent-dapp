@@ -175,7 +175,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
       address: USG_CONTRACT.USG,
       decimals: 18,
       displayDecimals: 2,
-      logo: "USG",
+      logoKey: "USG",
       name: "USG",
       price: 1,
       symbol: "USG",

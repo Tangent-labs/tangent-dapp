@@ -50,6 +50,18 @@ export default function USGStakeContent() {
 
   const { connect } = useWalletConnexionContext()
 
+  const isStake = "stake" === currentFeature
+  let inputInAsset = ""
+  let inputOutAsset = ""
+
+  if (isStake) {
+    inputInAsset = "USG"
+    inputOutAsset = "sUSG"
+  } else {
+    inputInAsset = "sUSG"
+    inputOutAsset = "USG"
+  }
+
   return (
     <>
       <div className="flex items-stretch justify-between gap-6">
@@ -119,9 +131,9 @@ export default function USGStakeContent() {
             <GenericInputAssetAmount
               inputWeiValue={weiValue}
               onValueChange={(value: bigint | undefined) => setWeiValue(value)}
-              depositSelect={<StaticCardAssetInput asset={"stake" === currentFeature ? "USG" : "sUSG"} />}
+              depositSelect={<StaticCardAssetInput assetName={inputInAsset} logoKey={inputInAsset} />}
               asset={currentAssetInfo?.asset}
-              label={currentFeature === "stake" ? "You deposit" : "You unstake"}
+              label={isStake ? "You deposit" : "You unstake"}
               maxAmountParams={{
                 maxWeiValue: currentAssetInfo?.balance || 0n,
                 setMaxAmount: () => {
@@ -136,7 +148,7 @@ export default function USGStakeContent() {
             />
 
             <div
-              onClick={() => setCurrentFeature(currentFeature === "stake" ? "unstake" : "stake")}
+              onClick={() => setCurrentFeature(isStake ? "unstake" : "stake")}
               className="my-2 flex w-full cursor-pointer items-center justify-center border-none"
             >
               <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-10 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
@@ -145,9 +157,9 @@ export default function USGStakeContent() {
             <GenericInputAssetAmount
               inputWeiValue={expected}
               onValueChange={(value: bigint | undefined) => setWeiValue(value)}
-              depositSelect={<StaticCardAssetInput asset={"stake" === currentFeature ? "sUSG" : "USG"} />}
+              depositSelect={<StaticCardAssetInput assetName={inputOutAsset} logoKey={inputOutAsset} />}
               asset={receivedTokenInfo}
-              label={currentFeature === "stake" ? "You stake" : "You receive"}
+              label={isStake ? "You stake" : "You receive"}
               disabled={true}
             />
           </div>
@@ -171,7 +183,7 @@ export default function USGStakeContent() {
                       <span className="text-subtitle">Expected : </span>
 
                       <span className="font-semibold text-white">
-                        {formatBigInt(expected, 18, 2)} {currentFeature === "stake" ? "sUSG" : "USG"}
+                        {formatBigInt(expected, 18, 2)} {isStake ? "sUSG" : "USG"}
                       </span>
                     </div>
                   </div>
@@ -182,13 +194,13 @@ export default function USGStakeContent() {
 
           <FormButtons
             actions={{
-              handleApprove: currentFeature === "stake" ? actionApprove : undefined,
-              handleProcess: currentFeature === "stake" ? actionStake : actionUnstake,
+              handleApprove: isStake ? actionApprove : undefined,
+              handleProcess: isStake ? actionStake : actionUnstake,
             }}
             connect={connect}
             formState={formState}
             isLoading={isLoading}
-            labelProcess={currentFeature === "stake" ? "Deposit & Stake" : "Unstake"}
+            labelProcess={isStake ? "Deposit & Stake" : "Unstake"}
           />
         </ReliefCard>
 

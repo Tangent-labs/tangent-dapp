@@ -10,7 +10,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "USD Coin",
     decimals: 6,
     displayDecimals: 2,
-    logo: "USDC",
+    logoKey: "USDC",
   },
   CVX: {
     address: TOKEN_ADDR.CVX,
@@ -18,7 +18,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "Convex",
     decimals: 18,
     displayDecimals: 0,
-    logo: "CVX",
+    logoKey: "CVX",
   },
   CRV: {
     address: TOKEN_ADDR.CRV,
@@ -26,7 +26,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     symbol: "CRV",
     decimals: 18,
     displayDecimals: 0,
-    logo: "CRV",
+    logoKey: "CRV",
   },
   FXN: {
     symbol: "FXN",
@@ -34,21 +34,21 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     decimals: 18,
     address: TOKEN_ADDR.FXN,
     displayDecimals: 0,
-    logo: "FXN",
+    logoKey: "FXN",
   },
   BAL: {
     symbol: "BAL",
     name: "Balancer",
     decimals: 18,
     displayDecimals: 0,
-    logo: "BAL",
+    logoKey: "BAL",
     address: TOKEN_ADDR.BAL,
   },
   PENDLE: {
     symbol: "PENDLE",
     name: "Pendle",
     decimals: 18,
-    logo: "PENDLE",
+    logoKey: "PENDLE",
     address: TOKEN_ADDR.PENDLE,
     displayDecimals: 0,
   },
@@ -57,7 +57,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "crvUSD",
     decimals: 18,
     address: TOKEN_ADDR.CRVUSD,
-    logo: "CRVUSD",
+    logoKey: "CRVUSD",
     displayDecimals: 0,
   },
   CVGCVX: {
@@ -66,14 +66,14 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     decimals: 18,
     address: TOKEN_ADDR.CVGCVX,
     displayDecimals: 0,
-    logo: "CVGCVX",
+    logoKey: "CVGCVX",
   },
   CVGSDT: {
     symbol: "cvgSDT",
     name: "cvgSDT",
     decimals: 18,
     address: TOKEN_ADDR.CVGSDT,
-    logo: "CVGSDT",
+    logoKey: "CVGSDT",
     displayDecimals: 0,
   },
   ETH: {
@@ -82,14 +82,14 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     decimals: 18,
     displayDecimals: 4,
     address: TOKEN_ADDR.ETH,
-    logo: "ETH",
+    logoKey: "ETH",
   },
   SDT: {
     symbol: "SDT",
     name: "SDT",
     decimals: 18,
     address: TOKEN_ADDR.SDT,
-    logo: "SDT",
+    logoKey: "SDT",
     displayDecimals: 0,
   },
   WETH: {
@@ -97,7 +97,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "Wrapped Ether",
     decimals: 18,
     displayDecimals: 4,
-    logo: "WETH",
+    logoKey: "WETH",
     address: TOKEN_ADDR.WETH,
   },
   wstETH: {
@@ -105,7 +105,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "Wrapped liquid staked Ether 2.0",
     decimals: 18,
     address: TOKEN_ADDR.wstETH,
-    logo: "wstETH",
+    logoKey: "wstETH",
     displayDecimals: 4,
   },
   TRICRV: {
@@ -113,7 +113,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "Curve.fi DAI/USDC/USDT",
     decimals: 18,
     address: TOKEN_ADDR.TRICRV,
-    logo: "TRICRV",
+    logoKey: "TRICRV",
     displayDecimals: 2,
   },
   "crvUSD-USDC": {
@@ -121,7 +121,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "Curve USD/USDC",
     decimals: 18,
     address: TOKEN_ADDR["crvUSD-USDC"],
-    logo: "crvUSD-USDC",
+    logoKey: "crvUSD-USDC",
     displayDecimals: 2,
   },
   "crvUSD-USDT": {
@@ -129,7 +129,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "Curve USD/USDT",
     decimals: 18,
     address: TOKEN_ADDR["crvUSD-USDT"],
-    logo: "crvUSD-USDT",
+    logoKey: "crvUSD-USDT",
     displayDecimals: 2,
   },
   "USDC-fxUSD": {
@@ -137,7 +137,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "USDC-fxUSD",
     decimals: 18,
     address: TOKEN_ADDR["USDC-fxUSD"],
-    logo: "USDC-fxUSD",
+    logoKey: "USDC-fxUSD",
     displayDecimals: 2,
   },
   "USDC-USDT": {
@@ -145,7 +145,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "USDC-USDT",
     decimals: 18,
     address: TOKEN_ADDR["USDC-USDT"],
-    logo: "USDC-USDT",
+    logoKey: "USDC-USDT",
     displayDecimals: 2,
   },
   "frxUSD-USDe": {
@@ -153,7 +153,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "frxUSD-USDe",
     decimals: 18,
     address: TOKEN_ADDR["frxUSD-USDe"],
-    logo: "frxUSD-USDe",
+    logoKey: "frxUSD-USDe",
     displayDecimals: 2,
   },
 
@@ -162,7 +162,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "frxETH-WETH",
     decimals: 18,
     address: TOKEN_ADDR["frxETH-WETH"],
-    logo: "frxETH-WETH",
+    logoKey: "frxETH-WETH",
     displayDecimals: 2,
   },
   "pxETH-stETH": {
@@ -170,7 +170,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "pxETH-stETH",
     decimals: 18,
     address: TOKEN_ADDR["pxETH-stETH"],
-    logo: "pxETH-stETH",
+    logoKey: "pxETH-stETH",
     displayDecimals: 2,
   },
   "pxETH-WETH": {
@@ -178,7 +178,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "pxETH-WETH",
     decimals: 18,
     address: TOKEN_ADDR["pxETH-WETH"],
-    logo: "pxETH-WETH",
+    logoKey: "pxETH-WETH",
     displayDecimals: 2,
   },
   "cbBTC-WBTC": {
@@ -186,7 +186,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "cbBTC-WBTC",
     decimals: 18,
     address: TOKEN_ADDR["cbBTC-WBTC"],
-    logo: "cbBTC-WBTC",
+    logoKey: "cbBTC-WBTC",
     displayDecimals: 2,
   },
   "crvUSD-ETH-CRV": {
@@ -194,7 +194,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "crvUSD-ETH-CRV",
     decimals: 18,
     address: TOKEN_ADDR["crvUSD-ETH-CRV"],
-    logo: "crvUSD-ETH-CRV",
+    logoKey: "crvUSD-ETH-CRV",
     displayDecimals: 2,
   },
   "GHO-cbBTC-WETH": {
@@ -202,7 +202,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "GHO-cbBTC-WETH",
     decimals: 18,
     address: TOKEN_ADDR["GHO-cbBTC-WETH"],
-    logo: "GHO-cbBTC-WETH",
+    logoKey: "GHO-cbBTC-WETH",
     displayDecimals: 2,
   },
 
@@ -211,7 +211,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "USDC-WBTC-WETH",
     decimals: 18,
     address: TOKEN_ADDR["USDC-WBTC-WETH"],
-    logo: "USDC-WBTC-WETH",
+    logoKey: "USDC-WBTC-WETH",
     displayDecimals: 2,
   },
 
@@ -220,7 +220,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "USDT-WBTC-WETH",
     decimals: 18,
     address: TOKEN_ADDR["USDT-WBTC-WETH"],
-    logo: "USDT-WBTC-WETH",
+    logoKey: "USDT-WBTC-WETH",
     displayDecimals: 2,
   },
 
@@ -229,7 +229,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "USR-RLP",
     decimals: 18,
     address: TOKEN_ADDR["USR-RLP"],
-    logo: "USR-RLP",
+    logoKey: "USR-RLP",
     displayDecimals: 2,
   },
 
@@ -238,7 +238,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "CVX-ETH",
     decimals: 18,
     address: TOKEN_ADDR["CVX-ETH"],
-    logo: "CVX-ETH",
+    logoKey: "CVX-ETH",
     displayDecimals: 2,
   },
   sUSG: {
@@ -246,7 +246,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "sUSG",
     decimals: 18,
     address: TOKEN_ADDR.sUSG,
-    logo: "sUSG",
+    logoKey: "sUSG",
     displayDecimals: 2,
   },
   USG: {
@@ -254,7 +254,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "USG",
     decimals: 18,
     address: TOKEN_ADDR.USG,
-    logo: "USG",
+    logoKey: "USG",
     displayDecimals: 2,
   },
   wcrvUSD: {
@@ -262,7 +262,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "wcrvUSD",
     decimals: 18,
     address: TOKEN_ADDR["wcrvUSD"],
-    logo: "wcrvUSD",
+    logoKey: "wcrvUSD",
     displayDecimals: 2,
   },
   scrvUSD: {
@@ -271,7 +271,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     decimals: 18,
     address: TOKEN_ADDR["scrvUSD"],
 
-    logo: "scrvUSD",
+    logoKey: "scrvUSD",
     displayDecimals: 2,
   },
   crvUSD: {
@@ -279,7 +279,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "crvUSD",
     decimals: 18,
     address: TOKEN_ADDR["crvUSD"],
-    logo: "crvUSD",
+    logoKey: "crvUSD",
     displayDecimals: 2,
   },
   sTAN: {
@@ -287,7 +287,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "sTAN",
     decimals: 18,
     address: TOKEN_ADDR["sTAN"],
-    logo: "sTAN",
+    logoKey: "sTAN",
     displayDecimals: 2,
   },
   TAN: {
@@ -295,7 +295,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "TAN",
     decimals: 18,
     address: TOKEN_ADDR["TAN"],
-    logo: "TAN",
+    logoKey: "TAN",
     displayDecimals: 2,
   },
   vsTAN: {
@@ -303,7 +303,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "vsTAN",
     decimals: 18,
     address: TOKEN_ADDR["vsTAN"],
-    logo: "vsTAN",
+    logoKey: "vsTAN",
     displayDecimals: 2,
   },
   frxUSD: {
@@ -311,7 +311,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "frxUSD",
     decimals: 18,
     address: TOKEN_ADDR["frxUSD"],
-    logo: "frxUSD",
+    logoKey: "frxUSD",
     displayDecimals: 2,
   },
   "USG-frxUSD": {
@@ -319,7 +319,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "USG-frxUSD",
     decimals: 18,
     address: TOKEN_ADDR["USG-frxUSD"],
-    logo: "USG-frxUSD",
+    logoKey: "USG-frxUSD",
     displayDecimals: 2,
   },
   "USG-USDC": {
@@ -327,7 +327,7 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     name: "USG-USDC",
     decimals: 18,
     address: TOKEN_ADDR["USG-USDC"],
-    logo: "USG-USDC",
+    logoKey: "USG-USDC",
     displayDecimals: 2,
   },
 }

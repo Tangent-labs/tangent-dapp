@@ -1,3 +1,5 @@
+"use client"
+
 import { formatDate } from "@/lib/other_formatter"
 import { Abi, Address, Hex, WalletClient } from "viem"
 import harvestUI from "../../../../abi/USG/HarvestUI.json"
@@ -50,14 +52,10 @@ export function transformHarvestOnChainData(harvesterInfos: HarvesterInfo[], ass
     const stakingInfo = Object.values(USGMarkets).find((i) => i.marketAddress === info.marketAddress)
     if (!stakingInfo) return
 
-    const marketNameIsDuplicated = stakingInfo != null && USGMarkets.filter((m) => m.marketName === stakingInfo?.marketName).length > 1
-
-    const displayName = (marketNameIsDuplicated && stakingInfo?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + stakingInfo?.marketName
-
     const rewards = getPricesFromTokenAmounts(info.tokenAmounts, assetInfos)
     const percentage = Number(info.harvesterFeePercentage) / 1000
     return {
-      asset: displayName,
+      asset: stakingInfo?.marketName,
       percentage,
       harvesterFees: (rewards.data.totalDollar * percentage) / 100,
       rewards: rewards?.data,
@@ -92,7 +90,7 @@ export const computeAndReturnPrices = async (harvestInfo: HarvesterInfo[]) => {
         }
       })
       .sort((a, b) => {
-        return (a?.logo ? tokens.indexOf(a.logo) : -1) - (b?.logo ? tokens.indexOf(b.logo) : -1)
+        return (a?.logoKey ? tokens.indexOf(a.logoKey) : -1) - (b?.logoKey ? tokens.indexOf(b.logoKey) : -1)
       })
 
     return allInfos

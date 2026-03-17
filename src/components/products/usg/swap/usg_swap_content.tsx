@@ -2,10 +2,8 @@
 
 import Image from "next/image"
 import { Address } from "viem"
-import { ExistingAsset } from "@/types"
 import { useUSGContext } from "../usg_context"
 import { IconChevron } from "@/components/icons"
-import { DepositReceiveAsset } from "../usg_type"
 import { formatAddress } from "@/lib/other_formatter"
 import { useUSGSwapContext } from "./usg_swap_context"
 import { formatBigInt } from "@/lib/number_formatter"
@@ -19,17 +17,12 @@ import { GenericInputAssetAmount } from "@/components/design_system/inputs/Gener
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
 
-type AssetSelectProps = {
-  options: DepositReceiveAsset[]
-}
-
 export default function USGSwapContent() {
   const {
-    setIsBuying,
-    handleDepositChange,
-    handleReceiveChange,
-    setDepositAsset,
-    setReceiveAsset,
+    handleSellChange,
+    handleBuyChange,
+    setSellAssetAddress,
+    setBuyAssetAddress,
     setSlippage,
     setDepositSliderPercent,
     actionSwap,
@@ -38,15 +31,18 @@ export default function USGSwapContent() {
     formState,
     computedAssets,
     isSwapLoading,
-    depositAssetInfo,
-    depositWeiValue,
-    depositAsset,
-    receiveAsset,
-    isBuying,
+
+    buyAssetInfo,
+    sellAssetInfo,
+
+    sellAssetName,
+    buyAssetName,
+
+    sellWeiValue,
+    buyWeiValue,
+
     isLoading,
     balanceAllowanceData,
-    receiveWeiValue,
-    receiveAssetInfo,
     depositSliderPercent,
     slippage,
     USGsUSGMetrics,
@@ -57,67 +53,55 @@ export default function USGSwapContent() {
 
   const { connect } = useWalletConnexionContext()
 
-  const ReceiveAssetSelect = ({ options }: AssetSelectProps) => {
-    if (!options) {
-      return (
-        <AssetSelectionDialog
-          className="w-full"
-          template={AssetSelectTemplate}
-          value={receiveAsset}
-          options={[]}
-          onChange={(v: string) => setReceiveAsset(v)}
-        />
-      )
-    }
-
+  const SellAssetSelect = () => {
     return (
       <AssetSelectionDialog
-        className="w-full"
         template={AssetSelectTemplate}
-        value={receiveAsset}
-        options={options}
-        onChange={(v: string) => setReceiveAsset(v)}
+        value={sellAssetName || ""}
+        options={computedAssets}
+        onChange={(v: string) => {
+          const findMatching = computedAssets?.find((o) => o.symbol === v)
+          setSellAssetAddress(findMatching?.address ?? "0x")
+        }}
       />
     )
   }
 
-  const DepositAssetSelect = ({ options }: AssetSelectProps) => {
-    return <AssetSelectionDialog template={AssetSelectTemplate} value={depositAsset || ""} options={options} onChange={(v: string) => setDepositAsset(v)} />
+  const BuyAssetSelect = () => {
+    return (
+      <AssetSelectionDialog
+        template={AssetSelectTemplate}
+        value={buyAssetName!}
+        options={computedAssets}
+        onChange={(v: string) => {
+          const findMatching = computedAssets?.find((o) => o.symbol === v)
+          setBuyAssetAddress(findMatching?.address ?? "0x")
+        }}
+      />
+    )
   }
 
   const AssetSelectTemplate = (option: {
     logoURI?: string
-    logo?: ExistingAsset
+    logoKey?: string
     value: string
     name?: string
     symbol: string
-    balance?: bigint
+    balanceFormatted?: bigint
     decimals?: number
     address?: Address
   }) => {
     return (
       <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
         <div className="flex w-full items-center gap-2">
-          <>
-            {option.symbol === "ETH" ? (
-              <TokenImage token={option.logo} size={32} />
-            ) : (
-              <>
-                {option.logoURI ? (
-                  <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} />
-                ) : (
-                  <TokenImage token={option.symbol as ExistingAsset} size={32} />
-                )}
-              </>
-            )}
-          </>
+          <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} /> : <TokenImage token={option.logoKey} size={32} />}</>
 
           <div className="flex flex-col items-start justify-start">
-            <span className="text-sm font-semibold">{option.symbol?.replaceAll("-", "/")}</span>
+            <span className="text-sm font-semibold">{option.symbol}</span>
             <span className="text-xs text-subtitle">{formatAddress(option?.address, 4)}</span>
           </div>
         </div>
-        <span className="ml-auto text-xs text-subtitle">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
+        <span className="ml-auto text-xs text-subtitle">{option.balanceFormatted}</span>
       </div>
     )
   }
@@ -145,19 +129,19 @@ export default function USGSwapContent() {
         <ReliefCard className="flex w-full max-w-[450px] flex-col items-center justify-center p-4">
           <div className="mb-3 flex w-full items-end justify-end">
             <span className="text-xs text-subtitle">
-              Max: {formatBigInt(balanceAllowanceData?.balance ?? 0n, depositAssetInfo?.decimals || 18, 2)} {depositAssetInfo?.symbol}
+              Max: {formatBigInt(balanceAllowanceData?.balance ?? 0n, sellAssetInfo?.decimals || 18, 2)} {sellAssetInfo?.symbol}
             </span>
           </div>
           <div className="w-full">
             <GenericInputAssetAmount
-              inputWeiValue={depositWeiValue}
-              onValueChange={handleDepositChange}
-              depositSelect={<DepositAssetSelect options={computedAssets?.depositAssets} />}
-              asset={depositAssetInfo!}
+              inputWeiValue={sellWeiValue}
+              onValueChange={handleSellChange}
+              depositSelect={<SellAssetSelect />}
+              asset={sellAssetInfo!}
               label={"You sell"}
               maxAmountParams={{
                 maxWeiValue: balanceAllowanceData?.balance ?? 0n,
-                setMaxAmount: () => () => handleDepositChange(balanceAllowanceData?.balance),
+                setMaxAmount: () => () => handleSellChange(balanceAllowanceData?.balance),
               }}
               sliderParams={{
                 sliderPercentage: depositSliderPercent,
@@ -168,7 +152,6 @@ export default function USGSwapContent() {
             <div
               onClick={() => {
                 toggleTokensSwitch()
-                setIsBuying(!isBuying)
               }}
               className="my-2 flex w-full cursor-pointer items-center justify-center border-none"
             >
@@ -176,13 +159,13 @@ export default function USGSwapContent() {
             </div>
 
             <GenericInputAssetAmount
-              inputWeiValue={receiveWeiValue}
-              onValueChange={handleReceiveChange}
-              depositSelect={<ReceiveAssetSelect options={computedAssets?.receiveAssets} />}
-              asset={receiveAssetInfo!}
+              inputWeiValue={buyWeiValue}
+              onValueChange={handleBuyChange}
+              depositSelect={<BuyAssetSelect />}
+              asset={buyAssetInfo!}
               label={"You buy"}
               isLoading={isLoading || isSwapLoading}
-              bottomPart={<div className="flex select-none gap-2 text-xs text-subtitle">Minimum received {receiveWeiValue ? minValueReceivedFromZap : ""}</div>}
+              bottomPart={<div className="flex select-none gap-2 text-xs text-subtitle">Minimum received {buyWeiValue ? minValueReceivedFromZap : ""}</div>}
             />
           </div>
 

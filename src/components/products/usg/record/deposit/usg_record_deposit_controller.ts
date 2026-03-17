@@ -1,3 +1,5 @@
+"use client"
+
 import { CollateralInfo } from "@/types"
 import { getBorrowCommonFormState } from "../usg_record_controller"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"

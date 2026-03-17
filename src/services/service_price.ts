@@ -1,12 +1,8 @@
+"use client"
+
 import { ADDR_TOKEN, TOKEN_ADDR } from "@/services/repo_asset_addresses"
 import { AssetConfigKey } from "@/services/repo_asset_infos"
-import { dappConfig } from "@/dapp_config"
 import { Address } from "viem"
-import { unstable_cache } from "next/cache"
-import { ExistingAsset } from "@/types"
-
-const CACHE_PRICE_TAG = "tan-price"
-const CACHE_PRICE_OPTION = { revalidate: dappConfig.cacheTime.price * 60 }
 
 type DefillamaTokenInfo = {
   decimals: number
@@ -41,19 +37,6 @@ const _fetchAndReturnPrices = async (list: Address[]): Promise<Record<AssetConfi
   }
 }
 
-const _getPrice = async (): Promise<Record<AssetConfigKey, number> | undefined> => {
-  const list = Object.values(TOKEN_ADDR)
-  return _fetchAndReturnPrices(list)
-}
-
-export const getPrices = unstable_cache(
-  async () => {
-    return _getPrice()
-  },
-  [CACHE_PRICE_TAG],
-  CACHE_PRICE_OPTION
-)
-
 /**
  *
  * @param tokens only returns the price of some selected tokens
@@ -61,7 +44,7 @@ export const getPrices = unstable_cache(
  */
 export const getTokensPrice = async (tokens: string[]) => {
   const selectedAddresses: Address[] = Object.entries(TOKEN_ADDR)
-    .filter(([key]) => tokens.includes(key as ExistingAsset))
+    .filter(([key]) => tokens.includes(key))
     .map(([, value]) => value)
 
   return _fetchAndReturnPrices(selectedAddresses)

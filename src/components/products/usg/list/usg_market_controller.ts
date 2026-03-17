@@ -1,7 +1,9 @@
+"use client"
+
 import MarketListUI from "@/abi/USG/MarketListUI.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import { Abi, Address, formatEther, formatUnits, Hex } from "viem"
-import { ExistingAsset, ListHeaderData, ListRowData } from "@/types"
+import { ListHeaderData, ListRowData } from "@/types"
 import { USG_CONTRACT, USGMarkets, USGPegKeepers } from "../usg_repository"
 import { formatBigInt, formatMillions, formatNumber } from "@/lib/number_formatter"
 import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, USGGlobalData, USGMarketType } from "../usg_type"
@@ -117,10 +119,11 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
 
   return {
     marketType,
-    token: data.collateral as ExistingAsset,
+    token: data.collateral,
     protocol,
     type,
     name: data.collateral,
+    logoKey: data.logoKey,
     address: data.marketAddress as Address,
     apr: {
       current: Number(totalCurrentAPR),
@@ -166,10 +169,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
 export const computeCollatData = (market: ChainViewMarketRow, totalFormatted: number, amountFormatted: number) => {
   const percentage = totalFormatted > 0 ? (amountFormatted / totalFormatted) * 100 : 0
   const marketConfig = USGMarkets.find((m) => m.marketAddress === market.marketAddress)
-  const marketNameIsDuplicated = marketConfig != null && USGMarkets.filter((m) => m.marketName === marketConfig.marketName).length > 1
-  const displayName = (marketNameIsDuplicated && marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + marketConfig?.marketName
-
-  return { displayName, percentage }
+  return { displayName: marketConfig?.marketName || "", logoKey: marketConfig?.logoKey, percentage }
 }
 
 export const USGListHeaders: ListHeaderData[] = [

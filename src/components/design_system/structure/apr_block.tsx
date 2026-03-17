@@ -1,5 +1,5 @@
 import { IconCircleHelp } from "@/components/icons"
-import { AprEntry, ExistingAsset } from "@/types"
+import { AprEntry } from "@/types"
 import { TokenImage } from "./token_image"
 import { ProgressBar } from "./progress_bar"
 import { useMemo } from "react"
@@ -42,7 +42,7 @@ export function AprBlock({ title, aprEntry }: AprBlockProps) {
         {display.details.map((a) => (
           <div key={a.asset} className="flex w-full justify-between">
             <div className="flex w-1/3 gap-2 lg:w-1/5">
-              <TokenImage token={a.asset as ExistingAsset} size={16} />
+              <TokenImage token={a.asset} size={16} />
               <span className="text-sm">{a.asset}</span>
             </div>
             <div className="w-1/3 lg:w-3/5">

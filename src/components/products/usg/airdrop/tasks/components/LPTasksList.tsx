@@ -1,7 +1,7 @@
 "use client"
 
 import { UserTask } from "../../../usg_type"
-import { ExistingAsset, ListState } from "@/types"
+import { ListState } from "@/types"
 import { IconOpenOutside, IconSortHeader } from "@/components/icons"
 import { formatToken } from "../usg_tasks_controller"
 import { TaskStatus } from "../../components/TaskStatus"
@@ -22,7 +22,7 @@ export const lpListState: ListState = {
 }
 
 const computeProtocolDisplay = (protocol: string) => {
-  let token: ExistingAsset
+  let token: string
   let label = ""
 
   switch (protocol.toLowerCase()) {
@@ -159,7 +159,7 @@ export const LPTasksList = () => {
           >
             <div className="hidden items-center justify-between md:flex">
               <div className="flex w-5/12 items-center gap-2">
-                <LpTaskCustomAssetDisplay token={task.asset.replaceAll("_", "-") as ExistingAsset} />
+                <LpTaskCustomAssetDisplay token={task.asset.replaceAll("_", "-")} />
 
                 <div className="flex h-full flex-col items-start justify-between">
                   <span className="flex text-[15px] font-semibold">{task?.description}</span>

@@ -1,3 +1,5 @@
+"use client"
+
 import { Address } from "viem"
 import { ListHeaderData } from "@/types"
 import { EarnPoolsData, EarnProtocolInput, StakeDaoAPRData, USGMarketType } from "../usg_type"

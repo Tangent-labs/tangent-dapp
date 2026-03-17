@@ -33,7 +33,7 @@ export default function USGRecordBorrowContent() {
           }}
           disabled={maxBorrowCapReached}
           label="You borrow"
-          depositSelect={<StaticCardAssetInput asset="USG" />}
+          depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
           asset={USGInfo}
           maxAmountParams={{
             maxWeiValue: maxBorrowableValue,

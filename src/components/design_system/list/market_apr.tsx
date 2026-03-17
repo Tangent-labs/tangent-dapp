@@ -1,12 +1,12 @@
 import { useMemo } from "react"
 import { cn } from "@/lib/utils"
-import { ExistingAsset } from "@/types"
 import { AprIndicator } from "./apr_indicator"
 import { TokenImage } from "../structure/token_image"
 import { USGMarketType } from "@/components/products/usg/usg_type"
 
 interface ListAPRProps {
   poolName: string
+  logoKey: string
   isMarketListDisplay: boolean
   rewardToken: string
   maxLeverage: number
@@ -36,6 +36,7 @@ const StreamTile = ({ active }: StreamTileProps) => {
 
 export const MarketAPR = ({
   poolName,
+  logoKey,
   rewardToken,
   maxLeverage,
   currentAPRDetails,
@@ -84,8 +85,8 @@ export const MarketAPR = ({
                 <div className="flex flex-col gap-2 p-2">
                   <div className="flex w-full items-center justify-between gap-2">
                     <div className="flex items-center justify-start gap-2 text-xs font-semibold">
-                      <TokenImage token={poolName as ExistingAsset} size={24} />
-                      {poolName?.replaceAll("-", "/")} Rewards
+                      <TokenImage token={logoKey} size={24} />
+                      {poolName} Rewards
                     </div>
                     {/* Display streaming label or not */}
                     {marketType === "Pendle_PT" ? <></> : <StreamTile active={!!currentAPRDetails && Number(currentAPRDetails[rewardToken]) !== 0} />}

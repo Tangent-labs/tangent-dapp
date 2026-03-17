@@ -5,17 +5,17 @@ import { formatUnits, parseEther } from "viem"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { getCurrentBlock } from "@/services/service_rpc"
 import { useVsTanContext } from "../rstan_layout_context"
-import { useUSGContext } from "../../usg/usg_context"
-import { LockPosition, ZapToken } from "../../usg/usg_type"
+import { LockPosition } from "../../usg/usg_type"
 import { ToastComponent } from "@/components/design_system/toast"
 import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import { getQuote, getRoute } from "../../usg/global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
-import { AssetDataPriced, CollateralInfo, ExistingAsset, FormState } from "@/types"
+import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computedMinAmountOut, computeSwapAssetPrice } from "../../usg/record/usg_record_controller"
 import { doApprove, doIncreaseLockAmount, doLock, doZapAndIncreaseLock, doZapAndLock, getLockFormState } from "./rstan_lock_controller"
+import { Erc20Details, ERC20S } from "@/data/erc20s"
 
 type VsTanLockContextProps = {
   children: ReactNode
@@ -85,8 +85,6 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
 
   const { walletClient, isWellConnected, currentAddress } = useWalletConnexionContext()
 
-  const { tokens } = useUSGContext()
-
   const { loadData, lockData, fetchBalanceAllowanceData, balanceAllowanceData } = useVsTanContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -145,14 +143,14 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
         value: "TAN",
         decimals: 18,
         address: VSTAN_CONTRACT?.TAN,
-        logo: "TAN" as ExistingAsset,
+        logo: "TAN",
         displayDecimals: 5,
         // TODO : update to formatBigInt(lockData?.tanPrice, 18, 6)
         price: Number(formatBigInt(lockData?.tanPrice, 13, 6)),
       }
     }
 
-    const assetInfo = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset) || undefined
+    const assetInfo = ERC20S.find((el: Erc20Details) => el.name === depositAsset || el.symbol === depositAsset) || undefined
 
     if (!swapAssetPrice || !assetInfo)
       return {
@@ -161,7 +159,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
         value: "TAN",
         decimals: 18,
         address: VSTAN_CONTRACT?.TAN,
-        logo: "TAN" as ExistingAsset,
+        logo: "TAN",
         displayDecimals: 5,
         // TODO : update to formatBigInt(lockData?.tanPrice, 18, 6)
         price: Number(formatBigInt(lockData?.tanPrice, 13, 6)),
@@ -428,7 +426,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
     const fetchSwapAssetData = async () => {
       setIsZapLoading(true)
       try {
-        const data = await computeSwapAssetPrice(tokens, depositAsset)
+        const data = await computeSwapAssetPrice(depositAsset)
 
         setSwapAssetPrice(data || 0)
       } catch (error) {

@@ -17,11 +17,8 @@ type USGDashboardContextValues = {
     USGCollateralsData: USGCollateralData[]
     marketDebtData: MarketDebtData[]
   } | null
-
   globalData: USGGlobalData
-
   marketDebtMaxValue: number
-
   marketTVLMaxValue: number
 }
 

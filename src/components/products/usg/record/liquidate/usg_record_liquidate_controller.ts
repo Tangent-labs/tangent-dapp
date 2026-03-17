@@ -1,3 +1,5 @@
+"use client"
+
 import { MarketDetailData } from "../../usg_type"
 import { formatBigInt } from "@/lib/number_formatter"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"

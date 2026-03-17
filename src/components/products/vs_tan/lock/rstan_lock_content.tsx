@@ -1,7 +1,6 @@
 // "use client"
 
 // import Image from "next/image"
-// import { ExistingAsset } from "@/types"
 // import { Switch } from "@/components/ui/switch"
 // import { formatBigInt } from "@/lib/number_formatter"
 // import { VSTAN_CONTRACT } from "../rs_tan_repository"
@@ -107,7 +106,7 @@
 
 //   const AssetSelectTemplate = (option: {
 //     logoURI?: string
-//     logo?: ExistingAsset
+//     logo?: string
 //     value: string
 //     name?: string
 //     symbol: string
@@ -146,7 +145,7 @@
 //         value: "TAN",
 //         decimals: 18,
 //         address: VSTAN_CONTRACT?.TAN,
-//         logo: "TAN" as ExistingAsset,
+//         logo: "TAN" ,
 //         displayDecimals: 5,
 //         balance: balances ? balances[VSTAN_CONTRACT?.TAN] : BigInt(0),
 //       },
@@ -157,7 +156,7 @@
 //           value: "ETH",
 //           decimals: 18,
 //           address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-//           logo: "ETH" as ExistingAsset,
+//           logo: "ETH" ,
 //           displayDecimals: 5,
 //           balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
 //         },

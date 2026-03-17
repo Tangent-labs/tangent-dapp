@@ -2,7 +2,6 @@
 
 import { ReactNode } from "react"
 import { formatUnits } from "viem"
-import { ExistingAsset } from "@/types"
 import { DynamicProgressBar } from "./dynamic-progress-bar"
 import { usePredepositContext } from "../predeposit.context"
 import { Button } from "@/components/design_system/inputs/button"
@@ -133,7 +132,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
             handleProcess={actionDepositUSGUSDC}
             cap={predepositStatus?.USGUSDCData?.USGUSDCCap}
             connect={connect}
-            pool={predepositStatus?.USGUSDCData?.lpName as ExistingAsset}
+            pool={predepositStatus?.USGUSDCData?.lpName ?? ""}
             setMaxBalance={setDepositMaxUSGUSDC}
             tanAllocation={projectedUSDCTANAllocation}
           />
@@ -156,7 +155,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
             handleProcess={actionDepositUSGfrxUSD}
             cap={predepositStatus?.USGfrxUSDData?.USGfrxUSDCap}
             connect={connect}
-            pool={predepositStatus?.USGfrxUSDData?.lpName as ExistingAsset}
+            pool={predepositStatus?.USGfrxUSDData?.lpName ?? ""}
             setMaxBalance={setDepositMaxUSGfrxUSD}
             tanAllocation={projectedfrxUSDTANAllocation}
           />

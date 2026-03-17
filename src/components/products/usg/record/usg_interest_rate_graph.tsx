@@ -93,9 +93,9 @@ export function InterestRateGraph() {
         <AreaChart
           data={chartData}
           margin={{
-            top: 30,
-            right: 10,
-            left: 10,
+            top: 10,
+            right: -20,
+            left: -20,
             bottom: 0,
           }}
         >

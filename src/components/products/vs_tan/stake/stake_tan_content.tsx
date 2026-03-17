@@ -2,7 +2,7 @@
 
 // import Image from "next/image"
 // import { formatUnits } from "viem"
-// import { ExistingAsset, SelectOption } from "@/types"
+// import {  SelectOption } from "@/types"
 // import { VSTAN_CONTRACT } from "../rs_tan_repository"
 // import { ForecastGraph } from "./tan_staking_forecast"
 // import { useStakeTanContext } from "./stake_tan_context"
@@ -65,9 +65,9 @@
 //       symbol: "sTAN",
 //     }
 
-//     let logo = assetInfo?.logo as ExistingAsset
+//     let logo = assetInfo?.logo
 //     if (option.value === "sdAsset") {
-//       logo = sTANInfo.logo as ExistingAsset
+//       logo = sTANInfo.logo
 //     }
 
 //     return (
@@ -83,7 +83,7 @@
 
 //     return (
 //       <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
-//         <TokenImage token={receivedTokenInfo.logo as ExistingAsset} size={24} />
+//         <TokenImage token={receivedTokenInfo.logo } size={24} />
 //         <span className="text-sm font-semibold">
 //           <span>{receivedTokenInfo.symbol}</span>
 //         </span>

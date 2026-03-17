@@ -2,45 +2,45 @@
 
 import { useUSGContext } from "../usg_context"
 import { SwapConfig, swapConfig } from "./swap_config"
-import { truncateDecimals } from "@/lib/number_formatter"
+import { formatNumber, truncateDecimals } from "@/lib/number_formatter"
 import { toastTx } from "@/components/design_system/toast"
-import { USG_CONTRACT, USGTokens } from "../usg_repository"
+import { USG_CONTRACT } from "../usg_repository"
 import { getQuote, getRoute } from "../global_quote_controller"
-import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
+import { AssetDataPriced, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Abi, Address, formatUnits, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
 import { computedMinAmountOut, getBalances, getBalancesAndAllowances } from "../record/usg_record_controller"
-import { BalanceAllowanceData, SwapToken, DepositReceiveAsset, LpUserPoints, USGStakingInfo, ZapToken } from "../usg_type"
+import { BalanceAllowanceData, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../usg_type"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./usg_swap_controller"
 import { getTokenSymbolPriorityIndex } from "@/components/design_system/inputs/asset_selector"
+import { buildAssetInfo, resolveAssetName } from "./utils"
+import { useSearchParams } from "next/navigation"
+import { USDC } from "@tangent/defi-resources/build/ressources/erc20/common"
+import { Erc20Details, ERC20S } from "@/data/erc20s"
 
 type USGSwapContextProps = {
   children: ReactNode
-  tokenIn: string | undefined
-  tokenOut: string | undefined
 }
 
 type USGSwapContextValues = {
   isLoading: boolean
 
-  depositWeiValue?: bigint
-  setDepositWeiValue: (arg: bigint | undefined) => void
+  sellWeiValue?: bigint
+  setSellWeiValue: (arg: bigint | undefined) => void
 
-  receiveWeiValue?: bigint
-  setReceiveWeiValue: (arg: bigint | undefined) => void
+  buyWeiValue?: bigint
+  setBuyWeiValue: (arg: bigint | undefined) => void
 
-  setDepositAsset: (arg: string) => void
-  depositAsset: string | null
+  sellAssetAddress: string | null
+  setSellAssetAddress: (arg: Address) => void
 
-  setIsBuying: (arg: boolean) => void
-  isBuying: boolean
+  buyAssetAddress: string | undefined
+  setBuyAssetAddress: (arg: Address) => void
 
-  setReceiveAsset: (arg: string) => void
-  receiveAsset: string | undefined
-
-  tokens: SwapToken[]
+  sellAssetName: string | null
+  buyAssetName: string | null
 
   depositSliderPercent: number
   setDepositSliderPercent: (arg: number) => void
@@ -53,17 +53,17 @@ type USGSwapContextValues = {
 
   balances: Record<Address, bigint> | null
 
-  swapAssetPrice: number | null
+  sellAssetPrice: number | null
 
-  depositAssetInfo: AssetDataPriced | null
+  sellAssetInfo: AssetDataPriced | null
 
-  receiveAssetInfo: AssetDataPriced | null
+  buyAssetInfo: AssetDataPriced | null
 
   balanceAllowanceData: BalanceAllowanceData | null
 
-  handleDepositChange: (arg: bigint | undefined) => void
+  handleSellChange: (arg: bigint | undefined) => void
 
-  handleReceiveChange: (arg: bigint | undefined) => void
+  handleBuyChange: (arg: bigint | undefined) => void
 
   actionSwap: () => void
 
@@ -73,7 +73,7 @@ type USGSwapContextValues = {
 
   formState: FormState
 
-  computedAssets: { depositAssets: DepositReceiveAsset[]; receiveAssets: DepositReceiveAsset[] }
+  computedAssets: DepositReceiveAsset[]
 
   USGsUSGMetrics: USGStakingInfo | undefined
 
@@ -84,135 +84,92 @@ type USGSwapContextValues = {
 
 export const USGSwapContext = createContext<USGSwapContextValues | undefined>(undefined)
 
-export const USGSwapProvider = ({ children, tokenIn, tokenOut }: USGSwapContextProps) => {
+export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
+  const searchParams = useSearchParams()
+
   const { curveRoutes, handleQuote } = useRootContext()
-
-  const { tokens, USGsUSGMetrics, lpUserPoints } = useUSGContext()
-
+  const { USGsUSGMetrics, lpUserPoints } = useUSGContext()
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [isBuying, setIsBuying] = useState<boolean>(true)
+  const [sellAssetPrice, setSellAssetPrice] = useState<number | null>(null)
+  const [buyAssetPrice, setBuyAssetPrice] = useState<number | null>(null)
 
-  const [receiveAsset, setReceiveAsset] = useState<string>("USG")
+  // --- Resolve names from addresses (for swapConfig, computeSwapAssetPrice, getABI) ---
+  const [sellAssetAddress, setSellAssetAddress] = useState<string>(searchParams.get("tokenIn")?.toLowerCase() ?? USDC.toLowerCase())
+  const [buyAssetAddress, setBuyAssetAddress] = useState<string>(searchParams.get("tokenOut")?.toLowerCase() ?? USG_CONTRACT.USG.toLowerCase())
 
-  const [depositAsset, setDepositAsset] = useState<string>("USDC")
+  // --- Resolve names from addresses (for swapConfig, computeSwapAssetPrice, getABI) ---
+  const sellAssetName = useMemo(() => resolveAssetName(sellAssetAddress), [sellAssetAddress])
+  const buyAssetName = useMemo(() => resolveAssetName(buyAssetAddress), [buyAssetAddress])
+
+  // --- Asset info (now resolved by address) ---
+  const sellAssetInfo = useMemo(() => buildAssetInfo(sellAssetAddress, sellAssetPrice), [sellAssetAddress, sellAssetPrice])
+  const buyAssetInfo = useMemo(() => buildAssetInfo(buyAssetAddress, buyAssetPrice), [buyAssetAddress, buyAssetPrice])
+
+  const [sellWeiValue, setSellWeiValue] = useState<bigint | undefined>()
+  const [buyWeiValue, setBuyWeiValue] = useState<bigint | undefined>()
 
   const [isSwapLoading, setIsSwapLoading] = useState(false)
-
   const [slippage, setSlippage] = useState<number>(0.2)
 
-  const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
-
-  const [receiveWeiValue, setReceiveWeiValue] = useState<bigint | undefined>()
-
-  const [swapAssetPrice, setSwapAssetPrice] = useState<number | null>(null)
-
   const [depositSliderPercent, setDepositSliderPercent] = useState<number>(0)
-
-  const [swapedAssetPrice, setSwapedAssetPrice] = useState<number | null>(null)
-
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
-
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
-
   const [swapData, setSwapData] = useState<SwapConfig | null>(null)
 
+  // Sync URL → state (browser back/forward)
   useEffect(() => {
-    if (tokenIn && tokenOut) {
-      const tokenInName = computedAssets?.depositAssets?.find((el) => el?.address?.toLowerCase() === tokenIn?.toLowerCase())?.name
-      const tokenOutName = computedAssets?.receiveAssets?.find((el) => el?.address?.toLowerCase() === tokenOut?.toLowerCase())?.name
+    if (!sellAssetAddress || !buyAssetAddress) return
 
-      if (tokenInName && tokenOutName) {
-        setDepositAsset(tokenInName)
-        setReceiveAsset(tokenOutName)
-      }
-    }
-  }, [tokenIn, tokenOut])
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("tokenIn", sellAssetAddress)
+    params.set("tokenOut", buyAssetAddress)
 
-  const receiveAssetInfo = useMemo(() => {
-    const tgTokens: SwapToken[] = Object.entries(USGTokens).flatMap(([, tokens]) => {
-      return Object.entries(tokens).map(([name, address]) => ({
-        name,
-        symbol: name,
-        value: name,
-        address: address as Address,
-        decimals: 18,
-        displayDecimals: 2,
-        logoURI: "null",
-      }))
-    })
+    const newUrl = `${window.location.pathname}?${params.toString()}`
 
-    const assetInfo =
-      tokens.find((el: SwapToken) => el.name === receiveAsset || el.symbol === receiveAsset) ||
-      tgTokens.find((el: SwapToken) => el.name === receiveAsset || el.symbol === receiveAsset)
+    // Avoid pushing if URL is already correct
+    if (window.location.search === `?${params.toString()}`) return
 
-    if (!swapedAssetPrice || !assetInfo) return null
+    window.history.pushState(null, "", newUrl)
+  }, [sellAssetAddress, buyAssetAddress])
 
-    const asset: AssetDataPriced = {
-      address: assetInfo?.address,
-      decimals: assetInfo?.decimals,
-      displayDecimals: 2,
-      symbol: assetInfo?.symbol,
-      name: assetInfo?.name,
-      price: swapedAssetPrice,
-    }
-
-    return asset
-  }, [receiveAsset, swapedAssetPrice])
-
-  const depositAssetInfo = useMemo(() => {
-    const tgTokens: SwapToken[] = Object.entries(USGTokens).flatMap(([, tokens]) => {
-      return Object.entries(tokens).map(([name, address]) => ({
-        name,
-        symbol: name,
-        value: name,
-        address: address as Address,
-        decimals: 18,
-        displayDecimals: 2,
-        logoURI: "null",
-      }))
-    })
-
-    const assetInfo =
-      tokens.find((el: SwapToken) => el.name === depositAsset || el.symbol === depositAsset) ||
-      tgTokens.find((el: SwapToken) => el.name === depositAsset || el.symbol === depositAsset)
-
-    if (!swapAssetPrice || !assetInfo) return null
-
-    const asset: AssetDataPriced = {
-      address: assetInfo?.address,
-      decimals: assetInfo?.decimals,
-      displayDecimals: 2,
-      symbol: assetInfo?.symbol,
-      name: assetInfo?.name,
-      price: swapAssetPrice,
-    }
-
-    return asset
-  }, [depositAsset, swapAssetPrice])
-
+  // Sync URL → state (browser back/forward)
   useEffect(() => {
-    if (depositAssetInfo && receiveAssetInfo && walletClient) {
+    const onPopState = () => {
+      const params = new URLSearchParams(window.location.search)
+      const tokenIn = params.get("tokenIn")?.toLowerCase()
+      const tokenOut = params.get("tokenOut")?.toLowerCase()
+
+      if (tokenIn) setSellAssetAddress(tokenIn)
+      if (tokenOut) setBuyAssetAddress(tokenOut)
+    }
+
+    window.addEventListener("popstate", onPopState)
+    return () => window.removeEventListener("popstate", onPopState)
+  }, [])
+
+  // --- Balance/allowance ---
+  useEffect(() => {
+    if (sellAssetInfo && buyAssetInfo && walletClient) {
       fetchBalanceAllowanceData(walletClient)
     }
-  }, [depositAssetInfo, receiveAssetInfo, walletClient])
+  }, [sellAssetInfo, buyAssetInfo, walletClient])
 
   const fetchBalanceAllowanceData = async (walletClient: WalletClient) => {
-    if (!depositAssetInfo || !receiveAssetInfo) return
+    if (!sellAssetInfo || !buyAssetInfo) return
 
     try {
       let spender = "" as Address
 
-      if (receiveAssetInfo?.address === USG_CONTRACT?.USG || depositAssetInfo?.address === USG_CONTRACT?.USG) {
+      if (buyAssetInfo?.address === USG_CONTRACT?.USG || sellAssetInfo?.address === USG_CONTRACT?.USG) {
         spender = USG_CONTRACT.CURVE_ROUTER as Address
       } else {
         spender = USG_CONTRACT.ENSO_ROUTER as Address
       }
 
-      const data = await getBalancesAndAllowances(walletClient, depositAssetInfo.address, spender)
-
+      const data = await getBalancesAndAllowances(walletClient, sellAssetInfo.address, spender)
       setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
     } catch (error) {
       console.error("Failed to fetch balance/allowance:", error)
@@ -220,7 +177,7 @@ export const USGSwapProvider = ({ children, tokenIn, tokenOut }: USGSwapContextP
   }
 
   useEffect(() => {
-    const tokenAddresses: Address[] = tokens.map((el) => el.address)
+    const tokenAddresses: Address[] = ERC20S.map((el) => el.address)
 
     if (currentAddress && tokenAddresses.length > 0) {
       getBalances(currentAddress, tokenAddresses).then((data) => {
@@ -237,118 +194,99 @@ export const USGSwapProvider = ({ children, tokenIn, tokenOut }: USGSwapContextP
         }
       })
     }
-  }, [currentAddress, tokens])
+  }, [currentAddress])
 
-  const handleReceiveChange = (value: bigint | undefined) => {
-    setReceiveWeiValue(value)
-
-    if (value === undefined) {
-      setDepositWeiValue(undefined)
-      return
-    }
-
-    if (!depositAssetInfo || !receiveAssetInfo) return
-
-    const quote = swapData?.quote
-
-    const fetchValue = async () => {
-      if (!value || !currentAddress || !depositAssetInfo || !receiveAssetInfo) return
-
-      setIsSwapLoading(true)
-      try {
-        const { quote } = await getQuote(value, currentAddress, depositAssetInfo?.address, receiveAssetInfo?.address, curveRoutes)
-
-        handleQuote(quote)
-
-        if (quote) {
-          setDepositWeiValue(quote)
-        }
-      } catch (error) {
-        console.error("Error fetching zap value:", error)
-      } finally {
-        setIsSwapLoading(false)
-      }
-    }
-
-    if (quote === "enso") {
-      fetchValue()
-    } else if (quote === "1") {
-      setDepositWeiValue(value)
-    } else {
-      if (depositWeiValue && quote) {
-        doCustomQuote(quote, depositWeiValue, currentAddress, receiveAssetInfo?.address).then((v) => {
-          setDepositWeiValue(v as bigint)
-        })
-      }
-    }
-  }
-
-  const handleDepositChange = (value: bigint | undefined) => {
+  const handleSellChange = (value: bigint | undefined) => {
     setIsSwapLoading(true)
-    setDepositWeiValue(value)
+    setSellWeiValue(value)
 
     if (value === undefined) {
-      setReceiveWeiValue(undefined)
+      setBuyWeiValue(undefined)
       return
     }
 
-    if (!depositAssetInfo || !receiveAssetInfo) return
+    if (!sellAssetInfo || !buyAssetInfo) return
 
     const quote = swapData?.quote
 
-    const fetchSwapValue = async () => {
-      if (!value || !depositAssetInfo || !receiveAssetInfo) return
-
-      setIsSwapLoading(true)
-      try {
-        const { quote } = await getQuote(value, currentAddress || zeroAddress, receiveAssetInfo?.address, depositAssetInfo?.address, curveRoutes)
-
-        handleQuote(quote)
-
-        if (quote) {
-          setReceiveWeiValue(quote)
-        }
-        setIsSwapLoading(false)
-      } catch (error) {
-        console.error("Error fetching zap value:", error)
-        setIsSwapLoading(false)
-      }
-    }
-
     if (quote === "enso") {
-      fetchSwapValue()
+      fetchSwapValue(value, "sell")
     } else if (quote === "1") {
-      setReceiveWeiValue(value)
+      setBuyWeiValue(value)
       setIsSwapLoading(false)
     } else {
       const quote = swapData?.quote
-
-      const quoteContractAddress = [depositAssetInfo, receiveAssetInfo].find((el) => el.symbol === swapData?.quoteContract)?.address as Address
+      const quoteContractAddress = [sellAssetInfo, buyAssetInfo].find((el) => el.symbol === swapData?.quoteContract)?.address as Address
 
       if (value && quote) {
         doCustomQuote(quote, value, currentAddress, quoteContractAddress).then((v) => {
-          setReceiveWeiValue(v as bigint)
+          setBuyWeiValue(v as bigint)
           setIsSwapLoading(false)
         })
       }
     }
   }
 
-  useEffect(() => {
-    if (!receiveAsset) return
+  // --- Quote handlers ---
+  const handleBuyChange = (value: bigint | undefined) => {
+    setBuyWeiValue(value)
 
-    const fetchSwapAssetData = async () => {
-      setIsSwapLoading(true)
-      setSwapedAssetPrice(1)
+    if (value === undefined) {
+      setSellWeiValue(undefined)
+      return
+    }
 
-      try {
-        const data = await computeSwapAssetPrice(tokens, receiveAsset)
+    if (!sellAssetInfo || !buyAssetInfo) return
 
-        if (data) {
-          setSwapedAssetPrice(data)
+    const quote = swapData?.quote
+
+    if (quote === "enso") {
+      fetchSwapValue(value, "buy")
+    } else if (quote === "1") {
+      setSellWeiValue(value)
+    } else {
+      if (sellWeiValue && quote) {
+        doCustomQuote(quote, sellWeiValue, currentAddress, buyAssetInfo?.address).then((v) => {
+          setBuyWeiValue(v as bigint)
+        })
+      }
+    }
+  }
+
+  const fetchSwapValue = async (value: bigint | undefined, type: "sell" | "buy") => {
+    if (!value || !sellAssetInfo || !buyAssetInfo) return
+
+    setIsSwapLoading(true)
+    try {
+      const quoteTokenIn = type === "sell" ? buyAssetInfo?.address : sellAssetInfo?.address
+      const quoteTokenOut = type === "sell" ? sellAssetInfo?.address : buyAssetInfo?.address
+
+      const { quote } = await getQuote(value, currentAddress || zeroAddress, quoteTokenIn, quoteTokenOut, curveRoutes)
+      handleQuote(quote)
+      if (quote) {
+        if (type == "sell") {
+          setBuyWeiValue(quote)
         } else {
-          setSwapedAssetPrice(1)
+          setSellWeiValue(quote)
         }
+      }
+      setIsSwapLoading(false)
+    } catch (error) {
+      console.error("Error fetching zap value:", error)
+      setIsSwapLoading(false)
+    }
+  }
+
+  // --- Price fetching (needs name for computeSwapAssetPrice) ---
+  useEffect(() => {
+    if (!buyAssetName) return
+
+    const fetchSwapAssetData = async () => {
+      setIsSwapLoading(true)
+      setBuyAssetPrice(1)
+      try {
+        const data = await computeSwapAssetPrice(buyAssetName)
+        setBuyAssetPrice(data ?? 1)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
       } finally {
@@ -357,16 +295,16 @@ export const USGSwapProvider = ({ children, tokenIn, tokenOut }: USGSwapContextP
     }
 
     fetchSwapAssetData()
-  }, [receiveAsset])
+  }, [buyAssetName])
 
   useEffect(() => {
-    if (!depositAsset) return
+    if (!sellAssetName) return
 
     const fetchSwapAssetData = async () => {
       setIsSwapLoading(true)
       try {
-        const data = await computeSwapAssetPrice(tokens, depositAsset)
-        setSwapAssetPrice(data ?? 1)
+        const data = await computeSwapAssetPrice(sellAssetName)
+        setSellAssetPrice(data)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
       } finally {
@@ -375,26 +313,27 @@ export const USGSwapProvider = ({ children, tokenIn, tokenOut }: USGSwapContextP
     }
 
     fetchSwapAssetData()
-  }, [depositAsset])
+  }, [sellAssetName])
 
+  // --- Actions ---
   const actionApprove = async () => {
     setIsLoading(true)
 
-    if (walletClient && receiveAssetInfo && depositAssetInfo) {
+    if (walletClient && buyAssetInfo && sellAssetInfo) {
       let spender = "" as Address
 
-      if (receiveAssetInfo?.address === USG_CONTRACT?.USG || depositAssetInfo?.address === USG_CONTRACT?.USG) {
+      if (buyAssetInfo?.address === USG_CONTRACT?.USG || sellAssetInfo?.address === USG_CONTRACT?.USG) {
         spender = USG_CONTRACT.CURVE_ROUTER as Address
       } else {
         spender = USG_CONTRACT.ENSO_ROUTER as Address
       }
 
-      await toastTx(doApprove(walletClient, depositAssetInfo?.address, depositWeiValue || 0n, spender), {
+      await toastTx(doApprove(walletClient, sellAssetInfo?.address, sellWeiValue || 0n, spender), {
         pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
         success: () => {
           fetchBalanceAllowanceData(walletClient)
           setIsLoading(false)
-          return { type: "Success", content: `${depositAssetInfo?.symbol} approved successfully.` }
+          return { type: "Success", content: `${sellAssetInfo?.symbol} approved successfully.` }
         },
       })
     }
@@ -403,40 +342,39 @@ export const USGSwapProvider = ({ children, tokenIn, tokenOut }: USGSwapContextP
   const actionSwap = async () => {
     setIsLoading(true)
 
-    if (!depositAssetInfo || !receiveAssetInfo || !depositWeiValue) return
+    if (!sellAssetInfo || !buyAssetInfo || !sellWeiValue) return
 
     const swapFn = swapData?.swap
 
     if (swapFn && walletClient) {
-      const contract = getABI(depositAssetInfo?.symbol, receiveAssetInfo?.symbol)
+      const contract = getABI(sellAssetInfo?.symbol, buyAssetInfo?.symbol)
       const quoteType = swapData?.quote
       const contractSymbol = swapData?.contract
-      const swapContractToken = [depositAssetInfo, receiveAssetInfo].find((el) => el.symbol === contractSymbol)?.address as Address
+      const swapContractToken = [sellAssetInfo, buyAssetInfo].find((el) => el.symbol === contractSymbol)?.address as Address
 
-      await toastTx(doCustomSwap(walletClient, contract?.abi as Abi, swapFn, depositWeiValue || 0n, swapContractToken, quoteType === "enso"), {
+      await toastTx(doCustomSwap(walletClient, contract?.abi as Abi, swapFn, sellWeiValue || 0n, swapContractToken, quoteType === "enso"), {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
         success: () => {
-          setDepositWeiValue(undefined)
-          setReceiveWeiValue(undefined)
+          setSellWeiValue(undefined)
+          setBuyWeiValue(undefined)
           fetchBalanceAllowanceData(walletClient)
           setIsLoading(false)
           return { type: "Success", content: "Transaction successful." }
         },
         error: () => {
           setIsLoading(false)
-
           return { type: "Error", content: "Transaction failed." }
         },
       })
     } else {
-      if (!depositWeiValue || !currentAddress || !receiveWeiValue) return
+      if (!sellWeiValue || !currentAddress || !buyWeiValue) return
 
       try {
         const routeData = await getRoute(
-          depositAssetInfo?.address,
-          receiveAssetInfo?.address,
-          depositWeiValue,
-          computedMinAmountOut(receiveWeiValue, slippage),
+          sellAssetInfo?.address,
+          buyAssetInfo?.address,
+          sellWeiValue,
+          computedMinAmountOut(buyWeiValue, slippage),
           currentAddress,
           currentAddress,
           curveRoutes
@@ -451,15 +389,14 @@ export const USGSwapProvider = ({ children, tokenIn, tokenOut }: USGSwapContextP
         await toastTx(doSwap(walletClient!, tx), {
           pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
           success: () => {
-            setDepositWeiValue(undefined)
-            setReceiveWeiValue(undefined)
+            setSellWeiValue(undefined)
+            setBuyWeiValue(undefined)
             fetchBalanceAllowanceData(walletClient!)
             setIsLoading(false)
             return { type: "Success", content: "Transaction successful." }
           },
           error: () => {
             setIsLoading(false)
-
             return { type: "Error", content: "Transaction failed." }
           },
         })
@@ -470,13 +407,14 @@ export const USGSwapProvider = ({ children, tokenIn, tokenOut }: USGSwapContextP
     }
   }
 
+  // --- Swap config resolution (uses names as keys) ---
   useEffect(() => {
-    setDepositWeiValue(undefined)
-    setReceiveWeiValue(undefined)
+    setSellWeiValue(undefined)
+    setBuyWeiValue(undefined)
 
-    if (depositAsset && receiveAsset) {
+    if (sellAssetName && buyAssetName) {
       try {
-        const swapDataFromConfig = swapConfig[depositAsset][receiveAsset]
+        const swapDataFromConfig = swapConfig[sellAssetName][buyAssetName]
 
         setSwapData(
           !!swapDataFromConfig
@@ -499,160 +437,92 @@ export const USGSwapProvider = ({ children, tokenIn, tokenOut }: USGSwapContextP
         })
       }
     }
-  }, [isBuying, depositAsset, receiveAsset])
+  }, [sellAssetName, buyAssetName])
 
   const formState = useMemo(
     () =>
       getSwapFormState(
         swapData?.approval === "noApprovalNeeded",
-        depositWeiValue,
-        receiveWeiValue,
+        sellWeiValue,
+        buyWeiValue,
         isWellConnected,
-        depositAssetInfo!,
-        receiveAssetInfo!,
+        sellAssetInfo!,
+        buyAssetInfo!,
         balanceAllowanceData!
       ),
-    [depositWeiValue, receiveWeiValue, isWellConnected, depositAssetInfo, receiveAssetInfo, balanceAllowanceData!]
+    [sellWeiValue, buyWeiValue, isWellConnected, sellAssetInfo, buyAssetInfo, balanceAllowanceData!]
   )
 
+  // --- Toggle just swaps the two addresses ---
   const toggleTokensSwitch = () => {
-    setReceiveAsset(depositAsset)
-    setDepositAsset(receiveAsset)
+    setBuyAssetAddress(sellAssetAddress)
+    setSellAssetAddress(buyAssetAddress)
   }
 
   const computedAssets = useMemo(() => {
-    const tgTokens = Object.entries(USGTokens).flatMap(([, tokens]) => {
-      return Object.entries(tokens).map(([name, address]) => ({
-        name,
-        symbol: name,
-        value: name,
-        address,
-        balance: balances ? balances[address as Address] : BigInt(0),
-      }))
-    })
-
-    const tokenOptions = tokens
-      .map((el: ZapToken) => ({
-        ...el,
-        value: el.name as string,
-        address: el.address as Address,
-        balance: balances ? balances[el.address] : BigInt(0),
-      }))
-      .sort((a, b) => {
-        const aPriority = getTokenSymbolPriorityIndex(a.symbol)
-        const bPriority = getTokenSymbolPriorityIndex(b.symbol)
-
-        if (Number(a.balance) > 0 !== Number(b.balance) > 0) {
-          return Number(a.balance) > 0 ? -1 : 1
-        } else if (aPriority !== bPriority) {
-          return aPriority - bPriority
-        } else {
-          return Number(b.balance) - Number(a.balance)
-        }
-      })
-
-    const depositAssets = isBuying
-      ? [
-          ...[
-            {
-              symbol: "ETH",
-              name: "Ethereum",
-              value: "ETH",
-              decimals: 18,
-              address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-              logo: "ETH" as ExistingAsset,
-              displayDecimals: 5,
-              balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
-            },
-            ...tokenOptions,
-          ],
-        ]
-      : [
-          ...tgTokens,
-          ...[
-            {
-              symbol: "ETH",
-              name: "Ethereum",
-              value: "ETH",
-              decimals: 18,
-              address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-              logo: "ETH" as ExistingAsset,
-              displayDecimals: 5,
-              balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
-            },
-            ...tokenOptions,
-          ],
-        ]
-
-    const receiveAssets = isBuying
-      ? [
-          ...tgTokens,
-          ...[
-            {
-              symbol: "ETH",
-              name: "Ethereum",
-              value: "ETH",
-              decimals: 18,
-              address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-              logo: "ETH" as ExistingAsset,
-              displayDecimals: 5,
-              balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
-            },
-            ...tokenOptions,
-          ].sort((a, b) => Number(b.balance) - Number(a.balance)),
-        ]
-      : [
-          ...[
-            {
-              symbol: "ETH",
-              name: "Ethereum",
-              value: "ETH",
-              decimals: 18,
-              address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-              logo: "ETH" as ExistingAsset,
-              displayDecimals: 5,
-              balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
-            },
-            ...tokenOptions,
-            ...tgTokens,
-          ].sort((a, b) => Number(b.balance) - Number(a.balance)),
-        ]
-
-    return { depositAssets, receiveAssets }
-  }, [balances, isBuying])
+    return (
+      ERC20S
+        // .filter((el) => ["USDC", "WETH", "USG", "sUSG", "ETH"].includes(el.symbol!)) cool to debug that shit
+        .map((el: Erc20Details) => {
+          const balWei = balances?.[el.address] ?? 0n
+          const balNumber = Number(formatUnits(balWei, el.decimals))
+          const formattedBal = formatNumber(balNumber, el.displayDecimals ?? 2)
+          return {
+            ...el,
+            value: el.name as string,
+            address: el.address as Address,
+            balanceWei: balWei,
+            balanceNumber: balNumber,
+            balanceFormatted: formattedBal,
+          }
+        })
+        .sort((a, b) => {
+          if (a.balanceNumber !== b.balanceNumber) {
+            return b.balanceNumber - a.balanceNumber
+          }
+          return getTokenSymbolPriorityIndex(a.symbol) - getTokenSymbolPriorityIndex(b.symbol)
+        })
+    )
+  }, [balances])
 
   const minValueReceivedFromZap = useMemo(() => {
-    if (receiveWeiValue) {
-      const minAmountOutWei = computedMinAmountOut(receiveWeiValue, slippage)
-
-      const result = `(${truncateDecimals(formatUnits(minAmountOutWei, receiveAssetInfo?.decimals || 18), receiveAssetInfo?.displayDecimals)})`
+    if (buyWeiValue) {
+      const minAmountOutWei = computedMinAmountOut(buyWeiValue, slippage)
+      const result = `(${truncateDecimals(formatUnits(minAmountOutWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)})`
       return result
     }
     return ""
-  }, [receiveWeiValue, slippage])
+  }, [buyWeiValue, slippage])
 
   const contextValue: USGSwapContextValues = {
     isLoading,
-    depositWeiValue,
-    setDepositWeiValue,
-    depositAsset,
-    setDepositAsset,
-    tokens,
+
+    sellWeiValue,
+    setSellWeiValue,
+
+    buyWeiValue,
+    setBuyWeiValue,
+
+    buyAssetAddress,
+    setBuyAssetAddress,
+
+    sellAssetAddress,
+    setSellAssetAddress,
+
+    sellAssetName,
+    buyAssetName,
+
     isSwapLoading,
     setIsSwapLoading,
-    receiveAsset,
-    setReceiveAsset,
-    isBuying,
-    setIsBuying,
+
     balances,
-    depositAssetInfo,
-    swapAssetPrice,
+    sellAssetInfo,
+    sellAssetPrice,
     balanceAllowanceData,
-    handleDepositChange,
-    handleReceiveChange,
-    receiveWeiValue,
-    receiveAssetInfo,
-    setReceiveWeiValue,
+    handleSellChange,
+    handleBuyChange,
+    buyAssetInfo,
+
     actionApprove,
     actionSwap,
     formState,

@@ -214,6 +214,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
       displayDecimals: 2,
       symbol: "USDC",
       name: "USD Coin",
+      logoKey: "USDC",
       price: USDCPrice,
     }
   }, [USDCPrice])
@@ -225,6 +226,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
       displayDecimals: 2,
       symbol: "frxUSD",
       name: "Frax USD",
+      logoKey: "frxUSD",
       price: frxUSDPrice,
     }
   }, [frxUSDPrice])

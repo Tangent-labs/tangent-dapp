@@ -1,8 +1,9 @@
 "use client"
 
 import { ListState } from "@/types"
+import { mapPoolsAndTasks } from "./utils"
 import { useUSGContext } from "../usg_context"
-import { mapPoolsAndTasks, mapAPROpportunities } from "./usg_earn_controller"
+import { mapAPROpportunities } from "./usg_earn_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { getCurvePools, getConvexPools, getStakeDAOPools, getPendlePools } from "../server_api"
 import { AprOpportunityItem, USGStakingInfo, LpUserPoints, EarnProtocolInput, EarnPoolsData } from "../usg_type"

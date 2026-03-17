@@ -72,7 +72,7 @@ type USGRepayContextValues = {
 
   isDebtBelowThreshold: boolean
 
-  expectedUSG: string
+  expectedRemainingDebt: string
 
   USGDollarRepayedValue: string
 
@@ -282,7 +282,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     if (isRepayMax || percentage === 100) {
       const usgBalance = marketData?.debtInfos.usgBalance || 0n
 
-      if (usgBalance < repayValue) {
+      if (usgBalance > repayValue) {
         repayValue = maxUint256
       }
     }
@@ -329,6 +329,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
           return { type: "Success", content: "Transaction successful." }
         },
         error: () => {
+          setReplayLoading(false)
           return { type: "Error", content: "Transaction failed." }
         },
       }
@@ -474,12 +475,12 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     return `(${formatDollar((Number(Number(formatUnits(usgRepayedValue || 0n, 18))) * USGInfo?.price).toFixed(2))})`
   }, [usgRepayedValue, USGInfo])
 
-  const expectedUSG = useMemo(() => {
+  const expectedRemainingDebt = useMemo(() => {
     if (marketData) {
       if (usgRepayedValue && repayAsset && repayAsset !== "USG") {
-        return `${formatBigIntAsNumber(BigInt(usgRepayedValue || 0n), 18, 2)} USG`
+        return `${formatBigIntAsNumber(BigInt(marketData?.debtInfos?.userDebt - usgRepayedValue || 0n), 18, 2)} USG`
       } else if (repayAsset && repayAsset === "USG" && repayWeiValue) {
-        return `${formatBigIntAsNumber(repayWeiValue || 0n, 18, 2)}  USG`
+        return `${formatBigIntAsNumber(BigInt(marketData?.debtInfos?.userDebt - repayWeiValue || 0n), 18, 2)} USG`
       }
     }
     return "0 USG"
@@ -518,7 +519,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     USGDollarRepayedValue,
     withdrawSelectedAsset,
     setWithdrawSelectedAsset,
-    expectedUSG,
+    expectedRemainingDebt,
     repayLoading,
     minValueReceivedFromZap,
   }

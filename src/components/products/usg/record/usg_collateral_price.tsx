@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils"
 import { useEffect, useMemo, useRef, useState } from "react"
-import { formatBigInt, formatDollar } from "@/lib/number_formatter"
+import { formatDollar, formatNumber } from "@/lib/number_formatter"
 
 import {
   CandlestickSeries,
@@ -40,7 +40,7 @@ export const CollateralGraph = ({ graphData, isPending, liquidationPrice }: Coll
   const [showBackupBadge, setShowBackupBadge] = useState(false)
 
   const liquidationPriceNumber = useMemo(() => {
-    return Number(formatBigInt(liquidationPrice, 18, 3))
+    return Number(Number(liquidationPrice / 10n ** 15n)?.toFixed(4)) / 1000
   }, [liquidationPrice])
 
   useEffect(() => {
@@ -171,7 +171,7 @@ export const CollateralGraph = ({ graphData, isPending, liquidationPrice }: Coll
 
       {showBackupBadge && !isPending && (
         <div className="absolute bottom-2 right-2 z-10 rounded-[2px] bg-[#ff0300] px-1 py-0.5 text-xs text-white">
-          Liquidation price ${liquidationPriceNumber}
+          Liquidation price ${formatNumber(liquidationPriceNumber, 3)}
         </div>
       )}
     </div>

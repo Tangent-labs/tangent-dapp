@@ -41,6 +41,13 @@ export const MarketMetadata = ({ marketData }: MarketMetadataProps) => {
             </>
           )}
 
+          {marketData?.marketType?.includes("FXN") && (
+            <>
+              <MobileProtocol token="FXN" label="f(x) Protocol " />
+              <TokenImage className="flex text-sm md:hidden" token={"FXN"} size={20} />
+            </>
+          )}
+
           <div className="flex items-center justify-center rounded-full bg-overlay-panel px-3 py-0.5 text-xs">
             {marketData?.constants?.irParams.isHEC ? "HEC" : "LEC"}
           </div>

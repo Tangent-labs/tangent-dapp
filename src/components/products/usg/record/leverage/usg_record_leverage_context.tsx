@@ -189,6 +189,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     const expectedCollateralFinalDollarValue = (collatToBuy * collatPrice) / parseEther("1")
     return (expectedCollateralFinalDollarValue * parseEther("1")) / globalData.usgPriceWei
   }
+
   const activeInputRef = useRef<"deposit" | "zap" | null>(null)
   const requestIdRef = useRef<number>(0)
 

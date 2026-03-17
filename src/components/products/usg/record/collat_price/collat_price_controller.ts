@@ -12,17 +12,17 @@ export type PendleCollatApiType = {
 export const computeTimeDiff = (customStartTime: string) => {
   switch (customStartTime) {
     case "15m":
-      return 24 * 60 * 60
+      return 3 * 24 * 60 * 60
     case "1h":
-      return 7 * 24 * 60 * 60
+      return 12 * 24 * 60 * 60
     case "6h":
-      return 30 * 24 * 60 * 60
+      return 60 * 24 * 60 * 60
     case "1d":
-      return 120 * 24 * 60 * 60
+      return 240 * 24 * 60 * 60
     case "7d":
-      return 180 * 24 * 60 * 60
+      return 720 * 24 * 60 * 60
     default:
-      return 30 * 24 * 60 * 60
+      return 120 * 24 * 60 * 60
   }
 }
 

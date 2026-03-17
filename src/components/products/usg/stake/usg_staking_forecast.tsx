@@ -1,8 +1,8 @@
 "use client"
 
-import { IconCircleHelp } from "@/components/icons"
 import { ReactNode, useMemo, useState } from "react"
 import { formatDollar } from "@/lib/number_formatter"
+import { IconStars } from "@/components/icons/icon_stars"
 import { computedProjection } from "./usg_stake_controller"
 import type { LineDot } from "recharts/types/cartesian/Line"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
@@ -252,19 +252,16 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apr, currentFea
             sUSG
           </div>
 
-          <div className="flex flex-col items-center justify-center rounded-[10px] bg-button-active px-4 py-1">
-            <span className="text-lg font-semibold">{apr.toFixed(2)}%</span>
-          </div>
-
-          <HoverCard openDelay={150} closeDelay={100}>
+          <HoverCard openDelay={100} closeDelay={100}>
             <HoverCardTrigger asChild>
-              <button type="button" className="inline-flex items-center">
-                <IconCircleHelp className="h-auto w-[14px] text-white" />
+              <button type="button" className="inline-flex items-center hover:text-row-tonic">
+                <div className="mr-1 text-xl font-semibold">{apr.toFixed(2)}%</div>
+                <IconStars className="fill-row-tonic" />
               </button>
             </HoverCardTrigger>
 
-            <HoverCardContent side="top" align="center" className="z-1001 w-fit max-w-64 p-2 text-xs">
-              Estimated Annual Percentage Yield based on the last rewards distribution.
+            <HoverCardContent side="top" align="center" className="z-1001 p-2 text-center text-xs">
+              7 days trailing APY
             </HoverCardContent>
           </HoverCard>
         </div>

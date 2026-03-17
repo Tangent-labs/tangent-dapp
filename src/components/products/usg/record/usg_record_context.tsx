@@ -29,27 +29,42 @@ import { toast } from "react-toastify"
 import { usePathname } from "next/navigation"
 import { getConvexPools } from "../server_api"
 import { useUSGContext } from "../usg_context"
-import { USG_CONTRACT } from "../usg_repository"
+import { USG_CONTRACT, USGMarkets } from "../usg_repository"
 import { ToastComponent } from "@/components/design_system/toast"
 import { Address, formatUnits, parseEther, zeroAddress } from "viem"
 import { useRootContext } from "@/components/products/root/root_context"
 import { useUSGMaketListContext } from "../list/usg_market_list_context"
 import { getHistoricalMarketData, getUserPositions } from "../client_api"
 import { sortUserData } from "./position_history/usg_position_history_controller"
-import { AssetDataPriced, CollateralInfo, ExistingAsset, ListState } from "@/types"
+import { AssetDataPriced, CollateralInfo, ListState } from "@/types"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { AssetInfos } from "@/components/design_system/inputs/asset_selector"
+import { formatNumber } from "@/lib/number_formatter"
 
 type USGRecordContextProps = {
   children: ReactNode
-  collateral: string
-  collateralInfo: CollateralInfo
-  marketInfo: USGMarket
+  marketAddress: Address
+}
+
+export function getReceiptPrefix(marketType: string | undefined) {
+  let receiptPrefix = ""
+
+  switch (marketType) {
+    case "CRV_Gauge":
+      receiptPrefix = "Gauge "
+      break
+    case "STAKEDAO_CRV_Vault":
+      receiptPrefix = "Vault "
+      break
+    default:
+      break
+  }
+
+  return receiptPrefix
 }
 
 type USGRecordContextValues = {
-  collateral: string
-  collateralInfo: CollateralInfo
   isLoading: boolean
   marketData?: MarketDetailData
   loadOnChainData: () => void
@@ -62,9 +77,11 @@ type USGRecordContextValues = {
   setCurrentAmounts: (amounts: USGMarketAmounts) => void
 
   marketInfo: USGMarket
+  collateralInfo: CollateralInfo
 
   balanceAllowanceData: BalanceAllowanceData | null
   setBalanceAllowanceData: (arg: BalanceAllowanceData) => void
+  depositAssetOptions: AssetInfos[]
 
   displayRows: UserPosition[]
 
@@ -128,25 +145,25 @@ type USGRecordContextValues = {
 
   simulatedDebtAmount: number
   setSimulatedDebtAmount: (n: number) => void
-
-  depositAssetOptions: Array<{
-    label: string
-    value: string
-    address: Address
-    balance: bigint
-    symbol: string
-    logo?: ExistingAsset
-    logoURI?: string
-    name?: string
-  }>
 }
 
 const LEVERAGE_TRESHOLD = 0.989
 
 export const USGRecordContext = createContext<USGRecordContextValues | undefined>(undefined)
 
-export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, children }: USGRecordContextProps) => {
+export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextProps) => {
   const path = usePathname()
+
+  const marketInfo = USGMarkets.find((m) => m.marketAddress.toLowerCase() === marketAddress.toLowerCase())!
+  const collateralInfo = {
+    address: marketInfo.collatAddress as Address,
+    decimals: marketInfo.collatDecimals,
+    symbol: marketInfo.marketName as string,
+    name: marketInfo.marketName as string,
+    logoKey: marketInfo.logoKey,
+    displayDecimals: 2,
+    price: 0,
+  }
 
   const { marketAprs, balances } = useUSGContext()
 
@@ -203,7 +220,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
 
   const loadOnChainData = () => {
     setIsLoading(true)
-    getUSGMarketRecordData(currentAddress || zeroAddress, marketInfo.marketAddress).then((data) => {
+    getUSGMarketRecordData(currentAddress || zeroAddress, marketInfo!.marketAddress).then((data) => {
       setOnChainData(data)
       setIsLoading(false)
     })
@@ -232,7 +249,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
    */
   useEffect(() => {
     if (isWalletInitialized && currentAddress) {
-      getUserPositions(currentAddress!, marketInfo.marketAddress).then((pos) => {
+      getUserPositions(currentAddress!, marketInfo!.marketAddress).then((pos) => {
         if (pos) {
           setUserPositions(pos)
         } else {
@@ -426,8 +443,10 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
   }, [marketInfo])
 
   useEffect(() => {
-    if (displayAPRVariation) {
-      fetchLpConvexData(collateralInfo?.address)
+    if (collateralInfo) {
+      if (displayAPRVariation) {
+        fetchLpConvexData(collateralInfo?.address)
+      }
     }
   }, [collateralInfo?.address, displayAPRVariation])
 
@@ -450,26 +469,40 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     return []
   }, [marketData])
 
-  const depositAssetOptions = useMemo(() => {
+  const depositAssetOptions: AssetInfos[] = useMemo(() => {
     if (!!marketData && !!balances) {
-      const gaugeSymbol = `Gauge ${collateralInfo?.symbol}`
+      const gaugeSymbol = `${getReceiptPrefix(marketData.marketType!)} ${collateralInfo?.symbol}`
+
+      const balCollatWei = balances?.[collateralInfo?.address] ?? 0n
+      const balCollatNumber = Number(formatUnits(balCollatWei, collateralInfo?.decimals))
+
+      const receiptCollat = balances?.[marketData?.constants?.receipt] ?? 0n
+      const receiptNumber = Number(formatUnits(receiptCollat, collateralInfo?.decimals))
 
       return [
         {
           label: collateralInfo?.symbol,
           value: collateralInfo?.symbol,
           address: collateralInfo?.address,
-          balance: balances?.[collateralInfo?.address] ?? BigInt(0),
+          balanceWei: balCollatWei,
+          balanceNumber: balCollatNumber,
+          balanceFormatted: formatNumber(balCollatNumber, 2),
           symbol: collateralInfo?.symbol,
-          logo: collateralInfo?.symbol as ExistingAsset,
+          logoKey: collateralInfo?.logoKey,
+          decimals: collateralInfo.decimals,
+          displayDecimals: 2,
         },
         {
           label: gaugeSymbol,
           value: gaugeSymbol,
           address: marketData?.constants?.receipt,
-          balance: balances?.[marketData?.constants?.receipt] ?? BigInt(0),
+          balanceWei: receiptCollat,
+          balanceNumber: receiptNumber,
+          balanceFormatted: formatNumber(receiptNumber, 2),
           symbol: gaugeSymbol,
-          logo: collateralInfo?.symbol as ExistingAsset,
+          logoKey: collateralInfo?.logoKey,
+          decimals: collateralInfo.decimals,
+          displayDecimals: 2,
         },
       ]
     }
@@ -478,7 +511,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
 
   const contextValue: USGRecordContextValues = {
     isLoading,
-    collateral,
+
     collateralInfo: pricedCollateralInfo,
     marketData,
     loadOnChainData,
@@ -525,7 +558,7 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
     currentConvexTVL,
 
     displayAPRVariation,
-
+    depositAssetOptions,
     computedBorrowRate,
 
     liquidationPrice,
@@ -540,9 +573,6 @@ export const USGRecordProvider = ({ collateral, marketInfo, collateralInfo, chil
 
     activeTab,
     setActiveTab,
-
-    depositAssetOptions,
-
     simulatedCollatAmount,
     setSimulatedCollatAmount,
 

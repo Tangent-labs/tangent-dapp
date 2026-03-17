@@ -1,3 +1,4 @@
+"use client"
 import {
   BalanceAllowanceData,
   ChainViewMarketRow,
@@ -7,19 +8,19 @@ import {
   USGMarketDisplayData,
   USGMarketLoanDisplayData,
   TotalBorrow,
-  ZapToken,
   MarketAPRs,
 } from "../usg_type"
 
 import GetBalances from "@/abi/USG/GetBalances.json"
-import { CollateralInfo, ExistingAsset } from "@/types"
+import { CollateralInfo } from "@/types"
 import { getSwapAssetPrice } from "@/services/service_price"
 import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
 import { USG_CONTRACT, USGMarkets, USGOracles } from "../usg_repository"
 import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
-import { Abi, Address, erc20Abi, formatEther, formatUnits, Hex, parseEther, parseUnits, WalletClient, zeroAddress } from "viem"
-import { executeApprove, executeChainViewUnique, getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { Abi, Address, formatEther, formatUnits, Hex, parseEther, parseUnits, WalletClient, zeroAddress } from "viem"
+import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
 import { formatBigInt, formatBigIntAsNumber, formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
+import { Erc20Details, ERC20S } from "@/data/erc20s"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
@@ -99,7 +100,7 @@ export function getComputedFutureLoanData(
     zapValue?: bigint
     liquidateValue?: bigint
   }
-) {
+): USGMarketLoanDisplayData {
   amounts = { ...{ borrowWeiValue: 0n, repayWeiValue: 0n, depositWeiValue: 0n, withdrawWeiValue: 0n, zapValue: 0n, liquidateValue: 0n }, ...(amounts || {}) }
 
   if (!marketData || !collateralInfo || !usgPrice)
@@ -152,37 +153,7 @@ export function getComputedFutureLoanData(
     ltv: ltv > 0 ? formatNumber(Number(formatUnits(BigInt(Math.trunc(ltv)), 18)), 2) + "%" : "0%",
     maxBorrowable: formatDollarBigInt(maxBorrowable, collateralInfo.decimals, 0),
     maxWithdrawable: formatDollarBigInt(maxWithDrawable, collateralInfo.decimals, 0),
-  } as USGMarketLoanDisplayData
-}
-
-export async function loadMarketServerData(marketAddress: Address) {
-  const marketInfo = USGMarkets.find((m) => m.marketAddress.toLowerCase() === marketAddress.toLowerCase())
-
-  const serverPublicClient = getPublicClient()
-
-  if (!marketInfo) {
-    return { marketInfo: undefined, collateralInfo: undefined }
   }
-
-  const tokenAddress = marketInfo.collatAddress as Address
-
-  const decimals = await serverPublicClient.readContract({
-    address: tokenAddress,
-    abi: erc20Abi,
-    functionName: "decimals",
-  })
-
-  const collateralInfo = {
-    address: tokenAddress,
-    decimals: Number(decimals),
-    displayDecimals: 2,
-    symbol: marketInfo?.marketName as string,
-    name: marketInfo?.marketName as string,
-    logo: marketInfo?.marketName as ExistingAsset,
-    price: 0,
-  }
-
-  return { collateralInfo, marketInfo }
 }
 
 export function getMarketDisplayData(usgPrice: number, marketData?: MarketDetailData, collateralInfo?: CollateralInfo) {
@@ -233,15 +204,15 @@ export function getMarketDisplayData(usgPrice: number, marketData?: MarketDetail
   } as USGMarketDisplayData
 }
 
-export const computeSwapAssetPrice = async (tokens: ZapToken[], depositAsset: string) => {
+export const computeSwapAssetPrice = async (depositAsset: string) => {
   let tokenAddress
 
   try {
     if (depositAsset === "ETH") {
       tokenAddress = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address
     } else {
-      tokenAddress = tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)
-        ? tokens.find((el: ZapToken) => el.name === depositAsset || el.symbol === depositAsset)?.address
+      tokenAddress = ERC20S.find((el: Erc20Details) => el.name === depositAsset || el.symbol === depositAsset)
+        ? ERC20S.find((el: Erc20Details) => el.name === depositAsset || el.symbol === depositAsset)?.address
         : undefined
     }
 

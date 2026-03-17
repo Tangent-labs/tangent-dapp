@@ -19,12 +19,12 @@ const isPendleRouter = (tokenIn: Address, tokenOut: Address) => {
 
 export const getQuote = async (
   amountIn: bigint,
-  currentAddress: Address,
+  walletConnected: Address,
   tokenOut: Address,
   tokenIn: Address,
   curveRoutes: CustomCurveRoutes
 ): Promise<{ quote: bigint; priceImpact?: bigint }> => {
-  const data = await getEnsoData(amountIn, tokenIn, tokenOut, currentAddress, currentAddress, 0n)
+  const data = await getEnsoData(amountIn, tokenIn, tokenOut, walletConnected, walletConnected, 0n)
   if (data) {
     return { quote: data?.amountOut }
   } else if (isCurveRouter(tokenIn, tokenOut)) {

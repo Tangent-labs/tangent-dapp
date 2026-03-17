@@ -3,7 +3,6 @@
 import { useUSGLiquidateContext } from "./usg_record_liquidate_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { useUSGRecordContext } from "../usg_record_context"
-import { CustomCollatAssetDisplay } from "@/components/design_system/structure/custom_collat_asset_display"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 import { Divider } from "@/components/design_system/structure/divider"
@@ -36,10 +35,6 @@ export default function USGLiquidatePanel() {
     isLiquidationLoading,
   } = useUSGLiquidateContext()
 
-  const LiquidateAssetDisplay = () => {
-    return <CustomCollatAssetDisplay collateralInfo={collateralInfo} />
-  }
-
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2">
@@ -51,7 +46,7 @@ export default function USGLiquidatePanel() {
         <GenericInputAssetAmount
           inputWeiValue={liquidateWeiValue}
           label="You liquidate"
-          depositSelect={<LiquidateAssetDisplay />}
+          depositSelect={<StaticCardAssetInput assetName={collateralInfo.name} logoKey={collateralInfo.logoKey} />}
           disabled={!canInteract}
           asset={collateralInfo}
           onValueChange={handleLiquidateValueChange}
@@ -65,7 +60,7 @@ export default function USGLiquidatePanel() {
         <GenericInputAssetAmount
           inputWeiValue={USGReceivedValue}
           label="For"
-          depositSelect={<StaticCardAssetInput asset="USG" />}
+          depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
           disabled={true}
           asset={USGInfo}
           onValueChange={() => {}}
@@ -82,7 +77,7 @@ export default function USGLiquidatePanel() {
         <GenericInputAssetAmount
           inputWeiValue={repayWeiValue}
           label="You repay"
-          depositSelect={<StaticCardAssetInput asset="USG" />}
+          depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
           disabled={!canInteract}
           asset={USGInfo}
           onValueChange={(value: bigint | undefined) => {
@@ -98,7 +93,7 @@ export default function USGLiquidatePanel() {
         <GenericInputAssetAmount
           inputWeiValue={(USGReceivedValue || 0n) - (repayWeiValue || 0n)}
           label="You receive"
-          depositSelect={<StaticCardAssetInput asset="USG" />}
+          depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
           disabled={true}
           asset={USGInfo}
           onValueChange={() => {}}

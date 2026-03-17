@@ -18,6 +18,7 @@ export type PredepositContentProps = {
 
 export const PredepositContent = ({ opportunitiesData }: PredepositContentProps) => {
   const { predepositStatus } = usePredepositContext()
+
   const faqRef = useRef<HTMLDivElement | null>(null)
 
   const scrollToFaq = () => {

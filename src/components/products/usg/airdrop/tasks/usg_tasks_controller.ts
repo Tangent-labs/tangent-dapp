@@ -1,4 +1,4 @@
-import { ExistingAsset, ListHeaderData } from "@/types"
+import { ListHeaderData } from "@/types"
 import { UserTask } from "../../usg_type"
 import { Abi, Address, Hex } from "viem"
 import { executeChainViewUnique } from "@/services/service_rpc"
@@ -40,16 +40,16 @@ export async function getUserBalancesAndDebtForLpTasks(address: Address, markets
   return await executeChainViewUnique<bigint[]>(TaskListUI.abi as Abi, TaskListUI.bytecode as Hex, [address, markets, tokens, USG_CONTRACT.MARKET_VIEWER])
 }
 
-export const formatToken = (token: string): ExistingAsset => {
+export const formatToken = (token: string): string => {
   if (token.includes("LP USDe") || token.includes("PT USDe") || token.includes("YT USDe")) {
-    return "USDe" as ExistingAsset
+    return "USDe"
   }
 
   if (token.includes("LP sUSDe") || token.includes("PT sUSDe") || token.includes("YT sUSDe")) {
-    return "sUSDe" as ExistingAsset
+    return "sUSDe"
   }
 
-  return token.replaceAll("_", "-") as ExistingAsset
+  return token.replaceAll("_", "-")
 }
 
 export const mapVoteTasksProtocol = (protocol: string) => {

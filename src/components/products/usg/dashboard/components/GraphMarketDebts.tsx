@@ -33,8 +33,8 @@ export const GraphMarketDebts = ({ userData, marketDebtMaxValue }: MarketDebtPro
         <div className="scrollbar-thin flex w-full flex-col gap-1 overflow-y-auto">
           {userData?.marketDebtData
             ?.filter((el: MarketDebtData) => el.value > 0)
-            .map((data: MarketDebtData) => (
-              <div key={data.id} className="flex w-full items-center justify-start gap-2">
+            .map((data: MarketDebtData, index: number) => (
+              <div key={index} className="flex w-full items-center justify-start gap-2">
                 <InnerTooltip
                   innerContent={
                     <div className="flex min-w-24 items-center justify-center gap-1 px-4">
@@ -42,7 +42,7 @@ export const GraphMarketDebts = ({ userData, marketDebtMaxValue }: MarketDebtPro
                       <div className="text-white">{formatMillions(formatEther(data.rawValue))} USG </div>
                     </div>
                   }
-                  key={data.id}
+                  key={index}
                 >
                   <div
                     className="h-2 flex-grow cursor-pointer rounded-full bg-blue-500"
@@ -55,9 +55,9 @@ export const GraphMarketDebts = ({ userData, marketDebtMaxValue }: MarketDebtPro
                   <span>{data.name?.replaceAll("-", "/")}</span>
 
                   {specialTokensList.includes(data.name?.substring(0, data.name.indexOf(" ")).trim()) ? (
-                    <TokenImage token={data.name} size={16} className="w-4" />
+                    <TokenImage token={data.logoKey} size={16} className="w-4" />
                   ) : (
-                    <TokenImage token={data.name} size={16} className="w-6" />
+                    <TokenImage token={data.logoKey} size={16} className="w-6" />
                   )}
                 </div>
               </div>

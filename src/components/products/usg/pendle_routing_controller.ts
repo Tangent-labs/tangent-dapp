@@ -1,3 +1,5 @@
+"use client"
+
 import { USG_CONTRACT } from "./usg_repository"
 import { PENDLE_POOLS } from "@tangent/defi-resources"
 import { CustomCurveRoutes } from "./global_quote_controller"

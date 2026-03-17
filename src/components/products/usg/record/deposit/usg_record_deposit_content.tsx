@@ -4,7 +4,6 @@ import { cn, PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGDepositContext } from "./usg_record_deposit_context"
-import { AssetSelector } from "@/components/design_system/inputs/asset_selector"
 import { IconSingleArrow } from "@/components/icons"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
@@ -12,10 +11,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
-import { ExistingAsset } from "@/types"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import FormButtons from "@/components/design_system/form/form_actions"
+import { ZapAssetSelector } from "@/components/design_system/inputs/asset_selector"
 
 export default function USGDepositContent() {
   const {
@@ -56,7 +55,7 @@ export default function USGDepositContent() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex w-full items-end justify-between gap-2">
-        <span className="text-sm font-semibold md:text-xl">Deposit {collateralInfo?.symbol?.replaceAll("-", "/")}</span>
+        <span className="text-sm font-semibold md:text-xl">Deposit {collateralInfo.symbol?.replaceAll("-", "/")}</span>
         <span className="text-xs text-subtitle">{maxDepositString}</span>
       </div>
 
@@ -66,7 +65,7 @@ export default function USGDepositContent() {
         onValueChange={(e) => {
           handleDepositChange(e)
         }}
-        depositSelect={<AssetSelector collateralInfo={collateralInfo} depositAsset={depositAsset || collateralInfo.name} setDepositAsset={setDepositAsset} />}
+        depositSelect={<ZapAssetSelector collateralInfo={collateralInfo} depositAsset={depositAsset} setDepositAsset={setDepositAsset} caseType="deposit" />}
         isLoading={isDepositLoading}
         asset={depositAssetInfo}
         label={isZapping ? "You sell" : "You deposit"}
@@ -83,7 +82,10 @@ export default function USGDepositContent() {
         }}
       />
 
-      {/* ZAPPING RESULT INPUT */}
+      {/* 
+        ZAPPING RESULT INPUT 
+        SHOWN ONLY WHEN ZAPPING 
+      */}
 
       {depositAsset && isZapping && (
         <GenericInputAssetAmount
@@ -94,7 +96,7 @@ export default function USGDepositContent() {
           asset={collateralInfo}
           isLoading={isZapLoading}
           label={"You buy and deposit"}
-          depositSelect={<StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />}
+          depositSelect={<StaticCardAssetInput assetName={collateralInfo.name} logoKey={collateralInfo.logoKey} />}
           bottomPart={
             <div className="flex select-none gap-2 text-xs text-subtitle">
               Minimum received {zapValue && !!marketData?.collateralInfos ? minValueReceivedFromZap : ""}
@@ -103,7 +105,10 @@ export default function USGDepositContent() {
         />
       )}
 
-      {/* BORROW INPUT */}
+      {/* 
+        BORROW INPUT 
+        SHOW ONLY ON DEPOSIT & BORROW
+      */}
 
       {isDepositAndBorrow && (
         <div className="flex flex-col gap-1">
@@ -119,7 +124,7 @@ export default function USGDepositContent() {
             asset={USGInfo}
             disabled={maxBorrowCapReached}
             label="You borrow"
-            depositSelect={<StaticCardAssetInput asset="USG" />}
+            depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
             maxAmountParams={{ maxWeiValue: maxBorrowableValue, setMaxAmount: maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue) }}
             sliderParams={{
               sliderPercentage: borrowSliderPercent,

@@ -1,3 +1,5 @@
+"use-client"
+
 import { USGMarket } from "./usg_type"
 import { Address } from "viem"
 
@@ -11,9 +13,10 @@ const envAddresses = JSON.parse(addresses)
 
 type RawMarket = {
   marketAddress: string
-  collatName: string
+  marketName: string
   collatAddress: string
   marketType: string
+  collatDecimals: number
 }
 
 export const USGTokens = [
@@ -26,10 +29,10 @@ export const USGTokens = [
     "USG-frxUSD": envAddresses.lps["USG-frxUSD"],
   },
   {
-    wcrvUSD: envAddresses.wStables.wcrvUSD,
-    wUSDe: envAddresses.wStables.wUSDe,
-    wDOLA: envAddresses.wStables.wDOLA,
-    wUSR: envAddresses.wStables.wUSR,
+    // wcrvUSD: envAddresses.wStables.wcrvUSD,
+    // wUSDe: envAddresses.wStables.wUSDe,
+    // wDOLA: envAddresses.wStables.wDOLA,
+    // wUSR: envAddresses.wStables.wUSR,
   },
 ]
 
@@ -45,11 +48,10 @@ export const USGOracles = Object.entries(envAddresses?.oracles).map(([key, addre
 })
 
 export const USGMarkets: USGMarket[] = envAddresses.markets.map((market: RawMarket) => ({
-  marketAddress: market.marketAddress as Address,
-  marketName: market.collatName.replace("_", "-"),
-  collatAddress: market.collatAddress as Address,
-  marketType: market.marketType,
-})) as USGMarket[]
+  ...market,
+  collatDecimals: market.collatDecimals ?? 18,
+  logoKey: market.marketName.replace("/", "-"),
+}))
 
 export const CurveCollaterals: Array<Address> = envAddresses.markets
   .filter((m: RawMarket) => m.marketType.includes("Convex_CRV"))

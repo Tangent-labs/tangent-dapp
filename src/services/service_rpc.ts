@@ -1,3 +1,5 @@
+"use client"
+
 import { dappConfig } from "@/dapp_config"
 import { TxContractCallData } from "@/types"
 import { getSwapAssetPrice } from "./service_price"

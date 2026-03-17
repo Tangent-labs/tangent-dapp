@@ -7,7 +7,7 @@ import { USG_CONTRACT } from "../usg_repository"
 import { useRootContext } from "../../root/root_context"
 import { convertRange } from "../../root/root_controller"
 import { toastTx } from "@/components/design_system/toast"
-import { AssetDataPriced, ExistingAsset, FormState } from "@/types"
+import { AssetDataPriced, FormState } from "@/types"
 import { StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../usg_type"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -83,7 +83,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
         address: USG_CONTRACT.SUSG,
         decimals: 18,
         displayDecimals: 2,
-        logo: "sUSG" as ExistingAsset,
+        logo: "sUSG",
         name: "sUSG",
         price: Number(formatEther(USGsUSGMetrics?.sUSGPrice)),
         symbol: "sUSG",
@@ -95,7 +95,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
       address: USG_CONTRACT.USG,
       decimals: 18,
       displayDecimals: 2,
-      logo: "USG" as ExistingAsset,
+      logo: "USG",
       name: "USG",
       price: Number(formatEther(USGsUSGMetrics?.USGPrice)),
       symbol: "USG",
@@ -117,7 +117,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
           displayDecimals: 2,
           symbol: "USG",
           name: "USG",
-          logo: "USG" as ExistingAsset,
+          logo: "USG",
         },
       }
     }
@@ -133,7 +133,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
         displayDecimals: 2,
         symbol: "sUSG",
         name: "sUSG",
-        logo: "sUSG" as ExistingAsset,
+        logo: "sUSG",
       },
     }
   }, [currentFeature, USGsUSGMetrics])

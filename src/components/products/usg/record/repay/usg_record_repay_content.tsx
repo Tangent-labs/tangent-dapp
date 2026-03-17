@@ -1,13 +1,7 @@
 "use client"
 
-import Image from "next/image"
-import { ExistingAsset } from "@/types"
-import { ZapToken } from "../../usg_type"
-import { useUSGContext } from "../../usg_context"
-import { USG_CONTRACT } from "../../usg_repository"
-import { formatAddress } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
-import { Address, zeroAddress } from "viem"
+import { zeroAddress } from "viem"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGRepayContext } from "./usg_record_repay_context"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
@@ -18,9 +12,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
-import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import FormButtons from "@/components/design_system/form/form_actions"
+import { AssetInfos, ZapAssetSelector } from "@/components/design_system/inputs/asset_selector"
 
 export default function USGRepayContent() {
   const {
@@ -54,114 +48,35 @@ export default function USGRepayContent() {
     minValueReceivedFromZap,
   } = useUSGRepayContext()
 
-  const { tokens, balances } = useUSGContext()
-
   const { connect } = useWalletConnexionContext()
 
   const { USGInfo, collateralInfo, marketData, isRepayAndWithdraw, depositAssetOptions } = useUSGRecordContext()
 
   const isZapping = !!repayAsset && repayAsset !== "USG"
 
-  const AssetSelectTemplate = (option: {
-    logoURI?: string
-    logo?: ExistingAsset
-    value: string
-    name?: string
-    symbol: string
-    balance?: bigint
-    decimals?: number
-    address?: Address
-  }) => {
-    return (
-      <div className="flex w-full min-w-48 cursor-pointer items-center justify-between px-2 py-1 hover:rounded-full hover:bg-white/30">
-        <div className="flex w-full items-center gap-2">
-          <>
-            {option.symbol === "ETH" ? (
-              <TokenImage token={option.logo} size={32} />
-            ) : (
-              <>{option.logoURI ? <Image src={option.logoURI} alt={option.logoURI} height={32} width={32} /> : <TokenImage token={option.logo} size={32} />}</>
-            )}
-          </>
-
-          <div className="flex flex-col items-start justify-start">
-            <span className="text-sm font-semibold">{option.symbol?.replaceAll("-", "/")}</span>
-            <span className="text-xs text-subtitle">{formatAddress(option?.address, 4)}</span>
-          </div>
-        </div>
-        <span className="ml-auto text-xs text-subtitle">{formatBigInt(option.balance!, option.decimals!, 2)}</span>
-      </div>
-    )
-  }
-
-  const AssetSelect = () => {
-    if (!!marketData) {
-      const tokenOptions = tokens.map((el: ZapToken) => ({
-        ...el,
-        value: el.name as string,
-        address: el.address as Address,
-        balance: balances ? balances[el.address] : BigInt(0),
-      }))
-
-      const sortedAssets = [
-        {
-          address: USG_CONTRACT.USG,
-          decimals: 18,
-          displayDecimals: 2,
-          logo: "USG" as ExistingAsset,
-          name: "USG",
-          price: 1,
-          symbol: "USG",
-          value: "USG",
-          balance: balances ? balances[USG_CONTRACT.USG] : BigInt(0),
-        },
-        ...[
-          {
-            symbol: "ETH",
-            name: "Ethereum",
-            value: "ETH",
-            decimals: 18,
-            address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address,
-            logo: "ETH" as ExistingAsset,
-            displayDecimals: 5,
-            balance: balances ? balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"] : BigInt(0),
-          },
-          ...tokenOptions,
-        ].sort((a, b) => Number(b.balance) - Number(a.balance)),
-      ]
-
-      return (
-        <AssetSelectionDialog
-          className="w-full min-w-24"
-          template={AssetSelectTemplate}
-          value={repayAsset || "USG"}
-          options={sortedAssets}
-          onChange={(v: string) => setRepayAsset(v)}
-        />
-      )
-    }
-  }
-
-  const WithdrawAssetSelectTemplate = (option: { logo?: ExistingAsset; label: string }) => {
+  const WithdrawAssetSelectTemplate = (option: AssetInfos) => {
     return (
       <div className="flex w-full cursor-pointer items-center gap-2 rounded-[10px] py-1 hover:bg-white/10">
-        <TokenImage token={option?.logo} size={32} />
-        <span className="text-sm font-semibold">{option.label?.replaceAll("-", "/")}</span>
+        <TokenImage token={option?.logoKey} size={32} />
+        <span className="text-sm font-semibold">{option.symbol}</span>
       </div>
     )
   }
-
-  const assetSelectElement =
-    marketData?.constants?.receipt !== zeroAddress ? (
-      <InputSelect
-        className="w-full"
-        template={WithdrawAssetSelectTemplate}
-        value={withdrawSelectedAsset || collateralInfo?.symbol}
-        options={depositAssetOptions}
-        onChange={(v) => setWithdrawSelectedAsset(v)}
-      />
-    ) : (
-      <StaticCardAssetInput asset={collateralInfo.name as ExistingAsset} />
-    )
+  let assetSelectElement = <></>
+  if (collateralInfo) {
+    assetSelectElement =
+      marketData?.constants?.receipt !== zeroAddress ? (
+        <InputSelect
+          className="w-full"
+          template={WithdrawAssetSelectTemplate}
+          value={withdrawSelectedAsset || collateralInfo?.symbol}
+          options={depositAssetOptions} // Cast to any to satisfy InputSelect generic
+          onChange={(v) => setWithdrawSelectedAsset(v)}
+        />
+      ) : (
+        <StaticCardAssetInput assetName={collateralInfo.name} logoKey={collateralInfo.logoKey} />
+      )
+  }
 
   return (
     <div className="flex flex-col gap-2">
@@ -177,7 +92,9 @@ export default function USGRepayContent() {
         <GenericInputAssetAmount
           inputWeiValue={repayWeiValue}
           label={isZapping ? "You sell" : "You repay"}
-          depositSelect={<AssetSelect />}
+          depositSelect={
+            <ZapAssetSelector collateralInfo={collateralInfo} depositAsset={repayAsset || "USG"} setDepositAsset={setRepayAsset} caseType="repay" />
+          }
           disabled={isRepayMax}
           isZapping={isZapping}
           asset={repayAssetInfo || USGInfo}
@@ -194,7 +111,7 @@ export default function USGRepayContent() {
             inputWeiValue={usgRepayedValue}
             label={"You buy and repay"}
             isLoading={isZapLoading}
-            depositSelect={<StaticCardAssetInput asset="USG" />}
+            depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
             disabled={isRepayMax}
             asset={USGInfo}
             bottomPart={

@@ -8,7 +8,7 @@ import init, { OnboardAPI } from "@web3-onboard/core"
 
 const appMetadata = {
   name: "Tangent",
-  description: "Governance Aggregator",
+  description: "Borrow USG against productive collateral",
   recommendedInjectedWallets: [
     { name: "Coinbase", url: "https://wallet.coinbase.com/" },
     { name: "MetaMask", url: "https://metamask.io" },

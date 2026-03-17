@@ -4,7 +4,7 @@
 // import { VSTAN_CONTRACT } from "../rs_tan_repository"
 // import { useUSGContext } from "../../usg/usg_context"
 // import { StakingAssetInfo, StakingDepositType, TANStakingInfo } from "../rstan_types"
-// import { AssetDataPriced, ExistingAsset, FormState, SelectAssetLogoOption } from "@/types"
+// import { AssetDataPriced,  FormState, SelectAssetLogoOption } from "@/types"
 // import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 // import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 // import { doApprove, doStakeUSG, doUnstakeUSG, getExpectedsTAN, getExpectedTAN, getFormState } from "./stake_tan_controller"
@@ -79,7 +79,7 @@
 //         address: VSTAN_CONTRACT.STAN,
 //         decimals: 18,
 //         displayDecimals: 2,
-//         logo: "sTAN" as ExistingAsset,
+//         logo: "sTAN" ,
 //         name: "sTAN",
 //         price: 0,
 //         symbol: "sTAN",
@@ -91,7 +91,7 @@
 //       address: VSTAN_CONTRACT.TAN,
 //       decimals: 18,
 //       displayDecimals: 2,
-//       logo: "TAN" as ExistingAsset,
+//       logo: "TAN" ,
 //       name: "TAN",
 //       price: 0,
 //       symbol: "TAN",
@@ -112,7 +112,7 @@
 //           displayDecimals: 2,
 //           symbol: "TAN",
 //           name: "TAN",
-//           logo: "TAN" as ExistingAsset,
+//           logo: "TAN" ,
 //         },
 //       }
 //     }
@@ -128,7 +128,7 @@
 //         displayDecimals: 2,
 //         symbol: "sTAN",
 //         name: "sTAN",
-//         logo: "sTAN" as ExistingAsset,
+//         logo: "sTAN" ,
 //       },
 //     }
 //   }, [currentFeature, TANsTANMetrics])

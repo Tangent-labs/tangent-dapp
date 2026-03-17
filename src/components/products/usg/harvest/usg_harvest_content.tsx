@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { useUSGContext } from "../usg_context"
 import { Switch } from "@/components/ui/switch"
-import { ExistingAsset, ListState } from "@/types"
+import { ListState } from "@/types"
 import { useUSGHarvestContext } from "./usg_harvest_context"
 import { harvestListHeaders } from "./usg_harvest_controller"
 import { Button } from "@/components/design_system/inputs/button"
@@ -105,9 +105,9 @@ export default function USGHarvestContent() {
                   <div className={`relative flex items-center gap-4`}>
                     {el.marketName?.substring(0, el.marketName.indexOf(" ")) === "USDe" ||
                     el.marketName?.substring(0, el.marketName.indexOf(" ")) === "sUSDe" ? (
-                      <TokenImage token={el.marketName as ExistingAsset} size={24} className="ml-1 w-6" />
+                      <TokenImage token={el.marketName} size={24} className="ml-1 w-6" />
                     ) : (
-                      <TokenImage token={el.marketName as ExistingAsset} size={32} className="w-8" />
+                      <TokenImage token={el.marketName} size={32} className="w-8" />
                     )}
 
                     <span className="text-[12px] font-semibold">{el.marketName?.replaceAll("-", "/")}</span>
@@ -158,9 +158,9 @@ function HarvestList() {
                   <div className="flex flex-col gap-1 text-sm">
                     {item?.rewards?.details?.map((reward, index) => (
                       <div key={index} className="flex items-center gap-2">
-                        <TokenImage token={reward.logo} size={16} />
+                        <TokenImage token={reward.logoKey} size={16} />
 
-                        <span className="w-20"> {reward.logo}</span>
+                        <span className="w-20"> {reward.logoKey}</span>
                         <span> {formatDollar(reward.dollarValue)}</span>
                       </div>
                     ))}

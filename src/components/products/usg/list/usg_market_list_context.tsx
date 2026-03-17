@@ -17,7 +17,7 @@ import { ListRowData, ListState } from "@/types"
 import { Address, formatUnits, zeroAddress } from "viem"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { ChainViewMarketList, MarketConstants, MarketDebtData, USGCollateralData, USGGlobalData } from "../usg_type"
+import { ChainViewMarketList, MarketConstants, MarketDebtData, USGCollateralData, USGGlobalData, USGMarketType } from "../usg_type"
 
 type USGMaketListContextProps = {
   children: ReactNode
@@ -31,7 +31,7 @@ type USGMaketListContextValues = {
   sortMarketList: (arg: ListState) => void
 
   marketData: Array<{
-    marketType: "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | "STAKEDAO_CRV_Vault" | undefined
+    marketType: USGMarketType | undefined
     marketAddress: Address
     constants: MarketConstants
   }>
@@ -102,6 +102,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
         return {
           marketAddress: market.marketAddress,
           collateral: market.marketName,
+          logoKey: market.logoKey,
           currentAPR: currentMarket.currentAPR,
           projectedAPR: currentMarket.projectedAPR,
         }
@@ -110,6 +111,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
       return {
         marketAddress: market.marketAddress,
         collateral: market.marketName,
+        logoKey: market.logoKey,
         currentAPR: {},
         projectedAPR: {},
       }
@@ -138,9 +140,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     return transformGlobalData(onChainData)
   }, [onChainData])
 
-  const marketData = useMemo<
-    Array<{ marketType: "Convex_CRV" | "Convex_FXN" | "Pendle_PT" | "STAKEDAO_CRV_Vault" | undefined; marketAddress: Address; constants: MarketConstants }>
-  >(() => {
+  const marketData = useMemo<Array<{ marketType: USGMarketType | undefined; marketAddress: Address; constants: MarketConstants }>>(() => {
     if (onChainData) {
       return transformMarketData(onChainData)
     }
@@ -170,10 +170,13 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
 
           const { displayName, percentage } = computeCollatData(market, totalDepositFormatted, collateralFormatted)
 
+          const marketConfig = USGMarkets.find((m) => m.marketAddress === market.marketAddress)!
+
           return {
-            name: displayName,
+            name: displayName || "",
             value: Number(percentage.toFixed(2)),
             rawValue: collateralValue,
+            logoKey: marketConfig.logoKey,
           }
         })
         .sort((a, b) => b.value - a.value)
@@ -186,12 +189,15 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
 
           const { displayName, percentage } = computeCollatData(market, totalDebtFormatted, debtFormatted)
 
+          const marketConfig = USGMarkets.find((m) => m.marketAddress === market.marketAddress)!
+
           return {
             id: index + 1,
-            name: displayName,
+            name: displayName || "",
             value: Number(percentage.toFixed(2)),
             rawValue: debtValue,
             marketAddress: market.marketAddress,
+            logoKey: marketConfig.logoKey,
           }
         })
         .sort((a, b) => b.value - a.value)

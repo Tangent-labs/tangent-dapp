@@ -4,13 +4,12 @@ import { useEffect, useMemo, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { TokenImage } from "./token_image"
 import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
-import { ExistingAsset } from "@/types"
 
 type EvolutionBoxProps = {
   originalValue: string | number
   newValue?: string | number
   label?: string
-  logo?: ExistingAsset
+  logo?: string
   className?: string
 }
 

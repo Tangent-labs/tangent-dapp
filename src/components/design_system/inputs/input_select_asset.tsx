@@ -1,22 +1,21 @@
 "use client"
 
-import { ExistingAsset } from "@/types"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useCallback } from "react"
 
 type InputSelectAssetProps = React.ParamHTMLAttributes<HTMLSelectElement> & {
-  options: ExistingAsset[]
-  onChange: (value: ExistingAsset | string) => void
+  options: string[]
+  onChange: (value: string) => void
   label?: string
   placeholder?: string
   className?: string
-  value: ExistingAsset | string
+  value: string
   optionValues?: Record<string, string>
 }
 
 const InputSelectAsset = ({ options, onChange, label, placeholder = "Select an option", className = "", value, optionValues }: InputSelectAssetProps) => {
-  const seletedValue = useCallback((val: string | ExistingAsset) => (optionValues && optionValues[val] ? optionValues[val] : val), [])
+  const seletedValue = useCallback((val: string) => (optionValues && optionValues[val] ? optionValues[val] : val), [])
 
   return (
     <>

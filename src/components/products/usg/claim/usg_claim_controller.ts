@@ -4,7 +4,7 @@ import { getTokensPrice } from "@/services/service_price"
 import { USG_CONTRACT, USGMarkets } from "../usg_repository"
 import { Abi, Address, formatUnits, Hex, WalletClient } from "viem"
 import claimContract from "../../../../abi/USG/RewardAccumulator.json"
-import { AssetDataPriced, ExistingAsset, ListHeaderData } from "@/types"
+import { AssetDataPriced, ListHeaderData } from "@/types"
 import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import { executeChainViewUnique, executeContractCall, waitForTransaction } from "@/services/service_rpc"
 import { getRewardTokenFromAprDetails } from "../list/usg_market_controller"
@@ -28,7 +28,7 @@ export async function getUSGClaimOnChainData(currentAddress: string) {
 }
 
 export const computeAndReturnPrices = async (claimInfo: ClaimerInfo[]) => {
-  const tokensSet = new Set<ExistingAsset>()
+  const tokensSet = new Set<string>()
 
   claimInfo.forEach((el) => {
     el.claimableTokens.forEach((t) => {
@@ -52,7 +52,7 @@ export const computeAndReturnPrices = async (claimInfo: ClaimerInfo[]) => {
         }
       })
       .sort((a, b) => {
-        return (a?.logo ? tokens.indexOf(a.logo) : -1) - (b?.logo ? tokens.indexOf(b.logo) : -1)
+        return (a?.logoKey ? tokens.indexOf(a.logoKey) : -1) - (b?.logoKey ? tokens.indexOf(b.logoKey) : -1)
       })
 
     return allInfos
@@ -91,9 +91,7 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
       valueInUsd: depositedValueInUsd.toFixed(2),
     }
 
-    const marketConfig = USGMarkets.find((m) => m.marketAddress === claimer.marketAddress)
-
-    const marketNameIsDuplicated = marketConfig != null && USGMarkets.filter((m) => m.marketName === marketConfig.marketName).length > 1
+    const marketConfig = USGMarkets.find((m) => m.marketAddress === claimer.marketAddress)!
 
     // APR Computing Section
     let totalCurrentAPR = 0
@@ -109,12 +107,11 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
       rewardToken = getRewardTokenFromAprDetails(marketDataApr?.currentAPR, marketConfig?.marketType || "Curve")
     }
 
-    const displayName = (marketNameIsDuplicated && marketConfig?.marketType === "STAKEDAO_CRV_Vault" ? "s-" : "") + marketConfig?.marketName
-
     return {
-      marketType: marketConfig?.marketType,
+      marketType: marketConfig.marketType,
       marketAddress: claimer.marketAddress,
-      marketName: displayName,
+      marketName: marketConfig.marketName,
+      logoKey: marketConfig.logoKey,
       claimable,
       totalClaimableValue: totalClaimableValue.toFixed(2),
       deposited,

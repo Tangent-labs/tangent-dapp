@@ -1,3 +1,5 @@
+"use client"
+
 import { ListHeaderData } from "@/types"
 import { UserPosition } from "../../usg_type"
 

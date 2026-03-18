@@ -11,13 +11,13 @@ import FormButtons from "@/components/design_system/form/form_actions"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
 import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
+import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 
 export default function USGSwapContent() {
   const {
@@ -61,6 +61,8 @@ export default function USGSwapContent() {
     priceImpactLoss,
 
     priceImpact,
+
+    isSwapReady,
   } = useUSGSwapContext()
 
   const { lpUserPoints, voteUserPoints } = useUSGContext()
@@ -187,7 +189,7 @@ export default function USGSwapContent() {
             <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
           </div>
 
-          {!!buyWeiValue && !!sellWeiValue && isSwapBlockedBySlippage && slippage >= 1 && (
+          {isSwapReady && isSwapBlockedBySlippage && slippage >= 1 && (
             <SlippageAlert
               symbol={buyAssetInfo?.symbol as string}
               tokenLoss={slippageLoss?.tokenLoss}
@@ -198,7 +200,7 @@ export default function USGSwapContent() {
             />
           )}
 
-          {!!buyWeiValue && !!sellWeiValue && isSwapBlockedByPriceImpact && priceImpact >= 1 && (
+          {isSwapReady && isSwapBlockedByPriceImpact && priceImpact >= 1 && (
             <PriceImpactAlert
               dollarLoss={priceImpactLoss}
               priceImpact={priceImpact}

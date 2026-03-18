@@ -1,21 +1,21 @@
 "use client"
 
 import { toast } from "react-toastify"
-import { formatEther, formatUnits, parseEther } from "viem"
 import { useUSGContext } from "../../usg_context"
 import { USG_CONTRACT } from "../../usg_repository"
-import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
-import { ToastComponent, toastTx } from "@/components/design_system/toast"
+import { Erc20Details, ERC20S } from "@/data/erc20s"
+import { formatEther, formatUnits, parseEther } from "viem"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
+import { ToastComponent, toastTx } from "@/components/design_system/toast"
+import { useUSGMaketListContext } from "../../list/usg_market_list_context"
+import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
 import { formatBigInt, formatBigIntAsNumber, truncateDecimals } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
-import { computeAprVariation, computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
-import { useUSGMaketListContext } from "../../list/usg_market_list_context"
-import { Erc20Details, ERC20S } from "@/data/erc20s"
+import { computeAprVariation, computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove } from "../usg_record_controller"
 
 type USGLeverageContextProps = {
   children: ReactNode
@@ -93,6 +93,18 @@ type USGLeverageContextValues = {
   sliderLegendValues?: string[] | undefined
 
   startEndRange?: [string, string, string] | undefined
+
+  slippageLoss: { tokenLoss: string; dollarLoss: string }
+
+  isTransactionBlockedBySlippage: boolean
+  setIsTransactionBlockedBySlippage: (arg: boolean) => void
+
+  priceImpactLoss: string
+
+  priceImpact: number
+
+  isTransactionBlockedByPriceImpact: boolean
+  setIsTransactionBlockedByPriceImpact: (arg: boolean) => void
 }
 
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
@@ -144,6 +156,12 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const [slippage, setSlippage] = useState<number>(0.2)
 
+  const [isTransactionBlockedBySlippage, setIsTransactionBlockedBySlippage] = useState<boolean>(false)
+
+  const [isTransactionBlockedByPriceImpact, setIsTransactionBlockedByPriceImpact] = useState<boolean>(false)
+
+  const [priceImpact, setPriceImpact] = useState<number>(0)
+
   const isZapping = useMemo(() => {
     const marketType = marketData?.marketType
     if (!depositAsset) return false
@@ -174,7 +192,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     const asset: AssetDataPriced = {
       address: assetInfo?.address,
       decimals: assetInfo?.decimals,
-      displayDecimals: 2,
+      displayDecimals: assetInfo?.displayDecimals || 2,
       symbol: assetInfo?.symbol,
       name: assetInfo?.name,
       price: swapAssetPrice,
@@ -212,12 +230,14 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     setIsZapLoading(true)
 
     getQuote(value, currentAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
-      .then(({ quote }) => {
+      .then(({ quote, priceImpact: pI }) => {
         if (requestId !== requestIdRef.current) return
         if (quote) {
           setZapValue(quote as bigint)
           updateBorrowWeiValue(computeBorrowValue(quote as bigint, leveragePercentage))
         }
+
+        if (pI) setPriceImpact(Number(pI) / 100)
       })
       .catch((e) => {
         if (requestId !== requestIdRef.current) return
@@ -545,6 +565,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   const formState = useMemo(
     () =>
       getLeverageFormState(
+        isTransactionBlockedByPriceImpact,
+        isTransactionBlockedBySlippage,
         marketData,
         leverageExceedsMaxLtv,
         depositWeiValue,
@@ -567,6 +589,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       leverageBalanceAllowanceData,
       leverageExceedsMaxLtv,
       leveragePercentage,
+      isTransactionBlockedByPriceImpact,
+      isTransactionBlockedBySlippage,
     ]
   )
 
@@ -650,6 +674,26 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     return ["1", String(rounded), "0.1"] as [string, string, string]
   }, [marketData?.constants])
 
+  const priceImpactLoss = useMemo(() => {
+    const { dollarLoss } = computeTransactionPotentialLoss(zapValue as bigint, collateralInfo, priceImpact)
+
+    return dollarLoss
+  }, [zapValue, priceImpact])
+
+  const slippageLoss = useMemo(() => {
+    const { tokenLoss, dollarLoss } = computeTransactionPotentialLoss(zapValue as bigint, collateralInfo, slippage)
+
+    return { tokenLoss, dollarLoss }
+  }, [slippage, zapValue])
+
+  useEffect(() => {
+    setIsTransactionBlockedBySlippage(!!depositWeiValue && !!zapValue && slippage >= 1)
+  }, [slippage, zapValue, depositWeiValue])
+
+  useEffect(() => {
+    setIsTransactionBlockedByPriceImpact(!!depositWeiValue && !!zapValue && priceImpact >= 1)
+  }, [priceImpact, zapValue, depositWeiValue])
+
   const contextValue: USGLeverageContextValues = {
     collateralInfo,
 
@@ -721,6 +765,18 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     sliderLegendValues,
 
     startEndRange,
+
+    slippageLoss,
+
+    isTransactionBlockedBySlippage,
+    setIsTransactionBlockedBySlippage,
+
+    priceImpactLoss,
+
+    priceImpact,
+
+    isTransactionBlockedByPriceImpact,
+    setIsTransactionBlockedByPriceImpact,
   }
 
   return <USGLeverageContext.Provider value={contextValue}>{children}</USGLeverageContext.Provider>

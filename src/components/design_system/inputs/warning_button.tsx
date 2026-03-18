@@ -12,17 +12,7 @@ type WarningButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   classNameChild?: string
 }
 
-export const WarningButton = ({
-  warningType,
-  label,
-  state = "active",
-  className,
-  classNameChild,
-  disabled,
-  children,
-  onClick,
-  ...props
-}: WarningButtonProps) => {
+export const WarningButton = ({ warningType, label, state = "active", classNameChild, disabled, children, onClick, ...props }: WarningButtonProps) => {
   const [mounted, setMounted] = useState(false)
 
   // Use a consistent default during SSR

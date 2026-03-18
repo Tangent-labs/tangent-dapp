@@ -490,7 +490,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
           symbol: collateralInfo?.symbol,
           logoKey: collateralInfo?.logoKey,
           decimals: collateralInfo.decimals,
-          displayDecimals: 2,
+          displayDecimals: collateralInfo?.displayDecimals || 2,
         },
         {
           label: gaugeSymbol,
@@ -502,7 +502,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
           symbol: gaugeSymbol,
           logoKey: collateralInfo?.logoKey,
           decimals: collateralInfo.decimals,
-          displayDecimals: 2,
+          displayDecimals: collateralInfo?.displayDecimals || 2,
         },
       ]
     }

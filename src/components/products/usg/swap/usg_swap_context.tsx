@@ -11,7 +11,7 @@ import { useRootContext } from "@/components/products/root/root_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Abi, Address, formatUnits, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
-import { computedMinAmountOut, getBalances, getBalancesAndAllowances } from "../record/usg_record_controller"
+import { computedMinAmountOut, computeTransactionPotentialLoss, getBalances, getBalancesAndAllowances } from "../record/usg_record_controller"
 import { BalanceAllowanceData, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../usg_type"
 import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./usg_swap_controller"
 import { getTokenSymbolPriorityIndex } from "@/components/design_system/inputs/asset_selector"
@@ -92,6 +92,8 @@ type USGSwapContextValues = {
   priceImpact: number
 
   priceImpactLoss: string
+
+  isSwapReady: boolean
 }
 
 export const USGSwapContext = createContext<USGSwapContextValues | undefined>(undefined)
@@ -520,36 +522,29 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     return ""
   }, [buyWeiValue, slippage])
 
-  const slippageLoss = useMemo(() => {
-    if (buyWeiValue && buyAssetInfo) {
-      const minAmountOutWei = computedMinAmountOut(buyWeiValue, slippage)
-
-      const tokenLoss = `${formatNumber(Number(truncateDecimals(formatUnits(BigInt(buyWeiValue) - minAmountOutWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
-      const dollarLoss = `$${formatNumber(Number(truncateDecimals(formatUnits(((BigInt(buyWeiValue) - minAmountOutWei) * BigInt(Number(buyAssetInfo?.price?.toFixed(3)) * 10000)) / BigInt(10000n), buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
-
-      return { tokenLoss, dollarLoss }
-    }
-    return { tokenLoss: "", dollarLoss: "" }
-  }, [buyWeiValue, slippage, buyAssetInfo])
-
   const priceImpactLoss = useMemo(() => {
-    if (buyWeiValue && buyAssetInfo) {
-      const minAmountOutWei = computedMinAmountOut(buyWeiValue, priceImpact)
+    const { dollarLoss } = computeTransactionPotentialLoss(buyWeiValue as bigint, buyAssetInfo!, priceImpact)
 
-      const loss = `$${formatNumber(Number(truncateDecimals(formatUnits(((BigInt(buyWeiValue) - minAmountOutWei) * BigInt(Number(buyAssetInfo?.price?.toFixed(3)) * 10000)) / BigInt(10000n), buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
-
-      return loss
-    }
-    return ""
+    return dollarLoss
   }, [buyWeiValue, priceImpact, buyAssetInfo])
+
+  const slippageLoss = useMemo(() => {
+    const { tokenLoss, dollarLoss } = computeTransactionPotentialLoss(buyWeiValue as bigint, buyAssetInfo!, slippage)
+
+    return { tokenLoss, dollarLoss }
+  }, [buyWeiValue, slippage, buyAssetInfo])
 
   useEffect(() => {
     setIsSwapBlockedBySlippage(!!sellWeiValue && !!buyWeiValue && slippage >= 1)
   }, [slippage, buyWeiValue, sellWeiValue])
 
   useEffect(() => {
-    setIsSwapBlockedByPriceImpact(!!sellWeiValue && !!buyWeiValue && priceImpact > 1)
-  }, [, buyWeiValue, sellWeiValue, priceImpact])
+    setIsSwapBlockedByPriceImpact(!!sellWeiValue && !!buyWeiValue && priceImpact >= 1)
+  }, [buyWeiValue, sellWeiValue, priceImpact])
+
+  const isSwapReady = useMemo(() => {
+    return !!buyWeiValue && !!sellWeiValue
+  }, [buyWeiValue, sellWeiValue])
 
   const contextValue: USGSwapContextValues = {
     isLoading,
@@ -604,6 +599,8 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     priceImpact,
 
     priceImpactLoss,
+
+    isSwapReady,
   }
 
   return <USGSwapContext.Provider value={contextValue}>{children}</USGSwapContext.Provider>

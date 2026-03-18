@@ -9,8 +9,6 @@ type WarningButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   label?: string
   children?: ReactNode
   state?: "active" | "inactive" | "disabled"
-  hasLoadingState?: boolean
-  isLoading?: boolean
   classNameChild?: string
 }
 
@@ -23,8 +21,6 @@ export const WarningButton = ({
   disabled,
   children,
   onClick,
-  hasLoadingState = false,
-  isLoading,
   ...props
 }: WarningButtonProps) => {
   const [mounted, setMounted] = useState(false)
@@ -40,44 +36,38 @@ export const WarningButton = ({
   const isDisabled = effectiveState !== "active" || disabled
 
   return (
-    <div
+    <button
+      {...props}
+      ref={buttonRef}
+      disabled={isDisabled}
+      data-state={effectiveState}
+      onClick={(e) => {
+        if (isDisabled) return
+        createRippleEffect(e, buttonRef)
+        onClick?.(e)
+      }}
       className={cn(
-        "border-1 relative inline-flex w-full rounded-[11px] p-[1px] [border-image:linear-gradient(0deg,rgba(255,255,255,0)_68.33%,rgba(255,255,255,0.1)_100%)_1]",
-        className
+        "group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[10px] px-4 py-1 font-gilroy text-xs font-semibold",
+        {
+          "bg-[#FFE1001A] hover:bg-[#FFE10033]": warningType === "warning" && !isDisabled,
+          "bg-[#FF030033] hover:bg-[#FF03004D]": warningType === "danger" && !isDisabled,
+          "bg-overlay-panel backdrop-blur-[60px] backdrop-filter": isDisabled,
+        },
+        classNameChild ? classNameChild : ""
       )}
     >
-      <button
-        {...props}
-        ref={buttonRef}
-        disabled={isDisabled}
-        data-state={effectiveState}
-        onClick={(e) => {
-          if (isDisabled) return
-          createRippleEffect(e, buttonRef)
-          onClick?.(e)
+      <div
+        className="pointer-events-none absolute inset-0 rounded-[10px]"
+        style={{
+          border: "1px solid transparent",
+          background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
+          WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
+          WebkitMaskComposite: "xor",
+          maskComposite: "exclude",
         }}
-        className={cn(
-          "group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[10px] px-4 py-1 font-gilroy text-sm font-semibold disabled:cursor-not-allowed",
-          {
-            "bg-[#FFE1001A] hover:bg-[#FFE10033]": warningType === "warning",
-            "bg-[#FF030033] hover:bg-[#FF03004D]": warningType === "danger",
-          },
-          classNameChild ? classNameChild : ""
-        )}
-      >
-        <div
-          className="pointer-events-none absolute inset-0 rounded-[10px]"
-          style={{
-            border: "1px solid transparent",
-            background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
-            WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
-            WebkitMaskComposite: "xor",
-            maskComposite: "exclude",
-          }}
-        />
+      />
 
-        {children || label}
-      </button>
-    </div>
+      {children || label}
+    </button>
   )
 }

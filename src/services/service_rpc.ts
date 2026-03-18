@@ -148,6 +148,7 @@ export const executeChainView = async <T>(abi: Abi, byteCode: Hex, args?: unknow
     if (!dataRaw) {
       return executeChainView(abi, byteCode, args, retryCount + 1)
     }
+
     const v = decodeErrorResult({
       abi,
       data: dataRaw,

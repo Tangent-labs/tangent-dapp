@@ -205,17 +205,12 @@ export function getMarketDisplayData(usgPrice: number, marketData?: MarketDetail
 }
 
 export const computeSwapAssetPrice = async (depositAsset: string) => {
-  let tokenAddress
+  // Remove prefixes
+  const lpName = depositAsset.replace("Gauge ", "").replace("Vault ", "")
+  const token = ERC20S.find((el: Erc20Details) => el.name === lpName || el.symbol === depositAsset)
+  const tokenAddress = token ? token?.address : undefined
 
   try {
-    if (depositAsset === "ETH") {
-      tokenAddress = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address
-    } else {
-      tokenAddress = ERC20S.find((el: Erc20Details) => el.name === depositAsset || el.symbol === depositAsset)
-        ? ERC20S.find((el: Erc20Details) => el.name === depositAsset || el.symbol === depositAsset)?.address
-        : undefined
-    }
-
     if (tokenAddress) {
       const data = await getSwapAssetPrice(tokenAddress)
       return data

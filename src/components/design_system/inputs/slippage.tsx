@@ -13,6 +13,7 @@ type SlippageInputProps = {
 
 export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => {
   const [localValue, setLocalValue] = useState(slippage.toString())
+  const [isHovered, setIsHovered] = useState(false)
 
   useEffect(() => {
     if (document.activeElement?.tagName === "INPUT") return
@@ -36,14 +37,9 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <ReliefCard className="flex w-[88px] cursor-pointer items-center justify-between font-gilroy">
-          <span className="px-2 text-xs text-subtitle"> {slippage}%</span>
-          <button type="button" title="Slippage">
-            <div className="cursor-pointer rounded-[10px] bg-button-gradient p-2 hover:bg-white/10">
-              <IconGearWheel className="h-auto w-3 text-row-tonic" />
-            </div>
-          </button>
-        </ReliefCard>
+        <button title="Slippage" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+          <IconGearWheel className="mb-1 h-auto w-4 text-row-tonic" isHovered={isHovered} />
+        </button>
       </PopoverTrigger>
       <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none font-gilroy">
         <ReliefCard className="p-3">

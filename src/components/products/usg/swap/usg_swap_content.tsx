@@ -16,6 +16,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
+import { RecapAccordion } from "@/components/design_system/structure/recap"
 
 export default function USGSwapContent() {
   const {
@@ -137,6 +138,7 @@ export default function USGSwapContent() {
               inputWeiValue={sellWeiValue}
               onValueChange={handleSellChange}
               depositSelect={<SellAssetSelect />}
+              slippageInput={<SlippageInput slippage={slippage} setSlippage={setSlippage} />}
               asset={sellAssetInfo!}
               label={"You sell"}
               maxAmountParams={{
@@ -169,9 +171,11 @@ export default function USGSwapContent() {
             />
           </div>
 
-          <div className="mt-2 flex w-full items-end justify-end gap-2">
-            <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
-          </div>
+          <RecapAccordion
+            className="mt-2"
+            zappingParams={{ isDisplayed: true, label: "USDC", expected: "2", slippage: slippage, minOut: "2" }}
+            isLoading={isLoading}
+          />
 
           <div className="mt-2 flex w-full">
             <FormButtons

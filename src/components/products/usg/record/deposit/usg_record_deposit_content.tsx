@@ -1,20 +1,18 @@
 "use client"
 
-import { cn, PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
+import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGDepositContext } from "./usg_record_deposit_context"
-import { IconSingleArrow } from "@/components/icons"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { ZapAssetSelector } from "@/components/design_system/inputs/asset_selector"
+import { RecapAccordion } from "@/components/design_system/structure/recap"
 
 export default function USGDepositContent() {
   const {
@@ -50,7 +48,7 @@ export default function USGDepositContent() {
 
   const { connect } = useWalletConnexionContext()
 
-  const { collateralInfo, isDepositAndBorrow, marketData, balanceAllowanceData, maxBorrowCapReached, displayAPRVariation, USGInfo } = useUSGRecordContext()
+  const { collateralInfo, isDepositAndBorrow, marketData, balanceAllowanceData, maxBorrowCapReached, USGInfo } = useUSGRecordContext()
 
   return (
     <div className="flex flex-col gap-2">
@@ -65,6 +63,7 @@ export default function USGDepositContent() {
         onValueChange={(e) => {
           handleDepositChange(e)
         }}
+        slippageInput={isZapping ? <SlippageInput slippage={slippage} setSlippage={setSlippage} /> : <></>}
         depositSelect={<ZapAssetSelector collateralInfo={collateralInfo} depositAsset={depositAsset} setDepositAsset={setDepositAsset} caseType="deposit" />}
         isLoading={isDepositLoading}
         asset={depositAssetInfo}
@@ -136,54 +135,12 @@ export default function USGDepositContent() {
       )}
 
       {/* RECAP */}
-
-      <div className="flex items-start justify-between gap-2">
-        <Accordion className="w-full" type="single" collapsible>
-          <AccordionItem value="item-1">
-            <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary hover:bg-panel-hover">
-              <AccordionTrigger>Recap</AccordionTrigger>
-
-              <AccordionContent className="w-full">
-                <div className={cn("flex flex-col gap-1 rounded-[10px] text-xs", isDepositLoading ? "shimmer" : "")}>
-                  {displayAPRVariation && (
-                    <>
-                      <div className="flex w-full items-center justify-between">
-                        <span className="text-subtitle">APR variation : </span>
-                      </div>
-
-                      <div className="flex w-full items-center justify-between">
-                        <span className="ml-4 italic text-subtitle">Current </span>
-                        <div className="flex items-center justify-center gap-1">
-                          <span className="text-white">{aprVariation.current}</span>
-                          <IconSingleArrow></IconSingleArrow>
-                          <span className="text-tonic">{aprVariation.currentUpdated}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex w-full items-center justify-between">
-                        <span className="ml-4 italic text-subtitle">Projected </span>
-                        <div className="flex items-center justify-center gap-1">
-                          <span className="text-white">{aprVariation.projected}</span>
-                          <IconSingleArrow></IconSingleArrow>
-                          <span className="text-tonic">{aprVariation.projectedUpdated}</span>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  <div className={cn(displayAPRVariation ? "mt-2 border-t border-white/10 pt-2" : "", "flex w-full items-center justify-between")}>
-                    <span className="text-subtitle">Expected collateral: </span>
-
-                    <span className="font-semibold text-white">{expectedCollateral}</span>
-                  </div>
-                </div>
-              </AccordionContent>
-            </ReliefCard>
-          </AccordionItem>
-        </Accordion>
-
-        <SlippageInput slippage={slippage} setSlippage={setSlippage} />
-      </div>
+      <RecapAccordion
+        className=""
+        isLoading={isDepositLoading}
+        zappingParams={{ isDisplayed: isZapping, label: "collateral", expected: expectedCollateral, minOut: minValueReceivedFromZap, slippage: slippage }}
+        aprVariationParams={aprVariation}
+      ></RecapAccordion>
 
       <MarketTransactionError display={!!borrowWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />
 

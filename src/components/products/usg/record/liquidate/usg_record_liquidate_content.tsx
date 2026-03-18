@@ -8,6 +8,8 @@ import { StaticCardAssetInput } from "@/components/products/predeposit/component
 import { Divider } from "@/components/design_system/structure/divider"
 import { formatBigInt } from "@/lib/number_formatter"
 import FormButtons from "@/components/design_system/form/form_actions"
+import { SlippageInput } from "@/components/design_system/inputs/slippage"
+import { RecapAccordion } from "@/components/design_system/structure/recap"
 
 export default function USGLiquidatePanel() {
   const { connect } = useWalletConnexionContext()
@@ -16,7 +18,7 @@ export default function USGLiquidatePanel() {
 
   const { USGInfo, collateralInfo } = useUSGRecordContext()
 
-  const { actionLiquidate, formState } = useUSGLiquidateContext()
+  const { actionLiquidate, formState, slippage, setSlippage } = useUSGLiquidateContext()
 
   const {
     setRepayWeiValue,
@@ -39,7 +41,7 @@ export default function USGLiquidatePanel() {
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2">
         <div className="flex w-full items-end justify-between">
-          <span className="text-sm font-semibold md:text-xl">Liquidate </span>
+          <span className="text-sm font-semibold md:text-xl">Liquidate</span>
           <span className="text-xs text-subtitle">{maxLiquidateString}</span>
         </div>
 
@@ -47,6 +49,7 @@ export default function USGLiquidatePanel() {
           inputWeiValue={liquidateWeiValue}
           label="You liquidate"
           depositSelect={<StaticCardAssetInput assetName={collateralInfo.name} logoKey={collateralInfo.logoKey} />}
+          slippageInput={<SlippageInput slippage={slippage} setSlippage={setSlippage} />}
           disabled={!canInteract}
           asset={collateralInfo}
           onValueChange={handleLiquidateValueChange}
@@ -71,7 +74,7 @@ export default function USGLiquidatePanel() {
 
         <div className="flex w-full items-end justify-between">
           <span className="text-sm font-semibold md:text-xl">Repay </span>
-          <span className="text-xs text-subtitle">Max: {formatBigInt(maxRepayable, 18, 2)} USG</span>{" "}
+          <span className="text-xs text-subtitle">Max: {formatBigInt(maxRepayable, 18, 2)} USG</span>
         </div>
 
         <GenericInputAssetAmount
@@ -100,6 +103,17 @@ export default function USGLiquidatePanel() {
           isLoading={isQuoteLoading}
         />
       </div>
+
+      <RecapAccordion
+        isLoading={isLiquidationLoading}
+        zappingParams={{
+          label: "USG",
+          isDisplayed: true,
+          expected: "2",
+          minOut: "2",
+          slippage: slippage,
+        }}
+      />
 
       <FormButtons
         isLoading={isLiquidationLoading}

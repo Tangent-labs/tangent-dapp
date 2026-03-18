@@ -15,6 +15,7 @@ import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, 
 import { computeAprVariation, computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit, doMarketDepositAndBorrow } from "./usg_record_deposit_controller"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
+import { AprVariation } from "@/components/design_system/structure/recap"
 
 type USGDepositContextProps = {
   children: ReactNode
@@ -70,7 +71,7 @@ type USGDepositContextValues = {
 
   expectedCollateral: string
 
-  aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
+  aprVariation: AprVariation
 
   isZapping: boolean
 }

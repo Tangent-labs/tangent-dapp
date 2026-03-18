@@ -1,6 +1,6 @@
 import { Address } from "viem"
-import { CURVE_LPS, PENDLE_POOLS } from "@tangent/defi-resources"
-import { SDT_crvUSD_USDC_VAULT, SDT_crvUSD_USDT_VAULT } from "@tangent/defi-resources/build/ressources/erc20/stakeDao"
+import { CURVE_GAUGES, CURVE_LPS, PENDLE_POOLS } from "@tangent/defi-resources"
+import { SDT_crvUSD_USDC_VAULT, SDT_crvUSD_USDT_VAULT, SDT_tBTC_cbBTC_VAULT } from "@tangent/defi-resources/build/ressources/erc20/stakeDao"
 
 export type Erc20Details = {
   address: Address
@@ -81,14 +81,6 @@ export const ERC20S: Erc20Details[] = [
     symbol: "USDC/fxUSD",
   },
   {
-    address: CURVE_LPS.DUO_GHO_crvUSD as Address,
-    chainId: 1,
-    decimals: 18,
-    logoKey: "GHO-crvUSD",
-    name: "GHO/crvUSD",
-    symbol: "GHO/crvUSD",
-  },
-  {
     address: CURVE_LPS.DUO_fxUSD_reUSD as Address,
     chainId: 1,
     decimals: 18,
@@ -101,8 +93,16 @@ export const ERC20S: Erc20Details[] = [
     chainId: 1,
     decimals: 18,
     logoKey: "GHO-fxUSD",
-    name: "GHO/fxUSD/reUSD",
+    name: "GHO/fxUSD",
     symbol: "GHO/fxUSD",
+  },
+  {
+    address: CURVE_LPS.DUO_msUSD_fxUSD as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "msUSD-fxUSD",
+    name: "msUSD/fxUSD",
+    symbol: "msUSD/fxUSD",
   },
   {
     address: CURVE_LPS.DUO_PYUSD_USDC as Address,
@@ -121,15 +121,6 @@ export const ERC20S: Erc20Details[] = [
     symbol: "RLUSD/USDC",
   },
   {
-    address: CURVE_LPS.DUO_msUSD_fxUSD as Address,
-    chainId: 1,
-    decimals: 18,
-    logoKey: "msUSD-fxUSD",
-    name: "msUSD/fxUSD",
-    symbol: "msUSD/fxUSD",
-  },
-
-  {
     address: CURVE_LPS.DUO_stUSDS_USDS as Address,
     chainId: 1,
     decimals: 18,
@@ -137,7 +128,6 @@ export const ERC20S: Erc20Details[] = [
     name: "stUSDS/USDS",
     symbol: "stUSDS/USDS",
   },
-
   {
     address: CURVE_LPS.DUO_frxUSD_msUSD as Address,
     chainId: 1,
@@ -155,7 +145,7 @@ export const ERC20S: Erc20Details[] = [
     symbol: "msETH/OETH",
   },
   {
-    address: CURVE_LPS.ETHp_WETH_LP as Address,
+    address: CURVE_LPS["ETHp_WETH_LP"] as Address,
     chainId: 1,
     decimals: 18,
     logoKey: "ETH+-WETH",
@@ -163,15 +153,18 @@ export const ERC20S: Erc20Details[] = [
     symbol: "ETH+/WETH",
   },
   {
-    address: CURVE_LPS.DUO_tBTC_cbBTC as Address,
+    address: CURVE_LPS.DUO_tBTC_crvUSD as Address,
     chainId: 1,
     decimals: 18,
     logoKey: "tBTC-cbBTC",
     name: "tBTC/cbBTC",
     symbol: "tBTC/cbBTC",
   },
+
+  // PENDLE PT
+
   {
-    address: PENDLE_POOLS?.["wstUSR 25/06/26"]?.MARKET,
+    address: PENDLE_POOLS?.["wstUSR 25/06/26"]?.PT,
     chainId: 1,
     decimals: 18,
     logoKey: "wstUSR 25/06/26",
@@ -179,7 +172,7 @@ export const ERC20S: Erc20Details[] = [
     symbol: "wstUSR 25/06/26",
   },
   {
-    address: PENDLE_POOLS?.["sUSDe 07/05/26"]?.MARKET,
+    address: PENDLE_POOLS?.["sUSDe 07/05/26"]?.PT,
     chainId: 1,
     decimals: 18,
     logoKey: "sUSDe 07/05/26",
@@ -187,7 +180,7 @@ export const ERC20S: Erc20Details[] = [
     symbol: "sUSDe 07/05/26",
   },
   {
-    address: PENDLE_POOLS?.["USDe 07/05/26"]?.MARKET,
+    address: PENDLE_POOLS?.["USDe 07/05/26"]?.PT,
     chainId: 1,
     decimals: 18,
     logoKey: "USDe 07/05/26",
@@ -195,7 +188,7 @@ export const ERC20S: Erc20Details[] = [
     symbol: "USDe 07/05/26",
   },
 
-  // Stake DAO VAULT LP
+  // Stake DAO VAULT
   {
     address: SDT_crvUSD_USDC_VAULT,
     chainId: 1,
@@ -211,6 +204,41 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "crvUSD-USDT",
     name: "Vault crvUSD/USDT",
     symbol: "Vault crvUSD/USDT",
+  },
+
+  {
+    address: SDT_tBTC_cbBTC_VAULT,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "tBTC-cbBTC",
+    name: "Vault tBTC/cbBTC",
+    symbol: "Vault tBTC/cbBTC",
+  },
+
+  // CURVE GAUGES
+  {
+    address: CURVE_GAUGES.RLUSD_USDC,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "RLUSD-USDC",
+    name: "Gauge RLUSD/USDC",
+    symbol: "Gauge RLUSD/USDC",
+  },
+  {
+    address: CURVE_GAUGES.PYUSD_USDC,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "PYUSD-USDC",
+    name: "Gauge PYUSD/USDC",
+    symbol: "Gauge PYUSD/USDC",
+  },
+  {
+    address: CURVE_GAUGES.stUSDS_USDS,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "stUSDS-USDS",
+    name: "Gauge stUSDS/USDS",
+    symbol: "Gauge stUSDS/USDS",
   },
 
   {

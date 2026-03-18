@@ -1,25 +1,9 @@
 import { AssetDataPriced } from "@/types"
 import WStable from "@/abi/USG/WStable.json"
 import IERC4626 from "@/abi/USG/IERC4626.json"
-import { getSwapAssetPrice } from "@/services/service_price"
 import { BalanceAllowanceData } from "../usg_type"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, SendTransactionParameters, WalletClient, WriteContractParameters } from "viem"
-import { Erc20Details, ERC20S } from "@/data/erc20s"
-
-export const computeSwapAssetPrice = async (depositAsset: string) => {
-  try {
-    const found = ERC20S.find((el: Erc20Details) => el.name === depositAsset || el.symbol === depositAsset)
-    const tokenAddress = found ? found.address : undefined
-    if (tokenAddress) {
-      const data = await getSwapAssetPrice(tokenAddress)
-      return data
-    } else return null
-  } catch (error) {
-    console.error("Failed to compute swap asset price:", error)
-    return null
-  }
-}
 
 export const doApprove = async (walletClient: WalletClient, depositAssetAddress: Address, amount: bigint, spender: Address) => {
   const publicClient = getPublicClient()

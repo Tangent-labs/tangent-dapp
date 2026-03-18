@@ -17,6 +17,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
+import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
 
 export default function USGSwapContent() {
   const {
@@ -49,10 +50,17 @@ export default function USGSwapContent() {
     USGsUSGMetrics,
     minValueReceivedFromZap,
 
-    isSwapBlocked,
-    setIsSwapBlocked,
+    isSwapBlockedByPriceImpact,
+    setIsSwapBlockedByPriceImpact,
+
+    isSwapBlockedBySlippage,
+    setIsSwapBlockedBySlippage,
 
     slippageLoss,
+
+    priceImpactLoss,
+
+    priceImpact,
   } = useUSGSwapContext()
 
   const { lpUserPoints, voteUserPoints } = useUSGContext()
@@ -179,14 +187,23 @@ export default function USGSwapContent() {
             <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
           </div>
 
-          {!!buyWeiValue && !!sellWeiValue && isSwapBlocked && slippage >= 1 && (
+          {!!buyWeiValue && !!sellWeiValue && isSwapBlockedBySlippage && slippage >= 1 && (
             <SlippageAlert
               symbol={buyAssetInfo?.symbol as string}
               tokenLoss={slippageLoss?.tokenLoss}
               dollarLoss={slippageLoss?.dollarLoss}
               slippage={slippage}
               isLoading={isLoading || isSwapLoading}
-              onClickContinue={() => setIsSwapBlocked(false)}
+              onClickContinue={() => setIsSwapBlockedBySlippage(false)}
+            />
+          )}
+
+          {!!buyWeiValue && !!sellWeiValue && isSwapBlockedByPriceImpact && priceImpact >= 1 && (
+            <PriceImpactAlert
+              dollarLoss={priceImpactLoss}
+              priceImpact={priceImpact}
+              isLoading={isLoading || isSwapLoading}
+              onClickContinue={() => setIsSwapBlockedByPriceImpact(false)}
             />
           )}
 

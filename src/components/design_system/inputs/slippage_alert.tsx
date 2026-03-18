@@ -1,8 +1,8 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { ReliefCard } from "../structure/relief_card"
 import { IconWarningTriangle } from "@/components/icons"
+import { WarningButton } from "./warning_button"
 
 type SlippageAlertProps = {
   symbol: string
@@ -37,7 +37,7 @@ export const SlippageAlert = ({ symbol, tokenLoss, dollarLoss, slippage, onClick
   return (
     <div
       className={cn(
-        "mt-1 flex w-full flex-col items-start justify-start rounded-[10px] p-3",
+        "mt-2 flex w-full flex-col items-start justify-start rounded-[10px] p-3",
         isLoading ? "shimmer" : "",
         isWarning ? "bg-[#FFE10008]" : "bg-[#FF030008]"
       )}
@@ -52,12 +52,9 @@ export const SlippageAlert = ({ symbol, tokenLoss, dollarLoss, slippage, onClick
       <span className="mb-1 text-xs text-subtitle">{computeContent(slippage, tokenLoss, symbol, dollarLoss)}</span>
 
       {slippage <= 10 && (
-        <ReliefCard
-          className={cn(isWarning ? "bg-[#FFE1001A]" : "bg-[#FF030033]", "flex w-full cursor-pointer justify-center py-2 text-xs font-semibold")}
-          onClick={onClickContinue}
-        >
+        <WarningButton warningType={isWarning ? "warning" : "danger"} disabled={isLoading} onClick={onClickContinue}>
           {isWarning ? "Confirm anyway" : "I understand the risk"}
-        </ReliefCard>
+        </WarningButton>
       )}
     </div>
   )

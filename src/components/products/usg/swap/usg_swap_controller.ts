@@ -74,7 +74,8 @@ export const doCustomSwap = async (walletClient: WalletClient, abi: Abi, method:
 }
 
 export function getSwapFormState(
-  isSwapBlocked: boolean,
+  isSwapBlockedByPriceImpact: boolean,
+  isSwapBlockedBySlippage: boolean,
   approveNotNeeded: boolean,
   depositWeiValue?: bigint,
   receiveWeiValue?: bigint,
@@ -103,8 +104,10 @@ export function getSwapFormState(
       reasons.push("Not enough balance.")
     } else if (!receiveWeiValue || receiveWeiValue === 0n) {
       reasons.push("You need to input a target token.")
-    } else if (isSwapBlocked) {
+    } else if (isSwapBlockedBySlippage) {
       reasons.push("Slippage is too high.")
+    } else if (isSwapBlockedByPriceImpact) {
+      reasons.push("Price impact is too high.")
     }
   }
 

@@ -11,6 +11,7 @@ import FormButtons from "@/components/design_system/form/form_actions"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
@@ -47,6 +48,11 @@ export default function USGSwapContent() {
     slippage,
     USGsUSGMetrics,
     minValueReceivedFromZap,
+
+    isSwapBlocked,
+    setIsSwapBlocked,
+
+    slippageLoss,
   } = useUSGSwapContext()
 
   const { lpUserPoints, voteUserPoints } = useUSGContext()
@@ -172,6 +178,17 @@ export default function USGSwapContent() {
           <div className="mt-2 flex w-full items-end justify-end gap-2">
             <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
           </div>
+
+          {!!buyWeiValue && !!sellWeiValue && isSwapBlocked && slippage >= 1 && (
+            <SlippageAlert
+              symbol={buyAssetInfo?.symbol as string}
+              tokenLoss={slippageLoss?.tokenLoss}
+              dollarLoss={slippageLoss?.dollarLoss}
+              slippage={slippage}
+              isLoading={isLoading || isSwapLoading}
+              onClickContinue={() => setIsSwapBlocked(false)}
+            />
+          )}
 
           <div className="mt-2 flex w-full">
             <FormButtons

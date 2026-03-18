@@ -13,10 +13,10 @@ export function IconWarningTriangle({ className }: IconProps) {
           fill="none"
           stroke="currentcolor"
           strokeLinecap="square"
-          stroke-miterlimit="10"
+          strokeMiterlimit="10"
           strokeWidth="2"
         ></path>
-        <line x1="12" y1="8" x2="12" y2="14" fill="none" stroke="inherit" strokeLinecap="square" stroke-miterlimit="10" strokeWidth="2"></line>
+        <line x1="12" y1="8" x2="12" y2="14" fill="none" stroke="inherit" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="2"></line>
         <circle data-stroke="none" cx="12" cy="17.5" r="1.5" stroke="none"></circle>
       </g>
     </svg>

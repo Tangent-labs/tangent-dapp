@@ -80,6 +80,11 @@ type USGSwapContextValues = {
   lpUserPoints: LpUserPoints
 
   minValueReceivedFromZap: string
+
+  isSwapBlocked: boolean
+  setIsSwapBlocked: (b: boolean) => void
+
+  slippageLoss: { tokenLoss: string; dollarLoss: string }
 }
 
 export const USGSwapContext = createContext<USGSwapContextValues | undefined>(undefined)
@@ -118,6 +123,8 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
   const [swapData, setSwapData] = useState<SwapConfig | null>(null)
+
+  const [isSwapBlocked, setIsSwapBlocked] = useState<boolean>(false)
 
   // Sync URL → state (browser back/forward)
   useEffect(() => {
@@ -442,6 +449,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const formState = useMemo(
     () =>
       getSwapFormState(
+        isSwapBlocked,
         swapData?.approval === "noApprovalNeeded",
         sellWeiValue,
         buyWeiValue,
@@ -450,7 +458,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
         buyAssetInfo!,
         balanceAllowanceData!
       ),
-    [sellWeiValue, buyWeiValue, isWellConnected, sellAssetInfo, buyAssetInfo, balanceAllowanceData!]
+    [isSwapBlocked, sellWeiValue, buyWeiValue, isWellConnected, sellAssetInfo, buyAssetInfo, balanceAllowanceData!]
   )
 
   // --- Toggle just swaps the two addresses ---
@@ -494,6 +502,22 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     return ""
   }, [buyWeiValue, slippage])
 
+  const slippageLoss = useMemo(() => {
+    if (buyWeiValue && buyAssetInfo) {
+      const minAmountOutWei = computedMinAmountOut(buyWeiValue, slippage)
+
+      const tokenLoss = `${formatNumber(Number(truncateDecimals(formatUnits(BigInt(buyWeiValue) - minAmountOutWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), 2)}`
+      const dollarLoss = `$${formatNumber(Number(truncateDecimals(formatUnits(((BigInt(buyWeiValue) - minAmountOutWei) * BigInt(Number(buyAssetInfo?.price?.toFixed(4)) * 10000)) / BigInt(10000n), buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), 2)}`
+
+      return { tokenLoss, dollarLoss }
+    }
+    return { tokenLoss: "", dollarLoss: "" }
+  }, [buyWeiValue, slippage, buyAssetInfo])
+
+  useEffect(() => {
+    setIsSwapBlocked(!!sellWeiValue && !!buyWeiValue && slippage >= 1)
+  }, [slippage, buyWeiValue, sellWeiValue])
+
   const contextValue: USGSwapContextValues = {
     isLoading,
 
@@ -535,6 +559,10 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     USGsUSGMetrics,
     lpUserPoints,
     minValueReceivedFromZap,
+
+    isSwapBlocked,
+    setIsSwapBlocked,
+    slippageLoss,
   }
 
   return <USGSwapContext.Provider value={contextValue}>{children}</USGSwapContext.Provider>

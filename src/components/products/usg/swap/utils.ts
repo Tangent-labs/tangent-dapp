@@ -40,7 +40,7 @@ export const buildAssetInfo = (tokenAddress: string | null | undefined, price: n
   return {
     address: assetInfo.address,
     decimals: assetInfo.decimals,
-    displayDecimals: 2,
+    displayDecimals: assetInfo?.displayDecimals || 2,
     symbol: assetInfo.symbol,
     name: assetInfo.name,
     price,

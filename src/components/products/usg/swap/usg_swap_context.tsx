@@ -506,8 +506,8 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     if (buyWeiValue && buyAssetInfo) {
       const minAmountOutWei = computedMinAmountOut(buyWeiValue, slippage)
 
-      const tokenLoss = `${formatNumber(Number(truncateDecimals(formatUnits(BigInt(buyWeiValue) - minAmountOutWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), 2)}`
-      const dollarLoss = `$${formatNumber(Number(truncateDecimals(formatUnits(((BigInt(buyWeiValue) - minAmountOutWei) * BigInt(Number(buyAssetInfo?.price?.toFixed(4)) * 10000)) / BigInt(10000n), buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), 2)}`
+      const tokenLoss = `${formatNumber(Number(truncateDecimals(formatUnits(BigInt(buyWeiValue) - minAmountOutWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
+      const dollarLoss = `$${formatNumber(Number(truncateDecimals(formatUnits(((BigInt(buyWeiValue) - minAmountOutWei) * BigInt(Number(buyAssetInfo?.price?.toFixed(4)) * 10000)) / BigInt(10000n), buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
 
       return { tokenLoss, dollarLoss }
     }

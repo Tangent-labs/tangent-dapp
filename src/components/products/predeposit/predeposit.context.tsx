@@ -6,13 +6,14 @@ import { USGTokens } from "../usg/usg_repository"
 import { AssetDataPriced, FormState } from "@/types"
 import { useRootContext } from "../root/root_context"
 import { getTokensPrice } from "@/services/service_price"
-import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { Address, formatUnits, WalletClient, zeroAddress } from "viem"
+import { formatNumber, truncateDecimals } from "@/lib/number_formatter"
+import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { fetchUserStatus, validatePredepositSignature } from "./api/client.api"
-import { doApprove, getBalancesAndAllowances } from "../usg/record/usg_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { deposit, fetchQuote, getFormState, mapPredepositStatus, TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "./predeposit.controller"
+import { computedMinAmountOut, computeTransactionPotentialLoss, doApprove, getBalancesAndAllowances } from "../usg/record/usg_record_controller"
 
 type PredepositContextProps = {
   children: ReactNode
@@ -85,6 +86,19 @@ type PredepositContextValues = {
   projectedfrxUSDTANAllocation: bigint
 
   projectedUSDCTANAllocation: bigint
+
+  minUSGUSDCReceived: string
+
+  minUSGfrxUSDReceived: string
+
+  isUSGUSDCTransactionBlockedBySlippage: boolean
+  setIsUSDGUSDCTransactionBlockedBySlippage: (v: boolean) => void
+
+  isUSGfrxUSDTransactionBlockedBySlippage: boolean
+  setIsUSGfrxUSDTransactionBlockedBySlippage: (v: boolean) => void
+
+  USGUSDCSlippageLoss: { tokenLoss: string; dollarLoss: string }
+  USGfrxUSDSlippageLoss: { tokenLoss: string; dollarLoss: string }
 }
 
 export const PredepositContext = createContext<PredepositContextValues | undefined>(undefined)
@@ -130,6 +144,10 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   const [predepositStatus, setPredepositStatus] = useState<PredepositStatus | null>(null)
 
   const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false)
+
+  const [isUSGUSDCTransactionBlockedBySlippage, setIsUSDGUSDCTransactionBlockedBySlippage] = useState<boolean>(false)
+
+  const [isUSGfrxUSDTransactionBlockedBySlippage, setIsUSGfrxUSDTransactionBlockedBySlippage] = useState<boolean>(false)
 
   const getUserStatus = async () => {
     const status = await fetchUserStatus(currentAddress || zeroAddress)
@@ -278,6 +296,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   const USGUSDCformState = useMemo(() => {
     if (predepositStatus) {
       return getFormState(
+        isUSGUSDCTransactionBlockedBySlippage,
         USDCDepositValue,
         (USGUSDCDepositValue || 0n) / 10n ** 12n,
         USDCBalanceAllowance,
@@ -286,11 +305,12 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
       )
     }
     return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
-  }, [USDCDepositValue, predepositStatus, currentAddress, USDCBalanceAllowance, USGUSDCDepositValue])
+  }, [USDCDepositValue, predepositStatus, currentAddress, USDCBalanceAllowance, USGUSDCDepositValue, isUSGUSDCTransactionBlockedBySlippage])
 
   const USGfrxUSDformState = useMemo(() => {
     if (predepositStatus) {
       return getFormState(
+        isUSGfrxUSDTransactionBlockedBySlippage,
         frxUSDDepositValue,
         USGfrxUSDDepositValue,
         frxUSDBalanceAllowance,
@@ -299,7 +319,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
       )
     }
     return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
-  }, [frxUSDDepositValue, predepositStatus, currentAddress, frxUSDBalanceAllowance, USGfrxUSDDepositValue])
+  }, [frxUSDDepositValue, predepositStatus, currentAddress, frxUSDBalanceAllowance, USGfrxUSDDepositValue, isUSGfrxUSDTransactionBlockedBySlippage])
 
   const actionApproveUSGUSDC = () => {
     if (walletClient && USDCDepositValue) {
@@ -457,6 +477,66 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     return 0n
   }, [frxUSDDepositValue])
 
+  const minUSGUSDCReceived = useMemo(() => {
+    if (USGUSDCDepositValue) {
+      const minAmountOutWei = computedMinAmountOut(USGUSDCDepositValue, slippage)
+      const result = `(${formatNumber(Number(truncateDecimals(formatUnits(minAmountOutWei, 18), 3)), 2)})`
+      return result
+    }
+
+    return ""
+  }, [USGUSDCDepositValue, slippage])
+
+  const minUSGfrxUSDReceived = useMemo(() => {
+    if (USGfrxUSDDepositValue) {
+      const minAmountOutWei = computedMinAmountOut(USGfrxUSDDepositValue, frxUSDslippage)
+      const result = `(${formatNumber(Number(truncateDecimals(formatUnits(minAmountOutWei, 18), 3)), 2)})`
+      return result
+    }
+
+    return ""
+  }, [USGfrxUSDDepositValue, frxUSDslippage])
+
+  const USGUSDCSlippageLoss = useMemo(() => {
+    const USGUSDCInfo = {
+      address: USGTokens[1]["USG-USDC"],
+      decimals: 18,
+      displayDecimals: 3,
+      symbol: "USG-USDC",
+      name: "USG-USDC",
+      logoKey: "USG-USDC",
+      price: 1,
+    }
+
+    const { tokenLoss, dollarLoss } = computeTransactionPotentialLoss(USGUSDCDepositValue as bigint, USGUSDCInfo, slippage)
+
+    return { tokenLoss, dollarLoss }
+  }, [slippage, USGUSDCDepositValue])
+
+  const USGfrxUSDSlippageLoss = useMemo(() => {
+    const USGfrxUSDInfo = {
+      address: USGTokens[1]["USG-frxUSD"],
+      decimals: 18,
+      displayDecimals: 3,
+      symbol: "USG-frxUSD",
+      name: "USG-frxUSD",
+      logoKey: "USG-frxUSD",
+      price: 1,
+    }
+
+    const { tokenLoss, dollarLoss } = computeTransactionPotentialLoss(USGfrxUSDDepositValue as bigint, USGfrxUSDInfo, frxUSDslippage)
+
+    return { tokenLoss, dollarLoss }
+  }, [frxUSDslippage, USGfrxUSDDepositValue])
+
+  useEffect(() => {
+    setIsUSDGUSDCTransactionBlockedBySlippage(!!USGUSDCDepositValue && slippage >= 1)
+  }, [slippage, USGUSDCDepositValue])
+
+  useEffect(() => {
+    setIsUSGfrxUSDTransactionBlockedBySlippage(!!USGfrxUSDDepositValue && frxUSDslippage >= 1)
+  }, [frxUSDslippage, USGfrxUSDDepositValue])
+
   const contextValue: PredepositContextValues = {
     isUSDCDepositLoading,
     isfrxUSDDepositLoading,
@@ -496,6 +576,14 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     setDepositMaxUSGfrxUSD,
     projectedUSDCTANAllocation,
     projectedfrxUSDTANAllocation,
+    minUSGUSDCReceived,
+    minUSGfrxUSDReceived,
+    isUSGUSDCTransactionBlockedBySlippage,
+    setIsUSDGUSDCTransactionBlockedBySlippage,
+    USGUSDCSlippageLoss,
+    isUSGfrxUSDTransactionBlockedBySlippage,
+    setIsUSGfrxUSDTransactionBlockedBySlippage,
+    USGfrxUSDSlippageLoss,
   }
 
   return <PredepositContext.Provider value={contextValue}>{children}</PredepositContext.Provider>

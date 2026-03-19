@@ -6,13 +6,14 @@ import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGDepositContext } from "./usg_record_deposit_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
-import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { ZapAssetSelector } from "@/components/design_system/inputs/asset_selector"
 import { RecapAccordion } from "@/components/design_system/structure/recap"
+import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
+import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
 
 export default function USGDepositContent() {
   const {
@@ -45,6 +46,13 @@ export default function USGDepositContent() {
     maxDepositString,
     // aprVariation,
     isZapping,
+    slippageLoss,
+    isTransactionBlockedBySlippage,
+    setIsTransactionBlockedBySlippage,
+    priceImpact,
+    priceImpactLoss,
+    isTransactionBlockedByPriceImpact,
+    setIsTransactionBlockedByPriceImpact,
   } = useUSGDepositContext()
 
   const { collateralInfo, isDepositAndBorrow, marketData, balanceAllowanceData, maxBorrowCapReached, USGInfo } = useUSGRecordContext()
@@ -149,9 +157,27 @@ export default function USGDepositContent() {
         // aprVariationParams={aprVariation}
       ></RecapAccordion>
 
-      <MarketTransactionError display={!!borrowWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />
-
       <MaxBorrowCapReached display={!borrowWeiValue && isDepositAndBorrow && maxBorrowCapReached} />
+
+      {!!depositWeiValue && isTransactionBlockedBySlippage && slippage >= 1 && (
+        <SlippageAlert
+          symbol={collateralInfo?.symbol as string}
+          tokenLoss={slippageLoss?.tokenLoss}
+          dollarLoss={slippageLoss?.dollarLoss}
+          slippage={slippage}
+          isLoading={isZapLoading}
+          onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
+        />
+      )}
+
+      {!!depositWeiValue && isTransactionBlockedByPriceImpact && priceImpact >= 1 && (
+        <PriceImpactAlert
+          dollarLoss={priceImpactLoss}
+          priceImpact={priceImpact}
+          isLoading={isZapLoading}
+          onClickContinue={() => setIsTransactionBlockedByPriceImpact(false)}
+        />
+      )}
 
       <FormButtons
         actions={{

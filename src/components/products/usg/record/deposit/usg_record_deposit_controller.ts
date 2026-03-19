@@ -7,6 +7,8 @@ import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContrac
 import { BalanceAllowanceData, MarketDetailData, USGMarketDepositParams, ZapMarketData } from "../../usg_type"
 
 export function getDepositFormState(
+  isTransactionBlockedByPriceImpact: boolean,
+  isTransactionBlockedBySlippage: boolean,
   marketData?: MarketDetailData,
   depositWeiValue?: bigint,
   borrowWeiValue?: bigint,
@@ -28,6 +30,10 @@ export function getDepositFormState(
       reasons.push("No amount.")
     } else if (!isEnoughBalance) {
       reasons.push("Not enough balance.")
+    } else if (isTransactionBlockedBySlippage) {
+      reasons.push("Slippage is too high.")
+    } else if (isTransactionBlockedByPriceImpact) {
+      reasons.push("Price impact is too high.")
     }
 
     if (isDepositAndBorrow) {

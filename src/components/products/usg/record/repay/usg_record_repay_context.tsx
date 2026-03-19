@@ -9,9 +9,9 @@ import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
-import { formatBigIntAsNumber, formatDollar, toBigInt, truncateDecimals } from "@/lib/number_formatter"
+import { formatBigIntAsNumber, formatDollar, formatNumber, toBigInt, truncateDecimals } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
+import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove } from "../usg_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
@@ -80,11 +80,25 @@ type USGRepayContextValues = {
   setWithdrawSelectedAsset: (v: string) => void
 
   minValueReceivedFromZap: string
+
+  slippageLoss: { tokenLoss: string; dollarLoss: string }
+
+  isTransactionBlockedBySlippage: boolean
+  setIsTransactionBlockedBySlippage: (arg: boolean) => void
+
+  priceImpactLoss: string
+
+  priceImpact: number
+
+  isTransactionBlockedByPriceImpact: boolean
+  setIsTransactionBlockedByPriceImpact: (arg: boolean) => void
 }
 
 export const USGRepayContext = createContext<USGRepayContextValues | undefined>(undefined)
 
 export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepayContextProps) => {
+  const WITHDRAW_BUFFER = BigInt(10 ** 16)
+
   const { curveRoutes, handleQuote } = useRootContext()
 
   const { loadUSGsUSGMetrics } = useUSGContext()
@@ -127,6 +141,12 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   const [repayLoading, setReplayLoading] = useState<boolean>(false)
 
+  const [isTransactionBlockedBySlippage, setIsTransactionBlockedBySlippage] = useState<boolean>(false)
+
+  const [isTransactionBlockedByPriceImpact, setIsTransactionBlockedByPriceImpact] = useState<boolean>(false)
+
+  const [priceImpact, setPriceImpact] = useState<number>(0)
+
   useEffect(() => {
     if (collateralInfo) {
       setWithdrawSelectedAsset(collateralInfo.name)
@@ -152,7 +172,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     const asset: AssetDataPriced = {
       address: assetInfo?.address,
       decimals: assetInfo?.decimals,
-      displayDecimals: 2,
+      displayDecimals: assetInfo?.displayDecimals || 2,
       symbol: assetInfo?.symbol,
       name: assetInfo?.name,
       price: swapAssetPrice,
@@ -350,11 +370,28 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   const formState = useMemo(() => {
     if (marketData) {
-      return getRepayFormState(marketData, repayWeiValue, isWellConnected, balanceAllowanceData!, repayAsset)
+      return getRepayFormState(
+        isTransactionBlockedByPriceImpact,
+        isTransactionBlockedBySlippage,
+        marketData,
+        repayWeiValue,
+        isWellConnected,
+        balanceAllowanceData!,
+        repayAsset
+      )
     }
 
     return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
-  }, [marketData, repayWeiValue, isWellConnected, currentAddress, balanceAllowanceData, repayAsset])
+  }, [
+    isTransactionBlockedByPriceImpact,
+    isTransactionBlockedBySlippage,
+    marketData,
+    repayWeiValue,
+    isWellConnected,
+    currentAddress,
+    balanceAllowanceData,
+    repayAsset,
+  ])
 
   const marketValues = useMemo(() => {
     if (marketData && currentAddress) {
@@ -388,7 +425,11 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
       const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
       const maxWithDrawable = collateralPriceRaw !== 0n ? futureDeposited - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
 
-      return maxWithDrawable > 0n ? maxWithDrawable : 0n
+      if (futureDebt === 0n) {
+        return maxWithDrawable > 0n ? maxWithDrawable : 0n
+      }
+
+      return maxWithDrawable > WITHDRAW_BUFFER ? maxWithDrawable - WITHDRAW_BUFFER : 0n
     }
 
     return 0n
@@ -397,7 +438,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   const minValueReceivedFromZap = useMemo(() => {
     if (usgRepayedValue) {
       const minAmountOutWei = computedMinAmountOut(usgRepayedValue, slippage)
-      const result = `(${truncateDecimals(formatUnits(minAmountOutWei, USGInfo?.decimals || 18), USGInfo.displayDecimals)})`
+      const result = `(${formatNumber(Number(truncateDecimals(formatUnits(minAmountOutWei, USGInfo?.decimals || 18), USGInfo.displayDecimals)), USGInfo.displayDecimals)})`
       return result
     }
     return ""
@@ -411,13 +452,13 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
       setIsZapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address, curveRoutes)
+        const { quote, priceImpact: pI } = await getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address, curveRoutes)
 
         handleQuote(quote)
 
-        if (quote) {
-          setUsgRepayedValue(quote)
-        }
+        if (quote) setUsgRepayedValue(quote)
+
+        if (pI) setPriceImpact(Number(pI) / 100)
       } catch (error) {
         console.error(error)
       } finally {
@@ -486,6 +527,26 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     return "0 USG"
   }, [usgRepayedValue, repayWeiValue, repayAsset, marketData])
 
+  const priceImpactLoss = useMemo(() => {
+    const { dollarLoss } = computeTransactionPotentialLoss(usgRepayedValue as bigint, USGInfo, priceImpact)
+
+    return dollarLoss
+  }, [usgRepayedValue, priceImpact, USGInfo])
+
+  const slippageLoss = useMemo(() => {
+    const { tokenLoss, dollarLoss } = computeTransactionPotentialLoss(usgRepayedValue as bigint, USGInfo, slippage)
+
+    return { tokenLoss, dollarLoss }
+  }, [slippage, usgRepayedValue, USGInfo])
+
+  useEffect(() => {
+    setIsTransactionBlockedBySlippage(!!repayWeiValue && !!usgRepayedValue && slippage >= 1)
+  }, [slippage, usgRepayedValue, repayWeiValue])
+
+  useEffect(() => {
+    setIsTransactionBlockedByPriceImpact(!!repayWeiValue && !!usgRepayedValue && priceImpact >= 1)
+  }, [priceImpact, usgRepayedValue, repayWeiValue])
+
   const contextValue: USGRepayContextValues = {
     actionRepay,
     formState,
@@ -522,6 +583,18 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     expectedRemainingDebt,
     repayLoading,
     minValueReceivedFromZap,
+
+    slippageLoss,
+
+    isTransactionBlockedBySlippage,
+    setIsTransactionBlockedBySlippage,
+
+    priceImpactLoss,
+
+    priceImpact,
+
+    isTransactionBlockedByPriceImpact,
+    setIsTransactionBlockedByPriceImpact,
   }
 
   return <USGRepayContext.Provider value={contextValue}>{children}</USGRepayContext.Provider>

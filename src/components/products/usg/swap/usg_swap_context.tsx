@@ -11,7 +11,6 @@ import { useRootContext } from "@/components/products/root/root_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Abi, Address, formatUnits, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
-import { computedMinAmountOut, computeSwapAssetPrice, getBalances, getBalancesAndAllowances } from "../record/usg_record_controller"
 import { BalanceAllowanceData, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../usg_type"
 import { doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./usg_swap_controller"
 import { getTokenSymbolPriorityIndex } from "@/components/design_system/inputs/asset_selector"
@@ -19,6 +18,13 @@ import { buildAssetInfo, resolveAssetName } from "./utils"
 import { useSearchParams } from "next/navigation"
 import { USDC } from "@tangent/defi-resources/build/ressources/erc20/common"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
+import {
+  computedMinAmountOut,
+  computeSwapAssetPrice,
+  computeTransactionPotentialLoss,
+  getBalances,
+  getBalancesAndAllowances,
+} from "../record/usg_record_controller"
 
 type USGSwapContextProps = {
   children: ReactNode
@@ -80,6 +86,20 @@ type USGSwapContextValues = {
   lpUserPoints: LpUserPoints
 
   zapValuesFormatted: { buyFormatted: string; minOutFormatted: string }
+
+  isSwapBlockedByPriceImpact: boolean
+  setIsSwapBlockedByPriceImpact: (b: boolean) => void
+
+  isSwapBlockedBySlippage: boolean
+  setIsSwapBlockedBySlippage: (b: boolean) => void
+
+  slippageLoss: { tokenLoss: string; dollarLoss: string }
+
+  priceImpact: number
+
+  priceImpactLoss: string
+
+  isSwapReady: boolean
 }
 
 export const USGSwapContext = createContext<USGSwapContextValues | undefined>(undefined)
@@ -118,6 +138,12 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
   const [swapData, setSwapData] = useState<SwapConfig | null>(null)
+
+  const [isSwapBlockedBySlippage, setIsSwapBlockedBySlippage] = useState<boolean>(false)
+
+  const [isSwapBlockedByPriceImpact, setIsSwapBlockedByPriceImpact] = useState<boolean>(false)
+
+  const [priceImpact, setPriceImpact] = useState<number>(0)
 
   // Sync URL → state (browser back/forward)
   useEffect(() => {
@@ -247,8 +273,14 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
       const quoteTokenIn = type === "sell" ? buyAssetInfo?.address : sellAssetInfo?.address
       const quoteTokenOut = type === "sell" ? sellAssetInfo?.address : buyAssetInfo?.address
 
-      const { quote } = await getQuote(value, currentAddress || zeroAddress, quoteTokenIn, quoteTokenOut, curveRoutes)
+      const { quote, priceImpact: pI } = await getQuote(value, currentAddress || zeroAddress, quoteTokenIn, quoteTokenOut, curveRoutes)
+
       handleQuote(quote)
+
+      if (pI) {
+        setPriceImpact(Number(pI) / 100)
+      }
+
       if (quote) {
         if (type == "sell") {
           setBuyWeiValue(quote)
@@ -428,6 +460,8 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const formState = useMemo(
     () =>
       getSwapFormState(
+        isSwapBlockedByPriceImpact,
+        isSwapBlockedBySlippage,
         swapData?.approval === "noApprovalNeeded",
         sellWeiValue,
         buyWeiValue,
@@ -436,7 +470,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
         buyAssetInfo!,
         balanceAllowanceData!
       ),
-    [sellWeiValue, buyWeiValue, isWellConnected, sellAssetInfo, buyAssetInfo, balanceAllowanceData!]
+    [isSwapBlockedByPriceImpact, isSwapBlockedBySlippage, sellWeiValue, buyWeiValue, isWellConnected, sellAssetInfo, buyAssetInfo, balanceAllowanceData!]
   )
 
   // --- Toggle just swaps the two addresses ---
@@ -484,6 +518,30 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     return { buyFormatted: "-", minOutFormatted: "-" }
   }, [buyWeiValue, slippage])
 
+  const priceImpactLoss = useMemo(() => {
+    const { dollarLoss } = computeTransactionPotentialLoss(buyWeiValue as bigint, buyAssetInfo!, priceImpact)
+
+    return dollarLoss
+  }, [buyWeiValue, priceImpact, buyAssetInfo])
+
+  const slippageLoss = useMemo(() => {
+    const { tokenLoss, dollarLoss } = computeTransactionPotentialLoss(buyWeiValue as bigint, buyAssetInfo!, slippage)
+
+    return { tokenLoss, dollarLoss }
+  }, [buyWeiValue, slippage, buyAssetInfo])
+
+  useEffect(() => {
+    setIsSwapBlockedBySlippage(!!sellWeiValue && !!buyWeiValue && slippage >= 1)
+  }, [slippage, buyWeiValue, sellWeiValue])
+
+  useEffect(() => {
+    setIsSwapBlockedByPriceImpact(!!sellWeiValue && !!buyWeiValue && priceImpact >= 1)
+  }, [buyWeiValue, sellWeiValue, priceImpact])
+
+  const isSwapReady = useMemo(() => {
+    return !!buyWeiValue && !!sellWeiValue
+  }, [buyWeiValue, sellWeiValue])
+
   const contextValue: USGSwapContextValues = {
     isLoading,
 
@@ -524,7 +582,22 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     toggleTokensSwitch,
     USGsUSGMetrics,
     lpUserPoints,
+
     zapValuesFormatted,
+
+    isSwapBlockedByPriceImpact,
+    setIsSwapBlockedByPriceImpact,
+
+    isSwapBlockedBySlippage,
+    setIsSwapBlockedBySlippage,
+
+    slippageLoss,
+
+    priceImpact,
+
+    priceImpactLoss,
+
+    isSwapReady,
   }
 
   return <USGSwapContext.Provider value={contextValue}>{children}</USGSwapContext.Provider>

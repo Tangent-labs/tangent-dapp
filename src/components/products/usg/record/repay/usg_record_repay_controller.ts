@@ -6,6 +6,8 @@ import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContrac
 import { BalanceAllowanceData, MarketDetailData, USGMarketRepayParams, ZapMarketData } from "../../usg_type"
 
 export function getRepayFormState(
+  isTransactionBlockedByPriceImpact: boolean,
+  isTransactionBlockedBySlippage: boolean,
   marketData?: MarketDetailData,
   repayWeiValue?: bigint,
   isWellConnected?: boolean,
@@ -24,6 +26,10 @@ export function getRepayFormState(
   } else {
     if (repayWeiValue === 0n || !repayWeiValue) {
       reasons.push("Amount must be greater than zero.")
+    } else if (isTransactionBlockedBySlippage) {
+      reasons.push("Slippage is too high.")
+    } else if (isTransactionBlockedByPriceImpact) {
+      reasons.push("Price impact is too high.")
     }
 
     if (reasons.length === 0) {

@@ -26,7 +26,7 @@ export const getQuote = async (
 ): Promise<{ quote: bigint; priceImpact?: bigint }> => {
   const data = await getEnsoData(amountIn, tokenIn, tokenOut, walletConnected, walletConnected, 0n)
   if (data) {
-    return { quote: BigInt(data?.amountOut) }
+    return { quote: BigInt(data?.amountOut), priceImpact: data?.priceImpact }
   } else if (isCurveRouter(tokenIn, tokenOut)) {
     const quote = await getCustomQuote(curveRoutes, tokenIn, tokenOut, amountIn)
     return { quote }

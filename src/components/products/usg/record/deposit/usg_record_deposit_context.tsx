@@ -1,21 +1,21 @@
 "use client"
 
 import { toast } from "react-toastify"
-import { useUSGContext } from "../../usg_context"
 import { USGMarket } from "../../usg_type"
-import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
+import { useUSGContext } from "../../usg_context"
+import { Erc20Details, ERC20S } from "@/data/erc20s"
+import { formatBigInt } from "@/lib/number_formatter"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
+import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
+import { BuyAndMinOutFormatted } from "../leverage/usg_record_leverage_context"
 import { Address, formatEther, formatUnits, parseEther, zeroAddress } from "viem"
-import { formatBigInt } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
-import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit, doMarketDepositAndBorrow } from "./usg_record_deposit_controller"
-import { Erc20Details, ERC20S } from "@/data/erc20s"
-import { BuyAndMinOutFormatted } from "../leverage/usg_record_leverage_context"
+import { doMarketDeposit, doMarketDepositAndBorrow, doZapDeposit, doZapDepositAndBorrow, getDepositFormState } from "./usg_record_deposit_controller"
+import { computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove } from "../usg_record_controller"
 
 type USGDepositContextProps = {
   children: ReactNode
@@ -73,6 +73,17 @@ type USGDepositContextValues = {
   isTxLoading: boolean
 
   // aprVariation: AprVariation
+  slippageLoss: { tokenLoss: string; dollarLoss: string }
+
+  isTransactionBlockedBySlippage: boolean
+  setIsTransactionBlockedBySlippage: (arg: boolean) => void
+
+  priceImpactLoss: string
+
+  priceImpact: number
+
+  isTransactionBlockedByPriceImpact: boolean
+  setIsTransactionBlockedByPriceImpact: (arg: boolean) => void
 }
 
 export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
@@ -129,6 +140,22 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const [slippage, setSlippage] = useState<number>(0.2)
 
+  const [isTransactionBlockedBySlippage, setIsTransactionBlockedBySlippage] = useState<boolean>(false)
+
+  const [isTransactionBlockedByPriceImpact, setIsTransactionBlockedByPriceImpact] = useState<boolean>(false)
+
+  const [priceImpact, setPriceImpact] = useState<number>(0)
+
+  useEffect(() => {
+    setIsDepositAndBorrow(isDepositAndBorrowInput)
+  }, [])
+
+  useEffect(() => {
+    if (collateralInfo) {
+      setDepositAsset(collateralInfo.name)
+    }
+  }, [collateralInfo?.name])
+
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
     // When market data is not charged
     if (!!marketData && (depositAsset === undefined || depositAsset === collateralInfo.name)) {
@@ -150,7 +177,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     const asset: AssetDataPriced = {
       address: assetInfo?.address as Address,
       decimals: assetInfo?.decimals,
-      displayDecimals: 2,
+      displayDecimals: assetInfo?.displayDecimals || 2,
       symbol: assetInfo?.symbol,
       name: assetInfo?.name,
       price: swapAssetPrice,
@@ -185,6 +212,36 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       fetchBalanceAllowanceData(depositAssetInfo?.address)
     }
   }, [depositAssetInfo])
+
+  const handleZapChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setZapValue(parseEther(e?.target?.value))
+
+    if (e?.target?.value === "") {
+      setDepositWeiValue(undefined)
+      return
+    }
+
+    const debounceTimeout = setTimeout(async () => {
+      if (!parseEther(e?.target?.value) || !currentAddress || !depositAssetInfo) return
+      setIsDepositLoading(true)
+
+      try {
+        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
+
+        handleQuote(quote)
+
+        if (quote) {
+          setDepositWeiValue(BigInt(quote))
+        }
+      } catch (error) {
+        console.error("Error fetching depositWeiValue:", error)
+      } finally {
+        setIsDepositLoading(false)
+      }
+    }, 500)
+
+    return () => clearTimeout(debounceTimeout)
+  }
 
   // Reset form when deposit asset is changed
   useEffect(() => {
@@ -295,11 +352,13 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     setIsZapLoading(true)
 
     getQuote(value, currentAddress || zeroAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
-      .then(({ quote }) => {
+      .then(({ quote, priceImpact: pI }) => {
         // Do nothing when price is stale
         if (requestId !== latestRequestRef.current) return // stale
         handleQuote(quote)
         if (quote) setZapValue(quote)
+
+        if (pI) setPriceImpact(Number(pI) / 100)
       })
       .catch((error) => {
         if (requestId !== latestRequestRef.current) return
@@ -308,36 +367,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       .finally(() => {
         if (requestId === latestRequestRef.current) setIsZapLoading(false)
       })
-  }
-
-  const handleZapChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setZapValue(parseEther(e?.target?.value))
-
-    if (e?.target?.value === "") {
-      setDepositWeiValue(undefined)
-      return
-    }
-
-    const debounceTimeout = setTimeout(async () => {
-      if (!parseEther(e?.target?.value) || !currentAddress || !depositAssetInfo) return
-      setIsDepositLoading(true)
-
-      try {
-        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
-
-        handleQuote(quote)
-
-        if (quote) {
-          setDepositWeiValue(BigInt(quote))
-        }
-      } catch (error) {
-        console.error("Error fetching depositWeiValue:", error)
-      } finally {
-        setIsDepositLoading(false)
-      }
-    }, 500)
-
-    return () => clearTimeout(debounceTimeout)
   }
 
   const handleZapInputChange = (v: bigint | undefined) => {
@@ -424,6 +453,8 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const formState = useMemo(() => {
     return getDepositFormState(
+      isTransactionBlockedByPriceImpact,
+      isTransactionBlockedBySlippage,
       marketData,
       depositWeiValue,
       borrowWeiValue,
@@ -444,6 +475,8 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     currentAddress,
     depositAssetInfo,
     balanceAllowanceData,
+    isTransactionBlockedByPriceImpact,
+    isTransactionBlockedBySlippage,
   ])
 
   //  ACTIONS
@@ -660,6 +693,26 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     fetchBalanceAllowanceData(depositAssetInfo?.address)
   }
 
+  const priceImpactLoss = useMemo(() => {
+    const { dollarLoss } = computeTransactionPotentialLoss(zapValue as bigint, collateralInfo, priceImpact)
+
+    return dollarLoss
+  }, [zapValue, priceImpact])
+
+  const slippageLoss = useMemo(() => {
+    const { tokenLoss, dollarLoss } = computeTransactionPotentialLoss(zapValue as bigint, collateralInfo, slippage)
+
+    return { tokenLoss, dollarLoss }
+  }, [slippage, zapValue])
+
+  useEffect(() => {
+    setIsTransactionBlockedBySlippage(!!depositWeiValue && !!zapValue && slippage >= 1)
+  }, [slippage, zapValue, depositWeiValue])
+
+  useEffect(() => {
+    setIsTransactionBlockedByPriceImpact(!!depositWeiValue && !!zapValue && priceImpact >= 1)
+  }, [priceImpact, zapValue, depositWeiValue])
+
   const contextValue: USGDepositContextValues = {
     marketInfo,
     collateralInfo,
@@ -714,6 +767,18 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     isZapping,
 
     isTxLoading,
+
+    slippageLoss,
+
+    isTransactionBlockedBySlippage,
+    setIsTransactionBlockedBySlippage,
+
+    priceImpactLoss,
+
+    priceImpact,
+
+    isTransactionBlockedByPriceImpact,
+    setIsTransactionBlockedByPriceImpact,
   }
 
   return <USGDepositContext.Provider value={contextValue}>{children}</USGDepositContext.Provider>

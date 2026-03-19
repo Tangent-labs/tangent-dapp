@@ -10,6 +10,7 @@ export const TOTAL_TAN_ALLOCATION = 200_000n
 export const TOTAL_DEPOSIT_CAP = 10_000_000n
 
 export const getFormState = (
+  isTxBlockedBySlippage: boolean,
   depositValue: bigint | undefined,
   quotedValue: bigint | undefined,
   balanceAllowance: {
@@ -33,6 +34,8 @@ export const getFormState = (
     reasons.push("Your balance is too low.")
   } else if (currentlyDeposited + depositValue > totalCap) {
     reasons.push("Deposit exceeds total cap.")
+  } else if (isTxBlockedBySlippage) {
+    reasons.push("Slippage too high.")
   }
 
   return { canProcess: true, cantProcessReasons: reasons, haveToApprove: !isApproved }

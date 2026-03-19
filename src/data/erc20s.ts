@@ -1310,6 +1310,7 @@ export const ERC20S: Erc20Details[] = [
     name: "Wrapped Ether",
     address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     decimals: 18,
+    displayDecimals: 4,
     chainId: 1,
     logoURI: "https://files.cow.fi/token-lists/images/1/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2/logo.png",
   },

@@ -16,7 +16,6 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
   const [isHovered, setIsHovered] = useState(false)
 
   useEffect(() => {
-    if (document.activeElement?.tagName === "INPUT") return
     setLocalValue(slippage.toString())
   }, [slippage])
 
@@ -41,7 +40,15 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
           <IconGearWheel className="mb-1 h-auto w-4 text-row-tonic" isHovered={isHovered} />
         </button>
       </PopoverTrigger>
-      <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none font-gilroy">
+
+      <PopoverContent
+        side="bottom"
+        align="center"
+        sideOffset={8}
+        collisionPadding={16}
+        className="!m-0 !w-56 border-none font-gilroy"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <ReliefCard className="p-3">
           <div className="flex w-full flex-col items-center justify-between gap-2">
             <div className="flex w-full items-center justify-start">Slippage</div>

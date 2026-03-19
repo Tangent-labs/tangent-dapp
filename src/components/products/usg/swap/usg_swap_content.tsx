@@ -8,15 +8,17 @@ import { formatAddress } from "@/lib/other_formatter"
 import { useUSGSwapContext } from "./usg_swap_context"
 import { formatBigInt } from "@/lib/number_formatter"
 import FormButtons from "@/components/design_system/form/form_actions"
+import { RecapAccordion } from "@/components/design_system/structure/recap"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
+import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
 import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
-import { RecapAccordion } from "@/components/design_system/structure/recap"
 
 export default function USGSwapContent() {
   const {
@@ -47,7 +49,22 @@ export default function USGSwapContent() {
     depositSliderPercent,
     slippage,
     USGsUSGMetrics,
+
     zapValuesFormatted,
+
+    isSwapBlockedByPriceImpact,
+    setIsSwapBlockedByPriceImpact,
+
+    isSwapBlockedBySlippage,
+    setIsSwapBlockedBySlippage,
+
+    slippageLoss,
+
+    priceImpactLoss,
+
+    priceImpact,
+
+    isSwapReady,
   } = useUSGSwapContext()
 
   const { lpUserPoints, voteUserPoints } = useUSGContext()
@@ -182,6 +199,28 @@ export default function USGSwapContent() {
             }}
             isLoading={isLoading || isSwapLoading}
           />
+
+          {isSwapReady && isSwapBlockedBySlippage && slippage >= 1 && (
+            <SlippageAlert
+              symbol={buyAssetInfo?.symbol as string}
+              tokenLoss={slippageLoss?.tokenLoss}
+              dollarLoss={slippageLoss?.dollarLoss}
+              slippage={slippage}
+              isLoading={isLoading || isSwapLoading}
+              onClickContinue={() => setIsSwapBlockedBySlippage(false)}
+              className="mt-2"
+            />
+          )}
+
+          {isSwapReady && isSwapBlockedByPriceImpact && priceImpact >= 1 && (
+            <PriceImpactAlert
+              dollarLoss={priceImpactLoss}
+              priceImpact={priceImpact}
+              isLoading={isLoading || isSwapLoading}
+              onClickContinue={() => setIsSwapBlockedByPriceImpact(false)}
+              className="mt-2"
+            />
+          )}
 
           <div className="mt-2 flex w-full">
             <FormButtons

@@ -19,7 +19,7 @@ export const CollateralCard = ({ collateralInfo, marketData }: CollateralCardPro
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <ReliefCard className="flex w-full cursor-pointer items-center justify-between gap-4 px-4 py-2 transition-colors duration-200 ease-in-out hover:bg-white/10 md:w-fit">
+        <ReliefCard className="flex w-full cursor-pointer items-center justify-start gap-4 px-4 py-2 transition-colors duration-200 ease-in-out hover:bg-white/10 xl:w-1/2">
           <div className="flex items-center gap-2">
             {specialTokensList.includes(collateralInfo?.logoKey?.substring(0, collateralInfo?.logoKey.indexOf(" ")).trim()) ? (
               <TokenImage token={collateralInfo?.logoKey} size={32} className="w-6 md:w-10" />
@@ -32,7 +32,7 @@ export const CollateralCard = ({ collateralInfo, marketData }: CollateralCardPro
 
           <div className="flex items-center justify-between gap-2">{marketData && <MarketMetadata marketData={marketData} />}</div>
 
-          <IconChevron className="w-3 stroke-white" />
+          <IconChevron className="ml-auto flex w-3 stroke-white" />
         </ReliefCard>
       </DialogTrigger>
 

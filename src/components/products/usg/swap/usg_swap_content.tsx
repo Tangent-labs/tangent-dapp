@@ -197,6 +197,7 @@ export default function USGSwapContent() {
               slippage={slippage}
               isLoading={isLoading || isSwapLoading}
               onClickContinue={() => setIsSwapBlockedBySlippage(false)}
+              className="mt-2"
             />
           )}
 
@@ -206,6 +207,7 @@ export default function USGSwapContent() {
               priceImpact={priceImpact}
               isLoading={isLoading || isSwapLoading}
               onClickContinue={() => setIsSwapBlockedByPriceImpact(false)}
+              className="mt-2"
             />
           )}
 

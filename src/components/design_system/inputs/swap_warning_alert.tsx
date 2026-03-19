@@ -11,18 +11,29 @@ type TradeWarningAlertProps = {
   title: string
   subtitle: string
   content: string
+  className?: string
   showButtonState?: boolean
 }
 
-export const SwapWarningAlert = ({ percentage, isLoading, onClickContinue, title, subtitle, content, showButtonState = false }: TradeWarningAlertProps) => {
+export const SwapWarningAlert = ({
+  percentage,
+  isLoading,
+  onClickContinue,
+  title,
+  subtitle,
+  content,
+  showButtonState = false,
+  className,
+}: TradeWarningAlertProps) => {
   const isWarning = percentage >= 1 && percentage < 5
 
   return (
     <div
       className={cn(
-        "my-2 flex w-full flex-col items-start justify-start rounded-[10px] p-3",
+        "flex w-full flex-col items-start justify-start rounded-[10px] p-3",
         isLoading && "shimmer",
-        isWarning ? "bg-[#FFE10008]" : "bg-[#FF030008]"
+        isWarning ? "bg-[#FFE10008]" : "bg-[#FF030008]",
+        className
       )}
     >
       <span className={cn("flex items-center justify-start gap-1 text-xs font-semibold", isWarning ? "text-slippage-warning" : "text-danger")}>

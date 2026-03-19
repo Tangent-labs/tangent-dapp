@@ -97,6 +97,8 @@ type USGRepayContextValues = {
 export const USGRepayContext = createContext<USGRepayContextValues | undefined>(undefined)
 
 export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepayContextProps) => {
+  const WITHDRAW_BUFFER = BigInt(10 ** 16)
+
   const { curveRoutes, handleQuote } = useRootContext()
 
   const { loadUSGsUSGMetrics } = useUSGContext()
@@ -423,7 +425,11 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
       const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
       const maxWithDrawable = collateralPriceRaw !== 0n ? futureDeposited - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
 
-      return maxWithDrawable > 0n ? maxWithDrawable : 0n
+      if (futureDebt === 0n) {
+        return maxWithDrawable > 0n ? maxWithDrawable : 0n
+      }
+
+      return maxWithDrawable > WITHDRAW_BUFFER ? maxWithDrawable - WITHDRAW_BUFFER : 0n
     }
 
     return 0n

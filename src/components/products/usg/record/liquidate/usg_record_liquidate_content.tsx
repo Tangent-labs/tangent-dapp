@@ -106,9 +106,9 @@ export default function USGLiquidatePanel() {
 
       <RecapAccordion
         isLoading={isLiquidationLoading}
+        isDisplayed={true}
         zappingParams={{
           label: "USG",
-          isDisplayed: true,
           expected: "2",
           minOut: "2",
           slippage: slippage,

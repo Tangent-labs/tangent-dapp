@@ -2,7 +2,7 @@
 
 import { useUSGContext } from "../usg_context"
 import { SwapConfig, swapConfig } from "./swap_config"
-import { formatNumber, truncateDecimals } from "@/lib/number_formatter"
+import { formatBigInt, formatNumber } from "@/lib/number_formatter"
 import { toastTx } from "@/components/design_system/toast"
 import { USG_CONTRACT } from "../usg_repository"
 import { getQuote, getRoute } from "../global_quote_controller"
@@ -79,7 +79,7 @@ type USGSwapContextValues = {
 
   lpUserPoints: LpUserPoints
 
-  minValueReceivedFromZap: string
+  zapValuesFormatted: { buyFormatted: string; minOutFormatted: string }
 }
 
 export const USGSwapContext = createContext<USGSwapContextValues | undefined>(undefined)
@@ -135,21 +135,6 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     window.history.pushState(null, "", newUrl)
   }, [sellAssetAddress, buyAssetAddress])
 
-  // Sync URL → state (browser back/forward)
-  useEffect(() => {
-    const onPopState = () => {
-      const params = new URLSearchParams(window.location.search)
-      const tokenIn = params.get("tokenIn")?.toLowerCase()
-      const tokenOut = params.get("tokenOut")?.toLowerCase()
-
-      if (tokenIn) setSellAssetAddress(tokenIn)
-      if (tokenOut) setBuyAssetAddress(tokenOut)
-    }
-
-    window.addEventListener("popstate", onPopState)
-    return () => window.removeEventListener("popstate", onPopState)
-  }, [])
-
   // --- Balance/allowance ---
   useEffect(() => {
     if (sellAssetInfo && buyAssetInfo && walletClient) {
@@ -176,6 +161,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     }
   }
 
+  // Fetch balances of all tokens
   useEffect(() => {
     const tokenAddresses: Address[] = ERC20S.map((el) => el.address)
 
@@ -485,13 +471,17 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     )
   }, [balances])
 
-  const minValueReceivedFromZap = useMemo(() => {
+  const zapValuesFormatted = useMemo(() => {
     if (buyWeiValue) {
       const minAmountOutWei = computedMinAmountOut(buyWeiValue, slippage)
-      const result = `(${truncateDecimals(formatUnits(minAmountOutWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)})`
-      return result
+      const decimals = buyAssetInfo?.decimals || 18
+      const displayDecimals = buyAssetInfo?.displayDecimals || 2
+      const buyFormatted = formatBigInt(buyWeiValue, decimals, displayDecimals)
+      const minOutFormatted = formatBigInt(minAmountOutWei, decimals, displayDecimals)
+
+      return { buyFormatted, minOutFormatted }
     }
-    return ""
+    return { buyFormatted: "-", minOutFormatted: "-" }
   }, [buyWeiValue, slippage])
 
   const contextValue: USGSwapContextValues = {
@@ -534,7 +524,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     toggleTokensSwitch,
     USGsUSGMetrics,
     lpUserPoints,
-    minValueReceivedFromZap,
+    zapValuesFormatted,
   }
 
   return <USGSwapContext.Provider value={contextValue}>{children}</USGSwapContext.Provider>

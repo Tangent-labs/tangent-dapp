@@ -47,7 +47,7 @@ export default function USGSwapContent() {
     depositSliderPercent,
     slippage,
     USGsUSGMetrics,
-    minValueReceivedFromZap,
+    zapValuesFormatted,
   } = useUSGSwapContext()
 
   const { lpUserPoints, voteUserPoints } = useUSGContext()
@@ -167,14 +167,20 @@ export default function USGSwapContent() {
               asset={buyAssetInfo!}
               label={"You buy"}
               isLoading={isLoading || isSwapLoading}
-              bottomPart={<div className="flex select-none gap-2 text-xs text-subtitle">Minimum received {buyWeiValue ? minValueReceivedFromZap : ""}</div>}
+              bottomPart={<div className="flex select-none gap-2 text-xs text-subtitle">Minimum received {zapValuesFormatted.minOutFormatted}</div>}
             />
           </div>
 
           <RecapAccordion
             className="mt-2"
-            zappingParams={{ isDisplayed: true, label: "USDC", expected: "2", slippage: slippage, minOut: "2" }}
-            isLoading={isLoading}
+            isDisplayed={true}
+            zappingParams={{
+              label: buyAssetInfo?.symbol,
+              expected: zapValuesFormatted.buyFormatted,
+              minOut: zapValuesFormatted.minOutFormatted,
+              slippage: slippage,
+            }}
+            isLoading={isLoading || isSwapLoading}
           />
 
           <div className="mt-2 flex w-full">

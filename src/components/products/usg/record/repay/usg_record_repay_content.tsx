@@ -153,9 +153,9 @@ export default function USGRepayContent() {
       {isZapping && (
         <RecapAccordion
           isLoading={isZapLoading}
+          isDisplayed={isZapping}
           zappingParams={{
             label: "USG",
-            isDisplayed: isZapping,
             expected: `${expectedRemainingDebt}`,
             minOut: minValueReceivedFromZap,
             slippage: slippage,

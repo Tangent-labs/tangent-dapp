@@ -36,14 +36,14 @@ export default function USGLeverageContent() {
     borrowWeiValue,
     leveragedCollateralQuote,
     slippage,
-    minValueReceivedFromZap,
-    minCollatReceivedFromUSGDump,
-    expectedCollateral,
+    zapValuesFormatted,
+    usgDumpValuesFormatted,
+    swapValuesFormatted,
     depositSliderPercent,
     leveragePercentage,
     maxDepositString,
     computedMaxLeverage,
-    aprVariation,
+    // aprVariation,
     isZapping,
     sliderLegendValues,
     startEndRange,
@@ -100,11 +100,7 @@ export default function USGLeverageContent() {
           isLoading={isZapLoading}
           label={isZapping ? "You buy and deposit" : "You deposit"}
           depositSelect={<StaticCardAssetInput assetName={collateralInfo!.name} logoKey={collateralInfo!.logoKey} />}
-          bottomPart={
-            <div className="flex select-none gap-2 text-xs text-subtitle">
-              Minimum received {zapValue && !!marketData?.collateralInfos ? minValueReceivedFromZap : ""}
-            </div>
-          }
+          bottomPart={<div className="flex select-none gap-2 text-xs text-subtitle">Minimum received {zapValuesFormatted.minOutFormatted}</div>}
         />
       )}
 
@@ -137,30 +133,26 @@ export default function USGLeverageContent() {
 
       <GenericInputAssetAmount
         inputWeiValue={leveragedCollateralQuote}
+        isLoading={isDepositLoading}
         label="You buy and deposit"
         depositSelect={<StaticCardAssetInput assetName={collateralInfo!.name} logoKey={collateralInfo!.logoKey} />}
         disabled={true}
         asset={collateralInfo}
         onValueChange={() => {}}
-        // isLoading={isQuoteLoading}
-        bottomPart={
-          <div className="flex select-none gap-2 text-xs text-subtitle">
-            Minimum received {leveragedCollateralQuote && !!marketData?.collateralInfos ? minCollatReceivedFromUSGDump : ""}
-          </div>
-        }
+        bottomPart={<div className="flex select-none gap-2 text-xs text-subtitle">Minimum received {usgDumpValuesFormatted.minOutFormatted}</div>}
       />
 
       <RecapAccordion
-        isLoading={isDepositLoading}
+        isLoading={isDepositLoading || isZapLoading}
+        isDisplayed={true}
         zappingParams={{
-          isDisplayed: true,
           label: "collateral",
-          expected: `${expectedCollateral?.sum} ${expectedCollateral?.result}`,
-          minOut: ``,
+          expected: swapValuesFormatted.expectedFormatted,
+          minOut: swapValuesFormatted.minOutFormatted,
           slippage: slippage,
           leverage: leveragePercentage,
         }}
-        aprVariationParams={aprVariation}
+        // aprVariationParams={aprVariation}
       />
 
       <MarketTransactionError display={!!depositWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />

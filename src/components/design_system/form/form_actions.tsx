@@ -14,40 +14,40 @@ type FormButtonsProps = {
 }
 
 export default function FormButtons({ formState, labelApprove = "Approve", labelProcess, actions, connect, isLoading = false }: FormButtonsProps) {
-  const approveState = useMemo(() => {
-    return !formState?.cantProcessReasons?.length ? (formState?.haveToApprove ? "active" : "inactive") : "disabled"
-  }, [formState])
-
-  const processState = useMemo(() => {
-    return !formState?.cantProcessReasons?.length ? (formState?.haveToApprove ? "inactive" : "active") : "disabled"
+  const isWalletConnected = !formState.cantProcessReasons.includes("No connected wallet.")
+  const isApproveNeeded = !!actions.handleApprove && formState?.haveToApprove
+  let label = ""
+  let funcCalledOnClick: (() => void) | undefined
+  if (isApproveNeeded) {
+    label = labelApprove
+    funcCalledOnClick = actions.handleApprove
+  } else {
+    label = labelProcess
+    funcCalledOnClick = actions.handleProcess
+  }
+  const buttonState = useMemo(() => {
+    if (isLoading) {
+      return "disabled"
+    }
+    if (formState.cantProcessReasons.length === 0 && (formState.haveToApprove || formState.canProcess)) {
+      return "active"
+    }
+    return "disabled"
   }, [formState])
 
   return (
     <div className="flex w-full items-center justify-between gap-2">
-      {formState.cantProcessReasons.includes("No connected wallet.") ? (
-        <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
+      {isWalletConnected ? (
+        <Button
+          hasLoadingState={true}
+          isLoading={isLoading}
+          label={label}
+          onClick={isLoading ? () => {} : funcCalledOnClick}
+          state={buttonState}
+          className="w-full justify-center"
+        />
       ) : (
-        <>
-          {!!actions.handleApprove && formState?.haveToApprove ? (
-            <Button
-              hasLoadingState={true}
-              isLoading={isLoading}
-              label={labelApprove}
-              onClick={isLoading ? () => {} : actions.handleApprove}
-              state={approveState}
-              className="w-full justify-center"
-            />
-          ) : (
-            <Button
-              hasLoadingState={true}
-              isLoading={isLoading}
-              label={labelProcess}
-              onClick={isLoading ? () => {} : actions.handleProcess}
-              state={processState}
-              className="w-full justify-center"
-            />
-          )}
-        </>
+        <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
       )}
     </div>
   )

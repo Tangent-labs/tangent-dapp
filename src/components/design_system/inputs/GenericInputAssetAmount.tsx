@@ -282,7 +282,7 @@ export function GenericInputAssetAmount({
               lang="en"
               disabled={isLoading || disabled}
               type="text"
-              value={localDisplay}
+              value={isLoading ? "-" : localDisplay}
               placeholder="0.00"
               onChange={handleInputChange}
               className={cn(
@@ -301,7 +301,7 @@ export function GenericInputAssetAmount({
             />
           </div>
 
-          <div className="select-none text-xs text-subtitle">{dollarDepositDisplay}</div>
+          <div className="select-none text-xs text-subtitle">{isLoading ? "($-)" : dollarDepositDisplay}</div>
         </div>
 
         <div className="stop-focus flex select-none items-center justify-center gap-2">

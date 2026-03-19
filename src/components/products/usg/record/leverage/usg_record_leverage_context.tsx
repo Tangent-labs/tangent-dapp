@@ -9,11 +9,11 @@ import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
-import { formatBigInt, formatBigIntAsNumber, truncateDecimals } from "@/lib/number_formatter"
+import { formatBigInt, formatBigIntAsNumber } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
-import { computeAprVariation, computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
+import { computedMinAmountOut, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { useUSGMaketListContext } from "../../list/usg_market_list_context"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
 
@@ -21,6 +21,12 @@ type USGLeverageContextProps = {
   children: ReactNode
 }
 
+export type BuyAndMinOutFormatted = {
+  expectedFormatted: string
+  minOutFormatted: string
+  expectedWei?: bigint
+  minOutWei?: bigint
+}
 type USGLeverageContextValues = {
   collateralInfo: AssetDataPriced
 
@@ -73,14 +79,13 @@ type USGLeverageContextValues = {
 
   expectedCollateral: { sum: string; result: string }
 
-  minValueReceivedFromZap: string
-  minCollatReceivedFromUSGDump: string
+  zapValuesFormatted: BuyAndMinOutFormatted
+  usgDumpValuesFormatted: BuyAndMinOutFormatted
+  swapValuesFormatted: BuyAndMinOutFormatted
 
   maxDepositString: string
 
   computedMaxLeverage: string
-
-  aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
 
   computedDepositAmount: bigint
 
@@ -93,6 +98,8 @@ type USGLeverageContextValues = {
   sliderLegendValues?: string[] | undefined
 
   startEndRange?: [string, string, string] | undefined
+
+  // aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
 }
 
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
@@ -104,7 +111,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     balanceAllowanceData,
     futureMarketDisplayData,
     collateralInfo,
-    currentConvexTVL,
     fetchBalanceAllowanceData,
     loadOnChainData,
     setCurrentAmounts,
@@ -114,7 +120,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { loadUSGsUSGMetrics, marketAprs } = useUSGContext()
+  const { loadUSGsUSGMetrics } = useUSGContext()
 
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
@@ -183,8 +189,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     return asset
   }, [depositAsset, swapAssetPrice, marketData])
 
-  function computeBorrowValue(depositedCollateralWei: bigint, leverageValue: number) {
-    const collatToBuy = (depositedCollateralWei * BigInt(leverageValue * 100)) / 100n - depositedCollateralWei
+  function computeBorrowValue(depositedCollateralWei: bigint, leverageMultiplicator: number) {
+    const collatToBuy = (depositedCollateralWei * BigInt(Math.trunc(leverageMultiplicator * 100))) / 100n - depositedCollateralWei
     const collatPrice = marketData?.collateralInfos.collateralUSDPrice || 0n
     const expectedCollateralFinalDollarValue = (collatToBuy * collatPrice) / parseEther("1")
     return (expectedCollateralFinalDollarValue * parseEther("1")) / globalData.usgPriceWei
@@ -198,6 +204,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     const valueWei = BigInt(value || 0n)
     setDepositWeiValue(valueWei)
 
+    // NO ZAP CASE
     if (!value || !currentAddress || !depositAssetInfo) {
       updateBorrowWeiValue(computeBorrowValue(valueWei, leveragePercentage))
       return
@@ -208,6 +215,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       return
     }
 
+    //  ZAP CASE
     const requestId = ++requestIdRef.current
     setIsZapLoading(true)
 
@@ -215,8 +223,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       .then(({ quote }) => {
         if (requestId !== requestIdRef.current) return
         if (quote) {
-          setZapValue(quote as bigint)
-          updateBorrowWeiValue(computeBorrowValue(quote as bigint, leveragePercentage))
+          setZapValue(quote)
+          updateBorrowWeiValue(computeBorrowValue(quote, leveragePercentage))
         }
       })
       .catch((e) => {
@@ -230,7 +238,9 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   function handleZapInputChange(value: bigint | undefined) {
     activeInputRef.current = "zap"
-    setZapValue(value ?? 0n)
+    const valueWei = value ?? 0n
+
+    setZapValue(valueWei)
 
     if (!value || !currentAddress || !depositAssetInfo) {
       setDepositWeiValue(undefined)
@@ -240,7 +250,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     const requestId = ++requestIdRef.current
     setIsDepositLoading(true)
 
-    getQuote(value, currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
+    getQuote(valueWei, currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
       .then(({ quote }) => {
         if (requestId !== requestIdRef.current) return
         handleQuote(quote)
@@ -490,40 +500,90 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     return quoteDetail
   }, [zapValue, depositWeiValue, leveragedCollateralQuote, collateralInfo?.symbol, marketData, isLeverageAllPosition, isDepositDisabled])
 
-  const aprVariation = useMemo(() => {
-    let apr = { current: "", currentUpdated: "-", projected: "", projectedUpdated: "-" }
+  // const aprVariation = useMemo(() => {
+  //   let apr = { current: "", currentUpdated: "-", projected: "", projectedUpdated: "-" }
 
-    if (marketData) {
-      if (marketAprs && zapValue && leveragedCollateralQuote) {
-        apr = computeAprVariation(marketAprs, currentConvexTVL, marketData, leveragedCollateralQuote + BigInt(zapValue))
-      } else if (marketAprs && depositWeiValue && leveragedCollateralQuote) {
-        apr = computeAprVariation(marketAprs, currentConvexTVL, marketData, leveragedCollateralQuote + depositWeiValue)
-      } else {
-        apr = computeAprVariation(marketAprs, currentConvexTVL, marketData, 0n)
-      }
-    }
-    return apr
-  }, [zapValue, depositWeiValue, leveragedCollateralQuote, marketData, currentConvexTVL])
+  //   if (marketData) {
+  //     if (marketAprs && zapValue && leveragedCollateralQuote) {
+  //       apr = computeAprVariation(marketAprs, currentConvexTVL, marketData, leveragedCollateralQuote + BigInt(zapValue))
+  //     } else if (marketAprs && depositWeiValue && leveragedCollateralQuote) {
+  //       apr = computeAprVariation(marketAprs, currentConvexTVL, marketData, leveragedCollateralQuote + depositWeiValue)
+  //     } else {
+  //       apr = computeAprVariation(marketAprs, currentConvexTVL, marketData, 0n)
+  //     }
+  //   }
+  //   return apr
+  // }, [zapValue, depositWeiValue, leveragedCollateralQuote, marketData, currentConvexTVL])
 
-  const minValueReceivedFromZap = useMemo(() => {
+  const zapValuesFormatted = useMemo(() => {
     if (zapValue) {
       const minAmountOutWei = computedMinAmountOut(zapValue, slippage)
-      const result = `(${truncateDecimals(formatUnits(minAmountOutWei, collateralInfo?.decimals), collateralInfo.displayDecimals)})`
-      return result
+      return {
+        expectedWei: zapValue,
+        minOutWei: minAmountOutWei,
+        expectedFormatted: formatBigInt(zapValue, collateralInfo?.decimals, collateralInfo.displayDecimals),
+        minOutFormatted: formatBigInt(minAmountOutWei, collateralInfo?.decimals, collateralInfo.displayDecimals),
+      }
     }
 
-    return ""
+    return { expectedFormatted: "-", minOutFormatted: "-" }
   }, [zapValue, slippage])
 
-  const minCollatReceivedFromUSGDump = useMemo(() => {
+  const usgDumpValuesFormatted = useMemo(() => {
     if (leveragedCollateralQuote) {
       const minAmountOutWei = computedMinAmountOut(leveragedCollateralQuote, slippage)
-      const result = `(${truncateDecimals(formatUnits(minAmountOutWei, collateralInfo?.decimals), collateralInfo.displayDecimals)})`
-      return result
+      return {
+        expectedWei: leveragedCollateralQuote,
+        minOutWei: minAmountOutWei,
+        expectedFormatted: formatBigInt(leveragedCollateralQuote, collateralInfo?.decimals, collateralInfo.displayDecimals),
+        minOutFormatted: formatBigInt(minAmountOutWei, collateralInfo?.decimals, collateralInfo.displayDecimals),
+      }
+    }
+    return { expectedFormatted: "-", minOutFormatted: "-" }
+  }, [leveragedCollateralQuote, slippage])
+
+  const swapValuesFormatted = useMemo(() => {
+    const symbol = collateralInfo.symbol
+
+    let expectedFormatted = "- " + symbol
+    let minOutFormatted = "- " + symbol
+    const collatDecimals = collateralInfo.decimals
+    const collatDisplayDecimals = collateralInfo.displayDecimals
+
+    if (!isZapLoading && !isDepositLoading) {
+      // ZAP AND LEVERAGE
+      if (isZapping) {
+        if (usgDumpValuesFormatted.expectedWei && zapValuesFormatted.expectedWei) {
+          const isOneOfBothValueAbsent = zapValuesFormatted.expectedFormatted === "-" || usgDumpValuesFormatted.expectedFormatted === "-"
+          // One of both swap is not quoted
+          if (!isOneOfBothValueAbsent) {
+            const sumExpected = formatBigInt(usgDumpValuesFormatted.expectedWei + BigInt(zapValuesFormatted.expectedWei), collatDecimals, collatDisplayDecimals)
+            const sumMinOut = formatBigInt(usgDumpValuesFormatted.minOutWei + zapValuesFormatted.minOutWei, collatDecimals, collatDisplayDecimals)
+
+            expectedFormatted = `${zapValuesFormatted.expectedFormatted} + ${usgDumpValuesFormatted.expectedFormatted} = ${sumExpected} ${symbol}`
+            minOutFormatted = `${zapValuesFormatted.minOutFormatted} + ${usgDumpValuesFormatted.minOutFormatted} = ${sumMinOut} ${symbol}`
+          }
+        }
+      }
+      // LEVERAGE CLASSIC
+      else {
+        // Quote is ready
+        if (usgDumpValuesFormatted.expectedFormatted !== "-" && depositWeiValue && usgDumpValuesFormatted.expectedWei) {
+          const depositCollatFormatted = formatBigInt(depositWeiValue, collatDecimals, collatDecimals)
+          const sumExpected = formatBigInt(depositWeiValue + usgDumpValuesFormatted.expectedWei, collatDecimals, collatDisplayDecimals)
+          const sumMinOut = formatBigInt(depositWeiValue + usgDumpValuesFormatted.minOutWei, collatDecimals, collatDisplayDecimals)
+
+          expectedFormatted = `${depositCollatFormatted} + ${usgDumpValuesFormatted.expectedFormatted} = ${sumExpected} ${symbol}`
+          minOutFormatted = `${depositCollatFormatted} + ${usgDumpValuesFormatted.minOutFormatted} = ${sumMinOut} ${symbol}`
+        }
+      }
     }
 
-    return ""
-  }, [leveragedCollateralQuote, slippage])
+    return {
+      expectedFormatted,
+      minOutFormatted,
+    }
+  }, [zapValuesFormatted.minOutFormatted, usgDumpValuesFormatted.minOutFormatted, isZapLoading, isDepositLoading])
 
   const leverageExceedsMaxLtv = useMemo(() => {
     const computedLtv = futureMarketDisplayData.ltv.substring(0, futureMarketDisplayData.ltv.length - 1)
@@ -698,8 +758,9 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
     actionApproveZap,
 
-    minValueReceivedFromZap,
-    minCollatReceivedFromUSGDump,
+    zapValuesFormatted,
+    usgDumpValuesFormatted,
+    swapValuesFormatted,
 
     expectedCollateral,
 
@@ -707,7 +768,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
     computedMaxLeverage,
 
-    aprVariation,
+    // aprVariation,
 
     isLeverageAllPosition,
     setIsLeverageAllPosition,

@@ -27,7 +27,6 @@ import {
 
 import { toast } from "react-toastify"
 import { usePathname } from "next/navigation"
-import { getConvexPools } from "../server_api"
 import { useUSGContext } from "../usg_context"
 import { USG_CONTRACT, USGMarkets } from "../usg_repository"
 import { ToastComponent } from "@/components/design_system/toast"
@@ -121,9 +120,7 @@ type USGRecordContextValues = {
 
   maxBorrowCapReached: boolean
 
-  currentConvexTVL: bigint
-
-  displayAPRVariation: boolean
+  // currentConvexTVL: bigint
 
   computedBorrowRate: { current: string; next: string }
 
@@ -205,7 +202,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
 
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
 
-  const [currentConvexTVL, setCurrentConvexTVL] = useState<bigint>(1n)
+  // const [currentConvexTVL, setCurrentConvexTVL] = useState<bigint>(1n)
 
   const [activeTab, setActiveTab] = useState<string>("Borrow")
 
@@ -432,24 +429,6 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
     }
   }, [maxBorrowCapReached, currentAmounts.borrowWeiValue, marketData])
 
-  const fetchLpConvexData = async (address: Address) => {
-    const convexLpData = await getConvexPools()
-    const convexCollateralInfo = convexLpData.find((el) => el.lpTokenAddress?.toLowerCase() === address.toLowerCase())
-    setCurrentConvexTVL(BigInt((convexCollateralInfo?.convexPoolData?.usdTotal || 0) * 10 ** 18))
-  }
-
-  const displayAPRVariation = useMemo(() => {
-    return marketInfo?.marketType !== "Pendle_PT"
-  }, [marketInfo])
-
-  useEffect(() => {
-    if (collateralInfo) {
-      if (displayAPRVariation) {
-        fetchLpConvexData(collateralInfo?.address)
-      }
-    }
-  }, [collateralInfo?.address, displayAPRVariation])
-
   const computedBorrowRate = useMemo(() => {
     return {
       current: `${((Math.exp(marketDisplayData.borrowRateCurrent) - 1) * 100).toFixed(2)}%`,
@@ -555,9 +534,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
 
     maxBorrowCapReached,
 
-    currentConvexTVL,
-
-    displayAPRVariation,
+    // currentConvexTVL,
     depositAssetOptions,
     computedBorrowRate,
 

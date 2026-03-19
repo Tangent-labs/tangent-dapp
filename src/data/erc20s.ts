@@ -1,6 +1,11 @@
 import { Address } from "viem"
 import { CURVE_GAUGES, CURVE_LPS, PENDLE_POOLS } from "@tangent/defi-resources"
-import { SDT_crvUSD_USDC_VAULT, SDT_crvUSD_USDT_VAULT, SDT_tBTC_cbBTC_VAULT } from "@tangent/defi-resources/build/ressources/erc20/stakeDao"
+import {
+  SDT_crvUSD_USDC_VAULT,
+  SDT_crvUSD_USDT_VAULT,
+  SDT_GHO_crvUSD_VAULT,
+  SDT_tBTC_cbBTC_VAULT,
+} from "@tangent/defi-resources/build/ressources/erc20/stakeDao"
 
 export type Erc20Details = {
   address: Address
@@ -160,6 +165,14 @@ export const ERC20S: Erc20Details[] = [
     name: "tBTC/cbBTC",
     symbol: "tBTC/cbBTC",
   },
+  {
+    address: CURVE_LPS.DUO_GHO_crvUSD,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "GHO-crvUSD",
+    name: "GHO/crvUSD",
+    symbol: "GHO/crvUSD",
+  },
 
   // PENDLE PT
 
@@ -213,6 +226,15 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "tBTC-cbBTC",
     name: "Vault tBTC/cbBTC",
     symbol: "Vault tBTC/cbBTC",
+  },
+
+  {
+    address: SDT_GHO_crvUSD_VAULT,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "GHO-crvUSD",
+    name: "Vault GHO/crvUSD",
+    symbol: "Vault GHO/crvUSD",
   },
 
   // CURVE GAUGES

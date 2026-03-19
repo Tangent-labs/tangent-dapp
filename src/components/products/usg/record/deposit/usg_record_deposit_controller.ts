@@ -16,14 +16,12 @@ export function getDepositFormState(
   depositAssetInfo?: Address,
   collateralInfo?: CollateralInfo,
   balanceAllowanceData?: BalanceAllowanceData,
-  maxBorrowableValue?: bigint
+  maxBorrowableValue?: bigint,
+  isLoading?: boolean
 ) {
   const isZapMode = depositAssetInfo !== collateralInfo?.address
-
   const reasons: string[] = []
-  const isApproved =
-    (!isZapMode && (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n)) ||
-    (isZapMode && (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n))
+  const isApproved = (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n)
 
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
@@ -45,9 +43,8 @@ export function getDepositFormState(
       reasons.push("Loan exceeds max LTV")
     }
   }
-
   return {
-    canProcess: isApproved && reasons.length === 0,
+    canProcess: isApproved && reasons.length === 0 && !isLoading,
     cantProcessReasons: reasons,
     haveToApprove: !isApproved,
   }

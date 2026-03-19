@@ -30,10 +30,13 @@ export default function USGDepositContent() {
     depositAsset,
     depositWeiValue,
     formState,
-    minValueReceivedFromZap,
+    zapValuesFormatted,
     borrowWeiValue,
-    isZapLoading,
+
     isDepositLoading,
+    isZapLoading,
+    isTxLoading,
+
     zapValue,
     depositAssetInfo,
     slippage,
@@ -41,14 +44,13 @@ export default function USGDepositContent() {
     borrowSliderPercent,
     maxBorrowableValue,
     maxDepositString,
-    aprVariation,
-    expectedCollateral,
+    // aprVariation,
     isZapping,
   } = useUSGDepositContext()
 
-  const { connect } = useWalletConnexionContext()
-
   const { collateralInfo, isDepositAndBorrow, marketData, balanceAllowanceData, maxBorrowCapReached, USGInfo } = useUSGRecordContext()
+
+  const { connect } = useWalletConnexionContext()
 
   return (
     <div className="flex flex-col gap-2">
@@ -65,10 +67,10 @@ export default function USGDepositContent() {
         }}
         slippageInput={isZapping ? <SlippageInput slippage={slippage} setSlippage={setSlippage} /> : <></>}
         depositSelect={<ZapAssetSelector collateralInfo={collateralInfo} depositAsset={depositAsset} setDepositAsset={setDepositAsset} caseType="deposit" />}
-        isLoading={isDepositLoading}
         asset={depositAssetInfo}
         label={isZapping ? "You sell" : "You deposit"}
         isZapping={isZapping}
+        isLoading={isDepositLoading}
         maxAmountParams={{
           maxWeiValue: balanceAllowanceData?.balance || 0n,
           setMaxAmount: () => {
@@ -98,7 +100,7 @@ export default function USGDepositContent() {
           depositSelect={<StaticCardAssetInput assetName={collateralInfo.name} logoKey={collateralInfo.logoKey} />}
           bottomPart={
             <div className="flex select-none gap-2 text-xs text-subtitle">
-              Minimum received {zapValue && !!marketData?.collateralInfos ? minValueReceivedFromZap : ""}
+              Minimum received {zapValue && !!marketData?.collateralInfos && zapValuesFormatted.minOutFormatted}
             </div>
           }
         />
@@ -137,9 +139,15 @@ export default function USGDepositContent() {
       {/* RECAP */}
       <RecapAccordion
         className=""
-        isLoading={isDepositLoading}
-        zappingParams={{ isDisplayed: isZapping, label: "collateral", expected: expectedCollateral, minOut: minValueReceivedFromZap, slippage: slippage }}
-        aprVariationParams={aprVariation}
+        isDisplayed={isZapping}
+        isLoading={isZapLoading}
+        zappingParams={{
+          label: "collateral",
+          expected: `${zapValuesFormatted.expectedFormatted} ${collateralInfo.symbol}`,
+          minOut: `${zapValuesFormatted.minOutFormatted} ${collateralInfo.symbol}`,
+          slippage: slippage,
+        }}
+        // aprVariationParams={aprVariation}
       ></RecapAccordion>
 
       <MarketTransactionError display={!!borrowWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />
@@ -154,7 +162,7 @@ export default function USGDepositContent() {
         formState={formState}
         labelProcess={isDepositAndBorrow ? "Deposit & Borrow" : "Deposit"}
         connect={connect}
-        isLoading={isDepositLoading}
+        isLoading={isDepositLoading || isZapLoading || isTxLoading}
       />
     </div>
   )

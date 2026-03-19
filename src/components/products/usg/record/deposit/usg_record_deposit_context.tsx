@@ -9,13 +9,13 @@ import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { Address, formatEther, formatUnits, parseEther, zeroAddress } from "viem"
-import { formatBigInt, formatBigIntAsNumber, formatNumber, truncateDecimals } from "@/lib/number_formatter"
+import { formatBigInt } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { computeAprVariation, computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
+import { computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit, doMarketDepositAndBorrow } from "./usg_record_deposit_controller"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
-import { AprVariation } from "@/components/design_system/structure/recap"
+import { BuyAndMinOutFormatted } from "../leverage/usg_record_leverage_context"
 
 type USGDepositContextProps = {
   children: ReactNode
@@ -65,15 +65,15 @@ type USGDepositContextValues = {
 
   maxBorrowableValue: bigint
 
-  minValueReceivedFromZap: string
+  zapValuesFormatted: BuyAndMinOutFormatted
 
   maxDepositString: string
 
-  expectedCollateral: string
-
-  aprVariation: AprVariation
-
   isZapping: boolean
+
+  isTxLoading: boolean
+
+  // aprVariation: AprVariation
 }
 
 export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
@@ -81,7 +81,7 @@ export const USGDepositContext = createContext<USGDepositContextValues | undefin
 export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDepositContextProps) => {
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { loadUSGsUSGMetrics, marketAprs } = useUSGContext()
+  const { loadUSGsUSGMetrics } = useUSGContext()
 
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
@@ -94,7 +94,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     fetchBalanceAllowanceData,
     collateralInfo,
     marketInfo,
-    currentConvexTVL,
     setIsDepositAndBorrow,
   } = useUSGRecordContext()
 
@@ -118,6 +117,8 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const [isZapLoading, setIsZapLoading] = useState(false)
 
+  const [isTxLoading, setIsTxLoading] = useState(false)
+
   const [zapValue, setZapValue] = useState<bigint | undefined>()
 
   const [zapInnerValue, setZapInnerValue] = useState<number | undefined>(zapValue !== undefined ? Number(formatUnits(zapValue || BigInt(0), 18)) : undefined)
@@ -125,16 +126,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   const [isZapUserInput, setIsZapUserInput] = useState<boolean>(false)
 
   const [slippage, setSlippage] = useState<number>(0.2)
-
-  useEffect(() => {
-    setIsDepositAndBorrow(isDepositAndBorrowInput)
-  }, [])
-
-  useEffect(() => {
-    if (collateralInfo) {
-      setDepositAsset(collateralInfo.name)
-    }
-  }, [collateralInfo?.name])
 
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
     // When market data is not charged
@@ -172,127 +163,41 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     return ![collateralInfo?.symbol, `${getReceiptPrefix(marketType)}${collateralInfo?.symbol}`].includes(depositAsset)
   }, [depositAsset, collateralInfo?.symbol])
 
-  /**
-   * Call back method to prevent loadDataAfterApprove
-   * to be called multiple times at once
-   */
-  const loadDataAfterApprove = useCallback((assetAddress: Address, isZap = false) => {
-    const now = Date.now()
-    if (now - lastApproveRef.current < 6000) {
-      return
-    }
+  //  useEffects
 
-    lastApproveRef.current = now
-
-    if (!isZap) {
-      loadOnChainData()
-    }
-
-    fetchBalanceAllowanceData(assetAddress)
-    setIsDepositLoading(false)
+  useEffect(() => {
+    setIsDepositAndBorrow(isDepositAndBorrowInput)
   }, [])
 
-  /**
-   * Call back method to prevent resetAfterDepositSuccess
-   * to be called multiple times at once
-   */
-  const resetAfterDepositSuccess = useCallback(() => {
-    const now = Date.now()
-    if (now - lastDepositRef.current < 6000) {
-      return
+  useEffect(() => {
+    if (collateralInfo) {
+      setDepositAsset(collateralInfo.name)
     }
+  }, [collateralInfo?.name])
 
-    lastDepositRef.current = now
-
-    loadOnChainData()
-    loadUSGsUSGMetrics()
-    setDepositWeiValue(undefined)
-    setBorrowWeiValue(undefined)
-    setZapValue(undefined)
-    setIsZapLoading(false)
-    setBorrowSliderPercent(0)
-    setDepositSliderPercent(0)
-    setIsDepositLoading(false)
-    fetchBalanceAllowanceData(depositAssetInfo?.address)
-  }, [
-    loadOnChainData,
-    loadUSGsUSGMetrics,
-    setDepositWeiValue,
-    setBorrowWeiValue,
-    setZapValue,
-    setIsZapLoading,
-    setBorrowSliderPercent,
-    setDepositSliderPercent,
-    setIsDepositLoading,
-    fetchBalanceAllowanceData,
-    depositAssetInfo?.address,
-  ])
-
-  const latestRequestRef = useRef(0)
-
-  const handleDepositChange = (value: bigint | undefined) => {
-    setDepositWeiValue(value)
-
-    if (!value || !depositAssetInfo || !isZapping) {
-      if (!value || value === 0n) setZapValue(undefined)
-      return
+  // Fetch balance and allowances of new depositAsset
+  useEffect(() => {
+    if (depositAssetInfo) {
+      fetchBalanceAllowanceData(depositAssetInfo?.address)
     }
+  }, [depositAssetInfo])
 
-    const requestId = ++latestRequestRef.current
-    setIsZapLoading(true)
-
-    getQuote(value, currentAddress || zeroAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
-      .then(({ quote }) => {
-        // Do nothing when price is stale
-        if (requestId !== latestRequestRef.current) return // stale
-        handleQuote(quote)
-        if (quote) setZapValue(quote)
-      })
-      .catch((error) => {
-        if (requestId !== latestRequestRef.current) return
-        console.error("Error fetching zap value:", error)
-      })
-      .finally(() => {
-        if (requestId === latestRequestRef.current) setIsZapLoading(false)
-      })
-  }
-
-  const handleZapChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setZapValue(parseEther(e?.target?.value))
-
-    if (e?.target?.value === "") {
+  // Reset form when deposit asset is changed
+  useEffect(() => {
+    if (depositAsset) {
+      setBorrowWeiValue(undefined)
       setDepositWeiValue(undefined)
-      return
+      setZapValue(undefined)
+      setBorrowSliderPercent(0)
     }
+  }, [depositAsset])
 
-    const debounceTimeout = setTimeout(async () => {
-      if (!parseEther(e?.target?.value) || !currentAddress || !depositAssetInfo) return
-      setIsDepositLoading(true)
-
-      try {
-        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
-
-        handleQuote(quote)
-
-        if (quote) {
-          setDepositWeiValue(BigInt(quote))
-        }
-      } catch (error) {
-        console.error("Error fetching depositWeiValue:", error)
-      } finally {
-        setIsDepositLoading(false)
-      }
-    }, 500)
-
-    return () => clearTimeout(debounceTimeout)
-  }
-
-  const handleZapInputChange = (v: bigint | undefined) => {
-    const value = v || 0n
-    const zapValueNumber = Number(formatEther(value))
-    setZapInnerValue(zapValueNumber)
-    setIsZapUserInput(true)
-  }
+  useEffect(() => {
+    if (!isDepositAndBorrow) {
+      setBorrowWeiValue(undefined)
+      setBorrowSliderPercent(0)
+    }
+  }, [isDepositAndBorrow])
 
   useEffect(() => {
     if (zapValue !== undefined) {
@@ -361,8 +266,197 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     }
   }, [depositWeiValue, borrowWeiValue, zapValue])
 
+  /**
+   * Call back method to prevent loadDataAfterApprove
+   * to be called multiple times at once
+   */
+  const loadDataAfterApprove = useCallback((assetAddress: Address, isZap = false) => {
+    const now = Date.now()
+    if (now - lastApproveRef.current < 6000) {
+      return
+    }
+
+    lastApproveRef.current = now
+
+    if (!isZap) {
+      loadOnChainData()
+    }
+
+    fetchBalanceAllowanceData(assetAddress)
+    setIsTxLoading(false)
+  }, [])
+
+  // Handle inputs
+  const latestRequestRef = useRef(0)
+
+  const handleDepositChange = (value: bigint | undefined) => {
+    setDepositWeiValue(value)
+
+    if (!value || !depositAssetInfo || !isZapping) {
+      if (!value || value === 0n) setZapValue(undefined)
+      return
+    }
+
+    const requestId = ++latestRequestRef.current
+    setIsZapLoading(true)
+
+    getQuote(value, currentAddress || zeroAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
+      .then(({ quote }) => {
+        // Do nothing when price is stale
+        if (requestId !== latestRequestRef.current) return // stale
+        handleQuote(quote)
+        if (quote) setZapValue(quote)
+      })
+      .catch((error) => {
+        if (requestId !== latestRequestRef.current) return
+        console.error("Error fetching zap value:", error)
+      })
+      .finally(() => {
+        if (requestId === latestRequestRef.current) setIsZapLoading(false)
+      })
+  }
+
+  const handleZapChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setZapValue(parseEther(e?.target?.value))
+
+    if (e?.target?.value === "") {
+      setDepositWeiValue(undefined)
+      return
+    }
+
+    const debounceTimeout = setTimeout(async () => {
+      if (!parseEther(e?.target?.value) || !currentAddress || !depositAssetInfo) return
+      setIsDepositLoading(true)
+
+      try {
+        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
+
+        handleQuote(quote)
+
+        if (quote) {
+          setDepositWeiValue(BigInt(quote))
+        }
+      } catch (error) {
+        console.error("Error fetching depositWeiValue:", error)
+      } finally {
+        setIsDepositLoading(false)
+      }
+    }, 500)
+
+    return () => clearTimeout(debounceTimeout)
+  }
+
+  const handleZapInputChange = (v: bigint | undefined) => {
+    const value = v || 0n
+    const zapValueNumber = Number(formatEther(value))
+    setZapInnerValue(zapValueNumber)
+    setIsZapUserInput(true)
+  }
+
+  // useMemos
+
+  const maxBorrowableValue = useMemo(() => {
+    const deposit = depositWeiValue || 0n
+
+    if (marketData) {
+      const futureDebt = marketData?.debtInfos?.userDebt
+      let futureDeposited
+
+      if (isZapping && zapValue) {
+        futureDeposited =
+          marketData?.collateralInfos?.positionCollateralUSDValue +
+          (computedMinAmountOut(zapValue, slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** collateralInfo?.decimals)
+      } else {
+        futureDeposited =
+          marketData?.collateralInfos?.positionCollateralUSDValue + (deposit * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18)
+      }
+      const maxBorrowable = (futureDeposited * marketData?.constants.maxLTV) / 100000n - futureDebt
+
+      const computedMaxBorrowable = computeMaxBorrowable(maxBorrowable, marketData?.constants?.maxMarketDebt, marketData?.debtInfos?.totalDebt)
+
+      return computedMaxBorrowable
+    }
+
+    return 0n
+  }, [marketData, depositWeiValue, depositAsset, depositAssetInfo, zapValue, slippage, isZapping])
+
+  const zapValuesFormatted = useMemo(() => {
+    if (!isZapLoading) {
+      if (zapValue && marketData) {
+        const minAmountOutWei = computedMinAmountOut(zapValue, slippage)
+        const decimals = collateralInfo?.decimals || 18
+        const displayDecimals = collateralInfo?.displayDecimals || 2
+
+        return {
+          expectedFormatted: `${formatBigInt(zapValue, decimals, displayDecimals)} `,
+          minOutFormatted: `${formatBigInt(minAmountOutWei, decimals, displayDecimals)}`,
+        }
+      }
+    }
+
+    return { expectedFormatted: `-`, minOutFormatted: `-` }
+  }, [zapValue, isZapLoading, slippage])
+
+  const maxDepositString = useMemo(() => {
+    const asset = depositAssetInfo?.symbol?.replaceAll("-", "/")
+
+    let amountDisplayed = "0"
+
+    if (!!balanceAllowanceData && currentAddress && (isZapping || depositAssetInfo?.address == marketData?.constants?.receipt)) {
+      amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
+    }
+    if (currentAddress && !isZapping) {
+      amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
+    }
+    return `Max ${amountDisplayed} ${asset}`
+  }, [currentAddress, depositAssetInfo, balanceAllowanceData, isZapping])
+
+  // const aprVariation = useMemo(() => {
+  //   let result = { current: "", currentUpdated: "-", projected: "", projectedUpdated: "-" }
+
+  //   if (marketAprs && marketData && currentConvexTVL) {
+  //     if (zapValue && isZapping) {
+  //       result = computeAprVariation(marketAprs, currentConvexTVL, marketData, BigInt(zapValue))
+  //     } else if (!isZapping && depositWeiValue) {
+  //       result = computeAprVariation(marketAprs, currentConvexTVL, marketData, depositWeiValue)
+  //     } else {
+  //       result = computeAprVariation(marketAprs, currentConvexTVL, marketData, 0n)
+  //     }
+  //   }
+  //   return result
+  // }, [zapValue, depositWeiValue, collateralInfo?.symbol, marketAprs, marketData, currentConvexTVL, isZapping])
+
+  const formState = useMemo(() => {
+    return getDepositFormState(
+      marketData,
+      depositWeiValue,
+      borrowWeiValue,
+      isDepositAndBorrow,
+      isWellConnected,
+      depositAssetInfo?.address,
+      collateralInfo!,
+      balanceAllowanceData!,
+      maxBorrowableValue || 0n,
+      isZapLoading
+    )
+  }, [
+    isDepositLoading,
+    isZapLoading,
+    isTxLoading,
+    marketData,
+    isDepositAndBorrow,
+    borrowWeiValue,
+    depositWeiValue,
+    isWellConnected,
+    currentAddress,
+    depositAssetInfo,
+    balanceAllowanceData,
+  ])
+
+  //  ACTIONS
+
   const actionApproveZap = async () => {
-    setIsDepositLoading(true)
+    setIsTxLoading(true)
 
     try {
       if (!walletClient || !depositAssetInfo) throw new Error("Wallet not available")
@@ -377,12 +471,12 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     } catch (e) {
       console.error(e)
     } finally {
-      setIsDepositLoading(false)
+      setIsTxLoading(false)
     }
   }
 
   const actionApprove = async () => {
-    setIsDepositLoading(true)
+    setIsTxLoading(true)
     if (walletClient && depositWeiValue) {
       await toastTx(doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue), {
         pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
@@ -406,7 +500,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   }
 
   const depositAndBorrow = async () => {
-    setIsDepositLoading(true)
+    setIsTxLoading(true)
 
     if (walletClient && depositWeiValue) {
       const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
@@ -420,19 +514,19 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
             return { type: "Success", content: "Position successfully created." }
           },
           error: () => {
-            setIsDepositLoading(false)
+            setIsTxLoading(false)
             return { type: "Error", content: "Unable to proceed with the transaction." }
           },
         }
       )
     } else {
-      setIsDepositLoading(false)
+      setIsTxLoading(false)
       toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
     }
   }
 
   const deposit = async () => {
-    setIsDepositLoading(true)
+    setIsTxLoading(true)
 
     if (walletClient && depositWeiValue) {
       const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
@@ -444,37 +538,15 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
           return { type: "Success", content: "Position successfully created." }
         },
         error: () => {
-          setIsDepositLoading(false)
+          setIsTxLoading(false)
           return { type: "Error", content: "Unable to proceed with the transaction." }
         },
       })
     } else {
-      setIsDepositLoading(false)
+      setIsTxLoading(false)
       toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
     }
   }
-
-  useEffect(() => {
-    if (depositAssetInfo) {
-      fetchBalanceAllowanceData(depositAssetInfo?.address)
-    }
-  }, [depositAssetInfo])
-
-  useEffect(() => {
-    if (depositAsset) {
-      setBorrowWeiValue(undefined)
-      setBorrowSliderPercent(0)
-      setDepositWeiValue(undefined)
-      setZapValue(undefined)
-    }
-  }, [depositAsset])
-
-  useEffect(() => {
-    if (!isDepositAndBorrow) {
-      setBorrowWeiValue(undefined)
-      setBorrowSliderPercent(0)
-    }
-  }, [isDepositAndBorrow])
 
   const getRouteAndDeposit = async () => {
     if (!depositWeiValue || !currentAddress || !depositAssetInfo) return
@@ -489,8 +561,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   const zapAndDepositAndBorrow = async () => {
     if (!depositWeiValue || !currentAddress || !depositAssetInfo || !borrowWeiValue || !zapValue) return
 
-    setIsZapLoading(true)
-    setIsDepositLoading(true)
+    setIsTxLoading(true)
 
     try {
       const zapData = await getRoute(
@@ -518,8 +589,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
             return { type: "Success", content: "Position successfully created." }
           },
           error: () => {
-            setIsDepositLoading(false)
-            setIsZapLoading(false)
+            setIsTxLoading(false)
 
             return { type: "Error", content: "Unable to proceed with the transaction." }
           },
@@ -533,8 +603,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   const zapAndDeposit = async () => {
     if (!depositWeiValue || !currentAddress || !depositAssetInfo || !zapValue) return
 
-    setIsZapLoading(true)
-    setIsDepositLoading(true)
+    setIsTxLoading(true)
 
     try {
       const zapData = await getRoute(
@@ -560,108 +629,54 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
           return { type: "Success", content: "Position successfully created." }
         },
         error: () => {
-          setIsDepositLoading(false)
-          setIsZapLoading(false)
+          setIsTxLoading(false)
           return { type: "Error", content: "Unable to proceed with the transaction." }
         },
       })
     } catch (error) {
       console.error("Error in zapAndDeposit:", error)
-      setIsZapLoading(false)
-      setIsDepositLoading(false)
+      setIsTxLoading(false)
     }
   }
 
-  const maxBorrowableValue = useMemo(() => {
-    const deposit = depositWeiValue || 0n
-
-    if (marketData) {
-      const futureDebt = marketData?.debtInfos?.userDebt
-      let futureDeposited
-
-      if (isZapping && zapValue) {
-        futureDeposited =
-          marketData?.collateralInfos?.positionCollateralUSDValue +
-          (computedMinAmountOut(zapValue, slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** collateralInfo?.decimals)
-      } else {
-        futureDeposited =
-          marketData?.collateralInfos?.positionCollateralUSDValue + (deposit * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18)
-      }
-      const maxBorrowable = (futureDeposited * marketData?.constants.maxLTV) / 100000n - futureDebt
-
-      const computedMaxBorrowable = computeMaxBorrowable(maxBorrowable, marketData?.constants?.maxMarketDebt, marketData?.debtInfos?.totalDebt)
-
-      return computedMaxBorrowable
+  /**
+   * Call back method to prevent resetAfterDepositSuccess
+   * to be called multiple times at once
+   */
+  const resetAfterDepositSuccess = useCallback(() => {
+    const now = Date.now()
+    if (now - lastDepositRef.current < 6000) {
+      return
     }
 
-    return 0n
-  }, [marketData, depositWeiValue, depositAsset, depositAssetInfo, zapValue, slippage, isZapping])
+    lastDepositRef.current = now
 
-  const minValueReceivedFromZap = useMemo(() => {
-    if (zapValue && marketData) {
-      const minAmountOutWei = computedMinAmountOut(zapValue, slippage)
-      const result = `(${formatNumber(Number(truncateDecimals(formatUnits(minAmountOutWei, collateralInfo?.decimals), collateralInfo.displayDecimals)), 2)})`
-      return result
-    }
+    loadOnChainData()
+    loadUSGsUSGMetrics()
+    setDepositWeiValue(undefined)
+    setBorrowWeiValue(undefined)
+    setZapValue(undefined)
+    setIsZapLoading(false)
+    setBorrowSliderPercent(0)
+    setDepositSliderPercent(0)
+    setIsDepositLoading(false)
+    setIsTxLoading(false)
 
-    return ""
-  }, [zapValue, slippage])
-
-  const maxDepositString = useMemo(() => {
-    const asset = depositAssetInfo?.symbol?.replaceAll("-", "/")
-
-    let amountDisplayed = "0"
-
-    if (!!balanceAllowanceData && currentAddress && (isZapping || depositAssetInfo?.address == marketData?.constants?.receipt)) {
-      amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
-    }
-    if (currentAddress && !isZapping) {
-      amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
-    }
-    return `Max ${amountDisplayed} ${asset}`
-  }, [currentAddress, depositAssetInfo, balanceAllowanceData, isZapping])
-
-  const expectedCollateral = useMemo(() => {
-    if (marketData) {
-      if (zapValue && isZapping) {
-        return `${formatBigIntAsNumber(BigInt(zapValue || 0n), 18, 3)}  ${collateralInfo?.symbol}`
-      } else if (depositAssetInfo?.address === collateralInfo?.address && depositWeiValue) {
-        return `${formatBigIntAsNumber(depositWeiValue || 0n, 18, 3)}  ${collateralInfo?.symbol}`
-      }
-    }
-    return `0 ${collateralInfo?.symbol}`
-  }, [zapValue, depositWeiValue, collateralInfo?.symbol, marketData, isZapping])
-
-  const aprVariation = useMemo(() => {
-    let result = { current: "", currentUpdated: "-", projected: "", projectedUpdated: "-" }
-
-    if (marketAprs && marketData && currentConvexTVL) {
-      if (zapValue && isZapping) {
-        result = computeAprVariation(marketAprs, currentConvexTVL, marketData, BigInt(zapValue))
-      } else if (!isZapping && depositWeiValue) {
-        result = computeAprVariation(marketAprs, currentConvexTVL, marketData, depositWeiValue)
-      } else {
-        result = computeAprVariation(marketAprs, currentConvexTVL, marketData, 0n)
-      }
-    }
-    return result
-  }, [zapValue, depositWeiValue, collateralInfo?.symbol, marketAprs, marketData, currentConvexTVL, isZapping])
-
-  const formState = useMemo(
-    () =>
-      getDepositFormState(
-        marketData,
-        depositWeiValue,
-        borrowWeiValue,
-        isDepositAndBorrow,
-        isWellConnected,
-        depositAssetInfo?.address,
-        collateralInfo!,
-        balanceAllowanceData!,
-        maxBorrowableValue || 0n
-      ),
-    [marketData, isDepositAndBorrow, borrowWeiValue, depositWeiValue, isWellConnected, currentAddress, depositAssetInfo, balanceAllowanceData, isDepositLoading]
-  )
+    fetchBalanceAllowanceData(depositAssetInfo?.address)
+  }, [
+    loadOnChainData,
+    loadUSGsUSGMetrics,
+    setDepositWeiValue,
+    setBorrowWeiValue,
+    setZapValue,
+    setIsZapLoading,
+    setIsTxLoading,
+    setBorrowSliderPercent,
+    setDepositSliderPercent,
+    setIsDepositLoading,
+    fetchBalanceAllowanceData,
+    depositAssetInfo?.address,
+  ])
 
   const contextValue: USGDepositContextValues = {
     marketInfo,
@@ -711,15 +726,13 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
     maxBorrowableValue,
 
-    minValueReceivedFromZap,
+    zapValuesFormatted,
 
     maxDepositString,
 
-    aprVariation,
-
-    expectedCollateral,
-
     isZapping,
+
+    isTxLoading,
   }
 
   return <USGDepositContext.Provider value={contextValue}>{children}</USGDepositContext.Provider>

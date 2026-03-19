@@ -142,6 +142,9 @@ type USGRecordContextValues = {
 
   simulatedDebtAmount: number
   setSimulatedDebtAmount: (n: number) => void
+
+  isTxLoading: boolean
+  setIsTxLoading: (n: boolean) => void
 }
 
 const LEVERAGE_TRESHOLD = 0.989
@@ -214,6 +217,8 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
     zapValue: 0n,
     liquidateValue: 0n,
   })
+
+  const [isTxLoading, setIsTxLoading] = useState(false)
 
   const loadOnChainData = () => {
     setIsLoading(true)
@@ -555,6 +560,8 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
 
     simulatedDebtAmount,
     setSimulatedDebtAmount,
+    isTxLoading,
+    setIsTxLoading,
   }
 
   return <USGRecordContext.Provider value={contextValue}>{children}</USGRecordContext.Provider>

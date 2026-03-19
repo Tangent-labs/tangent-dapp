@@ -1,6 +1,5 @@
 "use client"
 
-import { CollateralInfo } from "@/types"
 import { getBorrowCommonFormState } from "../usg_record_controller"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
@@ -13,24 +12,21 @@ export function getDepositFormState(
   borrowWeiValue?: bigint,
   isDepositAndBorrow?: boolean,
   isWellConnected?: boolean,
-  depositAssetInfo?: Address,
-  collateralInfo?: CollateralInfo,
   balanceAllowanceData?: BalanceAllowanceData,
   maxBorrowableValue?: bigint,
   isLoading?: boolean
 ) {
-  const isZapMode = depositAssetInfo !== collateralInfo?.address
   const reasons: string[] = []
-  const isApproved = (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n)
+  const depositValue = depositWeiValue || 0n
+  const isApproved = depositValue <= (balanceAllowanceData?.allowances[0]?.allowance || 0n)
+  const isEnoughBalance = depositValue < (balanceAllowanceData?.balance || 0n)
 
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
   } else {
-    if (depositWeiValue === 0n) {
+    if (depositValue === 0n) {
       reasons.push("No amount.")
-    } else if (!isZapMode && (depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
-      reasons.push("Not enough balance.")
-    } else if (isZapMode && (depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
+    } else if (!isEnoughBalance) {
       reasons.push("Not enough balance.")
     }
 

@@ -11,7 +11,7 @@ import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { Address, formatEther, formatUnits, parseEther, zeroAddress } from "viem"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit, doMarketDepositAndBorrow } from "./usg_record_deposit_controller"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
@@ -40,7 +40,6 @@ type USGDepositContextValues = {
   setIsZapLoading: (arg: boolean) => void
   swapAssetPrice: number | null
   getRouteAndDeposit: () => void
-  actionApproveZap: () => void
   zapValue: bigint | undefined
   setZapValue: (arg: bigint) => void
   handleDepositChange: (arg: bigint | undefined) => void
@@ -79,6 +78,9 @@ type USGDepositContextValues = {
 export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
 
 export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDepositContextProps) => {
+  // ────────────────────────────────────────
+  //              PARENT CONTEXTS
+  // ────────────────────────────────────────
   const { curveRoutes, handleQuote } = useRootContext()
 
   const { loadUSGsUSGMetrics } = useUSGContext()
@@ -95,11 +97,13 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     collateralInfo,
     marketInfo,
     setIsDepositAndBorrow,
+    isTxLoading,
+    setIsTxLoading,
   } = useUSGRecordContext()
 
-  const lastApproveRef = useRef<number>(0)
-
-  const lastDepositRef = useRef<number>(0)
+  // ────────────────────────────────────────
+  //             USE STATE
+  // ────────────────────────────────────────
 
   const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
 
@@ -116,8 +120,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   const [isDepositLoading, setIsDepositLoading] = useState(false)
 
   const [isZapLoading, setIsZapLoading] = useState(false)
-
-  const [isTxLoading, setIsTxLoading] = useState(false)
 
   const [zapValue, setZapValue] = useState<bigint | undefined>()
 
@@ -163,7 +165,9 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     return ![collateralInfo?.symbol, `${getReceiptPrefix(marketType)}${collateralInfo?.symbol}`].includes(depositAsset)
   }, [depositAsset, collateralInfo?.symbol])
 
-  //  useEffects
+  // ────────────────────────────────────────
+  //              USE EFFECTS
+  // ────────────────────────────────────────
 
   useEffect(() => {
     setIsDepositAndBorrow(isDepositAndBorrowInput)
@@ -270,21 +274,11 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
    * Call back method to prevent loadDataAfterApprove
    * to be called multiple times at once
    */
-  const loadDataAfterApprove = useCallback((assetAddress: Address, isZap = false) => {
-    const now = Date.now()
-    if (now - lastApproveRef.current < 6000) {
-      return
-    }
-
-    lastApproveRef.current = now
-
-    if (!isZap) {
-      loadOnChainData()
-    }
-
+  function loadDataAfterApprove(assetAddress: Address) {
+    loadOnChainData()
     fetchBalanceAllowanceData(assetAddress)
     setIsTxLoading(false)
-  }, [])
+  }
 
   // Handle inputs
   const latestRequestRef = useRef(0)
@@ -353,7 +347,9 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     setIsZapUserInput(true)
   }
 
-  // useMemos
+  // ────────────────────────────────────────
+  //             USE MEMOS
+  // ────────────────────────────────────────
 
   const maxBorrowableValue = useMemo(() => {
     const deposit = depositWeiValue || 0n
@@ -433,16 +429,13 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       borrowWeiValue,
       isDepositAndBorrow,
       isWellConnected,
-      depositAssetInfo?.address,
-      collateralInfo!,
       balanceAllowanceData!,
       maxBorrowableValue || 0n,
-      isZapLoading
+      isZapLoading || isDepositLoading || isTxLoading
     )
   }, [
     isDepositLoading,
-    isZapLoading,
-    isTxLoading,
+    isZapLoading || isDepositLoading || isTxLoading,
     marketData,
     isDepositAndBorrow,
     borrowWeiValue,
@@ -455,96 +448,106 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   //  ACTIONS
 
-  const actionApproveZap = async () => {
-    setIsTxLoading(true)
-
-    try {
-      if (!walletClient || !depositAssetInfo) throw new Error("Wallet not available")
-
-      await toastTx(doApprove(walletClient, depositAssetInfo.address, marketInfo.marketAddress, depositWeiValue ?? 0n), {
-        pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
-        success: () => {
-          loadDataAfterApprove(depositAssetInfo?.address, true)
-          return { type: "Success", content: `${depositAssetInfo?.symbol} approved successfully.` }
-        },
-      })
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setIsTxLoading(false)
+  function matchBlockChainErrors(err: string) {
+    if (err.includes("User denied transaction signature")) {
+      return "User denied transaction signature"
     }
   }
 
   const actionApprove = async () => {
     setIsTxLoading(true)
     if (walletClient && depositWeiValue) {
-      await toastTx(doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue), {
-        pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
-        success: () => {
-          loadDataAfterApprove(depositAssetInfo?.address, false)
-
-          return { type: "Success", content: `${depositAssetInfo?.symbol} approved successfully.` }
-        },
-      })
+      try {
+        await toastTx(doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue), {
+          pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
+          success: () => ({
+            type: "Success",
+            content: `${depositAssetInfo?.symbol} approved successfully.`,
+          }),
+          error: (err) => {
+            const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+            return { type: "Error", content: error || "Unable to proceed with the transaction." }
+          },
+        })
+        // Executed once after the resolve of the toads
+        loadDataAfterApprove(depositAssetInfo?.address)
+      } catch {
+        setIsTxLoading(false)
+      }
     }
   }
 
   const actionDeposit = () => {
-    if (!depositWeiValue || !currentAddress || !depositAssetInfo) return
+    setIsTxLoading(true)
+
+    if (!walletClient || !depositWeiValue || !currentAddress || !depositAssetInfo) {
+      toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
+      setIsTxLoading(false)
+
+      return
+    }
+
+    const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
 
     if (isDepositAndBorrow) {
-      depositAndBorrow()
+      _depositAndBorrow(isReceiptIn)
     } else {
-      deposit()
+      _deposit(isReceiptIn)
     }
   }
 
-  const depositAndBorrow = async () => {
-    setIsTxLoading(true)
-
-    if (walletClient && depositWeiValue) {
-      const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
-
+  const _depositAndBorrow = async (isReceiptIn: boolean) => {
+    try {
       await toastTx(
-        doMarketDepositAndBorrow(walletClient, { depositWeiValue, isDepositAndBorrow, marketAddress: marketInfo?.marketAddress, borrowWeiValue, isReceiptIn }),
+        doMarketDepositAndBorrow(walletClient!, {
+          depositWeiValue: depositWeiValue!,
+          isDepositAndBorrow,
+          marketAddress: marketInfo?.marketAddress,
+          borrowWeiValue,
+          isReceiptIn,
+        }),
         {
           pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-          success: () => {
-            resetAfterDepositSuccess()
-            return { type: "Success", content: "Position successfully created." }
-          },
-          error: () => {
-            setIsTxLoading(false)
-            return { type: "Error", content: "Unable to proceed with the transaction." }
+          success: () => ({
+            type: "Success",
+            content: "Position successfully created.",
+          }),
+          error: (err) => {
+            const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+            return { type: "Error", content: error || "Unable to proceed with the transaction." }
           },
         }
       )
-    } else {
+      resetAfterDepositSuccess()
+    } catch {
       setIsTxLoading(false)
-      toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
     }
   }
 
-  const deposit = async () => {
-    setIsTxLoading(true)
-
-    if (walletClient && depositWeiValue) {
-      const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
-
-      await toastTx(doMarketDeposit(walletClient, { depositWeiValue, marketAddress: marketInfo?.marketAddress, borrowWeiValue, isReceiptIn }), {
-        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-        success: () => {
-          resetAfterDepositSuccess()
-          return { type: "Success", content: "Position successfully created." }
-        },
-        error: () => {
-          setIsTxLoading(false)
-          return { type: "Error", content: "Unable to proceed with the transaction." }
-        },
-      })
-    } else {
+  const _deposit = async (isReceiptIn: boolean) => {
+    try {
+      await toastTx(
+        doMarketDeposit(walletClient!, {
+          depositWeiValue: depositWeiValue!,
+          marketAddress: marketInfo?.marketAddress,
+          borrowWeiValue,
+          isReceiptIn,
+        }),
+        {
+          pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+          success: () => ({
+            type: "Success",
+            content: "Position successfully created.",
+          }),
+          error: (err) => {
+            const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+            return { type: "Error", content: error || "Unable to proceed with the transaction." }
+          },
+        }
+      )
+      resetAfterDepositSuccess()
+    } catch {
       setIsTxLoading(false)
-      toast.error(ToastComponent, { data: { type: "Error", content: "Unable to proceed with the transaction." } })
     }
   }
 
@@ -552,23 +555,24 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     if (!depositWeiValue || !currentAddress || !depositAssetInfo) return
 
     if (isDepositAndBorrow) {
-      zapAndDepositAndBorrow()
+      _zapAndDepositAndBorrow()
     } else {
-      zapAndDeposit()
+      _zapAndDeposit()
     }
   }
 
-  const zapAndDepositAndBorrow = async () => {
+  const _zapAndDepositAndBorrow = async () => {
     if (!depositWeiValue || !currentAddress || !depositAssetInfo || !borrowWeiValue || !zapValue) return
 
     setIsTxLoading(true)
+    const minOut = computedMinAmountOut(zapValue, slippage)
 
     try {
       const zapData = await getRoute(
         depositAssetInfo?.address,
         collateralInfo!.address,
         depositWeiValue,
-        computedMinAmountOut(zapValue, slippage),
+        minOut,
         marketInfo?.marketAddress,
         currentAddress,
         curveRoutes
@@ -577,40 +581,42 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       const zapMarketData = {
         tokenIn: depositAssetInfo?.address,
         amountIn: depositWeiValue,
-        minAmountOut: computedMinAmountOut(zapValue, slippage),
+        minAmountOut: minOut,
       }
 
       await toastTx(
         doZapDepositAndBorrow(marketInfo?.marketAddress, walletClient!, zapData?.routerAddress, zapData?.data as string, zapMarketData, borrowWeiValue),
         {
           pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-          success: () => {
-            resetAfterDepositSuccess()
-            return { type: "Success", content: "Position successfully created." }
-          },
-          error: () => {
-            setIsTxLoading(false)
-
-            return { type: "Error", content: "Unable to proceed with the transaction." }
+          success: () => ({
+            type: "Success",
+            content: "Position successfully created.",
+          }),
+          error: (err) => {
+            const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+            return { type: "Error", content: error || "Unable to proceed with the transaction." }
           },
         }
       )
+      resetAfterDepositSuccess()
     } catch (error) {
-      console.error("Error in getRouteAndDeposit:", error)
+      console.error("Error in zapAndDepositAndBorrow:", error)
+      setIsTxLoading(false)
     }
   }
 
-  const zapAndDeposit = async () => {
+  const _zapAndDeposit = async () => {
     if (!depositWeiValue || !currentAddress || !depositAssetInfo || !zapValue) return
 
     setIsTxLoading(true)
+    const minOut = computedMinAmountOut(zapValue, slippage)
 
     try {
       const zapData = await getRoute(
         depositAssetInfo?.address,
         collateralInfo?.address,
         depositWeiValue,
-        computedMinAmountOut(zapValue, slippage),
+        minOut,
         marketInfo?.marketAddress,
         currentAddress,
         curveRoutes
@@ -619,38 +625,28 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       const zapMarketData = {
         tokenIn: depositAssetInfo?.address,
         amountIn: depositWeiValue,
-        minAmountOut: computedMinAmountOut(zapValue, slippage),
+        minAmountOut: minOut,
       }
 
       await toastTx(doZapDeposit(marketInfo?.marketAddress, walletClient!, zapData?.routerAddress, zapData?.data as string, zapMarketData), {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-        success: () => {
-          resetAfterDepositSuccess()
-          return { type: "Success", content: "Position successfully created." }
-        },
-        error: () => {
-          setIsTxLoading(false)
-          return { type: "Error", content: "Unable to proceed with the transaction." }
+        success: () => ({
+          type: "Success",
+          content: "Position successfully created.",
+        }),
+        error: (err) => {
+          const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+          return { type: "Error", content: error || "Unable to proceed with the transaction." }
         },
       })
+      resetAfterDepositSuccess()
     } catch (error) {
       console.error("Error in zapAndDeposit:", error)
       setIsTxLoading(false)
     }
   }
 
-  /**
-   * Call back method to prevent resetAfterDepositSuccess
-   * to be called multiple times at once
-   */
-  const resetAfterDepositSuccess = useCallback(() => {
-    const now = Date.now()
-    if (now - lastDepositRef.current < 6000) {
-      return
-    }
-
-    lastDepositRef.current = now
-
+  function resetAfterDepositSuccess() {
     loadOnChainData()
     loadUSGsUSGMetrics()
     setDepositWeiValue(undefined)
@@ -661,22 +657,8 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     setDepositSliderPercent(0)
     setIsDepositLoading(false)
     setIsTxLoading(false)
-
     fetchBalanceAllowanceData(depositAssetInfo?.address)
-  }, [
-    loadOnChainData,
-    loadUSGsUSGMetrics,
-    setDepositWeiValue,
-    setBorrowWeiValue,
-    setZapValue,
-    setIsZapLoading,
-    setIsTxLoading,
-    setBorrowSliderPercent,
-    setDepositSliderPercent,
-    setIsDepositLoading,
-    fetchBalanceAllowanceData,
-    depositAssetInfo?.address,
-  ])
+  }
 
   const contextValue: USGDepositContextValues = {
     marketInfo,
@@ -704,7 +686,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     handleZapChange,
     swapAssetPrice,
     getRouteAndDeposit,
-    actionApproveZap,
     depositAssetInfo,
 
     slippage,

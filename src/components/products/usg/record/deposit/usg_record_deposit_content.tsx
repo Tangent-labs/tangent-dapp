@@ -23,7 +23,6 @@ export default function USGDepositContent() {
     handleDepositChange,
     getRouteAndDeposit,
     setSlippage,
-    actionApproveZap,
     handleZapInputChange,
     setDepositSliderPercent,
     setBorrowSliderPercent,
@@ -156,7 +155,7 @@ export default function USGDepositContent() {
 
       <FormButtons
         actions={{
-          handleApprove: depositAsset === "ETH" ? undefined : !!depositAsset && isZapping ? actionApproveZap : actionApprove,
+          handleApprove: depositAsset === "ETH" ? undefined : actionApprove,
           handleProcess: !!depositAsset && isZapping ? getRouteAndDeposit : actionDeposit,
         }}
         formState={formState}

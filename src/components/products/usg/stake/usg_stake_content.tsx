@@ -18,7 +18,6 @@ import { StaticCardAssetInput } from "../../predeposit/components/StaticCardAsse
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 import FormButtons from "@/components/design_system/form/form_actions"
 
@@ -42,8 +41,8 @@ export default function USGStakeContent() {
     USGsUSGMetrics,
     sUSGSelectedTab,
     apyHistory,
-    aprVariation,
     isLoading,
+    // aprVariation,
   } = useUSGStakeContext()
 
   const { sUSGCurrentAPY } = useRootContext()
@@ -164,33 +163,7 @@ export default function USGStakeContent() {
             />
           </div>
 
-          <Accordion className="w-full" type="single" collapsible>
-            <AccordionItem value="item-1">
-              <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary hover:bg-panel-hover">
-                <AccordionTrigger>Recap</AccordionTrigger>
-
-                <AccordionContent className="w-full">
-                  <div className="flex flex-col gap-1 text-xs">
-                    <div className="flex w-full items-center justify-between">
-                      <span className="text-subtitle">APR variation : </span>
-                      <div className="flex items-center justify-center gap-1">
-                        <span className="text-white">{aprVariation.current}</span>
-                        <span className="text-tonic">{aprVariation.updated}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex w-full items-center justify-between">
-                      <span className="text-subtitle">Expected : </span>
-
-                      <span className="font-semibold text-white">
-                        {formatBigInt(expected, 18, 2)} {isStake ? "sUSG" : "USG"}
-                      </span>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </ReliefCard>
-            </AccordionItem>
-          </Accordion>
+          {/* <RecapAccordion aprVariationParams={{ current: aprVariation.current, currentUpdated: aprVariation.updated }} /> */}
 
           <FormButtons
             actions={{

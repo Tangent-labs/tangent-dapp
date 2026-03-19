@@ -2,16 +2,17 @@
 
 import { formatUnits } from "viem"
 import { PredepositStatus } from "../types/types"
-import { DynamicProgressBar } from "./dynamic-progress-bar"
-import { formatDollar, formatNumber } from "@/lib/number_formatter"
 import { AssetDataPriced, FormState } from "@/types"
-import FormButtons from "@/components/design_system/form/form_actions"
-import { TokenImage } from "@/components/design_system/structure/token_image"
-import { BorderPanel } from "@/components/design_system/structure/border_panel"
-import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { DynamicProgressBar } from "./dynamic-progress-bar"
 import { StaticCardAssetInput } from "./StaticCardAssetInput"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { formatDollar, formatNumber } from "@/lib/number_formatter"
+import FormButtons from "@/components/design_system/form/form_actions"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
+import { TokenImage } from "@/components/design_system/structure/token_image"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { BorderPanel } from "@/components/design_system/structure/border_panel"
+import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
+import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 
 type USGPredepositComponentProps = {
   predepositStatus: PredepositStatus | null
@@ -34,6 +35,10 @@ type USGPredepositComponentProps = {
   pool: string
   setMaxBalance: () => void
   tanAllocation: bigint
+  minValueReceived: string
+  isTransactionBlockedBySlippage: boolean
+  setIsTransactionBlockedBySlippage: (b: boolean) => void
+  slippageLoss: { tokenLoss: string; dollarLoss: string }
 }
 
 export const USGPredepositComponent = ({
@@ -57,6 +62,10 @@ export const USGPredepositComponent = ({
   pool,
   setMaxBalance,
   tanAllocation,
+  minValueReceived,
+  isTransactionBlockedBySlippage,
+  setIsTransactionBlockedBySlippage,
+  slippageLoss,
 }: USGPredepositComponentProps) => {
   return (
     <ReliefCard className="flex w-full flex-col p-2 xl:p-4">
@@ -102,6 +111,9 @@ export const USGPredepositComponent = ({
               className="w-full max-w-36 bg-transparent text-[24px] font-semibold focus:outline-none"
               value={innerValue ?? ""}
             />
+            <div className="flex select-none justify-between gap-2 text-xs text-subtitle">
+              Minimum received {!!depositWeiValue && !!assetInfo ? minValueReceived : ""}
+            </div>
           </div>
           <BorderPanel className="flex items-center justify-center gap-2 bg-select-input px-2.5 py-2">
             <TokenImage token={pool} size={32} />
@@ -118,9 +130,20 @@ export const USGPredepositComponent = ({
         </span>
       </div>
 
-      <span className="my-2 flex h-4 w-full items-center justify-center">
-        {formState?.cantProcessReasons?.length > 0 && <span className="text-sm font-semibold text-danger"> {formState?.cantProcessReasons[0]} </span>}
-      </span>
+      {!!depositWeiValue && isTransactionBlockedBySlippage && slippage >= 1 ? (
+        <SlippageAlert
+          symbol={pool?.replaceAll("-", "/")}
+          tokenLoss={slippageLoss?.tokenLoss}
+          dollarLoss={slippageLoss?.dollarLoss}
+          slippage={slippage}
+          isLoading={isLoading}
+          onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
+        />
+      ) : (
+        <span className="my-2 flex h-4 w-full items-center justify-center">
+          {formState?.cantProcessReasons?.length > 0 && <span className="text-sm font-semibold text-danger"> {formState?.cantProcessReasons[0]} </span>}
+        </span>
+      )}
 
       <FormButtons
         actions={{

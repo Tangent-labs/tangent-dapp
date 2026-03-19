@@ -20,7 +20,7 @@ export const SwapWarningAlert = ({ percentage, isLoading, onClickContinue, title
   return (
     <div
       className={cn(
-        "mt-2 flex w-full flex-col items-start justify-start rounded-[10px] p-3",
+        "my-2 flex w-full flex-col items-start justify-start rounded-[10px] p-3",
         isLoading && "shimmer",
         isWarning ? "bg-[#FFE10008]" : "bg-[#FF030008]"
       )}

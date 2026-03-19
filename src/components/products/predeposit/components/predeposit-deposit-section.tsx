@@ -59,6 +59,14 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
     frxUSDslippage,
     projectedUSDCTANAllocation,
     projectedfrxUSDTANAllocation,
+    minUSGUSDCReceived,
+    minUSGfrxUSDReceived,
+    isUSGUSDCTransactionBlockedBySlippage,
+    USGUSDCSlippageLoss,
+    isUSGfrxUSDTransactionBlockedBySlippage,
+    USGfrxUSDSlippageLoss,
+    setIsUSGfrxUSDTransactionBlockedBySlippage,
+    setIsUSDGUSDCTransactionBlockedBySlippage,
     setfrxUSDSlippage,
     actionApproveUSGUSDC,
     actionDepositUSGUSDC,
@@ -113,7 +121,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
       ></DynamicProgressBar>
 
       <div className="relative mt-4">
-        <div className="flex w-full flex-col items-center justify-center gap-2 lg:flex-row">
+        <div className="flex w-full flex-col items-start justify-center gap-2 lg:flex-row">
           <USGPredepositComponent
             predepositStatus={predepositStatus}
             currentDeposit={predepositStatus?.USGUSDCData.USGUSDCAccumulatedTotal || 0n}
@@ -135,6 +143,10 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
             pool={predepositStatus?.USGUSDCData?.lpName ?? ""}
             setMaxBalance={setDepositMaxUSGUSDC}
             tanAllocation={projectedUSDCTANAllocation}
+            minValueReceived={minUSGUSDCReceived}
+            isTransactionBlockedBySlippage={isUSGUSDCTransactionBlockedBySlippage}
+            setIsTransactionBlockedBySlippage={setIsUSDGUSDCTransactionBlockedBySlippage}
+            slippageLoss={USGUSDCSlippageLoss}
           />
 
           <USGPredepositComponent
@@ -158,6 +170,10 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
             pool={predepositStatus?.USGfrxUSDData?.lpName ?? ""}
             setMaxBalance={setDepositMaxUSGfrxUSD}
             tanAllocation={projectedfrxUSDTANAllocation}
+            minValueReceived={minUSGfrxUSDReceived}
+            isTransactionBlockedBySlippage={isUSGfrxUSDTransactionBlockedBySlippage}
+            setIsTransactionBlockedBySlippage={setIsUSGfrxUSDTransactionBlockedBySlippage}
+            slippageLoss={USGfrxUSDSlippageLoss}
           />
         </div>
 

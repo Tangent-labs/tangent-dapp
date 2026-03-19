@@ -1,20 +1,28 @@
 "use client"
 
+import {
+  computeAprVariation,
+  computedMinAmountOut,
+  computeMaxBorrowable,
+  computeSwapAssetPrice,
+  computeTransactionPotentialLoss,
+  doApprove,
+} from "../usg_record_controller"
+
 import { toast } from "react-toastify"
-import { useUSGContext } from "../../usg_context"
 import { USGMarket } from "../../usg_type"
-import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
+import { useUSGContext } from "../../usg_context"
+import { Erc20Details, ERC20S } from "@/data/erc20s"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
+import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
 import { Address, formatEther, formatUnits, parseEther, zeroAddress } from "viem"
-import { formatBigInt, formatBigIntAsNumber, formatNumber, truncateDecimals } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { formatBigInt, formatBigIntAsNumber, formatNumber, truncateDecimals } from "@/lib/number_formatter"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { computeAprVariation, computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, doApprove } from "../usg_record_controller"
 import { doZapDeposit, doZapDepositAndBorrow, getDepositFormState, doMarketDeposit, doMarketDepositAndBorrow } from "./usg_record_deposit_controller"
-import { Erc20Details, ERC20S } from "@/data/erc20s"
 
 type USGDepositContextProps = {
   children: ReactNode
@@ -73,6 +81,18 @@ type USGDepositContextValues = {
   aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
 
   isZapping: boolean
+
+  slippageLoss: { tokenLoss: string; dollarLoss: string }
+
+  isTransactionBlockedBySlippage: boolean
+  setIsTransactionBlockedBySlippage: (arg: boolean) => void
+
+  priceImpactLoss: string
+
+  priceImpact: number
+
+  isTransactionBlockedByPriceImpact: boolean
+  setIsTransactionBlockedByPriceImpact: (arg: boolean) => void
 }
 
 export const USGDepositContext = createContext<USGDepositContextValues | undefined>(undefined)
@@ -125,6 +145,12 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const [slippage, setSlippage] = useState<number>(0.2)
 
+  const [isTransactionBlockedBySlippage, setIsTransactionBlockedBySlippage] = useState<boolean>(false)
+
+  const [isTransactionBlockedByPriceImpact, setIsTransactionBlockedByPriceImpact] = useState<boolean>(false)
+
+  const [priceImpact, setPriceImpact] = useState<number>(0)
+
   useEffect(() => {
     setIsDepositAndBorrow(isDepositAndBorrowInput)
   }, [])
@@ -156,7 +182,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     const asset: AssetDataPriced = {
       address: assetInfo?.address as Address,
       decimals: assetInfo?.decimals,
-      displayDecimals: 2,
+      displayDecimals: assetInfo?.displayDecimals || 2,
       symbol: assetInfo?.symbol,
       name: assetInfo?.name,
       price: swapAssetPrice,
@@ -241,11 +267,12 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     setIsZapLoading(true)
 
     getQuote(value, currentAddress || zeroAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
-      .then(({ quote }) => {
+      .then(({ quote, priceImpact: pI }) => {
         // Do nothing when price is stale
         if (requestId !== latestRequestRef.current) return // stale
         handleQuote(quote)
         if (quote) setZapValue(quote)
+        if (pI) setPriceImpact(Number(pI) / 100)
       })
       .catch((error) => {
         if (requestId !== latestRequestRef.current) return
@@ -649,6 +676,8 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   const formState = useMemo(
     () =>
       getDepositFormState(
+        isTransactionBlockedByPriceImpact,
+        isTransactionBlockedBySlippage,
         marketData,
         depositWeiValue,
         borrowWeiValue,
@@ -659,8 +688,40 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
         balanceAllowanceData!,
         maxBorrowableValue || 0n
       ),
-    [marketData, isDepositAndBorrow, borrowWeiValue, depositWeiValue, isWellConnected, currentAddress, depositAssetInfo, balanceAllowanceData, isDepositLoading]
+    [
+      marketData,
+      isDepositAndBorrow,
+      borrowWeiValue,
+      depositWeiValue,
+      isWellConnected,
+      currentAddress,
+      depositAssetInfo,
+      balanceAllowanceData,
+      isDepositLoading,
+      isTransactionBlockedByPriceImpact,
+      isTransactionBlockedBySlippage,
+    ]
   )
+
+  const priceImpactLoss = useMemo(() => {
+    const { dollarLoss } = computeTransactionPotentialLoss(zapValue as bigint, collateralInfo, priceImpact)
+
+    return dollarLoss
+  }, [zapValue, priceImpact])
+
+  const slippageLoss = useMemo(() => {
+    const { tokenLoss, dollarLoss } = computeTransactionPotentialLoss(zapValue as bigint, collateralInfo, slippage)
+
+    return { tokenLoss, dollarLoss }
+  }, [slippage, zapValue])
+
+  useEffect(() => {
+    setIsTransactionBlockedBySlippage(!!depositWeiValue && !!zapValue && slippage >= 1)
+  }, [slippage, zapValue, depositWeiValue])
+
+  useEffect(() => {
+    setIsTransactionBlockedByPriceImpact(!!depositWeiValue && !!zapValue && priceImpact >= 1)
+  }, [priceImpact, zapValue, depositWeiValue])
 
   const contextValue: USGDepositContextValues = {
     marketInfo,
@@ -719,6 +780,18 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     expectedCollateral,
 
     isZapping,
+
+    slippageLoss,
+
+    isTransactionBlockedBySlippage,
+    setIsTransactionBlockedBySlippage,
+
+    priceImpactLoss,
+
+    priceImpact,
+
+    isTransactionBlockedByPriceImpact,
+    setIsTransactionBlockedByPriceImpact,
   }
 
   return <USGDepositContext.Provider value={contextValue}>{children}</USGDepositContext.Provider>

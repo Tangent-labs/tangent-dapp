@@ -31,6 +31,7 @@
     --tgt-bg-panel-disabled: #ffffff26;
     --tgt-bg-tab: linear-gradient(135deg, #0075ff 0%, #00c2ff 100%);
     --tgt-bg-lec: linear-gradient(135deg, #ff8800 0%, #f79f61 100%);
+    --tgt-slippage-warning: #ffe100;
     --tgt-button-active: #0075ff;
     --tgt-button-active-dark: #023774;
     --tgt-button-active-hover: #0060d2;

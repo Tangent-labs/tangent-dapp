@@ -15,6 +15,8 @@ import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { AssetInfos, ZapAssetSelector } from "@/components/design_system/inputs/asset_selector"
+import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
+import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 
 export default function USGRepayContent() {
   const {
@@ -28,6 +30,8 @@ export default function USGRepayContent() {
     actionApprove,
     setSlippage,
     setWithdrawSelectedAsset,
+    setIsTransactionBlockedBySlippage,
+    setIsTransactionBlockedByPriceImpact,
     slippage,
     repayWeiValue,
     repayAsset,
@@ -46,6 +50,11 @@ export default function USGRepayContent() {
     expectedRemainingDebt,
     repayLoading,
     minValueReceivedFromZap,
+    slippageLoss,
+    isTransactionBlockedBySlippage,
+    priceImpact,
+    priceImpactLoss,
+    isTransactionBlockedByPriceImpact,
   } = useUSGRepayContext()
 
   const { connect } = useWalletConnexionContext()
@@ -175,11 +184,26 @@ export default function USGRepayContent() {
           <div className="flex w-full items-center justify-center text-xs text-red-500">Remaining debt can not be lower than $3,000</div>
         )}
       </>
-      <>
-        {!isDebtBelowThreshold && !!repayWeiValue && formState.cantProcessReasons.length > 0 && (
-          <div className="flex w-full items-center justify-center text-xs text-red-500"> {formState.cantProcessReasons[0]}</div>
-        )}
-      </>
+
+      {!!repayWeiValue && isTransactionBlockedBySlippage && slippage >= 1 && (
+        <SlippageAlert
+          symbol="USG"
+          tokenLoss={slippageLoss?.tokenLoss}
+          dollarLoss={slippageLoss?.dollarLoss}
+          slippage={slippage}
+          isLoading={isZapLoading}
+          onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
+        />
+      )}
+
+      {!!repayWeiValue && isTransactionBlockedByPriceImpact && priceImpact >= 1 && (
+        <PriceImpactAlert
+          dollarLoss={priceImpactLoss}
+          priceImpact={priceImpact}
+          isLoading={isZapLoading}
+          onClickContinue={() => setIsTransactionBlockedByPriceImpact(false)}
+        />
+      )}
 
       <FormButtons
         connect={connect}

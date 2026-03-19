@@ -8,6 +8,8 @@ import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 
 export function getLeverageFormState(
+  isTransactionBlockedByPriceImpact: boolean,
+  isTransactionBlockedBySlippage: boolean,
   marketData?: MarketDetailData,
   leverageExceedsMaxLtv?: boolean,
   depositWeiValue?: bigint,
@@ -32,6 +34,10 @@ export function getLeverageFormState(
       reasons.push("Not enough balance.")
     } else if (!!leverage && leverage > 1 / (1 - Number(marketData?.constants.maxLTV) / 100000)) {
       reasons.push("Reduce leverage.")
+    } else if (isTransactionBlockedBySlippage) {
+      reasons.push("Slippage is too high.")
+    } else if (isTransactionBlockedByPriceImpact) {
+      reasons.push("Price impact is too high.")
     }
 
     if (leverageExceedsMaxLtv) {

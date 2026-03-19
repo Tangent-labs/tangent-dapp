@@ -1,19 +1,20 @@
 "use client"
 
 import { cn } from "@/lib/utils"
+import { IconSingleArrow } from "@/components/icons"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGLeverageContext } from "./usg_record_leverage_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 import { ZapAssetSelector } from "@/components/design_system/inputs/asset_selector"
-import { IconSingleArrow } from "@/components/icons"
+import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function USGLeverageContent() {
   const {
@@ -50,6 +51,13 @@ export default function USGLeverageContent() {
     isZapping,
     sliderLegendValues,
     startEndRange,
+    slippageLoss,
+    isTransactionBlockedBySlippage,
+    setIsTransactionBlockedBySlippage,
+    priceImpact,
+    priceImpactLoss,
+    isTransactionBlockedByPriceImpact,
+    setIsTransactionBlockedByPriceImpact,
   } = useUSGLeverageContext()
 
   const { connect } = useWalletConnexionContext()
@@ -213,9 +221,27 @@ export default function USGLeverageContent() {
         </div>
       </>
 
-      <MarketTransactionError display={!!depositWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />
-
       <MaxBorrowCapReached display={(!!zapValue || !!depositWeiValue) && maxBorrowCapReached} />
+
+      {!!depositWeiValue && isTransactionBlockedBySlippage && slippage >= 1 && (
+        <SlippageAlert
+          symbol={collateralInfo?.symbol as string}
+          tokenLoss={slippageLoss?.tokenLoss}
+          dollarLoss={slippageLoss?.dollarLoss}
+          slippage={slippage}
+          isLoading={isZapLoading}
+          onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
+        />
+      )}
+
+      {!!depositWeiValue && isTransactionBlockedByPriceImpact && priceImpact >= 1 && (
+        <PriceImpactAlert
+          dollarLoss={priceImpactLoss}
+          priceImpact={priceImpact}
+          isLoading={isZapLoading}
+          onClickContinue={() => setIsTransactionBlockedByPriceImpact(false)}
+        />
+      )}
 
       <FormButtons
         actions={{

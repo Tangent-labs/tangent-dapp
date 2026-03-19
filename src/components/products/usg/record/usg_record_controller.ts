@@ -12,14 +12,14 @@ import {
 } from "../usg_type"
 
 import GetBalances from "@/abi/USG/GetBalances.json"
-import { CollateralInfo } from "@/types"
+import { AssetDataPriced, CollateralInfo } from "@/types"
 import { getSwapAssetPrice } from "@/services/service_price"
 import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
 import { USG_CONTRACT, USGMarkets, USGOracles } from "../usg_repository"
 import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
 import { Abi, Address, formatEther, formatUnits, Hex, parseEther, parseUnits, WalletClient, zeroAddress } from "viem"
 import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
-import { formatBigInt, formatBigIntAsNumber, formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
+import { formatBigInt, formatBigIntAsNumber, formatDollar, formatDollarBigInt, formatNumber, truncateDecimals } from "@/lib/number_formatter"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
 
 const DENOMINATOR = 100_000n
@@ -432,4 +432,16 @@ const MARKET_CONTRACTS = Object.fromEntries(
 
 export const fetchMarketContracts = (name: string): MarketContract[] => {
   return MARKET_CONTRACTS[name] ?? []
+}
+
+export const computeTransactionPotentialLoss = (buyWeiValue: bigint, buyAssetInfo: AssetDataPriced | CollateralInfo, delta: number) => {
+  if (buyWeiValue && buyAssetInfo) {
+    const minAmountOutWei = computedMinAmountOut(buyWeiValue, delta)
+
+    const tokenLoss = `${formatNumber(Number(truncateDecimals(formatUnits(BigInt(buyWeiValue) - minAmountOutWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
+    const dollarLoss = `$${formatNumber(Number(truncateDecimals(formatUnits(((BigInt(buyWeiValue) - minAmountOutWei) * BigInt(Number(buyAssetInfo?.price?.toFixed(2)) * 10000)) / BigInt(10000n), buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
+
+    return { tokenLoss, dollarLoss }
+  }
+  return { tokenLoss: "", dollarLoss: "" }
 }

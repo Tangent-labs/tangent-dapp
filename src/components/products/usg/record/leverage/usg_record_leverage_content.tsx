@@ -55,6 +55,7 @@ export default function USGLeverageContent() {
     priceImpactLoss,
     isTransactionBlockedBySlippage,
     isTransactionBlockedByPriceImpact,
+    leverageExceedsMaxLtv,
   } = useUSGLeverageContext()
 
   const { connect } = useWalletConnexionContext()
@@ -164,6 +165,10 @@ export default function USGLeverageContent() {
       />
 
       <MaxBorrowCapReached display={(!!zapValue || !!depositWeiValue) && maxBorrowCapReached} />
+
+      {leverageExceedsMaxLtv && (
+        <div className="flex w-full items-center justify-center text-xs text-red-500">Reduce your leverage or add more collateral.</div>
+      )}
 
       {!!depositWeiValue && isTransactionBlockedBySlippage && slippage >= 1 && (
         <SlippageAlert

@@ -111,6 +111,8 @@ type USGLeverageContextValues = {
 
   isTransactionBlockedByPriceImpact: boolean
   setIsTransactionBlockedByPriceImpact: (arg: boolean) => void
+
+  leverageExceedsMaxLtv: boolean
 }
 
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
@@ -636,8 +638,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
     const ltvAsNumber = Number(computedLtv)
 
-    return !!expectedCollateral && !!futureMarketDisplayData && ltvAsNumber > 90
-  }, [expectedCollateral, futureMarketDisplayData])
+    return !!expectedCollateral && !!futureMarketDisplayData && ltvAsNumber > Number(marketData?.constants?.maxLTV) / 1000
+  }, [expectedCollateral, futureMarketDisplayData, marketData])
 
   const leverageBalanceAllowanceData = useMemo(() => {
     if (!!marketData && depositAsset === collateralInfo?.name) {
@@ -867,6 +869,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
     isTransactionBlockedByPriceImpact,
     setIsTransactionBlockedByPriceImpact,
+
+    leverageExceedsMaxLtv,
   }
 
   return <USGLeverageContext.Provider value={contextValue}>{children}</USGLeverageContext.Provider>

@@ -26,6 +26,8 @@ export default function USGLeverageContent() {
     actionZapLeverage,
     actionApproveZap,
     handleLeverageSliderChange,
+    setIsTransactionBlockedBySlippage,
+    setIsTransactionBlockedByPriceImpact,
     depositAsset,
     depositWeiValue,
     formState,
@@ -49,17 +51,15 @@ export default function USGLeverageContent() {
     sliderLegendValues,
     startEndRange,
     slippageLoss,
-    isTransactionBlockedBySlippage,
-    setIsTransactionBlockedBySlippage,
     priceImpact,
     priceImpactLoss,
+    isTransactionBlockedBySlippage,
     isTransactionBlockedByPriceImpact,
-    setIsTransactionBlockedByPriceImpact,
   } = useUSGLeverageContext()
 
   const { connect } = useWalletConnexionContext()
 
-  const { collateralInfo, marketData, balanceAllowanceData, USGInfo, maxBorrowCapReached } = useUSGRecordContext()
+  const { collateralInfo, marketData, balanceAllowanceData, USGInfo, maxBorrowCapReached, isTxLoading } = useUSGRecordContext()
 
   return (
     <div className="flex flex-col gap-2">
@@ -193,7 +193,7 @@ export default function USGLeverageContent() {
         connect={connect}
         formState={formState}
         labelProcess={depositAsset && isZapping ? "Zap & leverage" : "Leverage"}
-        isLoading={isDepositLoading}
+        isLoading={isDepositLoading || isZapLoading || isTxLoading}
       />
     </div>
   )

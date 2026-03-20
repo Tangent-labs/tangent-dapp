@@ -80,8 +80,8 @@ export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
   }, [marketData, currentAddress])
 
   const formState = useMemo(
-    () => getBorrowFormState(marketData, borrowWeiValue, isWellConnected, maxBorrowableValue),
-    [marketData, borrowWeiValue, isWellConnected, currentAddress, maxBorrowableValue]
+    () => getBorrowFormState(marketData, borrowWeiValue, isWellConnected, maxBorrowableValue, borrowLoading),
+    [marketData, borrowWeiValue, isWellConnected, currentAddress, maxBorrowableValue, borrowLoading]
   )
 
   const contextValue: USGBorrowContextValues = {

@@ -440,3 +440,9 @@ export const computeTransactionPotentialLoss = (buyWeiValue: bigint, buyAssetInf
   }
   return { tokenLoss: "", dollarLoss: "" }
 }
+
+export function matchBlockChainErrors(err: string) {
+  if (err.includes("User denied transaction signature")) {
+    return "User denied transaction signature"
+  }
+}

@@ -66,7 +66,8 @@ export function getSwapFormState(
   isWellConnected?: boolean,
   depositAssetInfo?: AssetDataPriced,
   receiveAssetInfo?: AssetDataPriced,
-  balanceAllowanceData?: BalanceAllowanceData
+  balanceAllowanceData?: BalanceAllowanceData,
+  isLoading?: boolean
 ) {
   if (!depositAssetInfo || !receiveAssetInfo)
     return {
@@ -96,7 +97,7 @@ export function getSwapFormState(
   }
 
   return {
-    canProcess: isApproved && reasons.length === 0,
+    canProcess: isApproved && reasons.length === 0 && !isLoading,
     cantProcessReasons: reasons,
     haveToApprove: !isApproved,
   }

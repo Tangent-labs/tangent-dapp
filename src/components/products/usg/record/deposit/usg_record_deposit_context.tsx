@@ -15,7 +15,14 @@ import { Address, formatEther, formatUnits, parseEther, zeroAddress } from "viem
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { doMarketDeposit, doMarketDepositAndBorrow, doZapDeposit, doZapDepositAndBorrow, getDepositFormState } from "./usg_record_deposit_controller"
-import { computedMinAmountOut, computeMaxBorrowable, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove } from "../usg_record_controller"
+import {
+  computedMinAmountOut,
+  computeMaxBorrowable,
+  computeSwapAssetPrice,
+  computeTransactionPotentialLoss,
+  doApprove,
+  matchBlockChainErrors,
+} from "../usg_record_controller"
 
 type USGDepositContextProps = {
   children: ReactNode
@@ -327,18 +334,27 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     }
   }, [depositWeiValue, borrowWeiValue, zapValue])
 
-  /**
-   * Call back method to prevent loadDataAfterApprove
-   * to be called multiple times at once
-   */
+  //
+  // Handle inputs
+  const latestRequestRef = useRef(0)
+
+  const resetAfterDepositSuccess = () => {
+    loadOnChainData()
+    loadUSGsUSGMetrics()
+    setDepositWeiValue(undefined)
+    setBorrowWeiValue(undefined)
+    setZapValue(undefined)
+    setBorrowSliderPercent(0)
+    setDepositSliderPercent(0)
+    setIsTxLoading(false)
+    fetchBalanceAllowanceData(depositAssetInfo?.address)
+  }
+
   function loadDataAfterApprove(assetAddress: Address) {
     loadOnChainData()
     fetchBalanceAllowanceData(assetAddress)
     setIsTxLoading(false)
   }
-
-  // Handle inputs
-  const latestRequestRef = useRef(0)
 
   const handleDepositChange = (value: bigint | undefined) => {
     setDepositWeiValue(value)
@@ -481,12 +497,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   //  ACTIONS
 
-  function matchBlockChainErrors(err: string) {
-    if (err.includes("User denied transaction signature")) {
-      return "User denied transaction signature"
-    }
-  }
-
   const actionApprove = async () => {
     setIsTxLoading(true)
     if (walletClient && depositWeiValue) {
@@ -502,6 +512,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
             return { type: "Error", content: error || "Unable to proceed with the transaction." }
           },
         })
+
         // Executed once after the resolve of the toads
         loadDataAfterApprove(depositAssetInfo?.address)
       } catch {
@@ -632,9 +643,10 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
         }
       )
       resetAfterDepositSuccess()
-    } catch (error) {
-      console.error("Error in zapAndDepositAndBorrow:", error)
+    } catch (err) {
+      console.error("ERROR : ", err)
       setIsTxLoading(false)
+      toast.error(ToastComponent, { data: { type: "Error", content: "Something went wrong." } })
     }
   }
 
@@ -673,24 +685,11 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
         },
       })
       resetAfterDepositSuccess()
-    } catch (error) {
-      console.error("Error in zapAndDeposit:", error)
+    } catch (err) {
+      console.error("ERROR : ", err)
       setIsTxLoading(false)
+      toast.error(ToastComponent, { data: { type: "Error", content: "Something went wrong." } })
     }
-  }
-
-  function resetAfterDepositSuccess() {
-    loadOnChainData()
-    loadUSGsUSGMetrics()
-    setDepositWeiValue(undefined)
-    setBorrowWeiValue(undefined)
-    setZapValue(undefined)
-    setIsZapLoading(false)
-    setBorrowSliderPercent(0)
-    setDepositSliderPercent(0)
-    setIsDepositLoading(false)
-    setIsTxLoading(false)
-    fetchBalanceAllowanceData(depositAssetInfo?.address)
   }
 
   const priceImpactLoss = useMemo(() => {

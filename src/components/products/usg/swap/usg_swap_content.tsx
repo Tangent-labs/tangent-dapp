@@ -44,7 +44,8 @@ export default function USGSwapContent() {
     sellWeiValue,
     buyWeiValue,
 
-    isLoading,
+    isTxLoading,
+
     balanceAllowanceData,
     depositSliderPercent,
     slippage,
@@ -183,7 +184,7 @@ export default function USGSwapContent() {
               depositSelect={<BuyAssetSelect />}
               asset={buyAssetInfo!}
               label={"You buy"}
-              isLoading={isLoading || isSwapLoading}
+              isLoading={isSwapLoading}
               bottomPart={<div className="flex select-none gap-2 text-xs text-subtitle">Minimum received {zapValuesFormatted.minOutFormatted}</div>}
             />
           </div>
@@ -197,7 +198,7 @@ export default function USGSwapContent() {
               minOut: zapValuesFormatted.minOutFormatted,
               slippage: slippage,
             }}
-            isLoading={isLoading || isSwapLoading}
+            isLoading={isSwapLoading}
           />
 
           {isSwapReady && isSwapBlockedBySlippage && slippage >= 1 && (
@@ -206,7 +207,7 @@ export default function USGSwapContent() {
               tokenLoss={slippageLoss?.tokenLoss}
               dollarLoss={slippageLoss?.dollarLoss}
               slippage={slippage}
-              isLoading={isLoading || isSwapLoading}
+              isLoading={isSwapLoading}
               onClickContinue={() => setIsSwapBlockedBySlippage(false)}
               className="mt-2"
             />
@@ -216,7 +217,7 @@ export default function USGSwapContent() {
             <PriceImpactAlert
               dollarLoss={priceImpactLoss}
               priceImpact={priceImpact}
-              isLoading={isLoading || isSwapLoading}
+              isLoading={isSwapLoading}
               onClickContinue={() => setIsSwapBlockedByPriceImpact(false)}
               className="mt-2"
             />
@@ -231,7 +232,7 @@ export default function USGSwapContent() {
               connect={connect}
               formState={formState}
               labelProcess="Swap"
-              isLoading={isLoading}
+              isLoading={isTxLoading || isSwapLoading}
             />
           </div>
         </ReliefCard>

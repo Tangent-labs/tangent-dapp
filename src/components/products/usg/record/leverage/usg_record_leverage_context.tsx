@@ -15,7 +15,7 @@ import { formatBigInt, formatBigIntAsNumber } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
-import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove } from "../usg_record_controller"
+import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove, matchBlockChainErrors } from "../usg_record_controller"
 
 type USGLeverageContextProps = {
   children: ReactNode
@@ -125,6 +125,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     fetchBalanceAllowanceData,
     loadOnChainData,
     setCurrentAmounts,
+    setIsTxLoading,
+    isTxLoading,
   } = useUSGRecordContext()
 
   const { globalData } = useUSGMaketListContext()
@@ -359,30 +361,48 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }, [])
 
   const actionApproveZap = async () => {
-    setIsDepositLoading(true)
+    setIsTxLoading(true)
     if (walletClient && depositWeiValue) {
       await toastTx(doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue), {
         pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
-        success: () => {
-          fetchBalanceAllowanceData(depositAssetInfo?.address)
-          setIsDepositLoading(false)
-          return { type: "Success", content: `${depositAssetInfo?.symbol} approved successfully.` }
+        success: () => ({
+          type: "Success",
+          content: `${depositAssetInfo?.symbol} approved successfully.`,
+        }),
+        error: (err) => {
+          const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+          return { type: "Error", content: error || "Unable to proceed with the transaction." }
         },
       })
+
+      fetchBalanceAllowanceData(depositAssetInfo?.address)
+      setIsTxLoading(false)
     }
   }
 
   const actionApprove = async () => {
-    setIsDepositLoading(true)
-    if (walletClient && depositWeiValue)
-      await toastTx(doApprove(walletClient, marketInfo?.collatAddress, marketInfo?.marketAddress, depositWeiValue), {
-        pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
-        success: () => {
-          loadOnChainData()
-          setIsDepositLoading(false)
-          return { type: "Success", content: `${depositAssetInfo?.symbol} approved successfully.` }
-        },
-      })
+    if (walletClient && depositWeiValue) {
+      setIsTxLoading(true)
+
+      try {
+        await toastTx(doApprove(walletClient, marketInfo?.collatAddress, marketInfo?.marketAddress, depositWeiValue), {
+          pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
+          success: () => ({
+            type: "Success",
+            content: `${depositAssetInfo?.symbol} approved successfully.`,
+          }),
+          error: (err) => {
+            const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+            return { type: "Error", content: error || "Unable to proceed with the transaction." }
+          },
+        })
+
+        loadOnChainData()
+        setIsTxLoading(false)
+      } catch {
+        setIsTxLoading(false)
+      }
+    }
   }
 
   const actionZapLeverage = async () => {
@@ -392,7 +412,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         return
       }
 
-      setIsDepositLoading(true)
+      setIsTxLoading(true)
 
       const leverageData = await getRoute(
         USG_CONTRACT.USG,
@@ -429,57 +449,64 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         ),
         {
           pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-          success: () => {
-            resetAfterLeverageSuccess()
-            setIsDepositLoading(false)
-            return { type: "Success", content: "Position successfully created." }
-          },
+          success: () => ({
+            type: "Success",
+            content: "Position successfully created.",
+          }),
           error: () => {
-            setIsDepositLoading(false)
+            setIsTxLoading(false)
             return { type: "Error", content: "Something went wrong." }
           },
         }
       )
+
+      resetAfterLeverageSuccess()
+      setIsTxLoading(false)
     } catch (err) {
       console.error("ERROR : ", err)
-      setIsDepositLoading(false)
+      setIsTxLoading(false)
       toast.error(ToastComponent, { data: { type: "Error", content: "Something went wrong." } })
     }
   }
 
   const actionLeverage = async () => {
-    setIsDepositLoading(true)
+    try {
+      setIsTxLoading(true)
 
-    if (!walletClient || !currentAddress || !leveragedCollateralQuote || !borrowWeiValue) return
+      if (!walletClient || !currentAddress || !leveragedCollateralQuote || !borrowWeiValue) return
 
-    const leverageData = await getRoute(
-      USG_CONTRACT.USG,
-      marketInfo?.collatAddress,
-      borrowWeiValue,
-      leveragedCollateralQuote,
-      marketInfo?.marketAddress,
-      USG_CONTRACT.ZAPPER,
-      curveRoutes
-    )
+      const leverageData = await getRoute(
+        USG_CONTRACT.USG,
+        marketInfo?.collatAddress,
+        borrowWeiValue,
+        leveragedCollateralQuote,
+        marketInfo?.marketAddress,
+        USG_CONTRACT.ZAPPER,
+        curveRoutes
+      )
 
-    const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
+      const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
 
-    await toastTx(
-      doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, isReceiptIn, leverageData!),
-      {
-        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-        success: () => {
-          resetAfterLeverageSuccess()
-          setIsDepositLoading(false)
+      await toastTx(
+        doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, isReceiptIn, leverageData!),
+        {
+          pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+          success: () => ({
+            type: "Success",
+            content: "Position successfully created.",
+          }),
+          error: (err) => {
+            const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+            return { type: "Error", content: error || "Unable to proceed with the transaction." }
+          },
+        }
+      )
 
-          return { type: "Success", content: "Position successfully  created." }
-        },
-        error: () => {
-          setIsDepositLoading(false)
-          return { type: "Error", content: "Something went wrong." }
-        },
-      }
-    )
+      resetAfterLeverageSuccess()
+      setIsTxLoading(false)
+    } catch {
+      setIsTxLoading(false)
+    }
   }
 
   const resetAfterLeverageSuccess = () => {
@@ -491,7 +518,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     setBorrowWeiValue(undefined)
     setLeveragedCollateralQuote(undefined)
     setDepositSliderPercent(0)
-    setIsDepositLoading(false)
+    setIsTxLoading(false)
     setLeveragePercentage(1)
     loadUSGsUSGMetrics()
     loadOnChainData()
@@ -635,7 +662,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         depositAssetInfo!,
         collateralInfo!,
         leverageBalanceAllowanceData!,
-        leveragePercentage!
+        leveragePercentage!,
+        isZapLoading || isDepositLoading || isTxLoading
       ),
     [
       marketData,
@@ -650,6 +678,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       leveragePercentage,
       isTransactionBlockedByPriceImpact,
       isTransactionBlockedBySlippage,
+
+      isZapLoading || isDepositLoading || isTxLoading,
     ]
   )
 

@@ -127,24 +127,27 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         ),
         {
           pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-          success: () => {
-            loadUSGsUSGMetrics()
-            loadOnChainData()
-            setLiquidateWeiValue(undefined)
-            setLiquidablePercentage(0)
-            setRepayWeiValue(undefined)
-            setUSGReceivedValue(undefined)
 
-            setIsLiquidationLoading(false)
+          success: () => ({
+            type: "Success",
+            content: "Liquidation successful.",
+          }),
 
-            return { type: "Success", content: "Liquidation successful." }
-          },
           error: () => {
             setIsLiquidationLoading(false)
             return { type: "Error", content: "Something wrong happened." }
           },
         }
       )
+
+      loadUSGsUSGMetrics()
+      loadOnChainData()
+      setLiquidateWeiValue(undefined)
+      setLiquidablePercentage(0)
+      setRepayWeiValue(undefined)
+      setUSGReceivedValue(undefined)
+
+      setIsLiquidationLoading(false)
     }
   }
 

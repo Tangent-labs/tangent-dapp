@@ -279,12 +279,14 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
     await toastTx(doApprove(walletClient!, repayAssetInfo?.address, marketData?.marketAddress, repayWeiValue), {
       pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
-      success: () => {
-        loadOnChainData()
-        fetchBalanceAllowanceData(repayAssetInfo?.address)
-        return { type: "Success", content: `${repayAssetInfo?.symbol} approved successfully.` }
-      },
+      success: () => ({
+        type: "Success",
+        content: `${repayAssetInfo?.symbol} approved successfully.`,
+      }),
     })
+
+    loadOnChainData()
+    fetchBalanceAllowanceData(repayAssetInfo?.address)
   }
 
   const actionRepay = () => {
@@ -320,16 +322,18 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
       }),
       {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-        success: () => {
-          resetAfterRepaySuccess()
-          return { type: "Success", content: "Transaction successful." }
-        },
+        success: () => ({
+          type: "Success",
+          content: "Transaction successful.",
+        }),
         error: () => {
           setReplayLoading(false)
           return { type: "Error", content: "Transaction failed." }
         },
       }
     )
+
+    resetAfterRepaySuccess()
   }
 
   const marketRepayAndWithdraw = async () => {
@@ -344,16 +348,18 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
       }),
       {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-        success: () => {
-          resetAfterRepaySuccess()
-          return { type: "Success", content: "Transaction successful." }
-        },
+        success: () => ({
+          type: "Success",
+          content: "Transaction successful.",
+        }),
         error: () => {
           setReplayLoading(false)
           return { type: "Error", content: "Transaction failed." }
         },
       }
     )
+
+    resetAfterRepaySuccess()
   }
 
   const resetAfterRepaySuccess = () => {

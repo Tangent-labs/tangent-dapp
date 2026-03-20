@@ -1,6 +1,8 @@
+"use client"
+
 import { Address } from "viem"
 
-import { MarketHistoricalData, LpUserPoints, UserTask, VoteTask, VoteUserPoints, RefereesPoints, MarketAPRs, SavingAccountsApy, TVLData } from "./usg_type"
+import { MarketHistoricalData, VoteTask, MarketAPRs, SavingAccountsApy, TVLData, PointsResult, LpTask } from "./usg_type"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -79,6 +81,148 @@ export const getUserPositions = async (user: Address, market: Address) => {
   }
 }
 
+export const getHistoricalMarketData = async (marketAddress: string, range: string, currentTime: string): Promise<Array<MarketHistoricalData>> => {
+  try {
+    const url = `${baseUrl}/markets/${marketAddress.toLowerCase()}/dateFrom/${currentTime}?range=${range}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch historical market data")
+    }
+
+    const data: Array<MarketHistoricalData> = await response.json()
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch historical market data :", error)
+    return []
+  }
+}
+
+// ────────────────────────────────────────
+//           POINTS API CALLS
+// ────────────────────────────────────────
+
+export const getTasks = async (account: Address) => {
+  try {
+    const url = `${baseUrl}/tasks/${account}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch tasks")
+    }
+
+    const data: { lp: LpTask[]; vote: VoteTask[] } = await response.json()
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch tasks:", error)
+    return { lp: [], vote: [] }
+  }
+}
+
+export const getPoints = async (account: Address, dateFrom: string): Promise<PointsResult> => {
+  try {
+    const url = `${baseUrl}/points/${account}/${dateFrom}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch user points")
+    }
+
+    const data: PointsResult = await response.json()
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch user points:", error)
+    return {
+      lp: { total: "", dailyRate: "", referees: "" },
+      vote: { total: "", referees: "" },
+      boost: 1,
+    }
+  }
+}
+
+export const getUserBoosts = async (account: Address) => {
+  try {
+    const url = `${baseUrl}/boosts/${account}`
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch boosts")
+    }
+
+    const boosts: string[] = await response.json()
+
+    return boosts
+  } catch (error) {
+    console.error("Failed to fetch boosts:", error)
+    return []
+  }
+}
+export type GodsonsLeaderboardItem = {
+  rank: number
+  address: Address
+  lpPoints: number
+  votePts: number
+}
+export type LeaderBoardPosition = {
+  rank: number
+  address: Address
+  pts: number
+}
+export const getLeaderboards = async (
+  user: Address
+): Promise<{
+  lp: LeaderBoardPosition[]
+  vote: LeaderBoardPosition[]
+  godsons: GodsonsLeaderboardItem[]
+}> => {
+  try {
+    const url = `${baseUrl}/leaderboards/${user}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch leaderboard")
+    }
+
+    const { lp, vote, godsons } = await response.json()
+    return { lp, vote, godsons }
+  } catch (error) {
+    console.error("Failed to fetch leaderboard:", error)
+    return { lp: [], vote: [], godsons: [] }
+  }
+}
+
 export const validateReferralCode = async (referralCode: string, signature: Address, currentAddress: Address, now: string) => {
   try {
     const url = `${baseUrl}/referral`
@@ -151,248 +295,9 @@ export const getReferralStatus = async (account: Address): Promise<UserStatus> =
   }
 }
 
-export const getHistoricalMarketData = async (marketAddress: string, range: string, currentTime: string): Promise<Array<MarketHistoricalData>> => {
-  try {
-    const url = `${baseUrl}/markets/${marketAddress.toLowerCase()}/dateFrom/${currentTime}?range=${range}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch historical market data")
-    }
-
-    const data: Array<MarketHistoricalData> = await response.json()
-
-    return data
-  } catch (error) {
-    console.error("Failed to fetch historical market data :", error)
-    return []
-  }
-}
-
-export const getUserVoteTasks = async (account: Address): Promise<Array<VoteTask>> => {
-  try {
-    const url = `${baseUrl}/tasks/vote/${account}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch vote tasks")
-    }
-
-    const data: Array<VoteTask> = await response.json()
-
-    return data
-  } catch (error) {
-    console.error("Failed to fetch vote tasks:", error)
-    return []
-  }
-}
-
-export const getUserTasks = async (account: Address): Promise<UserTask[]> => {
-  try {
-    const url = `${baseUrl}/tasks/${account}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch tasks")
-    }
-
-    const data: UserTask[] = await response.json()
-
-    return data
-  } catch (error) {
-    console.error("Failed to fetch tasks:", error)
-    return []
-  }
-}
-
-export const getVoteUserPoints = async (account: Address): Promise<VoteUserPoints> => {
-  try {
-    const url = `${baseUrl}/vote-points/${account}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch vote points")
-    }
-
-    const data: VoteUserPoints = await response.json()
-
-    return data
-  } catch (error) {
-    console.error("Failed to fetch vote points:", error)
-    return { voteTotalPoints: 0 }
-  }
-}
-
-export const getUserRefereesPoints = async (account: Address): Promise<RefereesPoints> => {
-  try {
-    const url = `${baseUrl}/refereess/points/${account}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch user points")
-    }
-
-    const data: RefereesPoints = await response.json()
-
-    return data
-  } catch (error) {
-    console.error("Failed to fetch user points:", error)
-    return { lpPoints: 0, votePoints: 0 }
-  }
-}
-
-export const getLpUserPoints = async (account: Address, dateFrom: string): Promise<LpUserPoints> => {
-  try {
-    const url = `${baseUrl}/lp-points/${account}/${dateFrom}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch user points")
-    }
-
-    const data: LpUserPoints = await response.json()
-
-    return data
-  } catch (error) {
-    console.error("Failed to fetch user points:", error)
-    return { lpDailyRate: 0, lpTotalPoints: 0 }
-  }
-}
-
-export const getUserBoosts = async (account: Address): Promise<{ boost: number; result: Array<string> }> => {
-  try {
-    const url = `${baseUrl}/boosts/${account}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch boosts")
-    }
-
-    const boosts: { boost: number; result: Array<string> } = await response.json()
-
-    return boosts
-  } catch (error) {
-    console.error("Failed to fetch boosts:", error)
-    return { boost: 1, result: [] }
-  }
-}
-
-export const getLeaderboards = async (
-  user: Address
-): Promise<{
-  lpLeaderboard: Array<{
-    rank: number
-    address: Address
-    pts: number
-  }>
-  voteLeaderboard: Array<{
-    rank: number
-    address: Address
-    pts: number
-  }>
-}> => {
-  try {
-    const url = `${baseUrl}/leaderboards/${user}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch leaderboard")
-    }
-
-    const { lpLeaderboard, voteLeaderboard } = await response.json()
-
-    return { lpLeaderboard, voteLeaderboard }
-  } catch (error) {
-    console.error("Failed to fetch leaderboard:", error)
-    return { lpLeaderboard: [], voteLeaderboard: [] }
-  }
-}
-
-export const getGodsonsLeaderboard = async (
-  address: Address
-): Promise<
-  Array<{
-    rank: number
-    address: Address
-    lpPoints: number
-    votePts: number
-  }>
-> => {
-  try {
-    const url = `${baseUrl}/leaderboard/godsons/${address}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch godsons leaderboard")
-    }
-
-    const leaderboard: Array<{
-      rank: number
-      address: Address
-      lpPoints: number
-      votePts: number
-    }> = await response.json()
-
-    return leaderboard
-  } catch (error) {
-    console.error("Failed to fetch godsons leaderboard:", error)
-    return []
-  }
-}
+// ────────────────────────────────────────
+//           sUSG API
+// ────────────────────────────────────────
 
 export const getsUsgApyData = async (dateTo: number, dateFrom: number | null): Promise<Array<{ timestamp: Date; amount: string }>> => {
   try {
@@ -413,6 +318,29 @@ export const getsUsgApyData = async (dateTo: number, dateFrom: number | null): P
     return data
   } catch (error) {
     console.error("Failed to fetch historical susg apy:", error)
+    return []
+  }
+}
+
+export const getSavingsAPY = async (): Promise<SavingAccountsApy[]> => {
+  try {
+    const url = `${baseUrl}/savingAccounts/apy`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch savings APY")
+    }
+
+    const data: SavingAccountsApy[] = await response.json()
+    return data
+  } catch (error) {
+    console.error("Failed to fetch savings APY : ", error)
     return []
   }
 }
@@ -459,29 +387,6 @@ export const getTotalSupply = async (dateTo: number, dateFrom: number | null, to
     return data
   } catch (error) {
     console.error("Failed to fetch historical market data:", error)
-    return []
-  }
-}
-
-export const getSavingsAPY = async (): Promise<SavingAccountsApy[]> => {
-  try {
-    const url = `${baseUrl}/savingAccounts/apy`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch savings APY")
-    }
-
-    const data: SavingAccountsApy[] = await response.json()
-    return data
-  } catch (error) {
-    console.error("Failed to fetch savings APY : ", error)
     return []
   }
 }

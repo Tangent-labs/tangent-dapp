@@ -107,7 +107,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   const USDC_ADDRESS = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
   const frxUSD_ADDRESS = "0xcacd6fd266af91b8aed52accc382b4e165586e29"
 
-  const { currentAddress, walletClient, isWalletInitialized } = useWalletConnexionContext()
+  const { currentAddress, walletClient, isWalletContextLoaded } = useWalletConnexionContext()
 
   const { getCachedCurrentBlock } = useRootContext()
 
@@ -182,16 +182,16 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
    * On init
    */
   useEffect(() => {
-    if (isWalletInitialized) {
+    if (isWalletContextLoaded) {
       getUserStatus()
     }
-  }, [isWalletInitialized])
+  }, [isWalletContextLoaded])
 
   /**
    * On user logs in/logs out
    */
   useEffect(() => {
-    if (isWalletInitialized && predepositStatus) {
+    if (isWalletContextLoaded && predepositStatus) {
       getUserStatus()
     }
   }, [currentAddress])

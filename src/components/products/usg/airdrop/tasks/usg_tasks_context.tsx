@@ -4,18 +4,18 @@ import { ListState } from "@/types"
 import { Address, formatEther } from "viem"
 import { useUSGContext } from "../../usg_context"
 import { USGMarkets } from "../../usg_repository"
-import { UserTask, VoteTask } from "../../usg_type"
-import { getUserTasks, getUserVoteTasks } from "../../client_api"
+import { LpTask, VoteTask } from "../../usg_type"
 import { getUserBalancesAndDebtForLpTasks, mapAirdropData, mapVoteTasksProtocol } from "./usg_tasks_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { getTasks } from "../../client_api"
 
 type UsgTasksContextProps = {
   children: ReactNode
 }
 
 type UsgTasksContextValues = {
-  lpTasks: UserTask[]
+  lpTasks: LpTask[]
 
   voteTasks: VoteTask[]
   sortLpTasks: (arg: ListState) => void
@@ -42,11 +42,11 @@ type UsgTasksContextValues = {
 export const UsgTasksContext = createContext<UsgTasksContextValues | undefined>(undefined)
 
 export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
-  const { currentAddress } = useWalletConnexionContext()
+  const { currentAddress, isWalletContextLoaded } = useWalletConnexionContext()
 
   const { refetchPoints } = useUSGContext()
 
-  const [tasks, setTasks] = useState<UserTask[]>([])
+  const [rawLpTasks, setRawLpTasks] = useState<LpTask[]>([])
 
   const [rawVoteTasks, setRawVoteTasks] = useState<VoteTask[]>([])
 
@@ -63,22 +63,18 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
   const [voteTaskProtocol, setVoteTaskProtocol] = useState<string>("All")
 
   useEffect(() => {
-    if (currentAddress) {
-      getUserTasks(currentAddress).then((rawLpTasks) => {
-        setTasks(rawLpTasks)
+    if (isWalletContextLoaded) {
+      getTasks(currentAddress).then((data) => {
+        setRawLpTasks(data.lp)
+        setRawVoteTasks(data.vote)
       })
-
-      getUserVoteTasks(currentAddress).then((t) => {
-        setRawVoteTasks(t)
-      })
-
       refetchPoints()
     }
   }, [currentAddress])
 
   useEffect(() => {
-    if (tasks.length !== 0) {
-      const tokens = tasks.map((t) => t.tokenAddress) as Address[]
+    if (rawLpTasks.length !== 0) {
+      const tokens = rawLpTasks.map((t) => t.tokenAddress) as Address[]
       // Fetch current balance on the LP tasks
       getUserBalancesAndDebtForLpTasks(
         currentAddress as Address,
@@ -86,7 +82,7 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
         tokens.slice(1) // Remove the first element as there is no tokens on the first task
       ).then((balances) => {
         if (balances) {
-          const tasksCopy = [...tasks]
+          const tasksCopy = [...rawLpTasks]
 
           // Aggregation of all debt from all markets is on the last element of the array returned by the chainview
           const debt = balances[balances.length - 1]
@@ -103,11 +99,11 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
             t.balanceUsd = t.balance * t.priceUSD
             t.status = t.balanceUsd > 0.1
           }
-          setTasks(tasksCopy)
+          setRawLpTasks(tasksCopy)
         }
       })
     }
-  }, [tasks.length])
+  }, [rawLpTasks.length])
 
   const voteTasks = useMemo(() => {
     if (!rawVoteTasks) return []
@@ -125,9 +121,9 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
   }, [rawVoteTasks, voteTaskSearchValue, voteTaskProtocol])
 
   const lpTasks = useMemo(() => {
-    if (!tasks) return []
+    if (!rawLpTasks) return []
 
-    const rows = mapAirdropData(tasks)
+    const rows = mapAirdropData(rawLpTasks)
 
     let rowsToShow = rows
       .filter((row) => lpTaskFilteredBy === "All" || (row?.balance ?? 0) > 0)
@@ -139,7 +135,7 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
     }
 
     return rowsToShow
-  }, [tasks, lpTaskSearchValue, lpTaskFilteredBy, lpTaskProtocol])
+  }, [rawLpTasks, lpTaskSearchValue, lpTaskFilteredBy, lpTaskProtocol])
 
   const sortVoteTasks = (listState: ListState) => {
     const { key, direction } = listState.sort!
@@ -158,9 +154,9 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
   const sortLpTasks = (listState: ListState) => {
     const { key, direction } = listState.sort!
 
-    lpTasks.sort((elementA: UserTask, elementB: UserTask) => {
-      const aValue = elementA[key as keyof UserTask]!
-      const bValue = elementB[key as keyof UserTask]!
+    lpTasks.sort((elementA: LpTask, elementB: LpTask) => {
+      const aValue = elementA[key as keyof LpTask]!
+      const bValue = elementB[key as keyof LpTask]!
 
       if (aValue < bValue) return direction === "asc" ? -1 : 1
       if (aValue > bValue) return direction === "asc" ? 1 : -1

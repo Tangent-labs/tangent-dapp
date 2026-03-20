@@ -13,13 +13,13 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export const UsgBoostsContent = () => {
-  const { lpUserPoints, voteUserPoints } = useUSGContext()
+  const { lpUserPoints, voteUserPoints, userBoostFactor } = useUSGContext()
 
   const { userBoosts, sortBoosts } = useUsgBoostsContext()
 
   const { isConnected, connect } = useWalletConnexionContext()
 
-  const { userBoostFactor, setReferralStatus, referralStatus, airdropDataIsLoading, signMessage } = useUsgAirdropContext()
+  const { setReferralStatus, referralStatus, airdropDataIsLoading, signMessage } = useUsgAirdropContext()
 
   return (
     <>

@@ -481,7 +481,7 @@ export type TotalBorrow = {
   }>
 }
 
-export type UserTask = {
+export type LpTask = {
   taskId: number
   asset: string
   protocol: string
@@ -511,6 +511,19 @@ export type VoteTask = {
 export type LpUserPoints = {
   lpTotalPoints: number
   lpDailyRate: number
+}
+
+export type PointsResult = {
+  boost: number
+  lp: {
+    total: string
+    referees: string
+    dailyRate: string
+  }
+  vote: {
+    total: string
+    referees: string
+  }
 }
 
 export type RefereesPoints = {
@@ -562,39 +575,6 @@ export type MarketListAPRData = {
   }
   projectedAPR: {
     [rewardToken: string]: number // allows any other dynamic APR components (e.g. CRV, CVX, FXN, etc.)
-  }
-}
-
-export type EarnPoolsData = {
-  protocol: string
-  address: Address
-  gaugeCrvApy?: Array<number>
-  gaugeFutureCrvApy?: Array<number>
-  lpTokenAddress?: Address
-  convexPoolData?: { usdTotal?: number }
-  usdTotal?: number
-  pendleBaseAPY?: number
-  details?: {
-    impliedApy: number
-    aggregatedApy: number
-  }
-  pt?: string
-  yt?: string
-}
-
-export type StakeDaoAPRData = {
-  lpToken: {
-    address: string
-  }
-  apr: {
-    current: {
-      total: number
-      details: Array<{
-        label: string
-        value: number[]
-      }>
-    }
-    projected: { total: number }
   }
 }
 

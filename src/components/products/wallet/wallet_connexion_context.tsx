@@ -6,21 +6,24 @@ import { registerUser } from "./register_user"
 import { WalletState } from "@web3-onboard/core"
 import web3Onboard from "@/services/config_wallet_provider"
 import { getUserBalances } from "./wallet_connexion_controller"
-import { Address, createWalletClient, custom, toHex, WalletClient } from "viem"
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { Address, createWalletClient, custom, toHex, WalletClient, zeroAddress } from "viem"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 
 export type Account = {
   address: Address
   ens: string | null
 }
 
+type WalletStatus = "loading" | "disconnected" | "connected"
+
 export type WalletConnexionContextValues = {
+  walletStatus: WalletStatus
   isConnected: boolean
   isChainConnected: boolean
   isWellConnected: boolean
   currentAccount?: Account
   currentWallet?: WalletState
-  currentAddress?: Address
+  currentAddress: Address
   connect: () => void
   disconnect: () => void
   changeNetwork: () => void
@@ -28,164 +31,135 @@ export type WalletConnexionContextValues = {
   canInteract: boolean
   userBalances: Array<{ balance: bigint; token: string; address: Address }>
   tokenInfo: (t: string) => { balance: bigint; token: string; address: Address } | undefined
-  isWalletInitialized: boolean
-}
-
-interface WalletConnexionProviderProps {
-  children: ReactNode
+  isWalletContextLoaded: boolean
 }
 
 const WalletConnexionContext = createContext<WalletConnexionContextValues | undefined>(undefined)
 
-export const WalletConnexionProvider = ({ children }: WalletConnexionProviderProps) => {
+export const WalletConnexionProvider = ({ children }: { children: ReactNode }) => {
+  const [walletStatus, setWalletStatus] = useState<WalletStatus>("loading")
   const [currentWallet, setCurrentWallet] = useState<WalletState | undefined>(undefined)
-
   const [currentAccount, setCurrentAccount] = useState<Account | undefined>(undefined)
-
   const [userBalances, setUserBalances] = useState<Array<{ balance: bigint; token: string; address: Address }>>([])
+  const hasReceivedFirstUpdate = useRef(false)
 
-  const [isWalletInitialized, setIsWalletInitialized] = useState<boolean>(false)
+  useEffect(() => {
+    const wallets$ = web3Onboard.state.select("wallets")
 
+    const subscription = wallets$.subscribe({
+      next: (wallets: WalletState[]) => {
+        // A wallet connected → trust immediately
+        if (wallets.length > 0) {
+          hasReceivedFirstUpdate.current = true
+          clearTimeout(timeout)
+
+          const wallet = wallets[0]
+          const account = wallet.accounts[0] as unknown as Account
+
+          setCurrentWallet(wallet)
+          setCurrentAccount(account)
+          setWalletStatus("connected")
+          registerUser(account.address)
+          return
+        }
+
+        // Empty array BUT we already had a connection before → real disconnect
+        if (hasReceivedFirstUpdate.current) {
+          setCurrentWallet(undefined)
+          setCurrentAccount(undefined)
+          setWalletStatus("disconnected")
+          return
+        }
+
+        // Empty array and never connected yet → ignore, let the timeout decide
+      },
+      error: (err: Error) => console.error("Wallet subscription error:", err),
+    })
+
+    // If nothing connects within 2s, it's a real disconnect
+    const timeout = setTimeout(() => {
+      if (!hasReceivedFirstUpdate.current) {
+        hasReceivedFirstUpdate.current = true
+        setWalletStatus("disconnected")
+      }
+    }, 2000)
+
+    return () => {
+      subscription.unsubscribe()
+      clearTimeout(timeout)
+    }
+  }, [])
+
+  // ─── Derived state ───
+  const isConnected = walletStatus === "connected"
+
+  const isChainConnected = useMemo(() => currentWallet?.chains?.at(0)?.id === toHex(dappConfig.chain.id), [currentWallet])
+
+  const currentAddress = currentAccount?.address ?? zeroAddress
+
+  const isWellConnected = isConnected && isChainConnected
+
+  const isWalletContextLoaded = walletStatus !== "loading"
+
+  const canInteract = currentAddress !== zeroAddress && isWellConnected
+
+  const walletClient = useMemo(() => {
+    if (!currentWallet || !currentAccount?.address) return undefined
+    return createWalletClient({
+      chain,
+      transport: custom(currentWallet.provider),
+      account: currentAccount.address,
+    }) as WalletClient
+  }, [currentWallet, currentAccount])
+
+  // ─── Actions ───
   const connect = async () => {
     await web3Onboard.connectWallet()
-    const state = web3Onboard.state.get()
-    if (state?.wallets.length > 0) {
-      const userAccount = state.wallets?.at(0)?.accounts?.at(0)
+    // subscription handles the rest
+  }
 
-      if (userAccount) {
-        setCurrentWallet(state.wallets?.at(0))
-        setCurrentAccount(userAccount as Account)
-        registerUser(userAccount?.address)
-      }
-    }
+  const disconnect = async () => {
+    if (!currentWallet) return
+    await web3Onboard.disconnectWallet({ label: currentWallet.label })
+    // subscription handles the rest
   }
 
   const changeNetwork = () => {
     web3Onboard.setChain({ chainId: dappConfig.chain.id })
   }
 
-  // is there an actual wallet connect on the DAPP
-  const isConnected = useMemo<boolean>(() => {
-    return !!currentAccount?.address || false
-  }, [currentAccount])
-
-  // is the connected wallet  has the good chain selected
-  const isChainConnected = useMemo<boolean>(() => {
-    return currentWallet?.chains?.at(0)?.id === toHex(dappConfig.chain.id)
-  }, [currentWallet])
-
-  const currentAddress = useMemo<Address | undefined>(() => {
-    return currentAccount?.address
-  }, [currentAccount])
-
-  // are all the condition for interacting with the daap are met .
-  const isWellConnected = useMemo<boolean>(() => {
-    return isConnected && isChainConnected
-  }, [isConnected, isChainConnected])
-
-  const walletClient: WalletClient | undefined = useMemo(() => {
-    if (!currentWallet || !currentAddress) return undefined
-
-    return createWalletClient({
-      chain,
-      transport: custom(currentWallet.provider),
-      account: currentAddress,
-    }) as WalletClient
-  }, [currentWallet, currentAddress])
-
-  const disconnect = async () => {
-    if (!currentWallet) return
-    await web3Onboard.disconnectWallet({ label: currentWallet?.label })
-  }
-
+  // ─── Balances ───
   useEffect(() => {
-    const state = web3Onboard.state.select("wallets")
-
-    const handleUpdate = (wallets: WalletState[]) => {
-      if (wallets.length === 0) {
-        setCurrentWallet(undefined)
-        setCurrentAccount(undefined)
-        return
-      }
-
-      const newWallet = wallets[0]
-      const newAccount = wallets[0].accounts[0] as unknown as Account
-
-      if (newWallet.label !== currentWallet?.label) {
-        setCurrentWallet(newWallet)
-      }
-
-      setCurrentAccount(newAccount)
-      setIsWalletInitialized(true)
-    }
-
-    /**
-     * Hack when the user is not connected
-     */
-    setTimeout(() => {
-      const state = web3Onboard.state.get().wallets
-
-      if (state.length === 0) {
-        setIsWalletInitialized(true)
-      }
-    }, 800)
-
-    /**
-     * Subscribe to wallet state update
-     */
-    const subscription = state.subscribe({
-      next: (update: WalletState[]) => {
-        handleUpdate(update)
-      },
-      error: (err: Error) => {
-        console.error("Error in subscription:", err)
-      },
-    })
-
-    return () => {
-      if (subscription) {
-        subscription.unsubscribe()
-      }
-    }
-  }, [currentWallet, currentAccount])
-
-  const canInteract = useMemo(() => {
-    return !!currentAddress && isWellConnected
-  }, [currentAddress, isWellConnected])
-
-  useEffect(() => {
-    if (currentAddress) {
-      getUserBalances(currentAddress).then((res) => {
-        setUserBalances(res)
-      })
+    if (currentAddress && currentAddress !== zeroAddress) {
+      getUserBalances(currentAddress).then(setUserBalances)
     }
   }, [currentAddress])
 
-  const tokenInfo = useCallback(
-    (t: string) => {
-      return userBalances.find((el) => el.token === t)
-    },
-    [userBalances]
+  const tokenInfo = useCallback((t: string) => userBalances.find((el) => el.token === t), [userBalances])
+
+  return (
+    <WalletConnexionContext.Provider
+      value={{
+        walletStatus,
+        currentAddress,
+        currentAccount,
+        currentWallet,
+        isConnected,
+        isChainConnected,
+        isWellConnected,
+        walletClient,
+        connect,
+        disconnect,
+        changeNetwork,
+        canInteract,
+        userBalances,
+        tokenInfo,
+        isWalletContextLoaded,
+      }}
+    >
+      {children}
+    </WalletConnexionContext.Provider>
   )
-
-  const contextValue: WalletConnexionContextValues = {
-    currentAddress,
-    currentAccount,
-    currentWallet,
-    isConnected,
-    isChainConnected,
-    isWellConnected,
-    walletClient,
-    connect,
-    disconnect,
-    changeNetwork,
-    canInteract,
-    userBalances,
-    tokenInfo,
-    isWalletInitialized,
-  }
-
-  return <WalletConnexionContext.Provider value={contextValue}>{children} </WalletConnexionContext.Provider>
 }
 
 export const useWalletConnexionContext = () => {

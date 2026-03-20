@@ -27,7 +27,6 @@ type UsgAirdropContextValues = {
   generateReferralCode: () => void
   referralStatus: UserStatus
   setReferralStatus: (arg: UserStatus) => void
-  userBoostFactor: number
   userBoosts: Array<Boost>
 }
 
@@ -36,23 +35,18 @@ export const UsgAirdropContext = createContext<UsgAirdropContextValues | undefin
 export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
   const { getCachedCurrentBlock } = useRootContext()
 
-  const { currentAddress, walletClient } = useWalletConnexionContext()
+  const { currentAddress, walletClient, isWalletContextLoaded } = useWalletConnexionContext()
 
   const [airdropDataIsLoading, setAirdropDataIsLoading] = useState<boolean>(true)
 
   const [referralStatus, setReferralStatus] = useState<UserStatus>({ generatedCode: null, hasUsedCode: false, referralCode: "", friends: 0 })
 
-  const [userBoostFactor, setUserBoostFactor] = useState<number>(1)
-
   const [userBoosts, setUserBoosts] = useState<Array<Boost>>([])
 
   useEffect(() => {
-    if (currentAddress) {
-      getUserBoosts(currentAddress).then((b) => {
-        const mappedBoosts = mapUserBoosts(b?.result)
-
-        setUserBoosts(mappedBoosts)
-        setUserBoostFactor(b.boost)
+    if (isWalletContextLoaded) {
+      getUserBoosts(currentAddress).then((data) => {
+        setUserBoosts(mapUserBoosts(data))
       })
 
       getReferralStatus(currentAddress).then((status) => {
@@ -123,7 +117,6 @@ export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
     generateReferralCode,
     referralStatus,
     setReferralStatus,
-    userBoostFactor,
     userBoosts,
   }
 

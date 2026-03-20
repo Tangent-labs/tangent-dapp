@@ -31,14 +31,6 @@ export function WalletConnexionContent({ className, classNameChild }: WalletConn
     return formatAddress(currentAddress) || "Unknown Address"
   }, [isConnected, isChainConnected, currentAddress])
 
-  const handleConnect = async () => {
-    await connect()
-  }
-
-  const handleDisconnect = async () => {
-    await disconnect()
-  }
-
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -47,7 +39,7 @@ export function WalletConnexionContent({ className, classNameChild }: WalletConn
           onClick={(e) => {
             if (!isConnected) {
               e.preventDefault()
-              handleConnect()
+              connect()
             }
           }}
         >
@@ -89,7 +81,7 @@ export function WalletConnexionContent({ className, classNameChild }: WalletConn
             </div>
 
             {isConnected && (
-              <div onClick={() => handleDisconnect()} className="flex w-full cursor-pointer items-center justify-start p-2 font-semibold text-danger">
+              <div onClick={() => disconnect()} className="flex w-full cursor-pointer items-center justify-start p-2 font-semibold text-danger">
                 Log out
               </div>
             )}

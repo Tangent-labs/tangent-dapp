@@ -1,12 +1,12 @@
 "use client"
 
 import { Address, zeroAddress } from "viem"
-import { getUSGsUSGMetrics } from "./usg_controller"
+import { getPointsDetails, getUSGsUSGMetrics } from "./usg_controller"
 import { getBalances } from "./record/usg_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { getLpUserPoints, getMarketAprs, getUserRefereesPoints, getVoteUserPoints } from "./client_api"
-import { USGStakingInfo, LpUserPoints, VoteUserPoints, RefereesPoints, MarketAPRs } from "./usg_type"
+import { getMarketAprs } from "./client_api"
+import { USGStakingInfo, VoteUserPoints, RefereesPoints, MarketAPRs, LpUserPoints } from "./usg_type"
 import { useRootContext } from "../root/root_context"
 import { ERC20S } from "@/data/erc20s"
 
@@ -21,6 +21,7 @@ type USGContextValues = {
   balances: Record<Address, bigint> | null
   lpUserPoints: LpUserPoints
   voteUserPoints: VoteUserPoints
+  userBoostFactor: number
   refetchPoints: () => Promise<void>
   loadUSGsUSGMetrics: () => void
   USGsUSGMetrics: USGStakingInfo | undefined
@@ -35,7 +36,7 @@ export const USGContext = createContext<USGContextValues | undefined>(undefined)
 export const USGProvider = ({ children }: USGContextProps) => {
   const { getCachedCurrentBlock } = useRootContext()
 
-  const { currentAddress, isWalletInitialized } = useWalletConnexionContext()
+  const { currentAddress, isWalletContextLoaded } = useWalletConnexionContext()
 
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
 
@@ -44,6 +45,8 @@ export const USGProvider = ({ children }: USGContextProps) => {
   const [voteUserPoints, setVoteUserPoints] = useState<VoteUserPoints>({ voteTotalPoints: 0 })
 
   const [refereesPoints, setRefereesPoints] = useState<RefereesPoints>({ lpPoints: 0, votePoints: 0 })
+
+  const [userBoostFactor, setUserBoostFactor] = useState<number>(1)
 
   const [USGsUSGMetrics, setUSGsUSGMetrics] = useState<USGStakingInfo | undefined>()
 
@@ -77,50 +80,38 @@ export const USGProvider = ({ children }: USGContextProps) => {
    * On init
    */
   useEffect(() => {
-    if (isWalletInitialized) {
+    if (isWalletContextLoaded) {
       loadUSGsUSGMetrics()
       // loadTanSTANMetrics()
       refetchPoints()
     }
-  }, [isWalletInitialized])
+  }, [isWalletContextLoaded, currentAddress])
 
   /**
    * On user logs in/logs out
    */
   useEffect(() => {
-    if (isWalletInitialized && USGsUSGMetrics) {
+    if (isWalletContextLoaded && USGsUSGMetrics) {
       loadUSGsUSGMetrics()
       // loadTanSTANMetrics()
     }
   }, [currentAddress])
 
-  const getRefereesPoints = async () => {
-    getUserRefereesPoints(currentAddress!).then((p) => {
-      setRefereesPoints(p)
-    })
-  }
-
   const refetchPoints = async () => {
     const currentBlock = await getCachedCurrentBlock()
 
-    const isoEndDate = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
-    const dateFrom = encodeURIComponent(isoEndDate)
-
-    getLpUserPoints(currentAddress!, dateFrom).then((lpPts) => {
-      setLpUserPoints(lpPts)
+    getPointsDetails(currentAddress, Number(currentBlock.timestamp)).then((data) => {
+      setLpUserPoints({ lpDailyRate: Number(data.lp.dailyRate), lpTotalPoints: Number(data.lp.total) })
+      setVoteUserPoints({ voteTotalPoints: Number(data.vote.total) })
+      setRefereesPoints({ lpPoints: Number(data.lp.referees), votePoints: Number(data.vote.referees) })
+      setUserBoostFactor(data.boost)
     })
-
-    getVoteUserPoints(currentAddress!).then((votePts) => {
-      setVoteUserPoints(votePts)
-    })
-
-    getRefereesPoints()
   }
 
   useEffect(() => {
     const tokenAddresses: Address[] = ERC20S.map((el) => el.address as Address)
 
-    if (currentAddress && tokenAddresses.length > 0) {
+    if (currentAddress !== zeroAddress) {
       getBalances(currentAddress, tokenAddresses).then((data) => {
         if (data) {
           const tokenBalances = tokenAddresses.reduce(
@@ -145,7 +136,7 @@ export const USGProvider = ({ children }: USGContextProps) => {
     voteUserPoints,
     refereesPoints,
     marketAprs,
-
+    userBoostFactor,
     // loadTanSTANMetrics,
     // TANsTANMetrics,
   }

@@ -5,8 +5,8 @@ import { mapPoolsAndTasks } from "./utils"
 import { useUSGContext } from "../usg_context"
 import { mapAPROpportunities } from "./usg_earn_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { getCurvePools, getConvexPools, getStakeDAOPools, getPendlePools } from "../server_api"
-import { AprOpportunityItem, USGStakingInfo, LpUserPoints, EarnProtocolInput, EarnPoolsData } from "../usg_type"
+import { AprOpportunityItem, USGStakingInfo, LpUserPoints, EarnProtocolInput } from "../usg_type"
+import { EarnPoolsData, getConvexPools, getCurvePools, getPendlePools, getStakeDAOPools } from "../client_api_external"
 
 type USGEarnContextProps = {
   children: ReactNode
@@ -28,7 +28,7 @@ export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  const [poolsData, setPoolsData] = useState<Array<EarnPoolsData>>()
+  const [poolsData, setPoolsData] = useState<EarnPoolsData[]>()
 
   const displayRows = useMemo(() => {
     if (!tasks || !poolsData) return []

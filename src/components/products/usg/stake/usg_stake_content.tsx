@@ -93,7 +93,7 @@ export default function USGStakeContent() {
                 key: "APY",
                 value: (
                   <div className="flex items-center justify-center gap-1">
-                    {sUSGCurrentAPY.toFixed(2)}%<IconStars className="w-4 fill-row-tonic"></IconStars>
+                    {sUSGCurrentAPY.toFixed(2)}%<IconStars className="w-4 fill-[#95FF00]"></IconStars>
                   </div>
                 ),
               },

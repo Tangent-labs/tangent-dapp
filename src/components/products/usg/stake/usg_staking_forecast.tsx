@@ -254,9 +254,9 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apr, currentFea
 
           <HoverCard openDelay={100} closeDelay={100}>
             <HoverCardTrigger asChild>
-              <button type="button" className="inline-flex items-center hover:text-row-tonic">
+              <button type="button" className="inline-flex items-center hover:text-[#95FF00]">
                 <div className="mr-1 text-xl font-semibold">{apr.toFixed(2)}%</div>
-                <IconStars className="fill-row-tonic" />
+                <IconStars className="fill-[#95FF00]" />
               </button>
             </HoverCardTrigger>
 

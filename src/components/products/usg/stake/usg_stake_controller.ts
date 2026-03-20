@@ -6,7 +6,14 @@ import { Address, EstimateContractGasParameters, formatUnits, maxUint256, Wallet
 
 export const COMPOUNDING_PERIODS_PER_YEAR = 52
 
-export function getFormState(stakeInfo: USGStakingInfo, currentFeature: "stake" | "unstake", weiValue?: bigint, expected?: bigint, isWellConnected?: boolean) {
+export function getFormState(
+  stakeInfo: USGStakingInfo,
+  currentFeature: "stake" | "unstake",
+  weiValue?: bigint,
+  expected?: bigint,
+  isWellConnected?: boolean,
+  isLoading?: boolean
+) {
   let isApproved = false
   const reasons: string[] = []
 
@@ -25,7 +32,7 @@ export function getFormState(stakeInfo: USGStakingInfo, currentFeature: "stake" 
       reasons.push("")
     }
   }
-  return { canProcess: isApproved && reasons.length === 0, cantProcessReasons: reasons, haveToApprove: !isApproved }
+  return { canProcess: isApproved && reasons.length === 0 && !isLoading, cantProcessReasons: reasons, haveToApprove: !isApproved }
 }
 
 export const getExpectedUSG = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {

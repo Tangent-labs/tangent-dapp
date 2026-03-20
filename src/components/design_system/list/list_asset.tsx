@@ -28,7 +28,7 @@ export const ListAsset = ({ name, token, marketData, className = "" }: ListAsset
         {!!marketData ? (
           <>
             <div className="ml-2 flex items-center justify-center gap-1 md:ml-0 xl:gap-2">
-              {marketData?.marketType?.includes("CRV") && <TokenImageHighlighted token="CRV" size={24} />}
+              {(marketData?.marketType?.includes("CRV") || marketData?.marketType?.startsWith("Convex_")) && <TokenImageHighlighted token="CRV" size={24} />}
               {marketData?.marketType?.startsWith("Convex_") && <TokenImageHighlighted token="CVX" size={24} />}
               {marketData?.marketType?.startsWith("STAKEDAO") && <TokenImageHighlighted token="SDT" size={24} />}
               {marketData?.marketType?.startsWith("Pendle") && <TokenImageHighlighted token="PENDLE" size={24} />}

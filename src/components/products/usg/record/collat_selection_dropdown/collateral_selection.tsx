@@ -30,7 +30,7 @@ export const CollateralCard = ({ collateralInfo, marketData }: CollateralCardPro
             <span className="text-sm font-semibold md:text-[24px]">{collateralInfo?.symbol}</span>
           </div>
 
-          <div className="flex items-center justify-between gap-2">{marketData && <MarketMetadata marketData={marketData} />}</div>
+          <div className="flex items-center justify-between gap-1">{marketData && <MarketMetadata marketData={marketData} />}</div>
 
           <IconChevron className="ml-auto flex w-3 stroke-white" />
         </ReliefCard>

@@ -12,6 +12,7 @@ import { StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../usg_typ
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doApprove, doStakeUSG, doUnstakeUSG, getExpectedSUSG, getExpectedUSG, getFormState } from "./usg_stake_controller"
+import { matchBlockChainErrors } from "../record/usg_record_controller"
 
 type USGStakeContextProps = {
   children: ReactNode
@@ -51,7 +52,7 @@ type USGStakeContextValues = {
 export const USGStakeContext = createContext<USGStakeContextValues | undefined>(undefined)
 
 export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
-  const { walletClient } = useWalletConnexionContext()
+  const { walletClient, isWellConnected } = useWalletConnexionContext()
 
   const { loadUSGsUSGMetrics, USGsUSGMetrics } = useUSGContext()
 
@@ -138,7 +139,10 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     }
   }, [currentFeature, USGsUSGMetrics])
 
-  const formState = useMemo<FormState>(() => getFormState(USGsUSGMetrics!, currentFeature, weiValue, expected, true), [USGsUSGMetrics, weiValue, expected])
+  const formState = useMemo<FormState>(
+    () => getFormState(USGsUSGMetrics!, currentFeature, weiValue, expected, isWellConnected, isLoading),
+    [USGsUSGMetrics, currentFeature, weiValue, expected, isWellConnected, isLoading]
+  )
 
   const hasToApprove = useMemo(() => {
     if (!weiValue) return true
@@ -151,70 +155,92 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   }, [USGsUSGMetrics, currentFeature, weiValue])
 
   const actionUnstake = async () => {
-    if (!weiValue || weiValue === 0n) return
-    if (!currentAssetInfo?.current) return
+    try {
+      if (!weiValue || weiValue === 0n) return
+      if (!currentAssetInfo?.current) return
 
-    setIsLoading(true)
+      setIsLoading(true)
 
-    const params = {
-      walletClient: walletClient!,
-      stakingAddress: USG_CONTRACT.SUSG,
-      weiValue,
+      const params = {
+        walletClient: walletClient!,
+        stakingAddress: USG_CONTRACT.SUSG,
+        weiValue,
+      }
+
+      await toastTx(doUnstakeUSG(params), {
+        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+        success: () => ({
+          type: "Success",
+          content: "Position successfully created.",
+        }),
+        error: () => {
+          return { type: "Error", content: "Unable to proceed with the transaction." }
+        },
+      })
+
+      loadUSGsUSGMetrics()
+      setWeiValue(undefined)
+      setExpected(undefined)
+      setIsLoading(false)
+    } catch {
+      setIsLoading(false)
     }
-
-    await toastTx(doUnstakeUSG(params), {
-      pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-      success: () => {
-        loadUSGsUSGMetrics()
-        setWeiValue(undefined)
-        setExpected(undefined)
-
-        setIsLoading(false)
-        return { type: "Success", content: "Position successfully created." }
-      },
-      error: () => {
-        return { type: "Error", content: "Unable to proceed with the transaction." }
-      },
-    })
   }
 
   const actionStake = async () => {
-    if (!weiValue || weiValue === 0n) return
-    if (!currentAssetInfo?.current) return
+    try {
+      if (!weiValue || weiValue === 0n) return
+      if (!currentAssetInfo?.current) return
 
-    setIsLoading(true)
+      setIsLoading(true)
 
-    const params = {
-      walletClient: walletClient!,
-      stakingAddress: USG_CONTRACT.SUSG,
-      weiValue,
+      const params = {
+        walletClient: walletClient!,
+        stakingAddress: USG_CONTRACT.SUSG,
+        weiValue,
+      }
+
+      await toastTx(doStakeUSG(params), {
+        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+        success: () => ({
+          type: "Success",
+          content: "Position successfully created.",
+        }),
+        error: (err) => {
+          const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+          return { type: "Error", content: error || "Unable to proceed with the transaction." }
+        },
+      })
+
+      loadUSGsUSGMetrics()
+      setWeiValue(undefined)
+      setExpected(undefined)
+      setIsLoading(false)
+    } catch {
+      setIsLoading(false)
     }
-
-    await toastTx(doStakeUSG(params), {
-      pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-      success: () => {
-        loadUSGsUSGMetrics()
-        setWeiValue(undefined)
-        setExpected(undefined)
-        setIsLoading(false)
-        return { type: "Success", content: "Position successfully created." }
-      },
-      error: () => {
-        return { type: "Error", content: "Unable to proceed with the transaction." }
-      },
-    })
   }
 
   const actionApprove = async () => {
-    setIsLoading(true)
-    await toastTx(doApprove(walletClient!, USG_CONTRACT.USG, weiValue || 0n, USG_CONTRACT.SUSG), {
-      pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
-      success: () => {
-        loadUSGsUSGMetrics()
-        setIsLoading(false)
-        return { type: "Success", content: "USG approved successfully." }
-      },
-    })
+    try {
+      setIsLoading(true)
+      await toastTx(doApprove(walletClient!, USG_CONTRACT.USG, weiValue || 0n, USG_CONTRACT.SUSG), {
+        pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
+        success: () => ({
+          type: "Success",
+          content: "USG approved successfully.",
+        }),
+        error: (err) => {
+          const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+          return { type: "Error", content: error || "Unable to proceed with the transaction." }
+        },
+      })
+
+      loadUSGsUSGMetrics()
+      setIsLoading(false)
+    } catch {
+      setIsLoading(false)
+    }
   }
 
   useEffect(() => {

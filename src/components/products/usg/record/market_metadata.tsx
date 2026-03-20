@@ -13,7 +13,7 @@ export const MarketMetadata = ({ marketData }: MarketMetadataProps) => {
     <>
       {marketData && (
         <>
-          {marketData?.marketType?.includes("CRV") && (
+          {(marketData?.marketType?.includes("CRV") || marketData?.marketType?.startsWith("Convex_")) && (
             <>
               <MobileProtocol token="CRV" label="Curve" />
               <TokenImage className="flex text-sm md:hidden" token={"CRV"} size={20} />

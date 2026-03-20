@@ -4,19 +4,18 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { zeroAddress } from "viem"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGRepayContext } from "./usg_record_repay_context"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { InputSelect } from "@/components/design_system/inputs/input_select"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { AssetInfos, ZapAssetSelector } from "@/components/design_system/inputs/asset_selector"
-import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
+import { RecapAccordion } from "@/components/design_system/structure/recap"
 import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
+import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
 
 export default function USGRepayContent() {
   const {
@@ -104,6 +103,7 @@ export default function USGRepayContent() {
           depositSelect={
             <ZapAssetSelector collateralInfo={collateralInfo} depositAsset={repayAsset || "USG"} setDepositAsset={setRepayAsset} caseType="repay" />
           }
+          slippageInput={isZapping && <SlippageInput slippage={slippage} setSlippage={setSlippage} />}
           disabled={isRepayMax}
           isZapping={isZapping}
           asset={repayAssetInfo || USGInfo}
@@ -159,25 +159,18 @@ export default function USGRepayContent() {
         )}
       </div>
 
-      <div className="flex items-start justify-between gap-2">
-        <Accordion className="w-full" type="single" collapsible>
-          <AccordionItem value="item-1">
-            <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary hover:bg-panel-hover">
-              <AccordionTrigger>Recap</AccordionTrigger>
-
-              <AccordionContent className="w-full">
-                <div className="flex w-full items-center justify-between">
-                  <span className="text-subtitle">Expected debt: </span>
-
-                  <span className="font-semibold text-white">{expectedRemainingDebt}</span>
-                </div>
-              </AccordionContent>
-            </ReliefCard>
-          </AccordionItem>
-        </Accordion>
-
-        <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
-      </div>
+      {isZapping && (
+        <RecapAccordion
+          isLoading={isZapLoading}
+          isDisplayed={isZapping}
+          zappingParams={{
+            label: "USG",
+            expected: `${expectedRemainingDebt}`,
+            minOut: minValueReceivedFromZap,
+            slippage: slippage,
+          }}
+        />
+      )}
 
       <>
         {isDebtBelowThreshold && (

@@ -68,20 +68,22 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
         }),
         {
           pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-          success: () => {
-            loadUSGsUSGMetrics()
-            loadOnChainData()
-            setWithdrawWeiValue(undefined)
-            setWithdrawPercentage(0)
-            setWithdrawLoading(false)
-            return { type: "Success", content: "Transaction successful." }
-          },
+          success: () => ({
+            type: "Success",
+            content: "Transaction successful.",
+          }),
           error: () => {
             setWithdrawLoading(false)
             return { type: "Error", content: "Transaction failed." }
           },
         }
       )
+
+      loadUSGsUSGMetrics()
+      loadOnChainData()
+      setWithdrawWeiValue(undefined)
+      setWithdrawPercentage(0)
+      setWithdrawLoading(false)
     }
   }
 

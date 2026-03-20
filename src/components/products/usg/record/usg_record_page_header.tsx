@@ -12,7 +12,7 @@ export default function USGRecordPageHeader() {
 
   return (
     <>
-      <div className="flex w-full flex-col justify-between xl:flex-row">
+      <div className="flex w-full flex-col justify-between gap-[20px] xl:flex-row">
         <CollateralCard collateralInfo={collateralInfo} marketData={marketData}></CollateralCard>
 
         <NeonLightCard

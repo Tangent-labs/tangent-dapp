@@ -40,24 +40,22 @@ export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
   const [borrowLoading, setBorrowLoading] = useState<boolean>(false)
 
   const actionBorrow = async () => {
-    if (walletClient) {
-      setBorrowLoading(true)
+    if (!walletClient) return
 
+    setBorrowLoading(true)
+
+    try {
       await toastTx(doMarketBorrow(walletClient, { marketAddress: marketData!.marketAddress, borrowWeiValue }), {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-        success: () => {
-          setBorrowWeiValue(undefined)
-          loadOnChainData()
-          setBorrowPercentage(0)
-          loadUSGsUSGMetrics()
-          setBorrowLoading(false)
-          return { type: "Success", content: "Borrow successfull." }
-        },
-        error: () => {
-          setBorrowLoading(false)
-          return { type: "Error", content: "Borrow failed." }
-        },
+        success: () => ({ type: "Success", content: "Borrow successful." }),
+        error: () => ({ type: "Error", content: "Borrow failed." }),
       })
+      setBorrowWeiValue(undefined)
+      loadOnChainData()
+      setBorrowPercentage(0)
+      loadUSGsUSGMetrics()
+    } finally {
+      setBorrowLoading(false)
     }
   }
 
@@ -82,8 +80,8 @@ export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
   }, [marketData, currentAddress])
 
   const formState = useMemo(
-    () => getBorrowFormState(marketData, borrowWeiValue, isWellConnected, maxBorrowableValue),
-    [marketData, borrowWeiValue, isWellConnected, currentAddress, maxBorrowableValue]
+    () => getBorrowFormState(marketData, borrowWeiValue, isWellConnected, maxBorrowableValue, borrowLoading),
+    [marketData, borrowWeiValue, isWellConnected, currentAddress, maxBorrowableValue, borrowLoading]
   )
 
   const contextValue: USGBorrowContextValues = {

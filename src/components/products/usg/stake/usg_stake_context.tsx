@@ -11,7 +11,7 @@ import { AssetDataPriced, FormState } from "@/types"
 import { StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../usg_type"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { computeSUSGAprVariation, doApprove, doStakeUSG, doUnstakeUSG, getExpectedSUSG, getExpectedUSG, getFormState } from "./usg_stake_controller"
+import { doApprove, doStakeUSG, doUnstakeUSG, getExpectedSUSG, getExpectedUSG, getFormState } from "./usg_stake_controller"
 
 type USGStakeContextProps = {
   children: ReactNode
@@ -43,9 +43,9 @@ type USGStakeContextValues = {
 
   fetchsUSGHistoryAPY: (s: string) => Promise<void>
 
-  aprVariation: { current: string; updated: string }
-
   isLoading: boolean
+
+  // aprVariation: { current: string; updated: string }
 }
 
 export const USGStakeContext = createContext<USGStakeContextValues | undefined>(undefined)
@@ -55,7 +55,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
 
   const { loadUSGsUSGMetrics, USGsUSGMetrics } = useUSGContext()
 
-  const { getCachedCurrentBlock, sUSGCurrentAPY } = useRootContext()
+  const { getCachedCurrentBlock } = useRootContext()
 
   const [currentFeature, setCurrentFeature] = useState<"stake" | "unstake">("stake")
 
@@ -270,18 +270,18 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     setAPYHistory(sUSGData)
   }
 
-  const aprVariation = useMemo(() => {
-    let result = { current: "", updated: "" }
+  // const aprVariation = useMemo(() => {
+  //   let result = { current: "", updated: "" }
 
-    if (USGsUSGMetrics && sUSGCurrentAPY) {
-      if (weiValue) {
-        result = computeSUSGAprVariation(currentFeature, USGsUSGMetrics, weiValue, sUSGCurrentAPY)
-      } else {
-        result = computeSUSGAprVariation(currentFeature, USGsUSGMetrics, 0n, sUSGCurrentAPY)
-      }
-    }
-    return result
-  }, [USGsUSGMetrics, weiValue, currentFeature])
+  //   if (USGsUSGMetrics && sUSGCurrentAPY) {
+  //     if (weiValue) {
+  //       result = computeSUSGAprVariation(currentFeature, USGsUSGMetrics, weiValue, sUSGCurrentAPY)
+  //     } else {
+  //       result = computeSUSGAprVariation(currentFeature, USGsUSGMetrics, 0n, sUSGCurrentAPY)
+  //     }
+  //   }
+  //   return result
+  // }, [USGsUSGMetrics, weiValue, currentFeature])
 
   const contextValue: USGStakeContextValues = {
     actionStake,
@@ -304,7 +304,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     setsUSGSelectedTab,
     apyHistory,
     fetchsUSGHistoryAPY,
-    aprVariation,
+    // aprVariation,
     isLoading,
   }
 

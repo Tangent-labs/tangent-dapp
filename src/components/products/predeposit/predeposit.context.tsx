@@ -347,19 +347,21 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
 
       await toastTx(deposit(walletClient!, USDCDepositValue, slippage, USGTokens[1]["USG-USDC"]), {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-        success: () => {
-          getUSGUSDCBalanceAllowance(walletClient!)
-          setUSDCDepositValue(undefined)
-          setUSDCDepositSliderPercent(0)
-          setUSGUSDCDepositValue(0n)
-          setIsUSDCDepositLoading(false)
-          return { type: "Success", content: "USDC successfully deposited." }
-        },
+        success: () => ({
+          type: "Success",
+          content: "USDC successfully deposited.",
+        }),
         error: () => {
           setIsUSDCDepositLoading(false)
           return { type: "Error", content: "Unable to proceed with the deposit." }
         },
       })
+
+      getUSGUSDCBalanceAllowance(walletClient!)
+      setUSDCDepositValue(undefined)
+      setUSDCDepositSliderPercent(0)
+      setUSGUSDCDepositValue(0n)
+      setIsUSDCDepositLoading(false)
     }
   }
 
@@ -369,19 +371,22 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
 
       await toastTx(deposit(walletClient!, frxUSDDepositValue, slippage, USGTokens[1]["USG-frxUSD"]), {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-        success: () => {
-          getUSGfrxUSDBalanceAllowance(walletClient!)
-          setfrxUSDDepositValue(undefined)
-          setfrxUSDDepositSliderPercent(0)
-          setUSGfrxUSDDepositValue(0n)
-          setIsfrxUSDDepositLoading(false)
-          return { type: "Success", content: "frxUSD successfully deposited." }
-        },
+        success: () => ({
+          type: "Success",
+          content: "frxUSD successfully deposited.",
+        }),
+
         error: () => {
           setIsfrxUSDDepositLoading(false)
           return { type: "Error", content: "Unable to proceed with the deposit." }
         },
       })
+
+      getUSGfrxUSDBalanceAllowance(walletClient!)
+      setfrxUSDDepositValue(undefined)
+      setfrxUSDDepositSliderPercent(0)
+      setUSGfrxUSDDepositValue(0n)
+      setIsfrxUSDDepositLoading(false)
     }
   }
 

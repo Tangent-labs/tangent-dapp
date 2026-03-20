@@ -1,12 +1,9 @@
 "use client"
 
-import { cn } from "@/lib/utils"
-import { IconSingleArrow } from "@/components/icons"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGLeverageContext } from "./usg_record_leverage_context"
 import FormButtons from "@/components/design_system/form/form_actions"
-import { SlippageInput } from "@/components/design_system/inputs/slippage"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { RecapAccordion } from "@/components/design_system/structure/recap"
 import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 import { ZapAssetSelector } from "@/components/design_system/inputs/asset_selector"
 import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
@@ -14,7 +11,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { SlippageInput } from "@/components/design_system/inputs/slippage"
 
 export default function USGLeverageContent() {
   const {
@@ -29,6 +26,8 @@ export default function USGLeverageContent() {
     actionZapLeverage,
     actionApproveZap,
     handleLeverageSliderChange,
+    setIsTransactionBlockedBySlippage,
+    setIsTransactionBlockedByPriceImpact,
     depositAsset,
     depositWeiValue,
     formState,
@@ -40,29 +39,28 @@ export default function USGLeverageContent() {
     borrowWeiValue,
     leveragedCollateralQuote,
     slippage,
-    minValueReceivedFromZap,
-    minCollatReceivedFromUSGDump,
-    expectedCollateral,
+    zapValuesFormatted,
+    usgDumpValuesFormatted,
+    swapValuesFormatted,
     depositSliderPercent,
     leveragePercentage,
     maxDepositString,
     computedMaxLeverage,
-    aprVariation,
+    // aprVariation,
     isZapping,
     sliderLegendValues,
     startEndRange,
     slippageLoss,
-    isTransactionBlockedBySlippage,
-    setIsTransactionBlockedBySlippage,
     priceImpact,
     priceImpactLoss,
+    isTransactionBlockedBySlippage,
     isTransactionBlockedByPriceImpact,
-    setIsTransactionBlockedByPriceImpact,
+    leverageExceedsMaxLtv,
   } = useUSGLeverageContext()
 
   const { connect } = useWalletConnexionContext()
 
-  const { collateralInfo, marketData, balanceAllowanceData, USGInfo, maxBorrowCapReached, displayAPRVariation } = useUSGRecordContext()
+  const { collateralInfo, marketData, balanceAllowanceData, USGInfo, maxBorrowCapReached, isTxLoading } = useUSGRecordContext()
 
   return (
     <div className="flex flex-col gap-2">
@@ -88,6 +86,7 @@ export default function USGLeverageContent() {
             asset={depositAssetInfo}
             label={isZapping ? "You sell" : "You deposit"}
             isZapping={isZapping}
+            slippageInput={<SlippageInput slippage={slippage} setSlippage={setSlippage} />}
             maxAmountParams={{
               maxWeiValue: (!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance) || 0n,
               setMaxAmount: () => {
@@ -108,120 +107,68 @@ export default function USGLeverageContent() {
           onValueChange={(e) => handleZapInputChange(e)}
           asset={collateralInfo}
           isLoading={isZapLoading}
-          label={"You deposit"}
+          label={isZapping ? "You buy and deposit" : "You deposit"}
           depositSelect={<StaticCardAssetInput assetName={collateralInfo!.name} logoKey={collateralInfo!.logoKey} />}
-          bottomPart={
-            <div className="flex select-none gap-2 text-xs text-subtitle">
-              Minimum received {zapValue && !!marketData?.collateralInfos ? minValueReceivedFromZap : ""}
-            </div>
-          }
+          bottomPart={<div className="flex select-none gap-2 text-xs text-subtitle">Minimum received {zapValuesFormatted.minOutFormatted}</div>}
         />
       )}
 
-      <>
-        <div className="flex flex-col gap-2">
-          <div className="flex w-full items-end justify-between gap-1">
-            <span className="flex items-start justify-start text-sm font-semibold md:text-xl">Borrow USG</span>
+      <div className="flex flex-col gap-2">
+        <div className="flex w-full items-end justify-between gap-1">
+          <span className="flex items-start justify-start text-sm font-semibold md:text-xl">Borrow USG</span>
 
-            <div className="flex items-end justify-end text-xs text-subtitle">{computedMaxLeverage}</div>
-          </div>
-
-          <GenericInputAssetAmount
-            inputWeiValue={borrowWeiValue}
-            onValueChange={(e) => handleBorrowChange(e)}
-            depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
-            label="You borrow and sell"
-            asset={USGInfo}
-            maxAmountParams={{
-              maxWeiValue: 0n,
-              setMaxAmount: () => handleLeverageSliderChange(Math.floor((1 / (1 - Number(marketData?.constants?.maxLTV) / 100000)) * 100) / 100),
-            }}
-            sliderParams={{
-              sliderPercentage: leveragePercentage,
-              setSliderPercentage: (e) => handleLeverageSliderChange(e),
-              sliderLegendValues,
-              startEndRange,
-              unit: "x",
-            }}
-          />
+          <div className="flex items-end justify-end text-xs text-subtitle">{computedMaxLeverage}</div>
         </div>
 
         <GenericInputAssetAmount
-          inputWeiValue={leveragedCollateralQuote}
-          label="You buy and deposit"
-          depositSelect={<StaticCardAssetInput assetName={collateralInfo!.name} logoKey={collateralInfo!.logoKey} />}
-          disabled={true}
-          asset={collateralInfo}
-          onValueChange={() => {}}
-          // isLoading={isQuoteLoading}
-          bottomPart={
-            <div className="flex select-none gap-2 text-xs text-subtitle">
-              Minimum received {leveragedCollateralQuote && !!marketData?.collateralInfos ? minCollatReceivedFromUSGDump : ""}
-            </div>
-          }
+          inputWeiValue={borrowWeiValue}
+          onValueChange={(e) => handleBorrowChange(e)}
+          depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
+          label="You borrow and sell"
+          asset={USGInfo}
+          maxAmountParams={{
+            maxWeiValue: 0n,
+            setMaxAmount: () => handleLeverageSliderChange(Math.floor((1 / (1 - Number(marketData?.constants?.maxLTV) / 100000)) * 100) / 100),
+          }}
+          sliderParams={{
+            sliderPercentage: leveragePercentage,
+            setSliderPercentage: (e) => handleLeverageSliderChange(e),
+            sliderLegendValues,
+            startEndRange,
+            unit: "x",
+          }}
         />
+      </div>
 
-        <div className="flex items-start justify-start gap-2">
-          <Accordion className={cn("w-full", isDepositLoading ? "shimmer rounded-[10px]" : "")} type="single" collapsible>
-            <AccordionItem value="item-1">
-              <ReliefCard className="flex cursor-pointer flex-col px-2 text-xs text-primary hover:bg-panel-hover">
-                <AccordionTrigger>Recap</AccordionTrigger>
+      <GenericInputAssetAmount
+        inputWeiValue={leveragedCollateralQuote}
+        isLoading={isDepositLoading}
+        label="You buy and deposit"
+        depositSelect={<StaticCardAssetInput assetName={collateralInfo!.name} logoKey={collateralInfo!.logoKey} />}
+        disabled={true}
+        asset={collateralInfo}
+        onValueChange={() => {}}
+        bottomPart={<div className="flex select-none gap-2 text-xs text-subtitle">Minimum received {usgDumpValuesFormatted.minOutFormatted}</div>}
+      />
 
-                <AccordionContent className="w-full">
-                  <div className="flex flex-col gap-1 rounded-[10px] text-xs">
-                    <div className="flex w-full items-center justify-between">
-                      <span className="text-subtitle">Leverage : </span>
-                      <span className="text-white">~{leveragePercentage.toFixed(2)}x</span>
-                    </div>
-
-                    {displayAPRVariation && (
-                      <>
-                        <div className="flex w-full items-center justify-between">
-                          <span className="text-subtitle">APR variation : </span>
-                        </div>
-
-                        <div className="flex w-full items-center justify-between">
-                          <span className="ml-4 italic text-subtitle">Current </span>
-                          <div className="flex items-center justify-center gap-1">
-                            <span className="text-white">{aprVariation.current}</span>
-                            <IconSingleArrow></IconSingleArrow>
-                            <span className="text-tonic">{aprVariation.currentUpdated}</span>
-                          </div>
-                        </div>
-
-                        <div className="flex w-full items-center justify-between">
-                          <span className="ml-4 italic text-subtitle">Projected </span>
-                          <div className="flex items-center justify-center gap-1">
-                            <span className="text-white">{aprVariation.projected}</span>
-                            <IconSingleArrow></IconSingleArrow>
-                            <span className="text-tonic">{aprVariation.projectedUpdated}</span>
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    <div
-                      className={cn(
-                        displayAPRVariation ? "mt-2 border-t border-white/10 pt-2" : "",
-                        "flex w-full flex-col items-start justify-start md:flex-row md:items-center md:justify-between"
-                      )}
-                    >
-                      <span className="text-subtitle">Expected collateral: </span>
-                      <span className="text-white">
-                        {expectedCollateral?.sum}
-                        <span className="font-semibold text-white">{expectedCollateral?.result}</span>
-                      </span>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </ReliefCard>
-            </AccordionItem>
-          </Accordion>
-          <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
-        </div>
-      </>
+      <RecapAccordion
+        isLoading={isDepositLoading || isZapLoading}
+        isDisplayed={true}
+        zappingParams={{
+          label: "collateral",
+          expected: swapValuesFormatted.expectedFormatted,
+          minOut: swapValuesFormatted.minOutFormatted,
+          slippage: slippage,
+          leverage: leveragePercentage,
+        }}
+        // aprVariationParams={aprVariation}
+      />
 
       <MaxBorrowCapReached display={(!!zapValue || !!depositWeiValue) && maxBorrowCapReached} />
+
+      {leverageExceedsMaxLtv && (
+        <div className="flex w-full items-center justify-center text-xs text-red-500">Reduce your leverage or add more collateral.</div>
+      )}
 
       {!!depositWeiValue && isTransactionBlockedBySlippage && slippage >= 1 && (
         <SlippageAlert
@@ -251,7 +198,7 @@ export default function USGLeverageContent() {
         connect={connect}
         formState={formState}
         labelProcess={depositAsset && isZapping ? "Zap & leverage" : "Leverage"}
-        isLoading={isDepositLoading}
+        isLoading={isDepositLoading || isZapLoading || isTxLoading}
       />
     </div>
   )

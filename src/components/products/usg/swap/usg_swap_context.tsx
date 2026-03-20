@@ -2,7 +2,7 @@
 
 import { useUSGContext } from "../usg_context"
 import { SwapConfig, swapConfig } from "./swap_config"
-import { formatNumber, truncateDecimals } from "@/lib/number_formatter"
+import { formatBigInt, formatNumber } from "@/lib/number_formatter"
 import { toastTx } from "@/components/design_system/toast"
 import { USG_CONTRACT } from "../usg_repository"
 import { getQuote, getRoute } from "../global_quote_controller"
@@ -11,21 +11,27 @@ import { useRootContext } from "@/components/products/root/root_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Abi, Address, formatUnits, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
-import { computedMinAmountOut, computeTransactionPotentialLoss, getBalances, getBalancesAndAllowances } from "../record/usg_record_controller"
 import { BalanceAllowanceData, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../usg_type"
-import { computeSwapAssetPrice, doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./usg_swap_controller"
+import { doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./usg_swap_controller"
 import { getTokenSymbolPriorityIndex } from "@/components/design_system/inputs/asset_selector"
 import { buildAssetInfo, resolveAssetName } from "./utils"
 import { useSearchParams } from "next/navigation"
 import { USDC } from "@tangent/defi-resources/build/ressources/erc20/common"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
+import {
+  computedMinAmountOut,
+  computeSwapAssetPrice,
+  computeTransactionPotentialLoss,
+  getBalances,
+  getBalancesAndAllowances,
+} from "../record/usg_record_controller"
 
 type USGSwapContextProps = {
   children: ReactNode
 }
 
 type USGSwapContextValues = {
-  isLoading: boolean
+  isTxLoading: boolean
 
   sellWeiValue?: bigint
   setSellWeiValue: (arg: bigint | undefined) => void
@@ -79,7 +85,7 @@ type USGSwapContextValues = {
 
   lpUserPoints: LpUserPoints
 
-  minValueReceivedFromZap: string
+  zapValuesFormatted: { buyFormatted: string; minOutFormatted: string }
 
   isSwapBlockedByPriceImpact: boolean
   setIsSwapBlockedByPriceImpact: (b: boolean) => void
@@ -105,7 +111,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const { USGsUSGMetrics, lpUserPoints } = useUSGContext()
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isTxLoading, setIsTxLoading] = useState<boolean>(false)
 
   const [sellAssetPrice, setSellAssetPrice] = useState<number | null>(null)
   const [buyAssetPrice, setBuyAssetPrice] = useState<number | null>(null)
@@ -155,21 +161,6 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     window.history.pushState(null, "", newUrl)
   }, [sellAssetAddress, buyAssetAddress])
 
-  // Sync URL → state (browser back/forward)
-  useEffect(() => {
-    const onPopState = () => {
-      const params = new URLSearchParams(window.location.search)
-      const tokenIn = params.get("tokenIn")?.toLowerCase()
-      const tokenOut = params.get("tokenOut")?.toLowerCase()
-
-      if (tokenIn) setSellAssetAddress(tokenIn)
-      if (tokenOut) setBuyAssetAddress(tokenOut)
-    }
-
-    window.addEventListener("popstate", onPopState)
-    return () => window.removeEventListener("popstate", onPopState)
-  }, [])
-
   // --- Balance/allowance ---
   useEffect(() => {
     if (sellAssetInfo && buyAssetInfo && walletClient) {
@@ -196,6 +187,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     }
   }
 
+  // Fetch balances of all tokens
   useEffect(() => {
     const tokenAddresses: Address[] = ERC20S.map((el) => el.address)
 
@@ -210,7 +202,6 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
             {} as Record<Address, bigint>
           )
           setBalances(tokenBalances)
-          setIsLoading(false)
         }
       })
     }
@@ -343,7 +334,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
   // --- Actions ---
   const actionApprove = async () => {
-    setIsLoading(true)
+    setIsTxLoading(true)
 
     if (walletClient && buyAssetInfo && sellAssetInfo) {
       let spender = "" as Address
@@ -356,17 +347,19 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
       await toastTx(doApprove(walletClient, sellAssetInfo?.address, sellWeiValue || 0n, spender), {
         pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
-        success: () => {
-          fetchBalanceAllowanceData(walletClient)
-          setIsLoading(false)
-          return { type: "Success", content: `${sellAssetInfo?.symbol} approved successfully.` }
-        },
+        success: () => ({
+          type: "Success",
+          content: `${sellAssetInfo?.symbol} approved successfully.`,
+        }),
       })
+
+      fetchBalanceAllowanceData(walletClient)
+      setIsTxLoading(false)
     }
   }
 
   const actionSwap = async () => {
-    setIsLoading(true)
+    setIsTxLoading(true)
 
     if (!sellAssetInfo || !buyAssetInfo || !sellWeiValue) return
 
@@ -380,18 +373,20 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
       await toastTx(doCustomSwap(walletClient, contract?.abi as Abi, swapFn, sellWeiValue || 0n, swapContractToken, quoteType === "enso"), {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-        success: () => {
-          setSellWeiValue(undefined)
-          setBuyWeiValue(undefined)
-          fetchBalanceAllowanceData(walletClient)
-          setIsLoading(false)
-          return { type: "Success", content: "Transaction successful." }
-        },
+        success: () => ({
+          type: "Success",
+          content: "Transaction successful.",
+        }),
         error: () => {
-          setIsLoading(false)
+          setIsTxLoading(false)
           return { type: "Error", content: "Transaction failed." }
         },
       })
+
+      setSellWeiValue(undefined)
+      setBuyWeiValue(undefined)
+      fetchBalanceAllowanceData(walletClient)
+      setIsTxLoading(false)
     } else {
       if (!sellWeiValue || !currentAddress || !buyWeiValue) return
 
@@ -414,21 +409,25 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
         await toastTx(doSwap(walletClient!, tx), {
           pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-          success: () => {
-            setSellWeiValue(undefined)
-            setBuyWeiValue(undefined)
-            fetchBalanceAllowanceData(walletClient!)
-            setIsLoading(false)
-            return { type: "Success", content: "Transaction successful." }
-          },
+
+          success: () => ({
+            type: "Success",
+            content: "Transaction successful.",
+          }),
+
           error: () => {
-            setIsLoading(false)
+            setIsTxLoading(false)
             return { type: "Error", content: "Transaction failed." }
           },
         })
+
+        setSellWeiValue(undefined)
+        setBuyWeiValue(undefined)
+        fetchBalanceAllowanceData(walletClient!)
+        setIsTxLoading(false)
       } catch (error) {
         console.error("Error in actionSwap:", error)
-        setIsLoading(false)
+        setIsTxLoading(false)
       }
     }
   }
@@ -476,9 +475,20 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
         isWellConnected,
         sellAssetInfo!,
         buyAssetInfo!,
-        balanceAllowanceData!
+        balanceAllowanceData!,
+        isTxLoading || isSwapLoading
       ),
-    [isSwapBlockedByPriceImpact, isSwapBlockedBySlippage, sellWeiValue, buyWeiValue, isWellConnected, sellAssetInfo, buyAssetInfo, balanceAllowanceData!]
+    [
+      isSwapBlockedByPriceImpact,
+      isSwapBlockedBySlippage,
+      sellWeiValue,
+      buyWeiValue,
+      isWellConnected,
+      sellAssetInfo,
+      buyAssetInfo,
+      balanceAllowanceData!,
+      isTxLoading || isSwapLoading,
+    ]
   )
 
   // --- Toggle just swaps the two addresses ---
@@ -513,13 +523,17 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     )
   }, [balances])
 
-  const minValueReceivedFromZap = useMemo(() => {
+  const zapValuesFormatted = useMemo(() => {
     if (buyWeiValue) {
       const minAmountOutWei = computedMinAmountOut(buyWeiValue, slippage)
-      const result = `(${formatNumber(Number(truncateDecimals(formatUnits(minAmountOutWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), Number(buyAssetInfo?.displayDecimals))})`
-      return result
+      const decimals = buyAssetInfo?.decimals || 18
+      const displayDecimals = buyAssetInfo?.displayDecimals || 2
+      const buyFormatted = formatBigInt(buyWeiValue, decimals, displayDecimals)
+      const minOutFormatted = formatBigInt(minAmountOutWei, decimals, displayDecimals)
+
+      return { buyFormatted, minOutFormatted }
     }
-    return ""
+    return { buyFormatted: "-", minOutFormatted: "-" }
   }, [buyWeiValue, slippage])
 
   const priceImpactLoss = useMemo(() => {
@@ -547,7 +561,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   }, [buyWeiValue, sellWeiValue])
 
   const contextValue: USGSwapContextValues = {
-    isLoading,
+    isTxLoading,
 
     sellWeiValue,
     setSellWeiValue,
@@ -586,7 +600,8 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     toggleTokensSwitch,
     USGsUSGMetrics,
     lpUserPoints,
-    minValueReceivedFromZap,
+
+    zapValuesFormatted,
 
     isSwapBlockedByPriceImpact,
     setIsSwapBlockedByPriceImpact,

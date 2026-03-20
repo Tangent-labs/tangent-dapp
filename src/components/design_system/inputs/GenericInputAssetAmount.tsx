@@ -34,6 +34,7 @@ type GenericInputAssetAmountProps = React.InputHTMLAttributes<HTMLInputElement> 
   isLoading?: boolean
 
   displayBalance?: boolean
+  slippageInput?: ReactNode
 
   bottomPart?: ReactNode
   maxAmountParams?: MaxAmount
@@ -53,6 +54,7 @@ export function GenericInputAssetAmount({
   disabled,
   maxAmountParams,
   sliderParams,
+  slippageInput,
 
   ...props
 }: GenericInputAssetAmountProps) {
@@ -248,16 +250,22 @@ export function GenericInputAssetAmount({
               "focus-within:border-[--tgt-button-active] focus-within:shadow-[0_0_6px_1px_var(--tgt-button-active)]",
               "hover:bg-white/[0.08] [&:has(.no-parent-hover:hover)]:!bg-white/[0.03] [&:has(.no-parent-hover:hover)]:!shadow-none"
             ),
-        "flex flex-col p-2 transition-all duration-200"
+        "flex flex-col p-2 py-1 transition-all duration-200"
       )}
       onClick={handlePanelClick}
     >
-      {displayBalance ? (
+      {displayBalance || slippageInput ? (
         <div className="flex w-full select-none items-center justify-between">
           <div className="text-sm text-subtitle">{label}</div>
           <div className="flex items-center justify-center gap-1 text-xs text-subtitle">
-            {formatBigInt(maxWeiValue, asset?.decimals || 18, 2)}
-            <IconWallet className="w-3"></IconWallet>
+            {displayBalance ? (
+              <>
+                <div> {formatBigInt(maxWeiValue, asset?.decimals || 18, 2)}</div>
+                <IconWallet className="w-3"></IconWallet>
+              </>
+            ) : (
+              <div className="stop-focus no-parent-hover">{slippageInput}</div>
+            )}
           </div>
         </div>
       ) : (
@@ -274,7 +282,7 @@ export function GenericInputAssetAmount({
               lang="en"
               disabled={isLoading || disabled}
               type="text"
-              value={localDisplay}
+              value={isLoading ? "-" : localDisplay}
               placeholder="0.00"
               onChange={handleInputChange}
               className={cn(
@@ -293,7 +301,7 @@ export function GenericInputAssetAmount({
             />
           </div>
 
-          <div className="select-none text-xs text-subtitle">{dollarDepositDisplay}</div>
+          <div className="select-none text-xs text-subtitle">{isLoading ? "($-)" : dollarDepositDisplay}</div>
         </div>
 
         <div className="stop-focus flex select-none items-center justify-center gap-2">

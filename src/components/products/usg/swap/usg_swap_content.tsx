@@ -8,16 +8,17 @@ import { formatAddress } from "@/lib/other_formatter"
 import { useUSGSwapContext } from "./usg_swap_context"
 import { formatBigInt } from "@/lib/number_formatter"
 import FormButtons from "@/components/design_system/form/form_actions"
+import { RecapAccordion } from "@/components/design_system/structure/recap"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
+import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
 import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
-import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
-import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 
 export default function USGSwapContent() {
   const {
@@ -43,12 +44,14 @@ export default function USGSwapContent() {
     sellWeiValue,
     buyWeiValue,
 
-    isLoading,
+    isTxLoading,
+
     balanceAllowanceData,
     depositSliderPercent,
     slippage,
     USGsUSGMetrics,
-    minValueReceivedFromZap,
+
+    zapValuesFormatted,
 
     isSwapBlockedByPriceImpact,
     setIsSwapBlockedByPriceImpact,
@@ -153,6 +156,7 @@ export default function USGSwapContent() {
               inputWeiValue={sellWeiValue}
               onValueChange={handleSellChange}
               depositSelect={<SellAssetSelect />}
+              slippageInput={<SlippageInput slippage={slippage} setSlippage={setSlippage} />}
               asset={sellAssetInfo!}
               label={"You sell"}
               maxAmountParams={{
@@ -180,14 +184,22 @@ export default function USGSwapContent() {
               depositSelect={<BuyAssetSelect />}
               asset={buyAssetInfo!}
               label={"You buy"}
-              isLoading={isLoading || isSwapLoading}
-              bottomPart={<div className="flex select-none gap-2 text-xs text-subtitle">Minimum received {buyWeiValue ? minValueReceivedFromZap : ""}</div>}
+              isLoading={isSwapLoading}
+              bottomPart={<div className="flex select-none gap-2 text-xs text-subtitle">Minimum received {zapValuesFormatted.minOutFormatted}</div>}
             />
           </div>
 
-          <div className="mt-2 flex w-full items-end justify-end gap-2">
-            <SlippageInput slippage={slippage} setSlippage={setSlippage}></SlippageInput>
-          </div>
+          <RecapAccordion
+            className="mt-2"
+            isDisplayed={true}
+            zappingParams={{
+              label: buyAssetInfo?.symbol,
+              expected: zapValuesFormatted.buyFormatted,
+              minOut: zapValuesFormatted.minOutFormatted,
+              slippage: slippage,
+            }}
+            isLoading={isSwapLoading}
+          />
 
           {isSwapReady && isSwapBlockedBySlippage && slippage >= 1 && (
             <SlippageAlert
@@ -195,7 +207,7 @@ export default function USGSwapContent() {
               tokenLoss={slippageLoss?.tokenLoss}
               dollarLoss={slippageLoss?.dollarLoss}
               slippage={slippage}
-              isLoading={isLoading || isSwapLoading}
+              isLoading={isSwapLoading}
               onClickContinue={() => setIsSwapBlockedBySlippage(false)}
               className="mt-2"
             />
@@ -205,7 +217,7 @@ export default function USGSwapContent() {
             <PriceImpactAlert
               dollarLoss={priceImpactLoss}
               priceImpact={priceImpact}
-              isLoading={isLoading || isSwapLoading}
+              isLoading={isSwapLoading}
               onClickContinue={() => setIsSwapBlockedByPriceImpact(false)}
               className="mt-2"
             />
@@ -220,7 +232,7 @@ export default function USGSwapContent() {
               connect={connect}
               formState={formState}
               labelProcess="Swap"
-              isLoading={isLoading}
+              isLoading={isTxLoading || isSwapLoading}
             />
           </div>
         </ReliefCard>

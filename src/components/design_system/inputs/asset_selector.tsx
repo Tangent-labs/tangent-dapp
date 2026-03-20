@@ -81,6 +81,7 @@ export const ZapAssetSelector = ({ collateralInfo, depositAsset, setDepositAsset
   const allAssets: AssetInfos[] = useMemo(() => {
     const receiptAddress = marketData?.constants?.receipt !== zeroAddress ? marketData?.constants?.receipt?.toLowerCase() : undefined
     const collatAddress = collateralInfo?.address.toLowerCase()
+
     const assets = ERC20S.map((el: Erc20Details) => {
       const balWei = balances?.[el.address as Address] ?? 0n
       const balNumber = Number(formatUnits(balWei, el.decimals))

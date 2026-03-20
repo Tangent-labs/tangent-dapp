@@ -19,7 +19,8 @@ export function getLeverageFormState(
   depositAssetInfo?: AssetDataPriced,
   collateralInfo?: CollateralInfo,
   balanceAllowanceData?: { balance: bigint; allowance: bigint },
-  leverage?: number
+  leverage?: number,
+  isLoading?: boolean
 ) {
   const isZapMode = depositAssetInfo?.address !== collateralInfo?.address
 
@@ -51,7 +52,7 @@ export function getLeverageFormState(
   }
 
   return {
-    canProcess: isApproved && reasons.length === 0,
+    canProcess: isApproved && reasons.length === 0 && !isLoading,
     cantProcessReasons: reasons,
     haveToApprove: !isApproved,
   }

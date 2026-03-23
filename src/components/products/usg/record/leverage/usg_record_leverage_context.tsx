@@ -246,12 +246,12 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       .then(({ quote, priceImpact: pI }) => {
         if (requestId !== requestIdRef.current) return
 
-        const validQuote = handleQuote(quote)
+        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
 
-        if (Number(pI) >= 0 && validQuote) {
+        if (validPriceImpact >= 0 && validQuote) {
           updateBorrowWeiValue(computeBorrowValue(validQuote, leveragePercentage))
           setZapValue(validQuote)
-          setPriceImpact(Number(pI) / 100)
+          setPriceImpact(Number(validPriceImpact) / 100)
         }
       })
       .catch((e) => {
@@ -281,11 +281,11 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       .then(({ quote, priceImpact: pI }) => {
         if (requestId !== requestIdRef.current) return
 
-        const validQuote = handleQuote(quote)
+        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
 
-        if (Number(pI) >= 0 && validQuote) {
+        if (validPriceImpact >= 0 && validQuote) {
           setDepositWeiValue(BigInt(validQuote))
-          setPriceImpact(Number(pI) / 100)
+          setPriceImpact(Number(validPriceImpact) / 100)
         } else {
           setDepositWeiValue(undefined)
         }

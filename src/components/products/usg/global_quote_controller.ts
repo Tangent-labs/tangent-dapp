@@ -25,11 +25,13 @@ export const getQuote = async (
   curveRoutes: CustomCurveRoutes
 ): Promise<{ quote: bigint; priceImpact?: bigint }> => {
   const data = await getEnsoData(amountIn, tokenIn, tokenOut, walletConnected, walletConnected, 0n)
+
   if (data) {
     return { quote: BigInt(data?.amountOut), priceImpact: data?.priceImpact }
   } else if (isCurveRouter(tokenIn, tokenOut)) {
-    const quote = await getCustomQuote(curveRoutes, tokenIn, tokenOut, amountIn)
-    return { quote }
+    const { quote, priceImpact } = await getCustomQuote(curveRoutes, tokenIn, tokenOut, amountIn)
+
+    return { quote, priceImpact: priceImpact / BigInt(10 ** 14) }
   } else if (isPendleRouter(tokenIn, tokenOut)) {
     let swapDirection = "tokenToPT"
 
@@ -40,8 +42,8 @@ export const getQuote = async (
     const quote = await getCustomPendleQuote(curveRoutes, tokenIn, tokenOut, amountIn, swapDirection)
     return { quote, priceImpact: 0n }
   } else {
-    const quote = await getCustomQuote(curveRoutes, tokenIn, tokenOut, amountIn)
-    return { quote }
+    const { quote, priceImpact } = await getCustomQuote(curveRoutes, tokenIn, tokenOut, amountIn)
+    return { quote, priceImpact: priceImpact / BigInt(10 ** 14) }
   }
 }
 

@@ -241,11 +241,11 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
           curveRoutes
         )
 
-        const validQuote = handleQuote(quote)
+        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
 
-        if (Number(pI) >= 0 && validQuote) {
+        if (validPriceImpact >= 0 && validQuote) {
           setDepositWeiValue(BigInt(validQuote))
-          setPriceImpact(Number(pI) / 100)
+          setPriceImpact(Number(validPriceImpact) / 100)
         } else {
           setDepositWeiValue(undefined)
         }
@@ -381,11 +381,11 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
         // Do nothing when price is stale
         if (requestId !== latestRequestRef.current) return // stale
 
-        const validQuote = handleQuote(quote)
+        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
 
-        if (Number(pI) >= 0 && validQuote) {
+        if (validPriceImpact >= 0 && validQuote) {
           setZapValue(validQuote)
-          setPriceImpact(Number(pI) / 100)
+          setPriceImpact(Number(validPriceImpact) / 100)
         } else {
           setZapValue(undefined)
         }

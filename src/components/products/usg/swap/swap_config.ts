@@ -76,23 +76,6 @@ export const swapConfig: { [inToken: string]: { [outToken: string]: SwapConfig }
       contract: "wDOLA",
     },
   },
-  wUSR: {
-    USR: {
-      approval: "noApprovalNeeded",
-      quote: "1",
-      swap: "burn",
-      isStaked: false,
-      contract: "wUSR",
-    },
-    wstUSR: {
-      approval: "noApprovalNeeded",
-      quote: "convertToShares",
-      quoteContract: "wstUSR",
-      swap: "burn",
-      isStaked: true,
-      contract: "wUSR",
-    },
-  },
 
   USG: {
     sUSG: {
@@ -138,15 +121,6 @@ export const swapConfig: { [inToken: string]: { [outToken: string]: SwapConfig }
       swap: "mint",
       isStaked: false,
       contract: "wDOLA",
-    },
-  },
-  USR: {
-    wUSR: {
-      approval: "approve",
-      quote: "1",
-      swap: "mint",
-      isStaked: false,
-      contract: "wUSR",
     },
   },
 
@@ -198,16 +172,6 @@ export const swapConfig: { [inToken: string]: { [outToken: string]: SwapConfig }
       swap: "mint",
       isStaked: true,
       contract: "wDOLA",
-    },
-  },
-  wstUSR: {
-    wUSR: {
-      approval: "approve",
-      quote: "convertToAssets",
-      quoteContract: "wstUSR",
-      swap: "mint",
-      isStaked: true,
-      contract: "wUSR",
     },
   },
 }

@@ -10,13 +10,14 @@ import { formatBigInt } from "@/lib/number_formatter"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { RecapAccordion } from "@/components/design_system/structure/recap"
+import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
 
 export default function USGLiquidatePanel() {
   const { connect } = useWalletConnexionContext()
 
   const { canInteract } = useWalletConnexionContext()
 
-  const { USGInfo, collateralInfo } = useUSGRecordContext()
+  const { USGInfo, collateralInfo, isTxLoading } = useUSGRecordContext()
 
   const { actionLiquidate, formState, slippage, setSlippage } = useUSGLiquidateContext()
 
@@ -35,6 +36,10 @@ export default function USGLiquidatePanel() {
     maxRepayable,
     maxLiquidateString,
     isLiquidationLoading,
+    priceImpact,
+    priceImpactLoss,
+    setIsTransactionBlockedByPriceImpact,
+    isTransactionBlockedByPriceImpact,
   } = useUSGLiquidateContext()
 
   return (
@@ -115,8 +120,18 @@ export default function USGLiquidatePanel() {
         }}
       />
 
+      {!!liquidateWeiValue && priceImpact >= 1 && (
+        <PriceImpactAlert
+          dollarLoss={priceImpactLoss}
+          priceImpact={priceImpact}
+          isLoading={isLiquidationLoading}
+          displayConfirmationButton={isTransactionBlockedByPriceImpact}
+          onClickContinue={() => setIsTransactionBlockedByPriceImpact(false)}
+        />
+      )}
+
       <FormButtons
-        isLoading={isLiquidationLoading}
+        isLoading={isLiquidationLoading || isTxLoading}
         connect={connect}
         actions={{ handleApprove: undefined, handleProcess: actionLiquidate }}
         formState={formState}

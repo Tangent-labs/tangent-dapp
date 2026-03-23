@@ -1,7 +1,7 @@
 import { USG_CONTRACT } from "./usg_repository"
 import CurveRouterABI from "../../../abi/USG/CurveRouter.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
-import QuotesCurveRouter from "../../../abi/USG/QuotesCurveRouter.json"
+import QuotesCurveRouterImpact from "../../../abi/USG/QuotesCurveRouterImpact.json"
 import { Abi, Address, encodeFunctionData, Hex, zeroAddress } from "viem"
 import { CustomCurveRoutes } from "./global_quote_controller"
 
@@ -14,17 +14,29 @@ const returnCustomQuoteData = async (customCurveRoutes: CustomCurveRoutes, token
       _pools: [zeroAddress, zeroAddress, zeroAddress, zeroAddress, zeroAddress],
     })) ?? []
 
-  const abi = QuotesCurveRouter.abi
-  const bytecode = QuotesCurveRouter.bytecode
+  const abi = QuotesCurveRouterImpact.abi
+  const bytecode = QuotesCurveRouterImpact.bytecode
 
-  const quotes = await executeChainViewUnique<bigint[]>(abi as Abi, bytecode as Hex, [matchingRoutes])
+  const quotesArray = await executeChainViewUnique<{ quote: bigint; priceImpact: bigint }[]>(abi as Abi, bytecode as Hex, [matchingRoutes])
 
-  if (quotes) {
-    const bestQuote: bigint = quotes.length > 0 ? quotes!.reduce((a, b) => (a > b ? a : b)) : 0n
+  if (quotesArray && quotesArray.length > 0) {
+    const bestQuote = quotesArray.reduce((best, current) => (current.quote > best.quote ? current : best))
 
-    return { matchingRoutes, quotes, bestQuote }
+    return {
+      matchingRoutes,
+      quotes: quotesArray,
+      bestQuote: bestQuote,
+    }
   }
-  return { matchingRoutes, quotes: [], bestQuote: 0n }
+
+  return {
+    matchingRoutes,
+    quotes: [],
+    bestQuote: {
+      quote: 0n,
+      priceImpact: 0n,
+    },
+  }
 }
 
 export const getCustomQuote = async (customCurveRoutes: CustomCurveRoutes, tokenIn: Address, tokenOut: Address, amount: bigint) => {
@@ -43,7 +55,12 @@ export const getCustomRouterRoute = async (
 ) => {
   const { matchingRoutes, quotes, bestQuote } = await returnCustomQuoteData(customCurveRoutes, tokenIn, tokenOut, amount)
 
-  const biggestValueIndex = quotes?.indexOf(bestQuote) as number
+  const bestQuoteItem = quotes?.find((el) => el?.quote === bestQuote?.quote) || {
+    quote: 0n,
+    priceImpact: 0n,
+  }
+
+  const biggestValueIndex = quotes?.indexOf(bestQuoteItem) as number
 
   const matchingRoute = matchingRoutes[biggestValueIndex]
 

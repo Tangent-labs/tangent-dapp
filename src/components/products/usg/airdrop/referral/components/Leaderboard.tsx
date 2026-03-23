@@ -3,7 +3,7 @@
 import { Address } from "viem"
 import { toast } from "react-toastify"
 import { useClipboard } from "@/hooks/useClipboard"
-import { formatNumber } from "@/lib/number_formatter"
+import { formatMillions } from "@/lib/number_formatter"
 import { formatAddress } from "@/lib/other_formatter"
 import { IconTrophy } from "@/components/icons"
 import { ToastComponent } from "@/components/design_system/toast"
@@ -53,7 +53,7 @@ export const Leaderboard = ({ leaderboard, feature }: LeaderboardProps) => {
                 feature === "vote" ? "bg-tonic" : "bg-row-tonic"
               )}
             >
-              {formatNumber(el.pts, 0)}
+              {formatMillions(el.pts)}
             </div>
           </div>
         ))}

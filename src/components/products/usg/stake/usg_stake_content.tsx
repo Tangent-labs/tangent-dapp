@@ -158,7 +158,7 @@ export default function USGStakeContent() {
               onValueChange={(value: bigint | undefined) => setWeiValue(value)}
               depositSelect={<StaticCardAssetInput assetName={inputOutAsset} logoKey={inputOutAsset} />}
               asset={receivedTokenInfo}
-              label={isStake ? "You stake" : "You receive"}
+              label={isStake ? "You receive" : "You receive"}
               disabled={true}
             />
           </div>
@@ -173,7 +173,7 @@ export default function USGStakeContent() {
             connect={connect}
             formState={formState}
             isLoading={isLoading}
-            labelProcess={isStake ? "Deposit & Stake" : "Unstake"}
+            labelProcess={isStake ? "Stake" : "Unstake"}
           />
         </ReliefCard>
 

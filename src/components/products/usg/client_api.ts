@@ -133,9 +133,34 @@ export const getTasks = async (account: Address) => {
   }
 }
 
-export const getPoints = async (account: Address, dateFrom: string): Promise<PointsResult> => {
+interface PointsCache {
+  timestamp: number
+  wallet: Address
+  data: PointsResult
+}
+
+export async function getPointsDetails(addr: Address, currentBlockTimestamp: number) {
+  const POINTS_CACHE_KEY = "POINTS_CACHE"
+  const CACHE_TTL = 300_000 // 5 minutes
+  const wallet = addr.toLowerCase() as Address
+  const cached = localStorage.getItem(POINTS_CACHE_KEY)
+  const now = new Date().getTime()
+  if (cached) {
+    const parsed: PointsCache = JSON.parse(cached)
+    if (now - parsed.timestamp < CACHE_TTL && parsed.wallet === wallet) {
+      return parsed.data
+    }
+  }
+
+  const points = await _callPointsDetails(wallet, encodeURIComponent(new Date(currentBlockTimestamp * 1000).toISOString()))
+  localStorage.setItem(POINTS_CACHE_KEY, JSON.stringify({ wallet: wallet, timestamp: now, data: points }))
+
+  return points
+}
+
+async function _callPointsDetails(currentAddress: Address, dateFrom: string) {
   try {
-    const url = `${baseUrl}/points/${account}/${dateFrom}`
+    const url = `${baseUrl}/points/${currentAddress}/${dateFrom}`
 
     const response = await fetch(url, {
       method: "GET",
@@ -156,33 +181,14 @@ export const getPoints = async (account: Address, dateFrom: string): Promise<Poi
     return {
       lp: { total: "", dailyRate: "", referees: "" },
       vote: { total: "", referees: "" },
-      boost: 1,
-    }
-  }
-}
-
-export const getUserBoosts = async (account: Address) => {
-  try {
-    const url = `${baseUrl}/boosts/${account}`
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
+      boost: {
+        multiplicator: 1,
+        keys: [],
       },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch boosts")
     }
-
-    const boosts: string[] = await response.json()
-
-    return boosts
-  } catch (error) {
-    console.error("Failed to fetch boosts:", error)
-    return []
   }
 }
+
 export type GodsonsLeaderboardItem = {
   rank: number
   address: Address
@@ -296,7 +302,7 @@ export const getReferralStatus = async (account: Address): Promise<UserStatus> =
 }
 
 // ────────────────────────────────────────
-//           sUSG API
+//           SUPPLY & APR API
 // ────────────────────────────────────────
 
 export const getsUsgApyData = async (dateTo: number, dateFrom: number | null): Promise<Array<{ timestamp: Date; amount: string }>> => {
@@ -322,7 +328,30 @@ export const getsUsgApyData = async (dateTo: number, dateFrom: number | null): P
   }
 }
 
-export const getSavingsAPY = async (): Promise<SavingAccountsApy[]> => {
+interface SavingsAPYCache {
+  timestamp: number
+  data: SavingAccountsApy[]
+}
+export async function getSavingsAPY() {
+  const now = new Date().getTime()
+  const SAVINGS_APY = "SAVINGS_APY"
+  const CACHE_TTL = 300_000 // 5 minutes
+  const cached = localStorage.getItem(SAVINGS_APY)
+  if (cached) {
+    const parsed: SavingsAPYCache = JSON.parse(cached)
+    if (now - parsed.timestamp < CACHE_TTL) {
+      return parsed.data
+    }
+  }
+  const savingsAPYData = await _callSavingsAPY()
+  // If array is empty, an error occured, we so want to redo the call asap
+  if (savingsAPYData.length !== 0) {
+    localStorage.setItem(SAVINGS_APY, JSON.stringify({ timestamp: now, data: savingsAPYData }))
+  }
+  return savingsAPYData
+}
+
+async function _callSavingsAPY(): Promise<SavingAccountsApy[]> {
   try {
     const url = `${baseUrl}/savingAccounts/apy`
 
@@ -391,7 +420,31 @@ export const getTotalSupply = async (dateTo: number, dateFrom: number | null, to
   }
 }
 
-export const getMarketAprs = async (): Promise<Array<MarketAPRs>> => {
+interface MarketsAPRCache {
+  timestamp: number
+  data: MarketAPRs[]
+}
+
+export async function getMarketsAprs(): Promise<MarketAPRs[]> {
+  const now = new Date().getTime()
+  const MARKETS_APR = "MARKETS_APR"
+  const CACHE_TTL = 300_000 // 5 minutes
+  const cached = localStorage.getItem(MARKETS_APR)
+  if (cached) {
+    const parsed: MarketsAPRCache = JSON.parse(cached)
+    if (now - parsed.timestamp < CACHE_TTL) {
+      return parsed.data
+    }
+  }
+  const marketsAprs = await _callMarketsAprs()
+  // If array is empty, an error occured, we so want to redo the call asap
+  if (marketsAprs.length !== 0) {
+    localStorage.setItem(MARKETS_APR, JSON.stringify({ timestamp: now, data: marketsAprs }))
+  }
+  return marketsAprs
+}
+
+async function _callMarketsAprs(): Promise<MarketAPRs[]> {
   try {
     const url = `${baseUrl}/aprs`
 

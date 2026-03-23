@@ -514,7 +514,10 @@ export type LpUserPoints = {
 }
 
 export type PointsResult = {
-  boost: number
+  boost: {
+    multiplicator: number
+    keys: string[]
+  }
   lp: {
     total: string
     referees: string

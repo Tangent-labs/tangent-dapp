@@ -21,9 +21,7 @@ export const UsgBoostsContext = createContext<UsgBoostsContextValues | undefined
 export const UsgBoostsProvider = ({ children }: UsgBoostsContextProps) => {
   const { currentAddress } = useWalletConnexionContext()
 
-  const { refetchPoints } = useUSGContext()
-
-  const { userBoosts } = useUsgAirdropContext()
+  const { refetchPoints, userBoosts } = useUSGContext()
 
   useEffect(() => {
     if (currentAddress) {

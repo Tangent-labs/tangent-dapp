@@ -176,40 +176,28 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   }
 
   useEffect(() => {
-    if (currentAddress) {
+    if (currentAddress && isWalletContextLoaded) {
       const timer = setInterval(() => {
         getUserStatus()
-      }, 15000)
+      }, 12000)
 
       return () => clearInterval(timer)
     }
   }, [currentAddress])
 
-  /**
-   * On init
-   */
   useEffect(() => {
     if (isWalletContextLoaded) {
-      getUserStatus()
-    }
-  }, [isWalletContextLoaded])
-
-  /**
-   * On user logs in/logs out
-   */
-  useEffect(() => {
-    if (isWalletContextLoaded && predepositStatus) {
       getUserStatus()
     }
   }, [currentAddress])
 
   useEffect(() => {
-    if (walletClient) {
+    if (walletClient && currentAddress !== zeroAddress) {
       fetchPrices()
       getUSGUSDCBalanceAllowance(walletClient)
       getUSGfrxUSDBalanceAllowance(walletClient)
     }
-  }, [walletClient])
+  }, [currentAddress])
 
   const getUSGUSDCBalanceAllowance = async (walletClient: WalletClient) => {
     const data = await getBalancesAndAllowances(walletClient!, USDC_ADDRESS, USGTokens[1]["USG-USDC"])

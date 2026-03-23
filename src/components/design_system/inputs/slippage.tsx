@@ -14,7 +14,7 @@ type SlippageInputProps = {
 export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => {
   const [localValue, setLocalValue] = useState(slippage.toString())
   const [isHovered, setIsHovered] = useState(false)
-
+  const [open, setOpen] = useState(false)
   useEffect(() => {
     setLocalValue(slippage.toString())
   }, [slippage])
@@ -34,21 +34,14 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
   }
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button title="Slippage" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+        <button title="Slippage" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onPointerDown={(e) => e.stopPropagation()}>
           <IconGearWheel className="mb-1 h-auto w-4 text-row-tonic" isHovered={isHovered} />
         </button>
       </PopoverTrigger>
 
-      <PopoverContent
-        side="bottom"
-        align="center"
-        sideOffset={8}
-        collisionPadding={16}
-        className="!m-0 !w-56 border-none font-gilroy"
-        onOpenAutoFocus={(e) => e.preventDefault()}
-      >
+      <PopoverContent side="bottom" align="center" sideOffset={8} collisionPadding={16} className="!m-0 !w-56 border-none font-gilroy">
         <ReliefCard className="p-3">
           <div className="flex w-full flex-col items-center justify-between gap-2">
             <div className="flex w-full items-center justify-start">Slippage</div>

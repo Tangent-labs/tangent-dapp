@@ -232,10 +232,8 @@ export function GenericInputAssetAmount({
   // ---------------------------
   const handlePanelClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement
-
-    // Prevent to get focus whend clicked on interractive element in the input
     if (target.closest(".stop-focus")) return
-
+    if (target.closest("[data-radix-popper-content-wrapper]")) return
     inputRef.current?.focus()
   }
 

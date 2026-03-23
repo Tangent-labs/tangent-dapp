@@ -12,7 +12,8 @@ export function getLiquidateFormState(
   repayWeiValue: bigint,
   isWellConnected: boolean,
   isQuoteLoading: boolean,
-  isTransactionBlockedByPriceImpact: boolean
+  isTransactionBlockedByPriceImpact: boolean,
+  isTransactionBlockedBySlippage: boolean
 ) {
   const reasons: string[] = []
 
@@ -25,6 +26,8 @@ export function getLiquidateFormState(
       reasons.push("Withdraw value too high.")
     } else if (isTransactionBlockedByPriceImpact) {
       reasons.push("Price impact is too high.")
+    } else if (isTransactionBlockedBySlippage) {
+      reasons.push("Slippage is too high.")
     }
   }
 

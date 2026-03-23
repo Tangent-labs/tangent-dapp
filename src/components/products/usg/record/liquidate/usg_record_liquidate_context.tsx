@@ -7,11 +7,12 @@ import { AssetDataPriced, FormState } from "@/types"
 import { formatBigInt } from "@/lib/number_formatter"
 import { toastTx } from "@/components/design_system/toast"
 import { useUSGRecordContext } from "../usg_record_context"
-import { computedMinAmountOut, computeTransactionPotentialLoss } from "../usg_record_controller"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
+import { BuyAndMinOutFormatted } from "../leverage/usg_record_leverage_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { doMarketLiquidate, getLiquidateFormState } from "./usg_record_liquidate_controller"
+import { computedMinAmountOut, computeTransactionPotentialLoss } from "../usg_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 type USGLiquidateContextProps = {
@@ -57,6 +58,13 @@ type USGLiquidateContextValues = {
 
   isTransactionBlockedByPriceImpact: boolean
   setIsTransactionBlockedByPriceImpact: (arg: boolean) => void
+
+  zapValuesFormatted: BuyAndMinOutFormatted
+
+  isTransactionBlockedBySlippage: boolean
+  setIsTransactionBlockedBySlippage: (arg: boolean) => void
+
+  slippageLoss: { tokenLoss: string; dollarLoss: string }
 }
 
 export const USGLiquidateContext = createContext<USGLiquidateContextValues | undefined>(undefined)
@@ -87,6 +95,8 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   const [priceImpact, setPriceImpact] = useState<number>(0)
 
   const [isTransactionBlockedByPriceImpact, setIsTransactionBlockedByPriceImpact] = useState<boolean>(false)
+
+  const [isTransactionBlockedBySlippage, setIsTransactionBlockedBySlippage] = useState<boolean>(false)
 
   useEffect(() => {
     setLiquidateWeiValue(undefined)
@@ -170,11 +180,21 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         repayWeiValue || 0n,
         isWellConnected,
         isQuoteLoading || isTxLoading,
-        isTransactionBlockedByPriceImpact
+        isTransactionBlockedByPriceImpact,
+        isTransactionBlockedBySlippage
       )
     }
     return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
-  }, [marketData, liquidateWeiValue, isWellConnected, currentAddress, isQuoteLoading || isTxLoading, repayWeiValue, isTransactionBlockedByPriceImpact])
+  }, [
+    marketData,
+    liquidateWeiValue,
+    isWellConnected,
+    currentAddress,
+    isQuoteLoading || isTxLoading,
+    repayWeiValue,
+    isTransactionBlockedByPriceImpact,
+    isTransactionBlockedBySlippage,
+  ])
 
   const maxLiquidable = useMemo(() => {
     if (marketData) {
@@ -239,9 +259,34 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     return dollarLoss
   }, [liquidateWeiValue, priceImpact])
 
+  const slippageLoss = useMemo(() => {
+    const { tokenLoss, dollarLoss } = computeTransactionPotentialLoss(liquidateWeiValue as bigint, collateralInfo, slippage)
+
+    return { tokenLoss, dollarLoss }
+  }, [slippage, liquidateWeiValue])
+
   useEffect(() => {
     setIsTransactionBlockedByPriceImpact(!!USGReceivedValue && !!liquidateWeiValue && priceImpact >= 1)
   }, [priceImpact, liquidateWeiValue, USGReceivedValue])
+
+  useEffect(() => {
+    setIsTransactionBlockedBySlippage(!!USGReceivedValue && !!liquidateWeiValue && slippage >= 1)
+  }, [slippage, liquidateWeiValue, USGReceivedValue])
+
+  const zapValuesFormatted = useMemo(() => {
+    if (!isQuoteLoading && liquidateWeiValue && marketData?.collateralInfos) {
+      const minAmountOutWei = computedMinAmountOut(marketData?.collateralInfos?.positionCollateralAmount - liquidateWeiValue, slippage)
+      const decimals = collateralInfo?.decimals || 18
+      const displayDecimals = collateralInfo?.displayDecimals || 2
+
+      return {
+        expectedFormatted: `${formatBigInt(marketData?.collateralInfos?.positionCollateralAmount - liquidateWeiValue, decimals, displayDecimals)} `,
+        minOutFormatted: `${formatBigInt(minAmountOutWei, decimals, displayDecimals)}`,
+      }
+    }
+
+    return { expectedFormatted: `-`, minOutFormatted: `-` }
+  }, [liquidateWeiValue, isQuoteLoading, slippage])
 
   const contextValue: USGLiquidateContextValues = {
     actionLiquidate,
@@ -269,6 +314,10 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     priceImpactLoss,
     isTransactionBlockedByPriceImpact,
     setIsTransactionBlockedByPriceImpact,
+    zapValuesFormatted,
+    isTransactionBlockedBySlippage,
+    setIsTransactionBlockedBySlippage,
+    slippageLoss,
   }
 
   return <USGLiquidateContext.Provider value={contextValue}>{children}</USGLiquidateContext.Provider>

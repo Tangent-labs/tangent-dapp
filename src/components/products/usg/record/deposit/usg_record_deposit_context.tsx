@@ -436,16 +436,14 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   }, [marketData, depositWeiValue, depositAsset, depositAssetInfo, zapValue, slippage, isZapping])
 
   const zapValuesFormatted = useMemo(() => {
-    if (!isZapLoading) {
-      if (zapValue && marketData) {
-        const minAmountOutWei = computedMinAmountOut(zapValue, slippage)
-        const decimals = collateralInfo?.decimals || 18
-        const displayDecimals = collateralInfo?.displayDecimals || 2
+    if (!isZapLoading && zapValue) {
+      const minAmountOutWei = computedMinAmountOut(zapValue, slippage)
+      const decimals = collateralInfo?.decimals || 18
+      const displayDecimals = collateralInfo?.displayDecimals || 2
 
-        return {
-          expectedFormatted: `${formatBigInt(zapValue, decimals, displayDecimals)} `,
-          minOutFormatted: `${formatBigInt(minAmountOutWei, decimals, displayDecimals)}`,
-        }
+      return {
+        expectedFormatted: `${formatBigInt(zapValue, decimals, displayDecimals)} `,
+        minOutFormatted: `${formatBigInt(minAmountOutWei, decimals, displayDecimals)}`,
       }
     }
 

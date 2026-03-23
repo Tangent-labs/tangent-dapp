@@ -17,7 +17,7 @@ export type WalletSubscriber = (wallet: WalletInfo | null) => void
  */
 export interface WalletAdapter {
   connect(): Promise<void>
-  disconnect(label: string): Promise<void>
+  disconnect(): Promise<void>
   switchChain(chainId: number): Promise<void>
   subscribe(cb: WalletSubscriber): () => void
 }

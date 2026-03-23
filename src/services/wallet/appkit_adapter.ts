@@ -1,9 +1,9 @@
 import { dappConfig } from "@/dapp_config"
 import { chain } from "@/services/service_rpc"
-import { createAppKit, type AppKit } from "@reown/appkit"
+import { createAppKit } from "@reown/appkit"
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi"
 import type { EIP1193Provider } from "viem"
-import { toHex } from "viem"
+import { getAddress, toHex } from "viem"
 import type { WalletAdapter, WalletSubscriber } from "./wallet_adapter"
 
 export function createAppKitAdapter(): WalletAdapter {
@@ -48,23 +48,38 @@ export function createAppKitAdapter(): WalletAdapter {
     },
 
     subscribe(cb: WalletSubscriber): () => void {
-      const unsubAccount = appKit.subscribeAccount((account) => {
-        if (account.isConnected && account.address) {
+      const emitCurrentState = () => {
+        const account = appKit.getAccount("eip155")
+        if (account?.isConnected && account?.address) {
           const provider = appKit.getProvider<EIP1193Provider>("eip155")
+          if (!provider) {
+            cb(null)
+            return
+          }
           const caipNetwork = appKit.getCaipNetwork()
+          if (!caipNetwork?.id) {
+            cb(null)
+            return
+          }
           cb({
             label: "AppKit",
-            address: account.address as `0x${string}`,
+            address: getAddress(account.address),
             ens: null,
-            chainIdHex: caipNetwork?.id ? toHex(Number(caipNetwork.id)) : "0x0",
-            provider: provider!,
+            chainIdHex: toHex(Number(caipNetwork.id)),
+            provider,
           })
         } else {
           cb(null)
         }
-      }, "eip155")
+      }
 
-      return unsubAccount
+      const unsubAccount = appKit.subscribeAccount(() => emitCurrentState(), "eip155")
+      const unsubNetwork = appKit.subscribeNetwork(() => emitCurrentState())
+
+      return () => {
+        unsubAccount()
+        unsubNetwork()
+      }
     },
   }
 }

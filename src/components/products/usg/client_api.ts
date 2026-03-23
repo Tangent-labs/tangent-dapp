@@ -186,6 +186,15 @@ export async function getPointsDetails(addr: Address, currentBlockTimestamp: num
 }
 
 async function _callPointsDetails(currentAddress: Address, dateFrom: string) {
+  const EMPTY_POINTS_RESULT = {
+    lp: { total: "", dailyRate: "", referees: "" },
+    vote: { total: "", referees: "" },
+    boost: {
+      multiplicator: 1,
+      keys: [],
+    },
+  }
+
   try {
     const url = `${baseUrl}/points/${currentAddress}/${dateFrom}`
 
@@ -197,11 +206,7 @@ async function _callPointsDetails(currentAddress: Address, dateFrom: string) {
     })
 
     if (response.status === 404) {
-      return {
-        lp: { total: "", dailyRate: "", referees: "" },
-        vote: { total: "", referees: "" },
-        boost: 1,
-      }
+      return EMPTY_POINTS_RESULT
     }
     if (!response.ok) {
       throw new Error("Failed to fetch user points")
@@ -212,14 +217,7 @@ async function _callPointsDetails(currentAddress: Address, dateFrom: string) {
     return data
   } catch (error) {
     console.error("Failed to fetch user points:", error)
-    return {
-      lp: { total: "", dailyRate: "", referees: "" },
-      vote: { total: "", referees: "" },
-      boost: {
-        multiplicator: 1,
-        keys: [],
-      },
-    }
+    return EMPTY_POINTS_RESULT
   }
 }
 

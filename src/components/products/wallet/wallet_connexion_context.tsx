@@ -3,7 +3,7 @@
 import { dappConfig } from "@/dapp_config"
 import { chain } from "@/services/service_rpc"
 import { registerUser } from "./register_user"
-import { createWeb3OnboardAdapter } from "@/services/wallet"
+import { createAdapter } from "@/services/wallet"
 import type { WalletInfo } from "@/services/wallet"
 import { getUserBalances } from "./wallet_connexion_controller"
 import { Address, createWalletClient, custom, toHex, WalletClient, zeroAddress } from "viem"
@@ -41,10 +41,15 @@ export const WalletConnexionProvider = ({ children }: { children: ReactNode }) =
   const [currentAccount, setCurrentAccount] = useState<Account | undefined>(undefined)
   const [userBalances, setUserBalances] = useState<Array<{ balance: bigint; token: string; address: Address }>>([])
   const hasReceivedFirstUpdate = useRef(false)
-  const adapter = useRef(createWeb3OnboardAdapter())
+  const [adapter] = useState(() => {
+    if (typeof window === "undefined") return null
+    return createAdapter()
+  })
 
   useEffect(() => {
-    const unsubscribe = adapter.current.subscribe((wallet) => {
+    if (!adapter) return
+
+    const unsubscribe = adapter.subscribe((wallet) => {
       // A wallet connected → trust immediately
       if (wallet) {
         hasReceivedFirstUpdate.current = true
@@ -106,16 +111,17 @@ export const WalletConnexionProvider = ({ children }: { children: ReactNode }) =
 
   // ─── Actions ───
   const connect = async () => {
-    await adapter.current.connect()
+    await adapter?.connect()
   }
 
   const disconnect = async () => {
     if (!currentWallet) return
-    await adapter.current.disconnect(currentWallet.label)
+    await adapter?.disconnect()
   }
 
-  const changeNetwork = () => {
-    adapter.current.switchChain(dappConfig.chain.id)
+  const changeNetwork = async () => {
+    if (!currentWallet) return
+    await adapter?.switchChain(dappConfig.chain.id)
   }
 
   // ─── Balances ───

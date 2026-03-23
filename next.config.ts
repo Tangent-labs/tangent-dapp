@@ -2,6 +2,16 @@ import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
+  webpack: (config) => {
+    // Stub out unavailable wagmi connector peer deps
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      "porto/internal": false,
+      porto: false,
+      "@react-native-async-storage/async-storage": false,
+    }
+    return config
+  },
   logging: {
     fetches: {
       fullUrl: true,

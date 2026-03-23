@@ -5,13 +5,16 @@ import { PredepositStatus } from "./types/types"
 import { USGTokens } from "../usg/usg_repository"
 import { AssetDataPriced, FormState } from "@/types"
 import { useRootContext } from "../root/root_context"
+import { mapPoolsAndTasks } from "../usg/earn/utils"
 import { getTokensPrice } from "@/services/service_price"
 import { Address, formatUnits, WalletClient, zeroAddress } from "viem"
 import { formatNumber, truncateDecimals } from "@/lib/number_formatter"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { fetchUserStatus, validatePredepositSignature } from "./api/client.api"
+import { opportunities } from "../../../app/(products)/(usg)/earn/aprOpportunities.json"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { EarnPoolsData, getConvexPools, getCurvePools, getPendlePools, getStakeDAOPools } from "../usg/client_api_external"
 import { deposit, fetchQuote, getFormState, mapPredepositStatus, TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "./predeposit.controller"
 import { computedMinAmountOut, computeTransactionPotentialLoss, doApprove, getBalancesAndAllowances } from "../usg/record/usg_record_controller"
 
@@ -99,6 +102,8 @@ type PredepositContextValues = {
 
   USGUSDCSlippageLoss: { tokenLoss: string; dollarLoss: string }
   USGfrxUSDSlippageLoss: { tokenLoss: string; dollarLoss: string }
+
+  opportunitiesData: EarnPoolsData[]
 }
 
 export const PredepositContext = createContext<PredepositContextValues | undefined>(undefined)
@@ -107,13 +112,15 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   const USDC_ADDRESS = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
   const frxUSD_ADDRESS = "0xcacd6fd266af91b8aed52accc382b4e165586e29"
 
-  const { currentAddress, walletClient, isWalletInitialized } = useWalletConnexionContext()
+  const { currentAddress, walletClient, isWalletContextLoaded } = useWalletConnexionContext()
 
   const { getCachedCurrentBlock } = useRootContext()
 
   const [isfrxUSDDepositLoading, setIsfrxUSDDepositLoading] = useState<boolean>(false)
 
   const [isUSDCDepositLoading, setIsUSDCDepositLoading] = useState<boolean>(false)
+
+  const [opportunitiesData, setOpportunitiesData] = useState<EarnPoolsData[]>([])
 
   const [slippage, setSlippage] = useState<number>(0.2)
   const [frxUSDslippage, setfrxUSDSlippage] = useState<number>(0.2)
@@ -169,40 +176,28 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   }
 
   useEffect(() => {
-    if (currentAddress) {
+    if (currentAddress && isWalletContextLoaded) {
       const timer = setInterval(() => {
         getUserStatus()
-      }, 15000)
+      }, 12000)
 
       return () => clearInterval(timer)
     }
   }, [currentAddress])
 
-  /**
-   * On init
-   */
   useEffect(() => {
-    if (isWalletInitialized) {
-      getUserStatus()
-    }
-  }, [isWalletInitialized])
-
-  /**
-   * On user logs in/logs out
-   */
-  useEffect(() => {
-    if (isWalletInitialized && predepositStatus) {
+    if (isWalletContextLoaded) {
       getUserStatus()
     }
   }, [currentAddress])
 
   useEffect(() => {
-    if (walletClient) {
+    if (walletClient && currentAddress !== zeroAddress) {
       fetchPrices()
       getUSGUSDCBalanceAllowance(walletClient)
       getUSGfrxUSDBalanceAllowance(walletClient)
     }
-  }, [walletClient])
+  }, [currentAddress])
 
   const getUSGUSDCBalanceAllowance = async (walletClient: WalletClient) => {
     const data = await getBalancesAndAllowances(walletClient!, USDC_ADDRESS, USGTokens[1]["USG-USDC"])
@@ -542,6 +537,18 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     setIsUSGfrxUSDTransactionBlockedBySlippage(!!USGfrxUSDDepositValue && frxUSDslippage >= 1)
   }, [frxUSDslippage, USGfrxUSDDepositValue])
 
+  const fetchPoolsData = async () => {
+    const [curvePools, convexPools, stakeDaoPools, pendlePools] = await Promise.all([getCurvePools(), getConvexPools(), getStakeDAOPools(), getPendlePools()])
+
+    const mappedPools = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, opportunities)
+
+    setOpportunitiesData(mappedPools)
+  }
+
+  useEffect(() => {
+    fetchPoolsData()
+  }, [])
+
   const contextValue: PredepositContextValues = {
     isUSDCDepositLoading,
     isfrxUSDDepositLoading,
@@ -589,6 +596,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     isUSGfrxUSDTransactionBlockedBySlippage,
     setIsUSGfrxUSDTransactionBlockedBySlippage,
     USGfrxUSDSlippageLoss,
+    opportunitiesData,
   }
 
   return <PredepositContext.Provider value={contextValue}>{children}</PredepositContext.Provider>

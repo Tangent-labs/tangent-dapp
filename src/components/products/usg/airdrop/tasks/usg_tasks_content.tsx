@@ -5,7 +5,6 @@ import { useUSGContext } from "../../usg_context"
 import { SlidingTabs } from "./components/SlidingTabs"
 import { useUsgTasksContext } from "./usg_tasks_context"
 import { useUsgAirdropContext } from "../usg_airdrop_context"
-import { Button } from "@/components/design_system/inputs/button"
 import { lpListState, LPTasksList } from "./components/LPTasksList"
 import { lpListHeaders, voteListHeaders } from "./usg_tasks_controller"
 import { voteListState, VoteTasksList } from "./components/VoteTasksList"
@@ -19,9 +18,9 @@ import { InputSelect } from "@/components/design_system/inputs/input_select"
 import { protocolOptions } from "../../list/usg_market_controller"
 
 export default function UsgTasksContent() {
-  const { lpUserPoints, voteUserPoints } = useUSGContext()
+  const { lpUserPoints, voteUserPoints, userBoostFactor } = useUSGContext()
 
-  const { isConnected, connect } = useWalletConnexionContext()
+  const { isConnected } = useWalletConnexionContext()
 
   const {
     lpTasks,
@@ -42,7 +41,7 @@ export default function UsgTasksContent() {
     setVoteTaskSearchValue,
   } = useUsgTasksContext()
 
-  const { userBoostFactor, setReferralStatus, referralStatus, airdropDataIsLoading, signMessage } = useUsgAirdropContext()
+  const { setReferralStatus, referralStatus, airdropDataIsLoading, signMessage } = useUsgAirdropContext()
 
   return (
     <>
@@ -77,7 +76,7 @@ export default function UsgTasksContent() {
 
       <div className="flex w-full items-start justify-start gap-4">
         <div className="flex w-full flex-col">
-          {isConnected && selectedFeature === "Borrow & LP" && (
+          {selectedFeature === "Borrow & LP" && (
             <>
               <div className="mb-2 hidden items-end justify-between lg:flex xl:mb-0">
                 <div className="flex flex-col items-stretch justify-between gap-3">
@@ -120,7 +119,7 @@ export default function UsgTasksContent() {
             </>
           )}
 
-          {isConnected && selectedFeature === "Vote" && (
+          {selectedFeature === "Vote" && (
             <>
               <div className="mb-2 hidden items-end justify-between lg:flex xl:mb-0">
                 <div className="flex w-full items-end justify-start gap-2">
@@ -152,15 +151,6 @@ export default function UsgTasksContent() {
                 <VoteTasksList />
               </ListProvider>
             </>
-          )}
-
-          {!isConnected && (
-            <div className="mt-12 flex min-h-28 w-full flex-col items-center justify-center gap-4">
-              <div className="test-sm flex w-full items-center justify-center text-subtitle">Connect your wallet to see you current tasks</div>
-              <div className="flex w-56 flex-col items-center justify-center">
-                <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
-              </div>
-            </div>
           )}
         </div>
       </div>

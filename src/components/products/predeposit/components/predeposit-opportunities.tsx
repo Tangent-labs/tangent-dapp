@@ -3,12 +3,12 @@
 import { useMemo } from "react"
 import { ListState } from "@/types"
 import { AprOpportunityItem } from "../../usg/usg_type"
-import { PredepositContentProps } from "../predeposit.content"
 import { AprOpportunity } from "../../usg/earn/components/EarnList"
 import { ListHeader } from "@/components/design_system/list/list_header"
 import { opportunities } from "../../../../app/(products)/(usg)/earn/aprOpportunities.json"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { aprOpportunitiesListHeaders, mapAPROpportunities } from "../../usg/earn/usg_earn_controller"
+import { EarnPoolsData } from "../../usg/client_api_external"
 
 const listState: ListState = {
   search: undefined,
@@ -18,7 +18,11 @@ const listState: ListState = {
   },
 }
 
-export const PredepositOpportunities = ({ opportunitiesData }: PredepositContentProps) => {
+type PredepositOpportunities = {
+  opportunitiesData: EarnPoolsData[]
+}
+
+export const PredepositOpportunities = ({ opportunitiesData }: PredepositOpportunities) => {
   const displayRows = useMemo(() => {
     if (!opportunitiesData) return []
 

@@ -58,7 +58,7 @@ type USGMaketListContextValues = {
 export const USGMaketListContext = createContext<USGMaketListContextValues | undefined>(undefined)
 
 export const USGMarketListProvider = ({ children }: USGMaketListContextProps) => {
-  const { currentAddress, isWalletInitialized } = useWalletConnexionContext()
+  const { currentAddress, isWalletContextLoaded } = useWalletConnexionContext()
 
   const { marketAprs } = useUSGContext()
 
@@ -76,18 +76,18 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
    * On init
    */
   useEffect(() => {
-    if (isWalletInitialized) {
+    if (isWalletContextLoaded) {
       getUSGMarketsData(currentAddress || zeroAddress).then((d) => {
         setOnChainData(d)
       })
     }
-  }, [isWalletInitialized])
+  }, [isWalletContextLoaded])
 
   /**
    * On user logs in/logs out
    */
   useEffect(() => {
-    if (isWalletInitialized && onChainData) {
+    if (isWalletContextLoaded && onChainData) {
       getUSGMarketsData(currentAddress || zeroAddress).then((d) => {
         setOnChainData(d)
       })

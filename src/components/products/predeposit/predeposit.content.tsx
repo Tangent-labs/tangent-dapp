@@ -6,18 +6,13 @@ import { IconTangent } from "@/components/icons"
 import { usePredepositContext } from "./predeposit.context"
 import { PredepositFAQ } from "./components/predeposit-faq"
 import { PredepositHeading } from "./components/predeposit-heading"
-import { APROpportunitiesData } from "../usg/earn/usg_earn_controller"
 import { PredepositWalletConnect } from "../wallet/predeposit_wallet_connect"
 import { PredepositOpportunities } from "./components/predeposit-opportunities"
 import { PredepositDepositSection } from "./components/predeposit-deposit-section"
 import { PredepositRetentionPhase } from "./components/predeposit-retention-phase"
 
-export type PredepositContentProps = {
-  opportunitiesData: Array<APROpportunitiesData>
-}
-
-export const PredepositContent = ({ opportunitiesData }: PredepositContentProps) => {
-  const { predepositStatus } = usePredepositContext()
+export const PredepositContent = () => {
+  const { predepositStatus, opportunitiesData } = usePredepositContext()
 
   const faqRef = useRef<HTMLDivElement | null>(null)
 

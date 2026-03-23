@@ -2,12 +2,12 @@
 
 import { ListHeaderData, ListRowData, ListSort, ListState } from "@/types"
 import React, { createContext, useContext, useState, ReactNode, useMemo } from "react"
-import { Boost, ClaimData, AprOpportunityItem, HarvesterInfoDisplay, UserPosition, UserTask, VoteTask } from "@/components/products/usg/usg_type"
+import { Boost, ClaimData, AprOpportunityItem, HarvesterInfoDisplay, UserPosition, VoteTask, LpTask } from "@/components/products/usg/usg_type"
 
 //  Defined what is injected into the Provider ( mosty via server execution)
 interface ListProviderProps {
   _listState: ListState
-  _rows: ListRowData[] | ClaimData[] | UserTask[] | VoteTask[] | UserPosition[] | AprOpportunityItem[] | Boost[] | HarvesterInfoDisplay[]
+  _rows: ListRowData[] | ClaimData[] | LpTask[] | VoteTask[] | UserPosition[] | AprOpportunityItem[] | Boost[] | HarvesterInfoDisplay[]
   _headers: ListHeaderData[]
   children: ReactNode
   customSort?: (arg: ListState) => void
@@ -16,7 +16,7 @@ interface ListProviderProps {
 // Define what is returned by the provider
 interface ListContextValues {
   listState: ListState
-  displayRows: ListRowData[] | ClaimData[] | UserTask[] | VoteTask[] | UserPosition[] | AprOpportunityItem[] | Boost[] | HarvesterInfoDisplay[]
+  displayRows: ListRowData[] | ClaimData[] | LpTask[] | VoteTask[] | UserPosition[] | AprOpportunityItem[] | Boost[] | HarvesterInfoDisplay[]
   headers: ListHeaderData[]
   udpateSort: (field: string) => void
   udpateSearch: (search: string) => void

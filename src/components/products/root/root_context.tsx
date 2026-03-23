@@ -79,7 +79,9 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     }
   }
 
-  const getCachedCurrentBlock = async (cacheDelay = 600_000): Promise<Block> => {
+  // Fetch the cached current block if it has been fetched more than 1 min.
+  // Block is refetched every minutes
+  const getCachedCurrentBlock = async (cacheDelay = 60_000): Promise<Block> => {
     const now = Date.now()
     const blockData = localStorage.getItem(CURRENT_BLOCK)
 
@@ -87,8 +89,9 @@ export const RootProvider = ({ children }: RootProviderProps) => {
       const block = JSON.parse(blockData, (_, value) => {
         return typeof value === "string" && /^\d+$/.test(value) ? BigInt(value) : value
       })
-
-      if (block && now < block.lastRefresh) return block
+      if (block && now < block.lastRefresh) {
+        return block
+      }
     }
 
     const publicClient = getPublicClient()

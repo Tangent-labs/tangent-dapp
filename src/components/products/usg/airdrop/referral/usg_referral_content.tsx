@@ -21,11 +21,11 @@ export const UsgReferralCode = () => {
 
   const { isConnected, currentAddress } = useWalletConnexionContext()
 
-  const { lpUserPoints, voteUserPoints, refereesPoints } = useUSGContext()
+  const { lpUserPoints, voteUserPoints, refereesPoints, userBoostFactor } = useUSGContext()
 
   const { lpLeaderboard, voteLeaderboard, godsonsLeaderboard } = useUsgReferralCodeContext()
 
-  const { setReferralStatus, referralStatus, signMessage, airdropDataIsLoading, generateReferralCode, userBoostFactor } = useUsgAirdropContext()
+  const { setReferralStatus, referralStatus, signMessage, airdropDataIsLoading, generateReferralCode } = useUsgAirdropContext()
 
   return (
     <div className="flex w-full flex-col items-center justify-center">

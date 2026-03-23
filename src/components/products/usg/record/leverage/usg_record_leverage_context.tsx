@@ -278,10 +278,17 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     setIsDepositLoading(true)
 
     getQuote(valueWei, currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
-      .then(({ quote }) => {
+      .then(({ quote, priceImpact: pI }) => {
         if (requestId !== requestIdRef.current) return
-        handleQuote(quote)
-        if (quote) setDepositWeiValue(quote)
+
+        const validQuote = handleQuote(quote)
+
+        if (Number(pI) >= 0 && validQuote) {
+          setDepositWeiValue(BigInt(validQuote))
+          setPriceImpact(Number(pI) / 100)
+        } else {
+          setDepositWeiValue(undefined)
+        }
       })
       .catch((err) => {
         if (requestId !== requestIdRef.current) return

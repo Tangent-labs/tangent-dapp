@@ -1,7 +1,7 @@
 "use client"
 
 import { ButtonTab } from "./button_tab"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { IconGearWheel } from "@/components/icons"
 import { ReliefCard } from "../structure/relief_card"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -14,6 +14,8 @@ type SlippageInputProps = {
 export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => {
   const [localValue, setLocalValue] = useState(slippage.toString())
   const [isHovered, setIsHovered] = useState(false)
+
+  const inputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     setLocalValue(slippage.toString())
@@ -47,7 +49,10 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
         sideOffset={8}
         collisionPadding={16}
         className="!m-0 !w-56 border-none font-gilroy"
-        onOpenAutoFocus={(e) => e.preventDefault()}
+        onOpenAutoFocus={(e) => {
+          e.preventDefault()
+          inputRef.current?.focus()
+        }}
       >
         <ReliefCard className="p-3">
           <div className="flex w-full flex-col items-center justify-between gap-2">
@@ -60,6 +65,7 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
               inputMode="decimal"
               min={0.1}
               step={0.1}
+              ref={inputRef}
               className="w-full rounded-[10px] border border-white/10 bg-transparent pl-2 focus:outline-none"
             />
             <div className="mt-2 flex w-full items-center justify-between gap-2">

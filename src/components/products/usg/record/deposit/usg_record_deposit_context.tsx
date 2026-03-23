@@ -233,12 +233,21 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       setIsDepositLoading(true)
 
       try {
-        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
+        const { quote, priceImpact: pI } = await getQuote(
+          parseEther(e?.target?.value),
+          currentAddress,
+          depositAssetInfo?.address,
+          marketInfo?.collatAddress,
+          curveRoutes
+        )
 
-        handleQuote(quote)
+        const validQuote = handleQuote(quote)
 
-        if (quote) {
-          setDepositWeiValue(BigInt(quote))
+        if (Number(pI) >= 0 && validQuote) {
+          setDepositWeiValue(BigInt(validQuote))
+          setPriceImpact(Number(pI) / 100)
+        } else {
+          setDepositWeiValue(undefined)
         }
       } catch (error) {
         console.error("Error fetching depositWeiValue:", error)

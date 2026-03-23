@@ -54,10 +54,10 @@ export const WalletConnexionProvider = ({ children }: { children: ReactNode }) =
           clearTimeout(timeout)
 
           const wallet = wallets[0]
-          const account = wallet.accounts[0] as unknown as Account
+          const account = wallet.accounts[0]
 
           setCurrentWallet(wallet)
-          setCurrentAccount(account)
+          setCurrentAccount(account as Account)
           setWalletStatus("connected")
           registerUser(account.address)
           return
@@ -82,7 +82,7 @@ export const WalletConnexionProvider = ({ children }: { children: ReactNode }) =
         hasReceivedFirstUpdate.current = true
         setWalletStatus("disconnected")
       }
-    }, 2000)
+    }, 1500)
 
     return () => {
       subscription.unsubscribe()

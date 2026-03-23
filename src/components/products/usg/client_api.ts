@@ -109,7 +109,34 @@ export const getHistoricalMarketData = async (marketAddress: string, range: stri
 //           POINTS API CALLS
 // ────────────────────────────────────────
 
-export const getTasks = async (account: Address) => {
+interface TasksCache {
+  timestamp: number
+  wallet: Address
+  data: { lp: LpTask[]; vote: VoteTask[] }
+}
+
+export async function getTasks(addr: Address) {
+  const TASKS_CACHE_KEY = "TASKS_CACHE"
+  const CACHE_TTL = 300_000 // 5 minutes
+  const wallet = addr.toLowerCase() as Address
+  const cached = localStorage.getItem(TASKS_CACHE_KEY)
+  const now = new Date().getTime()
+  if (cached) {
+    const parsed: TasksCache = JSON.parse(cached)
+    if (now - parsed.timestamp < CACHE_TTL && parsed.wallet === wallet) {
+      return parsed.data
+    }
+  }
+
+  const tasks = await _callTasks(addr)
+  if (tasks.lp.length !== 0 && tasks.vote.length !== 0) {
+    localStorage.setItem(TASKS_CACHE_KEY, JSON.stringify({ wallet: wallet, timestamp: now, data: tasks }))
+  }
+
+  return tasks
+}
+
+async function _callTasks(account: Address) {
   try {
     const url = `${baseUrl}/tasks/${account}`
 

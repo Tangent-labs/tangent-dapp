@@ -70,7 +70,7 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
       })
       refetchPoints()
     }
-  }, [currentAddress])
+  }, [currentAddress, isWalletContextLoaded])
 
   useEffect(() => {
     if (rawLpTasks.length !== 0) {

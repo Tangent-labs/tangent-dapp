@@ -82,8 +82,8 @@ export const USGProvider = ({ children }: USGContextProps) => {
   useEffect(() => {
     if (isWalletContextLoaded) {
       loadUSGsUSGMetrics()
-      // loadTanSTANMetrics()
       refetchPoints()
+      // loadTanSTANMetrics()
     }
   }, [isWalletContextLoaded, currentAddress])
 

@@ -3,7 +3,7 @@
 import { toast } from "react-toastify"
 import { useClipboard } from "@/hooks/useClipboard"
 import { formatAddress } from "@/lib/other_formatter"
-import { formatNumber } from "@/lib/number_formatter"
+import { formatMillions } from "@/lib/number_formatter"
 import { IconTrophy } from "@/components/icons"
 import { ToastComponent } from "@/components/design_system/toast"
 import { GodsonLeaderboard } from "../../../usg_type"
@@ -42,10 +42,10 @@ export const GodsonsLeaderboard = ({ godsonsLeaderboard }: GodsonsLeaderboardPro
               {formatAddress(el.address, 4)}
             </div>
             <div className="flex w-3/12 items-center justify-center bg-row-tonic bg-clip-text text-xs font-semibold text-transparent">
-              {formatNumber(el.lpPoints, 0)}
+              {formatMillions(el.lpPoints)}
             </div>
             <div className="flex w-3/12 items-center justify-center bg-tonic bg-clip-text text-xs font-semibold text-transparent">
-              {formatNumber(el.votePts, 0)}
+              {formatMillions(el.votePts)}
             </div>
           </div>
         ))}

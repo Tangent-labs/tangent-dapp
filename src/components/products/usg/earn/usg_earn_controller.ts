@@ -2,7 +2,8 @@
 
 import { Address } from "viem"
 import { ListHeaderData } from "@/types"
-import { EarnPoolsData, EarnProtocolInput, USGMarketType } from "../usg_type"
+import { EarnProtocolInput, USGMarketType } from "../usg_type"
+import { EarnPoolsData } from "../client_api_external"
 
 export type APROpportunitiesData = {
   protocol: string

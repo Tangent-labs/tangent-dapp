@@ -1,14 +1,14 @@
 import { ListHeaderData } from "@/types"
-import { UserTask } from "../../usg_type"
 import { Abi, Address, Hex } from "viem"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import TaskListUI from "../../../../../abi/USG/TaskListUI.json"
 import { USG_CONTRACT } from "../../usg_repository"
+import { LpTask } from "../../usg_type"
 
-export const mapAirdropData = (tasks: UserTask[]) => {
+export const mapAirdropData = (tasks: LpTask[]) => {
   if (!tasks || tasks.length === 0) return []
 
-  return [...tasks].sort((a: UserTask, b: UserTask) => {
+  return [...tasks].sort((a: LpTask, b: LpTask) => {
     if (a.status && !b.status) return -1
     if (!a.status && b.status) return 1
 

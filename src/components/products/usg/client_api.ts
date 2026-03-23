@@ -1,6 +1,8 @@
+"use client"
+
 import { Address } from "viem"
 
-import { MarketHistoricalData, LpUserPoints, UserTask, VoteTask, VoteUserPoints, RefereesPoints, MarketAPRs, SavingAccountsApy, TVLData } from "./usg_type"
+import { MarketHistoricalData, VoteTask, MarketAPRs, SavingAccountsApy, TVLData, PointsResult, LpTask } from "./usg_type"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -79,6 +81,181 @@ export const getUserPositions = async (user: Address, market: Address) => {
   }
 }
 
+export const getHistoricalMarketData = async (marketAddress: string, range: string, currentTime: string): Promise<Array<MarketHistoricalData>> => {
+  try {
+    const url = `${baseUrl}/markets/${marketAddress.toLowerCase()}/dateFrom/${currentTime}?range=${range}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch historical market data")
+    }
+
+    const data: Array<MarketHistoricalData> = await response.json()
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch historical market data :", error)
+    return []
+  }
+}
+
+// ────────────────────────────────────────
+//           POINTS API CALLS
+// ────────────────────────────────────────
+
+interface TasksCache {
+  timestamp: number
+  wallet: Address
+  data: { lp: LpTask[]; vote: VoteTask[] }
+}
+
+export async function getTasks(addr: Address) {
+  const TASKS_CACHE_KEY = "TASKS_CACHE"
+  const CACHE_TTL = 300_000 // 5 minutes
+  const wallet = addr.toLowerCase() as Address
+  const cached = localStorage.getItem(TASKS_CACHE_KEY)
+  const now = new Date().getTime()
+  if (cached) {
+    const parsed: TasksCache = JSON.parse(cached)
+    if (now - parsed.timestamp < CACHE_TTL && parsed.wallet === wallet) {
+      return parsed.data
+    }
+  }
+
+  const tasks = await _callTasks(addr)
+  if (tasks.lp.length !== 0 && tasks.vote.length !== 0) {
+    localStorage.setItem(TASKS_CACHE_KEY, JSON.stringify({ wallet: wallet, timestamp: now, data: tasks }))
+  }
+
+  return tasks
+}
+
+async function _callTasks(account: Address) {
+  try {
+    const url = `${baseUrl}/tasks/${account}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch tasks")
+    }
+
+    const data: { lp: LpTask[]; vote: VoteTask[] } = await response.json()
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch tasks:", error)
+    return { lp: [], vote: [] }
+  }
+}
+
+interface PointsCache {
+  timestamp: number
+  wallet: Address
+  data: PointsResult
+}
+
+export async function getPointsDetails(addr: Address, currentBlockTimestamp: number) {
+  const POINTS_CACHE_KEY = "POINTS_CACHE"
+  const CACHE_TTL = 300_000 // 5 minutes
+  const wallet = addr.toLowerCase() as Address
+  const cached = localStorage.getItem(POINTS_CACHE_KEY)
+  const now = new Date().getTime()
+  if (cached) {
+    const parsed: PointsCache = JSON.parse(cached)
+    if (now - parsed.timestamp < CACHE_TTL && parsed.wallet === wallet) {
+      return parsed.data
+    }
+  }
+
+  const points = await _callPointsDetails(wallet, encodeURIComponent(new Date(currentBlockTimestamp * 1000).toISOString()))
+  localStorage.setItem(POINTS_CACHE_KEY, JSON.stringify({ wallet: wallet, timestamp: now, data: points }))
+
+  return points
+}
+
+async function _callPointsDetails(currentAddress: Address, dateFrom: string) {
+  try {
+    const url = `${baseUrl}/points/${currentAddress}/${dateFrom}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch user points")
+    }
+
+    const data: PointsResult = await response.json()
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch user points:", error)
+    return {
+      lp: { total: "", dailyRate: "", referees: "" },
+      vote: { total: "", referees: "" },
+      boost: {
+        multiplicator: 1,
+        keys: [],
+      },
+    }
+  }
+}
+
+export type GodsonsLeaderboardItem = {
+  rank: number
+  address: Address
+  lpPoints: number
+  votePts: number
+}
+export type LeaderBoardPosition = {
+  rank: number
+  address: Address
+  pts: number
+}
+export const getLeaderboards = async (
+  user: Address
+): Promise<{
+  lp: LeaderBoardPosition[]
+  vote: LeaderBoardPosition[]
+  godsons: GodsonsLeaderboardItem[]
+}> => {
+  try {
+    const url = `${baseUrl}/leaderboards/${user}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch leaderboard")
+    }
+
+    const { lp, vote, godsons } = await response.json()
+    return { lp, vote, godsons }
+  } catch (error) {
+    console.error("Failed to fetch leaderboard:", error)
+    return { lp: [], vote: [], godsons: [] }
+  }
+}
+
 export const validateReferralCode = async (referralCode: string, signature: Address, currentAddress: Address, now: string) => {
   try {
     const url = `${baseUrl}/referral`
@@ -151,248 +328,9 @@ export const getReferralStatus = async (account: Address): Promise<UserStatus> =
   }
 }
 
-export const getHistoricalMarketData = async (marketAddress: string, range: string, currentTime: string): Promise<Array<MarketHistoricalData>> => {
-  try {
-    const url = `${baseUrl}/markets/${marketAddress.toLowerCase()}/dateFrom/${currentTime}?range=${range}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch historical market data")
-    }
-
-    const data: Array<MarketHistoricalData> = await response.json()
-
-    return data
-  } catch (error) {
-    console.error("Failed to fetch historical market data :", error)
-    return []
-  }
-}
-
-export const getUserVoteTasks = async (account: Address): Promise<Array<VoteTask>> => {
-  try {
-    const url = `${baseUrl}/tasks/vote/${account}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch vote tasks")
-    }
-
-    const data: Array<VoteTask> = await response.json()
-
-    return data
-  } catch (error) {
-    console.error("Failed to fetch vote tasks:", error)
-    return []
-  }
-}
-
-export const getUserTasks = async (account: Address): Promise<UserTask[]> => {
-  try {
-    const url = `${baseUrl}/tasks/${account}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch tasks")
-    }
-
-    const data: UserTask[] = await response.json()
-
-    return data
-  } catch (error) {
-    console.error("Failed to fetch tasks:", error)
-    return []
-  }
-}
-
-export const getVoteUserPoints = async (account: Address): Promise<VoteUserPoints> => {
-  try {
-    const url = `${baseUrl}/vote-points/${account}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch vote points")
-    }
-
-    const data: VoteUserPoints = await response.json()
-
-    return data
-  } catch (error) {
-    console.error("Failed to fetch vote points:", error)
-    return { voteTotalPoints: 0 }
-  }
-}
-
-export const getUserRefereesPoints = async (account: Address): Promise<RefereesPoints> => {
-  try {
-    const url = `${baseUrl}/refereess/points/${account}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch user points")
-    }
-
-    const data: RefereesPoints = await response.json()
-
-    return data
-  } catch (error) {
-    console.error("Failed to fetch user points:", error)
-    return { lpPoints: 0, votePoints: 0 }
-  }
-}
-
-export const getLpUserPoints = async (account: Address, dateFrom: string): Promise<LpUserPoints> => {
-  try {
-    const url = `${baseUrl}/lp-points/${account}/${dateFrom}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch user points")
-    }
-
-    const data: LpUserPoints = await response.json()
-
-    return data
-  } catch (error) {
-    console.error("Failed to fetch user points:", error)
-    return { lpDailyRate: 0, lpTotalPoints: 0 }
-  }
-}
-
-export const getUserBoosts = async (account: Address): Promise<{ boost: number; result: Array<string> }> => {
-  try {
-    const url = `${baseUrl}/boosts/${account}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch boosts")
-    }
-
-    const boosts: { boost: number; result: Array<string> } = await response.json()
-
-    return boosts
-  } catch (error) {
-    console.error("Failed to fetch boosts:", error)
-    return { boost: 1, result: [] }
-  }
-}
-
-export const getLeaderboards = async (
-  user: Address
-): Promise<{
-  lpLeaderboard: Array<{
-    rank: number
-    address: Address
-    pts: number
-  }>
-  voteLeaderboard: Array<{
-    rank: number
-    address: Address
-    pts: number
-  }>
-}> => {
-  try {
-    const url = `${baseUrl}/leaderboards/${user}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch leaderboard")
-    }
-
-    const { lpLeaderboard, voteLeaderboard } = await response.json()
-
-    return { lpLeaderboard, voteLeaderboard }
-  } catch (error) {
-    console.error("Failed to fetch leaderboard:", error)
-    return { lpLeaderboard: [], voteLeaderboard: [] }
-  }
-}
-
-export const getGodsonsLeaderboard = async (
-  address: Address
-): Promise<
-  Array<{
-    rank: number
-    address: Address
-    lpPoints: number
-    votePts: number
-  }>
-> => {
-  try {
-    const url = `${baseUrl}/leaderboard/godsons/${address}`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch godsons leaderboard")
-    }
-
-    const leaderboard: Array<{
-      rank: number
-      address: Address
-      lpPoints: number
-      votePts: number
-    }> = await response.json()
-
-    return leaderboard
-  } catch (error) {
-    console.error("Failed to fetch godsons leaderboard:", error)
-    return []
-  }
-}
+// ────────────────────────────────────────
+//           SUPPLY & APR API
+// ────────────────────────────────────────
 
 export const getsUsgApyData = async (dateTo: number, dateFrom: number | null): Promise<Array<{ timestamp: Date; amount: string }>> => {
   try {
@@ -413,6 +351,52 @@ export const getsUsgApyData = async (dateTo: number, dateFrom: number | null): P
     return data
   } catch (error) {
     console.error("Failed to fetch historical susg apy:", error)
+    return []
+  }
+}
+
+interface SavingsAPYCache {
+  timestamp: number
+  data: SavingAccountsApy[]
+}
+export async function getSavingsAPY() {
+  const now = new Date().getTime()
+  const SAVINGS_APY = "SAVINGS_APY"
+  const CACHE_TTL = 300_000 // 5 minutes
+  const cached = localStorage.getItem(SAVINGS_APY)
+  if (cached) {
+    const parsed: SavingsAPYCache = JSON.parse(cached)
+    if (now - parsed.timestamp < CACHE_TTL) {
+      return parsed.data
+    }
+  }
+  const savingsAPYData = await _callSavingsAPY()
+  // If array is empty, an error occured, we so want to redo the call asap
+  if (savingsAPYData.length !== 0) {
+    localStorage.setItem(SAVINGS_APY, JSON.stringify({ timestamp: now, data: savingsAPYData }))
+  }
+  return savingsAPYData
+}
+
+async function _callSavingsAPY(): Promise<SavingAccountsApy[]> {
+  try {
+    const url = `${baseUrl}/savingAccounts/apy`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch savings APY")
+    }
+
+    const data: SavingAccountsApy[] = await response.json()
+    return data
+  } catch (error) {
+    console.error("Failed to fetch savings APY : ", error)
     return []
   }
 }
@@ -463,30 +447,31 @@ export const getTotalSupply = async (dateTo: number, dateFrom: number | null, to
   }
 }
 
-export const getSavingsAPY = async (): Promise<SavingAccountsApy[]> => {
-  try {
-    const url = `${baseUrl}/savingAccounts/apy`
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch savings APY")
-    }
-
-    const data: SavingAccountsApy[] = await response.json()
-    return data
-  } catch (error) {
-    console.error("Failed to fetch savings APY : ", error)
-    return []
-  }
+interface MarketsAPRCache {
+  timestamp: number
+  data: MarketAPRs[]
 }
 
-export const getMarketAprs = async (): Promise<Array<MarketAPRs>> => {
+export async function getMarketsAprs(): Promise<MarketAPRs[]> {
+  const now = new Date().getTime()
+  const MARKETS_APR = "MARKETS_APR"
+  const CACHE_TTL = 300_000 // 5 minutes
+  const cached = localStorage.getItem(MARKETS_APR)
+  if (cached) {
+    const parsed: MarketsAPRCache = JSON.parse(cached)
+    if (now - parsed.timestamp < CACHE_TTL) {
+      return parsed.data
+    }
+  }
+  const marketsAprs = await _callMarketsAprs()
+  // If array is empty, an error occured, we so want to redo the call asap
+  if (marketsAprs.length !== 0) {
+    localStorage.setItem(MARKETS_APR, JSON.stringify({ timestamp: now, data: marketsAprs }))
+  }
+  return marketsAprs
+}
+
+async function _callMarketsAprs(): Promise<MarketAPRs[]> {
   try {
     const url = `${baseUrl}/aprs`
 

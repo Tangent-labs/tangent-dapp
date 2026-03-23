@@ -3,11 +3,9 @@
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { generateCode, getReferralStatus, getUserBoosts, validateReferralCode } from "../client_api"
+import { generateCode, getReferralStatus, validateReferralCode } from "../client_api"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { useRootContext } from "../../root/root_context"
-import { Boost } from "../usg_type"
-import { mapUserBoosts } from "./boosts/usg_boosts_controller"
 
 export type UserStatus = {
   generatedCode: string | null
@@ -27,8 +25,6 @@ type UsgAirdropContextValues = {
   generateReferralCode: () => void
   referralStatus: UserStatus
   setReferralStatus: (arg: UserStatus) => void
-  userBoostFactor: number
-  userBoosts: Array<Boost>
 }
 
 export const UsgAirdropContext = createContext<UsgAirdropContextValues | undefined>(undefined)
@@ -36,25 +32,14 @@ export const UsgAirdropContext = createContext<UsgAirdropContextValues | undefin
 export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
   const { getCachedCurrentBlock } = useRootContext()
 
-  const { currentAddress, walletClient } = useWalletConnexionContext()
+  const { currentAddress, walletClient, isWalletContextLoaded } = useWalletConnexionContext()
 
   const [airdropDataIsLoading, setAirdropDataIsLoading] = useState<boolean>(true)
 
   const [referralStatus, setReferralStatus] = useState<UserStatus>({ generatedCode: null, hasUsedCode: false, referralCode: "", friends: 0 })
 
-  const [userBoostFactor, setUserBoostFactor] = useState<number>(1)
-
-  const [userBoosts, setUserBoosts] = useState<Array<Boost>>([])
-
   useEffect(() => {
-    if (currentAddress) {
-      getUserBoosts(currentAddress).then((b) => {
-        const mappedBoosts = mapUserBoosts(b?.result)
-
-        setUserBoosts(mappedBoosts)
-        setUserBoostFactor(b.boost)
-      })
-
+    if (isWalletContextLoaded) {
       getReferralStatus(currentAddress).then((status) => {
         if (status) {
           setReferralStatus((prev) => ({
@@ -123,8 +108,6 @@ export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
     generateReferralCode,
     referralStatus,
     setReferralStatus,
-    userBoostFactor,
-    userBoosts,
   }
 
   return <UsgAirdropContext.Provider value={contextValue}>{children}</UsgAirdropContext.Provider>

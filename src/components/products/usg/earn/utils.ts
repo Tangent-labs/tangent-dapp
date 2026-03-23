@@ -1,5 +1,6 @@
 import { Address } from "viem"
-import { EarnPoolsData, StakeDaoAPRData, EarnProtocolInput } from "../usg_type"
+import { EarnProtocolInput } from "../usg_type"
+import { EarnPoolsData, StakeDaoAPRData } from "../client_api_external"
 
 export const mapPoolsAndTasks = (
   curvePools: EarnPoolsData[],

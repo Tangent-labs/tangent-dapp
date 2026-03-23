@@ -5,10 +5,11 @@ import { getUSGsUSGMetrics } from "./usg_controller"
 import { getBalances } from "./record/usg_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { getLpUserPoints, getMarketAprs, getUserRefereesPoints, getVoteUserPoints } from "./client_api"
-import { USGStakingInfo, LpUserPoints, VoteUserPoints, RefereesPoints, MarketAPRs } from "./usg_type"
+import { getMarketsAprs, getPointsDetails } from "./client_api"
+import { USGStakingInfo, VoteUserPoints, RefereesPoints, MarketAPRs, LpUserPoints, Boost } from "./usg_type"
 import { useRootContext } from "../root/root_context"
 import { ERC20S } from "@/data/erc20s"
+import { mapUserBoosts } from "./airdrop/boosts/usg_boosts_controller"
 
 // import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
 // import { TANStakingInfo } from "../vs_tan/rstan_types"
@@ -21,6 +22,7 @@ type USGContextValues = {
   balances: Record<Address, bigint> | null
   lpUserPoints: LpUserPoints
   voteUserPoints: VoteUserPoints
+  userBoostFactor: number
   refetchPoints: () => Promise<void>
   loadUSGsUSGMetrics: () => void
   USGsUSGMetrics: USGStakingInfo | undefined
@@ -28,6 +30,7 @@ type USGContextValues = {
   // loadTanSTANMetrics: () => void
   refereesPoints: RefereesPoints
   marketAprs: MarketAPRs[]
+  userBoosts: Boost[]
 }
 
 export const USGContext = createContext<USGContextValues | undefined>(undefined)
@@ -35,7 +38,7 @@ export const USGContext = createContext<USGContextValues | undefined>(undefined)
 export const USGProvider = ({ children }: USGContextProps) => {
   const { getCachedCurrentBlock } = useRootContext()
 
-  const { currentAddress, isWalletInitialized } = useWalletConnexionContext()
+  const { currentAddress, isWalletContextLoaded } = useWalletConnexionContext()
 
   const [balances, setBalances] = useState<Record<Address, bigint> | null>(null)
 
@@ -45,20 +48,20 @@ export const USGProvider = ({ children }: USGContextProps) => {
 
   const [refereesPoints, setRefereesPoints] = useState<RefereesPoints>({ lpPoints: 0, votePoints: 0 })
 
+  const [userBoostFactor, setUserBoostFactor] = useState<number>(1)
+
   const [USGsUSGMetrics, setUSGsUSGMetrics] = useState<USGStakingInfo | undefined>()
 
   // const [TANsTANMetrics, setTANsTANMetrics] = useState<TANStakingInfo | undefined>()
 
   const [marketAprs, setMarketAprs] = useState<Array<MarketAPRs>>([])
 
-  const fetchAprs = async () => {
-    const markets = await getMarketAprs()
-
-    setMarketAprs(markets)
-  }
+  const [userBoosts, setUserBoosts] = useState<Array<Boost>>([])
 
   useEffect(() => {
-    fetchAprs()
+    getMarketsAprs().then((data) => {
+      setMarketAprs(data)
+    })
   }, [])
 
   const loadUSGsUSGMetrics = () => {
@@ -77,50 +80,29 @@ export const USGProvider = ({ children }: USGContextProps) => {
    * On init
    */
   useEffect(() => {
-    if (isWalletInitialized) {
+    if (isWalletContextLoaded) {
       loadUSGsUSGMetrics()
-      // loadTanSTANMetrics()
       refetchPoints()
-    }
-  }, [isWalletInitialized])
-
-  /**
-   * On user logs in/logs out
-   */
-  useEffect(() => {
-    if (isWalletInitialized && USGsUSGMetrics) {
-      loadUSGsUSGMetrics()
       // loadTanSTANMetrics()
     }
-  }, [currentAddress])
-
-  const getRefereesPoints = async () => {
-    getUserRefereesPoints(currentAddress!).then((p) => {
-      setRefereesPoints(p)
-    })
-  }
+  }, [isWalletContextLoaded, currentAddress])
 
   const refetchPoints = async () => {
     const currentBlock = await getCachedCurrentBlock()
 
-    const isoEndDate = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
-    const dateFrom = encodeURIComponent(isoEndDate)
-
-    getLpUserPoints(currentAddress!, dateFrom).then((lpPts) => {
-      setLpUserPoints(lpPts)
+    getPointsDetails(currentAddress, Number(currentBlock.timestamp)).then((data) => {
+      setLpUserPoints({ lpDailyRate: Number(data.lp.dailyRate), lpTotalPoints: Number(data.lp.total) })
+      setVoteUserPoints({ voteTotalPoints: Number(data.vote.total) })
+      setRefereesPoints({ lpPoints: Number(data.lp.referees), votePoints: Number(data.vote.referees) })
+      setUserBoostFactor(data.boost.multiplicator)
+      setUserBoosts(mapUserBoosts(data.boost.keys))
     })
-
-    getVoteUserPoints(currentAddress!).then((votePts) => {
-      setVoteUserPoints(votePts)
-    })
-
-    getRefereesPoints()
   }
 
   useEffect(() => {
     const tokenAddresses: Address[] = ERC20S.map((el) => el.address as Address)
 
-    if (currentAddress && tokenAddresses.length > 0) {
+    if (currentAddress !== zeroAddress) {
       getBalances(currentAddress, tokenAddresses).then((data) => {
         if (data) {
           const tokenBalances = tokenAddresses.reduce(
@@ -145,7 +127,8 @@ export const USGProvider = ({ children }: USGContextProps) => {
     voteUserPoints,
     refereesPoints,
     marketAprs,
-
+    userBoostFactor,
+    userBoosts,
     // loadTanSTANMetrics,
     // TANsTANMetrics,
   }

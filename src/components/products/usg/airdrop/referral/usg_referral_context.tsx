@@ -1,8 +1,7 @@
 "use client"
 
-import { Address, zeroAddress } from "viem"
-import { useUSGContext } from "../../usg_context"
-import { getGodsonsLeaderboard, getLeaderboards } from "../../client_api"
+import { Address } from "viem"
+import { getLeaderboards } from "../../client_api"
 import { useUsgAirdropContext } from "../usg_airdrop_context"
 import { GodsonLeaderboard, Leaderboard } from "../../usg_type"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
@@ -31,9 +30,7 @@ type UsgReferralCodeContextValues = {
 export const UsgReferralCodeContext = createContext<UsgReferralCodeContextValues | undefined>(undefined)
 
 export const UsgReferralCodeProvider = ({ children, code }: UsgReferralCodeContextProps) => {
-  const { currentAddress, isWalletInitialized } = useWalletConnexionContext()
-
-  const { refetchPoints } = useUSGContext()
+  const { currentAddress, walletStatus, isWalletContextLoaded } = useWalletConnexionContext()
 
   const { setReferralStatus, referralStatus } = useUsgAirdropContext()
 
@@ -61,20 +58,11 @@ export const UsgReferralCodeProvider = ({ children, code }: UsgReferralCodeConte
     }
   }, [code])
 
-  useEffect(() => {
-    if (currentAddress) {
-      getGodsonsLeaderboard(currentAddress).then((l) => {
-        setGodsonsLeaderboard(l)
-      })
-
-      refetchPoints()
-    }
-  }, [currentAddress])
-
   const fetchLeaderboards = async (user: Address) => {
     getLeaderboards(user)?.then((res) => {
-      setLpLeaderboard(res?.lpLeaderboard)
-      setVoteLeaderboard(res?.voteLeaderboard)
+      setLpLeaderboard(res.lp)
+      setVoteLeaderboard(res.vote)
+      setGodsonsLeaderboard(res.godsons)
     })
   }
 
@@ -82,19 +70,10 @@ export const UsgReferralCodeProvider = ({ children, code }: UsgReferralCodeConte
    * On init
    */
   useEffect(() => {
-    if (isWalletInitialized) {
-      fetchLeaderboards(currentAddress || zeroAddress)
-    }
-  }, [isWalletInitialized])
-
-  /**
-   * On user logs in/logs out
-   */
-  useEffect(() => {
-    if (isWalletInitialized && currentAddress) {
+    if (isWalletContextLoaded) {
       fetchLeaderboards(currentAddress)
     }
-  }, [currentAddress])
+  }, [walletStatus])
 
   const contextValue: UsgReferralCodeContextValues = {
     isLoading,

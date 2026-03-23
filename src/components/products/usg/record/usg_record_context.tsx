@@ -170,12 +170,11 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
   const { getCachedCurrentBlock } = useRootContext()
 
   const { globalData } = useUSGMaketListContext()
+  const { currentAddress, walletClient, isWalletContextLoaded } = useWalletConnexionContext()
 
   const [isDepositAndBorrow, setIsDepositAndBorrow] = useState<boolean>(true)
 
   const [isRepayAndWithdraw, setIsRepayAndWithdraw] = useState<boolean>(false)
-
-  const { currentAddress, walletClient, isWalletInitialized } = useWalletConnexionContext()
 
   const [chartData, setChartData] = useState<Array<{ price: number; vAPR: number }>>([])
 
@@ -232,16 +231,16 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
    * Loads on chain data when wallet is initialized
    */
   useEffect(() => {
-    if (isWalletInitialized) {
+    if (isWalletContextLoaded) {
       loadOnChainData()
     }
-  }, [isWalletInitialized])
+  }, [isWalletContextLoaded])
 
   /**
    * Loads on chain data if user logs in/logs out
    */
   useEffect(() => {
-    if (isWalletInitialized && onChainData) {
+    if (isWalletContextLoaded && onChainData) {
       loadOnChainData()
     }
   }, [currentAddress])
@@ -250,7 +249,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
    * Loads user positions if wallet is initialized and if currentAddress is defined
    */
   useEffect(() => {
-    if (isWalletInitialized && currentAddress) {
+    if (isWalletContextLoaded && currentAddress) {
       getUserPositions(currentAddress!, marketInfo!.marketAddress).then((pos) => {
         if (pos) {
           setUserPositions(pos)
@@ -259,7 +258,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
         }
       })
     }
-  }, [isWalletInitialized, currentAddress])
+  }, [isWalletContextLoaded, currentAddress])
 
   const USGInfo = useMemo(() => {
     if (globalData && globalData.USGPrice) {
@@ -292,7 +291,6 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
     try {
       if (walletClient) {
         const data = await getBalancesAndAllowances(walletClient!, depositAssetInfo, marketInfo?.marketAddress)
-
         setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
       }
     } catch (error) {

@@ -103,7 +103,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const { loadUSGsUSGMetrics } = useUSGContext()
 
-  const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
+  const { isWellConnected, walletClient, currentAddress, isWalletContextLoaded } = useWalletConnexionContext()
 
   const {
     marketData,
@@ -215,10 +215,10 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   // Fetch balance and allowances of new depositAsset
   useEffect(() => {
-    if (depositAssetInfo) {
+    if (depositAssetInfo && isWalletContextLoaded) {
       fetchBalanceAllowanceData(depositAssetInfo?.address)
     }
-  }, [depositAssetInfo])
+  }, [depositAssetInfo.address, isWalletContextLoaded])
 
   const handleZapChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setZapValue(parseEther(e?.target?.value))

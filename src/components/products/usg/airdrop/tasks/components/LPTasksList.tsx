@@ -1,6 +1,5 @@
 "use client"
 
-import { UserTask } from "../../../usg_type"
 import { ListState } from "@/types"
 import { IconOpenOutside, IconSortHeader } from "@/components/icons"
 import { formatToken } from "../usg_tasks_controller"
@@ -12,6 +11,7 @@ import { useListContext } from "@/components/design_system/list/list_context"
 import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { useRouter } from "next/navigation"
+import { LpTask } from "../../../usg_type"
 
 export const lpListState: ListState = {
   search: undefined,
@@ -151,7 +151,7 @@ export const LPTasksList = () => {
       </div>
 
       {displayRows &&
-        (displayRows as UserTask[])?.map((task: UserTask) => (
+        (displayRows as LpTask[])?.map((task: LpTask) => (
           <div
             onClick={() => window.open(task.url, "_blank")}
             key={task?.taskId}

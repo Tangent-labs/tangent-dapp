@@ -3,7 +3,6 @@
 import { ListState } from "@/types"
 import { Boost } from "../../usg_type"
 import { useUSGContext } from "../../usg_context"
-import { useUsgAirdropContext } from "../usg_airdrop_context"
 import { createContext, ReactNode, useContext, useEffect } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 

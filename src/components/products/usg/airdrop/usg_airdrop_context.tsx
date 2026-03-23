@@ -6,8 +6,6 @@ import { createContext, ReactNode, useContext, useEffect, useState } from "react
 import { generateCode, getReferralStatus, validateReferralCode } from "../client_api"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { useRootContext } from "../../root/root_context"
-import { Boost } from "../usg_type"
-import { mapUserBoosts } from "./boosts/usg_boosts_controller"
 
 export type UserStatus = {
   generatedCode: string | null

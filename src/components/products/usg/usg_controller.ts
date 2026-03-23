@@ -1,9 +1,9 @@
 "use client"
 
-import { Abi, Address, Hex } from "viem"
+import { Abi, Hex } from "viem"
 import sUSGUI from "../../../abi/USG/sUSGUI.json"
 import { USG_CONTRACT } from "./usg_repository"
-import { PointsResult, USGStakingInfo } from "./usg_type"
+import { USGStakingInfo } from "./usg_type"
 import { executeChainViewUnique } from "@/services/service_rpc"
 
 export async function getUSGsUSGMetrics(currentAddress: string) {

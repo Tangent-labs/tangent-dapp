@@ -26,7 +26,10 @@
     "@radix-ui/react-select": "^2.1.6",
     "@radix-ui/react-switch": "^1.1.2",
     "@radix-ui/react-tabs": "^1.1.0",
+    "@reown/appkit": "^1.8.19",
+    "@reown/appkit-adapter-wagmi": "^1.8.19",
     "@shadcn/ui": "^0.0.4",
+    "@tanstack/react-query": "^5.95.0",
     "@tanstack/react-virtual": "^3.11.3",
     "@web3-onboard/common": "^2.4.2",
     "@web3-onboard/core": "^2.2.12",
@@ -58,7 +61,8 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "use-debounce": "^10.0.4",
-    "viem": "^2.21.18"
+    "viem": "^2.21.18",
+    "wagmi": "^3.5.0"
   },
   "devDependencies": {
     "@tangent/defi-resources": "github:Tangent-labs/defi-resources#main",

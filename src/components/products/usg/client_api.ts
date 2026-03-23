@@ -196,6 +196,13 @@ async function _callPointsDetails(currentAddress: Address, dateFrom: string) {
       },
     })
 
+    if (response.status === 404) {
+      return {
+        lp: { total: "", dailyRate: "", referees: "" },
+        vote: { total: "", referees: "" },
+        boost: 1,
+      }
+    }
     if (!response.ok) {
       throw new Error("Failed to fetch user points")
     }

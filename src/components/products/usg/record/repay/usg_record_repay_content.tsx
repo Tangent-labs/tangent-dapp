@@ -178,22 +178,24 @@ export default function USGRepayContent() {
         )}
       </>
 
-      {!!repayWeiValue && isTransactionBlockedBySlippage && slippage >= 1 && (
+      {!!repayWeiValue && slippage >= 1 && (
         <SlippageAlert
           symbol="USG"
           tokenLoss={slippageLoss?.tokenLoss}
           dollarLoss={slippageLoss?.dollarLoss}
           slippage={slippage}
           isLoading={isZapLoading}
+          displayConfirmationButton={isTransactionBlockedBySlippage}
           onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
         />
       )}
 
-      {!!repayWeiValue && isTransactionBlockedByPriceImpact && priceImpact >= 1 && (
+      {!!repayWeiValue && priceImpact >= 1 && (
         <PriceImpactAlert
           dollarLoss={priceImpactLoss}
           priceImpact={priceImpact}
           isLoading={isZapLoading}
+          displayConfirmationButton={isTransactionBlockedByPriceImpact}
           onClickContinue={() => setIsTransactionBlockedByPriceImpact(false)}
         />
       )}

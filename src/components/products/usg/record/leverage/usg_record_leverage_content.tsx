@@ -12,6 +12,7 @@ import { GenericInputAssetAmount } from "@/components/design_system/inputs/Gener
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
+import { formatDollar } from "@/lib/number_formatter"
 
 export default function USGLeverageContent() {
   const {
@@ -56,6 +57,7 @@ export default function USGLeverageContent() {
     isTransactionBlockedBySlippage,
     isTransactionBlockedByPriceImpact,
     leverageExceedsMaxLtv,
+    USGDumpPriceImpact,
   } = useUSGLeverageContext()
 
   const { connect } = useWalletConnexionContext()
@@ -170,22 +172,26 @@ export default function USGLeverageContent() {
         <div className="flex w-full items-center justify-center text-xs text-red-500">Reduce your leverage or add more collateral.</div>
       )}
 
-      {!!depositWeiValue && isTransactionBlockedBySlippage && slippage >= 1 && (
+      {!!depositWeiValue && slippage >= 1 && (
         <SlippageAlert
           symbol={collateralInfo?.symbol as string}
           tokenLoss={slippageLoss?.tokenLoss}
           dollarLoss={slippageLoss?.dollarLoss}
           slippage={slippage}
           isLoading={isZapLoading}
+          displayConfirmationButton={isTransactionBlockedBySlippage}
           onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
         />
       )}
 
-      {!!depositWeiValue && isTransactionBlockedByPriceImpact && priceImpact >= 1 && (
+      {!!depositWeiValue && (priceImpact >= 1 || USGDumpPriceImpact?.priceImpact >= 1) && (
         <PriceImpactAlert
           dollarLoss={priceImpactLoss}
           priceImpact={priceImpact}
           isLoading={isZapLoading}
+          displayConfirmationButton={isTransactionBlockedByPriceImpact}
+          mintDumpPriceImpact={USGDumpPriceImpact?.priceImpact}
+          mintDumpDollarLoss={formatDollar(USGDumpPriceImpact?.dollarLoss)}
           onClickContinue={() => setIsTransactionBlockedByPriceImpact(false)}
         />
       )}

@@ -11,6 +11,7 @@ type TradeWarningAlertProps = {
   title: string
   subtitle: string
   content: string
+  displayConfirmationButton: boolean
   className?: string
   showButtonState?: boolean
 }
@@ -23,6 +24,7 @@ export const SwapWarningAlert = ({
   subtitle,
   content,
   showButtonState = false,
+  displayConfirmationButton,
   className,
 }: TradeWarningAlertProps) => {
   const isWarning = percentage >= 1 && percentage < 5
@@ -44,7 +46,7 @@ export const SwapWarningAlert = ({
       <span className="my-1 text-xs text-subtitle">{subtitle}</span>
       <span className="mb-1 text-xs text-subtitle">{content}</span>
 
-      {percentage <= 10 && (
+      {percentage <= 10 && displayConfirmationButton && (
         <WarningButton
           {...(showButtonState ? { state: "active" as const } : {})}
           warningType={isWarning ? "warning" : "danger"}

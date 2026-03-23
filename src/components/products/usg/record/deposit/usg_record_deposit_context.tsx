@@ -371,10 +371,15 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       .then(({ quote, priceImpact: pI }) => {
         // Do nothing when price is stale
         if (requestId !== latestRequestRef.current) return // stale
-        handleQuote(quote)
-        if (quote) setZapValue(quote)
 
-        if (pI) setPriceImpact(Number(pI) / 100)
+        const validQuote = handleQuote(quote)
+
+        if (Number(pI) >= 0 && validQuote) {
+          setZapValue(validQuote)
+          setPriceImpact(Number(pI) / 100)
+        } else {
+          setZapValue(undefined)
+        }
       })
       .catch((error) => {
         if (requestId !== latestRequestRef.current) return
@@ -474,6 +479,8 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       marketData,
       depositWeiValue,
       borrowWeiValue,
+      zapValue,
+      isZapping,
       isDepositAndBorrow,
       isWellConnected,
       balanceAllowanceData!,
@@ -493,6 +500,8 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     balanceAllowanceData,
     isTransactionBlockedByPriceImpact,
     isTransactionBlockedBySlippage,
+    zapValue,
+    isZapping,
   ])
 
   //  ACTIONS

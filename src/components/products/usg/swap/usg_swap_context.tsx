@@ -274,17 +274,15 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
       const { quote, priceImpact: pI } = await getQuote(value, currentAddress || zeroAddress, quoteTokenIn, quoteTokenOut, curveRoutes)
 
-      handleQuote(quote)
+      const validQuote = handleQuote(quote)
 
-      if (pI) {
+      if (Number(pI) >= 0 && validQuote) {
         setPriceImpact(Number(pI) / 100)
-      }
 
-      if (quote) {
         if (type == "sell") {
-          setBuyWeiValue(quote)
+          setBuyWeiValue(validQuote)
         } else {
-          setSellWeiValue(quote)
+          setSellWeiValue(validQuote)
         }
       }
       setIsSwapLoading(false)

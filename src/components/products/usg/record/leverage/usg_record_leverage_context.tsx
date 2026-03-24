@@ -798,29 +798,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     return { tokenLoss, dollarLoss }
   }, [slippage, zapValue])
 
-  /**
-   * Old way to compute USGDumpPriceImpact, didn't think about it first but we can get if from the USG => Collat quote line 712
-   */
-  // const USGDumpPriceImpact = useMemo(() => {
-  //   if (!borrowWeiValue || !leveragedCollateralQuote || !collateralInfo?.price || !globalData.usgPriceWei) {
-  //     return { priceImpact: 0, dollarLoss: 0 }
-  //   }
-
-  //   const collateralDollarValue = (leveragedCollateralQuote * BigInt(Math.round(collateralInfo.price * 1e18))) / BigInt(10n ** 18n)
-  //   const borrowDollarValue = (borrowWeiValue * globalData.usgPriceWei) / BigInt(10n ** 18n)
-
-  //   const ratio = Number((collateralDollarValue * 1000n) / borrowDollarValue) / 1000
-
-  //   const leveragedValuePriceImpact = (1 - ratio) * 100
-
-  //   const dollarLoss = (borrowDollarValue - collateralDollarValue) / BigInt(10n ** 18n)
-
-  //   return {
-  //     priceImpact: Number(leveragedValuePriceImpact?.toFixed(2)),
-  //     dollarLoss: dollarLoss >= 0 ? Number(dollarLoss) : 0,
-  //   }
-  // }, [borrowWeiValue, leveragedCollateralQuote, collateralInfo?.price, globalData.usgPriceWei])
-
   const USGDumpDollarLoss = useMemo(() => {
     if (!borrowWeiValue || !leveragedCollateralQuote || !collateralInfo?.price || !globalData.usgPriceWei) {
       return 0

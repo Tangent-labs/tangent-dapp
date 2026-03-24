@@ -114,7 +114,9 @@ type USGLeverageContextValues = {
 
   leverageExceedsMaxLtv: boolean
 
-  USGDumpPriceImpact: { priceImpact: number; dollarLoss: number }
+  USGDumpPriceImpact: number
+
+  USGDumpDollarLoss: number
 }
 
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
@@ -172,6 +174,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   const [isTransactionBlockedByPriceImpact, setIsTransactionBlockedByPriceImpact] = useState<boolean>(false)
 
   const [priceImpact, setPriceImpact] = useState<number>(0)
+
+  const [USGDumpPriceImpact, setUSGDumpPriceImpact] = useState<number>(0)
 
   const isZapping = useMemo(() => {
     const marketType = marketData?.marketType
@@ -517,7 +521,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
       resetAfterLeverageSuccess()
       setIsTxLoading(false)
-    } catch {
+    } catch (e) {
+      console.error(e)
       setIsTxLoading(false)
     }
   }
@@ -691,7 +696,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       leveragePercentage,
       isTransactionBlockedByPriceImpact,
       isTransactionBlockedBySlippage,
-
       isZapLoading || isDepositLoading || isTxLoading,
     ]
   )
@@ -706,10 +710,16 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     if (value) {
       setIsDepositLoading(true)
       getQuote(value, currentAddress!, marketInfo?.collatAddress, USG_CONTRACT.USG, curveRoutes)
-        .then(({ quote }) => {
-          setLeveragedCollateralQuote(quote)
+        .then(({ quote, priceImpact: pI }) => {
+          const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
+
+          if (validPriceImpact >= 0 && validQuote) {
+            setUSGDumpPriceImpact(validPriceImpact)
+            setLeveragedCollateralQuote(validQuote)
+            setBorrowWeiValue(value)
+          }
+
           setIsDepositLoading(false)
-          setBorrowWeiValue(value)
         })
         .catch((e) => {
           console.error(e)
@@ -788,24 +798,40 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     return { tokenLoss, dollarLoss }
   }, [slippage, zapValue])
 
-  const USGDumpPriceImpact = useMemo(() => {
+  /**
+   * Old way to compute USGDumpPriceImpact, didn't think about it first but we can get if from the USG => Collat quote line 712
+   */
+  // const USGDumpPriceImpact = useMemo(() => {
+  //   if (!borrowWeiValue || !leveragedCollateralQuote || !collateralInfo?.price || !globalData.usgPriceWei) {
+  //     return { priceImpact: 0, dollarLoss: 0 }
+  //   }
+
+  //   const collateralDollarValue = (leveragedCollateralQuote * BigInt(Math.round(collateralInfo.price * 1e18))) / BigInt(10n ** 18n)
+  //   const borrowDollarValue = (borrowWeiValue * globalData.usgPriceWei) / BigInt(10n ** 18n)
+
+  //   const ratio = Number((collateralDollarValue * 1000n) / borrowDollarValue) / 1000
+
+  //   const leveragedValuePriceImpact = (1 - ratio) * 100
+
+  //   const dollarLoss = (borrowDollarValue - collateralDollarValue) / BigInt(10n ** 18n)
+
+  //   return {
+  //     priceImpact: Number(leveragedValuePriceImpact?.toFixed(2)),
+  //     dollarLoss: dollarLoss >= 0 ? Number(dollarLoss) : 0,
+  //   }
+  // }, [borrowWeiValue, leveragedCollateralQuote, collateralInfo?.price, globalData.usgPriceWei])
+
+  const USGDumpDollarLoss = useMemo(() => {
     if (!borrowWeiValue || !leveragedCollateralQuote || !collateralInfo?.price || !globalData.usgPriceWei) {
-      return { priceImpact: 0, dollarLoss: 0 }
+      return 0
     }
 
     const collateralDollarValue = (leveragedCollateralQuote * BigInt(Math.round(collateralInfo.price * 1e18))) / BigInt(10n ** 18n)
     const borrowDollarValue = (borrowWeiValue * globalData.usgPriceWei) / BigInt(10n ** 18n)
 
-    const ratio = Number((collateralDollarValue * 1000n) / borrowDollarValue) / 1000
-
-    const leveragedValuePriceImpact = (1 - ratio) * 100
-
     const dollarLoss = (borrowDollarValue - collateralDollarValue) / BigInt(10n ** 18n)
 
-    return {
-      priceImpact: Number(leveragedValuePriceImpact?.toFixed(2)),
-      dollarLoss: dollarLoss >= 0 ? Number(dollarLoss) : 0,
-    }
+    return dollarLoss >= 0 ? Number(dollarLoss) : 0
   }, [borrowWeiValue, leveragedCollateralQuote, collateralInfo?.price, globalData.usgPriceWei])
 
   useEffect(() => {
@@ -813,8 +839,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }, [slippage, depositWeiValue])
 
   useEffect(() => {
-    setIsTransactionBlockedByPriceImpact(!!depositWeiValue && !!zapValue && (priceImpact >= 1 || USGDumpPriceImpact?.priceImpact >= 1))
-  }, [priceImpact, zapValue, depositWeiValue, USGDumpPriceImpact])
+    setIsTransactionBlockedByPriceImpact(!!depositWeiValue && (priceImpact >= 1 || USGDumpPriceImpact >= 1))
+  }, [priceImpact, depositWeiValue, USGDumpPriceImpact])
 
   const contextValue: USGLeverageContextValues = {
     collateralInfo,
@@ -904,6 +930,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     leverageExceedsMaxLtv,
 
     USGDumpPriceImpact,
+
+    USGDumpDollarLoss,
   }
 
   return <USGLeverageContext.Provider value={contextValue}>{children}</USGLeverageContext.Provider>

@@ -1,8 +1,10 @@
 "use client"
 
+import { formatDollar } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGLeverageContext } from "./usg_record_leverage_context"
 import FormButtons from "@/components/design_system/form/form_actions"
+import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { RecapAccordion } from "@/components/design_system/structure/recap"
 import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 import { ZapAssetSelector } from "@/components/design_system/inputs/asset_selector"
@@ -11,8 +13,6 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
-import { SlippageInput } from "@/components/design_system/inputs/slippage"
-import { formatDollar } from "@/lib/number_formatter"
 
 export default function USGLeverageContent() {
   const {
@@ -58,6 +58,7 @@ export default function USGLeverageContent() {
     isTransactionBlockedByPriceImpact,
     leverageExceedsMaxLtv,
     USGDumpPriceImpact,
+    USGDumpDollarLoss,
   } = useUSGLeverageContext()
 
   const { connect } = useWalletConnexionContext()
@@ -184,14 +185,14 @@ export default function USGLeverageContent() {
         />
       )}
 
-      {!!depositWeiValue && (priceImpact >= 1 || USGDumpPriceImpact?.priceImpact >= 1) && (
+      {!!depositWeiValue && (priceImpact >= 1 || USGDumpPriceImpact >= 1) && (
         <PriceImpactAlert
           dollarLoss={priceImpactLoss}
           priceImpact={priceImpact}
           isLoading={isZapLoading}
           displayConfirmationButton={isTransactionBlockedByPriceImpact}
-          mintDumpPriceImpact={USGDumpPriceImpact?.priceImpact}
-          mintDumpDollarLoss={formatDollar(USGDumpPriceImpact?.dollarLoss)}
+          mintDumpPriceImpact={USGDumpPriceImpact}
+          mintDumpDollarLoss={formatDollar(USGDumpDollarLoss)}
           onClickContinue={() => setIsTransactionBlockedByPriceImpact(false)}
         />
       )}

@@ -19,7 +19,7 @@ const contents = (swapPriceImpact: number, swapDollarLoss: string, mintDumpPrice
 
   if (swapPriceImpact < 1) {
     alert = ""
-  } else if (swapPriceImpact >= 1 && swapPriceImpact < 5) {
+  } else if (swapPriceImpact < 5) {
     alert = `This trade has a ${swapPriceImpact}% price impact. You'll receive (${swapDollarLoss}) less than market value due to low pool liquidity.`
   } else if (swapPriceImpact <= 10) {
     alert = `This trade has a ${swapPriceImpact}% price impact — you'll lose (${swapDollarLoss}). Consider reducing your amount or splitting into smaller trades.`

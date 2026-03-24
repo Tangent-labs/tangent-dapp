@@ -13,7 +13,7 @@ import { useContext, useEffect, useState, createContext, ReactNode, useMemo } fr
 
 export type RootContextValues = {
   curveRoutes: CustomCurveRoutes
-  handleQuote: (quote: bigint) => bigint | null
+  handleQuote: (quote: bigint, priceImpact: bigint) => { validQuote: bigint; validPriceImpact: number }
 
   isLoading: boolean
   totalSupplies: {
@@ -70,12 +70,22 @@ export const RootProvider = ({ children }: RootProviderProps) => {
 
   const [curveRoutes, setCurveRoutes] = useState<CustomCurveRoutes>({ errors: [], success: {} })
 
-  const handleQuote = (quote: bigint) => {
-    if (quote) {
-      return quote
+  const handlePriceImpact = (priceImpact: bigint) => {
+    if (!priceImpact || Number(priceImpact) <= 0) {
+      return 0
+    }
+
+    return Number(priceImpact)
+  }
+
+  const handleQuote = (quote: bigint, priceImpact: bigint) => {
+    const validPriceImpact = handlePriceImpact(priceImpact)
+
+    if (quote && validPriceImpact >= 0) {
+      return { validQuote: quote, validPriceImpact }
     } else {
       toast.error(ToastComponent, { data: { type: "Error", content: "Could not find a quote for this swap." } })
-      return null
+      return { validQuote: 0n, validPriceImpact: 0 }
     }
   }
 

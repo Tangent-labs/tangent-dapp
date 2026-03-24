@@ -11,7 +11,9 @@ export function getLiquidateFormState(
   withdrawWeiValue: bigint,
   repayWeiValue: bigint,
   isWellConnected: boolean,
-  isQuoteLoading: boolean
+  isQuoteLoading: boolean,
+  isTransactionBlockedByPriceImpact: boolean,
+  isTransactionBlockedBySlippage: boolean
 ) {
   const reasons: string[] = []
 
@@ -22,6 +24,10 @@ export function getLiquidateFormState(
       reasons.push("Quote loading.")
     } else if (withdrawWeiValue > marketData?.collateralInfos?.positionCollateralAmount) {
       reasons.push("Withdraw value too high.")
+    } else if (isTransactionBlockedByPriceImpact) {
+      reasons.push("Price impact is too high.")
+    } else if (isTransactionBlockedBySlippage) {
+      reasons.push("Slippage is too high.")
     }
   }
 

@@ -159,22 +159,24 @@ export default function USGDepositContent() {
 
       <MaxBorrowCapReached display={!borrowWeiValue && isDepositAndBorrow && maxBorrowCapReached} />
 
-      {!!depositWeiValue && isTransactionBlockedBySlippage && slippage >= 1 && (
+      {!!depositWeiValue && slippage >= 1 && (
         <SlippageAlert
           symbol={collateralInfo?.symbol as string}
           tokenLoss={slippageLoss?.tokenLoss}
           dollarLoss={slippageLoss?.dollarLoss}
           slippage={slippage}
           isLoading={isZapLoading}
+          displayConfirmationButton={isTransactionBlockedBySlippage}
           onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
         />
       )}
 
-      {!!depositWeiValue && isTransactionBlockedByPriceImpact && priceImpact >= 1 && (
+      {!!depositWeiValue && priceImpact >= 1 && (
         <PriceImpactAlert
           dollarLoss={priceImpactLoss}
           priceImpact={priceImpact}
           isLoading={isZapLoading}
+          displayConfirmationButton={isTransactionBlockedByPriceImpact}
           onClickContinue={() => setIsTransactionBlockedByPriceImpact(false)}
         />
       )}

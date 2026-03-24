@@ -233,12 +233,21 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       setIsDepositLoading(true)
 
       try {
-        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
+        const { quote, priceImpact: pI } = await getQuote(
+          parseEther(e?.target?.value),
+          currentAddress,
+          depositAssetInfo?.address,
+          marketInfo?.collatAddress,
+          curveRoutes
+        )
 
-        handleQuote(quote)
+        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
 
-        if (quote) {
-          setDepositWeiValue(BigInt(quote))
+        if (validPriceImpact >= 0 && validQuote) {
+          setDepositWeiValue(BigInt(validQuote))
+          setPriceImpact(Number(validPriceImpact) / 100)
+        } else {
+          setDepositWeiValue(undefined)
         }
       } catch (error) {
         console.error("Error fetching depositWeiValue:", error)
@@ -371,10 +380,15 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       .then(({ quote, priceImpact: pI }) => {
         // Do nothing when price is stale
         if (requestId !== latestRequestRef.current) return // stale
-        handleQuote(quote)
-        if (quote) setZapValue(quote)
 
-        if (pI) setPriceImpact(Number(pI) / 100)
+        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
+
+        if (validPriceImpact >= 0 && validQuote) {
+          setZapValue(validQuote)
+          setPriceImpact(Number(validPriceImpact) / 100)
+        } else {
+          setZapValue(undefined)
+        }
       })
       .catch((error) => {
         if (requestId !== latestRequestRef.current) return
@@ -422,16 +436,14 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   }, [marketData, depositWeiValue, depositAsset, depositAssetInfo, zapValue, slippage, isZapping])
 
   const zapValuesFormatted = useMemo(() => {
-    if (!isZapLoading) {
-      if (zapValue && marketData) {
-        const minAmountOutWei = computedMinAmountOut(zapValue, slippage)
-        const decimals = collateralInfo?.decimals || 18
-        const displayDecimals = collateralInfo?.displayDecimals || 2
+    if (!isZapLoading && zapValue) {
+      const minAmountOutWei = computedMinAmountOut(zapValue, slippage)
+      const decimals = collateralInfo?.decimals || 18
+      const displayDecimals = collateralInfo?.displayDecimals || 2
 
-        return {
-          expectedFormatted: `${formatBigInt(zapValue, decimals, displayDecimals)} `,
-          minOutFormatted: `${formatBigInt(minAmountOutWei, decimals, displayDecimals)}`,
-        }
+      return {
+        expectedFormatted: `${formatBigInt(zapValue, decimals, displayDecimals)} `,
+        minOutFormatted: `${formatBigInt(minAmountOutWei, decimals, displayDecimals)}`,
       }
     }
 
@@ -474,6 +486,8 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       marketData,
       depositWeiValue,
       borrowWeiValue,
+      zapValue,
+      isZapping,
       isDepositAndBorrow,
       isWellConnected,
       balanceAllowanceData!,
@@ -493,6 +507,8 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     balanceAllowanceData,
     isTransactionBlockedByPriceImpact,
     isTransactionBlockedBySlippage,
+    zapValue,
+    isZapping,
   ])
 
   //  ACTIONS

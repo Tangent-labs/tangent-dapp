@@ -1,22 +1,24 @@
 "use client"
 
-import { useUSGLiquidateContext } from "./usg_record_liquidate_context"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { useUSGRecordContext } from "../usg_record_context"
-import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
-import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
-import { Divider } from "@/components/design_system/structure/divider"
 import { formatBigInt } from "@/lib/number_formatter"
+import { useUSGRecordContext } from "../usg_record_context"
+import { Divider } from "@/components/design_system/structure/divider"
 import FormButtons from "@/components/design_system/form/form_actions"
+import { useUSGLiquidateContext } from "./usg_record_liquidate_context"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { RecapAccordion } from "@/components/design_system/structure/recap"
+import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
+import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 
 export default function USGLiquidatePanel() {
   const { connect } = useWalletConnexionContext()
 
   const { canInteract } = useWalletConnexionContext()
 
-  const { USGInfo, collateralInfo } = useUSGRecordContext()
+  const { USGInfo, collateralInfo, isTxLoading } = useUSGRecordContext()
 
   const { actionLiquidate, formState, slippage, setSlippage } = useUSGLiquidateContext()
 
@@ -35,6 +37,14 @@ export default function USGLiquidatePanel() {
     maxRepayable,
     maxLiquidateString,
     isLiquidationLoading,
+    priceImpact,
+    priceImpactLoss,
+    zapValuesFormatted,
+    setIsTransactionBlockedByPriceImpact,
+    isTransactionBlockedByPriceImpact,
+    isTransactionBlockedBySlippage,
+    setIsTransactionBlockedBySlippage,
+    slippageLoss,
   } = useUSGLiquidateContext()
 
   return (
@@ -108,15 +118,37 @@ export default function USGLiquidatePanel() {
         isLoading={isLiquidationLoading}
         isDisplayed={true}
         zappingParams={{
-          label: "USG",
-          expected: "2",
-          minOut: "2",
+          label: "collateral",
+          expected: `${zapValuesFormatted.expectedFormatted} ${collateralInfo.symbol}`,
+          minOut: `${zapValuesFormatted.minOutFormatted} ${collateralInfo.symbol}`,
           slippage: slippage,
         }}
       />
 
+      {!!liquidateWeiValue && slippage >= 1 && (
+        <SlippageAlert
+          symbol={collateralInfo?.symbol as string}
+          tokenLoss={slippageLoss?.tokenLoss}
+          dollarLoss={slippageLoss?.dollarLoss}
+          slippage={slippage}
+          isLoading={isLiquidationLoading || isQuoteLoading}
+          displayConfirmationButton={isTransactionBlockedBySlippage}
+          onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
+        />
+      )}
+
+      {!!liquidateWeiValue && priceImpact >= 1 && (
+        <PriceImpactAlert
+          dollarLoss={priceImpactLoss}
+          priceImpact={priceImpact}
+          isLoading={isLiquidationLoading || isQuoteLoading}
+          displayConfirmationButton={isTransactionBlockedByPriceImpact}
+          onClickContinue={() => setIsTransactionBlockedByPriceImpact(false)}
+        />
+      )}
+
       <FormButtons
-        isLoading={isLiquidationLoading}
+        isLoading={isLiquidationLoading || isTxLoading}
         connect={connect}
         actions={{ handleApprove: undefined, handleProcess: actionLiquidate }}
         formState={formState}

@@ -1,8 +1,10 @@
 "use client"
 
+import { formatDollar } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGLeverageContext } from "./usg_record_leverage_context"
 import FormButtons from "@/components/design_system/form/form_actions"
+import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { RecapAccordion } from "@/components/design_system/structure/recap"
 import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 import { ZapAssetSelector } from "@/components/design_system/inputs/asset_selector"
@@ -11,7 +13,6 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
-import { SlippageInput } from "@/components/design_system/inputs/slippage"
 
 export default function USGLeverageContent() {
   const {
@@ -56,6 +57,8 @@ export default function USGLeverageContent() {
     isTransactionBlockedBySlippage,
     isTransactionBlockedByPriceImpact,
     leverageExceedsMaxLtv,
+    USGDumpPriceImpact,
+    USGDumpDollarLoss,
   } = useUSGLeverageContext()
 
   const { connect } = useWalletConnexionContext()
@@ -170,22 +173,26 @@ export default function USGLeverageContent() {
         <div className="flex w-full items-center justify-center text-xs text-red-500">Reduce your leverage or add more collateral.</div>
       )}
 
-      {!!depositWeiValue && isTransactionBlockedBySlippage && slippage >= 1 && (
+      {!!depositWeiValue && slippage >= 1 && (
         <SlippageAlert
           symbol={collateralInfo?.symbol as string}
           tokenLoss={slippageLoss?.tokenLoss}
           dollarLoss={slippageLoss?.dollarLoss}
           slippage={slippage}
           isLoading={isZapLoading}
+          displayConfirmationButton={isTransactionBlockedBySlippage}
           onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
         />
       )}
 
-      {!!depositWeiValue && isTransactionBlockedByPriceImpact && priceImpact >= 1 && (
+      {!!depositWeiValue && (priceImpact >= 1 || USGDumpPriceImpact >= 1) && (
         <PriceImpactAlert
           dollarLoss={priceImpactLoss}
           priceImpact={priceImpact}
           isLoading={isZapLoading}
+          displayConfirmationButton={isTransactionBlockedByPriceImpact}
+          mintDumpPriceImpact={USGDumpPriceImpact}
+          mintDumpDollarLoss={formatDollar(USGDumpDollarLoss)}
           onClickContinue={() => setIsTransactionBlockedByPriceImpact(false)}
         />
       )}

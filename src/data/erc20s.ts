@@ -86,6 +86,14 @@ export const ERC20S: Erc20Details[] = [
     symbol: "USDC/fxUSD",
   },
   {
+    address: CURVE_LPS.LP_WETH_frxETH as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "frxETH-WETH",
+    name: "frxETH/WETH",
+    symbol: "frxETH/WETH",
+  },
+  {
     address: CURVE_LPS.DUO_fxUSD_reUSD as Address,
     chainId: 1,
     decimals: 18,
@@ -176,14 +184,6 @@ export const ERC20S: Erc20Details[] = [
 
   // PENDLE PT
 
-  {
-    address: PENDLE_POOLS?.["wstUSR 25/06/26"]?.PT,
-    chainId: 1,
-    decimals: 18,
-    logoKey: "wstUSR 25/06/26",
-    name: "wstUSR 25/06/26",
-    symbol: "wstUSR 25/06/26",
-  },
   {
     address: PENDLE_POOLS?.["sUSDe 07/05/26"]?.PT,
     chainId: 1,
@@ -407,14 +407,6 @@ export const ERC20S: Erc20Details[] = [
     decimals: 18,
     chainId: 1,
     logoURI: "https://files.cow.fi/token-lists/images/1/0x111111111117dc0aa78b770fa6a738034120c302/logo.png",
-  },
-  {
-    address: "0x1202f5c7b4b9e47a1a484e8b270be34dbbc75055",
-    symbol: "wstUSR",
-    name: "Wrapped stUSR",
-    decimals: 18,
-    chainId: 1,
-    logoURI: "https://files.cow.fi/token-lists/images/1/0x1202f5c7b4b9e47a1a484e8b270be34dbbc75055/logo.png",
   },
   {
     symbol: "DPI",
@@ -865,14 +857,6 @@ export const ERC20S: Erc20Details[] = [
     logoURI: "https://files.cow.fi/token-lists/images/1/0x657e8c867d8b37dcc18fa4caead9c45eb088c642/logo.png",
   },
   {
-    address: "0x66a1e37c9b0eaddca17d3662d6c05f4decf3e110",
-    symbol: "USR",
-    name: "Resolv USD",
-    decimals: 18,
-    chainId: 1,
-    logoURI: "https://files.cow.fi/token-lists/images/1/0x66a1e37c9b0eaddca17d3662d6c05f4decf3e110/logo.png",
-  },
-  {
     address: "0x66b5228cfd34d9f4d9f03188d67816286c7c0b74",
     symbol: "VOLT",
     name: "VOLT.WIN",
@@ -927,14 +911,6 @@ export const ERC20S: Erc20Details[] = [
     decimals: 6,
     chainId: 1,
     logoURI: "https://files.cow.fi/token-lists/images/1/0x6c3ea9036406852006290770bedfcaba0e23a0e8/logo.png",
-  },
-  {
-    address: "0x6c8984bc7dbbedaf4f6b2fd766f16ebb7d10aab4",
-    symbol: "stUSR",
-    name: "Staked USR",
-    decimals: 18,
-    chainId: 1,
-    logoURI: "https://files.cow.fi/token-lists/images/1/0x6c8984bc7dbbedaf4f6b2fd766f16ebb7d10aab4/logo.png",
   },
   {
     symbol: "LQTY",
@@ -2073,14 +2049,6 @@ export const ERC20S: Erc20Details[] = [
     decimals: 18,
     chainId: 8453,
     logoURI: "https://files.cow.fi/token-lists/images/8453/0x04d5ddf5f3a8939889f11e97f8c4bb48317f1938/logo.png",
-  },
-  {
-    address: "0x35e5db674d8e93a03d814fa0ada70731efe8a4b9",
-    symbol: "USR",
-    name: "Resolv USD",
-    decimals: 18,
-    chainId: 8453,
-    logoURI: "https://files.cow.fi/token-lists/images/8453/0x35e5db674d8e93a03d814fa0ada70731efe8a4b9/logo.png",
   },
   {
     address: "0x3a43aec53490cb9fa922847385d82fe25d0e9de7",

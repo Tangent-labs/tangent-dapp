@@ -430,15 +430,19 @@ export const fetchMarketContracts = (name: string): MarketContract[] => {
 }
 
 export const computeTransactionPotentialLoss = (buyWeiValue: bigint, buyAssetInfo: AssetDataPriced | CollateralInfo, delta: number) => {
-  if (buyWeiValue && buyAssetInfo) {
-    const minAmountOutWei = computedMinAmountOut(buyWeiValue, delta)
+  try {
+    if (buyWeiValue && buyAssetInfo) {
+      const minAmountOutWei = computedMinAmountOut(buyWeiValue, delta)
 
-    const tokenLoss = `${formatNumber(Number(truncateDecimals(formatUnits(BigInt(buyWeiValue) - minAmountOutWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
-    const dollarLoss = `$${formatNumber(Number(truncateDecimals(formatUnits(((BigInt(buyWeiValue) - minAmountOutWei) * BigInt(Number(buyAssetInfo?.price?.toFixed(2)) * 10000)) / BigInt(10000n), buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
+      const tokenLoss = `${formatNumber(Number(truncateDecimals(formatUnits(BigInt(buyWeiValue) - minAmountOutWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
+      const dollarLoss = `$${formatNumber(Number(truncateDecimals(formatUnits(((BigInt(buyWeiValue) - minAmountOutWei) * BigInt(Math.round(Number(buyAssetInfo?.price?.toFixed(2)) * 10000))) / BigInt(10000n), buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
 
-    return { tokenLoss, dollarLoss }
+      return { tokenLoss, dollarLoss }
+    }
+    return { tokenLoss: "", dollarLoss: "" }
+  } catch {
+    return { tokenLoss: "", dollarLoss: "" }
   }
-  return { tokenLoss: "", dollarLoss: "" }
 }
 
 export function matchBlockChainErrors(err: string) {

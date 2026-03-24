@@ -291,6 +291,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   const USGUSDCformState = useMemo(() => {
     if (predepositStatus) {
       return getFormState(
+        isUSDCDepositLoading,
         isUSGUSDCTransactionBlockedBySlippage,
         USDCDepositValue,
         (USGUSDCDepositValue || 0n) / 10n ** 12n,
@@ -300,11 +301,20 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
       )
     }
     return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
-  }, [USDCDepositValue, predepositStatus, currentAddress, USDCBalanceAllowance, USGUSDCDepositValue, isUSGUSDCTransactionBlockedBySlippage])
+  }, [
+    USDCDepositValue,
+    predepositStatus,
+    currentAddress,
+    USDCBalanceAllowance,
+    USGUSDCDepositValue,
+    isUSGUSDCTransactionBlockedBySlippage,
+    isUSDCDepositLoading,
+  ])
 
   const USGfrxUSDformState = useMemo(() => {
     if (predepositStatus) {
       return getFormState(
+        isfrxUSDDepositLoading,
         isUSGfrxUSDTransactionBlockedBySlippage,
         frxUSDDepositValue,
         USGfrxUSDDepositValue,
@@ -314,7 +324,15 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
       )
     }
     return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
-  }, [frxUSDDepositValue, predepositStatus, currentAddress, frxUSDBalanceAllowance, USGfrxUSDDepositValue, isUSGfrxUSDTransactionBlockedBySlippage])
+  }, [
+    frxUSDDepositValue,
+    predepositStatus,
+    currentAddress,
+    frxUSDBalanceAllowance,
+    USGfrxUSDDepositValue,
+    isUSGfrxUSDTransactionBlockedBySlippage,
+    isfrxUSDDepositLoading,
+  ])
 
   const actionApproveUSGUSDC = () => {
     if (walletClient && USDCDepositValue) {

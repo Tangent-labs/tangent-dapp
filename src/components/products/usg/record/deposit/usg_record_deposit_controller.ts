@@ -12,6 +12,8 @@ export function getDepositFormState(
   marketData?: MarketDetailData,
   depositWeiValue?: bigint,
   borrowWeiValue?: bigint,
+  zapValue?: bigint,
+  isZapping?: boolean,
   isDepositAndBorrow?: boolean,
   isWellConnected?: boolean,
   balanceAllowanceData?: BalanceAllowanceData,
@@ -34,6 +36,8 @@ export function getDepositFormState(
       reasons.push("Slippage is too high.")
     } else if (isTransactionBlockedByPriceImpact) {
       reasons.push("Price impact is too high.")
+    } else if (isZapping && !zapValue) {
+      reasons.push("No Zap value.")
     }
 
     if (isDepositAndBorrow) {

@@ -122,7 +122,7 @@ export const getCustomPendleQuote = async (
 ) => {
   const { bestQuote } = await returnCustomPendleQuoteData(customCurveRoutes, tokenIn, tokenOut, amount, swapDirection)
 
-  return bestQuote?.quote as bigint
+  return bestQuote
 }
 
 export const getPendleCustomRouterRoute = async (

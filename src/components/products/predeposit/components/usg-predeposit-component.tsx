@@ -130,13 +130,14 @@ export const USGPredepositComponent = ({
         </span>
       </div>
 
-      {!!depositWeiValue && isTransactionBlockedBySlippage && slippage >= 1 ? (
+      {!!depositWeiValue && slippage >= 1 ? (
         <SlippageAlert
           symbol={pool?.replaceAll("-", "/")}
           tokenLoss={slippageLoss?.tokenLoss}
           dollarLoss={slippageLoss?.dollarLoss}
           slippage={slippage}
           isLoading={isLoading}
+          displayConfirmationButton={isTransactionBlockedBySlippage}
           onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
         />
       ) : (

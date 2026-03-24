@@ -2739,6 +2739,35 @@
         }
       ]
     },
+    "0x1202f5c7b4b9e47a1a484e8b270be34dbbc75055": {
+      "0xb1c2db5d6ca03fce73dbd304d320bf76c55ae1b1": [
+        {
+          "params": {
+            "routeAddresses": [
+              "0x1202f5c7b4b9e47a1a484e8b270be34dbbc75055",
+              "0x1202f5c7b4b9e47a1a484e8b270be34dbbc75055",
+              "0x66a1e37c9b0eaddca17d3662d6c05f4decf3e110",
+              "0x38de22a3175708d45e7c7c64cd78479c8b56f76e",
+              "0x865377367054516e17014CcdED1e7d814EDC9ce4",
+              "0x8b83c4aA949254895507D09365229BC3a8c7f710",
+              "0xa3931d71877c0e7a3148cb7eb4463524fec27fbd",
+              "0x81A2612F6dEA269a6Dd1F6DeAb45C5424EE2c4b7",
+              "0xcacd6fd266af91b8aed52accc382b4e165586e29",
+              "0xefc056790bb19702b2164ec6ea6ba3ae01d81195",
+              "0xb1c2db5d6ca03fce73dbd304d320bf76c55ae1b1"
+            ],
+            "swapParamsFull": [
+              [1, 0, 9, 1, 0],
+              [1, 0, 1, 1, 2],
+              [0, 1, 1, 1, 2],
+              [1, 0, 1, 1, 2],
+              [0, 1, 1, 1, 2]
+            ]
+          },
+          "display": "wstUSR >> wstUSR >> USR >> DOLA/USR >> DOLA >> DOLA/sUSDS >> sUSDS >> frxUSD/sUSDS >> frxUSD >> USG-frxUSD* >> USG*"
+        }
+      ]
+    },
     "0x4c9edd5852cd905f086c759e8383e09bff1e68b3": {
       "0xb1c2db5d6ca03fce73dbd304d320bf76c55ae1b1": [
         {
@@ -3097,7 +3126,6 @@
     "USG* >> USG-frxUSD* >> frxUSD >> frxUSD/sUSDS >> sUSDS >> sUSDe/sUSDS >> sUSDe >> sUSDe >> USDe >> USDT/USDe >> USDT/USDe",
     "msETH/OETH >> msETH/OETH >> OETH >> OETH/ETH >> ETH >> WBTC/ETH/USDC >> USDC >> USG-USDC* >> USG*",
     "wstUSR >> DOLA/wstUSR >> DOLA >> DOLA/sUSDS >> sUSDS >> frxUSD/sUSDS >> frxUSD >> USG-frxUSD* >> USG*",
-    "wstUSR >> wstUSR >> USR >> DOLA/USR >> DOLA >> DOLA/sUSDS >> sUSDS >> frxUSD/sUSDS >> frxUSD >> USG-frxUSD* >> USG*",
     "USG* >> USG-frxUSD* >> frxUSD >> sUSDS/frxUSD >> sUSDS >> sUSDe/sUSDS >> sUSDe >> sUSDe >> USDe",
     "USG* >> USG-frxUSD* >> frxUSD >> frxUSD/sUSDS >> sUSDS >> DOLA/sUSDS >> DOLA >> DOLA/sUSDe >> sUSDe >> sUSDe >> USDe",
     "frxETH/WETH >> frxETH/WETH >> frxETH >> frxETH/ETH >> ETH >> WBTC/ETH/USDC >> USDC >> USG-USDC* >> USG*",

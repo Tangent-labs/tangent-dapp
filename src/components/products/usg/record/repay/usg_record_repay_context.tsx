@@ -460,11 +460,12 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
       try {
         const { quote, priceImpact: pI } = await getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address, curveRoutes)
 
-        handleQuote(quote)
+        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
 
-        if (quote) setUsgRepayedValue(quote)
-
-        if (pI) setPriceImpact(Number(pI) / 100)
+        if (validPriceImpact >= 0 && validQuote) {
+          setUsgRepayedValue(validQuote)
+          setPriceImpact(Number(validPriceImpact) / 100)
+        }
       } catch (error) {
         console.error(error)
       } finally {

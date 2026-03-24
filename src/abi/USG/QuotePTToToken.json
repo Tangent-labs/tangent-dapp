@@ -57,7 +57,7 @@
                   "type": "address[5]"
                 }
               ],
-              "internalType": "struct CurveRouteParamsOny",
+              "internalType": "struct CurveRouteParamsOnly",
               "name": "curveRouterData",
               "type": "tuple"
             }

@@ -208,16 +208,18 @@ export default function USGSwapContent() {
               dollarLoss={slippageLoss?.dollarLoss}
               slippage={slippage}
               isLoading={isSwapLoading}
+              displayConfirmationButton={isSwapBlockedBySlippage}
               onClickContinue={() => setIsSwapBlockedBySlippage(false)}
               className="mt-2"
             />
           )}
 
-          {isSwapReady && isSwapBlockedByPriceImpact && priceImpact >= 1 && (
+          {isSwapReady && priceImpact >= 1 && (
             <PriceImpactAlert
               dollarLoss={priceImpactLoss}
               priceImpact={priceImpact}
               isLoading={isSwapLoading}
+              displayConfirmationButton={isSwapBlockedByPriceImpact}
               onClickContinue={() => setIsSwapBlockedByPriceImpact(false)}
               className="mt-2"
             />

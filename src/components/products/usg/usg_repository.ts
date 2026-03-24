@@ -54,7 +54,7 @@ export const USGMarkets: USGMarket[] = envAddresses.markets.map((market: RawMark
 }))
 
 export const CurveCollaterals: Array<Address> = envAddresses.markets
-  .filter((m: RawMarket) => m.marketType.includes("Convex_CRV"))
+  .filter((m: RawMarket) => m.marketType.includes("Convex_CRV") || m.marketType.includes("CRV_Gauge"))
   .map((market: RawMarket) => market.collatAddress as Address)
 
 export const PendleCollaterals: Array<Address> = envAddresses.markets
@@ -76,4 +76,4 @@ export const USG_CONTRACT = {
   DAO: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
 }
 
-export const specialTokensList = ["USDe", "sUSDe", "LP sUSDe", "PT sUSDe", "YT sUSDe", "LP USDe", "PT USDe", "YT USDe", "reUSD", "wstUSR"]
+export const specialTokensList = ["USDe", "sUSDe", "LP sUSDe", "PT sUSDe", "YT sUSDe", "LP USDe", "PT USDe", "YT USDe", "reUSD"]

@@ -224,15 +224,6 @@ export const assetConfig: Record<AssetConfigKey, AssetData> = {
     displayDecimals: 2,
   },
 
-  "USR-RLP": {
-    symbol: "USR-RLP",
-    name: "USR-RLP",
-    decimals: 18,
-    address: TOKEN_ADDR["USR-RLP"],
-    logoKey: "USR-RLP",
-    displayDecimals: 2,
-  },
-
   "CVX-ETH": {
     symbol: "CVX-ETH",
     name: "CVX-ETH",

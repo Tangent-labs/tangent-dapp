@@ -6,6 +6,7 @@ type SlippageAlertProps = {
   dollarLoss: string
   slippage: number
   isLoading: boolean
+  displayConfirmationButton: boolean
   onClickContinue: () => void
   className?: string
 }
@@ -20,8 +21,9 @@ const contents = (s: number, tokenLoss: string, symbol: string, dollarLoss: stri
   return `At ${s}% slippage, you risk losing ${tokenLoss} ${symbol} (~${dollarLoss}). To protect our users from MEV sandwich attacks, this dApp enforces a maximum slippage tolerance of 10% as a built-in safety guard. Please lower your slippage to proceed.`
 }
 
-export const SlippageAlert = ({ symbol, tokenLoss, dollarLoss, slippage, className, ...rest }: SlippageAlertProps) => (
+export const SlippageAlert = ({ symbol, tokenLoss, dollarLoss, slippage, className, displayConfirmationButton, ...rest }: SlippageAlertProps) => (
   <SwapWarningAlert
+    displayConfirmationButton={displayConfirmationButton}
     percentage={slippage}
     title={titles(slippage)}
     subtitle={`This swap has a slippage of ${slippage}%.`}

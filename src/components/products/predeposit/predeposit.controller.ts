@@ -10,6 +10,7 @@ export const TOTAL_TAN_ALLOCATION = 200_000n
 export const TOTAL_DEPOSIT_CAP = 10_000_000n
 
 export const getFormState = (
+  isLoading: boolean,
   isTxBlockedBySlippage: boolean,
   depositValue: bigint | undefined,
   quotedValue: bigint | undefined,
@@ -38,7 +39,7 @@ export const getFormState = (
     reasons.push("Slippage too high.")
   }
 
-  return { canProcess: true, cantProcessReasons: reasons, haveToApprove: !isApproved }
+  return { canProcess: reasons.length === 0 && !isLoading, cantProcessReasons: reasons, haveToApprove: !isApproved }
 }
 
 export const fetchQuote = async (depositValue: bigint, contract: Address) => {

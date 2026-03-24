@@ -324,12 +324,12 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
 
       setIsZapLoading(true)
       try {
-        const { quote } = await getQuote(value, currentAddress, VSTAN_CONTRACT?.TAN, depositAssetInfo?.address, curveRoutes)
+        const { quote, priceImpact: pI } = await getQuote(value, currentAddress, VSTAN_CONTRACT?.TAN, depositAssetInfo?.address, curveRoutes)
 
-        handleQuote(quote)
+        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
 
-        if (quote) {
-          setZapValue(quote)
+        if (validPriceImpact >= 0 && validQuote) {
+          setZapValue(validQuote)
         }
       } catch (error) {
         console.error("Error fetching zap value:", error)
@@ -356,12 +356,19 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
       setIsZapLoading(true)
 
       try {
-        const { quote } = await getQuote(parseEther(e?.target?.value), currentAddress, depositAssetInfo?.address, VSTAN_CONTRACT?.TAN, curveRoutes)
+        const { quote, priceImpact: pI } = await getQuote(
+          parseEther(e?.target?.value),
+          currentAddress,
+          depositAssetInfo?.address,
+          VSTAN_CONTRACT?.TAN,
 
-        handleQuote(quote)
+          curveRoutes
+        )
 
-        if (quote) {
-          setDepositWeiValue(quote)
+        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
+
+        if (validPriceImpact >= 0 && validQuote) {
+          setDepositWeiValue(validQuote)
         }
       } catch (error) {
         console.error("Error fetching depositWeiValue:", error)

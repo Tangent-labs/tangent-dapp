@@ -57,6 +57,7 @@ export const CurveCollaterals: Array<Address> = envAddresses.markets
   .filter(
     (m: RawMarket) =>
       m.marketType.includes("Convex_CRV") ||
+      m.marketType.includes("Convex_FXN") ||
       m.marketType.includes("CRV_Gauge") ||
       m.marketType.includes("STAKEDAO_CRV_Vault")
   )

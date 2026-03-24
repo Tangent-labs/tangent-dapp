@@ -133,7 +133,6 @@ export function GenericInputAssetAmount({
       return
     }
     const percentage = Number((inputWeiValue * 100n) / maxWeiValue)
-
     setSliderPercentage(Math.min(Number(sliderStartEndRange[1]), Math.max(Number(sliderStartEndRange[0]), percentage)))
   }, [inputWeiValue, maxWeiValue])
 
@@ -223,7 +222,10 @@ export function GenericInputAssetAmount({
   const handleMaxClick = () => {
     setMaxAmount()
     setSliderPercentage(Number(sliderStartEndRange[1]))
-    setLocalDisplay(truncateDecimals(formatUnits(maxWeiValue, decimals), asset?.displayDecimals))
+    // Do not treat this part for the leverage, it's externally controlled
+    if (maxWeiValue !== 0n) {
+      setLocalDisplay(truncateDecimals(formatUnits(maxWeiValue, decimals), asset?.displayDecimals))
+    }
   }
 
   // ---------------------------

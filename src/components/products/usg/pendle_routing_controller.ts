@@ -8,7 +8,7 @@ import PendlePTRouter from "../../../abi/USG/PendlePTRouter.json"
 import QuoteTokenToPT from "../../../abi/USG/QuoteTokenToPT.json"
 import QuotePTToToken from "../../../abi/USG/QuotePTToToken.json"
 import { PendlePTToSYQuote, PendleSYToPTQuote } from "./usg_type"
-import { Abi, Address, encodeFunctionData, Hex, zeroAddress } from "viem"
+import { Abi, Address, encodeFunctionData, formatUnits, Hex, zeroAddress } from "viem"
 
 type RawRoute = {
   params: {
@@ -122,7 +122,7 @@ export const getCustomPendleQuote = async (
 ) => {
   const { bestQuote } = await returnCustomPendleQuoteData(customCurveRoutes, tokenIn, tokenOut, amount, swapDirection)
 
-  return bestQuote
+  return { quote: bestQuote.quote, priceImpact: Number(formatUnits(bestQuote.priceImpact, 16)) }
 }
 
 export const getPendleCustomRouterRoute = async (

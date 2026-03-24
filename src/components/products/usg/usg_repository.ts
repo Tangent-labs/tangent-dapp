@@ -54,7 +54,7 @@ export const USGMarkets: USGMarket[] = envAddresses.markets.map((market: RawMark
 }))
 
 export const CurveCollaterals: Array<Address> = envAddresses.markets
-  .filter((m: RawMarket) => m.marketType.includes("Convex_CRV") || m.marketType.includes("CRV_Gauge"))
+  .filter((m: RawMarket) => m.marketType.includes("Convex_CRV") || m.marketType.includes("CRV_Gauge") || m.marketType.includes("STAKEDAO_CRV_Vault") || m.marketType.includes("STAKEDAO_CRV_Vault"))
   .map((market: RawMarket) => market.collatAddress as Address)
 
 export const PendleCollaterals: Array<Address> = envAddresses.markets

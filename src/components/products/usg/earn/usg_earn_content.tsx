@@ -7,7 +7,7 @@ import { useUSGEarnContext } from "./usg_earn_context"
 import { AprOpportunity } from "./components/EarnList"
 import { aprOpportunitiesListHeaders } from "./usg_earn_controller"
 import { ListHeader } from "@/components/design_system/list/list_header"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { PageHeader } from "@/components/design_system/structure/page_header"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
@@ -28,10 +28,9 @@ export const USGEarnContent = () => {
   return (
     <>
       <div className="mb-4 flex items-stretch justify-between gap-6">
-        <ReliefCard className="hidden w-1/2 bg-panel-title-gradient xl:flex">
-          <div className="flex items-center justify-center">
-            <Image height={165} width={165} src="/medias/logos/earn.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px", paddingLeft: "16px" }} />
-          </div>
+        <PageHeader>
+          <Image height={165} width={165} src="/medias/logos/earn.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px", paddingLeft: "16px" }} />
+
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Earn</span>
             <p className="text-[15px]">
@@ -39,7 +38,7 @@ export const USGEarnContent = () => {
               trading markets.
             </p>
           </div>
-        </ReliefCard>
+        </PageHeader>
 
         <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
           <PointsCampaignLiveCard />

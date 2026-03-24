@@ -2,20 +2,21 @@
 
 import Image from "next/image"
 import { formatUnits } from "viem"
-import { Switch } from "@/components/ui/switch"
 import { ListState } from "@/types"
-import { formatDollar, formatMillions } from "@/lib/number_formatter"
+import { Switch } from "@/components/ui/switch"
 import { specialTokensList } from "../usg_repository"
 import { useUSGClaimContext } from "./usg_claim_context"
 import { claimListHeaders } from "./usg_claim_controller"
 import { Button } from "@/components/design_system/inputs/button"
 import { ClaimableMarket, ClaimAsset, ClaimData } from "../usg_type"
 import { ListAsset } from "@/components/design_system/list/list_asset"
+import { formatDollar, formatMillions } from "@/lib/number_formatter"
+import { MarketAPR } from "@/components/design_system/list/market_apr"
 import { Divider } from "@/components/design_system/structure/divider"
 import { ListHeader } from "@/components/design_system/list/list_header"
+import { PageHeader } from "@/components/design_system/structure/page_header"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { TokenImage } from "@/components/design_system/structure/token_image"
-import { MarketAPR } from "@/components/design_system/list/market_apr"
 import { USGHoverCard } from "@/components/design_system/structure/usg_hover_card"
 import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
@@ -54,15 +55,14 @@ export default function USGClaimContent() {
   return (
     <>
       <div className="flex items-stretch justify-between gap-6">
-        <ReliefCard className="hidden w-1/2 bg-panel-title-gradient xl:flex">
-          <div className="flex items-center justify-center">
-            <Image height={150} width={150} src="/medias/logos/claim.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
-          </div>
+        <PageHeader>
+          <Image height={150} width={150} src="/medias/logos/claim.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Claim</span>
             <p className="text-[15px]"> Claim rewards associated with your active positions.</p>
           </div>
-        </ReliefCard>
+        </PageHeader>
 
         <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>

@@ -12,7 +12,8 @@ export function getRepayFormState(
   repayWeiValue?: bigint,
   isWellConnected?: boolean,
   balanceAllowanceData?: BalanceAllowanceData,
-  repayAsset?: string
+  repayAsset?: string,
+  isLoading?: boolean
 ) {
   const isZapMode = !!repayAsset && !!balanceAllowanceData && repayAsset !== "USG"
 
@@ -43,7 +44,7 @@ export function getRepayFormState(
     }
   }
   return {
-    canProcess: isApproved && reasons.length === 0,
+    canProcess: isApproved && reasons.length === 0 && !isLoading,
     cantProcessReasons: reasons,
     haveToApprove: !isApproved,
   }

@@ -11,7 +11,7 @@ export function getLiquidateFormState(
   withdrawWeiValue: bigint,
   repayWeiValue: bigint,
   isWellConnected: boolean,
-  isQuoteLoading: boolean,
+  isLoading: boolean,
   isTransactionBlockedByPriceImpact: boolean,
   isTransactionBlockedBySlippage: boolean
 ) {
@@ -20,7 +20,7 @@ export function getLiquidateFormState(
   if (!isWellConnected) {
     reasons.push("No connected wallet.")
   } else {
-    if (isQuoteLoading) {
+    if (isLoading) {
       reasons.push("Quote loading.")
     } else if (withdrawWeiValue > marketData?.collateralInfos?.positionCollateralAmount) {
       reasons.push("Withdraw value too high.")
@@ -40,7 +40,7 @@ export function getLiquidateFormState(
     reasons.push(`Remaining debt must be at least ${formatBigInt(minimumLoan, 18, 2)}`)
   }
 
-  return { canProcess: reasons.length === 0, cantProcessReasons: reasons, haveToApprove: false }
+  return { canProcess: reasons.length === 0 && !isLoading, cantProcessReasons: reasons, haveToApprove: false }
 }
 
 export async function doMarketLiquidate(

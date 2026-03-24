@@ -46,7 +46,7 @@ export function RecapAccordion({ isLoading, isDisplayed, zappingParams, classNam
                     <span className="font-semibold text-white">{zappingParams.slippage}%</span>
                   </div>
                   <div className={cn("flex items-center justify-between", isLoading ? "shimmer" : "")}>
-                    <span className="text-subtitle">Expected {zappingParams?.label} </span>
+                    <span className="text-subtitle">Expected {zappingParams?.label}: </span>
                     <span className="text-white">{zappingParams.expected}</span>
                   </div>
                   <div className={cn("flex items-center justify-between", isLoading ? "shimmer" : "")}>

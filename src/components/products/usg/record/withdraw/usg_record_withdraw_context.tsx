@@ -107,10 +107,10 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
 
   const formState = useMemo(() => {
     if (marketData) {
-      return getWithdrawFormState(marketData, withdrawWeiValue!, maxWithdrawable, isWellConnected)
+      return getWithdrawFormState(marketData, withdrawWeiValue!, maxWithdrawable, isWellConnected, withdrawLoading)
     }
     return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
-  }, [marketData, withdrawWeiValue, isWellConnected, currentAddress, maxWithdrawable])
+  }, [marketData, withdrawWeiValue, isWellConnected, currentAddress, maxWithdrawable, withdrawLoading])
 
   useEffect(() => {
     setWithdrawWeiValue(undefined)

@@ -40,9 +40,6 @@ export const getStakeDAOPools = async (): Promise<StakeDaoAPRData[]> => {
 
     const response = await fetch(url, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
     })
 
     if (!response.ok) {

@@ -46,9 +46,7 @@ export default function USGRepayContent() {
     isDebtBelowThreshold,
     repayAssetInfo,
     withdrawSelectedAsset,
-    expectedRemainingDebt,
-    repayLoading,
-    minValueReceivedFromZap,
+    zapValuesFormatted,
     slippageLoss,
     isTransactionBlockedBySlippage,
     priceImpact,
@@ -58,7 +56,7 @@ export default function USGRepayContent() {
 
   const { connect } = useWalletConnexionContext()
 
-  const { USGInfo, collateralInfo, marketData, isRepayAndWithdraw, depositAssetOptions } = useUSGRecordContext()
+  const { USGInfo, collateralInfo, marketData, isRepayAndWithdraw, depositAssetOptions, isTxLoading } = useUSGRecordContext()
 
   const isZapping = !!repayAsset && repayAsset !== "USG"
 
@@ -125,7 +123,7 @@ export default function USGRepayContent() {
             asset={USGInfo}
             bottomPart={
               <div className="flex select-none justify-between gap-2 text-xs text-subtitle">
-                Minimum received {usgRepayedValue && USGInfo?.price !== 0 ? minValueReceivedFromZap : ""}
+                Minimum received {usgRepayedValue && USGInfo?.price !== 0 ? zapValuesFormatted.minOutFormatted : ""}
               </div>
             }
           />
@@ -164,9 +162,9 @@ export default function USGRepayContent() {
           isLoading={isZapLoading}
           isDisplayed={isZapping}
           zappingParams={{
-            label: "USG",
-            expected: `${expectedRemainingDebt}`,
-            minOut: minValueReceivedFromZap,
+            label: "debt repaid",
+            expected: `${zapValuesFormatted.expectedFormatted} USG`,
+            minOut: `${zapValuesFormatted.minOutFormatted} USG`,
             slippage: slippage,
           }}
         />
@@ -208,7 +206,7 @@ export default function USGRepayContent() {
         }}
         formState={formState}
         labelProcess={isRepayAndWithdraw ? "Repay & withdraw" : "Repay"}
-        isLoading={repayLoading || isZapLoading}
+        isLoading={isZapLoading || isTxLoading}
       />
     </div>
   )

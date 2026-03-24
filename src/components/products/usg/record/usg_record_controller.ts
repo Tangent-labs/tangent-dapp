@@ -183,14 +183,15 @@ export function getMarketDisplayData(usgPrice: number, marketData?: MarketDetail
     } as USGMarketDisplayData
 
   const loanData = getComputedFutureLoanData(usgPrice, marketData!, collateralInfo, { borrowWeiValue: 0n, depositWeiValue: 0n })
-
+  let available = BigInt(marketData?.constants.maxMarketDebt - marketData?.debtInfos?.totalDebt)
+  available = available >= 0n ? available : 0n
   return {
     ...loanData,
     tvl: formatNumber(Number(formatEther(BigInt(marketData?.collateralInfos?.totalCollateralAmount || 0n))), 0),
     tvlDollar: formatEther(BigInt(marketData?.collateralInfos?.totalCollateralUSDValue || 0n)),
     borrowed: formatNumber(Number(formatEther(BigInt(marketData?.debtInfos?.totalDebt || 0n))), 0) + " USG",
     cap: formatNumber(Number(formatEther(BigInt(marketData?.constants.maxMarketDebt || 0n))), 0) + " USG",
-    available: formatNumber(Number(formatEther(BigInt(marketData?.constants.maxMarketDebt - marketData?.debtInfos?.totalDebt))), 0) + " USG",
+    available: formatNumber(Number(formatEther(available)), 0) + " USG",
     deposited: formatNumber(Number(formatEther(BigInt(marketData?.collateralInfos.positionCollateralAmount || 0n))), 0),
     depositedDollar: formatDollar(Number(formatEther(BigInt(marketData?.collateralInfos.positionCollateralUSDValue || 0n))), 0),
     borrowRateCurrent: Number(formatEther(marketData?.debtInfos.currentBorrowRate || 0n)),

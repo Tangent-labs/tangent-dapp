@@ -305,8 +305,12 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     if (leverageDebounceRef.current) clearTimeout(leverageDebounceRef.current)
 
     leverageDebounceRef.current = setTimeout(() => {
-      const collateralAmount = isZapping && zapValue ? BigInt(zapValue) : BigInt(depositWeiValue || 0n)
-      updateBorrowWeiValue(computeBorrowValue(collateralAmount, leverageValue))
+      const depositedAmount = isZapping && zapValue ? BigInt(zapValue) : BigInt(depositWeiValue || 0n)
+      const alreadyDepositedAmount = marketData?.collateralInfos.positionCollateralAmount
+      const totalDepositedAmount = depositedAmount + alreadyDepositedAmount!
+      const borrowWeiValue = computeBorrowValue(totalDepositedAmount, leverageValue)
+      setBorrowWeiValue(borrowWeiValue)
+      updateBorrowWeiValue(borrowWeiValue)
     }, 400)
   }
 
@@ -698,7 +702,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         .then(({ quote }) => {
           setLeveragedCollateralQuote(quote)
           setIsDepositLoading(false)
-          setBorrowWeiValue(value)
         })
         .catch((e) => {
           console.error(e)

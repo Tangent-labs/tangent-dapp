@@ -415,7 +415,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
       const computedMaxBorrowable = computeMaxBorrowable(maxBorrowable, marketData?.constants?.maxMarketDebt, marketData?.debtInfos?.totalDebt)
 
-      return computedMaxBorrowable
+      return computedMaxBorrowable >= 0n ? computedMaxBorrowable : 0n
     }
 
     return 0n

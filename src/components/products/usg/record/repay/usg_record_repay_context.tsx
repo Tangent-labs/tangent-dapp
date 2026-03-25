@@ -1,20 +1,20 @@
 "use client"
 
-import { toast } from "react-toastify"
 import { formatUnits, maxUint256 } from "viem"
 import { useUSGContext } from "../../usg_context"
 import { AssetDataPriced, FormState } from "@/types"
 import { USG_CONTRACT } from "../../usg_repository"
+import { Erc20Details, ERC20S } from "@/data/erc20s"
+import { toastTx } from "@/components/design_system/toast"
 import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
-import { ToastComponent, toastTx } from "@/components/design_system/toast"
-import { formatBigIntAsNumber, formatDollar, formatNumber, toBigInt, truncateDecimals } from "@/lib/number_formatter"
+import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
+import { BuyAndMinOutFormatted } from "../leverage/usg_record_leverage_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove } from "../usg_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
-import { Erc20Details, ERC20S } from "@/data/erc20s"
+import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove, matchBlockChainErrors } from "../usg_record_controller"
 
 type USGRepayContextProps = {
   children: ReactNode
@@ -50,8 +50,6 @@ type USGRepayContextValues = {
   isZapLoading: boolean
   setIsZapLoading: (arg: boolean) => void
 
-  repayLoading: boolean
-
   handleRepayValueChange: (arg: bigint | undefined) => void
 
   usgRepayedValue: bigint | undefined
@@ -72,14 +70,10 @@ type USGRepayContextValues = {
 
   isDebtBelowThreshold: boolean
 
-  expectedRemainingDebt: string
-
   USGDollarRepayedValue: string
 
   withdrawSelectedAsset: string | undefined
   setWithdrawSelectedAsset: (v: string) => void
-
-  minValueReceivedFromZap: string
 
   slippageLoss: { tokenLoss: string; dollarLoss: string }
 
@@ -92,6 +86,8 @@ type USGRepayContextValues = {
 
   isTransactionBlockedByPriceImpact: boolean
   setIsTransactionBlockedByPriceImpact: (arg: boolean) => void
+
+  zapValuesFormatted: BuyAndMinOutFormatted
 }
 
 export const USGRepayContext = createContext<USGRepayContextValues | undefined>(undefined)
@@ -115,6 +111,8 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     fetchBalanceAllowanceData,
     collateralInfo,
     isRepayAndWithdraw,
+    setIsTxLoading,
+    isTxLoading,
   } = useUSGRecordContext()
 
   const [isZapLoading, setIsZapLoading] = useState(false)
@@ -138,8 +136,6 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   const [usgRepayedValue, setUsgRepayedValue] = useState<bigint | undefined>()
 
   const [withdrawSelectedAsset, setWithdrawSelectedAsset] = useState<string>()
-
-  const [repayLoading, setReplayLoading] = useState<boolean>(false)
 
   const [isTransactionBlockedBySlippage, setIsTransactionBlockedBySlippage] = useState<boolean>(false)
 
@@ -199,7 +195,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   const zapRepayAndWithdraw = async () => {
     if (!repayWeiValue || !repayAssetInfo || !marketData || !withdrawWeiValue) return
 
-    setIsZapLoading(true)
+    setIsTxLoading(true)
 
     try {
       const repayData = await getRoute(
@@ -220,18 +216,21 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
       const isReceiptOut = withdrawSelectedAsset !== collateralInfo?.name
 
-      doZapRepayAndWithdraw(marketData?.marketAddress, walletClient!, withdrawWeiValue, isReceiptOut, repayData!, zapMarketData)
-        .then(() => {
-          resetAfterRepaySuccess()
-          toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
-        })
-        .catch((e) => {
-          console.error(e)
-          toast.error(ToastComponent, { data: { type: "Error", content: "Transaction failed." } })
-          setIsZapLoading(false)
-        })
+      await toastTx(doZapRepayAndWithdraw(marketData?.marketAddress, walletClient!, withdrawWeiValue, isReceiptOut, repayData!, zapMarketData), {
+        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+        success: () => ({
+          type: "Success",
+          content: "Transaction successful",
+        }),
+        error: (err) => {
+          const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+          return { type: "Error", content: error || "Unable to proceed with the transaction." }
+        },
+      })
+
+      resetAfterRepaySuccess()
     } catch (error) {
-      setIsZapLoading(false)
+      setIsTxLoading(false)
       console.error("Error in getRouteAndDeposit:", error)
     }
   }
@@ -239,7 +238,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   const zapRepay = async () => {
     if (!repayWeiValue || !repayAssetInfo || !marketData || !usgRepayedValue) return
 
-    setIsZapLoading(true)
+    setIsTxLoading(true)
 
     try {
       const repayData = await getRoute(
@@ -258,24 +257,29 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
         minAmountOut: computedMinAmountOut(usgRepayedValue, slippage),
       }
 
-      doZapRepay(marketData?.marketAddress, walletClient!, repayData!, zapMarketData)
-        .then(() => {
-          resetAfterRepaySuccess()
-          toast.success(ToastComponent, { data: { type: "Success", content: "Transaction successful." } })
-        })
-        .catch((e) => {
-          console.error(e)
-          toast.error(ToastComponent, { data: { type: "Error", content: "Transaction failed." } })
-          setIsZapLoading(false)
-        })
+      await toastTx(doZapRepay(marketData?.marketAddress, walletClient!, repayData!, zapMarketData), {
+        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+        success: () => ({
+          type: "Success",
+          content: "Transaction successful",
+        }),
+        error: (err) => {
+          const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+          return { type: "Error", content: error || "Unable to proceed with the transaction." }
+        },
+      })
+
+      resetAfterRepaySuccess()
     } catch (error) {
-      setIsZapLoading(false)
+      setIsTxLoading(false)
       console.error("Error in getRouteAndDeposit:", error)
     }
   }
 
   const actionApprove = async () => {
     if (!repayWeiValue || !repayAssetInfo || !marketData) return
+
+    setIsTxLoading(true)
 
     await toastTx(doApprove(walletClient!, repayAssetInfo?.address, marketData?.marketAddress, repayWeiValue), {
       pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
@@ -285,6 +289,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
       }),
     })
 
+    setIsTxLoading(false)
     loadOnChainData()
     fetchBalanceAllowanceData(repayAssetInfo?.address)
   }
@@ -313,65 +318,72 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   }
 
   const marketRepay = async () => {
-    setReplayLoading(true)
+    try {
+      setIsTxLoading(true)
 
-    await toastTx(
-      doRepay(walletClient!, {
-        marketAddress: marketData!.marketAddress,
-        repayWeiValue: repayValue(repayWeiValue),
-      }),
-      {
-        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-        success: () => ({
-          type: "Success",
-          content: "Transaction successful.",
+      await toastTx(
+        doRepay(walletClient!, {
+          marketAddress: marketData!.marketAddress,
+          repayWeiValue: repayValue(repayWeiValue),
         }),
-        error: () => {
-          setReplayLoading(false)
-          return { type: "Error", content: "Transaction failed." }
-        },
-      }
-    )
+        {
+          pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+          success: () => ({
+            type: "Success",
+            content: "Transaction successful.",
+          }),
+          error: (err) => {
+            const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+            return { type: "Error", content: error || "Unable to proceed with the transaction." }
+          },
+        }
+      )
 
-    resetAfterRepaySuccess()
+      resetAfterRepaySuccess()
+    } catch {
+      setIsTxLoading(false)
+    }
   }
 
   const marketRepayAndWithdraw = async () => {
-    setReplayLoading(true)
+    try {
+      setIsTxLoading(true)
 
-    await toastTx(
-      doRepayAndWithdraw(walletClient!, {
-        marketAddress: marketData!.marketAddress,
-        repayWeiValue: repayValue(repayWeiValue),
-        withdrawWeiValue,
-        isReceiptOut: withdrawSelectedAsset !== collateralInfo?.address,
-      }),
-      {
-        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-        success: () => ({
-          type: "Success",
-          content: "Transaction successful.",
+      await toastTx(
+        doRepayAndWithdraw(walletClient!, {
+          marketAddress: marketData!.marketAddress,
+          repayWeiValue: repayValue(repayWeiValue),
+          withdrawWeiValue,
+          isReceiptOut: withdrawSelectedAsset !== collateralInfo?.address,
         }),
-        error: () => {
-          setReplayLoading(false)
-          return { type: "Error", content: "Transaction failed." }
-        },
-      }
-    )
+        {
+          pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+          success: () => ({
+            type: "Success",
+            content: "Transaction successful.",
+          }),
+          error: (err) => {
+            const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+            return { type: "Error", content: error || "Unable to proceed with the transaction." }
+          },
+        }
+      )
 
-    resetAfterRepaySuccess()
+      resetAfterRepaySuccess()
+    } catch {
+      setIsTxLoading(false)
+    }
   }
 
   const resetAfterRepaySuccess = () => {
     loadOnChainData()
     setPercentage(0)
     setWithdrawPercentage(0)
-    setIsZapLoading(false)
+    setIsTxLoading(false)
     setRepayWeiValue(undefined)
     setWithdrawWeiValue(undefined)
     setUsgRepayedValue(undefined)
     loadUSGsUSGMetrics()
-    setReplayLoading(false)
   }
 
   const formState = useMemo(() => {
@@ -383,7 +395,8 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
         repayWeiValue,
         isWellConnected,
         balanceAllowanceData!,
-        repayAsset
+        repayAsset,
+        isZapLoading || isTxLoading
       )
     }
 
@@ -397,6 +410,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     currentAddress,
     balanceAllowanceData,
     repayAsset,
+    isZapLoading || isTxLoading,
   ])
 
   const marketValues = useMemo(() => {
@@ -435,20 +449,17 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
         return maxWithDrawable > 0n ? maxWithDrawable : 0n
       }
 
-      return maxWithDrawable > WITHDRAW_BUFFER ? maxWithDrawable - WITHDRAW_BUFFER : 0n
+      if (maxWithDrawable > WITHDRAW_BUFFER && maxWithDrawable < BigInt(300_000n * 10n ** 18n)) {
+        return maxWithDrawable > WITHDRAW_BUFFER ? maxWithDrawable - WITHDRAW_BUFFER : 0n
+      }
+
+      if (maxWithDrawable > BigInt(300_000n * 10n ** 18n)) {
+        return (maxWithDrawable * 9995n) / 10000n
+      }
     }
 
     return 0n
   }, [marketData, repayWeiValue, usgRepayedValue, currentAddress])
-
-  const minValueReceivedFromZap = useMemo(() => {
-    if (usgRepayedValue) {
-      const minAmountOutWei = computedMinAmountOut(usgRepayedValue, slippage)
-      const result = `(${formatNumber(Number(truncateDecimals(formatUnits(minAmountOutWei, USGInfo?.decimals || 18), USGInfo.displayDecimals)), USGInfo.displayDecimals)})`
-      return result
-    }
-    return ""
-  }, [usgRepayedValue, slippage])
 
   const handleRepayValueChange = (value: bigint | undefined) => {
     setRepayWeiValue(value)
@@ -523,16 +534,20 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     return `(${formatDollar((Number(Number(formatUnits(usgRepayedValue || 0n, 18))) * USGInfo?.price).toFixed(2))})`
   }, [usgRepayedValue, USGInfo])
 
-  const expectedRemainingDebt = useMemo(() => {
-    if (marketData) {
-      if (usgRepayedValue && repayAsset && repayAsset !== "USG") {
-        return `${formatBigIntAsNumber(BigInt(marketData?.debtInfos?.userDebt - usgRepayedValue || 0n), 18, 2)} USG`
-      } else if (repayAsset && repayAsset === "USG" && repayWeiValue) {
-        return `${formatBigIntAsNumber(BigInt(marketData?.debtInfos?.userDebt - repayWeiValue || 0n), 18, 2)} USG`
+  const zapValuesFormatted = useMemo(() => {
+    if (!isZapLoading && usgRepayedValue) {
+      const minAmountOutWei = computedMinAmountOut(usgRepayedValue, slippage)
+      const decimals = collateralInfo?.decimals || 18
+      const displayDecimals = collateralInfo?.displayDecimals || 2
+
+      return {
+        expectedFormatted: `${formatBigInt(usgRepayedValue, decimals, displayDecimals)} `,
+        minOutFormatted: `${formatBigInt(minAmountOutWei, decimals, displayDecimals)}`,
       }
     }
-    return "0 USG"
-  }, [usgRepayedValue, repayWeiValue, repayAsset, marketData])
+
+    return { expectedFormatted: `-`, minOutFormatted: `-` }
+  }, [usgRepayedValue, slippage, isZapLoading, collateralInfo])
 
   const priceImpactLoss = useMemo(() => {
     const { dollarLoss } = computeTransactionPotentialLoss(usgRepayedValue as bigint, USGInfo, priceImpact)
@@ -587,9 +602,6 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     USGDollarRepayedValue,
     withdrawSelectedAsset,
     setWithdrawSelectedAsset,
-    expectedRemainingDebt,
-    repayLoading,
-    minValueReceivedFromZap,
 
     slippageLoss,
 
@@ -602,6 +614,8 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
     isTransactionBlockedByPriceImpact,
     setIsTransactionBlockedByPriceImpact,
+
+    zapValuesFormatted,
   }
 
   return <USGRepayContext.Provider value={contextValue}>{children}</USGRepayContext.Provider>

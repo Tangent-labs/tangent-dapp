@@ -1,23 +1,23 @@
 "use client"
 
 import Image from "next/image"
+import { ListState } from "@/types"
 import { useUSGContext } from "../usg_context"
 import { Switch } from "@/components/ui/switch"
-import { ListState } from "@/types"
 import { useUSGHarvestContext } from "./usg_harvest_context"
 import { harvestListHeaders } from "./usg_harvest_controller"
 import { Button } from "@/components/design_system/inputs/button"
+import { formatDollar, formatPercent } from "@/lib/number_formatter"
 import { Divider } from "@/components/design_system/structure/divider"
 import { HarvestableMarket, HarvesterInfoDisplay } from "../usg_type"
 import { ListAsset } from "@/components/design_system/list/list_asset"
 import { ListHeader } from "@/components/design_system/list/list_header"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { TokenImage } from "@/components/design_system/structure/token_image"
+import { PageHeader } from "@/components/design_system/structure/page_header"
 import { USGHoverCard } from "@/components/design_system/structure/usg_hover_card"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { formatDollar, formatPercent } from "@/lib/number_formatter"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
 
@@ -52,15 +52,13 @@ export default function USGHarvestContent() {
   return (
     <>
       <div className="flex items-stretch justify-between gap-6">
-        <ReliefCard className="hidden w-1/2 bg-panel-title-gradient xl:flex">
-          <div className="flex items-center justify-center">
-            <Image height={150} width={150} src="/medias/logos/claim.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
-          </div>
+        <PageHeader>
+          <Image height={150} width={150} src="/medias/logos/claim.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Harvest</span>
             <p className="text-[15px]">Harvest markets&apos; rewards.</p>
           </div>
-        </ReliefCard>
+        </PageHeader>
 
         <div className="flex h-auto w-full flex-col items-center gap-2 xl:w-1/2">
           <PointsCampaignLiveCard />

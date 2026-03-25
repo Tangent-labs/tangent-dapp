@@ -1,9 +1,9 @@
 "use client"
 
 import { maxUint256 } from "viem"
+import { FormState } from "@/types"
 import { useUSGContext } from "../../usg_context"
 import { USG_CONTRACT } from "../../usg_repository"
-import { AssetDataPriced, FormState } from "@/types"
 import { formatBigInt } from "@/lib/number_formatter"
 import { toastTx } from "@/components/design_system/toast"
 import { useUSGRecordContext } from "../usg_record_context"
@@ -50,8 +50,6 @@ type USGLiquidateContextValues = {
 
   maxLiquidateString: string
 
-  isLiquidationLoading: boolean
-
   priceImpact: number
 
   priceImpactLoss: string
@@ -82,8 +80,6 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
 
   const [isQuoteLoading, setIsQuoteLoading] = useState<boolean>(false)
 
-  const [isLiquidationLoading, setIsLiquidationLoading] = useState<boolean>(false)
-
   const [liquidateWeiValue, setLiquidateWeiValue] = useState<bigint | undefined>()
   const [liquidablePercentage, setLiquidablePercentage] = useState<number>(0)
 
@@ -113,62 +109,64 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   }, [liquidateWeiValue, repayWeiValue])
 
   const actionLiquidate = async () => {
-    setIsTxLoading(true)
+    try {
+      setIsTxLoading(true)
 
-    if (walletClient && liquidateWeiValue && currentAddress && USGReceivedValue && marketData) {
-      let repayValue = repayWeiValue || 0n
+      if (walletClient && liquidateWeiValue && currentAddress && USGReceivedValue && marketData) {
+        let repayValue = repayWeiValue || 0n
 
-      // TODO : Change this into a logical value
-      const maxUSGToBurn = maxUint256
+        // TODO : Change this into a logical value
+        const maxUSGToBurn = maxUint256
 
-      if (repayWeiValue === maxRepayable && repayWeiValue !== 0n) {
-        repayValue = maxUint256
-      }
-
-      const liquidationData = await getRoute(
-        marketInfo?.collatAddress,
-        USG_CONTRACT.USG,
-        liquidateWeiValue,
-        computedMinAmountOut(USGReceivedValue, slippage),
-        currentAddress,
-        USG_CONTRACT.LIQUIDATOR_PROXY,
-        curveRoutes
-      )
-
-      await toastTx(
-        doMarketLiquidate(
-          liquidateWeiValue,
-          repayValue,
-          maxUSGToBurn,
-          computedMinAmountOut(USGReceivedValue, slippage),
-          false,
-          liquidationData!,
-          walletClient,
-          marketInfo?.marketAddress
-        ),
-        {
-          pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-
-          success: () => ({
-            type: "Success",
-            content: "Liquidation successful.",
-          }),
-
-          error: () => {
-            setIsLiquidationLoading(false)
-            return { type: "Error", content: "Something wrong happened." }
-          },
+        if (repayWeiValue === maxRepayable && repayWeiValue !== 0n) {
+          repayValue = maxUint256
         }
-      )
 
+        const liquidationData = await getRoute(
+          marketInfo?.collatAddress,
+          USG_CONTRACT.USG,
+          liquidateWeiValue,
+          computedMinAmountOut(USGReceivedValue, slippage),
+          currentAddress,
+          USG_CONTRACT.LIQUIDATOR_PROXY,
+          curveRoutes
+        )
+
+        await toastTx(
+          doMarketLiquidate(
+            liquidateWeiValue,
+            repayValue,
+            maxUSGToBurn,
+            computedMinAmountOut(USGReceivedValue, slippage),
+            false,
+            liquidationData!,
+            walletClient,
+            marketInfo?.marketAddress
+          ),
+          {
+            pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+
+            success: () => ({
+              type: "Success",
+              content: "Liquidation successful.",
+            }),
+
+            error: () => {
+              return { type: "Error", content: "Something wrong happened." }
+            },
+          }
+        )
+
+        setIsTxLoading(false)
+        loadUSGsUSGMetrics()
+        loadOnChainData()
+        setLiquidateWeiValue(undefined)
+        setLiquidablePercentage(0)
+        setRepayWeiValue(undefined)
+        setUSGReceivedValue(undefined)
+      }
+    } catch {
       setIsTxLoading(false)
-      loadUSGsUSGMetrics()
-      loadOnChainData()
-      setLiquidateWeiValue(undefined)
-      setLiquidablePercentage(0)
-      setRepayWeiValue(undefined)
-      setUSGReceivedValue(undefined)
-      setIsLiquidationLoading(false)
     }
   }
 
@@ -211,39 +209,35 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   }, [marketDisplayData])
 
   const handleLiquidateValueChange = (value: bigint | undefined) => {
-    setIsQuoteLoading(true)
-    const assetInfo: AssetDataPriced = {
-      address: USG_CONTRACT.USG,
-      decimals: 18,
-      displayDecimals: 2,
-      logoKey: "USG",
-      name: "USG",
-      price: 1,
-      symbol: "USG",
-    }
+    try {
+      setIsQuoteLoading(true)
 
-    setLiquidateWeiValue(value)
+      setLiquidateWeiValue(value)
 
-    const fetchZapValue = async () => {
-      if (!value || !currentAddress || !collateralInfo) return
+      const fetchZapValue = async () => {
+        if (!value || !currentAddress || !collateralInfo) return
 
-      try {
-        const { quote, priceImpact: pI } = await getQuote(value, currentAddress, assetInfo?.address, collateralInfo?.address, curveRoutes)
+        try {
+          const { quote, priceImpact: pI } = await getQuote(value, currentAddress, USG_CONTRACT.USG, collateralInfo?.address, curveRoutes)
 
-        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
+          const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
 
-        if (validPriceImpact >= 0 && validQuote) {
-          setUSGReceivedValue(validQuote)
-          setPriceImpact(Number(validPriceImpact) / 100)
+          if (validPriceImpact >= 0 && validQuote) {
+            setUSGReceivedValue(validQuote)
+            setPriceImpact(Number(validPriceImpact))
+          }
+
+          setIsQuoteLoading(false)
+        } catch (error) {
+          console.error(error)
+          setIsQuoteLoading(false)
         }
-      } catch (error) {
-        console.error(error)
-      } finally {
-        setIsQuoteLoading(false)
       }
-    }
 
-    fetchZapValue()
+      fetchZapValue()
+    } catch {
+      setIsQuoteLoading(false)
+    }
   }
 
   const maxLiquidateString = useMemo(() => {
@@ -274,8 +268,8 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   }, [slippage, liquidateWeiValue, USGReceivedValue])
 
   const zapValuesFormatted = useMemo(() => {
-    if (!isQuoteLoading && liquidateWeiValue && marketData?.collateralInfos) {
-      const minAmountOutWei = computedMinAmountOut(marketData?.collateralInfos?.positionCollateralAmount - liquidateWeiValue, slippage)
+    if (!isQuoteLoading && liquidateWeiValue && marketData?.collateralInfos && USGReceivedValue) {
+      const minAmountOutWei = computedMinAmountOut(USGReceivedValue, slippage)
       const decimals = collateralInfo?.decimals || 18
       const displayDecimals = collateralInfo?.displayDecimals || 2
 
@@ -286,7 +280,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     }
 
     return { expectedFormatted: `-`, minOutFormatted: `-` }
-  }, [liquidateWeiValue, isQuoteLoading, slippage])
+  }, [liquidateWeiValue, isQuoteLoading, slippage, USGReceivedValue])
 
   const contextValue: USGLiquidateContextValues = {
     actionLiquidate,
@@ -309,7 +303,6 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     slippage,
     setSlippage,
     maxLiquidateString,
-    isLiquidationLoading,
     priceImpact,
     priceImpactLoss,
     isTransactionBlockedByPriceImpact,

@@ -197,6 +197,7 @@ export default function USGSwapContent() {
               expected: zapValuesFormatted.buyFormatted,
               minOut: zapValuesFormatted.minOutFormatted,
               slippage: slippage,
+              priceImpact: priceImpact,
             }}
             isLoading={isSwapLoading}
           />

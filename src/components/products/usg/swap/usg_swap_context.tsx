@@ -267,7 +267,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const fetchSwapValue = async (value: bigint | undefined, type: "sell" | "buy") => {
     if (!value || !sellAssetInfo || !buyAssetInfo) return
 
-    setIsSwapLoading(true)
+    setIsSwapLoading(type === "sell")
     try {
       const quoteTokenIn = type === "sell" ? buyAssetInfo?.address : sellAssetInfo?.address
       const quoteTokenOut = type === "sell" ? sellAssetInfo?.address : buyAssetInfo?.address

@@ -163,6 +163,7 @@ export default function USGLeverageContent() {
           minOut: swapValuesFormatted.minOutFormatted,
           slippage: slippage,
           leverage: leveragePercentage,
+          priceImpact: priceImpact,
         }}
         // aprVariationParams={aprVariation}
       />

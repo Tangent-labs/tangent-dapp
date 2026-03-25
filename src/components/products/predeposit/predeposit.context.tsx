@@ -245,29 +245,25 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   }, [frxUSDPrice])
 
   const handleDepositChange = (value: bigint | undefined) => {
-    if (value) {
-      setUSDCDepositValue(value)
+    setUSDCDepositValue(value)
 
-      const getUSDCPredepositQuote = async (depositValue: bigint) => {
-        const quote = await fetchQuote(depositValue, USGTokens[1]["USG-USDC"])
-        setUSGUSDCDepositValue(quote)
-      }
-
-      getUSDCPredepositQuote(value)
+    const getUSDCPredepositQuote = async (depositValue: bigint) => {
+      const quote = await fetchQuote(depositValue, USGTokens[1]["USG-USDC"])
+      setUSGUSDCDepositValue(quote)
     }
+
+    getUSDCPredepositQuote(value || 0n)
   }
 
   const handleDepositfrxUSDChange = (value: bigint | undefined) => {
-    if (value) {
-      setfrxUSDDepositValue(value)
+    setfrxUSDDepositValue(value)
 
-      const getfrxUSDPredepositQuote = async (depositValue: bigint) => {
-        const quote = await fetchQuote(depositValue, USGTokens[1]["USG-frxUSD"])
-        setUSGfrxUSDDepositValue(quote)
-      }
-
-      getfrxUSDPredepositQuote(value)
+    const getfrxUSDPredepositQuote = async (depositValue: bigint) => {
+      const quote = await fetchQuote(depositValue, USGTokens[1]["USG-frxUSD"])
+      setUSGfrxUSDDepositValue(quote)
     }
+
+    getfrxUSDPredepositQuote(value || 0n)
   }
 
   useEffect(() => {
@@ -482,18 +478,22 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   }
 
   const projectedUSDCTANAllocation = useMemo(() => {
-    if (USDCDepositValue) {
-      return (USDCDepositValue * 10n ** 12n * TOTAL_TAN_ALLOCATION) / (TOTAL_DEPOSIT_CAP * 10n ** 18n)
+    if (USGUSDCDepositValue) {
+      const minAmountOutWei = computedMinAmountOut(USGUSDCDepositValue, slippage)
+
+      return (minAmountOutWei * TOTAL_TAN_ALLOCATION) / (TOTAL_DEPOSIT_CAP * 10n ** 18n)
     }
     return 0n
-  }, [USDCDepositValue])
+  }, [USGUSDCDepositValue, slippage])
 
   const projectedfrxUSDTANAllocation = useMemo(() => {
-    if (frxUSDDepositValue) {
-      return (frxUSDDepositValue * TOTAL_TAN_ALLOCATION) / (TOTAL_DEPOSIT_CAP * 10n ** 18n)
+    if (USGfrxUSDDepositValue) {
+      const minAmountOutWei = computedMinAmountOut(USGfrxUSDDepositValue, slippage)
+
+      return (minAmountOutWei * TOTAL_TAN_ALLOCATION) / (TOTAL_DEPOSIT_CAP * 10n ** 18n)
     }
     return 0n
-  }, [frxUSDDepositValue])
+  }, [USGfrxUSDDepositValue, slippage])
 
   const minUSGUSDCReceived = useMemo(() => {
     if (USGUSDCDepositValue) {

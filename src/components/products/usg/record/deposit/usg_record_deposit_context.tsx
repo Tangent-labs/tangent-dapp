@@ -153,16 +153,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const [priceImpact, setPriceImpact] = useState<number>(0)
 
-  useEffect(() => {
-    setIsDepositAndBorrow(isDepositAndBorrowInput)
-  }, [])
-
-  useEffect(() => {
-    if (collateralInfo) {
-      setDepositAsset(collateralInfo.name)
-    }
-  }, [collateralInfo?.name])
-
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
     // When market data is not charged
     if (!!marketData && (depositAsset === undefined || depositAsset === collateralInfo.name)) {
@@ -266,6 +256,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       setDepositWeiValue(undefined)
       setZapValue(undefined)
       setBorrowSliderPercent(0)
+      setPriceImpact(0)
     }
   }, [depositAsset])
 
@@ -411,8 +402,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   // ────────────────────────────────────────
 
   const maxBorrowableValue = useMemo(() => {
-    const deposit = depositWeiValue || 0n
-
     if (marketData) {
       const futureDebt = marketData?.debtInfos?.userDebt
       let futureDeposited
@@ -422,8 +411,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
           marketData?.collateralInfos?.positionCollateralUSDValue +
           (computedMinAmountOut(zapValue, slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** collateralInfo?.decimals)
       } else {
-        futureDeposited =
-          marketData?.collateralInfos?.positionCollateralUSDValue + (deposit * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18)
+        futureDeposited = marketData?.collateralInfos?.positionCollateralUSDValue
       }
       const maxBorrowable = (futureDeposited * marketData?.constants.maxLTV) / 100000n - futureDebt
 

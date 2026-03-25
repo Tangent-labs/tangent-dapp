@@ -103,7 +103,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const { loadUSGsUSGMetrics } = useUSGContext()
 
-  const { isWellConnected, walletClient, currentAddress, isWalletContextLoaded } = useWalletConnexionContext()
+  const { isWellConnected, walletClient, currentAddress, isWalletContextLoaded, isConnected } = useWalletConnexionContext()
 
   const {
     marketData,
@@ -218,7 +218,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     if (depositAssetInfo && isWalletContextLoaded) {
       fetchBalanceAllowanceData(depositAssetInfo?.address)
     }
-  }, [depositAssetInfo.address, isWalletContextLoaded])
+  }, [depositAssetInfo.address, isWalletContextLoaded, currentAddress, isConnected])
 
   const handleZapChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setZapValue(parseEther(e?.target?.value))
@@ -453,16 +453,20 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   const maxDepositString = useMemo(() => {
     const asset = depositAssetInfo?.symbol?.replaceAll("-", "/")
 
-    let amountDisplayed = "0"
+    if (isConnected) {
+      let amountDisplayed = "0"
 
-    if (!!balanceAllowanceData && currentAddress && (isZapping || depositAssetInfo?.address == marketData?.constants?.receipt)) {
-      amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
+      if (!!balanceAllowanceData && currentAddress && (isZapping || depositAssetInfo?.address == marketData?.constants?.receipt)) {
+        amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
+      }
+      if (currentAddress && !isZapping) {
+        amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
+      }
+      return `Max ${amountDisplayed} ${asset}`
     }
-    if (currentAddress && !isZapping) {
-      amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
-    }
-    return `Max ${amountDisplayed} ${asset}`
-  }, [currentAddress, depositAssetInfo, balanceAllowanceData, isZapping])
+
+    return `Max 0 ${asset}`
+  }, [currentAddress, depositAssetInfo, balanceAllowanceData, isZapping, isConnected])
 
   // const aprVariation = useMemo(() => {
   //   let result = { current: "", currentUpdated: "-", projected: "", projectedUpdated: "-" }

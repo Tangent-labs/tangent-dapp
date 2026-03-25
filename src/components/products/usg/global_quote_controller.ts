@@ -24,15 +24,16 @@ export const getQuote = async (
   tokenIn: Address,
   curveRoutes: CustomCurveRoutes
 ): Promise<{ quote: bigint; priceImpact: number }> => {
-  const ensoResult = await getEnsoData(amountIn, tokenIn, tokenOut, walletConnected, walletConnected, 0n)
-  const ensoRes = { quote: BigInt(ensoResult?.amountOut || 0n), priceImpact: ensoResult?.priceImpact || 0 }
-  let customRes = { quote: 0n, priceImpact: 0 }
+  let customQuote: Promise<{ quote: bigint; priceImpact: number }>
   if (isPendleRouter(tokenIn, tokenOut)) {
-    customRes = await getCustomPendleQuote(curveRoutes, tokenIn, tokenOut, amountIn, PendleCollaterals.includes(tokenIn) ? "PTToToken" : "tokenToPT")
+    customQuote = getCustomPendleQuote(curveRoutes, tokenIn, tokenOut, amountIn, PendleCollaterals.includes(tokenIn) ? "PTToToken" : "tokenToPT")
   } else {
-    customRes = await getCurveQuote(curveRoutes, tokenIn, tokenOut, amountIn)
+    customQuote = getCurveQuote(curveRoutes, tokenIn, tokenOut, amountIn)
   }
 
+  const [ensoResult, customResult] = await Promise.all([getEnsoData(amountIn, tokenIn, tokenOut, walletConnected, walletConnected, 0n), customQuote])
+  const customRes = { quote: BigInt(customResult?.quote || 0n), priceImpact: customResult.priceImpact || 0 }
+  const ensoRes = { quote: BigInt(ensoResult?.amountOut || 0n), priceImpact: ensoResult?.priceImpact || 0 }
   return customRes.quote >= ensoRes.quote ? customRes : ensoRes
 }
 

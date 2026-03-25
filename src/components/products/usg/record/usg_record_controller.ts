@@ -132,13 +132,13 @@ export function getComputedFutureLoanData(
 
   const futureDeposited = !!amounts?.zapValue
     ? BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) +
-    BigInt(amounts.zapValue!) -
-    BigInt(amounts.withdrawWeiValue!) -
-    BigInt(amounts.liquidateValue!)
+      BigInt(amounts.zapValue!) -
+      BigInt(amounts.withdrawWeiValue!) -
+      BigInt(amounts.liquidateValue!)
     : BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) +
-    BigInt(amounts.depositWeiValue!) -
-    BigInt(amounts.withdrawWeiValue!) -
-    BigInt(amounts.liquidateValue!)
+      BigInt(amounts.depositWeiValue!) -
+      BigInt(amounts.withdrawWeiValue!) -
+      BigInt(amounts.liquidateValue!)
 
   const futureDepositedDollarRaw = (futureDeposited * collateralPriceRaw) / DECIMALS
   const futureDepositedDollar = collateralValueToNumber(futureDeposited) * collateralprice
@@ -186,8 +186,8 @@ export function getMarketDisplayData(usgPrice: number, marketData?: MarketDetail
 
   const loanData = getComputedFutureLoanData(usgPrice, marketData!, collateralInfo, { borrowWeiValue: 0n, depositWeiValue: 0n })
 
-  const rawAvailable = BigInt(marketData?.constants.maxMarketDebt - marketData?.debtInfos?.totalDebt)
-  const flooredAvailable = (rawAvailable / 10n ** 18n) * 10n ** 18n
+  const rawAvailable = marketData.constants.maxMarketDebt - marketData.debtInfos.totalDebt
+  const flooredAvailable = rawAvailable > 0n ? rawAvailable : 0n
 
   return {
     ...loanData,

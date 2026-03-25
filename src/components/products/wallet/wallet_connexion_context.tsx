@@ -58,7 +58,7 @@ export const WalletConnexionProvider = ({ children }: { children: ReactNode }) =
         setCurrentWallet(wallet)
         setCurrentAccount({ address: wallet.address, ens: wallet.ens })
         setWalletStatus("connected")
-        registerUser(wallet.address)
+        // registerUser(wallet.address)
         return
       }
 

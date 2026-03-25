@@ -96,7 +96,7 @@ type USGLeverageContextValues = {
 
   handleBorrowChange: (arg: bigint | undefined) => Promise<void>
 
-  leverageInfo: { sliderLegendValues: string[]; startEndRange: [string, string, string]; maxLeverage: number }
+  leverageRange: { sliderLegendValues: string[]; startEndRange: [string, string, string]; maxLeverageRaw: number; maxLeverageAdjusted: number }
 
   // aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
   slippageLoss: { tokenLoss: string; dollarLoss: string }
@@ -219,6 +219,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   function computeBorrowValue(leveragedCollateralAmount: bigint, leverageFactor: number) {
     const collatToBuy = (leveragedCollateralAmount * parseUnits((leverageFactor - 1).toString(), 2)) / 100n
+
     const expectedCollateralFinalDollarValue = (collatToBuy * (marketData?.collateralInfos.collateralUSDPrice || 0n)) / parseEther("1")
     const usgAmountToBorrow = (expectedCollateralFinalDollarValue * parseEther("1")) / globalData.usgPriceWei
     return usgAmountToBorrow
@@ -231,6 +232,9 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     activeInputRef.current = "deposit"
     const valueWei = BigInt(value || 0n)
     setDepositWeiValue(valueWei)
+
+    // TODO : Need to adjust the leverage pencentage after the maxLeverageAdjusted has been triggered
+    setLeveragePercentage(leveragePercentage > leverageRange.maxLeverageAdjusted ? leverageRange.maxLeverageAdjusted : leveragePercentage)
 
     // NO ZAP CASE
     if (!value || !depositAssetInfo || depositAssetInfo.address === marketInfo?.collatAddress) {
@@ -317,7 +321,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     const totalCollatDollarValue = depositDollarValueWei + (borrowValue || 0n)
     const leverageMultiplicator = Number(formatEther((totalCollatDollarValue * parseEther("1")) / depositDollarValueWei))
 
-    setLeveragePercentage(leverageMultiplicator < leverageInfo.maxLeverage ? leverageMultiplicator : leverageInfo.maxLeverage)
+    setLeveragePercentage(leverageMultiplicator < leverageRange.maxLeverageAdjusted ? leverageMultiplicator : leverageRange.maxLeverageAdjusted)
   }
 
   // Computes the current LTV of the connected position
@@ -771,19 +775,49 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     return 0n
   }, [zapValue, depositWeiValue, isDepositDisabled, isLeverageAllPosition, marketData])
 
-  const leverageInfo = useMemo(() => {
-    const ltv = Number(formatUnits(marketData?.constants?.maxLTV || 0n, 5))
-    const maxLeverageRaw = 1 / (1 - ltv)
-    // 2% marging on maxLeverage to take into account liquidity price impact
-    const safeMaxLeverage = maxLeverageRaw * 0.98
-    const rounded = Math.floor(safeMaxLeverage * 100) / 100
+  // Max leverage recomputed each time the collateral value input is changing
+  // Is needed because the maximum leverage doable depends on available amount on the market
+  const leverageRange = useMemo(() => {
+    if (marketData && globalData.usgPriceWei) {
+      const ltv = Number(formatUnits(marketData?.constants?.maxLTV || 0n, 5))
+      const maxLeverageRaw = 1 / (1 - ltv)
+      // 2% marging on maxLeverage to take into account liquidity price impact
+      const safeMaxLeverage = maxLeverageRaw * 0.98
+      const availableRaw = marketData.constants.maxMarketDebt - marketData.debtInfos.totalDebt
+      const available = availableRaw < 0n ? 0n : availableRaw
+      const amountToDeposit = isZapping && zapValue ? BigInt(zapValue) : BigInt(depositWeiValue || 0n)
+      const amountStaked = marketData?.collateralInfos.positionCollateralAmount || 0n
+      const maxLTV = (marketData?.constants.maxLTV || 0n) * 10n ** 13n
+
+      const leveragedAmount = amountToDeposit + (amountStaked * (maxLTV - currentLTV)) / maxLTV
+      let maxLeverageAdjusted = Math.floor(safeMaxLeverage * 100) / 100
+
+      if (leveragedAmount > 0n) {
+        const borrowValue = computeBorrowValue(leveragedAmount, safeMaxLeverage)
+        if (available >= borrowValue) {
+          maxLeverageAdjusted = safeMaxLeverage
+        }
+        // available = leveragedAmount * (adjustedLeverage - 1)
+        // adjustedLeverage = available / leveragedAmount + 1
+        const adjusted = leveragedAmount > 0n ? Number(formatEther((available * 10n ** 18n) / leveragedAmount)) + 1 : 1
+        maxLeverageAdjusted = Math.min(maxLeverageAdjusted, Math.floor(adjusted * 100) / 100)
+      }
+
+      return {
+        maxLeverageRaw: maxLeverageRaw,
+        maxLeverageAdjusted: maxLeverageAdjusted,
+        sliderLegendValues: Array.from({ length: maxLeverageAdjusted }, (_, i) => String(i + 1)),
+        startEndRange: ["1", String(maxLeverageAdjusted), "0.01"] as [string, string, string],
+      }
+    }
 
     return {
-      sliderLegendValues: Array.from({ length: rounded }, (_, i) => String(i + 1)),
-      startEndRange: ["1", String(rounded), "0.01"] as [string, string, string],
-      maxLeverage: rounded,
+      maxLeverageRaw: 10,
+      maxLeverageAdjusted: 10,
+      sliderLegendValues: Array.from({ length: 10 }, (_, i) => String(i + 1)),
+      startEndRange: ["1", String(10), "0.01"] as [string, string, string],
     }
-  }, [marketData?.constants])
+  }, [isZapping, depositWeiValue, zapValue, marketData?.collateralInfos.positionCollateralAmount, globalData.usgPriceWei])
 
   const priceImpactLoss = useMemo(() => {
     const { dollarLoss } = computeTransactionPotentialLoss(zapValue as bigint, collateralInfo, priceImpact)
@@ -886,7 +920,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     handleLeverageSliderChange,
     handleBorrowChange,
 
-    leverageInfo,
+    leverageRange,
 
     slippageLoss,
 

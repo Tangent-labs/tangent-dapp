@@ -6,6 +6,7 @@ import { useUSGContext } from "../usg_context"
 import { AssetDataPriced, ListState } from "@/types"
 import { ToastComponent } from "@/components/design_system/toast"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { SortedRows } from "@/components/design_system/list/list_context"
 import { HarvestableMarket, HarvesterInfo, HarvesterInfoDisplay, USGStakingInfo } from "../usg_type"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { computeAndReturnPrices, doHarvest, doMultiHarvest, getUSGHarvestOnChainData, transformHarvestOnChainData } from "./usg_harvest_controller"
@@ -18,7 +19,8 @@ type USGHarvestContextValues = {
   isLoading: boolean
   displayRows: HarvesterInfoDisplay[]
   actionHarvest: (arg: Address) => void
-  customSort: (arg: ListState) => void
+  // Harvest overrides how the provider's internal sort state is applied because several columns are computed.
+  getSortedRows: (rows: SortedRows, arg: ListState) => HarvesterInfoDisplay[]
   onClickSelectAll: () => void
   marketsToHarvest: HarvestableMarket[]
   addToHarvestableMarkets: (rowData: HarvestableMarket) => void
@@ -107,12 +109,31 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
     }
   }
 
-  const customSort = (listState: ListState) => {
+  const getSortedRows = (rows: SortedRows, listState: ListState) => {
     const { key, direction } = listState.sort!
+    const harvestRows = rows as HarvesterInfoDisplay[]
 
-    displayRows.sort((elementA: HarvesterInfoDisplay, elementB: HarvesterInfoDisplay) => {
-      const aValue = Number(elementA[key as keyof HarvesterInfoDisplay])
-      const bValue = Number(elementB[key as keyof HarvesterInfoDisplay])
+    return [...harvestRows].sort((elementA: HarvesterInfoDisplay, elementB: HarvesterInfoDisplay) => {
+      let aValue: number | string = elementA[key as keyof HarvesterInfoDisplay] as number | string
+      let bValue: number | string = elementB[key as keyof HarvesterInfoDisplay] as number | string
+
+      if (key === "totalRewards") {
+        aValue = elementA.rewards.totalDollar
+        bValue = elementB.rewards.totalDollar
+      }
+
+      if (key === "harvesterRewards") {
+        aValue = (elementA.rewards.totalDollar * elementA.percentage) / 100
+        bValue = (elementB.rewards.totalDollar * elementB.percentage) / 100
+      }
+
+      if (key === "lastHarvestDate") {
+        const [aDay, aMonth, aYear] = elementA.lastHarvestDate.split("-").map(Number)
+        const [bDay, bMonth, bYear] = elementB.lastHarvestDate.split("-").map(Number)
+
+        aValue = new Date(aYear, aMonth - 1, aDay).getTime()
+        bValue = new Date(bYear, bMonth - 1, bDay).getTime()
+      }
 
       if (aValue < bValue) return direction === "asc" ? -1 : 1
       if (aValue > bValue) return direction === "asc" ? 1 : -1
@@ -123,10 +144,10 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
 
   const addToHarvestableMarkets = (rowData: HarvestableMarket) => {
     setMarketsToHarvest((prevMarkets: HarvestableMarket[]) => {
-      const market = prevMarkets.find((market) => market.marketName === rowData.marketName)
+      const market = prevMarkets.find((market) => market.marketAddress === rowData.marketAddress)
 
       if (market) {
-        return prevMarkets.filter((m) => m.marketName !== market.marketName)
+        return prevMarkets.filter((m) => m.marketAddress !== market.marketAddress)
       } else {
         return [
           ...prevMarkets,
@@ -152,7 +173,7 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
   const contextValue: USGHarvestContextValues = {
     isLoading,
     displayRows,
-    customSort,
+    getSortedRows,
     onClickSelectAll,
     actionHarvest,
     marketsToHarvest,

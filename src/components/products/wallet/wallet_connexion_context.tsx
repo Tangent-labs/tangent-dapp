@@ -41,6 +41,7 @@ export const WalletConnexionProvider = ({ children }: { children: ReactNode }) =
   const [currentAccount, setCurrentAccount] = useState<Account | undefined>(undefined)
   const [userBalances, setUserBalances] = useState<Array<{ balance: bigint; token: string; address: Address }>>([])
   const hasReceivedFirstUpdate = useRef(false)
+  const lastRegisteredAddress = useRef<Address | undefined>(undefined)
   const [adapter] = useState(() => {
     if (typeof window === "undefined") return null
     return createAdapter()
@@ -58,7 +59,10 @@ export const WalletConnexionProvider = ({ children }: { children: ReactNode }) =
         setCurrentWallet(wallet)
         setCurrentAccount({ address: wallet.address, ens: wallet.ens })
         setWalletStatus("connected")
-        // registerUser(wallet.address)
+        if (lastRegisteredAddress.current !== wallet.address) {
+          lastRegisteredAddress.current = wallet.address
+          void registerUser(wallet.address)
+        }
         return
       }
 
@@ -67,6 +71,7 @@ export const WalletConnexionProvider = ({ children }: { children: ReactNode }) =
         setCurrentWallet(null)
         setCurrentAccount(undefined)
         setWalletStatus("disconnected")
+        lastRegisteredAddress.current = undefined
         return
       }
 

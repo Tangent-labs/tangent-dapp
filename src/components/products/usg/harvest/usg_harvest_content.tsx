@@ -24,8 +24,8 @@ import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/b
 const listeState: ListState = {
   search: undefined,
   sort: {
-    key: "market",
-    direction: "asc",
+    key: "totalRewards",
+    direction: "desc",
   },
 }
 
@@ -47,7 +47,7 @@ export default function USGHarvestContent() {
 
   const { isConnected, connect } = useWalletConnexionContext()
 
-  const { displayRows, USGsUSGMetrics, marketsToHarvest, isLoading, customSort, onClickSelectAll, onClickHarvest } = useUSGHarvestContext()
+  const { displayRows, USGsUSGMetrics, marketsToHarvest, isLoading, getSortedRows, onClickSelectAll, onClickHarvest } = useUSGHarvestContext()
 
   return (
     <>
@@ -69,7 +69,7 @@ export default function USGHarvestContent() {
 
       <div className="mt-3 flex w-full flex-col items-start justify-start gap-3 md:flex-row">
         <div className="flex w-full flex-col md:w-9/12">
-          <ListProvider customSort={customSort} _headers={harvestListHeaders} _rows={displayRows} _listState={listeState}>
+          <ListProvider getSortedRows={getSortedRows} _headers={harvestListHeaders} _rows={displayRows} _listState={listeState}>
             <HarvestList></HarvestList>
           </ListProvider>
 
@@ -99,7 +99,7 @@ export default function USGHarvestContent() {
 
             <div className="flex w-full flex-col">
               {marketsToHarvest.map((el: HarvestableMarket) => (
-                <div key={el.marketName} className="my-1 flex w-full items-center justify-between">
+                <div key={el.marketAddress} className="my-1 flex w-full items-center justify-between">
                   <div className={`relative flex items-center gap-4`}>
                     {el.marketName?.substring(0, el.marketName.indexOf(" ")) === "USDe" ||
                     el.marketName?.substring(0, el.marketName.indexOf(" ")) === "sUSDe" ? (
@@ -178,7 +178,7 @@ function HarvestList() {
 
               <div className="flex w-full flex-1 cursor-pointer flex-col items-center justify-center">
                 <Switch
-                  checked={!!marketsToHarvest.find((market) => market.marketName === item.asset)}
+                  checked={!!marketsToHarvest.find((market) => market.marketAddress === item.contractAddress)}
                   onCheckedChange={() =>
                     addToHarvestableMarkets({
                       marketName: item.asset,

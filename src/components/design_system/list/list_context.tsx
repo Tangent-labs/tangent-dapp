@@ -4,13 +4,18 @@ import { ListHeaderData, ListRowData, ListSort, ListState } from "@/types"
 import React, { createContext, useContext, useState, ReactNode, useMemo } from "react"
 import { Boost, ClaimData, AprOpportunityItem, HarvesterInfoDisplay, UserPosition, VoteTask, LpTask } from "@/components/products/usg/usg_type"
 
+export type SortedRows = ListRowData[] | ClaimData[] | LpTask[] | VoteTask[] | UserPosition[] | AprOpportunityItem[] | Boost[] | HarvesterInfoDisplay[]
+
 //  Defined what is injected into the Provider ( mosty via server execution)
 interface ListProviderProps {
   _listState: ListState
   _rows: ListRowData[] | ClaimData[] | LpTask[] | VoteTask[] | UserPosition[] | AprOpportunityItem[] | Boost[] | HarvesterInfoDisplay[]
   _headers: ListHeaderData[]
   children: ReactNode
+  // Legacy hook kept for list implementations that apply sorting through external state mutations.
   customSort?: (arg: ListState) => void
+  // Pure hook for list implementations that want to customize how the internal list state sorts displayed rows.
+  getSortedRows?: (rows: SortedRows, arg: ListState) => SortedRows
 }
 
 // Define what is returned by the provider
@@ -26,7 +31,7 @@ interface ListContextValues {
 const ListContext = createContext<ListContextValues | undefined>(undefined)
 
 // Create a provider component
-export const ListProvider = ({ children, _listState, _rows, _headers, customSort }: ListProviderProps) => {
+export const ListProvider = ({ children, _listState, _rows, _headers, customSort, getSortedRows }: ListProviderProps) => {
   const [listState, setListState] = useState<ListState>(_listState)
   const [headers] = useState<ListHeaderData[]>(_headers)
 
@@ -38,9 +43,12 @@ export const ListProvider = ({ children, _listState, _rows, _headers, customSort
       // activeRows = activeRows.filter((r) => r.name.toLowerCase().includes(listState.search!.toLowerCase()))
     }
     if (listState?.sort?.key) {
+      if (getSortedRows) {
+        return getSortedRows(activeRows, listState)
+      }
     }
     return activeRows
-  }, [listState, _rows])
+  }, [listState, _rows, getSortedRows])
 
   const udpateSort = (field: string) => {
     const newSort = { ...listState.sort } as ListSort
@@ -54,6 +62,7 @@ export const ListProvider = ({ children, _listState, _rows, _headers, customSort
 
     setListState({ ...listState, sort: newSort })
     if (customSort) {
+      // Preserve the previous contract where sorting is handled outside the provider.
       customSort({ ...listState, sort: newSort })
     }
   }

@@ -79,16 +79,27 @@ export const SliderInput = ({ className, handleSliderChange, legendValues, value
             filter: isBarHovered ? "brightness(1.15)" : "brightness(1)",
           }}
         >
-          {/* Background de base */}
           <div className="absolute inset-0 rounded-[10px] bg-[--tgt-button-active]" />
-
-          {/* Ellipse animée qui se déplace */}
           <div
             className="neon-slide absolute inset-0"
             style={{
               background: `radial-gradient(ellipse 40% 100% at 50% 50%, #0077ff 0%, rgba(0, 119, 255, 0.5) 40%, #2e8fffb8 0%`,
             }}
           />
+        </div>
+        {/* Legend dots — inside the slider container */}
+        <div className="absolute inset-y-0 left-1 right-1.5">
+          {legendValues?.map((el) => {
+            const pos = ((Number(el) - start) * 100) / (end - start)
+            return (
+              <div
+                key={`dot-${el}`}
+                className="no-parent-hover absolute top-1/2 z-[5] h-1 w-1 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-white"
+                style={{ left: `${pos}%` }}
+                onClick={() => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>)}
+              />
+            )
+          })}
         </div>
 
         {/* Invisible input slider */}
@@ -101,31 +112,25 @@ export const SliderInput = ({ className, handleSliderChange, legendValues, value
           value={value}
           onChange={handleSliderChange}
           className={`slider-input absolute inset-x-0 top-1/2 z-10 h-4 w-full -translate-y-1/2 cursor-pointer appearance-none rounded-[10px] bg-transparent ${isBarHovered ? "hovered" : ""} ${className}`}
-          style={{
-            background: "transparent",
-          }}
+          style={{ background: "transparent" }}
         />
       </div>
-      {/* LEGEND */}
-      {legendValues && (
-        <div className="pointer-events-none flex w-full select-none items-center justify-between text-[10px] text-subtitle">
-          {legendValues.map((el) => (
-            <div key={el} className="relative flex w-fit items-center justify-center">
-              <span className="transition-colors duration-200" style={{ color: isBarHovered ? "#ffffff" : undefined }}>
-                {`${el} ${unit}`}
-              </span>
-              <div
-                onClick={
-                  !!handleSliderChange ? () => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>) : () => {}
-                }
-                onMouseEnter={() => setIsBarHovered(true)}
-                onMouseLeave={() => setIsBarHovered(false)}
-                className="no-parent-hover absolute -top-1.5 z-20 mt-[1px] h-1 w-1 cursor-pointer rounded-full bg-white"
-              ></div>
-            </div>
-          ))}
+
+      {/* LEGEND — labels only */}
+      <div className="pointer-events-none relative h-4 w-full select-none text-[10px] text-subtitle">
+        <div className="absolute inset-y-0 left-1 right-2">
+          {legendValues.map((el) => {
+            const pos = ((Number(el) - start) * 100) / (end - start)
+            return (
+              <div key={`label-${el}`} className="absolute" style={{ left: `${pos}%`, transform: "translateX(-50%)" }}>
+                <span className="whitespace-nowrap transition-colors duration-200" style={{ color: isBarHovered ? "#ffffff" : undefined }}>
+                  {`${el} ${unit}`}
+                </span>
+              </div>
+            )
+          })}
         </div>
-      )}
+      </div>
     </>
   )
 }

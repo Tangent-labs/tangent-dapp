@@ -46,7 +46,6 @@ export default function USGLeverageContent() {
     depositSliderPercent,
     leveragePercentage,
     maxDepositString,
-    computedMaxLeverage,
     // aprVariation,
     isZapping,
     leverageInfo,
@@ -119,7 +118,7 @@ export default function USGLeverageContent() {
         <div className="flex w-full items-end justify-between gap-1">
           <span className="flex items-start justify-start text-sm font-semibold md:text-xl">Borrow USG</span>
 
-          <div className="flex items-end justify-end text-xs text-subtitle">{computedMaxLeverage}</div>
+          <div className="flex items-end justify-end text-xs text-subtitle">{`Max leverage: x${leverageInfo.maxLeverage}`}</div>
         </div>
 
         <GenericInputAssetAmount

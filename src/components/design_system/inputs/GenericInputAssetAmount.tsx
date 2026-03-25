@@ -150,10 +150,7 @@ export function GenericInputAssetAmount({
   // Updates local display and calls parent callback with debounce
   // ---------------------------
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let val = e.target.value.replace(",", ".").trim()
-
-    // Remove leading zeros (but keep "0." for decimals)
-    val = val.replace(/^0+(\d)/, "$1")
+    const val = e.target.value.replace(",", ".").trim()
 
     // Allow empty string or valid numeric input
     if (val === "" || /^\d*\.?\d*$/.test(val)) {
@@ -175,6 +172,13 @@ export function GenericInputAssetAmount({
           }
         }
       }, 400)
+    }
+  }
+
+  const handleBlur = () => {
+    if (localDisplay && localDisplay !== ".") {
+      const cleaned = localDisplay.replace(/^0+(\d)/, "$1")
+      setLocalDisplay(cleaned)
     }
   }
 
@@ -285,6 +289,7 @@ export function GenericInputAssetAmount({
               value={isLoading ? "-" : localDisplay}
               placeholder="0.00"
               onChange={handleInputChange}
+              onBlur={handleBlur}
               className={cn(
                 "auto-grow",
                 "block w-full",

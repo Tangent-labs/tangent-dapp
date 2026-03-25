@@ -143,7 +143,6 @@ export interface CollateralInfos {
 
 export interface DebtInfos {
   totalDebt: bigint
-  positionDebt: bigint
   userDebt: bigint
   healthRatio: bigint
   usgBalance: bigint

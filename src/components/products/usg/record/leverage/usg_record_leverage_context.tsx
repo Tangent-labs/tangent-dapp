@@ -3,7 +3,7 @@
 import { toast } from "react-toastify"
 import { useUSGContext } from "../../usg_context"
 import { USG_CONTRACT } from "../../usg_repository"
-import { formatEther, formatUnits, parseEther } from "viem"
+import { formatEther, formatUnits, maxUint256, parseEther, parseUnits } from "viem"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
@@ -86,8 +86,6 @@ type USGLeverageContextValues = {
   swapValuesFormatted: BuyAndMinOutFormatted
 
   maxDepositString: string
-
-  computedMaxLeverage: string
 
   computedDepositAmount: bigint
 
@@ -218,11 +216,11 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     return asset
   }, [depositAsset, swapAssetPrice, marketData])
 
-  function computeBorrowValue(depositedCollateralWei: bigint, leverageMultiplicator: number) {
-    const collatToBuy = (depositedCollateralWei * BigInt(Math.trunc(leverageMultiplicator * 100) - 100)) / 100n
-    const collatPrice = marketData?.collateralInfos.collateralUSDPrice || 0n
-    const expectedCollateralFinalDollarValue = (collatToBuy * collatPrice) / parseEther("1")
-    return (expectedCollateralFinalDollarValue * parseEther("1")) / globalData.usgPriceWei
+  function computeBorrowValue(leveragedCollateralAmount: bigint, leverageFactor: number) {
+    const collatToBuy = (leveragedCollateralAmount * parseUnits((leverageFactor - 1).toString(), 2)) / 100n
+    const expectedCollateralFinalDollarValue = (collatToBuy * (marketData?.collateralInfos.collateralUSDPrice || 0n)) / parseEther("1")
+    const usgAmountToBorrow = (expectedCollateralFinalDollarValue * parseEther("1")) / globalData.usgPriceWei
+    return usgAmountToBorrow
   }
 
   const activeInputRef = useRef<"deposit" | "zap" | null>(null)
@@ -321,16 +319,29 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     setLeveragePercentage(leverageMultiplicator < leverageInfo.maxLeverage ? leverageMultiplicator : leverageInfo.maxLeverage)
   }
 
+  // Computes the current LTV of the connected position
+  const currentLTV = useMemo(() => {
+    if (marketData) {
+      if (marketData.collateralInfos.positionCollateralUSDValue !== 0n) {
+        return (marketData.debtInfos.userDebt * 10n ** 18n) / marketData.collateralInfos.positionCollateralUSDValue
+      } else {
+        return maxUint256
+      }
+    }
+    return 0n
+  }, [marketData])
+
   function handleLeverageSliderChange(leverageValue: number) {
     setLeveragePercentage(leverageValue)
 
     if (leverageDebounceRef.current) clearTimeout(leverageDebounceRef.current)
 
     leverageDebounceRef.current = setTimeout(async () => {
-      const depositedAmount = isZapping && zapValue ? BigInt(zapValue) : BigInt(depositWeiValue || 0n)
-      const alreadyDepositedAmount = marketData?.collateralInfos.positionCollateralAmount
-      const totalDepositedAmount = depositedAmount + alreadyDepositedAmount!
-      const borrowWeiValue = computeBorrowValue(totalDepositedAmount, leverageValue)
+      const amountToDeposit = isZapping && zapValue ? BigInt(zapValue) : BigInt(depositWeiValue || 0n)
+      const amountStaked = marketData?.collateralInfos.positionCollateralAmount || 0n
+      const maxLTV = (marketData?.constants.maxLTV || 0n) * 10n ** 13n
+      const leveragedAmount = amountToDeposit + (amountStaked * (maxLTV - currentLTV)) / maxLTV
+      const borrowWeiValue = computeBorrowValue(leveragedAmount, leverageValue)
       setBorrowWeiValue(borrowWeiValue)
 
       await quoteDumpUSG(borrowWeiValue)
@@ -741,14 +752,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     return `Max ${amountDisplayed} ${asset}`
   }, [currentAddress, depositAssetInfo, balanceAllowanceData, isZapping])
 
-  const computedMaxLeverage = useMemo(() => {
-    if (!marketData) return ""
-    const leverage = 1 / (1 - Number(marketData.constants.maxLTV) / 100000)
-    const rounded = Math.floor(leverage * 100) / 100
-
-    return `Max leverage: x${rounded}`
-  }, [marketData])
-
   const computedDepositAmount = useMemo(() => {
     if (!marketData?.collateralInfos) return 0n
 
@@ -768,13 +771,15 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }, [zapValue, depositWeiValue, isDepositDisabled, isLeverageAllPosition, marketData])
 
   const leverageInfo = useMemo(() => {
-    const ltv = Number(marketData?.constants?.maxLTV) / 100000
+    const ltv = Number(formatUnits(marketData?.constants?.maxLTV || 0n, 5))
     const maxLeverageRaw = 1 / (1 - ltv)
-    const rounded = Math.floor(maxLeverageRaw * 100) / 100
+    // 2% marging on maxLeverage to take into account liquidity price impact
+    const safeMaxLeverage = maxLeverageRaw * 0.98
+    const rounded = Math.floor(safeMaxLeverage * 100) / 100
 
     return {
       sliderLegendValues: Array.from({ length: rounded }, (_, i) => String(i + 1)),
-      startEndRange: ["1", String(rounded), "0.1"] as [string, string, string],
+      startEndRange: ["1", String(rounded), "0.01"] as [string, string, string],
       maxLeverage: rounded,
     }
   }, [marketData?.constants])
@@ -868,8 +873,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     expectedCollateral,
 
     maxDepositString,
-
-    computedMaxLeverage,
 
     // aprVariation,
 

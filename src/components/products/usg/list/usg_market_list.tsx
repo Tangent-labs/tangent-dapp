@@ -28,6 +28,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
+import { PageHeader } from "@/components/design_system/structure/page_header"
 
 interface ListRowDispositionProps {
   children: React.ReactNode[]
@@ -86,25 +87,22 @@ export default function USGMarketList() {
   return (
     <>
       <div className="mb-4 hidden items-stretch justify-between gap-6 xl:flex">
-        <ReliefCard className="w-1/2">
-          <div className="flex overflow-hidden rounded-lg bg-panel-title-gradient">
-            <div className="flex items-center justify-center">
-              <Image height={150} width={150} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
-            </div>
-            <div className="flex flex-col items-start justify-center px-6">
-              <h2 className="text-4xl font-semibold">Markets</h2>
-              <p className="mt-2 text-[15px]">Borrow USG against accepted collateral. Tangent features two kinds of markets.</p>
-              <Link
-                className="flex cursor-pointer items-center justify-center underline hover:text-white/30"
-                href="https://docs.tangent.finance/docs/usg/overview_usg#markets%E2%80%8B"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Learn more about HEC and LEC markets <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white"></IconOpenOutside>
-              </Link>
-            </div>
+        <PageHeader>
+          <Image height={150} width={150} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+
+          <div className="flex flex-col items-start justify-center px-6">
+            <h2 className="text-4xl font-semibold">Markets</h2>
+            <p className="mt-2 text-[15px]">Borrow USG against accepted collateral. Tangent features two kinds of markets.</p>
+            <Link
+              className="flex cursor-pointer items-center justify-center underline hover:text-white/30"
+              href="https://docs.tangent.finance/docs/usg/overview_usg#markets%E2%80%8B"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Learn more about HEC and LEC markets <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white"></IconOpenOutside>
+            </Link>
           </div>
-        </ReliefCard>
+        </PageHeader>
 
         <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>

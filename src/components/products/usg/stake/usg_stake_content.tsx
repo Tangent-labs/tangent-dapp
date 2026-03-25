@@ -3,23 +3,24 @@
 import Link from "next/link"
 import Image from "next/image"
 import { formatUnits } from "viem"
-import { IconChevron, IconOpenOutside } from "@/components/icons"
 import { useUSGStakeContext } from "./usg_stake_context"
 import { IconStars } from "@/components/icons/icon_stars"
 import { computeProjection } from "./usg_stake_controller"
+import { IconChevron, IconOpenOutside } from "@/components/icons"
 import { Divider } from "@/components/design_system/structure/divider"
+import FormButtons from "@/components/design_system/form/form_actions"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { PageHeader } from "@/components/design_system/structure/page_header"
 import { PerformanceHistoryPanel } from "./components/PerformanceHistoryPanel"
-import { formatBigInt, formatDollar, formatMillions, formatNumber } from "@/lib/number_formatter"
 import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
 import { LargeButtonTab } from "@/components/design_system/inputs/large_button_tab"
 import { StaticCardAssetInput } from "../../predeposit/components/StaticCardAssetInput"
+import { formatBigInt, formatDollar, formatMillions, formatNumber } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
-import FormButtons from "@/components/design_system/form/form_actions"
 
 export default function USGStakeContent() {
   const {
@@ -64,10 +65,9 @@ export default function USGStakeContent() {
   return (
     <>
       <div className="flex items-stretch justify-between gap-6">
-        <ReliefCard className="hidden w-1/2 bg-panel-title-gradient xl:flex">
-          <div className="flex items-center justify-center">
-            <Image height={150} width={150} src="/medias/tokens/SUSG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
-          </div>
+        <PageHeader>
+          <Image height={150} width={150} src="/medias/tokens/SUSG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+
           <div className="flex flex-col items-start justify-center px-6">
             <span className="text-4xl font-semibold">Savings account</span>
             <p className="mt-2 text-[15px]">Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi.</p>
@@ -80,7 +80,7 @@ export default function USGStakeContent() {
               Learn more about sUSG <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white"></IconOpenOutside>
             </Link>
           </div>
-        </ReliefCard>
+        </PageHeader>
 
         <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>

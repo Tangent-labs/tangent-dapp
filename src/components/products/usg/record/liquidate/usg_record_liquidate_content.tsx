@@ -36,7 +36,6 @@ export default function USGLiquidatePanel() {
     repayablePercentage,
     maxRepayable,
     maxLiquidateString,
-    isLiquidationLoading,
     priceImpact,
     priceImpactLoss,
     zapValuesFormatted,
@@ -115,13 +114,13 @@ export default function USGLiquidatePanel() {
       </div>
 
       <RecapAccordion
-        isLoading={isLiquidationLoading}
+        isLoading={isQuoteLoading}
         isDisplayed={true}
         zappingParams={{
-          label: "collateral",
+          label: "remaining collateral",
           expected: `${zapValuesFormatted.expectedFormatted} ${collateralInfo.symbol}`,
-          minOut: `${zapValuesFormatted.minOutFormatted} ${collateralInfo.symbol}`,
           slippage: slippage,
+          liquidateMinOut: `${zapValuesFormatted?.minOutFormatted} USG`,
         }}
       />
 
@@ -131,7 +130,7 @@ export default function USGLiquidatePanel() {
           tokenLoss={slippageLoss?.tokenLoss}
           dollarLoss={slippageLoss?.dollarLoss}
           slippage={slippage}
-          isLoading={isLiquidationLoading || isQuoteLoading}
+          isLoading={isQuoteLoading}
           displayConfirmationButton={isTransactionBlockedBySlippage}
           onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
         />
@@ -141,14 +140,14 @@ export default function USGLiquidatePanel() {
         <PriceImpactAlert
           dollarLoss={priceImpactLoss}
           priceImpact={priceImpact}
-          isLoading={isLiquidationLoading || isQuoteLoading}
+          isLoading={isQuoteLoading}
           displayConfirmationButton={isTransactionBlockedByPriceImpact}
           onClickContinue={() => setIsTransactionBlockedByPriceImpact(false)}
         />
       )}
 
       <FormButtons
-        isLoading={isLiquidationLoading || isTxLoading}
+        isLoading={isTxLoading || isQuoteLoading}
         connect={connect}
         actions={{ handleApprove: undefined, handleProcess: actionLiquidate }}
         formState={formState}

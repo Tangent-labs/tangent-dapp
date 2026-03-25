@@ -25,6 +25,8 @@ import { Erc20Details, ERC20S } from "@/data/erc20s"
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
 
+const BORROW_BUFFER = BigInt(10 ** 16)
+
 export const getBalancesAndAllowances = async (walletClient: WalletClient, address: Address | undefined, spender: Address | undefined) => {
   address = address || zeroAddress
   const [account] = await walletClient.requestAddresses()
@@ -130,13 +132,13 @@ export function getComputedFutureLoanData(
 
   const futureDeposited = !!amounts?.zapValue
     ? BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) +
-      BigInt(amounts.zapValue!) -
-      BigInt(amounts.withdrawWeiValue!) -
-      BigInt(amounts.liquidateValue!)
+    BigInt(amounts.zapValue!) -
+    BigInt(amounts.withdrawWeiValue!) -
+    BigInt(amounts.liquidateValue!)
     : BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n) +
-      BigInt(amounts.depositWeiValue!) -
-      BigInt(amounts.withdrawWeiValue!) -
-      BigInt(amounts.liquidateValue!)
+    BigInt(amounts.depositWeiValue!) -
+    BigInt(amounts.withdrawWeiValue!) -
+    BigInt(amounts.liquidateValue!)
 
   const futureDepositedDollarRaw = (futureDeposited * collateralPriceRaw) / DECIMALS
   const futureDepositedDollar = collateralValueToNumber(futureDeposited) * collateralprice
@@ -183,15 +185,17 @@ export function getMarketDisplayData(usgPrice: number, marketData?: MarketDetail
     } as USGMarketDisplayData
 
   const loanData = getComputedFutureLoanData(usgPrice, marketData!, collateralInfo, { borrowWeiValue: 0n, depositWeiValue: 0n })
-  let available = BigInt(marketData?.constants.maxMarketDebt - marketData?.debtInfos?.totalDebt)
-  available = available >= 0n ? available : 0n
+
+  const rawAvailable = BigInt(marketData?.constants.maxMarketDebt - marketData?.debtInfos?.totalDebt)
+  const flooredAvailable = (rawAvailable / 10n ** 18n) * 10n ** 18n
+
   return {
     ...loanData,
     tvl: formatNumber(Number(formatEther(BigInt(marketData?.collateralInfos?.totalCollateralAmount || 0n))), 0),
     tvlDollar: formatEther(BigInt(marketData?.collateralInfos?.totalCollateralUSDValue || 0n)),
     borrowed: formatNumber(Number(formatEther(BigInt(marketData?.debtInfos?.totalDebt || 0n))), 0) + " USG",
     cap: formatNumber(Number(formatEther(BigInt(marketData?.constants.maxMarketDebt || 0n))), 0) + " USG",
-    available: formatNumber(Number(formatEther(available)), 0) + " USG",
+    available: formatNumber(Number(formatEther(flooredAvailable)), 0) + " USG",
     deposited: formatNumber(Number(formatEther(BigInt(marketData?.collateralInfos.positionCollateralAmount || 0n))), 0),
     depositedDollar: formatDollar(Number(formatEther(BigInt(marketData?.collateralInfos.positionCollateralUSDValue || 0n))), 0),
     borrowRateCurrent: Number(formatEther(marketData?.debtInfos.currentBorrowRate || 0n)),
@@ -224,9 +228,17 @@ export const computeSwapAssetPrice = async (depositAsset: string) => {
 
 export const computeMaxBorrowable = (maxBorrowable: bigint, maxMarketDebt: bigint, totalDebt: bigint) => {
   if (maxBorrowable < maxMarketDebt - totalDebt) {
-    return maxBorrowable > 0n ? maxBorrowable : 0n
+    if (maxBorrowable > BORROW_BUFFER && maxBorrowable < BigInt(300_000n * 10n ** 18n)) {
+      return maxBorrowable > BORROW_BUFFER ? maxBorrowable - BORROW_BUFFER : 0n
+    }
+
+    if (maxBorrowable > BigInt(300_000n * 10n ** 18n)) {
+      return (maxBorrowable * 9995n) / 10000n
+    }
+
+    return 0n
   }
-  return maxMarketDebt - totalDebt
+  return ((maxMarketDebt - totalDebt) / 10n ** 18n) * 10n ** 18n
 }
 
 export const computeIR = (USGPrice: bigint, irParams: IrParams) => {

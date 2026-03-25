@@ -13,6 +13,7 @@ import { Divider } from "@/components/design_system/structure/divider"
 import { AirdropSharedHeader } from "../components/airdrop_side_header"
 import { IconShare, IconTrophy, IconCompleted } from "@/components/icons"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { PageHeader } from "@/components/design_system/structure/page_header"
 import { SecondaryButton } from "@/components/design_system/inputs/secondary_button"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
@@ -30,15 +31,14 @@ export const UsgReferralCode = () => {
   return (
     <div className="flex w-full flex-col items-center justify-center">
       <div className="flex w-full items-stretch justify-between gap-6">
-        <ReliefCard className="hidden w-1/2 bg-panel-title-gradient xl:flex">
-          <div className="flex items-center justify-center">
-            <Image height={140} width={140} src="/medias/logos/referral.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
-          </div>
+        <PageHeader>
+          <Image height={140} width={140} src="/medias/logos/referral.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+
           <div className="flex flex-col items-start justify-center gap-3 px-6">
             <span className="text-4xl font-semibold">Referral & leaderboard</span>
             <p className="text-[15px]">Refer your friends and earn 10% of their points.</p>
           </div>
-        </ReliefCard>
+        </PageHeader>
 
         <AirdropSharedHeader
           isConnected={isConnected}

@@ -99,7 +99,13 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
         return maxWithDrawable > 0n ? maxWithDrawable : 0n
       }
 
-      return maxWithDrawable > WITHDRAW_BUFFER ? maxWithDrawable - WITHDRAW_BUFFER : 0n
+      if (maxWithDrawable > WITHDRAW_BUFFER && maxWithDrawable <= BigInt(300_000n * 10n ** 18n)) {
+        return maxWithDrawable > WITHDRAW_BUFFER ? maxWithDrawable - WITHDRAW_BUFFER : 0n
+      }
+
+      if (maxWithDrawable > BigInt(300_000n * 10n ** 18n)) {
+        return (maxWithDrawable * 9995n) / 10000n
+      }
     }
 
     return 0n
@@ -107,10 +113,10 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
 
   const formState = useMemo(() => {
     if (marketData) {
-      return getWithdrawFormState(marketData, withdrawWeiValue!, maxWithdrawable, isWellConnected)
+      return getWithdrawFormState(marketData, withdrawWeiValue!, maxWithdrawable, isWellConnected, withdrawLoading)
     }
     return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
-  }, [marketData, withdrawWeiValue, isWellConnected, currentAddress, maxWithdrawable])
+  }, [marketData, withdrawWeiValue, isWellConnected, currentAddress, maxWithdrawable, withdrawLoading])
 
   useEffect(() => {
     setWithdrawWeiValue(undefined)

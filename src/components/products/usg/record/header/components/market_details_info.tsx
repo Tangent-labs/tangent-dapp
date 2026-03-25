@@ -13,7 +13,7 @@ type MarketDetailsInfosProps = {
 
 export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
   const [tokenA, tokenB] = useMemo(() => {
-    return marketData.collateralInfo.name.split("-") as [string, string]
+    return marketData.collateralInfo.name.split("/") as [string, string]
   }, [marketData?.collateralInfo?.name])
 
   const [selectedToken, setSelectedToken] = useState<string | string>(tokenA)

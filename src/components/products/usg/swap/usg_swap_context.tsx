@@ -357,76 +357,77 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   }
 
   const actionSwap = async () => {
-    setIsTxLoading(true)
+    try {
+      setIsTxLoading(true)
 
-    if (!sellAssetInfo || !buyAssetInfo || !sellWeiValue) return
+      if (!sellAssetInfo || !buyAssetInfo || !sellWeiValue) return
 
-    const swapFn = swapData?.swap
+      const swapFn = swapData?.swap
 
-    if (swapFn && walletClient) {
-      const contract = getABI(sellAssetInfo?.symbol, buyAssetInfo?.symbol)
-      const quoteType = swapData?.quote
-      const contractSymbol = swapData?.contract
-      const swapContractToken = [sellAssetInfo, buyAssetInfo].find((el) => el.symbol === contractSymbol)?.address as Address
+      if (swapFn && walletClient) {
+        const contract = getABI(sellAssetInfo?.symbol, buyAssetInfo?.symbol)
+        const quoteType = swapData?.quote
+        const contractSymbol = swapData?.contract
+        const swapContractToken = [sellAssetInfo, buyAssetInfo].find((el) => el.symbol === contractSymbol)?.address as Address
 
-      await toastTx(doCustomSwap(walletClient, contract?.abi as Abi, swapFn, sellWeiValue || 0n, swapContractToken, quoteType === "enso"), {
-        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-        success: () => ({
-          type: "Success",
-          content: "Transaction successful.",
-        }),
-        error: () => {
-          setIsTxLoading(false)
-          return { type: "Error", content: "Transaction failed." }
-        },
-      })
-
-      setSellWeiValue(undefined)
-      setBuyWeiValue(undefined)
-      fetchBalanceAllowanceData(walletClient)
-      setIsTxLoading(false)
-    } else {
-      if (!sellWeiValue || !currentAddress || !buyWeiValue) return
-
-      try {
-        const routeData = await getRoute(
-          sellAssetInfo?.address,
-          buyAssetInfo?.address,
-          sellWeiValue,
-          computedMinAmountOut(buyWeiValue, slippage),
-          currentAddress,
-          currentAddress,
-          curveRoutes
-        )
-
-        const tx = {
-          data: routeData?.data as `0x${string}`,
-          to: routeData?.routerAddress,
-          value: 0n,
-        } as SendTransactionParameters
-
-        await toastTx(doSwap(walletClient!, tx), {
+        await toastTx(doCustomSwap(walletClient, contract?.abi as Abi, swapFn, sellWeiValue || 0n, swapContractToken, quoteType === "enso"), {
           pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-
           success: () => ({
             type: "Success",
             content: "Transaction successful.",
           }),
-
           error: () => {
-            setIsTxLoading(false)
             return { type: "Error", content: "Transaction failed." }
           },
         })
 
         setSellWeiValue(undefined)
         setBuyWeiValue(undefined)
-        fetchBalanceAllowanceData(walletClient!)
+        fetchBalanceAllowanceData(walletClient)
         setIsTxLoading(false)
-      } catch (error) {
-        console.error("Error in actionSwap:", error)
-        setIsTxLoading(false)
+      } else {
+        if (!sellWeiValue || !currentAddress || !buyWeiValue) return
+
+        try {
+          const routeData = await getRoute(
+            sellAssetInfo?.address,
+            buyAssetInfo?.address,
+            sellWeiValue,
+            computedMinAmountOut(buyWeiValue, slippage),
+            currentAddress,
+            currentAddress,
+            curveRoutes
+          )
+
+          const tx = {
+            data: routeData?.data as `0x${string}`,
+            to: routeData?.routerAddress,
+            value: 0n,
+          } as SendTransactionParameters
+
+          await toastTx(doSwap(walletClient!, tx), {
+            pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+            success: () => ({
+              type: "Success",
+              content: "Transaction successful.",
+            }),
+            error: () => {
+              return { type: "Error", content: "Transaction failed." }
+            },
+          })
+
+          setSellWeiValue(undefined)
+          setBuyWeiValue(undefined)
+          fetchBalanceAllowanceData(walletClient!)
+          setIsTxLoading(false)
+        } catch (error) {
+          console.error("Error in actionSwap:", error)
+          setIsTxLoading(false)
+        }
       }
+    } catch (error) {
+      console.error("Error in actionSwap:", error)
+      setIsTxLoading(false)
     }
   }
 

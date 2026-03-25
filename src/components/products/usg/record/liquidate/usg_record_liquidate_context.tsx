@@ -268,8 +268,8 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   }, [slippage, liquidateWeiValue, USGReceivedValue])
 
   const zapValuesFormatted = useMemo(() => {
-    if (!isQuoteLoading && liquidateWeiValue && marketData?.collateralInfos) {
-      const minAmountOutWei = computedMinAmountOut(marketData?.collateralInfos?.positionCollateralAmount - liquidateWeiValue, slippage)
+    if (!isQuoteLoading && liquidateWeiValue && marketData?.collateralInfos && USGReceivedValue) {
+      const minAmountOutWei = computedMinAmountOut(USGReceivedValue, slippage)
       const decimals = collateralInfo?.decimals || 18
       const displayDecimals = collateralInfo?.displayDecimals || 2
 
@@ -280,7 +280,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     }
 
     return { expectedFormatted: `-`, minOutFormatted: `-` }
-  }, [liquidateWeiValue, isQuoteLoading, slippage])
+  }, [liquidateWeiValue, isQuoteLoading, slippage, USGReceivedValue])
 
   const contextValue: USGLiquidateContextValues = {
     actionLiquidate,

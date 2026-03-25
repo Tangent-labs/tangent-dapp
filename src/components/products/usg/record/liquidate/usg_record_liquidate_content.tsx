@@ -117,10 +117,10 @@ export default function USGLiquidatePanel() {
         isLoading={isQuoteLoading}
         isDisplayed={true}
         zappingParams={{
-          label: "collateral",
+          label: "remaining collateral",
           expected: `${zapValuesFormatted.expectedFormatted} ${collateralInfo.symbol}`,
-          minOut: `${zapValuesFormatted.minOutFormatted} ${collateralInfo.symbol}`,
           slippage: slippage,
+          liquidateMinOut: `${zapValuesFormatted?.minOutFormatted} USG`,
         }}
       />
 

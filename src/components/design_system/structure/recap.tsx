@@ -13,7 +13,8 @@ export type SwapRecapParams = {
   leverage?: number
   label?: string
   expected: string | undefined
-  minOut: string | undefined
+  minOut?: string | undefined
+  liquidateMinOut?: string | undefined
   slippage: number | undefined
 }
 export type Recap = {
@@ -49,10 +50,20 @@ export function RecapAccordion({ isLoading, isDisplayed, zappingParams, classNam
                     <span className="text-subtitle">Expected {zappingParams?.label}: </span>
                     <span className="text-white">{zappingParams.expected}</span>
                   </div>
-                  <div className={cn("flex items-center justify-between", isLoading ? "shimmer" : "")}>
-                    <span className="text-subtitle">Minimum {zappingParams.label}: </span>
-                    <span className="text-white">{zappingParams.minOut}</span>
-                  </div>
+
+                  {zappingParams?.minOut && (
+                    <div className={cn("flex items-center justify-between", isLoading ? "shimmer" : "")}>
+                      <span className="text-subtitle">Minimum {zappingParams.label}: </span>
+                      <span className="text-white">{zappingParams?.minOut}</span>
+                    </div>
+                  )}
+
+                  {zappingParams?.liquidateMinOut && (
+                    <div className={cn("flex items-center justify-between", isLoading ? "shimmer" : "")}>
+                      <span className="text-subtitle">Minimum USG received: </span>
+                      <span className="text-white">{zappingParams?.liquidateMinOut}</span>
+                    </div>
+                  )}
                 </>
               )}
 

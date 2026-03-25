@@ -449,13 +449,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
         return maxWithDrawable > 0n ? maxWithDrawable : 0n
       }
 
-      if (maxWithDrawable > WITHDRAW_BUFFER && maxWithDrawable < BigInt(300_000n * 10n ** 18n)) {
-        return maxWithDrawable > WITHDRAW_BUFFER ? maxWithDrawable - WITHDRAW_BUFFER : 0n
-      }
-
-      if (maxWithDrawable > BigInt(300_000n * 10n ** 18n)) {
-        return (maxWithDrawable * 9995n) / 10000n
-      }
+      return maxWithDrawable > WITHDRAW_BUFFER ? (maxWithDrawable * 9995n) / 10000n : 0n
     }
 
     return 0n

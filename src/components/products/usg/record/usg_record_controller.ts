@@ -226,17 +226,14 @@ export const computeSwapAssetPrice = async (depositAsset: string) => {
   }
 }
 
+/**
+ *  If maxBorrowable is within the global market debt cap and > $0.01 return it with a 0.05% margin (or return 0 if < $0.01)
+ *  Else return the remaining borrowable debt.
+ * @returns
+ */
 export const computeMaxBorrowable = (maxBorrowable: bigint, maxMarketDebt: bigint, totalDebt: bigint) => {
   if (maxBorrowable < maxMarketDebt - totalDebt) {
-    if (maxBorrowable > BORROW_BUFFER && maxBorrowable < BigInt(300_000n * 10n ** 18n)) {
-      return maxBorrowable > BORROW_BUFFER ? maxBorrowable - BORROW_BUFFER : 0n
-    }
-
-    if (maxBorrowable > BigInt(300_000n * 10n ** 18n)) {
-      return (maxBorrowable * 9995n) / 10000n
-    }
-
-    return 0n
+    return maxBorrowable > BORROW_BUFFER ? (maxBorrowable * 9995n) / 10000n : 0n
   }
   return ((maxMarketDebt - totalDebt) / 10n ** 18n) * 10n ** 18n
 }

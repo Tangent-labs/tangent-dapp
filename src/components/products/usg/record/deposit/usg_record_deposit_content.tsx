@@ -122,7 +122,7 @@ export default function USGDepositContent() {
         <div className="flex flex-col gap-1">
           <div className="flex items-end justify-between">
             <span className="text-sm font-semibold md:text-xl">Borrow USG</span>
-            <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} USG</span>
+            <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 2)} USG</span>
           </div>
           <GenericInputAssetAmount
             inputWeiValue={borrowWeiValue}

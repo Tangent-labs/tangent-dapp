@@ -234,7 +234,7 @@ export default function USGSwapContent() {
               connect={connect}
               formState={formState}
               labelProcess="Swap"
-              isLoading={isTxLoading || isSwapLoading || isTxLoading}
+              isLoading={isSwapLoading || isTxLoading}
             />
           </div>
         </ReliefCard>

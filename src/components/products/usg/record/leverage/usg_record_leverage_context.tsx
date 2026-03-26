@@ -3,7 +3,7 @@
 import { toast } from "react-toastify"
 import { useUSGContext } from "../../usg_context"
 import { USG_CONTRACT } from "../../usg_repository"
-import { formatEther, formatUnits, maxUint256, parseEther, parseUnits } from "viem"
+import { formatEther, formatUnits, maxUint256 } from "viem"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
@@ -14,14 +14,7 @@ import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
 import { formatBigInt, formatBigIntAsNumber } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
-import {
-  computeBorrowValue,
-  computeLeverageFromBorrow,
-  computeMaxLeverageAdjusted,
-  doMarketLeverage,
-  doZapLeverage,
-  getLeverageFormState,
-} from "./usg_record_leverage_controller"
+import { computeBorrowValue, computeMaxLeverageAdjusted, doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
 import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove, matchBlockChainErrors } from "../usg_record_controller"
 import { ONE_ETHER } from "@/lib/utils"
 
@@ -246,8 +239,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     if (!value || !depositAssetInfo || !isZapping) {
       const collatToLeverage = inputValueWei + rebasedStakedCollatAmount
 
-      // Regarding amounts in collateral in the deposit input
-      // It's possible that the maximum leverage gets reduced related to the available USG to borrow on the market
       const maxLeverageAdjusted = computeMaxLeverageAdjusted(
         marketData?.constants.maxLTV || 0n,
         currentLTV,
@@ -288,8 +279,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
           if (validPriceImpact >= 0 && validQuote) {
             const collatToLeverage = validQuote + rebasedStakedCollatAmount
 
-            // Regarding amounts in collateral in the deposit input
-            // It's possible that the maximum leverage gets reduced related to the available USG to borrow on the market
             const maxLeverageAdjusted = computeMaxLeverageAdjusted(
               marketData?.constants.maxLTV || 0n,
               currentLTV,
@@ -365,12 +354,9 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     )
 
     // Adjust the leverage slider cursor after the maxLeverageAdjusted is computed.
-    // Only when maxLeverageAdjusted becomes smaller than the current to dont be over the slider value
     setLeveragePercentage(newLeveragePercentage)
-
     setBorrowWeiValue(borrowedAmount)
     await quoteDumpUSG(borrowedAmount)
-
     getQuote(valueWei, currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
       .then(({ quote, priceImpact: pI }) => {
         if (requestId !== requestIdRef.current) return
@@ -407,7 +393,9 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
     const leveragedUSD = collatValueToDeposit + (stakedCollateralUSDValue * (maxLTV - currentLTV)) / maxLTV
 
-    const leverage = Number(formatEther(computeLeverageFromBorrow(leveragedUSD, globalData.usgPriceWei, borrowWei)))
+    const borrowUSDValue = (borrowWei * globalData.usgPriceWei) / ONE_ETHER
+
+    const leverage = Number(formatEther(((leveragedUSD + borrowUSDValue) * ONE_ETHER) / leveragedUSD))
 
     setLeveragePercentage(leverage < leverageRange.maxLeverageAdjusted ? leverage : leverageRange.maxLeverageAdjusted)
   }

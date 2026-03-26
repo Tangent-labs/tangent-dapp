@@ -5,7 +5,7 @@ import { AssetDataPriced, CollateralInfo } from "@/types"
 import { getBorrowCommonFormState } from "../usg_record_controller"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import { Address, EstimateContractGasParameters, formatEther, formatUnits, parseEther, parseUnits, WalletClient, WriteContractParameters } from "viem"
+import { Address, EstimateContractGasParameters, formatEther, formatUnits, parseUnits, WalletClient, WriteContractParameters } from "viem"
 import { ONE_ETHER } from "@/lib/utils"
 
 export function getLeverageFormState(
@@ -133,20 +133,8 @@ export function computeBorrowValue(leveragedCollateralAmount: bigint, collateral
   return usgAmountToBorrow
 }
 
-export function computeLeverageFromBorrow(
-  leveragedUSDValue: bigint, // part exploitable (nouveau dépôt + collat libre)
-  usgPrice: bigint,
-  borrowAmount: bigint
-) {
-  // Valeur USD de l'emprunt
-  const borrowUSDValue = (borrowAmount * usgPrice) / ONE_ETHER
-
-  // Leverage = (base exploitable + emprunt) / base exploitable
-  const leverage = ((leveragedUSDValue + borrowUSDValue) * ONE_ETHER) / leveragedUSDValue
-
-  return leverage
-}
-
+// Regarding amounts in collateral in the deposit input
+// It's possible that the maximum leverage gets reduced related to the available USG to borrow on the market
 export function computeMaxLeverageAdjusted(
   maxLTV: bigint,
   positionLTV: bigint,
@@ -161,8 +149,7 @@ export function computeMaxLeverageAdjusted(
   const safeMaxLeverage = maxLeverageRaw * 0.98
   const deltaAvailable = maxMarketDebt - totalMarketDebt
   const availableToBorrow = deltaAvailable < 0n ? 0n : deltaAvailable
-  // const amountToDeposit = isZapping && zapValue ? BigInt(zapValue) : BigInt(depositWeiValue || 0n)
-  // const amountStaked = marketData?.collateralInfos.positionCollateralAmount || 0n
+
   const _maxLTV = maxLTV * 10n ** 13n
 
   const leveragedAmount = amountToDeposit + (collateralBalance * (_maxLTV - positionLTV)) / _maxLTV

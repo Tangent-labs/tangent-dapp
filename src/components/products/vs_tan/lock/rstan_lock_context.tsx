@@ -83,7 +83,7 @@ export const VsTanLockContext = createContext<VsTanLockContextValues | undefined
 export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { walletClient, isWellConnected, currentAddress } = useWalletConnexionContext()
+  const { walletClient, canInteract, currentAddress } = useWalletConnexionContext()
 
   const { loadData, lockData, fetchBalanceAllowanceData, balanceAllowanceData } = useVsTanContext()
 
@@ -297,7 +297,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
       if (!lockData || !depositWeiValue) {
         setFormState({ canProcess: false, cantProcessReasons: ["No data"], haveToApprove: false })
       } else {
-        getLockFormState(lockBalanceAllowanceData, depositPositionInfo, depositWeiValue, depositAsset, isWellConnected).then((d) => {
+        getLockFormState(lockBalanceAllowanceData, depositPositionInfo, depositWeiValue, depositAsset, canInteract).then((d) => {
           setFormState(d)
         })
       }
@@ -306,7 +306,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
     if (depositPositionInfo) {
       computeFormState()
     }
-  }, [depositWeiValue, isWellConnected, lockBalanceAllowanceData, depositPositionInfo])
+  }, [depositWeiValue, canInteract, lockBalanceAllowanceData, depositPositionInfo])
 
   const computedNewLockValue = useMemo(() => {
     const baseValue = depositPositionInfo?.amount ? depositPositionInfo?.amount : 0n

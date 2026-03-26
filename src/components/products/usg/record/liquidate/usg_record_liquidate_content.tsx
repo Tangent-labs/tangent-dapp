@@ -14,8 +14,6 @@ import { GenericInputAssetAmount } from "@/components/design_system/inputs/Gener
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 
 export default function USGLiquidatePanel() {
-  const { connect } = useWalletConnexionContext()
-
   const { canInteract } = useWalletConnexionContext()
 
   const { USGInfo, collateralInfo, isTxLoading } = useUSGRecordContext()
@@ -148,7 +146,6 @@ export default function USGLiquidatePanel() {
 
       <FormButtons
         isLoading={isTxLoading || isQuoteLoading}
-        connect={connect}
         actions={{ handleApprove: undefined, handleProcess: actionLiquidate }}
         formState={formState}
         labelProcess="Liquidate"

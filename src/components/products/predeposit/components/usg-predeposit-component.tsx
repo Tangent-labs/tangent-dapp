@@ -31,7 +31,6 @@ type USGPredepositComponentProps = {
   handleApprove: () => void
   handleProcess: () => void
   cap: bigint | undefined
-  connect: () => void
   pool: string
   setMaxBalance: () => void
   tanAllocation: bigint
@@ -58,7 +57,6 @@ export const USGPredepositComponent = ({
   handleApprove,
   handleProcess,
   cap,
-  connect,
   pool,
   setMaxBalance,
   tanAllocation,
@@ -151,7 +149,6 @@ export const USGPredepositComponent = ({
           handleApprove: handleApprove,
           handleProcess: handleProcess,
         }}
-        connect={connect}
         formState={formState}
         labelProcess="Deposit"
         isLoading={isLoading}

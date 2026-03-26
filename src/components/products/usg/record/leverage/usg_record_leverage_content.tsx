@@ -9,7 +9,6 @@ import { RecapAccordion } from "@/components/design_system/structure/recap"
 import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 import { ZapAssetSelector } from "@/components/design_system/inputs/asset_selector"
 import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
@@ -60,8 +59,6 @@ export default function USGLeverageContent() {
     USGDumpPriceImpact,
     USGDumpDollarLoss,
   } = useUSGLeverageContext()
-
-  const { connect } = useWalletConnexionContext()
 
   const { collateralInfo, marketData, balanceAllowanceData, USGInfo, maxBorrowCapReached, isTxLoading } = useUSGRecordContext()
 
@@ -202,7 +199,6 @@ export default function USGLeverageContent() {
           handleApprove: depositAsset && isZapping ? actionApproveZap : actionApprove,
           handleProcess: depositAsset && isZapping ? actionZapLeverage : actionLeverage,
         }}
-        connect={connect}
         formState={formState}
         labelProcess={depositAsset && isZapping ? "Zap & leverage" : "Leverage"}
         isLoading={isDepositLoading || isZapLoading || isTxLoading}

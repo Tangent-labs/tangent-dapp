@@ -6,7 +6,6 @@ import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGRepayContext } from "./usg_record_repay_context"
 import { InputSelect } from "@/components/design_system/inputs/input_select"
 import { TokenImage } from "@/components/design_system/structure/token_image"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
@@ -53,8 +52,6 @@ export default function USGRepayContent() {
     priceImpactLoss,
     isTransactionBlockedByPriceImpact,
   } = useUSGRepayContext()
-
-  const { connect } = useWalletConnexionContext()
 
   const { USGInfo, collateralInfo, marketData, isRepayAndWithdraw, depositAssetOptions, isTxLoading } = useUSGRecordContext()
 
@@ -199,7 +196,6 @@ export default function USGRepayContent() {
       )}
 
       <FormButtons
-        connect={connect}
         actions={{
           handleApprove: repayAsset && repayAsset !== "USG" ? actionApprove : undefined,
           handleProcess: repayAsset && repayAsset !== "USG" ? actionZapRepay : actionRepay,

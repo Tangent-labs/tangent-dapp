@@ -142,7 +142,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const { loadUSGsUSGMetrics } = useUSGContext()
 
-  const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
+  const { canInteract, walletClient, currentAddress } = useWalletConnexionContext()
 
   const [isDepositDisabled, setIsDepositDisabled] = useState<boolean>(false)
 
@@ -677,7 +677,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         depositWeiValue,
         borrowWeiValue,
         !isDepositDisabled,
-        isWellConnected,
+        canInteract,
         depositAssetInfo!,
         collateralInfo!,
         leverageBalanceAllowanceData!,
@@ -689,7 +689,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       isDepositDisabled,
       borrowWeiValue,
       depositWeiValue,
-      isWellConnected,
+      canInteract,
       currentAddress,
       depositAssetInfo,
       leverageBalanceAllowanceData,

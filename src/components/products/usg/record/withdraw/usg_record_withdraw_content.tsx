@@ -5,7 +5,6 @@ import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGWithdrawContext } from "./usg_record_withdraw_context"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 import { AssetInfos, AssetSelectTemplate } from "@/components/design_system/inputs/asset_selector"
@@ -36,8 +35,6 @@ export const AssetSelectWithdraw = ({ collateralInfo, isReceipt, selectedAsset, 
 }
 
 export default function USGWithdrawContent() {
-  const { connect } = useWalletConnexionContext()
-
   const { collateralInfo, depositAssetOptions } = useUSGRecordContext()
 
   const {
@@ -94,7 +91,6 @@ export default function USGWithdrawContent() {
 
         <FormButtons
           isLoading={withdrawLoading}
-          connect={connect}
           actions={{ handleApprove: undefined, handleProcess: actionWithdraw }}
           formState={formState}
           labelProcess="Withdraw"

@@ -2,6 +2,7 @@ import { dappConfig } from "@/dapp_config"
 import { chain } from "@/services/service_rpc"
 import { createAppKit } from "@reown/appkit"
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi"
+import { getConnection, getConnections, watchConnections } from "@wagmi/core"
 import type { EIP1193Provider } from "viem"
 import { getAddress, toHex } from "viem"
 import type { WalletAdapter, WalletSubscriber } from "./wallet_adapter"
@@ -26,6 +27,9 @@ export function createAppKitAdapter(): WalletAdapter {
       icons: [],
     },
     themeMode: "dark",
+    themeVariables: {
+      "--apkt-font-family": "Gilroy, sans-serif",
+    },
     features: {
       analytics: false,
     },
@@ -40,32 +44,24 @@ export function createAppKitAdapter(): WalletAdapter {
       await appKit.disconnect()
     },
 
-    async switchChain(chainId: number) {
-      const network = appKit.getCaipNetworks("eip155").find((n) => n.id === chainId)
-      if (network) {
-        await appKit.switchNetwork(network)
-      }
-    },
-
     subscribe(cb: WalletSubscriber): () => void {
-      const emitCurrentState = () => {
-        const account = appKit.getAccount("eip155")
-        if (account?.isConnected && account?.address) {
-          const provider = appKit.getProvider<EIP1193Provider>("eip155")
+      const emitCurrentState = async () => {
+        const { isConnected, address, chainId } = getConnection(wagmiAdapter.wagmiConfig)
+
+        if (isConnected && address && chainId) {
+          const connection = getConnections(wagmiAdapter.wagmiConfig).find((item) =>
+            item.accounts.some((accountAddress) => accountAddress.toLowerCase() === address.toLowerCase())
+          )
+          const provider = (await connection?.connector?.getProvider?.()) as EIP1193Provider | undefined
           if (!provider) {
-            cb(null)
-            return
-          }
-          const caipNetwork = appKit.getCaipNetwork()
-          if (!caipNetwork?.id) {
             cb(null)
             return
           }
           cb({
             label: "AppKit",
-            address: getAddress(account.address),
+            address: getAddress(address),
             ens: null,
-            chainIdHex: toHex(Number(caipNetwork.id)),
+            chainIdHex: toHex(chainId),
             provider,
           })
         } else {
@@ -73,11 +69,19 @@ export function createAppKitAdapter(): WalletAdapter {
         }
       }
 
-      const unsubAccount = appKit.subscribeAccount(() => emitCurrentState(), "eip155")
-      const unsubNetwork = appKit.subscribeNetwork(() => emitCurrentState())
+      void emitCurrentState()
+
+      const unwatchAccount = watchConnections(wagmiAdapter.wagmiConfig, {
+        onChange: () => {
+          void emitCurrentState()
+        },
+      })
+      const unsubNetwork = appKit.subscribeNetwork(() => {
+        void emitCurrentState()
+      })
 
       return () => {
-        unsubAccount()
+        unwatchAccount()
         unsubNetwork()
       }
     },

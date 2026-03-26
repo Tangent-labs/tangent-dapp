@@ -1,12 +1,11 @@
 "use client"
 
-import { dappConfig } from "@/dapp_config"
 import { chain } from "@/services/service_rpc"
 import { registerUser } from "./register_user"
 import { createAdapter } from "@/services/wallet"
 import type { WalletInfo } from "@/services/wallet"
 import { getUserBalances } from "./wallet_connexion_controller"
-import { Address, createWalletClient, custom, toHex, WalletClient, zeroAddress } from "viem"
+import { Address, createWalletClient, custom, getAddress, WalletClient, zeroAddress } from "viem"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 
 export type Account = {
@@ -19,13 +18,12 @@ type WalletStatus = "loading" | "disconnected" | "connected"
 export type WalletConnexionContextValues = {
   walletStatus: WalletStatus
   isConnected: boolean
-  isChainConnected: boolean
-  isWellConnected: boolean
+  walletActionLabel: string
   currentAccount?: Account
   currentAddress: Address
   connect: () => void
   disconnect: () => void
-  changeNetwork: () => void
+  requestWalletAction: () => void
   walletClient: WalletClient | undefined
   canInteract: boolean
   userBalances: Array<{ balance: bigint; token: string; address: Address }>
@@ -92,27 +90,90 @@ export const WalletConnexionProvider = ({ children }: { children: ReactNode }) =
     }
   }, [])
 
+  useEffect(() => {
+    if (!currentWallet?.provider) return
+
+    let isCancelled = false
+
+    const syncWalletState = async () => {
+      try {
+        const [chainIdHex, accounts] = await Promise.all([
+          currentWallet.provider.request({ method: "eth_chainId" }) as Promise<string>,
+          currentWallet.provider.request({ method: "eth_accounts" }) as Promise<string[]>,
+        ])
+
+        if (isCancelled) return
+
+        const nextAddress = accounts?.[0] ? getAddress(accounts[0]) : undefined
+
+        setCurrentWallet((prev) => {
+          if (!prev) return prev
+
+          const shouldUpdateAddress = !!nextAddress && prev.address !== nextAddress
+          const shouldUpdateChain = prev.chainIdHex !== chainIdHex
+
+          if (!shouldUpdateAddress && !shouldUpdateChain) return prev
+
+          return {
+            ...prev,
+            address: nextAddress || prev.address,
+            chainIdHex,
+          }
+        })
+
+        if (!nextAddress) {
+          setCurrentAccount(undefined)
+          setWalletStatus("disconnected")
+          return
+        }
+
+        setCurrentAccount((prev) => {
+          if (prev?.address === nextAddress) return prev
+          return { address: nextAddress, ens: null }
+        })
+        setWalletStatus("connected")
+      } catch {
+        // Adapter subscription remains the primary source; this effect is only a safety net.
+      }
+    }
+
+    const handleProviderStateChange = () => {
+      void syncWalletState()
+    }
+
+    currentWallet.provider.on?.("chainChanged", handleProviderStateChange)
+    currentWallet.provider.on?.("accountsChanged", handleProviderStateChange)
+    currentWallet.provider.on?.("disconnect", handleProviderStateChange)
+
+    void syncWalletState()
+
+    return () => {
+      isCancelled = true
+      currentWallet.provider.removeListener?.("chainChanged", handleProviderStateChange)
+      currentWallet.provider.removeListener?.("accountsChanged", handleProviderStateChange)
+      currentWallet.provider.removeListener?.("disconnect", handleProviderStateChange)
+    }
+  }, [currentWallet?.provider])
+
   // ─── Derived state ───
   const isConnected = walletStatus === "connected"
 
-  const isChainConnected = useMemo(() => currentWallet?.chainIdHex === toHex(dappConfig.chain.id), [currentWallet])
-
   const currentAddress = currentAccount?.address ?? zeroAddress
-
-  const isWellConnected = isConnected && isChainConnected
 
   const isWalletContextLoaded = walletStatus !== "loading"
 
-  const canInteract = currentAddress !== zeroAddress && isWellConnected
+  const canInteract = currentAddress !== zeroAddress && isConnected
+
+  const walletActionLabel = useMemo(() => "Connect Wallet", [])
 
   const walletClient = useMemo(() => {
-    if (!currentWallet || !currentAccount?.address) return undefined
+    if (!currentWallet || !currentAccount?.address || !isConnected) return undefined
     return createWalletClient({
       chain,
       transport: custom(currentWallet.provider),
       account: currentAccount.address,
     }) as WalletClient
-  }, [currentWallet, currentAccount])
+  }, [currentWallet, currentAccount, isConnected])
 
   // ─── Actions ───
   const connect = async () => {
@@ -124,9 +185,10 @@ export const WalletConnexionProvider = ({ children }: { children: ReactNode }) =
     await adapter?.disconnect()
   }
 
-  const changeNetwork = async () => {
-    if (!currentWallet) return
-    await adapter?.switchChain(dappConfig.chain.id)
+  const requestWalletAction = async () => {
+    if (!isConnected) {
+      await connect()
+    }
   }
 
   // ─── Balances ───
@@ -145,12 +207,11 @@ export const WalletConnexionProvider = ({ children }: { children: ReactNode }) =
         currentAddress,
         currentAccount,
         isConnected,
-        isChainConnected,
-        isWellConnected,
+        walletActionLabel,
         walletClient,
         connect,
         disconnect,
-        changeNetwork,
+        requestWalletAction,
         canInteract,
         userBalances,
         tokenInfo,

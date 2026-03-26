@@ -21,15 +21,14 @@ type WalletConnexionContentProps = {
 export function WalletConnexionContent({ className, classNameChild }: WalletConnexionContentProps) {
   const { copied, copy } = useClipboard()
 
-  const { connect, disconnect, isConnected, isChainConnected, currentAddress } = useWalletConnexionContext()
+  const { disconnect, requestWalletAction, isConnected, currentAddress } = useWalletConnexionContext()
 
   const { USGsUSGMetrics } = useUSGContext()
 
   const buttonLabel = useMemo(() => {
     if (!isConnected) return "Connect Wallet"
-    if (!isChainConnected) return "Switch Network"
     return formatAddress(currentAddress) || "Unknown Address"
-  }, [isConnected, isChainConnected, currentAddress])
+  }, [isConnected, currentAddress])
 
   return (
     <Popover>
@@ -39,7 +38,7 @@ export function WalletConnexionContent({ className, classNameChild }: WalletConn
           onClick={(e) => {
             if (!isConnected) {
               e.preventDefault()
-              connect()
+              requestWalletAction()
             }
           }}
         >

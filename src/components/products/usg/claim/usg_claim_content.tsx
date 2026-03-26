@@ -7,7 +7,6 @@ import { Switch } from "@/components/ui/switch"
 import { specialTokensList } from "../usg_repository"
 import { useUSGClaimContext } from "./usg_claim_context"
 import { claimListHeaders } from "./usg_claim_controller"
-import { Button } from "@/components/design_system/inputs/button"
 import { ClaimableMarket, ClaimAsset, ClaimData } from "../usg_type"
 import { ListAsset } from "@/components/design_system/list/list_asset"
 import { formatDollar, formatMillions } from "@/lib/number_formatter"
@@ -20,8 +19,9 @@ import { TokenImage } from "@/components/design_system/structure/token_image"
 import { USGHoverCard } from "@/components/design_system/structure/usg_hover_card"
 import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
+import { Button } from "@/components/design_system/inputs/button"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 const listeState: ListState = {
   search: undefined,
@@ -49,8 +49,7 @@ export default function USGClaimContent() {
   const color2 = "#0075FF"
 
   const { displayRows, onClickClaim, marketsToClaim, getSortedRows, isLoading, onClickClaimAll, totalDeposited, totalClaimable } = useUSGClaimContext()
-
-  const { isWellConnected, connect } = useWalletConnexionContext()
+  const { canInteract, requestWalletAction } = useWalletConnexionContext()
 
   return (
     <>
@@ -162,13 +161,15 @@ export default function USGClaimContent() {
 
             <div className="mt-8 flex w-full">
               {marketsToClaim.length > 0 && (
-                <>
-                  {isWellConnected ? (
-                    <Button label="Claim" className="flex w-full items-center justify-center" onClick={() => onClickClaim(marketsToClaim)} />
-                  ) : (
-                    <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
-                  )}
-                </>
+                <Button
+                  hasLoadingState={canInteract}
+                  isLoading={isLoading}
+                  onClick={canInteract ? () => onClickClaim(marketsToClaim) : requestWalletAction}
+                  state={canInteract ? "active" : "active"}
+                  className="flex w-full items-center justify-center"
+                >
+                  {canInteract ? "Claim" : "Connect Wallet"}
+                </Button>
               )}
             </div>
 

@@ -32,7 +32,7 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
 
   const { loadUSGsUSGMetrics } = useUSGContext()
 
-  const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
+  const { canInteract, walletClient, currentAddress } = useWalletConnexionContext()
 
   const { marketData, loadOnChainData, setCurrentAmounts, collateralInfo } = useUSGRecordContext()
 
@@ -113,10 +113,10 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
 
   const formState = useMemo(() => {
     if (marketData) {
-      return getWithdrawFormState(marketData, withdrawWeiValue!, maxWithdrawable, isWellConnected, withdrawLoading)
+      return getWithdrawFormState(marketData, withdrawWeiValue!, maxWithdrawable, canInteract, withdrawLoading)
     }
     return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
-  }, [marketData, withdrawWeiValue, isWellConnected, currentAddress, maxWithdrawable, withdrawLoading])
+  }, [marketData, withdrawWeiValue, canInteract, currentAddress, maxWithdrawable, withdrawLoading])
 
   useEffect(() => {
     setWithdrawWeiValue(undefined)

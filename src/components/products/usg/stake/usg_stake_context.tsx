@@ -52,7 +52,7 @@ type USGStakeContextValues = {
 export const USGStakeContext = createContext<USGStakeContextValues | undefined>(undefined)
 
 export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
-  const { walletClient, isWellConnected } = useWalletConnexionContext()
+  const { walletClient, canInteract } = useWalletConnexionContext()
 
   const { loadUSGsUSGMetrics, USGsUSGMetrics } = useUSGContext()
 
@@ -140,8 +140,8 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   }, [currentFeature, USGsUSGMetrics])
 
   const formState = useMemo<FormState>(
-    () => getFormState(USGsUSGMetrics!, currentFeature, weiValue, expected, isWellConnected, isLoading),
-    [USGsUSGMetrics, currentFeature, weiValue, expected, isWellConnected, isLoading]
+    () => getFormState(USGsUSGMetrics!, currentFeature, weiValue, expected, canInteract, isLoading),
+    [USGsUSGMetrics, currentFeature, weiValue, expected, canInteract, isLoading]
   )
 
   const hasToApprove = useMemo(() => {

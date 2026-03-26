@@ -72,7 +72,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
 
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
+  const { canInteract, walletClient, currentAddress } = useWalletConnexionContext()
 
   const { marketData, marketInfo, loadOnChainData, marketDisplayData, setCurrentAmounts, collateralInfo, isTxLoading, setIsTxLoading } = useUSGRecordContext()
 
@@ -176,7 +176,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         marketData,
         liquidateWeiValue!,
         repayWeiValue || 0n,
-        isWellConnected,
+        canInteract,
         isQuoteLoading || isTxLoading,
         isTransactionBlockedByPriceImpact,
         isTransactionBlockedBySlippage
@@ -186,7 +186,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   }, [
     marketData,
     liquidateWeiValue,
-    isWellConnected,
+    canInteract,
     currentAddress,
     isQuoteLoading || isTxLoading,
     repayWeiValue,

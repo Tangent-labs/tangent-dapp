@@ -38,7 +38,7 @@ type VsTanSplitContextValues = {
 export const VsTanSplitContext = createContext<VsTanSplitContextValues | undefined>(undefined)
 
 export const VsTanSplitProvider = ({ children }: VsTanSplitContextProps) => {
-  const { walletClient, isWellConnected } = useWalletConnexionContext()
+  const { walletClient, canInteract } = useWalletConnexionContext()
 
   const { loadData, lockData } = useVsTanContext()
 
@@ -109,7 +109,7 @@ export const VsTanSplitProvider = ({ children }: VsTanSplitContextProps) => {
       if (!lockData || !splitPositionInfo) {
         setFormState({ canProcess: false, cantProcessReasons: ["Form is empty"], haveToApprove: false })
       } else {
-        getSplitFormState(splitPositionInfo, isWellConnected).then((d) => {
+        getSplitFormState(splitPositionInfo, canInteract).then((d) => {
           setFormState(d)
         })
       }

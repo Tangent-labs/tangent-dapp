@@ -99,7 +99,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   const { loadUSGsUSGMetrics } = useUSGContext()
 
-  const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
+  const { canInteract, walletClient, currentAddress } = useWalletConnexionContext()
 
   const {
     marketData,
@@ -393,7 +393,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
         isTransactionBlockedBySlippage,
         marketData,
         repayWeiValue,
-        isWellConnected,
+        canInteract,
         balanceAllowanceData!,
         repayAsset,
         isZapLoading || isTxLoading
@@ -406,7 +406,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     isTransactionBlockedBySlippage,
     marketData,
     repayWeiValue,
-    isWellConnected,
+    canInteract,
     currentAddress,
     balanceAllowanceData,
     repayAsset,

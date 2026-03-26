@@ -17,7 +17,6 @@ import { EvolutionBox } from "@/components/design_system/structure/evolution_box
 import { LargeButtonTab } from "@/components/design_system/inputs/large_button_tab"
 import { StaticCardAssetInput } from "../../predeposit/components/StaticCardAssetInput"
 import { formatBigInt, formatDollar, formatMillions, formatNumber } from "@/lib/number_formatter"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
@@ -47,8 +46,6 @@ export default function USGStakeContent() {
   } = useUSGStakeContext()
 
   const { sUSGCurrentAPY } = useRootContext()
-
-  const { connect } = useWalletConnexionContext()
 
   const isStake = "stake" === currentFeature
   let inputInAsset = ""
@@ -170,7 +167,6 @@ export default function USGStakeContent() {
               handleApprove: isStake ? actionApprove : undefined,
               handleProcess: isStake ? actionStake : actionUnstake,
             }}
-            connect={connect}
             formState={formState}
             isLoading={isLoading}
             labelProcess={isStake ? "Stake" : "Unstake"}

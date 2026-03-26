@@ -4,7 +4,6 @@ import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGDepositContext } from "./usg_record_deposit_context"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
@@ -56,8 +55,6 @@ export default function USGDepositContent() {
   } = useUSGDepositContext()
 
   const { collateralInfo, isDepositAndBorrow, marketData, balanceAllowanceData, maxBorrowCapReached, USGInfo } = useUSGRecordContext()
-
-  const { connect } = useWalletConnexionContext()
 
   return (
     <div className="flex flex-col gap-2">
@@ -188,7 +185,6 @@ export default function USGDepositContent() {
         }}
         formState={formState}
         labelProcess={isDepositAndBorrow ? "Deposit & Borrow" : "Deposit"}
-        connect={connect}
         isLoading={isDepositLoading || isZapLoading || isTxLoading}
       />
     </div>

@@ -6,7 +6,6 @@ import { useUSGContext } from "../usg_context"
 import { Switch } from "@/components/ui/switch"
 import { useUSGHarvestContext } from "./usg_harvest_context"
 import { harvestListHeaders } from "./usg_harvest_controller"
-import { Button } from "@/components/design_system/inputs/button"
 import { formatDollar, formatPercent } from "@/lib/number_formatter"
 import { Divider } from "@/components/design_system/structure/divider"
 import { HarvestableMarket, HarvesterInfoDisplay } from "../usg_type"
@@ -15,11 +14,12 @@ import { ListHeader } from "@/components/design_system/list/list_header"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { PageHeader } from "@/components/design_system/structure/page_header"
 import { USGHoverCard } from "@/components/design_system/structure/usg_hover_card"
-import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
+import { Button } from "@/components/design_system/inputs/button"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 const listeState: ListState = {
   search: undefined,
@@ -45,9 +45,8 @@ const HarvestRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
 export default function USGHarvestContent() {
   const { lpUserPoints, voteUserPoints } = useUSGContext()
 
-  const { isConnected, connect } = useWalletConnexionContext()
-
   const { displayRows, USGsUSGMetrics, marketsToHarvest, isLoading, getSortedRows, onClickSelectAll, onClickHarvest } = useUSGHarvestContext()
+  const { canInteract, requestWalletAction } = useWalletConnexionContext()
 
   return (
     <>
@@ -117,11 +116,16 @@ export default function USGHarvestContent() {
             </div>
 
             <div className="mt-8 flex w-full">
-              {marketsToHarvest.length > 0 && isConnected && (
-                <Button label="Harvest" className="flex w-full items-center justify-center" onClick={() => onClickHarvest()} />
+              {marketsToHarvest.length > 0 && (
+                <Button
+                  hasLoadingState={canInteract}
+                  isLoading={isLoading}
+                  onClick={canInteract ? () => onClickHarvest() : requestWalletAction}
+                  className="flex w-full items-center justify-center"
+                >
+                  {canInteract ? "Harvest" : "Connect Wallet"}
+                </Button>
               )}
-
-              {!isConnected && <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />}
             </div>
             <ListGradientBorder />
           </div>

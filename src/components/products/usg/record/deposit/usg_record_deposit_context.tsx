@@ -103,7 +103,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const { loadUSGsUSGMetrics } = useUSGContext()
 
-  const { isWellConnected, walletClient, currentAddress, isWalletContextLoaded, isConnected } = useWalletConnexionContext()
+  const { canInteract, walletClient, currentAddress, isWalletContextLoaded, isConnected } = useWalletConnexionContext()
 
   const {
     marketData,
@@ -493,7 +493,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       zapValue,
       isZapping,
       isDepositAndBorrow,
-      isWellConnected,
+      canInteract,
       balanceAllowanceData!,
       maxBorrowableValue || 0n,
       isZapLoading || isDepositLoading || isTxLoading
@@ -505,7 +505,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     isDepositAndBorrow,
     borrowWeiValue,
     depositWeiValue,
-    isWellConnected,
+    canInteract,
     currentAddress,
     depositAssetInfo,
     balanceAllowanceData,

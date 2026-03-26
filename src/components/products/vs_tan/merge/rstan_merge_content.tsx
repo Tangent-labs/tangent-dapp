@@ -11,12 +11,9 @@ import { IconVsTan, IconOpenOutside } from "@/components/icons"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { InputSelect } from "@/components/design_system/inputs/input_select"
 import { TokenImage } from "@/components/design_system/structure/token_image"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export const VsTanMergeContent = () => {
   const { lockData } = useVsTanContext()
-
-  const { connect } = useWalletConnexionContext()
 
   const {
     actionMerge,
@@ -217,7 +214,7 @@ export const VsTanMergeContent = () => {
             </span>
           </div>
 
-          <FormButtons connect={connect} actions={{ handleApprove: undefined, handleProcess: actionMerge }} formState={formState} labelProcess="Merge" />
+          <FormButtons actions={{ handleApprove: undefined, handleProcess: actionMerge }} formState={formState} labelProcess="Merge" />
         </>
       )}
     </div>

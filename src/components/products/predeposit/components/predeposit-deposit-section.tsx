@@ -81,7 +81,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
     setDepositMaxUSGfrxUSD,
   } = usePredepositContext()
 
-  const { connect, isConnected } = useWalletConnexionContext()
+  const { isConnected, requestWalletAction } = useWalletConnexionContext()
 
   return (
     <section className="mt-4 flex w-full flex-col">
@@ -139,7 +139,6 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
             handleApprove={actionApproveUSGUSDC}
             handleProcess={actionDepositUSGUSDC}
             cap={predepositStatus?.USGUSDCData?.USGUSDCCap}
-            connect={connect}
             pool={predepositStatus?.USGUSDCData?.lpName ?? ""}
             setMaxBalance={setDepositMaxUSGUSDC}
             tanAllocation={projectedUSDCTANAllocation}
@@ -166,7 +165,6 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
             handleApprove={actionApproveUSGfrxUSD}
             handleProcess={actionDepositUSGfrxUSD}
             cap={predepositStatus?.USGfrxUSDData?.USGfrxUSDCap}
-            connect={connect}
             pool={predepositStatus?.USGfrxUSDData?.lpName ?? ""}
             setMaxBalance={setDepositMaxUSGfrxUSD}
             tanAllocation={projectedfrxUSDTANAllocation}
@@ -179,8 +177,8 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
 
         {!isConnected && (
           <BlurrySection scrollToFaq={scrollToFaq}>
-            <Button onClick={connect} className="flex h-10 items-center justify-center">
-              Connect wallet
+            <Button onClick={requestWalletAction} className="flex h-10 items-center justify-center">
+              Connect Wallet
             </Button>
           </BlurrySection>
         )}

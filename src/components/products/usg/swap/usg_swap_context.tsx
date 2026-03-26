@@ -109,7 +109,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
   const { curveRoutes, handleQuote } = useRootContext()
   const { USGsUSGMetrics, lpUserPoints } = useUSGContext()
-  const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
+  const { canInteract, walletClient, currentAddress } = useWalletConnexionContext()
 
   const [isTxLoading, setIsTxLoading] = useState<boolean>(false)
 
@@ -471,7 +471,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
         swapData?.approval === "noApprovalNeeded",
         sellWeiValue,
         buyWeiValue,
-        isWellConnected,
+        canInteract,
         sellAssetInfo!,
         buyAssetInfo!,
         balanceAllowanceData!,
@@ -482,7 +482,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
       isSwapBlockedBySlippage,
       sellWeiValue,
       buyWeiValue,
-      isWellConnected,
+      canInteract,
       sellAssetInfo,
       buyAssetInfo,
       balanceAllowanceData!,

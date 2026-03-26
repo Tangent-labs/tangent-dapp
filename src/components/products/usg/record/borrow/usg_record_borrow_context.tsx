@@ -29,7 +29,7 @@ export const USGBorrowContext = createContext<USGBorrowContextValues | undefined
 export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
   const { loadUSGsUSGMetrics } = useUSGContext()
 
-  const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
+  const { canInteract, walletClient, currentAddress } = useWalletConnexionContext()
 
   const { marketData, loadOnChainData, setCurrentAmounts } = useUSGRecordContext()
 
@@ -80,8 +80,8 @@ export const USGBorrowProvider = ({ children }: USGBorrowContextProps) => {
   }, [marketData, currentAddress])
 
   const formState = useMemo(
-    () => getBorrowFormState(marketData, borrowWeiValue, isWellConnected, maxBorrowableValue, borrowLoading),
-    [marketData, borrowWeiValue, isWellConnected, currentAddress, maxBorrowableValue, borrowLoading]
+    () => getBorrowFormState(marketData, borrowWeiValue, canInteract, maxBorrowableValue, borrowLoading),
+    [marketData, borrowWeiValue, canInteract, currentAddress, maxBorrowableValue, borrowLoading]
   )
 
   const contextValue: USGBorrowContextValues = {

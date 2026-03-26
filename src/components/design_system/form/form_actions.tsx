@@ -3,18 +3,18 @@
 import { useMemo } from "react"
 import { FormState, FormAction } from "@/types"
 import { Button } from "@/components/design_system/inputs/button"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 type FormButtonsProps = {
   formState: FormState
   actions: FormAction
   labelApprove?: string
   labelProcess: string
-  connect: () => void
   isLoading?: boolean
 }
 
-export default function FormButtons({ formState, labelApprove = "Approve", labelProcess, actions, connect, isLoading = false }: FormButtonsProps) {
-  const isWalletConnected = !formState.cantProcessReasons.includes("No connected wallet.")
+export default function FormButtons({ formState, labelApprove = "Approve", labelProcess, actions, isLoading = false }: FormButtonsProps) {
+  const { canInteract, walletActionLabel, requestWalletAction } = useWalletConnexionContext()
   const isApproveNeeded = !!actions.handleApprove && formState?.haveToApprove
   let label = ""
   let funcCalledOnClick: (() => void) | undefined
@@ -37,18 +37,15 @@ export default function FormButtons({ formState, labelApprove = "Approve", label
 
   return (
     <div className="flex w-full items-center justify-between gap-2">
-      {isWalletConnected ? (
-        <Button
-          hasLoadingState={true}
-          isLoading={isLoading}
-          label={label}
-          onClick={isLoading ? () => {} : funcCalledOnClick}
-          state={buttonState}
-          className="w-full justify-center"
-        />
-      ) : (
-        <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
-      )}
+      <Button
+        hasLoadingState={canInteract}
+        isLoading={isLoading}
+        label={canInteract ? label : walletActionLabel}
+        onClick={canInteract ? (isLoading || buttonState !== "active" ? () => {} : funcCalledOnClick) : requestWalletAction}
+        state={canInteract && buttonState === "active" ? "active" : canInteract ? "disabled" : "active"}
+        className="w-full justify-center"
+        classNameChild="flex w-full items-center justify-center"
+      />
     </div>
   )
 }

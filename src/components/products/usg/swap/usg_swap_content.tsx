@@ -15,7 +15,6 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
 import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
@@ -69,8 +68,6 @@ export default function USGSwapContent() {
   } = useUSGSwapContext()
 
   const { lpUserPoints, voteUserPoints } = useUSGContext()
-
-  const { connect } = useWalletConnexionContext()
 
   const SellAssetSelect = () => {
     return (
@@ -231,7 +228,6 @@ export default function USGSwapContent() {
                 handleApprove: actionApprove,
                 handleProcess: actionSwap,
               }}
-              connect={connect}
               formState={formState}
               labelProcess="Swap"
               isLoading={isTxLoading || isSwapLoading || isTxLoading}

@@ -229,9 +229,11 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     activeInputRef.current = "deposit"
     const inputValueWei = BigInt(value || 0n)
 
+    setDepositWeiValue(inputValueWei)
+    setPriceImpact(0)
+
     const maxLTV = (marketData?.constants.maxLTV || 0n) * 10n ** 13n
     const stakedCollatAmount = marketData?.collateralInfos.positionCollateralAmount || 0n
-    setDepositWeiValue(inputValueWei)
 
     const rebasedStakedCollatAmount = (stakedCollatAmount * (maxLTV - currentLTV)) / maxLTV
 
@@ -322,6 +324,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     const rebasedStakedCollatAmount = (stakedCollatAmount * (maxLTV - currentLTV)) / maxLTV
 
     setZapValue(valueWei)
+    setPriceImpact(0)
 
     if (!value || !currentAddress || !depositAssetInfo) {
       setDepositWeiValue(undefined)
@@ -806,7 +809,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
           const { validQuote, validPriceImpact } = handleQuote(quote, pI)
 
           if (validPriceImpact >= 0 && validQuote) {
-            setUSGDumpPriceImpact(validPriceImpact)
+            setUSGDumpPriceImpact(validPriceImpact / 100)
             setLeveragedCollateralQuote(validQuote)
           }
         })

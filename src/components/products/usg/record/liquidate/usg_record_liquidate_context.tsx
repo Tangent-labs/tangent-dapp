@@ -210,8 +210,8 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
 
   const handleLiquidateValueChange = (value: bigint | undefined) => {
     try {
+      setPriceImpact(0)
       setIsQuoteLoading(true)
-
       setLiquidateWeiValue(value)
 
       const fetchZapValue = async () => {
@@ -224,7 +224,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
 
           if (validPriceImpact >= 0 && validQuote) {
             setUSGReceivedValue(validQuote)
-            setPriceImpact(Number(validPriceImpact))
+            setPriceImpact(Number(validPriceImpact) / 100)
           }
 
           setIsQuoteLoading(false)

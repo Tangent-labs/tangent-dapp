@@ -1,4 +1,4 @@
-import { ClaimerInfo, MarketAPRs } from "../usg_type"
+import { ClaimData, ClaimerInfo, MarketAPRs } from "../usg_type"
 import claimUI from "../../../../abi/USG/ClaimUI.json"
 import { getTokensPrice } from "@/services/service_price"
 import { USG_CONTRACT, USGMarkets } from "../usg_repository"
@@ -140,3 +140,25 @@ export const claimListHeaders: ListHeaderData[] = [
   { label: "Deposited", key: "totalDepositedValue", sort: "sort" },
   { label: "", key: "" },
 ]
+
+export const sortClaimListByType = (elementA: ClaimData, elementB: ClaimData, direction: string) => {
+  let computedAPRA = 0
+  let computedAPRB = 0
+
+  if (elementA?.marketType === "Pendle_PT") {
+    computedAPRA = Number(elementA?.apr?.current)
+  } else {
+    computedAPRA = Number(elementA?.currentAPRDetails?.[elementA?.rewardToken]) === 0 ? Number(elementA?.apr?.projected) : Number(elementA?.apr?.current)
+  }
+
+  if (elementB?.marketType === "Pendle_PT") {
+    computedAPRB = Number(elementB?.apr?.current)
+  } else {
+    computedAPRB = Number(elementB?.currentAPRDetails?.[elementB?.rewardToken]) === 0 ? Number(elementB?.apr?.projected) : Number(elementB?.apr?.current)
+  }
+
+  if (computedAPRA < computedAPRB) return direction === "asc" ? -1 : 1
+  if (computedAPRA > computedAPRB) return direction === "asc" ? 1 : -1
+
+  return 0
+}

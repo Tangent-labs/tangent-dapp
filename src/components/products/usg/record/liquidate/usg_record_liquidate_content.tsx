@@ -121,6 +121,7 @@ export default function USGLiquidatePanel() {
           expected: `${zapValuesFormatted.expectedFormatted} ${collateralInfo.symbol}`,
           slippage: slippage,
           liquidateMinOut: `${zapValuesFormatted?.minOutFormatted} USG`,
+          priceImpact: priceImpact,
         }}
       />
 

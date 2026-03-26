@@ -153,6 +153,7 @@ export default function USGDepositContent() {
           expected: `${zapValuesFormatted.expectedFormatted} ${collateralInfo.symbol}`,
           minOut: `${zapValuesFormatted.minOutFormatted} ${collateralInfo.symbol}`,
           slippage: slippage,
+          priceImpact: priceImpact,
         }}
         // aprVariationParams={aprVariation}
       ></RecapAccordion>

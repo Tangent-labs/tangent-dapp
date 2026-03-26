@@ -457,6 +457,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   const handleRepayValueChange = (value: bigint | undefined) => {
     setRepayWeiValue(value)
+    setPriceImpact(0)
 
     const fetchZapValue = async () => {
       if (!value || !currentAddress || !marketData || !repayAssetInfo) return

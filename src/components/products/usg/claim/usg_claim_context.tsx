@@ -9,7 +9,7 @@ import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { ClaimableMarket, ClaimData, ClaimerInfo, USGStakingInfo } from "../usg_type"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { computeAndReturnPrices, doClaim, getUSGClaimOnChainData, transformClaimOnChainData } from "./usg_claim_controller"
+import { computeAndReturnPrices, doClaim, getUSGClaimOnChainData, sortClaimListByType, transformClaimOnChainData } from "./usg_claim_controller"
 
 type USGClaimContextProps = {
   children: ReactNode
@@ -103,8 +103,7 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
       }
 
       if (key === "apr") {
-        aValue = elementA.apr?.current ?? 0
-        bValue = elementB.apr?.current ?? 0
+        return sortClaimListByType(elementA, elementB, direction)
       }
 
       if (key === "totalClaimableValue" || key === "totalDepositedValue") {

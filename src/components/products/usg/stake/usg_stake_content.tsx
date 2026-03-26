@@ -184,7 +184,7 @@ export default function USGStakeContent() {
                 className="w-full"
                 originalValue={formatNumber(Number(formatUnits(USGsUSGMetrics?.sUSGBalance ?? 0n, 18)), 0)}
                 label="sUSG balance"
-                newValue={formatNumber(computeProjectedValue, 0)}
+                newValue={formatNumber(computeProjectedValue >= 0 ? computeProjectedValue : 0, 0)}
               />
 
               <EvolutionBox
@@ -192,7 +192,7 @@ export default function USGStakeContent() {
                 originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature)}
                 label="30 days projection"
                 newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature, weiValue)}
-                logo="sUSG"
+                logo="USG"
               />
 
               <EvolutionBox
@@ -200,7 +200,7 @@ export default function USGStakeContent() {
                 originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature)}
                 label="1 year projection"
                 newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature, weiValue)}
-                logo="sUSG"
+                logo="USG"
               />
             </div>
           )}

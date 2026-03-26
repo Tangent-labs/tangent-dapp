@@ -270,7 +270,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
     } else {
       return Number(formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18)) - Number(formatUnits(weiValue || 0n, 18))
     }
-  }, [currentFeature, weiValue])
+  }, [currentFeature, weiValue, USGsUSGMetrics])
 
   useEffect(() => {
     setExpected(undefined)

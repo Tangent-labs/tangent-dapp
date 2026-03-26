@@ -224,7 +224,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
 
           if (validPriceImpact >= 0 && validQuote) {
             setUSGReceivedValue(validQuote)
-            setPriceImpact(Number(validPriceImpact))
+            setPriceImpact(Number(validPriceImpact) / 100)
           }
 
           setIsQuoteLoading(false)

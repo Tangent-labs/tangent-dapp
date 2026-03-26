@@ -408,16 +408,22 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   // ────────────────────────────────────────
 
   const maxBorrowableValue = useMemo(() => {
+    const deposit = depositWeiValue || 0n
+
     if (marketData) {
       const futureDebt = marketData?.debtInfos?.userDebt
       let futureDeposited
 
-      if (isZapping && zapValue) {
-        futureDeposited =
-          marketData?.collateralInfos?.positionCollateralUSDValue +
-          (computedMinAmountOut(zapValue, slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** collateralInfo?.decimals)
-      } else {
+      if (isZapping) {
         futureDeposited = marketData?.collateralInfos?.positionCollateralUSDValue
+
+        if (zapValue) {
+          futureDeposited +=
+            (computedMinAmountOut(zapValue, slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** collateralInfo?.decimals)
+        }
+      } else {
+        futureDeposited =
+          marketData?.collateralInfos?.positionCollateralUSDValue + (deposit * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18)
       }
       const maxBorrowable = (futureDeposited * marketData?.constants.maxLTV) / 100000n - futureDebt
 

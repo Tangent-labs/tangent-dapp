@@ -141,7 +141,7 @@ export const claimListHeaders: ListHeaderData[] = [
   { label: "", key: "" },
 ]
 
-export const sortClaimListByType = (elementA: ClaimData, elementB: ClaimData, direction: string, maxLeverageA = 1, maxLeverageB = 1) => {
+export const sortClaimListByType = (elementA: ClaimData, elementB: ClaimData, direction: string) => {
   let computedAPRA = 0
   let computedAPRB = 0
 
@@ -157,8 +157,8 @@ export const sortClaimListByType = (elementA: ClaimData, elementB: ClaimData, di
     computedAPRB = Number(elementB?.currentAPRDetails?.[elementB?.rewardToken]) === 0 ? Number(elementB?.apr?.projected) : Number(elementB?.apr?.current)
   }
 
-  if (computedAPRA * maxLeverageA < computedAPRB * maxLeverageB) return direction === "asc" ? -1 : 1
-  if (computedAPRA * maxLeverageA > computedAPRB * maxLeverageB) return direction === "asc" ? 1 : -1
+  if (computedAPRA < computedAPRB) return direction === "asc" ? -1 : 1
+  if (computedAPRA > computedAPRB) return direction === "asc" ? 1 : -1
 
   return 0
 }

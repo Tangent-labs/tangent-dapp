@@ -717,7 +717,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
           const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
 
           if (validPriceImpact >= 0 && validQuote) {
-            setUSGDumpPriceImpact(validPriceImpact)
+            setUSGDumpPriceImpact(validPriceImpact / 100)
             setLeveragedCollateralQuote(validQuote)
             setBorrowWeiValue(value)
           }

@@ -51,8 +51,11 @@ type USGSwapContextValues = {
   depositSliderPercent: number
   setDepositSliderPercent: (arg: number) => void
 
-  isSwapLoading: boolean
-  setIsSwapLoading: (arg: boolean) => void
+  isBuyValueLoading: boolean
+  setIsBuyValueLoading: (arg: boolean) => void
+
+  isSellValueLoading: boolean
+  setIsSellValueLoading: (arg: boolean) => void
 
   slippage: number
   setSlippage: (arg: number) => void
@@ -131,7 +134,10 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const [sellWeiValue, setSellWeiValue] = useState<bigint | undefined>()
   const [buyWeiValue, setBuyWeiValue] = useState<bigint | undefined>()
 
-  const [isSwapLoading, setIsSwapLoading] = useState(false)
+  const [isBuyValueLoading, setIsBuyValueLoading] = useState(false)
+
+  const [isSellValueLoading, setIsSellValueLoading] = useState(false)
+
   const [slippage, setSlippage] = useState<number>(0.2)
 
   const [depositSliderPercent, setDepositSliderPercent] = useState<number>(0)
@@ -208,7 +214,6 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   }, [currentAddress])
 
   const handleSellChange = (value: bigint | undefined) => {
-    setIsSwapLoading(true)
     setSellWeiValue(value)
 
     if (value === undefined) {
@@ -218,13 +223,15 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
     if (!sellAssetInfo || !buyAssetInfo) return
 
+    setIsBuyValueLoading(true)
+
     const quote = swapData?.quote
 
     if (quote === "enso") {
       fetchSwapValue(value, "sell")
     } else if (quote === "1") {
       setBuyWeiValue(value)
-      setIsSwapLoading(false)
+      setIsBuyValueLoading(false)
     } else {
       const quote = swapData?.quote
       const quoteContractAddress = [sellAssetInfo, buyAssetInfo].find((el) => el.symbol === swapData?.quoteContract)?.address as Address
@@ -232,7 +239,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
       if (value && quote) {
         doCustomQuote(quote, value, currentAddress, quoteContractAddress).then((v) => {
           setBuyWeiValue(v as bigint)
-          setIsSwapLoading(false)
+          setIsBuyValueLoading(false)
         })
       }
     }
@@ -249,16 +256,20 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
     if (!sellAssetInfo || !buyAssetInfo) return
 
+    setIsSellValueLoading(true)
+
     const quote = swapData?.quote
 
     if (quote === "enso") {
       fetchSwapValue(value, "buy")
     } else if (quote === "1") {
       setSellWeiValue(value)
+      setIsSellValueLoading(false)
     } else {
       if (sellWeiValue && quote) {
         doCustomQuote(quote, sellWeiValue, currentAddress, buyAssetInfo?.address).then((v) => {
           setBuyWeiValue(v as bigint)
+          setIsSellValueLoading(false)
         })
       }
     }
@@ -267,7 +278,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const fetchSwapValue = async (value: bigint | undefined, type: "sell" | "buy") => {
     if (!value || !sellAssetInfo || !buyAssetInfo) return
 
-    setIsSwapLoading(type === "sell")
+    setPriceImpact(0)
     try {
       const quoteTokenIn = type === "sell" ? buyAssetInfo?.address : sellAssetInfo?.address
       const quoteTokenOut = type === "sell" ? sellAssetInfo?.address : buyAssetInfo?.address
@@ -281,14 +292,16 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
         if (type == "sell") {
           setBuyWeiValue(validQuote)
+          setIsBuyValueLoading(false)
         } else {
           setSellWeiValue(validQuote)
+          setIsSellValueLoading(false)
         }
       }
-      setIsSwapLoading(false)
     } catch (error) {
       console.error("Error fetching zap value:", error)
-      setIsSwapLoading(false)
+      setIsBuyValueLoading(false)
+      setIsSellValueLoading(false)
     }
   }
 
@@ -297,7 +310,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     if (!buyAssetName) return
 
     const fetchSwapAssetData = async () => {
-      setIsSwapLoading(true)
+      setIsBuyValueLoading(true)
       setBuyAssetPrice(1)
       try {
         const data = await computeSwapAssetPrice(buyAssetName)
@@ -305,7 +318,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
       } catch (error) {
         console.error("Error fetching Enso data:", error)
       } finally {
-        setIsSwapLoading(false)
+        setIsBuyValueLoading(false)
       }
     }
 
@@ -316,14 +329,14 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     if (!sellAssetName) return
 
     const fetchSwapAssetData = async () => {
-      setIsSwapLoading(true)
+      setIsBuyValueLoading(true)
       try {
         const data = await computeSwapAssetPrice(sellAssetName)
         setSellAssetPrice(data)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
       } finally {
-        setIsSwapLoading(false)
+        setIsBuyValueLoading(false)
       }
     }
 
@@ -475,7 +488,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
         sellAssetInfo!,
         buyAssetInfo!,
         balanceAllowanceData!,
-        isTxLoading || isSwapLoading
+        isTxLoading || isBuyValueLoading
       ),
     [
       isSwapBlockedByPriceImpact,
@@ -486,7 +499,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
       sellAssetInfo,
       buyAssetInfo,
       balanceAllowanceData!,
-      isTxLoading || isSwapLoading,
+      isTxLoading || isBuyValueLoading,
     ]
   )
 
@@ -577,8 +590,11 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     sellAssetName,
     buyAssetName,
 
-    isSwapLoading,
-    setIsSwapLoading,
+    isBuyValueLoading,
+    setIsBuyValueLoading,
+
+    isSellValueLoading,
+    setIsSellValueLoading,
 
     balances,
     sellAssetInfo,

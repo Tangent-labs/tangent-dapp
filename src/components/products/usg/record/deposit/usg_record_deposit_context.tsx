@@ -212,6 +212,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const handleZapChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setZapValue(parseEther(e?.target?.value))
+    setPriceImpact(0)
 
     if (e?.target?.value === "") {
       setDepositWeiValue(undefined)
@@ -257,6 +258,10 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       setZapValue(undefined)
       setBorrowSliderPercent(0)
       setPriceImpact(0)
+
+      if (depositAsset === collateralInfo?.name) {
+        setSlippage(0.2)
+      }
     }
   }, [depositAsset])
 
@@ -358,6 +363,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const handleDepositChange = (value: bigint | undefined) => {
     setDepositWeiValue(value)
+    setPriceImpact(0)
 
     if (!value || !depositAssetInfo || !isZapping) {
       if (!value || value === 0n) setZapValue(undefined)

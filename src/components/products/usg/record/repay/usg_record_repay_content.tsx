@@ -166,6 +166,7 @@ export default function USGRepayContent() {
             expected: `${zapValuesFormatted.expectedFormatted} USG`,
             minOut: `${zapValuesFormatted.minOutFormatted} USG`,
             slippage: slippage,
+            priceImpact: priceImpact,
           }}
         />
       )}

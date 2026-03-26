@@ -110,7 +110,7 @@ export function PerformanceHistoryPanel({
           className="w-full"
           originalValue={formatNumber(sUSGBalance, 0)}
           label="sUSG balance"
-          newValue={formatNumber(computeProjectedValue, 0)}
+          newValue={formatNumber(computeProjectedValue >= 0 ? computeProjectedValue : 0, 0)}
           logo="sUSG"
         />
 
@@ -119,7 +119,7 @@ export function PerformanceHistoryPanel({
           originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature)}
           label="30 days projection"
           newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature, weiValue)}
-          logo="sUSG"
+          logo="USG"
         />
 
         <EvolutionBox
@@ -127,7 +127,7 @@ export function PerformanceHistoryPanel({
           originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature)}
           label="1 year projection"
           newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature, weiValue)}
-          logo="sUSG"
+          logo="USG"
         />
       </ReliefCard>
 

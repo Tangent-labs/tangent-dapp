@@ -87,7 +87,7 @@ export const USGPredepositComponent = ({
       <GenericInputAssetAmount
         inputWeiValue={depositWeiValue}
         depositSelect={<StaticCardAssetInput assetName={assetInfo?.symbol} logoKey={assetInfo.logoKey!} />}
-        isLoading={isLoading}
+        isLoading={false}
         label="You deposit"
         asset={assetInfo}
         isZapping={false}
@@ -137,6 +137,7 @@ export const USGPredepositComponent = ({
           dollarLoss={slippageLoss?.dollarLoss}
           slippage={slippage}
           isLoading={isLoading}
+          className="my-2"
           displayConfirmationButton={isTransactionBlockedBySlippage}
           onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
         />

@@ -153,16 +153,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const [priceImpact, setPriceImpact] = useState<number>(0)
 
-  useEffect(() => {
-    setIsDepositAndBorrow(isDepositAndBorrowInput)
-  }, [])
-
-  useEffect(() => {
-    if (collateralInfo) {
-      setDepositAsset(collateralInfo.name)
-    }
-  }, [collateralInfo?.name])
-
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
     // When market data is not charged
     if (!!marketData && (depositAsset === undefined || depositAsset === collateralInfo.name)) {
@@ -222,6 +212,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const handleZapChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setZapValue(parseEther(e?.target?.value))
+    setPriceImpact(0)
 
     if (e?.target?.value === "") {
       setDepositWeiValue(undefined)
@@ -266,6 +257,11 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       setDepositWeiValue(undefined)
       setZapValue(undefined)
       setBorrowSliderPercent(0)
+      setPriceImpact(0)
+
+      if (depositAsset === collateralInfo?.name) {
+        setSlippage(0.2)
+      }
     }
   }, [depositAsset])
 
@@ -367,6 +363,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const handleDepositChange = (value: bigint | undefined) => {
     setDepositWeiValue(value)
+    setPriceImpact(0)
 
     if (!value || !depositAssetInfo || !isZapping) {
       if (!value || value === 0n) setZapValue(undefined)
@@ -417,10 +414,13 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       const futureDebt = marketData?.debtInfos?.userDebt
       let futureDeposited
 
-      if (isZapping && zapValue) {
-        futureDeposited =
-          marketData?.collateralInfos?.positionCollateralUSDValue +
-          (computedMinAmountOut(zapValue, slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** collateralInfo?.decimals)
+      if (isZapping) {
+        futureDeposited = marketData?.collateralInfos?.positionCollateralUSDValue
+
+        if (zapValue) {
+          futureDeposited +=
+            (computedMinAmountOut(zapValue, slippage) * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** collateralInfo?.decimals)
+        }
       } else {
         futureDeposited =
           marketData?.collateralInfos?.positionCollateralUSDValue + (deposit * marketData?.collateralInfos?.collateralUSDPrice) / BigInt(10 ** 18)

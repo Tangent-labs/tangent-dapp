@@ -140,9 +140,10 @@ export const computeProjection = (sUSGBalance: bigint, timeFrame: number, apr: n
   } else if (currentFeature === "unstake" && !!amount && amount > 0n) {
     projection = computedProjection(sUSGBalanceNumb - amountNumb, timeFrame, apr)
   } else {
-    projection = computedProjection(amountNumb, timeFrame, apr)
+    projection = computedProjection(sUSGBalanceNumb, timeFrame, apr)
   }
-  return formatNumber(projection, 0)
+
+  return formatNumber(projection >= 0 ? projection : 0, 0)
 }
 
 export const computeSUSGAprVariation = (currentFeature: string, USGsUSGMetrics: USGStakingInfo, inputValue: bigint, currentAPY: number) => {

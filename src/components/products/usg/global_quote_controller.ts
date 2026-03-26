@@ -31,7 +31,7 @@ export const getQuote = async (
   } else if (isCurveRouter(tokenIn, tokenOut)) {
     const { quote, priceImpact } = await getCustomQuote(curveRoutes, tokenIn, tokenOut, amountIn)
 
-    return { quote, priceImpact: priceImpact / BigInt(10 ** 16) }
+    return { quote, priceImpact: priceImpact / BigInt(10 ** 14) }
   } else if (isPendleRouter(tokenIn, tokenOut)) {
     let swapDirection = "tokenToPT"
 
@@ -44,7 +44,7 @@ export const getQuote = async (
     return { quote, priceImpact: priceImpact / BigInt(10 ** 16) }
   } else {
     const { quote, priceImpact } = await getCustomQuote(curveRoutes, tokenIn, tokenOut, amountIn)
-    return { quote, priceImpact: priceImpact / BigInt(10 ** 16) }
+    return { quote, priceImpact: priceImpact / BigInt(10 ** 14) }
   }
 }
 

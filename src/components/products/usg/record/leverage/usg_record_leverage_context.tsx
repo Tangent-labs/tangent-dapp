@@ -231,6 +231,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     activeInputRef.current = "deposit"
     const valueWei = BigInt(value || 0n)
     setDepositWeiValue(valueWei)
+    setPriceImpact(0)
 
     // NO ZAP CASE
     if (!value || !currentAddress || !depositAssetInfo) {
@@ -273,6 +274,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     const valueWei = value ?? 0n
 
     setZapValue(valueWei)
+    setPriceImpact(0)
 
     if (!value || !currentAddress || !depositAssetInfo) {
       setDepositWeiValue(undefined)
@@ -715,7 +717,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
           const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
 
           if (validPriceImpact >= 0 && validQuote) {
-            setUSGDumpPriceImpact(validPriceImpact)
+            setUSGDumpPriceImpact(validPriceImpact / 100)
             setLeveragedCollateralQuote(validQuote)
             setBorrowWeiValue(value)
           }

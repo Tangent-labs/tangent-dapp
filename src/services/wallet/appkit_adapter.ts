@@ -9,6 +9,7 @@ import type { WalletAdapter, WalletSubscriber } from "./wallet_adapter"
 
 export function createAppKitAdapter(): WalletAdapter {
   const projectId = dappConfig.chain.walletConnectId
+  const appUrl = dappConfig.dappUrl || window.location.origin
 
   const wagmiAdapter = new WagmiAdapter({
     projectId,
@@ -23,7 +24,7 @@ export function createAppKitAdapter(): WalletAdapter {
     metadata: {
       name: "Tangent",
       description: "Borrow USG against productive collateral",
-      url: dappConfig.dappUrl || window.location.origin,
+      url: appUrl,
       icons: [],
     },
     themeMode: "dark",
@@ -31,7 +32,10 @@ export function createAppKitAdapter(): WalletAdapter {
       "--apkt-font-family": "Gilroy, sans-serif",
     },
     features: {
+      email: false,
+      socials: false,
       analytics: false,
+      connectMethodsOrder: ["wallet"],
     },
   })
 

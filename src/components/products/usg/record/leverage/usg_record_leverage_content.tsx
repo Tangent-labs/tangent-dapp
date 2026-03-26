@@ -127,6 +127,7 @@ export default function USGLeverageContent() {
           depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
           label="You borrow and sell"
           asset={USGInfo}
+          isLoading={isZapLoading}
           maxAmountParams={{
             maxWeiValue: 0n,
             setMaxAmount: () => {
@@ -147,7 +148,7 @@ export default function USGLeverageContent() {
 
       <GenericInputAssetAmount
         inputWeiValue={leveragedCollateralQuote}
-        isLoading={isDumpUSGLoading}
+        isLoading={isDumpUSGLoading || isZapLoading}
         label="You buy and deposit"
         depositSelect={<StaticCardAssetInput assetName={collateralInfo!.name} logoKey={collateralInfo!.logoKey} />}
         disabled={true}

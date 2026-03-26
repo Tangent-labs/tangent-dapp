@@ -5,7 +5,8 @@ import { USGMarketListProvider } from "@/components/products/usg/list/usg_market
 import { Address } from "viem"
 
 export default async function Layout({ params, children }: { params: { id: Address }; children: ReactNode }) {
-  const market = params
+  const market = await params
+
   const marketAddress = market?.id
 
   return (

@@ -8,7 +8,7 @@ import { USG_CONTRACT } from "../usg_repository"
 import { getQuote, getRoute } from "../global_quote_controller"
 import { AssetDataPriced, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Abi, Address, formatUnits, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
 import { BalanceAllowanceData, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../usg_type"
@@ -113,7 +113,6 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const { curveRoutes, handleQuote } = useRootContext()
   const { USGsUSGMetrics, lpUserPoints } = useUSGContext()
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
-
   const [isTxLoading, setIsTxLoading] = useState<boolean>(false)
 
   const [sellAssetPrice, setSellAssetPrice] = useState<number | null>(null)
@@ -212,12 +211,20 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
       })
     }
   }, [currentAddress])
+  // --- Quote handlers ---
+
+  const sellDebounceRef = useRef<NodeJS.Timeout | null>(null)
+  const buyDebounceRef = useRef<NodeJS.Timeout | null>(null)
+  const sellQuoteIdRef = useRef(0)
+  const buyQuoteIdRef = useRef(0)
 
   const handleSellChange = (value: bigint | undefined) => {
+    setPriceImpact(0)
     setSellWeiValue(value)
 
     if (value === undefined) {
       setBuyWeiValue(undefined)
+      setIsBuyValueLoading(false)
       return
     }
 
@@ -225,32 +232,55 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
     setIsBuyValueLoading(true)
 
+    if (sellDebounceRef.current) clearTimeout(sellDebounceRef.current)
+
     const quote = swapData?.quote
 
-    if (quote === "enso") {
-      fetchSwapValue(value, "sell")
-    } else if (quote === "1") {
+    if (quote === "1") {
       setBuyWeiValue(value)
       setIsBuyValueLoading(false)
-    } else {
-      const quote = swapData?.quote
-      const quoteContractAddress = [sellAssetInfo, buyAssetInfo].find((el) => el.symbol === swapData?.quoteContract)?.address as Address
-
-      if (value && quote) {
-        doCustomQuote(quote, value, currentAddress, quoteContractAddress).then((v) => {
-          setBuyWeiValue(v as bigint)
-          setIsBuyValueLoading(false)
-        })
-      }
+      return
     }
+    const quoteId = ++sellQuoteIdRef.current
+
+    sellDebounceRef.current = setTimeout(async () => {
+      try {
+        //
+        if (quote === "enso") {
+          const quote = await getQuote(value, currentAddress || zeroAddress, buyAssetInfo?.address, sellAssetInfo?.address, curveRoutes)
+          const handledQuote = handleQuote(quote.quote, quote.priceImpact)
+
+          if (quoteId !== sellQuoteIdRef.current) return
+          if (quote) {
+            setPriceImpact(Number(handledQuote.validPriceImpact) / 100)
+            setBuyWeiValue(handledQuote.validQuote)
+          }
+        }
+        //
+        else {
+          const quoteContractAddress = [sellAssetInfo, buyAssetInfo].find((el) => el.symbol === swapData?.quoteContract)?.address as Address
+
+          if (value && quote) {
+            const v = await doCustomQuote(quote, value, currentAddress, quoteContractAddress)
+            if (quoteId !== sellQuoteIdRef.current) return
+            setBuyWeiValue(v as bigint)
+          }
+        }
+      } finally {
+        if (quoteId === sellQuoteIdRef.current) {
+          setIsBuyValueLoading(false)
+        }
+      }
+    }, 1000)
   }
 
-  // --- Quote handlers ---
   const handleBuyChange = (value: bigint | undefined) => {
+    setPriceImpact(0)
     setBuyWeiValue(value)
 
     if (value === undefined) {
       setSellWeiValue(undefined)
+      setIsSellValueLoading(false)
       return
     }
 
@@ -258,63 +288,52 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
     setIsSellValueLoading(true)
 
+    if (buyDebounceRef.current) clearTimeout(buyDebounceRef.current)
+
     const quote = swapData?.quote
 
-    if (quote === "enso") {
-      fetchSwapValue(value, "buy")
-    } else if (quote === "1") {
+    if (quote === "1") {
       setSellWeiValue(value)
       setIsSellValueLoading(false)
-    } else {
-      if (sellWeiValue && quote) {
-        doCustomQuote(quote, sellWeiValue, currentAddress, buyAssetInfo?.address).then((v) => {
-          setBuyWeiValue(v as bigint)
-          setIsSellValueLoading(false)
-        })
-      }
+      return
     }
-  }
+    const quoteId = ++buyQuoteIdRef.current
 
-  const fetchSwapValue = async (value: bigint | undefined, type: "sell" | "buy") => {
-    if (!value || !sellAssetInfo || !buyAssetInfo) return
+    buyDebounceRef.current = setTimeout(async () => {
+      try {
+        if (quote === "enso") {
+          const quote = await getQuote(value, currentAddress || zeroAddress, sellAssetInfo?.address, buyAssetInfo?.address, curveRoutes)
+          const handledQuote = handleQuote(quote.quote, quote.priceImpact)
 
-    setPriceImpact(0)
-    try {
-      const quoteTokenIn = type === "sell" ? buyAssetInfo?.address : sellAssetInfo?.address
-      const quoteTokenOut = type === "sell" ? sellAssetInfo?.address : buyAssetInfo?.address
-
-      const { quote, priceImpact: pI } = await getQuote(value, currentAddress || zeroAddress, quoteTokenIn, quoteTokenOut, curveRoutes)
-
-      const { validQuote, validPriceImpact } = handleQuote(quote, pI)
-
-      if (validPriceImpact >= 0 && validQuote) {
-        setPriceImpact(Number(validPriceImpact) / 100)
-
-        if (type == "sell") {
-          setBuyWeiValue(validQuote)
-          setIsBuyValueLoading(false)
+          if (quoteId !== buyQuoteIdRef.current) return
+          if (quote) {
+            setPriceImpact(Number(handledQuote.validPriceImpact) / 100)
+            setSellWeiValue(handledQuote.validQuote)
+          }
         } else {
-          setSellWeiValue(validQuote)
+          if (value && quote) {
+            const v = await doCustomQuote(quote, value, currentAddress, buyAssetInfo?.address)
+            if (quoteId !== buyQuoteIdRef.current) return
+            setSellWeiValue(v as bigint)
+          }
+        }
+      } finally {
+        if (quoteId === buyQuoteIdRef.current) {
           setIsSellValueLoading(false)
         }
       }
-    } catch (error) {
-      console.error("Error fetching zap value:", error)
-      setIsBuyValueLoading(false)
-      setIsSellValueLoading(false)
-    }
+    }, 1000)
   }
 
   // --- Price fetching (needs name for computeSwapAssetPrice) ---
   useEffect(() => {
-    if (!buyAssetName) return
+    if (!buyAssetName || !USGsUSGMetrics) return
 
     const fetchSwapAssetData = async () => {
       setIsBuyValueLoading(true)
-      setBuyAssetPrice(1)
       try {
-        const data = await computeSwapAssetPrice(buyAssetName)
-        setBuyAssetPrice(data ?? 1)
+        const data = await computeSwapAssetPrice(buyAssetName, USGsUSGMetrics.USGPrice, USGsUSGMetrics.sUSGPrice)
+        setBuyAssetPrice(data)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
       } finally {
@@ -323,15 +342,15 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     }
 
     fetchSwapAssetData()
-  }, [buyAssetName])
+  }, [buyAssetName, USGsUSGMetrics?.USGPrice])
 
   useEffect(() => {
-    if (!sellAssetName) return
+    if (!sellAssetName || !USGsUSGMetrics) return
 
     const fetchSwapAssetData = async () => {
       setIsBuyValueLoading(true)
       try {
-        const data = await computeSwapAssetPrice(sellAssetName)
+        const data = await computeSwapAssetPrice(sellAssetName, USGsUSGMetrics.USGPrice, USGsUSGMetrics.sUSGPrice)
         setSellAssetPrice(data)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
@@ -341,7 +360,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     }
 
     fetchSwapAssetData()
-  }, [sellAssetName])
+  }, [sellAssetName, USGsUSGMetrics?.USGPrice])
 
   // --- Actions ---
   const actionApprove = async () => {

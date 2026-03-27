@@ -10,11 +10,11 @@ import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
 import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
-import { BuyAndMinOutFormatted } from "../leverage/usg_record_leverage_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
 import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove, matchBlockChainErrors } from "../usg_record_controller"
+import { BuyAndMinOutFormatted } from "../leverage/types"
 
 type USGRepayContextProps = {
   children: ReactNode
@@ -97,7 +97,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { loadUSGsUSGMetrics } = useUSGContext()
+  const { loadUSGsUSGMetrics, USGsUSGMetrics } = useUSGContext()
 
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
@@ -497,7 +497,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     const fetchSwapAssetData = async () => {
       setIsZapLoading(true)
       try {
-        const data = await computeSwapAssetPrice(repayAsset)
+        const data = await computeSwapAssetPrice(repayAsset, USGsUSGMetrics!.sUSGPrice, USGsUSGMetrics!.sUSGPrice)
         setSwapAssetPrice(data || 0)
       } catch (error) {
         console.error("Error fetching Enso data:", error)

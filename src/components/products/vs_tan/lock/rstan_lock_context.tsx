@@ -433,7 +433,8 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
     const fetchSwapAssetData = async () => {
       setIsZapLoading(true)
       try {
-        const data = await computeSwapAssetPrice(depositAsset)
+        // TODO 1 hardcoded, to fix
+        const data = await computeSwapAssetPrice(depositAsset, 1n, 1n)
 
         setSwapAssetPrice(data || 0)
       } catch (error) {

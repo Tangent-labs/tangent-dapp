@@ -5,7 +5,7 @@ import { useUSGContext } from "../../usg_context"
 import { USG_CONTRACT } from "../../usg_repository"
 import { formatEther, formatUnits, maxUint256 } from "viem"
 import { getQuote, getRoute } from "../../global_quote_controller"
-import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
+import { AssetDataPriced, CollateralInfo } from "@/types"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { useUSGMaketListContext } from "../../list/usg_market_list_context"
@@ -13,111 +13,11 @@ import { useRootContext } from "@/components/products/root/root_context"
 import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
 import { formatBigInt, formatBigIntAsNumber } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { computeBorrowValue, computeMaxLeverageAdjusted, doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
 import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove, matchBlockChainErrors } from "../usg_record_controller"
 import { ONE_ETHER } from "@/lib/utils"
-
-type USGLeverageContextProps = {
-  children: ReactNode
-}
-
-export type BuyAndMinOutFormatted = {
-  expectedFormatted: string
-  minOutFormatted: string
-  expectedWei?: bigint
-  minOutWei?: bigint
-}
-
-type USGLeverageContextValues = {
-  collateralInfo: AssetDataPriced
-
-  isDepositDisabled: boolean
-  setIsDepositDisabled: (arg: boolean) => void
-
-  isLeverageAllPosition: boolean
-  setIsLeverageAllPosition: (arg: boolean) => void
-
-  depositWeiValue?: bigint
-  setDepositWeiValue: (arg: bigint | undefined) => void
-  actionApprove: () => void
-  formState: FormState
-  borrowWeiValue?: bigint
-  setBorrowWeiValue: (arg: bigint | undefined) => void
-  setDepositAsset: (arg: string) => void
-  depositAsset: string | undefined
-
-  isDepositLoading: boolean
-  setIsDepositLoading: (arg: boolean) => void
-
-  isZapLoading: boolean
-  setIsZapLoading: (arg: boolean) => void
-
-  isDumpUSGLoading: boolean
-  setIsDumpUSGLoading: (arg: boolean) => void
-
-  swapAssetPrice: number | null
-
-  zapValue: bigint | undefined
-  setZapValue: (arg: bigint) => void
-  handleDepositChange: (arg: bigint | undefined) => void
-  depositAssetInfo: AssetDataPriced | CollateralInfo
-
-  slippage: number
-  setSlippage: (arg: number) => void
-
-  depositSliderPercent: number
-  setDepositSliderPercent: (arg: number) => void
-
-  leveragePercentage: number
-  setLeveragePercentage: (arg: number) => void
-
-  handleZapInputChange: (arg: bigint | undefined) => void
-
-  actionLeverage: () => void
-
-  actionZapLeverage: () => void
-
-  leveragedCollateralQuote: bigint | undefined
-  setLeveragedCollateralQuote: (arg: bigint) => void
-
-  expectedCollateral: { sum: string; result: string }
-
-  zapValuesFormatted: BuyAndMinOutFormatted
-  usgDumpValuesFormatted: BuyAndMinOutFormatted
-  swapValuesFormatted: BuyAndMinOutFormatted
-
-  maxDepositString: string
-
-  computedDepositAmount: bigint
-
-  isZapping: boolean
-
-  handleLeverageSliderChange: (arg: number) => void
-
-  handleBorrowChange: (arg: bigint | undefined) => Promise<void>
-
-  leverageRange: { sliderLegendValues: string[]; startEndRange: [string, string, string]; maxLeverageRaw: number; maxLeverageAdjusted: number }
-
-  // aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
-  slippageLoss: { tokenLoss: string; dollarLoss: string }
-
-  isTransactionBlockedBySlippage: boolean
-  setIsTransactionBlockedBySlippage: (arg: boolean) => void
-
-  priceImpactLoss: string
-
-  priceImpact: number
-
-  isTransactionBlockedByPriceImpact: boolean
-  setIsTransactionBlockedByPriceImpact: (arg: boolean) => void
-
-  leverageExceedsMaxLtv: boolean
-
-  USGDumpPriceImpact: number
-
-  USGDumpDollarLoss: number
-}
+import { USGLeverageContextProps, USGLeverageContextValues } from "./types"
 
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
 
@@ -139,7 +39,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { loadUSGsUSGMetrics } = useUSGContext()
+  const { loadUSGsUSGMetrics, USGsUSGMetrics } = useUSGContext()
 
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
@@ -441,7 +341,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     const fetchSwapAssetData = async () => {
       setIsZapLoading(true)
       try {
-        const data = await computeSwapAssetPrice(depositAsset)
+        const data = await computeSwapAssetPrice(depositAsset, USGsUSGMetrics!.sUSGPrice, USGsUSGMetrics!.sUSGPrice)
         setSwapAssetPrice(data || 0)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
@@ -950,9 +850,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const contextValue: USGLeverageContextValues = {
     collateralInfo,
-
     isDepositDisabled,
-
     setIsDepositDisabled,
     depositWeiValue,
     setDepositWeiValue,
@@ -963,77 +861,49 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     setBorrowWeiValue,
     setDepositAsset,
     depositAsset,
-
     isDepositLoading,
     setIsDepositLoading,
-
     isZapLoading,
     setIsZapLoading,
-
     isDumpUSGLoading,
     setIsDumpUSGLoading,
-
     zapValue,
     setZapValue,
-
     handleDepositChange,
     swapAssetPrice,
-
     depositAssetInfo,
-
     slippage,
     setSlippage,
-
     depositSliderPercent,
     setDepositSliderPercent,
-
     leveragePercentage,
     setLeveragePercentage,
-
     leveragedCollateralQuote,
     setLeveragedCollateralQuote,
-
     handleZapInputChange,
-
     actionZapLeverage,
-
     zapValuesFormatted,
     usgDumpValuesFormatted,
     swapValuesFormatted,
-
     expectedCollateral,
-
     maxDepositString,
-
     // aprVariation,
-
     isLeverageAllPosition,
     setIsLeverageAllPosition,
-
     computedDepositAmount,
-
     isZapping,
     handleLeverageSliderChange,
     handleBorrowChange,
-
     leverageRange,
-
     slippageLoss,
-
     isTransactionBlockedBySlippage,
     setIsTransactionBlockedBySlippage,
-
     priceImpactLoss,
-
     priceImpact,
-
     isTransactionBlockedByPriceImpact,
     setIsTransactionBlockedByPriceImpact,
-
     leverageExceedsMaxLtv,
-
     USGDumpPriceImpact,
-
     USGDumpDollarLoss,
   }
 

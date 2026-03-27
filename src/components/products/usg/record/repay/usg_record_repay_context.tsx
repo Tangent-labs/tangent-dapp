@@ -10,11 +10,11 @@ import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
 import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
-import { BuyAndMinOutFormatted } from "../leverage/usg_record_leverage_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
 import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove, matchBlockChainErrors } from "../usg_record_controller"
+import { BuyAndMinOutFormatted } from "../leverage/types"
 
 type USGRepayContextProps = {
   children: ReactNode
@@ -97,7 +97,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { loadUSGsUSGMetrics } = useUSGContext()
+  const { loadUSGsUSGMetrics, USGsUSGMetrics } = useUSGContext()
 
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
@@ -449,13 +449,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
         return maxWithDrawable > 0n ? maxWithDrawable : 0n
       }
 
-      if (maxWithDrawable > WITHDRAW_BUFFER && maxWithDrawable < BigInt(300_000n * 10n ** 18n)) {
-        return maxWithDrawable > WITHDRAW_BUFFER ? maxWithDrawable - WITHDRAW_BUFFER : 0n
-      }
-
-      if (maxWithDrawable > BigInt(300_000n * 10n ** 18n)) {
-        return (maxWithDrawable * 9995n) / 10000n
-      }
+      return maxWithDrawable > WITHDRAW_BUFFER ? (maxWithDrawable * 9995n) / 10000n : 0n
     }
 
     return 0n
@@ -472,7 +466,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
       try {
         const { quote, priceImpact: pI } = await getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address, curveRoutes)
 
-        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
+        const { validQuote, validPriceImpact } = handleQuote(quote, pI)
 
         if (validPriceImpact >= 0 && validQuote) {
           setUsgRepayedValue(validQuote)
@@ -503,7 +497,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     const fetchSwapAssetData = async () => {
       setIsZapLoading(true)
       try {
-        const data = await computeSwapAssetPrice(repayAsset)
+        const data = await computeSwapAssetPrice(repayAsset, USGsUSGMetrics!.sUSGPrice, USGsUSGMetrics!.sUSGPrice)
         setSwapAssetPrice(data || 0)
       } catch (error) {
         console.error("Error fetching Enso data:", error)

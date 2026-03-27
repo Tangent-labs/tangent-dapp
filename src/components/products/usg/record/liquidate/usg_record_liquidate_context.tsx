@@ -9,11 +9,11 @@ import { toastTx } from "@/components/design_system/toast"
 import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
-import { BuyAndMinOutFormatted } from "../leverage/usg_record_leverage_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { doMarketLiquidate, getLiquidateFormState } from "./usg_record_liquidate_controller"
 import { computedMinAmountOut, computeTransactionPotentialLoss } from "../usg_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { BuyAndMinOutFormatted } from "../leverage/types"
 
 type USGLiquidateContextProps = {
   children: ReactNode
@@ -220,7 +220,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         try {
           const { quote, priceImpact: pI } = await getQuote(value, currentAddress, USG_CONTRACT.USG, collateralInfo?.address, curveRoutes)
 
-          const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
+          const { validQuote, validPriceImpact } = handleQuote(quote, pI)
 
           if (validPriceImpact >= 0 && validQuote) {
             setUSGReceivedValue(validQuote)

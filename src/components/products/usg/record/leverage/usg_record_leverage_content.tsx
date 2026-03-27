@@ -25,7 +25,6 @@ export default function USGLeverageContent() {
     actionLeverage,
     handleBorrowChange,
     actionZapLeverage,
-    actionApproveZap,
     handleLeverageSliderChange,
     setIsTransactionBlockedBySlippage,
     setIsTransactionBlockedByPriceImpact,
@@ -34,6 +33,7 @@ export default function USGLeverageContent() {
     formState,
     isZapLoading,
     isDepositLoading,
+    isDumpUSGLoading,
     isDepositDisabled,
     zapValue,
     depositAssetInfo,
@@ -46,11 +46,9 @@ export default function USGLeverageContent() {
     depositSliderPercent,
     leveragePercentage,
     maxDepositString,
-    computedMaxLeverage,
     // aprVariation,
     isZapping,
-    sliderLegendValues,
-    startEndRange,
+    leverageRange,
     slippageLoss,
     priceImpact,
     priceImpactLoss,
@@ -85,7 +83,7 @@ export default function USGLeverageContent() {
                 caseType="deposit"
               />
             }
-            isLoading={false}
+            isLoading={isDepositLoading}
             asset={depositAssetInfo}
             label={isZapping ? "You sell" : "You deposit"}
             isZapping={isZapping}
@@ -120,7 +118,7 @@ export default function USGLeverageContent() {
         <div className="flex w-full items-end justify-between gap-1">
           <span className="flex items-start justify-start text-sm font-semibold md:text-xl">Borrow USG</span>
 
-          <div className="flex items-end justify-end text-xs text-subtitle">{computedMaxLeverage}</div>
+          <div className="flex items-end justify-end text-xs text-subtitle">{`Max leverage: x${leverageRange.maxLeverageAdjusted}`}</div>
         </div>
 
         <GenericInputAssetAmount
@@ -129,15 +127,20 @@ export default function USGLeverageContent() {
           depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
           label="You borrow and sell"
           asset={USGInfo}
+          isLoading={isZapLoading}
           maxAmountParams={{
             maxWeiValue: 0n,
-            setMaxAmount: () => handleLeverageSliderChange(Math.floor((1 / (1 - Number(marketData?.constants?.maxLTV) / 100000)) * 100) / 100),
+            setMaxAmount: () => {
+              handleLeverageSliderChange(leverageRange.maxLeverageAdjusted)
+            },
           }}
           sliderParams={{
             sliderPercentage: leveragePercentage,
-            setSliderPercentage: (e) => handleLeverageSliderChange(e),
-            sliderLegendValues,
-            startEndRange,
+            setSliderPercentage: (e) => {
+              handleLeverageSliderChange(e)
+            },
+            sliderLegendValues: leverageRange.sliderLegendValues,
+            startEndRange: leverageRange.startEndRange,
             unit: "x",
           }}
         />
@@ -145,7 +148,7 @@ export default function USGLeverageContent() {
 
       <GenericInputAssetAmount
         inputWeiValue={leveragedCollateralQuote}
-        isLoading={isDepositLoading}
+        isLoading={isDumpUSGLoading || isZapLoading}
         label="You buy and deposit"
         depositSelect={<StaticCardAssetInput assetName={collateralInfo!.name} logoKey={collateralInfo!.logoKey} />}
         disabled={true}
@@ -155,7 +158,7 @@ export default function USGLeverageContent() {
       />
 
       <RecapAccordion
-        isLoading={isDepositLoading || isZapLoading}
+        isLoading={isDumpUSGLoading || isZapLoading || isDepositLoading}
         isDisplayed={true}
         zappingParams={{
           label: "collateral",
@@ -200,7 +203,7 @@ export default function USGLeverageContent() {
 
       <FormButtons
         actions={{
-          handleApprove: depositAsset && isZapping ? actionApproveZap : actionApprove,
+          handleApprove: actionApprove,
           handleProcess: depositAsset && isZapping ? actionZapLeverage : actionLeverage,
         }}
         connect={connect}

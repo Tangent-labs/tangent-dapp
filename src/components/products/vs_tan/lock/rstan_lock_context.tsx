@@ -326,7 +326,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
       try {
         const { quote, priceImpact: pI } = await getQuote(value, currentAddress, VSTAN_CONTRACT?.TAN, depositAssetInfo?.address, curveRoutes)
 
-        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
+        const { validQuote, validPriceImpact } = handleQuote(quote, pI)
 
         if (validPriceImpact >= 0 && validQuote) {
           setZapValue(validQuote)
@@ -365,7 +365,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
           curveRoutes
         )
 
-        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
+        const { validQuote, validPriceImpact } = handleQuote(quote, pI)
 
         if (validPriceImpact >= 0 && validQuote) {
           setDepositWeiValue(validQuote)
@@ -433,7 +433,8 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
     const fetchSwapAssetData = async () => {
       setIsZapLoading(true)
       try {
-        const data = await computeSwapAssetPrice(depositAsset)
+        // TODO 1 hardcoded, to fix
+        const data = await computeSwapAssetPrice(depositAsset, 1n, 1n)
 
         setSwapAssetPrice(data || 0)
       } catch (error) {

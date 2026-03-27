@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { parseEther } from "viem"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -18,3 +19,4 @@ export function assert(condition: unknown, message: string): asserts condition {
 }
 
 export const PERCENTAGE_INPUT_AMOUNT = ["0", "25", "50", "75", "100"]
+export const ONE_ETHER = parseEther("1")

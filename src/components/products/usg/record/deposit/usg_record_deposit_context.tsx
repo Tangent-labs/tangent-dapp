@@ -10,7 +10,6 @@ import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
-import { BuyAndMinOutFormatted } from "../leverage/usg_record_leverage_context"
 import { Address, formatEther, formatUnits, parseEther, zeroAddress } from "viem"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
@@ -23,6 +22,7 @@ import {
   doApprove,
   matchBlockChainErrors,
 } from "../usg_record_controller"
+import { BuyAndMinOutFormatted } from "../leverage/types"
 
 type USGDepositContextProps = {
   children: ReactNode
@@ -101,7 +101,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   // ────────────────────────────────────────
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { loadUSGsUSGMetrics } = useUSGContext()
+  const { USGsUSGMetrics, loadUSGsUSGMetrics } = useUSGContext()
 
   const { isWellConnected, walletClient, currentAddress, isWalletContextLoaded, isConnected } = useWalletConnexionContext()
 
@@ -232,7 +232,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
           curveRoutes
         )
 
-        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
+        const { validQuote, validPriceImpact } = handleQuote(quote, pI)
 
         if (validPriceImpact >= 0 && validQuote) {
           setDepositWeiValue(BigInt(validQuote))
@@ -304,7 +304,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     const fetchSwapAssetData = async () => {
       setIsZapLoading(true)
       try {
-        const data = await computeSwapAssetPrice(depositAsset)
+        const data = await computeSwapAssetPrice(depositAsset, USGsUSGMetrics!.sUSGPrice, USGsUSGMetrics!.sUSGPrice)
 
         setSwapAssetPrice(data || 0)
       } catch (error) {
@@ -378,7 +378,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
         // Do nothing when price is stale
         if (requestId !== latestRequestRef.current) return // stale
 
-        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
+        const { validQuote, validPriceImpact } = handleQuote(quote, pI)
 
         if (validPriceImpact >= 0 && validQuote) {
           setZapValue(validQuote)
@@ -429,7 +429,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
       const computedMaxBorrowable = computeMaxBorrowable(maxBorrowable, marketData?.constants?.maxMarketDebt, marketData?.debtInfos?.totalDebt)
 
-      return computedMaxBorrowable
+      return computedMaxBorrowable >= 0n ? computedMaxBorrowable : 0n
     }
 
     return 0n

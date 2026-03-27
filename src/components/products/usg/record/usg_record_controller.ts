@@ -209,7 +209,12 @@ export function getMarketDisplayData(usgPrice: number, marketData?: MarketDetail
   } as USGMarketDisplayData
 }
 
-export const computeSwapAssetPrice = async (depositAsset: string) => {
+export const computeSwapAssetPrice = async (depositAsset: string, usgPrice: bigint, sUSGPrice: bigint) => {
+  if (depositAsset === "USG") {
+    return Number(formatEther(usgPrice))
+  } else if (depositAsset === "sUSG") {
+    return Number(formatEther(sUSGPrice))
+  }
   // Remove prefixes
   const lpName = depositAsset.replace("Gauge ", "").replace("Vault ", "")
   const token = ERC20S.find((el: Erc20Details) => el.name === lpName || el.symbol === depositAsset)

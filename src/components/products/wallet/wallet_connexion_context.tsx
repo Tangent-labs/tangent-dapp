@@ -25,7 +25,6 @@ export type WalletConnexionContextValues = {
   currentAddress: Address
   connect: () => void
   disconnect: () => void
-  changeNetwork: () => void
   walletClient: WalletClient | undefined
   canInteract: boolean
   userBalances: Array<{ balance: bigint; token: string; address: Address }>
@@ -124,11 +123,6 @@ export const WalletConnexionProvider = ({ children }: { children: ReactNode }) =
     await adapter?.disconnect()
   }
 
-  const changeNetwork = async () => {
-    if (!currentWallet) return
-    await adapter?.switchChain(dappConfig.chain.id)
-  }
-
   // ─── Balances ───
   useEffect(() => {
     if (currentAddress && currentAddress !== zeroAddress) {
@@ -150,7 +144,6 @@ export const WalletConnexionProvider = ({ children }: { children: ReactNode }) =
         walletClient,
         connect,
         disconnect,
-        changeNetwork,
         canInteract,
         userBalances,
         tokenInfo,

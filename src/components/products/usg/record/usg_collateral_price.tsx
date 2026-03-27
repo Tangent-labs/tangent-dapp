@@ -9,32 +9,33 @@ import {
   createChart,
   DeepPartial,
   IChartApi,
+  LineSeries,
   ISeriesApi,
   IPriceLine,
   LineStyle,
   TimeChartOptions,
-  Time,
   CandlestickSeriesOptions,
   CreatePriceLineOptions,
+  LineSeriesOptions,
   PriceLineOptions,
 } from "lightweight-charts"
 
-type GraphData = {
-  chain: string
-  address: string
-  data: { time: Time; open: number; high: number; low: number; close: number }[]
-}
+import { CollatGraphData } from "../usg_type"
+import { OraclePricePoint } from "./collat_price/collat_price_controller"
 
 type CollateralGraphParams = {
-  graphData: GraphData | null
+  graphData: CollatGraphData | null
+  oraclePriceData: OraclePricePoint[] | null
   isPending: boolean
   liquidationPrice: bigint
 }
 
-export const CollateralGraph = ({ graphData, isPending, liquidationPrice }: CollateralGraphParams) => {
+export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquidationPrice }: CollateralGraphParams) => {
+  const visibleBarsCount = 50
   const containerRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<IChartApi | null>(null)
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null)
+  const oracleSeriesRef = useRef<ISeriesApi<"Line"> | null>(null)
   const priceLineRef = useRef<IPriceLine | null>(null)
 
   const [showBackupBadge, setShowBackupBadge] = useState(false)
@@ -88,18 +89,51 @@ export const CollateralGraph = ({ graphData, isPending, liquidationPrice }: Coll
     const series = chart.addSeries(CandlestickSeries, seriesOptions)
     seriesRef.current = series
 
+    const oracleSeriesOptions: DeepPartial<LineSeriesOptions> = {
+      color: "#3b82f6",
+      lineWidth: 2,
+      crosshairMarkerVisible: true,
+      lastValueVisible: true,
+      priceLineVisible: false,
+      title: "Oracle",
+    }
+
+    const oracleSeries = chart.addSeries(LineSeries, oracleSeriesOptions)
+    oracleSeriesRef.current = oracleSeries
+
     return () => {
       chart.remove()
       chartRef.current = null
       seriesRef.current = null
+      oracleSeriesRef.current = null
       priceLineRef.current = null
     }
   }, [])
 
   useEffect(() => {
-    if (!seriesRef.current || !graphData?.data?.length) return
+    if (!seriesRef.current || !chartRef.current || !graphData?.data?.length) return
+
     seriesRef.current.setData(graphData.data)
+
+    const timeScale = chartRef.current.timeScale()
+    const barsInView = Math.min(visibleBarsCount, graphData.data.length)
+    const rightOffset = 2
+    const to = graphData.data.length - 1 + rightOffset
+    const from = Math.max(0, to - barsInView)
+
+    timeScale.setVisibleLogicalRange({ from, to })
   }, [graphData])
+
+  useEffect(() => {
+    if (!oracleSeriesRef.current) return
+
+    if (!oraclePriceData?.length) {
+      oracleSeriesRef.current.setData([])
+      return
+    }
+
+    oracleSeriesRef.current.setData(oraclePriceData)
+  }, [oraclePriceData])
 
   useEffect(() => {
     const series = seriesRef.current

@@ -6,7 +6,7 @@ import { Button } from "@/components/design_system/inputs/button"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export const PredepositWalletConnect = () => {
-  const { connect, disconnect, changeNetwork, isConnected, isChainConnected, currentAddress } = useWalletConnexionContext()
+  const { connect, disconnect, isConnected, isChainConnected, currentAddress } = useWalletConnexionContext()
 
   const buttonLabel = useMemo(() => {
     if (!isConnected) return "Connect Wallet"
@@ -22,15 +22,9 @@ export const PredepositWalletConnect = () => {
     await disconnect()
   }
 
-  const handleSwitchNetwork = async () => {
-    await changeNetwork()
-  }
-
   const handleButtonClick = () => {
     if (!isConnected) {
       handleConnect()
-    } else if (!isChainConnected) {
-      handleSwitchNetwork()
     } else if (isConnected) {
       handleDisconnect()
     }

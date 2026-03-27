@@ -1,5 +1,8 @@
 "use client"
 
+import { Time } from "lightweight-charts"
+import { OracleGraphDataPoint } from "../../client_api"
+
 export type PendleCollatApiType = {
   currency: string
   results: string
@@ -9,21 +12,18 @@ export type PendleCollatApiType = {
   total: number
 }
 
+const DAY_IN_SECONDS = 24 * 60 * 60
+
+const TIME_DIFF_BY_WINDOW: Record<string, number> = {
+  "15m": 3 * DAY_IN_SECONDS,
+  "1h": 12 * DAY_IN_SECONDS,
+  "6h": 60 * DAY_IN_SECONDS,
+  "1d": 240 * DAY_IN_SECONDS,
+  "7d": 720 * DAY_IN_SECONDS,
+}
+
 export const computeTimeDiff = (customStartTime: string) => {
-  switch (customStartTime) {
-    case "15m":
-      return 3 * 24 * 60 * 60
-    case "1h":
-      return 12 * 24 * 60 * 60
-    case "6h":
-      return 60 * 24 * 60 * 60
-    case "1d":
-      return 240 * 24 * 60 * 60
-    case "7d":
-      return 720 * 24 * 60 * 60
-    default:
-      return 120 * 24 * 60 * 60
-  }
+  return TIME_DIFF_BY_WINDOW[customStartTime] ?? 120 * DAY_IN_SECONDS
 }
 
 export const mapPendleResponseToGraphData = (resp: PendleCollatApiType, address: string) => {
@@ -52,6 +52,31 @@ export const mapPendleResponseToGraphData = (resp: PendleCollatApiType, address:
   return { chain: "1", address, data }
 }
 
+export type OraclePricePoint = { time: Time; value: number }
+
+export const mapOracleResponseToLineData = (resp: OracleGraphDataPoint[] | null): OraclePricePoint[] | null => {
+  if (!resp?.length) return null
+
+  return resp
+    .filter((row) => row.price != null && !isNaN(Number(row.price)))
+    .map((row) => ({
+      time: Math.floor(row.ts / 1000) as Time,
+      value: Number(row.price),
+    }))
+}
+
+const ORACLE_BUCKET_SIZE_BY_WINDOW: Record<string, number> = {
+  "15m": 15,
+  "1h": 60,
+  "6h": 360,
+  "1d": 1440,
+  "7d": 10080,
+}
+
+export const computeOracleBucketSizeMinutes = (customStartTime: string): number => {
+  return ORACLE_BUCKET_SIZE_BY_WINDOW[customStartTime] ?? 1440
+}
+
 const RANGE_TO_UNIT: Record<string, string> = {
   "1h": "hour",
   "1d": "day",
@@ -62,19 +87,14 @@ export const computePendleAggUnit = (customStartTime: string): string => {
   return RANGE_TO_UNIT[customStartTime]
 }
 
+const AGGREGATION_BY_WINDOW: Record<string, { aggNumber: number; aggUnit: string }> = {
+  "15m": { aggNumber: 15, aggUnit: "minute" },
+  "1h": { aggNumber: 1, aggUnit: "hour" },
+  "6h": { aggNumber: 6, aggUnit: "hour" },
+  "1d": { aggNumber: 1, aggUnit: "day" },
+  "7d": { aggNumber: 7, aggUnit: "day" },
+}
+
 export const computeAggNumberAndAggUnit = (customStartTime: string): { aggNumber: number; aggUnit: string } => {
-  switch (customStartTime) {
-    case "15m":
-      return { aggNumber: 15, aggUnit: "minute" }
-    case "1h":
-      return { aggNumber: 1, aggUnit: "hour" }
-    case "6h":
-      return { aggNumber: 6, aggUnit: "hour" }
-    case "1d":
-      return { aggNumber: 1, aggUnit: "day" }
-    case "7d":
-      return { aggNumber: 7, aggUnit: "day" }
-    default:
-      return { aggNumber: 1, aggUnit: "day" }
-  }
+  return AGGREGATION_BY_WINDOW[customStartTime] ?? { aggNumber: 1, aggUnit: "day" }
 }

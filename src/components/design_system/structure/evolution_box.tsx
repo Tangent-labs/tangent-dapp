@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { TokenImage } from "./token_image"
 import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 type EvolutionBoxProps = {
   originalValue: string | number
@@ -11,9 +12,11 @@ type EvolutionBoxProps = {
   label?: string
   logo?: string
   className?: string
+  displayHover?: boolean
+  hoverContent?: string
 }
 
-export function EvolutionBox({ label, originalValue, newValue, logo, className = "" }: EvolutionBoxProps) {
+export function EvolutionBox({ label, originalValue, newValue, logo, displayHover = false, hoverContent, className = "" }: EvolutionBoxProps) {
   const hasChanged = useMemo(() => {
     return newValue !== undefined && newValue !== originalValue
   }, [newValue, originalValue])
@@ -45,7 +48,21 @@ export function EvolutionBox({ label, originalValue, newValue, logo, className =
         )}
 
         <div className="flex items-center gap-2 text-sm">
-          <span className="font-semibold">{originalValue}</span>
+          {displayHover ? (
+            <>
+              <HoverCard openDelay={150} closeDelay={100}>
+                <HoverCardTrigger asChild>
+                  <span className="cursor-pointer font-semibold">{originalValue}</span>
+                </HoverCardTrigger>
+                <HoverCardContent side="top" align="center" className="z-[9999] flex w-full justify-center px-2 py-1 text-xs text-subtitle">
+                  {hoverContent}
+                </HoverCardContent>
+              </HoverCard>
+            </>
+          ) : (
+            <span className="font-semibold">{originalValue}</span>
+          )}
+
           {logo && (
             <div className="w-5">
               <TokenImage size={48} token={logo} />

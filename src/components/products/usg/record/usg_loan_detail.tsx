@@ -5,9 +5,10 @@ import { Title } from "@/components/design_system/structure/title"
 import { Divider } from "@/components/design_system/structure/divider"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
+import { formatBigIntAsNumber } from "@/lib/number_formatter"
 
 export function USGLoanDetail() {
-  const { marketDisplayData, futureMarketDisplayData } = useUSGRecordContext()
+  const { marketDisplayData, futureMarketDisplayData, marketData } = useUSGRecordContext()
 
   return (
     <ReliefCard className="flex flex-col px-3 py-2">
@@ -22,6 +23,8 @@ export function USGLoanDetail() {
             label={"Collateral value"}
             newValue={futureMarketDisplayData.collateralValue}
             className="flex-1"
+            displayHover={!!marketData?.collateralInfos?.positionCollateralAmount && marketData?.collateralInfos?.positionCollateralAmount > 0n}
+            hoverContent={formatBigIntAsNumber(marketData?.collateralInfos?.positionCollateralAmount || 0n, 18, 3) + " " + marketData?.collateralInfo?.symbol}
           />
           <EvolutionBox originalValue={marketDisplayData.debt} label={"Debt"} newValue={futureMarketDisplayData.debt} className="flex-1" logo="USG" />
         </div>

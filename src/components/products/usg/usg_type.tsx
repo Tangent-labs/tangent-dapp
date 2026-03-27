@@ -1,4 +1,5 @@
 import { Address } from "viem"
+import { Time } from "lightweight-charts"
 import { AprEntry, AssetData, AssetDataPriced, CollateralInfo, ERC20StaticInfos, Network, TokenAmountPriced } from "@/types"
 
 export type MarketPlatforms = "convex" | "curve"
@@ -595,4 +596,10 @@ export type TVLData = {
   pegkeepers: number
   susg: number
   total: number
+}
+
+export type CollatGraphData = {
+  chain: string
+  address: string
+  data: { time: Time; open: number; high: number; low: number; close: number }[]
 }

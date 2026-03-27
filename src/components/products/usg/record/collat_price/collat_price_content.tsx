@@ -8,7 +8,7 @@ import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 export function USGCollateralPrice() {
-  const { timeWindow, graphData, isPending, marketInfo, selectTab } = useCollateralPriceContext()
+  const { timeWindow, graphData, oraclePriceData, isPending, marketInfo, selectTab } = useCollateralPriceContext()
 
   const { liquidationPrice } = useUSGRecordContext()
 
@@ -36,7 +36,7 @@ export function USGCollateralPrice() {
       </div>
 
       <div className="w-full rounded-[10px]">
-        <CollateralGraph liquidationPrice={liquidationPrice} isPending={isPending} graphData={graphData} />
+        <CollateralGraph liquidationPrice={liquidationPrice} isPending={isPending} graphData={graphData} oraclePriceData={oraclePriceData} />
       </div>
     </ReliefCard>
   )

@@ -59,6 +59,41 @@ export const fetchGraphData = async (aggNumber: number, aggUnit: string, tokenIn
   }
 }
 
+export type OracleGraphDataPoint = {
+  ts: number
+  price: number | null
+}
+
+export const fetchOracleGraphData = async (
+  marketAddress: Address,
+  dateEnd: string,
+  bucketSizeMinutes: number,
+  bucketCount = 50
+): Promise<OracleGraphDataPoint[] | null> => {
+  try {
+    const safeBucketCount = Math.min(Math.max(1, bucketCount), 200)
+    const safeBucketSizeMinutes = Math.min(Math.max(1, bucketSizeMinutes), 10080)
+    const url = `${baseUrl}/oracle/${marketAddress}?dateEnd=${encodeURIComponent(dateEnd)}&bucketCount=${safeBucketCount}&bucketSizeMinutes=${safeBucketSizeMinutes}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Oracle API request failed with status ${response.status}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Oracle API failed to fetch data:", error)
+    return null
+  }
+}
+
 export const getUserPositions = async (user: Address, market: Address) => {
   try {
     const url = `${baseUrl}/events/${user}/${market}`

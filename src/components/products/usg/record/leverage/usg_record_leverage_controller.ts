@@ -5,7 +5,8 @@ import { AssetDataPriced, CollateralInfo } from "@/types"
 import { getBorrowCommonFormState } from "../usg_record_controller"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
+import { Address, EstimateContractGasParameters, formatEther, formatUnits, parseUnits, WalletClient, WriteContractParameters } from "viem"
+import { ONE_ETHER } from "@/lib/utils"
 
 export function getLeverageFormState(
   isTransactionBlockedByPriceImpact: boolean,
@@ -122,4 +123,44 @@ export const doMarketLeverage = async (
   const txData = { ...estimateGasData, gas }
   const hash = await walletClient.writeContract(txData as WriteContractParameters)
   return await waitForTransaction(hash)
+}
+
+export function computeBorrowValue(leveragedCollateralAmount: bigint, collateralPrice: bigint, usgPrice: bigint, leverageFactor: number) {
+  const collatToBuy = (leveragedCollateralAmount * parseUnits((leverageFactor - 1).toString(), 2)) / 100n
+
+  const expectedCollateralFinalDollarValue = (collatToBuy * collateralPrice) / ONE_ETHER
+  const usgAmountToBorrow = (expectedCollateralFinalDollarValue * ONE_ETHER) / usgPrice
+  return usgAmountToBorrow
+}
+
+// Regarding amounts in collateral in the deposit input
+// It's possible that the maximum leverage gets reduced related to the available USG to borrow on the market
+export function computeMaxLeverageAdjusted(
+  maxLTV: bigint,
+  positionLTV: bigint,
+  amountToDeposit: bigint,
+  collateralBalance: bigint,
+  maxMarketDebt: bigint,
+  totalMarketDebt: bigint
+) {
+  const ltv = Number(formatUnits(maxLTV, 5))
+  const maxLeverageRaw = 1 / (1 - ltv)
+  // 2% marging on maxLeverage to take into account liquidity price impact
+  const safeMaxLeverage = maxLeverageRaw * 0.98
+  const deltaAvailable = maxMarketDebt - totalMarketDebt
+  const availableToBorrow = deltaAvailable < 0n ? 0n : deltaAvailable
+
+  const _maxLTV = maxLTV * 10n ** 13n
+
+  const leveragedAmount = amountToDeposit + (collateralBalance * (_maxLTV - positionLTV)) / _maxLTV
+  let maxLeverageAdjusted = Math.floor(safeMaxLeverage * 100) / 100
+
+  if (leveragedAmount > 0n) {
+    // available = leveragedAmount * (adjustedLeverage - 1)
+    // adjustedLeverage = available / leveragedAmount + 1
+    const adjusted = leveragedAmount > 0n ? Number(formatEther((availableToBorrow * 10n ** 18n) / leveragedAmount)) + 1 : 1
+    maxLeverageAdjusted = Math.min(maxLeverageAdjusted, Math.floor(adjusted * 100) / 100)
+  }
+
+  return maxLeverageAdjusted
 }

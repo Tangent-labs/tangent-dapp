@@ -6,6 +6,7 @@ import { Address } from "viem"
 
 export default async function Layout({ params, children }: { params: { id: Address }; children: ReactNode }) {
   const market = await params
+
   const marketAddress = market?.id
 
   return (

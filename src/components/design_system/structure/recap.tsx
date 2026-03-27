@@ -16,6 +16,7 @@ export type SwapRecapParams = {
   minOut?: string | undefined
   liquidateMinOut?: string | undefined
   slippage: number | undefined
+  priceImpact: number
 }
 export type Recap = {
   isDisplayed: boolean
@@ -46,6 +47,14 @@ export function RecapAccordion({ isLoading, isDisplayed, zappingParams, classNam
                     <span className="text-subtitle">Slippage: </span>
                     <span className="font-semibold text-white">{zappingParams.slippage}%</span>
                   </div>
+
+                  {zappingParams.priceImpact > 0 && (
+                    <div className={cn("flex items-center justify-between", isLoading ? "shimmer" : "")}>
+                      <span className="text-subtitle">Price impact: </span>
+                      <span className="font-semibold text-white">{zappingParams.priceImpact}%</span>
+                    </div>
+                  )}
+
                   <div className={cn("flex items-center justify-between", isLoading ? "shimmer" : "")}>
                     <span className="text-subtitle">Expected {zappingParams?.label}: </span>
                     <span className="text-white">{zappingParams.expected}</span>

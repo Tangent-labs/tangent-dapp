@@ -4,11 +4,12 @@ import { Address, zeroAddress } from "viem"
 import { useUSGContext } from "../usg_context"
 import { USG_CONTRACT, USGMarkets } from "../usg_repository"
 import { AssetDataPriced, ListState } from "@/types"
+import { SortedRows } from "@/components/design_system/list/list_context"
 import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { ClaimableMarket, ClaimData, ClaimerInfo, USGStakingInfo } from "../usg_type"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { computeAndReturnPrices, doClaim, getUSGClaimOnChainData, transformClaimOnChainData } from "./usg_claim_controller"
+import { computeAndReturnPrices, doClaim, getUSGClaimOnChainData, sortClaimListByType, transformClaimOnChainData } from "./usg_claim_controller"
 
 type USGClaimContextProps = {
   children: ReactNode
@@ -21,7 +22,7 @@ type USGClaimContextValues = {
   onClickClaim: (marketsToClaim: ClaimableMarket[]) => void
   addToClaimableMarkets: (rowData: ClaimableMarket) => void
   marketsToClaim: ClaimableMarket[]
-  customSort: (arg: ListState) => void
+  getSortedRows: (rows: SortedRows, arg: ListState) => ClaimData[]
   onClickClaimAll: () => void
   USGsUSGMetrics: USGStakingInfo | undefined
 
@@ -67,10 +68,15 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
   const displayRows = useMemo(() => {
     if (!claimInfo || !rewardsInfo || !marketAprs) return []
     const rows = transformClaimOnChainData(claimInfo, rewardsInfo, marketAprs)
-    setIsLoading(false)
-    setMarketsToClaim([])
 
     return rows.filter((market) => Number(market?.totalDepositedValue) > 0)
+  }, [claimInfo, rewardsInfo, marketAprs])
+
+  useEffect(() => {
+    if (!claimInfo || !rewardsInfo || !marketAprs) return
+
+    setIsLoading(false)
+    setMarketsToClaim([])
   }, [claimInfo, rewardsInfo, marketAprs])
 
   const actionClaim = useCallback(
@@ -83,12 +89,27 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
     [currentAddress, rewardsInfo]
   )
 
-  const customSort = (listState: ListState) => {
+  const getSortedRows = (rows: SortedRows, listState: ListState) => {
     const { key, direction } = listState.sort!
+    const claimRows = rows as ClaimData[]
 
-    displayRows.sort((elementA: ClaimData, elementB: ClaimData) => {
-      const aValue = Number(elementA[key as keyof ClaimData])
-      const bValue = Number(elementB[key as keyof ClaimData])
+    return [...claimRows].sort((elementA: ClaimData, elementB: ClaimData) => {
+      let aValue: number | string = elementA[key as keyof ClaimData] as number | string
+      let bValue: number | string = elementB[key as keyof ClaimData] as number | string
+
+      if (key === "marketName") {
+        const compared = elementA.marketName.localeCompare(elementB.marketName)
+        return direction === "asc" ? compared : -compared
+      }
+
+      if (key === "apr") {
+        return sortClaimListByType(elementA, elementB, direction)
+      }
+
+      if (key === "totalClaimableValue" || key === "totalDepositedValue") {
+        aValue = Number(elementA[key as keyof ClaimData] ?? 0)
+        bValue = Number(elementB[key as keyof ClaimData] ?? 0)
+      }
 
       if (aValue < bValue) return direction === "asc" ? -1 : 1
       if (aValue > bValue) return direction === "asc" ? 1 : -1
@@ -151,7 +172,7 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
     addToClaimableMarkets,
     marketsToClaim,
     isLoading,
-    customSort,
+    getSortedRows,
     onClickClaimAll,
     USGsUSGMetrics,
     totalDeposited: totals.totalDeposited,

@@ -26,8 +26,8 @@ import { PointsCampaignLiveCard } from "@/components/design_system/structure/poi
 const listeState: ListState = {
   search: undefined,
   sort: {
-    key: "market",
-    direction: "asc",
+    key: "totalClaimableValue",
+    direction: "desc",
   },
 }
 
@@ -48,7 +48,7 @@ export default function USGClaimContent() {
   const color1 = "#0077ff67"
   const color2 = "#0075FF"
 
-  const { displayRows, onClickClaim, marketsToClaim, customSort, isLoading, onClickClaimAll, totalDeposited, totalClaimable } = useUSGClaimContext()
+  const { displayRows, onClickClaim, marketsToClaim, getSortedRows, isLoading, onClickClaimAll, totalDeposited, totalClaimable } = useUSGClaimContext()
 
   const { isWellConnected, connect } = useWalletConnexionContext()
 
@@ -115,7 +115,7 @@ export default function USGClaimContent() {
 
       <div className="mt-3 flex w-full flex-col items-start justify-start gap-3 md:flex-row">
         <div className="flex w-full flex-col md:w-9/12">
-          <ListProvider customSort={customSort} _headers={claimListHeaders} _rows={displayRows} _listState={listeState}>
+          <ListProvider getSortedRows={getSortedRows} _headers={claimListHeaders} _rows={displayRows} _listState={listeState}>
             <ClaimList />
           </ListProvider>
 

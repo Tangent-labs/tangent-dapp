@@ -245,29 +245,25 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   }, [frxUSDPrice])
 
   const handleDepositChange = (value: bigint | undefined) => {
-    if (value) {
-      setUSDCDepositValue(value)
+    setUSDCDepositValue(value)
 
-      const getUSDCPredepositQuote = async (depositValue: bigint) => {
-        const quote = await fetchQuote(depositValue, USGTokens[1]["USG-USDC"])
-        setUSGUSDCDepositValue(quote)
-      }
-
-      getUSDCPredepositQuote(value)
+    const getUSDCPredepositQuote = async (depositValue: bigint) => {
+      const quote = await fetchQuote(depositValue, USGTokens[1]["USG-USDC"])
+      setUSGUSDCDepositValue(quote)
     }
+
+    getUSDCPredepositQuote(value || 0n)
   }
 
   const handleDepositfrxUSDChange = (value: bigint | undefined) => {
-    if (value) {
-      setfrxUSDDepositValue(value)
+    setfrxUSDDepositValue(value)
 
-      const getfrxUSDPredepositQuote = async (depositValue: bigint) => {
-        const quote = await fetchQuote(depositValue, USGTokens[1]["USG-frxUSD"])
-        setUSGfrxUSDDepositValue(quote)
-      }
-
-      getfrxUSDPredepositQuote(value)
+    const getfrxUSDPredepositQuote = async (depositValue: bigint) => {
+      const quote = await fetchQuote(depositValue, USGTokens[1]["USG-frxUSD"])
+      setUSGfrxUSDDepositValue(quote)
     }
+
+    getfrxUSDPredepositQuote(value || 0n)
   }
 
   useEffect(() => {
@@ -358,23 +354,26 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     if (USDCDepositValue) {
       setIsUSDCDepositLoading(true)
 
-      await toastTx(deposit(walletClient!, USDCDepositValue, slippage, USGTokens[1]["USG-USDC"]), {
-        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-        success: () => ({
-          type: "Success",
-          content: "USDC successfully deposited.",
-        }),
-        error: () => {
-          setIsUSDCDepositLoading(false)
-          return { type: "Error", content: "Unable to proceed with the deposit." }
-        },
-      })
+      try {
+        await toastTx(deposit(walletClient!, USDCDepositValue, slippage, USGTokens[1]["USG-USDC"]), {
+          pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+          success: () => ({
+            type: "Success",
+            content: "USDC successfully deposited.",
+          }),
+          error: () => {
+            return { type: "Error", content: "Unable to proceed with the deposit." }
+          },
+        })
 
-      getUSGUSDCBalanceAllowance(walletClient!)
-      setUSDCDepositValue(undefined)
-      setUSDCDepositSliderPercent(0)
-      setUSGUSDCDepositValue(0n)
-      setIsUSDCDepositLoading(false)
+        getUSGUSDCBalanceAllowance(walletClient!)
+        setUSDCDepositValue(undefined)
+        setUSDCDepositSliderPercent(0)
+        setUSGUSDCDepositValue(0n)
+        setIsUSDCDepositLoading(false)
+      } catch {
+        setIsUSDCDepositLoading(false)
+      }
     }
   }
 
@@ -382,24 +381,26 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     if (frxUSDDepositValue) {
       setIsfrxUSDDepositLoading(true)
 
-      await toastTx(deposit(walletClient!, frxUSDDepositValue, slippage, USGTokens[1]["USG-frxUSD"]), {
-        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
-        success: () => ({
-          type: "Success",
-          content: "frxUSD successfully deposited.",
-        }),
+      try {
+        await toastTx(deposit(walletClient!, frxUSDDepositValue, slippage, USGTokens[1]["USG-frxUSD"]), {
+          pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+          success: () => ({
+            type: "Success",
+            content: "frxUSD successfully deposited.",
+          }),
 
-        error: () => {
-          setIsfrxUSDDepositLoading(false)
-          return { type: "Error", content: "Unable to proceed with the deposit." }
-        },
-      })
-
-      getUSGfrxUSDBalanceAllowance(walletClient!)
-      setfrxUSDDepositValue(undefined)
-      setfrxUSDDepositSliderPercent(0)
-      setUSGfrxUSDDepositValue(0n)
-      setIsfrxUSDDepositLoading(false)
+          error: () => {
+            return { type: "Error", content: "Unable to proceed with the deposit." }
+          },
+        })
+        getUSGfrxUSDBalanceAllowance(walletClient!)
+        setfrxUSDDepositValue(undefined)
+        setfrxUSDDepositSliderPercent(0)
+        setUSGfrxUSDDepositValue(0n)
+        setIsfrxUSDDepositLoading(false)
+      } catch {
+        setIsfrxUSDDepositLoading(false)
+      }
     }
   }
 
@@ -482,18 +483,22 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   }
 
   const projectedUSDCTANAllocation = useMemo(() => {
-    if (USDCDepositValue) {
-      return (USDCDepositValue * 10n ** 12n * TOTAL_TAN_ALLOCATION) / (TOTAL_DEPOSIT_CAP * 10n ** 18n)
+    if (USGUSDCDepositValue) {
+      const minAmountOutWei = computedMinAmountOut(USGUSDCDepositValue, slippage)
+
+      return (minAmountOutWei * TOTAL_TAN_ALLOCATION) / (TOTAL_DEPOSIT_CAP * 10n ** 18n)
     }
     return 0n
-  }, [USDCDepositValue])
+  }, [USGUSDCDepositValue, slippage])
 
   const projectedfrxUSDTANAllocation = useMemo(() => {
-    if (frxUSDDepositValue) {
-      return (frxUSDDepositValue * TOTAL_TAN_ALLOCATION) / (TOTAL_DEPOSIT_CAP * 10n ** 18n)
+    if (USGfrxUSDDepositValue) {
+      const minAmountOutWei = computedMinAmountOut(USGfrxUSDDepositValue, slippage)
+
+      return (minAmountOutWei * TOTAL_TAN_ALLOCATION) / (TOTAL_DEPOSIT_CAP * 10n ** 18n)
     }
     return 0n
-  }, [frxUSDDepositValue])
+  }, [USGfrxUSDDepositValue, slippage])
 
   const minUSGUSDCReceived = useMemo(() => {
     if (USGUSDCDepositValue) {

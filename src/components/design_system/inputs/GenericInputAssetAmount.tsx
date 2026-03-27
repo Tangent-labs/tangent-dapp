@@ -133,7 +133,6 @@ export function GenericInputAssetAmount({
       return
     }
     const percentage = Number((inputWeiValue * 100n) / maxWeiValue)
-
     setSliderPercentage(Math.min(Number(sliderStartEndRange[1]), Math.max(Number(sliderStartEndRange[0]), percentage)))
   }, [inputWeiValue, maxWeiValue])
 
@@ -151,10 +150,7 @@ export function GenericInputAssetAmount({
   // Updates local display and calls parent callback with debounce
   // ---------------------------
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let val = e.target.value.replace(",", ".").trim()
-
-    // Remove leading zeros (but keep "0." for decimals)
-    val = val.replace(/^0+(\d)/, "$1")
+    const val = e.target.value.replace(",", ".").trim()
 
     // Allow empty string or valid numeric input
     if (val === "" || /^\d*\.?\d*$/.test(val)) {
@@ -176,6 +172,13 @@ export function GenericInputAssetAmount({
           }
         }
       }, 400)
+    }
+  }
+
+  const handleBlur = () => {
+    if (localDisplay && localDisplay !== ".") {
+      const cleaned = localDisplay.replace(/^0+(\d)/, "$1")
+      setLocalDisplay(cleaned)
     }
   }
 
@@ -223,7 +226,10 @@ export function GenericInputAssetAmount({
   const handleMaxClick = () => {
     setMaxAmount()
     setSliderPercentage(Number(sliderStartEndRange[1]))
-    setLocalDisplay(truncateDecimals(formatUnits(maxWeiValue, decimals), asset?.displayDecimals))
+    // Do not treat this part for the leverage, it's externally controlled
+    if (maxWeiValue !== 0n) {
+      setLocalDisplay(truncateDecimals(formatUnits(maxWeiValue, decimals), asset?.displayDecimals))
+    }
   }
 
   // ---------------------------
@@ -283,6 +289,7 @@ export function GenericInputAssetAmount({
               value={isLoading ? "-" : localDisplay}
               placeholder="0.00"
               onChange={handleInputChange}
+              onBlur={handleBlur}
               className={cn(
                 "auto-grow",
                 "block w-full",

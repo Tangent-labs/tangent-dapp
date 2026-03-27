@@ -101,9 +101,9 @@ export const computeAndReturnPrices = async (harvestInfo: HarvesterInfo[]) => {
 }
 
 export const harvestListHeaders: ListHeaderData[] = [
-  { label: "Assets", key: "assets" },
+  { label: "Assets", key: "asset", sort: "sort" },
   { label: "Total Rewards", key: "totalRewards", sort: "sort" },
-  { label: "Harvester Fees", key: "harvesterFees", sort: "sort" },
+  { label: "Harvester Fees", key: "percentage", sort: "sort" },
   { label: "Harvester Rewards", key: "harvesterRewards", sort: "sort" },
-  { label: "", key: "" },
+  { label: "Last Harvest", key: "lastHarvestDate", sort: "sort" },
 ]

@@ -3,9 +3,9 @@
 import { toast } from "react-toastify"
 import { useUSGContext } from "../../usg_context"
 import { USG_CONTRACT } from "../../usg_repository"
-import { formatEther, formatUnits, parseEther } from "viem"
+import { formatEther, formatUnits, maxUint256 } from "viem"
 import { getQuote, getRoute } from "../../global_quote_controller"
-import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
+import { AssetDataPriced, CollateralInfo } from "@/types"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { useUSGMaketListContext } from "../../list/usg_market_list_context"
@@ -13,112 +13,11 @@ import { useRootContext } from "@/components/products/root/root_context"
 import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
 import { formatBigInt, formatBigIntAsNumber } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { computeBorrowValue, computeMaxLeverageAdjusted, doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
 import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove, matchBlockChainErrors } from "../usg_record_controller"
-
-type USGLeverageContextProps = {
-  children: ReactNode
-}
-
-export type BuyAndMinOutFormatted = {
-  expectedFormatted: string
-  minOutFormatted: string
-  expectedWei?: bigint
-  minOutWei?: bigint
-}
-
-type USGLeverageContextValues = {
-  collateralInfo: AssetDataPriced
-
-  isDepositDisabled: boolean
-  setIsDepositDisabled: (arg: boolean) => void
-
-  isLeverageAllPosition: boolean
-  setIsLeverageAllPosition: (arg: boolean) => void
-
-  depositWeiValue?: bigint
-  setDepositWeiValue: (arg: bigint | undefined) => void
-  actionApprove: () => void
-  actionApproveZap: () => void
-  formState: FormState
-  borrowWeiValue?: bigint
-  setBorrowWeiValue: (arg: bigint | undefined) => void
-  setDepositAsset: (arg: string) => void
-  depositAsset: string | undefined
-
-  isDepositLoading: boolean
-  setIsDepositLoading: (arg: boolean) => void
-
-  isZapLoading: boolean
-  setIsZapLoading: (arg: boolean) => void
-
-  swapAssetPrice: number | null
-
-  zapValue: bigint | undefined
-  setZapValue: (arg: bigint) => void
-  handleDepositChange: (arg: bigint | undefined) => void
-  depositAssetInfo: AssetDataPriced | CollateralInfo
-
-  slippage: number
-  setSlippage: (arg: number) => void
-
-  depositSliderPercent: number
-  setDepositSliderPercent: (arg: number) => void
-
-  leveragePercentage: number
-  setLeveragePercentage: (arg: number) => void
-
-  handleZapInputChange: (arg: bigint | undefined) => void
-
-  actionLeverage: () => void
-
-  actionZapLeverage: () => void
-
-  leveragedCollateralQuote: bigint | undefined
-  setLeveragedCollateralQuote: (arg: bigint) => void
-
-  expectedCollateral: { sum: string; result: string }
-
-  zapValuesFormatted: BuyAndMinOutFormatted
-  usgDumpValuesFormatted: BuyAndMinOutFormatted
-  swapValuesFormatted: BuyAndMinOutFormatted
-
-  maxDepositString: string
-
-  computedMaxLeverage: string
-
-  computedDepositAmount: bigint
-
-  isZapping: boolean
-
-  handleLeverageSliderChange: (arg: number) => void
-
-  handleBorrowChange: (arg: bigint | undefined) => Promise<void>
-
-  sliderLegendValues?: string[] | undefined
-
-  startEndRange?: [string, string, string] | undefined
-
-  // aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
-  slippageLoss: { tokenLoss: string; dollarLoss: string }
-
-  isTransactionBlockedBySlippage: boolean
-  setIsTransactionBlockedBySlippage: (arg: boolean) => void
-
-  priceImpactLoss: string
-
-  priceImpact: number
-
-  isTransactionBlockedByPriceImpact: boolean
-  setIsTransactionBlockedByPriceImpact: (arg: boolean) => void
-
-  leverageExceedsMaxLtv: boolean
-
-  USGDumpPriceImpact: number
-
-  USGDumpDollarLoss: number
-}
+import { ONE_ETHER } from "@/lib/utils"
+import { USGLeverageContextProps, USGLeverageContextValues } from "./types"
 
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
 
@@ -140,15 +39,13 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { loadUSGsUSGMetrics } = useUSGContext()
+  const { loadUSGsUSGMetrics, USGsUSGMetrics } = useUSGContext()
 
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
   const [isDepositDisabled, setIsDepositDisabled] = useState<boolean>(false)
 
   const [isLeverageAllPosition, setIsLeverageAllPosition] = useState<boolean>(false)
-
-  const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
 
   const [depositAsset, setDepositAsset] = useState<string | undefined>(undefined)
 
@@ -160,11 +57,15 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
 
+  const [borrowWeiValue, setBorrowWeiValue] = useState<bigint | undefined>()
+
+  const [zapValue, setZapValue] = useState<bigint | undefined>()
+
   const [isDepositLoading, setIsDepositLoading] = useState(false)
 
   const [isZapLoading, setIsZapLoading] = useState(false)
 
-  const [zapValue, setZapValue] = useState<bigint | undefined>()
+  const [isDumpUSGLoading, setIsDumpUSGLoading] = useState(false)
 
   const [leveragedCollateralQuote, setLeveragedCollateralQuote] = useState<bigint | undefined>()
 
@@ -217,62 +118,113 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     return asset
   }, [depositAsset, swapAssetPrice, marketData])
 
-  function computeBorrowValue(depositedCollateralWei: bigint, leverageMultiplicator: number) {
-    const collatToBuy = (depositedCollateralWei * BigInt(Math.trunc(leverageMultiplicator * 100))) / 100n - depositedCollateralWei
-    const collatPrice = marketData?.collateralInfos.collateralUSDPrice || 0n
-    const expectedCollateralFinalDollarValue = (collatToBuy * collatPrice) / parseEther("1")
-    return (expectedCollateralFinalDollarValue * parseEther("1")) / globalData.usgPriceWei
-  }
-
   const activeInputRef = useRef<"deposit" | "zap" | null>(null)
   const requestIdRef = useRef<number>(0)
 
-  function handleDepositChange(value: bigint | undefined) {
+  async function handleDepositChange(value: bigint | undefined) {
+    // Do nothing if marketData are not charged
+    if (!marketData) {
+      return
+    }
     activeInputRef.current = "deposit"
-    const valueWei = BigInt(value || 0n)
-    setDepositWeiValue(valueWei)
+    const inputValueWei = BigInt(value || 0n)
+
+    setDepositWeiValue(inputValueWei)
+    setPriceImpact(0)
+
+    const maxLTV = (marketData?.constants.maxLTV || 0n) * 10n ** 13n
+    const stakedCollatAmount = marketData?.collateralInfos.positionCollateralAmount || 0n
+
+    const rebasedStakedCollatAmount = (stakedCollatAmount * (maxLTV - currentLTV)) / maxLTV
 
     // NO ZAP CASE
-    if (!value || !currentAddress || !depositAssetInfo) {
-      updateBorrowWeiValue(computeBorrowValue(valueWei, leveragePercentage))
+    if (!value || !depositAssetInfo || !isZapping) {
+      const collatToLeverage = inputValueWei + rebasedStakedCollatAmount
+
+      const maxLeverageAdjusted = computeMaxLeverageAdjusted(
+        marketData?.constants.maxLTV || 0n,
+        currentLTV,
+        collatToLeverage,
+        marketData?.collateralInfos.positionCollateralAmount || 0n,
+        marketData?.constants.maxMarketDebt || 0n,
+        marketData?.debtInfos.totalDebt || 0n
+      )
+
+      const newLeveragePercentage = leveragePercentage > maxLeverageAdjusted ? maxLeverageAdjusted : leveragePercentage
+
+      // Adjust the leverage slider cursor after the maxLeverageAdjusted is computed.
+      // Only when maxLeverageAdjusted becomes smaller than the current to dont be over the slider value
+      setLeveragePercentage(newLeveragePercentage)
+
+      const borrowedAmount = computeBorrowValue(
+        collatToLeverage,
+        marketData?.collateralInfos.collateralUSDPrice || 0n,
+        globalData.usgPriceWei,
+        newLeveragePercentage
+      )
+      setBorrowWeiValue(borrowedAmount)
+      await quoteDumpUSG(borrowedAmount)
       return
     }
-
-    if (depositAssetInfo.address === marketInfo?.collatAddress) {
-      updateBorrowWeiValue(computeBorrowValue(valueWei, leveragePercentage))
-      return
-    }
-
     //  ZAP CASE
-    const requestId = ++requestIdRef.current
-    setIsZapLoading(true)
+    else {
+      // Allows to take into account only the last fired quote and not the previous one
+      // The input will load until the last request hasn't answered
+      const requestId = ++requestIdRef.current
+      setIsZapLoading(true)
 
-    getQuote(value, currentAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
-      .then(({ quote, priceImpact: pI }) => {
-        if (requestId !== requestIdRef.current) return
+      getQuote(value, currentAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
+        .then(async ({ quote, priceImpact: pI }) => {
+          if (requestId !== requestIdRef.current) return
 
-        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
+          const { validQuote, validPriceImpact } = handleQuote(quote, pI)
+          if (validPriceImpact >= 0 && validQuote) {
+            const collatToLeverage = validQuote + rebasedStakedCollatAmount
 
-        if (validPriceImpact >= 0 && validQuote) {
-          updateBorrowWeiValue(computeBorrowValue(validQuote, leveragePercentage))
-          setZapValue(validQuote)
-          setPriceImpact(Number(validPriceImpact) / 100)
-        }
-      })
-      .catch((e) => {
-        if (requestId !== requestIdRef.current) return
-        console.error("Error fetching zap value:", e)
-      })
-      .finally(() => {
-        if (requestId === requestIdRef.current) setIsZapLoading(false)
-      })
+            const maxLeverageAdjusted = computeMaxLeverageAdjusted(
+              marketData?.constants.maxLTV || 0n,
+              currentLTV,
+              collatToLeverage,
+              marketData?.collateralInfos.positionCollateralAmount || 0n,
+              marketData?.constants.maxMarketDebt || 0n,
+              marketData?.debtInfos.totalDebt || 0n
+            )
+
+            const newLeveragePercentage = leveragePercentage > maxLeverageAdjusted ? maxLeverageAdjusted : leveragePercentage
+
+            const borrowedAmount = computeBorrowValue(
+              collatToLeverage,
+              marketData?.collateralInfos.collateralUSDPrice || 0n,
+              globalData.usgPriceWei,
+              newLeveragePercentage
+            )
+
+            setLeveragePercentage(newLeveragePercentage)
+            setBorrowWeiValue(borrowedAmount)
+            await quoteDumpUSG(borrowedAmount)
+            setZapValue(validQuote)
+            setPriceImpact(Number(validPriceImpact) / 100)
+          }
+        })
+        .catch((e) => {
+          if (requestId !== requestIdRef.current) return
+          console.error("Error fetching zap value:", e)
+        })
+        .finally(() => {
+          if (requestId === requestIdRef.current) setIsZapLoading(false)
+        })
+    }
   }
 
-  function handleZapInputChange(value: bigint | undefined) {
+  async function handleZapInputChange(value: bigint | undefined) {
     activeInputRef.current = "zap"
     const valueWei = value ?? 0n
+    const maxLTV = (marketData?.constants.maxLTV || 0n) * 10n ** 13n
+    const stakedCollatAmount = marketData?.collateralInfos.positionCollateralAmount || 0n
+    const rebasedStakedCollatAmount = (stakedCollatAmount * (maxLTV - currentLTV)) / maxLTV
 
     setZapValue(valueWei)
+    setPriceImpact(0)
 
     if (!value || !currentAddress || !depositAssetInfo) {
       setDepositWeiValue(undefined)
@@ -282,11 +234,37 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     const requestId = ++requestIdRef.current
     setIsDepositLoading(true)
 
+    const collatToLeverage = valueWei + rebasedStakedCollatAmount
+
+    // Regarding amounts in collateral in the deposit input
+    // It's possible that the maximum leverage gets reduced related to the available USG to borrow on the market
+    const maxLeverageAdjusted = computeMaxLeverageAdjusted(
+      marketData?.constants.maxLTV || 0n,
+      currentLTV,
+      collatToLeverage,
+      marketData?.collateralInfos.positionCollateralAmount || 0n,
+      marketData?.constants.maxMarketDebt || 0n,
+      marketData?.debtInfos.totalDebt || 0n
+    )
+
+    const newLeveragePercentage = leveragePercentage > maxLeverageAdjusted ? maxLeverageAdjusted : leveragePercentage
+
+    const borrowedAmount = computeBorrowValue(
+      valueWei + rebasedStakedCollatAmount,
+      marketData?.collateralInfos.collateralUSDPrice || 0n,
+      globalData.usgPriceWei,
+      newLeveragePercentage
+    )
+
+    // Adjust the leverage slider cursor after the maxLeverageAdjusted is computed.
+    setLeveragePercentage(newLeveragePercentage)
+    setBorrowWeiValue(borrowedAmount)
+    await quoteDumpUSG(borrowedAmount)
     getQuote(valueWei, currentAddress, depositAssetInfo?.address, marketInfo?.collatAddress, curveRoutes)
       .then(({ quote, priceImpact: pI }) => {
         if (requestId !== requestIdRef.current) return
 
-        const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
+        const { validQuote, validPriceImpact } = handleQuote(quote, pI)
 
         if (validPriceImpact >= 0 && validQuote) {
           setDepositWeiValue(BigInt(validQuote))
@@ -304,27 +282,58 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       })
   }
 
-  async function handleBorrowChange(borrowValue: bigint | undefined) {
-    await updateBorrowWeiValue(borrowValue)
-    const collatPrice = marketData?.collateralInfos.collateralUSDPrice || 0n
-    const depositDollarValueWei = ((depositWeiValue || 0n) * collatPrice) / parseEther("1")
-    const totalCollatDollarValue = depositDollarValueWei + (borrowValue || 0n)
-    const leverageMultiplicator = Number(formatEther((totalCollatDollarValue * parseEther("1")) / depositDollarValueWei))
-    setLeveragePercentage(leverageMultiplicator)
-  }
-
   const leverageDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const latestDumpUSGRequest = useRef(0)
+
+  async function handleBorrowChange(borrowValue: bigint | undefined) {
+    const borrowWei = borrowValue || 0n
+    await quoteDumpUSG(borrowWei)
+    setBorrowWeiValue(borrowWei)
+
+    const maxLTV = (marketData?.constants.maxLTV || 0n) * 10n ** 13n
+    const collatValueToDeposit = (((isZapping ? zapValue : depositWeiValue) || 0n) * (marketData?.collateralInfos.collateralUSDPrice || 0n)) / ONE_ETHER
+    const stakedCollateralUSDValue = marketData?.collateralInfos.positionCollateralUSDValue || 0n
+
+    const leveragedUSD = collatValueToDeposit + (stakedCollateralUSDValue * (maxLTV - currentLTV)) / maxLTV
+
+    const borrowUSDValue = (borrowWei * globalData.usgPriceWei) / ONE_ETHER
+
+    const leverage = Number(formatEther(((leveragedUSD + borrowUSDValue) * ONE_ETHER) / leveragedUSD))
+
+    setLeveragePercentage(leverage < leverageRange.maxLeverageAdjusted ? leverage : leverageRange.maxLeverageAdjusted)
+  }
 
   function handleLeverageSliderChange(leverageValue: number) {
     setLeveragePercentage(leverageValue)
 
     if (leverageDebounceRef.current) clearTimeout(leverageDebounceRef.current)
 
-    leverageDebounceRef.current = setTimeout(() => {
-      const collateralAmount = isZapping && zapValue ? BigInt(zapValue) : BigInt(depositWeiValue || 0n)
-      updateBorrowWeiValue(computeBorrowValue(collateralAmount, leverageValue))
-    }, 400)
+    const amountToDeposit = isZapping && zapValue ? BigInt(zapValue) : BigInt(depositWeiValue || 0n)
+    const amountStaked = marketData?.collateralInfos.positionCollateralAmount || 0n
+    const maxLTV = (marketData?.constants.maxLTV || 0n) * 10n ** 13n
+    const leveragedAmount = amountToDeposit + (amountStaked * (maxLTV - currentLTV)) / maxLTV
+
+    setIsDumpUSGLoading(true)
+
+    const borrowWeiValue = computeBorrowValue(leveragedAmount, marketData?.collateralInfos.collateralUSDPrice || 0n, globalData.usgPriceWei, leverageValue)
+    setBorrowWeiValue(borrowWeiValue)
+
+    leverageDebounceRef.current = setTimeout(async () => {
+      await quoteDumpUSG(borrowWeiValue)
+    }, 800)
   }
+
+  // Computes the current LTV of the connected position
+  const currentLTV = useMemo(() => {
+    if (marketData) {
+      if (marketData.collateralInfos.positionCollateralUSDValue !== 0n) {
+        return (marketData.debtInfos.userDebt * 10n ** 18n) / marketData.collateralInfos.positionCollateralUSDValue
+      } else {
+        return maxUint256
+      }
+    }
+    return 0n
+  }, [marketData])
 
   useEffect(() => {
     if (!depositAsset) return
@@ -332,7 +341,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     const fetchSwapAssetData = async () => {
       setIsZapLoading(true)
       try {
-        const data = await computeSwapAssetPrice(depositAsset)
+        const data = await computeSwapAssetPrice(depositAsset, USGsUSGMetrics!.sUSGPrice, USGsUSGMetrics!.sUSGPrice)
         setSwapAssetPrice(data || 0)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
@@ -378,32 +387,12 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     })
   }, [])
 
-  const actionApproveZap = async () => {
-    setIsTxLoading(true)
-    if (walletClient && depositWeiValue) {
-      await toastTx(doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue), {
-        pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
-        success: () => ({
-          type: "Success",
-          content: `${depositAssetInfo?.symbol} approved successfully.`,
-        }),
-        error: (err) => {
-          const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
-          return { type: "Error", content: error || "Unable to proceed with the transaction." }
-        },
-      })
-
-      fetchBalanceAllowanceData(depositAssetInfo?.address)
-      setIsTxLoading(false)
-    }
-  }
-
   const actionApprove = async () => {
     if (walletClient && depositWeiValue) {
       setIsTxLoading(true)
 
       try {
-        await toastTx(doApprove(walletClient, marketInfo?.collatAddress, marketInfo?.marketAddress, depositWeiValue), {
+        await toastTx(doApprove(walletClient, depositAssetInfo?.address, marketInfo?.marketAddress, depositWeiValue), {
           pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
           success: () => ({
             type: "Success",
@@ -416,6 +405,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         })
 
         loadOnChainData()
+        fetchBalanceAllowanceData(depositAssetInfo?.address)
         setIsTxLoading(false)
       } catch {
         setIsTxLoading(false)
@@ -472,7 +462,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
             content: "Position successfully created.",
           }),
           error: () => {
-            setIsTxLoading(false)
             return { type: "Error", content: "Something went wrong." }
           },
         }
@@ -707,24 +696,30 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     }
   }, [depositAssetInfo])
 
-  const updateBorrowWeiValue = async (value: bigint | undefined) => {
+  async function quoteDumpUSG(value: bigint | undefined) {
     if (value) {
-      setIsDepositLoading(true)
+      setIsDumpUSGLoading(true)
+
+      const requestId = ++latestDumpUSGRequest.current
+
       getQuote(value, currentAddress!, marketInfo?.collatAddress, USG_CONTRACT.USG, curveRoutes)
         .then(({ quote, priceImpact: pI }) => {
-          const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
+          // Do nothing when price is stale
+          if (requestId !== latestDumpUSGRequest.current) return // stale
+          const { validQuote, validPriceImpact } = handleQuote(quote, pI)
 
           if (validPriceImpact >= 0 && validQuote) {
-            setUSGDumpPriceImpact(validPriceImpact)
+            setUSGDumpPriceImpact(validPriceImpact / 100)
             setLeveragedCollateralQuote(validQuote)
-            setBorrowWeiValue(value)
           }
-
-          setIsDepositLoading(false)
         })
         .catch((e) => {
           console.error(e)
+          if (requestId !== latestDumpUSGRequest.current) return
           toast.error(ToastComponent, { data: { type: "Error", content: "USG to Collateral quote failed." } })
+        })
+        .finally(() => {
+          if (requestId === latestDumpUSGRequest.current) setIsDumpUSGLoading(false)
         })
     }
   }
@@ -742,14 +737,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     }
     return `Max ${amountDisplayed} ${asset}`
   }, [currentAddress, depositAssetInfo, balanceAllowanceData, isZapping])
-
-  const computedMaxLeverage = useMemo(() => {
-    if (!marketData) return ""
-    const leverage = 1 / (1 - Number(marketData.constants.maxLTV) / 100000)
-    const rounded = Math.floor(leverage * 100) / 100
-
-    return `Max leverage: x${rounded}`
-  }, [marketData])
 
   const computedDepositAmount = useMemo(() => {
     if (!marketData?.collateralInfos) return 0n
@@ -769,23 +756,64 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     return 0n
   }, [zapValue, depositWeiValue, isDepositDisabled, isLeverageAllPosition, marketData])
 
-  const sliderLegendValues = useMemo(() => {
-    const ltv = Number(marketData?.constants?.maxLTV) / 100000
-    const maxLeverageRaw = 1 / (1 - ltv)
+  // Max leverage recomputed each time the collateral value input is changing
+  // Is needed because the maximum leverage doable depends on available amount on the market
+  const leverageRange = useMemo(() => {
+    if (marketData && globalData.usgPriceWei) {
+      const ltv = Number(formatUnits(marketData?.constants?.maxLTV || 0n, 5))
+      const maxLeverageRaw = 1 / (1 - ltv)
+      // 2% marging on maxLeverage to take into account liquidity price impact
+      const safeMaxLeverage = maxLeverageRaw * 0.98
+      const deltaAvailable = marketData.constants.maxMarketDebt - marketData.debtInfos.totalDebt
+      const availableToBorrow = deltaAvailable < 0n ? 0n : deltaAvailable
+      const amountToDeposit = isZapping && zapValue ? BigInt(zapValue) : BigInt(depositWeiValue || 0n)
+      const amountStaked = marketData?.collateralInfos.positionCollateralAmount || 0n
+      const maxLTV = (marketData?.constants.maxLTV || 0n) * 10n ** 13n
 
-    const rounded = Math.floor(maxLeverageRaw * 100) / 100
+      const leveragedAmount = amountToDeposit + (amountStaked * (maxLTV - currentLTV)) / maxLTV
+      let maxLeverageAdjusted = Math.floor(safeMaxLeverage * 100) / 100
 
-    return Array.from({ length: rounded }, (_, i) => String(i + 1))
-  }, [marketData?.constants])
+      if (leveragedAmount > 0n) {
+        const maxBorrowable = computeBorrowValue(leveragedAmount, marketData?.collateralInfos.collateralUSDPrice || 0n, globalData.usgPriceWei, safeMaxLeverage)
+        if (availableToBorrow >= maxBorrowable) {
+          maxLeverageAdjusted = safeMaxLeverage
+        }
+        // available = leveragedAmount * (adjustedLeverage - 1)
+        // adjustedLeverage = available / leveragedAmount + 1
+        const adjusted = leveragedAmount > 0n ? Number(formatEther((availableToBorrow * 10n ** 18n) / leveragedAmount)) + 1 : 1
+        maxLeverageAdjusted = Math.min(Math.floor(maxLeverageAdjusted * 100) / 100, Math.floor(adjusted * 100) / 100)
+      }
 
-  const startEndRange = useMemo(() => {
-    const ltv = Number(marketData?.constants?.maxLTV) / 100000
-    const maxLeverageRaw = 1 / (1 - ltv)
+      const sliderLegendValues = Array.from({ length: maxLeverageAdjusted - 1 }, (_, i) => String(i + 1))
 
-    const rounded = Math.floor(maxLeverageRaw * 100) / 100
+      const decimalPartMaxLeverage = maxLeverageAdjusted % 1
 
-    return ["1", String(rounded), "0.1"] as [string, string, string]
-  }, [marketData?.constants])
+      if (maxLeverageAdjusted > 7) {
+        if (decimalPartMaxLeverage > 0.25) {
+          sliderLegendValues.push(Math.trunc(maxLeverageAdjusted).toString())
+          sliderLegendValues.push(maxLeverageAdjusted.toString())
+        } else {
+          sliderLegendValues.push(maxLeverageAdjusted.toString())
+        }
+      } else {
+        sliderLegendValues.push(Math.trunc(maxLeverageAdjusted).toString())
+        sliderLegendValues.push(maxLeverageAdjusted.toString())
+      }
+      return {
+        maxLeverageRaw: maxLeverageRaw,
+        maxLeverageAdjusted: maxLeverageAdjusted,
+        sliderLegendValues: sliderLegendValues,
+        startEndRange: ["1", String(maxLeverageAdjusted), "0.01"] as [string, string, string],
+      }
+    }
+
+    return {
+      maxLeverageRaw: 10,
+      maxLeverageAdjusted: 10,
+      sliderLegendValues: Array.from({ length: 10 }, (_, i) => String(i + 1)),
+      startEndRange: ["1", String(10), "0.01"] as [string, string, string],
+    }
+  }, [isZapping, depositWeiValue, zapValue, marketData?.collateralInfos.positionCollateralAmount, globalData.usgPriceWei])
 
   const priceImpactLoss = useMemo(() => {
     const { dollarLoss } = computeTransactionPotentialLoss(zapValue as bigint, collateralInfo, priceImpact)
@@ -822,9 +850,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
   const contextValue: USGLeverageContextValues = {
     collateralInfo,
-
     isDepositDisabled,
-
     setIsDepositDisabled,
     depositWeiValue,
     setDepositWeiValue,
@@ -835,80 +861,49 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     setBorrowWeiValue,
     setDepositAsset,
     depositAsset,
-
     isDepositLoading,
     setIsDepositLoading,
-
     isZapLoading,
     setIsZapLoading,
-
+    isDumpUSGLoading,
+    setIsDumpUSGLoading,
     zapValue,
     setZapValue,
-
     handleDepositChange,
     swapAssetPrice,
-
     depositAssetInfo,
-
     slippage,
     setSlippage,
-
     depositSliderPercent,
     setDepositSliderPercent,
-
     leveragePercentage,
     setLeveragePercentage,
-
     leveragedCollateralQuote,
     setLeveragedCollateralQuote,
-
     handleZapInputChange,
-
     actionZapLeverage,
-
-    actionApproveZap,
-
     zapValuesFormatted,
     usgDumpValuesFormatted,
     swapValuesFormatted,
-
     expectedCollateral,
-
     maxDepositString,
-
-    computedMaxLeverage,
-
     // aprVariation,
-
     isLeverageAllPosition,
     setIsLeverageAllPosition,
-
     computedDepositAmount,
-
     isZapping,
     handleLeverageSliderChange,
     handleBorrowChange,
-
-    sliderLegendValues,
-
-    startEndRange,
-
+    leverageRange,
     slippageLoss,
-
     isTransactionBlockedBySlippage,
     setIsTransactionBlockedBySlippage,
-
     priceImpactLoss,
-
     priceImpact,
-
     isTransactionBlockedByPriceImpact,
     setIsTransactionBlockedByPriceImpact,
-
     leverageExceedsMaxLtv,
-
     USGDumpPriceImpact,
-
     USGDumpDollarLoss,
   }
 

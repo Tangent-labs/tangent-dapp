@@ -13,7 +13,7 @@ import { useContext, useEffect, useState, createContext, ReactNode, useMemo } fr
 
 export type RootContextValues = {
   curveRoutes: CustomCurveRoutes
-  handleQuote: (quote: bigint, priceImpact: bigint) => { validQuote: bigint; validPriceImpact: number }
+  handleQuote: (quote: bigint, priceImpact: number) => { validQuote: bigint; validPriceImpact: number }
 
   isLoading: boolean
   totalSupplies: {
@@ -70,16 +70,8 @@ export const RootProvider = ({ children }: RootProviderProps) => {
 
   const [curveRoutes, setCurveRoutes] = useState<CustomCurveRoutes>({ errors: [], success: {} })
 
-  const handlePriceImpact = (priceImpact: bigint) => {
-    if (!priceImpact || Number(priceImpact) <= 0) {
-      return 0
-    }
-
-    return Number(priceImpact)
-  }
-
-  const handleQuote = (quote: bigint, priceImpact: bigint) => {
-    const validPriceImpact = handlePriceImpact(priceImpact)
+  const handleQuote = (quote: bigint, priceImpact: number) => {
+    const validPriceImpact = priceImpact > 0 ? priceImpact : 0
 
     if (quote && validPriceImpact >= 0) {
       return { validQuote: quote, validPriceImpact }
@@ -355,7 +347,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
   return (
     <RootContext.Provider value={contextValue}>
       <ToastContainer
-        position="top-right"
+        position="bottom-right"
         autoClose={3000}
         hideProgressBar
         newestOnTop={false}

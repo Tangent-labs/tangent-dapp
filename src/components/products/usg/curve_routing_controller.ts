@@ -2,7 +2,7 @@ import { USG_CONTRACT } from "./usg_repository"
 import CurveRouterABI from "../../../abi/USG/CurveRouter.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import QuotesCurveRouterImpact from "../../../abi/USG/QuotesCurveRouterImpact.json"
-import { Abi, Address, encodeFunctionData, Hex, zeroAddress } from "viem"
+import { Abi, Address, encodeFunctionData, formatUnits, Hex, zeroAddress } from "viem"
 import { CustomCurveRoutes } from "./global_quote_controller"
 
 const returnCustomQuoteData = async (customCurveRoutes: CustomCurveRoutes, tokenIn: Address, tokenOut: Address, amount: bigint) => {
@@ -39,13 +39,13 @@ const returnCustomQuoteData = async (customCurveRoutes: CustomCurveRoutes, token
   }
 }
 
-export const getCustomQuote = async (customCurveRoutes: CustomCurveRoutes, tokenIn: Address, tokenOut: Address, amount: bigint) => {
+export const getCurveQuote = async (customCurveRoutes: CustomCurveRoutes, tokenIn: Address, tokenOut: Address, amount: bigint) => {
   const { bestQuote } = await returnCustomQuoteData(customCurveRoutes, tokenIn, tokenOut, amount)
 
-  return bestQuote
+  return { quote: bestQuote.quote, priceImpact: Number(formatUnits(bestQuote.priceImpact, 16)) }
 }
 
-export const getCustomRouterRoute = async (
+export const getCurveRouterRoute = async (
   customCurveRoutes: CustomCurveRoutes,
   tokenIn: Address,
   tokenOut: Address,

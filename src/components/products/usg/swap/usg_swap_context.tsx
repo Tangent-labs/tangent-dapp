@@ -8,7 +8,7 @@ import { USG_CONTRACT } from "../usg_repository"
 import { getQuote, getRoute } from "../global_quote_controller"
 import { AssetDataPriced, FormState } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Abi, Address, formatUnits, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
 import { BalanceAllowanceData, DepositReceiveAsset, LpUserPoints, USGStakingInfo } from "../usg_type"
@@ -51,8 +51,11 @@ type USGSwapContextValues = {
   depositSliderPercent: number
   setDepositSliderPercent: (arg: number) => void
 
-  isSwapLoading: boolean
-  setIsSwapLoading: (arg: boolean) => void
+  isBuyValueLoading: boolean
+  setIsBuyValueLoading: (arg: boolean) => void
+
+  isSellValueLoading: boolean
+  setIsSellValueLoading: (arg: boolean) => void
 
   slippage: number
   setSlippage: (arg: number) => void
@@ -110,7 +113,6 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const { curveRoutes, handleQuote } = useRootContext()
   const { USGsUSGMetrics, lpUserPoints } = useUSGContext()
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
-
   const [isTxLoading, setIsTxLoading] = useState<boolean>(false)
 
   const [sellAssetPrice, setSellAssetPrice] = useState<number | null>(null)
@@ -131,7 +133,10 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const [sellWeiValue, setSellWeiValue] = useState<bigint | undefined>()
   const [buyWeiValue, setBuyWeiValue] = useState<bigint | undefined>()
 
-  const [isSwapLoading, setIsSwapLoading] = useState(false)
+  const [isBuyValueLoading, setIsBuyValueLoading] = useState(false)
+
+  const [isSellValueLoading, setIsSellValueLoading] = useState(false)
+
   const [slippage, setSlippage] = useState<number>(0.2)
 
   const [depositSliderPercent, setDepositSliderPercent] = useState<number>(0)
@@ -206,129 +211,156 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
       })
     }
   }, [currentAddress])
+  // --- Quote handlers ---
+
+  const sellDebounceRef = useRef<NodeJS.Timeout | null>(null)
+  const buyDebounceRef = useRef<NodeJS.Timeout | null>(null)
+  const sellQuoteIdRef = useRef(0)
+  const buyQuoteIdRef = useRef(0)
 
   const handleSellChange = (value: bigint | undefined) => {
-    setIsSwapLoading(true)
+    setPriceImpact(0)
     setSellWeiValue(value)
 
     if (value === undefined) {
       setBuyWeiValue(undefined)
+      setIsBuyValueLoading(false)
       return
     }
 
     if (!sellAssetInfo || !buyAssetInfo) return
 
+    setIsBuyValueLoading(true)
+
+    if (sellDebounceRef.current) clearTimeout(sellDebounceRef.current)
+
     const quote = swapData?.quote
 
-    if (quote === "enso") {
-      fetchSwapValue(value, "sell")
-    } else if (quote === "1") {
+    if (quote === "1") {
       setBuyWeiValue(value)
-      setIsSwapLoading(false)
-    } else {
-      const quote = swapData?.quote
-      const quoteContractAddress = [sellAssetInfo, buyAssetInfo].find((el) => el.symbol === swapData?.quoteContract)?.address as Address
-
-      if (value && quote) {
-        doCustomQuote(quote, value, currentAddress, quoteContractAddress).then((v) => {
-          setBuyWeiValue(v as bigint)
-          setIsSwapLoading(false)
-        })
-      }
+      setIsBuyValueLoading(false)
+      return
     }
+    const quoteId = ++sellQuoteIdRef.current
+
+    sellDebounceRef.current = setTimeout(async () => {
+      try {
+        //
+        if (quote === "enso") {
+          const quote = await getQuote(value, currentAddress || zeroAddress, buyAssetInfo?.address, sellAssetInfo?.address, curveRoutes)
+          const handledQuote = handleQuote(quote.quote, quote.priceImpact)
+
+          if (quoteId !== sellQuoteIdRef.current) return
+          if (quote) {
+            setPriceImpact(Number(handledQuote.validPriceImpact) / 100)
+            setBuyWeiValue(handledQuote.validQuote)
+          }
+        }
+        //
+        else {
+          const quoteContractAddress = [sellAssetInfo, buyAssetInfo].find((el) => el.symbol === swapData?.quoteContract)?.address as Address
+
+          if (value && quote) {
+            const v = await doCustomQuote(quote, value, currentAddress, quoteContractAddress)
+            if (quoteId !== sellQuoteIdRef.current) return
+            setBuyWeiValue(v as bigint)
+          }
+        }
+      } finally {
+        if (quoteId === sellQuoteIdRef.current) {
+          setIsBuyValueLoading(false)
+        }
+      }
+    }, 1000)
   }
 
-  // --- Quote handlers ---
   const handleBuyChange = (value: bigint | undefined) => {
+    setPriceImpact(0)
     setBuyWeiValue(value)
 
     if (value === undefined) {
       setSellWeiValue(undefined)
+      setIsSellValueLoading(false)
       return
     }
 
     if (!sellAssetInfo || !buyAssetInfo) return
 
+    setIsSellValueLoading(true)
+
+    if (buyDebounceRef.current) clearTimeout(buyDebounceRef.current)
+
     const quote = swapData?.quote
 
-    if (quote === "enso") {
-      fetchSwapValue(value, "buy")
-    } else if (quote === "1") {
+    if (quote === "1") {
       setSellWeiValue(value)
-    } else {
-      if (sellWeiValue && quote) {
-        doCustomQuote(quote, sellWeiValue, currentAddress, buyAssetInfo?.address).then((v) => {
-          setBuyWeiValue(v as bigint)
-        })
-      }
+      setIsSellValueLoading(false)
+      return
     }
-  }
+    const quoteId = ++buyQuoteIdRef.current
 
-  const fetchSwapValue = async (value: bigint | undefined, type: "sell" | "buy") => {
-    if (!value || !sellAssetInfo || !buyAssetInfo) return
+    buyDebounceRef.current = setTimeout(async () => {
+      try {
+        if (quote === "enso") {
+          const quote = await getQuote(value, currentAddress || zeroAddress, sellAssetInfo?.address, buyAssetInfo?.address, curveRoutes)
+          const handledQuote = handleQuote(quote.quote, quote.priceImpact)
 
-    setIsSwapLoading(true)
-    try {
-      const quoteTokenIn = type === "sell" ? buyAssetInfo?.address : sellAssetInfo?.address
-      const quoteTokenOut = type === "sell" ? sellAssetInfo?.address : buyAssetInfo?.address
-
-      const { quote, priceImpact: pI } = await getQuote(value, currentAddress || zeroAddress, quoteTokenIn, quoteTokenOut, curveRoutes)
-
-      const { validQuote, validPriceImpact } = handleQuote(quote, pI || 0n)
-
-      if (validPriceImpact >= 0 && validQuote) {
-        setPriceImpact(Number(validPriceImpact) / 100)
-
-        if (type == "sell") {
-          setBuyWeiValue(validQuote)
+          if (quoteId !== buyQuoteIdRef.current) return
+          if (quote) {
+            setPriceImpact(Number(handledQuote.validPriceImpact) / 100)
+            setSellWeiValue(handledQuote.validQuote)
+          }
         } else {
-          setSellWeiValue(validQuote)
+          if (value && quote) {
+            const v = await doCustomQuote(quote, value, currentAddress, buyAssetInfo?.address)
+            if (quoteId !== buyQuoteIdRef.current) return
+            setSellWeiValue(v as bigint)
+          }
+        }
+      } finally {
+        if (quoteId === buyQuoteIdRef.current) {
+          setIsSellValueLoading(false)
         }
       }
-      setIsSwapLoading(false)
-    } catch (error) {
-      console.error("Error fetching zap value:", error)
-      setIsSwapLoading(false)
-    }
+    }, 1000)
   }
 
   // --- Price fetching (needs name for computeSwapAssetPrice) ---
   useEffect(() => {
-    if (!buyAssetName) return
+    if (!buyAssetName || !USGsUSGMetrics) return
 
     const fetchSwapAssetData = async () => {
-      setIsSwapLoading(true)
-      setBuyAssetPrice(1)
+      setIsBuyValueLoading(true)
       try {
-        const data = await computeSwapAssetPrice(buyAssetName)
-        setBuyAssetPrice(data ?? 1)
+        const data = await computeSwapAssetPrice(buyAssetName, USGsUSGMetrics.USGPrice, USGsUSGMetrics.sUSGPrice)
+        setBuyAssetPrice(data)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
       } finally {
-        setIsSwapLoading(false)
+        setIsBuyValueLoading(false)
       }
     }
 
     fetchSwapAssetData()
-  }, [buyAssetName])
+  }, [buyAssetName, USGsUSGMetrics?.USGPrice])
 
   useEffect(() => {
-    if (!sellAssetName) return
+    if (!sellAssetName || !USGsUSGMetrics) return
 
     const fetchSwapAssetData = async () => {
-      setIsSwapLoading(true)
+      setIsBuyValueLoading(true)
       try {
-        const data = await computeSwapAssetPrice(sellAssetName)
+        const data = await computeSwapAssetPrice(sellAssetName, USGsUSGMetrics.USGPrice, USGsUSGMetrics.sUSGPrice)
         setSellAssetPrice(data)
       } catch (error) {
         console.error("Error fetching Enso data:", error)
       } finally {
-        setIsSwapLoading(false)
+        setIsBuyValueLoading(false)
       }
     }
 
     fetchSwapAssetData()
-  }, [sellAssetName])
+  }, [sellAssetName, USGsUSGMetrics?.USGPrice])
 
   // --- Actions ---
   const actionApprove = async () => {
@@ -475,7 +507,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
         sellAssetInfo!,
         buyAssetInfo!,
         balanceAllowanceData!,
-        isTxLoading || isSwapLoading
+        isTxLoading || isBuyValueLoading
       ),
     [
       isSwapBlockedByPriceImpact,
@@ -486,7 +518,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
       sellAssetInfo,
       buyAssetInfo,
       balanceAllowanceData!,
-      isTxLoading || isSwapLoading,
+      isTxLoading || isBuyValueLoading,
     ]
   )
 
@@ -577,8 +609,11 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     sellAssetName,
     buyAssetName,
 
-    isSwapLoading,
-    setIsSwapLoading,
+    isBuyValueLoading,
+    setIsBuyValueLoading,
+
+    isSellValueLoading,
+    setIsSellValueLoading,
 
     balances,
     sellAssetInfo,

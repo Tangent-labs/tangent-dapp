@@ -186,8 +186,8 @@ export function getMarketDisplayData(usgPrice: number, marketData?: MarketDetail
 
   const loanData = getComputedFutureLoanData(usgPrice, marketData!, collateralInfo, { borrowWeiValue: 0n, depositWeiValue: 0n })
 
-  const rawAvailable = BigInt(marketData?.constants.maxMarketDebt - marketData?.debtInfos?.totalDebt)
-  const flooredAvailable = (rawAvailable / 10n ** 18n) * 10n ** 18n
+  const rawAvailable = marketData.constants.maxMarketDebt - marketData.debtInfos.totalDebt
+  const flooredAvailable = rawAvailable > 0n ? rawAvailable : 0n
 
   return {
     ...loanData,
@@ -209,7 +209,12 @@ export function getMarketDisplayData(usgPrice: number, marketData?: MarketDetail
   } as USGMarketDisplayData
 }
 
-export const computeSwapAssetPrice = async (depositAsset: string) => {
+export const computeSwapAssetPrice = async (depositAsset: string, usgPrice: bigint, sUSGPrice: bigint) => {
+  if (depositAsset === "USG") {
+    return Number(formatEther(usgPrice))
+  } else if (depositAsset === "sUSG") {
+    return Number(formatEther(sUSGPrice))
+  }
   // Remove prefixes
   const lpName = depositAsset.replace("Gauge ", "").replace("Vault ", "")
   const token = ERC20S.find((el: Erc20Details) => el.name === lpName || el.symbol === depositAsset)
@@ -226,17 +231,14 @@ export const computeSwapAssetPrice = async (depositAsset: string) => {
   }
 }
 
+/**
+ *  If maxBorrowable is within the global market debt cap and > $0.01 return it with a 0.05% margin (or return 0 if < $0.01)
+ *  Else return the remaining borrowable debt.
+ * @returns
+ */
 export const computeMaxBorrowable = (maxBorrowable: bigint, maxMarketDebt: bigint, totalDebt: bigint) => {
   if (maxBorrowable < maxMarketDebt - totalDebt) {
-    if (maxBorrowable > BORROW_BUFFER && maxBorrowable < BigInt(300_000n * 10n ** 18n)) {
-      return maxBorrowable > BORROW_BUFFER ? maxBorrowable - BORROW_BUFFER : 0n
-    }
-
-    if (maxBorrowable > BigInt(300_000n * 10n ** 18n)) {
-      return (maxBorrowable * 9995n) / 10000n
-    }
-
-    return 0n
+    return maxBorrowable > BORROW_BUFFER ? (maxBorrowable * 9995n) / 10000n : 0n
   }
   return ((maxMarketDebt - totalDebt) / 10n ** 18n) * 10n ** 18n
 }

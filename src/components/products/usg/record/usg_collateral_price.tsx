@@ -38,6 +38,7 @@ export const CollateralGraph = ({ graphData, isPending, liquidationPrice }: Coll
   const priceLineRef = useRef<IPriceLine | null>(null)
 
   const [showBackupBadge, setShowBackupBadge] = useState(false)
+  const [isAboveView, setIsAboveView] = useState(false)
 
   const liquidationPriceNumber = useMemo(() => {
     return Number(Number(liquidationPrice / 10n ** 15n)?.toFixed(4)) / 1000
@@ -131,12 +132,10 @@ export const CollateralGraph = ({ graphData, isPending, liquidationPrice }: Coll
       animationFrame = 0
 
       const y = series.priceToCoordinate(liquidationPriceNumber)
-
       const h = container.getBoundingClientRect().height
 
-      const outOfView = y === null || y < 0 || y > h
-
-      setShowBackupBadge(outOfView)
+      setShowBackupBadge(y === null || y < 0 || y > h)
+      setIsAboveView(y === null || y < 0)
     }
 
     const scheduleCheck = () => {
@@ -170,7 +169,7 @@ export const CollateralGraph = ({ graphData, isPending, liquidationPrice }: Coll
       <div ref={containerRef} className={cn("absolute inset-0", isPending && "animate-pulse")} />
 
       {showBackupBadge && !isPending && (
-        <div className="absolute bottom-2 right-2 z-10 rounded-[2px] bg-[#ff0300] px-1 py-0.5 text-xs text-white">
+        <div className={cn("absolute right-2 z-10 rounded-[2px] bg-[#ff0300] px-1 py-0.5 text-xs text-white", isAboveView ? "top-2" : "bottom-2")}>
           Liquidation price ${formatNumber(liquidationPriceNumber, 3)}
         </div>
       )}

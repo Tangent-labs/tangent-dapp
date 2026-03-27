@@ -577,6 +577,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
             content: "Position successfully created.",
           }),
           error: (err) => {
+            console.error(err)
             const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
             return { type: "Error", content: error || "Unable to proceed with the transaction." }
           },

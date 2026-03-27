@@ -11,7 +11,7 @@ import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
 import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { BuyAndMinOutFormatted } from "../leverage/usg_record_leverage_context"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
 import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove, matchBlockChainErrors } from "../usg_record_controller"
@@ -142,6 +142,8 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   const [isTransactionBlockedByPriceImpact, setIsTransactionBlockedByPriceImpact] = useState<boolean>(false)
 
   const [priceImpact, setPriceImpact] = useState<number>(0)
+
+  const latestRequestRef = useRef(0)
 
   useEffect(() => {
     if (collateralInfo) {
@@ -459,29 +461,34 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     setRepayWeiValue(value)
     setPriceImpact(0)
 
-    const fetchZapValue = async () => {
-      if (!value || !currentAddress || !marketData || !repayAssetInfo) return
+    if (!value || !currentAddress || !marketData || !repayAssetInfo || repayAssetInfo?.symbol === "USG") {
+      if (!value || value === 0n) setUsgRepayedValue(undefined)
+      return
+    }
 
-      setIsZapLoading(true)
-      try {
-        const { quote, priceImpact: pI } = await getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address, curveRoutes)
+    const requestId = ++latestRequestRef.current
+    setIsZapLoading(true)
+
+    getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address, curveRoutes)
+      .then(({ quote, priceImpact: pI }) => {
+        if (requestId !== latestRequestRef.current) return
 
         const { validQuote, validPriceImpact } = handleQuote(quote, pI)
 
         if (validPriceImpact >= 0 && validQuote) {
           setUsgRepayedValue(validQuote)
           setPriceImpact(Number(validPriceImpact) / 100)
+        } else {
+          setUsgRepayedValue(undefined)
         }
-      } catch (error) {
-        console.error(error)
-      } finally {
-        setIsZapLoading(false)
-      }
-    }
-
-    if (!!repayAssetInfo && repayAssetInfo?.symbol !== "USG") {
-      fetchZapValue()
-    }
+      })
+      .catch((error) => {
+        if (requestId !== latestRequestRef.current) return
+        console.error("Error fetching repay zap value:", error)
+      })
+      .finally(() => {
+        if (requestId === latestRequestRef.current) setIsZapLoading(false)
+      })
   }
 
   useEffect(() => {

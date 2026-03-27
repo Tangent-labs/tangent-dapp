@@ -62,6 +62,7 @@ export default function USGLiquidatePanel() {
           disabled={!canInteract}
           asset={collateralInfo}
           onValueChange={handleLiquidateValueChange}
+          handleInputChangeDebounceTime={600}
           maxAmountParams={{ maxWeiValue: maxLiquidable, setMaxAmount: () => handleLiquidateValueChange(maxLiquidable) }}
           sliderParams={{
             sliderPercentage: liquidablePercentage,

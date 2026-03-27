@@ -42,7 +42,7 @@ const returnCustomQuoteData = async (customCurveRoutes: CustomCurveRoutes, token
 export const getCurveQuote = async (customCurveRoutes: CustomCurveRoutes, tokenIn: Address, tokenOut: Address, amount: bigint) => {
   const { bestQuote } = await returnCustomQuoteData(customCurveRoutes, tokenIn, tokenOut, amount)
 
-  return { quote: bestQuote.quote, priceImpact: Number(formatUnits(bestQuote.priceImpact, 16)) }
+  return { quote: bestQuote.quote, priceImpact: Number(formatUnits(bestQuote.priceImpact, 14)) }
 }
 
 export const getCurveRouterRoute = async (

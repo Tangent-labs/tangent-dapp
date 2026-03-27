@@ -106,6 +106,7 @@ export default function USGRepayContent() {
           isZapping={isZapping}
           asset={repayAssetInfo || USGInfo}
           onValueChange={handleRepayValueChange}
+          handleInputChangeDebounceTime={600}
           maxAmountParams={{ maxWeiValue: maxRepayableValue, setMaxAmount: () => handleRepayValueChange(maxRepayableValue) }}
           sliderParams={{
             sliderPercentage: percentage,

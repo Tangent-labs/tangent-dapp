@@ -24,7 +24,7 @@ const contents = (swapPriceImpact: number, swapDollarLoss: string, mintDumpPrice
   } else if (swapPriceImpact <= 10) {
     alert = `This trade has a ${swapPriceImpact}% price impact, which may result in a ${swapDollarLoss} shortfall.`
   } else {
-    alert = `A ${swapPriceImpact}% price impact would result in an estimated ${swapDollarLoss} loss. As a safety measure, trades exceeding 10% impact are not permitted.`
+    alert = `A ${swapPriceImpact?.toFixed(2)}% price impact would result in an estimated ${swapDollarLoss} loss. As a safety measure, trades exceeding 10% impact are not permitted.`
   }
 
   if (mintDumpPriceImpact && mintDumpPriceImpact > 0) {

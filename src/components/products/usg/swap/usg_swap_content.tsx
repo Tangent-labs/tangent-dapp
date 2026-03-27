@@ -157,7 +157,6 @@ export default function USGSwapContent() {
               isLoading={isSellValueLoading}
               inputWeiValue={sellWeiValue}
               onValueChange={handleSellChange}
-              handleInputChangeDebounceTime={600}
               depositSelect={<SellAssetSelect />}
               slippageInput={<SlippageInput slippage={slippage} setSlippage={setSlippage} />}
               asset={sellAssetInfo!}

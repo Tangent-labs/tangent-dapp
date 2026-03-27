@@ -27,7 +27,6 @@ type GenericInputAssetAmountProps = React.InputHTMLAttributes<HTMLInputElement> 
   disabled?: boolean
   inputWeiValue?: bigint
   onValueChange?: (value: bigint | undefined) => void
-  handleInputChangeDebounceTime?: number
   asset?: AssetDataPriced | CollateralInfo
   label: string | ReactNode
   depositSelect: ReactNode
@@ -47,7 +46,6 @@ export function GenericInputAssetAmount({
   asset,
   label,
   onValueChange,
-  handleInputChangeDebounceTime = 400,
   depositSelect = <></>,
   isZapping = false,
   isLoading = false,
@@ -173,7 +171,7 @@ export function GenericInputAssetAmount({
             console.warn("Invalid amount", val, err)
           }
         }
-      }, handleInputChangeDebounceTime)
+      }, 400)
     }
   }
 

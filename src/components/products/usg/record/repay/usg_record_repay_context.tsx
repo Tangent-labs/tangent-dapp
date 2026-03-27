@@ -1,6 +1,6 @@
 "use client"
 
-import { formatUnits, maxUint256 } from "viem"
+import { Address, formatUnits, maxUint256 } from "viem"
 import { useUSGContext } from "../../usg_context"
 import { AssetDataPriced, FormState } from "@/types"
 import { USG_CONTRACT } from "../../usg_repository"
@@ -144,6 +144,8 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   const [priceImpact, setPriceImpact] = useState<number>(0)
 
   const latestRequestRef = useRef(0)
+
+  const repayDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     if (collateralInfo) {
@@ -457,7 +459,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     return 0n
   }, [marketData, repayWeiValue, usgRepayedValue, currentAddress])
 
-  const handleRepayValueChange = (value: bigint | undefined) => {
+  function handleRepayValueChange(value: bigint | undefined) {
     setRepayWeiValue(value)
     setPriceImpact(0)
 
@@ -466,10 +468,19 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
       return
     }
 
-    const requestId = ++latestRequestRef.current
     setIsZapLoading(true)
 
-    getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address, curveRoutes)
+    if (repayDebounceRef.current) clearTimeout(repayDebounceRef.current)
+
+    repayDebounceRef.current = setTimeout(() => {
+      quoteRepayZap(value)
+    }, 800)
+  }
+
+  async function quoteRepayZap(value: bigint) {
+    const requestId = ++latestRequestRef.current
+
+    getQuote(value, currentAddress!, USG_CONTRACT.USG, repayAssetInfo?.address as Address, curveRoutes)
       .then(({ quote, priceImpact: pI }) => {
         if (requestId !== latestRequestRef.current) return
 

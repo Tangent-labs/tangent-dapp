@@ -1,23 +1,23 @@
 "use client"
 
 import { toast } from "react-toastify"
+import { ONE_ETHER } from "@/lib/utils"
 import { useUSGContext } from "../../usg_context"
 import { USG_CONTRACT } from "../../usg_repository"
+import { Erc20Details, ERC20S } from "@/data/erc20s"
+import { AssetDataPriced, CollateralInfo } from "@/types"
 import { formatEther, formatUnits, maxUint256 } from "viem"
 import { getQuote, getRoute } from "../../global_quote_controller"
-import { AssetDataPriced, CollateralInfo } from "@/types"
-import { Erc20Details, ERC20S } from "@/data/erc20s"
-import { ToastComponent, toastTx } from "@/components/design_system/toast"
-import { useUSGMaketListContext } from "../../list/usg_market_list_context"
 import { useRootContext } from "@/components/products/root/root_context"
-import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
 import { formatBigInt, formatBigIntAsNumber } from "@/lib/number_formatter"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { ToastComponent, toastTx } from "@/components/design_system/toast"
+import { USGLeverageContextProps, USGLeverageContextValues } from "./types"
+import { useUSGMaketListContext } from "../../list/usg_market_list_context"
+import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computeBorrowValue, computeMaxLeverageAdjusted, doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
 import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove, matchBlockChainErrors } from "../usg_record_controller"
-import { ONE_ETHER } from "@/lib/utils"
-import { USGLeverageContextProps, USGLeverageContextValues } from "./types"
 
 export const USGLeverageContext = createContext<USGLeverageContextValues | undefined>(undefined)
 
@@ -865,10 +865,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     setIsDepositLoading,
     isZapLoading,
     setIsZapLoading,
-
     isDumpUSGLoading,
     setIsDumpUSGLoading,
-
     zapValue,
     setZapValue,
     handleDepositChange,
@@ -884,23 +882,18 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     setLeveragedCollateralQuote,
     handleZapInputChange,
     actionZapLeverage,
-
     zapValuesFormatted,
     usgDumpValuesFormatted,
     swapValuesFormatted,
     expectedCollateral,
     maxDepositString,
-
-    // aprVariation,
     isLeverageAllPosition,
     setIsLeverageAllPosition,
     computedDepositAmount,
     isZapping,
     handleLeverageSliderChange,
     handleBorrowChange,
-
     leverageRange,
-
     slippageLoss,
     isTransactionBlockedBySlippage,
     setIsTransactionBlockedBySlippage,

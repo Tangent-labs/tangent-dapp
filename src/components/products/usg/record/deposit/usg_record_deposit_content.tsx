@@ -72,7 +72,6 @@ export default function USGDepositContent() {
         onValueChange={(e) => {
           handleDepositChange(e)
         }}
-        handleInputChangeDebounceTime={600}
         slippageInput={isZapping ? <SlippageInput slippage={slippage} setSlippage={setSlippage} /> : <></>}
         depositSelect={<ZapAssetSelector collateralInfo={collateralInfo} depositAsset={depositAsset} setDepositAsset={setDepositAsset} caseType="deposit" />}
         asset={depositAssetInfo}
@@ -102,7 +101,6 @@ export default function USGDepositContent() {
           onValueChange={(e) => {
             handleZapInputChange(e)
           }}
-          handleInputChangeDebounceTime={600}
           asset={collateralInfo}
           isLoading={isZapLoading}
           label={"You buy and deposit"}

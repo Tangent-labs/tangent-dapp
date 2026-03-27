@@ -9,7 +9,7 @@ import { toastTx } from "@/components/design_system/toast"
 import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { doMarketLiquidate, getLiquidateFormState } from "./usg_record_liquidate_controller"
 import { computedMinAmountOut, computeTransactionPotentialLoss } from "../usg_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -93,6 +93,10 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   const [isTransactionBlockedByPriceImpact, setIsTransactionBlockedByPriceImpact] = useState<boolean>(false)
 
   const [isTransactionBlockedBySlippage, setIsTransactionBlockedBySlippage] = useState<boolean>(false)
+
+  const liquidateDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const latestRequestRef = useRef(0)
 
   useEffect(() => {
     setLiquidateWeiValue(undefined)
@@ -208,36 +212,45 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     return 0n
   }, [marketDisplayData])
 
-  const handleLiquidateValueChange = (value: bigint | undefined) => {
-    try {
-      setPriceImpact(0)
-      setIsQuoteLoading(true)
-      setLiquidateWeiValue(value)
+  function handleLiquidateValueChange(value: bigint | undefined) {
+    setPriceImpact(0)
+    setLiquidateWeiValue(value)
 
-      const fetchZapValue = async () => {
-        if (!value || !currentAddress || !collateralInfo) return
-
-        try {
-          const { quote, priceImpact: pI } = await getQuote(value, currentAddress, USG_CONTRACT.USG, collateralInfo?.address, curveRoutes)
-
-          const { validQuote, validPriceImpact } = handleQuote(quote, pI)
-
-          if (validPriceImpact >= 0 && validQuote) {
-            setUSGReceivedValue(validQuote)
-            setPriceImpact(Number(validPriceImpact) / 100)
-          }
-
-          setIsQuoteLoading(false)
-        } catch (error) {
-          console.error(error)
-          setIsQuoteLoading(false)
-        }
-      }
-
-      fetchZapValue()
-    } catch {
-      setIsQuoteLoading(false)
+    if (!value || !currentAddress || !collateralInfo) {
+      if (!value || value === 0n) setUSGReceivedValue(undefined)
+      return
     }
+
+    setIsQuoteLoading(true)
+
+    if (liquidateDebounceRef.current) clearTimeout(liquidateDebounceRef.current)
+
+    liquidateDebounceRef.current = setTimeout(() => {
+      quoteLiquidate(value)
+    }, 800)
+  }
+
+  async function quoteLiquidate(value: bigint) {
+    const requestId = ++latestRequestRef.current
+
+    getQuote(value, currentAddress!, USG_CONTRACT.USG, collateralInfo?.address, curveRoutes)
+      .then(({ quote, priceImpact: pI }) => {
+        if (requestId !== latestRequestRef.current) return
+
+        const { validQuote, validPriceImpact } = handleQuote(quote, pI)
+
+        if (validPriceImpact >= 0 && validQuote) {
+          setUSGReceivedValue(validQuote)
+          setPriceImpact(Number(validPriceImpact) / 100)
+        }
+      })
+      .catch((error) => {
+        if (requestId !== latestRequestRef.current) return
+        console.error(error)
+      })
+      .finally(() => {
+        if (requestId === latestRequestRef.current) setIsQuoteLoading(false)
+      })
   }
 
   const maxLiquidateString = useMemo(() => {

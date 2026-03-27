@@ -83,7 +83,6 @@ export default function USGLeverageContent() {
                 caseType="deposit"
               />
             }
-            handleInputChangeDebounceTime={600}
             isLoading={isDepositLoading}
             asset={depositAssetInfo}
             label={isZapping ? "You sell" : "You deposit"}
@@ -107,7 +106,6 @@ export default function USGLeverageContent() {
         <GenericInputAssetAmount
           inputWeiValue={zapValue || 0n}
           onValueChange={(e) => handleZapInputChange(e)}
-          handleInputChangeDebounceTime={600}
           asset={collateralInfo}
           isLoading={isZapLoading}
           label={isZapping ? "You buy and deposit" : "You deposit"}
@@ -126,7 +124,6 @@ export default function USGLeverageContent() {
         <GenericInputAssetAmount
           inputWeiValue={borrowWeiValue}
           onValueChange={(e) => handleBorrowChange(e)}
-          handleInputChangeDebounceTime={600}
           depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
           label="You borrow and sell"
           asset={USGInfo}

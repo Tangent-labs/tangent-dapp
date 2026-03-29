@@ -461,18 +461,24 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
             type: "Success",
             content: "Position successfully created.",
           }),
-          error: () => {
-            return { type: "Error", content: "Something went wrong." }
+          error: (err) => {
+            const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+            return { type: "Error", content: error || "Unable to proceed with the transaction." }
           },
         }
       )
-
-      resetAfterLeverageSuccess()
-      setIsTxLoading(false)
+        .then(() => {
+          resetAfterLeverageSuccess()
+          setIsTxLoading(false)
+        })
+        .catch(() => {
+          setIsTxLoading(false)
+        })
     } catch (err) {
       console.error("ERROR : ", err)
       setIsTxLoading(false)
-      toast.error(ToastComponent, { data: { type: "Error", content: "Something went wrong." } })
+      const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+      toast.error(ToastComponent, { data: { type: "Error", content: error || "Unable to proceed with the transaction." } })
     }
   }
 
@@ -508,12 +514,18 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
           },
         }
       )
-
-      resetAfterLeverageSuccess()
-      setIsTxLoading(false)
+        .then(() => {
+          resetAfterLeverageSuccess()
+          setIsTxLoading(false)
+        })
+        .catch(() => {
+          setIsTxLoading(false)
+        })
     } catch (e) {
       console.error(e)
       setIsTxLoading(false)
+      const error = matchBlockChainErrors(typeof e === "string" ? e : e instanceof Error ? e.message : String(e))
+      toast.error(ToastComponent, { data: { type: "Error", content: error || "Unable to proceed with the transaction." } })
     }
   }
 

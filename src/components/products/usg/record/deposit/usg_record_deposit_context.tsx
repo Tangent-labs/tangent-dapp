@@ -638,7 +638,10 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   }
 
   const _zapAndDepositAndBorrow = async () => {
-    if (!depositWeiValue || !currentAddress || !depositAssetInfo || !borrowWeiValue || !zapValue) return
+    if (!depositWeiValue || !currentAddress || !depositAssetInfo || !borrowWeiValue || !zapValue) {
+      toast.error(ToastComponent, { data: { type: "Error", content: "Error while computing deposit data." } })
+      return
+    }
 
     setIsTxLoading(true)
     const minOut = computedMinAmountOut(zapValue, slippage)
@@ -678,12 +681,14 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     } catch (err) {
       console.error("ERROR : ", err)
       setIsTxLoading(false)
-      toast.error(ToastComponent, { data: { type: "Error", content: "Something went wrong." } })
     }
   }
 
   const _zapAndDeposit = async () => {
-    if (!depositWeiValue || !currentAddress || !depositAssetInfo || !zapValue) return
+    if (!depositWeiValue || !currentAddress || !depositAssetInfo || !zapValue) {
+      toast.error(ToastComponent, { data: { type: "Error", content: "Error while computing deposit data." } })
+      return
+    }
 
     setIsTxLoading(true)
     const minOut = computedMinAmountOut(zapValue, slippage)
@@ -716,11 +721,18 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
           return { type: "Error", content: error || "Unable to proceed with the transaction." }
         },
       })
-      resetAfterDepositSuccess()
+        .then(() => {
+          resetAfterDepositSuccess()
+          setIsTxLoading(false)
+        })
+        .catch(() => {
+          setIsTxLoading(false)
+        })
     } catch (err) {
       console.error("ERROR : ", err)
       setIsTxLoading(false)
-      toast.error(ToastComponent, { data: { type: "Error", content: "Something went wrong." } })
+      const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+      toast.error(ToastComponent, { data: { type: "Error", content: error || "Unable to proceed with the transaction." } })
     }
   }
 

@@ -194,7 +194,7 @@ export default function MenuBarFeature() {
 
               <SwapButton />
 
-              <WalletConnexionContent classNameChild={"py-[9px] px-1"} />
+              <WalletConnexionContent />
 
               {/* Burger button - mobile only */}
               <button

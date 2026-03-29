@@ -5,7 +5,7 @@ import { useUSGContext } from "../../usg_context"
 import { AssetDataPriced, FormState } from "@/types"
 import { USG_CONTRACT } from "../../usg_repository"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
-import { toastTx } from "@/components/design_system/toast"
+import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
@@ -15,6 +15,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
 import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove, matchBlockChainErrors } from "../usg_record_controller"
 import { BuyAndMinOutFormatted } from "../leverage/types"
+import { toast } from "react-toastify"
 
 type USGRepayContextProps = {
   children: ReactNode
@@ -197,7 +198,10 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   }
 
   const zapRepayAndWithdraw = async () => {
-    if (!repayWeiValue || !repayAssetInfo || !marketData || !withdrawWeiValue) return
+    if (!repayWeiValue || !repayAssetInfo || !marketData || !withdrawWeiValue) {
+      toast.error(ToastComponent, { data: { type: "Error", content: "Error while computing repay data." } })
+      return
+    }
 
     setIsTxLoading(true)
 
@@ -231,16 +235,26 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
           return { type: "Error", content: error || "Unable to proceed with the transaction." }
         },
       })
-
-      resetAfterRepaySuccess()
+        .then(() => {
+          resetAfterRepaySuccess()
+          setIsTxLoading(false)
+        })
+        .catch(() => {
+          setIsTxLoading(false)
+        })
     } catch (error) {
-      setIsTxLoading(false)
       console.error("Error in getRouteAndDeposit:", error)
+      setIsTxLoading(false)
+      const err = matchBlockChainErrors(typeof error === "string" ? error : error instanceof Error ? error.message : String(error))
+      toast.error(ToastComponent, { data: { type: "Error", content: err || "Unable to proceed with the transaction." } })
     }
   }
 
   const zapRepay = async () => {
-    if (!repayWeiValue || !repayAssetInfo || !marketData || !usgRepayedValue) return
+    if (!repayWeiValue || !repayAssetInfo || !marketData || !usgRepayedValue) {
+      toast.error(ToastComponent, { data: { type: "Error", content: "Error while computing repay data." } })
+      return
+    }
 
     setIsTxLoading(true)
 
@@ -272,11 +286,18 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
           return { type: "Error", content: error || "Unable to proceed with the transaction." }
         },
       })
-
-      resetAfterRepaySuccess()
+        .then(() => {
+          resetAfterRepaySuccess()
+          setIsTxLoading(false)
+        })
+        .catch(() => {
+          setIsTxLoading(false)
+        })
     } catch (error) {
-      setIsTxLoading(false)
       console.error("Error in getRouteAndDeposit:", error)
+      setIsTxLoading(false)
+      const err = matchBlockChainErrors(typeof error === "string" ? error : error instanceof Error ? error.message : String(error))
+      toast.error(ToastComponent, { data: { type: "Error", content: err || "Unable to proceed with the transaction." } })
     }
   }
 

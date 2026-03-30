@@ -7,7 +7,7 @@
 @layer base {
   /* Variables tangent   */
   :root {
-    --tgt-background: #000;
+    --tgt-background: #070707;
     --tgt-foreground: #fff;
     --tgt-row-tonic: #0075ff;
     --tgt-row-success: #95ff00;

@@ -89,6 +89,8 @@ type USGRepayContextValues = {
   setIsTransactionBlockedByPriceImpact: (arg: boolean) => void
 
   zapValuesFormatted: BuyAndMinOutFormatted
+
+  expectedUSGRefunded: string | undefined
 }
 
 export const USGRepayContext = createContext<USGRepayContextValues | undefined>(undefined)
@@ -603,6 +605,16 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     setIsTransactionBlockedByPriceImpact(!!repayWeiValue && !!usgRepayedValue && priceImpact >= 0.25)
   }, [priceImpact, usgRepayedValue, repayWeiValue])
 
+  const expectedUSGRefunded = useMemo(() => {
+    if (usgRepayedValue && marketData?.debtInfos?.userDebt && usgRepayedValue > marketData?.debtInfos?.userDebt) {
+      const minAmountOutWei = computedMinAmountOut(usgRepayedValue, slippage)
+
+      return minAmountOutWei - marketData?.debtInfos?.userDebt >= 0n ? formatBigInt(minAmountOutWei - marketData?.debtInfos?.userDebt, 18, 2) : undefined
+    }
+
+    return undefined
+  }, [marketData, usgRepayedValue, slippage])
+
   const contextValue: USGRepayContextValues = {
     actionRepay,
     formState,
@@ -650,6 +662,8 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     setIsTransactionBlockedByPriceImpact,
 
     zapValuesFormatted,
+
+    expectedUSGRefunded,
   }
 
   return <USGRepayContext.Provider value={contextValue}>{children}</USGRepayContext.Provider>

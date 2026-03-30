@@ -17,6 +17,8 @@ export type SwapRecapParams = {
   liquidateMinOut?: string | undefined
   slippage: number | undefined
   priceImpact: number
+  usgRepaidFromWallet?: string | undefined
+  usgRepaidFromCollateral?: string | undefined
 }
 export type Recap = {
   isDisplayed: boolean
@@ -71,6 +73,20 @@ export function RecapAccordion({ isLoading, isDisplayed, zappingParams, classNam
                     <div className={cn("flex items-center justify-between", isLoading ? "shimmer" : "")}>
                       <span className="text-subtitle">Minimum USG received: </span>
                       <span className="text-white">{zappingParams?.liquidateMinOut}</span>
+                    </div>
+                  )}
+
+                  {zappingParams?.usgRepaidFromCollateral && (
+                    <div className={cn("flex items-center justify-between", isLoading ? "shimmer" : "")}>
+                      <span className="text-subtitle">USG repaid from collateral: </span>
+                      <span className="text-white">{zappingParams?.usgRepaidFromCollateral}</span>
+                    </div>
+                  )}
+
+                  {zappingParams?.usgRepaidFromWallet && (
+                    <div className={cn("flex items-center justify-between", isLoading ? "shimmer" : "")}>
+                      <span className="text-subtitle">USG repaid from wallet: </span>
+                      <span className="text-white">{zappingParams?.usgRepaidFromWallet}</span>
                     </div>
                   )}
                 </>

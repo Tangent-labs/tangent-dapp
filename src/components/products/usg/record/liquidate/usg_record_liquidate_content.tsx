@@ -9,6 +9,7 @@ import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { RecapAccordion } from "@/components/design_system/structure/recap"
 import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
+import { WalletRepayAlert } from "@/components/design_system/inputs/wallet_repay_alert"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
@@ -44,7 +45,14 @@ export default function USGLiquidatePanel() {
     isTransactionBlockedBySlippage,
     setIsTransactionBlockedBySlippage,
     slippageLoss,
+    walletRepayValue,
+    collateralRepayValue,
+    isTransactionBlockedByWalletRepay,
+    setIsTransactionBlockedByWalletRepay,
   } = useUSGLiquidateContext()
+
+  const netReceivedValue = (USGReceivedValue || 0n) - (repayWeiValue || 0n)
+  const isWalletRepayNet = netReceivedValue < 0n
 
   return (
     <div className="flex flex-col gap-2">
@@ -103,8 +111,8 @@ export default function USGLiquidatePanel() {
         />
 
         <GenericInputAssetAmount
-          inputWeiValue={(USGReceivedValue || 0n) - (repayWeiValue || 0n)}
-          label="You receive"
+          inputWeiValue={isWalletRepayNet ? walletRepayValue : netReceivedValue}
+          label={isWalletRepayNet ? "You repay from wallet" : "You receive"}
           depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
           disabled={true}
           asset={USGInfo}
@@ -117,11 +125,13 @@ export default function USGLiquidatePanel() {
         isLoading={isQuoteLoading}
         isDisplayed={true}
         zappingParams={{
-          label: "remaining collateral",
+          label: "USG",
           expected: `${zapValuesFormatted.expectedFormatted} ${collateralInfo.symbol}`,
           slippage: slippage,
           liquidateMinOut: `${zapValuesFormatted?.minOutFormatted} USG`,
           priceImpact: priceImpact,
+          usgRepaidFromCollateral: `${formatBigInt(collateralRepayValue, 18, 2)} USG`,
+          usgRepaidFromWallet: `${formatBigInt(walletRepayValue, 18, 2)} USG`,
         }}
       />
 
@@ -144,6 +154,16 @@ export default function USGLiquidatePanel() {
           isLoading={isQuoteLoading}
           displayConfirmationButton={isTransactionBlockedByPriceImpact}
           onClickContinue={() => setIsTransactionBlockedByPriceImpact(false)}
+        />
+      )}
+
+      {!!repayWeiValue && walletRepayValue > 0n && (
+        <WalletRepayAlert
+          confirmationButtonLabel="I understand"
+          displayConfirmationButton={isTransactionBlockedByWalletRepay}
+          walletRepay={`${formatBigInt(walletRepayValue, 18, 2)} USG`}
+          isLoading={isQuoteLoading}
+          onClickContinue={() => setIsTransactionBlockedByWalletRepay(false)}
         />
       )}
 

@@ -153,6 +153,10 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   const [priceImpact, setPriceImpact] = useState<number>(0)
 
+  const depositDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const latestRequestRef = useRef(0)
+
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
     // When market data is not charged
     if (!!marketData && (depositAsset === undefined || depositAsset === collateralInfo.name)) {
@@ -245,7 +249,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       } finally {
         setIsDepositLoading(false)
       }
-    }, 500)
+    }, 800)
 
     return () => clearTimeout(debounceTimeout)
   }
@@ -341,7 +345,6 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
   //
   // Handle inputs
-  const latestRequestRef = useRef(0)
 
   const resetAfterDepositSuccess = () => {
     loadOnChainData()
@@ -361,7 +364,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     setIsTxLoading(false)
   }
 
-  const handleDepositChange = (value: bigint | undefined) => {
+  function handleDepositChange(value: bigint | undefined) {
     setDepositWeiValue(value)
     setPriceImpact(0)
 
@@ -370,13 +373,21 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       return
     }
 
-    const requestId = ++latestRequestRef.current
     setIsZapLoading(true)
+
+    if (depositDebounceRef.current) clearTimeout(depositDebounceRef.current)
+
+    depositDebounceRef.current = setTimeout(() => {
+      quoteZap(value)
+    }, 800)
+  }
+
+  async function quoteZap(value: bigint) {
+    const requestId = ++latestRequestRef.current
 
     getQuote(value, currentAddress || zeroAddress, marketInfo?.collatAddress, depositAssetInfo?.address, curveRoutes)
       .then(({ quote, priceImpact: pI }) => {
-        // Do nothing when price is stale
-        if (requestId !== latestRequestRef.current) return // stale
+        if (requestId !== latestRequestRef.current) return
 
         const { validQuote, validPriceImpact } = handleQuote(quote, pI)
 
@@ -577,6 +588,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
             content: "Position successfully created.",
           }),
           error: (err) => {
+            console.error(err)
             const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
             return { type: "Error", content: error || "Unable to proceed with the transaction." }
           },
@@ -626,7 +638,10 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   }
 
   const _zapAndDepositAndBorrow = async () => {
-    if (!depositWeiValue || !currentAddress || !depositAssetInfo || !borrowWeiValue || !zapValue) return
+    if (!depositWeiValue || !currentAddress || !depositAssetInfo || !borrowWeiValue || !zapValue) {
+      toast.error(ToastComponent, { data: { type: "Error", content: "Error while computing deposit data." } })
+      return
+    }
 
     setIsTxLoading(true)
     const minOut = computedMinAmountOut(zapValue, slippage)
@@ -666,12 +681,14 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     } catch (err) {
       console.error("ERROR : ", err)
       setIsTxLoading(false)
-      toast.error(ToastComponent, { data: { type: "Error", content: "Something went wrong." } })
     }
   }
 
   const _zapAndDeposit = async () => {
-    if (!depositWeiValue || !currentAddress || !depositAssetInfo || !zapValue) return
+    if (!depositWeiValue || !currentAddress || !depositAssetInfo || !zapValue) {
+      toast.error(ToastComponent, { data: { type: "Error", content: "Error while computing deposit data." } })
+      return
+    }
 
     setIsTxLoading(true)
     const minOut = computedMinAmountOut(zapValue, slippage)
@@ -704,11 +721,18 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
           return { type: "Error", content: error || "Unable to proceed with the transaction." }
         },
       })
-      resetAfterDepositSuccess()
+        .then(() => {
+          resetAfterDepositSuccess()
+          setIsTxLoading(false)
+        })
+        .catch(() => {
+          setIsTxLoading(false)
+        })
     } catch (err) {
       console.error("ERROR : ", err)
       setIsTxLoading(false)
-      toast.error(ToastComponent, { data: { type: "Error", content: "Something went wrong." } })
+      const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+      toast.error(ToastComponent, { data: { type: "Error", content: error || "Unable to proceed with the transaction." } })
     }
   }
 

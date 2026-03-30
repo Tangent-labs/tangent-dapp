@@ -5,6 +5,8 @@ import {
   SDT_crvUSD_USDT_VAULT,
   SDT_GHO_crvUSD_VAULT,
   SDT_tBTC_cbBTC_VAULT,
+  SDT_USG_frxUSD_VAULT,
+  SDT_USG_USDC_VAULT,
 } from "@tangent/defi-resources/build/ressources/erc20/stakeDao"
 
 export type Erc20Details = {
@@ -203,6 +205,22 @@ export const ERC20S: Erc20Details[] = [
 
   // Stake DAO VAULT
   {
+    address: SDT_USG_frxUSD_VAULT,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "USG-frxUSD",
+    name: "Vault USG/frxUSD",
+    symbol: "Vault USG/frxUSD",
+  },
+  {
+    address: SDT_USG_USDC_VAULT,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "USG-USDC",
+    name: "Vault USG/USDC",
+    symbol: "Vault USG/USDC",
+  },
+  {
     address: SDT_crvUSD_USDC_VAULT,
     chainId: 1,
     decimals: 18,
@@ -218,7 +236,6 @@ export const ERC20S: Erc20Details[] = [
     name: "Vault crvUSD/USDT",
     symbol: "Vault crvUSD/USDT",
   },
-
   {
     address: SDT_tBTC_cbBTC_VAULT,
     chainId: 1,

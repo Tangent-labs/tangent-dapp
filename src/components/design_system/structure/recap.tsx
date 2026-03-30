@@ -51,7 +51,7 @@ export function RecapAccordion({ isLoading, isDisplayed, zappingParams, classNam
                   {zappingParams.priceImpact > 0 && (
                     <div className={cn("flex items-center justify-between", isLoading ? "shimmer" : "")}>
                       <span className="text-subtitle">Price impact: </span>
-                      <span className="font-semibold text-white">{zappingParams.priceImpact}%</span>
+                      <span className="font-semibold text-white">{zappingParams.priceImpact?.toFixed(2)}%</span>
                     </div>
                   )}
 

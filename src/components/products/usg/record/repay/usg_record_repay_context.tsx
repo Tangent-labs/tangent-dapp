@@ -1,20 +1,21 @@
 "use client"
 
-import { formatUnits, maxUint256 } from "viem"
+import { Address, formatUnits, maxUint256 } from "viem"
 import { useUSGContext } from "../../usg_context"
 import { AssetDataPriced, FormState } from "@/types"
 import { USG_CONTRACT } from "../../usg_repository"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
-import { toastTx } from "@/components/design_system/toast"
+import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
 import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
 import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove, matchBlockChainErrors } from "../usg_record_controller"
 import { BuyAndMinOutFormatted } from "../leverage/types"
+import { toast } from "react-toastify"
 
 type USGRepayContextProps = {
   children: ReactNode
@@ -143,6 +144,10 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   const [priceImpact, setPriceImpact] = useState<number>(0)
 
+  const latestRequestRef = useRef(0)
+
+  const repayDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   useEffect(() => {
     if (collateralInfo) {
       setWithdrawSelectedAsset(collateralInfo.name)
@@ -193,7 +198,10 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   }
 
   const zapRepayAndWithdraw = async () => {
-    if (!repayWeiValue || !repayAssetInfo || !marketData || !withdrawWeiValue) return
+    if (!repayWeiValue || !repayAssetInfo || !marketData || !withdrawWeiValue) {
+      toast.error(ToastComponent, { data: { type: "Error", content: "Error while computing repay data." } })
+      return
+    }
 
     setIsTxLoading(true)
 
@@ -227,16 +235,26 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
           return { type: "Error", content: error || "Unable to proceed with the transaction." }
         },
       })
-
-      resetAfterRepaySuccess()
+        .then(() => {
+          resetAfterRepaySuccess()
+          setIsTxLoading(false)
+        })
+        .catch(() => {
+          setIsTxLoading(false)
+        })
     } catch (error) {
-      setIsTxLoading(false)
       console.error("Error in getRouteAndDeposit:", error)
+      setIsTxLoading(false)
+      const err = matchBlockChainErrors(typeof error === "string" ? error : error instanceof Error ? error.message : String(error))
+      toast.error(ToastComponent, { data: { type: "Error", content: err || "Unable to proceed with the transaction." } })
     }
   }
 
   const zapRepay = async () => {
-    if (!repayWeiValue || !repayAssetInfo || !marketData || !usgRepayedValue) return
+    if (!repayWeiValue || !repayAssetInfo || !marketData || !usgRepayedValue) {
+      toast.error(ToastComponent, { data: { type: "Error", content: "Error while computing repay data." } })
+      return
+    }
 
     setIsTxLoading(true)
 
@@ -268,11 +286,18 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
           return { type: "Error", content: error || "Unable to proceed with the transaction." }
         },
       })
-
-      resetAfterRepaySuccess()
+        .then(() => {
+          resetAfterRepaySuccess()
+          setIsTxLoading(false)
+        })
+        .catch(() => {
+          setIsTxLoading(false)
+        })
     } catch (error) {
-      setIsTxLoading(false)
       console.error("Error in getRouteAndDeposit:", error)
+      setIsTxLoading(false)
+      const err = matchBlockChainErrors(typeof error === "string" ? error : error instanceof Error ? error.message : String(error))
+      toast.error(ToastComponent, { data: { type: "Error", content: err || "Unable to proceed with the transaction." } })
     }
   }
 
@@ -455,33 +480,47 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     return 0n
   }, [marketData, repayWeiValue, usgRepayedValue, currentAddress])
 
-  const handleRepayValueChange = (value: bigint | undefined) => {
+  function handleRepayValueChange(value: bigint | undefined) {
     setRepayWeiValue(value)
     setPriceImpact(0)
 
-    const fetchZapValue = async () => {
-      if (!value || !currentAddress || !marketData || !repayAssetInfo) return
+    if (!value || !currentAddress || !marketData || !repayAssetInfo || repayAssetInfo?.symbol === "USG") {
+      if (!value || value === 0n) setUsgRepayedValue(undefined)
+      return
+    }
 
-      setIsZapLoading(true)
-      try {
-        const { quote, priceImpact: pI } = await getQuote(value, currentAddress, USG_CONTRACT.USG, repayAssetInfo?.address, curveRoutes)
+    setIsZapLoading(true)
+
+    if (repayDebounceRef.current) clearTimeout(repayDebounceRef.current)
+
+    repayDebounceRef.current = setTimeout(() => {
+      quoteRepayZap(value)
+    }, 800)
+  }
+
+  async function quoteRepayZap(value: bigint) {
+    const requestId = ++latestRequestRef.current
+
+    getQuote(value, currentAddress!, USG_CONTRACT.USG, repayAssetInfo?.address as Address, curveRoutes)
+      .then(({ quote, priceImpact: pI }) => {
+        if (requestId !== latestRequestRef.current) return
 
         const { validQuote, validPriceImpact } = handleQuote(quote, pI)
 
         if (validPriceImpact >= 0 && validQuote) {
           setUsgRepayedValue(validQuote)
           setPriceImpact(Number(validPriceImpact) / 100)
+        } else {
+          setUsgRepayedValue(undefined)
         }
-      } catch (error) {
-        console.error(error)
-      } finally {
-        setIsZapLoading(false)
-      }
-    }
-
-    if (!!repayAssetInfo && repayAssetInfo?.symbol !== "USG") {
-      fetchZapValue()
-    }
+      })
+      .catch((error) => {
+        if (requestId !== latestRequestRef.current) return
+        console.error("Error fetching repay zap value:", error)
+      })
+      .finally(() => {
+        if (requestId === latestRequestRef.current) setIsZapLoading(false)
+      })
   }
 
   useEffect(() => {

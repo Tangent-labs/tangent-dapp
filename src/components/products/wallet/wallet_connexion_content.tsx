@@ -15,10 +15,9 @@ import { cn } from "@/lib/utils"
 
 type WalletConnexionContentProps = {
   className?: string
-  classNameChild?: string
 }
 
-export function WalletConnexionContent({ className, classNameChild }: WalletConnexionContentProps) {
+export function WalletConnexionContent({ className }: WalletConnexionContentProps) {
   const { copied, copy } = useClipboard()
 
   const { connect, disconnect, isConnected, isChainConnected, currentAddress } = useWalletConnexionContext()
@@ -43,7 +42,7 @@ export function WalletConnexionContent({ className, classNameChild }: WalletConn
             }
           }}
         >
-          <Button classNameChild={classNameChild}>{buttonLabel}</Button>
+          <Button classNameChild="py-[9px] px-1">{buttonLabel}</Button>
         </PopoverTriggerElement>
       </PopoverTrigger>
 

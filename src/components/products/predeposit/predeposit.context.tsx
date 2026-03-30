@@ -16,7 +16,13 @@ import { opportunities } from "../../../app/(products)/(usg)/earn/aprOpportuniti
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { EarnPoolsData, getConvexPools, getCurvePools, getPendlePools, getStakeDAOPools } from "../usg/client_api_external"
 import { deposit, fetchQuote, getFormState, mapPredepositStatus, TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "./predeposit.controller"
-import { computedMinAmountOut, computeTransactionPotentialLoss, doApprove, getBalancesAndAllowances } from "../usg/record/usg_record_controller"
+import {
+  computedMinAmountOut,
+  computeTransactionPotentialLoss,
+  doApprove,
+  getBalancesAndAllowances,
+  matchBlockChainErrors,
+} from "../usg/record/usg_record_controller"
 
 type PredepositContextProps = {
   children: ReactNode
@@ -333,20 +339,34 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   const actionApproveUSGUSDC = () => {
     if (walletClient && USDCDepositValue) {
       setIsUSDCDepositLoading(true)
-      doApprove(walletClient, USDCInfo?.address, USGTokens[1]["USG-USDC"], USDCDepositValue).then(() => {
-        getUSGUSDCBalanceAllowance(walletClient)
-        setIsUSDCDepositLoading(false)
-      })
+      doApprove(walletClient, USDCInfo?.address, USGTokens[1]["USG-USDC"], USDCDepositValue)
+        .then(() => {
+          getUSGUSDCBalanceAllowance(walletClient)
+          setIsUSDCDepositLoading(false)
+          toast.success(ToastComponent, { data: { type: "Success", content: "USDC approved successfully." } })
+        })
+        .catch((err) => {
+          setIsUSDCDepositLoading(false)
+          const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+          toast.error(ToastComponent, { data: { type: "Error", content: error || "Unable to proceed with the transaction." } })
+        })
     }
   }
 
   const actionApproveUSGfrxUSD = () => {
     if (walletClient && frxUSDDepositValue) {
       setIsfrxUSDDepositLoading(true)
-      doApprove(walletClient, frxUSDInfo?.address, USGTokens[1]["USG-frxUSD"], frxUSDDepositValue).then(() => {
-        getUSGfrxUSDBalanceAllowance(walletClient)
-        setIsfrxUSDDepositLoading(false)
-      })
+      doApprove(walletClient, frxUSDInfo?.address, USGTokens[1]["USG-frxUSD"], frxUSDDepositValue)
+        .then(() => {
+          getUSGfrxUSDBalanceAllowance(walletClient)
+          setIsfrxUSDDepositLoading(false)
+          toast.success(ToastComponent, { data: { type: "Success", content: "frxUSD approved successfully." } })
+        })
+        .catch((err) => {
+          setIsfrxUSDDepositLoading(false)
+          const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+          toast.error(ToastComponent, { data: { type: "Error", content: error || "Unable to proceed with the transaction." } })
+        })
     }
   }
 
@@ -388,17 +408,18 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
             type: "Success",
             content: "frxUSD successfully deposited.",
           }),
-
           error: () => {
             return { type: "Error", content: "Unable to proceed with the deposit." }
           },
         })
+
         getUSGfrxUSDBalanceAllowance(walletClient!)
         setfrxUSDDepositValue(undefined)
         setfrxUSDDepositSliderPercent(0)
         setUSGfrxUSDDepositValue(0n)
         setIsfrxUSDDepositLoading(false)
-      } catch {
+      } catch (e) {
+        console.error(e)
         setIsfrxUSDDepositLoading(false)
       }
     }

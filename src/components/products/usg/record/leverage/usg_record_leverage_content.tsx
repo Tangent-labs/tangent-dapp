@@ -189,7 +189,7 @@ export default function USGLeverageContent() {
         />
       )}
 
-      {!!depositWeiValue && (priceImpact >= 1 || USGDumpPriceImpact >= 1) && (
+      {!!depositWeiValue && (priceImpact >= 0.25 || USGDumpPriceImpact >= 0.25) && (
         <PriceImpactAlert
           dollarLoss={priceImpactLoss}
           priceImpact={priceImpact}

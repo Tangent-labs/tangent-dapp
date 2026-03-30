@@ -217,7 +217,7 @@ export default function USGSwapContent() {
             />
           )}
 
-          {isSwapReady && priceImpact >= 1 && (
+          {isSwapReady && priceImpact >= 0.25 && (
             <PriceImpactAlert
               dollarLoss={priceImpactLoss}
               priceImpact={priceImpact}

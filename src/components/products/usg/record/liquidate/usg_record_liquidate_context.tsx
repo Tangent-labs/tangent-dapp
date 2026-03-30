@@ -63,6 +63,10 @@ type USGLiquidateContextValues = {
   setIsTransactionBlockedBySlippage: (arg: boolean) => void
 
   slippageLoss: { tokenLoss: string; dollarLoss: string }
+  walletRepayValue: bigint
+  collateralRepayValue: bigint
+  isTransactionBlockedByWalletRepay: boolean
+  setIsTransactionBlockedByWalletRepay: (arg: boolean) => void
 }
 
 export const USGLiquidateContext = createContext<USGLiquidateContextValues | undefined>(undefined)
@@ -93,6 +97,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   const [isTransactionBlockedByPriceImpact, setIsTransactionBlockedByPriceImpact] = useState<boolean>(false)
 
   const [isTransactionBlockedBySlippage, setIsTransactionBlockedBySlippage] = useState<boolean>(false)
+  const [isTransactionBlockedByWalletRepay, setIsTransactionBlockedByWalletRepay] = useState<boolean>(false)
 
   const liquidateDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -119,11 +124,11 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
       if (walletClient && liquidateWeiValue && currentAddress && USGReceivedValue && marketData) {
         let repayValue = repayWeiValue || 0n
 
-        // TODO : Change this into a logical value
-        const maxUSGToBurn = maxUint256
-
+        // Replay value + 0.01% to handle IR
+        let maxUSGToBurn = repayValue || 0n
         if (repayWeiValue === maxRepayable && repayWeiValue !== 0n) {
           repayValue = maxUint256
+          maxUSGToBurn = repayValue + repayValue / 10_000n
         }
 
         const liquidationData = await getRoute(
@@ -183,7 +188,8 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         isWellConnected,
         isQuoteLoading || isTxLoading,
         isTransactionBlockedByPriceImpact,
-        isTransactionBlockedBySlippage
+        isTransactionBlockedBySlippage,
+        isTransactionBlockedByWalletRepay
       )
     }
     return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
@@ -196,6 +202,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     repayWeiValue,
     isTransactionBlockedByPriceImpact,
     isTransactionBlockedBySlippage,
+    isTransactionBlockedByWalletRepay,
   ])
 
   const maxLiquidable = useMemo(() => {
@@ -272,13 +279,26 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     return { tokenLoss, dollarLoss }
   }, [slippage, liquidateWeiValue])
 
+  const { collateralRepayValue, walletRepayValue } = useMemo(() => {
+    const quotedUsgOut = USGReceivedValue || 0n
+    const repayValue = repayWeiValue || 0n
+    const collateralRepayValue = quotedUsgOut >= repayValue ? repayValue : quotedUsgOut
+    const walletRepayValue = repayValue > collateralRepayValue ? repayValue - collateralRepayValue : 0n
+
+    return { collateralRepayValue, walletRepayValue }
+  }, [USGReceivedValue, repayWeiValue])
+
   useEffect(() => {
-    setIsTransactionBlockedByPriceImpact(!!USGReceivedValue && !!liquidateWeiValue && priceImpact >= 1)
+    setIsTransactionBlockedByPriceImpact(!!USGReceivedValue && !!liquidateWeiValue && priceImpact >= 0.25)
   }, [priceImpact, liquidateWeiValue, USGReceivedValue])
 
   useEffect(() => {
-    setIsTransactionBlockedBySlippage(!!USGReceivedValue && !!liquidateWeiValue && slippage >= 1)
+    setIsTransactionBlockedBySlippage(!!USGReceivedValue && !!liquidateWeiValue && slippage >= 0.25)
   }, [slippage, liquidateWeiValue, USGReceivedValue])
+
+  useEffect(() => {
+    setIsTransactionBlockedByWalletRepay(walletRepayValue > 0n)
+  }, [walletRepayValue])
 
   const zapValuesFormatted = useMemo(() => {
     if (!isQuoteLoading && liquidateWeiValue && marketData?.collateralInfos && USGReceivedValue) {
@@ -287,7 +307,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
       const displayDecimals = collateralInfo?.displayDecimals || 2
 
       return {
-        expectedFormatted: `${formatBigInt(marketData?.collateralInfos?.positionCollateralAmount - liquidateWeiValue, decimals, displayDecimals)} `,
+        expectedFormatted: `${formatBigInt(USGReceivedValue, 18, displayDecimals)} `,
         minOutFormatted: `${formatBigInt(minAmountOutWei, decimals, displayDecimals)}`,
       }
     }
@@ -324,6 +344,10 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     isTransactionBlockedBySlippage,
     setIsTransactionBlockedBySlippage,
     slippageLoss,
+    walletRepayValue,
+    collateralRepayValue,
+    isTransactionBlockedByWalletRepay,
+    setIsTransactionBlockedByWalletRepay,
   }
 
   return <USGLiquidateContext.Provider value={contextValue}>{children}</USGLiquidateContext.Provider>

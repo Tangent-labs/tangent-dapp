@@ -753,7 +753,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   }, [slippage, zapValue, depositWeiValue])
 
   useEffect(() => {
-    setIsTransactionBlockedByPriceImpact(!!depositWeiValue && !!zapValue && priceImpact >= 1)
+    setIsTransactionBlockedByPriceImpact(!!depositWeiValue && !!zapValue && priceImpact >= 0.25)
   }, [priceImpact, zapValue, depositWeiValue])
 
   const contextValue: USGDepositContextValues = {

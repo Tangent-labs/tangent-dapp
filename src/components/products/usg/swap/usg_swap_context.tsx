@@ -584,7 +584,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   }, [slippage, buyWeiValue, sellWeiValue])
 
   useEffect(() => {
-    setIsSwapBlockedByPriceImpact(!!sellWeiValue && !!buyWeiValue && priceImpact >= 1)
+    setIsSwapBlockedByPriceImpact(!!sellWeiValue && !!buyWeiValue && priceImpact >= 0.25)
   }, [buyWeiValue, sellWeiValue, priceImpact])
 
   const isSwapReady = useMemo(() => {

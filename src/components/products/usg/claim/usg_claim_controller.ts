@@ -5,9 +5,9 @@ import { USG_CONTRACT, USGMarkets } from "../usg_repository"
 import { Abi, Address, formatUnits, Hex, WalletClient } from "viem"
 import claimContract from "../../../../abi/USG/RewardAccumulator.json"
 import { AssetDataPriced, ListHeaderData } from "@/types"
-import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import { executeChainViewUnique, executeContractCall, waitForTransaction } from "@/services/service_rpc"
 import { getRewardTokenFromAprDetails } from "../list/usg_market_controller"
+import { ERC20S } from "@/data/erc20s"
 
 export async function doClaim(contractAddress: Address, markets: Address[], rewardsLength: number | undefined, walletClient: WalletClient) {
   const txData = {
@@ -27,38 +27,31 @@ export async function getUSGClaimOnChainData(currentAddress: string) {
   return await executeChainViewUnique<ClaimerInfo[]>(claimUI.abi as Abi, claimUI.bytecode as Hex, [currentAddress, addresses, USG_CONTRACT.MARKET_VIEWER])
 }
 
-export const computeAndReturnPrices = async (claimInfo: ClaimerInfo[]) => {
-  const tokensSet = new Set<string>()
+export async function getRewardTokensInfos(claimerInfos: ClaimerInfo[]) {
+  const tokens: Address[] = []
 
-  claimInfo.forEach((el) => {
-    el.claimableTokens.forEach((t) => {
-      if (t?.symbol) tokensSet.add(t.symbol)
+  // Iterate over markets
+  claimerInfos.forEach((c) => {
+    // Iterate over tokens
+    c.claimableTokens.forEach((ct) => {
+      if (!tokens.includes(ct.token)) tokens.push(ct.token.toString().toLowerCase() as Address)
+    })
+  })
+  try {
+    const prices = (await getTokensPrice(tokens))!
+    const tokenDetails = ERC20S.filter((t) => {
+      return tokens.includes(t.address)
+    }).map((t) => {
+      return {
+        ...t,
+        price: prices[t.address],
+      }
     })
 
-    tokensSet.add(el.collatStaked.symbol)
-  })
-
-  const tokens: string[] = Array.from(tokensSet)
-
-  try {
-    const prices = await getTokensPrice(tokens)
-
-    const allInfos = Object.entries(assetConfig)
-      .filter(([assetSymbol]) => tokens.indexOf(assetSymbol as AssetConfigKey) !== -1)
-      .map(([symbol, config]) => {
-        return {
-          ...config,
-          price: (prices ? prices[symbol as AssetConfigKey] : 0) || 0,
-        }
-      })
-      .sort((a, b) => {
-        return (a?.logoKey ? tokens.indexOf(a.logoKey) : -1) - (b?.logoKey ? tokens.indexOf(b.logoKey) : -1)
-      })
-
-    return allInfos
+    return tokenDetails as AssetDataPriced[]
   } catch (error) {
     console.error("Failed to load asset information:", error)
-    return undefined
+    return
   }
 }
 

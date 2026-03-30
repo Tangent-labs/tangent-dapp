@@ -3,13 +3,22 @@
 import { Address } from "viem"
 import { toast } from "react-toastify"
 import { useUSGContext } from "../usg_context"
-import { AssetDataPriced, ListState } from "@/types"
+import { AssetDataPriced, ListState, TokenAmount } from "@/types"
 import { ToastComponent } from "@/components/design_system/toast"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { SortedRows } from "@/components/design_system/list/list_context"
 import { HarvestableMarket, HarvesterInfo, HarvesterInfoDisplay, USGStakingInfo } from "../usg_type"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { computeAndReturnPrices, doHarvest, doMultiHarvest, getUSGHarvestOnChainData, transformHarvestOnChainData } from "./usg_harvest_controller"
+import {
+  getRewardTokensInfos,
+  doHarvest,
+  doMultiHarvest,
+  getUSGHarvestOnChainData,
+  transformHarvestOnChainData,
+  getStakeDaoMerkleData,
+  Merk,
+} from "./usg_harvest_controller"
+import { COMMON_ERC20S } from "@tangent/defi-resources"
 
 type USGHarvestContextProps = {
   children: ReactNode
@@ -37,27 +46,34 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  const [harvestInfo, setHarvestInfo] = useState<HarvesterInfo[] | undefined>()
+  const [harvestInfo, setHarvestInfo] = useState<(HarvesterInfo & { marketType: number })[] | undefined>()
 
   const [rewardsInfo, setRewardsInfo] = useState<AssetDataPriced[]>()
 
   const [marketsToHarvest, setMarketsToHarvest] = useState<HarvestableMarket[]>([])
 
-  useEffect(() => {
-    loadPrices()
+  const [stakeDaoMerkle, setStakeDaoMerkle] = useState<Merk[]>([])
+
+  const stakeDaoMarkets = useMemo(() => {
+    if (!harvestInfo) return []
+    return harvestInfo.filter((market) => market?.marketType === 2)
   }, [harvestInfo])
-
-  const loadPrices = async () => {
-    if (!harvestInfo) return
-
-    const allInfos = await computeAndReturnPrices(harvestInfo)
-
-    setRewardsInfo(allInfos)
-  }
 
   useEffect(() => {
     loadData()
   }, [])
+
+  // Fetch prices and infos of ERC20 rewards
+  useEffect(() => {
+    if (!harvestInfo) return
+    getRewardTokensInfos(harvestInfo).then((data) => setRewardsInfo(data))
+  }, [harvestInfo])
+
+  // Fetch Merkle data from StakeDao
+  useEffect(() => {
+    if (stakeDaoMarkets.length === 0) return
+    getStakeDaoMerkleData(stakeDaoMarkets).then((data) => setStakeDaoMerkle(data))
+  }, [stakeDaoMarkets])
 
   const loadData = useCallback(() => {
     getUSGHarvestOnChainData().then((data) => {
@@ -68,12 +84,40 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
 
   const displayRows = useMemo(() => {
     if (!harvestInfo || !rewardsInfo) return []
-
     const rows = transformHarvestOnChainData(harvestInfo, rewardsInfo)
     setIsLoading(false)
-
     return rows.filter((market) => market?.rewards?.totalDollar > 0)
   }, [harvestInfo, rewardsInfo])
+
+  // Rewards already claimed by our markets on the Merkle claim contract of StakeDao
+  const stakeDaoMerkleAlreadyClaimed = useMemo(() => {
+    if (stakeDaoMarkets.length === 0) return []
+    return stakeDaoMarkets.map((market) => {
+      return { marketAddress: market.marketAddress, alreadyClaimed: market.claimableRewards.filter((cR) => cR.token !== COMMON_ERC20S.CRV) }
+    })
+  }, [stakeDaoMarkets])
+
+  // Rewards claimable on our markets from extra rewards of StakeDAO
+  // Need to have stakeDaoMemo already claimed & the answers of the call to StakeDAO merkle
+  // We have to do this because :
+  //  - StakeDAO API call returns the totalClaimable
+  //  - Contract call returns what has been already claimed
+  // => What is claimable is the total - claimed
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const stakeDaoMerkleClaimable = useMemo(() => {
+    if (stakeDaoMerkleAlreadyClaimed.length === 0 || stakeDaoMerkle.length === 0) return []
+    return stakeDaoMerkleAlreadyClaimed.map((ac) => {
+      const claimable: TokenAmount[] = []
+      const merkle = stakeDaoMerkle.find((sdm) => ac.marketAddress.toLowerCase() === sdm.marketAddress)!
+
+      ac.alreadyClaimed.forEach((t) => {
+        const totalClaimable = BigInt(merkle.merkleData.find((md) => md.tokenObj.address.toLowerCase() === t.token)?.merkle.amount || 0n)
+        claimable.push({ token: t.token, amount: totalClaimable - t.amount })
+      })
+
+      return { marketAddress: ac.marketAddress, claimable: claimable }
+    })
+  }, [stakeDaoMerkleAlreadyClaimed, stakeDaoMerkle])
 
   const actionHarvest = () => {
     doHarvest(marketsToHarvest[0].marketAddress, walletClient!).then(() => {
@@ -103,6 +147,7 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
           harvestable: (el.rewards.totalDollar * el?.percentage) / 100,
           marketAddress: el.contractAddress,
           percentage: el.percentage,
+          logoKey: el.logoKey,
         } satisfies HarvestableMarket
       })
       setMarketsToHarvest(markets)
@@ -147,7 +192,14 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
       const market = prevMarkets.find((market) => market.marketAddress === rowData.marketAddress)
 
       if (market) {
-        return prevMarkets.filter((m) => m.marketAddress !== market.marketAddress)
+        return prevMarkets
+          .filter((m) => m.marketAddress !== market.marketAddress)
+          .map((m) => {
+            return {
+              ...m,
+              logoKey: m.logoKey,
+            }
+          })
       } else {
         return [
           ...prevMarkets,
@@ -156,6 +208,7 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
             harvestable: (rowData.harvestable * rowData?.percentage) / 100,
             marketAddress: rowData.marketAddress,
             percentage: rowData?.percentage,
+            logoKey: rowData.logoKey,
           },
         ]
       }

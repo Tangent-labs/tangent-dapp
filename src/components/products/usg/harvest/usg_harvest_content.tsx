@@ -101,14 +101,8 @@ export default function USGHarvestContent() {
               {marketsToHarvest.map((el: HarvestableMarket) => (
                 <div key={el.marketAddress} className="my-1 flex w-full items-center justify-between">
                   <div className={`relative flex items-center gap-4`}>
-                    {el.marketName?.substring(0, el.marketName.indexOf(" ")) === "USDe" ||
-                    el.marketName?.substring(0, el.marketName.indexOf(" ")) === "sUSDe" ? (
-                      <TokenImage token={el.marketName} size={24} className="ml-1 w-6" />
-                    ) : (
-                      <TokenImage token={el.marketName} size={32} className="w-8" />
-                    )}
-
-                    <span className="text-[12px] font-semibold">{el.marketName?.replaceAll("-", "/")}</span>
+                    <TokenImage token={el.logoKey} size={32} className="w-8" />
+                    <span className="text-[12px] font-semibold">{el.marketName}</span>
                   </div>
 
                   <span className="text-[12px] font-semibold">{formatDollar(el.harvestable, 2)}</span>
@@ -146,9 +140,11 @@ function HarvestList() {
         <div key={item.contractAddress} className="my-0.5 bg-overlay-panel px-4 py-1 backdrop-blur-[60px]">
           <div className="flex items-center justify-between max-xl:flex-col">
             <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
+              {/* COL "ASSET" */}
               <div className="xl:w-1/2">
-                <ListAsset name={item?.asset} token={item.asset} />
+                <ListAsset name={item?.logoKey} token={item?.logoKey} />
               </div>
+              {/* COL "TOTAL REWARDS" */}
               <div className="flex justify-center gap-2 text-sm md:text-[15px] xl:w-1/2">
                 {formatDollar(item?.rewards?.totalDollar || 0)}
 
@@ -157,7 +153,6 @@ function HarvestList() {
                     {item?.rewards?.details?.map((reward, index) => (
                       <div key={index} className="flex items-center gap-2">
                         <TokenImage token={reward.logoKey} size={16} />
-
                         <span className="w-20"> {reward.logoKey}</span>
                         <span> {formatDollar(reward.dollarValue)}</span>
                       </div>
@@ -168,15 +163,16 @@ function HarvestList() {
             </div>
             <hr className="my-2 w-full opacity-20 xl:hidden" />
             <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-1/2">
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center gap-2 text-sm md:text-[15px]">
-                {formatPercent(item?.percentage)}
-              </div>
+              {/* COL "HARVESTER FEES" */}
+              <div className="flex w-full flex-1 items-center justify-center gap-2 text-sm md:text-[15px]">{formatPercent(item?.percentage)}</div>
 
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center text-sm md:text-[15px]">
+              {/* COL "HARVESTER REWARDS" */}
+              <div className="flex w-full flex-1 items-center justify-center text-sm md:text-[15px]">
                 {formatDollar((item?.rewards.totalDollar * item?.percentage) / 100)}
               </div>
 
-              <div className="flex w-full flex-1 cursor-pointer flex-col items-center justify-center">
+              {/* COL "SWITCH LAST & LAST HARVEST" */}
+              <div className="flex w-full flex-1 flex-col items-center justify-center">
                 <Switch
                   checked={!!marketsToHarvest.find((market) => market.marketAddress === item.contractAddress)}
                   onCheckedChange={() =>
@@ -185,6 +181,7 @@ function HarvestList() {
                       harvestable: item.rewards.totalDollar,
                       marketAddress: item.contractAddress,
                       percentage: item?.percentage,
+                      logoKey: item.logoKey,
                     })
                   }
                 />

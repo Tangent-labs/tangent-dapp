@@ -6,11 +6,11 @@ import harvestUI from "../../../../abi/USG/HarvestUI.json"
 import { getTokensPrice } from "@/services/service_price"
 import { getPricesFromTokenAmounts } from "@/lib/asset_utils"
 import { USG_CONTRACT, USGMarkets } from "../usg_repository"
-import { HarvesterInfo, HarvesterInfoDisplay } from "../usg_type"
-import { AssetData, AssetDataPriced, ListHeaderData } from "@/types"
-import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
+import { HarvesterInfo, HarvesterInfoDisplay, USGTokenAmount } from "../usg_type"
+import { AssetDataPriced, ListHeaderData } from "@/types"
 import rewardAccumulator from "../../../../abi/USG/RewardAccumulator.json"
 import { executeChainViewUnique, executeContractCall, waitForTransaction } from "@/services/service_rpc"
+import { ERC20S } from "@/data/erc20s"
 
 export async function doHarvest(stakingAddress: Address, walletClient: WalletClient) {
   const [account] = await walletClient.requestAddresses()
@@ -42,62 +42,172 @@ export async function doMultiHarvest(addresses: Array<Address>, walletClient: Wa
 }
 
 export async function getUSGHarvestOnChainData() {
-  const addresses: Address[] = USGMarkets.map((m) => m.marketAddress)
+  const paramIn = USGMarkets.map((m) => {
+    let typeId = 12
+    switch (m.marketType) {
+      case "Convex_CRV":
+        typeId = 0
+        break
+      case "Convex_FXN":
+        typeId = 1
+        break
+      case "STAKEDAO_CRV_Vault":
+        typeId = 2
+        break
+      case "CRV_Gauge":
+        typeId = 3
+        break
+    }
+    return {
+      marketAddress: m.marketAddress,
+      marketType: typeId,
+    }
+  })
 
-  return await executeChainViewUnique<HarvesterInfo[]>(harvestUI.abi as Abi, harvestUI.bytecode as Hex, [addresses, USG_CONTRACT.REWARD_ACCUMULATOR])
+  const chainviewData = (await executeChainViewUnique<HarvesterInfo[]>(harvestUI.abi as Abi, harvestUI.bytecode as Hex, [
+    paramIn,
+    USG_CONTRACT.REWARD_ACCUMULATOR,
+  ]))!
+  return chainviewData.map((m, i) => ({ ...m, marketType: paramIn[i].marketType }))
 }
-
-export function transformHarvestOnChainData(harvesterInfos: HarvesterInfo[], assetInfos: AssetDataPriced[]) {
-  const processOne = (info: HarvesterInfo) => {
-    const stakingInfo = Object.values(USGMarkets).find((i) => i.marketAddress === info.marketAddress)
+export type StakeDaoAlreadyClaimed = {
+  marketAddress: Address
+  tokens: USGTokenAmount[]
+}
+export function transformHarvestOnChainData(harvestInfos: (HarvesterInfo & { marketType: number })[], assetInfos: AssetDataPriced[]) {
+  const processOne = (marketInfo: HarvesterInfo) => {
+    const stakingInfo = USGMarkets.find((i) => i.marketAddress === marketInfo.marketAddress)
     if (!stakingInfo) return
+    const isStakeDao = stakingInfo.marketType === "STAKEDAO_CRV_Vault"
+    let tokenAmounts: USGTokenAmount[] = []
 
-    const rewards = getPricesFromTokenAmounts(info.tokenAmounts, assetInfos)
-    const percentage = Number(info.harvesterFeePercentage) / 1000
+    // For stake DAO, harvestable rewards are :
+    //      - Rewards held by the contracts
+    //      - CRV claimable into the accountant
+    // Rewards in .claimableRewards are rewards already claimable by the market on the StakeDao Merkle contract.
+    if (isStakeDao) {
+      tokenAmounts = marketInfo.balancesRewards.map((bR) => {
+        let claimable = 0n
+        if (bR.symbol === "CRV") {
+          claimable = marketInfo.claimableRewards.find((cR) => cR.token === "CRV")?.amount || 0n
+        }
+        return { ...bR, amount: bR.amount + claimable }
+      })
+    }
+    // For any other contracts, we are summing rewards held by the market
+    // and rewards claimable by the market on the underlying protocol
+    else {
+      tokenAmounts = marketInfo.balancesRewards.map((bR) => {
+        const claimable = marketInfo.claimableRewards.find((cR) => cR.token === bR.token)?.amount || 0n
+        return { ...bR, amount: bR.amount + claimable }
+      })
+    }
+
+    const rewards = getPricesFromTokenAmounts(tokenAmounts, assetInfos)
+    const percentage = Number(marketInfo.harvesterFeePercentage) / 1000
     return {
       asset: stakingInfo?.marketName,
+      logoKey: stakingInfo.logoKey,
       percentage,
       harvesterFees: (rewards.data.totalDollar * percentage) / 100,
       rewards: rewards?.data,
       isProcessed: true,
       contractAddress: stakingInfo.marketAddress,
-      lastHarvestDate: formatDate(new Date(Number(info.lastHarvestDate) * 1000), "dd-MM-yyyy"),
+      lastHarvestDate: formatDate(new Date(Number(marketInfo.lastHarvestDate) * 1000), "dd-MM-yyyy"),
     } as HarvesterInfoDisplay
   }
-  return harvesterInfos?.map(processOne).filter((a) => !!a) || []
+
+  return harvestInfos?.map(processOne).filter((a) => !!a) || []
 }
 
-export const computeAndReturnPrices = async (harvestInfo: HarvesterInfo[]) => {
-  const tokens: string[] = []
+export const getRewardTokensInfos = async (harvestInfo: HarvesterInfo[]) => {
+  const tokens: Address[] = []
 
-  harvestInfo.forEach((el) => {
-    el.tokenAmounts.forEach((t) => {
-      if (!tokens.includes(t?.symbol)) tokens.push(t.symbol)
+  // Iterate over markets
+  harvestInfo.forEach((m) => {
+    // Iterate over tokens
+    m.balancesRewards.forEach((br) => {
+      if (!tokens.includes(br.token)) tokens.push(br.token.toString().toLowerCase() as Address)
     })
   })
-
   try {
-    const list: Record<AssetConfigKey, AssetData> = assetConfig
+    const prices = (await getTokensPrice(tokens))!
+    const tokenDetails = ERC20S.filter((t) => {
+      return tokens.includes(t.address)
+    }).map((t) => {
+      return {
+        ...t,
+        price: prices[t.address],
+      }
+    })
 
-    const prices = await getTokensPrice(tokens)
-
-    const allInfos = Object.entries(list)
-      .filter(([k]) => tokens.indexOf(k as AssetConfigKey) !== -1)
-      .map(([k, v]) => {
-        return {
-          ...v,
-          price: (prices ? prices[k as AssetConfigKey] : 0) || 0,
-        }
-      })
-      .sort((a, b) => {
-        return (a?.logoKey ? tokens.indexOf(a.logoKey) : -1) - (b?.logoKey ? tokens.indexOf(b.logoKey) : -1)
-      })
-
-    return allInfos
+    return tokenDetails as AssetDataPriced[]
   } catch (error) {
     console.error("Failed to load asset information:", error)
     return
   }
+}
+
+export async function getStakeDaoMerkleData(stakeDaoInfos: HarvesterInfo[]) {
+  const results: Merk[] = []
+  // Iterate over stakeDao markets
+  stakeDaoInfos.forEach((sdi) => {
+    fetch(`https://hub.stakedao.org/v1/merkles?user=${sdi.marketAddress}`).then(async (res) => {
+      const data = (await res.json()) as TokenReward[]
+      results.push({
+        marketAddress: sdi.marketAddress,
+        merkleData: data,
+      })
+    })
+  })
+  return results
+}
+
+interface TokenExtensions {
+  onChainPrice?: {
+    to: Address
+    data: string
+    decimals: number
+  }
+  coingeckoId?: string
+}
+
+interface TokenObj {
+  id: string
+  name: string
+  address: Address
+  symbol: string
+  decimals: number
+  chainId: number
+  logoURI: string
+  tags: string[]
+  extensions: TokenExtensions
+}
+
+interface Merkle {
+  account: Address
+  proof: string[]
+  amount: string
+  rewardAmount: string
+  rewardAmountInUsd: number
+  isUniversal: boolean
+  token: Address
+}
+
+export interface TokenReward {
+  address: Address
+  tokenObj: TokenObj
+  merkleContract: Address
+  chainId: number
+  merkle: Merkle
+  tokenPriceInUsd: number
+  tokenDecimals: number
+  isUniversal: boolean
+}
+
+export interface Merk {
+  marketAddress: Address
+  merkleData: TokenReward[]
 }
 
 export const harvestListHeaders: ListHeaderData[] = [

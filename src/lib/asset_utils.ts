@@ -9,7 +9,7 @@ export const getPricesFromTokenAmounts = (amounts: TokenAmount[], assets: AssetD
   const finalData = { totalDollar: 0, details: [] as TokenAmountPricedRow[] }
   const errors: string[] = []
   amounts?.reduce<TokenAmountPriced>((agg, amount) => {
-    const assetData = assets.find((a) => a.address === amount.token)
+    const assetData = assets.find((a) => a.address.toLowerCase() === amount.token.toLowerCase())
     if (assetData) {
       const actualAmount = parseFloat(formatUnits(amount?.amount || 0n, assetData.decimals))
       // Calculate the dollar value for this token amount

@@ -2,7 +2,6 @@
 
 import { PredepositRawState, PredepositStatus } from "./types/types"
 import PredepositPoolsABI from "../../../abi/USG/PredepositPoolsABI.json"
-import { computedMinAmountOut } from "../usg/record/usg_record_controller"
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 
@@ -57,11 +56,9 @@ export const fetchQuote = async (depositValue: bigint, contract: Address) => {
   return previewCustomeQuote as bigint
 }
 
-export const deposit = async (walletClient: WalletClient, amount: bigint, slippage: number, contract: Address) => {
+export const deposit = async (walletClient: WalletClient, amount: bigint, minOut: bigint, contract: Address) => {
   const publicClient = getPublicClient()
   const [account] = await walletClient.requestAddresses()
-
-  const minOut = computedMinAmountOut(amount, slippage)
 
   const estimateGasData = {
     abi: PredepositPoolsABI.abi as Abi,

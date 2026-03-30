@@ -1,6 +1,6 @@
 import { Address } from "viem"
+import { AprEntry, AssetData, AssetDataPriced, CollateralInfo, ERC20StaticInfos, Network, TokenAmount, TokenAmountPriced } from "@/types"
 import { Time } from "lightweight-charts"
-import { AprEntry, AssetData, AssetDataPriced, CollateralInfo, ERC20StaticInfos, Network, TokenAmountPriced } from "@/types"
 
 export type MarketPlatforms = "convex" | "curve"
 
@@ -17,17 +17,18 @@ export type USGMarketData = {
 }
 
 export type USGTokenAmount = {
-  token: string
+  token: Address
   symbol: string
   amount: bigint
 }
 
 export type HarvesterInfo = {
+  marketAddress: Address
   collateralName: string
   harvesterFeePercentage: bigint
-  marketAddress: string
-  tokenAmounts: USGTokenAmount[]
   lastHarvestDate: bigint
+  balancesRewards: USGTokenAmount[]
+  claimableRewards: TokenAmount[]
 }
 
 export type USGMarketDataUser = {
@@ -116,6 +117,7 @@ export type ClaimableMarket = {
 
 export type HarvestableMarket = {
   marketName: string
+  logoKey: string
   marketAddress: Address
   harvestable: number
   percentage: number
@@ -283,6 +285,7 @@ export type HarvesterInfoDisplay = {
   percentage: number
   harvesterFees: number
   lastHarvestDate: string
+  logoKey: string
 }
 
 export type SwapToken = AssetData & {

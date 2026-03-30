@@ -561,7 +561,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   }, [slippage, usgRepayedValue, repayWeiValue])
 
   useEffect(() => {
-    setIsTransactionBlockedByPriceImpact(!!repayWeiValue && !!usgRepayedValue && priceImpact >= 1)
+    setIsTransactionBlockedByPriceImpact(!!repayWeiValue && !!usgRepayedValue && priceImpact >= 0.25)
   }, [priceImpact, usgRepayedValue, repayWeiValue])
 
   const contextValue: USGRepayContextValues = {

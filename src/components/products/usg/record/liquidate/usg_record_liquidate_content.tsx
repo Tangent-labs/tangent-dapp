@@ -147,7 +147,7 @@ export default function USGLiquidatePanel() {
         />
       )}
 
-      {!!liquidateWeiValue && priceImpact >= 1 && (
+      {!!liquidateWeiValue && priceImpact >= 0.25 && (
         <PriceImpactAlert
           dollarLoss={priceImpactLoss}
           priceImpact={priceImpact}

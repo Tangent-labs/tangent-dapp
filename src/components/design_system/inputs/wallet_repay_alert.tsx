@@ -10,5 +10,5 @@ type WalletRepayAlertProps = {
 }
 
 export const WalletRepayAlert = ({ walletRepay, ...rest }: WalletRepayAlertProps) => (
-  <SwapWarningAlert percentage={4} title="Wallet USG Usage" subtitle={`This repayment will use your wallet USG ( ${walletRepay}). `} content="" {...rest} />
+  <SwapWarningAlert percentage={4} title="Wallet USG Usage" subtitle={`This repayment will use your wallet USG (${walletRepay}). `} content="" {...rest} />
 )

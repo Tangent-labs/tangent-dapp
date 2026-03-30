@@ -17,7 +17,7 @@ const titles = (p: number) => (p < 5 ? "High Price Impact" : p <= 10 ? "Excessiv
 const contents = (swapPriceImpact: number, swapDollarLoss: string, mintDumpPriceImpact?: number, mintDumpDollarLoss?: string): string => {
   let alert: string
 
-  if (swapPriceImpact < 1) {
+  if (swapPriceImpact < 0.25) {
     alert = ""
   } else if (swapPriceImpact < 5) {
     alert = `Due to limited pool liquidity, this trade carries a ${swapPriceImpact}% price impact. You may receive up to ${swapDollarLoss} less than the current market value.`

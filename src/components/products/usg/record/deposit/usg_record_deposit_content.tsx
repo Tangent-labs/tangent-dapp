@@ -172,7 +172,7 @@ export default function USGDepositContent() {
         />
       )}
 
-      {!!depositWeiValue && priceImpact >= 1 && (
+      {!!depositWeiValue && priceImpact >= 0.25 && (
         <PriceImpactAlert
           dollarLoss={priceImpactLoss}
           priceImpact={priceImpact}

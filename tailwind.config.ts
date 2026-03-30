@@ -36,6 +36,7 @@ const config: Config = {
         "panel-title-gradient": "var(--tgt-panel-title-gradient)",
         "button-gradient": "var(--tgt-button)",
         lec: "var(--tgt-bg-lec)",
+        body: "var(--tgt-image-body)",
       },
       colors: {
         "button-active-hover": "var(--tgt-button-active-hover)",

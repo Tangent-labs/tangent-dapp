@@ -12,17 +12,17 @@ export default function USGRecordPageHeader() {
 
   return (
     <>
-      <div className="flex w-full flex-col justify-between gap-0 xl:flex-row xl:gap-[20px]">
-        <CollateralCard collateralInfo={collateralInfo} marketData={marketData}></CollateralCard>
+      <div className="flex w-full flex-col justify-between gap-0 xl:flex-row xl:gap-4">
+        <CollateralCard className="w-full xl:w-5/12" collateralInfo={collateralInfo} marketData={marketData}></CollateralCard>
 
         <NeonLightCard
-          className={cn(marketDisplayData?.tvlDollar === "-" ? "shimmer" : "", "mt-2 flex h-full w-full xl:mt-0 xl:w-1/2")}
+          className={cn(marketDisplayData?.tvlDollar === "-" ? "shimmer" : "", "mt-2 flex h-full w-full xl:mt-0 xl:w-7/12")}
           color1="#0077ffa3"
           color2="#0075FF"
         >
           <div className="flex h-full items-center gap-2 xl:gap-4">
-            <div className="flex w-full items-center justify-between px-6 xl:gap-8">
-              <div className="text-center">
+            <div className="flex w-full items-center justify-between px-5 py-0.5">
+              <div className="flex-1 text-center">
                 <div className="text-center text-xs text-subtitle">TVL</div>
                 <div className="mt-1 text-center text-sm font-semibold">${formatMillions(marketDisplayData?.tvlDollar)} </div>
               </div>
@@ -32,7 +32,7 @@ export default function USGRecordPageHeader() {
                 { key: "Cap", value: marketDisplayData?.cap },
                 { key: "Available", value: marketDisplayData?.available },
               ].map((item, index) => (
-                <div className="text-center" key={index}>
+                <div className="flex-1 text-center xl:border-l xl:border-white/10" key={index}>
                   <div className="text-center text-xs text-subtitle">{item.key}</div>
                   <div className="mt-1 text-center text-sm font-semibold">{formatMillions(item.value)} USG</div>
                 </div>

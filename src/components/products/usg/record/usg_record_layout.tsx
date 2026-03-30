@@ -124,7 +124,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
             <div className="mt-2">{children}</div>
           </ReliefCard>
 
-          <div className="flex w-full flex-col gap-2 self-start xl:sticky xl:top-24 xl:w-7/12">
+          <div className="flex w-full flex-col gap-5 self-start xl:sticky xl:top-24 xl:w-7/12">
             <USGLoanDetail />
 
             <CollateralPriceProvider>

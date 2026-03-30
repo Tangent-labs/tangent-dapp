@@ -13,13 +13,16 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 type CollateralCardProps = {
   collateralInfo: { logoKey: string; symbol: string }
   marketData?: MarketDetailData
+  className?: string
 }
 
-export const CollateralCard = ({ collateralInfo, marketData }: CollateralCardProps) => {
+export const CollateralCard = ({ collateralInfo, marketData, className }: CollateralCardProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <ReliefCard className="flex w-full cursor-pointer items-center justify-start gap-4 px-4 py-2 transition-colors duration-200 ease-in-out hover:bg-white/10 xl:w-1/2">
+        <ReliefCard
+          className={`${className || ""} flex w-full cursor-pointer items-center justify-start gap-4 px-4 py-2 transition-colors duration-200 ease-in-out hover:bg-white/10 xl:w-1/2`}
+        >
           <div className="flex items-center gap-2">
             {specialTokensList.includes(collateralInfo?.logoKey?.substring(0, collateralInfo?.logoKey.indexOf(" ")).trim()) ? (
               <TokenImage token={collateralInfo?.logoKey} size={32} className="w-6 md:w-10" />

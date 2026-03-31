@@ -2,7 +2,7 @@
 
 import { MarketDetailData } from "../../usg_type"
 import { AssetDataPriced, CollateralInfo } from "@/types"
-import { getBorrowCommonFormState } from "../usg_record_controller"
+import { getBorrowCommonFormState, NO_CONNECTED_WALLET } from "../usg_record_controller"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Address, EstimateContractGasParameters, formatEther, formatUnits, parseUnits, WalletClient, WriteContractParameters } from "viem"
@@ -30,7 +30,7 @@ export function getLeverageFormState(
   const isApproved = (depositWeiValue || 0n) <= (balanceAllowanceData?.allowance || 0n)
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    reasons.push(NO_CONNECTED_WALLET)
   } else {
     if (!isZapMode && (depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
       reasons.push("Not enough balance.")

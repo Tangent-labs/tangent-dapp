@@ -3,6 +3,7 @@ import VsTan from "../../../../abi/USG/VsTAN.json"
 import { Abi, WalletClient } from "viem"
 import { LockPosition } from "../../usg/usg_type"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
+import { NO_CONNECTED_WALLET } from "../../usg/record/usg_record_controller"
 
 export const doSplit = async (tokenId: bigint, walletClient: WalletClient, amountToRemove: bigint) => {
   const txData = {
@@ -22,7 +23,7 @@ export async function getSplitFormState(splitPositionInfo: LockPosition, isWellC
   const currentBlock = await getCurrentBlock()
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    reasons.push(NO_CONNECTED_WALLET)
   } else {
     if (!!splitPositionInfo?.endLockTime && currentBlock.timestamp > Number(splitPositionInfo?.endLockTime)) {
       reasons.push("Lock expired.")

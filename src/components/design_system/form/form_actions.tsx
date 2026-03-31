@@ -3,6 +3,7 @@
 import { useMemo } from "react"
 import { FormState, FormAction } from "@/types"
 import { Button } from "@/components/design_system/inputs/button"
+import { NO_CONNECTED_WALLET } from "@/components/products/usg/record/usg_record_controller"
 
 type FormButtonsProps = {
   formState: FormState
@@ -14,9 +15,12 @@ type FormButtonsProps = {
 }
 
 export default function FormButtons({ formState, labelApprove = "Approve", labelProcess, actions, connect, isLoading = false }: FormButtonsProps) {
-  const isWalletConnected = !formState.cantProcessReasons.includes("No connected wallet.")
+  const isWalletConnected = !formState.cantProcessReasons.includes(NO_CONNECTED_WALLET)
+
   const isApproveNeeded = !!actions.handleApprove && formState?.haveToApprove
+
   let label = ""
+
   let funcCalledOnClick: (() => void) | undefined
   if (isApproveNeeded) {
     label = labelApprove

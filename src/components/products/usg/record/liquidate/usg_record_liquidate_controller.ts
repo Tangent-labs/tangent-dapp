@@ -5,6 +5,7 @@ import { formatBigInt } from "@/lib/number_formatter"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
+import { EMPTY_FORM, IS_LOADING, NO_CONNECTED_WALLET, PRICE_IMPACT_ERROR, SLIPPAGE_ERROR, USG_REPAYED_ERROR } from "../usg_record_controller"
 
 export function getLiquidateFormState(
   marketData: MarketDetailData,
@@ -19,18 +20,12 @@ export function getLiquidateFormState(
   const reasons: string[] = []
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    reasons.push(NO_CONNECTED_WALLET)
   } else {
     if (isLoading) {
-      reasons.push("Quote loading.")
+      reasons.push(IS_LOADING)
     } else if (withdrawWeiValue > marketData?.collateralInfos?.positionCollateralAmount) {
       reasons.push("Withdraw value too high.")
-    } else if (isTransactionBlockedByPriceImpact) {
-      reasons.push("Price impact is too high.")
-    } else if (isTransactionBlockedBySlippage) {
-      reasons.push("Slippage is too high.")
-    } else if (isTransactionBlockedByWalletRepay) {
-      reasons.push("Repayment uses wallet USG.")
     }
   }
 
@@ -42,7 +37,19 @@ export function getLiquidateFormState(
   } else if (existingDebt - repayWeiValue! > 0n && existingDebt - repayWeiValue! < minimumLoan) {
     reasons.push(`Remaining debt must be at least ${formatBigInt(minimumLoan, 18, 2)}`)
   } else if (!repayWeiValue && !withdrawWeiValue) {
-    reasons.push("No values")
+    reasons.push(EMPTY_FORM)
+  }
+
+  if (isTransactionBlockedByWalletRepay) {
+    reasons.push(USG_REPAYED_ERROR)
+  }
+
+  if (isTransactionBlockedByPriceImpact) {
+    reasons.push(PRICE_IMPACT_ERROR)
+  }
+
+  if (isTransactionBlockedBySlippage) {
+    reasons.push(SLIPPAGE_ERROR)
   }
 
   return { canProcess: reasons.length === 0 && !isLoading, cantProcessReasons: reasons, haveToApprove: false }

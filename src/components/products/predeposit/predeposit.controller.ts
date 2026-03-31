@@ -2,7 +2,7 @@
 
 import { PredepositRawState, PredepositStatus } from "./types/types"
 import PredepositPoolsABI from "../../../abi/USG/PredepositPoolsABI.json"
-import { computedMinAmountOut } from "../usg/record/usg_record_controller"
+import { computedMinAmountOut, SLIPPAGE_ERROR } from "../usg/record/usg_record_controller"
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 
@@ -29,14 +29,16 @@ export const getFormState = (
     return { canProcess: false, cantProcessReasons: reasons, haveToApprove: false }
   }
 
-  if (!!quotedValue && quotedValue < (99n * depositValue) / 100n) {
+  reasons.push("Price impact too high. Wait for Peg Keepers to take action and try again later.")
+
+  if (!!quotedValue && quotedValue < (9975n * depositValue) / 10000n) {
     reasons.push("Price impact too high. Wait for Peg Keepers to take action and try again later.")
   } else if (!!depositValue && depositValue > balanceAllowance?.balance) {
     reasons.push("Your balance is too low.")
   } else if (currentlyDeposited + depositValue > totalCap) {
     reasons.push("Deposit exceeds total cap.")
   } else if (isTxBlockedBySlippage) {
-    reasons.push("Slippage too high.")
+    reasons.push(SLIPPAGE_ERROR)
   }
 
   return { canProcess: reasons.length === 0 && !isLoading, cantProcessReasons: reasons, haveToApprove: !isApproved }

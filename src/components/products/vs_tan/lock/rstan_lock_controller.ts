@@ -3,6 +3,7 @@ import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { LockPosition, ZapMarketData } from "../../usg/usg_type"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { executeApprove, executeContractCall, getCurrentBlock, getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { NO_CONNECTED_WALLET } from "../../usg/record/usg_record_controller"
 
 export async function doApprove(walletClient: WalletClient, contract: Address, spender: Address, amount: bigint) {
   const txHash = await executeApprove(walletClient, contract, spender, amount)
@@ -127,7 +128,7 @@ export async function getLockFormState(
     (isZapMode && (depositWeiValue || 0n) <= (lockBalanceAllowanceData?.allowance || 0n))
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    reasons.push(NO_CONNECTED_WALLET)
   } else {
     if (lockBalanceAllowanceData?.balance < depositWeiValue) {
       reasons.push("Not enough balance.")

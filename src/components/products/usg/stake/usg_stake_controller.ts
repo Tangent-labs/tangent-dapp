@@ -3,6 +3,7 @@ import { formatNumber } from "@/lib/number_formatter"
 import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Address, EstimateContractGasParameters, formatUnits, maxUint256, WalletClient, WriteContractParameters } from "viem"
+import { NO_CONNECTED_WALLET } from "../record/usg_record_controller"
 
 export const COMPOUNDING_PERIODS_PER_YEAR = 52
 
@@ -18,7 +19,7 @@ export function getFormState(
   const reasons: string[] = []
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    reasons.push(NO_CONNECTED_WALLET)
   } else {
     isApproved = (currentFeature === "stake" && !!stakeInfo?.USGAllowance && (weiValue || 0n) <= stakeInfo?.USGAllowance) || currentFeature === "unstake"
     if (weiValue === 0n) {

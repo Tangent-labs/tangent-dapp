@@ -4,6 +4,7 @@ import IERC4626 from "@/abi/USG/IERC4626.json"
 import { BalanceAllowanceData } from "../usg_type"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, SendTransactionParameters, WalletClient, WriteContractParameters } from "viem"
+import { NO_CONNECTED_WALLET, PRICE_IMPACT_ERROR, SLIPPAGE_ERROR } from "../record/usg_record_controller"
 
 export const doApprove = async (walletClient: WalletClient, depositAssetAddress: Address, amount: bigint, spender: Address) => {
   const publicClient = getPublicClient()
@@ -81,7 +82,7 @@ export function getSwapFormState(
   const isApproved = approveNotNeeded || ((depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n) && !approveNotNeeded)
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    reasons.push(NO_CONNECTED_WALLET)
   } else {
     if (!depositWeiValue || depositWeiValue === 0n) {
       reasons.push("No amount.")
@@ -90,9 +91,9 @@ export function getSwapFormState(
     } else if (!receiveWeiValue || receiveWeiValue === 0n) {
       reasons.push("You need to input a target token.")
     } else if (isSwapBlockedBySlippage) {
-      reasons.push("Slippage is too high.")
+      reasons.push(SLIPPAGE_ERROR)
     } else if (isSwapBlockedByPriceImpact) {
-      reasons.push("Price impact is too high.")
+      reasons.push(PRICE_IMPACT_ERROR)
     }
   }
 

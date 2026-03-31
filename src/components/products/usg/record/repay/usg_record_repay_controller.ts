@@ -4,6 +4,7 @@ import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { BalanceAllowanceData, MarketDetailData, USGMarketRepayParams, ZapMarketData } from "../../usg_type"
+import { NO_CONNECTED_WALLET } from "../usg_record_controller"
 
 export function getRepayFormState(
   isTransactionBlockedByPriceImpact: boolean,
@@ -23,7 +24,7 @@ export function getRepayFormState(
   if (!marketData) return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    reasons.push(NO_CONNECTED_WALLET)
   } else {
     if (repayWeiValue === 0n || !repayWeiValue) {
       reasons.push("Amount must be greater than zero.")

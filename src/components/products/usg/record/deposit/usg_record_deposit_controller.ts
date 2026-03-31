@@ -1,6 +1,6 @@
 "use client"
 
-import { getBorrowCommonFormState } from "../usg_record_controller"
+import { getBorrowCommonFormState, NO_CONNECTED_WALLET } from "../usg_record_controller"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
@@ -26,7 +26,7 @@ export function getDepositFormState(
   const isEnoughBalance = depositValue < (balanceAllowanceData?.balance || 0n)
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    reasons.push(NO_CONNECTED_WALLET)
   } else {
     if (depositValue === 0n) {
       reasons.push("No amount.")

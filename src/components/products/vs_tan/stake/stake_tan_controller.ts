@@ -4,6 +4,7 @@ import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
 import { TANStakingInfo } from "../rstan_types"
+import { NO_CONNECTED_WALLET } from "../../usg/record/usg_record_controller"
 
 export async function getTanStakeOnChainData(currentAddress: string) {
   return await executeChainViewUnique<TANStakingInfo>(sTANUI.abi as Abi, sTANUI.bytecode as Hex, [
@@ -21,7 +22,7 @@ export function getFormState(stakeInfo: TANStakingInfo, currentFeature: "stake" 
   const reasons: string[] = []
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    reasons.push(NO_CONNECTED_WALLET)
   } else {
     isApproved = (currentFeature === "stake" && !!stakeInfo?.tanAllowance && (weiValue || 0n) <= stakeInfo?.tanAllowance) || currentFeature === "unstake"
     if (weiValue === 0n) {

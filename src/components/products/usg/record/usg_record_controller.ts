@@ -25,6 +25,13 @@ import { Erc20Details, ERC20S } from "@/data/erc20s"
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
 
+export const SLIPPAGE_ERROR = "Slippage is too high."
+export const PRICE_IMPACT_ERROR = "Price impact is too high."
+export const USG_REPAYED_ERROR = "Repayment uses wallet USG."
+export const EMPTY_FORM = "Empty form."
+export const IS_LOADING = "Form is loading."
+export const NO_CONNECTED_WALLET = "No connected wallet."
+
 const BORROW_BUFFER = BigInt(10 ** 16)
 
 export const getBalancesAndAllowances = async (walletClient: WalletClient, address: Address | undefined, spender: Address | undefined) => {
@@ -76,7 +83,7 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, borrowWe
   const reasons: string[] = []
 
   if (!borrowWeiValue || borrowWeiValue === 0n) {
-    reasons.push("Borrow amount must be greater than zero.")
+    reasons.push(EMPTY_FORM)
   } else {
     const minLoan = BigInt(marketData?.constants?.minimumLoan || "0")
     const totalDebt = marketData?.debtInfos?.totalDebt || 0n

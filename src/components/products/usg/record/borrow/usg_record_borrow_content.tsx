@@ -46,7 +46,7 @@ export default function USGRecordBorrowContent() {
         />
       </div>
 
-      <MarketTransactionError display={!!borrowWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />
+      <MarketTransactionError error={formState?.cantProcessReasons[0]} />
 
       <MaxBorrowCapReached display={!borrowWeiValue && maxBorrowCapReached} />
 

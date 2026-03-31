@@ -13,6 +13,7 @@ import { WalletRepayAlert } from "@/components/design_system/inputs/wallet_repay
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
+import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 
 export default function USGLiquidatePanel() {
   const { connect } = useWalletConnexionContext()
@@ -134,6 +135,8 @@ export default function USGLiquidatePanel() {
           usgRepaidFromWallet: `${formatBigInt(walletRepayValue, 18, 2)} USG`,
         }}
       />
+
+      <MarketTransactionError error={formState?.cantProcessReasons[0]} />
 
       {!!liquidateWeiValue && slippage >= 1 && (
         <SlippageAlert

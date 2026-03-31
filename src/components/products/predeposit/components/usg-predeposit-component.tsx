@@ -13,6 +13,7 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { BorderPanel } from "@/components/design_system/structure/border_panel"
 import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 
 type USGPredepositComponentProps = {
   predepositStatus: PredepositStatus | null
@@ -122,7 +123,7 @@ export const USGPredepositComponent = ({
         </div>
       </div>
 
-      <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel px-3 py-1 backdrop-blur-[60px]">
+      <div className="mb-2 flex w-full items-center justify-between rounded-[10px] bg-overlay-panel px-3 py-1 backdrop-blur-[60px]">
         <span className="text-xs font-semibold text-subtitle">TAN allocation</span>
         <span className="flex items-center justify-center gap-2 text-xl font-semibold">
           {formatNumber(Number(tanAllocation), 0)}
@@ -130,7 +131,9 @@ export const USGPredepositComponent = ({
         </span>
       </div>
 
-      {!!depositWeiValue && slippage >= 1 ? (
+      <MarketTransactionError error={formState?.cantProcessReasons[0]} />
+
+      {!!depositWeiValue && slippage >= 1 && (
         <SlippageAlert
           symbol={pool?.replaceAll("-", "/")}
           tokenLoss={slippageLoss?.tokenLoss}
@@ -141,10 +144,6 @@ export const USGPredepositComponent = ({
           displayConfirmationButton={isTransactionBlockedBySlippage}
           onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
         />
-      ) : (
-        <span className="my-2 flex h-4 w-full items-center justify-center">
-          {formState?.cantProcessReasons?.length > 0 && <span className="text-sm font-semibold text-danger"> {formState?.cantProcessReasons[0]} </span>}
-        </span>
       )}
 
       <FormButtons

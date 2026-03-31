@@ -164,17 +164,19 @@ export const LPTasksList = () => {
                 <div className="flex h-full flex-col items-start justify-between">
                   <span className="flex text-[15px] font-semibold">{task?.description}</span>
 
-                  <ReliefCard
-                    onClick={(e) => {
-                      e?.stopPropagation()
-                      e?.preventDefault()
-                      router.push(`/swap?tokenIn=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&tokenOut=${task?.tokenAddress}`)
-                    }}
-                    className="flex items-center justify-center !rounded-full px-2 py-1 text-sm"
-                  >
-                    Zap
-                    <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white"></IconOpenOutside>
-                  </ReliefCard>
+                  {task?.canZap && (
+                    <ReliefCard
+                      onClick={(e) => {
+                        e?.stopPropagation()
+                        e?.preventDefault()
+                        router.push(`/swap?tokenIn=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&tokenOut=${task?.tokenAddress}`)
+                      }}
+                      className="flex items-center justify-center !rounded-full px-2 py-1 text-sm"
+                    >
+                      Zap
+                      <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white"></IconOpenOutside>
+                    </ReliefCard>
+                  )}
                 </div>
               </div>
 

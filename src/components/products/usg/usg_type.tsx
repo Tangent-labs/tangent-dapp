@@ -493,6 +493,7 @@ export type LpTask = {
   points: number
   tokenAddress: Address
   priceUSD: number
+  canZap: boolean
   balance?: number
   balanceUsd?: number
 }

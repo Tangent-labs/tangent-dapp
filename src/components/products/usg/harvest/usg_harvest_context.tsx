@@ -60,7 +60,7 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
   }, [harvestInfo])
 
   useEffect(() => {
-    loadData()
+    loadChainviewData()
   }, [])
 
   // Fetch prices and infos of ERC20 rewards
@@ -75,7 +75,7 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
     getStakeDaoMerkleData(stakeDaoMarkets).then((data) => setStakeDaoMerkle(data))
   }, [stakeDaoMarkets])
 
-  const loadData = useCallback(() => {
+  const loadChainviewData = useCallback(() => {
     getUSGHarvestOnChainData().then((data) => {
       setHarvestInfo(data)
       setIsLoading(false)
@@ -121,7 +121,7 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
 
   const actionHarvest = () => {
     doHarvest(marketsToHarvest[0].marketAddress, walletClient!).then(() => {
-      loadData()
+      loadChainviewData()
       setMarketsToHarvest([])
       toast.success(ToastComponent, { data: { type: "Success", content: "Market harvested successfully" } })
     })
@@ -131,7 +131,7 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
     const marketAddresses = marketsToHarvest.map((el) => el.marketAddress)
 
     doMultiHarvest(marketAddresses, walletClient!).then(() => {
-      loadData()
+      loadChainviewData()
       setMarketsToHarvest([])
       toast.success(ToastComponent, { data: { type: "Success", content: "Markets harvested successfully" } })
     })

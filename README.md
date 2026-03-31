@@ -7,7 +7,7 @@
 - Shadcnui + tailwind css as UI components
 - Viem as blockchain framework.
 
-## Directory organization
+## Directory organizationn
 
 ### Project Folder Structure
 

@@ -52,6 +52,7 @@ export default function USGRepayContent() {
     priceImpact,
     priceImpactLoss,
     isTransactionBlockedByPriceImpact,
+    expectedUSGRefunded,
   } = useUSGRepayContext()
 
   const { connect } = useWalletConnexionContext()
@@ -165,6 +166,7 @@ export default function USGRepayContent() {
             label: "debt repaid",
             expected: `${zapValuesFormatted.expectedFormatted} USG`,
             minOut: `${zapValuesFormatted.minOutFormatted} USG`,
+            usgRefund: !!expectedUSGRefunded ? `${expectedUSGRefunded} USG` : undefined,
             slippage: slippage,
             priceImpact: priceImpact,
           }}

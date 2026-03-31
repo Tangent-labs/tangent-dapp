@@ -13,7 +13,8 @@ export function getLiquidateFormState(
   isWellConnected: boolean,
   isLoading: boolean,
   isTransactionBlockedByPriceImpact: boolean,
-  isTransactionBlockedBySlippage: boolean
+  isTransactionBlockedBySlippage: boolean,
+  isTransactionBlockedByWalletRepay: boolean
 ) {
   const reasons: string[] = []
 
@@ -28,6 +29,8 @@ export function getLiquidateFormState(
       reasons.push("Price impact is too high.")
     } else if (isTransactionBlockedBySlippage) {
       reasons.push("Slippage is too high.")
+    } else if (isTransactionBlockedByWalletRepay) {
+      reasons.push("Repayment uses wallet USG.")
     }
   }
 
@@ -38,6 +41,8 @@ export function getLiquidateFormState(
     reasons.push(`Repayment exceeds outstanding debt.`)
   } else if (existingDebt - repayWeiValue! > 0n && existingDebt - repayWeiValue! < minimumLoan) {
     reasons.push(`Remaining debt must be at least ${formatBigInt(minimumLoan, 18, 2)}`)
+  } else if (!repayWeiValue && !withdrawWeiValue) {
+    reasons.push("No values")
   }
 
   return { canProcess: reasons.length === 0 && !isLoading, cantProcessReasons: reasons, haveToApprove: false }

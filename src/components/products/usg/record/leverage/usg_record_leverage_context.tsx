@@ -857,7 +857,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
   }, [slippage, depositWeiValue])
 
   useEffect(() => {
-    setIsTransactionBlockedByPriceImpact(!!depositWeiValue && (priceImpact >= 1 || USGDumpPriceImpact >= 1))
+    setIsTransactionBlockedByPriceImpact(!!depositWeiValue && (priceImpact >= 0.25 || USGDumpPriceImpact >= 0.25))
   }, [priceImpact, depositWeiValue, USGDumpPriceImpact])
 
   const contextValue: USGLeverageContextValues = {

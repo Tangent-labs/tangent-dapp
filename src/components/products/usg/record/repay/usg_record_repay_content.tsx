@@ -189,7 +189,7 @@ export default function USGRepayContent() {
         />
       )}
 
-      {!!repayWeiValue && priceImpact >= 1 && (
+      {!!repayWeiValue && priceImpact >= 0.25 && (
         <PriceImpactAlert
           dollarLoss={priceImpactLoss}
           priceImpact={priceImpact}

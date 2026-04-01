@@ -45,6 +45,7 @@ export type TokenAmountPricedRow = {
   symbol: string
   dollarValue: number
   tokenAmount: number
+  rawAmount: string
   logoKey?: string
   tokenAmountFormatted?: string
 }

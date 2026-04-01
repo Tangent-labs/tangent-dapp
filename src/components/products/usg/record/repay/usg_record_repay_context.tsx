@@ -117,6 +117,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     isRepayAndWithdraw,
     setIsTxLoading,
     isTxLoading,
+    futureMarketDisplayData,
   } = useUSGRecordContext()
 
   const [isZapLoading, setIsZapLoading] = useState(false)
@@ -414,6 +415,14 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     loadUSGsUSGMetrics()
   }
 
+  const transactionExceedsMaxLtv = useMemo(() => {
+    const computedLtv = futureMarketDisplayData.ltv.substring(0, futureMarketDisplayData.ltv.length - 1)
+
+    const ltvAsNumber = Number(computedLtv)
+
+    return !!futureMarketDisplayData && ltvAsNumber > Number(marketData?.constants?.maxLTV) / 1000
+  }, [futureMarketDisplayData, marketData])
+
   const formState = useMemo(() => {
     if (marketData) {
       return getRepayFormState(
@@ -424,7 +433,8 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
         isWellConnected,
         balanceAllowanceData!,
         repayAsset,
-        isZapLoading || isTxLoading
+        isZapLoading || isTxLoading,
+        transactionExceedsMaxLtv
       )
     }
 
@@ -439,6 +449,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     balanceAllowanceData,
     repayAsset,
     isZapLoading || isTxLoading,
+    transactionExceedsMaxLtv,
   ])
 
   const marketValues = useMemo(() => {

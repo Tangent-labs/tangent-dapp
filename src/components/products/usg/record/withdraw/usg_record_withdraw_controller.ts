@@ -16,6 +16,8 @@ export function getWithdrawFormState(
 
   if (!marketData) return { canProcess: false, errors: [], haveToApprove: false }
 
+  if (!withdrawWeiValue || withdrawWeiValue === 0n) return { canProcess: false, errors: [], haveToApprove: false }
+
   if (!isWellConnected) {
     errors.push({
       key: "no-wallet",
@@ -25,15 +27,6 @@ export function getWithdrawFormState(
       type: "form-alert",
     })
   } else {
-    if (!withdrawWeiValue || withdrawWeiValue === 0n) {
-      errors.push({
-        key: "empty-form",
-        title: "Invalid Withdraw Amount",
-        subtitle: "Amount must be greater than zero.",
-        content: "Please enter a valid amount to withdraw.",
-        type: "form-alert",
-      })
-    }
     if (withdrawWeiValue > maxWithdrawable) {
       errors.push({
         key: "max-withdrawable",

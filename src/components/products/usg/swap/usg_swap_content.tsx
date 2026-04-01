@@ -19,6 +19,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
 
 export default function USGSwapContent() {
   const {
@@ -203,6 +204,12 @@ export default function USGSwapContent() {
             }}
             isLoading={isBuyValueLoading || isSellValueLoading}
           />
+
+          {formState.errors
+            .filter((e) => e.type === "form-alert")
+            .map((error) => (
+              <FormAlert key={error.key} error={error} className="my-1" isLoading={isBuyValueLoading || isSellValueLoading} />
+            ))}
 
           {isSwapReady && isSwapBlockedBySlippage && slippage >= 1 && (
             <SlippageAlert

@@ -29,13 +29,7 @@ export function getStakeFormState(
     isApproved = (currentFeature === "stake" && !!stakeInfo?.USGAllowance && (weiValue || 0n) <= stakeInfo?.USGAllowance) || currentFeature === "unstake"
 
     if (!weiValue || weiValue === 0n) {
-      errors.push({
-        key: "empty-form",
-        title: "No Amount Entered",
-        subtitle: "Please enter an amount.",
-        content: "A value greater than zero is required to proceed.",
-        type: "form-alert",
-      })
+      return { canProcess: false, errors: [], haveToApprove: true }
     } else {
       if (currentFeature === "stake" && weiValue > (stakeInfo?.USGBalance || 0n)) {
         errors.push({

@@ -13,7 +13,8 @@ export function getRepayFormState(
   isWellConnected?: boolean,
   balanceAllowanceData?: BalanceAllowanceData,
   repayAsset?: string,
-  isLoading?: boolean
+  isLoading?: boolean,
+  transactionExceedsMaxLtv?: boolean
 ): FormState {
   const isZapMode = !!repayAsset && !!balanceAllowanceData && repayAsset !== "USG"
   const isApproved = repayAsset === "USG" || (isZapMode && (repayWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n))
@@ -21,6 +22,8 @@ export function getRepayFormState(
   const errors: FormError[] = []
 
   if (!marketData) return { canProcess: false, errors: [], haveToApprove: false }
+
+  if (!repayWeiValue || repayWeiValue === 0n) return { canProcess: false, errors: [], haveToApprove: false }
 
   if (!isWellConnected) {
     errors.push({
@@ -31,54 +34,54 @@ export function getRepayFormState(
       type: "form-alert",
     })
   } else {
-    if (!repayWeiValue || repayWeiValue === 0n) {
+    if (transactionExceedsMaxLtv) {
       errors.push({
-        key: "empty-form",
-        title: "No Amount Entered",
-        subtitle: "Amount must be greater than zero.",
-        content: "Please enter a valid repayment amount.",
+        key: "max-ltv",
+        title: "Max LTV Exceeded",
+        subtitle: "Your remaining debt amount exceeds the maximum loan-to-value ratio.",
+        content: "Please reduce your remaining debt amount to stay within the allowed LTV.",
         type: "form-alert",
       })
-    } else {
-      if (isTransactionBlockedBySlippage) {
-        errors.push({
-          key: "slippage",
-          title: "Slippage Too High",
-          subtitle: "Your slippage tolerance is blocking this transaction.",
-          content: "Please lower your slippage to proceed.",
-          type: null,
-        })
-      }
-      if (isTransactionBlockedByPriceImpact) {
-        errors.push({
-          key: "price-impact",
-          title: "Price Impact Too High",
-          subtitle: "The price impact on this transaction is too high.",
-          content: "Wait for Peg Keepers to take action and try again later.",
-          type: null,
-        })
-      }
+    }
 
-      const existingDebt = marketData.debtInfos?.userDebt || 0n
-      const minimumLoan = marketData.constants?.minimumLoan || 0n
+    if (isTransactionBlockedBySlippage) {
+      errors.push({
+        key: "slippage",
+        title: "Slippage Too High",
+        subtitle: "Your slippage tolerance is blocking this transaction.",
+        content: "Please lower your slippage to proceed.",
+        type: null,
+      })
+    }
+    if (isTransactionBlockedByPriceImpact) {
+      errors.push({
+        key: "price-impact",
+        title: "Price Impact Too High",
+        subtitle: "Price Impact Too High",
+        content: "Price Impact Too High",
+        type: null,
+      })
+    }
 
-      if (repayWeiValue > existingDebt) {
-        errors.push({
-          key: "repay-exceeds-debt",
-          title: "Repayment Exceeds Debt",
-          subtitle: "Your repayment amount is greater than your outstanding debt.",
-          content: "Please reduce your repayment amount.",
-          type: "form-alert",
-        })
-      } else if (existingDebt - repayWeiValue > 0n && existingDebt - repayWeiValue < minimumLoan) {
-        errors.push({
-          key: "min-debt",
-          title: "Remaining Debt Too Low",
-          subtitle: `Remaining debt must be at least ${formatBigInt(minimumLoan, 18, 2)} USG.`,
-          content: "Either repay the full debt or leave at least the minimum loan amount.",
-          type: "form-alert",
-        })
-      }
+    const existingDebt = marketData.debtInfos?.userDebt || 0n
+    const minimumLoan = marketData.constants?.minimumLoan || 0n
+
+    if (repayWeiValue > existingDebt) {
+      errors.push({
+        key: "repay-exceeds-debt",
+        title: "Repayment Exceeds Debt",
+        subtitle: "Your repayment amount is greater than your outstanding debt.",
+        content: "Please reduce your repayment amount.",
+        type: "form-alert",
+      })
+    } else if (existingDebt - repayWeiValue > 0n && existingDebt - repayWeiValue < minimumLoan) {
+      errors.push({
+        key: "min-debt",
+        title: "Remaining Debt Too Low",
+        subtitle: `Remaining debt must be at least ${formatBigInt(minimumLoan, 18, 2)} USG.`,
+        content: "Either repay the full debt or leave at least the minimum loan amount.",
+        type: "form-alert",
+      })
     }
   }
 

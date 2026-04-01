@@ -67,8 +67,8 @@ export function getLeverageFormState(
       errors.push({
         key: "price-impact",
         title: "Price Impact Too High",
-        subtitle: "The price impact on this transaction is too high.",
-        content: "Wait for Peg Keepers to take action and try again later.",
+        subtitle: "Price Impact Too High",
+        content: "Price Impact Too High",
         type: null,
       })
     }
@@ -82,6 +82,14 @@ export function getLeverageFormState(
       })
     }
     if (isDepositAndBorrow) {
+      if (!borrowWeiValue || borrowWeiValue === 0n) {
+        return {
+          canProcess: false,
+          errors,
+          haveToApprove: !isApproved,
+        }
+      }
+
       const borrowErrors = getBorrowCommonFormState(marketData, borrowWeiValue)
       errors.push(...borrowErrors)
     }

@@ -96,8 +96,6 @@ export type USGLeverageContextValues = {
   isTransactionBlockedByPriceImpact: boolean
   setIsTransactionBlockedByPriceImpact: (arg: boolean) => void
 
-  leverageExceedsMaxLtv: boolean
-
   USGDumpPriceImpact: number
 
   USGDumpDollarLoss: number

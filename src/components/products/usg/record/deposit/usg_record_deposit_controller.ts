@@ -25,6 +25,14 @@ export function getDepositFormState(
   const isApproved = depositValue <= (balanceAllowanceData?.allowances[0]?.allowance || 0n)
   const isEnoughBalance = depositValue < (balanceAllowanceData?.balance || 0n)
 
+  if (depositValue === 0n) {
+    return {
+      canProcess: false,
+      errors,
+      haveToApprove: !isApproved,
+    }
+  }
+
   if (!isWellConnected) {
     errors.push({
       key: "no-wallet",
@@ -34,54 +42,52 @@ export function getDepositFormState(
       type: "form-alert",
     })
   } else {
-    if (depositValue === 0n) {
+    if (!isEnoughBalance) {
       errors.push({
-        key: "empty-form",
-        title: "No Amount Entered",
-        subtitle: "Please enter a deposit amount.",
-        content: "A deposit amount greater than zero is required to proceed.",
+        key: "balance",
+        title: "Insufficient Balance",
+        subtitle: "You don't have enough tokens to complete this deposit.",
+        content: "Please reduce your deposit amount or acquire more tokens.",
         type: "form-alert",
       })
-    } else {
-      if (!isEnoughBalance) {
-        errors.push({
-          key: "balance",
-          title: "Insufficient Balance",
-          subtitle: "You don't have enough tokens to complete this deposit.",
-          content: "Please reduce your deposit amount or acquire more tokens.",
-          type: "form-alert",
-        })
-      }
-      if (isTransactionBlockedBySlippage) {
-        errors.push({
-          key: "slippage",
-          title: "Slippage Too High",
-          subtitle: "Your slippage tolerance is blocking this transaction.",
-          content: "Please lower your slippage to proceed.",
-          type: null,
-        })
-      }
-      if (isTransactionBlockedByPriceImpact) {
-        errors.push({
-          key: "price-impact",
-          title: "Price Impact Too High",
-          subtitle: "The price impact on this transaction is too high.",
-          content: "Wait for Peg Keepers to take action and try again later.",
-          type: null,
-        })
-      }
-      if (isZapping && !zapValue) {
-        errors.push({
-          key: "empty-form",
-          title: "No Zap Value",
-          subtitle: "The zap quote hasn't loaded yet.",
-          content: "Please wait for the zap value to be calculated before proceeding.",
-          type: "form-alert",
-        })
-      }
+    }
+    if (isTransactionBlockedBySlippage) {
+      errors.push({
+        key: "slippage",
+        title: "Slippage Too High",
+        subtitle: "Your slippage tolerance is blocking this transaction.",
+        content: "Please lower your slippage to proceed.",
+        type: null,
+      })
+    }
+    if (isTransactionBlockedByPriceImpact) {
+      errors.push({
+        key: "price-impact",
+        title: "Price Impact Too High",
+        subtitle: "Price Impact Too High",
+        content: "Price Impact Too High",
+        type: null,
+      })
+    }
+    if (isZapping && !zapValue) {
+      errors.push({
+        key: "empty-form",
+        title: "No Zap Value",
+        subtitle: "The zap quote hasn't loaded yet.",
+        content: "Please wait for the zap value to be calculated before proceeding.",
+        type: "form-alert",
+      })
     }
 
     if (isDepositAndBorrow) {
+      if (!borrowWeiValue || borrowWeiValue === 0n) {
+        return {
+          canProcess: false,
+          errors,
+          haveToApprove: !isApproved,
+        }
+      }
+
       const borrowErrors = getBorrowCommonFormState(marketData, borrowWeiValue)
       errors.push(...borrowErrors)
     }

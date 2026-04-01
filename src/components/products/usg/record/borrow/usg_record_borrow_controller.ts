@@ -24,6 +24,14 @@ export function getBorrowFormState(
       type: "form-alert",
     })
   } else {
+    if (!borrowWeiValue || borrowWeiValue === 0n) {
+      return {
+        canProcess: false,
+        errors,
+        haveToApprove: true,
+      }
+    }
+
     const borrowErrors = getBorrowCommonFormState(marketData, borrowWeiValue)
     errors.push(...borrowErrors)
   }

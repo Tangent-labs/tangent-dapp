@@ -8,6 +8,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
 
 export default function USGRecordBorrowContent() {
   const { connect } = useWalletConnexionContext()
@@ -46,6 +47,12 @@ export default function USGRecordBorrowContent() {
       </div>
 
       <MaxBorrowCapReached display={!borrowWeiValue && maxBorrowCapReached} />
+
+      {formState.errors
+        .filter((e) => e.type === "form-alert")
+        .map((error) => (
+          <FormAlert key={error.key} error={error} className="my-1" isLoading={borrowLoading} />
+        ))}
 
       <FormButtons
         isLoading={borrowLoading}

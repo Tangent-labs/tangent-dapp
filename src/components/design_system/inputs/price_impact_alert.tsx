@@ -20,9 +20,9 @@ const contents = (swapPriceImpact: number, swapDollarLoss: string, mintDumpPrice
   if (swapPriceImpact < 0.25) {
     alert = ""
   } else if (swapPriceImpact < 5) {
-    alert = `Due to limited pool liquidity, this trade carries a ${swapPriceImpact}% price impact. You may receive up to ${swapDollarLoss} less than the current market value.`
+    alert = `Due to limited pool liquidity, this trade carries a ${swapPriceImpact?.toFixed(2)}% price impact. You may receive up to ${swapDollarLoss} less than the current market value.`
   } else if (swapPriceImpact <= 10) {
-    alert = `This trade has a ${swapPriceImpact}% price impact, which may result in a ${swapDollarLoss} shortfall.`
+    alert = `This trade has a ${swapPriceImpact?.toFixed(2)}% price impact, which may result in a ${swapDollarLoss} shortfall.`
   } else {
     alert = `A ${swapPriceImpact?.toFixed(2)}% price impact would result in an estimated ${swapDollarLoss} loss. As a safety measure, trades exceeding 10% impact are not permitted.`
   }

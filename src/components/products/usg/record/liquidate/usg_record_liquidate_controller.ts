@@ -36,15 +36,17 @@ export function getLiquidateFormState(
         type: "form-alert",
       })
     }
+
     if (isTransactionBlockedByPriceImpact) {
       errors.push({
         key: "price-impact",
         title: "Price Impact Too High",
-        subtitle: "The price impact on this transaction is too high.",
-        content: "Wait for Peg Keepers to take action and try again later.",
-        type: "form-alert",
+        subtitle: "Price Impact Too High",
+        content: "Price Impact Too High",
+        type: null,
       })
     }
+
     if (isTransactionBlockedBySlippage) {
       errors.push({
         key: "slippage",
@@ -54,13 +56,14 @@ export function getLiquidateFormState(
         type: null,
       })
     }
+
     if (isTransactionBlockedByWalletRepay) {
       errors.push({
         key: "wallet-repay",
         title: "Repayment Uses Wallet USG",
         subtitle: "This repayment will use USG from your wallet.",
         content: "Make sure you have enough USG in your wallet to cover the repayment.",
-        type: "form-alert",
+        type: null,
       })
     }
   }
@@ -69,13 +72,7 @@ export function getLiquidateFormState(
   const minimumLoan = marketData.constants?.minimumLoan || 0n
 
   if (!repayWeiValue && !withdrawWeiValue) {
-    errors.push({
-      key: "empty-form",
-      title: "No Values Entered",
-      subtitle: "Please enter a repayment or withdrawal amount.",
-      content: "At least one value must be provided to proceed.",
-      type: "form-alert",
-    })
+    return { canProcess: false, errors: [], haveToApprove: false }
   } else if (repayWeiValue && repayWeiValue > existingDebt) {
     errors.push({
       key: "repay-exceeds-debt",

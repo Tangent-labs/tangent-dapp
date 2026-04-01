@@ -14,6 +14,7 @@ import { ZapAssetSelector } from "@/components/design_system/inputs/asset_select
 import { RecapAccordion } from "@/components/design_system/structure/recap"
 import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
 
 export default function USGDepositContent() {
   const {
@@ -159,6 +160,12 @@ export default function USGDepositContent() {
       ></RecapAccordion>
 
       <MaxBorrowCapReached display={!borrowWeiValue && isDepositAndBorrow && maxBorrowCapReached} />
+
+      {formState.errors
+        .filter((e) => e.type === "form-alert")
+        .map((error) => (
+          <FormAlert key={error.key} error={error} className="my-1" isLoading={isTxLoading} />
+        ))}
 
       {!!depositWeiValue && slippage >= 1 && (
         <SlippageAlert

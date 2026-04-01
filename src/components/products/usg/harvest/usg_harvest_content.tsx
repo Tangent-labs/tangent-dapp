@@ -47,7 +47,8 @@ export default function USGHarvestContent() {
 
   const { isConnected, connect } = useWalletConnexionContext()
 
-  const { displayRows, USGsUSGMetrics, marketsToHarvest, isLoading, getSortedRows, onClickSelectAll, onClickHarvest } = useUSGHarvestContext()
+  const { displayRows, USGsUSGMetrics, marketsToHarvest, isChainviewLoading, isTxLoading, getSortedRows, onClickSelectAll, onClickHarvest } =
+    useUSGHarvestContext()
 
   return (
     <>
@@ -73,7 +74,7 @@ export default function USGHarvestContent() {
             <HarvestList></HarvestList>
           </ListProvider>
 
-          {!isLoading && displayRows?.length === 0 && (
+          {!isChainviewLoading && displayRows?.length === 0 && (
             <div className="mt-24 flex w-full items-center justify-center text-sm text-subtitle">Nothing to harvest for now</div>
           )}
         </div>
@@ -88,7 +89,7 @@ export default function USGHarvestContent() {
             <ListGradientBorder classname={"rounded-t-[10px]"} />
           </div>
 
-          <div className="relative mt-1 flex h-full min-h-52 w-full cursor-pointer flex-col items-start justify-start p-2 backdrop-blur-[60px] transition-all duration-200 ease-out before:absolute before:inset-0 before:-z-10 before:opacity-60 before:transition-all before:duration-300">
+          <div className="relative mt-1 flex h-full min-h-52 w-full flex-col items-start justify-start p-2 backdrop-blur-[60px] transition-all duration-200 ease-out before:absolute before:inset-0 before:-z-10 before:opacity-60 before:transition-all before:duration-300">
             <div className="flex w-full items-center justify-between">
               <div className="flex flex-col items-start justify-start">Market</div>
 
@@ -112,7 +113,14 @@ export default function USGHarvestContent() {
 
             <div className="mt-8 flex w-full">
               {marketsToHarvest.length > 0 && isConnected && (
-                <Button label="Harvest" className="flex w-full items-center justify-center" onClick={() => onClickHarvest()} />
+                <Button
+                  label="Harvest"
+                  className="flex w-full items-center justify-center"
+                  hasLoadingState={true}
+                  isLoading={isTxLoading}
+                  state={isTxLoading ? "disabled" : "active"}
+                  onClick={() => onClickHarvest()}
+                />
               )}
 
               {!isConnected && <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />}
@@ -124,7 +132,6 @@ export default function USGHarvestContent() {
     </>
   )
 }
-
 function HarvestList() {
   const { headers, listState, udpateSort, displayRows } = useListContext()
 
@@ -177,11 +184,10 @@ function HarvestList() {
                   checked={!!marketsToHarvest.find((market) => market.marketAddress === item.contractAddress)}
                   onCheckedChange={() =>
                     addToHarvestableMarkets({
+                      ...item,
                       marketName: item.asset,
                       harvestable: item.rewards.totalDollar,
                       marketAddress: item.contractAddress,
-                      percentage: item?.percentage,
-                      logoKey: item.logoKey,
                     })
                   }
                 />

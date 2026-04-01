@@ -48,7 +48,8 @@ export default function USGClaimContent() {
   const color1 = "#0077ff67"
   const color2 = "#0075FF"
 
-  const { displayRows, onClickClaim, marketsToClaim, getSortedRows, isLoading, onClickClaimAll, totalDeposited, totalClaimable } = useUSGClaimContext()
+  const { displayRows, onClickClaim, marketsToClaim, getSortedRows, isChainviewLoading, isTxLoading, onClickClaimAll, totalDeposited, totalClaimable } =
+    useUSGClaimContext()
 
   const { isWellConnected, connect } = useWalletConnexionContext()
 
@@ -119,7 +120,7 @@ export default function USGClaimContent() {
             <ClaimList />
           </ListProvider>
 
-          {!isLoading && displayRows?.length === 0 && (
+          {!isChainviewLoading && displayRows?.length === 0 && (
             <div className="mt-24 flex w-full items-center justify-center text-sm text-subtitle">Nothing to claim for now</div>
           )}
         </div>
@@ -134,7 +135,7 @@ export default function USGClaimContent() {
             <ListGradientBorder classname={"rounded-t-[10px]"} />
           </div>
 
-          <div className="relative mt-1 flex h-full min-h-52 w-full cursor-pointer flex-col items-start justify-start p-2 backdrop-blur-[60px] transition-all duration-200 ease-out before:absolute before:inset-0 before:-z-10 before:opacity-60 before:transition-all before:duration-300">
+          <div className="relative mt-1 flex h-full min-h-52 w-full flex-col items-start justify-start p-2 backdrop-blur-[60px] transition-all duration-200 ease-out before:absolute before:inset-0 before:-z-10 before:opacity-60 before:transition-all before:duration-300">
             <div className="flex w-full items-center justify-between">
               <div className="flex flex-col items-start justify-start">Market</div>
               Claimable
@@ -164,7 +165,14 @@ export default function USGClaimContent() {
               {marketsToClaim.length > 0 && (
                 <>
                   {isWellConnected ? (
-                    <Button label="Claim" className="flex w-full items-center justify-center" onClick={() => onClickClaim(marketsToClaim)} />
+                    <Button
+                      label="Claim"
+                      className="flex w-full items-center justify-center"
+                      hasLoadingState={true}
+                      isLoading={isTxLoading}
+                      state={isTxLoading ? "disabled" : "active"}
+                      onClick={() => onClickClaim(marketsToClaim)}
+                    />
                   ) : (
                     <Button label="Connect wallet" className="flex w-full items-center justify-center" onClick={connect} />
                   )}
@@ -217,7 +225,7 @@ function ClaimList() {
 
             <hr className="my-2 w-full opacity-20 xl:hidden" />
             <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-1/2">
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center gap-2 text-[15px]">
+              <div className="flex w-full flex-1 items-center justify-center gap-2 text-[15px]">
                 {formatDollar(item?.totalClaimableValue || 0, 2)}
 
                 <USGHoverCard iconClassName="w-3" title={`${item?.marketName} Rewards Breakdown`}>
@@ -234,9 +242,9 @@ function ClaimList() {
                 </USGHoverCard>
               </div>
 
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center text-[15px]">${formatMillions(item?.totalDepositedValue || 0)}</div>
+              <div className="flex w-full flex-1 items-center justify-center text-[15px]">${formatMillions(item?.totalDepositedValue || 0)}</div>
 
-              <div className="flex w-full flex-1 cursor-pointer items-center justify-center">
+              <div className="flex w-full flex-1 items-center justify-center">
                 <Switch
                   checked={!!marketsToClaim.find((market) => market.marketAddress === item.marketAddress)}
                   onCheckedChange={() =>
@@ -245,6 +253,7 @@ function ClaimList() {
                       claimable: item.totalClaimableValue,
                       marketAddress: item.marketAddress,
                       logoKey: item.logoKey,
+                      rewards: item.claimable,
                     })
                   }
                 />

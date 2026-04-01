@@ -9,12 +9,12 @@ import { executeChainViewUnique, executeContractCall, waitForTransaction } from 
 import { getRewardTokenFromAprDetails } from "../list/usg_market_controller"
 import { ERC20S } from "@/data/erc20s"
 
-export async function doClaim(contractAddress: Address, markets: Address[], rewardsLength: number | undefined, walletClient: WalletClient) {
+export async function doSimpleClaim(market: Address, walletClient: WalletClient) {
   const txData = {
     abi: claimContract.abi as Abi,
-    functionName: markets.length === 1 ? "claimSimple" : "claimMultiple",
-    args: markets.length === 1 ? [markets[0]] : [markets, rewardsLength],
-    address: contractAddress,
+    functionName: "claimSimple",
+    args: [market],
+    address: USG_CONTRACT.REWARD_ACCUMULATOR,
     gas: undefined as undefined | bigint,
   }
 
@@ -22,6 +22,18 @@ export async function doClaim(contractAddress: Address, markets: Address[], rewa
   return await waitForTransaction(txHash)
 }
 
+export async function doMultiClaim(markets: Address[], rewardsLength: number, walletClient: WalletClient) {
+  const txData = {
+    abi: claimContract.abi as Abi,
+    functionName: "claimMultiple",
+    args: [markets, rewardsLength],
+    address: USG_CONTRACT.REWARD_ACCUMULATOR,
+    gas: undefined as undefined | bigint,
+  }
+
+  const txHash = await executeContractCall(walletClient, txData)
+  return await waitForTransaction(txHash)
+}
 export async function getUSGClaimOnChainData(currentAddress: string) {
   const addresses: Address[] = USGMarkets.map((m) => m.marketAddress)
   return await executeChainViewUnique<ClaimerInfo[]>(claimUI.abi as Abi, claimUI.bytecode as Hex, [currentAddress, addresses, USG_CONTRACT.MARKET_VIEWER])
@@ -39,9 +51,7 @@ export async function getRewardTokensInfos(claimerInfos: ClaimerInfo[]) {
   })
   try {
     const prices = (await getTokensPrice(tokens))!
-    const tokenDetails = ERC20S.filter((t) => {
-      return tokens.includes(t.address)
-    }).map((t) => {
+    const tokenDetails = ERC20S.filter((t) => tokens.includes(t.address)).map((t) => {
       return {
         ...t,
         price: prices[t.address],
@@ -62,17 +72,20 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
   }
 
   const result = claimerInfos.map((claimer) => {
-    const claimable = claimer.claimableTokens.map((token) => {
-      const tokenPrice = getPriceBySymbol(token.symbol)
+    // Hide lines with 0 wei of token to claim
+    const claimable = claimer.claimableTokens
+      .filter((c) => c.amount !== 0n)
+      .map((token) => {
+        const tokenPrice = getPriceBySymbol(token.symbol)
 
-      const valueInUsd = Number(formatUnits(token.amount, Number(token.decimals))) * tokenPrice
+        const valueInUsd = Number(formatUnits(token.amount, Number(token.decimals))) * tokenPrice
 
-      return {
-        symbol: token.symbol,
-        amount: token.amount.toString(),
-        valueInUsd: valueInUsd.toFixed(2),
-      }
-    })
+        return {
+          symbol: token.symbol,
+          amount: token.amount.toString(),
+          valueInUsd: valueInUsd.toFixed(2),
+        }
+      })
 
     const totalClaimableValue = claimable.reduce((sum, token) => sum + parseFloat(token.valueInUsd), 0)
 

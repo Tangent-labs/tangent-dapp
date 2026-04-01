@@ -112,6 +112,11 @@ export type ClaimableMarket = {
   marketName: string
   marketAddress: Address
   claimable: string
+  rewards: {
+    symbol: string
+    amount: string
+    valueInUsd: string
+  }[]
   logoKey?: string
 }
 
@@ -121,6 +126,7 @@ export type HarvestableMarket = {
   marketAddress: Address
   harvestable: number
   percentage: number
+  rewards: TokenAmountPriced
 }
 
 export interface ChainViewMarketRow {

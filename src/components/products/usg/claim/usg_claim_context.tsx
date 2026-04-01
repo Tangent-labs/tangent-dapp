@@ -1,24 +1,31 @@
 "use client"
 
-import { Address, zeroAddress } from "viem"
+import { zeroAddress } from "viem"
 import { useUSGContext } from "../usg_context"
-import { USG_CONTRACT, USGMarkets } from "../usg_repository"
+import { USGMarkets } from "../usg_repository"
 import { AssetDataPriced, ListState } from "@/types"
 import { SortedRows } from "@/components/design_system/list/list_context"
 import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { ClaimableMarket, ClaimData, ClaimerInfo, USGStakingInfo } from "../usg_type"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { getRewardTokensInfos, doClaim, getUSGClaimOnChainData, sortClaimListByType, transformClaimOnChainData } from "./usg_claim_controller"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import {
+  getRewardTokensInfos,
+  getUSGClaimOnChainData,
+  sortClaimListByType,
+  transformClaimOnChainData,
+  doSimpleClaim,
+  doMultiClaim,
+} from "./usg_claim_controller"
 
 type USGClaimContextProps = {
   children: ReactNode
 }
 
 type USGClaimContextValues = {
-  isLoading: boolean
+  isChainviewLoading: boolean
+  isTxLoading: boolean
   displayRows: ClaimData[]
-  actionClaim: (arg: Address, markets: Address[]) => void
   onClickClaim: (marketsToClaim: ClaimableMarket[]) => void
   addToClaimableMarkets: (rowData: ClaimableMarket) => void
   marketsToClaim: ClaimableMarket[]
@@ -35,9 +42,10 @@ export const USGClaimContext = createContext<USGClaimContextValues | undefined>(
 export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
   const { USGsUSGMetrics, marketAprs } = useUSGContext()
 
-  const { walletClient, currentAddress } = useWalletConnexionContext()
+  const { walletClient, currentAddress, isWalletContextLoaded } = useWalletConnexionContext()
 
-  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isChainviewLoading, setIsChainviewLoading] = useState<boolean>(true)
+  const [isTxLoading, setIsTxLoading] = useState<boolean>(false)
 
   const [claimInfo, setClaimInfo] = useState<ClaimerInfo[] | undefined>()
 
@@ -56,38 +64,42 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
   }
 
   useEffect(() => {
-    loadData()
+    if (isWalletContextLoaded) {
+      loadData()
+    }
   }, [currentAddress])
 
-  const loadData = useCallback(() => {
-    getUSGClaimOnChainData(currentAddress || zeroAddress).then((data) => {
-      setClaimInfo(data)
-    })
-  }, [currentAddress])
+  function loadData() {
+    setIsChainviewLoading(true)
+    getUSGClaimOnChainData(currentAddress || zeroAddress)
+      .then((data) => {
+        setClaimInfo(data)
+      })
+      .catch((e) => console.error(e))
+      .finally(() => setIsChainviewLoading(false))
+  }
 
   const displayRows = useMemo(() => {
     if (!claimInfo || !rewardsInfo || !marketAprs) return []
     const rows = transformClaimOnChainData(claimInfo, rewardsInfo, marketAprs)
 
-    return rows.filter((market) => Number(market?.totalDepositedValue) > 0)
+    return rows.filter((market) => {
+      let isSmthinToClaim = false
+      market.claimable.forEach((r) => {
+        if (r.amount !== "0") {
+          isSmthinToClaim = true
+        }
+      })
+      return isSmthinToClaim
+    })
   }, [claimInfo, rewardsInfo, marketAprs])
 
   useEffect(() => {
     if (!claimInfo || !rewardsInfo || !marketAprs) return
 
-    setIsLoading(false)
+    setIsChainviewLoading(false)
     setMarketsToClaim([])
   }, [claimInfo, rewardsInfo, marketAprs])
-
-  const actionClaim = useCallback(
-    (contractAddress: Address, markets: Address[]) => {
-      doClaim(contractAddress, markets, rewardsInfo?.length, walletClient!).then(() => {
-        setIsLoading(true)
-        loadData()
-      })
-    },
-    [currentAddress, rewardsInfo]
-  )
 
   const getSortedRows = (rows: SortedRows, listState: ListState) => {
     const { key, direction } = listState.sort!
@@ -120,7 +132,37 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
 
   const onClickClaim = (marketsToClaim: ClaimableMarket[]) => {
     const marketAddressesToClaim = marketsToClaim.map((el) => el.marketAddress)
-    actionClaim(USG_CONTRACT.REWARD_ACCUMULATOR, marketAddressesToClaim)
+    if (!walletClient) return
+    setIsTxLoading(true)
+    if (marketAddressesToClaim.length === 1) {
+      doSimpleClaim(marketAddressesToClaim[0], walletClient)
+        .then(() => {
+          setMarketsToClaim([])
+          loadData()
+        })
+        .catch((e) => console.error(e))
+        .finally(() => setIsTxLoading(false))
+    } else {
+      doMultiClaim(marketAddressesToClaim, getRewardAmountToBeClaimed(), walletClient)
+        .then(() => {
+          setMarketsToClaim([])
+          loadData()
+        })
+        .catch((e) => console.error(e))
+        .finally(() => setIsTxLoading(false))
+    }
+  }
+
+  function getRewardAmountToBeClaimed() {
+    const set = new Set<string>()
+    marketsToClaim.forEach((m) => {
+      m.rewards.forEach((r) => {
+        if (r.amount !== "0") {
+          set.add(r.symbol)
+        }
+      })
+    })
+    return Array.from(set).length
   }
 
   const addToClaimableMarkets = (rowData: ClaimableMarket) => {
@@ -130,12 +172,18 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
       const marketConfig = USGMarkets.find((m) => m.marketAddress === rowData.marketAddress)
 
       if (market) {
-        return prevMarkets.filter((m) => m.marketAddress !== market.marketAddress)
+        return prevMarkets.filter((m) => m.marketAddress !== market.marketAddress).sort((m1, m2) => Number(m2.claimable) - Number(m1.claimable))
       } else {
         return [
           ...prevMarkets,
-          { marketName: rowData.marketName, claimable: rowData.claimable, marketAddress: rowData.marketAddress, logoKey: marketConfig?.logoKey },
-        ]
+          {
+            marketName: rowData.marketName,
+            claimable: rowData.claimable,
+            marketAddress: rowData.marketAddress,
+            logoKey: marketConfig?.logoKey,
+            rewards: rowData.rewards,
+          },
+        ].sort((m1, m2) => Number(m2.claimable) - Number(m1.claimable))
       }
     })
   }
@@ -144,16 +192,19 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
     if (marketsToClaim.length === displayRows.length) {
       setMarketsToClaim([])
     } else {
-      const markets = displayRows.map((el) => {
-        const marketConfig = USGMarkets.find((m) => m.marketAddress === el.marketAddress)
+      const markets = displayRows
+        .map((el) => {
+          const marketConfig = USGMarkets.find((m) => m.marketAddress === el.marketAddress)
 
-        return {
-          marketName: el.marketName,
-          claimable: el.totalClaimableValue,
-          marketAddress: el.marketAddress,
-          logoKey: marketConfig?.logoKey,
-        } as ClaimableMarket
-      })
+          return {
+            marketName: el.marketName,
+            claimable: el.totalClaimableValue,
+            rewards: el.claimable,
+            marketAddress: el.marketAddress,
+            logoKey: marketConfig?.logoKey,
+          } as ClaimableMarket
+        })
+        .sort((m1, m2) => Number(m2.claimable) - Number(m1.claimable))
       setMarketsToClaim(markets)
     }
   }
@@ -167,11 +218,11 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
 
   const contextValue: USGClaimContextValues = {
     displayRows,
-    actionClaim,
     onClickClaim,
     addToClaimableMarkets,
     marketsToClaim,
-    isLoading,
+    isChainviewLoading,
+    isTxLoading,
     getSortedRows,
     onClickClaimAll,
     USGsUSGMetrics,

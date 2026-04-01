@@ -26,13 +26,13 @@ export async function doHarvest(stakingAddress: Address, walletClient: WalletCli
   return await waitForTransaction(txHash)
 }
 
-export async function doMultiHarvest(addresses: Array<Address>, walletClient: WalletClient) {
+export async function doMultiHarvest(marketAddresses: Address[], rewardAmount: number, walletClient: WalletClient) {
   const [account] = await walletClient.requestAddresses()
 
   const txData = {
     abi: rewardAccumulator.abi as Abi,
     functionName: "processMultiRewards",
-    args: [addresses, account, addresses.length],
+    args: [marketAddresses, account, rewardAmount],
     address: USG_CONTRACT.REWARD_ACCUMULATOR,
     gas: undefined as undefined | bigint,
   }
@@ -40,35 +40,34 @@ export async function doMultiHarvest(addresses: Array<Address>, walletClient: Wa
   const txHash = await executeContractCall(walletClient, txData)
   return await waitForTransaction(txHash)
 }
+const chainviewParamIn = USGMarkets.map((m) => {
+  let typeId = 12 // Bcs 12 is fun
 
+  switch (m.marketType) {
+    case "Convex_CRV":
+      typeId = 0
+      break
+    case "Convex_FXN":
+      typeId = 1
+      break
+    case "STAKEDAO_CRV_Vault":
+      typeId = 2
+      break
+    case "CRV_Gauge":
+      typeId = 3
+      break
+  }
+  return {
+    marketAddress: m.marketAddress,
+    marketType: typeId,
+  }
+})
 export async function getUSGHarvestOnChainData() {
-  const paramIn = USGMarkets.map((m) => {
-    let typeId = 12
-    switch (m.marketType) {
-      case "Convex_CRV":
-        typeId = 0
-        break
-      case "Convex_FXN":
-        typeId = 1
-        break
-      case "STAKEDAO_CRV_Vault":
-        typeId = 2
-        break
-      case "CRV_Gauge":
-        typeId = 3
-        break
-    }
-    return {
-      marketAddress: m.marketAddress,
-      marketType: typeId,
-    }
-  })
-
   const chainviewData = (await executeChainViewUnique<HarvesterInfo[]>(harvestUI.abi as Abi, harvestUI.bytecode as Hex, [
-    paramIn,
+    chainviewParamIn,
     USG_CONTRACT.REWARD_ACCUMULATOR,
   ]))!
-  return chainviewData.map((m, i) => ({ ...m, marketType: paramIn[i].marketType }))
+  return chainviewData.map((m, i) => ({ ...m, marketType: chainviewParamIn[i].marketType }))
 }
 export type StakeDaoAlreadyClaimed = {
   marketAddress: Address
@@ -138,10 +137,11 @@ export const getRewardTokensInfos = async (harvestInfo: HarvesterInfo[]) => {
       return {
         ...t,
         price: prices[t.address],
+        displayDecimals: t.displayDecimals ?? 2,
       }
     })
 
-    return tokenDetails as AssetDataPriced[]
+    return tokenDetails satisfies AssetDataPriced[]
   } catch (error) {
     console.error("Failed to load asset information:", error)
     return
@@ -211,7 +211,7 @@ export interface Merk {
 }
 
 export const harvestListHeaders: ListHeaderData[] = [
-  { label: "Assets", key: "asset", sort: "sort" },
+  { label: "Market", key: "asset", sort: "sort" },
   { label: "Total Rewards", key: "totalRewards", sort: "sort" },
   { label: "Harvester Fees", key: "percentage", sort: "sort" },
   { label: "Harvester Rewards", key: "harvesterRewards", sort: "sort" },

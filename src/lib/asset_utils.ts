@@ -19,6 +19,7 @@ export const getPricesFromTokenAmounts = (amounts: TokenAmount[], assets: AssetD
         symbol: amount.token,
         dollarValue: dollarValue || 0,
         tokenAmount: actualAmount || 0,
+        rawAmount: amount?.amount.toString(),
         logoKey: assetData?.logoKey,
         tokenAmountFormatted: formatBigInt(amount?.amount || 0n, assetData.decimals, assetData.displayDecimals),
       })

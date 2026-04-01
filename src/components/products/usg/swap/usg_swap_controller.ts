@@ -1,7 +1,7 @@
 import { AssetDataPriced } from "@/types"
 import WStable from "@/abi/USG/WStable.json"
 import IERC4626 from "@/abi/USG/IERC4626.json"
-import { BalanceAllowanceData } from "../usg_type"
+import { BalanceAllowanceData, FormError, FormState } from "../usg_type"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, SendTransactionParameters, WalletClient, WriteContractParameters } from "viem"
 
@@ -68,37 +68,75 @@ export function getSwapFormState(
   receiveAssetInfo?: AssetDataPriced,
   balanceAllowanceData?: BalanceAllowanceData,
   isLoading?: boolean
-) {
-  if (!depositAssetInfo || !receiveAssetInfo)
-    return {
-      canProcess: false,
-      cantProcessReasons: [],
-      haveToApprove: true,
-    }
+): FormState {
+  const errors: FormError[] = []
 
-  const reasons: string[] = []
+  if (!depositAssetInfo || !receiveAssetInfo) {
+    return { canProcess: false, errors: [], haveToApprove: true }
+  }
 
-  const isApproved = approveNotNeeded || ((depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n) && !approveNotNeeded)
+  const isApproved = approveNotNeeded || (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n)
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    errors.push({
+      key: "no-wallet",
+      title: "No Connected Wallet",
+      subtitle: "You need to connect your wallet to proceed.",
+      content: "Please connect your wallet to swap.",
+      type: "form-alert",
+    })
   } else {
     if (!depositWeiValue || depositWeiValue === 0n) {
-      reasons.push("No amount.")
-    } else if ((depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
-      reasons.push("Not enough balance.")
-    } else if (!receiveWeiValue || receiveWeiValue === 0n) {
-      reasons.push("You need to input a target token.")
-    } else if (isSwapBlockedBySlippage) {
-      reasons.push("Slippage is too high.")
-    } else if (isSwapBlockedByPriceImpact) {
-      reasons.push("Price impact is too high.")
+      errors.push({
+        key: "empty-form",
+        title: "No Amount Entered",
+        subtitle: "Please enter a deposit amount.",
+        content: "A value greater than zero is required to proceed.",
+        type: "form-alert",
+      })
+    } else {
+      if (depositWeiValue > (balanceAllowanceData?.balance || 0n)) {
+        errors.push({
+          key: "balance",
+          title: "Insufficient Balance",
+          subtitle: "You don't have enough tokens to complete this swap.",
+          content: "Please reduce your swap amount or acquire more tokens.",
+          type: "form-alert",
+        })
+      }
+      if (!receiveWeiValue || receiveWeiValue === 0n) {
+        errors.push({
+          key: "empty-form",
+          title: "No Quote Available",
+          subtitle: "The output amount hasn't been calculated yet.",
+          content: "Please wait for the quote to load or select a target token.",
+          type: "form-alert",
+        })
+      }
+      if (isSwapBlockedBySlippage) {
+        errors.push({
+          key: "slippage",
+          title: "Slippage Too High",
+          subtitle: "Your slippage tolerance is blocking this transaction.",
+          content: "Please lower your slippage to proceed.",
+          type: null,
+        })
+      }
+      if (isSwapBlockedByPriceImpact) {
+        errors.push({
+          key: "price-impact",
+          title: "Price Impact Too High",
+          subtitle: "The price impact on this swap is too high.",
+          content: "Wait for Peg Keepers to take action and try again later.",
+          type: null,
+        })
+      }
     }
   }
 
   return {
-    canProcess: isApproved && reasons.length === 0 && !isLoading,
-    cantProcessReasons: reasons,
+    canProcess: isApproved && errors.length === 0 && !isLoading,
+    errors,
     haveToApprove: !isApproved,
   }
 }

@@ -3,7 +3,7 @@ import { formatBigInt } from "@/lib/number_formatter"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
-import { BalanceAllowanceData, MarketDetailData, USGMarketRepayParams, ZapMarketData } from "../../usg_type"
+import { BalanceAllowanceData, FormError, FormState, MarketDetailData, USGMarketRepayParams, ZapMarketData } from "../../usg_type"
 
 export function getRepayFormState(
   isTransactionBlockedByPriceImpact: boolean,
@@ -14,38 +14,77 @@ export function getRepayFormState(
   balanceAllowanceData?: BalanceAllowanceData,
   repayAsset?: string,
   isLoading?: boolean
-) {
+): FormState {
   const isZapMode = !!repayAsset && !!balanceAllowanceData && repayAsset !== "USG"
-
   const isApproved = repayAsset === "USG" || (isZapMode && (repayWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n))
 
-  const reasons: string[] = []
-  if (!marketData) return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+  const errors: FormError[] = []
+
+  if (!marketData) return { canProcess: false, errors: [], haveToApprove: false }
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    errors.push({
+      key: "no-wallet",
+      title: "No Connected Wallet",
+      subtitle: "You need to connect your wallet to proceed.",
+      content: "Please connect your wallet to repay.",
+      type: "form-alert",
+    })
   } else {
-    if (repayWeiValue === 0n || !repayWeiValue) {
-      reasons.push("Amount must be greater than zero.")
-    } else if (isTransactionBlockedBySlippage) {
-      reasons.push("Slippage is too high.")
-    } else if (isTransactionBlockedByPriceImpact) {
-      reasons.push("Price impact is too high.")
-    }
+    if (!repayWeiValue || repayWeiValue === 0n) {
+      errors.push({
+        key: "empty-form",
+        title: "No Amount Entered",
+        subtitle: "Amount must be greater than zero.",
+        content: "Please enter a valid repayment amount.",
+        type: "form-alert",
+      })
+    } else {
+      if (isTransactionBlockedBySlippage) {
+        errors.push({
+          key: "slippage",
+          title: "Slippage Too High",
+          subtitle: "Your slippage tolerance is blocking this transaction.",
+          content: "Please lower your slippage to proceed.",
+          type: null,
+        })
+      }
+      if (isTransactionBlockedByPriceImpact) {
+        errors.push({
+          key: "price-impact",
+          title: "Price Impact Too High",
+          subtitle: "The price impact on this transaction is too high.",
+          content: "Wait for Peg Keepers to take action and try again later.",
+          type: null,
+        })
+      }
 
-    if (reasons.length === 0) {
       const existingDebt = marketData.debtInfos?.userDebt || 0n
       const minimumLoan = marketData.constants?.minimumLoan || 0n
-      if (repayWeiValue && repayWeiValue > existingDebt) {
-        reasons.push(`Repayment exceeds outstanding debt.`)
-      } else if (existingDebt - repayWeiValue! > 0n && existingDebt - repayWeiValue! < minimumLoan) {
-        reasons.push(`Remaining debt must be at least ${formatBigInt(minimumLoan, 18, 2)}`)
+
+      if (repayWeiValue > existingDebt) {
+        errors.push({
+          key: "repay-exceeds-debt",
+          title: "Repayment Exceeds Debt",
+          subtitle: "Your repayment amount is greater than your outstanding debt.",
+          content: "Please reduce your repayment amount.",
+          type: "form-alert",
+        })
+      } else if (existingDebt - repayWeiValue > 0n && existingDebt - repayWeiValue < minimumLoan) {
+        errors.push({
+          key: "min-debt",
+          title: "Remaining Debt Too Low",
+          subtitle: `Remaining debt must be at least ${formatBigInt(minimumLoan, 18, 2)} USG.`,
+          content: "Either repay the full debt or leave at least the minimum loan amount.",
+          type: "form-alert",
+        })
       }
     }
   }
+
   return {
-    canProcess: isApproved && reasons.length === 0 && !isLoading,
-    cantProcessReasons: reasons,
+    canProcess: isApproved && errors.length === 0 && !isLoading,
+    errors,
     haveToApprove: !isApproved,
   }
 }

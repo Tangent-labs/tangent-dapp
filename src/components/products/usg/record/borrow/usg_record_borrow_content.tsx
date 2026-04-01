@@ -8,7 +8,6 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
-import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
 
 export default function USGRecordBorrowContent() {
   const { connect } = useWalletConnexionContext()
@@ -45,8 +44,6 @@ export default function USGRecordBorrowContent() {
           }}
         />
       </div>
-
-      <MarketTransactionError display={!!borrowWeiValue && formState?.cantProcessReasons.length > 0} error={formState?.cantProcessReasons[0]} />
 
       <MaxBorrowCapReached display={!borrowWeiValue && maxBorrowCapReached} />
 

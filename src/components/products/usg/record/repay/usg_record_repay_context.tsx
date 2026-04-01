@@ -1,21 +1,22 @@
 "use client"
 
-import { Address, formatUnits, maxUint256 } from "viem"
+import { toast } from "react-toastify"
+import { AssetDataPriced } from "@/types"
+import { FormState } from "../../usg_type"
 import { useUSGContext } from "../../usg_context"
-import { AssetDataPriced, FormState } from "@/types"
 import { USG_CONTRACT } from "../../usg_repository"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
-import { ToastComponent, toastTx } from "@/components/design_system/toast"
+import { Address, formatUnits, maxUint256 } from "viem"
+import { BuyAndMinOutFormatted } from "../leverage/types"
 import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
+import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
 import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove, matchBlockChainErrors } from "../usg_record_controller"
-import { BuyAndMinOutFormatted } from "../leverage/types"
-import { toast } from "react-toastify"
 
 type USGRepayContextProps = {
   children: ReactNode
@@ -427,7 +428,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
       )
     }
 
-    return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+    return { canProcess: false, errors: [], haveToApprove: false }
   }, [
     isTransactionBlockedByPriceImpact,
     isTransactionBlockedBySlippage,

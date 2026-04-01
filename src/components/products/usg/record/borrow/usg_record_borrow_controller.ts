@@ -1,7 +1,7 @@
 "use client"
 
 import { Abi, WalletClient } from "viem"
-import { MarketDetailData, USGMarketBorrowParams } from "../../usg_type"
+import { FormError, FormState, MarketDetailData, USGMarketBorrowParams } from "../../usg_type"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
 import { getBorrowCommonFormState } from "../usg_record_controller"
@@ -12,21 +12,33 @@ export function getBorrowFormState(
   isWellConnected?: boolean,
   maxBorrowableValue?: bigint,
   isLoading?: boolean
-) {
-  const reasons: string[] = []
+): FormState {
+  const errors: FormError[] = []
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    errors.push({
+      key: "no-wallet",
+      title: "No connected wallet",
+      subtitle: "You need to connect your wallet to proceed.",
+      content: "Please connect your wallet to borrow.",
+      type: "form-alert",
+    })
   } else {
-    const borrowReasons = getBorrowCommonFormState(marketData, borrowWeiValue)
-    reasons.push(...borrowReasons)
+    const borrowErrors = getBorrowCommonFormState(marketData, borrowWeiValue)
+    errors.push(...borrowErrors)
   }
 
   if (borrowWeiValue! > maxBorrowableValue!) {
-    reasons.push("Loan exceeds max LTV")
+    errors.push({
+      key: "max-ltv",
+      title: "Loan Exceeds Max LTV",
+      subtitle: "Your borrow amount exceeds the maximum loan-to-value ratio.",
+      content: "Please reduce your borrow amount to stay within the allowed LTV.",
+      type: "form-alert",
+    })
   }
 
-  return { canProcess: reasons.length === 0 && !isLoading, cantProcessReasons: reasons, haveToApprove: false }
+  return { canProcess: errors.length === 0 && !isLoading, errors, haveToApprove: false }
 }
 
 export async function doMarketBorrow(walletClient: WalletClient, args: USGMarketBorrowParams) {

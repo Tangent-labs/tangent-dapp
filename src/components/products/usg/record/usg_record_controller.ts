@@ -9,6 +9,7 @@ import {
   USGMarketLoanDisplayData,
   TotalBorrow,
   MarketAPRs,
+  FormError,
 } from "../usg_type"
 
 import GetBalances from "@/abi/USG/GetBalances.json"
@@ -72,22 +73,41 @@ export const transformMarketData = (onChainData: ChainViewMarketRow, collateralI
   }
 }
 
-export function getBorrowCommonFormState(marketData?: MarketDetailData, borrowWeiValue?: bigint) {
-  const reasons: string[] = []
+export function getBorrowCommonFormState(marketData?: MarketDetailData, borrowWeiValue?: bigint): FormError[] {
+  const errors: FormError[] = []
 
   if (!borrowWeiValue || borrowWeiValue === 0n) {
-    reasons.push("Borrow amount must be greater than zero.")
+    errors.push({
+      key: "empty-form",
+      title: "Invalid Borrow Amount",
+      subtitle: "Borrow amount must be greater than zero.",
+      content: "Please enter a valid amount to borrow.",
+      type: "form-alert",
+    })
   } else {
     const minLoan = BigInt(marketData?.constants?.minimumLoan || "0")
     const totalDebt = marketData?.debtInfos?.totalDebt || 0n
 
     if (borrowWeiValue + totalDebt < minLoan) {
-      reasons.push(`Min debt is ${formatBigIntAsNumber(minLoan, 18, 0)} USG`)
+      errors.push({
+        key: "min-debt",
+        title: "Below Minimum Debt",
+        subtitle: `Minimum debt is ${formatBigIntAsNumber(minLoan, 18, 0)} USG.`,
+        content: "Please increase your borrow amount to meet the minimum debt requirement.",
+        type: "form-alert",
+      })
     } else if (BigInt(marketData?.debtInfos?.userDebt || 0n) + BigInt(borrowWeiValue || 0n) > (marketData?.constants?.maxMarketDebt || 0n)) {
-      reasons.push("Max market debt reached.")
+      errors.push({
+        key: "max-market-debt",
+        title: "Max Market Debt Reached",
+        subtitle: "This borrow would exceed the market's maximum debt limit.",
+        content: "Please reduce your borrow amount.",
+        type: "form-alert",
+      })
     }
   }
-  return reasons
+
+  return errors
 }
 
 export function getComputedFutureLoanData(

@@ -1,5 +1,6 @@
 "use client"
 
+import { FormError, FormState } from "../usg/usg_type"
 import { PredepositRawState, PredepositStatus } from "./types/types"
 import PredepositPoolsABI from "../../../abi/USG/PredepositPoolsABI.json"
 import { computedMinAmountOut } from "../usg/record/usg_record_controller"
@@ -14,32 +15,63 @@ export const getFormState = (
   isTxBlockedBySlippage: boolean,
   depositValue: bigint | undefined,
   quotedValue: bigint | undefined,
-  balanceAllowance: {
-    balance: bigint
-    allowance: bigint
-  },
+  balanceAllowance: { balance: bigint; allowance: bigint },
   totalCap: bigint,
   currentlyDeposited: bigint
-) => {
-  const reasons: string[] = []
-
-  const isApproved = (depositValue || 0n) <= (balanceAllowance?.allowance || 0n)
+): FormState => {
+  const errors: FormError[] = []
 
   if (!depositValue || depositValue === 0n) {
-    return { canProcess: false, cantProcessReasons: reasons, haveToApprove: false }
+    return { canProcess: false, errors: [], haveToApprove: false }
   }
+
+  const isApproved = depositValue <= (balanceAllowance?.allowance || 0n)
 
   if (!!quotedValue && quotedValue < (99n * depositValue) / 100n) {
-    reasons.push("Price impact too high. Wait for Peg Keepers to take action and try again later.")
-  } else if (!!depositValue && depositValue > balanceAllowance?.balance) {
-    reasons.push("Your balance is too low.")
-  } else if (currentlyDeposited + depositValue > totalCap) {
-    reasons.push("Deposit exceeds total cap.")
-  } else if (isTxBlockedBySlippage) {
-    reasons.push("Slippage too high.")
+    errors.push({
+      key: "price-impact",
+      title: "High Price Impact",
+      subtitle: "The quoted value deviates significantly from your deposit.",
+      content: "Price impact too high. Wait for Peg Keepers to take action and try again later.",
+      type: "form-alert",
+    })
   }
 
-  return { canProcess: reasons.length === 0 && !isLoading, cantProcessReasons: reasons, haveToApprove: !isApproved }
+  if (depositValue > balanceAllowance?.balance) {
+    errors.push({
+      key: "balance",
+      title: "Insufficient Balance",
+      subtitle: "You don't have enough tokens to complete this deposit.",
+      content: "Please reduce your deposit amount or acquire more tokens.",
+      type: "form-alert",
+    })
+  }
+
+  if (currentlyDeposited + depositValue > totalCap) {
+    errors.push({
+      key: "cap-exceeded",
+      title: "Deposit Cap Reached",
+      subtitle: "This deposit would exceed the maximum allowed amount.",
+      content: "The pool has reached its capacity. Please reduce your deposit amount.",
+      type: "form-alert",
+    })
+  }
+
+  if (isTxBlockedBySlippage) {
+    errors.push({
+      key: "slippage",
+      title: "Slippage Too High",
+      subtitle: "Your slippage tolerance is blocking this transaction.",
+      content: "Please lower your slippage to proceed.",
+      type: null,
+    })
+  }
+
+  return {
+    canProcess: errors.length === 0 && !isLoading,
+    errors,
+    haveToApprove: !isApproved,
+  }
 }
 
 export const fetchQuote = async (depositValue: bigint, contract: Address) => {

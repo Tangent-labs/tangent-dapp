@@ -1,6 +1,6 @@
 "use client"
 
-import { MarketDetailData } from "../../usg_type"
+import { FormError, FormState, MarketDetailData } from "../../usg_type"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { getBorrowCommonFormState } from "../usg_record_controller"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
@@ -22,39 +22,74 @@ export function getLeverageFormState(
   balanceAllowanceData?: { balance: bigint; allowance: bigint },
   leverage?: number,
   isLoading?: boolean
-) {
+): FormState {
+  const errors: FormError[] = []
   const isZapMode = depositAssetInfo?.address !== collateralInfo?.address
-
-  const reasons: string[] = []
-
   const isApproved = (depositWeiValue || 0n) <= (balanceAllowanceData?.allowance || 0n)
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    errors.push({
+      key: "no-wallet",
+      title: "No Connected Wallet",
+      subtitle: "You need to connect your wallet to proceed.",
+      content: "Please connect your wallet to use leverage.",
+      type: "form-alert",
+    })
   } else {
     if (!isZapMode && (depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
-      reasons.push("Not enough balance.")
-    } else if (!!leverage && leverage > 1 / (1 - Number(marketData?.constants.maxLTV) / 100000)) {
-      reasons.push("Reduce leverage.")
-    } else if (isTransactionBlockedBySlippage) {
-      reasons.push("Slippage is too high.")
-    } else if (isTransactionBlockedByPriceImpact) {
-      reasons.push("Price impact is too high.")
+      errors.push({
+        key: "balance",
+        title: "Insufficient Balance",
+        subtitle: "You don't have enough tokens to complete this deposit.",
+        content: "Please reduce your deposit amount or acquire more tokens.",
+        type: "form-alert",
+      })
     }
-
+    if (!!leverage && leverage > 1 / (1 - Number(marketData?.constants.maxLTV) / 100000)) {
+      errors.push({
+        key: "max-leverage",
+        title: "Leverage Too High",
+        subtitle: "Your leverage exceeds the maximum allowed for this market.",
+        content: "Please reduce your leverage to proceed.",
+        type: "form-alert",
+      })
+    }
+    if (isTransactionBlockedBySlippage) {
+      errors.push({
+        key: "slippage",
+        title: "Slippage Too High",
+        subtitle: "Your slippage tolerance is blocking this transaction.",
+        content: "Please lower your slippage to proceed.",
+        type: null,
+      })
+    }
+    if (isTransactionBlockedByPriceImpact) {
+      errors.push({
+        key: "price-impact",
+        title: "Price Impact Too High",
+        subtitle: "The price impact on this transaction is too high.",
+        content: "Wait for Peg Keepers to take action and try again later.",
+        type: null,
+      })
+    }
     if (leverageExceedsMaxLtv) {
-      reasons.push("Reduce your leverage or add more collateral.")
+      errors.push({
+        key: "max-ltv",
+        title: "Leverage Exceeds Max LTV",
+        subtitle: "Your current leverage exceeds the maximum loan-to-value ratio.",
+        content: "Please reduce your leverage or add more collateral.",
+        type: "form-alert",
+      })
     }
-
     if (isDepositAndBorrow) {
-      const borrowReasons = getBorrowCommonFormState(marketData, borrowWeiValue)
-      reasons.push(...borrowReasons)
+      const borrowErrors = getBorrowCommonFormState(marketData, borrowWeiValue)
+      errors.push(...borrowErrors)
     }
   }
 
   return {
-    canProcess: isApproved && reasons.length === 0 && !isLoading,
-    cantProcessReasons: reasons,
+    canProcess: isApproved && errors.length === 0 && !isLoading,
+    errors,
     haveToApprove: !isApproved,
   }
 }

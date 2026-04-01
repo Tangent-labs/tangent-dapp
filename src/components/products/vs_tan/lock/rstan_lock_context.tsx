@@ -5,12 +5,12 @@ import { formatUnits, parseEther } from "viem"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { getCurrentBlock } from "@/services/service_rpc"
 import { useVsTanContext } from "../rstan_layout_context"
-import { LockPosition } from "../../usg/usg_type"
+import { FormState, LockPosition } from "../../usg/usg_type"
 import { ToastComponent } from "@/components/design_system/toast"
 import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import { getQuote, getRoute } from "../../usg/global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
-import { AssetDataPriced, CollateralInfo, FormState } from "@/types"
+import { AssetDataPriced, CollateralInfo } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computedMinAmountOut, computeSwapAssetPrice } from "../../usg/record/usg_record_controller"
@@ -89,7 +89,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [formState, setFormState] = useState<FormState>({ canProcess: false, cantProcessReasons: [], haveToApprove: false })
+  const [formState, setFormState] = useState<FormState>({ canProcess: false, errors: [], haveToApprove: false })
 
   const [isPermaLock, setIsPermaLock] = useState<boolean>(false)
 
@@ -295,7 +295,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
   useEffect(() => {
     const computeFormState = async () => {
       if (!lockData || !depositWeiValue) {
-        setFormState({ canProcess: false, cantProcessReasons: ["No data"], haveToApprove: false })
+        setFormState({ canProcess: false, errors: [], haveToApprove: false })
       } else {
         getLockFormState(lockBalanceAllowanceData, depositPositionInfo, depositWeiValue, depositAsset, isWellConnected).then((d) => {
           setFormState(d)

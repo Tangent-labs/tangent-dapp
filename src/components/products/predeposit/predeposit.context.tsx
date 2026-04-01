@@ -3,7 +3,7 @@
 import { toast } from "react-toastify"
 import { PredepositStatus } from "./types/types"
 import { USGTokens } from "../usg/usg_repository"
-import { AssetDataPriced, FormState } from "@/types"
+import { AssetDataPriced } from "@/types"
 import { useRootContext } from "../root/root_context"
 import { mapPoolsAndTasks } from "../usg/earn/utils"
 import { getTokensPrice } from "@/services/service_price"
@@ -23,6 +23,7 @@ import {
   getBalancesAndAllowances,
   matchBlockChainErrors,
 } from "../usg/record/usg_record_controller"
+import { FormState } from "../usg/usg_type"
 
 type PredepositContextProps = {
   children: ReactNode
@@ -302,7 +303,12 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
         predepositStatus?.USGUSDCData?.USGUSDCAccumulatedTotal / 10n ** 12n
       )
     }
-    return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+
+    return {
+      canProcess: false,
+      errors: [],
+      haveToApprove: true,
+    }
   }, [
     USDCDepositValue,
     predepositStatus,
@@ -325,7 +331,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
         predepositStatus?.USGfrxUSDData?.USGfrxUSDAccumulatedTotal
       )
     }
-    return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+    return { canProcess: false, errors: [], haveToApprove: false }
   }, [
     frxUSDDepositValue,
     predepositStatus,

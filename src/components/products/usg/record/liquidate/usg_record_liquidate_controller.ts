@@ -1,6 +1,6 @@
 "use client"
 
-import { MarketDetailData } from "../../usg_type"
+import { FormError, FormState, MarketDetailData } from "../../usg_type"
 import { formatBigInt } from "@/lib/number_formatter"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
@@ -15,37 +15,86 @@ export function getLiquidateFormState(
   isTransactionBlockedByPriceImpact: boolean,
   isTransactionBlockedBySlippage: boolean,
   isTransactionBlockedByWalletRepay: boolean
-) {
-  const reasons: string[] = []
+): FormState {
+  const errors: FormError[] = []
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    errors.push({
+      key: "no-wallet",
+      title: "No Connected Wallet",
+      subtitle: "You need to connect your wallet to proceed.",
+      content: "Please connect your wallet to liquidate.",
+      type: "form-alert",
+    })
   } else {
-    if (isLoading) {
-      reasons.push("Quote loading.")
-    } else if (withdrawWeiValue > marketData?.collateralInfos?.positionCollateralAmount) {
-      reasons.push("Withdraw value too high.")
-    } else if (isTransactionBlockedByPriceImpact) {
-      reasons.push("Price impact is too high.")
-    } else if (isTransactionBlockedBySlippage) {
-      reasons.push("Slippage is too high.")
-    } else if (isTransactionBlockedByWalletRepay) {
-      reasons.push("Repayment uses wallet USG.")
+    if (withdrawWeiValue > marketData?.collateralInfos?.positionCollateralAmount) {
+      errors.push({
+        key: "max-withdrawable",
+        title: "Withdraw Value Too High",
+        subtitle: "Your withdrawal exceeds the available collateral.",
+        content: "Please reduce your withdrawal amount.",
+        type: "form-alert",
+      })
+    }
+    if (isTransactionBlockedByPriceImpact) {
+      errors.push({
+        key: "price-impact",
+        title: "Price Impact Too High",
+        subtitle: "The price impact on this transaction is too high.",
+        content: "Wait for Peg Keepers to take action and try again later.",
+        type: "form-alert",
+      })
+    }
+    if (isTransactionBlockedBySlippage) {
+      errors.push({
+        key: "slippage",
+        title: "Slippage Too High",
+        subtitle: "Your slippage tolerance is blocking this transaction.",
+        content: "Please lower your slippage to proceed.",
+        type: null,
+      })
+    }
+    if (isTransactionBlockedByWalletRepay) {
+      errors.push({
+        key: "wallet-repay",
+        title: "Repayment Uses Wallet USG",
+        subtitle: "This repayment will use USG from your wallet.",
+        content: "Make sure you have enough USG in your wallet to cover the repayment.",
+        type: "form-alert",
+      })
     }
   }
 
   const existingDebt = marketData.debtInfos?.userDebt || 0n
   const minimumLoan = marketData.constants?.minimumLoan || 0n
 
-  if (repayWeiValue && repayWeiValue > existingDebt) {
-    reasons.push(`Repayment exceeds outstanding debt.`)
+  if (!repayWeiValue && !withdrawWeiValue) {
+    errors.push({
+      key: "empty-form",
+      title: "No Values Entered",
+      subtitle: "Please enter a repayment or withdrawal amount.",
+      content: "At least one value must be provided to proceed.",
+      type: "form-alert",
+    })
+  } else if (repayWeiValue && repayWeiValue > existingDebt) {
+    errors.push({
+      key: "repay-exceeds-debt",
+      title: "Repayment Exceeds Debt",
+      subtitle: "Your repayment amount is greater than your outstanding debt.",
+      content: "Please reduce your repayment amount.",
+      type: "form-alert",
+    })
   } else if (existingDebt - repayWeiValue! > 0n && existingDebt - repayWeiValue! < minimumLoan) {
-    reasons.push(`Remaining debt must be at least ${formatBigInt(minimumLoan, 18, 2)}`)
-  } else if (!repayWeiValue && !withdrawWeiValue) {
-    reasons.push("No values")
+    errors.push({
+      key: "min-debt",
+      title: "Remaining Debt Too Low",
+      subtitle: `Remaining debt must be at least ${formatBigInt(minimumLoan, 18, 2)} USG.`,
+      content: "Either repay the full debt or leave at least the minimum loan amount.",
+      type: "form-alert",
+    })
   }
 
-  return { canProcess: reasons.length === 0 && !isLoading, cantProcessReasons: reasons, haveToApprove: false }
+  return { canProcess: errors.length === 0 && !isLoading, errors, haveToApprove: false }
 }
 
 export async function doMarketLiquidate(

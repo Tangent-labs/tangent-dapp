@@ -1,4 +1,4 @@
-import { USGStakingInfo } from "../usg_type"
+import { FormError, FormState, USGStakingInfo } from "../usg_type"
 import { formatNumber } from "@/lib/number_formatter"
 import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
@@ -6,33 +6,68 @@ import { Address, EstimateContractGasParameters, formatUnits, maxUint256, Wallet
 
 export const COMPOUNDING_PERIODS_PER_YEAR = 52
 
-export function getFormState(
+export function getStakeFormState(
   stakeInfo: USGStakingInfo,
   currentFeature: "stake" | "unstake",
   weiValue?: bigint,
   expected?: bigint,
   isWellConnected?: boolean,
   isLoading?: boolean
-) {
+): FormState {
+  const errors: FormError[] = []
   let isApproved = false
-  const reasons: string[] = []
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    errors.push({
+      key: "no-wallet",
+      title: "No Connected Wallet",
+      subtitle: "You need to connect your wallet to proceed.",
+      content: "Please connect your wallet to stake.",
+      type: "form-alert",
+    })
   } else {
     isApproved = (currentFeature === "stake" && !!stakeInfo?.USGAllowance && (weiValue || 0n) <= stakeInfo?.USGAllowance) || currentFeature === "unstake"
-    if (weiValue === 0n) {
-      reasons.push("No amount.")
-    } else if (currentFeature === "stake" && (weiValue || 0n) > (stakeInfo?.USGBalance || 0n)) {
-      reasons.push("Not enough balance.")
-    } else if (currentFeature === "unstake" && (weiValue || 0n) > (stakeInfo?.sUSGBalance || 0n)) {
-      reasons.push("Not enough balance.")
-    }
-    if (!expected || expected === 0n) {
-      reasons.push("")
+
+    if (!weiValue || weiValue === 0n) {
+      errors.push({
+        key: "empty-form",
+        title: "No Amount Entered",
+        subtitle: "Please enter an amount.",
+        content: "A value greater than zero is required to proceed.",
+        type: "form-alert",
+      })
+    } else {
+      if (currentFeature === "stake" && weiValue > (stakeInfo?.USGBalance || 0n)) {
+        errors.push({
+          key: "balance",
+          title: "Insufficient Balance",
+          subtitle: "You don't have enough USG to stake this amount.",
+          content: "Please reduce your stake amount or acquire more USG.",
+          type: "form-alert",
+        })
+      }
+      if (currentFeature === "unstake" && weiValue > (stakeInfo?.sUSGBalance || 0n)) {
+        errors.push({
+          key: "balance",
+          title: "Insufficient Balance",
+          subtitle: "You don't have enough sUSG to unstake this amount.",
+          content: "Please reduce your unstake amount.",
+          type: "form-alert",
+        })
+      }
+      if (!expected || expected === 0n) {
+        errors.push({
+          key: "empty-form",
+          title: "Quote Unavailable",
+          subtitle: "The expected output hasn't loaded yet.",
+          content: "Please wait for the quote to be calculated before proceeding.",
+          type: "form-alert",
+        })
+      }
     }
   }
-  return { canProcess: isApproved && reasons.length === 0 && !isLoading, cantProcessReasons: reasons, haveToApprove: !isApproved }
+
+  return { canProcess: isApproved && errors.length === 0 && !isLoading, errors, haveToApprove: !isApproved }
 }
 
 export const getExpectedUSG = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {

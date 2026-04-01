@@ -4,7 +4,7 @@ import { getBorrowCommonFormState } from "../usg_record_controller"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
-import { BalanceAllowanceData, MarketDetailData, USGMarketDepositParams, ZapMarketData } from "../../usg_type"
+import { BalanceAllowanceData, FormError, FormState, MarketDetailData, USGMarketDepositParams, ZapMarketData } from "../../usg_type"
 
 export function getDepositFormState(
   isTransactionBlockedByPriceImpact: boolean,
@@ -19,39 +19,87 @@ export function getDepositFormState(
   balanceAllowanceData?: BalanceAllowanceData,
   maxBorrowableValue?: bigint,
   isLoading?: boolean
-) {
-  const reasons: string[] = []
+): FormState {
+  const errors: FormError[] = []
   const depositValue = depositWeiValue || 0n
   const isApproved = depositValue <= (balanceAllowanceData?.allowances[0]?.allowance || 0n)
   const isEnoughBalance = depositValue < (balanceAllowanceData?.balance || 0n)
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    errors.push({
+      key: "no-wallet",
+      title: "No Connected Wallet",
+      subtitle: "You need to connect your wallet to proceed.",
+      content: "Please connect your wallet to deposit.",
+      type: "form-alert",
+    })
   } else {
     if (depositValue === 0n) {
-      reasons.push("No amount.")
-    } else if (!isEnoughBalance) {
-      reasons.push("Not enough balance.")
-    } else if (isTransactionBlockedBySlippage) {
-      reasons.push("Slippage is too high.")
-    } else if (isTransactionBlockedByPriceImpact) {
-      reasons.push("Price impact is too high.")
-    } else if (isZapping && !zapValue) {
-      reasons.push("No Zap value.")
+      errors.push({
+        key: "empty-form",
+        title: "No Amount Entered",
+        subtitle: "Please enter a deposit amount.",
+        content: "A deposit amount greater than zero is required to proceed.",
+        type: "form-alert",
+      })
+    } else {
+      if (!isEnoughBalance) {
+        errors.push({
+          key: "balance",
+          title: "Insufficient Balance",
+          subtitle: "You don't have enough tokens to complete this deposit.",
+          content: "Please reduce your deposit amount or acquire more tokens.",
+          type: "form-alert",
+        })
+      }
+      if (isTransactionBlockedBySlippage) {
+        errors.push({
+          key: "slippage",
+          title: "Slippage Too High",
+          subtitle: "Your slippage tolerance is blocking this transaction.",
+          content: "Please lower your slippage to proceed.",
+          type: null,
+        })
+      }
+      if (isTransactionBlockedByPriceImpact) {
+        errors.push({
+          key: "price-impact",
+          title: "Price Impact Too High",
+          subtitle: "The price impact on this transaction is too high.",
+          content: "Wait for Peg Keepers to take action and try again later.",
+          type: null,
+        })
+      }
+      if (isZapping && !zapValue) {
+        errors.push({
+          key: "empty-form",
+          title: "No Zap Value",
+          subtitle: "The zap quote hasn't loaded yet.",
+          content: "Please wait for the zap value to be calculated before proceeding.",
+          type: "form-alert",
+        })
+      }
     }
 
     if (isDepositAndBorrow) {
-      const borrowReasons = getBorrowCommonFormState(marketData, borrowWeiValue)
-      reasons.push(...borrowReasons)
+      const borrowErrors = getBorrowCommonFormState(marketData, borrowWeiValue)
+      errors.push(...borrowErrors)
     }
 
     if (borrowWeiValue! > maxBorrowableValue!) {
-      reasons.push("Loan exceeds max LTV")
+      errors.push({
+        key: "max-ltv",
+        title: "Loan Exceeds Max LTV",
+        subtitle: "Your borrow amount exceeds the maximum loan-to-value ratio.",
+        content: "Please reduce your borrow amount to stay within the allowed LTV.",
+        type: "form-alert",
+      })
     }
   }
+
   return {
-    canProcess: isApproved && reasons.length === 0 && !isLoading,
-    cantProcessReasons: reasons,
+    canProcess: isApproved && errors.length === 0 && !isLoading,
+    errors,
     haveToApprove: !isApproved,
   }
 }

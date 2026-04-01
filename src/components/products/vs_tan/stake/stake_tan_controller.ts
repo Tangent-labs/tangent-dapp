@@ -1,9 +1,10 @@
+import { TANStakingInfo } from "../rstan_types"
 import sTANUI from "../../../../abi/USG/sTANUI.json"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
+import { FormError, FormState } from "../../usg/usg_type"
 import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
-import { TANStakingInfo } from "../rstan_types"
 
 export async function getTanStakeOnChainData(currentAddress: string) {
   return await executeChainViewUnique<TANStakingInfo>(sTANUI.abi as Abi, sTANUI.bytecode as Hex, [
@@ -16,26 +17,67 @@ export async function getTanStakeOnChainData(currentAddress: string) {
   ])
 }
 
-export function getFormState(stakeInfo: TANStakingInfo, currentFeature: "stake" | "unstake", weiValue?: bigint, expected?: bigint, isWellConnected?: boolean) {
+export function getTanStakeFormState(
+  stakeInfo: TANStakingInfo,
+  currentFeature: "stake" | "unstake",
+  weiValue?: bigint,
+  expected?: bigint,
+  isWellConnected?: boolean
+): FormState {
+  const errors: FormError[] = []
   let isApproved = false
-  const reasons: string[] = []
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    errors.push({
+      key: "no-wallet",
+      title: "No Connected Wallet",
+      subtitle: "You need to connect your wallet to proceed.",
+      content: "Please connect your wallet to stake.",
+      type: "form-alert",
+    })
   } else {
     isApproved = (currentFeature === "stake" && !!stakeInfo?.tanAllowance && (weiValue || 0n) <= stakeInfo?.tanAllowance) || currentFeature === "unstake"
-    if (weiValue === 0n) {
-      reasons.push("No amount.")
-    } else if (currentFeature === "stake" && (weiValue || 0n) > (stakeInfo?.tanBalance || 0n)) {
-      reasons.push("Not enough balance.")
-    } else if (currentFeature === "unstake" && (weiValue || 0n) > (stakeInfo?.sTanBalance || 0n)) {
-      reasons.push("Not enough balance.")
-    }
-    if (!expected || expected === 0n) {
-      reasons.push("")
+
+    if (!weiValue || weiValue === 0n) {
+      errors.push({
+        key: "empty-form",
+        title: "No Amount Entered",
+        subtitle: "Please enter an amount.",
+        content: "A value greater than zero is required to proceed.",
+        type: "form-alert",
+      })
+    } else {
+      if (currentFeature === "stake" && weiValue > (stakeInfo?.tanBalance || 0n)) {
+        errors.push({
+          key: "balance",
+          title: "Insufficient Balance",
+          subtitle: "You don't have enough TAN to stake this amount.",
+          content: "Please reduce your stake amount or acquire more TAN.",
+          type: "form-alert",
+        })
+      }
+      if (currentFeature === "unstake" && weiValue > (stakeInfo?.sTanBalance || 0n)) {
+        errors.push({
+          key: "balance",
+          title: "Insufficient Balance",
+          subtitle: "You don't have enough sTAN to unstake this amount.",
+          content: "Please reduce your unstake amount.",
+          type: "form-alert",
+        })
+      }
+      if (!expected || expected === 0n) {
+        errors.push({
+          key: "empty-form",
+          title: "Quote Unavailable",
+          subtitle: "The expected output hasn't loaded yet.",
+          content: "Please wait for the quote to be calculated before proceeding.",
+          type: "form-alert",
+        })
+      }
     }
   }
-  return { canProcess: isApproved && reasons.length === 0, cantProcessReasons: reasons, haveToApprove: !isApproved }
+
+  return { canProcess: isApproved && errors.length === 0, errors, haveToApprove: !isApproved }
 }
 
 export const getExpectedTAN = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {

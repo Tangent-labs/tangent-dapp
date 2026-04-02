@@ -10,7 +10,7 @@ import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { doMarketLiquidate, getLiquidateFormState } from "./usg_record_liquidate_controller"
+import { computeLiquidateAutoRepayValue, doMarketLiquidate, getLiquidateFormState } from "./usg_record_liquidate_controller"
 import { computedMinAmountOut, computeTransactionPotentialLoss } from "../usg_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { BuyAndMinOutFormatted } from "../leverage/types"
@@ -67,6 +67,7 @@ type USGLiquidateContextValues = {
   collateralRepayValue: bigint
   isTransactionBlockedByWalletRepay: boolean
   setIsTransactionBlockedByWalletRepay: (arg: boolean) => void
+  isDebtBelowThreshold: boolean
 }
 
 export const USGLiquidateContext = createContext<USGLiquidateContextValues | undefined>(undefined)
@@ -222,6 +223,18 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   function handleLiquidateValueChange(value: bigint | undefined) {
     setPriceImpact(0)
     setLiquidateWeiValue(value)
+    setRepayWeiValue((currentRepayWeiValue) => {
+      if (currentRepayWeiValue && currentRepayWeiValue > 0n) {
+        return currentRepayWeiValue
+      }
+
+      if (!value || !marketData) {
+        return undefined
+      }
+
+      const autoRepayWeiValue = computeLiquidateAutoRepayValue(marketData, value)
+      return autoRepayWeiValue > 0n ? autoRepayWeiValue : undefined
+    })
 
     if (!value || !currentAddress || !collateralInfo) {
       if (!value || value === 0n) setUSGReceivedValue(undefined)
@@ -288,6 +301,16 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     return { collateralRepayValue, walletRepayValue }
   }, [USGReceivedValue, repayWeiValue])
 
+  const isDebtBelowThreshold = useMemo(() => {
+    if (!marketData || !repayWeiValue || repayWeiValue === 0n) return false
+
+    const currentDebt = marketData.debtInfos?.userDebt || 0n
+    const minimumLoan = marketData.constants?.minimumLoan || 0n
+    const remainingDebt = currentDebt > repayWeiValue ? currentDebt - repayWeiValue : 0n
+
+    return remainingDebt > 0n && remainingDebt < minimumLoan
+  }, [marketData, repayWeiValue])
+
   useEffect(() => {
     setIsTransactionBlockedByPriceImpact(!!USGReceivedValue && !!liquidateWeiValue && priceImpact >= 0.25)
   }, [priceImpact, liquidateWeiValue, USGReceivedValue])
@@ -348,6 +371,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     collateralRepayValue,
     isTransactionBlockedByWalletRepay,
     setIsTransactionBlockedByWalletRepay,
+    isDebtBelowThreshold,
   }
 
   return <USGLiquidateContext.Provider value={contextValue}>{children}</USGLiquidateContext.Provider>

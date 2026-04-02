@@ -69,7 +69,9 @@ export const MarketAPR = ({
 
   return (
     <div className="flex w-full items-center justify-between gap-2 xl:justify-center">
-      {isMarketListDisplay && <div className="flex items-center justify-center text-sm text-subtitle xl:hidden">{maxLeverage === 1 ? "vAPR" : "Max vAPR"}</div>}
+      {isMarketListDisplay && (
+        <div className="flex items-center justify-center text-xs text-subtitle md:text-sm xl:hidden">{maxLeverage === 1 ? "vAPR" : "Max vAPR"}</div>
+      )}
 
       <div className={cn("flex min-h-min min-w-16 items-center justify-center text-center xl:min-h-8 xl:flex-col", isMarketListDisplay ? "" : "w-full")}>
         {!!computedAPR && Number(computedAPR) > 0 && (

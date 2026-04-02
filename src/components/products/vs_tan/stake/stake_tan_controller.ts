@@ -30,7 +30,7 @@ export function getTanStakeFormState(
   if (!isWellConnected) {
     errors.push({
       key: "no-wallet",
-      title: "No Connected Wallet",
+      title: "No connected wallet",
       subtitle: "You need to connect your wallet to proceed.",
       content: "Please connect your wallet to stake.",
       type: "form-alert",

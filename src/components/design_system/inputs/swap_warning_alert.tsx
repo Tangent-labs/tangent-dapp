@@ -15,6 +15,7 @@ type TradeWarningAlertProps = {
   confirmationButtonLabel?: string
   className?: string
   showButtonState?: boolean
+  isWarning?: boolean
 }
 
 export const SwapWarningAlert = ({
@@ -28,9 +29,8 @@ export const SwapWarningAlert = ({
   displayConfirmationButton,
   confirmationButtonLabel,
   className,
+  isWarning = false,
 }: TradeWarningAlertProps) => {
-  const isWarning = percentage >= 1 && percentage < 5
-
   return (
     <div
       className={cn(

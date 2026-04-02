@@ -128,7 +128,7 @@ export async function getLockFormState(
   if (!isWellConnected) {
     errors.push({
       key: "no-wallet",
-      title: "No Connected Wallet",
+      title: "No connected wallet",
       subtitle: "You need to connect your wallet to proceed.",
       content: "Please connect your wallet to lock.",
       type: "form-alert",

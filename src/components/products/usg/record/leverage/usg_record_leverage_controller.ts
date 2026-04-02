@@ -28,13 +28,19 @@ export function getLeverageFormState(
   const isApproved = (depositWeiValue || 0n) <= (balanceAllowanceData?.allowance || 0n)
 
   if (!isWellConnected) {
-    errors.push({
-      key: "no-wallet",
-      title: "No Connected Wallet",
-      subtitle: "You need to connect your wallet to proceed.",
-      content: "Please connect your wallet to use leverage.",
-      type: "form-alert",
-    })
+    return {
+      canProcess: false,
+      errors: [
+        {
+          key: "no-wallet",
+          title: "No connected wallet",
+          subtitle: "You need to connect your wallet to proceed.",
+          content: "Please connect your wallet to repay.",
+          type: null,
+        },
+      ],
+      haveToApprove: false,
+    }
   } else {
     if (!isZapMode && (depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
       errors.push({

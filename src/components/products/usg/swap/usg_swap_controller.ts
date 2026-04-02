@@ -74,13 +74,19 @@ export function getSwapFormState(
   const isApproved = approveNotNeeded || (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n)
 
   if (!isWellConnected) {
-    errors.push({
-      key: "no-wallet",
-      title: "No Connected Wallet",
-      subtitle: "You need to connect your wallet to proceed.",
-      content: "Please connect your wallet to swap.",
-      type: "form-alert",
-    })
+    return {
+      canProcess: false,
+      errors: [
+        {
+          key: "no-wallet",
+          title: "No connected wallet",
+          subtitle: "You need to connect your wallet to proceed.",
+          content: "Please connect your wallet to repay.",
+          type: null,
+        },
+      ],
+      haveToApprove: false,
+    }
   } else {
     if (!depositAssetInfo || !receiveAssetInfo) return { canProcess: false, errors: [], haveToApprove: false }
 
@@ -95,6 +101,18 @@ export function getSwapFormState(
         type: "form-alert",
       })
     }
+
+    if (!!depositWeiValue && !isLoading && (!receiveWeiValue || receiveWeiValue === 0n)) {
+      errors.push({
+        key: "empty-form",
+        title: "Buy token missing",
+        subtitle: "The receive token is missing.",
+        content: "You need to input a target token.",
+        type: "form-alert",
+      })
+    }
+
+    if (!depositWeiValue || depositWeiValue === 0n) return { canProcess: false, errors: [], haveToApprove: false }
 
     if (isSwapBlockedBySlippage) {
       errors.push({

@@ -18,13 +18,19 @@ export function getStakeFormState(
   let isApproved = false
 
   if (!isWellConnected) {
-    errors.push({
-      key: "no-wallet",
-      title: "No Connected Wallet",
-      subtitle: "You need to connect your wallet to proceed.",
-      content: "Please connect your wallet to stake.",
-      type: "form-alert",
-    })
+    return {
+      canProcess: false,
+      errors: [
+        {
+          key: "no-wallet",
+          title: "No connected wallet",
+          subtitle: "You need to connect your wallet to proceed.",
+          content: "Please connect your wallet to repay.",
+          type: null,
+        },
+      ],
+      haveToApprove: false,
+    }
   } else {
     isApproved = (currentFeature === "stake" && !!stakeInfo?.USGAllowance && (weiValue || 0n) <= stakeInfo?.USGAllowance) || currentFeature === "unstake"
 

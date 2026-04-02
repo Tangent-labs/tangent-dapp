@@ -16,13 +16,19 @@ export function getBorrowFormState(
   const errors: FormError[] = []
 
   if (!isWellConnected) {
-    errors.push({
-      key: "no-wallet",
-      title: "No connected wallet",
-      subtitle: "You need to connect your wallet to proceed.",
-      content: "Please connect your wallet to borrow.",
-      type: "form-alert",
-    })
+    return {
+      canProcess: false,
+      errors: [
+        {
+          key: "no-wallet",
+          title: "No connected wallet",
+          subtitle: "You need to connect your wallet to proceed.",
+          content: "Please connect your wallet to repay.",
+          type: null,
+        },
+      ],
+      haveToApprove: false,
+    }
   } else {
     if (!borrowWeiValue || borrowWeiValue === 0n) {
       return {

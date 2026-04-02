@@ -24,7 +24,7 @@ export async function getSplitFormState(splitPositionInfo: LockPosition, isWellC
   if (!isWellConnected) {
     errors.push({
       key: "no-wallet",
-      title: "No Connected Wallet",
+      title: "No connected wallet",
       subtitle: "You need to connect your wallet to proceed.",
       content: "Please connect your wallet to split your position.",
       type: "form-alert",

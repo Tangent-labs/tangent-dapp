@@ -19,13 +19,19 @@ export function getLiquidateFormState(
   const errors: FormError[] = []
 
   if (!isWellConnected) {
-    errors.push({
-      key: "no-wallet",
-      title: "No Connected Wallet",
-      subtitle: "You need to connect your wallet to proceed.",
-      content: "Please connect your wallet to liquidate.",
-      type: "form-alert",
-    })
+    return {
+      canProcess: false,
+      errors: [
+        {
+          key: "no-wallet",
+          title: "No connected wallet",
+          subtitle: "You need to connect your wallet to proceed.",
+          content: "Please connect your wallet to repay.",
+          type: null,
+        },
+      ],
+      haveToApprove: false,
+    }
   } else {
     if (withdrawWeiValue > marketData?.collateralInfos?.positionCollateralAmount) {
       errors.push({

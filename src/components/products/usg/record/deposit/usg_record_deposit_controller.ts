@@ -25,22 +25,28 @@ export function getDepositFormState(
   const isApproved = depositValue <= (balanceAllowanceData?.allowances[0]?.allowance || 0n)
   const isEnoughBalance = depositValue < (balanceAllowanceData?.balance || 0n)
 
+  if (!isWellConnected) {
+    return {
+      canProcess: false,
+      errors: [
+        {
+          key: "no-wallet",
+          title: "No connected wallet",
+          subtitle: "You need to connect your wallet to proceed.",
+          content: "Please connect your wallet to repay.",
+          type: null,
+        },
+      ],
+      haveToApprove: false,
+    }
+  }
+
   if (depositValue === 0n) {
     return {
       canProcess: false,
       errors,
       haveToApprove: !isApproved,
     }
-  }
-
-  if (!isWellConnected) {
-    errors.push({
-      key: "no-wallet",
-      title: "No Connected Wallet",
-      subtitle: "You need to connect your wallet to proceed.",
-      content: "Please connect your wallet to deposit.",
-      type: "form-alert",
-    })
   } else {
     if (!isEnoughBalance) {
       errors.push({

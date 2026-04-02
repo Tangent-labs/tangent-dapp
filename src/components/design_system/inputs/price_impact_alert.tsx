@@ -56,6 +56,7 @@ export const PriceImpactAlert = ({
       content={contents(priceImpact, dollarLoss, mintDumpPriceImpact, mintDumpDollarLoss)}
       showButtonState
       className={`${className} whitespace-pre-line`}
+      isWarning={effectivePriceImpact >= 0.25 && effectivePriceImpact < 5}
       {...rest}
     />
   )

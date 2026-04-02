@@ -14,19 +14,26 @@ export function getWithdrawFormState(
 ): FormState {
   const errors: FormError[] = []
 
+  if (!isWellConnected) {
+    return {
+      canProcess: false,
+      errors: [
+        {
+          key: "no-wallet",
+          title: "No connected wallet",
+          subtitle: "You need to connect your wallet to proceed.",
+          content: "Please connect your wallet to repay.",
+          type: null,
+        },
+      ],
+      haveToApprove: false,
+    }
+  }
+
   if (!marketData) return { canProcess: false, errors: [], haveToApprove: false }
 
   if (!withdrawWeiValue || withdrawWeiValue === 0n) return { canProcess: false, errors: [], haveToApprove: false }
-
-  if (!isWellConnected) {
-    errors.push({
-      key: "no-wallet",
-      title: "No Connected Wallet",
-      subtitle: "You need to connect your wallet to proceed.",
-      content: "Please connect your wallet to withdraw.",
-      type: "form-alert",
-    })
-  } else {
+  else {
     if (withdrawWeiValue > maxWithdrawable) {
       errors.push({
         key: "max-withdrawable",

@@ -29,6 +29,7 @@ export const SlippageAlert = ({ symbol, tokenLoss, dollarLoss, slippage, classNa
     subtitle={`This swap has a slippage of ${slippage}%.`}
     content={contents(slippage, tokenLoss, symbol, dollarLoss)}
     className={className}
+    isWarning={slippage >= 1 && slippage < 5}
     {...rest}
   />
 )

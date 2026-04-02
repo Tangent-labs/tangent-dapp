@@ -424,21 +424,17 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   }, [futureMarketDisplayData, marketData])
 
   const formState = useMemo(() => {
-    if (marketData) {
-      return getRepayFormState(
-        isTransactionBlockedByPriceImpact,
-        isTransactionBlockedBySlippage,
-        marketData,
-        repayWeiValue,
-        isWellConnected,
-        balanceAllowanceData!,
-        repayAsset,
-        isZapLoading || isTxLoading,
-        transactionExceedsMaxLtv
-      )
-    }
-
-    return { canProcess: false, errors: [], haveToApprove: false }
+    return getRepayFormState(
+      isTransactionBlockedByPriceImpact,
+      isTransactionBlockedBySlippage,
+      marketData,
+      repayWeiValue,
+      isWellConnected,
+      balanceAllowanceData!,
+      repayAsset,
+      isZapLoading || isTxLoading,
+      transactionExceedsMaxLtv
+    )
   }, [
     isTransactionBlockedByPriceImpact,
     isTransactionBlockedBySlippage,

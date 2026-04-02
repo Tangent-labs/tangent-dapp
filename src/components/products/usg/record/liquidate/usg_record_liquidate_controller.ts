@@ -5,6 +5,7 @@ import { formatBigInt } from "@/lib/number_formatter"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export function getLiquidateFormState(
   marketData: MarketDetailData,
@@ -21,56 +22,24 @@ export function getLiquidateFormState(
   if (!isWellConnected) {
     return {
       canProcess: false,
-      errors: [
-        {
-          key: "no-wallet",
-          title: "No connected wallet",
-          subtitle: "You need to connect your wallet to proceed.",
-          content: "Please connect your wallet to repay.",
-          type: null,
-        },
-      ],
+      errors: [dappErrors["no-wallet"]],
       haveToApprove: false,
     }
   } else {
     if (withdrawWeiValue > marketData?.collateralInfos?.positionCollateralAmount) {
-      errors.push({
-        key: "max-withdrawable",
-        title: "Withdraw Value Too High",
-        subtitle: "Your withdrawal exceeds the available collateral.",
-        content: "Please reduce your withdrawal amount.",
-        type: "form-alert",
-      })
+      errors.push(dappErrors["max-withdrawable"])
     }
 
     if (isTransactionBlockedByPriceImpact) {
-      errors.push({
-        key: "price-impact",
-        title: "Price Impact Too High",
-        subtitle: "Price Impact Too High",
-        content: "Price Impact Too High",
-        type: null,
-      })
+      errors.push(dappErrors["price-impact"])
     }
 
     if (isTransactionBlockedBySlippage) {
-      errors.push({
-        key: "slippage",
-        title: "Slippage Too High",
-        subtitle: "Your slippage tolerance is blocking this transaction.",
-        content: "Please lower your slippage to proceed.",
-        type: null,
-      })
+      errors.push(dappErrors["slippage"])
     }
 
     if (isTransactionBlockedByWalletRepay) {
-      errors.push({
-        key: "wallet-repay",
-        title: "Repayment Uses Wallet USG",
-        subtitle: "This repayment will use USG from your wallet.",
-        content: "Make sure you have enough USG in your wallet to cover the repayment.",
-        type: null,
-      })
+      errors.push(dappErrors["wallet-repay"])
     }
   }
 
@@ -80,13 +49,7 @@ export function getLiquidateFormState(
   if (!repayWeiValue && !withdrawWeiValue) {
     return { canProcess: false, errors: [], haveToApprove: false }
   } else if (repayWeiValue && repayWeiValue > existingDebt) {
-    errors.push({
-      key: "repay-exceeds-debt",
-      title: "Repayment Exceeds Debt",
-      subtitle: "Your repayment amount is greater than your outstanding debt.",
-      content: "Please reduce your repayment amount.",
-      type: "form-alert",
-    })
+    errors.push(dappErrors["repay-exceeds-debt"])
   } else if (existingDebt - repayWeiValue! > 0n && existingDebt - repayWeiValue! < minimumLoan) {
     errors.push({
       key: "min-debt",

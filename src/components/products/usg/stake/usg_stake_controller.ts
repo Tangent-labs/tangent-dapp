@@ -3,6 +3,7 @@ import { formatNumber } from "@/lib/number_formatter"
 import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Address, EstimateContractGasParameters, formatUnits, maxUint256, WalletClient, WriteContractParameters } from "viem"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export const COMPOUNDING_PERIODS_PER_YEAR = 52
 
@@ -20,15 +21,7 @@ export function getStakeFormState(
   if (!isWellConnected) {
     return {
       canProcess: false,
-      errors: [
-        {
-          key: "no-wallet",
-          title: "No connected wallet",
-          subtitle: "You need to connect your wallet to proceed.",
-          content: "Please connect your wallet to repay.",
-          type: null,
-        },
-      ],
+      errors: [dappErrors["no-wallet"]],
       haveToApprove: false,
     }
   } else {
@@ -38,31 +31,13 @@ export function getStakeFormState(
       return { canProcess: false, errors: [], haveToApprove: true }
     } else {
       if (currentFeature === "stake" && weiValue > (stakeInfo?.USGBalance || 0n)) {
-        errors.push({
-          key: "balance",
-          title: "Insufficient Balance",
-          subtitle: "You don't have enough USG to stake this amount.",
-          content: "Please reduce your stake amount or acquire more USG.",
-          type: "form-alert",
-        })
+        errors.push(dappErrors["balance"])
       }
       if (currentFeature === "unstake" && weiValue > (stakeInfo?.sUSGBalance || 0n)) {
-        errors.push({
-          key: "balance",
-          title: "Insufficient Balance",
-          subtitle: "You don't have enough sUSG to unstake this amount.",
-          content: "Please reduce your unstake amount.",
-          type: "form-alert",
-        })
+        errors.push(dappErrors["balance"])
       }
       if (!expected || expected === 0n) {
-        errors.push({
-          key: "empty-form",
-          title: "Quote Unavailable",
-          subtitle: "The expected output hasn't loaded yet.",
-          content: "Please wait for the quote to be calculated before proceeding.",
-          type: "form-alert",
-        })
+        errors.push(dappErrors["empty-form"])
       }
     }
   }

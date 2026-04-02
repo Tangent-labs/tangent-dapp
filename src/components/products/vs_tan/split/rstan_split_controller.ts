@@ -3,6 +3,7 @@ import VsTan from "../../../../abi/USG/VsTAN.json"
 import { Abi, WalletClient } from "viem"
 import { FormError, FormState, LockPosition } from "../../usg/usg_type"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export const doSplit = async (tokenId: bigint, walletClient: WalletClient, amountToRemove: bigint) => {
   const txData = {
@@ -22,22 +23,10 @@ export async function getSplitFormState(splitPositionInfo: LockPosition, isWellC
   const currentBlock = await getCurrentBlock()
 
   if (!isWellConnected) {
-    errors.push({
-      key: "no-wallet",
-      title: "No connected wallet",
-      subtitle: "You need to connect your wallet to proceed.",
-      content: "Please connect your wallet to split your position.",
-      type: "form-alert",
-    })
+    errors.push(dappErrors["no-wallet"])
   } else {
     if (!!splitPositionInfo?.endLockTime && currentBlock.timestamp > Number(splitPositionInfo?.endLockTime)) {
-      errors.push({
-        key: "lock-expired",
-        title: "Lock Expired",
-        subtitle: "Your lock period has ended.",
-        content: "This position can no longer be split as the lock has expired.",
-        type: "form-alert",
-      })
+      errors.push(dappErrors["lock-expired"])
     }
   }
 

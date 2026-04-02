@@ -9,7 +9,7 @@ type FormAlertProps = {
 
 export const FormAlert = ({ error, isLoading, className }: FormAlertProps) => (
   <TransactionWarningAlert
-    percentage={6}
+    isWarning={false}
     isLoading={isLoading}
     onClickContinue={() => {}}
     title={error.title}

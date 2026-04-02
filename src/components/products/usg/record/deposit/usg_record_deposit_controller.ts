@@ -5,6 +5,7 @@ import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { BalanceAllowanceData, FormError, FormState, MarketDetailData, USGMarketDepositParams, ZapMarketData } from "../../usg_type"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export function getDepositFormState(
   isTransactionBlockedByPriceImpact: boolean,
@@ -28,15 +29,7 @@ export function getDepositFormState(
   if (!isWellConnected) {
     return {
       canProcess: false,
-      errors: [
-        {
-          key: "no-wallet",
-          title: "No connected wallet",
-          subtitle: "You need to connect your wallet to proceed.",
-          content: "Please connect your wallet to repay.",
-          type: null,
-        },
-      ],
+      errors: [dappErrors["no-wallet"]],
       haveToApprove: false,
     }
   }
@@ -49,40 +42,16 @@ export function getDepositFormState(
     }
   } else {
     if (!isEnoughBalance) {
-      errors.push({
-        key: "balance",
-        title: "Insufficient Balance",
-        subtitle: "You don't have enough tokens to complete this deposit.",
-        content: "Please reduce your deposit amount or acquire more tokens.",
-        type: "form-alert",
-      })
+      errors.push(dappErrors["balance"])
     }
     if (isTransactionBlockedBySlippage) {
-      errors.push({
-        key: "slippage",
-        title: "Slippage Too High",
-        subtitle: "Your slippage tolerance is blocking this transaction.",
-        content: "Please lower your slippage to proceed.",
-        type: null,
-      })
+      errors.push(dappErrors["slippage"])
     }
     if (isTransactionBlockedByPriceImpact) {
-      errors.push({
-        key: "price-impact",
-        title: "Price Impact Too High",
-        subtitle: "Price Impact Too High",
-        content: "Price Impact Too High",
-        type: null,
-      })
+      errors.push(dappErrors["price-impact"])
     }
-    if (isZapping && !zapValue) {
-      errors.push({
-        key: "empty-form",
-        title: "No Zap Value",
-        subtitle: "The zap quote hasn't loaded yet.",
-        content: "Please wait for the zap value to be calculated before proceeding.",
-        type: "form-alert",
-      })
+    if (isZapping && !isLoading && !zapValue) {
+      errors.push(dappErrors["no-zap-value"])
     }
 
     if (isDepositAndBorrow) {
@@ -99,13 +68,7 @@ export function getDepositFormState(
     }
 
     if (borrowWeiValue! > maxBorrowableValue!) {
-      errors.push({
-        key: "max-ltv",
-        title: "Loan Exceeds Max LTV",
-        subtitle: "Your borrow amount exceeds the maximum loan-to-value ratio.",
-        content: "Please reduce your borrow amount to stay within the allowed LTV.",
-        type: "form-alert",
-      })
+      errors.push(dappErrors["max-ltv"])
     }
   }
 

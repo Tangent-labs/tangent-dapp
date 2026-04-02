@@ -5,6 +5,7 @@ import { FormError, FormState, MarketDetailData, USGMarketBorrowParams } from ".
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
 import { getBorrowCommonFormState } from "../usg_record_controller"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export function getBorrowFormState(
   marketData?: MarketDetailData,
@@ -18,15 +19,8 @@ export function getBorrowFormState(
   if (!isWellConnected) {
     return {
       canProcess: false,
-      errors: [
-        {
-          key: "no-wallet",
-          title: "No connected wallet",
-          subtitle: "You need to connect your wallet to proceed.",
-          content: "Please connect your wallet to repay.",
-          type: null,
-        },
-      ],
+      errors: [dappErrors["no-wallet"]],
+
       haveToApprove: false,
     }
   } else {
@@ -43,13 +37,7 @@ export function getBorrowFormState(
   }
 
   if (borrowWeiValue! > maxBorrowableValue!) {
-    errors.push({
-      key: "max-ltv",
-      title: "Loan Exceeds Max Borrowable",
-      subtitle: "Your borrow amount exceeds the maximum available.",
-      content: "Please reduce your borrow amount.",
-      type: "form-alert",
-    })
+    errors.push(dappErrors["max-ltv"])
   }
 
   return { canProcess: errors.length === 0 && !isLoading, errors, haveToApprove: false }

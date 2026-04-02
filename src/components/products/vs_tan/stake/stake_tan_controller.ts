@@ -5,6 +5,7 @@ import { FormError, FormState } from "../../usg/usg_type"
 import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export async function getTanStakeOnChainData(currentAddress: string) {
   return await executeChainViewUnique<TANStakingInfo>(sTANUI.abi as Abi, sTANUI.bytecode as Hex, [
@@ -28,51 +29,21 @@ export function getTanStakeFormState(
   let isApproved = false
 
   if (!isWellConnected) {
-    errors.push({
-      key: "no-wallet",
-      title: "No connected wallet",
-      subtitle: "You need to connect your wallet to proceed.",
-      content: "Please connect your wallet to stake.",
-      type: "form-alert",
-    })
+    errors.push(dappErrors["no-wallet"])
   } else {
     isApproved = (currentFeature === "stake" && !!stakeInfo?.tanAllowance && (weiValue || 0n) <= stakeInfo?.tanAllowance) || currentFeature === "unstake"
 
     if (!weiValue || weiValue === 0n) {
-      errors.push({
-        key: "empty-form",
-        title: "No Amount Entered",
-        subtitle: "Please enter an amount.",
-        content: "A value greater than zero is required to proceed.",
-        type: "form-alert",
-      })
+      errors.push(dappErrors["empty-form"])
     } else {
       if (currentFeature === "stake" && weiValue > (stakeInfo?.tanBalance || 0n)) {
-        errors.push({
-          key: "balance",
-          title: "Insufficient Balance",
-          subtitle: "You don't have enough TAN to stake this amount.",
-          content: "Please reduce your stake amount or acquire more TAN.",
-          type: "form-alert",
-        })
+        errors.push(dappErrors["balance"])
       }
       if (currentFeature === "unstake" && weiValue > (stakeInfo?.sTanBalance || 0n)) {
-        errors.push({
-          key: "balance",
-          title: "Insufficient Balance",
-          subtitle: "You don't have enough sTAN to unstake this amount.",
-          content: "Please reduce your unstake amount.",
-          type: "form-alert",
-        })
+        errors.push(dappErrors["balance"])
       }
       if (!expected || expected === 0n) {
-        errors.push({
-          key: "empty-form",
-          title: "Quote Unavailable",
-          subtitle: "The expected output hasn't loaded yet.",
-          content: "Please wait for the quote to be calculated before proceeding.",
-          type: "form-alert",
-        })
+        errors.push(dappErrors["empty-form"])
       }
     }
   }

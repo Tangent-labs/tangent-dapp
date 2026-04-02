@@ -69,6 +69,7 @@ export default function USGWithdrawContent() {
             inputWeiValue={withdrawWeiValue}
             onValueChange={setWithdrawWeiValue}
             label="You withdraw"
+            disabled={maxWithdrawable === 0n}
             depositSelect={
               <AssetSelectWithdraw
                 collateralInfo={collateralInfo!}

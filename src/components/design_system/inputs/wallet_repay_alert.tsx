@@ -11,9 +11,9 @@ type WalletRepayAlertProps = {
 
 export const WalletRepayAlert = ({ walletRepay, ...rest }: WalletRepayAlertProps) => (
   <TransactionWarningAlert
-    percentage={4}
+    isWarning={true}
     title="Wallet USG Usage"
-    subtitle={`This repayment will use your wallet USG (${walletRepay}). `}
+    subtitle={`This repayment will use ${walletRepay} USG from your wallet.`}
     content=""
     {...rest}
   />

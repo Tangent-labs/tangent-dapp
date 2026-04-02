@@ -4,11 +4,11 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGBorrowContext } from "./usg_record_borrow_context"
 import FormButtons from "@/components/design_system/form/form_actions"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
-import { FormAlert } from "@/components/design_system/inputs/form_alert"
 
 export default function USGRecordBorrowContent() {
   const { connect } = useWalletConnexionContext()
@@ -31,7 +31,7 @@ export default function USGRecordBorrowContent() {
           onValueChange={(value: bigint | undefined) => {
             setBorrowWeiValue(value)
           }}
-          disabled={maxBorrowCapReached}
+          disabled={maxBorrowCapReached || maxBorrowableValue === 0n}
           label="You borrow"
           depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
           asset={USGInfo}

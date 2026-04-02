@@ -3,6 +3,7 @@ import VsTan from "../../../../abi/USG/VsTAN.json"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { FormError, FormState, LockPosition } from "../../usg/usg_type"
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export const doMerge = async (walletClient: WalletClient, tokenIdA: bigint, tokenIdB: bigint, claimAsSUSG: boolean) => {
   const txData = {
@@ -20,13 +21,7 @@ export function getMergeFormState(lockPositionOne: LockPosition, lockPositionTwo
   const errors: FormError[] = []
 
   if (lockPositionOne?.tokenId === lockPositionTwo?.tokenId) {
-    errors.push({
-      key: "same-position",
-      title: "Invalid Merge",
-      subtitle: "You cannot merge a position with itself.",
-      content: "Please select two different positions to merge.",
-      type: "form-alert",
-    })
+    errors.push(dappErrors["same-position"])
   }
 
   return { canProcess: errors.length === 0, errors, haveToApprove: false }

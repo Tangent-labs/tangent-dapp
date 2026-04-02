@@ -629,12 +629,13 @@ type FormErrorKey =
   | "max-leverage"
   | "lock-expired"
   | "same-position"
+  | "no-zap-value"
 
 export type FormError = {
   key: FormErrorKey
   title: string
   subtitle: string
-  content: string
+  content?: string
   type: "form-alert" | null
 }
 

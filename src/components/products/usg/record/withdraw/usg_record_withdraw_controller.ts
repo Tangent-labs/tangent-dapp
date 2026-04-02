@@ -4,6 +4,7 @@ import { Abi, WalletClient } from "viem"
 import { FormError, FormState, MarketDetailData, USGMarketWitrhdrawParams } from "../../usg_type"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export function getWithdrawFormState(
   marketData: MarketDetailData,
@@ -17,15 +18,7 @@ export function getWithdrawFormState(
   if (!isWellConnected) {
     return {
       canProcess: false,
-      errors: [
-        {
-          key: "no-wallet",
-          title: "No connected wallet",
-          subtitle: "You need to connect your wallet to proceed.",
-          content: "Please connect your wallet to repay.",
-          type: null,
-        },
-      ],
+      errors: [dappErrors["no-wallet"]],
       haveToApprove: false,
     }
   }
@@ -35,13 +28,7 @@ export function getWithdrawFormState(
   if (!withdrawWeiValue || withdrawWeiValue === 0n) return { canProcess: false, errors: [], haveToApprove: false }
   else {
     if (withdrawWeiValue > maxWithdrawable) {
-      errors.push({
-        key: "max-withdrawable",
-        title: "Amount Exceeds Maximum",
-        subtitle: "Your withdrawal amount is greater than the maximum withdrawable.",
-        content: "Please reduce your withdrawal amount.",
-        type: "form-alert",
-      })
+      errors.push(dappErrors["max-withdrawable"])
     }
   }
 

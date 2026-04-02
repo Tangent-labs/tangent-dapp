@@ -142,7 +142,7 @@ export default function USGLiquidatePanel() {
           <FormAlert key={error.key} error={error} className="my-1" isLoading={isQuoteLoading} />
         ))}
 
-      {!!liquidateWeiValue && slippage >= 1 && (
+      {!!liquidateWeiValue && !isQuoteLoading && slippage >= 1 && (
         <SlippageAlert
           symbol={collateralInfo?.symbol as string}
           tokenLoss={slippageLoss?.tokenLoss}

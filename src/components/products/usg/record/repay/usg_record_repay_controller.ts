@@ -4,6 +4,7 @@ import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { BalanceAllowanceData, FormError, FormState, MarketDetailData, USGMarketRepayParams, ZapMarketData } from "../../usg_type"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export function getRepayFormState(
   isTransactionBlockedByPriceImpact: boolean,
@@ -24,15 +25,7 @@ export function getRepayFormState(
   if (!isWellConnected) {
     return {
       canProcess: false,
-      errors: [
-        {
-          key: "no-wallet",
-          title: "No connected wallet",
-          subtitle: "You need to connect your wallet to proceed.",
-          content: "Please connect your wallet to repay.",
-          type: null,
-        },
-      ],
+      errors: [dappErrors["no-wallet"]],
       haveToApprove: false,
     }
   }
@@ -40,32 +33,14 @@ export function getRepayFormState(
   if (!repayWeiValue || repayWeiValue === 0n) return { canProcess: false, errors: [], haveToApprove: false }
   else {
     if (transactionExceedsMaxLtv) {
-      errors.push({
-        key: "max-ltv",
-        title: "Max LTV Exceeded",
-        subtitle: "Your remaining debt amount exceeds the maximum loan-to-value ratio.",
-        content: "Please reduce your remaining debt amount to stay within the allowed LTV.",
-        type: "form-alert",
-      })
+      errors.push(dappErrors["max-ltv"])
     }
 
     if (isTransactionBlockedBySlippage) {
-      errors.push({
-        key: "slippage",
-        title: "Slippage Too High",
-        subtitle: "Your slippage tolerance is blocking this transaction.",
-        content: "Please lower your slippage to proceed.",
-        type: null,
-      })
+      errors.push(dappErrors["slippage"])
     }
     if (isTransactionBlockedByPriceImpact) {
-      errors.push({
-        key: "price-impact",
-        title: "Price Impact Too High",
-        subtitle: "Price Impact Too High",
-        content: "Price Impact Too High",
-        type: null,
-      })
+      errors.push(dappErrors["price-impact"])
     }
 
     if (marketData && repayWeiValue) {
@@ -73,13 +48,7 @@ export function getRepayFormState(
       const minimumLoan = marketData.constants?.minimumLoan || 0n
 
       if (repayWeiValue > existingDebt) {
-        errors.push({
-          key: "repay-exceeds-debt",
-          title: "Repayment Exceeds Debt",
-          subtitle: "Your repayment amount is greater than your outstanding debt.",
-          content: "Please reduce your repayment amount.",
-          type: "form-alert",
-        })
+        errors.push(dappErrors["repay-exceeds-debt"])
       } else if (existingDebt - repayWeiValue > 0n && existingDebt - repayWeiValue < minimumLoan) {
         errors.push({
           key: "min-debt",

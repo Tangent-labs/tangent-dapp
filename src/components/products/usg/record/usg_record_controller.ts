@@ -22,6 +22,7 @@ import { Abi, Address, formatEther, formatUnits, Hex, parseEther, parseUnits, Wa
 import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
 import { formatBigInt, formatBigIntAsNumber, formatDollar, formatDollarBigInt, formatNumber, truncateDecimals } from "@/lib/number_formatter"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
@@ -77,13 +78,7 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, borrowWe
   const errors: FormError[] = []
 
   if (!borrowWeiValue || borrowWeiValue === 0n) {
-    errors.push({
-      key: "empty-form",
-      title: "Invalid Borrow Amount",
-      subtitle: "Borrow amount must be greater than zero.",
-      content: "Please enter a valid amount to borrow.",
-      type: "form-alert",
-    })
+    errors.push(dappErrors["empty-form"])
   } else {
     const minLoan = BigInt(marketData?.constants?.minimumLoan || "0")
     const totalDebt = marketData?.debtInfos?.totalDebt || 0n
@@ -97,13 +92,7 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, borrowWe
         type: "form-alert",
       })
     } else if (BigInt(marketData?.debtInfos?.userDebt || 0n) + BigInt(borrowWeiValue || 0n) > (marketData?.constants?.maxMarketDebt || 0n)) {
-      errors.push({
-        key: "max-market-debt",
-        title: "Max Market Debt Reached",
-        subtitle: "This borrow would exceed the market's maximum debt limit.",
-        content: "Please reduce your borrow amount.",
-        type: "form-alert",
-      })
+      errors.push(dappErrors["max-market-debt"])
     }
   }
 

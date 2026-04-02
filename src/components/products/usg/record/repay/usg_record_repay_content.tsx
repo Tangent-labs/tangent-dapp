@@ -103,7 +103,7 @@ export default function USGRepayContent() {
             <ZapAssetSelector collateralInfo={collateralInfo} depositAsset={repayAsset || "USG"} setDepositAsset={setRepayAsset} caseType="repay" />
           }
           slippageInput={isZapping && <SlippageInput slippage={slippage} setSlippage={setSlippage} />}
-          disabled={isRepayMax}
+          disabled={isRepayMax || maxRepayableValue === 0n}
           isZapping={isZapping}
           asset={repayAssetInfo || USGInfo}
           onValueChange={handleRepayValueChange}
@@ -179,7 +179,7 @@ export default function USGRepayContent() {
           <FormAlert key={error.key} error={error} className="my-1" isLoading={isZapLoading} />
         ))}
 
-      {!!repayWeiValue && slippage >= 1 && (
+      {!!repayWeiValue && !isZapLoading && slippage >= 1 && (
         <SlippageAlert
           symbol="USG"
           tokenLoss={slippageLoss?.tokenLoss}

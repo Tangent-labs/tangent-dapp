@@ -9,7 +9,7 @@ export const MaxBorrowCapReached = ({ display }: MaxBorrowCapReachedProps) => {
     return (
       <TransactionWarningAlert
         displayConfirmationButton={false}
-        percentage={6}
+        isWarning={false}
         title="Max borrow cap reached"
         subtitle=""
         content="You cannot borrow USG for now."

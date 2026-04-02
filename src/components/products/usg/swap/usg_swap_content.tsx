@@ -211,7 +211,7 @@ export default function USGSwapContent() {
               <FormAlert key={error.key} error={error} className="my-1" isLoading={isBuyValueLoading || isSellValueLoading} />
             ))}
 
-          {isSwapReady && isSwapBlockedBySlippage && slippage >= 1 && (
+          {isSwapReady && !isBuyValueLoading && !isSellValueLoading && slippage >= 1 && (
             <SlippageAlert
               symbol={buyAssetInfo?.symbol as string}
               tokenLoss={slippageLoss?.tokenLoss}

@@ -3,6 +3,7 @@ import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { FormError, FormState, LockPosition, ZapMarketData } from "../../usg/usg_type"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { executeApprove, executeContractCall, getCurrentBlock, getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export async function doApprove(walletClient: WalletClient, contract: Address, spender: Address, amount: bigint) {
   const txHash = await executeApprove(walletClient, contract, spender, amount)
@@ -126,39 +127,15 @@ export async function getLockFormState(
     (isZapMode && (depositWeiValue || 0n) <= (lockBalanceAllowanceData?.allowance || 0n))
 
   if (!isWellConnected) {
-    errors.push({
-      key: "no-wallet",
-      title: "No connected wallet",
-      subtitle: "You need to connect your wallet to proceed.",
-      content: "Please connect your wallet to lock.",
-      type: "form-alert",
-    })
+    errors.push(dappErrors["no-wallet"])
   } else {
     if (!depositWeiValue || depositWeiValue === 0n) {
-      errors.push({
-        key: "empty-form",
-        title: "No Amount Entered",
-        subtitle: "Please enter an amount to lock.",
-        content: "A value greater than zero is required to proceed.",
-        type: "form-alert",
-      })
+      errors.push(dappErrors["empty-form"])
     } else if (lockBalanceAllowanceData?.balance < depositWeiValue) {
-      errors.push({
-        key: "balance",
-        title: "Insufficient Balance",
-        subtitle: "You don't have enough tokens to lock this amount.",
-        content: "Please reduce your lock amount or acquire more tokens.",
-        type: "form-alert",
-      })
+      errors.push(dappErrors["balance"])
     }
     if (!!depositPositionInfo?.endLockTime && currentBlock.timestamp > Number(depositPositionInfo?.endLockTime)) {
-      errors.push({
-        key: "lock-expired",
-        title: "Lock Expired",
-        subtitle: "Your lock period has ended.",
-        content: "This position can no longer be locked as the lock has expired.",
-        type: "form-alert",
-      })
+      errors.push(dappErrors["lock-expired"])
     }
   }
 

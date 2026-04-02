@@ -7,6 +7,7 @@ import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Address, EstimateContractGasParameters, formatEther, formatUnits, parseUnits, WalletClient, WriteContractParameters } from "viem"
 import { ONE_ETHER } from "@/lib/utils"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export function getLeverageFormState(
   isTransactionBlockedByPriceImpact: boolean,
@@ -30,62 +31,24 @@ export function getLeverageFormState(
   if (!isWellConnected) {
     return {
       canProcess: false,
-      errors: [
-        {
-          key: "no-wallet",
-          title: "No connected wallet",
-          subtitle: "You need to connect your wallet to proceed.",
-          content: "Please connect your wallet to repay.",
-          type: null,
-        },
-      ],
+      errors: [dappErrors["no-wallet"]],
       haveToApprove: false,
     }
   } else {
     if (!isZapMode && (depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
-      errors.push({
-        key: "balance",
-        title: "Insufficient Balance",
-        subtitle: "You don't have enough tokens to complete this deposit.",
-        content: "Please reduce your deposit amount or acquire more tokens.",
-        type: "form-alert",
-      })
+      errors.push(dappErrors["balance"])
     }
     if (!!leverage && leverage > 1 / (1 - Number(marketData?.constants.maxLTV) / 100000)) {
-      errors.push({
-        key: "max-leverage",
-        title: "Leverage Too High",
-        subtitle: "Your leverage exceeds the maximum allowed for this market.",
-        content: "Please reduce your leverage to proceed.",
-        type: "form-alert",
-      })
+      errors.push(dappErrors["max-leverage"])
     }
     if (isTransactionBlockedBySlippage) {
-      errors.push({
-        key: "slippage",
-        title: "Slippage Too High",
-        subtitle: "Your slippage tolerance is blocking this transaction.",
-        content: "Please lower your slippage to proceed.",
-        type: null,
-      })
+      errors.push(dappErrors["slippage"])
     }
     if (isTransactionBlockedByPriceImpact) {
-      errors.push({
-        key: "price-impact",
-        title: "Price Impact Too High",
-        subtitle: "Price Impact Too High",
-        content: "Price Impact Too High",
-        type: null,
-      })
+      errors.push(dappErrors["price-impact"])
     }
     if (leverageExceedsMaxLtv) {
-      errors.push({
-        key: "max-ltv",
-        title: "Leverage Exceeds Max LTV",
-        subtitle: "Your current leverage exceeds the maximum loan-to-value ratio.",
-        content: "Please reduce your leverage or add more collateral.",
-        type: "form-alert",
-      })
+      errors.push(dappErrors["max-ltv"])
     }
     if (isDepositAndBorrow) {
       if (!borrowWeiValue || borrowWeiValue === 0n) {

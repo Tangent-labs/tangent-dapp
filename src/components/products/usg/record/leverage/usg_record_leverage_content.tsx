@@ -179,7 +179,7 @@ export default function USGLeverageContent() {
           <FormAlert key={error.key} error={error} className="my-1" isLoading={isTxLoading} />
         ))}
 
-      {!!depositWeiValue && slippage >= 1 && (
+      {!!depositWeiValue && !isZapLoading && slippage >= 1 && (
         <SlippageAlert
           symbol={collateralInfo?.symbol as string}
           tokenLoss={slippageLoss?.tokenLoss}

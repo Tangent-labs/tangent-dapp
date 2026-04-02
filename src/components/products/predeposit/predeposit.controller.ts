@@ -5,6 +5,7 @@ import { PredepositRawState, PredepositStatus } from "./types/types"
 import PredepositPoolsABI from "../../../abi/USG/PredepositPoolsABI.json"
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export const TOTAL_TAN_ALLOCATION = 200_000n
 export const TOTAL_DEPOSIT_CAP = 10_000_000n
@@ -37,33 +38,15 @@ export const getFormState = (
   }
 
   if (depositValue > balanceAllowance?.balance) {
-    errors.push({
-      key: "balance",
-      title: "Insufficient Balance",
-      subtitle: "You don't have enough tokens to complete this deposit.",
-      content: "Please reduce your deposit amount or acquire more tokens.",
-      type: "form-alert",
-    })
+    errors.push(dappErrors["balance"])
   }
 
   if (currentlyDeposited + depositValue > totalCap) {
-    errors.push({
-      key: "cap-exceeded",
-      title: "Deposit Cap Reached",
-      subtitle: "This deposit would exceed the maximum allowed amount.",
-      content: "The pool has reached its capacity. Please reduce your deposit amount.",
-      type: "form-alert",
-    })
+    errors.push(dappErrors["cap-exceeded"])
   }
 
   if (isTxBlockedBySlippage) {
-    errors.push({
-      key: "slippage",
-      title: "Slippage Too High",
-      subtitle: "Your slippage tolerance is blocking this transaction.",
-      content: "Please lower your slippage to proceed.",
-      type: null,
-    })
+    errors.push(dappErrors["slippage"])
   }
 
   return {

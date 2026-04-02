@@ -5,12 +5,12 @@ import { WarningButton } from "./warning_button"
 import { IconWarningTriangle } from "@/components/icons"
 
 type TransactionWarningAlertProps = {
-  percentage: number
+  percentage?: number
   isLoading: boolean
   onClickContinue: () => void
   title: string
   subtitle: string
-  content: string
+  content?: string
   displayConfirmationButton: boolean
   confirmationButtonLabel?: string
   className?: string
@@ -46,9 +46,10 @@ export const TransactionWarningAlert = ({
       </span>
 
       <span className="my-1 text-xs text-subtitle">{subtitle}</span>
-      <span className="mb-1 text-xs text-subtitle">{content}</span>
 
-      {percentage <= 10 && displayConfirmationButton && (
+      {!!content && <span className="mb-1 text-xs text-subtitle">{content}</span>}
+
+      {!!percentage && percentage <= 10 && displayConfirmationButton && (
         <WarningButton
           {...(showButtonState ? { state: "active" as const } : {})}
           warningType={isWarning ? "warning" : "danger"}

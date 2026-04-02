@@ -3,20 +3,30 @@
 import { Address } from "viem"
 import { toast } from "react-toastify"
 import { useUSGContext } from "../usg_context"
-import { AssetDataPriced, ListState } from "@/types"
+import { AssetDataPriced, ListState, TokenAmount } from "@/types"
 import { ToastComponent } from "@/components/design_system/toast"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { SortedRows } from "@/components/design_system/list/list_context"
 import { HarvestableMarket, HarvesterInfo, HarvesterInfoDisplay, USGStakingInfo } from "../usg_type"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { computeAndReturnPrices, doHarvest, doMultiHarvest, getUSGHarvestOnChainData, transformHarvestOnChainData } from "./usg_harvest_controller"
+import {
+  getRewardTokensInfos,
+  doHarvest,
+  doMultiHarvest,
+  getUSGHarvestOnChainData,
+  transformHarvestOnChainData,
+  getStakeDaoMerkleData,
+  Merk,
+} from "./usg_harvest_controller"
+import { COMMON_ERC20S } from "@tangent/defi-resources"
 
 type USGHarvestContextProps = {
   children: ReactNode
 }
 
 type USGHarvestContextValues = {
-  isLoading: boolean
+  isChainviewLoading: boolean
+  isTxLoading: boolean
   displayRows: HarvesterInfoDisplay[]
   actionHarvest: (arg: Address) => void
   // Harvest overrides how the provider's internal sort state is applied because several columns are computed.
@@ -35,78 +45,141 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
 
   const { walletClient } = useWalletConnexionContext()
 
-  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isChainviewLoading, setIsChainviewLoading] = useState<boolean>(true)
 
-  const [harvestInfo, setHarvestInfo] = useState<HarvesterInfo[] | undefined>()
+  const [isTxLoading, setIsTxLoading] = useState<boolean>(false)
+
+  const [harvestInfo, setHarvestInfo] = useState<(HarvesterInfo & { marketType: number })[] | undefined>()
 
   const [rewardsInfo, setRewardsInfo] = useState<AssetDataPriced[]>()
 
   const [marketsToHarvest, setMarketsToHarvest] = useState<HarvestableMarket[]>([])
 
-  useEffect(() => {
-    loadPrices()
+  const [stakeDaoMerkle, setStakeDaoMerkle] = useState<Merk[]>([])
+
+  const stakeDaoMarkets = useMemo(() => {
+    if (!harvestInfo) return []
+    return harvestInfo.filter((market) => market?.marketType === 2)
   }, [harvestInfo])
 
-  const loadPrices = async () => {
-    if (!harvestInfo) return
-
-    const allInfos = await computeAndReturnPrices(harvestInfo)
-
-    setRewardsInfo(allInfos)
-  }
-
   useEffect(() => {
-    loadData()
+    loadChainviewData()
   }, [])
 
-  const loadData = useCallback(() => {
+  // Fetch prices and infos of ERC20 rewards
+  useEffect(() => {
+    if (!harvestInfo) return
+    getRewardTokensInfos(harvestInfo)
+      .then((data) => {
+        setRewardsInfo(data)
+      })
+      .catch((e) => {
+        console.error(e)
+      })
+      .finally(() => setIsChainviewLoading(false))
+  }, [harvestInfo])
+
+  // Fetch Merkle data from StakeDao
+  useEffect(() => {
+    if (stakeDaoMarkets.length === 0) return
+    getStakeDaoMerkleData(stakeDaoMarkets).then((data) => setStakeDaoMerkle(data))
+  }, [stakeDaoMarkets])
+
+  const loadChainviewData = useCallback(() => {
     getUSGHarvestOnChainData().then((data) => {
       setHarvestInfo(data)
-      setIsLoading(false)
     })
   }, [])
 
   const displayRows = useMemo(() => {
     if (!harvestInfo || !rewardsInfo) return []
-
     const rows = transformHarvestOnChainData(harvestInfo, rewardsInfo)
-    setIsLoading(false)
-
     return rows.filter((market) => market?.rewards?.totalDollar > 0)
   }, [harvestInfo, rewardsInfo])
 
-  const actionHarvest = () => {
-    doHarvest(marketsToHarvest[0].marketAddress, walletClient!).then(() => {
-      loadData()
-      setMarketsToHarvest([])
-      toast.success(ToastComponent, { data: { type: "Success", content: "Market harvested successfully" } })
+  // Rewards already claimed by our markets on the Merkle claim contract of StakeDao
+  const stakeDaoMerkleAlreadyClaimed = useMemo(() => {
+    if (stakeDaoMarkets.length === 0) return []
+    return stakeDaoMarkets.map((market) => {
+      return { marketAddress: market.marketAddress, alreadyClaimed: market.claimableRewards.filter((cR) => cR.token !== COMMON_ERC20S.CRV) }
     })
+  }, [stakeDaoMarkets])
+
+  // Rewards claimable on our markets from extra rewards of StakeDAO
+  // Need to have stakeDaoMemo already claimed & the answers of the call to StakeDAO merkle
+  // We have to do this because :
+  //  - StakeDAO API call returns the totalClaimable
+  //  - Contract call returns what has been already claimed
+  // => What is claimable is the total - claimed
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const stakeDaoMerkleClaimable = useMemo(() => {
+    if (stakeDaoMerkleAlreadyClaimed.length === 0 || stakeDaoMerkle.length === 0) return []
+    return stakeDaoMerkleAlreadyClaimed.map((ac) => {
+      const claimable: TokenAmount[] = []
+      const merkle = stakeDaoMerkle.find((sdm) => ac.marketAddress.toLowerCase() === sdm.marketAddress.toLowerCase())!
+
+      ac.alreadyClaimed.forEach((t) => {
+        const totalClaimable = BigInt(merkle.merkleData.find((md) => md.tokenObj.address.toLowerCase() === t.token)?.merkle.amount || 0n)
+        claimable.push({ token: t.token, amount: totalClaimable - t.amount })
+      })
+
+      return { marketAddress: ac.marketAddress, claimable: claimable }
+    })
+  }, [stakeDaoMerkleAlreadyClaimed, stakeDaoMerkle])
+
+  const actionHarvest = () => {
+    doHarvest(marketsToHarvest[0].marketAddress, walletClient!)
+      .then(() => {
+        loadChainviewData()
+        setMarketsToHarvest([])
+        toast.success(ToastComponent, { data: { type: "Success", content: "Market harvested successfully" } })
+      })
+      .catch((e) => console.error(e))
+      .finally(() => setIsTxLoading(false))
   }
 
   const actionHarvestMultipleMarkets = () => {
     const marketAddresses = marketsToHarvest.map((el) => el.marketAddress)
 
-    doMultiHarvest(marketAddresses, walletClient!).then(() => {
-      loadData()
-      setMarketsToHarvest([])
-      toast.success(ToastComponent, { data: { type: "Success", content: "Markets harvested successfully" } })
-    })
+    doMultiHarvest(marketAddresses, getRewardAmountToBeClaimed(), walletClient!)
+      .then(() => {
+        loadChainviewData()
+        setMarketsToHarvest([])
+        toast.success(ToastComponent, { data: { type: "Success", content: "Markets harvested successfully" } })
+      })
+      .catch((e) => console.error(e))
+      .finally(() => setIsTxLoading(false))
   }
 
   const onClickSelectAll = () => {
+    // If everythin is already selected
     if (marketsToHarvest.length === displayRows.length) {
       setMarketsToHarvest([])
     } else {
-      const markets = displayRows.map((el) => {
-        return {
-          marketName: el.asset,
-          harvestable: (el.rewards.totalDollar * el?.percentage) / 100,
-          marketAddress: el.contractAddress,
-          percentage: el.percentage,
-        } satisfies HarvestableMarket
-      })
+      const markets = displayRows
+        .map((el) => {
+          return {
+            ...el,
+            marketName: el.asset,
+            harvestable: (el.rewards.totalDollar * el?.percentage) / 100,
+            marketAddress: el.contractAddress,
+          } satisfies HarvestableMarket
+        })
+        .sort((m1, m2) => Number(m2.rewards.totalDollar) - Number(m1.rewards.totalDollar))
       setMarketsToHarvest(markets)
     }
+  }
+
+  function getRewardAmountToBeClaimed() {
+    const set = new Set<string>()
+    marketsToHarvest.forEach((m) => {
+      m.rewards.details.forEach((d) => {
+        if (d.rawAmount !== "0") {
+          set.add(d.symbol)
+        }
+      })
+    })
+    return Array.from(set).length
   }
 
   const getSortedRows = (rows: SortedRows, listState: ListState) => {
@@ -145,24 +218,24 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
   const addToHarvestableMarkets = (rowData: HarvestableMarket) => {
     setMarketsToHarvest((prevMarkets: HarvestableMarket[]) => {
       const market = prevMarkets.find((market) => market.marketAddress === rowData.marketAddress)
-
       if (market) {
-        return prevMarkets.filter((m) => m.marketAddress !== market.marketAddress)
+        return prevMarkets
+          .filter((m) => m.marketAddress !== market.marketAddress)
+          .sort((m1, m2) => Number(m2.rewards.totalDollar) - Number(m1.rewards.totalDollar))
       } else {
         return [
           ...prevMarkets,
           {
-            marketName: rowData.marketName,
+            ...rowData,
             harvestable: (rowData.harvestable * rowData?.percentage) / 100,
-            marketAddress: rowData.marketAddress,
-            percentage: rowData?.percentage,
           },
-        ]
+        ].sort((m1, m2) => Number(m2.rewards.totalDollar) - Number(m1.rewards.totalDollar))
       }
     })
   }
 
   const onClickHarvest = () => {
+    setIsTxLoading(true)
     if (marketsToHarvest.length > 1) {
       actionHarvestMultipleMarkets()
     } else {
@@ -171,7 +244,8 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
   }
 
   const contextValue: USGHarvestContextValues = {
-    isLoading,
+    isChainviewLoading,
+    isTxLoading,
     displayRows,
     getSortedRows,
     onClickSelectAll,

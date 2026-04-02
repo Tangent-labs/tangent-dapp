@@ -1,7 +1,5 @@
 "use client"
 
-import { ADDR_TOKEN, TOKEN_ADDR } from "@/services/repo_asset_addresses"
-import { AssetConfigKey } from "@/services/repo_asset_infos"
 import { Address } from "viem"
 
 type DefillamaTokenInfo = {
@@ -19,7 +17,7 @@ type DefillamaPriceData = {
   coins: DefillamaCoins
 }
 
-const _fetchAndReturnPrices = async (list: Address[]): Promise<Record<AssetConfigKey, number> | undefined> => {
+const _fetchAndReturnPrices = async (list: Address[]): Promise<{ [tokenAddress: Address]: number } | undefined> => {
   const param = `ethereum:${list.join(",ethereum:")}`
   const priceResponse = await fetch(`https://coins.llama.fi/prices/current/${param}?searchWidth=4h`)
   if (priceResponse.status === 200) {
@@ -27,11 +25,10 @@ const _fetchAndReturnPrices = async (list: Address[]): Promise<Record<AssetConfi
     const prices = Object.entries(responseData.coins).reduce(
       (acc, [key, data]) => {
         const address = key.replace("ethereum:", "") as Address
-        const assetKey = ADDR_TOKEN[address] as AssetConfigKey
-        acc[assetKey] = data.price
+        acc[address] = data.price
         return acc
       },
-      {} as Record<AssetConfigKey, number>
+      {} as { [tokenAddress: Address]: number }
     )
     return prices
   }
@@ -42,12 +39,8 @@ const _fetchAndReturnPrices = async (list: Address[]): Promise<Record<AssetConfi
  * @param tokens only returns the price of some selected tokens
  * @returns
  */
-export const getTokensPrice = async (tokens: string[]) => {
-  const selectedAddresses: Address[] = Object.entries(TOKEN_ADDR)
-    .filter(([key]) => tokens.includes(key))
-    .map(([, value]) => value)
-
-  return _fetchAndReturnPrices(selectedAddresses)
+export const getTokensPrice = async (tokens: Address[]) => {
+  return _fetchAndReturnPrices(tokens)
 }
 
 /**

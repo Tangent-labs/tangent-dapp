@@ -1,11 +1,21 @@
 "use client"
 
+import {
+  computedMinAmountOut,
+  computeTransactionPotentialLoss,
+  doApprove,
+  getBalancesAndAllowances,
+  matchBlockChainErrors,
+} from "../usg/record/usg_record_controller"
+
 import { toast } from "react-toastify"
+import { FormState } from "../usg/usg_type"
+import { AssetDataPriced } from "@/types"
 import { PredepositStatus } from "./types/types"
 import { USGTokens } from "../usg/usg_repository"
-import { AssetDataPriced } from "@/types"
 import { useRootContext } from "../root/root_context"
 import { mapPoolsAndTasks } from "../usg/earn/utils"
+import { COMMON_ERC20S } from "@tangent/defi-resources"
 import { getTokensPrice } from "@/services/service_price"
 import { Address, formatUnits, WalletClient, zeroAddress } from "viem"
 import { formatNumber, truncateDecimals } from "@/lib/number_formatter"
@@ -16,14 +26,6 @@ import { opportunities } from "../../../app/(products)/(usg)/earn/aprOpportuniti
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { EarnPoolsData, getConvexPools, getCurvePools, getPendlePools, getStakeDAOPools } from "../usg/client_api_external"
 import { deposit, fetchQuote, getFormState, mapPredepositStatus, TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "./predeposit.controller"
-import {
-  computedMinAmountOut,
-  computeTransactionPotentialLoss,
-  doApprove,
-  getBalancesAndAllowances,
-  matchBlockChainErrors,
-} from "../usg/record/usg_record_controller"
-import { FormState } from "../usg/usg_type"
 
 type PredepositContextProps = {
   children: ReactNode
@@ -116,9 +118,6 @@ type PredepositContextValues = {
 export const PredepositContext = createContext<PredepositContextValues | undefined>(undefined)
 
 export const PredepositProvider = ({ children }: PredepositContextProps) => {
-  const USDC_ADDRESS = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
-  const frxUSD_ADDRESS = "0xcacd6fd266af91b8aed52accc382b4e165586e29"
-
   const { currentAddress, walletClient, isWalletContextLoaded } = useWalletConnexionContext()
 
   const { getCachedCurrentBlock } = useRootContext()
@@ -207,29 +206,29 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   }, [currentAddress])
 
   const getUSGUSDCBalanceAllowance = async (walletClient: WalletClient) => {
-    const data = await getBalancesAndAllowances(walletClient!, USDC_ADDRESS, USGTokens[1]["USG-USDC"])
+    const data = await getBalancesAndAllowances(walletClient!, COMMON_ERC20S.USDC, USGTokens[1]["USG-USDC"])
 
     if (data) setUSDCBalanceAllowance({ balance: data[0]?.balance, allowance: data[0]?.allowances[0].allowance })
   }
 
   const getUSGfrxUSDBalanceAllowance = async (walletClient: WalletClient) => {
-    const data = await getBalancesAndAllowances(walletClient!, frxUSD_ADDRESS, USGTokens[1]["USG-frxUSD"])
+    const data = await getBalancesAndAllowances(walletClient!, COMMON_ERC20S.frxUSD, USGTokens[1]["USG-frxUSD"])
 
     if (data) setfrxUSDBalanceAllowance({ balance: data[0]?.balance, allowance: data[0]?.allowances[0].allowance })
   }
 
   const fetchPrices = async () => {
-    const data = await getTokensPrice(["frxUSD", "USDC"])
+    const data = await getTokensPrice([COMMON_ERC20S.frxUSD, COMMON_ERC20S.USDC])
 
     if (data) {
-      setUSDCPrice(data["USDC"])
-      setfrxUSDPrice(data["frxUSD"])
+      setUSDCPrice(data[COMMON_ERC20S.USDC])
+      setfrxUSDPrice(data[COMMON_ERC20S.frxUSD])
     }
   }
 
   const USDCInfo = useMemo(() => {
     return {
-      address: USDC_ADDRESS as Address,
+      address: COMMON_ERC20S.USDC as Address,
       decimals: 6,
       displayDecimals: 2,
       symbol: "USDC",
@@ -241,7 +240,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
 
   const frxUSDInfo = useMemo(() => {
     return {
-      address: frxUSD_ADDRESS as Address,
+      address: COMMON_ERC20S.frxUSD as Address,
       decimals: 18,
       displayDecimals: 2,
       symbol: "frxUSD",
@@ -377,11 +376,10 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   }
 
   const actionDepositUSGUSDC = async () => {
-    if (USDCDepositValue) {
+    if (USGUSDCDepositValue && USDCDepositValue) {
       setIsUSDCDepositLoading(true)
-
       try {
-        await toastTx(deposit(walletClient!, USDCDepositValue, slippage, USGTokens[1]["USG-USDC"]), {
+        await toastTx(deposit(walletClient!, USDCDepositValue, computedMinAmountOut(USGUSDCDepositValue, slippage), USGTokens[1]["USG-USDC"]), {
           pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
           success: () => ({
             type: "Success",
@@ -397,18 +395,18 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
         setUSDCDepositSliderPercent(0)
         setUSGUSDCDepositValue(0n)
         setIsUSDCDepositLoading(false)
-      } catch {
+      } catch (e) {
+        console.error(e)
         setIsUSDCDepositLoading(false)
       }
     }
   }
 
   const actionDepositUSGfrxUSD = async () => {
-    if (frxUSDDepositValue) {
+    if (USGfrxUSDDepositValue && frxUSDDepositValue) {
       setIsfrxUSDDepositLoading(true)
-
       try {
-        await toastTx(deposit(walletClient!, frxUSDDepositValue, slippage, USGTokens[1]["USG-frxUSD"]), {
+        await toastTx(deposit(walletClient!, frxUSDDepositValue, computedMinAmountOut(USGfrxUSDDepositValue, slippage), USGTokens[1]["USG-frxUSD"]), {
           pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
           success: () => ({
             type: "Success",

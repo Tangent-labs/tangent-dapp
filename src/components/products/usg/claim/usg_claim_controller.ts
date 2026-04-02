@@ -5,16 +5,16 @@ import { USG_CONTRACT, USGMarkets } from "../usg_repository"
 import { Abi, Address, formatUnits, Hex, WalletClient } from "viem"
 import claimContract from "../../../../abi/USG/RewardAccumulator.json"
 import { AssetDataPriced, ListHeaderData } from "@/types"
-import { assetConfig, AssetConfigKey } from "@/services/repo_asset_infos"
 import { executeChainViewUnique, executeContractCall, waitForTransaction } from "@/services/service_rpc"
 import { getRewardTokenFromAprDetails } from "../list/usg_market_controller"
+import { ERC20S } from "@/data/erc20s"
 
-export async function doClaim(contractAddress: Address, markets: Address[], rewardsLength: number | undefined, walletClient: WalletClient) {
+export async function doSimpleClaim(market: Address, walletClient: WalletClient) {
   const txData = {
     abi: claimContract.abi as Abi,
-    functionName: markets.length === 1 ? "claimSimple" : "claimMultiple",
-    args: markets.length === 1 ? [markets[0]] : [markets, rewardsLength],
-    address: contractAddress,
+    functionName: "claimSimple",
+    args: [market],
+    address: USG_CONTRACT.REWARD_ACCUMULATOR,
     gas: undefined as undefined | bigint,
   }
 
@@ -22,43 +22,46 @@ export async function doClaim(contractAddress: Address, markets: Address[], rewa
   return await waitForTransaction(txHash)
 }
 
+export async function doMultiClaim(markets: Address[], rewardsLength: number, walletClient: WalletClient) {
+  const txData = {
+    abi: claimContract.abi as Abi,
+    functionName: "claimMultiple",
+    args: [markets, rewardsLength],
+    address: USG_CONTRACT.REWARD_ACCUMULATOR,
+    gas: undefined as undefined | bigint,
+  }
+
+  const txHash = await executeContractCall(walletClient, txData)
+  return await waitForTransaction(txHash)
+}
 export async function getUSGClaimOnChainData(currentAddress: string) {
   const addresses: Address[] = USGMarkets.map((m) => m.marketAddress)
   return await executeChainViewUnique<ClaimerInfo[]>(claimUI.abi as Abi, claimUI.bytecode as Hex, [currentAddress, addresses, USG_CONTRACT.MARKET_VIEWER])
 }
 
-export const computeAndReturnPrices = async (claimInfo: ClaimerInfo[]) => {
-  const tokensSet = new Set<string>()
+export async function getRewardTokensInfos(claimerInfos: ClaimerInfo[]) {
+  const tokens: Address[] = []
 
-  claimInfo.forEach((el) => {
-    el.claimableTokens.forEach((t) => {
-      if (t?.symbol) tokensSet.add(t.symbol)
+  // Iterate over markets
+  claimerInfos.forEach((c) => {
+    // Iterate over tokens
+    c.claimableTokens.forEach((ct) => {
+      if (!tokens.includes(ct.token)) tokens.push(ct.token.toString().toLowerCase() as Address)
+    })
+  })
+  try {
+    const prices = (await getTokensPrice(tokens))!
+    const tokenDetails = ERC20S.filter((t) => tokens.includes(t.address)).map((t) => {
+      return {
+        ...t,
+        price: prices[t.address],
+      }
     })
 
-    tokensSet.add(el.collatStaked.symbol)
-  })
-
-  const tokens: string[] = Array.from(tokensSet)
-
-  try {
-    const prices = await getTokensPrice(tokens)
-
-    const allInfos = Object.entries(assetConfig)
-      .filter(([assetSymbol]) => tokens.indexOf(assetSymbol as AssetConfigKey) !== -1)
-      .map(([symbol, config]) => {
-        return {
-          ...config,
-          price: (prices ? prices[symbol as AssetConfigKey] : 0) || 0,
-        }
-      })
-      .sort((a, b) => {
-        return (a?.logoKey ? tokens.indexOf(a.logoKey) : -1) - (b?.logoKey ? tokens.indexOf(b.logoKey) : -1)
-      })
-
-    return allInfos
+    return tokenDetails as AssetDataPriced[]
   } catch (error) {
     console.error("Failed to load asset information:", error)
-    return undefined
+    return
   }
 }
 
@@ -69,17 +72,20 @@ export function transformClaimOnChainData(claimerInfos: ClaimerInfo[], assetInfo
   }
 
   const result = claimerInfos.map((claimer) => {
-    const claimable = claimer.claimableTokens.map((token) => {
-      const tokenPrice = getPriceBySymbol(token.symbol)
+    // Hide lines with 0 wei of token to claim
+    const claimable = claimer.claimableTokens
+      .filter((c) => c.amount !== 0n)
+      .map((token) => {
+        const tokenPrice = getPriceBySymbol(token.symbol)
 
-      const valueInUsd = Number(formatUnits(token.amount, Number(token.decimals))) * tokenPrice
+        const valueInUsd = Number(formatUnits(token.amount, Number(token.decimals))) * tokenPrice
 
-      return {
-        symbol: token.symbol,
-        amount: token.amount.toString(),
-        valueInUsd: valueInUsd.toFixed(2),
-      }
-    })
+        return {
+          symbol: token.symbol,
+          amount: token.amount.toString(),
+          valueInUsd: valueInUsd.toFixed(2),
+        }
+      })
 
     const totalClaimableValue = claimable.reduce((sum, token) => sum + parseFloat(token.valueInUsd), 0)
 

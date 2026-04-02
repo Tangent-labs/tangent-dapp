@@ -1,5 +1,5 @@
 import { Address } from "viem"
-import { CURVE_GAUGES, CURVE_LPS, PENDLE_POOLS } from "@tangent/defi-resources"
+import { COMMON_ERC20S, CURVE_GAUGES, CURVE_LPS, PENDLE_POOLS } from "@tangent/defi-resources"
 import {
   SDT_crvUSD_USDC_VAULT,
   SDT_crvUSD_USDT_VAULT,
@@ -744,6 +744,7 @@ export const ERC20S: Erc20Details[] = [
     decimals: 18,
     chainId: 1,
     logoURI: "https://files.cow.fi/token-lists/images/1/0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b/logo.png",
+    logoKey: "CVX",
   },
   {
     symbol: "LINK",
@@ -928,6 +929,15 @@ export const ERC20S: Erc20Details[] = [
     decimals: 6,
     chainId: 1,
     logoURI: "https://files.cow.fi/token-lists/images/1/0x6c3ea9036406852006290770bedfcaba0e23a0e8/logo.png",
+    logoKey: "PYUSD",
+  },
+  {
+    address: "0x8292bb45bf1ee4d140127049757c2e0ff06317ed",
+    symbol: "RLUSD",
+    name: "Ripple USD",
+    decimals: 18,
+    chainId: 1,
+    logoKey: "RLUSD",
   },
   {
     symbol: "LQTY",
@@ -1458,6 +1468,15 @@ export const ERC20S: Erc20Details[] = [
     decimals: 18,
     chainId: 1,
     logoURI: "https://files.cow.fi/token-lists/images/1/0xd533a949740bb3306d119cc777fa900ba034cd52/logo.png",
+    logoKey: "CRV",
+  },
+  {
+    symbol: "FXN",
+    name: "f(x) protocol",
+    address: COMMON_ERC20S.FXN.toLowerCase(),
+    decimals: 18,
+    chainId: 1,
+    logoKey: "FXN",
   },
   {
     symbol: "USDT",

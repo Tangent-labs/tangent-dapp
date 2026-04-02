@@ -37,7 +37,7 @@ export function getRepayFormState(
     }
   }
 
-  if (repayWeiValue === 0n) return { canProcess: false, errors: [], haveToApprove: false }
+  if (!repayWeiValue || repayWeiValue === 0n) return { canProcess: false, errors: [], haveToApprove: false }
   else {
     if (transactionExceedsMaxLtv) {
       errors.push({

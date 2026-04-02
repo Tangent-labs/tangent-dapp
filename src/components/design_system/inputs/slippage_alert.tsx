@@ -1,4 +1,4 @@
-import { SwapWarningAlert } from "./swap_warning_alert"
+import { TransactionWarningAlert } from "./transaction_warning_alert"
 
 type SlippageAlertProps = {
   symbol: string
@@ -22,7 +22,7 @@ const contents = (s: number, tokenLoss: string, symbol: string, dollarLoss: stri
 }
 
 export const SlippageAlert = ({ symbol, tokenLoss, dollarLoss, slippage, className, displayConfirmationButton, ...rest }: SlippageAlertProps) => (
-  <SwapWarningAlert
+  <TransactionWarningAlert
     displayConfirmationButton={displayConfirmationButton}
     percentage={slippage}
     title={titles(slippage)}

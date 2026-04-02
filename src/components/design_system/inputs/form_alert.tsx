@@ -1,5 +1,5 @@
 import { FormError } from "@/components/products/usg/usg_type"
-import { SwapWarningAlert } from "./swap_warning_alert"
+import { TransactionWarningAlert } from "./transaction_warning_alert"
 
 type FormAlertProps = {
   error: FormError
@@ -8,7 +8,7 @@ type FormAlertProps = {
 }
 
 export const FormAlert = ({ error, isLoading, className }: FormAlertProps) => (
-  <SwapWarningAlert
+  <TransactionWarningAlert
     percentage={6}
     isLoading={isLoading}
     onClickContinue={() => {}}

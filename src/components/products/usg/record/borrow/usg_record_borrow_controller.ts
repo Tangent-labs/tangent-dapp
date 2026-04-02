@@ -34,7 +34,7 @@ export function getBorrowFormState(
       return {
         canProcess: false,
         errors,
-        haveToApprove: true,
+        haveToApprove: false,
       }
     }
 
@@ -45,9 +45,9 @@ export function getBorrowFormState(
   if (borrowWeiValue! > maxBorrowableValue!) {
     errors.push({
       key: "max-ltv",
-      title: "Loan Exceeds Max LTV",
-      subtitle: "Your borrow amount exceeds the maximum loan-to-value ratio.",
-      content: "Please reduce your borrow amount to stay within the allowed LTV.",
+      title: "Loan Exceeds Max Borrowable",
+      subtitle: "Your borrow amount exceeds the maximum available.",
+      content: "Please reduce your borrow amount.",
       type: "form-alert",
     })
   }

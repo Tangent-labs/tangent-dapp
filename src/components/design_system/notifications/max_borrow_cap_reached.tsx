@@ -1,9 +1,24 @@
+import { TransactionWarningAlert } from "../inputs/transaction_warning_alert"
+
 type MaxBorrowCapReachedProps = {
   display: boolean
 }
 
 export const MaxBorrowCapReached = ({ display }: MaxBorrowCapReachedProps) => {
-  if (display) return <div className="flex w-full items-center justify-center text-xs text-red-500">Max borrow cap reached. You cannot borrow USG for now</div>
+  if (display)
+    return (
+      <TransactionWarningAlert
+        displayConfirmationButton={false}
+        percentage={6}
+        title="Max borrow cap reached"
+        subtitle=""
+        content="You cannot borrow USG for now."
+        showButtonState
+        className="my-1 whitespace-pre-line"
+        isLoading={false}
+        onClickContinue={() => {}}
+      />
+    )
 
   return <></>
 }

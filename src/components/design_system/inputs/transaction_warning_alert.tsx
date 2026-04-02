@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import { WarningButton } from "./warning_button"
 import { IconWarningTriangle } from "@/components/icons"
 
-type TradeWarningAlertProps = {
+type TransactionWarningAlertProps = {
   percentage: number
   isLoading: boolean
   onClickContinue: () => void
@@ -18,7 +18,7 @@ type TradeWarningAlertProps = {
   isWarning?: boolean
 }
 
-export const SwapWarningAlert = ({
+export const TransactionWarningAlert = ({
   percentage,
   isLoading,
   onClickContinue,
@@ -30,7 +30,7 @@ export const SwapWarningAlert = ({
   confirmationButtonLabel,
   className,
   isWarning = false,
-}: TradeWarningAlertProps) => {
+}: TransactionWarningAlertProps) => {
   return (
     <div
       className={cn(

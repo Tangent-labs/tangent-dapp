@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { SwapWarningAlert } from "./swap_warning_alert"
+import { TransactionWarningAlert } from "./transaction_warning_alert"
 
 type PriceImpactAlertProps = {
   dollarLoss: string
@@ -48,7 +48,7 @@ export const PriceImpactAlert = ({
   }, [priceImpact, mintDumpPriceImpact])
 
   return (
-    <SwapWarningAlert
+    <TransactionWarningAlert
       displayConfirmationButton={displayConfirmationButton}
       percentage={effectivePriceImpact}
       title={titles(effectivePriceImpact)}

@@ -50,7 +50,7 @@ const MarketHeaderDisplay = ({ label, sort = "none", onSort, field, indicator, c
 export const MarketListHeader = ({ headers, activeSort, onSort, rowDisposition: CustomRowDisposition = ListRowDisposition }: ListHeaderProps) => {
   return (
     <div className="relative mt-4 hidden w-full xl:block">
-      <div className={`w-full rounded-t-[10px] bg-overlay-panel px-4 py-2 leading-[10px] backdrop-blur-[60px]`}>
+      <div className={`w-full rounded-t-[10px] bg-overlay-panel p-2 leading-[10px] backdrop-blur-[60px]`}>
         <CustomRowDisposition>
           {!!headers[0]?.key && (
             <MarketHeaderDisplay
@@ -60,7 +60,7 @@ export const MarketListHeader = ({ headers, activeSort, onSort, rowDisposition: 
               field={headers[0]?.key || ""}
               onSort={!!headers[0]?.sort ? onSort : undefined}
               indicator={headers[0]?.indicator}
-              className="flex w-full items-center justify-start pl-8"
+              className="flex w-full items-center justify-start pl-2"
             />
           )}
           {!!headers[1]?.key && (
@@ -86,19 +86,17 @@ export const MarketListHeader = ({ headers, activeSort, onSort, rowDisposition: 
             />
           )}
           <>
-            {headers
-              ?.slice(3)
-              ?.map((header) => (
-                <MarketHeaderDisplay
-                  key={header.key}
-                  label={header.label}
-                  sort={(activeSort?.key == header.key && activeSort?.direction) || "none"}
-                  field={header.key}
-                  onSort={!!header.sort ? onSort : undefined}
-                  indicator={header.indicator}
-                  className="flex w-full flex-1 items-center justify-center"
-                />
-              ))}
+            {headers?.slice(3)?.map((header) => (
+              <MarketHeaderDisplay
+                key={header.key}
+                label={header.label}
+                sort={(activeSort?.key == header.key && activeSort?.direction) || "none"}
+                field={header.key}
+                onSort={!!header.sort ? onSort : undefined}
+                indicator={header.indicator}
+                className="flex w-full flex-1 items-center justify-center"
+              />
+            ))}
           </>
         </CustomRowDisposition>
       </div>

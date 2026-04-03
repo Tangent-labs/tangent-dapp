@@ -1,9 +1,10 @@
 "use client"
 
 import { Abi, WalletClient } from "viem"
-import { MarketDetailData, USGMarketWitrhdrawParams } from "../../usg_type"
+import { FormError, FormState, MarketDetailData, USGMarketWitrhdrawParams } from "../../usg_type"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export function getWithdrawFormState(
   marketData: MarketDetailData,
@@ -11,22 +12,27 @@ export function getWithdrawFormState(
   maxWithdrawable: bigint,
   isWellConnected?: boolean,
   withdrawLoading?: boolean
-) {
-  const reasons: string[] = []
-
-  if (!marketData) return { canProcess: false, cantProcessReasons: ["No market data"], haveToApprove: false }
+): FormState {
+  const errors: FormError[] = []
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet")
-  } else {
-    if (withdrawWeiValue === 0n || !withdrawWeiValue) {
-      reasons.push("Amount must be greater than zero")
-    }
-    if (maxWithdrawable < withdrawWeiValue) {
-      reasons.push("Value is greater than max withdrawable")
+    return {
+      canProcess: false,
+      errors: [dappErrors["no-wallet"]],
+      haveToApprove: false,
     }
   }
-  return { canProcess: reasons.length === 0 && !withdrawLoading, cantProcessReasons: reasons, haveToApprove: false }
+
+  if (!marketData) return { canProcess: false, errors: [], haveToApprove: false }
+
+  if (!withdrawWeiValue || withdrawWeiValue === 0n) return { canProcess: false, errors: [], haveToApprove: false }
+  else {
+    if (withdrawWeiValue > maxWithdrawable) {
+      errors.push(dappErrors["max-withdrawable"])
+    }
+  }
+
+  return { canProcess: errors.length === 0 && !withdrawLoading, errors, haveToApprove: false }
 }
 
 export async function doMarketWithdraw(walletClient: WalletClient, args: USGMarketWitrhdrawParams) {

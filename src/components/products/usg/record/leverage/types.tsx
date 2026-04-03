@@ -1,5 +1,6 @@
-import { AssetDataPriced, FormState, CollateralInfo } from "@/types"
+import { AssetDataPriced, CollateralInfo } from "@/types"
 import { ReactNode } from "react"
+import { FormState } from "../../usg_type"
 
 export type USGLeverageContextProps = {
   children: ReactNode
@@ -94,8 +95,6 @@ export type USGLeverageContextValues = {
 
   isTransactionBlockedByPriceImpact: boolean
   setIsTransactionBlockedByPriceImpact: (arg: boolean) => void
-
-  leverageExceedsMaxLtv: boolean
 
   USGDumpPriceImpact: number
 

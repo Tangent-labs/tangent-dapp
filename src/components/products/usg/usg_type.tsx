@@ -612,3 +612,35 @@ export type CollatGraphData = {
   address: string
   data: { time: Time; open: number; high: number; low: number; close: number }[]
 }
+
+type FormErrorKey =
+  | "price-impact"
+  | "balance"
+  | "cap-exceeded"
+  | "slippage"
+  | "no-wallet"
+  | "max-ltv"
+  | "empty-form"
+  | "min-debt"
+  | "max-market-debt"
+  | "max-withdrawable"
+  | "wallet-repay"
+  | "repay-exceeds-debt"
+  | "max-leverage"
+  | "lock-expired"
+  | "same-position"
+  | "no-zap-value"
+
+export type FormError = {
+  key: FormErrorKey
+  title: string
+  subtitle: string
+  content?: string
+  type: "form-alert" | null
+}
+
+export type FormState = {
+  canProcess: boolean
+  errors: FormError[]
+  haveToApprove: boolean
+}

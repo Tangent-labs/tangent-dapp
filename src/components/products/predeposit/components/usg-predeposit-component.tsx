@@ -1,18 +1,21 @@
 "use client"
 
+import { useMemo } from "react"
 import { formatUnits } from "viem"
+import { AssetDataPriced } from "@/types"
 import { PredepositStatus } from "../types/types"
-import { AssetDataPriced, FormState } from "@/types"
 import { DynamicProgressBar } from "./dynamic-progress-bar"
 import { StaticCardAssetInput } from "./StaticCardAssetInput"
 import { formatDollar, formatNumber } from "@/lib/number_formatter"
 import FormButtons from "@/components/design_system/form/form_actions"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { BorderPanel } from "@/components/design_system/structure/border_panel"
 import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { FormState } from "../../usg/usg_type"
 
 type USGPredepositComponentProps = {
   predepositStatus: PredepositStatus | null
@@ -67,6 +70,14 @@ export const USGPredepositComponent = ({
   setIsTransactionBlockedBySlippage,
   slippageLoss,
 }: USGPredepositComponentProps) => {
+  const formAlertErrors = useMemo(() => {
+    if (formState.errors && formState.errors?.length > 0) {
+      return formState.errors.filter((e) => e.type === "form-alert")
+    }
+
+    return []
+  }, [formState])
+
   return (
     <ReliefCard className="flex w-full flex-col p-2 xl:p-4">
       <div className="mb-2 flex w-full items-center justify-between">
@@ -130,22 +141,23 @@ export const USGPredepositComponent = ({
         </span>
       </div>
 
-      {!!depositWeiValue && slippage >= 1 ? (
-        <SlippageAlert
-          symbol={pool?.replaceAll("-", "/")}
-          tokenLoss={slippageLoss?.tokenLoss}
-          dollarLoss={slippageLoss?.dollarLoss}
-          slippage={slippage}
-          isLoading={isLoading}
-          className="my-2"
-          displayConfirmationButton={isTransactionBlockedBySlippage}
-          onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
-        />
-      ) : (
-        <span className="my-2 flex h-4 w-full items-center justify-center">
-          {formState?.cantProcessReasons?.length > 0 && <span className="text-sm font-semibold text-danger"> {formState?.cantProcessReasons[0]} </span>}
-        </span>
-      )}
+      <div className="my-2 flex flex-col gap-2">
+        {formAlertErrors.map((error) => (
+          <FormAlert key={error.key} error={error} isLoading={isLoading} />
+        ))}
+
+        {!!depositWeiValue && slippage >= 1 && (
+          <SlippageAlert
+            symbol={pool?.replaceAll("-", "/")}
+            tokenLoss={slippageLoss?.tokenLoss}
+            dollarLoss={slippageLoss?.dollarLoss}
+            slippage={slippage}
+            isLoading={isLoading}
+            displayConfirmationButton={isTransactionBlockedBySlippage}
+            onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
+          />
+        )}
+      </div>
 
       <FormButtons
         actions={{

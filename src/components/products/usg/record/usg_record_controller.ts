@@ -9,6 +9,7 @@ import {
   USGMarketLoanDisplayData,
   TotalBorrow,
   MarketAPRs,
+  FormError,
 } from "../usg_type"
 
 import GetBalances from "@/abi/USG/GetBalances.json"
@@ -21,6 +22,7 @@ import { Abi, Address, formatEther, formatUnits, Hex, parseEther, parseUnits, Wa
 import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
 import { formatBigInt, formatBigIntAsNumber, formatDollar, formatDollarBigInt, formatNumber, truncateDecimals } from "@/lib/number_formatter"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
@@ -72,22 +74,29 @@ export const transformMarketData = (onChainData: ChainViewMarketRow, collateralI
   }
 }
 
-export function getBorrowCommonFormState(marketData?: MarketDetailData, borrowWeiValue?: bigint) {
-  const reasons: string[] = []
+export function getBorrowCommonFormState(marketData?: MarketDetailData, borrowWeiValue?: bigint): FormError[] {
+  const errors: FormError[] = []
 
   if (!borrowWeiValue || borrowWeiValue === 0n) {
-    reasons.push("Borrow amount must be greater than zero.")
+    errors.push(dappErrors["empty-form"])
   } else {
     const minLoan = BigInt(marketData?.constants?.minimumLoan || "0")
     const totalDebt = marketData?.debtInfos?.totalDebt || 0n
 
     if (borrowWeiValue + totalDebt < minLoan) {
-      reasons.push(`Min debt is ${formatBigIntAsNumber(minLoan, 18, 0)} USG`)
+      errors.push({
+        key: "min-debt",
+        title: "Below Minimum Debt",
+        subtitle: `Minimum debt is ${formatBigIntAsNumber(minLoan, 18, 0)} USG.`,
+        content: "Please increase your borrow amount to meet the minimum debt requirement.",
+        type: "form-alert",
+      })
     } else if (BigInt(marketData?.debtInfos?.userDebt || 0n) + BigInt(borrowWeiValue || 0n) > (marketData?.constants?.maxMarketDebt || 0n)) {
-      reasons.push("Max market debt reached.")
+      errors.push(dappErrors["max-market-debt"])
     }
   }
-  return reasons
+
+  return errors
 }
 
 export function getComputedFutureLoanData(

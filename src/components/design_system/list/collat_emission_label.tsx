@@ -7,10 +7,10 @@ type CollateralEmissionLabelProps = {
 
 export const CollateralEmissionLabel = ({ isHEC }: CollateralEmissionLabelProps) => {
   return (
-    <div className="flex items-center text-white transition duration-200">
+    <div className="flex items-center justify-center text-white transition duration-200">
       <HoverCard openDelay={100} closeDelay={100}>
         <HoverCardTrigger asChild>
-          <span className="flex items-center justify-center rounded-full bg-overlay-panel px-3 py-0.5 text-xs backdrop-blur-[60px] hover:bg-white/10">
+          <span className="flex h-6 items-center justify-center rounded-full bg-overlay-panel px-2 py-0.5 text-xs backdrop-blur-[60px] hover:bg-white/10">
             {isHEC ? "HEC" : "LEC"}
           </span>
         </HoverCardTrigger>

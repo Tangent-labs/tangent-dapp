@@ -13,6 +13,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { MaxBorrowCapReached } from "@/components/design_system/notifications/max_borrow_cap_reached"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
 
 export default function USGLeverageContent() {
   const {
@@ -54,7 +55,6 @@ export default function USGLeverageContent() {
     priceImpactLoss,
     isTransactionBlockedBySlippage,
     isTransactionBlockedByPriceImpact,
-    leverageExceedsMaxLtv,
     USGDumpPriceImpact,
     USGDumpDollarLoss,
   } = useUSGLeverageContext()
@@ -173,11 +173,13 @@ export default function USGLeverageContent() {
 
       <MaxBorrowCapReached display={(!!zapValue || !!depositWeiValue) && maxBorrowCapReached} />
 
-      {leverageExceedsMaxLtv && (
-        <div className="flex w-full items-center justify-center text-xs text-red-500">Reduce your leverage or add more collateral.</div>
-      )}
+      {formState.errors
+        .filter((e) => e.type === "form-alert")
+        .map((error) => (
+          <FormAlert key={error.key} error={error} className="my-1" isLoading={isTxLoading} />
+        ))}
 
-      {!!depositWeiValue && slippage >= 1 && (
+      {!!depositWeiValue && !isZapLoading && slippage >= 1 && (
         <SlippageAlert
           symbol={collateralInfo?.symbol as string}
           tokenLoss={slippageLoss?.tokenLoss}

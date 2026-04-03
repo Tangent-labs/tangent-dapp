@@ -7,11 +7,11 @@ import { USG_CONTRACT } from "../usg_repository"
 import { useRootContext } from "../../root/root_context"
 import { convertRange } from "../../root/root_controller"
 import { toastTx } from "@/components/design_system/toast"
-import { AssetDataPriced, FormState } from "@/types"
-import { StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../usg_type"
+import { AssetDataPriced } from "@/types"
+import { FormState, StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../usg_type"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doApprove, doStakeUSG, doUnstakeUSG, getExpectedSUSG, getExpectedUSG, getFormState } from "./usg_stake_controller"
+import { doApprove, doStakeUSG, doUnstakeUSG, getExpectedSUSG, getExpectedUSG, getStakeFormState } from "./usg_stake_controller"
 import { matchBlockChainErrors } from "../record/usg_record_controller"
 
 type USGStakeContextProps = {
@@ -140,7 +140,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   }, [currentFeature, USGsUSGMetrics])
 
   const formState = useMemo<FormState>(
-    () => getFormState(USGsUSGMetrics!, currentFeature, weiValue, expected, isWellConnected, isLoading),
+    () => getStakeFormState(USGsUSGMetrics!, currentFeature, weiValue, expected, isWellConnected, isLoading),
     [USGsUSGMetrics, currentFeature, weiValue, expected, isWellConnected, isLoading]
   )
 

@@ -913,7 +913,6 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     priceImpact,
     isTransactionBlockedByPriceImpact,
     setIsTransactionBlockedByPriceImpact,
-    leverageExceedsMaxLtv,
     USGDumpPriceImpact,
     USGDumpDollarLoss,
   }

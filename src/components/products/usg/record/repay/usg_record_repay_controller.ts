@@ -3,7 +3,8 @@ import { formatBigInt } from "@/lib/number_formatter"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
-import { BalanceAllowanceData, MarketDetailData, USGMarketRepayParams, ZapMarketData } from "../../usg_type"
+import { BalanceAllowanceData, FormError, FormState, MarketDetailData, USGMarketRepayParams, ZapMarketData } from "../../usg_type"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export function getRepayFormState(
   isTransactionBlockedByPriceImpact: boolean,
@@ -13,39 +14,56 @@ export function getRepayFormState(
   isWellConnected?: boolean,
   balanceAllowanceData?: BalanceAllowanceData,
   repayAsset?: string,
-  isLoading?: boolean
-) {
+  isLoading?: boolean,
+  transactionExceedsMaxLtv?: boolean
+): FormState {
   const isZapMode = !!repayAsset && !!balanceAllowanceData && repayAsset !== "USG"
-
   const isApproved = repayAsset === "USG" || (isZapMode && (repayWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n))
 
-  const reasons: string[] = []
-  if (!marketData) return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+  const errors: FormError[] = []
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
-  } else {
-    if (repayWeiValue === 0n || !repayWeiValue) {
-      reasons.push("Amount must be greater than zero.")
-    } else if (isTransactionBlockedBySlippage) {
-      reasons.push("Slippage is too high.")
-    } else if (isTransactionBlockedByPriceImpact) {
-      reasons.push("Price impact is too high.")
+    return {
+      canProcess: false,
+      errors: [dappErrors["no-wallet"]],
+      haveToApprove: false,
+    }
+  }
+
+  if (!repayWeiValue || repayWeiValue === 0n) return { canProcess: false, errors: [], haveToApprove: false }
+  else {
+    if (transactionExceedsMaxLtv) {
+      errors.push(dappErrors["max-ltv"])
     }
 
-    if (reasons.length === 0) {
+    if (isTransactionBlockedBySlippage) {
+      errors.push(dappErrors["slippage"])
+    }
+    if (isTransactionBlockedByPriceImpact) {
+      errors.push(dappErrors["price-impact"])
+    }
+
+    if (marketData && repayWeiValue) {
       const existingDebt = marketData.debtInfos?.userDebt || 0n
       const minimumLoan = marketData.constants?.minimumLoan || 0n
-      if (repayWeiValue && repayWeiValue > existingDebt) {
-        reasons.push(`Repayment exceeds outstanding debt.`)
-      } else if (existingDebt - repayWeiValue! > 0n && existingDebt - repayWeiValue! < minimumLoan) {
-        reasons.push(`Remaining debt must be at least ${formatBigInt(minimumLoan, 18, 2)}`)
+
+      if (repayWeiValue > existingDebt) {
+        errors.push(dappErrors["repay-exceeds-debt"])
+      } else if (existingDebt - repayWeiValue > 0n && existingDebt - repayWeiValue < minimumLoan) {
+        errors.push({
+          key: "min-debt",
+          title: "Remaining Debt Too Low",
+          subtitle: `Remaining debt must be at least ${formatBigInt(minimumLoan, 18, 2)} USG.`,
+          content: "Either repay the full debt or leave at least the minimum loan amount.",
+          type: "form-alert",
+        })
       }
     }
   }
+
   return {
-    canProcess: isApproved && reasons.length === 0 && !isLoading,
-    cantProcessReasons: reasons,
+    canProcess: isApproved && errors.length === 0 && !isLoading,
+    errors,
     haveToApprove: !isApproved,
   }
 }

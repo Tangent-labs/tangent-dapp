@@ -10,6 +10,7 @@ import { GenericInputAssetAmount } from "@/components/design_system/inputs/Gener
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
 import { AssetInfos, AssetSelectTemplate } from "@/components/design_system/inputs/asset_selector"
 import { CollateralInfo } from "@/types"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
 
 interface AssetSelectWithdrawProps {
   collateralInfo: CollateralInfo
@@ -68,6 +69,7 @@ export default function USGWithdrawContent() {
             inputWeiValue={withdrawWeiValue}
             onValueChange={setWithdrawWeiValue}
             label="You withdraw"
+            disabled={maxWithdrawable === 0n}
             depositSelect={
               <AssetSelectWithdraw
                 collateralInfo={collateralInfo!}
@@ -86,11 +88,11 @@ export default function USGWithdrawContent() {
           />
         </div>
 
-        <>
-          {!!withdrawWeiValue && formState.cantProcessReasons.length > 0 && (
-            <div className="flex w-full items-center justify-center text-xs text-red-500"> {formState.cantProcessReasons[0]}</div>
-          )}
-        </>
+        {formState.errors
+          .filter((e) => e.type === "form-alert")
+          .map((error) => (
+            <FormAlert key={error.key} error={error} className="my-1" isLoading={withdrawLoading} />
+          ))}
 
         <FormButtons
           isLoading={withdrawLoading}

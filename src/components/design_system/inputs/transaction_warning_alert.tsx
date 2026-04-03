@@ -4,20 +4,21 @@ import { cn } from "@/lib/utils"
 import { WarningButton } from "./warning_button"
 import { IconWarningTriangle } from "@/components/icons"
 
-type TradeWarningAlertProps = {
-  percentage: number
+type TransactionWarningAlertProps = {
+  percentage?: number
   isLoading: boolean
   onClickContinue: () => void
   title: string
   subtitle: string
-  content: string
+  content?: string
   displayConfirmationButton: boolean
   confirmationButtonLabel?: string
   className?: string
   showButtonState?: boolean
+  isWarning?: boolean
 }
 
-export const SwapWarningAlert = ({
+export const TransactionWarningAlert = ({
   percentage,
   isLoading,
   onClickContinue,
@@ -28,9 +29,8 @@ export const SwapWarningAlert = ({
   displayConfirmationButton,
   confirmationButtonLabel,
   className,
-}: TradeWarningAlertProps) => {
-  const isWarning = percentage >= 1 && percentage < 5
-
+  isWarning = false,
+}: TransactionWarningAlertProps) => {
   return (
     <div
       className={cn(
@@ -46,9 +46,10 @@ export const SwapWarningAlert = ({
       </span>
 
       <span className="my-1 text-xs text-subtitle">{subtitle}</span>
-      <span className="mb-1 text-xs text-subtitle">{content}</span>
 
-      {percentage <= 10 && displayConfirmationButton && (
+      {!!content && <span className="mb-1 text-xs text-subtitle">{content}</span>}
+
+      {!!percentage && percentage <= 10 && displayConfirmationButton && (
         <WarningButton
           {...(showButtonState ? { state: "active" as const } : {})}
           warningType={isWarning ? "warning" : "danger"}

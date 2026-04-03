@@ -21,6 +21,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
 
 export default function USGStakeContent() {
   const {
@@ -164,6 +165,12 @@ export default function USGStakeContent() {
           </div>
 
           {/* <RecapAccordion aprVariationParams={{ current: aprVariation.current, currentUpdated: aprVariation.updated }} /> */}
+
+          {formState.errors
+            .filter((e) => e.type === "form-alert")
+            .map((error) => (
+              <FormAlert key={error.key} error={error} className="my-1" isLoading={isLoading} />
+            ))}
 
           <FormButtons
             actions={{

@@ -13,6 +13,7 @@ import { WalletRepayAlert } from "@/components/design_system/inputs/wallet_repay
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
 
 export default function USGLiquidatePanel() {
   const { connect } = useWalletConnexionContext()
@@ -135,7 +136,13 @@ export default function USGLiquidatePanel() {
         }}
       />
 
-      {!!liquidateWeiValue && slippage >= 1 && (
+      {formState.errors
+        .filter((e) => e.type === "form-alert")
+        .map((error) => (
+          <FormAlert key={error.key} error={error} className="my-1" isLoading={isQuoteLoading} />
+        ))}
+
+      {!!liquidateWeiValue && !isQuoteLoading && slippage >= 1 && (
         <SlippageAlert
           symbol={collateralInfo?.symbol as string}
           tokenLoss={slippageLoss?.tokenLoss}

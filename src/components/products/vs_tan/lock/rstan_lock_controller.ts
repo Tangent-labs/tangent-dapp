@@ -1,8 +1,9 @@
 import VsTan from "../../../../abi/USG/VsTAN.json"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { LockPosition, ZapMarketData } from "../../usg/usg_type"
+import { FormError, FormState, LockPosition, ZapMarketData } from "../../usg/usg_type"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { executeApprove, executeContractCall, getCurrentBlock, getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export async function doApprove(walletClient: WalletClient, contract: Address, spender: Address, amount: bigint) {
   const txHash = await executeApprove(walletClient, contract, spender, amount)
@@ -115,10 +116,9 @@ export async function getLockFormState(
   depositWeiValue: bigint,
   depositAsset: string,
   isWellConnected: boolean
-) {
+): Promise<FormState> {
+  const errors: FormError[] = []
   const isZapMode = depositAsset !== "TAN"
-
-  const reasons: string[] = []
 
   const currentBlock = await getCurrentBlock()
 
@@ -127,17 +127,17 @@ export async function getLockFormState(
     (isZapMode && (depositWeiValue || 0n) <= (lockBalanceAllowanceData?.allowance || 0n))
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    errors.push(dappErrors["no-wallet"])
   } else {
-    if (lockBalanceAllowanceData?.balance < depositWeiValue) {
-      reasons.push("Not enough balance.")
-    }
     if (!depositWeiValue || depositWeiValue === 0n) {
-      reasons.push("No amount.")
+      errors.push(dappErrors["empty-form"])
+    } else if (lockBalanceAllowanceData?.balance < depositWeiValue) {
+      errors.push(dappErrors["balance"])
     }
     if (!!depositPositionInfo?.endLockTime && currentBlock.timestamp > Number(depositPositionInfo?.endLockTime)) {
-      reasons.push("Lock expired.")
+      errors.push(dappErrors["lock-expired"])
     }
   }
-  return { canProcess: reasons.length === 0, cantProcessReasons: reasons, haveToApprove: !isApproved }
+
+  return { canProcess: errors.length === 0, errors, haveToApprove: !isApproved }
 }

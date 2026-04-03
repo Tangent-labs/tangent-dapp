@@ -75,8 +75,8 @@ export function USGModalMarketList() {
 const ModalMarketListRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
     <div className="flex items-center justify-between">
-      <div className="flex w-1/2 items-center justify-start md:w-1/2">{children?.at(0)}</div>
-      <div className="flex w-1/4 items-center justify-end md:justify-center">{children?.at(1)}</div>
+      <div className="flex w-full items-center justify-start md:w-1/2">{children?.at(0)}</div>
+      <div className="flex w-1/4 items-center justify-end md:w-1/6 md:justify-center xl:w-1/4">{children?.at(1)}</div>
       <div className="hidden w-1/4 items-center justify-center md:flex">{children?.at(2)}</div>
     </div>
   )
@@ -92,7 +92,7 @@ export function USGModalMarketListInner() {
         <ListHeader rowDisposition={ModalMarketListRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 
-      <div className="max-h-[476px] overflow-y-auto">
+      <div className="scrollbar-thin max-h-[476px] overflow-y-auto pr-1">
         {displayRows?.map((item, index) => (
           <ListRow
             rowDisposition={ModalMarketListRowDisposition}
@@ -116,8 +116,8 @@ export function USGModalMarketListInner() {
             />
 
             <span className="hidden items-center justify-center gap-2 md:flex">
-              <span className={cn("flex text-xs text-subtitle md:text-xl xl:hidden")}>{item.indicators[0]?.label}</span>
-              <span className="text-xs md:text-lg">{item.indicators[0]?.value}</span>
+              <span className="flex text-sm text-subtitle xl:hidden">{item.indicators[0]?.label}</span>
+              <span className="text-xs md:text-sm xl:text-[15px]">{item.indicators[0]?.value}</span>
             </span>
 
             {item.userHasDeposited && (

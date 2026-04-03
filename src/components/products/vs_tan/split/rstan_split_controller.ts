@@ -1,8 +1,9 @@
 import { executeContractCall, getCurrentBlock, waitForTransaction } from "@/services/service_rpc"
 import VsTan from "../../../../abi/USG/VsTAN.json"
 import { Abi, WalletClient } from "viem"
-import { LockPosition } from "../../usg/usg_type"
+import { FormError, FormState, LockPosition } from "../../usg/usg_type"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export const doSplit = async (tokenId: bigint, walletClient: WalletClient, amountToRemove: bigint) => {
   const txData = {
@@ -16,17 +17,18 @@ export const doSplit = async (tokenId: bigint, walletClient: WalletClient, amoun
   return await waitForTransaction(txHash)
 }
 
-export async function getSplitFormState(splitPositionInfo: LockPosition, isWellConnected: boolean) {
-  const reasons: string[] = []
+export async function getSplitFormState(splitPositionInfo: LockPosition, isWellConnected: boolean): Promise<FormState> {
+  const errors: FormError[] = []
 
   const currentBlock = await getCurrentBlock()
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    errors.push(dappErrors["no-wallet"])
   } else {
     if (!!splitPositionInfo?.endLockTime && currentBlock.timestamp > Number(splitPositionInfo?.endLockTime)) {
-      reasons.push("Lock expired.")
+      errors.push(dappErrors["lock-expired"])
     }
   }
-  return { canProcess: reasons.length === 0, cantProcessReasons: reasons, haveToApprove: false }
+
+  return { canProcess: errors.length === 0, errors, haveToApprove: false }
 }

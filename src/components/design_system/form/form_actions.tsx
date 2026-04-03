@@ -1,8 +1,9 @@
 "use client"
 
 import { useMemo } from "react"
-import { FormState, FormAction } from "@/types"
+import { FormAction } from "@/types"
 import { Button } from "@/components/design_system/inputs/button"
+import { FormState } from "@/components/products/usg/usg_type"
 
 type FormButtonsProps = {
   formState: FormState
@@ -14,26 +15,27 @@ type FormButtonsProps = {
 }
 
 export default function FormButtons({ formState, labelApprove = "Approve", labelProcess, actions, connect, isLoading = false }: FormButtonsProps) {
-  const isWalletConnected = !formState.cantProcessReasons.includes("No connected wallet.")
-  const isApproveNeeded = !!actions.handleApprove && formState?.haveToApprove
-  let label = ""
-  let funcCalledOnClick: (() => void) | undefined
-  if (isApproveNeeded) {
-    label = labelApprove
-    funcCalledOnClick = actions.handleApprove
-  } else {
-    label = labelProcess
-    funcCalledOnClick = actions.handleProcess
-  }
-  const buttonState = useMemo(() => {
-    if (isLoading) {
-      return "disabled"
+  const isWalletConnected = useMemo(() => {
+    if (!!formState.errors && formState.errors?.length >= 0) {
+      return !formState.errors.some((e) => e?.key === "no-wallet")
     }
-    if (formState.cantProcessReasons.length === 0 && (formState.haveToApprove || formState.canProcess)) {
-      return "active"
-    }
-    return "disabled"
+
+    return false
   }, [formState])
+
+  const isApproveNeeded = !!actions.handleApprove && formState?.haveToApprove
+
+  const label = isApproveNeeded ? labelApprove : labelProcess
+
+  const funcCalledOnClick = isApproveNeeded ? actions.handleApprove : actions.handleProcess
+
+  const buttonState = useMemo(() => {
+    if (isLoading) return "disabled"
+
+    if (formState?.errors?.length === 0 && (formState.haveToApprove || formState.canProcess)) return "active"
+
+    return "disabled"
+  }, [formState, isLoading])
 
   return (
     <div className="flex w-full items-center justify-between gap-2">

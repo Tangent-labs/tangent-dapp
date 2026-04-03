@@ -1,6 +1,5 @@
 "use client"
 
-import { FormState } from "@/types"
 import { useUSGContext } from "../../usg_context"
 import { toastTx } from "@/components/design_system/toast"
 import { useUSGRecordContext } from "../usg_record_context"
@@ -8,6 +7,7 @@ import { computeMaxBorrowable } from "../usg_record_controller"
 import { doMarketBorrow, getBorrowFormState } from "./usg_record_borrow_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { FormState } from "../../usg_type"
 
 type USGBorrowContextProps = {
   children: ReactNode

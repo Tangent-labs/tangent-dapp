@@ -1,7 +1,6 @@
 "use client"
 
 import { maxUint256 } from "viem"
-import { FormState } from "@/types"
 import { useUSGContext } from "../../usg_context"
 import { USG_CONTRACT } from "../../usg_repository"
 import { formatBigInt } from "@/lib/number_formatter"
@@ -14,6 +13,7 @@ import { doMarketLiquidate, getLiquidateFormState } from "./usg_record_liquidate
 import { computedMinAmountOut, computeTransactionPotentialLoss } from "../usg_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { BuyAndMinOutFormatted } from "../leverage/types"
+import { FormState } from "../../usg_type"
 
 type USGLiquidateContextProps = {
   children: ReactNode
@@ -192,7 +192,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         isTransactionBlockedByWalletRepay
       )
     }
-    return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+    return { canProcess: false, errors: [], haveToApprove: false }
   }, [
     marketData,
     liquidateWeiValue,

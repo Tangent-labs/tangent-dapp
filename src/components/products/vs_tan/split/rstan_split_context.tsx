@@ -3,10 +3,9 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useVsTanContext } from "../rstan_layout_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { LockPosition } from "../../usg/usg_type"
+import { FormState, LockPosition } from "../../usg/usg_type"
 import { doSplit, getSplitFormState } from "./rstan_split_controller"
 import { formatBigInt } from "@/lib/number_formatter"
-import { FormState } from "@/types"
 
 type VsTanSplitContextProps = {
   children: ReactNode
@@ -44,7 +43,7 @@ export const VsTanSplitProvider = ({ children }: VsTanSplitContextProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [formState, setFormState] = useState<FormState>({ canProcess: false, cantProcessReasons: [], haveToApprove: false })
+  const [formState, setFormState] = useState<FormState>({ canProcess: false, errors: [], haveToApprove: false })
 
   const [splitPercentage, setSplitPercentage] = useState<number>(50)
 
@@ -107,7 +106,7 @@ export const VsTanSplitProvider = ({ children }: VsTanSplitContextProps) => {
   useEffect(() => {
     const computeFormState = async () => {
       if (!lockData || !splitPositionInfo) {
-        setFormState({ canProcess: false, cantProcessReasons: ["Form is empty"], haveToApprove: false })
+        setFormState({ canProcess: false, errors: [], haveToApprove: false })
       } else {
         getSplitFormState(splitPositionInfo, isWellConnected).then((d) => {
           setFormState(d)

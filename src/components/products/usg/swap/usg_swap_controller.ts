@@ -1,9 +1,10 @@
 import { AssetDataPriced } from "@/types"
 import WStable from "@/abi/USG/WStable.json"
 import IERC4626 from "@/abi/USG/IERC4626.json"
-import { BalanceAllowanceData } from "../usg_type"
+import { BalanceAllowanceData, FormError, FormState } from "../usg_type"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, SendTransactionParameters, WalletClient, WriteContractParameters } from "viem"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export const doApprove = async (walletClient: WalletClient, depositAssetAddress: Address, amount: bigint, spender: Address) => {
   const publicClient = getPublicClient()
@@ -68,37 +69,43 @@ export function getSwapFormState(
   receiveAssetInfo?: AssetDataPriced,
   balanceAllowanceData?: BalanceAllowanceData,
   isLoading?: boolean
-) {
-  if (!depositAssetInfo || !receiveAssetInfo)
-    return {
-      canProcess: false,
-      cantProcessReasons: [],
-      haveToApprove: true,
-    }
+): FormState {
+  const errors: FormError[] = []
 
-  const reasons: string[] = []
-
-  const isApproved = approveNotNeeded || ((depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n) && !approveNotNeeded)
+  const isApproved = approveNotNeeded || (depositWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n)
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    return {
+      canProcess: false,
+      errors: [dappErrors["no-wallet"]],
+      haveToApprove: false,
+    }
   } else {
-    if (!depositWeiValue || depositWeiValue === 0n) {
-      reasons.push("No amount.")
-    } else if ((depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
-      reasons.push("Not enough balance.")
-    } else if (!receiveWeiValue || receiveWeiValue === 0n) {
-      reasons.push("You need to input a target token.")
-    } else if (isSwapBlockedBySlippage) {
-      reasons.push("Slippage is too high.")
-    } else if (isSwapBlockedByPriceImpact) {
-      reasons.push("Price impact is too high.")
+    if (!depositAssetInfo || !receiveAssetInfo) return { canProcess: false, errors: [], haveToApprove: false }
+
+    if (!depositWeiValue || depositWeiValue === 0n) return { canProcess: false, errors: [], haveToApprove: false }
+
+    if (depositWeiValue > (balanceAllowanceData?.balance || 0n)) {
+      errors.push(dappErrors["balance"])
+    }
+
+    if (!!depositWeiValue && !isLoading && (!receiveWeiValue || receiveWeiValue === 0n)) {
+      errors.push(dappErrors["empty-form"])
+    }
+
+    if (!depositWeiValue || depositWeiValue === 0n) return { canProcess: false, errors: [], haveToApprove: false }
+
+    if (isSwapBlockedBySlippage) {
+      errors.push(dappErrors["slippage"])
+    }
+    if (isSwapBlockedByPriceImpact) {
+      errors.push(dappErrors["price-impact"])
     }
   }
 
   return {
-    canProcess: isApproved && reasons.length === 0 && !isLoading,
-    cantProcessReasons: reasons,
+    canProcess: isApproved && errors.length === 0 && !isLoading,
+    errors,
     haveToApprove: !isApproved,
   }
 }

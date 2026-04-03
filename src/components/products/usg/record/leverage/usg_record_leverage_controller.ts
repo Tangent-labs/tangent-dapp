@@ -1,12 +1,13 @@
 "use client"
 
-import { MarketDetailData } from "../../usg_type"
+import { FormError, FormState, MarketDetailData } from "../../usg_type"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { getBorrowCommonFormState } from "../usg_record_controller"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Address, EstimateContractGasParameters, formatEther, formatUnits, parseUnits, WalletClient, WriteContractParameters } from "viem"
 import { ONE_ETHER } from "@/lib/utils"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export function getLeverageFormState(
   isTransactionBlockedByPriceImpact: boolean,
@@ -22,39 +23,50 @@ export function getLeverageFormState(
   balanceAllowanceData?: { balance: bigint; allowance: bigint },
   leverage?: number,
   isLoading?: boolean
-) {
+): FormState {
+  const errors: FormError[] = []
   const isZapMode = depositAssetInfo?.address !== collateralInfo?.address
-
-  const reasons: string[] = []
-
   const isApproved = (depositWeiValue || 0n) <= (balanceAllowanceData?.allowance || 0n)
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    return {
+      canProcess: false,
+      errors: [dappErrors["no-wallet"]],
+      haveToApprove: false,
+    }
   } else {
     if (!isZapMode && (depositWeiValue || 0n) > (balanceAllowanceData?.balance || 0n)) {
-      reasons.push("Not enough balance.")
-    } else if (!!leverage && leverage > 1 / (1 - Number(marketData?.constants.maxLTV) / 100000)) {
-      reasons.push("Reduce leverage.")
-    } else if (isTransactionBlockedBySlippage) {
-      reasons.push("Slippage is too high.")
-    } else if (isTransactionBlockedByPriceImpact) {
-      reasons.push("Price impact is too high.")
+      errors.push(dappErrors["balance"])
     }
-
+    if (!!leverage && leverage > 1 / (1 - Number(marketData?.constants.maxLTV) / 100000)) {
+      errors.push(dappErrors["max-leverage"])
+    }
+    if (isTransactionBlockedBySlippage) {
+      errors.push(dappErrors["slippage"])
+    }
+    if (isTransactionBlockedByPriceImpact) {
+      errors.push(dappErrors["price-impact"])
+    }
     if (leverageExceedsMaxLtv) {
-      reasons.push("Reduce your leverage or add more collateral.")
+      errors.push(dappErrors["max-ltv"])
     }
-
     if (isDepositAndBorrow) {
-      const borrowReasons = getBorrowCommonFormState(marketData, borrowWeiValue)
-      reasons.push(...borrowReasons)
+      if (!borrowWeiValue || borrowWeiValue === 0n) {
+        return {
+          canProcess: false,
+          errors,
+          haveToApprove: !isApproved,
+        }
+      }
+
+      const borrowErrors = getBorrowCommonFormState(marketData, borrowWeiValue)
+      errors.push(...borrowErrors)
     }
   }
 
   return {
-    canProcess: isApproved && reasons.length === 0 && !isLoading,
-    cantProcessReasons: reasons,
+    canProcess: isApproved && errors.length === 0 && !isLoading,
+    errors,
     haveToApprove: !isApproved,
   }
 }

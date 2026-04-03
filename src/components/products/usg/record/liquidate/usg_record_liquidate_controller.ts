@@ -1,15 +1,16 @@
 "use client"
 
-import { MarketDetailData } from "../../usg_type"
 import { formatBigInt } from "@/lib/number_formatter"
+import { FormError, FormState, MarketDetailData } from "../../usg_type"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 
 const COLLATERAL_PRICE_DECIMALS = 10n ** 18n
 const LTV_DENOMINATOR = 100_000n
-const AUTO_REPAY_TARGET_RATIO_NUMERATOR = 95n
-const AUTO_REPAY_TARGET_RATIO_DENOMINATOR = 100n
+const AUTO_REPAY_TARGET_RATIO_NUMERATOR = 995n
+const AUTO_REPAY_TARGET_RATIO_DENOMINATOR = 1000n
 
 function getFutureLiquidationPosition(marketData: MarketDetailData, liquidateWeiValue: bigint, repayWeiValue: bigint) {
   const currentCollateral = marketData.collateralInfos?.positionCollateralAmount || 0n
@@ -33,6 +34,7 @@ export function computeLiquidateAutoRepayValue(marketData: MarketDetailData, liq
   }
 
   const targetLtv = (maxLtv * AUTO_REPAY_TARGET_RATIO_NUMERATOR) / AUTO_REPAY_TARGET_RATIO_DENOMINATOR
+
   if (futureDebt * LTV_DENOMINATOR <= futureCollateralUsdValue * targetLtv) {
     return 0n
   }
@@ -61,39 +63,53 @@ export function getLiquidateFormState(
   isTransactionBlockedByPriceImpact: boolean,
   isTransactionBlockedBySlippage: boolean,
   isTransactionBlockedByWalletRepay: boolean
-) {
-  const reasons: string[] = []
+): FormState {
+  const errors: FormError[] = []
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    return {
+      canProcess: false,
+      errors: [dappErrors["no-wallet"]],
+      haveToApprove: false,
+    }
   } else {
-    if (isLoading) {
-      reasons.push("Quote loading.")
-    } else if (withdrawWeiValue > marketData?.collateralInfos?.positionCollateralAmount) {
-      reasons.push("Withdraw value too high.")
-    } else if (isTransactionBlockedByPriceImpact) {
-      reasons.push("Price impact is too high.")
-    } else if (isTransactionBlockedBySlippage) {
-      reasons.push("Slippage is too high.")
-    } else if (isTransactionBlockedByWalletRepay) {
-      reasons.push("Repayment uses wallet USG.")
+    if (withdrawWeiValue > marketData?.collateralInfos?.positionCollateralAmount) {
+      errors.push(dappErrors["max-withdrawable"])
+    }
+
+    if (isTransactionBlockedByPriceImpact) {
+      errors.push(dappErrors["price-impact"])
+    }
+
+    if (isTransactionBlockedBySlippage) {
+      errors.push(dappErrors["slippage"])
+    }
+
+    if (isTransactionBlockedByWalletRepay) {
+      errors.push(dappErrors["wallet-repay"])
     }
   }
 
   const existingDebt = marketData.debtInfos?.userDebt || 0n
   const minimumLoan = marketData.constants?.minimumLoan || 0n
 
-  if (repayWeiValue && repayWeiValue > existingDebt) {
-    reasons.push(`Repayment exceeds outstanding debt.`)
-  } else if (withdrawWeiValue > 0n && isLiquidateMaxLtvExceeded(marketData, withdrawWeiValue, repayWeiValue)) {
-    reasons.push("Max LTV reached. You need to repay more.")
+  if (!repayWeiValue && !withdrawWeiValue) {
+    return { canProcess: false, errors: [], haveToApprove: false }
+  } else if (repayWeiValue && repayWeiValue > existingDebt) {
+    errors.push(dappErrors["repay-exceeds-debt"])
   } else if (existingDebt - repayWeiValue! > 0n && existingDebt - repayWeiValue! < minimumLoan) {
-    reasons.push(`Remaining debt must be at least ${formatBigInt(minimumLoan, 18, 2)}`)
-  } else if (!repayWeiValue && !withdrawWeiValue) {
-    reasons.push("No values")
+    errors.push({
+      key: "min-debt",
+      title: "Remaining Debt Too Low",
+      subtitle: `Remaining debt must be at least ${formatBigInt(minimumLoan, 18, 2)} USG.`,
+      content: "Either repay the full debt or leave at least the minimum loan amount.",
+      type: "form-alert",
+    })
+  } else if (withdrawWeiValue > 0n && isLiquidateMaxLtvExceeded(marketData, withdrawWeiValue, repayWeiValue)) {
+    errors.push(dappErrors["max-ltv"])
   }
 
-  return { canProcess: reasons.length === 0 && !isLoading, cantProcessReasons: reasons, haveToApprove: false }
+  return { canProcess: errors.length === 0 && !isLoading, errors, haveToApprove: false }
 }
 
 export async function doMarketLiquidate(

@@ -21,7 +21,7 @@ export function AprIndicator({ children, isMax, className = "" }: AprIndicatorPr
     >
       <HoverCard openDelay={150} closeDelay={100}>
         <HoverCardTrigger asChild>
-          <span className="flex cursor-pointer items-center justify-center gap-1 text-sm xl:text-[15px]">
+          <span className="flex cursor-pointer items-center justify-center gap-1 text-xs md:text-sm xl:text-[15px]">
             {children[0]}
             <IconStars className={cn(isMax ? "fill-[#95FF00]" : "fill-row-tonic", "w-4")}></IconStars>
           </span>

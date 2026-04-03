@@ -16,6 +16,7 @@ import { AssetInfos, ZapAssetSelector } from "@/components/design_system/inputs/
 import { RecapAccordion } from "@/components/design_system/structure/recap"
 import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact_alert"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
 
 export default function USGRepayContent() {
   const {
@@ -43,7 +44,6 @@ export default function USGRepayContent() {
     withdrawPercentage,
     isZapLoading,
     usgRepayedValue,
-    isDebtBelowThreshold,
     repayAssetInfo,
     withdrawSelectedAsset,
     zapValuesFormatted,
@@ -103,7 +103,7 @@ export default function USGRepayContent() {
             <ZapAssetSelector collateralInfo={collateralInfo} depositAsset={repayAsset || "USG"} setDepositAsset={setRepayAsset} caseType="repay" />
           }
           slippageInput={isZapping && <SlippageInput slippage={slippage} setSlippage={setSlippage} />}
-          disabled={isRepayMax}
+          disabled={isRepayMax || maxRepayableValue === 0n}
           isZapping={isZapping}
           asset={repayAssetInfo || USGInfo}
           onValueChange={handleRepayValueChange}
@@ -173,13 +173,13 @@ export default function USGRepayContent() {
         />
       )}
 
-      <>
-        {isDebtBelowThreshold && (
-          <div className="flex w-full items-center justify-center text-xs text-red-500">Remaining debt can not be lower than $3,000</div>
-        )}
-      </>
+      {formState.errors
+        .filter((e) => e.type === "form-alert")
+        .map((error) => (
+          <FormAlert key={error.key} error={error} className="my-1" isLoading={isZapLoading} />
+        ))}
 
-      {!!repayWeiValue && slippage >= 1 && (
+      {!!repayWeiValue && !isZapLoading && slippage >= 1 && (
         <SlippageAlert
           symbol="USG"
           tokenLoss={slippageLoss?.tokenLoss}

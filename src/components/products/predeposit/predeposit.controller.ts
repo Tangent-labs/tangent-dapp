@@ -1,9 +1,11 @@
 "use client"
 
+import { FormError, FormState } from "../usg/usg_type"
 import { PredepositRawState, PredepositStatus } from "./types/types"
 import PredepositPoolsABI from "../../../abi/USG/PredepositPoolsABI.json"
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export const TOTAL_TAN_ALLOCATION = 200_000n
 export const TOTAL_DEPOSIT_CAP = 10_000_000n
@@ -13,32 +15,45 @@ export const getFormState = (
   isTxBlockedBySlippage: boolean,
   depositValue: bigint | undefined,
   quotedValue: bigint | undefined,
-  balanceAllowance: {
-    balance: bigint
-    allowance: bigint
-  },
+  balanceAllowance: { balance: bigint; allowance: bigint },
   totalCap: bigint,
   currentlyDeposited: bigint
-) => {
-  const reasons: string[] = []
-
-  const isApproved = (depositValue || 0n) <= (balanceAllowance?.allowance || 0n)
+): FormState => {
+  const errors: FormError[] = []
 
   if (!depositValue || depositValue === 0n) {
-    return { canProcess: false, cantProcessReasons: reasons, haveToApprove: false }
+    return { canProcess: false, errors: [], haveToApprove: false }
   }
+
+  const isApproved = depositValue <= (balanceAllowance?.allowance || 0n)
 
   if (!!quotedValue && quotedValue < (99n * depositValue) / 100n) {
-    reasons.push("Price impact too high. Wait for Peg Keepers to take action and try again later.")
-  } else if (!!depositValue && depositValue > balanceAllowance?.balance) {
-    reasons.push("Your balance is too low.")
-  } else if (currentlyDeposited + depositValue > totalCap) {
-    reasons.push("Deposit exceeds total cap.")
-  } else if (isTxBlockedBySlippage) {
-    reasons.push("Slippage too high.")
+    errors.push({
+      key: "price-impact",
+      title: "High Price Impact",
+      subtitle: "The quoted value deviates significantly from your deposit.",
+      content: "Price impact too high. Wait for Peg Keepers to take action and try again later.",
+      type: "form-alert",
+    })
   }
 
-  return { canProcess: reasons.length === 0 && !isLoading, cantProcessReasons: reasons, haveToApprove: !isApproved }
+  if (depositValue > balanceAllowance?.balance) {
+    errors.push(dappErrors["balance"])
+  }
+
+  if (currentlyDeposited + depositValue > totalCap) {
+    errors.push(dappErrors["cap-exceeded"])
+  }
+
+  if (isTxBlockedBySlippage) {
+    errors.push(dappErrors["slippage"])
+  }
+
+  return {
+    canProcess: errors.length === 0 && !isLoading,
+    errors,
+    haveToApprove: !isApproved,
+  }
 }
 
 export const fetchQuote = async (depositValue: bigint, contract: Address) => {

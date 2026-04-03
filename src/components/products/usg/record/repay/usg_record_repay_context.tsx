@@ -1,21 +1,22 @@
 "use client"
 
-import { Address, formatUnits, maxUint256 } from "viem"
+import { toast } from "react-toastify"
+import { AssetDataPriced } from "@/types"
+import { FormState } from "../../usg_type"
 import { useUSGContext } from "../../usg_context"
-import { AssetDataPriced, FormState } from "@/types"
 import { USG_CONTRACT } from "../../usg_repository"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
-import { ToastComponent, toastTx } from "@/components/design_system/toast"
+import { Address, formatUnits, maxUint256 } from "viem"
+import { BuyAndMinOutFormatted } from "../leverage/types"
 import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
+import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
 import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove, matchBlockChainErrors } from "../usg_record_controller"
-import { BuyAndMinOutFormatted } from "../leverage/types"
-import { toast } from "react-toastify"
 
 type USGRepayContextProps = {
   children: ReactNode
@@ -116,6 +117,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     isRepayAndWithdraw,
     setIsTxLoading,
     isTxLoading,
+    futureMarketDisplayData,
   } = useUSGRecordContext()
 
   const [isZapLoading, setIsZapLoading] = useState(false)
@@ -413,21 +415,26 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     loadUSGsUSGMetrics()
   }
 
-  const formState = useMemo(() => {
-    if (marketData) {
-      return getRepayFormState(
-        isTransactionBlockedByPriceImpact,
-        isTransactionBlockedBySlippage,
-        marketData,
-        repayWeiValue,
-        isWellConnected,
-        balanceAllowanceData!,
-        repayAsset,
-        isZapLoading || isTxLoading
-      )
-    }
+  const transactionExceedsMaxLtv = useMemo(() => {
+    const computedLtv = futureMarketDisplayData.ltv.substring(0, futureMarketDisplayData.ltv.length - 1)
 
-    return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+    const ltvAsNumber = Number(computedLtv)
+
+    return !!futureMarketDisplayData && ltvAsNumber > Number(marketData?.constants?.maxLTV) / 1000
+  }, [futureMarketDisplayData, marketData])
+
+  const formState = useMemo(() => {
+    return getRepayFormState(
+      isTransactionBlockedByPriceImpact,
+      isTransactionBlockedBySlippage,
+      marketData,
+      repayWeiValue,
+      isWellConnected,
+      balanceAllowanceData!,
+      repayAsset,
+      isZapLoading || isTxLoading,
+      transactionExceedsMaxLtv
+    )
   }, [
     isTransactionBlockedByPriceImpact,
     isTransactionBlockedBySlippage,
@@ -438,6 +445,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     balanceAllowanceData,
     repayAsset,
     isZapLoading || isTxLoading,
+    transactionExceedsMaxLtv,
   ])
 
   const marketValues = useMemo(() => {

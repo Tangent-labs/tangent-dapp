@@ -3,9 +3,8 @@
 import { createContext, ReactNode, useContext, useMemo, useState } from "react"
 import { useVsTanContext } from "../rstan_layout_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { LockPosition } from "../../usg/usg_type"
+import { FormState, LockPosition } from "../../usg/usg_type"
 import { doMerge, getMergeFormState } from "./rstan_merge_controller"
-import { FormState } from "@/types"
 
 type VsTanMergeContextProps = {
   children: ReactNode
@@ -80,7 +79,7 @@ export const VsTanMergeProvider = ({ children }: VsTanMergeContextProps) => {
   }, [lockData, firstPositionToMerge])
 
   const formState = useMemo(() => {
-    if (!firstPositionToMergeInfo || !secondPositionToMergeInfo) return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+    if (!firstPositionToMergeInfo || !secondPositionToMergeInfo) return { canProcess: false, errors: [], haveToApprove: false }
 
     return getMergeFormState(firstPositionToMergeInfo, secondPositionToMergeInfo)
   }, [firstPositionToMergeInfo, secondPositionToMergeInfo])

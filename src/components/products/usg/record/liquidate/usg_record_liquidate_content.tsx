@@ -13,7 +13,7 @@ import { WalletRepayAlert } from "@/components/design_system/inputs/wallet_repay
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { StaticCardAssetInput } from "@/components/products/predeposit/components/StaticCardAssetInput"
-import { MarketTransactionError } from "@/components/design_system/notifications/market_transaction_error"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
 
 export default function USGLiquidatePanel() {
   const { connect } = useWalletConnexionContext()
@@ -136,7 +136,13 @@ export default function USGLiquidatePanel() {
         }}
       />
 
-      {!!liquidateWeiValue && slippage >= 1 && (
+      {formState.errors
+        .filter((e) => e.type === "form-alert")
+        .map((error) => (
+          <FormAlert key={error.key} error={error} className="my-1" isLoading={isQuoteLoading} />
+        ))}
+
+      {!!liquidateWeiValue && !isQuoteLoading && slippage >= 1 && (
         <SlippageAlert
           symbol={collateralInfo?.symbol as string}
           tokenLoss={slippageLoss?.tokenLoss}
@@ -158,7 +164,7 @@ export default function USGLiquidatePanel() {
         />
       )}
 
-      {!!repayWeiValue && walletRepayValue > 0n && (
+      {!!repayWeiValue && !isQuoteLoading && walletRepayValue > 0n && (
         <WalletRepayAlert
           confirmationButtonLabel="I understand"
           displayConfirmationButton={isTransactionBlockedByWalletRepay}
@@ -167,8 +173,6 @@ export default function USGLiquidatePanel() {
           onClickContinue={() => setIsTransactionBlockedByWalletRepay(false)}
         />
       )}
-
-      <MarketTransactionError display={!!liquidateWeiValue && formState.cantProcessReasons.length > 0} error={formState.cantProcessReasons[0]} />
 
       <FormButtons
         isLoading={isTxLoading || isQuoteLoading}

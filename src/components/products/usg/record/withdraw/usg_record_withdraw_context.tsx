@@ -1,12 +1,12 @@
 "use client"
 
-import { FormState } from "@/types"
 import { useUSGContext } from "../../usg_context"
 import { toastTx } from "@/components/design_system/toast"
 import { useUSGRecordContext } from "../usg_record_context"
 import { doMarketWithdraw, getWithdrawFormState } from "./usg_record_withdraw_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { FormState } from "../../usg_type"
 
 type USGWithdrawContextProps = {
   children: ReactNode
@@ -109,7 +109,8 @@ export const USGWithdrawProvider = ({ children }: USGWithdrawContextProps) => {
     if (marketData) {
       return getWithdrawFormState(marketData, withdrawWeiValue!, maxWithdrawable, isWellConnected, withdrawLoading)
     }
-    return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+
+    return { canProcess: false, errors: [], haveToApprove: false }
   }, [marketData, withdrawWeiValue, isWellConnected, currentAddress, maxWithdrawable, withdrawLoading])
 
   useEffect(() => {

@@ -21,7 +21,7 @@ export default function USGRecordPageHeader() {
           color2="#0075FF"
         >
           <div className="flex h-full items-center gap-2 xl:gap-4">
-            <div className="flex w-full items-center justify-between px-5 py-0.5">
+            <div className="flex w-full items-center justify-between px-2 py-0.5 xl:px-5">
               <div className="flex-1 text-center">
                 <div className="text-center text-xs text-subtitle">TVL</div>
                 <div className="mt-1 text-center text-sm font-semibold">${formatMillions(marketDisplayData?.tvlDollar)} </div>

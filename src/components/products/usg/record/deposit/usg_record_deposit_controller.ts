@@ -4,7 +4,8 @@ import { getBorrowCommonFormState } from "../usg_record_controller"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
-import { BalanceAllowanceData, MarketDetailData, USGMarketDepositParams, ZapMarketData } from "../../usg_type"
+import { BalanceAllowanceData, FormError, FormState, MarketDetailData, USGMarketDepositParams, ZapMarketData } from "../../usg_type"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export function getDepositFormState(
   isTransactionBlockedByPriceImpact: boolean,
@@ -19,39 +20,61 @@ export function getDepositFormState(
   balanceAllowanceData?: BalanceAllowanceData,
   maxBorrowableValue?: bigint,
   isLoading?: boolean
-) {
-  const reasons: string[] = []
+): FormState {
+  const errors: FormError[] = []
   const depositValue = depositWeiValue || 0n
   const isApproved = depositValue <= (balanceAllowanceData?.allowances[0]?.allowance || 0n)
   const isEnoughBalance = depositValue < (balanceAllowanceData?.balance || 0n)
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    return {
+      canProcess: false,
+      errors: [dappErrors["no-wallet"]],
+      haveToApprove: false,
+    }
+  }
+
+  if (depositValue === 0n) {
+    return {
+      canProcess: false,
+      errors,
+      haveToApprove: !isApproved,
+    }
   } else {
-    if (depositValue === 0n) {
-      reasons.push("No amount.")
-    } else if (!isEnoughBalance) {
-      reasons.push("Not enough balance.")
-    } else if (isTransactionBlockedBySlippage) {
-      reasons.push("Slippage is too high.")
-    } else if (isTransactionBlockedByPriceImpact) {
-      reasons.push("Price impact is too high.")
-    } else if (isZapping && !zapValue) {
-      reasons.push("No Zap value.")
+    if (!isEnoughBalance) {
+      errors.push(dappErrors["balance"])
+    }
+    if (isTransactionBlockedBySlippage) {
+      errors.push(dappErrors["slippage"])
+    }
+    if (isTransactionBlockedByPriceImpact) {
+      errors.push(dappErrors["price-impact"])
+    }
+    if (isZapping && !isLoading && !zapValue) {
+      errors.push(dappErrors["no-zap-value"])
     }
 
     if (isDepositAndBorrow) {
-      const borrowReasons = getBorrowCommonFormState(marketData, borrowWeiValue)
-      reasons.push(...borrowReasons)
+      if (!borrowWeiValue || borrowWeiValue === 0n) {
+        return {
+          canProcess: false,
+          errors,
+          haveToApprove: !isApproved,
+        }
+      }
+
+      const borrowErrors = getBorrowCommonFormState(marketData, borrowWeiValue)
+      errors.push(...borrowErrors)
     }
 
     if (borrowWeiValue! > maxBorrowableValue!) {
-      reasons.push("Loan exceeds max LTV")
+      errors.push(dappErrors["max-ltv"])
     }
   }
+
   return {
-    canProcess: isApproved && reasons.length === 0 && !isLoading,
-    cantProcessReasons: reasons,
+    canProcess: isApproved && errors.length === 0 && !isLoading,
+    errors,
     haveToApprove: !isApproved,
   }
 }

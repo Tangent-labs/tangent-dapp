@@ -1,38 +1,48 @@
-import { USGStakingInfo } from "../usg_type"
+import { FormError, FormState, USGStakingInfo } from "../usg_type"
 import { formatNumber } from "@/lib/number_formatter"
 import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Address, EstimateContractGasParameters, formatUnits, maxUint256, WalletClient, WriteContractParameters } from "viem"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export const COMPOUNDING_PERIODS_PER_YEAR = 52
 
-export function getFormState(
+export function getStakeFormState(
   stakeInfo: USGStakingInfo,
   currentFeature: "stake" | "unstake",
   weiValue?: bigint,
   expected?: bigint,
   isWellConnected?: boolean,
   isLoading?: boolean
-) {
+): FormState {
+  const errors: FormError[] = []
   let isApproved = false
-  const reasons: string[] = []
 
   if (!isWellConnected) {
-    reasons.push("No connected wallet.")
+    return {
+      canProcess: false,
+      errors: [dappErrors["no-wallet"]],
+      haveToApprove: false,
+    }
   } else {
     isApproved = (currentFeature === "stake" && !!stakeInfo?.USGAllowance && (weiValue || 0n) <= stakeInfo?.USGAllowance) || currentFeature === "unstake"
-    if (weiValue === 0n) {
-      reasons.push("No amount.")
-    } else if (currentFeature === "stake" && (weiValue || 0n) > (stakeInfo?.USGBalance || 0n)) {
-      reasons.push("Not enough balance.")
-    } else if (currentFeature === "unstake" && (weiValue || 0n) > (stakeInfo?.sUSGBalance || 0n)) {
-      reasons.push("Not enough balance.")
-    }
-    if (!expected || expected === 0n) {
-      reasons.push("")
+
+    if (!weiValue || weiValue === 0n) {
+      return { canProcess: false, errors: [], haveToApprove: true }
+    } else {
+      if (currentFeature === "stake" && weiValue > (stakeInfo?.USGBalance || 0n)) {
+        errors.push(dappErrors["balance"])
+      }
+      if (currentFeature === "unstake" && weiValue > (stakeInfo?.sUSGBalance || 0n)) {
+        errors.push(dappErrors["balance"])
+      }
+      if (!expected || expected === 0n) {
+        errors.push(dappErrors["empty-form"])
+      }
     }
   }
-  return { canProcess: isApproved && reasons.length === 0 && !isLoading, cantProcessReasons: reasons, haveToApprove: !isApproved }
+
+  return { canProcess: isApproved && errors.length === 0 && !isLoading, errors, haveToApprove: !isApproved }
 }
 
 export const getExpectedUSG = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {

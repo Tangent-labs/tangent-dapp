@@ -1,7 +1,6 @@
 "use client"
 
 import { maxUint256 } from "viem"
-import { FormState } from "@/types"
 import { useUSGContext } from "../../usg_context"
 import { USG_CONTRACT } from "../../usg_repository"
 import { formatBigInt } from "@/lib/number_formatter"
@@ -14,6 +13,7 @@ import { computeLiquidateAutoRepayValue, doMarketLiquidate, getLiquidateFormStat
 import { computedMinAmountOut, computeTransactionPotentialLoss } from "../usg_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { BuyAndMinOutFormatted } from "../leverage/types"
+import { FormState } from "../../usg_type"
 
 type USGLiquidateContextProps = {
   children: ReactNode
@@ -193,7 +193,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         isTransactionBlockedByWalletRepay
       )
     }
-    return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+    return { canProcess: false, errors: [], haveToApprove: false }
   }, [
     marketData,
     liquidateWeiValue,
@@ -233,6 +233,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
       }
 
       const autoRepayWeiValue = computeLiquidateAutoRepayValue(marketData, value)
+
       return autoRepayWeiValue > 0n ? autoRepayWeiValue : undefined
     })
 

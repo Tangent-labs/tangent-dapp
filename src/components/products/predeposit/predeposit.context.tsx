@@ -1,11 +1,21 @@
 "use client"
 
+import {
+  computedMinAmountOut,
+  computeTransactionPotentialLoss,
+  doApprove,
+  getBalancesAndAllowances,
+  matchBlockChainErrors,
+} from "../usg/record/usg_record_controller"
+
 import { toast } from "react-toastify"
+import { FormState } from "../usg/usg_type"
+import { AssetDataPriced } from "@/types"
 import { PredepositStatus } from "./types/types"
 import { USGTokens } from "../usg/usg_repository"
-import { AssetDataPriced, FormState } from "@/types"
 import { useRootContext } from "../root/root_context"
 import { mapPoolsAndTasks } from "../usg/earn/utils"
+import { COMMON_ERC20S } from "@tangent/defi-resources"
 import { getTokensPrice } from "@/services/service_price"
 import { Address, formatUnits, WalletClient, zeroAddress } from "viem"
 import { formatNumber, truncateDecimals } from "@/lib/number_formatter"
@@ -16,14 +26,6 @@ import { opportunities } from "../../../app/(products)/(usg)/earn/aprOpportuniti
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { EarnPoolsData, getConvexPools, getCurvePools, getPendlePools, getStakeDAOPools } from "../usg/client_api_external"
 import { deposit, fetchQuote, getFormState, mapPredepositStatus, TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "./predeposit.controller"
-import {
-  computedMinAmountOut,
-  computeTransactionPotentialLoss,
-  doApprove,
-  getBalancesAndAllowances,
-  matchBlockChainErrors,
-} from "../usg/record/usg_record_controller"
-import { COMMON_ERC20S } from "@tangent/defi-resources"
 
 type PredepositContextProps = {
   children: ReactNode
@@ -300,7 +302,12 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
         predepositStatus?.USGUSDCData?.USGUSDCAccumulatedTotal / 10n ** 12n
       )
     }
-    return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+
+    return {
+      canProcess: false,
+      errors: [],
+      haveToApprove: true,
+    }
   }, [
     USDCDepositValue,
     predepositStatus,
@@ -323,7 +330,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
         predepositStatus?.USGfrxUSDData?.USGfrxUSDAccumulatedTotal
       )
     }
-    return { canProcess: false, cantProcessReasons: [], haveToApprove: false }
+    return { canProcess: false, errors: [], haveToApprove: false }
   }, [
     frxUSDDepositValue,
     predepositStatus,

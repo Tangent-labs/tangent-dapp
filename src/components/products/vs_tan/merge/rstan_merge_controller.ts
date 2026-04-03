@@ -1,8 +1,9 @@
-import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
-import VsTan from "../../../../abi/USG/VsTAN.json"
 import { Abi, WalletClient } from "viem"
-import { LockPosition } from "../../usg/usg_type"
+import VsTan from "../../../../abi/USG/VsTAN.json"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
+import { FormError, FormState, LockPosition } from "../../usg/usg_type"
+import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
 export const doMerge = async (walletClient: WalletClient, tokenIdA: bigint, tokenIdB: bigint, claimAsSUSG: boolean) => {
   const txData = {
@@ -16,12 +17,12 @@ export const doMerge = async (walletClient: WalletClient, tokenIdA: bigint, toke
   return await waitForTransaction(txHash)
 }
 
-export function getMergeFormState(lockPositionOne: LockPosition, lockPositionTwo: LockPosition) {
-  const reasons: string[] = []
+export function getMergeFormState(lockPositionOne: LockPosition, lockPositionTwo: LockPosition): FormState {
+  const errors: FormError[] = []
 
   if (lockPositionOne?.tokenId === lockPositionTwo?.tokenId) {
-    reasons.push("You cant merge a position with itself.")
+    errors.push(dappErrors["same-position"])
   }
 
-  return { canProcess: reasons.length === 0, cantProcessReasons: reasons, haveToApprove: false }
+  return { canProcess: errors.length === 0, errors, haveToApprove: false }
 }

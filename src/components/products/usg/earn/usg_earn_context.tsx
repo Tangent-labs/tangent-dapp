@@ -31,7 +31,7 @@ export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
   const [poolsData, setPoolsData] = useState<EarnPoolsData[]>()
 
   const displayRows = useMemo(() => {
-    if (!tasks || !poolsData) return []
+    if (!tasks) return []
 
     const mappedTasks = mapAPROpportunities(tasks, poolsData)
     return mappedTasks

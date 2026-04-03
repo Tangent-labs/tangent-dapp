@@ -42,17 +42,17 @@ export function USGPositionHistory() {
   const { displayRows, customSort, isUserHistoryLoading } = useUSGRecordContext()
 
   return (
-    <ReliefCard className="px-4 py-2">
+    <ReliefCard className="p-5">
       <Title label={"Transaction history"} size={"normal"} />
       <Divider />
 
       <>
         {isUserHistoryLoading ? (
-          <div className="flex h-full w-full items-start justify-center">
+          <div className="flex w-full items-start justify-center">
             <Loader></Loader>
           </div>
         ) : (
-          <div className="flex w-full items-start justify-start gap-4">
+          <div className="flex w-full items-start justify-start">
             <div className="flex w-full flex-col">
               <ListProvider customSort={customSort} _headers={userPositionListHeaders} _rows={displayRows} _listState={listeState}>
                 <PositionList></PositionList>
@@ -76,7 +76,7 @@ function PositionList() {
 
   return (
     <>
-      <div className="mt-6 rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <div className={`hidden p-4 xl:block`}>
           <HistoryRowDisposition>
             {!!headers?.at(0)?.key && (

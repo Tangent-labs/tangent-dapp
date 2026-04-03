@@ -303,23 +303,19 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
   }, [zapInnerValue, isZapUserInput])
 
   useEffect(() => {
-    if (!depositAsset) return
-
-    const fetchSwapAssetData = async () => {
-      setIsZapLoading(true)
-      try {
-        const data = await computeSwapAssetPrice(depositAsset, USGsUSGMetrics!.sUSGPrice, USGsUSGMetrics!.sUSGPrice)
-
+    if (!depositAsset || !USGsUSGMetrics) return
+    setIsZapLoading(true)
+    computeSwapAssetPrice(depositAsset, USGsUSGMetrics.USGPrice, USGsUSGMetrics.sUSGPrice)
+      .then((data) => {
         setSwapAssetPrice(data || 0)
-      } catch (error) {
+      })
+      .catch((error) => {
         console.error("Error fetching Enso data:", error)
-      } finally {
+      })
+      .finally(() => {
         setIsZapLoading(false)
-      }
-    }
-
-    fetchSwapAssetData()
-  }, [depositAsset])
+      })
+  }, [depositAsset, USGsUSGMetrics])
 
   useEffect(() => {
     if (depositWeiValue && depositAsset !== collateralInfo?.symbol && zapValue) {

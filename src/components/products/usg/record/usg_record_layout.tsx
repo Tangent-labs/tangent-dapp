@@ -2,7 +2,6 @@
 
 import { useEffect } from "react"
 import { USGLoanDetail } from "./usg_loan_detail"
-import { Switch } from "@/components/ui/switch"
 import { MarketDetails } from "./header/market_details"
 import { usePathname, useRouter } from "next/navigation"
 import USGRecordPageHeader from "./usg_record_page_header"
@@ -10,13 +9,15 @@ import { useUSGRecordContext } from "./usg_record_context"
 import { Divider } from "@/components/design_system/structure/divider"
 import { USGCollateralPrice } from "./collat_price/collat_price_content"
 import { USGPositionHistory } from "./position_history/usg_position_history"
-import { BorderPanel } from "@/components/design_system/structure/border_panel"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { CollateralPriceProvider } from "./collat_price/collat_price_context"
 import { MarketDetailsParameters } from "./header/components/market_details_parameters"
 import { FeatureTabs } from "@/components/design_system/inputs/feature_tabs/feature_tabs"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+
+// import { Switch } from "@/components/ui/switch"
+// import { BorderPanel } from "@/components/design_system/structure/border_panel"
+// import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+// import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 type USGRecordLayoutProps = {
   children: React.ReactNode
@@ -24,28 +25,28 @@ type USGRecordLayoutProps = {
 
 export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
   const {
-    USGInfo,
     feature,
-    debtVAPR,
-    chartData,
-    debtFarming,
-    onChainData,
-    isLeveraged,
     canLeverage,
-    initialCollatAmount,
-    currentTotalMarketApr,
     marketInfo,
-    setDebtVAPR,
-    setDebtFarming,
-    setIsLeveraged,
-    setInitialCollatAmount,
     setIsRepayAndWithdraw,
     setActiveTab,
     activeTab,
-    simulatedCollatAmount,
-    setSimulatedCollatAmount,
-    simulatedDebtAmount,
-    setSimulatedDebtAmount,
+    // USGInfo,
+    // debtVAPR,
+    // chartData,
+    // debtFarming,
+    // onChainData,
+    // isLeveraged,
+    // initialCollatAmount,
+    // currentTotalMarketApr,
+    // setDebtVAPR,
+    // setDebtFarming,
+    // setIsLeveraged,
+    // setInitialCollatAmount,
+    // simulatedCollatAmount,
+    // setSimulatedCollatAmount,
+    // simulatedDebtAmount,
+    // setSimulatedDebtAmount,
   } = useUSGRecordContext()
 
   const router = useRouter()
@@ -108,8 +109,8 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
       <MarketDetailsParameters />
 
       <div className="mt-2 flex flex-col gap-4">
-        <div className="relative flex items-start justify-start gap-4 max-xl:flex-col">
-          <ReliefCard className="w-full p-3 xl:w-5/12">
+        <div className="relative flex items-start justify-start gap-5 max-xl:flex-col">
+          <ReliefCard className="w-full p-5 xl:w-5/12">
             <FeatureTabs
               feature={feature}
               activeTab={activeTab}
@@ -121,7 +122,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
               onClickRepay={onClickRepay}
             ></FeatureTabs>
 
-            <div className="mt-2">{children}</div>
+            <div className="mt-[10]">{children}</div>
           </ReliefCard>
 
           <div className="flex w-full flex-col gap-5 self-start xl:sticky xl:top-24 xl:w-7/12">
@@ -133,7 +134,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
           </div>
         </div>
 
-        <Divider className="hidden xl:flex" />
+        {/* <Divider className="hidden xl:flex" />
 
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
@@ -351,11 +352,13 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
               </AccordionContent>
             </BorderPanel>
           </AccordionItem>
-        </Accordion>
+        </Accordion> */}
 
         <Divider />
 
         <MarketDetails />
+
+        <Divider />
 
         <USGPositionHistory />
       </div>

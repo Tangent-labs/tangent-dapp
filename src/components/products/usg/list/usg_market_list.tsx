@@ -145,7 +145,7 @@ export default function USGMarketList() {
         <div className="hidden w-full justify-center md:flex lg:w-1/2">
           <div className="flex h-full w-full items-stretch gap-4">
             <div className="basis-[40%]">
-              <NeonLightCard className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "h-full w-full")} color1="#0077ffa3" color2="#0075FF">
+              <NeonLightCard px="px-2" className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "h-full w-full")} color1="#0077ffa3" color2="#0075FF">
                 <div className="flex h-full items-center gap-2 xl:gap-4">
                   <div className="flex-shrink-0">
                     <TokenImage token="USG" className="h-10 w-10" size={32} />
@@ -165,7 +165,7 @@ export default function USGMarketList() {
               </NeonLightCard>
             </div>
             <div className="basis-[60%]">
-              <NeonLightCard className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "h-full w-full")} color1="#95ff006d" color2="#95FF00">
+              <NeonLightCard px="px-2" className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "h-full w-full")} color1="#95ff006d" color2="#95FF00">
                 <div className="flex h-full items-center gap-5">
                   <div className="flex-shrink-0">
                     <TokenImage token="sUSG" className="h-10 w-10" size={32} />

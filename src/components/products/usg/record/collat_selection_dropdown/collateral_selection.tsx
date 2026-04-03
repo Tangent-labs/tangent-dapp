@@ -21,7 +21,7 @@ export const CollateralCard = ({ collateralInfo, marketData, className }: Collat
     <Dialog>
       <DialogTrigger asChild>
         <ReliefCard
-          className={`${className || ""} flex w-full cursor-pointer items-center justify-start gap-4 px-4 py-2 transition-colors duration-200 ease-in-out hover:bg-white/10 xl:w-1/2`}
+          className={`${className || ""} flex w-full cursor-pointer items-center justify-start gap-4 px-4 py-2.5 pl-2.5 pr-5 transition-colors duration-200 ease-in-out hover:bg-white/10 xl:w-1/2`}
         >
           <div className="flex items-center gap-2">
             {specialTokensList.includes(collateralInfo?.logoKey?.substring(0, collateralInfo?.logoKey.indexOf(" ")).trim()) ? (

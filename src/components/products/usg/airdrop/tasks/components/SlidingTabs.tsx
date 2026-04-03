@@ -18,7 +18,7 @@ export function SlidingTabs({ labels, value, onSwitchTab }: SlidingTabsProps) {
   const numberOfLabels = labels.length
 
   return (
-    <div className="relative w-full">
+    <div className="relative mb-3 w-full">
       <div aria-hidden className="pointer-events-none absolute bottom-0 left-0 h-px w-full bg-slate-700/60 dark:bg-slate-600/40" />
 
       <div

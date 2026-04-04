@@ -175,6 +175,7 @@ export default function USGLiquidatePanel() {
       )}
 
       <FormButtons
+        disabled={isTransactionBlockedByWalletRepay}
         isLoading={isTxLoading || isQuoteLoading}
         connect={connect}
         actions={{ handleApprove: undefined, handleProcess: actionLiquidate }}

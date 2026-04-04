@@ -61,8 +61,7 @@ export function getLiquidateFormState(
   isWellConnected: boolean,
   isLoading: boolean,
   isTransactionBlockedByPriceImpact: boolean,
-  isTransactionBlockedBySlippage: boolean,
-  isTransactionBlockedByWalletRepay: boolean
+  isTransactionBlockedBySlippage: boolean
 ): FormState {
   const errors: FormError[] = []
 
@@ -83,10 +82,6 @@ export function getLiquidateFormState(
 
     if (isTransactionBlockedBySlippage) {
       errors.push(dappErrors["slippage"])
-    }
-
-    if (isTransactionBlockedByWalletRepay) {
-      errors.push(dappErrors["wallet-repay"])
     }
   }
 

@@ -9,7 +9,7 @@ import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { computeLiquidateAutoRepayValue, doMarketLiquidate, getLiquidateFormState } from "./usg_record_liquidate_controller"
+import { doMarketLiquidate, getLiquidateFormState } from "./usg_record_liquidate_controller"
 import { computedMinAmountOut, computeTransactionPotentialLoss } from "../usg_record_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { BuyAndMinOutFormatted } from "../leverage/types"
@@ -189,8 +189,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         isWellConnected,
         isQuoteLoading || isTxLoading,
         isTransactionBlockedByPriceImpact,
-        isTransactionBlockedBySlippage,
-        isTransactionBlockedByWalletRepay
+        isTransactionBlockedBySlippage
       )
     }
     return { canProcess: false, errors: [], haveToApprove: false }
@@ -203,7 +202,6 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     repayWeiValue,
     isTransactionBlockedByPriceImpact,
     isTransactionBlockedBySlippage,
-    isTransactionBlockedByWalletRepay,
   ])
 
   const maxLiquidable = useMemo(() => {
@@ -227,14 +225,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
       if (currentRepayWeiValue && currentRepayWeiValue > 0n) {
         return currentRepayWeiValue
       }
-
-      if (!value || !marketData) {
-        return undefined
-      }
-
-      const autoRepayWeiValue = computeLiquidateAutoRepayValue(marketData, value)
-
-      return autoRepayWeiValue > 0n ? autoRepayWeiValue : undefined
+      return undefined
     })
 
     if (!value || !currentAddress || !collateralInfo) {

@@ -65,7 +65,7 @@ export const CollateralPriceProvider = ({ children }: CollateralPriceContextProp
 
       const resp = await fetchOracleGraphData(marketAddress, endDate.toISOString(), bucketSizeMinutes, 50)
 
-      return mapOracleResponseToLineData(resp)
+      return mapOracleResponseToLineData(resp, bucketSizeMinutes)
     } catch (error) {
       console.error("Error fetching oracle graph data:", error)
       return null

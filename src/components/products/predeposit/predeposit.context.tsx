@@ -23,7 +23,7 @@ import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { fetchUserStatus, validatePredepositSignature } from "./api/client.api"
 import { opportunities } from "../../../app/(products)/(usg)/earn/aprOpportunities.json"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { EarnPoolsData, getConvexPools, getCurvePools, getPendlePools, getStakeDAOPools } from "../usg/client_api_external"
 import { deposit, fetchQuote, getFormState, mapPredepositStatus, TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "./predeposit.controller"
 
@@ -162,40 +162,47 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
 
   const [isUSGfrxUSDTransactionBlockedBySlippage, setIsUSGfrxUSDTransactionBlockedBySlippage] = useState<boolean>(false)
 
-  const getUserStatus = async () => {
-    const status = await fetchUserStatus(currentAddress || zeroAddress)
+  const getUserStatus = useCallback(async () => {
+    try {
+      const status = await fetchUserStatus(currentAddress || zeroAddress)
+      if (!status) return
 
-    if (status) {
       const mappedStatus: PredepositStatus = mapPredepositStatus(status)
 
+      // Always set status to display predeposit metrics
+      setPredepositStatus(mappedStatus)
+
+      if (!currentAddress) return
+
+      // Deal with user status
       const userCanSignAndAccessPredeposit =
         (mappedStatus?.predepositState === "deposit_private" && mappedStatus?.userState === "private") || mappedStatus?.predepositState === "deposit_public"
 
-      if (!!mappedStatus && mappedStatus?.isSigned && (mappedStatus?.userState === "private" || mappedStatus?.predepositState === "deposit_public")) {
+      if (mappedStatus?.isSigned && (mappedStatus?.userState === "private" || mappedStatus?.predepositState === "deposit_public")) {
         setIsWhitelisted(true)
-      } else if (!!mappedStatus && userCanSignAndAccessPredeposit && !mappedStatus?.isSigned) {
+      } else if (userCanSignAndAccessPredeposit && !mappedStatus?.isSigned) {
         await signMessage()
+      } else {
+        setIsWhitelisted(false)
       }
-
-      setPredepositStatus(mappedStatus)
-    }
-  }
-
-  useEffect(() => {
-    if (currentAddress && isWalletContextLoaded) {
-      const timer = setInterval(() => {
-        getUserStatus()
-      }, 12000)
-
-      return () => clearInterval(timer)
+    } catch (error) {
+      console.error("Failed to fetch user status : ", error)
     }
   }, [currentAddress])
 
+  // Fetches user data
   useEffect(() => {
-    if (isWalletContextLoaded) {
+    if (!isWalletContextLoaded) return
+
+    // Always fetch immediately when context loads or address changes
+    getUserStatus()
+
+    const timer = setInterval(() => {
       getUserStatus()
-    }
-  }, [currentAddress])
+    }, 12000)
+
+    return () => clearInterval(timer)
+  }, [currentAddress, isWalletContextLoaded])
 
   useEffect(() => {
     if (walletClient && currentAddress !== zeroAddress) {

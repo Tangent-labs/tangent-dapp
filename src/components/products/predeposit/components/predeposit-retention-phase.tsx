@@ -9,10 +9,10 @@ type PredepositRetentionPhaseProps = {
   amount: bigint
 }
 
-const PREDEPOSIT_CAP = 6_500_000n * 10n ** 18n
+const PREDEPOSIT_CAP = 7_000_000n * 10n ** 18n
 
 export const PredepositRetentionPhase = ({ amount }: PredepositRetentionPhaseProps) => {
-  const targetDate = new Date("2026-02-22T00:00:00").getTime()
+  const targetDate = new Date("2026-05-01T00:00:00").getTime()
 
   const computeTimeLeft = () => {
     const now = new Date().getTime()
@@ -48,7 +48,7 @@ export const PredepositRetentionPhase = ({ amount }: PredepositRetentionPhasePro
     <section className="mt-12 flex w-full flex-col items-center justify-center">
       {amount === PREDEPOSIT_CAP && <div className="text-center text-4xl text-subtitle">Cap reached</div>}
 
-      <div className="text-[80px] font-semibold text-white lg:text-[120px]"> ${formatBigInt(amount, 18, 0)} </div>
+      <div className="text-[72px] font-semibold text-white lg:text-[120px]"> ${formatBigInt(amount, 18, 0)} </div>
       <div className="flex items-center gap-0 lg:gap-12">
         <div className="flex w-24 flex-col items-center justify-center">
           <div className="text-4xl font-light tracking-wider text-white">{formatTimeNumber(timeLeft.days)}</div>

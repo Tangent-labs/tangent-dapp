@@ -92,7 +92,7 @@ export function USGModalMarketListInner() {
         <ListHeader rowDisposition={ModalMarketListRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 
-      <div className="scrollbar-thin max-h-[476px] overflow-y-auto pr-1">
+      <div className="scrollbar-thin h-[448px] overflow-y-auto pr-1">
         {displayRows?.map((item, index) => (
           <ListRow
             rowDisposition={ModalMarketListRowDisposition}

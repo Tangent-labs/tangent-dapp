@@ -39,14 +39,12 @@ export default function FormButtons({
   const funcCalledOnClick = isApproveNeeded ? actions.handleApprove : actions.handleProcess
 
   const buttonState = useMemo(() => {
-    if (disabled) return "disabled"
+    if (disabled || isLoading) return "disabled"
 
-    if (isLoading) return "disabled"
-
-    if (formState?.errors?.length === 0 && (formState.haveToApprove || formState.canProcess)) return "active"
+    if (!formState?.errors?.length && (formState.haveToApprove || formState.canProcess)) return "active"
 
     return "disabled"
-  }, [formState, isLoading])
+  }, [formState, isLoading, disabled])
 
   return (
     <div className="flex w-full items-center justify-between gap-2">

@@ -221,12 +221,6 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   function handleLiquidateValueChange(value: bigint | undefined) {
     setPriceImpact(0)
     setLiquidateWeiValue(value)
-    setRepayWeiValue((currentRepayWeiValue) => {
-      if (currentRepayWeiValue && currentRepayWeiValue > 0n) {
-        return currentRepayWeiValue
-      }
-      return undefined
-    })
 
     if (!value || !currentAddress || !collateralInfo) {
       if (!value || value === 0n) setUSGReceivedValue(undefined)

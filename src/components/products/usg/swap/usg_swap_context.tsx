@@ -364,26 +364,31 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
   // --- Actions ---
   const actionApprove = async () => {
-    setIsTxLoading(true)
+    try {
+      setIsTxLoading(true)
 
-    if (walletClient && buyAssetInfo && sellAssetInfo) {
-      let spender = "" as Address
+      if (walletClient && buyAssetInfo && sellAssetInfo) {
+        let spender = "" as Address
 
-      if (buyAssetInfo?.address === USG_CONTRACT?.USG || sellAssetInfo?.address === USG_CONTRACT?.USG) {
-        spender = USG_CONTRACT.CURVE_ROUTER as Address
-      } else {
-        spender = USG_CONTRACT.ENSO_ROUTER as Address
+        if (buyAssetInfo?.address === USG_CONTRACT?.USG || sellAssetInfo?.address === USG_CONTRACT?.USG) {
+          spender = USG_CONTRACT.CURVE_ROUTER as Address
+        } else {
+          spender = USG_CONTRACT.ENSO_ROUTER as Address
+        }
+
+        await toastTx(doApprove(walletClient, sellAssetInfo?.address, sellWeiValue || 0n, spender), {
+          pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
+          success: () => ({
+            type: "Success",
+            content: `${sellAssetInfo?.symbol} approved successfully.`,
+          }),
+        })
+
+        fetchBalanceAllowanceData(walletClient)
       }
-
-      await toastTx(doApprove(walletClient, sellAssetInfo?.address, sellWeiValue || 0n, spender), {
-        pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
-        success: () => ({
-          type: "Success",
-          content: `${sellAssetInfo?.symbol} approved successfully.`,
-        }),
-      })
-
-      fetchBalanceAllowanceData(walletClient)
+    } catch (e) {
+      console.error(e)
+    } finally {
       setIsTxLoading(false)
     }
   }

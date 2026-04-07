@@ -127,7 +127,7 @@ export default function USGLiquidatePanel() {
         isDisplayed={true}
         zappingParams={{
           label: "USG",
-          expected: `${zapValuesFormatted.expectedFormatted} ${collateralInfo.symbol}`,
+          expected: `${zapValuesFormatted.expectedFormatted} USG`,
           slippage: slippage,
           liquidateMinOut: `${zapValuesFormatted?.minOutFormatted} USG`,
           priceImpact: priceImpact,
@@ -164,17 +164,18 @@ export default function USGLiquidatePanel() {
         />
       )}
 
-      {!!repayWeiValue && walletRepayValue > 0n && (
+      {!!repayWeiValue && !isQuoteLoading && walletRepayValue > 0n && (
         <WalletRepayAlert
           confirmationButtonLabel="I understand"
           displayConfirmationButton={isTransactionBlockedByWalletRepay}
-          walletRepay={`${formatBigInt(walletRepayValue, 18, 2)} USG`}
+          walletRepay={`${formatBigInt(walletRepayValue, 18, 2)}`}
           isLoading={isQuoteLoading}
           onClickContinue={() => setIsTransactionBlockedByWalletRepay(false)}
         />
       )}
 
       <FormButtons
+        disabled={isTransactionBlockedByWalletRepay}
         isLoading={isTxLoading || isQuoteLoading}
         connect={connect}
         actions={{ handleApprove: undefined, handleProcess: actionLiquidate }}

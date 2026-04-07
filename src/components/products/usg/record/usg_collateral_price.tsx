@@ -233,10 +233,7 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
       <div ref={containerRef} className={cn("absolute inset-0", isPending && "animate-pulse")} />
 
       {oracleLabelTop !== null && !isPending && (
-        <div
-          className="absolute right-2 z-10 rounded-[2px] bg-[#3b82f6] px-1 py-0.5 text-xs text-white"
-          style={{ top: `${oracleLabelTop}px` }}
-        >
+        <div className="absolute right-2 z-10 rounded-[2px] bg-[#3b82f6] px-1 py-0.5 text-xs text-white" style={{ top: `${oracleLabelTop}px` }}>
           Oracle ${(oraclePriceData?.[oraclePriceData.length - 1]?.value || 0).toFixed(5)}
         </div>
       )}

@@ -12,9 +12,18 @@ type FormButtonsProps = {
   labelProcess: string
   connect: () => void
   isLoading?: boolean
+  disabled?: boolean
 }
 
-export default function FormButtons({ formState, labelApprove = "Approve", labelProcess, actions, connect, isLoading = false }: FormButtonsProps) {
+export default function FormButtons({
+  formState,
+  labelApprove = "Approve",
+  labelProcess,
+  actions,
+  connect,
+  isLoading = false,
+  disabled = false,
+}: FormButtonsProps) {
   const isWalletConnected = useMemo(() => {
     if (!!formState.errors && formState.errors?.length >= 0) {
       return !formState.errors.some((e) => e?.key === "no-wallet")
@@ -30,12 +39,12 @@ export default function FormButtons({ formState, labelApprove = "Approve", label
   const funcCalledOnClick = isApproveNeeded ? actions.handleApprove : actions.handleProcess
 
   const buttonState = useMemo(() => {
-    if (isLoading) return "disabled"
+    if (disabled || isLoading) return "disabled"
 
-    if (formState?.errors?.length === 0 && (formState.haveToApprove || formState.canProcess)) return "active"
+    if (!formState?.errors?.length && (formState.haveToApprove || formState.canProcess)) return "active"
 
     return "disabled"
-  }, [formState, isLoading])
+  }, [formState, isLoading, disabled])
 
   return (
     <div className="flex w-full items-center justify-between gap-2">

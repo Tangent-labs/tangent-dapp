@@ -1,8 +1,8 @@
 "use client"
 
-import { useMemo } from "react"
 import { formatUnits } from "viem"
 import { AssetDataPriced } from "@/types"
+import { FormState } from "../../usg/usg_type"
 import { PredepositStatus } from "../types/types"
 import { DynamicProgressBar } from "./dynamic-progress-bar"
 import { StaticCardAssetInput } from "./StaticCardAssetInput"
@@ -15,7 +15,6 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { BorderPanel } from "@/components/design_system/structure/border_panel"
 import { SlippageAlert } from "@/components/design_system/inputs/slippage_alert"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
-import { FormState } from "../../usg/usg_type"
 
 type USGPredepositComponentProps = {
   predepositStatus: PredepositStatus | null
@@ -70,14 +69,6 @@ export const USGPredepositComponent = ({
   setIsTransactionBlockedBySlippage,
   slippageLoss,
 }: USGPredepositComponentProps) => {
-  const formAlertErrors = useMemo(() => {
-    if (formState.errors && formState.errors?.length > 0) {
-      return formState.errors.filter((e) => e.type === "form-alert")
-    }
-
-    return []
-  }, [formState])
-
   return (
     <ReliefCard className="flex w-full flex-col p-2 xl:p-4">
       <div className="mb-2 flex w-full items-center justify-between">
@@ -116,7 +107,7 @@ export const USGPredepositComponent = ({
           <div className="flex flex-col items-start justify-start">
             <div className="flex items-center justify-center text-xs font-semibold text-subtitle">You receive</div>
             <input
-              type="number"
+              type="text"
               disabled={isLoading}
               readOnly={true}
               className="w-full max-w-36 bg-transparent text-[24px] font-semibold focus:outline-none"
@@ -142,9 +133,11 @@ export const USGPredepositComponent = ({
       </div>
 
       <div className="my-2 flex flex-col gap-2">
-        {formAlertErrors.map((error) => (
-          <FormAlert key={error.key} error={error} isLoading={isLoading} />
-        ))}
+        {formState.errors
+          .filter((e) => e.type === "form-alert")
+          .map((error) => (
+            <FormAlert key={error.key} error={error} isLoading={isLoading} />
+          ))}
 
         {!!depositWeiValue && slippage >= 1 && (
           <SlippageAlert

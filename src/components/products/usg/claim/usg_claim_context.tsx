@@ -1,11 +1,11 @@
 "use client"
 
-import { formatEther, zeroAddress } from "viem"
+import { zeroAddress } from "viem"
 import { useUSGContext } from "../usg_context"
 import { USGMarkets } from "../usg_repository"
 import { AssetDataPriced, ListState } from "@/types"
 import { SortedRows } from "@/components/design_system/list/list_context"
-import { formatBigInt, formatDollar, formatMillions } from "@/lib/number_formatter"
+import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { ClaimableMarket, ClaimData, ClaimerInfo, USGStakingInfo } from "../usg_type"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"

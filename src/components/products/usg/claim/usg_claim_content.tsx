@@ -15,7 +15,6 @@ import { MarketAPR } from "@/components/design_system/list/market_apr"
 import { Divider } from "@/components/design_system/structure/divider"
 import { ListHeader } from "@/components/design_system/list/list_header"
 import { PageHeader } from "@/components/design_system/structure/page_header"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { USGHoverCard } from "@/components/design_system/structure/usg_hover_card"
 import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
@@ -46,9 +45,6 @@ const ClaimRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
 }
 
 export default function USGClaimContent() {
-  const color1 = "#0077ff67"
-  const color2 = "#0075FF"
-
   const {
     displayRows,
     onClickClaim,

@@ -16,7 +16,7 @@ export default function USGRecordPageHeader() {
         <CollateralCard className="w-full xl:w-5/12" collateralInfo={collateralInfo} marketData={marketData}></CollateralCard>
 
         <NeonLightCard
-          px="px-0" // No padding here because we already have space in this div
+          paddingHorizontal={0} // No padding here because we already have space in this div
           className={cn(marketDisplayData?.tvlDollar === "-" ? "shimmer" : "", "mt-2 flex h-full w-full xl:mt-0 xl:w-7/12")}
           color1="#0077ffa3"
           color2="#0075FF"

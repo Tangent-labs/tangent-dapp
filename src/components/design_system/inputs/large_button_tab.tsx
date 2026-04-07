@@ -17,7 +17,7 @@ export function LargeButtonTab({ label, active, className, ...props }: ButtonTab
         id="radix-:r0:-trigger-deposit"
         className={clsx(
           className,
-          "relative inline-flex items-center justify-center whitespace-nowrap rounded-[10px] px-4 py-1 text-sm font-semibold backdrop-blur-[60px] transition-all duration-200 ease-in-out disabled:cursor-not-allowed",
+          "relative inline-flex items-center justify-center whitespace-nowrap rounded-[10px] px-4 py-2 text-sm font-semibold backdrop-blur-[60px] transition-all duration-200 ease-in-out disabled:cursor-not-allowed",
           "data-[state=active]:bg-white data-[state=active]:text-black",
           "data-[state=inactive]:bg-white/[0.03] data-[state=inactive]:text-subtitle"
         )}

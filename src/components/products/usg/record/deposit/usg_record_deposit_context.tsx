@@ -249,7 +249,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       } finally {
         setIsDepositLoading(false)
       }
-    }, 800)
+    }, 1200)
 
     return () => clearTimeout(debounceTimeout)
   }
@@ -375,7 +375,7 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
 
     depositDebounceRef.current = setTimeout(() => {
       quoteZap(value)
-    }, 800)
+    }, 1200)
   }
 
   async function quoteZap(value: bigint) {

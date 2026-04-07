@@ -320,7 +320,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
     leverageDebounceRef.current = setTimeout(async () => {
       await quoteDumpUSG(borrowWeiValue)
-    }, 800)
+    }, 1200)
   }
 
   // Computes the current LTV of the connected position

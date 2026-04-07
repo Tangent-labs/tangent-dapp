@@ -144,7 +144,7 @@ export const claimListHeaders: ListHeaderData[] = [
   { label: "APR", key: "apr", sort: "sort" },
   { label: "Claimable", key: "totalClaimableValue", sort: "sort" },
   { label: "Deposited", key: "totalDepositedValue", sort: "sort" },
-  { label: "", key: "" },
+
 ]
 
 export const sortClaimListByType = (elementA: ClaimData, elementB: ClaimData, direction: string) => {

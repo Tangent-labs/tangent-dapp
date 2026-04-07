@@ -271,7 +271,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
           setIsBuyValueLoading(false)
         }
       }
-    }, 1000)
+    }, 1200)
   }
 
   const handleBuyChange = (value: bigint | undefined) => {
@@ -322,7 +322,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
           setIsSellValueLoading(false)
         }
       }
-    }, 1000)
+    }, 1200)
   }
 
   // --- Price fetching (needs name for computeSwapAssetPrice) ---

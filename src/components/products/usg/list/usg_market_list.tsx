@@ -45,20 +45,24 @@ const listeState: ListState = {
 const CustomMarketListRow = ({ children }: ListRowDispositionProps) => {
   return (
     <div className="flex items-center justify-between max-xl:flex-col">
-      <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
-        <div className="xl:w-1/2">{children?.at(0)}</div>
-        <div className="hidden items-center justify-center xl:flex xl:w-1/4">{children?.at(1)}</div>
-        <div className="hidden items-center justify-center xl:flex xl:w-1/4">{children?.at(2)}</div>
-      </div>
-      <hr className="my-2 w-full opacity-20 xl:hidden" />
-      <div className="flex w-full items-center justify-evenly gap-2 xl:w-1/2">
-        <div className="flex w-full flex-col items-center justify-evenly gap-2 xl:hidden">
-          {children?.at(1)}
-          {children?.at(2)}
-          {children?.at(3)}
-        </div>
+      <div className="w-full self-start xl:w-1/4">{children?.at(0)}</div>
 
-        <div className="hidden w-full items-center justify-evenly gap-2 xl:flex">{children?.at(3)}</div>
+      <hr className="my-2 w-full opacity-20 xl:hidden" />
+
+      <div className="flex w-full xl:w-3/4">
+        <div className="flex hidden w-full items-center justify-between xl:flex xl:w-2/5 xl:justify-start">
+          <div className="hidden items-center justify-center xl:flex xl:w-1/2">{children?.at(1)}</div>
+          <div className="hidden items-center justify-center xl:flex xl:w-1/2">{children?.at(2)}</div>
+        </div>
+        <div className="flex w-full items-center justify-evenly gap-2 xl:w-3/5">
+          <div className="flex w-full flex-col items-center justify-evenly gap-2 xl:hidden">
+            {children?.at(1)}
+            {children?.at(2)}
+            {children?.at(3)}
+          </div>
+
+          <div className="hidden w-full items-center justify-evenly xl:flex">{children?.at(3)}</div>
+        </div>
       </div>
     </div>
   )
@@ -195,7 +199,7 @@ export default function USGMarketList() {
 
         <ReliefCard className={cn(globalData.globalCr === "-" ? "shimmer" : "", "flex items-center py-2 lg:w-1/2")}>
           <div className="flex w-1/3 flex-col items-center justify-center">
-            <div className="whitespace-nowrap text-xs text-subtitle">Global CR</div>
+            <div className="whitespace-nowrap text-xs text-subtitle">Collateral Ratio</div>
             <div className="whitespace-nowrap text-sm font-semibold">{globalData.globalCr}</div>
           </div>
 
@@ -203,7 +207,7 @@ export default function USGMarketList() {
           <div className="h-10 w-px flex-shrink-0 bg-white/10" />
 
           <div className="flex w-1/3 flex-col items-center justify-center">
-            <div className="whitespace-nowrap text-xs text-subtitle">Global TVL</div>
+            <div className="whitespace-nowrap text-xs text-subtitle">Markets TVL</div>
             <div className="whitespace-nowrap text-sm font-semibold">${formatMillions(globalData.globalTvl)}</div>
           </div>
 
@@ -211,7 +215,7 @@ export default function USGMarketList() {
           <div className="h-10 w-px flex-shrink-0 bg-white/10" />
 
           <div className="flex w-1/3 flex-col items-center justify-center">
-            <div className="whitespace-nowrap text-xs text-subtitle">Global Debt</div>
+            <div className="whitespace-nowrap text-xs text-subtitle">Total debt</div>
             <div className="whitespace-nowrap text-sm font-semibold">{formatMillions(globalData.globalDebt)} USG</div>
           </div>
         </ReliefCard>

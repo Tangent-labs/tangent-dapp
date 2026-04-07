@@ -64,7 +64,7 @@ export function EvolutionBox({ label, originalValue, newValue, logo, displayHove
           )}
 
           {logo && (
-            <div className="w-5">
+            <div className="w-4">
               <TokenImage size={48} token={logo} />
             </div>
           )}
@@ -96,7 +96,7 @@ export function EvolutionBox({ label, originalValue, newValue, logo, displayHove
             >
               <span className="font-semibold text-tonic">{newValue}</span>
               {logo && (
-                <div className="w-5">
+                <div className="w-4">
                   <TokenImage size={48} token={logo} />
                 </div>
               )}

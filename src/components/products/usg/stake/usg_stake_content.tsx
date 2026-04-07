@@ -103,7 +103,7 @@ export default function USGStakeContent() {
         </div>
       </div>
 
-      <div className="mt-4 flex w-full flex-col gap-2 lg:flex-row lg:items-start lg:gap-4">
+      <div className="mt-5 flex w-full flex-col gap-2 lg:flex-row lg:items-start lg:gap-4">
         <ReliefCard className="flex w-full flex-col items-center justify-start gap-1 p-4 lg:w-5/12 xl:w-1/3">
           <div className="flex w-full items-center justify-between gap-4">
             <LargeButtonTab

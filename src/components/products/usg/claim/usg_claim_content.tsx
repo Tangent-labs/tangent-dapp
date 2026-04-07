@@ -22,6 +22,7 @@ import { ListGradientBorder } from "@/components/design_system/list/list_gradien
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
+import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 
 const listeState: ListState = {
   search: undefined,
@@ -35,11 +36,11 @@ const ClaimRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
     <div className="flex items-center justify-between max-xl:flex-col">
       <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
-        <div className="xl:w-2/3">{children?.at(0)}</div>
-        <div className="flex justify-center xl:w-1/3">{children?.at(1)}</div>
+        <div className="xl:w-1/2">{children?.at(0)}</div>
+        <div className="flex justify-center xl:w-1/2">{children?.at(1)}</div>
       </div>
-      <hr className="my-2 w-full opacity-20 xl:hidden" />
-      <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-1/2">{children?.at(2)}</div>
+
+      <div className="flex w-full flex-wrap items-center justify-between xl:w-1/2">{children?.at(2)}</div>
     </div>
   )
 }
@@ -48,8 +49,18 @@ export default function USGClaimContent() {
   const color1 = "#0077ff67"
   const color2 = "#0075FF"
 
-  const { displayRows, onClickClaim, marketsToClaim, getSortedRows, isChainviewLoading, isTxLoading, onClickClaimAll, totalDeposited, totalClaimable } =
-    useUSGClaimContext()
+  const {
+    displayRows,
+    onClickClaim,
+    marketsToClaim,
+    getSortedRows,
+    isChainviewLoading,
+    isTxLoading,
+    onClickClaimAll,
+    totalDeposited,
+    totalClaimable,
+    weightedAPRAverage,
+  } = useUSGClaimContext()
 
   const { isWellConnected, connect } = useWalletConnexionContext()
 
@@ -67,54 +78,17 @@ export default function USGClaimContent() {
 
         <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
-
-          <ReliefCard className="relative flex w-full items-center justify-between px-3 py-4">
-            <div className="absolute inset-0 rounded-[10px] bg-cover bg-center opacity-20" style={{ backgroundImage: 'url("./medias/card_bg_blocks.png")' }} />
-
-            <div
-              className="absolute inset-0 rounded-[10px]"
-              style={{
-                left: 0,
-                width: "100%",
-                background: `
-                  linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), 
-                  radial-gradient(50.04% 50% at 50% 100%, ${color1} 0%, rgba(0, 0, 0, 0) 100%)
-                `,
-              }}
-            />
-
-            <div
-              className="pointer-events-none absolute inset-0 rounded-lg"
-              style={{
-                padding: "1px",
-                left: 0,
-                width: "100%",
-                background: `
-                  radial-gradient(49.97% 49.97% at 50% 100%, #FFFFFF 0%,
-                  ${color2} 19.71%, rgba(0, 0, 0, 0) 100%), 
-                  linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%,
-                  rgba(255, 255, 255, 0.1) 100%)
-                `,
-                WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                WebkitMaskComposite: "xor",
-                maskComposite: "exclude",
-              }}
-            />
-
-            <div className="relative z-10 w-full text-center">
-              <h3 className="mb-1 text-xs text-subtitle">Total deposited</h3>
-              <p className="font-semibold text-white">{totalDeposited}</p>
-            </div>
-
-            <div className="relative z-10 w-full text-center">
-              <h3 className="mb-1 text-xs text-subtitle">Total claimable</h3>
-              <p className="font-semibold text-white">{totalClaimable}</p>
-            </div>
-          </ReliefCard>
+          <ThreeCardRowWithMask
+            contents={[
+              { key: "Total claimable", value: totalClaimable },
+              { key: "Average APR", value: weightedAPRAverage },
+              { key: "Total deposited", value: totalDeposited },
+            ]}
+          />
         </div>
       </div>
 
-      <div className="mt-3 flex w-full flex-col items-start justify-start gap-3 md:flex-row">
+      <div className="mt-5 flex w-full flex-col items-start justify-start gap-3 md:flex-row">
         <div className="flex w-full flex-col md:w-9/12">
           <ListProvider getSortedRows={getSortedRows} _headers={claimListHeaders} _rows={displayRows} _listState={listeState}>
             <ClaimList />
@@ -199,69 +173,73 @@ function ClaimList() {
         <ListHeader rowDisposition={ClaimRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 
-      {(displayRows as ClaimData[])?.map((item: ClaimData) => (
-        <div key={item.marketAddress} className="my-0.5 bg-overlay-panel px-4 py-1 backdrop-blur-[60px]">
-          <div className="flex items-center justify-between max-xl:flex-col">
-            <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
-              <div className="xl:w-2/3">
-                <ListAsset name={item?.marketName} token={item.logoKey} />
+      {(displayRows as ClaimData[])?.map((item: ClaimData) => {
+        const isSelected = !!marketsToClaim.find((market) => market.marketAddress === item.marketAddress)
+        const selectedClass = isSelected ? "ring-1 ring-inset ring-[--tgt-button-active]" : ""
+        return (
+          <div
+            key={item.marketAddress}
+            className={`my-0.5 bg-overlay-panel px-4 py-1 backdrop-blur-[60px] hover-lift-row ${selectedClass}`}
+            onClick={() =>
+              addToClaimableMarkets({
+                marketName: item.marketName,
+                claimable: item.totalClaimableValue,
+                marketAddress: item.marketAddress,
+                logoKey: item.logoKey,
+                rewards: item.claimable,
+              })
+            }
+          >
+            <div className={`flex items-center justify-between max-xl:flex-col`}>
+              <div className="flex w-full items-center justify-between xl:w-1/2">
+                <div className="xl:w-1/2">
+                  <ListAsset name={item?.marketName} token={item.logoKey} />
+                </div>
+
+                <div className="flex justify-center xl:w-1/2">
+                  <MarketAPR
+                    marketType={item?.marketType}
+                    logoKey={item.logoKey}
+                    poolName={item?.marketName}
+                    rewardToken={item?.rewardToken}
+                    maxLeverage={1}
+                    currentAPRDetails={item.currentAPRDetails}
+                    projectedAPRDetails={item.projectedAPRDetails}
+                    apr={item?.apr?.current}
+                    projectedApr={item?.apr?.projected}
+                    isMarketListDisplay={true}
+                  />
+                </div>
               </div>
 
-              <div className="flex justify-center xl:w-1/3">
-                <MarketAPR
-                  marketType={item?.marketType}
-                  logoKey={item.logoKey}
-                  poolName={item?.marketName}
-                  rewardToken={item?.rewardToken}
-                  maxLeverage={1}
-                  currentAPRDetails={item.currentAPRDetails}
-                  projectedAPRDetails={item.projectedAPRDetails}
-                  apr={item?.apr?.current}
-                  projectedApr={item?.apr?.projected}
-                  isMarketListDisplay={true}
-                />
+              <hr className="my-2 w-full opacity-20 xl:hidden" />
+
+              <div className="flex w-full flex-wrap items-center justify-between xl:col-span-3 xl:w-1/2">
+                <div className="flex w-full flex-1 items-center justify-center gap-2 text-[15px] xl:w-1/2">
+                  {formatDollar(item?.totalClaimableValue || 0, 2)}
+
+                  <USGHoverCard iconClassName="w-3" title={`${item?.marketName} Rewards Breakdown`}>
+                    {(item?.claimable as ClaimAsset[]).map((reward: ClaimAsset) => (
+                      <div key={reward?.symbol} className="my-1 flex items-center gap-4">
+                        <TokenImage token={reward.symbol} size={16} />
+                        <span> {Number(formatUnits(BigInt(reward.amount), 18)).toFixed(2)}</span>
+                        <span className="w-6"> {reward.symbol}</span>
+                        <span className="text-white/60"> ({formatDollar(reward?.valueInUsd)})</span>
+                      </div>
+                    ))}
+                  </USGHoverCard>
+                </div>
+
+                <div className="flex w-full flex-1 items-center justify-center text-[15px] xl:w-1/2 xl:w-auto">
+                  ${formatMillions(item?.totalDepositedValue || 0)}
+                </div>
               </div>
             </div>
 
-            <hr className="my-2 w-full opacity-20 xl:hidden" />
-            <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-1/2">
-              <div className="flex w-full flex-1 items-center justify-center gap-2 text-[15px]">
-                {formatDollar(item?.totalClaimableValue || 0, 2)}
-
-                <USGHoverCard iconClassName="w-3" title={`${item?.marketName} Rewards Breakdown`}>
-                  {(item?.claimable as ClaimAsset[]).map((reward: ClaimAsset) => (
-                    <div key={reward?.symbol} className="my-1 flex items-center gap-4">
-                      <TokenImage token={reward.symbol} size={16} />
-
-                      <span> {Number(formatUnits(BigInt(reward.amount), 18)).toFixed(2)}</span>
-                      <span className="w-6"> {reward.symbol}</span>
-
-                      <span className="text-white/60"> ({formatDollar(reward?.valueInUsd)})</span>
-                    </div>
-                  ))}
-                </USGHoverCard>
-              </div>
-
-              <div className="flex w-full flex-1 items-center justify-center text-[15px]">${formatMillions(item?.totalDepositedValue || 0)}</div>
-
-              <div className="flex w-full flex-1 items-center justify-center">
-                <Switch
-                  checked={!!marketsToClaim.find((market) => market.marketAddress === item.marketAddress)}
-                  onCheckedChange={() =>
-                    addToClaimableMarkets({
-                      marketName: item.marketName,
-                      claimable: item.totalClaimableValue,
-                      marketAddress: item.marketAddress,
-                      logoKey: item.logoKey,
-                      rewards: item.claimable,
-                    })
-                  }
-                />
-              </div>
-            </div>
+            <ListGradientBorder />
           </div>
-        </div>
-      ))}
+        )
+      })}
     </>
   )
 }

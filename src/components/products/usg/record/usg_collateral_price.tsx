@@ -47,6 +47,18 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     return Number(Number(liquidationPrice / 10n ** 15n)?.toFixed(4)) / 1000
   }, [liquidationPrice])
 
+  const clippedOraclePriceData = useMemo(() => {
+    if (!graphData?.data?.length || !oraclePriceData?.length) return oraclePriceData
+
+    const firstCandleTime = Number(graphData.data[0]?.time)
+    const lastCandleTime = Number(graphData.data[graphData.data.length - 1]?.time)
+
+    return oraclePriceData.filter((point) => {
+      const pointTime = Number(point.time)
+      return pointTime >= firstCandleTime && pointTime <= lastCandleTime
+    })
+  }, [graphData, oraclePriceData])
+
   useEffect(() => {
     if (!containerRef.current) return
 
@@ -131,13 +143,13 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
   useEffect(() => {
     if (!oracleSeriesRef.current) return
 
-    if (!oraclePriceData?.length) {
+    if (!clippedOraclePriceData?.length) {
       oracleSeriesRef.current.setData([])
       return
     }
 
-    oracleSeriesRef.current.setData(oraclePriceData)
-  }, [oraclePriceData])
+    oracleSeriesRef.current.setData(clippedOraclePriceData)
+  }, [clippedOraclePriceData])
 
   useEffect(() => {
     if (!chartRef.current || !graphData?.data?.length) return
@@ -190,7 +202,7 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
       setShowBackupBadge(y === null || y < 0 || y > h)
       setIsAboveView(y === null || y < 0)
 
-      const lastOracleValue = oraclePriceData?.[oraclePriceData.length - 1]?.value
+      const lastOracleValue = clippedOraclePriceData?.[clippedOraclePriceData.length - 1]?.value
       const oracleY = lastOracleValue != null && oracleSeries ? oracleSeries.priceToCoordinate(lastOracleValue) : null
       const labelHeight = 22
 
@@ -226,18 +238,15 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
       ro.disconnect()
       if (animationFrame) cancelAnimationFrame(animationFrame)
     }
-  }, [liquidationPriceNumber, isPending, graphData?.data?.length, oraclePriceData])
+  }, [liquidationPriceNumber, isPending, graphData?.data?.length, clippedOraclePriceData])
 
   return (
     <div ref={chartShellRef} className="relative min-h-80 w-full rounded-[10px] bg-[#0a0a0a] ring-1 ring-white/5">
       <div ref={containerRef} className={cn("absolute inset-0", isPending && "animate-pulse")} />
 
       {oracleLabelTop !== null && !isPending && (
-        <div
-          className="absolute right-2 z-10 rounded-[2px] bg-[#3b82f6] px-1 py-0.5 text-xs text-white"
-          style={{ top: `${oracleLabelTop}px` }}
-        >
-          Oracle ${(oraclePriceData?.[oraclePriceData.length - 1]?.value || 0).toFixed(5)}
+        <div className="absolute right-2 z-10 rounded-[2px] bg-[#3b82f6] px-1 py-0.5 text-xs text-white" style={{ top: `${oracleLabelTop}px` }}>
+          Oracle ${(clippedOraclePriceData?.[clippedOraclePriceData.length - 1]?.value || 0).toFixed(5)}
         </div>
       )}
 

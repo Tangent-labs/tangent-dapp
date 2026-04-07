@@ -21,9 +21,9 @@ export function USGMarketInfo() {
           <div className="flex flex-1 items-center justify-between border-r border-r-white border-opacity-10 pr-3">
             <div className="flex w-full flex-col">
               <div className="flex w-full items-center justify-between gap-2">
-                <div className="flex items-center justify-center gap-2">
-                  Total borrow
-                  <span className="bg-button-active bg-clip-text text-xl font-semibold text-transparent">${formatCompact(totalBorrow?.latestTotalDebt)}</span>
+                <div className="flex items-center justify-center gap-1 text-base text-white">
+                  <span>Total borrow:</span>
+                  <span className="font-semibold">${formatCompact(totalBorrow?.latestTotalDebt)}</span>
                 </div>
                 <div className="flex gap-2">
                   <ButtonTab

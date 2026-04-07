@@ -10,17 +10,72 @@ type UsgTotalBorrowProps = {
   }>
 }
 
+const Y_AXIS_STEPS = [25_000, 50_000, 100_000, 250_000, 500_000, 1_000_000, 2_500_000, 5_000_000, 10_000_000]
+
+const getAdaptiveYAxisStep = (maxValue: number) => {
+  if (maxValue <= 0) return 250_000
+
+  // Keep the axis on "nice" financial steps while targeting roughly 4 visible intervals.
+  const targetTickCount = 4
+  const minimumStep = maxValue / targetTickCount
+
+  return Y_AXIS_STEPS.find((step) => step >= minimumStep) ?? Y_AXIS_STEPS[Y_AXIS_STEPS.length - 1]
+}
+
 export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
+  const maxBorrowValue = totalBorrow.length > 0 ? Math.max(...totalBorrow.map((d) => Number(d?.value))) : 0
+
+  // The Y scale is explicit rather than fully automatic:
+  // - use round monetary steps so the grid stays easy to read
+  // - round the max up to the next step so the area has headroom
+  // - switch label formatting between K and M depending on magnitude
+  const yAxisStep = getAdaptiveYAxisStep(maxBorrowValue)
+  const yAxisMax = Math.max(yAxisStep, Math.ceil(maxBorrowValue / yAxisStep) * yAxisStep)
+  const yAxisTicks = Array.from({ length: Math.floor(yAxisMax / yAxisStep) + 1 }, (_, index) => index * yAxisStep)
+  const hasMultipleYears = new Set(totalBorrow.map((d) => new Date(d.timestamp).getFullYear())).size > 1
+  const xAxisTicks = totalBorrow.reduce<string[]>((ticks, point) => {
+    const dayKey = new Date(point.timestamp).toISOString().slice(0, 10)
+    const lastTick = ticks[ticks.length - 1]
+    const lastDayKey = lastTick ? new Date(lastTick).toISOString().slice(0, 10) : null
+
+    if (dayKey !== lastDayKey) {
+      ticks.push(point.timestamp)
+    }
+
+    return ticks
+  }, [])
+
+  const formatAxisDate = (timestamp: string) => {
+    const date = new Date(timestamp)
+
+    return date.toLocaleDateString(undefined, {
+      year: hasMultipleYears ? "2-digit" : undefined,
+      month: "short",
+      day: "numeric",
+    })
+  }
+
+  const formatYAxisValue = (value: number) => {
+    if (value === 0) return "$0"
+
+    if (value < 250_000) {
+      return `$${Number((value / 1_000).toFixed(0)).toString()}K`
+    }
+
+    const valueInMillions = value / 1_000_000
+    return `$${Number(valueInMillions.toFixed(2)).toString()}M`
+  }
+
   return (
     <div className="flex h-full w-full items-center justify-center">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={totalBorrow}
           margin={{
-            top: 10,
-            right: -20,
-            left: -20,
-            bottom: 0,
+            top: 12,
+            right: 12,
+            left: 8,
+            bottom: 12,
           }}
         >
           <defs>
@@ -29,34 +84,35 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
               <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+          <CartesianGrid horizontal={true} vertical={false} stroke="#454545" strokeOpacity={0.3} />
           <XAxis
             dataKey="timestamp"
-            tickFormatter={(str) =>
-              new Date(str).toLocaleString(undefined, {
-                month: "short",
-                day: "numeric",
-              })
-            }
+            ticks={xAxisTicks}
+            minTickGap={24}
+            tickMargin={8}
+            className="text-sm"
+            axisLine={false}
+            tickLine={false}
+            tickFormatter={formatAxisDate}
           />
 
           <YAxis
-            domain={[0, Number(Math.max(...totalBorrow.map((d) => Number(d?.value)))) * 1.1]}
+            width={72}
+            ticks={yAxisTicks}
+            domain={[0, yAxisMax]}
             orientation="right"
-            tickFormatter={(value) => `$${formatMillions(value)}`}
+            tickMargin={8}
+            className="text-xs"
+            axisLine={false}
+            tickLine={false}
+            tickFormatter={formatYAxisValue}
           />
 
           <Tooltip
             content={({ active, payload, label }) => {
               if (active && payload && payload.length) {
-                const formattedValue = formatDollar(payload[0]?.value?.toString())
-                const formattedDate = new Date(label).toLocaleString(undefined, {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
+                const formattedValue = formatDollar(Number(payload[0]?.value || 0).toFixed(0), 0)
+                const formattedDate = new Date(label).toISOString().slice(0, 16).replace("T", " ")
 
                 return (
                   <div className="flex flex-col items-center justify-center rounded-[10px] border border-white border-opacity-10 bg-input p-2 text-white backdrop-blur-[60px]">
@@ -75,7 +131,7 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
               return null
             }}
           />
-          <Area type="monotone" dataKey="value" stroke="#1568ed" strokeWidth={3} fill="url(#borrowGradient)" dot={false} />
+          <Area type="monotone" dataKey="value" stroke="#1568ed" strokeWidth={1.5} fill="url(#borrowGradient)" dot={false} />
         </AreaChart>
       </ResponsiveContainer>
     </div>

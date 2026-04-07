@@ -23,6 +23,82 @@ import {
 import { CollatGraphData } from "../usg_type"
 import { OraclePricePoint } from "./collat_price/collat_price_controller"
 
+// The oracle series comes with its own timestamps, which can stretch the shared time scale
+// and visually separate the candles. We keep the candles as the source of truth and project
+// the oracle onto candle timestamps. For the Y scale, we rely on the chart's native autoscale
+// for the visible range and only add a small padding around it.
+const PRICE_RANGE_PADDING_RATIO = 0.08 // Add a small visual margin around the visible autoscaled range.
+const OUTLIER_WICK_RATIO = 6 // Only clamp the Y scale when a visible candle range is far above the typical visible range.
+
+const getMedian = (values: number[]) => {
+  if (values.length === 0) return null
+
+  const sortedValues = [...values].sort((a, b) => a - b)
+  const middleIndex = Math.floor(sortedValues.length / 2)
+
+  if (sortedValues.length % 2 === 0) {
+    return (sortedValues[middleIndex - 1] + sortedValues[middleIndex]) / 2
+  }
+
+  return sortedValues[middleIndex]
+}
+
+const getClampedVisiblePriceRange = (candles: CollatGraphData["data"]) => {
+  if (!candles?.length) return null
+
+  const candleRanges = candles.map((candle) => candle.high - candle.low).filter((range) => Number.isFinite(range) && range > 0)
+
+  const medianRange = getMedian(candleRanges)
+  if (!medianRange || medianRange <= 0) return null
+
+  const maxAllowedRange = medianRange * OUTLIER_WICK_RATIO
+  const hasOutlier = candleRanges.some((range) => range > maxAllowedRange)
+
+  if (!hasOutlier) return null
+
+  const clampedLows = candles.map((candle) => Math.max(candle.low, candle.open - maxAllowedRange / 2, candle.close - maxAllowedRange / 2))
+  const clampedHighs = candles.map((candle) => Math.min(candle.high, candle.open + maxAllowedRange / 2, candle.close + maxAllowedRange / 2))
+
+  const minValue = Math.min(...clampedLows)
+  const maxValue = Math.max(...clampedHighs)
+  const range = Math.max(maxValue - minValue, 0.0001)
+  const padding = Math.max(range * PRICE_RANGE_PADDING_RATIO, 0.0001)
+
+  return {
+    minValue: minValue - padding,
+    maxValue: maxValue + padding,
+  }
+}
+
+const getSnappedOraclePriceData = (candles: CollatGraphData["data"], oraclePriceData: OraclePricePoint[] | null) => {
+  if (!candles?.length || !oraclePriceData?.length) return []
+
+  const sortedOraclePoints = [...oraclePriceData].sort((a, b) => Number(a.time) - Number(b.time))
+
+  let oracleIndex = 0
+
+  return candles.map((candle) => {
+    const candleTime = Number(candle.time)
+
+    while (oracleIndex < sortedOraclePoints.length - 1 && Number(sortedOraclePoints[oracleIndex + 1].time) <= candleTime) {
+      oracleIndex += 1
+    }
+
+    const currentPoint = sortedOraclePoints[oracleIndex]
+
+    if (Number(currentPoint.time) > candleTime) {
+      return {
+        time: candle.time,
+      }
+    }
+
+    return {
+      time: candle.time,
+      value: currentPoint.value,
+    }
+  })
+}
+
 type CollateralGraphParams = {
   graphData: CollatGraphData | null
   oraclePriceData: OraclePricePoint[] | null
@@ -47,17 +123,24 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     return Number(Number(liquidationPrice / 10n ** 15n)?.toFixed(4)) / 1000
   }, [liquidationPrice])
 
-  const clippedOraclePriceData = useMemo(() => {
-    if (!graphData?.data?.length || !oraclePriceData?.length) return oraclePriceData
-
-    const firstCandleTime = Number(graphData.data[0]?.time)
-    const lastCandleTime = Number(graphData.data[graphData.data.length - 1]?.time)
-
-    return oraclePriceData.filter((point) => {
-      const pointTime = Number(point.time)
-      return pointTime >= firstCandleTime && pointTime <= lastCandleTime
-    })
+  const snappedOraclePriceData = useMemo(() => {
+    return getSnappedOraclePriceData(graphData?.data || [], oraclePriceData)
   }, [graphData, oraclePriceData])
+
+  const clampedVisiblePriceRange = useMemo(() => {
+    return getClampedVisiblePriceRange(graphData?.data || [])
+  }, [graphData])
+
+  const lastVisibleOracleValue = useMemo(() => {
+    for (let index = snappedOraclePriceData.length - 1; index >= 0; index -= 1) {
+      const point = snappedOraclePriceData[index]
+      if ("value" in point && typeof point.value === "number") {
+        return point.value
+      }
+    }
+
+    return null
+  }, [snappedOraclePriceData])
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -141,15 +224,43 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
   }, [graphData])
 
   useEffect(() => {
+    if (!seriesRef.current) return
+
+    seriesRef.current.applyOptions({
+      autoscaleInfoProvider: (original) => {
+        if (clampedVisiblePriceRange) {
+          return {
+            priceRange: clampedVisiblePriceRange,
+          }
+        }
+
+        const autoscaleInfo = original()
+        if (!autoscaleInfo?.priceRange) return autoscaleInfo
+
+        const range = autoscaleInfo.priceRange.maxValue - autoscaleInfo.priceRange.minValue
+        const padding = Math.max(range * PRICE_RANGE_PADDING_RATIO, 0.0001)
+
+        return {
+          ...autoscaleInfo,
+          priceRange: {
+            minValue: autoscaleInfo.priceRange.minValue - padding,
+            maxValue: autoscaleInfo.priceRange.maxValue + padding,
+          },
+        }
+      },
+    })
+  }, [clampedVisiblePriceRange])
+
+  useEffect(() => {
     if (!oracleSeriesRef.current) return
 
-    if (!clippedOraclePriceData?.length) {
+    if (!snappedOraclePriceData.length) {
       oracleSeriesRef.current.setData([])
       return
     }
 
-    oracleSeriesRef.current.setData(clippedOraclePriceData)
-  }, [clippedOraclePriceData])
+    oracleSeriesRef.current.setData(snappedOraclePriceData)
+  }, [snappedOraclePriceData])
 
   useEffect(() => {
     if (!chartRef.current || !graphData?.data?.length) return
@@ -202,7 +313,7 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
       setShowBackupBadge(y === null || y < 0 || y > h)
       setIsAboveView(y === null || y < 0)
 
-      const lastOracleValue = clippedOraclePriceData?.[clippedOraclePriceData.length - 1]?.value
+      const lastOracleValue = lastVisibleOracleValue
       const oracleY = lastOracleValue != null && oracleSeries ? oracleSeries.priceToCoordinate(lastOracleValue) : null
       const labelHeight = 22
 
@@ -211,7 +322,7 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
         return
       }
 
-      setOracleLabelTop(Math.max(8, Math.min(oracleY - labelHeight - 6, h - labelHeight - 8)))
+      setOracleLabelTop(Math.max(8, Math.min(oracleY - labelHeight / 2, h - labelHeight - 8)))
     }
 
     const scheduleCheck = () => {
@@ -238,7 +349,7 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
       ro.disconnect()
       if (animationFrame) cancelAnimationFrame(animationFrame)
     }
-  }, [liquidationPriceNumber, isPending, graphData?.data?.length, clippedOraclePriceData])
+  }, [liquidationPriceNumber, isPending, graphData?.data?.length, lastVisibleOracleValue])
 
   return (
     <div ref={chartShellRef} className="relative min-h-80 w-full rounded-[10px] bg-[#0a0a0a] ring-1 ring-white/5">
@@ -246,7 +357,7 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
 
       {oracleLabelTop !== null && !isPending && (
         <div className="absolute right-2 z-10 rounded-[2px] bg-[#3b82f6] px-1 py-0.5 text-xs text-white" style={{ top: `${oracleLabelTop}px` }}>
-          Oracle ${(clippedOraclePriceData?.[clippedOraclePriceData.length - 1]?.value || 0).toFixed(5)}
+          Oracle ${(lastVisibleOracleValue || 0).toFixed(5)}
         </div>
       )}
 

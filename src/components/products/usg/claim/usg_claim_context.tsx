@@ -35,6 +35,7 @@ type USGClaimContextValues = {
 
   totalDeposited: string
   totalClaimable: string
+  weightedAPRAverage: string
 }
 
 export const USGClaimContext = createContext<USGClaimContextValues | undefined>(undefined)
@@ -210,9 +211,24 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
   }
 
   const totals = useMemo(() => {
+    let weightedAPRAverage = 0
+    let totalValueDeposited = 0
+    let totalClaimable = 0
+
+    // Computes all totals with one loop only
+    displayRows.forEach((row) => {
+      const depositedValue = Number(row.totalDepositedValue)
+      totalValueDeposited += depositedValue
+      weightedAPRAverage += Number(row.apr.current) * depositedValue
+      totalClaimable += Number(row.totalClaimableValue)
+    })
+    // Prevent denom to be zero
+    weightedAPRAverage = totalValueDeposited !== 0 ? weightedAPRAverage / totalValueDeposited : 0
+
     return {
-      totalDeposited: `$${formatMillions(displayRows.reduce((sum, token) => sum + parseFloat(token.totalDepositedValue), 0).toString())}`,
-      totalClaimable: formatDollar(displayRows.reduce((sum, token) => sum + parseFloat(token.totalClaimableValue), 0).toString(), 2),
+      totalDeposited: `$${formatMillions(totalValueDeposited)}`,
+      totalClaimable: formatDollar(totalClaimable, 2),
+      weightedAPRAverage: weightedAPRAverage === 0 ? "-%" : weightedAPRAverage.toFixed(2) + "%",
     }
   }, [displayRows])
 
@@ -228,6 +244,7 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
     USGsUSGMetrics,
     totalDeposited: totals.totalDeposited,
     totalClaimable: totals.totalClaimable,
+    weightedAPRAverage: totals.weightedAPRAverage,
   }
 
   return <USGClaimContext.Provider value={contextValue}>{children}</USGClaimContext.Provider>

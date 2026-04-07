@@ -233,7 +233,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
 
     liquidateDebounceRef.current = setTimeout(() => {
       quoteLiquidate(value)
-    }, 800)
+    }, 1200)
   }
 
   async function quoteLiquidate(value: bigint) {

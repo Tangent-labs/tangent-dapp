@@ -19,32 +19,30 @@ export default function USGRecordBorrowContent() {
     useUSGBorrowContext()
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-col gap-2">
-        <div className="flex items-end justify-between">
-          <span className="text-sm font-semibold md:text-xl">Borrow USG</span>
-          <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} USG</span>
-        </div>
-
-        <GenericInputAssetAmount
-          inputWeiValue={borrowWeiValue}
-          onValueChange={(value: bigint | undefined) => {
-            setBorrowWeiValue(value)
-          }}
-          disabled={maxBorrowCapReached || maxBorrowableValue === 0n}
-          label="You borrow"
-          depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
-          asset={USGInfo}
-          maxAmountParams={{
-            maxWeiValue: maxBorrowableValue,
-            setMaxAmount: maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue),
-          }}
-          sliderParams={{
-            sliderPercentage: borrowPercentage,
-            setSliderPercentage: maxBorrowCapReached ? () => {} : setBorrowPercentage,
-          }}
-        />
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-sm font-semibold md:text-xl">Borrow USG</span>
+        <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} USG</span>
       </div>
+
+      <GenericInputAssetAmount
+        inputWeiValue={borrowWeiValue}
+        onValueChange={(value: bigint | undefined) => {
+          setBorrowWeiValue(value)
+        }}
+        // disabled={maxBorrowCapReached || maxBorrowableValue === 0n}
+        label="You borrow"
+        depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
+        asset={USGInfo}
+        maxAmountParams={{
+          maxWeiValue: maxBorrowableValue,
+          setMaxAmount: maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue),
+        }}
+        sliderParams={{
+          sliderPercentage: borrowPercentage,
+          setSliderPercentage: maxBorrowCapReached ? () => {} : setBorrowPercentage,
+        }}
+      />
 
       <MaxBorrowCapReached display={!borrowWeiValue && maxBorrowCapReached} />
 

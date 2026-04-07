@@ -56,16 +56,16 @@ export default function USGLiquidatePanel() {
   const isWalletRepayNet = netReceivedValue < 0n
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1.5">
       <div className="flex flex-col gap-2">
-        <div className="flex w-full items-end justify-between">
+        <div className="flex w-full items-center justify-between">
           <span className="text-sm font-semibold md:text-xl">Liquidate</span>
           <span className="text-xs text-subtitle">{maxLiquidateString}</span>
         </div>
 
         <GenericInputAssetAmount
           inputWeiValue={liquidateWeiValue}
-          label="You liquidate"
+          label="You withdraw and sell"
           depositSelect={<StaticCardAssetInput assetName={collateralInfo.name} logoKey={collateralInfo.logoKey} />}
           slippageInput={<SlippageInput slippage={slippage} setSlippage={setSlippage} />}
           disabled={!canInteract}
@@ -80,7 +80,7 @@ export default function USGLiquidatePanel() {
 
         <GenericInputAssetAmount
           inputWeiValue={USGReceivedValue}
-          label="For"
+          label="You buy"
           depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
           disabled={true}
           asset={USGInfo}

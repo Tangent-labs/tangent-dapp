@@ -11,7 +11,7 @@ export function USGLoanDetail() {
   const { marketDisplayData, futureMarketDisplayData, marketData, collateralInfo } = useUSGRecordContext()
 
   return (
-    <ReliefCard className="flex flex-col px-3 py-2">
+    <ReliefCard className="flex flex-col p-5">
       <Title label="Loan details" size="normal" />
 
       <Divider />

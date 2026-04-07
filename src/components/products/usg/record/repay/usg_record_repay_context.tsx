@@ -505,7 +505,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
     repayDebounceRef.current = setTimeout(() => {
       quoteRepayZap(value)
-    }, 800)
+    }, 1200)
   }
 
   async function quoteRepayZap(value: bigint) {

@@ -56,9 +56,9 @@ export default function USGWithdrawContent() {
 
   return (
     <>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1.5">
         <div className="flex flex-col gap-2">
-          <div className="flex items-end justify-between">
+          <div className="flex items-center justify-between">
             <span className="text-sm font-semibold md:text-xl">Withdraw collateral</span>
             <span className="text-xs text-subtitle">
               Max: {formatBigInt(maxWithdrawable, 18, 3)} {selectedAsset}

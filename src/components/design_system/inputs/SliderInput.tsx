@@ -67,7 +67,7 @@ export const SliderInput = ({ className, handleSliderChange, legendValues, value
 
       {/* SLIDER */}
       <div
-        className="stop-focus no-parent-hover relative mt-3 h-1.5 w-full overflow-visible rounded-[10px] bg-[#4b5563]"
+        className="stop-focus no-parent-hover relative mt-1 h-1.5 w-full overflow-visible rounded-[10px] bg-[#4b5563]"
         onMouseEnter={() => setIsBarHovered(true)}
         onMouseLeave={() => setIsBarHovered(false)}
       >
@@ -117,7 +117,7 @@ export const SliderInput = ({ className, handleSliderChange, legendValues, value
       </div>
 
       {/* LEGEND — labels only */}
-      <div className="pointer-events-none relative h-4 w-full select-none text-[10px] text-subtitle">
+      <div className="pointer-events-none relative h-2 w-full select-none text-[10px] text-subtitle">
         <div className="absolute inset-y-0 left-1 right-2">
           {legendValues.map((el) => {
             const pos = ((Number(el) - start) * 100) / (end - start)

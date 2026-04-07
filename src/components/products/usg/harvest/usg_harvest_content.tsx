@@ -32,12 +32,12 @@ const listeState: ListState = {
 const HarvestRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
     <div className="flex items-center justify-between max-xl:flex-col">
-      <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
-        <div className="xl:w-1/2">{children?.at(0)}</div>
-        <div className="flex justify-center xl:w-1/2">{children?.at(1)}</div>
+      <div className="flex w-full items-center justify-between xl:w-[43.75%] xl:justify-start">
+        <div className="xl:w-[57.14%]">{children?.at(0)}</div>
+        <div className="flex justify-center xl:w-[42.86%]">{children?.at(1)}</div>
       </div>
       <hr className="my-2 w-full opacity-20 xl:hidden" />
-      <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-1/2">{children?.at(2)}</div>
+      <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-[56.25%] xl:gap-0">{children?.at(2)}</div>
     </div>
   )
 }
@@ -61,14 +61,14 @@ export default function USGHarvestContent() {
           </div>
         </PageHeader>
 
-        <div className="flex h-auto w-full flex-col items-center gap-2 xl:w-1/2">
+        <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
           <PointsCampaignLiveCard />
 
           <UsgBalanceAndTotalPoints USGsUSGMetrics={USGsUSGMetrics} lpUserPoints={lpUserPoints} voteUserPoints={voteUserPoints} />
         </div>
       </div>
 
-      <div className="mt-3 flex w-full flex-col items-start justify-start gap-3 md:flex-row">
+      <div className="mt-5 flex w-full flex-col items-start justify-start gap-3 md:flex-row">
         <div className="flex w-full flex-col md:w-9/12">
           <ListProvider getSortedRows={getSortedRows} _headers={harvestListHeaders} _rows={displayRows} _listState={listeState}>
             <HarvestList></HarvestList>
@@ -143,60 +143,66 @@ function HarvestList() {
         <ListHeader rowDisposition={HarvestRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 
-      {(displayRows as HarvesterInfoDisplay[])?.map((item: HarvesterInfoDisplay) => (
-        <div key={item.contractAddress} className="my-0.5 bg-overlay-panel px-4 py-1 backdrop-blur-[60px]">
-          <div className="flex items-center justify-between max-xl:flex-col">
-            <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
-              {/* COL "ASSET" */}
-              <div className="xl:w-1/2">
-                <ListAsset name={item?.logoKey} token={item?.logoKey} />
-              </div>
-              {/* COL "TOTAL REWARDS" */}
-              <div className="flex justify-center gap-2 text-sm md:text-[15px] xl:w-1/2">
-                {formatDollar(item?.rewards?.totalDollar || 0)}
+      {(displayRows as HarvesterInfoDisplay[])?.map((item: HarvesterInfoDisplay) => {
+        const isSelected = !!marketsToHarvest.find((market) => market.marketAddress === item.contractAddress)
+        const selectedClass = isSelected ? "ring-1 ring-inset ring-[--tgt-button-active]" : ""
 
-                <USGHoverCard iconClassName="w-3" title={`${item?.asset} Rewards Breakdown`}>
-                  <div className="flex flex-col gap-1 text-sm">
-                    {item?.rewards?.details?.map((reward, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <TokenImage token={reward.logoKey} size={16} />
-                        <span className="w-20"> {reward.logoKey}</span>
-                        <span> {formatDollar(reward.dollarValue)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </USGHoverCard>
+        return (
+          <div
+            key={item.contractAddress}
+            className={`my-0.5 bg-overlay-panel px-4 py-1 backdrop-blur-[60px] hover-lift-row ${selectedClass}`}
+            onClick={() =>
+              addToHarvestableMarkets({
+                ...item,
+                marketName: item.asset,
+                harvestable: item.rewards.totalDollar,
+                marketAddress: item.contractAddress,
+              })
+            }
+          >
+            <div className="flex items-center justify-between max-xl:flex-col">
+              <div className="flex w-full items-center justify-between xl:w-[43.75%] xl:justify-start">
+                {/* COL "ASSET" */}
+                <div className="xl:w-[57.14%]">
+                  <ListAsset name={item?.logoKey} token={item?.logoKey} />
+                </div>
+                {/* COL "TOTAL REWARDS" */}
+                <div className="flex justify-center gap-2 text-sm md:text-[15px] xl:w-[42.86%]">
+                  {formatDollar(item?.rewards?.totalDollar || 0)}
+
+                  <USGHoverCard iconClassName="w-3" title={`${item?.asset} Rewards Breakdown`}>
+                    <div className="flex flex-col gap-1 text-sm">
+                      {item?.rewards?.details?.map((reward, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <TokenImage token={reward.logoKey} size={16} />
+                          <span className="w-20"> {reward.logoKey}</span>
+                          <span> {formatDollar(reward.dollarValue)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </USGHoverCard>
+                </div>
+              </div>
+              <hr className="my-2 w-full opacity-20 xl:hidden" />
+              <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-[56.25%] xl:gap-0">
+                {/* COL "HARVESTER FEES" */}
+                <div className="flex w-full flex-1 items-center justify-center gap-2 text-sm md:text-[15px]">{formatPercent(item?.percentage)}</div>
+
+                {/* COL "HARVESTER REWARDS" */}
+                <div className="flex w-full flex-1 items-center justify-center text-sm md:text-[15px]">
+                  {formatDollar((item?.rewards.totalDollar * item?.percentage) / 100)}
+                </div>
+
+                {/* COL "SWITCH LAST & LAST HARVEST" */}
+                <div className="flex w-full flex-1 flex-col items-center justify-center">
+                  <span className="text-sm">{item.lastHarvestDate} </span>
+                </div>
               </div>
             </div>
-            <hr className="my-2 w-full opacity-20 xl:hidden" />
-            <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-1/2">
-              {/* COL "HARVESTER FEES" */}
-              <div className="flex w-full flex-1 items-center justify-center gap-2 text-sm md:text-[15px]">{formatPercent(item?.percentage)}</div>
-
-              {/* COL "HARVESTER REWARDS" */}
-              <div className="flex w-full flex-1 items-center justify-center text-sm md:text-[15px]">
-                {formatDollar((item?.rewards.totalDollar * item?.percentage) / 100)}
-              </div>
-
-              {/* COL "SWITCH LAST & LAST HARVEST" */}
-              <div className="flex w-full flex-1 flex-col items-center justify-center">
-                <Switch
-                  checked={!!marketsToHarvest.find((market) => market.marketAddress === item.contractAddress)}
-                  onCheckedChange={() =>
-                    addToHarvestableMarkets({
-                      ...item,
-                      marketName: item.asset,
-                      harvestable: item.rewards.totalDollar,
-                      marketAddress: item.contractAddress,
-                    })
-                  }
-                />
-                <span className="mt-1 text-xs"> Last Harvest {item.lastHarvestDate} </span>
-              </div>
-            </div>
+            <ListGradientBorder />
           </div>
-        </div>
-      ))}
+        )
+      })}
     </>
   )
 }

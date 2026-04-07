@@ -27,7 +27,8 @@ export const getFormState = (
 
   const isApproved = depositValue <= (balanceAllowance?.allowance || 0n)
 
-  if (!!quotedValue && quotedValue < (99n * depositValue) / 100n) {
+  // 0.25% price impact maximum
+  if (!!quotedValue && quotedValue < (9975n * depositValue) / 10000n) {
     errors.push({
       key: "price-impact",
       title: "High Price Impact",

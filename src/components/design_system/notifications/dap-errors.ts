@@ -109,6 +109,6 @@ export const dappErrors = {
     title: "Repayment Uses Wallet USG",
     subtitle: "This repayment will use USG from your wallet.",
     content: "Make sure you have enough USG in your wallet to cover the repayment.",
-    type: "form-alert",
+    type: null,
   },
 } satisfies Record<string, FormError>

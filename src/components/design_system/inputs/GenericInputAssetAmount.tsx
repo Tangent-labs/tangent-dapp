@@ -254,7 +254,7 @@ export function GenericInputAssetAmount({
               "focus-within:border-[--tgt-button-active] focus-within:shadow-[0_0_6px_1px_var(--tgt-button-active)]",
               "hover:bg-white/[0.08] [&:has(.no-parent-hover:hover)]:!bg-white/[0.03] [&:has(.no-parent-hover:hover)]:!shadow-none"
             ),
-        "flex flex-col p-2 py-1 transition-all duration-200"
+        "flex flex-col p-2.5 transition-all duration-200"
       )}
       onClick={handlePanelClick}
     >
@@ -315,7 +315,7 @@ export function GenericInputAssetAmount({
         </div>
       </div>
 
-      <div className="flex w-full items-center gap-2">
+      <div className="mt-1 flex w-full items-center gap-2">
         {isSliderDisplay && (
           <div className="group flex w-full flex-col">
             <SliderInput

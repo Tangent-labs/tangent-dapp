@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { formatDollar, formatNumber } from "@/lib/number_formatter"
 
 import {
+  AutoscaleInfo,
   CandlestickSeries,
   createChart,
   DeepPartial,
@@ -227,7 +228,7 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     if (!seriesRef.current) return
 
     seriesRef.current.applyOptions({
-      autoscaleInfoProvider: (original) => {
+      autoscaleInfoProvider: (original: () => AutoscaleInfo | null) => {
         if (clampedVisiblePriceRange) {
           return {
             priceRange: clampedVisiblePriceRange,

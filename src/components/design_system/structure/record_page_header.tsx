@@ -48,8 +48,8 @@ export function RecordPageHeader({
 
   return (
     <>
-      <div className="flex w-full max-w-32 flex-col items-center justify-center text-[15px] xl:max-w-none xl:border-r xl:border-white/10">
-        <div className="flex items-center justify-center gap-1">Collateral vAPR</div>
+      <div className="flex h-[70px] w-full max-w-32 flex-col items-center justify-center text-[15px] xl:max-w-none xl:border-r xl:border-white/10">
+        <span>Collateral vAPR</span>
 
         <MarketAPR
           poolName={poolName}
@@ -66,13 +66,13 @@ export function RecordPageHeader({
         />
       </div>
 
-      <div className="flex w-full max-w-32 flex-col items-center justify-center text-[15px] xl:max-w-none xl:border-r xl:border-white/10">
+      <div className="flex h-[70px] w-full max-w-32 flex-col items-center justify-center text-[15px] xl:max-w-none xl:border-r xl:border-white/10">
         <div className="flex items-center justify-center gap-1">
           Max vAPR
           <HoverCard openDelay={100} closeDelay={100}>
             <HoverCardTrigger asChild>
               <button type="button">
-                <IconCircleHelp className="h-auto w-[12px] text-white" />
+                <IconCircleHelp className="h-auto w-[12px]" />
               </button>
             </HoverCardTrigger>
 
@@ -116,7 +116,7 @@ export const RecordPageHeaderIndicator = ({ title, value, subValue, indicator, c
   return (
     <div
       className={cn(
-        `flex h-full w-full max-w-32 flex-col items-center justify-center text-[15px] xl:max-w-none`,
+        `flex h-[70px] w-full max-w-32 flex-col items-center justify-center text-[15px] xl:max-w-none`,
         `${title === "LT" ? "" : "xl:border-r xl:border-white/10"}`
       )}
     >
@@ -140,7 +140,7 @@ export const RecordPageHeaderIndicator = ({ title, value, subValue, indicator, c
         )}
       </div>
 
-      <span className={cn("items-centerﬂ flex text-xl font-semibold", className)}>{value}</span>
+      <span className={cn("flex items-center text-xl font-semibold", className)}>{value}</span>
       <span className="text-xs text-subtitle">{subValue}</span>
     </div>
   )

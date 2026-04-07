@@ -20,7 +20,7 @@ export function NeonMetricsCard({ title, subtitle, value, extra, color1, color2,
         </div>
       </div>
 
-      <NeonLightCard color1={color1} color2={color2} className="w-full">
+      <NeonLightCard paddingHorizontal={3} color1={color1} color2={color2} className="w-full">
         <span className="mt-1 flex w-full items-center justify-center text-sm text-subtitle">{subtitle}</span>
 
         <div className="mb-2 flex items-center justify-center gap-1">

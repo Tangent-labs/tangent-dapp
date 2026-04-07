@@ -29,7 +29,7 @@ export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
   }
 
   return (
-    <ReliefCard className="mt-4 hidden h-24 items-center py-2 md:flex">
+    <ReliefCard className="hidden h-24 items-center py-2 md:flex">
       <div className="flex min-h-20 w-2/12 flex-col items-center justify-center border-r border-[#3F3F3F] px-8">
         <div className="flex flex-col items-center justify-between gap-2">
           <div className="mt-2 flex items-center justify-between gap-2">

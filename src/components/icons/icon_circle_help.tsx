@@ -4,8 +4,8 @@ interface IconProps {
 
 export function IconCircleHelp({ className = "" }: IconProps) {
   return (
-    <svg className={className || ""} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M9.26158 14.14V8.092H10.7376V14.14H9.26158ZM9.21358 5.5H10.7976V7.144H9.21358V5.5Z" fill="white" />
+    <svg className={className + " text-white/80 hover:text-white"} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9.26158 14.14V8.092H10.7376V14.14H9.26158ZM9.21358 5.5H10.7976V7.144H9.21358V5.5Z" fill="currentColor" />
       <path
         fillRule="evenodd"
         clipRule="evenodd"

@@ -23,7 +23,7 @@ export const UsgBalanceAndTotalPoints = ({ USGsUSGMetrics, voteUserPoints, lpUse
               {formatMillions(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints)} pts
               <HoverCard openDelay={100} closeDelay={100}>
                 <HoverCardTrigger asChild>
-                  <button type="button">
+                  <button className="h-[19.5px]" type="button">
                     <IconCircleHelp className="w-3 fill-white" />
                   </button>
                 </HoverCardTrigger>

@@ -1,6 +1,6 @@
 "use client"
 
-import { formatDollar, formatMillions } from "@/lib/number_formatter"
+import { formatDollar } from "@/lib/number_formatter"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 
 type UsgTotalBorrowProps = {

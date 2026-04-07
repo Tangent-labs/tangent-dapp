@@ -67,6 +67,7 @@ type USGLiquidateContextValues = {
   collateralRepayValue: bigint
   isTransactionBlockedByWalletRepay: boolean
   setIsTransactionBlockedByWalletRepay: (arg: boolean) => void
+  isDebtBelowThreshold: boolean
 }
 
 export const USGLiquidateContext = createContext<USGLiquidateContextValues | undefined>(undefined)
@@ -188,8 +189,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         isWellConnected,
         isQuoteLoading || isTxLoading,
         isTransactionBlockedByPriceImpact,
-        isTransactionBlockedBySlippage,
-        isTransactionBlockedByWalletRepay
+        isTransactionBlockedBySlippage
       )
     }
     return { canProcess: false, errors: [], haveToApprove: false }
@@ -202,7 +202,6 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     repayWeiValue,
     isTransactionBlockedByPriceImpact,
     isTransactionBlockedBySlippage,
-    isTransactionBlockedByWalletRepay,
   ])
 
   const maxLiquidable = useMemo(() => {
@@ -234,7 +233,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
 
     liquidateDebounceRef.current = setTimeout(() => {
       quoteLiquidate(value)
-    }, 800)
+    }, 1200)
   }
 
   async function quoteLiquidate(value: bigint) {
@@ -287,6 +286,16 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
 
     return { collateralRepayValue, walletRepayValue }
   }, [USGReceivedValue, repayWeiValue])
+
+  const isDebtBelowThreshold = useMemo(() => {
+    if (!marketData || !repayWeiValue || repayWeiValue === 0n) return false
+
+    const currentDebt = marketData.debtInfos?.userDebt || 0n
+    const minimumLoan = marketData.constants?.minimumLoan || 0n
+    const remainingDebt = currentDebt > repayWeiValue ? currentDebt - repayWeiValue : 0n
+
+    return remainingDebt > 0n && remainingDebt < minimumLoan
+  }, [marketData, repayWeiValue])
 
   useEffect(() => {
     setIsTransactionBlockedByPriceImpact(!!USGReceivedValue && !!liquidateWeiValue && priceImpact >= 0.25)
@@ -348,6 +357,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     collateralRepayValue,
     isTransactionBlockedByWalletRepay,
     setIsTransactionBlockedByWalletRepay,
+    isDebtBelowThreshold,
   }
 
   return <USGLiquidateContext.Provider value={contextValue}>{children}</USGLiquidateContext.Provider>

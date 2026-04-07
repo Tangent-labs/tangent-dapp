@@ -94,7 +94,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
               onClickRepay={onClickRepay}
             ></FeatureTabs>
 
-            <div className="mt-[10]">{children}</div>
+            <div className="mt-[10px]">{children}</div>
           </ReliefCard>
 
           <div className="flex w-full flex-col gap-5 self-start xl:sticky xl:top-24 xl:w-7/12">

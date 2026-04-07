@@ -110,7 +110,7 @@ export const AirdropSharedHeader = ({
         )}
       </ReliefCard>
 
-      <div className="flex w-full flex-col items-start justify-between gap-2 md:flex-row">
+      <div className="flex w-full flex-col items-start justify-between gap-3 md:flex-row">
         <NeonMetricsCard
           title="Liquidity"
           subtitle="Liquidity points"
@@ -130,7 +130,7 @@ export const AirdropSharedHeader = ({
           className="mt-2 h-full w-full min-w-48 md:mt-0 xl:w-auto"
         />
 
-        <ReliefCard className="hidden w-fit min-w-32 flex-col items-center justify-center gap-1 self-end px-4 py-2 lg:flex">
+        <ReliefCard className="hidden h-full w-fit min-w-32 flex-col items-center justify-center gap-1 self-end px-4 py-2 lg:flex">
           <span className="text-center text-sm text-subtitle">Your boost</span>
           <span className="text-center text-xl font-semibold text-white">x{userBoostFactor}</span>
         </ReliefCard>

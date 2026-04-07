@@ -23,7 +23,7 @@ import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { fetchUserStatus, validatePredepositSignature } from "./api/client.api"
 import { opportunities } from "../../../app/(products)/(usg)/earn/aprOpportunities.json"
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { EarnPoolsData, getConvexPools, getCurvePools, getPendlePools, getStakeDAOPools } from "../usg/client_api_external"
 import { deposit, fetchQuote, getFormState, mapPredepositStatus, TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "./predeposit.controller"
 
@@ -162,46 +162,46 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
 
   const [isUSGfrxUSDTransactionBlockedBySlippage, setIsUSGfrxUSDTransactionBlockedBySlippage] = useState<boolean>(false)
 
+  const hasPromptedSign = useRef(false)
+
   const getUserStatus = useCallback(async () => {
     try {
       const status = await fetchUserStatus(currentAddress || zeroAddress)
       if (!status) return
 
       const mappedStatus: PredepositStatus = mapPredepositStatus(status)
-
-      // Always set status to display predeposit metrics
       setPredepositStatus(mappedStatus)
 
-      if (!currentAddress) return
+      if (currentAddress === zeroAddress) return
 
-      // Deal with user status
       const userCanSignAndAccessPredeposit =
-        (mappedStatus?.predepositState === "deposit_private" && mappedStatus?.userState === "private") || mappedStatus?.predepositState === "deposit_public"
+        (mappedStatus.predepositState === "deposit_private" && mappedStatus.userState === "private") || mappedStatus.predepositState === "deposit_public"
 
-      if (mappedStatus?.isSigned && (mappedStatus?.userState === "private" || mappedStatus?.predepositState === "deposit_public")) {
+      if (mappedStatus.isSigned && (mappedStatus.userState === "private" || mappedStatus.predepositState === "deposit_public")) {
         setIsWhitelisted(true)
-      } else if (userCanSignAndAccessPredeposit && !mappedStatus?.isSigned) {
+      } else if (userCanSignAndAccessPredeposit && !mappedStatus.isSigned && !hasPromptedSign.current) {
+        hasPromptedSign.current = true
         await signMessage()
       } else {
         setIsWhitelisted(false)
       }
     } catch (error) {
-      console.error("Failed to fetch user status : ", error)
+      console.error("Failed to fetch user status:", error)
     }
   }, [currentAddress])
 
-  // Fetches user data
   useEffect(() => {
     if (!isWalletContextLoaded) return
 
-    // Always fetch immediately when context loads or address changes
     getUserStatus()
 
-    const timer = setInterval(() => {
-      getUserStatus()
-    }, 12000)
-
-    return () => clearInterval(timer)
+    if (currentAddress !== zeroAddress) {
+      const timer = setInterval(getUserStatus, 12000)
+      return () => clearInterval(timer)
+    } else {
+      hasPromptedSign.current = false
+      setIsWhitelisted(false)
+    }
   }, [currentAddress, isWalletContextLoaded])
 
   useEffect(() => {
@@ -437,20 +437,20 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   }
 
   const signMessage = async () => {
+    const pendingToastId = toast.info(ToastComponent, {
+      data: {
+        type: "Pending Transaction",
+        content: "Pending signature awaiting validation...",
+      },
+      autoClose: false,
+      closeOnClick: false,
+      draggable: false,
+    })
+
     try {
       const message = `I, owner of wallet ${currentAddress?.toLowerCase()} assess to participate to the predeposit campaign.`
 
       if (walletClient && currentAddress) {
-        const pendingToastId = toast.info(ToastComponent, {
-          data: {
-            type: "Pending Transaction",
-            content: "Pending signature awaiting validation...",
-          },
-          autoClose: false,
-          closeOnClick: false,
-          draggable: false,
-        })
-
         const signature = await walletClient.signMessage({
           account: currentAddress,
           message,
@@ -479,12 +479,38 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
               setIsWhitelisted(false)
             }
           })
-          .catch((error) => {
-            console.error("error : ", error)
+          .catch((err) => {
+            console.error("err : ", err)
+
+            setIsWhitelisted(false)
+
+            toast.update(pendingToastId, {
+              render: ToastComponent,
+              data: {
+                type: "Error",
+                content: "Signature failed.",
+              },
+              autoClose: 3000,
+              closeOnClick: true,
+              draggable: true,
+            })
           })
       }
-    } catch (err) {
-      console.error(err)
+    } catch (e) {
+      console.error("e : ", e)
+
+      setIsWhitelisted(false)
+
+      toast.update(pendingToastId, {
+        render: ToastComponent,
+        data: {
+          type: "Error",
+          content: "Signature failed.",
+        },
+        autoClose: 3000,
+        closeOnClick: true,
+        draggable: true,
+      })
     }
   }
 

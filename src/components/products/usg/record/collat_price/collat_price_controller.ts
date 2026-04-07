@@ -54,13 +54,17 @@ export const mapPendleResponseToGraphData = (resp: PendleCollatApiType, address:
 
 export type OraclePricePoint = { time: Time; value: number }
 
-export const mapOracleResponseToLineData = (resp: OracleGraphDataPoint[] | null): OraclePricePoint[] | null => {
+export const mapOracleResponseToLineData = (resp: OracleGraphDataPoint[] | null, bucketSizeMinutes: number): OraclePricePoint[] | null => {
   if (!resp?.length) return null
+
+  const bucketSizeSeconds = Math.max(1, bucketSizeMinutes) * 60
 
   return resp
     .filter((row) => row.price != null && !isNaN(Number(row.price)))
     .map((row) => ({
-      time: Math.floor(row.ts / 1000) as Time,
+      // Oracle buckets are returned on their end timestamp, while candles are drawn from bucket start.
+      // Shift the line back by one bucket so both series line up visually.
+      time: Math.floor(row.ts / 1000 - bucketSizeSeconds) as Time,
       value: Number(row.price),
     }))
 }

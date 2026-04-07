@@ -26,7 +26,7 @@ export function MarketDetailsParameters() {
   }, [marketAprs, marketData])
 
   return (
-    <ReliefCard className="my-5 md:h-[110px]">
+    <ReliefCard className="my-2 md:my-5 md:h-[110px]">
       {currentMarketApr && marketData && (
         <div className="flex hidden items-center justify-evenly py-5 md:flex">
           <RecordPageHeader

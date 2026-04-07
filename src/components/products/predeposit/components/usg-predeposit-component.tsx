@@ -107,7 +107,7 @@ export const USGPredepositComponent = ({
           <div className="flex flex-col items-start justify-start">
             <div className="flex items-center justify-center text-xs font-semibold text-subtitle">You receive</div>
             <input
-              type="string"
+              type="text"
               disabled={isLoading}
               readOnly={true}
               className="w-full max-w-36 bg-transparent text-[24px] font-semibold focus:outline-none"

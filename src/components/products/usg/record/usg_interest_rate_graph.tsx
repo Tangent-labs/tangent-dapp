@@ -159,14 +159,14 @@ export function InterestRateGraph() {
             labelFormatter={(label: number) => `Price: $${label.toFixed(3)}`}
           />
 
-          <Area yAxisId="left" type="stepAfter" dataKey="rewardsCut" stroke="#0075FF" strokeWidth={2} fill="url(#gradiant-blue)" fillOpacity={1} />
+          <Area yAxisId="left" type="stepAfter" dataKey="rewardsCut" stroke="#0075FF" strokeWidth={1.5} fill="url(#gradiant-blue)" fillOpacity={1} />
 
           <Area
             yAxisId="right"
             type="monotone"
             dataKey="interestRate"
             stroke="#e5ff00"
-            strokeWidth={2}
+            strokeWidth={1.5}
             fill="url(#gradiant-yellow)"
             fillOpacity={1}
             animationDuration={1000}

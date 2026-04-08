@@ -31,8 +31,8 @@ export const BoostsList = () => {
 
   return (
     <>
-      <div className="relative mb-1 mt-4 hidden w-full xl:block">
-        <div className={`w-full rounded-t-[10px] bg-overlay-panel p-4 leading-[10px] backdrop-blur-[60px]`}>
+      <div className="relative mb-1 mt-5 hidden w-full xl:block">
+        <div className={`w-full rounded-t-[10px] bg-overlay-panel p-2 leading-[10px] backdrop-blur-[60px]`}>
           <BoostRowLayout>
             {!!headers?.at(0)?.key && (
               <div className="flex w-full">

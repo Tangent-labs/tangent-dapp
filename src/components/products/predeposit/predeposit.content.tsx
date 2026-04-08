@@ -39,7 +39,10 @@ export const PredepositContent = () => {
                 </span>
                 <span className="w-32 border-t border-white"></span>
                 <span
-                  className={cn("relative h-3 w-3 rounded-full", predepositStatus?.predepositState !== "deposit_private" ? "bg-white" : "border border-white")}
+                  className={cn(
+                    "relative h-3 w-3 rounded-full",
+                    !!predepositStatus && predepositStatus?.predepositState !== "deposit_private" ? "bg-white" : "border border-white"
+                  )}
                 >
                   <div className="absolute -left-3 top-4 flex items-center justify-center text-sm text-subtitle">Public</div>
                 </span>

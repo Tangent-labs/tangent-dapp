@@ -33,7 +33,7 @@ export const getFormState = (
       key: "price-impact",
       title: "High Price Impact",
       subtitle: "The quoted value deviates significantly from your deposit.",
-      content: "Price impact too high. Wait for Peg Keepers to take action and try again later.",
+      content: "Wait for Peg Keepers to take action and try again later.",
       type: "form-alert",
     })
   }

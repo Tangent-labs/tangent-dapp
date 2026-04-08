@@ -63,7 +63,7 @@ export default function USGRepayContent() {
 
   const WithdrawAssetSelectTemplate = (option: AssetInfos) => {
     return (
-      <div className="flex w-full cursor-pointer items-center gap-2 rounded-[10px] py-1 hover:bg-white/10">
+      <div className="flex w-full cursor-pointer items-center gap-2 rounded-[10px] py-1">
         <TokenImage token={option?.logoKey} size={32} />
         <span className="text-sm font-semibold">{option.symbol}</span>
       </div>

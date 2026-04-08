@@ -516,6 +516,12 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   }, [repayAssetInfo?.address, walletClient])
 
   useEffect(() => {
+    setPercentage(0)
+    setWithdrawPercentage(0)
+    setRepayWeiValue(undefined)
+    setWithdrawWeiValue(undefined)
+    setUsgRepayedValue(undefined)
+
     if (!repayAsset) return
 
     const fetchSwapAssetData = async () => {

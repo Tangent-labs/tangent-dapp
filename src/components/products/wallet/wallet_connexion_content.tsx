@@ -1,6 +1,7 @@
 "use client"
 
-import { useMemo } from "react"
+import { cn } from "@/lib/utils"
+import { useMemo, useState } from "react"
 import { useUSGContext } from "../usg/usg_context"
 import { useClipboard } from "@/hooks/useClipboard"
 import { formatAddress } from "@/lib/other_formatter"
@@ -11,7 +12,6 @@ import { TokenImage } from "@/components/design_system/structure/token_image"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { PopoverTriggerElement } from "@/components/design_system/structure/popover_trigger_element"
-import { cn } from "@/lib/utils"
 
 type WalletConnexionContentProps = {
   className?: string
@@ -20,9 +20,11 @@ type WalletConnexionContentProps = {
 export function WalletConnexionContent({ className }: WalletConnexionContentProps) {
   const { copied, copy } = useClipboard()
 
+  const { USGsUSGMetrics } = useUSGContext()
+
   const { connect, disconnect, isConnected, isChainConnected, currentAddress } = useWalletConnexionContext()
 
-  const { USGsUSGMetrics } = useUSGContext()
+  const [popoverOpen, setPopoverOpen] = useState(false)
 
   const buttonLabel = useMemo(() => {
     if (!isConnected) return "Connect Wallet"
@@ -31,14 +33,22 @@ export function WalletConnexionContent({ className }: WalletConnexionContentProp
   }, [isConnected, isChainConnected, currentAddress])
 
   return (
-    <Popover>
+    <Popover
+      open={isConnected && popoverOpen}
+      onOpenChange={(open) => {
+        if (!isConnected) return
+        setPopoverOpen(open)
+      }}
+    >
       <PopoverTrigger asChild>
         <PopoverTriggerElement
           className={cn("w-full max-w-36", className)}
           onClick={(e) => {
             if (!isConnected) {
               e.preventDefault()
+              e.stopPropagation()
               connect()
+              return
             }
           }}
         >
@@ -80,8 +90,14 @@ export function WalletConnexionContent({ className }: WalletConnexionContentProp
             </div>
 
             {isConnected && (
-              <div onClick={() => disconnect()} className="flex w-full cursor-pointer items-center justify-start p-2 font-semibold text-danger">
-                Log out
+              <div
+                onClick={() => {
+                  disconnect()
+                  setPopoverOpen(false)
+                }}
+                className="flex w-full cursor-pointer items-center justify-center rounded-[10px] bg-[#FF030010] p-2 font-semibold text-danger hover:bg-[#FF030016]"
+              >
+                Disconnect wallet
               </div>
             )}
           </div>

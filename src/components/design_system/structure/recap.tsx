@@ -42,7 +42,7 @@ export function RecapAccordion({ isLoading, isDisplayed, zappingParams, classNam
                 <>
                   {zappingParams.leverage && (
                     <div className="flex w-full items-center justify-between">
-                      <span className="text-subtitle">Leverage : </span>
+                      <span className="text-subtitle">Leverage: </span>
                       <span className={cn("text-white")}>~{zappingParams.leverage.toFixed(2)}x</span>
                     </div>
                   )}

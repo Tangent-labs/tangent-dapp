@@ -26,7 +26,7 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
   return (
     <div className="flex w-full flex-col items-start justify-start gap-3 md:flex-row">
       <div className="flex w-full items-start justify-start">
-        <ReliefCard className="flex h-full max-h-[340px] w-full flex-col items-start justify-start p-3">
+        <ReliefCard className="flex h-full w-full flex-col items-start justify-start p-5">
           <div className="flex w-full items-center justify-end sm:justify-between">
             <div className="hidden text-xl font-semibold sm:flex">TVL </div>
 
@@ -70,17 +70,15 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
             </div>
           )}
           {/* CHART */}
-          <div className="mb-8 flex h-56 min-h-56 w-full items-center justify-center">
+          <div className="flex h-56 min-h-56 w-full items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
-                width={500}
-                height={400}
                 data={tvl}
                 margin={{
                   top: 10,
                   right: -20,
-                  left: -20,
-                  bottom: 0,
+                  left: -5,
+                  bottom: -10,
                 }}
               >
                 <XAxis
@@ -88,7 +86,6 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
                   tickFormatter={(tick) => formatXAxis(tick, rangeMs)}
                   interval={tickInterval}
                   scale="point"
-                  padding={{ left: 20, right: 20 }}
                   tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
                   axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
                   tickLine={false}

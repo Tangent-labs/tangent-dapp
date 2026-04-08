@@ -42,7 +42,7 @@ export function WalletConnexionContent({ className }: WalletConnexionContentProp
             }
           }}
         >
-          <Button classNameChild="py-[9px] px-1">{buttonLabel}</Button>
+          <Button classNameChild="py-[9px] md:py-[10.5px] px-1">{buttonLabel}</Button>
         </PopoverTriggerElement>
       </PopoverTrigger>
 

@@ -4,7 +4,7 @@ import Image from "next/image"
 import { ListState } from "@/types"
 import { useUSGContext } from "../usg_context"
 import { useUSGEarnContext } from "./usg_earn_context"
-import { AprOpportunity } from "./components/EarnList"
+import { AprOpportunity, AprOpportunityRowDisposition } from "./components/EarnList"
 import { aprOpportunitiesListHeaders } from "./usg_earn_controller"
 import { ListHeader } from "@/components/design_system/list/list_header"
 import { PageHeader } from "@/components/design_system/structure/page_header"
@@ -54,19 +54,6 @@ export const USGEarnContent = () => {
   )
 }
 
-export const EarnRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
-  return (
-    <div className="flex items-center justify-between max-xl:flex-col">
-      <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
-        <div className="xl:w-1/2">{children?.at(0)}</div>
-        <div className="flex justify-center xl:w-1/2">{children?.at(1)}</div>
-      </div>
-
-      <div className="flex w-full flex-wrap items-center justify-between xl:w-1/2">{children?.at(2)}</div>
-    </div>
-  )
-}
-
 export function USGEarnListInner() {
   const { headers, udpateSort } = useListContext()
 
@@ -74,7 +61,7 @@ export function USGEarnListInner() {
 
   return (
     <>
-      <ListHeader rowDisposition={EarnRowDisposition} headers={headers} onSort={udpateSort} />
+      <ListHeader rowDisposition={AprOpportunityRowDisposition} headers={headers} onSort={udpateSort} />
       {displayRows?.map((item, index) => <AprOpportunity item={item} key={index} index={index} isLoading={isLoading}></AprOpportunity>)}
     </>
   )

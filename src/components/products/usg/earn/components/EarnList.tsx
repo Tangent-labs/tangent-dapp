@@ -6,7 +6,6 @@ import { protocolConfig, ProtocolName } from "../usg_earn_controller"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { CustomAssetDisplay } from "@/components/design_system/list/custom_asset_display"
 import { MarketAPR } from "@/components/design_system/list/market_apr"
-import { EarnRowDisposition } from "../usg_earn_content"
 
 type AprOpportunityProps = {
   item: AprOpportunityItem
@@ -14,10 +13,23 @@ type AprOpportunityProps = {
   isLoading?: boolean
 }
 
+export const AprOpportunityRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
+  return (
+    <div className="flex items-center justify-between max-xl:flex-col">
+      <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
+        <div className="xl:w-1/2">{children?.at(0)}</div>
+        <div className="flex justify-center xl:w-1/2">{children?.at(1)}</div>
+      </div>
+
+      <div className="flex w-full flex-wrap items-center justify-between xl:w-1/2">{children?.at(2)}</div>
+    </div>
+  )
+}
+
 export const AprOpportunity = ({ item, index, isLoading }: AprOpportunityProps) => {
   return (
     <>
-      <ListRow rowDisposition={EarnRowDisposition} route={item.link} className={cn(isLoading ? "shimmer" : "")} key={index}>
+      <ListRow rowDisposition={AprOpportunityRowDisposition} route={item.link} className={cn(isLoading ? "shimmer" : "")} key={index}>
         <div className="relative flex items-center gap-2">
           <CustomAssetDisplay token={item?.asset} />
 

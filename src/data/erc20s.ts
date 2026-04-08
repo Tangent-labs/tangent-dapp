@@ -279,6 +279,22 @@ export const ERC20S: Erc20Details[] = [
     name: "Gauge stUSDS/USDS",
     symbol: "Gauge stUSDS/USDS",
   },
+  {
+    address: CURVE_GAUGES.USG_USDC,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "USG-USDC",
+    name: "Gauge USG/USDC",
+    symbol: "Gauge USG/USDC",
+  },
+  {
+    address: CURVE_GAUGES.USG_frxUSD,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "USG-frxUSD",
+    name: "Gauge USG/frxUSD",
+    symbol: "Gauge USG/frxUSD",
+  },
 
   {
     symbol: "ETH",

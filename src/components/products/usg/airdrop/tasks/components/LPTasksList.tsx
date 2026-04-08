@@ -62,13 +62,13 @@ const computeProtocolDisplay = (protocol: string) => {
 
 const LpTaskListDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
-    <div className="flex w-full items-center justify-evenly px-2">
-      <div className="flex w-5/12 items-center justify-center">{children?.at(0)} </div>
-      <div className="hidden w-2/12 items-center justify-center lg:flex">{children?.at(1)} </div>
-      <div className="flex w-1/12 items-center justify-center">{children?.at(2)} </div>
-      <div className="flex w-1/12 items-center justify-center">{children?.at(3)} </div>
-      <div className="flex w-2/12 items-center justify-center">{children?.at(4)} </div>
-      <div className="flex w-1/12 items-center justify-center">{children?.at(5)} </div>
+    <div className="flex w-full items-center justify-evenly px-2 text-sm">
+      <div className="flex w-[35%] items-center justify-center">{children?.at(0)} </div>
+      <div className="hidden w-[13%] items-center justify-center lg:flex">{children?.at(1)} </div>
+      <div className="flex w-[13%] items-center justify-center">{children?.at(2)} </div>
+      <div className="flex w-[13%] items-center justify-center">{children?.at(3)} </div>
+      <div className="flex w-[13%] items-center justify-center">{children?.at(4)} </div>
+      <div className="flex w-[13%] items-center justify-center">{children?.at(5)} </div>
     </div>
   )
 }
@@ -81,7 +81,7 @@ export const LPTasksList = () => {
   return (
     <>
       <div className="relative mb-1 mt-4 hidden w-full xl:block">
-        <div className={`w-full rounded-t-[10px] bg-overlay-panel p-4 leading-[10px] backdrop-blur-[60px]`}>
+        <div className={`w-full rounded-t-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]`}>
           <LpTaskListDisposition>
             {!!headers?.at(0)?.key && (
               <div className="flex w-full">
@@ -96,7 +96,16 @@ export const LPTasksList = () => {
 
             {!!headers?.at(2)?.key && (
               <div className="flex w-full items-center justify-center">
-                <span>{headers?.at(2)?.label}</span>
+                <button
+                  className="flex w-full items-center justify-center gap-2"
+                  type="button"
+                  onClick={() => udpateSort && udpateSort(String(headers?.at(2)?.key))}
+                >
+                  <span>{headers?.at(2)?.label}</span>
+                  <div className="text-row-tonic">
+                    <IconSortHeader sort={(listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction) || "none"} />
+                  </div>
+                </button>
               </div>
             )}
 
@@ -155,10 +164,10 @@ export const LPTasksList = () => {
           <div
             onClick={() => window.open(task.url, "_blank")}
             key={task?.taskId}
-            className="relative mb-1 bg-overlay-panel px-2 py-2 backdrop-blur-[60px] hover-lift-row lg:px-5"
+            className="relative mb-1 bg-overlay-panel py-2 backdrop-blur-[60px] hover-lift-row lg:px-5"
           >
             <div className="hidden items-center justify-between md:flex">
-              <div className="flex w-5/12 items-center gap-2">
+              <div className="flex w-[35%] items-center gap-2">
                 <LpTaskCustomAssetDisplay token={task.asset.replaceAll("_", "-")} />
 
                 <div className="flex h-full flex-col items-start justify-between">
@@ -180,17 +189,17 @@ export const LPTasksList = () => {
                 </div>
               </div>
 
-              <div className="hidden w-2/12 justify-center lg:flex">
+              <div className="hidden w-[13%] justify-center text-[15px] lg:flex">
                 <div>{computeProtocolDisplay(task?.protocol)}</div>
               </div>
 
-              <div className="flex w-1/12 items-center justify-center text-[15px]">{(task?.pointRate * 86400).toFixed(0)}</div>
+              <div className="flex w-[13%] items-center justify-center text-[15px]">{(task?.pointRate * 86400).toFixed(0)}</div>
 
-              <div className="flex w-1/12 items-center justify-center text-[15px]">{formatMillions(task?.balanceUsd)}</div>
+              <div className="flex w-[13%] items-center justify-center text-[15px]">{formatMillions(task?.balanceUsd)}</div>
 
-              <div className="flex w-2/12 items-center justify-center text-[15px]">{formatMillions(task?.points)}</div>
+              <div className="flex w-[13%] items-center justify-center text-[15px]">{formatMillions(task?.points)}</div>
 
-              <div className="flex w-1/12 flex-col items-center justify-center">
+              <div className="flex w-[13%] flex-col items-center justify-center">
                 <div className="flex h-10 w-10 flex-col items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
                   <TaskStatus status={task?.status} />
                 </div>

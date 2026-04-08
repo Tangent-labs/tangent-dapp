@@ -116,7 +116,7 @@ export default function USGRepayContent() {
 
         {repayAsset && repayAsset !== "USG" && (
           <GenericInputAssetAmount
-            inputWeiValue={usgRepayedValue}
+            inputWeiValue={zapValuesFormatted?.expectedWei}
             label={"You buy and repay"}
             isLoading={isZapLoading}
             depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
@@ -127,6 +127,17 @@ export default function USGRepayContent() {
                 Minimum received {usgRepayedValue && USGInfo?.price !== 0 ? zapValuesFormatted.minOutFormatted : ""}
               </div>
             }
+          />
+        )}
+
+        {expectedUSGRefunded && (
+          <GenericInputAssetAmount
+            inputWeiValue={(usgRepayedValue || 0n) - (zapValuesFormatted?.expectedWei || 0n)}
+            label={"You receive"}
+            isLoading={isZapLoading}
+            readOnly
+            depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
+            asset={USGInfo}
           />
         )}
 
@@ -165,7 +176,7 @@ export default function USGRepayContent() {
           zappingParams={{
             label: "debt repaid",
             expected: `${zapValuesFormatted.expectedFormatted} USG`,
-            minOut: `${zapValuesFormatted.minOutFormatted} USG`,
+            minOut: !!expectedUSGRefunded ? undefined : `${zapValuesFormatted.minOutFormatted} USG`,
             usgRefund: !!expectedUSGRefunded ? `${expectedUSGRefunded} USG` : undefined,
             slippage: slippage,
             priceImpact: priceImpact,

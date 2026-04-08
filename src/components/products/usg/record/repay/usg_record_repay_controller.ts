@@ -15,7 +15,8 @@ export function getRepayFormState(
   balanceAllowanceData?: BalanceAllowanceData,
   repayAsset?: string,
   isLoading?: boolean,
-  transactionExceedsMaxLtv?: boolean
+  transactionExceedsMaxLtv?: boolean,
+  expectedUSGOut?: bigint
 ): FormState {
   const isZapMode = !!repayAsset && !!balanceAllowanceData && repayAsset !== "USG"
   const isApproved = repayAsset === "USG" || (isZapMode && (repayWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n))
@@ -43,13 +44,21 @@ export function getRepayFormState(
       errors.push(dappErrors["price-impact"])
     }
 
+    if (isZapMode && repayWeiValue && !isLoading && !expectedUSGOut) {
+      errors.push(dappErrors["no-zap-value"])
+    }
+
     if (marketData && repayWeiValue) {
       const existingDebt = marketData.debtInfos?.userDebt || 0n
       const minimumLoan = marketData.constants?.minimumLoan || 0n
 
+      const formHasMinDebtError =
+        (existingDebt - repayWeiValue > 0n && existingDebt - repayWeiValue < minimumLoan) ||
+        (isZapMode && existingDebt - (expectedUSGOut || 0n) > 0n && existingDebt - (expectedUSGOut || 0n) < minimumLoan)
+
       if (repayWeiValue > existingDebt) {
         errors.push(dappErrors["repay-exceeds-debt"])
-      } else if (existingDebt - repayWeiValue > 0n && existingDebt - repayWeiValue < minimumLoan) {
+      } else if (formHasMinDebtError) {
         errors.push({
           key: "min-debt",
           title: "Remaining Debt Too Low",

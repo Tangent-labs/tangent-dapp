@@ -41,7 +41,7 @@ export const Button = ({
     <div
       className={cn(
         "relative inline-flex w-full rounded-[11px] p-[1px]",
-        effectiveState === "active" ? "bg-gradient-to-b from-[#00C2FF] to-[#00c2ff00]" : "",
+        effectiveState === "active" ? "bg-gradient-to-b from-[#00C2FF] to-[#00c2ff00]" : "px-[0px]",
         className
       )}
     >
@@ -68,7 +68,7 @@ export const Button = ({
         {/* Gradient border effect - only visible when inactive */}
         {effectiveState !== "active" && (
           <div
-            className="pointer-events-none absolute inset-0 rounded-[10px]"
+            className="pointer-events-none absolute inset-0 rounded-[10px] px-2"
             style={{
               border: "1px solid transparent",
               background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",

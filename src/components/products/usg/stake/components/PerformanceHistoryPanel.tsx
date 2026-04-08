@@ -105,7 +105,7 @@ export function PerformanceHistoryPanel({
         <SlidingTabs labels={["Projected earnings", "Position APR"]} value={selectedFeature} onSwitchTab={(e: string) => setSelectedFeature(e)} />
       </div>
 
-      <ReliefCard className="mt-6 flex w-full flex-col items-center justify-between gap-2 px-4 py-3 sm:flex-row">
+      <ReliefCard className="mt-[20px] flex w-full flex-col items-center justify-between gap-2 p-5 sm:flex-row">
         <EvolutionBox
           className="w-full"
           originalValue={formatNumber(sUSGBalance, 0)}
@@ -131,7 +131,7 @@ export function PerformanceHistoryPanel({
         />
       </ReliefCard>
 
-      <ReliefCard className="mt-6 flex w-full flex-col p-4">
+      <ReliefCard className="mt-5 flex w-full flex-col p-4">
         {selectedFeature === "Projected earnings" && (
           <ForecastGraph currentFeature={currentFeature} currentInvestment={sUSGBalance} apr={sUSGCurrentAPY} newLiquidity={addLiq} />
         )}

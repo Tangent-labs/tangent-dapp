@@ -6,10 +6,11 @@ import { useMemo } from "react"
 type SlidingTabsProps = {
   labels: string[]
   value: string
+  className?: string
   onSwitchTab: (s: string) => void
 }
 
-export function SlidingTabs({ labels, value, onSwitchTab }: SlidingTabsProps) {
+export function SlidingTabs({ labels, value, onSwitchTab, className }: SlidingTabsProps) {
   const activeTabIndex = useMemo(() => {
     const idx = labels.indexOf(value)
     return idx >= 0 ? idx : 0
@@ -18,7 +19,7 @@ export function SlidingTabs({ labels, value, onSwitchTab }: SlidingTabsProps) {
   const numberOfLabels = labels.length
 
   return (
-    <div className="relative mb-3 w-full">
+    <div className={`relative w-full ${className}`}>
       <div aria-hidden className="pointer-events-none absolute bottom-0 left-0 h-px w-full bg-slate-700/60 dark:bg-slate-600/40" />
 
       <div
@@ -53,7 +54,7 @@ export function SlidingTabs({ labels, value, onSwitchTab }: SlidingTabsProps) {
             >
               <span
                 className={cn(
-                  "block px-4 py-3 text-center font-medium",
+                  "block py-2.5 text-center font-medium",
                   selected ? "text-slate-900 dark:text-slate-50" : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
                 )}
               >

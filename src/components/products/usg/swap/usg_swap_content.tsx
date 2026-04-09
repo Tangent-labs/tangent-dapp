@@ -20,6 +20,7 @@ import { GenericInputAssetAmount } from "@/components/design_system/inputs/Gener
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
 import { FormAlert } from "@/components/design_system/inputs/form_alert"
+import { PageHeader } from "@/components/design_system/structure/page_header"
 
 export default function USGSwapContent() {
   const {
@@ -130,14 +131,14 @@ export default function USGSwapContent() {
   return (
     <>
       <div className="flex items-stretch justify-between gap-6">
-        <ReliefCard className="relative hidden w-1/2 bg-panel-title-gradient xl:flex">
+        <PageHeader>
           <Image height={140} width={140} src="/medias/logos/swap.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
 
           <div className="flex flex-col items-start justify-center gap-3 pr-6">
             <span className="text-5xl font-semibold">Swap</span>
             <p className="text-[15px]">Swap any asset for USG and other Tangent&apos;s assets, including Curve LPs and Wrapped Tangent Stablecoins.</p>
           </div>
-        </ReliefCard>
+        </PageHeader>
 
         <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
           <PointsCampaignLiveCard />
@@ -146,7 +147,7 @@ export default function USGSwapContent() {
         </div>
       </div>
 
-      <div className="mt-4 flex w-full flex-col items-center justify-center">
+      <div className="mt-5 flex w-full flex-col items-center justify-center">
         <ReliefCard className="flex w-full max-w-[450px] flex-col items-center justify-center gap-1.5 p-5">
           <div className="flex w-full items-end justify-end">
             <span className="text-xs text-subtitle">

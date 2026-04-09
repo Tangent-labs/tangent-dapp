@@ -22,10 +22,10 @@ import { formatNumber, truncateDecimals } from "@/lib/number_formatter"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { fetchUserStatus, validatePredepositSignature } from "./api/client.api"
-import { opportunities } from "../../../app/(products)/(usg)/earn/aprOpportunities.json"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { EarnPoolsData, getConvexPools, getCurvePools, getPendlePools, getStakeDAOPools } from "../usg/client_api_external"
 import { deposit, fetchQuote, getFormState, mapPredepositStatus, TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "./predeposit.controller"
+import { opportunities } from "@/app/(products)/(usg)/earn/aprOpportunities"
 
 type PredepositContextProps = {
   children: ReactNode

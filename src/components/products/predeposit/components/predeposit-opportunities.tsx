@@ -5,10 +5,10 @@ import { ListState } from "@/types"
 import { AprOpportunityItem } from "../../usg/usg_type"
 import { AprOpportunity, AprOpportunityRowDisposition } from "../../usg/earn/components/EarnList"
 import { ListHeader } from "@/components/design_system/list/list_header"
-import { opportunities } from "../../../../app/(products)/(usg)/earn/aprOpportunities.json"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { aprOpportunitiesListHeaders, mapAPROpportunities } from "../../usg/earn/usg_earn_controller"
 import { EarnPoolsData } from "../../usg/client_api_external"
+import { opportunities } from "@/app/(products)/(usg)/earn/aprOpportunities"
 
 const listState: ListState = {
   search: undefined,

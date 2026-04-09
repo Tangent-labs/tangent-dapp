@@ -72,8 +72,9 @@ export const AirdropSharedHeader = ({
   voteUserPoints,
 }: AirdropSharedHeaderProps) => {
   return (
-    <div className="flex h-auto w-full flex-col items-center gap-4 xl:w-1/2">
-      <ReliefCard className="relative mb-2 flex w-full flex-col items-center justify-between gap-2 px-3 py-4 md:flex-row xl:mb-0">
+    <div className="flex h-auto w-full flex-col items-center justify-between gap-3 xl:w-1/2">
+      {/* REFERAL FORM */}
+      <ReliefCard className="relative mb-2 flex w-full flex-col items-center justify-between gap-2 px-3 py-[15.5px] md:flex-row xl:mb-0">
         <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: 'url("./medias/card_bg_blocks.png")' }} />
 
         {!airdropDataIsLoading && referralStatus?.hasUsedCode ? (
@@ -109,8 +110,8 @@ export const AirdropSharedHeader = ({
           </>
         )}
       </ReliefCard>
-
-      <div className="flex w-full flex-col items-start justify-between gap-3 md:flex-row">
+      {/* TOTAL POINT DISPLAY */}
+      <div className="flex h-[70px] w-full flex-col items-start justify-between gap-3 md:flex-row">
         <NeonMetricsCard
           title="Liquidity"
           subtitle="Liquidity points"
@@ -127,7 +128,7 @@ export const AirdropSharedHeader = ({
           value={`${formatNumber(voteUserPoints?.voteTotalPoints, 0)} pts`}
           color1="#95ff006d"
           color2="#95FF00"
-          className="mt-2 h-full w-full min-w-48 md:mt-0 xl:w-auto"
+          className="h-full w-full min-w-48 md:mt-0 xl:w-auto"
         />
 
         <ReliefCard className="hidden h-full w-fit min-w-32 flex-col items-center justify-center gap-1 self-end px-4 py-2 lg:flex">

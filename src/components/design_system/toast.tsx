@@ -1,8 +1,8 @@
 "use client"
 
-import { IconBell } from "../icons/icon_bell"
-
 import { toast } from "react-toastify"
+import { IconBell } from "../icons/icon_bell"
+import { ReliefCard } from "./structure/relief_card"
 
 type ToastType = "Success" | "Notification" | "Error" | "Pending Transaction"
 
@@ -39,9 +39,9 @@ export const ToastComponent = ({ data, closeToast }: ToastContentProps) => {
   }
 
   return (
-    <div className="flex w-full flex-col rounded-[10px] border-2 border-white border-opacity-10 bg-dark">
+    <ReliefCard className="flex w-full flex-col p-[10px]">
       <div className="flex items-center justify-between border-b border-b-white border-opacity-10">
-        <div className={`flex min-w-56 items-center justify-start px-2 py-1 text-lg font-semibold ` + ` ${computedTitleClass()}`}>
+        <div className={`flex min-w-56 items-center justify-start pb-[10px] text-lg font-semibold ` + ` ${computedTitleClass()}`}>
           {computedIcon()}
           {data?.type}
         </div>
@@ -49,8 +49,8 @@ export const ToastComponent = ({ data, closeToast }: ToastContentProps) => {
           ✕
         </div>
       </div>
-      <div className="flex items-start justify-start p-2 text-xs text-subtitle">{data?.content}</div>
-    </div>
+      <div className="flex items-start justify-start py-[10px] text-xs text-subtitle">{data?.content}</div>
+    </ReliefCard>
   )
 }
 

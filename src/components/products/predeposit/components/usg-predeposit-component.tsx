@@ -23,6 +23,7 @@ type USGPredepositComponentProps = {
   setSlippage: (n: number) => void
   depositWeiValue: bigint | undefined
   isLoading: boolean
+  isQuoteLoading: boolean
   assetInfo: AssetDataPriced
   balance: bigint
   handleDepositChange: (arg: bigint | undefined) => void
@@ -50,6 +51,7 @@ export const USGPredepositComponent = ({
   setSlippage,
   depositWeiValue,
   isLoading,
+  isQuoteLoading,
   assetInfo,
   balance,
   handleDepositChange,
@@ -102,7 +104,7 @@ export const USGPredepositComponent = ({
         }}
       />
 
-      <div className={`${isLoading ? "shimmer" : ""} flex flex-col gap-1 rounded-[10px] bg-overlay-panel p-2.5 backdrop-blur-[60px]`}>
+      <div className={`${isQuoteLoading ? "shimmer" : ""} flex flex-col gap-1 rounded-[10px] bg-overlay-panel p-2.5 backdrop-blur-[60px]`}>
         <div className="flex items-center justify-between">
           <div className="flex flex-col items-start justify-start">
             <div className="flex items-center justify-center text-xs font-semibold text-subtitle">You receive</div>
@@ -111,7 +113,7 @@ export const USGPredepositComponent = ({
               disabled={isLoading}
               readOnly={true}
               className="w-full max-w-36 bg-transparent text-[24px] font-semibold focus:outline-none"
-              value={innerValue ?? ""}
+              value={isQuoteLoading ? "-" : innerValue}
             />
             <div className="flex select-none justify-between gap-2 text-xs text-subtitle">
               Minimum received {!!depositWeiValue && !!assetInfo ? minValueReceived : ""}
@@ -158,7 +160,7 @@ export const USGPredepositComponent = ({
         connect={connect}
         formState={formState}
         labelProcess="Deposit"
-        isLoading={isLoading}
+        isLoading={isLoading || isQuoteLoading}
       />
     </ReliefCard>
   )

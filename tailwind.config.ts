@@ -109,10 +109,9 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
-        breathe: {
-          "0%, 70%": { outlineOffset: "3px" },
-          "35%": { outlineOffset: "6px" },
-          "71%, 100%": { outlineOffset: "3px" },
+        sonar: {
+          "0%": { transform: "scale(1)", opacity: "0.6" },
+          "100%": { transform: "scale(3.5)", opacity: "0" },
         },
         "accordion-down": {
           from: { height: "0" },
@@ -129,7 +128,7 @@ const config: Config = {
       },
       animation: {
         ripple: "ripple 1500ms cubic-bezier(0.16, 0.8, 0.32, 1.6) forwards",
-        breathe: "breathe 3s ease-in-out infinite",
+        sonar: "sonar 2s linear infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },

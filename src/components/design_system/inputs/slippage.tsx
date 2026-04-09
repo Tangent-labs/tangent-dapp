@@ -57,7 +57,7 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
         collisionPadding={16}
         className="!m-0 !w-56 border-none font-gilroy"
       >
-        <ReliefCard className="p-3">
+        <ReliefCard className="p-[10px]">
           <div className="flex w-full flex-col items-center justify-between gap-2">
             <div className="flex w-full items-center justify-start">Slippage</div>
             <input
@@ -68,7 +68,7 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
               inputMode="decimal"
               min={0.1}
               step={0.1}
-              className="w-full rounded-[10px] border border-white/10 bg-transparent pl-2 focus:outline-none"
+              className="h-[30px] w-full rounded-[10px] border border-white/10 bg-transparent pl-2 focus:outline-none"
               ref={inputRef}
             />
             <div className="mt-2 flex w-full items-center justify-between gap-2">

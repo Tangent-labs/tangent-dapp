@@ -6,7 +6,7 @@ export const LpTaskCustomAssetDisplay = ({ token }: { token: string }) => {
   return (
     <>
       {tokenList.some((el) => token.includes(el)) ? (
-        <div className="px-0 md:px-2">
+        <div className="pr-2">
           <TokenImage token={token} size={32} className="w-6 md:w-10" />
         </div>
       ) : (

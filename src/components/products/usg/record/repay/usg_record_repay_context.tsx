@@ -319,7 +319,6 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     })
 
     setIsTxLoading(false)
-    loadOnChainData()
     fetchBalanceAllowanceData(repayAssetInfo?.address)
   }
 
@@ -435,7 +434,8 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
         const minimumLoan = marketData.constants.minimumLoan || 0n
         return { maxRepayableValue, minimumLoan }
       } else if (marketData && repayAssetInfo) {
-        const maxRepayableInZapAsset = (userDebt / toBigInt(repayAssetInfo?.price, 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
+        const maxRepayableInZapAsset = (userDebt * BigInt(10 ** (repayAssetInfo?.decimals || 18))) / toBigInt(repayAssetInfo?.price, 18)
+
         const minimumLoanInZapAsset =
           (marketData.constants.minimumLoan / toBigInt(repayAssetInfo?.price, repayAssetInfo?.decimals || 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
 
@@ -445,25 +445,6 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
     return { maxRepayableValue: 0n, minimumLoan: 0n }
   }, [marketData, repayAssetInfo, currentAddress])
-
-  const maxWithdrawable = useMemo(() => {
-    if (marketData && currentAddress) {
-      const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice
-      const computedRepayWeiValue = !!repayAsset && repayAsset === "USG" ? repayWeiValue : usgRepayedValue
-      const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n) - (computedRepayWeiValue || 0n)
-      const futureDeposited = BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n)
-      const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
-      const maxWithDrawable = collateralPriceRaw !== 0n ? futureDeposited - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
-
-      if (futureDebt === 0n) {
-        return maxWithDrawable > 0n ? maxWithDrawable : 0n
-      }
-
-      return maxWithDrawable > WITHDRAW_BUFFER ? (maxWithDrawable * 9995n) / 10000n : 0n
-    }
-
-    return 0n
-  }, [marketData, repayWeiValue, usgRepayedValue, currentAddress])
 
   function handleRepayValueChange(value: bigint | undefined) {
     setRepayWeiValue(value)
@@ -560,10 +541,12 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   }, [usgRepayedValue, USGInfo])
 
   const zapValuesFormatted = useMemo(() => {
-    if (!isZapLoading && usgRepayedValue && !!marketValues?.maxRepayableValue) {
-      const normalizedMaxRepayable = (marketValues?.maxRepayableValue / BigInt(10 ** (repayAssetInfo?.decimals || 18))) * BigInt(10n ** 18n)
+    if (!isZapLoading && usgRepayedValue && !!marketValues?.maxRepayableValue && repayAssetInfo) {
+      const maxRepayableInUSG =
+        (((marketValues?.maxRepayableValue * BigInt(10n ** 18n)) / BigInt(10 ** (repayAssetInfo?.decimals || 18))) * toBigInt(repayAssetInfo?.price, 18)) /
+        BigInt(10n ** 18n)
 
-      const actualDebtRepaid = usgRepayedValue > normalizedMaxRepayable ? normalizedMaxRepayable : usgRepayedValue
+      const actualDebtRepaid = usgRepayedValue > maxRepayableInUSG ? (marketData?.debtInfos?.userDebt as bigint) : usgRepayedValue
 
       const minAmountOutWei = computedMinAmountOut(actualDebtRepaid, slippage)
 
@@ -575,7 +558,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     }
 
     return { expectedFormatted: `-`, minOutFormatted: `-` }
-  }, [usgRepayedValue, slippage, isZapLoading, collateralInfo, marketValues, repayAssetInfo])
+  }, [usgRepayedValue, slippage, isZapLoading, marketValues, repayAssetInfo, marketData])
 
   const priceImpactLoss = useMemo(() => {
     const { dollarLoss } = computeTransactionPotentialLoss(usgRepayedValue as bigint, USGInfo, priceImpact)
@@ -607,6 +590,25 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     return undefined
   }, [marketData, usgRepayedValue, slippage])
 
+  const maxWithdrawable = useMemo(() => {
+    if (marketData && currentAddress) {
+      const collateralPriceRaw = marketData?.collateralInfos?.collateralUSDPrice
+      const computedRepayWeiValue = !!repayAsset && repayAsset === "USG" ? repayWeiValue : zapValuesFormatted?.expectedWei
+      const futureDebt = BigInt(marketData?.debtInfos?.userDebt || 0n) - (computedRepayWeiValue || 0n)
+      const futureDeposited = BigInt(marketData?.collateralInfos?.positionCollateralAmount || 0n)
+      const maxLTV = BigInt(marketData?.constants.maxLTV || "0") / 1000n
+      const maxWithDrawable = collateralPriceRaw !== 0n ? futureDeposited - (futureDebt * BigInt(10 ** 18)) / ((collateralPriceRaw * maxLTV) / 100n) : 0n
+
+      if (futureDebt === 0n) {
+        return maxWithDrawable > 0n ? maxWithDrawable : 0n
+      }
+
+      return maxWithDrawable > WITHDRAW_BUFFER ? (maxWithDrawable * 9995n) / 10000n : 0n
+    }
+
+    return 0n
+  }, [marketData, repayWeiValue, zapValuesFormatted, currentAddress])
+
   const formState = useMemo(() => {
     return getRepayFormState(
       isTransactionBlockedByPriceImpact,
@@ -618,7 +620,9 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
       repayAsset,
       isZapLoading || isTxLoading,
       transactionExceedsMaxLtv,
-      zapValuesFormatted?.expectedWei
+      zapValuesFormatted?.expectedWei,
+      withdrawWeiValue,
+      maxWithdrawable
     )
   }, [
     isTransactionBlockedByPriceImpact,
@@ -632,6 +636,8 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     isZapLoading || isTxLoading,
     transactionExceedsMaxLtv,
     zapValuesFormatted,
+    withdrawWeiValue,
+    maxWithdrawable,
   ])
 
   const contextValue: USGRepayContextValues = {

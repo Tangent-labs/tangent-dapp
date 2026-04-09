@@ -52,7 +52,7 @@ export const UsgReferralCode = () => {
         />
       </div>
 
-      <ReliefCard className={cn("mt-4 flex w-full flex-col items-center justify-center px-5 py-3", !!airdropDataIsLoading && currentAddress ? "shimmer" : "")}>
+      <ReliefCard className={cn("mt-5 flex w-full flex-col items-center justify-center p-5", !!airdropDataIsLoading && currentAddress ? "shimmer" : "")}>
         <div className="mr-auto text-lg font-semibold text-white">Your referral</div>
 
         <Divider />
@@ -101,7 +101,7 @@ export const UsgReferralCode = () => {
         </div>
       </ReliefCard>
 
-      <ReliefCard className="mt-4 hidden w-full flex-col items-center justify-center p-3 xl:flex">
+      <ReliefCard className="mt-4 hidden w-full flex-col items-center justify-center p-5 xl:flex">
         <div className="mr-auto text-lg font-semibold text-white">Airdrop referral</div>
 
         <Divider />
@@ -135,7 +135,7 @@ export const UsgReferralCode = () => {
       </ReliefCard>
 
       <div className="mt-4 flex w-full flex-wrap items-start justify-between gap-4 xl:flex-row xl:flex-nowrap">
-        <ReliefCard className="flex w-full flex-col items-start justify-start p-3">
+        <ReliefCard className="flex w-full flex-col items-start justify-start p-5">
           <div className="mr-auto text-lg font-semibold text-white">Liquidity points leaderboard</div>
 
           <Divider />
@@ -143,7 +143,7 @@ export const UsgReferralCode = () => {
           <Leaderboard leaderboard={lpLeaderboard} />
         </ReliefCard>
 
-        <ReliefCard className="flex w-full flex-col items-center justify-center p-3">
+        <ReliefCard className="flex w-full flex-col items-center justify-center p-5">
           <div className="mr-auto text-lg font-semibold text-white">Vote points leaderboard</div>
 
           <Divider />
@@ -151,7 +151,7 @@ export const UsgReferralCode = () => {
           <Leaderboard leaderboard={voteLeaderboard} feature="vote" />
         </ReliefCard>
 
-        <ReliefCard className="flex w-full flex-col items-center justify-center p-3">
+        <ReliefCard className="flex w-full flex-col items-center justify-center p-5">
           <div className="mr-auto text-lg font-semibold text-white">My referees</div>
 
           <Divider />

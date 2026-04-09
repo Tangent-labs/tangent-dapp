@@ -103,8 +103,8 @@ export default function USGStakeContent() {
         </div>
       </div>
 
-      <div className="mt-5 flex w-full flex-col gap-2 lg:flex-row lg:items-start lg:gap-4">
-        <ReliefCard className="flex w-full flex-col items-center justify-start gap-1 p-4 lg:w-5/12 xl:w-1/3">
+      <div className="mt-5 flex w-full flex-col gap-2 lg:flex-row lg:items-start lg:gap-5">
+        <ReliefCard className="flex w-full flex-col items-center justify-start gap-1 p-5 lg:w-5/12 xl:w-1/3">
           <div className="flex w-full items-center justify-between gap-4">
             <LargeButtonTab
               onClick={() => setCurrentFeature("stake")}
@@ -122,12 +122,13 @@ export default function USGStakeContent() {
 
           <Divider className="w-full" />
 
-          <div className="flex w-full items-end justify-end">
+          <div className="mb-[5px] flex w-full items-center justify-between">
+            <span className="text-sm font-semibold md:text-xl">Deposit</span>
             <span className="text-xs text-subtitle">
               Max: {formatBigInt(currentAssetInfo?.balance, 18, 2)} {currentFeature === "stake" ? "USG" : "sUSG"}{" "}
             </span>
           </div>
-          <div className="w-full">
+          <div className="mb-[5px] w-full">
             <GenericInputAssetAmount
               inputWeiValue={weiValue}
               onValueChange={(value: bigint | undefined) => setWeiValue(value)}
@@ -149,7 +150,7 @@ export default function USGStakeContent() {
 
             <div
               onClick={() => setCurrentFeature(isStake ? "unstake" : "stake")}
-              className="my-2 flex w-full cursor-pointer items-center justify-center border-none"
+              className="my-[10px] flex w-full cursor-pointer items-center justify-center border-none"
             >
               <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-10 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
             </div>
@@ -184,9 +185,10 @@ export default function USGStakeContent() {
           />
         </ReliefCard>
 
+        {/*  */}
         <div className="flex w-full flex-col lg:hidden">
           {!!USGsUSGMetrics && !!sUSGCurrentAPY && sUSGCurrentAPY > 0 && (
-            <div className="mt-6 flex w-full flex-col items-end justify-between gap-2 self-end sm:flex-row">
+            <div className="mt-5 flex w-full flex-col items-end justify-between gap-2 self-end sm:flex-row">
               <EvolutionBox
                 className="w-full"
                 originalValue={formatNumber(Number(formatUnits(USGsUSGMetrics?.sUSGBalance ?? 0n, 18)), 0)}

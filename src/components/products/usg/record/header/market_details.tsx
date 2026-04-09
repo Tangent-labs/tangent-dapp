@@ -14,7 +14,12 @@ export const MarketDetails = () => {
 
   return (
     <div className="hidden w-full md:flex md:flex-col">
-      <SlidingTabs labels={["Market info", "Collateral info", "Contracts"]} value={selectedFeature} onSwitchTab={(e: string) => setSelectedFeature(e)} />
+      <SlidingTabs
+        className="mb-3"
+        labels={["Market info", "Collateral info", "Contracts"]}
+        value={selectedFeature}
+        onSwitchTab={(e: string) => setSelectedFeature(e)}
+      />
 
       {selectedFeature === "Market info" && <USGMarketInfo />}
 

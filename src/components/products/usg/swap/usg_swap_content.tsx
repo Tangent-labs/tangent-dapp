@@ -147,8 +147,8 @@ export default function USGSwapContent() {
       </div>
 
       <div className="mt-4 flex w-full flex-col items-center justify-center">
-        <ReliefCard className="flex w-full max-w-[450px] flex-col items-center justify-center p-4">
-          <div className="mb-3 flex w-full items-end justify-end">
+        <ReliefCard className="flex w-full max-w-[450px] flex-col items-center justify-center gap-1.5 p-5">
+          <div className="flex w-full items-end justify-end">
             <span className="text-xs text-subtitle">
               Max: {formatBigInt(balanceAllowanceData?.balance ?? 0n, sellAssetInfo?.decimals || 18, 2)} {sellAssetInfo?.symbol}
             </span>
@@ -176,7 +176,7 @@ export default function USGSwapContent() {
               onClick={() => {
                 toggleTokensSwitch()
               }}
-              className="my-2 flex w-full cursor-pointer items-center justify-center border-none"
+              className="my-[10px] flex w-full cursor-pointer items-center justify-center border-none"
             >
               <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-10 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
             </div>
@@ -193,7 +193,6 @@ export default function USGSwapContent() {
           </div>
 
           <RecapAccordion
-            className="mt-2"
             isDisplayed={true}
             zappingParams={{
               label: buyAssetInfo?.symbol,
@@ -220,7 +219,6 @@ export default function USGSwapContent() {
               isLoading={isBuyValueLoading || isSellValueLoading}
               displayConfirmationButton={isSwapBlockedBySlippage}
               onClickContinue={() => setIsSwapBlockedBySlippage(false)}
-              className="mt-2"
             />
           )}
 
@@ -231,11 +229,10 @@ export default function USGSwapContent() {
               isLoading={isBuyValueLoading || isSellValueLoading}
               displayConfirmationButton={isSwapBlockedByPriceImpact}
               onClickContinue={() => setIsSwapBlockedByPriceImpact(false)}
-              className="mt-2"
             />
           )}
 
-          <div className="mt-2 flex w-full">
+          <div className="flex w-full">
             <FormButtons
               actions={{
                 handleApprove: actionApprove,

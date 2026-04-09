@@ -3,7 +3,7 @@
 import { useMemo } from "react"
 import { ListState } from "@/types"
 import { AprOpportunityItem } from "../../usg/usg_type"
-import { AprOpportunity } from "../../usg/earn/components/EarnList"
+import { AprOpportunity, AprOpportunityRowDisposition } from "../../usg/earn/components/EarnList"
 import { ListHeader } from "@/components/design_system/list/list_header"
 import { opportunities } from "../../../../app/(products)/(usg)/earn/aprOpportunities.json"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
@@ -47,7 +47,7 @@ export const PredepositOpportunities = ({ opportunitiesData }: PredepositOpportu
 
   return (
     <>
-      <section className="mt-4 flex w-full flex-col items-start justify-start lg:mt-12">
+      <section className="mb-2 mt-4 flex w-full flex-col items-start justify-start lg:mt-12">
         <div className="text-2xl font-semibold text-white lg:text-4xl">Opportunities</div>
         <div className="text-sm text-subtitle">View all available rewards opportunities.</div>
       </section>
@@ -68,7 +68,7 @@ export function PredepositOpportunitiesListInner({ displayRows }: PredepositOppo
 
   return (
     <>
-      <ListHeader headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
+      <ListHeader rowDisposition={AprOpportunityRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
 
       {displayRows?.map((item, index) => <AprOpportunity key={index} item={item} index={index}></AprOpportunity>)}
     </>

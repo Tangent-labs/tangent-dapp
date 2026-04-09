@@ -17,11 +17,11 @@ export default function USGRecordPageHeader() {
 
         <NeonLightCard
           paddingHorizontal={0} // No padding here because we already have space in this div
-          className={cn(marketDisplayData?.tvlDollar === "-" ? "shimmer" : "", "mt-2 flex h-full w-full xl:mt-0 xl:w-7/12")}
+          className={cn(marketDisplayData?.tvlDollar === "-" ? "shimmer" : "", "mt-2 flex w-full xl:mt-0 xl:w-7/12")}
           color1="#0077ffa3"
           color2="#0075FF"
         >
-          <div className="flex h-full items-center gap-2 xl:gap-4">
+          <div className="flex items-center gap-2 xl:gap-4">
             <div className="flex w-full items-center justify-between py-0.5">
               <div className="flex-1 text-center">
                 <div className="text-center text-xs text-subtitle">TVL</div>

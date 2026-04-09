@@ -16,7 +16,9 @@ export function getRepayFormState(
   repayAsset?: string,
   isLoading?: boolean,
   transactionExceedsMaxLtv?: boolean,
-  expectedUSGOut?: bigint
+  expectedUSGOut?: bigint,
+  withdrawWeiValue?: bigint,
+  maxWithdrawable?: bigint
 ): FormState {
   const isZapMode = !!repayAsset && !!balanceAllowanceData && repayAsset !== "USG"
   const isApproved = repayAsset === "USG" || (isZapMode && (repayWeiValue || 0n) <= (balanceAllowanceData?.allowances[0]?.allowance || 0n))
@@ -67,6 +69,10 @@ export function getRepayFormState(
           type: "form-alert",
         })
       }
+    }
+
+    if ((withdrawWeiValue || 0n) > (maxWithdrawable || 0n)) {
+      errors.push(dappErrors["max-withdrawable"])
     }
   }
 

@@ -70,8 +70,8 @@ export const USGPredepositComponent = ({
   slippageLoss,
 }: USGPredepositComponentProps) => {
   return (
-    <ReliefCard className="flex w-full flex-col p-2 xl:p-4">
-      <div className="mb-2 flex w-full items-center justify-between">
+    <ReliefCard className="flex w-full flex-col gap-[10px] p-2 xl:p-5">
+      <div className="flex w-full items-center justify-between">
         <span className="font-semibold text-white">Deposit cap</span>
         <span className="flex items-center">
           <span className="text-white">${formatNumber(Number(formatUnits(BigInt(currentDeposit || 0n), 18)), 0)}</span>
@@ -80,7 +80,7 @@ export const USGPredepositComponent = ({
         </span>
       </div>
 
-      <div className="mb-2 flex w-full items-center justify-center gap-2">
+      <div className="flex w-full items-center justify-center gap-2">
         <DynamicProgressBar progressBarColor="bg-white" maxValue={cap || 0n} currentValue={currentDeposit} />
 
         <SlippageInput slippage={slippage} setSlippage={setSlippage} />
@@ -102,7 +102,7 @@ export const USGPredepositComponent = ({
         }}
       />
 
-      <div className={`${isLoading ? "shimmer" : ""} my-2 flex flex-col gap-1 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]`}>
+      <div className={`${isLoading ? "shimmer" : ""} flex flex-col gap-1 rounded-[10px] bg-overlay-panel p-2.5 backdrop-blur-[60px]`}>
         <div className="flex items-center justify-between">
           <div className="flex flex-col items-start justify-start">
             <div className="flex items-center justify-center text-xs font-semibold text-subtitle">You receive</div>
@@ -124,33 +124,31 @@ export const USGPredepositComponent = ({
         </div>
       </div>
 
-      <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel px-3 py-1 backdrop-blur-[60px]">
+      <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel p-2.5 backdrop-blur-[60px]">
         <span className="text-xs font-semibold text-subtitle">TAN allocation</span>
-        <span className="flex items-center justify-center gap-2 text-xl font-semibold">
+        <span className="flex items-center justify-center gap-2 text-lg font-semibold">
           {formatNumber(Number(tanAllocation), 0)}
           <TokenImage token="tan" size={12} className="w-4" />
         </span>
       </div>
 
-      <div className="my-2 flex flex-col gap-2">
-        {formState.errors
-          .filter((e) => e.type === "form-alert")
-          .map((error) => (
-            <FormAlert key={error.key} error={error} isLoading={isLoading} />
-          ))}
+      {formState.errors
+        .filter((e) => e.type === "form-alert")
+        .map((error) => (
+          <FormAlert key={error.key} error={error} isLoading={isLoading} />
+        ))}
 
-        {!!depositWeiValue && slippage >= 1 && (
-          <SlippageAlert
-            symbol={pool?.replaceAll("-", "/")}
-            tokenLoss={slippageLoss?.tokenLoss}
-            dollarLoss={slippageLoss?.dollarLoss}
-            slippage={slippage}
-            isLoading={isLoading}
-            displayConfirmationButton={isTransactionBlockedBySlippage}
-            onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
-          />
-        )}
-      </div>
+      {!!depositWeiValue && slippage >= 1 && (
+        <SlippageAlert
+          symbol={pool?.replaceAll("-", "/")}
+          tokenLoss={slippageLoss?.tokenLoss}
+          dollarLoss={slippageLoss?.dollarLoss}
+          slippage={slippage}
+          isLoading={isLoading}
+          displayConfirmationButton={isTransactionBlockedBySlippage}
+          onClickContinue={() => setIsTransactionBlockedBySlippage(false)}
+        />
+      )}
 
       <FormButtons
         actions={{

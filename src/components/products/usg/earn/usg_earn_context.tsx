@@ -5,12 +5,12 @@ import { mapPoolsAndTasks } from "./utils"
 import { useUSGContext } from "../usg_context"
 import { mapAPROpportunities } from "./usg_earn_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { AprOpportunityItem, USGStakingInfo, LpUserPoints, EarnProtocolInput } from "../usg_type"
+import { AprOpportunityItem, USGStakingInfo, LpUserPoints } from "../usg_type"
 import { EarnPoolsData, getConvexPools, getCurvePools, getPendlePools, getStakeDAOPools } from "../client_api_external"
+import { opportunities } from "@/app/(products)/(usg)/earn/aprOpportunities"
 
 type USGEarnContextProps = {
   children: ReactNode
-  tasks: EarnProtocolInput[]
 }
 
 type USGEarnContextValues = {
@@ -23,7 +23,7 @@ type USGEarnContextValues = {
 
 export const USGEarnContext = createContext<USGEarnContextValues | undefined>(undefined)
 
-export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
+export const USGEarnProvider = ({ children }: USGEarnContextProps) => {
   const { USGsUSGMetrics, lpUserPoints } = useUSGContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -31,16 +31,14 @@ export const USGEarnProvider = ({ children, tasks }: USGEarnContextProps) => {
   const [poolsData, setPoolsData] = useState<EarnPoolsData[]>()
 
   const displayRows = useMemo(() => {
-    if (!tasks) return []
-
-    const mappedTasks = mapAPROpportunities(tasks, poolsData)
+    const mappedTasks = mapAPROpportunities(opportunities, poolsData)
     return mappedTasks
-  }, [tasks, poolsData])
+  }, [poolsData])
 
   const fetchPoolsData = async () => {
     const [curvePools, convexPools, stakeDaoPools, pendlePools] = await Promise.all([getCurvePools(), getConvexPools(), getStakeDAOPools(), getPendlePools()])
 
-    const poolsAndTasks = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, tasks)
+    const poolsAndTasks = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, opportunities)
 
     setPoolsData(poolsAndTasks)
     setIsLoading(false)

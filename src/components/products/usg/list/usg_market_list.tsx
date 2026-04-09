@@ -119,11 +119,11 @@ export default function USGMarketList() {
                 key: "Your Total Points",
                 value: (
                   <div className="flex w-full items-center justify-center gap-2 text-white transition duration-200">
-                    {formatMillions(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints)} pts
+                    <div>{formatMillions(lpUserPoints?.lpTotalPoints + voteUserPoints?.voteTotalPoints)} pts</div>
                     <HoverCard openDelay={100} closeDelay={100}>
                       <HoverCardTrigger asChild>
                         <button type="button">
-                          <IconCircleHelp className="w-3 fill-white" />
+                          <IconCircleHelp className="h-[13px] w-[13px] fill-white" />
                         </button>
                       </HoverCardTrigger>
                       <HoverCardContent

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { createPublicClient, http, Address } from "viem"
+import { createPublicClient, http, Address, formatUnits } from "viem"
 import { dappConfig } from "@/dapp_config"
 import { USGMarkets } from "@/components/products/usg/usg_repository"
 import IRCalculatorABI from "@/abi/USG/IRCalculator.json"
@@ -11,9 +11,29 @@ import { executeContractCall } from "@/services/service_rpc"
 
 const IR_CALCULATOR_ABI = IRCalculatorABI.abi as Abi
 
+const CURVE_LP_ABI: Abi = [
+  { name: "name", type: "function", stateMutability: "view", inputs: [], outputs: [{ type: "string" }] },
+  { name: "coins", type: "function", stateMutability: "view", inputs: [{ name: "i", type: "uint256" }], outputs: [{ type: "address" }] },
+  { name: "price_oracle", type: "function", stateMutability: "view", inputs: [{ name: "k", type: "uint256" }], outputs: [{ type: "uint256" }] },
+  { name: "get_p", type: "function", stateMutability: "view", inputs: [{ name: "i", type: "uint256" }], outputs: [{ type: "uint256" }] },
+  { name: "get_virtual_price", type: "function", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] },
+  { name: "balanceOf", type: "function", stateMutability: "view", inputs: [{ name: "owner", type: "address" }], outputs: [{ type: "uint256" }] },
+] as const
+
+const ERC20_ABI: Abi = [
+  { name: "symbol", type: "function", stateMutability: "view", inputs: [], outputs: [{ type: "string" }] },
+  { name: "decimals", type: "function", stateMutability: "view", inputs: [], outputs: [{ type: "uint8" }] },
+  { name: "balanceOf", type: "function", stateMutability: "view", inputs: [{ name: "owner", type: "address" }], outputs: [{ type: "uint256" }] },
+] as const
+
 const addresses = process.env.NEXT_PUBLIC_ADDRESSES_JSON
 const envAddresses = addresses ? JSON.parse(addresses) : {}
 const IR_CALCULATOR_ADDRESS: Address = envAddresses?.utilities?.irCalculator
+
+const LP_ADDRESSES: { name: string; address: Address }[] = [
+  { name: "USG-USDC", address: envAddresses?.lps?.["USG-USDC"] },
+  { name: "USG-frxUSD", address: envAddresses?.lps?.["USG-frxUSD"] },
+].filter((lp) => !!lp.address)
 
 const RAY = BigInt("1000000000000000000000000000") // 1e27
 
@@ -43,11 +63,26 @@ const publicClient = createPublicClient({
   transport: http(dappConfig.chain.rpc),
 })
 
+type LpRow = {
+  name: string
+  virtualPrice: string
+  priceOracle: string
+  lastPrice: string
+  coin0: string
+  balance0: number
+  coin1: string
+  balance1: number
+}
+
 type DebtIndexRow = {
   marketName: string
   marketAddress: Address
   index: bigint | null
   error: string | null
+}
+
+function formatStablePrice(value: bigint): string {
+  return Number(formatUnits(value, 18)).toFixed(6)
 }
 
 export default function DevToolsPage() {
@@ -60,6 +95,9 @@ export default function DevToolsPage() {
 
   const [debtIndexes, setDebtIndexes] = useState<DebtIndexRow[]>([])
   const [isLoadingIndexes, setIsLoadingIndexes] = useState(false)
+
+  const [lpRows, setLpRows] = useState<LpRow[]>([])
+  const [isLoadingLps, setIsLoadingLps] = useState(false)
 
   const [selected, setSelected] = useState<Set<Address>>(new Set())
   const [isCheckpointing, setIsCheckpointing] = useState(false)
@@ -100,6 +138,57 @@ export default function DevToolsPage() {
   useEffect(() => {
     fetchLastBlockTime()
   }, [fetchLastBlockTime])
+
+  const fetchLpData = useCallback(async () => {
+    setIsLoadingLps(true)
+    const results = await Promise.all(
+      LP_ADDRESSES.map(async ({ address: lpAddress }) => {
+        const readLp = (functionName: string, args?: unknown[]) => publicClient.readContract({ address: lpAddress, abi: CURVE_LP_ABI, functionName, args })
+
+        const readErc20 = (addr: Address, functionName: string, args?: unknown[]) =>
+          publicClient.readContract({ address: addr, abi: ERC20_ABI, functionName, args })
+
+        const [lpName, coin0Addr, coin1Addr, virtualPrice, priceOracle, lastPrice] = await Promise.all([
+          readLp("name") as Promise<string>,
+          readLp("coins", [0n]) as Promise<Address>,
+          readLp("coins", [1n]) as Promise<Address>,
+          readLp("get_virtual_price") as Promise<bigint>,
+          readLp("price_oracle", [0n]) as Promise<bigint>,
+          readLp("get_p", [0n]) as Promise<bigint>,
+        ])
+
+        const [[symbol0, balance0Raw, decimals0], [symbol1, balance1Raw, decimals1]] = await Promise.all([
+          Promise.all([
+            readErc20(coin0Addr, "symbol") as Promise<string>,
+            readErc20(coin0Addr, "balanceOf", [lpAddress]) as Promise<bigint>,
+            readErc20(coin0Addr, "decimals") as Promise<number>,
+          ]),
+          Promise.all([
+            readErc20(coin1Addr, "symbol") as Promise<string>,
+            readErc20(coin1Addr, "balanceOf", [lpAddress]) as Promise<bigint>,
+            readErc20(coin1Addr, "decimals") as Promise<number>,
+          ]),
+        ])
+
+        return {
+          name: lpName,
+          virtualPrice: formatStablePrice(virtualPrice),
+          priceOracle: formatStablePrice(priceOracle),
+          lastPrice: formatStablePrice(lastPrice),
+          coin0: symbol0,
+          balance0: Math.trunc(Number(formatUnits(balance0Raw, decimals0))),
+          coin1: symbol1,
+          balance1: Math.trunc(Number(formatUnits(balance1Raw, decimals1))),
+        }
+      })
+    )
+    setLpRows(results)
+    setIsLoadingLps(false)
+  }, [])
+
+  useEffect(() => {
+    fetchLpData()
+  }, [fetchLpData])
 
   const handleMineBlock = async () => {
     const hoursNum = parseFloat(hours)
@@ -216,6 +305,55 @@ export default function DevToolsPage() {
           </button>
         </div>
         {mineStatus && <p className="text-sm text-white/70">{mineStatus}</p>}
+      </div>
+
+      {/* Curve LP Pools */}
+      <div className="flex flex-col gap-3 rounded-[10px] bg-overlay-panel p-5">
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-white">Curve LP Pools</h2>
+          <button
+            onClick={fetchLpData}
+            disabled={isLoadingLps}
+            className="rounded-md bg-white/10 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/20 disabled:opacity-50"
+          >
+            {isLoadingLps ? "Loading..." : "Refresh"}
+          </button>
+        </div>
+
+        {isLoadingLps && lpRows.length === 0 && <p className="text-sm text-white/50">Loading pools...</p>}
+
+        {lpRows.length > 0 && (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-white/10 text-left text-white/50">
+                  <th className="pb-2 pr-6 font-medium">Pool</th>
+                  <th className="pb-2 pr-6 font-medium">Virtual Price</th>
+                  <th className="pb-2 pr-6 font-medium">Price Oracle</th>
+                  <th className="pb-2 pr-6 font-medium">Last Price</th>
+                  <th className="pb-2 pr-6 font-medium">Coin 0</th>
+                  <th className="pb-2 pr-6 font-medium">Balance 0</th>
+                  <th className="pb-2 pr-6 font-medium">Coin 1</th>
+                  <th className="pb-2 font-medium">Balance 1</th>
+                </tr>
+              </thead>
+              <tbody>
+                {lpRows.map((row) => (
+                  <tr key={row.name} className="border-b border-white/5">
+                    <td className="py-2 pr-6 font-medium text-white">{row.name}</td>
+                    <td className="py-2 pr-6 font-mono text-white">{row.virtualPrice}</td>
+                    <td className="py-2 pr-6 font-mono text-white">{row.priceOracle}</td>
+                    <td className="py-2 pr-6 font-mono text-white">{row.lastPrice}</td>
+                    <td className="py-2 pr-6 text-white/70">{row.coin0}</td>
+                    <td className="py-2 pr-6 font-mono text-white">{row.balance0.toLocaleString()}</td>
+                    <td className="py-2 pr-6 text-white/70">{row.coin1}</td>
+                    <td className="py-2 font-mono text-white">{row.balance1.toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Debt Indexes */}

@@ -69,6 +69,9 @@ export const USGPredepositComponent = ({
   setIsTransactionBlockedBySlippage,
   slippageLoss,
 }: USGPredepositComponentProps) => {
+  const availableLeft = ((cap || 0n) - (currentDeposit || 0n)) / 10n ** BigInt(18 - assetInfo.decimals)
+  const max = availableLeft > balance ? balance : availableLeft
+
   return (
     <ReliefCard className="flex w-full flex-col gap-[10px] p-2 xl:p-5">
       <div className="flex w-full items-center justify-between">
@@ -80,22 +83,15 @@ export const USGPredepositComponent = ({
         </span>
       </div>
 
-      <div className="flex w-full items-center justify-center gap-2">
-        <DynamicProgressBar progressBarColor="bg-white" maxValue={cap || 0n} currentValue={currentDeposit} />
-
-        <SlippageInput slippage={slippage} setSlippage={setSlippage} />
-      </div>
-
+      <DynamicProgressBar progressBarColor="bg-white" maxValue={cap || 0n} currentValue={currentDeposit} />
       <GenericInputAssetAmount
         inputWeiValue={depositWeiValue}
         depositSelect={<StaticCardAssetInput assetName={assetInfo?.symbol} logoKey={assetInfo.logoKey!} />}
-        isLoading={false}
         label="You deposit"
         asset={assetInfo}
-        isZapping={false}
         onValueChange={handleDepositChange}
-        displayBalance={true}
-        maxAmountParams={{ maxWeiValue: balance, setMaxAmount: setMaxBalance }}
+        slippageInput={<SlippageInput slippage={slippage} setSlippage={setSlippage} />}
+        maxAmountParams={{ maxWeiValue: max, setMaxAmount: setMaxBalance }}
         sliderParams={{
           sliderPercentage: percentage,
           setSliderPercentage: setPercentage,

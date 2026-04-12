@@ -8,7 +8,7 @@ import { USG_CONTRACT } from "../usg_repository"
 import { getQuote, getRoute } from "../global_quote_controller"
 import { AssetDataPriced } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { Abi, Address, formatUnits, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
 import { BalanceAllowanceData, DepositReceiveAsset, FormState, LpUserPoints, USGStakingInfo } from "../usg_type"
@@ -218,112 +218,146 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const sellQuoteIdRef = useRef(0)
   const buyQuoteIdRef = useRef(0)
 
-  const handleSellChange = (value: bigint | undefined) => {
-    setPriceImpact(0)
-    setSellWeiValue(value)
+  // Keeps a ref of both input and output tokens
+  // Ref is updated when needed and used in handleSellChange and handleBuyChange
+  const assetPairRef = useRef({ buyAssetInfo, sellAssetInfo })
 
-    if (value === undefined) {
-      setBuyWeiValue(undefined)
-      setIsBuyValueLoading(false)
-      return
-    }
+  useEffect(() => {
+    assetPairRef.current = { buyAssetInfo, sellAssetInfo }
+  }, [buyAssetInfo, sellAssetInfo])
 
-    if (!sellAssetInfo || !buyAssetInfo) return
-
-    setIsBuyValueLoading(true)
-
-    if (sellDebounceRef.current) clearTimeout(sellDebounceRef.current)
-
-    const quote = swapData?.quote
-
-    if (quote === "1") {
-      setBuyWeiValue(value)
-      setIsBuyValueLoading(false)
-      return
-    }
-    const quoteId = ++sellQuoteIdRef.current
-
-    sellDebounceRef.current = setTimeout(async () => {
-      try {
-        //
-        if (quote === "enso") {
-          const quote = await getQuote(value, currentAddress || zeroAddress, buyAssetInfo?.address, sellAssetInfo?.address, curveRoutes)
-          const handledQuote = handleQuote(quote.quote, quote.priceImpact)
-
-          if (quoteId !== sellQuoteIdRef.current) return
-          if (quote) {
-            setPriceImpact(Number(handledQuote.validPriceImpact) / 100)
-            setBuyWeiValue(handledQuote.validQuote)
-          }
-        }
-        //
-        else {
-          const quoteContractAddress = [sellAssetInfo, buyAssetInfo].find((el) => el.symbol === swapData?.quoteContract)?.address as Address
-
-          if (value && quote) {
-            const v = await doCustomQuote(quote, value, currentAddress, quoteContractAddress)
-            if (quoteId !== sellQuoteIdRef.current) return
-            setBuyWeiValue(v as bigint)
-          }
-        }
-      } finally {
-        if (quoteId === sellQuoteIdRef.current) {
-          setIsBuyValueLoading(false)
-        }
-      }
-    }, 1200)
-  }
-
-  const handleBuyChange = (value: bigint | undefined) => {
-    setPriceImpact(0)
-    setBuyWeiValue(value)
-
-    if (value === undefined) {
-      setSellWeiValue(undefined)
-      setIsSellValueLoading(false)
-      return
-    }
-
-    if (!sellAssetInfo || !buyAssetInfo) return
-
-    setIsSellValueLoading(true)
-
-    if (buyDebounceRef.current) clearTimeout(buyDebounceRef.current)
-
-    const quote = swapData?.quote
-
-    if (quote === "1") {
+  const handleSellChange = useCallback(
+    (value: bigint | undefined) => {
+      setPriceImpact(0)
       setSellWeiValue(value)
-      setIsSellValueLoading(false)
-      return
-    }
-    const quoteId = ++buyQuoteIdRef.current
 
-    buyDebounceRef.current = setTimeout(async () => {
-      try {
-        if (quote === "enso") {
-          const quote = await getQuote(value, currentAddress || zeroAddress, sellAssetInfo?.address, buyAssetInfo?.address, curveRoutes)
-          const handledQuote = handleQuote(quote.quote, quote.priceImpact)
-
-          if (quoteId !== buyQuoteIdRef.current) return
-          if (quote) {
-            setPriceImpact(Number(handledQuote.validPriceImpact) / 100)
-            setSellWeiValue(handledQuote.validQuote)
-          }
-        } else {
-          if (value && quote) {
-            const v = await doCustomQuote(quote, value, currentAddress, buyAssetInfo?.address)
-            if (quoteId !== buyQuoteIdRef.current) return
-            setSellWeiValue(v as bigint)
-          }
-        }
-      } finally {
-        if (quoteId === buyQuoteIdRef.current) {
-          setIsSellValueLoading(false)
-        }
+      if (value === undefined) {
+        setBuyWeiValue(undefined)
+        setIsBuyValueLoading(false)
+        return
       }
-    }, 1200)
-  }
+
+      if (!sellAssetInfo || !buyAssetInfo) return
+
+      setIsBuyValueLoading(true)
+
+      if (sellDebounceRef.current) clearTimeout(sellDebounceRef.current)
+
+      const quote = swapData?.quote
+
+      if (quote === "1") {
+        setBuyWeiValue(value)
+        setIsBuyValueLoading(false)
+        return
+      }
+      const quoteId = ++sellQuoteIdRef.current
+
+      sellDebounceRef.current = setTimeout(async () => {
+        try {
+          if (quote === "enso") {
+            const quote = await getQuote(value, currentAddress || zeroAddress, buyAssetInfo?.address, sellAssetInfo?.address, curveRoutes)
+            const handledQuote = handleQuote(quote.quote, quote.priceImpact)
+
+            if (
+              quoteId !== sellQuoteIdRef.current ||
+              assetPairRef.current.buyAssetInfo !== buyAssetInfo ||
+              assetPairRef.current.sellAssetInfo !== sellAssetInfo
+            )
+              return
+
+            if (quote) {
+              setPriceImpact(Number(handledQuote.validPriceImpact) / 100)
+              setBuyWeiValue(handledQuote.validQuote)
+            }
+          } else {
+            const quoteContractAddress = [sellAssetInfo, buyAssetInfo].find((el) => el.symbol === swapData?.quoteContract)?.address as Address
+
+            if (value && quote) {
+              const v = await doCustomQuote(quote, value, currentAddress, quoteContractAddress)
+
+              if (
+                quoteId !== sellQuoteIdRef.current ||
+                assetPairRef.current.buyAssetInfo !== buyAssetInfo ||
+                assetPairRef.current.sellAssetInfo !== sellAssetInfo
+              )
+                return
+
+              setBuyWeiValue(v as bigint)
+            }
+          }
+        } finally {
+          if (quoteId === sellQuoteIdRef.current) {
+            setIsBuyValueLoading(false)
+          }
+        }
+      }, 1200)
+    },
+    [buyAssetInfo, sellAssetInfo]
+  )
+
+  const handleBuyChange = useCallback(
+    (value: bigint | undefined) => {
+      setPriceImpact(0)
+      setBuyWeiValue(value)
+
+      if (value === undefined) {
+        setSellWeiValue(undefined)
+        setIsSellValueLoading(false)
+        return
+      }
+
+      if (!sellAssetInfo || !buyAssetInfo) return
+
+      setIsSellValueLoading(true)
+
+      if (buyDebounceRef.current) clearTimeout(buyDebounceRef.current)
+
+      const quote = swapData?.quote
+
+      if (quote === "1") {
+        setSellWeiValue(value)
+        setIsSellValueLoading(false)
+        return
+      }
+
+      const quoteId = ++buyQuoteIdRef.current
+
+      buyDebounceRef.current = setTimeout(async () => {
+        try {
+          if (quote === "enso") {
+            const quote = await getQuote(value, currentAddress || zeroAddress, sellAssetInfo?.address, buyAssetInfo?.address, curveRoutes)
+            const handledQuote = handleQuote(quote.quote, quote.priceImpact)
+
+            if (quoteId !== buyQuoteIdRef.current || assetPairRef.current.buyAssetInfo !== buyAssetInfo || assetPairRef.current.sellAssetInfo !== sellAssetInfo)
+              return
+
+            if (quote) {
+              setPriceImpact(Number(handledQuote.validPriceImpact) / 100)
+              setSellWeiValue(handledQuote.validQuote)
+            }
+          } else {
+            if (value && quote) {
+              const v = await doCustomQuote(quote, value, currentAddress, buyAssetInfo?.address)
+
+              if (
+                quoteId !== buyQuoteIdRef.current ||
+                assetPairRef.current.buyAssetInfo !== buyAssetInfo ||
+                assetPairRef.current.sellAssetInfo !== sellAssetInfo
+              )
+                return
+
+              setSellWeiValue(v as bigint)
+            }
+          }
+        } finally {
+          if (quoteId === buyQuoteIdRef.current) {
+            setIsSellValueLoading(false)
+          }
+        }
+      }, 1200)
+    },
+    [buyAssetInfo, sellAssetInfo]
+  )
 
   // --- Price fetching (needs name for computeSwapAssetPrice) ---
   useEffect(() => {
@@ -529,6 +563,8 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
   // --- Toggle just swaps the two addresses ---
   const toggleTokensSwitch = () => {
+    setBuyWeiValue(undefined)
+    setSellWeiValue(undefined)
     setBuyAssetAddress(sellAssetAddress)
     setSellAssetAddress(buyAssetAddress)
   }

@@ -10,11 +10,11 @@ import { Address, formatUnits, maxUint256 } from "viem"
 import { BuyAndMinOutFormatted } from "../leverage/types"
 import { useUSGRecordContext } from "../usg_record_context"
 import { getQuote, getRoute } from "../../global_quote_controller"
+import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
-import { formatBigInt, formatDollar, toBigInt } from "@/lib/number_formatter"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { doRepay, doRepayAndWithdraw, doZapRepay, doZapRepayAndWithdraw, getRepayFormState } from "./usg_record_repay_controller"
 import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove, matchBlockChainErrors } from "../usg_record_controller"
 
@@ -30,7 +30,7 @@ type USGRepayContextValues = {
   repayWeiValue?: bigint
   setRepayWeiValue: (arg: bigint | undefined) => void
 
-  maxRepayableValue: bigint
+  maxRepayable: bigint
 
   withdrawWeiValue?: bigint
   setWithdrawWeiValue: (arg: bigint | undefined) => void
@@ -101,7 +101,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
   const { curveRoutes, handleQuote } = useRootContext()
 
-  const { loadUSGsUSGMetrics, USGsUSGMetrics } = useUSGContext()
+  const { loadUSGsUSGMetrics, USGsUSGMetrics, balances } = useUSGContext()
 
   const { isWellConnected, walletClient, currentAddress } = useWalletConnexionContext()
 
@@ -174,6 +174,8 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
 
     if (!swapAssetPrice || !assetInfo) return null
 
+    const balWei = balances?.[assetInfo.address as Address] ?? 0n
+
     const asset: AssetDataPriced = {
       address: assetInfo?.address,
       decimals: assetInfo?.decimals,
@@ -181,10 +183,11 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
       symbol: assetInfo?.symbol,
       name: assetInfo?.name,
       price: swapAssetPrice,
+      balance: balWei,
     }
 
     return asset
-  }, [repayAsset, swapAssetPrice])
+  }, [repayAsset, swapAssetPrice, balances])
 
   useEffect(() => {
     setCurrentAmounts({
@@ -422,28 +425,19 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     return !!futureMarketDisplayData && ltvAsNumber > Number(marketData?.constants?.maxLTV) / 1000
   }, [futureMarketDisplayData, marketData])
 
-  const marketValues = useMemo(() => {
+  const maxRepayable = useMemo(() => {
     if (marketData && currentAddress) {
-      const userDebt = marketData.debtInfos?.userDebt
-
       if (repayAsset === "USG") {
+        const userDebt = marketData.debtInfos?.userDebt
         const usgBalance = marketData.debtInfos.usgBalance
 
-        const maxRepayableValue = usgBalance < userDebt ? usgBalance : userDebt
-
-        const minimumLoan = marketData.constants.minimumLoan || 0n
-        return { maxRepayableValue, minimumLoan }
-      } else if (marketData && repayAssetInfo) {
-        const maxRepayableInZapAsset = (userDebt * BigInt(10 ** (repayAssetInfo?.decimals || 18))) / toBigInt(repayAssetInfo?.price, 18)
-
-        const minimumLoanInZapAsset =
-          (marketData.constants.minimumLoan / toBigInt(repayAssetInfo?.price, repayAssetInfo?.decimals || 18)) * BigInt(10 ** (repayAssetInfo?.decimals || 18))
-
-        return { maxRepayableValue: maxRepayableInZapAsset, minimumLoan: minimumLoanInZapAsset }
+        return usgBalance < userDebt ? usgBalance : userDebt
+      } else if (repayAssetInfo) {
+        return repayAssetInfo?.balance || 0n
       }
     }
 
-    return { maxRepayableValue: 0n, minimumLoan: 0n }
+    return 0n
   }, [marketData, repayAssetInfo, currentAddress])
 
   function handleRepayValueChange(value: bigint | undefined) {
@@ -521,32 +515,29 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
   }, [repayAsset])
 
   const isDebtBelowThreshold = useMemo(() => {
-    if (!repayWeiValue || !marketValues?.maxRepayableValue || repayWeiValue === 0n) return false
-    if (repayAsset === "USG" && marketValues?.maxRepayableValue === repayWeiValue) return false
+    if (!repayWeiValue || !maxRepayable || repayWeiValue === 0n) return false
+    if (repayAsset === "USG" && maxRepayable === repayWeiValue) return false
 
-    const threshold = marketValues?.minimumLoan
+    const threshold = marketData?.constants?.minimumLoan || 0n
+
     let adjustedRepayValue = repayWeiValue
 
     if (repayAsset !== "USG") {
       adjustedRepayValue = usgRepayedValue || 0n
     }
 
-    const value = marketValues?.maxRepayableValue / BigInt(10 ** (repayAssetInfo?.decimals || 18)) - adjustedRepayValue / BigInt(10 ** 18)
+    const value = maxRepayable / BigInt(10 ** (repayAssetInfo?.decimals || 18)) - adjustedRepayValue / BigInt(10 ** 18)
 
     return value < threshold / BigInt(10 ** 18) && value > 0n
-  }, [repayWeiValue, marketValues, repayAsset, usgRepayedValue])
+  }, [repayWeiValue, maxRepayable, repayAsset, usgRepayedValue, marketData])
 
   const USGDollarRepayedValue = useMemo(() => {
     return `(${formatDollar((Number(Number(formatUnits(usgRepayedValue || 0n, 18))) * USGInfo?.price).toFixed(2))})`
   }, [usgRepayedValue, USGInfo])
 
   const zapValuesFormatted = useMemo(() => {
-    if (!isZapLoading && usgRepayedValue && !!marketValues?.maxRepayableValue && repayAssetInfo) {
-      const maxRepayableInUSG =
-        (((marketValues?.maxRepayableValue * BigInt(10n ** 18n)) / BigInt(10 ** (repayAssetInfo?.decimals || 18))) * toBigInt(repayAssetInfo?.price, 18)) /
-        BigInt(10n ** 18n)
-
-      const actualDebtRepaid = usgRepayedValue > maxRepayableInUSG ? (marketData?.debtInfos?.userDebt as bigint) : usgRepayedValue
+    if (!isZapLoading && usgRepayedValue && repayAssetInfo && marketData) {
+      const actualDebtRepaid = usgRepayedValue > marketData?.debtInfos?.userDebt ? marketData?.debtInfos?.userDebt : usgRepayedValue
 
       const minAmountOutWei = computedMinAmountOut(actualDebtRepaid, slippage)
 
@@ -558,7 +549,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     }
 
     return { expectedFormatted: `-`, minOutFormatted: `-` }
-  }, [usgRepayedValue, slippage, isZapLoading, marketValues, repayAssetInfo, marketData])
+  }, [usgRepayedValue, slippage, isZapLoading, repayAssetInfo, marketData])
 
   const priceImpactLoss = useMemo(() => {
     const { dollarLoss } = computeTransactionPotentialLoss(usgRepayedValue as bigint, USGInfo, priceImpact)
@@ -645,7 +636,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
     formState,
     repayWeiValue,
     setRepayWeiValue,
-    maxRepayableValue: marketValues?.maxRepayableValue,
+    maxRepayable,
     percentage,
     setPercentage,
     withdrawWeiValue,

@@ -35,7 +35,7 @@ export default function USGRepayContent() {
     slippage,
     repayWeiValue,
     repayAsset,
-    maxRepayableValue,
+    maxRepayable,
     formState,
     percentage,
     isRepayMax,
@@ -92,7 +92,7 @@ export default function USGRepayContent() {
           <span className="text-sm font-semibold md:text-xl">Repay debt</span>
 
           <span className="text-xs text-subtitle">
-            Max: {formatBigInt(maxRepayableValue, repayAssetInfo?.decimals || 18, 3)} {repayAssetInfo?.symbol || "USG"}
+            Max: {formatBigInt(maxRepayable, repayAssetInfo?.decimals || 18, 3)} {repayAssetInfo?.symbol || "USG"}
           </span>
         </div>
 
@@ -103,11 +103,11 @@ export default function USGRepayContent() {
             <ZapAssetSelector collateralInfo={collateralInfo} depositAsset={repayAsset || "USG"} setDepositAsset={setRepayAsset} caseType="repay" />
           }
           slippageInput={isZapping && <SlippageInput slippage={slippage} setSlippage={setSlippage} />}
-          disabled={isRepayMax || maxRepayableValue === 0n}
+          disabled={isRepayMax || marketData?.debtInfos?.userDebt === 0n}
           isZapping={isZapping}
           asset={repayAssetInfo || USGInfo}
           onValueChange={handleRepayValueChange}
-          maxAmountParams={{ maxWeiValue: maxRepayableValue, setMaxAmount: () => handleRepayValueChange(maxRepayableValue) }}
+          maxAmountParams={{ maxWeiValue: maxRepayable, setMaxAmount: () => handleRepayValueChange(maxRepayable) }}
           sliderParams={{
             sliderPercentage: percentage,
             setSliderPercentage: setPercentage,

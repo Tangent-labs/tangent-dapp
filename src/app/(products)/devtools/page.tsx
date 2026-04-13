@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { createPublicClient, http, Address, formatUnits } from "viem"
+import { createPublicClient, http, Address, formatUnits, formatEther, zeroAddress } from "viem"
 import { dappConfig } from "@/dapp_config"
 import { USGMarkets } from "@/components/products/usg/usg_repository"
 import IRCalculatorABI from "@/abi/USG/IRCalculator.json"
@@ -26,6 +26,11 @@ const ERC20_ABI: Abi = [
   { name: "balanceOf", type: "function", stateMutability: "view", inputs: [{ name: "owner", type: "address" }], outputs: [{ type: "uint256" }] },
 ] as const
 
+const MARKET_ABI: Abi = [
+  { name: "userDebtShares", type: "function", stateMutability: "view", inputs: [{ name: "user", type: "address" }], outputs: [{ type: "uint256" }] },
+  { name: "totalDebtShares", type: "function", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] },
+] as const
+
 const addresses = process.env.NEXT_PUBLIC_ADDRESSES_JSON
 const envAddresses = addresses ? JSON.parse(addresses) : {}
 const IR_CALCULATOR_ADDRESS: Address = envAddresses?.utilities?.irCalculator
@@ -34,15 +39,6 @@ const LP_ADDRESSES: { name: string; address: Address }[] = [
   { name: "USG-USDC", address: envAddresses?.lps?.["USG-USDC"] },
   { name: "USG-frxUSD", address: envAddresses?.lps?.["USG-frxUSD"] },
 ].filter((lp) => !!lp.address)
-
-const RAY = BigInt("1000000000000000000000000000") // 1e27
-
-function formatRay(value: bigint): string {
-  const whole = value / RAY
-  const fractional = value % RAY
-  const fractionalStr = fractional.toString().padStart(27, "0").slice(0, 6)
-  return `${whole}.${fractionalStr}`
-}
 
 async function rpcRequest(method: string, params: unknown[]) {
   const res = await fetch(dappConfig.chain.rpc, {
@@ -78,6 +74,8 @@ type DebtIndexRow = {
   marketName: string
   marketAddress: Address
   index: bigint | null
+  userDebtShares: bigint | null
+  totalDebtShares: bigint | null
   error: string | null
 }
 
@@ -86,7 +84,7 @@ function formatStablePrice(value: bigint): string {
 }
 
 export default function DevToolsPage() {
-  const { walletClient } = useWalletConnexionContext()
+  const { walletClient, currentAddress } = useWalletConnexionContext()
 
   const [hours, setHours] = useState<string>("1")
   const [mineStatus, setMineStatus] = useState<string>("")
@@ -102,9 +100,92 @@ export default function DevToolsPage() {
   const [selected, setSelected] = useState<Set<Address>>(new Set())
   const [isCheckpointing, setIsCheckpointing] = useState(false)
   const [checkpointStatus, setCheckpointStatus] = useState<string>("")
+  // Nouvel état pour la valeur globale
+  const [mintableInterests, setMintableInterests] = useState<bigint | null>(null)
 
   const allAddresses = debtIndexes.map((r) => r.marketAddress)
   const allSelected = allAddresses.length > 0 && allAddresses.every((a) => selected.has(a))
+
+  const fetchDebtIndexes = async () => {
+    if (!IR_CALCULATOR_ADDRESS || currentAddress === zeroAddress) {
+      return
+    }
+
+    setIsLoadingIndexes(true)
+
+    try {
+      const results: DebtIndexRow[] = []
+
+      for (const market of USGMarkets) {
+        try {
+          // Debt Index depuis IRCalculator
+          const index = (await publicClient.readContract({
+            address: IR_CALCULATOR_ADDRESS,
+            abi: IR_CALCULATOR_ABI,
+            functionName: "debtIndexes",
+            args: [market.marketAddress],
+          })) as bigint
+
+          // User Debt Shares (seulement si wallet connecté)
+          let userDebtShares: bigint | null = null
+          if (currentAddress) {
+            userDebtShares = (await publicClient.readContract({
+              address: market.marketAddress,
+              abi: MARKET_ABI,
+              functionName: "userDebtShares",
+              args: [currentAddress],
+            })) as bigint
+          }
+
+          // Total Debt Shares
+          const totalDebtShares = (await publicClient.readContract({
+            address: market.marketAddress,
+            abi: MARKET_ABI,
+            functionName: "totalDebtShares",
+          })) as bigint
+
+          results.push({
+            marketName: market.marketName,
+            marketAddress: market.marketAddress,
+            index,
+            userDebtShares,
+            totalDebtShares,
+            error: null,
+          })
+        } catch (err) {
+          console.error(`Error fetching data for market ${market.marketName}:`, err)
+
+          results.push({
+            marketName: market.marketName,
+            marketAddress: market.marketAddress,
+            index: null,
+            userDebtShares: null,
+            totalDebtShares: null,
+            error: err instanceof Error ? err.message : String(err),
+          })
+        }
+      }
+
+      // Mintable Interests (global)
+      let mintableInterests: bigint | null = null
+      try {
+        mintableInterests = (await publicClient.readContract({
+          address: IR_CALCULATOR_ADDRESS,
+          abi: IR_CALCULATOR_ABI,
+          functionName: "mintableInterests",
+        })) as bigint
+      } catch (err) {
+        console.error("Error fetching mintableInterests:", err)
+      }
+
+      setDebtIndexes(results)
+      setMintableInterests(mintableInterests)
+    } catch (e) {
+      console.error("Unexpected error in fetchDebtIndexes:", e)
+    } finally {
+      setIsLoadingIndexes(false)
+    }
+  }
 
   const toggleRow = (addr: Address) => {
     setSelected((prev) => {
@@ -217,40 +298,11 @@ export default function DevToolsPage() {
     }
   }
 
-  const fetchDebtIndexes = useCallback(async () => {
-    if (!IR_CALCULATOR_ADDRESS) return
-
-    setIsLoadingIndexes(true)
-
-    const results = await Promise.all(
-      USGMarkets.map(async (market) => {
-        try {
-          const index = (await publicClient.readContract({
-            address: IR_CALCULATOR_ADDRESS,
-            abi: IR_CALCULATOR_ABI,
-            functionName: "debtIndexes",
-            args: [market.marketAddress],
-          })) as bigint
-
-          return { marketName: market.marketName, marketAddress: market.marketAddress, index, error: null }
-        } catch (e) {
-          return {
-            marketName: market.marketName,
-            marketAddress: market.marketAddress,
-            index: null,
-            error: e instanceof Error ? e.message : String(e),
-          }
-        }
-      })
-    )
-
-    setDebtIndexes(results)
-    setIsLoadingIndexes(false)
-  }, [])
-
   useEffect(() => {
-    fetchDebtIndexes()
-  }, [fetchDebtIndexes])
+    if (currentAddress !== zeroAddress) {
+      fetchDebtIndexes()
+    }
+  }, [currentAddress])
 
   const handleCheckpoint = async () => {
     if (!walletClient || selected.size === 0 || !IR_CALCULATOR_ADDRESS) return
@@ -272,6 +324,36 @@ export default function DevToolsPage() {
       setCheckpointStatus(`Error: ${e instanceof Error ? e.message : String(e)}`)
     } finally {
       setIsCheckpointing(false)
+    }
+  }
+
+  const [isMintingIR, setIsMintingIR] = useState(false)
+  const handleMintIR = async () => {
+    if (!walletClient || !IR_CALCULATOR_ADDRESS) {
+      return
+    }
+
+    if (mintableInterests === null || mintableInterests === 0n) {
+      return
+    }
+
+    setIsMintingIR(true)
+
+    try {
+      await executeContractCall(walletClient, {
+        address: IR_CALCULATOR_ADDRESS,
+        abi: IR_CALCULATOR_ABI,
+        functionName: "mintIR",
+        args: [], // mintIR() ne prend normalement pas d'arguments
+      })
+
+      // Rafraîchir les données après mint
+      await fetchDebtIndexes()
+    } catch (e) {
+      const errorMsg = e instanceof Error ? e.message : String(e)
+      console.error("Mint IR failed:", errorMsg)
+    } finally {
+      setIsMintingIR(false)
     }
   }
 
@@ -356,6 +438,28 @@ export default function DevToolsPage() {
         )}
       </div>
 
+      <div className="flex flex-col gap-3 rounded-[10px] bg-overlay-panel p-5">
+        {/* Valeur globale Mintable Interests */}
+        {/* Valeur globale Mintable Interests + Bouton Mint */}
+        {mintableInterests !== null && (
+          <div className="flex items-center justify-between rounded-md bg-white/5 p-4">
+            <div>
+              <span className="text-white/70">Mintable Interests (global) : </span>
+              <span className="font-mono text-lg text-white">{formatEther(mintableInterests)}</span>
+              <span className="ml-2 text-xs text-white/40">({mintableInterests.toString()})</span>
+            </div>
+
+            <button
+              onClick={handleMintIR}
+              disabled={isMintingIR || mintableInterests === 0n || !walletClient}
+              className="flex items-center gap-2 rounded-md bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isMintingIR ? "Minting..." : "Mint Interests"}
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* Debt Indexes */}
       <div className="flex flex-col gap-3 rounded-[10px] bg-overlay-panel p-5">
         <div className="flex items-center justify-between">
@@ -401,7 +505,9 @@ export default function DevToolsPage() {
                   <th className="w-4 pb-2 pr-3 font-medium"></th>
                   <th className="pb-2 pr-4 font-medium">Market</th>
                   <th className="pb-2 pr-4 font-medium">Address</th>
-                  <th className="pb-2 font-medium">Debt Index (27 dec)</th>
+                  <th className="pb-2 pr-6 font-medium">Debt Index (27 dec)</th>
+                  <th className="pb-2 pr-6 font-medium">User Debt Shares</th>
+                  <th className="pb-2 font-medium">Total Debt Shares</th>
                 </tr>
               </thead>
               <tbody>
@@ -426,17 +532,29 @@ export default function DevToolsPage() {
                       <td className="py-2 pr-4 font-mono text-xs text-white/50">
                         {row.marketAddress.slice(0, 8)}...{row.marketAddress.slice(-6)}
                       </td>
-                      <td className="py-2">
+                      <td className="py-2 pr-6 font-mono">
                         {row.error ? (
                           <span className="text-xs text-red-400">{row.error}</span>
                         ) : row.index !== null ? (
                           <div className="flex flex-col">
-                            <span className="text-white">{formatRay(row.index)}</span>
+                            <span className="text-white">{Number(formatUnits(row.index, 27)).toFixed(5)}</span>
                             <span className="text-xs text-white/40">{row.index.toString()}</span>
                           </div>
                         ) : (
                           <span className="text-white/30">—</span>
                         )}
+                      </td>
+                      <td className="py-2 pr-6 font-mono text-white">
+                        {row.userDebtShares !== null ? (
+                          Number(formatEther(row.userDebtShares)).toFixed(5)
+                        ) : currentAddress ? (
+                          <span className="text-white/30">—</span>
+                        ) : (
+                          <span className="text-xs text-white/40">Connect wallet</span>
+                        )}
+                      </td>
+                      <td className="py-2 font-mono text-white">
+                        {row.totalDebtShares !== null ? Number(formatEther(row.totalDebtShares)).toFixed(5) : <span className="text-white/30">—</span>}
                       </td>
                     </tr>
                   )

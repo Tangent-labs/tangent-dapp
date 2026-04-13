@@ -1,14 +1,14 @@
 "use client"
 
 import { cn } from "@/lib/utils"
+import { formatMillions } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "./usg_record_context"
 import IndicatorV2 from "@/components/design_system/structure/indicators_v2"
 import { CollateralCard } from "./collat_selection_dropdown/collateral_selection"
 import { NeonLightCard } from "@/components/design_system/structure/neon_light_card"
-import { formatMillions } from "@/lib/number_formatter"
 
 export default function USGRecordPageHeader() {
-  const { collateralInfo, marketDisplayData, marketData } = useUSGRecordContext()
+  const { collateralInfo, marketDisplayData, marketData, currentTotalMarketApr } = useUSGRecordContext()
 
   return (
     <>
@@ -44,9 +44,9 @@ export default function USGRecordPageHeader() {
 
         {/* MOBILE COMPONENT */}
         <div className="mt-2 flex items-end gap-1 md:hidden">
-          <IndicatorV2 indicators={[{ title: "APR", value: "12%" }]} />
-          <IndicatorV2 indicators={[{ title: "Borrow rate", value: marketDisplayData.borrowRateCurrent }]} />
-          <IndicatorV2 indicators={[{ title: "LTV", value: marketDisplayData.maxLtv }]} />
+          <IndicatorV2 indicators={[{ title: "Current vAPR", value: `${currentTotalMarketApr}%` }]} />
+          <IndicatorV2 indicators={[{ title: "Borrow rate", value: `${((Math.exp(marketDisplayData.borrowRateCurrent) - 1) * 100).toFixed(2)}%` }]} />
+          <IndicatorV2 indicators={[{ title: "Max LTV", value: marketDisplayData.maxLtv }]} />
         </div>
       </div>
     </>

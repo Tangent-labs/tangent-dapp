@@ -44,6 +44,8 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
     isfrxUSDDepositLoading,
     isUSDCDepositLoading,
     frxUSDInfo,
+    isQuoteLoading,
+    isfrxUSDQuoteLoading,
     USDCBalanceAllowance,
     frxUSDBalanceAllowance,
     USDCDepositValue,
@@ -129,6 +131,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
             setSlippage={setSlippage}
             depositWeiValue={USDCDepositValue}
             isLoading={isUSDCDepositLoading}
+            isQuoteLoading={isQuoteLoading}
             assetInfo={USDCInfo}
             balance={USDCBalanceAllowance?.balance}
             handleDepositChange={handleDepositChange}
@@ -156,6 +159,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
             setSlippage={setfrxUSDSlippage}
             depositWeiValue={frxUSDDepositValue}
             isLoading={isfrxUSDDepositLoading}
+            isQuoteLoading={isfrxUSDQuoteLoading}
             assetInfo={frxUSDInfo}
             balance={frxUSDBalanceAllowance?.balance}
             handleDepositChange={handleDepositfrxUSDChange}

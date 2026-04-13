@@ -113,6 +113,10 @@ type PredepositContextValues = {
   USGfrxUSDSlippageLoss: { tokenLoss: string; dollarLoss: string }
 
   opportunitiesData: EarnPoolsData[]
+
+  isQuoteLoading: boolean
+
+  isfrxUSDQuoteLoading: boolean
 }
 
 export const PredepositContext = createContext<PredepositContextValues | undefined>(undefined)
@@ -157,6 +161,10 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   const [predepositStatus, setPredepositStatus] = useState<PredepositStatus | null>(null)
 
   const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false)
+
+  const [isQuoteLoading, setIsQuoteLoading] = useState<boolean>(false)
+
+  const [isfrxUSDQuoteLoading, setIsfrxUSDQuoteLoading] = useState<boolean>(false)
 
   const [isUSGUSDCTransactionBlockedBySlippage, setIsUSDGUSDCTransactionBlockedBySlippage] = useState<boolean>(false)
 
@@ -258,22 +266,28 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   }, [frxUSDPrice])
 
   const handleDepositChange = (value: bigint | undefined) => {
+    setIsQuoteLoading(true)
+    setUSGUSDCDepositValue(undefined)
     setUSDCDepositValue(value)
 
     const getUSDCPredepositQuote = async (depositValue: bigint) => {
-      const quote = await fetchQuote(depositValue, USGTokens[1]["USG-USDC"])
+      const [quote] = await Promise.all([fetchQuote(depositValue, USGTokens[1]["USG-USDC"]), new Promise((resolve) => setTimeout(resolve, 500))])
       setUSGUSDCDepositValue(quote)
+      setIsQuoteLoading(false)
     }
 
     getUSDCPredepositQuote(value || 0n)
   }
 
   const handleDepositfrxUSDChange = (value: bigint | undefined) => {
+    setIsfrxUSDQuoteLoading(true)
+    setUSGfrxUSDDepositValue(undefined)
     setfrxUSDDepositValue(value)
 
     const getfrxUSDPredepositQuote = async (depositValue: bigint) => {
-      const quote = await fetchQuote(depositValue, USGTokens[1]["USG-frxUSD"])
+      const [quote] = await Promise.all([fetchQuote(depositValue, USGTokens[1]["USG-frxUSD"]), new Promise((resolve) => setTimeout(resolve, 500))])
       setUSGfrxUSDDepositValue(quote)
+      setIsfrxUSDQuoteLoading(false)
     }
 
     getfrxUSDPredepositQuote(value || 0n)
@@ -298,9 +312,9 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   }, [USGfrxUSDDepositValue])
 
   const USGUSDCformState = useMemo(() => {
-    if (predepositStatus) {
+    if (predepositStatus && USDCDepositValue && USGUSDCDepositValue) {
       return getFormState(
-        isUSDCDepositLoading,
+        isUSDCDepositLoading || isQuoteLoading,
         isUSGUSDCTransactionBlockedBySlippage,
         USDCDepositValue,
         (USGUSDCDepositValue || 0n) / 10n ** 12n,
@@ -313,22 +327,22 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     return {
       canProcess: false,
       errors: [],
-      haveToApprove: true,
+      haveToApprove: false,
     }
   }, [
     USDCDepositValue,
     predepositStatus,
-    currentAddress,
     USDCBalanceAllowance,
     USGUSDCDepositValue,
     isUSGUSDCTransactionBlockedBySlippage,
     isUSDCDepositLoading,
+    isQuoteLoading,
   ])
 
   const USGfrxUSDformState = useMemo(() => {
-    if (predepositStatus) {
+    if (predepositStatus && frxUSDDepositValue && USGfrxUSDDepositValue) {
       return getFormState(
-        isfrxUSDDepositLoading,
+        isfrxUSDDepositLoading || isfrxUSDQuoteLoading,
         isUSGfrxUSDTransactionBlockedBySlippage,
         frxUSDDepositValue,
         USGfrxUSDDepositValue,
@@ -337,15 +351,19 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
         predepositStatus?.USGfrxUSDData?.USGfrxUSDAccumulatedTotal
       )
     }
-    return { canProcess: false, errors: [], haveToApprove: false }
+    return {
+      canProcess: false,
+      errors: [],
+      haveToApprove: false,
+    }
   }, [
     frxUSDDepositValue,
     predepositStatus,
-    currentAddress,
     frxUSDBalanceAllowance,
     USGfrxUSDDepositValue,
     isUSGfrxUSDTransactionBlockedBySlippage,
     isfrxUSDDepositLoading,
+    isfrxUSDQuoteLoading,
   ])
 
   const actionApproveUSGUSDC = () => {
@@ -678,6 +696,8 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     setIsUSGfrxUSDTransactionBlockedBySlippage,
     USGfrxUSDSlippageLoss,
     opportunitiesData,
+    isQuoteLoading,
+    isfrxUSDQuoteLoading,
   }
 
   return <PredepositContext.Provider value={contextValue}>{children}</PredepositContext.Provider>

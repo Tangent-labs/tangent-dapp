@@ -126,11 +126,10 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         let repayValue = repayWeiValue
 
         // Replay value + 0.01% to handle IR
-        let maxUSGToBurn = repayValue + repayValue / 10_000n
+        const maxUSGToBurn = repayValue + repayValue / 10_000n
 
         if (repayWeiValue === maxRepayable && repayWeiValue !== 0n) {
           repayValue = maxUint256
-          maxUSGToBurn = maxUint256
         }
 
         const liquidationData = await getRoute(

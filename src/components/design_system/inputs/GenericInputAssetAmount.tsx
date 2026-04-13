@@ -277,7 +277,7 @@ export function GenericInputAssetAmount({
       )}
 
       <div className="flex justify-between">
-        <div className="flex items-center justify-start gap-2">
+        <div className="flex max-w-44 items-center justify-start gap-2">
           <div className="relative inline-block w-full max-w-[250px]">
             <span ref={inputSpanRef} className="invisible absolute whitespace-pre bg-transparent text-[24px] font-semibold" aria-hidden="true" />
 
@@ -296,8 +296,6 @@ export function GenericInputAssetAmount({
                 "bg-transparent text-left text-[24px] font-semibold",
                 "placeholder:text-left placeholder:text-gray-400",
                 "focus:outline-none",
-                "min-w-[80px]",
-                "max-w-full",
                 "truncate"
               )}
               ref={inputRef}

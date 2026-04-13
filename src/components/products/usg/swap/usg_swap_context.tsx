@@ -1,23 +1,5 @@
 "use client"
 
-import { useUSGContext } from "../usg_context"
-import { SwapConfig, swapConfig } from "./swap_config"
-import { formatBigInt, formatNumber } from "@/lib/number_formatter"
-import { toastTx } from "@/components/design_system/toast"
-import { USG_CONTRACT } from "../usg_repository"
-import { getQuote, getRoute } from "../global_quote_controller"
-import { AssetDataPriced } from "@/types"
-import { useRootContext } from "@/components/products/root/root_context"
-import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { Abi, Address, formatUnits, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
-import { BalanceAllowanceData, DepositReceiveAsset, FormState, LpUserPoints, USGStakingInfo } from "../usg_type"
-import { doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./usg_swap_controller"
-import { getTokenSymbolPriorityIndex } from "@/components/design_system/inputs/asset_selector"
-import { buildAssetInfo, resolveAssetName } from "./utils"
-import { useSearchParams } from "next/navigation"
-import { USDC } from "@tangent/defi-resources/build/ressources/erc20/common"
-import { Erc20Details, ERC20S } from "@/data/erc20s"
 import {
   computedMinAmountOut,
   computeSwapAssetPrice,
@@ -25,6 +7,25 @@ import {
   getBalances,
   getBalancesAndAllowances,
 } from "../record/usg_record_controller"
+
+import { AssetDataPriced } from "@/types"
+import { useUSGContext } from "../usg_context"
+import { USG_CONTRACT } from "../usg_repository"
+import { useSearchParams } from "next/navigation"
+import { Erc20Details, ERC20S } from "@/data/erc20s"
+import { SwapConfig, swapConfig } from "./swap_config"
+import { toastTx } from "@/components/design_system/toast"
+import { buildAssetInfo, resolveAssetName } from "./utils"
+import { getQuote, getRoute } from "../global_quote_controller"
+import { formatBigInt, formatNumber } from "@/lib/number_formatter"
+import { useRootContext } from "@/components/products/root/root_context"
+import { USDC } from "@tangent/defi-resources/build/ressources/erc20/common"
+import { getTokenSymbolPriorityIndex } from "@/components/design_system/inputs/asset_selector"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { Abi, Address, formatUnits, SendTransactionParameters, WalletClient, zeroAddress } from "viem"
+import { doApprove, doCustomQuote, doCustomSwap, doSwap, getABI, getSwapFormState } from "./usg_swap_controller"
+import { BalanceAllowanceData, DepositReceiveAsset, FormState, LpUserPoints, USGStakingInfo } from "../usg_type"
 
 type USGSwapContextProps = {
   children: ReactNode
@@ -218,6 +219,14 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   const sellQuoteIdRef = useRef(0)
   const buyQuoteIdRef = useRef(0)
 
+  // Keeps a ref of both input and output tokens
+  // Ref is updated when needed and used in handleSellChange and handleBuyChange
+  const assetPairRef = useRef({ buyAssetInfo, sellAssetInfo })
+
+  useEffect(() => {
+    assetPairRef.current = { buyAssetInfo, sellAssetInfo }
+  }, [buyAssetInfo, sellAssetInfo])
+
   const handleSellChange = (value: bigint | undefined) => {
     setPriceImpact(0)
     setSellWeiValue(value)
@@ -245,24 +254,30 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
     sellDebounceRef.current = setTimeout(async () => {
       try {
-        //
         if (quote === "enso") {
           const quote = await getQuote(value, currentAddress || zeroAddress, buyAssetInfo?.address, sellAssetInfo?.address, curveRoutes)
           const handledQuote = handleQuote(quote.quote, quote.priceImpact)
 
-          if (quoteId !== sellQuoteIdRef.current) return
+          if (quoteId !== sellQuoteIdRef.current || assetPairRef.current.buyAssetInfo !== buyAssetInfo || assetPairRef.current.sellAssetInfo !== sellAssetInfo)
+            return
+
           if (quote) {
             setPriceImpact(Number(handledQuote.validPriceImpact) / 100)
             setBuyWeiValue(handledQuote.validQuote)
           }
-        }
-        //
-        else {
+        } else {
           const quoteContractAddress = [sellAssetInfo, buyAssetInfo].find((el) => el.symbol === swapData?.quoteContract)?.address as Address
 
           if (value && quote) {
             const v = await doCustomQuote(quote, value, currentAddress, quoteContractAddress)
-            if (quoteId !== sellQuoteIdRef.current) return
+
+            if (
+              quoteId !== sellQuoteIdRef.current ||
+              assetPairRef.current.buyAssetInfo !== buyAssetInfo ||
+              assetPairRef.current.sellAssetInfo !== sellAssetInfo
+            )
+              return
+
             setBuyWeiValue(v as bigint)
           }
         }
@@ -297,6 +312,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
       setIsSellValueLoading(false)
       return
     }
+
     const quoteId = ++buyQuoteIdRef.current
 
     buyDebounceRef.current = setTimeout(async () => {
@@ -305,7 +321,9 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
           const quote = await getQuote(value, currentAddress || zeroAddress, sellAssetInfo?.address, buyAssetInfo?.address, curveRoutes)
           const handledQuote = handleQuote(quote.quote, quote.priceImpact)
 
-          if (quoteId !== buyQuoteIdRef.current) return
+          if (quoteId !== buyQuoteIdRef.current || assetPairRef.current.buyAssetInfo !== buyAssetInfo || assetPairRef.current.sellAssetInfo !== sellAssetInfo)
+            return
+
           if (quote) {
             setPriceImpact(Number(handledQuote.validPriceImpact) / 100)
             setSellWeiValue(handledQuote.validQuote)
@@ -313,7 +331,10 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
         } else {
           if (value && quote) {
             const v = await doCustomQuote(quote, value, currentAddress, buyAssetInfo?.address)
-            if (quoteId !== buyQuoteIdRef.current) return
+
+            if (quoteId !== buyQuoteIdRef.current || assetPairRef.current.buyAssetInfo !== buyAssetInfo || assetPairRef.current.sellAssetInfo !== sellAssetInfo)
+              return
+
             setSellWeiValue(v as bigint)
           }
         }
@@ -529,6 +550,8 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
 
   // --- Toggle just swaps the two addresses ---
   const toggleTokensSwitch = () => {
+    setBuyWeiValue(undefined)
+    setSellWeiValue(undefined)
     setBuyAssetAddress(sellAssetAddress)
     setSellAssetAddress(buyAssetAddress)
   }

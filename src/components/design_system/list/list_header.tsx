@@ -41,7 +41,7 @@ const HeaderDisplay = ({ label, sort = "none", onSort, field, indicator, classNa
 export const ListHeader = ({ headers, activeSort, onSort, rowDisposition: CustomRowDisposition = ListRowDisposition }: ListHeaderProps) => {
   return (
     <div className="relative hidden w-full xl:block">
-      <div className={`w-full rounded-t-[10px] bg-overlay-panel px-4 py-2 leading-[10px] backdrop-blur-[60px]`}>
+      <div className={`w-full rounded-t-[10px] bg-overlay-panel px-4 py-[11.5px] leading-[10px] backdrop-blur-[60px]`}>
         <CustomRowDisposition>
           {!!headers[0]?.key && (
             <HeaderDisplay

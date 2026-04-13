@@ -27,7 +27,7 @@
     --tgt-bg-select-input: linear-gradient(135deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.1) 100%);
     --tgt-bg-header: linear-gradient(135deg, #070707 0%, #101010 100%);
     --tgt-bg-panel-hover: #ffffff1a;
-    --tgt-bg-overlay-panel: #ffffff09;
+    --tgt-bg-overlay-panel: #ffffff08;
     --tgt-bg-panel-disabled: #ffffff26;
     --tgt-bg-tab: linear-gradient(135deg, #0075ff 0%, #00c2ff 100%);
     --tgt-bg-lec: linear-gradient(135deg, #ff8800 0%, #f79f61 100%);
@@ -44,6 +44,7 @@
     --tgt-list-row-hover: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), linear-gradient(90deg, #0075ff 0%, rgba(0, 0, 0, 0) 50%);
     --tgt-panel-title-gradient: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)),
       radial-gradient(75% 250% at 0% 50%, #0075ff 0%, rgba(0, 0, 0, 0) 100%);
+    --tgt-bg-selected-row: radial-gradient(50.04% 826.49% at 0% 50%, rgba(0, 117, 255, 0.4) 0%, rgba(0, 117, 255, 0.2) 100%);
     --tgt-button: linear-gradient(135deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.1) 100%);
     --tgt-image-body: url("/medias/background.svg");
   }

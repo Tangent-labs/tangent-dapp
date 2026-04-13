@@ -68,7 +68,7 @@ export default function USGHarvestContent() {
         </div>
       </div>
 
-      <div className="mt-5 flex w-full flex-col items-start justify-start gap-3 md:flex-row">
+      <div className="mt-5 flex w-full flex-col items-start justify-start gap-[10px] md:flex-row">
         <div className="flex w-full flex-col md:w-9/12">
           <ListProvider getSortedRows={getSortedRows} _headers={harvestListHeaders} _rows={displayRows} _listState={listeState}>
             <HarvestList></HarvestList>
@@ -81,7 +81,7 @@ export default function USGHarvestContent() {
 
         <div className="flex w-full flex-col items-center justify-center md:w-3/12">
           <div className="relative hidden w-full xl:block">
-            <div className="flex w-full gap-3 rounded-t-[10px] bg-overlay-panel px-4 py-2 leading-[10px] backdrop-blur-[60px]">
+            <div className="flex w-full justify-between gap-3 rounded-t-[10px] bg-overlay-panel p-[10px] leading-[10px] backdrop-blur-[60px]">
               <span className="text-sm text-subtitle">Harvest all</span>
               <Switch checked={displayRows?.length > 0 && marketsToHarvest.length === displayRows.length} onClick={() => onClickSelectAll()}></Switch>
             </div>
@@ -89,7 +89,7 @@ export default function USGHarvestContent() {
             <ListGradientBorder classname={"rounded-t-[10px]"} />
           </div>
 
-          <div className="relative mt-1 flex h-full min-h-52 w-full flex-col items-start justify-start p-2 backdrop-blur-[60px] transition-all duration-200 ease-out before:absolute before:inset-0 before:-z-10 before:opacity-60 before:transition-all before:duration-300">
+          <div className="relative mt-1 flex h-full min-h-52 w-full flex-col items-stretch justify-between rounded-b-[10px] bg-overlay-panel p-[10px] backdrop-blur-[60px] transition-all duration-200 ease-out before:absolute before:inset-0 before:-z-10 before:opacity-60 before:transition-all before:duration-300">
             <div className="flex w-full items-center justify-between">
               <div className="flex flex-col items-start justify-start">Market</div>
 
@@ -111,7 +111,7 @@ export default function USGHarvestContent() {
               ))}
             </div>
 
-            <div className="mt-8 flex w-full">
+            <div className="mt-auto flex w-full pt-8">
               {marketsToHarvest.length > 0 && isConnected && (
                 <Button
                   label="Harvest"
@@ -145,12 +145,12 @@ function HarvestList() {
 
       {(displayRows as HarvesterInfoDisplay[])?.map((item: HarvesterInfoDisplay) => {
         const isSelected = !!marketsToHarvest.find((market) => market.marketAddress === item.contractAddress)
-        const selectedClass = isSelected ? "ring-1 ring-inset ring-[--tgt-button-active]" : ""
+        const selectedClass = isSelected ? "bg-panel-selected-row" : "bg-overlay-panel"
 
         return (
           <div
             key={item.contractAddress}
-            className={`my-0.5 bg-overlay-panel px-4 py-1 backdrop-blur-[60px] hover-lift-row ${selectedClass}`}
+            className={`my-0.5 px-4 py-1 backdrop-blur-[60px] hover-lift-row ${selectedClass}`}
             onClick={() =>
               addToHarvestableMarkets({
                 ...item,

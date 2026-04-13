@@ -84,7 +84,7 @@ export default function USGClaimContent() {
         </div>
       </div>
 
-      <div className="mt-5 flex w-full flex-col items-start justify-start gap-3 md:flex-row">
+      <div className="mt-5 flex w-full flex-col items-start justify-start gap-[10px] md:flex-row">
         <div className="flex w-full flex-col md:w-9/12">
           <ListProvider getSortedRows={getSortedRows} _headers={claimListHeaders} _rows={displayRows} _listState={listeState}>
             <ClaimList />
@@ -97,7 +97,7 @@ export default function USGClaimContent() {
 
         <div className="flex w-full flex-col items-center justify-center md:w-3/12">
           <div className="relative hidden w-full xl:block">
-            <div className="flex w-full gap-3 rounded-t-[10px] bg-overlay-panel px-4 py-2 leading-[10px] backdrop-blur-[60px]">
+            <div className="flex w-full justify-between gap-3 rounded-t-[10px] bg-overlay-panel px-4 py-2.5 leading-[10px] backdrop-blur-[60px]">
               <span className="text-sm text-subtitle">Claim all</span>
               <Switch checked={displayRows?.length > 0 && marketsToClaim.length === displayRows.length} onClick={() => onClickClaimAll()}></Switch>
             </div>
@@ -171,11 +171,11 @@ function ClaimList() {
 
       {(displayRows as ClaimData[])?.map((item: ClaimData) => {
         const isSelected = !!marketsToClaim.find((market) => market.marketAddress === item.marketAddress)
-        const selectedClass = isSelected ? "ring-1 ring-inset ring-[--tgt-button-active]" : ""
+        const selectedClass = isSelected ? "bg-panel-selected-row" : "bg-overlay-panel"
         return (
           <div
             key={item.marketAddress}
-            className={`my-0.5 bg-overlay-panel px-4 py-1 backdrop-blur-[60px] hover-lift-row ${selectedClass}`}
+            className={`my-0.5 px-4 py-1 backdrop-blur-[60px] hover-lift-row ${selectedClass}`}
             onClick={() =>
               addToClaimableMarkets({
                 marketName: item.marketName,

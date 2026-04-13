@@ -34,6 +34,7 @@ const config: Config = {
         "light-tonic": "var(--tgt-bg-light-tonic)",
         "list-row-hover": "var(--tgt-list-row-hover)",
         "panel-title-gradient": "var(--tgt-panel-title-gradient)",
+        "panel-selected-row": "var(--tgt-bg-selected-row)",
         "button-gradient": "var(--tgt-button)",
         lec: "var(--tgt-bg-lec)",
         body: "var(--tgt-image-body)",

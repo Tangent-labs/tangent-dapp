@@ -32,12 +32,48 @@ const ERC20_ABI: Abi = [
 const MARKET_ABI: Abi = [
   { name: "userDebtShares", type: "function", stateMutability: "view", inputs: [{ name: "user", type: "address" }], outputs: [{ type: "uint256" }] },
   { name: "totalDebtShares", type: "function", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] },
+  { name: "seizeCollateral", type: "function", stateMutability: "nonpayable", inputs: [{ name: "account", type: "address" }], outputs: [] },
+] as const
+
+// ==================== NOUVEL ABI MARKETVIEWER ====================
+const MARKET_VIEWER_ABI: Abi = [
+  {
+    name: "userDebt",
+    type: "function",
+    stateMutability: "view",
+    inputs: [
+      { name: "market", type: "address" },
+      { name: "account", type: "address" },
+    ],
+    outputs: [{ type: "uint256" }],
+  },
+  {
+    name: "positionValue",
+    type: "function",
+    stateMutability: "view",
+    inputs: [
+      { name: "market", type: "address" },
+      { name: "account", type: "address" },
+    ],
+    outputs: [{ type: "uint256" }],
+  },
+  {
+    name: "healthRatio",
+    type: "function",
+    stateMutability: "view",
+    inputs: [
+      { name: "market", type: "address" },
+      { name: "account", type: "address" },
+    ],
+    outputs: [{ type: "uint256" }],
+  },
 ] as const
 
 const addresses = process.env.NEXT_PUBLIC_ADDRESSES_JSON
 const envAddresses = addresses ? JSON.parse(addresses) : {}
 const IR_CALCULATOR_ADDRESS: Address = envAddresses?.utilities?.irCalculator
 const REWARD_ACC_ADDRESS: Address = envAddresses?.utilities?.rewardAccumulator
+const MARKET_VIEWER_ADDRESS: Address = envAddresses?.utilities?.marketViewer
 
 const LP_ADDRESSES: { name: string; address: Address }[] = [
   { name: "USG-USDC", address: envAddresses?.lps?.["USG-USDC"] },
@@ -158,6 +194,16 @@ export default function DevToolsPage() {
   const [updateStatus, setUpdateStatus] = useState<string>("")
   const allAddresses = debtIndexes.map((r) => r.marketAddress)
   const allSelected = allAddresses.length > 0 && allAddresses.every((a) => selected.has(a))
+
+  //  BAD DEBT AND SEIZING
+  const [selectedBadDebtMarket, setSelectedBadDebtMarket] = useState<Address>(USGMarkets[0]?.marketAddress || zeroAddress)
+  const [badDebtAccount, setBadDebtAccount] = useState<string>("")
+  const [collateralValue, setCollateralValue] = useState<bigint | null>(null)
+  const [debtValue, setDebtValue] = useState<bigint | null>(null)
+  const [healthRatio, setHealthRatio] = useState<bigint | null>(null)
+  const [isFetchingPosition, setIsFetchingPosition] = useState(false)
+  const [isSeizing, setIsSeizing] = useState(false)
+  const [seizeStatus, setSeizeStatus] = useState<string>("")
 
   const fetchDebtIndexes = async () => {
     if (!IR_CALCULATOR_ADDRESS || currentAddress === zeroAddress) {
@@ -580,6 +626,80 @@ export default function DevToolsPage() {
     }
   }, [selectedMarket, fetchCurrentIRParams])
 
+  // ==================== FETCH POSITION DATA (MarketViewer) ====================
+  const fetchBadDebtPosition = async () => {
+    if (!MARKET_VIEWER_ADDRESS || selectedBadDebtMarket === zeroAddress || !badDebtAccount) {
+      setSeizeStatus("Please select a market and enter a valid address")
+      return
+    }
+
+    setIsFetchingPosition(true)
+    setSeizeStatus("")
+
+    try {
+      const [debt, collat, ratio] = await Promise.all([
+        publicClient.readContract({
+          address: MARKET_VIEWER_ADDRESS,
+          abi: MARKET_VIEWER_ABI,
+          functionName: "userDebt",
+          args: [selectedBadDebtMarket, badDebtAccount as Address],
+        }) as Promise<bigint>,
+
+        publicClient.readContract({
+          address: MARKET_VIEWER_ADDRESS,
+          abi: MARKET_VIEWER_ABI,
+          functionName: "positionValue",
+          args: [selectedBadDebtMarket, badDebtAccount as Address],
+        }) as Promise<bigint>,
+
+        publicClient.readContract({
+          address: MARKET_VIEWER_ADDRESS,
+          abi: MARKET_VIEWER_ABI,
+          functionName: "healthRatio",
+          args: [selectedBadDebtMarket, badDebtAccount as Address],
+        }) as Promise<bigint>,
+      ])
+
+      setDebtValue(debt)
+      setCollateralValue(collat)
+      setHealthRatio(ratio)
+    } catch (err) {
+      console.error(err)
+      setSeizeStatus(`❌ Error fetching position: ${err instanceof Error ? err.message : String(err)}`)
+    } finally {
+      setIsFetchingPosition(false)
+    }
+  }
+
+  // ==================== SEIZE COLLATERAL ====================
+  const handleSeizeCollateral = async () => {
+    if (!walletClient || selectedBadDebtMarket === zeroAddress || !badDebtAccount) {
+      setSeizeStatus("Wallet not connected or missing data")
+      return
+    }
+
+    setIsSeizing(true)
+    setSeizeStatus("")
+
+    try {
+      const hash = await executeContractCall(walletClient, {
+        address: selectedBadDebtMarket, // Appel sur le Market
+        abi: MARKET_ABI,
+        functionName: "seizeCollateral",
+        args: [badDebtAccount as Address],
+      })
+
+      setSeizeStatus(`✅ Collateral seized successfully! Tx: ${hash}`)
+      // Rafraîchit les données après la saisie
+      setTimeout(fetchBadDebtPosition, 2500)
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e)
+      setSeizeStatus(`❌ ${msg}`)
+    } finally {
+      setIsSeizing(false)
+    }
+  }
+
   return (
     <div className="flex w-full flex-col gap-6 p-6">
       <h1 className="text-xl font-bold text-white">DevTools — Hardhat</h1>
@@ -951,6 +1071,81 @@ export default function DevToolsPage() {
         </div>
 
         {updateStatus && <p className={`mt-3 text-sm ${updateStatus.includes("✅") ? "text-emerald-400" : "text-red-400"}`}>{updateStatus}</p>}
+      </div>
+
+      {/* ==================== NEW DIV : SEIZE BAD DEBT COLLATERAL ==================== */}
+      <div className="flex flex-col gap-3 rounded-[10px] bg-overlay-panel p-5">
+        <h2 className="font-semibold text-white">Seize Bad Debt Collateral</h2>
+
+        {!MARKET_VIEWER_ADDRESS && <p className="text-sm text-red-400">MarketViewer address not found in NEXT_PUBLIC_ADDRESSES_JSON</p>}
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Market selection */}
+          <div>
+            <label className="mb-1 block text-sm text-white/70">Market</label>
+            <select
+              value={selectedBadDebtMarket}
+              onChange={(e) => setSelectedBadDebtMarket(e.target.value as Address)}
+              className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+            >
+              {USGMarkets.map((market) => (
+                <option key={market.marketAddress} value={market.marketAddress}>
+                  {market.marketName} — {market.marketAddress.slice(0, 8)}...{market.marketAddress.slice(-6)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Account address */}
+          <div>
+            <label className="mb-1 block text-sm text-white/70">Account Address</label>
+            <input
+              type="text"
+              placeholder="0x1234...abcd"
+              value={badDebtAccount}
+              onChange={(e) => setBadDebtAccount(e.target.value)}
+              className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 font-mono text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+            />
+          </div>
+        </div>
+
+        {/* Bouton Fetch */}
+        <button
+          onClick={fetchBadDebtPosition}
+          disabled={isFetchingPosition || !badDebtAccount}
+          className="mt-2 rounded-md bg-white/10 px-6 py-3 text-sm font-medium text-white hover:bg-white/20 disabled:opacity-50"
+        >
+          {isFetchingPosition ? "Fetching..." : "Load Position Data"}
+        </button>
+
+        {/* Affichage des valeurs */}
+        {(collateralValue !== null || debtValue !== null || healthRatio !== null) && (
+          <div className="mt-4 grid grid-cols-3 gap-4 rounded-md bg-white/5 p-4 text-sm">
+            <div>
+              <span className="text-white/60">Collateral Value</span>
+              <div className="mt-1 font-mono text-lg text-white">{collateralValue !== null ? formatEther(collateralValue) : "—"}</div>
+            </div>
+            <div>
+              <span className="text-white/60">Debt Value</span>
+              <div className="mt-1 font-mono text-lg text-white">{debtValue !== null ? formatEther(debtValue) : "—"}</div>
+            </div>
+            <div>
+              <span className="text-white/60">Health Ratio</span>
+              <div className="mt-1 font-mono text-lg text-white">{healthRatio !== null ? `${(Number(healthRatio) / 1e18).toFixed(4)}x` : "—"}</div>
+            </div>
+          </div>
+        )}
+
+        {/* Bouton Seize */}
+        <button
+          onClick={handleSeizeCollateral}
+          disabled={isSeizing || !walletClient || collateralValue === null}
+          className="mt-6 w-full rounded-md bg-red-600 px-6 py-3.5 font-semibold text-white hover:bg-red-500 disabled:opacity-50"
+        >
+          {isSeizing ? "Seizing Collateral..." : "Seize Collateral"}
+        </button>
+
+        {seizeStatus && <p className={`mt-3 text-sm ${seizeStatus.includes("✅") ? "text-emerald-400" : "text-red-400"}`}>{seizeStatus}</p>}
       </div>
     </div>
   )

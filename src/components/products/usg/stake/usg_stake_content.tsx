@@ -10,10 +10,11 @@ import { IconChevron, IconOpenOutside } from "@/components/icons"
 import { Divider } from "@/components/design_system/structure/divider"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { useRootContext } from "@/components/products/root/root_context"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
 import { PageHeader } from "@/components/design_system/structure/page_header"
-import { PerformanceHistoryPanel } from "./components/PerformanceHistoryPanel"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
+import { PositionPerformancePanel } from "./components/position_performance_panel"
 import { LargeButtonTab } from "@/components/design_system/inputs/large_button_tab"
 import { StaticCardAssetInput } from "../../predeposit/components/StaticCardAssetInput"
 import { formatBigInt, formatDollar, formatMillions, formatNumber } from "@/lib/number_formatter"
@@ -21,7 +22,6 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
-import { FormAlert } from "@/components/design_system/inputs/form_alert"
 
 export default function USGStakeContent() {
   const {
@@ -215,7 +215,7 @@ export default function USGStakeContent() {
           )}
         </div>
 
-        <PerformanceHistoryPanel
+        <PositionPerformancePanel
           currentFeature={currentFeature}
           USGsUSGMetrics={USGsUSGMetrics!}
           computeProjection={computeProjection}
@@ -225,7 +225,7 @@ export default function USGStakeContent() {
           fetchsUSGHistoryAPY={fetchsUSGHistoryAPY}
           apyHistory={apyHistory}
           sUSGCurrentAPY={sUSGCurrentAPY}
-        ></PerformanceHistoryPanel>
+        />
       </div>
     </>
   )

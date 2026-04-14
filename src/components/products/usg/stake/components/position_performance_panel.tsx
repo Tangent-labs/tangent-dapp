@@ -18,9 +18,12 @@ interface PositionPerformancePanelProps {
   computeProjectedValue: number
   sUSGSelectedTab: string
   apyHistory: Array<{ date: number; uv: number }>
-  fetchsUSGHistoryAPY: (s: string) => Promise<void>
+  fetchsUSGHistoryAPY: (range: string) => Promise<void>
   computeProjection: (balance: bigint, timeFrame: number, apr: number, currentFeature: "stake" | "unstake", amount?: bigint) => string
 }
+
+const PROJECTED_EARNINGS = "Projected earnings"
+const POSITION_APR = "Position APR"
 
 export function PositionPerformancePanel({
   USGsUSGMetrics,
@@ -33,7 +36,7 @@ export function PositionPerformancePanel({
   computeProjection,
   fetchsUSGHistoryAPY,
 }: PositionPerformancePanelProps) {
-  const [selectedFeature, setSelectedFeature] = useState<string>("Projected earnings")
+  const [selectedFeature, setSelectedFeature] = useState<string>(PROJECTED_EARNINGS)
 
   const sUSGBalance = useMemo(() => {
     return Number(formatUnits(USGsUSGMetrics?.sUSGBalance ?? 0n, 18))
@@ -76,11 +79,11 @@ export function PositionPerformancePanel({
       </ReliefCard>
 
       <ReliefCard className="mt-5 flex w-full flex-col p-[20px]">
-        {selectedFeature === "Projected earnings" && (
+        {selectedFeature === PROJECTED_EARNINGS && (
           <ForecastGraph currentFeature={currentFeature} currentInvestment={sUSGBalance} apr={sUSGCurrentAPY} newLiquidity={addLiq} />
         )}
 
-        {selectedFeature === "Position APR" && (
+        {selectedFeature === POSITION_APR && (
           <PositionAPR apyHistory={apyHistory} fetchsUSGHistoryAPY={fetchsUSGHistoryAPY} sUSGSelectedTab={sUSGSelectedTab} apr={sUSGCurrentAPY} />
         )}
       </ReliefCard>

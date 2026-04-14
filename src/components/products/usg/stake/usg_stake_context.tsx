@@ -42,7 +42,7 @@ type USGStakeContextValues = {
 
   apyHistory: Array<{ date: number; uv: number }>
 
-  fetchsUSGHistoryAPY: (s: string) => Promise<void>
+  fetchsUSGHistoryAPY: (range: string) => Promise<void>
 
   isLoading: boolean
 

@@ -16,9 +16,9 @@ export const APRDisplay = ({ apr }: APRDisplayProps) => {
 
       <HoverCard openDelay={100} closeDelay={100}>
         <HoverCardTrigger asChild>
-          <button type="button" className="inline-flex items-center hover:text-[#95FF00]">
+          <button type="button" className="inline-flex items-center hover:text-row-success">
             <div className="mr-1 text-xl font-semibold">{apr.toFixed(2)}%</div>
-            <IconStars className="fill-[#95FF00]" />
+            <IconStars className="fill-row-success" />
           </button>
         </HoverCardTrigger>
 

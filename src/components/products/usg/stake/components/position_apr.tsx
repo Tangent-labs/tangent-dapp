@@ -6,7 +6,7 @@ import { Area, AreaChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YA
 
 type PositionAPRProps = {
   apr: number
-  fetchsUSGHistoryAPY: (s: string) => Promise<void>
+  fetchsUSGHistoryAPY: (range: string) => Promise<void>
   sUSGSelectedTab: string
   apyHistory: {
     date: number

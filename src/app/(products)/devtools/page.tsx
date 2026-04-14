@@ -5,11 +5,14 @@ import { createPublicClient, http, Address, formatUnits, formatEther, zeroAddres
 import { dappConfig } from "@/dapp_config"
 import { USGMarkets } from "@/components/products/usg/usg_repository"
 import IRCalculatorABI from "@/abi/USG/IRCalculator.json"
+import RewardAccumulatorABI from "@/abi/USG/RewardAccumulator.json"
+
 import { Abi } from "viem"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { executeContractCall } from "@/services/service_rpc"
 
 const IR_CALCULATOR_ABI = IRCalculatorABI.abi as Abi
+const REWARD_ACC_ABI = RewardAccumulatorABI.abi as Abi
 
 const CURVE_LP_ABI: Abi = [
   { name: "name", type: "function", stateMutability: "view", inputs: [], outputs: [{ type: "string" }] },
@@ -34,6 +37,7 @@ const MARKET_ABI: Abi = [
 const addresses = process.env.NEXT_PUBLIC_ADDRESSES_JSON
 const envAddresses = addresses ? JSON.parse(addresses) : {}
 const IR_CALCULATOR_ADDRESS: Address = envAddresses?.utilities?.irCalculator
+const REWARD_ACC_ADDRESS: Address = envAddresses?.utilities?.rewardAccumulator
 
 const LP_ADDRESSES: { name: string; address: Address }[] = [
   { name: "USG-USDC", address: envAddresses?.lps?.["USG-USDC"] },
@@ -79,6 +83,27 @@ type DebtIndexRow = {
   error: string | null
 }
 
+type IRParams = {
+  isHEC: boolean
+  rMin: number
+  rMax: number
+  pMin: number
+  pInf: number
+  pMax: number
+  a1: number
+  a2: number
+  k: number
+}
+
+type RCParams = {
+  harvestFeePercentage: number
+  stepAmount: number
+  startCutPercentage: number
+  endCutPercentage: number
+  startCutPrice: number
+  endCutPrice: number
+}
+
 function formatStablePrice(value: bigint): string {
   return Number(formatUnits(value, 18)).toFixed(6)
 }
@@ -102,7 +127,35 @@ export default function DevToolsPage() {
   const [checkpointStatus, setCheckpointStatus] = useState<string>("")
   // Nouvel état pour la valeur globale
   const [mintableInterests, setMintableInterests] = useState<bigint | null>(null)
+  // === États pour Update IR Params ===
+  const [mode, setMode] = useState<"IR" | "RC">("IR")
 
+  const [selectedMarket, setSelectedMarket] = useState<Address>(USGMarkets[0]?.marketAddress || zeroAddress)
+
+  const [irParams, setIrParams] = useState<IRParams>({
+    isHEC: true,
+    rMin: 1000,
+    rMax: 100000,
+    pMin: 980000,
+    pInf: 990000,
+    pMax: 1000000,
+    a1: 2000,
+    a2: 4500,
+    k: 250,
+  })
+
+  const [rcParams, setRcParams] = useState<RCParams>({
+    harvestFeePercentage: 0,
+    stepAmount: 0,
+    startCutPercentage: 0,
+    endCutPercentage: 0,
+    startCutPrice: 0,
+    endCutPrice: 0,
+  })
+
+  const [isLoadingParams, setIsLoadingParams] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
+  const [updateStatus, setUpdateStatus] = useState<string>("")
   const allAddresses = debtIndexes.map((r) => r.marketAddress)
   const allSelected = allAddresses.length > 0 && allAddresses.every((a) => selected.has(a))
 
@@ -357,6 +410,176 @@ export default function DevToolsPage() {
     }
   }
 
+  // ==================== FONCTIONS IR / RC ====================
+
+  const fetchCurrentIRParams = useCallback(async (market: Address) => {
+    if (!IR_CALCULATOR_ADDRESS || market === zeroAddress) return
+
+    setIsLoadingParams(true)
+    setUpdateStatus("")
+
+    try {
+      const result = (await publicClient.readContract({
+        address: IR_CALCULATOR_ADDRESS,
+        abi: IR_CALCULATOR_ABI,
+        functionName: "getIRParams",
+        args: [market],
+      })) as {
+        isHEC: boolean
+        rMin: bigint
+        rMax: bigint
+        pMin: bigint
+        pInf: bigint
+        pMax: bigint
+        a1: bigint
+        a2: bigint
+        k: bigint
+      }
+
+      setIrParams({
+        isHEC: result.isHEC,
+        rMin: Number(result.rMin),
+        rMax: Number(result.rMax),
+        pMin: Number(result.pMin),
+        pInf: Number(result.pInf),
+        pMax: Number(result.pMax),
+        a1: Number(result.a1),
+        a2: Number(result.a2),
+        k: Number(result.k),
+      })
+    } catch (err) {
+      console.error(`Failed to fetch IRParams for ${market}:`, err)
+      setUpdateStatus("Could not load current IR parameters.")
+    } finally {
+      setIsLoadingParams(false)
+    }
+  }, [])
+
+  const fetchCurrentRCParams = useCallback(async (market: Address) => {
+    if (!REWARD_ACC_ADDRESS || market === zeroAddress) return
+
+    setIsLoadingParams(true)
+    setUpdateStatus("")
+
+    try {
+      const result = (await publicClient.readContract({
+        address: REWARD_ACC_ADDRESS,
+        abi: REWARD_ACC_ABI,
+        functionName: "getRCParams",
+        args: [market],
+      })) as {
+        harvestFeePercentage: bigint
+        stepAmount: bigint
+        startCutPercentage: bigint
+        endCutPercentage: bigint
+        startCutPrice: bigint
+        endCutPrice: bigint
+      }
+
+      setRcParams({
+        harvestFeePercentage: Number(result.harvestFeePercentage),
+        stepAmount: Number(result.stepAmount),
+        startCutPercentage: Number(result.startCutPercentage),
+        endCutPercentage: Number(result.endCutPercentage),
+        startCutPrice: Number(result.startCutPrice),
+        endCutPrice: Number(result.endCutPrice),
+      })
+    } catch (err) {
+      console.error(`Failed to fetch RCParams for ${market}:`, err)
+      setUpdateStatus("Could not load current RC parameters.")
+    } finally {
+      setIsLoadingParams(false)
+    }
+  }, [])
+
+  // Charger les paramètres au changement de marché
+  useEffect(() => {
+    if (selectedMarket !== zeroAddress) {
+      if (mode === "IR") {
+        fetchCurrentIRParams(selectedMarket)
+      } else {
+        fetchCurrentRCParams(selectedMarket)
+      }
+    }
+  }, [selectedMarket, mode, fetchCurrentIRParams, fetchCurrentRCParams])
+
+  const updateIRField = (field: keyof IRParams, value: string | number | boolean) => {
+    setIrParams((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const updateRCField = (field: keyof RCParams, value: number) => {
+    setRcParams((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleUpdateParams = async () => {
+    if (!walletClient || !IR_CALCULATOR_ADDRESS || !REWARD_ACC_ADDRESS || selectedMarket === zeroAddress) {
+      setUpdateStatus("Wallet not connected or market not selected")
+      return
+    }
+
+    setIsUpdating(true)
+    setUpdateStatus("")
+
+    try {
+      if (mode === "IR") {
+        const irParamStruct = {
+          isHEC: irParams.isHEC,
+          rMin: irParams.rMin,
+          rMax: irParams.rMax,
+          pMin: irParams.pMin,
+          pInf: irParams.pInf,
+          pMax: irParams.pMax,
+          a1: irParams.a1,
+          a2: irParams.a2,
+          k: irParams.k,
+        }
+
+        const hash = await executeContractCall(walletClient, {
+          address: IR_CALCULATOR_ADDRESS,
+          abi: IR_CALCULATOR_ABI,
+          functionName: "updateIRParams",
+          args: [selectedMarket, irParamStruct],
+        })
+        setUpdateStatus(`✅ IR Parameters updated! Tx: ${hash}`)
+      } else {
+        const rcParamStruct = {
+          harvestFeePercentage: rcParams.harvestFeePercentage,
+          stepAmount: rcParams.stepAmount,
+          startCutPercentage: rcParams.startCutPercentage,
+          endCutPercentage: rcParams.endCutPercentage,
+          startCutPrice: rcParams.startCutPrice,
+          endCutPrice: rcParams.endCutPrice,
+        }
+
+        const hash = await executeContractCall(walletClient, {
+          address: REWARD_ACC_ADDRESS,
+          abi: REWARD_ACC_ABI,
+          functionName: "updateRCParams",
+          args: [selectedMarket, rcParamStruct],
+        })
+        setUpdateStatus(`✅ RC Parameters updated! Tx: ${hash}`)
+      }
+
+      // Recharger les valeurs après mise à jour
+      setTimeout(() => {
+        if (mode === "IR") fetchCurrentIRParams(selectedMarket)
+        else fetchCurrentRCParams(selectedMarket)
+      }, 2000)
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e)
+      setUpdateStatus(`❌ Error: ${msg}`)
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  // Charger les params quand on change de marché
+  useEffect(() => {
+    if (selectedMarket !== zeroAddress) {
+      fetchCurrentIRParams(selectedMarket)
+    }
+  }, [selectedMarket, fetchCurrentIRParams])
+
   return (
     <div className="flex w-full flex-col gap-6 p-6">
       <h1 className="text-xl font-bold text-white">DevTools — Hardhat</h1>
@@ -439,7 +662,6 @@ export default function DevToolsPage() {
       </div>
 
       <div className="flex flex-col gap-3 rounded-[10px] bg-overlay-panel p-5">
-        {/* Valeur globale Mintable Interests */}
         {/* Valeur globale Mintable Interests + Bouton Mint */}
         {mintableInterests !== null && (
           <div className="flex items-center justify-between rounded-md bg-white/5 p-4">
@@ -563,6 +785,172 @@ export default function DevToolsPage() {
             </table>
           </div>
         )}
+      </div>
+
+      {/* ==================== UPDATE IR / RC PARAMETERS SECTION ==================== */}
+      <div className="flex flex-col gap-3 rounded-[10px] bg-overlay-panel p-5">
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-white">Update Market Parameters</h2>
+
+          <div className="flex rounded-full bg-white/10 p-1">
+            <button
+              onClick={() => setMode("IR")}
+              className={`rounded-full px-5 py-1.5 text-sm font-medium transition-all ${
+                mode === "IR" ? "bg-white text-black shadow" : "text-white/70 hover:text-white"
+              }`}
+            >
+              IR Parameters
+            </button>
+            <button
+              onClick={() => setMode("RC")}
+              className={`rounded-full px-5 py-1.5 text-sm font-medium transition-all ${
+                mode === "RC" ? "bg-white text-black shadow" : "text-white/70 hover:text-white"
+              }`}
+            >
+              RC Parameters
+            </button>
+          </div>
+        </div>
+
+        {!IR_CALCULATOR_ADDRESS && <p className="text-sm text-red-400">IRCalculator address not found in NEXT_PUBLIC_ADDRESSES_JSON</p>}
+
+        <div>
+          <label className="mb-1 block text-sm text-white/70">Market</label>
+          <select
+            value={selectedMarket}
+            onChange={(e) => setSelectedMarket(e.target.value as Address)}
+            className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+          >
+            {USGMarkets.map((market) => (
+              <option key={market.marketAddress} value={market.marketAddress}>
+                {market.marketName} — {market.marketAddress.slice(0, 8)}...{market.marketAddress.slice(-6)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {isLoadingParams && <p className="text-sm text-white/50">Loading current parameters...</p>}
+
+        {/* IR Form */}
+        {mode === "IR" && (
+          <>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm text-white/70">isHEC (High Elasticity Curve)</label>
+                <select
+                  value={irParams.isHEC ? "true" : "false"}
+                  onChange={(e) => updateIRField("isHEC", e.target.value === "true")}
+                  className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 text-white"
+                  disabled={isLoadingParams}
+                >
+                  <option value="true">true (HEC)</option>
+                  <option value="false">false (LEC)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+              {(["rMin", "rMax", "pMin", "pInf", "pMax", "a1", "a2", "k"] as const).map((field) => (
+                <div key={field}>
+                  <label className="mb-1 block text-xs text-white/60">{field}</label>
+                  <input
+                    type="number"
+                    value={irParams[field]}
+                    onChange={(e) => updateIRField(field, Number(e.target.value) || 0)}
+                    className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+                    disabled={isLoadingParams}
+                  />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* RC Form */}
+        {mode === "RC" && (
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+            <div>
+              <label className="mb-1 block text-xs text-white/60">harvestFeePercentage (uint16)</label>
+              <input
+                type="number"
+                value={rcParams.harvestFeePercentage}
+                onChange={(e) => updateRCField("harvestFeePercentage", Number(e.target.value) || 0)}
+                className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+                disabled={isLoadingParams}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-white/60">stepAmount (uint16)</label>
+              <input
+                type="number"
+                value={rcParams.stepAmount}
+                onChange={(e) => updateRCField("stepAmount", Number(e.target.value) || 0)}
+                className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+                disabled={isLoadingParams}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-white/60">startCutPercentage (uint32)</label>
+              <input
+                type="number"
+                value={rcParams.startCutPercentage}
+                onChange={(e) => updateRCField("startCutPercentage", Number(e.target.value) || 0)}
+                className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+                disabled={isLoadingParams}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-white/60">endCutPercentage (uint32)</label>
+              <input
+                type="number"
+                value={rcParams.endCutPercentage}
+                onChange={(e) => updateRCField("endCutPercentage", Number(e.target.value) || 0)}
+                className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+                disabled={isLoadingParams}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-white/60">startCutPrice (uint80)</label>
+              <input
+                type="number"
+                value={rcParams.startCutPrice}
+                onChange={(e) => updateRCField("startCutPrice", Number(e.target.value) || 0)}
+                className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+                disabled={isLoadingParams}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-white/60">endCutPrice (uint80)</label>
+              <input
+                type="number"
+                value={rcParams.endCutPrice}
+                onChange={(e) => updateRCField("endCutPrice", Number(e.target.value) || 0)}
+                className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+                disabled={isLoadingParams}
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="mt-6 flex items-center gap-3">
+          <button
+            onClick={handleUpdateParams}
+            disabled={isUpdating || !walletClient || isLoadingParams}
+            className="rounded-md bg-violet-600 px-6 py-3 font-semibold text-white hover:bg-violet-500 disabled:opacity-50"
+          >
+            {isUpdating ? "Updating..." : mode === "IR" ? "Update IR Parameters" : "Update RC Parameters"}
+          </button>
+
+          <button
+            onClick={() => (mode === "IR" ? fetchCurrentIRParams(selectedMarket) : fetchCurrentRCParams(selectedMarket))}
+            disabled={isLoadingParams}
+            className="rounded-md border border-white/30 px-4 py-3 text-sm text-white/70 hover:bg-white/5 disabled:opacity-50"
+          >
+            Refresh Current Values
+          </button>
+        </div>
+
+        {updateStatus && <p className={`mt-3 text-sm ${updateStatus.includes("✅") ? "text-emerald-400" : "text-red-400"}`}>{updateStatus}</p>}
       </div>
     </div>
   )

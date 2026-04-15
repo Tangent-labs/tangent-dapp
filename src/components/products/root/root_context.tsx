@@ -7,7 +7,7 @@ import { getPublicClient } from "@/services/service_rpc"
 import { SavingAccountsApy, TVLData } from "../usg/usg_type"
 import { USG_CONTRACT } from "../usg/usg_repository"
 import { ToastComponent } from "@/components/design_system/toast"
-import { getSavingsAPY, getTotalSupply, getTVL } from "../usg/client_api"
+import { getPriceHistory, getSavingsAPY, getTotalSupply, getTVL, PRICE_HISTORY_TOKENS } from "../usg/client_api"
 import { CustomCurveRoutes } from "../usg/global_quote_controller"
 import { useContext, useEffect, useState, createContext, ReactNode, useMemo } from "react"
 
@@ -48,6 +48,18 @@ export type RootContextValues = {
   tvl: Array<TVLData>
 
   fetchTVLData: (r: string) => void
+
+  priceSelectedTabs: {
+    USG: string
+    sUSG: string
+  }
+
+  priceHistory: {
+    USG: Array<{ date: number; uv: number }>
+    sUSG: Array<{ date: number; uv: number }>
+  }
+
+  fetchPriceHistoryData: (token: "USG" | "sUSG", range: string) => Promise<void>
 }
 
 const RootContext = createContext<RootContextValues | undefined>(undefined)
@@ -165,6 +177,14 @@ export const RootProvider = ({ children }: RootProviderProps) => {
 
   const [tvlSelectedTab, setTvlSelectedTab] = useState<string>("1m")
 
+  const [priceSelectedTabs, setPriceSelectedTabs] = useState<{
+    USG: string
+    sUSG: string
+  }>({
+    USG: "1d",
+    sUSG: "1d",
+  })
+
   const [totalSupplies, setTotalSupplies] = useState<{
     USGTotalSupply: Array<{ date: number; uv: number }>
     sUSGTotalSupply: Array<{ date: number; uv: number }>
@@ -174,6 +194,24 @@ export const RootProvider = ({ children }: RootProviderProps) => {
   })
 
   const [tvl, setTvl] = useState<Array<TVLData>>([])
+
+  const [priceHistory, setPriceHistory] = useState<{
+    USG: Array<{ date: number; uv: number }>
+    sUSG: Array<{ date: number; uv: number }>
+  }>({
+    USG: [],
+    sUSG: [],
+  })
+
+  const [priceHistoryByRange, setPriceHistoryByRange] = useState<
+    Record<
+      string,
+      {
+        USG: Array<{ date: number; uv: number }>
+        sUSG: Array<{ date: number; uv: number }>
+      }
+    >
+  >({})
 
   const fetchTotalSupplyData = async (range: string) => {
     setTotalSupplySelectedTab(range)
@@ -202,6 +240,56 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     setTvlSelectedTab(range)
 
     fetchAndSetTvl(range)
+  }
+
+  const fetchPriceHistoryData = async (token: "USG" | "sUSG", range: string) => {
+    setPriceSelectedTabs((prev) => ({ ...prev, [token]: range }))
+
+    const cachedRangeData = priceHistoryByRange[range]
+    if (cachedRangeData) {
+      setPriceHistory((prev) => ({
+        ...prev,
+        [token]: cachedRangeData[token],
+      }))
+      return
+    }
+
+    const data = await getPriceHistory([PRICE_HISTORY_TOKENS.USG, PRICE_HISTORY_TOKENS.sUSG], range)
+
+    const rangeData = data.reduce<{
+      USG: Array<{ date: number; uv: number }>
+      sUSG: Array<{ date: number; uv: number }>
+    }>(
+      (acc, tokenHistory) => {
+        const mappedHistory = tokenHistory.history.map((point) => ({
+          date: new Date(point.timestamp).getTime(),
+          uv: Number(point.amount),
+        }))
+
+        const tokenAddress = tokenHistory.tokenAddress.toLowerCase()
+
+        if (tokenAddress === PRICE_HISTORY_TOKENS.USG.toLowerCase()) {
+          acc.USG = mappedHistory
+        }
+
+        if (tokenAddress === PRICE_HISTORY_TOKENS.sUSG.toLowerCase()) {
+          acc.sUSG = mappedHistory
+        }
+
+        return acc
+      },
+      { USG: [], sUSG: [] }
+    )
+
+    setPriceHistoryByRange((prev) => ({
+      ...prev,
+      [range]: rangeData,
+    }))
+
+    setPriceHistory((prev) => ({
+      ...prev,
+      [token]: rangeData[token],
+    }))
   }
 
   const fetchAndSetTvl = async (range?: string) => {
@@ -288,6 +376,36 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     fetchTotalSupplies()
     fetchAndSetTvl()
     fetchSavingsAPY()
+
+    getPriceHistory([PRICE_HISTORY_TOKENS.USG, PRICE_HISTORY_TOKENS.sUSG], "1d").then((data) => {
+      const initialRangeData = data.reduce<{
+        USG: Array<{ date: number; uv: number }>
+        sUSG: Array<{ date: number; uv: number }>
+      }>(
+        (acc, tokenHistory) => {
+          const mappedHistory = tokenHistory.history.map((point) => ({
+            date: new Date(point.timestamp).getTime(),
+            uv: Number(point.amount),
+          }))
+
+          const tokenAddress = tokenHistory.tokenAddress.toLowerCase()
+
+          if (tokenAddress === PRICE_HISTORY_TOKENS.USG.toLowerCase()) {
+            acc.USG = mappedHistory
+          }
+
+          if (tokenAddress === PRICE_HISTORY_TOKENS.sUSG.toLowerCase()) {
+            acc.sUSG = mappedHistory
+          }
+
+          return acc
+        },
+        { USG: [], sUSG: [] }
+      )
+
+      setPriceHistory(initialRangeData)
+      setPriceHistoryByRange({ "1d": initialRangeData })
+    })
   }, [])
 
   const USGCurrentSupply = useMemo(() => {
@@ -342,6 +460,9 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     tvlSelectedTab,
     fetchTVLData,
     protocolCurrentTVL,
+    priceSelectedTabs,
+    priceHistory,
+    fetchPriceHistoryData,
   }
 
   return (

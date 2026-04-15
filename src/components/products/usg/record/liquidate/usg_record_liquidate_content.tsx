@@ -131,8 +131,8 @@ export default function USGLiquidatePanel() {
           slippage: slippage,
           liquidateMinOut: `${zapValuesFormatted?.minOutFormatted} USG`,
           priceImpact: priceImpact,
-          usgRepaidFromCollateral: `${formatBigInt(collateralRepayValue, 18, 2)} USG`,
-          usgRepaidFromWallet: `${formatBigInt(walletRepayValue, 18, 2)} USG`,
+          usgRepaidFromCollateral: collateralRepayValue ? `${formatBigInt(collateralRepayValue, 18, 2)} USG` : undefined,
+          usgRepaidFromWallet: walletRepayValue ? `${formatBigInt(walletRepayValue, 18, 2)} USG` : undefined,
         }}
       />
 

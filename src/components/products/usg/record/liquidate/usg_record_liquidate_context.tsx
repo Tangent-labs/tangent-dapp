@@ -122,14 +122,14 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     try {
       setIsTxLoading(true)
 
-      if (walletClient && liquidateWeiValue && currentAddress && USGReceivedValue && marketData) {
-        let repayValue = repayWeiValue || 0n
+      if (walletClient && liquidateWeiValue && currentAddress && USGReceivedValue && marketData && repayWeiValue) {
+        let repayValue = repayWeiValue
 
         // Replay value + 0.01% to handle IR
-        let maxUSGToBurn = repayValue || 0n
+        const maxUSGToBurn = repayValue + repayValue / 10_000n
+
         if (repayWeiValue === maxRepayable && repayWeiValue !== 0n) {
           repayValue = maxUint256
-          maxUSGToBurn = repayValue + repayValue / 10_000n
         }
 
         const liquidationData = await getRoute(
@@ -162,7 +162,7 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
             }),
 
             error: () => {
-              return { type: "Error", content: "Something wrong happened." }
+              return { type: "Error", content: "Transaction failed." }
             },
           }
         )
@@ -175,7 +175,8 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
         setRepayWeiValue(undefined)
         setUSGReceivedValue(undefined)
       }
-    } catch {
+    } catch (err) {
+      console.error(err)
       setIsTxLoading(false)
     }
   }

@@ -197,7 +197,7 @@ export default function USGMarketList() {
                       <div className="text-xs text-subtitle">APY</div>
                       <div className="flex items-center justify-center gap-1">
                         <div className="text-sm font-semibold text-white">{sUSGCurrentAPY.toFixed(2) + "%"}</div>
-                        <IconStars className="w-3 fill-[#95FF00]"></IconStars>
+                        <IconStars className="w-3 fill-row-success"></IconStars>
                       </div>
                     </div>
                   </div>

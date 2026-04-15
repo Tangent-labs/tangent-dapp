@@ -191,7 +191,7 @@ export default function USGLeverageContent() {
         />
       )}
 
-      {!!depositWeiValue && (priceImpact >= 0.25 || USGDumpPriceImpact >= 0.25) && (
+      {!isDumpUSGLoading && (priceImpact >= 0.25 || USGDumpPriceImpact >= 0.25) && (
         <PriceImpactAlert
           dollarLoss={priceImpactLoss}
           priceImpact={priceImpact}
@@ -211,7 +211,7 @@ export default function USGLeverageContent() {
         connect={connect}
         formState={formState}
         labelProcess={depositAsset && isZapping ? "Zap & leverage" : "Leverage"}
-        isLoading={isDepositLoading || isZapLoading || isTxLoading}
+        isLoading={isDepositLoading || isZapLoading || isTxLoading || isDumpUSGLoading}
       />
     </div>
   )

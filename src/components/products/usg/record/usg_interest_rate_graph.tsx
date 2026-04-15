@@ -156,7 +156,7 @@ export function InterestRateGraph() {
             contentStyle={{ backgroundColor: "#333", color: "#fff", border: "none", borderRadius: "4px" }}
             itemStyle={{ color: "#fff" }}
             formatter={(value: number, name: string) => [`${value.toFixed(2)}%`, name === "rewardsCut" ? "Rewards Cut" : "Interest Rate"]}
-            labelFormatter={(label: number) => `Price: $${label.toFixed(3)}`}
+            labelFormatter={(label: number) => `Price: $${label.toFixed(5)}`}
           />
 
           <Area yAxisId="left" type="stepAfter" dataKey="rewardsCut" stroke="#0075FF" strokeWidth={1.5} fill="url(#gradiant-blue)" fillOpacity={1} />

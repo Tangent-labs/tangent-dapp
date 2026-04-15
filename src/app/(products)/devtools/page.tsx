@@ -1,15 +1,18 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { createPublicClient, http, Address, formatUnits } from "viem"
+import { createPublicClient, http, Address, formatUnits, formatEther, zeroAddress } from "viem"
 import { dappConfig } from "@/dapp_config"
 import { USGMarkets } from "@/components/products/usg/usg_repository"
 import IRCalculatorABI from "@/abi/USG/IRCalculator.json"
+import RewardAccumulatorABI from "@/abi/USG/RewardAccumulator.json"
+
 import { Abi } from "viem"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { executeContractCall } from "@/services/service_rpc"
 
 const IR_CALCULATOR_ABI = IRCalculatorABI.abi as Abi
+const REWARD_ACC_ABI = RewardAccumulatorABI.abi as Abi
 
 const CURVE_LP_ABI: Abi = [
   { name: "name", type: "function", stateMutability: "view", inputs: [], outputs: [{ type: "string" }] },
@@ -26,23 +29,93 @@ const ERC20_ABI: Abi = [
   { name: "balanceOf", type: "function", stateMutability: "view", inputs: [{ name: "owner", type: "address" }], outputs: [{ type: "uint256" }] },
 ] as const
 
+const PAUSE_ENUM = {
+  DepositPaused: 0,
+  BorrowPaused: 1,
+  LeveragePaused: 2,
+} as const
+
+const MARKET_ABI: Abi = [
+  { name: "userDebtShares", type: "function", stateMutability: "view", inputs: [{ name: "user", type: "address" }], outputs: [{ type: "uint256" }] },
+  { name: "totalDebtShares", type: "function", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] },
+  { name: "seizeCollateral", type: "function", stateMutability: "nonpayable", inputs: [{ name: "account", type: "address" }], outputs: [] },
+  {
+    name: "setPause",
+    type: "function",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "pauseType", type: "uint8" }, // PauseEnum
+      { name: "isPaused", type: "uint64" },
+    ],
+    outputs: [],
+  },
+  {
+    name: "isDepositPaused",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "uint64" }],
+  },
+  {
+    name: "isBorrowPaused",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "uint64" }],
+  },
+  {
+    name: "isLeveragePaused",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "uint64" }],
+  },
+] as const
+
+// ==================== NOUVEL ABI MARKETVIEWER ====================
+const MARKET_VIEWER_ABI: Abi = [
+  {
+    name: "userDebt",
+    type: "function",
+    stateMutability: "view",
+    inputs: [
+      { name: "market", type: "address" },
+      { name: "account", type: "address" },
+    ],
+    outputs: [{ type: "uint256" }],
+  },
+  {
+    name: "positionValue",
+    type: "function",
+    stateMutability: "view",
+    inputs: [
+      { name: "market", type: "address" },
+      { name: "account", type: "address" },
+    ],
+    outputs: [{ type: "uint256" }],
+  },
+  {
+    name: "healthRatio",
+    type: "function",
+    stateMutability: "view",
+    inputs: [
+      { name: "market", type: "address" },
+      { name: "account", type: "address" },
+    ],
+    outputs: [{ type: "uint256" }],
+  },
+] as const
+
 const addresses = process.env.NEXT_PUBLIC_ADDRESSES_JSON
 const envAddresses = addresses ? JSON.parse(addresses) : {}
 const IR_CALCULATOR_ADDRESS: Address = envAddresses?.utilities?.irCalculator
+const REWARD_ACC_ADDRESS: Address = envAddresses?.utilities?.rewardAccumulator
+const MARKET_VIEWER_ADDRESS: Address = envAddresses?.utilities?.marketViewer
 
 const LP_ADDRESSES: { name: string; address: Address }[] = [
   { name: "USG-USDC", address: envAddresses?.lps?.["USG-USDC"] },
   { name: "USG-frxUSD", address: envAddresses?.lps?.["USG-frxUSD"] },
 ].filter((lp) => !!lp.address)
-
-const RAY = BigInt("1000000000000000000000000000") // 1e27
-
-function formatRay(value: bigint): string {
-  const whole = value / RAY
-  const fractional = value % RAY
-  const fractionalStr = fractional.toString().padStart(27, "0").slice(0, 6)
-  return `${whole}.${fractionalStr}`
-}
 
 async function rpcRequest(method: string, params: unknown[]) {
   const res = await fetch(dappConfig.chain.rpc, {
@@ -78,7 +151,30 @@ type DebtIndexRow = {
   marketName: string
   marketAddress: Address
   index: bigint | null
+  userDebtShares: bigint | null
+  totalDebtShares: bigint | null
   error: string | null
+}
+
+type IRParams = {
+  isHEC: boolean
+  rMin: number
+  rMax: number
+  pMin: number
+  pInf: number
+  pMax: number
+  a1: number
+  a2: number
+  k: number
+}
+
+type RCParams = {
+  harvestFeePercentage: number
+  stepAmount: number
+  startCutPercentage: number
+  endCutPercentage: number
+  startCutPrice: number
+  endCutPrice: number
 }
 
 function formatStablePrice(value: bigint): string {
@@ -86,7 +182,7 @@ function formatStablePrice(value: bigint): string {
 }
 
 export default function DevToolsPage() {
-  const { walletClient } = useWalletConnexionContext()
+  const { walletClient, currentAddress } = useWalletConnexionContext()
 
   const [hours, setHours] = useState<string>("1")
   const [mineStatus, setMineStatus] = useState<string>("")
@@ -102,9 +198,143 @@ export default function DevToolsPage() {
   const [selected, setSelected] = useState<Set<Address>>(new Set())
   const [isCheckpointing, setIsCheckpointing] = useState(false)
   const [checkpointStatus, setCheckpointStatus] = useState<string>("")
+  // Nouvel état pour la valeur globale
+  const [mintableInterests, setMintableInterests] = useState<bigint | null>(null)
+  // === États pour Update IR Params ===
+  const [mode, setMode] = useState<"IR" | "RC">("IR")
 
+  const [selectedMarket, setSelectedMarket] = useState<Address>(USGMarkets[0]?.marketAddress || zeroAddress)
+
+  const [irParams, setIrParams] = useState<IRParams>({
+    isHEC: true,
+    rMin: 1000,
+    rMax: 100000,
+    pMin: 980000,
+    pInf: 990000,
+    pMax: 1000000,
+    a1: 2000,
+    a2: 4500,
+    k: 250,
+  })
+
+  const [rcParams, setRcParams] = useState<RCParams>({
+    harvestFeePercentage: 0,
+    stepAmount: 0,
+    startCutPercentage: 0,
+    endCutPercentage: 0,
+    startCutPrice: 0,
+    endCutPrice: 0,
+  })
+
+  const [isLoadingParams, setIsLoadingParams] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
+  const [updateStatus, setUpdateStatus] = useState<string>("")
   const allAddresses = debtIndexes.map((r) => r.marketAddress)
   const allSelected = allAddresses.length > 0 && allAddresses.every((a) => selected.has(a))
+
+  //  BAD DEBT AND SEIZING
+  const [selectedBadDebtMarket, setSelectedBadDebtMarket] = useState<Address>(USGMarkets[0]?.marketAddress || zeroAddress)
+  const [badDebtAccount, setBadDebtAccount] = useState<string>("")
+  const [collateralValue, setCollateralValue] = useState<bigint | null>(null)
+  const [debtValue, setDebtValue] = useState<bigint | null>(null)
+  const [healthRatio, setHealthRatio] = useState<bigint | null>(null)
+  const [isFetchingPosition, setIsFetchingPosition] = useState(false)
+  const [isSeizing, setIsSeizing] = useState(false)
+  const [seizeStatus, setSeizeStatus] = useState<string>("")
+
+  // PAUSE
+
+  const [pauseMarket, setPauseMarket] = useState<Address>(USGMarkets[0]?.marketAddress || zeroAddress)
+
+  const [pauseStatus, setPauseStatus] = useState({
+    deposit: "0",
+    borrow: "0",
+    leverage: "0",
+  })
+
+  const [isLoadingPause, setIsLoadingPause] = useState(false)
+  const [pauseActionStatus, setPauseActionStatus] = useState("")
+
+  const fetchDebtIndexes = async () => {
+    if (!IR_CALCULATOR_ADDRESS || currentAddress === zeroAddress) {
+      return
+    }
+
+    setIsLoadingIndexes(true)
+
+    try {
+      const results: DebtIndexRow[] = []
+
+      for (const market of USGMarkets) {
+        try {
+          // Debt Index depuis IRCalculator
+          const index = (await publicClient.readContract({
+            address: IR_CALCULATOR_ADDRESS,
+            abi: IR_CALCULATOR_ABI,
+            functionName: "debtIndexes",
+            args: [market.marketAddress],
+          })) as bigint
+
+          // User Debt Shares (seulement si wallet connecté)
+          let userDebtShares: bigint | null = null
+          if (currentAddress) {
+            userDebtShares = (await publicClient.readContract({
+              address: market.marketAddress,
+              abi: MARKET_ABI,
+              functionName: "userDebtShares",
+              args: [currentAddress],
+            })) as bigint
+          }
+
+          // Total Debt Shares
+          const totalDebtShares = (await publicClient.readContract({
+            address: market.marketAddress,
+            abi: MARKET_ABI,
+            functionName: "totalDebtShares",
+          })) as bigint
+
+          results.push({
+            marketName: market.marketName,
+            marketAddress: market.marketAddress,
+            index,
+            userDebtShares,
+            totalDebtShares,
+            error: null,
+          })
+        } catch (err) {
+          console.error(`Error fetching data for market ${market.marketName}:`, err)
+
+          results.push({
+            marketName: market.marketName,
+            marketAddress: market.marketAddress,
+            index: null,
+            userDebtShares: null,
+            totalDebtShares: null,
+            error: err instanceof Error ? err.message : String(err),
+          })
+        }
+      }
+
+      // Mintable Interests (global)
+      let mintableInterests: bigint | null = null
+      try {
+        mintableInterests = (await publicClient.readContract({
+          address: IR_CALCULATOR_ADDRESS,
+          abi: IR_CALCULATOR_ABI,
+          functionName: "mintableInterests",
+        })) as bigint
+      } catch (err) {
+        console.error("Error fetching mintableInterests:", err)
+      }
+
+      setDebtIndexes(results)
+      setMintableInterests(mintableInterests)
+    } catch (e) {
+      console.error("Unexpected error in fetchDebtIndexes:", e)
+    } finally {
+      setIsLoadingIndexes(false)
+    }
+  }
 
   const toggleRow = (addr: Address) => {
     setSelected((prev) => {
@@ -217,40 +447,11 @@ export default function DevToolsPage() {
     }
   }
 
-  const fetchDebtIndexes = useCallback(async () => {
-    if (!IR_CALCULATOR_ADDRESS) return
-
-    setIsLoadingIndexes(true)
-
-    const results = await Promise.all(
-      USGMarkets.map(async (market) => {
-        try {
-          const index = (await publicClient.readContract({
-            address: IR_CALCULATOR_ADDRESS,
-            abi: IR_CALCULATOR_ABI,
-            functionName: "debtIndexes",
-            args: [market.marketAddress],
-          })) as bigint
-
-          return { marketName: market.marketName, marketAddress: market.marketAddress, index, error: null }
-        } catch (e) {
-          return {
-            marketName: market.marketName,
-            marketAddress: market.marketAddress,
-            index: null,
-            error: e instanceof Error ? e.message : String(e),
-          }
-        }
-      })
-    )
-
-    setDebtIndexes(results)
-    setIsLoadingIndexes(false)
-  }, [])
-
   useEffect(() => {
-    fetchDebtIndexes()
-  }, [fetchDebtIndexes])
+    if (currentAddress !== zeroAddress) {
+      fetchDebtIndexes()
+    }
+  }, [currentAddress])
 
   const handleCheckpoint = async () => {
     if (!walletClient || selected.size === 0 || !IR_CALCULATOR_ADDRESS) return
@@ -272,6 +473,347 @@ export default function DevToolsPage() {
       setCheckpointStatus(`Error: ${e instanceof Error ? e.message : String(e)}`)
     } finally {
       setIsCheckpointing(false)
+    }
+  }
+
+  const [isMintingIR, setIsMintingIR] = useState(false)
+  const handleMintIR = async () => {
+    if (!walletClient || !IR_CALCULATOR_ADDRESS) {
+      return
+    }
+
+    if (mintableInterests === null || mintableInterests === 0n) {
+      return
+    }
+
+    setIsMintingIR(true)
+
+    try {
+      await executeContractCall(walletClient, {
+        address: IR_CALCULATOR_ADDRESS,
+        abi: IR_CALCULATOR_ABI,
+        functionName: "mintIR",
+        args: [], // mintIR() ne prend normalement pas d'arguments
+      })
+
+      // Rafraîchir les données après mint
+      await fetchDebtIndexes()
+    } catch (e) {
+      const errorMsg = e instanceof Error ? e.message : String(e)
+      console.error("Mint IR failed:", errorMsg)
+    } finally {
+      setIsMintingIR(false)
+    }
+  }
+
+  // ==================== FONCTIONS IR / RC ====================
+
+  const fetchCurrentIRParams = useCallback(async (market: Address) => {
+    if (!IR_CALCULATOR_ADDRESS || market === zeroAddress) return
+
+    setIsLoadingParams(true)
+    setUpdateStatus("")
+
+    try {
+      const result = (await publicClient.readContract({
+        address: IR_CALCULATOR_ADDRESS,
+        abi: IR_CALCULATOR_ABI,
+        functionName: "getIRParams",
+        args: [market],
+      })) as {
+        isHEC: boolean
+        rMin: bigint
+        rMax: bigint
+        pMin: bigint
+        pInf: bigint
+        pMax: bigint
+        a1: bigint
+        a2: bigint
+        k: bigint
+      }
+
+      setIrParams({
+        isHEC: result.isHEC,
+        rMin: Number(result.rMin),
+        rMax: Number(result.rMax),
+        pMin: Number(result.pMin),
+        pInf: Number(result.pInf),
+        pMax: Number(result.pMax),
+        a1: Number(result.a1),
+        a2: Number(result.a2),
+        k: Number(result.k),
+      })
+    } catch (err) {
+      console.error(`Failed to fetch IRParams for ${market}:`, err)
+      setUpdateStatus("Could not load current IR parameters.")
+    } finally {
+      setIsLoadingParams(false)
+    }
+  }, [])
+
+  const fetchCurrentRCParams = useCallback(async (market: Address) => {
+    if (!REWARD_ACC_ADDRESS || market === zeroAddress) return
+
+    setIsLoadingParams(true)
+    setUpdateStatus("")
+
+    try {
+      const result = (await publicClient.readContract({
+        address: REWARD_ACC_ADDRESS,
+        abi: REWARD_ACC_ABI,
+        functionName: "getRCParams",
+        args: [market],
+      })) as {
+        harvestFeePercentage: bigint
+        stepAmount: bigint
+        startCutPercentage: bigint
+        endCutPercentage: bigint
+        startCutPrice: bigint
+        endCutPrice: bigint
+      }
+
+      setRcParams({
+        harvestFeePercentage: Number(result.harvestFeePercentage),
+        stepAmount: Number(result.stepAmount),
+        startCutPercentage: Number(result.startCutPercentage),
+        endCutPercentage: Number(result.endCutPercentage),
+        startCutPrice: Number(result.startCutPrice),
+        endCutPrice: Number(result.endCutPrice),
+      })
+    } catch (err) {
+      console.error(`Failed to fetch RCParams for ${market}:`, err)
+      setUpdateStatus("Could not load current RC parameters.")
+    } finally {
+      setIsLoadingParams(false)
+    }
+  }, [])
+
+  // Charger les paramètres au changement de marché
+  useEffect(() => {
+    if (selectedMarket !== zeroAddress) {
+      if (mode === "IR") {
+        fetchCurrentIRParams(selectedMarket)
+      } else {
+        fetchCurrentRCParams(selectedMarket)
+      }
+    }
+  }, [selectedMarket, mode, fetchCurrentIRParams, fetchCurrentRCParams])
+
+  const updateIRField = (field: keyof IRParams, value: string | number | boolean) => {
+    setIrParams((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const updateRCField = (field: keyof RCParams, value: number) => {
+    setRcParams((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleUpdateParams = async () => {
+    if (!walletClient || !IR_CALCULATOR_ADDRESS || !REWARD_ACC_ADDRESS || selectedMarket === zeroAddress) {
+      setUpdateStatus("Wallet not connected or market not selected")
+      return
+    }
+
+    setIsUpdating(true)
+    setUpdateStatus("")
+
+    try {
+      if (mode === "IR") {
+        const irParamStruct = {
+          isHEC: irParams.isHEC,
+          rMin: irParams.rMin,
+          rMax: irParams.rMax,
+          pMin: irParams.pMin,
+          pInf: irParams.pInf,
+          pMax: irParams.pMax,
+          a1: irParams.a1,
+          a2: irParams.a2,
+          k: irParams.k,
+        }
+
+        const hash = await executeContractCall(walletClient, {
+          address: IR_CALCULATOR_ADDRESS,
+          abi: IR_CALCULATOR_ABI,
+          functionName: "updateIRParams",
+          args: [selectedMarket, irParamStruct],
+        })
+        setUpdateStatus(`✅ IR Parameters updated! Tx: ${hash}`)
+      } else {
+        const rcParamStruct = {
+          harvestFeePercentage: rcParams.harvestFeePercentage,
+          stepAmount: rcParams.stepAmount,
+          startCutPercentage: rcParams.startCutPercentage,
+          endCutPercentage: rcParams.endCutPercentage,
+          startCutPrice: rcParams.startCutPrice,
+          endCutPrice: rcParams.endCutPrice,
+        }
+
+        const hash = await executeContractCall(walletClient, {
+          address: REWARD_ACC_ADDRESS,
+          abi: REWARD_ACC_ABI,
+          functionName: "updateRCParams",
+          args: [selectedMarket, rcParamStruct],
+        })
+        setUpdateStatus(`✅ RC Parameters updated! Tx: ${hash}`)
+      }
+
+      // Recharger les valeurs après mise à jour
+      setTimeout(() => {
+        if (mode === "IR") fetchCurrentIRParams(selectedMarket)
+        else fetchCurrentRCParams(selectedMarket)
+      }, 2000)
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e)
+      setUpdateStatus(`❌ Error: ${msg}`)
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  // Charger les params quand on change de marché
+  useEffect(() => {
+    if (selectedMarket !== zeroAddress) {
+      fetchCurrentIRParams(selectedMarket)
+    }
+  }, [selectedMarket, fetchCurrentIRParams])
+
+  // ==================== FETCH POSITION DATA (MarketViewer) ====================
+  const fetchBadDebtPosition = async () => {
+    if (!MARKET_VIEWER_ADDRESS || selectedBadDebtMarket === zeroAddress || !badDebtAccount) {
+      setSeizeStatus("Please select a market and enter a valid address")
+      return
+    }
+
+    setIsFetchingPosition(true)
+    setSeizeStatus("")
+
+    try {
+      const [debt, collat, ratio] = await Promise.all([
+        publicClient.readContract({
+          address: MARKET_VIEWER_ADDRESS,
+          abi: MARKET_VIEWER_ABI,
+          functionName: "userDebt",
+          args: [selectedBadDebtMarket, badDebtAccount as Address],
+        }) as Promise<bigint>,
+
+        publicClient.readContract({
+          address: MARKET_VIEWER_ADDRESS,
+          abi: MARKET_VIEWER_ABI,
+          functionName: "positionValue",
+          args: [selectedBadDebtMarket, badDebtAccount as Address],
+        }) as Promise<bigint>,
+
+        publicClient.readContract({
+          address: MARKET_VIEWER_ADDRESS,
+          abi: MARKET_VIEWER_ABI,
+          functionName: "healthRatio",
+          args: [selectedBadDebtMarket, badDebtAccount as Address],
+        }) as Promise<bigint>,
+      ])
+
+      setDebtValue(debt)
+      setCollateralValue(collat)
+      setHealthRatio(ratio)
+    } catch (err) {
+      console.error(err)
+      setSeizeStatus(`❌ Error fetching position: ${err instanceof Error ? err.message : String(err)}`)
+    } finally {
+      setIsFetchingPosition(false)
+    }
+  }
+
+  // ==================== PAUSE MARKET ====================
+
+  const fetchPauseStatus = async (market: Address) => {
+    if (!market || market === zeroAddress) return
+
+    setIsLoadingPause(true)
+
+    try {
+      const [deposit, borrow, leverage] = await Promise.all([
+        publicClient.readContract({
+          address: market,
+          abi: MARKET_ABI,
+          functionName: "isDepositPaused",
+        }) as Promise<bigint>,
+
+        publicClient.readContract({
+          address: market,
+          abi: MARKET_ABI,
+          functionName: "isBorrowPaused",
+        }) as Promise<bigint>,
+
+        publicClient.readContract({
+          address: market,
+          abi: MARKET_ABI,
+          functionName: "isLeveragePaused",
+        }) as Promise<bigint>,
+      ])
+
+      setPauseStatus({
+        deposit: deposit.toString(),
+        borrow: borrow.toString(),
+        leverage: leverage.toString(),
+      })
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setIsLoadingPause(false)
+    }
+  }
+
+  useEffect(() => {
+    if (pauseMarket !== zeroAddress) {
+      fetchPauseStatus(pauseMarket)
+    }
+  }, [pauseMarket])
+
+  const handleSetPause = async (type: keyof typeof PAUSE_ENUM, value: string) => {
+    if (!walletClient || pauseMarket === zeroAddress) return
+
+    setPauseActionStatus("")
+    try {
+      const hash = await executeContractCall(walletClient, {
+        address: pauseMarket,
+        abi: MARKET_ABI,
+        functionName: "setPause",
+        args: [PAUSE_ENUM[type], BigInt(value)],
+      })
+
+      setPauseActionStatus(`✅ Updated ${type}: tx ${hash}`)
+
+      await fetchPauseStatus(pauseMarket)
+    } catch (e) {
+      setPauseActionStatus(`❌ ${e instanceof Error ? e.message : String(e)}`)
+    } finally {
+    }
+  }
+
+  // ==================== SEIZE COLLATERAL ====================
+  const handleSeizeCollateral = async () => {
+    if (!walletClient || selectedBadDebtMarket === zeroAddress || !badDebtAccount) {
+      setSeizeStatus("Wallet not connected or missing data")
+      return
+    }
+
+    setIsSeizing(true)
+    setSeizeStatus("")
+
+    try {
+      const hash = await executeContractCall(walletClient, {
+        address: selectedBadDebtMarket, // Appel sur le Market
+        abi: MARKET_ABI,
+        functionName: "seizeCollateral",
+        args: [badDebtAccount as Address],
+      })
+
+      setSeizeStatus(`✅ Collateral seized successfully! Tx: ${hash}`)
+      // Rafraîchit les données après la saisie
+      setTimeout(fetchBadDebtPosition, 2500)
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e)
+      setSeizeStatus(`❌ ${msg}`)
+    } finally {
+      setIsSeizing(false)
     }
   }
 
@@ -356,6 +898,27 @@ export default function DevToolsPage() {
         )}
       </div>
 
+      <div className="flex flex-col gap-3 rounded-[10px] bg-overlay-panel p-5">
+        {/* Valeur globale Mintable Interests + Bouton Mint */}
+        {mintableInterests !== null && (
+          <div className="flex items-center justify-between rounded-md bg-white/5 p-4">
+            <div>
+              <span className="text-white/70">Mintable Interests (global) : </span>
+              <span className="font-mono text-lg text-white">{formatEther(mintableInterests)}</span>
+              <span className="ml-2 text-xs text-white/40">({mintableInterests.toString()})</span>
+            </div>
+
+            <button
+              onClick={handleMintIR}
+              disabled={isMintingIR || mintableInterests === 0n || !walletClient}
+              className="flex items-center gap-2 rounded-md bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isMintingIR ? "Minting..." : "Mint Interests"}
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* Debt Indexes */}
       <div className="flex flex-col gap-3 rounded-[10px] bg-overlay-panel p-5">
         <div className="flex items-center justify-between">
@@ -401,7 +964,9 @@ export default function DevToolsPage() {
                   <th className="w-4 pb-2 pr-3 font-medium"></th>
                   <th className="pb-2 pr-4 font-medium">Market</th>
                   <th className="pb-2 pr-4 font-medium">Address</th>
-                  <th className="pb-2 font-medium">Debt Index (27 dec)</th>
+                  <th className="pb-2 pr-6 font-medium">Debt Index (27 dec)</th>
+                  <th className="pb-2 pr-6 font-medium">User Debt Shares</th>
+                  <th className="pb-2 font-medium">Total Debt Shares</th>
                 </tr>
               </thead>
               <tbody>
@@ -426,17 +991,29 @@ export default function DevToolsPage() {
                       <td className="py-2 pr-4 font-mono text-xs text-white/50">
                         {row.marketAddress.slice(0, 8)}...{row.marketAddress.slice(-6)}
                       </td>
-                      <td className="py-2">
+                      <td className="py-2 pr-6 font-mono">
                         {row.error ? (
                           <span className="text-xs text-red-400">{row.error}</span>
                         ) : row.index !== null ? (
                           <div className="flex flex-col">
-                            <span className="text-white">{formatRay(row.index)}</span>
+                            <span className="text-white">{Number(formatUnits(row.index, 27)).toFixed(5)}</span>
                             <span className="text-xs text-white/40">{row.index.toString()}</span>
                           </div>
                         ) : (
                           <span className="text-white/30">—</span>
                         )}
+                      </td>
+                      <td className="py-2 pr-6 font-mono text-white">
+                        {row.userDebtShares !== null ? (
+                          Number(formatEther(row.userDebtShares)).toFixed(5)
+                        ) : currentAddress ? (
+                          <span className="text-white/30">—</span>
+                        ) : (
+                          <span className="text-xs text-white/40">Connect wallet</span>
+                        )}
+                      </td>
+                      <td className="py-2 font-mono text-white">
+                        {row.totalDebtShares !== null ? Number(formatEther(row.totalDebtShares)).toFixed(5) : <span className="text-white/30">—</span>}
                       </td>
                     </tr>
                   )
@@ -445,6 +1022,332 @@ export default function DevToolsPage() {
             </table>
           </div>
         )}
+      </div>
+
+      {/* ==================== UPDATE IR / RC PARAMETERS SECTION ==================== */}
+      <div className="flex flex-col gap-3 rounded-[10px] bg-overlay-panel p-5">
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-white">Update Market Parameters</h2>
+
+          <div className="flex rounded-full bg-white/10 p-1">
+            <button
+              onClick={() => setMode("IR")}
+              className={`rounded-full px-5 py-1.5 text-sm font-medium transition-all ${
+                mode === "IR" ? "bg-white text-black shadow" : "text-white/70 hover:text-white"
+              }`}
+            >
+              IR Parameters
+            </button>
+            <button
+              onClick={() => setMode("RC")}
+              className={`rounded-full px-5 py-1.5 text-sm font-medium transition-all ${
+                mode === "RC" ? "bg-white text-black shadow" : "text-white/70 hover:text-white"
+              }`}
+            >
+              RC Parameters
+            </button>
+          </div>
+        </div>
+
+        {!IR_CALCULATOR_ADDRESS && <p className="text-sm text-red-400">IRCalculator address not found in NEXT_PUBLIC_ADDRESSES_JSON</p>}
+
+        <div>
+          <label className="mb-1 block text-sm text-white/70">Market</label>
+          <select
+            value={selectedMarket}
+            onChange={(e) => setSelectedMarket(e.target.value as Address)}
+            className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+          >
+            {USGMarkets.map((market) => (
+              <option key={market.marketAddress} value={market.marketAddress}>
+                {market.marketName} — {market.marketAddress.slice(0, 8)}...{market.marketAddress.slice(-6)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {isLoadingParams && <p className="text-sm text-white/50">Loading current parameters...</p>}
+
+        {/* IR Form */}
+        {mode === "IR" && (
+          <>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm text-white/70">isHEC (High Elasticity Curve)</label>
+                <select
+                  value={irParams.isHEC ? "true" : "false"}
+                  onChange={(e) => updateIRField("isHEC", e.target.value === "true")}
+                  className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 text-white"
+                  disabled={isLoadingParams}
+                >
+                  <option value="true">true (HEC)</option>
+                  <option value="false">false (LEC)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+              {(["rMin", "rMax", "pMin", "pInf", "pMax", "a1", "a2", "k"] as const).map((field) => (
+                <div key={field}>
+                  <label className="mb-1 block text-xs text-white/60">{field}</label>
+                  <input
+                    type="number"
+                    value={irParams[field]}
+                    onChange={(e) => updateIRField(field, Number(e.target.value) || 0)}
+                    className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+                    disabled={isLoadingParams}
+                  />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* RC Form */}
+        {mode === "RC" && (
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+            <div>
+              <label className="mb-1 block text-xs text-white/60">harvestFeePercentage (uint16)</label>
+              <input
+                type="number"
+                value={rcParams.harvestFeePercentage}
+                onChange={(e) => updateRCField("harvestFeePercentage", Number(e.target.value) || 0)}
+                className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+                disabled={isLoadingParams}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-white/60">stepAmount (uint16)</label>
+              <input
+                type="number"
+                value={rcParams.stepAmount}
+                onChange={(e) => updateRCField("stepAmount", Number(e.target.value) || 0)}
+                className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+                disabled={isLoadingParams}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-white/60">startCutPercentage (uint32)</label>
+              <input
+                type="number"
+                value={rcParams.startCutPercentage}
+                onChange={(e) => updateRCField("startCutPercentage", Number(e.target.value) || 0)}
+                className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+                disabled={isLoadingParams}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-white/60">endCutPercentage (uint32)</label>
+              <input
+                type="number"
+                value={rcParams.endCutPercentage}
+                onChange={(e) => updateRCField("endCutPercentage", Number(e.target.value) || 0)}
+                className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+                disabled={isLoadingParams}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-white/60">startCutPrice (uint80)</label>
+              <input
+                type="number"
+                value={rcParams.startCutPrice}
+                onChange={(e) => updateRCField("startCutPrice", Number(e.target.value) || 0)}
+                className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+                disabled={isLoadingParams}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-white/60">endCutPrice (uint80)</label>
+              <input
+                type="number"
+                value={rcParams.endCutPrice}
+                onChange={(e) => updateRCField("endCutPrice", Number(e.target.value) || 0)}
+                className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+                disabled={isLoadingParams}
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="mt-6 flex items-center gap-3">
+          <button
+            onClick={handleUpdateParams}
+            disabled={isUpdating || !walletClient || isLoadingParams}
+            className="rounded-md bg-violet-600 px-6 py-3 font-semibold text-white hover:bg-violet-500 disabled:opacity-50"
+          >
+            {isUpdating ? "Updating..." : mode === "IR" ? "Update IR Parameters" : "Update RC Parameters"}
+          </button>
+
+          <button
+            onClick={() => (mode === "IR" ? fetchCurrentIRParams(selectedMarket) : fetchCurrentRCParams(selectedMarket))}
+            disabled={isLoadingParams}
+            className="rounded-md border border-white/30 px-4 py-3 text-sm text-white/70 hover:bg-white/5 disabled:opacity-50"
+          >
+            Refresh Current Values
+          </button>
+        </div>
+
+        {updateStatus && <p className={`mt-3 text-sm ${updateStatus.includes("✅") ? "text-emerald-400" : "text-red-400"}`}>{updateStatus}</p>}
+      </div>
+
+      {/* ==================== SEIZE BAD DEBT COLLATERAL ==================== */}
+      <div className="flex flex-col gap-3 rounded-[10px] bg-overlay-panel p-5">
+        <h2 className="font-semibold text-white">Seize Bad Debt Collateral</h2>
+
+        {!MARKET_VIEWER_ADDRESS && <p className="text-sm text-red-400">MarketViewer address not found in NEXT_PUBLIC_ADDRESSES_JSON</p>}
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Market selection */}
+          <div>
+            <label className="mb-1 block text-sm text-white/70">Market</label>
+            <select
+              value={selectedBadDebtMarket}
+              onChange={(e) => setSelectedBadDebtMarket(e.target.value as Address)}
+              className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+            >
+              {USGMarkets.map((market) => (
+                <option key={market.marketAddress} value={market.marketAddress}>
+                  {market.marketName} — {market.marketAddress.slice(0, 8)}...{market.marketAddress.slice(-6)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Account address */}
+          <div>
+            <label className="mb-1 block text-sm text-white/70">Account Address</label>
+            <input
+              type="text"
+              placeholder="0x1234...abcd"
+              value={badDebtAccount}
+              onChange={(e) => setBadDebtAccount(e.target.value)}
+              className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 font-mono text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+            />
+          </div>
+        </div>
+
+        {/* Bouton Fetch */}
+        <button
+          onClick={fetchBadDebtPosition}
+          disabled={isFetchingPosition || !badDebtAccount}
+          className="mt-2 rounded-md bg-white/10 px-6 py-3 text-sm font-medium text-white hover:bg-white/20 disabled:opacity-50"
+        >
+          {isFetchingPosition ? "Fetching..." : "Load Position Data"}
+        </button>
+
+        {/* Affichage des valeurs */}
+        {(collateralValue !== null || debtValue !== null || healthRatio !== null) && (
+          <div className="mt-4 grid grid-cols-3 gap-4 rounded-md bg-white/5 p-4 text-sm">
+            <div>
+              <span className="text-white/60">Collateral Value</span>
+              <div className="mt-1 font-mono text-lg text-white">{collateralValue !== null ? formatEther(collateralValue) : "—"}</div>
+            </div>
+            <div>
+              <span className="text-white/60">Debt Value</span>
+              <div className="mt-1 font-mono text-lg text-white">{debtValue !== null ? formatEther(debtValue) : "—"}</div>
+            </div>
+            <div>
+              <span className="text-white/60">Health Ratio</span>
+              <div className="mt-1 font-mono text-lg text-white">{healthRatio !== null ? `${(Number(healthRatio) / 1e18).toFixed(4)}x` : "—"}</div>
+            </div>
+          </div>
+        )}
+
+        {/* Bouton Seize */}
+        <button
+          onClick={handleSeizeCollateral}
+          disabled={isSeizing || !walletClient || collateralValue === null}
+          className="mt-6 w-full rounded-md bg-red-600 px-6 py-3.5 font-semibold text-white hover:bg-red-500 disabled:opacity-50"
+        >
+          {isSeizing ? "Seizing Collateral..." : "Seize Collateral"}
+        </button>
+
+        {seizeStatus && <p className={`mt-3 text-sm ${seizeStatus.includes("✅") ? "text-emerald-400" : "text-red-400"}`}>{seizeStatus}</p>}
+      </div>
+      {/* ====================  PAUSE ==================== */}
+
+      <div className="flex flex-col gap-3 rounded-[10px] bg-overlay-panel p-5">
+        <h2 className="font-semibold text-white">Market Pauser</h2>
+
+        {/* Market selector */}
+        <div>
+          <label className="mb-1 block text-sm text-white/70">Market</label>
+          <select
+            value={pauseMarket}
+            onChange={(e) => setPauseMarket(e.target.value as Address)}
+            className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 text-white"
+          >
+            {USGMarkets.map((m) => (
+              <option key={m.marketAddress} value={m.marketAddress}>
+                {m.marketName} — {m.marketAddress.slice(0, 8)}...
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {isLoadingPause && <p className="text-sm text-white/50">Loading pause status...</p>}
+
+        {/* Deposit */}
+        <div className="grid grid-cols-3 items-center gap-4">
+          <span className="text-white/70">Deposit</span>
+
+          <select
+            value={pauseStatus.deposit}
+            onChange={(e) => setPauseStatus((p) => ({ ...p, deposit: e.target.value }))}
+            className="rounded-md bg-white/5 px-3 py-2 text-white"
+          >
+            <option value="0">false</option>
+            <option value="1">true</option>
+          </select>
+
+          <button
+            onClick={() => handleSetPause("DepositPaused", pauseStatus.deposit)}
+            className="rounded-md bg-white/10 px-3 py-2 text-white hover:bg-white/20"
+          >
+            Update
+          </button>
+        </div>
+
+        {/* Borrow */}
+        <div className="grid grid-cols-3 items-center gap-4">
+          <span className="text-white/70">Borrow</span>
+
+          <select
+            value={pauseStatus.borrow}
+            onChange={(e) => setPauseStatus((p) => ({ ...p, borrow: e.target.value }))}
+            className="rounded-md bg-white/5 px-3 py-2 text-white"
+          >
+            <option value="0">false</option>
+            <option value="1">true</option>
+          </select>
+
+          <button onClick={() => handleSetPause("BorrowPaused", pauseStatus.borrow)} className="rounded-md bg-white/10 px-3 py-2 text-white hover:bg-white/20">
+            Update
+          </button>
+        </div>
+
+        {/* Leverage */}
+        <div className="grid grid-cols-3 items-center gap-4">
+          <span className="text-white/70">Leverage</span>
+
+          <select
+            value={pauseStatus.leverage}
+            onChange={(e) => setPauseStatus((p) => ({ ...p, leverage: e.target.value }))}
+            className="rounded-md bg-white/5 px-3 py-2 text-white"
+          >
+            <option value="0">false</option>
+            <option value="1">true</option>
+          </select>
+
+          <button
+            onClick={() => handleSetPause("LeveragePaused", pauseStatus.leverage)}
+            className="rounded-md bg-white/10 px-3 py-2 text-white hover:bg-white/20"
+          >
+            Update
+          </button>
+        </div>
+
+        {pauseActionStatus && <p className={`text-sm ${pauseActionStatus.includes("✅") ? "text-emerald-400" : "text-red-400"}`}>{pauseActionStatus}</p>}
       </div>
     </div>
   )

@@ -29,10 +29,47 @@ const ERC20_ABI: Abi = [
   { name: "balanceOf", type: "function", stateMutability: "view", inputs: [{ name: "owner", type: "address" }], outputs: [{ type: "uint256" }] },
 ] as const
 
+const PAUSE_ENUM = {
+  DepositPaused: 0,
+  BorrowPaused: 1,
+  LeveragePaused: 2,
+} as const
+
 const MARKET_ABI: Abi = [
   { name: "userDebtShares", type: "function", stateMutability: "view", inputs: [{ name: "user", type: "address" }], outputs: [{ type: "uint256" }] },
   { name: "totalDebtShares", type: "function", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] },
   { name: "seizeCollateral", type: "function", stateMutability: "nonpayable", inputs: [{ name: "account", type: "address" }], outputs: [] },
+  {
+    name: "setPause",
+    type: "function",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "pauseType", type: "uint8" }, // PauseEnum
+      { name: "isPaused", type: "uint64" },
+    ],
+    outputs: [],
+  },
+  {
+    name: "isDepositPaused",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "uint64" }],
+  },
+  {
+    name: "isBorrowPaused",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "uint64" }],
+  },
+  {
+    name: "isLeveragePaused",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "uint64" }],
+  },
 ] as const
 
 // ==================== NOUVEL ABI MARKETVIEWER ====================
@@ -204,6 +241,19 @@ export default function DevToolsPage() {
   const [isFetchingPosition, setIsFetchingPosition] = useState(false)
   const [isSeizing, setIsSeizing] = useState(false)
   const [seizeStatus, setSeizeStatus] = useState<string>("")
+
+  // PAUSE
+
+  const [pauseMarket, setPauseMarket] = useState<Address>(USGMarkets[0]?.marketAddress || zeroAddress)
+
+  const [pauseStatus, setPauseStatus] = useState({
+    deposit: "0",
+    borrow: "0",
+    leverage: "0",
+  })
+
+  const [isLoadingPause, setIsLoadingPause] = useState(false)
+  const [pauseActionStatus, setPauseActionStatus] = useState("")
 
   const fetchDebtIndexes = async () => {
     if (!IR_CALCULATOR_ADDRESS || currentAddress === zeroAddress) {
@@ -671,6 +721,73 @@ export default function DevToolsPage() {
     }
   }
 
+  // ==================== PAUSE MARKET ====================
+
+  const fetchPauseStatus = async (market: Address) => {
+    if (!market || market === zeroAddress) return
+
+    setIsLoadingPause(true)
+
+    try {
+      const [deposit, borrow, leverage] = await Promise.all([
+        publicClient.readContract({
+          address: market,
+          abi: MARKET_ABI,
+          functionName: "isDepositPaused",
+        }) as Promise<bigint>,
+
+        publicClient.readContract({
+          address: market,
+          abi: MARKET_ABI,
+          functionName: "isBorrowPaused",
+        }) as Promise<bigint>,
+
+        publicClient.readContract({
+          address: market,
+          abi: MARKET_ABI,
+          functionName: "isLeveragePaused",
+        }) as Promise<bigint>,
+      ])
+
+      setPauseStatus({
+        deposit: deposit.toString(),
+        borrow: borrow.toString(),
+        leverage: leverage.toString(),
+      })
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setIsLoadingPause(false)
+    }
+  }
+
+  useEffect(() => {
+    if (pauseMarket !== zeroAddress) {
+      fetchPauseStatus(pauseMarket)
+    }
+  }, [pauseMarket])
+
+  const handleSetPause = async (type: keyof typeof PAUSE_ENUM, value: string) => {
+    if (!walletClient || pauseMarket === zeroAddress) return
+
+    setPauseActionStatus("")
+    try {
+      const hash = await executeContractCall(walletClient, {
+        address: pauseMarket,
+        abi: MARKET_ABI,
+        functionName: "setPause",
+        args: [PAUSE_ENUM[type], BigInt(value)],
+      })
+
+      setPauseActionStatus(`✅ Updated ${type}: tx ${hash}`)
+
+      await fetchPauseStatus(pauseMarket)
+    } catch (e) {
+      setPauseActionStatus(`❌ ${e instanceof Error ? e.message : String(e)}`)
+    } finally {
+    }
+  }
+
   // ==================== SEIZE COLLATERAL ====================
   const handleSeizeCollateral = async () => {
     if (!walletClient || selectedBadDebtMarket === zeroAddress || !badDebtAccount) {
@@ -1073,7 +1190,7 @@ export default function DevToolsPage() {
         {updateStatus && <p className={`mt-3 text-sm ${updateStatus.includes("✅") ? "text-emerald-400" : "text-red-400"}`}>{updateStatus}</p>}
       </div>
 
-      {/* ==================== NEW DIV : SEIZE BAD DEBT COLLATERAL ==================== */}
+      {/* ==================== SEIZE BAD DEBT COLLATERAL ==================== */}
       <div className="flex flex-col gap-3 rounded-[10px] bg-overlay-panel p-5">
         <h2 className="font-semibold text-white">Seize Bad Debt Collateral</h2>
 
@@ -1146,6 +1263,91 @@ export default function DevToolsPage() {
         </button>
 
         {seizeStatus && <p className={`mt-3 text-sm ${seizeStatus.includes("✅") ? "text-emerald-400" : "text-red-400"}`}>{seizeStatus}</p>}
+      </div>
+      {/* ====================  PAUSE ==================== */}
+
+      <div className="flex flex-col gap-3 rounded-[10px] bg-overlay-panel p-5">
+        <h2 className="font-semibold text-white">Market Pauser</h2>
+
+        {/* Market selector */}
+        <div>
+          <label className="mb-1 block text-sm text-white/70">Market</label>
+          <select
+            value={pauseMarket}
+            onChange={(e) => setPauseMarket(e.target.value as Address)}
+            className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 text-white"
+          >
+            {USGMarkets.map((m) => (
+              <option key={m.marketAddress} value={m.marketAddress}>
+                {m.marketName} — {m.marketAddress.slice(0, 8)}...
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {isLoadingPause && <p className="text-sm text-white/50">Loading pause status...</p>}
+
+        {/* Deposit */}
+        <div className="grid grid-cols-3 items-center gap-4">
+          <span className="text-white/70">Deposit</span>
+
+          <select
+            value={pauseStatus.deposit}
+            onChange={(e) => setPauseStatus((p) => ({ ...p, deposit: e.target.value }))}
+            className="rounded-md bg-white/5 px-3 py-2 text-white"
+          >
+            <option value="0">false</option>
+            <option value="1">true</option>
+          </select>
+
+          <button
+            onClick={() => handleSetPause("DepositPaused", pauseStatus.deposit)}
+            className="rounded-md bg-white/10 px-3 py-2 text-white hover:bg-white/20"
+          >
+            Update
+          </button>
+        </div>
+
+        {/* Borrow */}
+        <div className="grid grid-cols-3 items-center gap-4">
+          <span className="text-white/70">Borrow</span>
+
+          <select
+            value={pauseStatus.borrow}
+            onChange={(e) => setPauseStatus((p) => ({ ...p, borrow: e.target.value }))}
+            className="rounded-md bg-white/5 px-3 py-2 text-white"
+          >
+            <option value="0">false</option>
+            <option value="1">true</option>
+          </select>
+
+          <button onClick={() => handleSetPause("BorrowPaused", pauseStatus.borrow)} className="rounded-md bg-white/10 px-3 py-2 text-white hover:bg-white/20">
+            Update
+          </button>
+        </div>
+
+        {/* Leverage */}
+        <div className="grid grid-cols-3 items-center gap-4">
+          <span className="text-white/70">Leverage</span>
+
+          <select
+            value={pauseStatus.leverage}
+            onChange={(e) => setPauseStatus((p) => ({ ...p, leverage: e.target.value }))}
+            className="rounded-md bg-white/5 px-3 py-2 text-white"
+          >
+            <option value="0">false</option>
+            <option value="1">true</option>
+          </select>
+
+          <button
+            onClick={() => handleSetPause("LeveragePaused", pauseStatus.leverage)}
+            className="rounded-md bg-white/10 px-3 py-2 text-white hover:bg-white/20"
+          >
+            Update
+          </button>
+        </div>
+
+        {pauseActionStatus && <p className={`text-sm ${pauseActionStatus.includes("✅") ? "text-emerald-400" : "text-red-400"}`}>{pauseActionStatus}</p>}
       </div>
     </div>
   )

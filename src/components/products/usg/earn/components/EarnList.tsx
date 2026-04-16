@@ -15,7 +15,7 @@ type AprOpportunityProps = {
 
 export const AprOpportunityRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
-    <div className="flex items-center justify-between max-xl:flex-col">
+    <div className="flex flex-col items-center justify-between xl:flex-row">
       <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">{children?.at(0)}</div>
 
       <hr className="my-2 w-full opacity-20 xl:hidden" />

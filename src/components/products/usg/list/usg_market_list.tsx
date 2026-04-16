@@ -50,7 +50,7 @@ const CustomMarketListRow = ({ children }: ListRowDispositionProps) => {
       <hr className="my-2 w-full opacity-20 xl:hidden" />
 
       <div className="flex w-full xl:w-3/4">
-        <div className="flex hidden w-full items-center justify-between xl:flex xl:w-2/5 xl:justify-start">
+        <div className="hidden w-full items-center justify-between xl:flex xl:w-2/5 xl:justify-start">
           <div className="hidden items-center justify-center xl:flex xl:w-1/2">{children?.at(1)}</div>
           <div className="hidden items-center justify-center xl:flex xl:w-1/2">{children?.at(2)}</div>
         </div>

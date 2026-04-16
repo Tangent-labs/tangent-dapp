@@ -39,7 +39,7 @@ export const CollateralCard = ({ collateralInfo, marketData, className }: Collat
         </ReliefCard>
       </DialogTrigger>
 
-      <DialogContent className="h-[640px] max-w-[763px] rounded-[10px] bg-overlay-panel p-4 text-white focus:outline-none">
+      <DialogContent className="h-[640px] max-w-[763px] rounded-[10px] bg-overlay-panel p-2 text-white focus:outline-none xl:p-4">
         <DialogTitle></DialogTitle>
         <USGMarketListProvider>
           <USGModalMarketList />

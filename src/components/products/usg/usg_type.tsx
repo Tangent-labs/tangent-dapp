@@ -380,12 +380,10 @@ export type AprOpportunityItem = {
   address: string
   rewardToken: string
   currentAPRDetails?: {
-    APY?: number
-    CRV?: number
+    [rewardToken: string]: number | undefined
   }
   projectedAPRDetails?: {
-    APY?: number
-    CRV?: number
+    [rewardToken: string]: number | undefined
   }
 }
 

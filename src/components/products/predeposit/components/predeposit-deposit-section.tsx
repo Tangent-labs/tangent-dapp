@@ -57,7 +57,6 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
     USGUSDCformState,
     USGfrxUSDformState,
     predepositStatus,
-    isWhitelisted,
     frxUSDslippage,
     projectedUSDCTANAllocation,
     projectedfrxUSDTANAllocation,
@@ -81,14 +80,32 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
     actionDepositUSGfrxUSD,
     setDepositMaxUSGUSDC,
     setDepositMaxUSGfrxUSD,
+    signMessage,
+    isFetchApiLoading,
+    isSigningLoading,
   } = usePredepositContext()
 
-  const { connect, isConnected } = useWalletConnexionContext()
+  const { connect, isConnected, isWalletContextLoaded } = useWalletConnexionContext()
+
+  let isDisplayYouAreNotWL = false
+  // In private
+  if (predepositStatus?.predepositState === "deposit_private") {
+    // Show you are not WL only in private if an user is not WL
+    isDisplayYouAreNotWL = predepositStatus.userState !== "private"
+  }
+
+  // Display the blurr when ( OR ) :
+  //  - Wallet not connected
+  //  - API is loading
+  //  - Wallet Connected, predeposit in private and now WL
+  //  - Wallet connected, privileges are OK but no signatures
+  const isDisplayBlurry = !isConnected || isFetchApiLoading || (isConnected && (isDisplayYouAreNotWL || !predepositStatus?.isSigned))
 
   return (
     <section className="mt-4 flex w-full flex-col">
       <div className="flex w-full items-center justify-between">
         <span className="text-lg font-semibold text-white">Total Deposit cap</span>
+
         <span className="flex items-center">
           <span className="text-button-active">
             $
@@ -181,19 +198,37 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
           />
         </div>
 
-        {!isConnected && (
+        {isDisplayBlurry && (
           <BlurrySection scrollToFaq={scrollToFaq}>
-            <Button onClick={connect} className="flex h-10 items-center justify-center">
-              Connect wallet
-            </Button>
-          </BlurrySection>
-        )}
+            {/* When not connected, propose to connect after the loading of the wallet context */}
+            {!isConnected && isWalletContextLoaded && (
+              <Button onClick={connect} className="flex h-10 items-center justify-center">
+                Connect wallet
+              </Button>
+            )}
 
-        {isConnected && !isWhitelisted && (
-          <BlurrySection scrollToFaq={scrollToFaq}>
-            <Button state="disabled" className="flex h-10 items-center justify-center">
-              You are not whitelisted
-            </Button>
+            {/* Wallet connected, api in fetching, 2 scenarios : 
+                - User not WL and we are in private, is prio compare to signMessage
+                - User WL or in public, signauture needed
+            */}
+
+            {!isFetchApiLoading &&
+              isConnected &&
+              (predepositStatus?.predepositState === "deposit_private" && isDisplayYouAreNotWL ? (
+                <Button state="disabled" className="flex h-10 items-center justify-center">
+                  You are not whitelisted
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => signMessage()}
+                  state={isSigningLoading ? "disabled" : "active"}
+                  className="flex h-10 items-center justify-center"
+                  hasLoadingState={true}
+                  isLoading={isSigningLoading}
+                >
+                  Sign the message
+                </Button>
+              ))}
           </BlurrySection>
         )}
       </div>

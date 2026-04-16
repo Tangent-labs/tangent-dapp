@@ -30,13 +30,12 @@ export default function USGRecordBorrowContent() {
         onValueChange={(value: bigint | undefined) => {
           setBorrowWeiValue(value)
         }}
-        // disabled={maxBorrowCapReached || maxBorrowableValue === 0n}
         label="You borrow"
         depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
         asset={USGInfo}
         maxAmountParams={{
           maxWeiValue: maxBorrowableValue,
-          setMaxAmount: maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue),
+          setMaxAmount: maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue - 10_000n),
         }}
         sliderParams={{
           sliderPercentage: borrowPercentage,

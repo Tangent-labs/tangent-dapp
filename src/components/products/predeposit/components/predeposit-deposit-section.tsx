@@ -81,7 +81,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
     setDepositMaxUSGUSDC,
     setDepositMaxUSGfrxUSD,
     signMessage,
-    isFetchApiLoading,
+    isFetchApiInitialLoading,
     isSigningLoading,
   } = usePredepositContext()
 
@@ -99,7 +99,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
   //  - API is loading
   //  - Wallet Connected, predeposit in private and now WL
   //  - Wallet connected, privileges are OK but no signatures
-  const isDisplayBlurry = !isConnected || isFetchApiLoading || (isConnected && (isDisplayYouAreNotWL || !predepositStatus?.isSigned))
+  const isDisplayBlurry = !isConnected || isFetchApiInitialLoading || (isConnected && (isDisplayYouAreNotWL || !predepositStatus?.isSigned))
 
   return (
     <section className="mt-4 flex w-full flex-col">
@@ -212,7 +212,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
                 - User WL or in public, signauture needed
             */}
 
-            {!isFetchApiLoading &&
+            {!isFetchApiInitialLoading &&
               isConnected &&
               (predepositStatus?.predepositState === "deposit_private" && isDisplayYouAreNotWL ? (
                 <Button state="disabled" className="flex h-10 items-center justify-center">

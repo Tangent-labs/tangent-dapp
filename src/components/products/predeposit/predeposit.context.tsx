@@ -118,7 +118,7 @@ type PredepositContextValues = {
   isfrxUSDQuoteLoading: boolean
 
   signMessage: () => void
-  isFetchApiLoading: boolean
+  isFetchApiInitialLoading: boolean
   isSigningLoading: boolean
 }
 
@@ -163,7 +163,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
 
   const [predepositStatus, setPredepositStatus] = useState<PredepositStatus | null>(null)
 
-  const [isFetchApiLoading, setIsFetchApiLoading] = useState<boolean>(true)
+  const [isFetchApiInitialLoading, setIsFetchApiLoading] = useState<boolean>(true)
 
   const [isQuoteLoading, setIsQuoteLoading] = useState<boolean>(false)
 
@@ -176,7 +176,6 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   const [isUSGfrxUSDTransactionBlockedBySlippage, setIsUSGfrxUSDTransactionBlockedBySlippage] = useState<boolean>(false)
 
   async function getUserStatus() {
-    setIsFetchApiLoading(true)
     try {
       const status = await fetchUserStatus(currentAddress || zeroAddress)
       if (!status) return
@@ -192,7 +191,15 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
 
   useEffect(() => {
     if (!isWalletContextLoaded) return
+    // Initial call
     getUserStatus()
+
+    // Call every 12 sec for actualization approx every block
+    const interval = setInterval(() => {
+      getUserStatus()
+    }, 12000)
+
+    return () => clearInterval(interval) // cleanup
   }, [currentAddress, isWalletContextLoaded])
 
   useEffect(() => {
@@ -684,7 +691,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     isQuoteLoading,
     isfrxUSDQuoteLoading,
     signMessage,
-    isFetchApiLoading,
+    isFetchApiInitialLoading,
     isSigningLoading,
   }
 

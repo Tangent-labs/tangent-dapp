@@ -93,17 +93,19 @@ export const USGDashboardContent = () => {
         />
       </div>
 
-      {/* USG & sUSG TOTAL SUPPLY GRAPH */}
-      <GraphUSGsUSG
-        fetchTotalSupplyData={fetchTotalSupplyData}
-        USGCurrentSupply={USGCurrentSupply}
-        sUSGCurrentSupply={sUSGCurrentSupply}
-        USGsUSGTotalSupplyData={USGsUSGTotalSupplyData}
-        totalSupplySelectedTab={totalSupplySelectedTab}
-      />
+      <div className="flex w-full flex-col gap-5 lg:flex-row">
+        {/* USG & sUSG TOTAL SUPPLY GRAPH */}
+        <GraphUSGsUSG
+          fetchTotalSupplyData={fetchTotalSupplyData}
+          USGCurrentSupply={USGCurrentSupply}
+          sUSGCurrentSupply={sUSGCurrentSupply}
+          USGsUSGTotalSupplyData={USGsUSGTotalSupplyData}
+          totalSupplySelectedTab={totalSupplySelectedTab}
+        />
 
-      {/* TVL GRAPH */}
-      <GraphGlobalTVL fetchTVLData={fetchTVLData} tvlSelectedTab={tvlSelectedTab} protocolCurrentTVL={protocolCurrentTVL} tvl={tvl} />
+        {/* TVL GRAPH */}
+        <GraphGlobalTVL fetchTVLData={fetchTVLData} tvlSelectedTab={tvlSelectedTab} protocolCurrentTVL={protocolCurrentTVL} tvl={tvl} />
+      </div>
 
       {/* USG Collaterals & Market debts */}
       <div className="flex w-full flex-col items-start justify-start gap-5 md:flex-row">

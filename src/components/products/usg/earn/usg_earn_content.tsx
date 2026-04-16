@@ -62,7 +62,7 @@ export function USGEarnListInner() {
   return (
     <>
       <ListHeader rowDisposition={AprOpportunityRowDisposition} headers={headers} onSort={udpateSort} />
-      {displayRows?.map((item, index) => <AprOpportunity item={item} key={index} index={index} isLoading={isLoading}></AprOpportunity>)}
+      {displayRows?.map((item, index) => <AprOpportunity item={item} key={index} index={index} isLoading={isLoading}  openInNewTab={true}></AprOpportunity>)}
     </>
   )
 }

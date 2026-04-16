@@ -30,10 +30,19 @@ export const mapPoolsAndTasks = (
     .filter((p: { lpToken: { address: string } }) => allStakeDaoPoolsPoolsAddresses.includes(p.lpToken.address))
     .map((el) => {
       const address = el.lpToken.address as Address
-      const gaugeCrvApy = el.apr.current.total
-      const gaugeFutureCrvApy = el.apr.projected.total
+      const currentDetails = el.apr.current.details || []
+      const tradingFees = currentDetails.find((detail) => detail.label.toLowerCase().includes("trading fees"))?.value?.[0] || el.tradingApy || 0
+      const rewardAPR =
+        currentDetails
+          .filter((detail) => !detail.label.toLowerCase().includes("trading fees"))
+          .reduce((sum, detail) => sum + (detail.value?.reduce((innerSum, value) => innerSum + value, 0) || 0), 0) || 0
 
-      return { protocol: "Stake DAO", address, gaugeCrvApy: [gaugeCrvApy], gaugeFutureCrvApy: [gaugeFutureCrvApy] }
+      // v2 does not expose a projected APR in the same shape as the legacy endpoint.
+      // Keep current values for the projected slot so the existing UI remains stable.
+      const gaugeCrvApy = [tradingFees, rewardAPR]
+      const gaugeFutureCrvApy = [tradingFees, rewardAPR]
+
+      return { protocol: "Stake DAO", address, gaugeCrvApy, gaugeFutureCrvApy }
     })
 
   // TODO : Implement the correct behaviour/APR

@@ -34,7 +34,7 @@ export default function USGRecordBorrowContent() {
         depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
         asset={USGInfo}
         maxAmountParams={{
-          maxWeiValue: maxBorrowableValue,
+          maxWeiValue: maxBorrowableValue - 10_000n,
           setMaxAmount: maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue - 10_000n),
         }}
         sliderParams={{

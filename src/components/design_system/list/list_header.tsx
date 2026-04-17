@@ -25,15 +25,26 @@ interface HeaderDisplayProps {
 }
 
 const HeaderDisplay = ({ label, sort = "none", onSort, field, indicator, className }: HeaderDisplayProps) => {
+  const isSortable = !!onSort
+  const isActive = sort !== "none"
+
   return (
-    <div className={cn(className, "cursor-pointer gap-2 text-sm")} onClick={() => onSort && onSort(field)}>
-      <span>{label}</span>
-      {indicator && (
-        <USGHoverCard iconClassName="w-[13px]" title={label as string}>
-          {indicator}
-        </USGHoverCard>
-      )}
-      {!!onSort && <IconSortHeader sort={sort} />}
+    <div className={cn(className, "cursor-pointer text-sm")} onClick={() => onSort && onSort(field)}>
+      <div
+        className={cn(
+          "flex items-center gap-2 hover:bg-white/10",
+          isSortable && "rounded-md px-2 py-0.5 transition-colors",
+          isSortable && isActive && "text-row-tonic"
+        )}
+      >
+        <span>{label}</span>
+        {indicator && (
+          <USGHoverCard iconClassName={isActive ? "fill-row-tonic w-[13px]" : "fill-white w-[13px]"} title={label as string}>
+            {indicator}
+          </USGHoverCard>
+        )}
+        {isSortable && <IconSortHeader sort={sort} className={isActive ? "fill-row-tonic" : "fill-white"} />}
+      </div>
     </div>
   )
 }

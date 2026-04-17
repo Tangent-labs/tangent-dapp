@@ -32,7 +32,7 @@ export const USGEarnProvider = ({ children }: USGEarnContextProps) => {
 
   const displayRows = useMemo(() => {
     const mappedTasks = mapAPROpportunities(opportunities, poolsData)
-    return mappedTasks
+    return mappedTasks.sort((a, b) => (b.currentAPR ?? 0) - (a.currentAPR ?? 0))
   }, [poolsData])
 
   const fetchPoolsData = async () => {

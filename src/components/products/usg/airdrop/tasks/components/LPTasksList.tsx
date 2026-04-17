@@ -1,5 +1,6 @@
 "use client"
 
+import { cn } from "@/lib/utils"
 import { ListState } from "@/types"
 import { IconOpenOutside, IconSortHeader } from "@/components/icons"
 import { formatToken } from "../usg_tasks_controller"
@@ -16,8 +17,8 @@ import { LpTask } from "../../../usg_type"
 export const lpListState: ListState = {
   search: undefined,
   sort: {
-    key: "status",
-    direction: "asc",
+    key: "points",
+    direction: "desc",
   },
 }
 
@@ -96,13 +97,14 @@ export const LPTasksList = () => {
 
             {!!headers?.at(2)?.key && (
               <div className="flex w-full items-center justify-center">
-                <button
-                  className="flex w-full items-center justify-center gap-2"
-                  type="button"
-                  onClick={() => udpateSort && udpateSort(String(headers?.at(2)?.key))}
-                >
-                  <span>{headers?.at(2)?.label}</span>
-                  <div className="text-row-tonic">
+                <button className="flex w-full items-center justify-center" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(2)?.key))}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-md px-2 py-0.5 transition-colors hover:bg-white/10",
+                      listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction !== "none" ? "text-row-tonic" : ""
+                    )}
+                  >
+                    <span>{headers?.at(2)?.label}</span>
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
@@ -111,13 +113,14 @@ export const LPTasksList = () => {
 
             {!!headers?.at(3)?.key && (
               <div key={headers?.at(3)?.label} className="flex w-full items-center justify-center">
-                <button
-                  className="flex w-full items-center justify-center gap-2"
-                  type="button"
-                  onClick={() => udpateSort && udpateSort(String(headers?.at(3)?.key))}
-                >
-                  <span>{headers?.at(3)?.label} </span>
-                  <div className="text-row-tonic">
+                <button className="flex w-full items-center justify-center" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(3)?.key))}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-md px-2 py-0.5 transition-colors hover:bg-white/10",
+                      listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction !== "none" ? "text-row-tonic" : ""
+                    )}
+                  >
+                    <span>{headers?.at(3)?.label}</span>
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
@@ -126,13 +129,14 @@ export const LPTasksList = () => {
 
             {!!headers?.at(4)?.key && (
               <div key={headers?.at(4)?.label} className="flex w-full items-center justify-center">
-                <button
-                  className="flex w-full items-center justify-center gap-2"
-                  type="button"
-                  onClick={() => udpateSort && udpateSort(String(headers?.at(4)?.key))}
-                >
-                  <span>{headers?.at(4)?.label} </span>
-                  <div className="text-row-tonic">
+                <button className="flex w-full items-center justify-center" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(4)?.key))}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-md px-2 py-0.5 transition-colors hover:bg-white/10",
+                      listState?.sort?.key === headers?.at(4)?.key && listState?.sort?.direction !== "none" ? "text-row-tonic" : ""
+                    )}
+                  >
+                    <span>{headers?.at(4)?.label}</span>
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(4)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
@@ -141,13 +145,14 @@ export const LPTasksList = () => {
 
             {!!headers?.at(5)?.key && (
               <div key={headers?.at(5)?.label} className="flex w-full items-center justify-center">
-                <button
-                  className="‚ flex w-full items-center justify-center gap-2"
-                  type="button"
-                  onClick={() => udpateSort && udpateSort(String(headers?.at(5)?.key))}
-                >
-                  <span>{headers?.at(5)?.label} </span>
-                  <div className="text-row-tonic">
+                <button className="flex w-full items-center justify-center" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(5)?.key))}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-md px-2 py-0.5 transition-colors hover:bg-white/10",
+                      listState?.sort?.key === headers?.at(5)?.key && listState?.sort?.direction !== "none" ? "text-row-tonic" : ""
+                    )}
+                  >
+                    <span>{headers?.at(5)?.label}</span>
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(5)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>

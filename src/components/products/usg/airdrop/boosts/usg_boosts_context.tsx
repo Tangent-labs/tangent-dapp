@@ -43,7 +43,7 @@ export const UsgBoostsProvider = ({ children }: UsgBoostsContextProps) => {
   }
 
   const contextValue: UsgBoostsContextValues = {
-    userBoosts,
+    userBoosts: [...userBoosts].sort((a, b) => (a.status === b.status ? 0 : b.status ? 1 : -1)),
     sortBoosts,
   }
 

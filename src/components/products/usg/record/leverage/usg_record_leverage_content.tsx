@@ -35,7 +35,6 @@ export default function USGLeverageContent() {
     isZapLoading,
     isDepositLoading,
     isDumpUSGLoading,
-    isDepositDisabled,
     zapValue,
     depositAssetInfo,
     borrowWeiValue,
@@ -47,7 +46,6 @@ export default function USGLeverageContent() {
     depositSliderPercent,
     leveragePercentage,
     maxDepositString,
-    // aprVariation,
     isZapping,
     leverageRange,
     slippageLoss,
@@ -65,44 +63,40 @@ export default function USGLeverageContent() {
 
   return (
     <div className="flex flex-col gap-1.5">
-      {!isDepositDisabled && (
-        <>
-          <div className="flex w-full items-center justify-between gap-2">
-            <span className="text-sm font-semibold md:text-xl">Deposit {collateralInfo?.symbol?.replaceAll("-", "/")}</span>
-            <span className="text-xs text-subtitle">{maxDepositString}</span>
-          </div>
+      <div className="flex w-full items-center justify-between gap-2">
+        <span className="text-sm font-semibold md:text-xl">Deposit {collateralInfo?.symbol?.replaceAll("-", "/")}</span>
+        <span className="text-xs text-subtitle">{maxDepositString}</span>
+      </div>
 
-          <GenericInputAssetAmount
-            inputWeiValue={depositWeiValue}
-            onValueChange={handleDepositChange}
-            depositSelect={
-              <ZapAssetSelector
-                collateralInfo={collateralInfo!}
-                depositAsset={depositAsset || collateralInfo!.name}
-                setDepositAsset={setDepositAsset}
-                caseType="deposit"
-              />
-            }
-            isLoading={isDepositLoading}
-            asset={depositAssetInfo}
-            label={isZapping ? "You sell" : "You deposit"}
-            isZapping={isZapping}
-            slippageInput={<SlippageInput slippage={slippage} setSlippage={setSlippage} />}
-            maxAmountParams={{
-              maxWeiValue: (!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance) || 0n,
-              setMaxAmount: () => {
-                handleDepositChange(marketData?.collateralBalance || 0n)
-              },
-            }}
-            sliderParams={{
-              sliderPercentage: depositSliderPercent,
-              setSliderPercentage: setDepositSliderPercent,
-            }}
+      <GenericInputAssetAmount
+        inputWeiValue={depositWeiValue}
+        onValueChange={handleDepositChange}
+        depositSelect={
+          <ZapAssetSelector
+            collateralInfo={collateralInfo!}
+            depositAsset={depositAsset || collateralInfo!.name}
+            setDepositAsset={setDepositAsset}
+            caseType="deposit"
           />
-        </>
-      )}
+        }
+        isLoading={isDepositLoading}
+        asset={depositAssetInfo}
+        label={isZapping ? "You sell" : "You deposit"}
+        isZapping={isZapping}
+        slippageInput={<SlippageInput slippage={slippage} setSlippage={setSlippage} />}
+        maxAmountParams={{
+          maxWeiValue: (!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance) || 0n,
+          setMaxAmount: () => {
+            handleDepositChange(marketData?.collateralBalance || 0n)
+          },
+        }}
+        sliderParams={{
+          sliderPercentage: depositSliderPercent,
+          setSliderPercentage: setDepositSliderPercent,
+        }}
+      />
 
-      {!isDepositDisabled && depositAsset && isZapping && (
+      {depositAsset && isZapping && (
         <GenericInputAssetAmount
           inputWeiValue={zapValue || 0n}
           onValueChange={(e) => handleZapInputChange(e)}

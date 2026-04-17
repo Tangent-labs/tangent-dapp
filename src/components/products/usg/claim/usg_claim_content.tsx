@@ -176,7 +176,7 @@ function ClaimList() {
         return (
           <div
             key={item.marketAddress}
-            className={`my-0.5 px-4 py-1 backdrop-blur-[60px] hover-lift-row ${selectedClass}`}
+            className={`my-0.5 p-[10px] backdrop-blur-[60px] hover-lift-row ${selectedClass}`}
             onClick={() =>
               addToClaimableMarkets({
                 marketName: item.marketName,

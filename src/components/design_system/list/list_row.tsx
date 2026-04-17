@@ -16,7 +16,7 @@ export const ListRow = ({ children, route, className = "", rowDisposition: Custo
   return (
     <div className="group relative mt-1 w-full">
       <div
-        className={`relative bg-overlay-panel px-2 py-1.5 backdrop-blur-[60px] hover-lift-row lg:px-4 ${isSelected ? "before:bg-list-row-hover" : ""} // Selected state styling ${className} `}
+        className={`relative bg-overlay-panel p-[10px] backdrop-blur-[60px] hover-lift-row lg:px-4 ${isSelected ? "before:bg-list-row-hover" : ""} // Selected state styling ${className} `}
       >
         <Link href={route}>
           <CustomRowDisposition>

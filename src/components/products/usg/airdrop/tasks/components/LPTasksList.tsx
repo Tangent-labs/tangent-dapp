@@ -3,10 +3,9 @@
 import { cn } from "@/lib/utils"
 import { ListState } from "@/types"
 import { IconOpenOutside, IconSortHeader } from "@/components/icons"
-import { formatToken } from "../usg_tasks_controller"
 import { TaskStatus } from "../../components/TaskStatus"
 import { LpTaskCustomAssetDisplay } from "./custom_token_display"
-import { formatNumber, formatMillions } from "@/lib/number_formatter"
+import { formatMillions } from "@/lib/number_formatter"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { useListContext } from "@/components/design_system/list/list_context"
 import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
@@ -169,9 +168,10 @@ export const LPTasksList = () => {
           <div
             onClick={() => window.open(task.url, "_blank")}
             key={task?.taskId}
-            className="relative mb-1 bg-overlay-panel py-2 backdrop-blur-[60px] hover-lift-row lg:px-5"
+            className="relative mb-1 bg-overlay-panel p-[10px] backdrop-blur-[60px] hover-lift-row"
           >
-            <div className="hidden items-center justify-between md:flex">
+            {/* Desktop */}
+            <div className="hidden items-center justify-between xl:flex">
               <div className="flex w-[35%] items-center gap-2">
                 <LpTaskCustomAssetDisplay token={task.asset.replaceAll("_", "-")} />
 
@@ -211,22 +211,56 @@ export const LPTasksList = () => {
               </div>
             </div>
 
-            <div className="flex w-full flex-col items-center justify-center md:hidden">
-              <div className="mb-1 flex w-full items-center justify-center text-sm font-semibold"> {task?.description}</div>
+            {/* Mobile card */}
+            <div className="flex w-full flex-col xl:hidden">
+              <div className="flex w-full items-center gap-1">
+                <LpTaskCustomAssetDisplay token={task.asset.replaceAll("_", "-")} />
 
-              <div className="flex w-full items-center justify-between gap-1 border-t border-white border-opacity-10 py-2">
-                <div className="flex items-center justify-center gap-2">
-                  <TokenImage token={formatToken(task.asset)} className="w-8" size={48} />
+                <div className="flex flex-row items-center gap-2">
+                  <span className="text-[15px] font-semibold">{task?.description}</span>
 
-                  <span className="flex text-sm font-semibold">{task.asset}</span>
+                  {task?.canZap && (
+                    <ReliefCard
+                      onClick={(e) => {
+                        e?.stopPropagation()
+                        e?.preventDefault()
+                        router.push(`/swap?tokenIn=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&tokenOut=${task?.tokenAddress}`)
+                      }}
+                      className="flex items-center justify-center !rounded-full px-2 py-1 text-sm"
+                    >
+                      Zap
+                      <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white"></IconOpenOutside>
+                    </ReliefCard>
+                  )}
+                </div>
+              </div>
+
+              <hr className="my-2 w-full opacity-20" />
+
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Protocol</span>
+                  {computeProtocolDisplay(task?.protocol)}
                 </div>
 
-                <div className="flex flex-col items-center justify-center text-sm">{computeProtocolDisplay(task?.protocol)}</div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Pts/Day/USD</span>
+                  <span>{(task?.pointRate * 86400).toFixed(0)}</span>
+                </div>
 
-                <div className="flex flex-col items-center justify-center">
-                  <span className="text-xs text-subtitle">Points</span>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Owned</span>
+                  <span>{formatMillions(task?.balanceUsd)}</span>
+                </div>
 
-                  <span className="flex text-sm">{formatNumber(task.points, 0)}</span>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Points</span>
+                  <span>{formatMillions(task?.points)}</span>
+                </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Status</span>
+                  <span className={`text-xs font-semibold ${task?.status ? "text-tonic" : "text-subtitle"}`}>{task?.status ? "ON" : "OFF"}</span>
                 </div>
               </div>
             </div>

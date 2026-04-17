@@ -151,10 +151,11 @@ export const VoteTasksList = () => {
         (displayRows as VoteTask[])?.map((task: VoteTask) => (
           <div
             key={task?.taskId}
-            className="relative mb-1 bg-overlay-panel px-2 py-3 backdrop-blur-[60px] hover-lift-row"
+            className="relative mb-1 bg-overlay-panel p-[10px] backdrop-blur-[60px] hover-lift-row"
             onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}
           >
-            <div className="hidden items-center justify-between md:flex">
+            {/* Desktop */}
+            <div className="hidden items-center justify-between xl:flex">
               <div className="flex w-[35%] items-center gap-2 xl:gap-4">
                 <span className="flex text-[15px] font-semibold">{task.description}</span>
               </div>
@@ -167,32 +168,40 @@ export const VoteTasksList = () => {
                 <div className="text flex items-center justify-center">{task?.pointRate}</div>
               </div>
               <div className="flex w-[16.25%] items-center justify-center">{formatMillions(task.points)}</div>
-
               <div className="flex w-[16.25%] items-center justify-center">{formatMillions(task.lastVotingPower)}</div>
             </div>
 
-            {/* MOBILE */}
-            <div className="flex flex-col items-center justify-between md:hidden">
-              <div className="mb-1 flex w-full items-center justify-center text-sm font-semibold"> {task?.description}</div>
+            {/* Mobile card */}
+            <div className="flex w-full flex-col xl:hidden">
+              <span className="text-[15px] font-semibold">{task?.description}</span>
 
-              <div className="flex w-full items-center justify-between gap-1 border-t border-white border-opacity-10 py-2">
-                <div className="flex flex-col items-center justify-center">
-                  <span className="text-xs text-subtitle">Current Vote</span>
-                  <span className="flex text-sm">{task.lastVotingPower}</span>
+              <hr className="my-2 w-full opacity-20" />
+
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Protocol</span>
+                  <div className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-2 py-1 text-sm backdrop-blur-[60px]">
+                    {computeProtocolDisplay(task.organisation)}
+                  </div>
                 </div>
 
-                <div className="flex flex-col items-center justify-center">
-                  <span className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-2 py-1 text-sm backdrop-blur-[60px]">
-                    {computeProtocolDisplay(task?.protocol)}
-                  </span>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Pts/Epoch/Tkn</span>
+                  <span>{task?.pointRate}</span>
                 </div>
 
-                <div className="flex flex-col items-center justify-center">
-                  <span className="text-xs text-subtitle">Points</span>
-                  <span className="flex text-sm">{task.points}</span>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Points</span>
+                  <span>{formatMillions(task.points)}</span>
+                </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Current Vote</span>
+                  <span>{formatMillions(task.lastVotingPower)}</span>
                 </div>
               </div>
             </div>
+
             <ListGradientBorder />
           </div>
         ))}

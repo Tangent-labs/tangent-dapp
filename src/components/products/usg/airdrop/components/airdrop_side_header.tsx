@@ -111,7 +111,7 @@ export const AirdropSharedHeader = ({
         )}
       </ReliefCard>
       {/* TOTAL POINT DISPLAY */}
-      <div className="flex h-[70px] w-full flex-col items-start justify-between gap-3 md:flex-row">
+      <div className="flex h-auto w-full flex-col items-start justify-between gap-3 md:flex-row xl:h-[70px]">
         <NeonMetricsCard
           title="Liquidity"
           subtitle="Liquidity points"

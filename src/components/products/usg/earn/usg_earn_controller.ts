@@ -39,6 +39,11 @@ export const aprOpportunitiesListHeaders: ListHeaderData[] = [
 ]
 
 export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Array<EarnPoolsData>) => {
+  const sanitizeValue = (value?: number | null) => (typeof value === "number" && Number.isFinite(value) ? value : 0)
+  const getAPYValue = (values?: Array<number | null>) => sanitizeValue(values?.[0])
+  const getGaugeValue = (values?: Array<number | null>) => sanitizeValue(values?.[1])
+  const sumAPRValues = (values?: Array<number | null>) => values?.reduce<number>((sum, value) => sum + sanitizeValue(value), 0) || 0
+
   return tasks.map((t) => {
     const currentPool = poolsData?.find((el) => {
       if (el?.protocol === "Pendle") {
@@ -72,20 +77,34 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
         projectedAPRDetails,
       }
     } else {
-      const currentAPR = t?.subLabel === "(unstaked)" ? currentPool?.gaugeCrvApy?.[0] : currentPool?.gaugeCrvApy?.reduce((sum, n) => sum + n, 0) || 0
+      const isCurveUnstaked = t?.protocolName === "Curve" && t?.subLabel === "(unstaked)"
+      const isCurveStaked = t?.protocolName === "Curve" && t?.subLabel === "(staked)"
 
-      const projectedAPR =
-        t?.subLabel === "(unstaked)" ? currentPool?.gaugeFutureCrvApy?.[0] : currentPool?.gaugeFutureCrvApy?.reduce((sum, n) => sum + n, 0) || 0
+      const currentAPR = isCurveUnstaked
+        ? getAPYValue(currentPool?.gaugeCrvApy)
+        : isCurveStaked
+          ? getGaugeValue(currentPool?.gaugeCrvApy)
+          : sumAPRValues(currentPool?.gaugeCrvApy)
+
+      const projectedAPR = isCurveUnstaked
+        ? getAPYValue(currentPool?.gaugeFutureCrvApy)
+        : isCurveStaked
+          ? getGaugeValue(currentPool?.gaugeFutureCrvApy)
+          : sumAPRValues(currentPool?.gaugeFutureCrvApy)
 
       const rewardToken = "CRV"
 
-      const currentAPRDetails =
-        t?.subLabel === "(unstaked)" ? { APY: currentPool?.gaugeCrvApy?.[0] } : { APY: currentPool?.gaugeCrvApy?.[0], CRV: currentPool?.gaugeCrvApy?.[1] }
+      const currentAPRDetails = isCurveUnstaked
+        ? { APY: getAPYValue(currentPool?.gaugeCrvApy) }
+        : isCurveStaked
+          ? { CRV: getGaugeValue(currentPool?.gaugeCrvApy) }
+          : { APY: getAPYValue(currentPool?.gaugeCrvApy), CRV: getGaugeValue(currentPool?.gaugeCrvApy) }
 
-      const projectedAPRDetails =
-        t?.subLabel === "(unstaked)"
-          ? { APY: currentPool?.gaugeFutureCrvApy?.[0] }
-          : { APY: currentPool?.gaugeFutureCrvApy?.[0], CRV: currentPool?.gaugeFutureCrvApy?.[1] }
+      const projectedAPRDetails = isCurveUnstaked
+        ? { APY: getAPYValue(currentPool?.gaugeFutureCrvApy) }
+        : isCurveStaked
+          ? { CRV: getGaugeValue(currentPool?.gaugeFutureCrvApy) }
+          : { APY: getAPYValue(currentPool?.gaugeFutureCrvApy), CRV: getGaugeValue(currentPool?.gaugeFutureCrvApy) }
 
       return {
         marketType: t?.marketType as USGMarketType,

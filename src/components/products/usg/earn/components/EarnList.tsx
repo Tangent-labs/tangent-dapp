@@ -11,6 +11,7 @@ type AprOpportunityProps = {
   item: AprOpportunityItem
   index: number
   isLoading?: boolean
+  openInNewTab?: boolean
 }
 
 export const AprOpportunityRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
@@ -27,10 +28,16 @@ export const AprOpportunityRowDisposition = ({ children }: { children: React.Rea
   )
 }
 
-export const AprOpportunity = ({ item, index, isLoading }: AprOpportunityProps) => {
+export const AprOpportunity = ({ item, index, isLoading, openInNewTab = false }: AprOpportunityProps) => {
   return (
     <>
-      <ListRow rowDisposition={AprOpportunityRowDisposition} route={item.link} className={cn(isLoading ? "shimmer" : "")} key={index}>
+      <ListRow
+        rowDisposition={AprOpportunityRowDisposition}
+        route={item.link}
+        openInNewTab={openInNewTab}
+        className={cn(isLoading ? "shimmer" : "")}
+        key={index}
+      >
         <div className="relative flex items-center gap-2">
           <CustomAssetDisplay token={item?.asset} />
 
@@ -56,7 +63,7 @@ export const AprOpportunity = ({ item, index, isLoading }: AprOpportunityProps) 
           <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-center">
             <MarketAPR
               marketType={item?.marketType}
-              poolName={item?.asset}
+              poolName={item?.asset?.replaceAll("-", "/")}
               logoKey={item.asset}
               rewardToken={item?.rewardToken}
               maxLeverage={1}

@@ -11,10 +11,10 @@ interface ListAPRProps {
   rewardToken: string
   maxLeverage: number
   currentAPRDetails?: {
-    [rewardToken: string]: number
+    [rewardToken: string]: number | undefined
   }
   projectedAPRDetails?: {
-    [rewardToken: string]: number
+    [rewardToken: string]: number | undefined
   }
   apr?: number
   projectedApr?: number
@@ -49,13 +49,13 @@ export const MarketAPR = ({
 }: ListAPRProps) => {
   const currentRewardEntries = useMemo(() => {
     return Object.entries(currentAPRDetails ?? {})
-      .filter(([k, v]) => k !== "APY" && typeof v === "number")
+      .filter((entry): entry is [string, number] => entry[0] !== "APY" && typeof entry[1] === "number")
       .sort((a, b) => b[1] - a[1])
   }, [currentAPRDetails])
 
   const projectedRewardEntries = useMemo(() => {
     return Object.entries(projectedAPRDetails ?? {})
-      .filter(([k, v]) => k !== "APY" && typeof v === "number")
+      .filter((entry): entry is [string, number] => entry[0] !== "APY" && typeof entry[1] === "number")
       .sort((a, b) => b[1] - a[1])
   }, [projectedAPRDetails])
 
@@ -104,10 +104,12 @@ export const MarketAPR = ({
                         <span> {((apr || 0) * maxLeverage).toFixed(2)}%</span>
                       </div>
 
-                      <div className="flex min-w-44 items-center justify-between text-subtitle">
-                        Base APY
-                        <span className="flex items-center justify-center">{((currentAPRDetails?.APY ?? 0) * maxLeverage).toFixed(2)}%</span>
-                      </div>
+                      {!!currentAPRDetails && typeof currentAPRDetails.APY === "number" && currentAPRDetails.APY > 0 && (
+                        <div className="flex min-w-44 items-center justify-between text-subtitle">
+                          Base APY
+                          <span className="flex items-center justify-center">{((currentAPRDetails.APY || 0) * maxLeverage).toFixed(2)}%</span>
+                        </div>
+                      )}
 
                       {currentRewardEntries.length > 0 && (
                         <div className="flex flex-col gap-2 text-subtitle">
@@ -131,10 +133,12 @@ export const MarketAPR = ({
                         <span> {((projectedApr || 0) * maxLeverage).toFixed(2)}%</span>
                       </div>
 
-                      <div className="flex min-w-44 items-center justify-between text-subtitle">
-                        Base APY
-                        <span className="flex items-center justify-center">{((projectedAPRDetails?.APY ?? 0) * maxLeverage).toFixed(2)}%</span>
-                      </div>
+                      {!!projectedAPRDetails && typeof projectedAPRDetails.APY === "number" && projectedAPRDetails.APY > 0 && (
+                        <div className="flex min-w-44 items-center justify-between text-subtitle">
+                          Base APY
+                          <span className="flex items-center justify-center">{((projectedAPRDetails.APY || 0) * maxLeverage).toFixed(2)}%</span>
+                        </div>
+                      )}
 
                       {projectedRewardEntries.length > 0 && (
                         <div className="flex flex-col gap-2 text-subtitle">

@@ -3,7 +3,6 @@
 import { ButtonTab } from "./button_tab"
 import { useEffect, useRef, useState } from "react"
 import { IconGearWheel } from "@/components/icons"
-import { ReliefCard } from "../structure/relief_card"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 type SlippageInputProps = {
@@ -52,32 +51,42 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
           inputRef.current?.focus()
         }}
         side="bottom"
-        align="center"
+        align="end"
         sideOffset={8}
         collisionPadding={16}
-        className="!m-0 !w-56 border-none font-gilroy"
+        className="!m-0 !w-40 border-none font-gilroy"
       >
-        <ReliefCard className="p-[10px]">
-          <div className="flex w-full flex-col items-center justify-between gap-2">
-            <div className="flex w-full items-center justify-start">Slippage</div>
-            <input
-              onChange={handleChange}
-              value={localValue}
-              placeholder="0"
-              type="text"
-              inputMode="decimal"
-              min={0.1}
-              step={0.1}
-              className="h-[30px] w-full rounded-[10px] border border-white/10 bg-transparent pl-2 focus:outline-none"
-              ref={inputRef}
-            />
-            <div className="mt-2 flex w-full items-center justify-between gap-2">
-              <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="rounded-full !px-2 !py-1" />
-              <ButtonTab onClick={() => setSlippage(1)} label={"1.0%"} active={slippage === 1} className="rounded-full !px-2 !py-1" />
-              <ButtonTab onClick={() => setSlippage(2)} label={"2.0%"} active={slippage === 2} className="rounded-full !px-2 !py-1" />
+        <div className="flex w-full flex-col gap-2 p-[10px]">
+          <div className="flex w-full items-center justify-between">
+            <span className="text-xs text-subtitle">Slippage</span>
+            <button onClick={() => setOpen(false)} className="text-xs text-subtitle hover:text-white">
+              ✕
+            </button>
+          </div>
+
+          <div className="w-full rounded-[10px] border border-white/10">
+            <div className="flex h-[30px] w-full items-center justify-between rounded-[9px] bg-select-input px-[10px]">
+              <input
+                onChange={handleChange}
+                value={localValue}
+                placeholder="0"
+                type="text"
+                inputMode="decimal"
+                min={0.1}
+                step={0.1}
+                className="w-full bg-transparent text-xs text-white focus:outline-none"
+                ref={inputRef}
+              />
+              <span className="text-xs text-subtitle">%</span>
             </div>
           </div>
-        </ReliefCard>
+
+          <div className="flex w-full items-center gap-2">
+            <ButtonTab onClick={() => setSlippage(0.5)} label={"0.5%"} active={slippage === 0.5} className="flex-1 rounded-full !px-2 !py-1" />
+            <ButtonTab onClick={() => setSlippage(1)} label={"1.0%"} active={slippage === 1} className="flex-1 rounded-full !px-2 !py-1" />
+            <ButtonTab onClick={() => setSlippage(2)} label={"2.0%"} active={slippage === 2} className="flex-1 rounded-full !px-2 !py-1" />
+          </div>
+        </div>
       </PopoverContent>
     </Popover>
   )

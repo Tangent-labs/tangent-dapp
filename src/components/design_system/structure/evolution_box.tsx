@@ -94,7 +94,7 @@ export function EvolutionBox({ label, originalValue, newValue, logo, displayHove
               transition={{ duration: 0.35, type: "spring", stiffness: 400, damping: 28 }}
               className="flex items-center gap-2 text-sm"
             >
-              <span className="font-semibold text-row-success">{newValue}</span>
+              <span className="font-semibold text-tonic">{newValue}</span>
               {logo && (
                 <div className="w-4">
                   <TokenImage size={48} token={logo} />

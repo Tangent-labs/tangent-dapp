@@ -16,8 +16,8 @@ const PopoverContent = React.forwardRef<React.ElementRef<typeof PopoverPrimitive
         align={align}
         sideOffset={sideOffset}
         className={cn(
-          "overflow-hidden rounded-[10px] border border-white border-opacity-10 bg-popover text-popover-foreground backdrop-blur-xl",
-          "relative z-[1000] max-h-96 min-w-[240px]",
+          "overflow-hidden rounded-lg bg-overlay-panel text-popover-foreground backdrop-blur-[60px]",
+          "relative z-[1000] max-h-96",
           "data-[state=open]:animate-in data-[state=closed]:animate-out",
           "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
           "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -26,7 +26,19 @@ const PopoverContent = React.forwardRef<React.ElementRef<typeof PopoverPrimitive
           className
         )}
         {...props}
-      />
+      >
+        {props.children}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-lg"
+          style={{
+            border: "1px solid transparent",
+            background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
+            WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
+            WebkitMaskComposite: "xor",
+            maskComposite: "exclude",
+          }}
+        />
+      </PopoverPrimitive.Content>
     </PopoverPrimitive.Portal>
   )
 )

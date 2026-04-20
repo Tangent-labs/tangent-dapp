@@ -16,7 +16,6 @@ export function getLeverageFormState(
   leverageExceedsMaxLtv?: boolean,
   depositWeiValue?: bigint,
   borrowWeiValue?: bigint,
-  isDepositAndBorrow?: boolean,
   isWellConnected?: boolean,
   depositAssetInfo?: AssetDataPriced,
   collateralInfo?: CollateralInfo,
@@ -50,18 +49,17 @@ export function getLeverageFormState(
     if (leverageExceedsMaxLtv) {
       errors.push(dappErrors["max-ltv"])
     }
-    if (isDepositAndBorrow) {
-      if (!borrowWeiValue || borrowWeiValue === 0n) {
-        return {
-          canProcess: false,
-          errors,
-          haveToApprove: !isApproved,
-        }
-      }
 
-      const borrowErrors = getBorrowCommonFormState(marketData, borrowWeiValue)
-      errors.push(...borrowErrors)
+    if (!borrowWeiValue || borrowWeiValue === 0n) {
+      return {
+        canProcess: false,
+        errors,
+        haveToApprove: !isApproved,
+      }
     }
+
+    const borrowErrors = getBorrowCommonFormState(marketData, borrowWeiValue)
+    errors.push(...borrowErrors)
   }
 
   return {

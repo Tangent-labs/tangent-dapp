@@ -16,12 +16,6 @@ export type BuyAndMinOutFormatted = {
 export type USGLeverageContextValues = {
   collateralInfo: AssetDataPriced
 
-  isDepositDisabled: boolean
-  setIsDepositDisabled: (arg: boolean) => void
-
-  isLeverageAllPosition: boolean
-  setIsLeverageAllPosition: (arg: boolean) => void
-
   depositWeiValue?: bigint
   setDepositWeiValue: (arg: bigint | undefined) => void
   actionApprove: () => void

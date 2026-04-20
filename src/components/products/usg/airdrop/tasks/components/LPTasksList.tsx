@@ -79,7 +79,7 @@ export const LPTasksList = () => {
 
   return (
     <>
-      <div className="relative mb-1 mt-4 hidden w-full xl:block">
+      <div className="relative mb-1 mt-[10px] hidden w-full xl:block">
         <div className={`w-full rounded-t-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]`}>
           <LpTaskListDisposition>
             {!!headers?.at(0)?.key && (

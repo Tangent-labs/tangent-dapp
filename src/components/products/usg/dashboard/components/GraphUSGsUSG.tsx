@@ -105,7 +105,7 @@ export const GraphUSGsUSG = ({
             data={USGsUSGTotalSupplyData}
             margin={{
               top: 10,
-              right: -5,
+              right: 4,
               left: -5,
               bottom: -10,
             }}
@@ -115,7 +115,6 @@ export const GraphUSGsUSG = ({
               tickFormatter={(tick) => formatXAxis(tick, rangeMs)}
               interval={tickInterval}
               scale="point"
-              padding={{ left: 0, right: 0 }}
               tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
               axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
               tickLine={false}
@@ -123,11 +122,14 @@ export const GraphUSGsUSG = ({
 
             <YAxis
               orientation="right"
-              axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
-              tickFormatter={formatYAxis}
-              tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
+              axisLine={false}
+              tick={({ x, y, payload }) => (
+                <text x={x + 44} y={y} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
+                  {formatYAxis(payload.value)}
+                </text>
+              )}
               tickLine={false}
-              width={60}
+              width={48}
             />
 
             <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.06)" />

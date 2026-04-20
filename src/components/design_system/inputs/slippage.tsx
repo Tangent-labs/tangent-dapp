@@ -54,7 +54,7 @@ export const SlippageInput = ({ slippage, setSlippage }: SlippageInputProps) => 
         align="end"
         sideOffset={8}
         collisionPadding={16}
-        className="!m-0 !w-40 border-none font-gilroy"
+        className="!m-0 !w-44 border-none font-gilroy"
       >
         <div className="flex w-full flex-col gap-2 p-[10px]">
           <div className="flex w-full items-center justify-between">

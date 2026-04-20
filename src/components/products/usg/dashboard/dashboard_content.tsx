@@ -1,25 +1,20 @@
 "use client"
 
-import { cn } from "@/lib/utils"
 import { GraphMarketDebts } from "./components/GraphMarketDebts"
 import { GraphUSGCollaterals } from "./components/GraphUSGCollaterals"
 import { useUSGDashboardContext } from "./dashboard_context"
-import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { useRootContext } from "@/components/products/root/root_context"
-import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { GraphGlobalTVL } from "./components/GraphGlobalTVL"
 import { GraphUSGsUSG } from "./components/GraphUSGsUSG"
 import { GraphTokenPrice } from "./components/GraphTokenPrice"
 
 export const USGDashboardContent = () => {
-  const { globalData, userData, marketDebtMaxValue, marketTVLMaxValue } = useUSGDashboardContext()
+  const { userData, marketDebtMaxValue, marketTVLMaxValue } = useUSGDashboardContext()
 
   const {
     tvl,
     protocolCurrentTVL,
-    sUSGCurrentAPY,
     tvlSelectedTab,
     USGCurrentSupply,
     sUSGCurrentSupply,
@@ -45,30 +40,6 @@ export const USGDashboardContent = () => {
             <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
           </div>
         </ReliefCard>
-      </div>
-
-      {/* INFOS USG & sUSG */}
-      <div className="flex w-full flex-col justify-between gap-5 md:flex-row md:justify-start">
-        <IndicatorCards
-          className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "flex w-full items-center justify-around")}
-          indicators={[
-            { title: "USG", value: formatDollar(globalData.USGPrice, 4) },
-            { title: "Supply", value: formatMillions(globalData.USGSupply) },
-          ]}
-        >
-          <TokenImage token="USG" className="h-8 w-8" size={32} />
-        </IndicatorCards>
-
-        <IndicatorCards
-          className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "flex w-full items-center justify-around")}
-          indicators={[
-            { title: "sUSG ", value: formatDollar(globalData.sUSGPrice, 4) },
-            { title: "Supply", value: formatMillions(globalData.sUSGSupply) },
-            { title: "APY", value: sUSGCurrentAPY.toFixed(2) + "%" },
-          ]}
-        >
-          <TokenImage token="sUSG" className="h-8 w-8" size={32} />
-        </IndicatorCards>
       </div>
 
       <div className="flex w-full flex-col gap-5 lg:flex-row">

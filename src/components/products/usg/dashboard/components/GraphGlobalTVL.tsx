@@ -98,7 +98,7 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
             data={tvl}
             margin={{
               top: 10,
-              right: -5,
+              right: 4,
               left: -5,
               bottom: -10,
             }}
@@ -115,11 +115,14 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
 
             <YAxis
               orientation="right"
-              axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
-              tickFormatter={formatYAxis}
-              tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
+              axisLine={false}
+              tick={({ x, y, payload }) => (
+                <text x={x + 44} y={y} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
+                  {formatYAxis(payload.value)}
+                </text>
+              )}
               tickLine={false}
-              width={60}
+              width={48}
             />
             <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.06)" />
 

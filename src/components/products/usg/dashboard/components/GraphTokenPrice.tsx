@@ -102,7 +102,7 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
   }
 
   return (
-    <ReliefCard className="flex h-full w-full flex-col items-start justify-start p-5">
+    <ReliefCard className="flex h-full w-full flex-col items-start justify-start px-5 pt-5">
       <div className="flex w-full items-center justify-between">
         <div className="text-xl font-semibold">{title}</div>
 
@@ -136,7 +136,7 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
             data={data}
             margin={{
               top: 10,
-              right: 6,
+              right: 4,
               left: 0,
               bottom: 12,
             }}
@@ -167,9 +167,9 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
               orientation="right"
               ticks={yTicks}
               tickFormatter={(tick) => formatPriceTick(tick, yTickStep)}
-              tick={({ x, y, payload }) => <PriceAxisTick x={x + 20} y={y} value={formatPriceTick(payload.value, yTickStep)} />}
+              tick={({ x, y, payload }) => <PriceAxisTick x={x + 19} y={y} value={formatPriceTick(payload.value, yTickStep)} />}
               tickLine={false}
-              //width={72}
+              width={48}
               domain={[domainMin, domainMax]}
             />
 

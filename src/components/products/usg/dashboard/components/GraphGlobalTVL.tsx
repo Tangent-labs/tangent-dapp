@@ -1,3 +1,5 @@
+"use client"
+
 import { formatMillions } from "@/lib/number_formatter"
 import { TVLData } from "../../usg_type"
 import { Divider } from "@/components/design_system/structure/divider"
@@ -15,14 +17,36 @@ type MarketDebtProps = {
   tvlSelectedTab: string
   fetchTVLData: (range: string) => void
 }
-const TVL_CATEGORIES: TooltipCategory[] = [
-  { key: "markets", label: "Markets", className: "text-row-tonic" },
-  { key: "pegkeepers", label: "Peg Keepers", className: "text-dash-keepers" },
-  { key: "susg", label: "sUSG", className: "text-dash-susg" },
+
+const TVL_CATEGORY_METADATA: Record<string, { label: string; className: string }> = {
+  markets: { label: "Markets", className: "text-row-tonic" },
+  pegkeepers: { label: "Peg Keepers", className: "text-dash-keepers" },
+  susg: { label: "sUSG", className: "text-dash-susg" },
+}
+
+const SERIES_CONFIG = [
+  { key: "markets" as keyof TVLData, stroke: "#0075ff", gradient: "tvl-marketsGradient", name: "Markets" },
+  { key: "pegkeepers" as keyof TVLData, stroke: "#24DD9A", gradient: "tvl-pegKeepersGradient", name: "Peg Keepers" },
+  { key: "susg" as keyof TVLData, stroke: "#4EB3DF", gradient: "tvl-susgGradient", name: "SUSG" },
 ]
+
 export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTVL, tvl }: MarketDebtProps) => {
   const rangeMs = getDataRangeMs(tvl)
   const tickInterval = getTickInterval(tvl.length)
+
+  const sortedSeries = tvl?.length
+    ? [...SERIES_CONFIG].sort((a, b) => {
+        const avgA = tvl.reduce((sum, d) => sum + ((d[a.key] as number) ?? 0), 0) / tvl.length
+        const avgB = tvl.reduce((sum, d) => sum + ((d[b.key] as number) ?? 0), 0) / tvl.length
+        return avgA - avgB
+      })
+    : SERIES_CONFIG
+
+  const sortedCategories: TooltipCategory[] = [...sortedSeries].reverse().map((s) => ({
+    key: s.key as string,
+    ...TVL_CATEGORY_METADATA[s.key],
+  }))
+
   return (
     <ReliefCard className="flex h-full w-full flex-col items-start justify-start p-5">
       <div className="flex w-full items-center justify-end sm:justify-between">
@@ -100,27 +124,25 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
             <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.06)" />
 
             <defs>
-              <linearGradient id="marketsGradient" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="tvl-marketsGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#0075ff" stopOpacity={0.6} />
                 <stop offset="95%" stopColor="#0075ff" stopOpacity={0} />
               </linearGradient>
 
-              <linearGradient id="pegKeepersGradient" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="tvl-pegKeepersGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#24DD9A" stopOpacity={0.6} />
                 <stop offset="95%" stopColor="#24DD9A" stopOpacity={0} />
               </linearGradient>
 
-              <linearGradient id="susgGradient" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="tvl-susgGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#4EB3DF" stopOpacity={0.6} />
                 <stop offset="95%" stopColor="#4EB3DF" stopOpacity={0} />
               </linearGradient>
             </defs>
 
-            <Area type="monotone" dataKey="susg" stackId="1" stroke="#4EB3DF" strokeWidth={1.5} fill="url(#susgGradient)" name="SUSG" />
-
-            <Area type="monotone" dataKey="pegkeepers" stackId="1" stroke="#24DD9A" strokeWidth={1.5} fill="url(#pegKeepersGradient)" name="Peg Keepers" />
-
-            <Area type="monotone" dataKey="markets" stackId="1" stroke="#0075ff" strokeWidth={1.5} fill="url(#marketsGradient)" name="Markets" />
+            {sortedSeries.map((s) => (
+              <Area key={s.key} type="monotone" dataKey={s.key} stackId="1" stroke={s.stroke} strokeWidth={1.5} fill={`url(#${s.gradient})`} name={s.name} />
+            ))}
 
             <Tooltip
               cursor={{
@@ -129,7 +151,7 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
                 strokeDasharray: "4 4",
               }}
               allowEscapeViewBox={{ x: false, y: false }}
-              content={<CustomTooltip categories={TVL_CATEGORIES} />}
+              content={<CustomTooltip categories={sortedCategories} />}
             />
           </AreaChart>
         </ResponsiveContainer>

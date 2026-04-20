@@ -77,7 +77,7 @@ function PositionList() {
   return (
     <>
       <div className="rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
-        <div className={`hidden p-4 xl:block`}>
+        <div className={`hidden p-4 text-sm xl:block`}>
           <HistoryRowDisposition>
             {!!headers?.at(0)?.key && (
               <div className="flex-1">
@@ -87,13 +87,21 @@ function PositionList() {
             {!!headers?.at(1)?.key && (
               <div key={headers?.at(1)?.label} className="flex-1">
                 <button
-                  className="flex w-full items-center justify-center gap-2"
+                  className="flex w-full items-center justify-center"
                   type="button"
                   onClick={() => udpateSort && udpateSort(headers?.at(1)?.key as string)}
                 >
-                  <span>{headers?.at(1)?.label} </span>
-                  <div className="text-row-tonic">
-                    <IconSortHeader sort={(listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction) || "none"} />
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-md px-2 py-0.5 transition-colors",
+                      listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction !== "none" ? "bg-white/10 text-row-tonic" : "hover:bg-white/10"
+                    )}
+                  >
+                    <span>{headers?.at(1)?.label}</span>
+                    <IconSortHeader
+                      className={listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction !== "none" ? "fill-row-tonic" : "fill-white"}
+                      sort={(listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction) || "none"}
+                    />
                   </div>
                 </button>
               </div>
@@ -101,12 +109,17 @@ function PositionList() {
             {!!headers?.at(2)?.key && (
               <div key={headers?.at(2)?.label} className="flex-1">
                 <button
-                  className="flex w-full items-center justify-center gap-2"
+                  className="flex w-full items-center justify-center"
                   type="button"
                   onClick={() => udpateSort && udpateSort(headers?.at(2)?.key as string)}
                 >
-                  <span>{headers?.at(2)?.label} </span>
-                  <div className="text-row-tonic">
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-md px-2 py-0.5 transition-colors",
+                      listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction !== "none" ? "bg-white/10 text-row-tonic" : "hover:bg-white/10"
+                    )}
+                  >
+                    <span>{headers?.at(2)?.label}</span>
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
@@ -115,12 +128,17 @@ function PositionList() {
             {!!headers?.at(3)?.key && (
               <div key={headers?.at(3)?.label} className="flex-1">
                 <button
-                  className="flex w-full items-center justify-center gap-2"
+                  className="flex w-full items-center justify-center"
                   type="button"
                   onClick={() => udpateSort && udpateSort(headers?.at(3)?.key as string)}
                 >
-                  <span>{headers?.at(3)?.label} </span>
-                  <div className="text-row-tonic">
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-md px-2 py-0.5 transition-colors",
+                      listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction !== "none" ? "bg-white/10 text-row-tonic" : "hover:bg-white/10"
+                    )}
+                  >
+                    <span>{headers?.at(3)?.label}</span>
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>

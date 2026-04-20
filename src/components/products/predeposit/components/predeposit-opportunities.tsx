@@ -70,9 +70,7 @@ export function PredepositOpportunitiesListInner({ displayRows }: PredepositOppo
     <>
       <ListHeader rowDisposition={AprOpportunityRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
 
-      {displayRows?.map((item, index) => (
-        <AprOpportunity key={index} item={item} index={index} openInNewTab={true} />
-      ))}
+      {displayRows?.map((item, index) => <AprOpportunity key={index} item={item} index={index} openInNewTab={true} />)}
     </>
   )
 }

@@ -57,7 +57,7 @@ export const ListProvider = ({ children, _listState, _rows, _headers, customSort
       newSort.direction = newSort.direction === "asc" ? "desc" : "asc"
     } else {
       newSort.key = field
-      newSort.direction = "asc"
+      newSort.direction = "desc"
     }
 
     setListState({ ...listState, sort: newSort })

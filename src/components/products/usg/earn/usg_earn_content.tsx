@@ -18,8 +18,8 @@ import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/b
 const listeState: ListState = {
   search: undefined,
   sort: {
-    key: "assets",
-    direction: "asc",
+    key: "currentAPR",
+    direction: "desc",
   },
 }
 
@@ -58,7 +58,7 @@ export const USGEarnContent = () => {
 }
 
 export function USGEarnListInner() {
-  const { headers, udpateSort } = useListContext()
+  const { headers, udpateSort, listState } = useListContext()
 
   const { displayRows, isLoading, searchValue, setSearchValue, protocolFilter, setProtocolFilter } = useUSGEarnContext()
 
@@ -79,8 +79,9 @@ export function USGEarnListInner() {
           <InputSelect className="w-full min-w-48" value={protocolFilter} options={protocolOptions} onChange={(e) => setProtocolFilter(e)} />
         </div>
       </div>
-      <ListHeader rowDisposition={AprOpportunityRowDisposition} headers={headers} onSort={udpateSort} />
-      {displayRows?.map((item, index) => <AprOpportunity item={item} key={index} index={index} isLoading={isLoading}  openInNewTab={true}></AprOpportunity>)}
+
+      <ListHeader rowDisposition={AprOpportunityRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
+      {displayRows?.map((item, index) => <AprOpportunity item={item} key={index} index={index} isLoading={isLoading}></AprOpportunity>)}
     </>
   )
 }

@@ -26,23 +26,34 @@ interface MarketHeaderDisplayProps {
 }
 
 const MarketHeaderDisplay = ({ label, sort = "none", onSort, field, indicator, className }: MarketHeaderDisplayProps) => {
-  return (
-    <div className={cn(className, "cursor-pointer gap-2 text-sm")} onClick={() => onSort && onSort(field)}>
-      <span>{label}</span>
-      {indicator && (
-        <HoverCard openDelay={150} closeDelay={100}>
-          <HoverCardTrigger asChild>
-            <button type="button" className="inline-flex items-center">
-              <IconCircleHelp className="w-3" />
-            </button>
-          </HoverCardTrigger>
+  const isSortable = !!onSort
+  const isActive = sort !== "none"
 
-          <HoverCardContent side="top" align="center" className="z-1001 w-fit max-w-64 p-2 text-xs">
-            {indicator}
-          </HoverCardContent>
-        </HoverCard>
-      )}
-      {!!onSort && <IconSortHeader sort={sort} />}
+  return (
+    <div className={cn(className, "cursor-pointer text-sm")} onClick={() => onSort && onSort(field)}>
+      <div
+        className={cn(
+          "flex items-center gap-2 hover:bg-white/10",
+          isSortable && "rounded-md px-2 py-0.5 transition-colors",
+          isSortable && isActive && "text-row-tonic"
+        )}
+      >
+        <span>{label}</span>
+        {indicator && (
+          <HoverCard openDelay={150} closeDelay={100}>
+            <HoverCardTrigger asChild>
+              <button type="button" className="inline-flex items-center">
+                <IconCircleHelp className={isActive ? "w-3 fill-row-tonic" : "w-3 fill-white"} />
+              </button>
+            </HoverCardTrigger>
+
+            <HoverCardContent side="top" align="center" className="z-1001 w-fit max-w-64 p-2 text-xs">
+              {indicator}
+            </HoverCardContent>
+          </HoverCard>
+        )}
+        {isSortable && <IconSortHeader sort={sort} className={isActive ? "fill-row-tonic" : "fill-white"} />}
+      </div>
     </div>
   )
 }

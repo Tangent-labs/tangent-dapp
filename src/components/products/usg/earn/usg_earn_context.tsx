@@ -46,7 +46,8 @@ export const USGEarnProvider = ({ children }: USGEarnContextProps) => {
         (row) => row.name.toLowerCase().includes(lowered) || row.asset.toLowerCase().includes(lowered) || row.protocolName.toLowerCase().includes(lowered)
       )
     }
-    return rows
+
+    return rows.sort((a, b) => (b.currentAPR ?? 0) - (a.currentAPR ?? 0))
   }, [poolsData, searchValue, protocolFilter])
 
   const fetchPoolsData = async () => {

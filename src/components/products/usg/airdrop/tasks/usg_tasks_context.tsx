@@ -117,7 +117,7 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
       rowsToShow = rowsToShow.filter((row) => row?.description?.toLowerCase().includes(lowered))
     }
 
-    return rowsToShow
+    return [...rowsToShow].sort((a, b) => (b.points ?? 0) - (a.points ?? 0))
   }, [rawVoteTasks, voteTaskSearchValue, voteTaskProtocol])
 
   const lpTasks = useMemo(() => {
@@ -134,7 +134,7 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
       rowsToShow = rowsToShow.filter((row) => row?.description?.toLowerCase().includes(lowered))
     }
 
-    return rowsToShow
+    return [...rowsToShow].sort((a, b) => (b.points ?? 0) - (a.points ?? 0))
   }, [rawLpTasks, lpTaskSearchValue, lpTaskFilteredBy, lpTaskProtocol])
 
   const sortVoteTasks = (listState: ListState) => {

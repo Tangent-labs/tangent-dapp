@@ -132,7 +132,7 @@ export function GenericInputAssetAmount({
       setSliderPercentage(Number(sliderStartEndRange[0]))
       return
     }
-    const percentage = Number((inputWeiValue * 100n) / maxWeiValue)
+    const percentage = (Number(inputWeiValue) / Number(maxWeiValue)) * 100
     setSliderPercentage(Math.min(Number(sliderStartEndRange[1]), Math.max(Number(sliderStartEndRange[0]), percentage)))
   }, [inputWeiValue, maxWeiValue])
 

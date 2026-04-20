@@ -16,7 +16,7 @@ type BlurrySectionProps = {
 
 const BlurrySection = ({ children, scrollToFaq }: BlurrySectionProps) => {
   return (
-    <div className="absolute inset-0 z-10 flex items-start justify-center rounded-[12px] bg-black/70 backdrop-blur-sm xl:items-center">
+    <div className="absolute inset-0 z-10 flex items-start justify-center rounded-[9px] bg-black/70 backdrop-blur-sm xl:items-center">
       <div className="flex flex-col items-center gap-4 rounded-[10px] p-6 text-center">
         <span className="text-2xl font-semibold text-white lg:text-4xl">Pre-deposit campaign</span>
 
@@ -102,7 +102,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
   const isDisplayBlurry = !isConnected || isFetchApiInitialLoading || (isConnected && (isDisplayYouAreNotWL || !predepositStatus?.isSigned))
 
   return (
-    <section className="mt-4 flex w-full flex-col">
+    <section className="mt-8 flex w-full flex-col">
       <div className="flex w-full items-center justify-between">
         <span className="text-lg font-semibold text-white">Total Deposit cap</span>
 
@@ -139,7 +139,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
         currentValue={(predepositStatus?.USGUSDCData.USGUSDCAccumulatedTotal || 0n) + (predepositStatus?.USGfrxUSDData.USGfrxUSDAccumulatedTotal || 0n)}
       ></DynamicProgressBar>
 
-      <div className="relative mt-4">
+      <div className="relative mt-[10px]">
         <div className="flex w-full flex-col items-start justify-center gap-[10px] lg:flex-row">
           <USGPredepositComponent
             predepositStatus={predepositStatus}

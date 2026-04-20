@@ -71,20 +71,28 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
   const badgeLabel = formatDollar(latestValue, 4)
   const badgeTextColor = token === "sUSG" ? "#05070A" : "#FFFFFF"
   const hasMultipleYears = new Set(data.map((point) => new Date(point.date).getFullYear())).size > 1
-  const xAxisTicks = data.reduce<number[]>((ticks, point) => {
-    const dayKey = new Date(point.date).toISOString().slice(0, 10)
-    const lastTick = ticks[ticks.length - 1]
-    const lastDayKey = lastTick ? new Date(lastTick).toISOString().slice(0, 10) : null
+  const rangeMs = data.length > 1 ? data[data.length - 1].date - data[0].date : 0
+  const isIntraday = rangeMs < 2 * 24 * 60 * 60 * 1000
 
-    if (dayKey !== lastDayKey) {
+  const toBucketKey = (ts: number) => {
+    const d = new Date(ts)
+    return isIntraday ? `${d.toISOString().slice(0, 13)}` : d.toISOString().slice(0, 10)
+  }
+
+  const xAxisTicks = data.reduce<number[]>((ticks, point) => {
+    const lastTick = ticks[ticks.length - 1]
+    if (!lastTick || toBucketKey(point.date) !== toBucketKey(lastTick)) {
       ticks.push(point.date)
     }
-
     return ticks
   }, [])
 
   const formatAxisDate = (timestamp: number) => {
     const date = new Date(timestamp)
+
+    if (isIntraday) {
+      return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`
+    }
 
     return date.toLocaleDateString(undefined, {
       year: hasMultipleYears ? "2-digit" : undefined,

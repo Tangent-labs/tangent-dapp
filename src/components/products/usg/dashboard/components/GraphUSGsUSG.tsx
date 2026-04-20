@@ -132,12 +132,12 @@ export const GraphUSGsUSG = ({
 
             <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.06)" />
             <defs>
-              <linearGradient id="susgGradient" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="supply-susgGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="rgba(252, 248, 47, 0.3)" />
                 <stop offset="100%" stopColor="rgba(251, 249, 17, 0)" />
               </linearGradient>
 
-              <linearGradient id="usgGradient" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="supply-usgGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="rgba(0, 117, 255, 0.3)" />
                 <stop offset="100%" stopColor="rgba(0, 117, 255, 0)" />
               </linearGradient>
@@ -148,7 +148,7 @@ export const GraphUSGsUSG = ({
               type="monotone"
               dataKey="susg"
               stroke="rgba(251, 249, 17, 0.8)"
-              fill="url(#susgGradient)"
+              fill="url(#supply-susgGradient)"
               name="sUSG Total Supply"
               connectNulls
             />
@@ -158,7 +158,7 @@ export const GraphUSGsUSG = ({
               type="monotone"
               dataKey="usg"
               stroke="rgba(0, 117, 255, 0.8)"
-              fill="url(#usgGradient)"
+              fill="url(#supply-usgGradient)"
               name="USG Total Supply"
               connectNulls
             />

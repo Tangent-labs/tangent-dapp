@@ -19,6 +19,10 @@ type USGEarnContextValues = {
   USGsUSGMetrics: USGStakingInfo | undefined
   lpUserPoints: LpUserPoints
   sortAprOpportunities: (l: ListState) => void
+  searchValue: string
+  setSearchValue: (value: string) => void
+  protocolFilter: string
+  setProtocolFilter: (value: string) => void
 }
 
 export const USGEarnContext = createContext<USGEarnContextValues | undefined>(undefined)
@@ -27,13 +31,24 @@ export const USGEarnProvider = ({ children }: USGEarnContextProps) => {
   const { USGsUSGMetrics, lpUserPoints } = useUSGContext()
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
-
   const [poolsData, setPoolsData] = useState<EarnPoolsData[]>()
+  const [searchValue, setSearchValue] = useState<string>("")
+  const [protocolFilter, setProtocolFilter] = useState<string>("All")
 
   const displayRows = useMemo(() => {
-    const mappedTasks = mapAPROpportunities(opportunities, poolsData)
-    return mappedTasks.sort((a, b) => (b.currentAPR ?? 0) - (a.currentAPR ?? 0))
-  }, [poolsData])
+    let rows = mapAPROpportunities(opportunities, poolsData)
+    if (protocolFilter && protocolFilter !== "All") {
+      rows = rows.filter((row) => row.protocolName === protocolFilter)
+    }
+    if (searchValue.trim()) {
+      const lowered = searchValue.toLowerCase().trim()
+      rows = rows.filter(
+        (row) => row.name.toLowerCase().includes(lowered) || row.asset.toLowerCase().includes(lowered) || row.protocolName.toLowerCase().includes(lowered)
+      )
+    }
+
+    return rows.sort((a, b) => (b.currentAPR ?? 0) - (a.currentAPR ?? 0))
+  }, [poolsData, searchValue, protocolFilter])
 
   const fetchPoolsData = async () => {
     const [curvePools, convexPools, stakeDaoPools, pendlePools] = await Promise.all([getCurvePools(), getConvexPools(), getStakeDAOPools(), getPendlePools()])
@@ -68,6 +83,10 @@ export const USGEarnProvider = ({ children }: USGEarnContextProps) => {
     USGsUSGMetrics,
     lpUserPoints,
     sortAprOpportunities,
+    searchValue,
+    setSearchValue,
+    protocolFilter,
+    setProtocolFilter,
   }
 
   return <USGEarnContext.Provider value={contextValue}>{children}</USGEarnContext.Provider>

@@ -3,9 +3,13 @@
 import { Address } from "viem"
 
 export type StakeDaoAPRData = {
+  vault: string
   lpToken: {
     address: string
   }
+  tradingApy?: number
+  minApr?: number
+  maxApr?: number
   apr: {
     current: {
       total: number
@@ -14,7 +18,7 @@ export type StakeDaoAPRData = {
         value: number[]
       }>
     }
-    projected: { total: number }
+    projected?: { total: number }
   }
 }
 export type EarnPoolsData = {
@@ -36,7 +40,7 @@ export type EarnPoolsData = {
 
 export const getStakeDAOPools = async (): Promise<StakeDaoAPRData[]> => {
   try {
-    const url = `https://api.stakedao.org/api/strategies/curve/`
+    const url = `https://api.stakedao.org/api/strategies/v2/curve/`
 
     const response = await fetch(url, {
       method: "GET",
@@ -46,9 +50,7 @@ export const getStakeDAOPools = async (): Promise<StakeDaoAPRData[]> => {
       throw new Error(`Failed to fetch convex pool`)
     }
 
-    const { deployed } = await response.json()
-
-    return deployed
+    return await response.json()
   } catch (error) {
     console.error("Failed to fetch convex pool :", error)
     return []
@@ -81,22 +83,36 @@ export const getConvexPools = async (): Promise<EarnPoolsData[]> => {
 
 export const getCurvePools = async (): Promise<EarnPoolsData[]> => {
   try {
-    const url = `https://api.curve.finance/v1/getPools/all/ethereum`
+    const [allPoolsResponse, stableNgResponse] = await Promise.all([
+      fetch(`https://api.curve.finance/v1/getPools/all/ethereum`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      fetch(`https://api.curve.finance/api/getPools/ethereum/factory-stable-ng`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    ])
 
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (!response.ok) {
+    if (!allPoolsResponse.ok || !stableNgResponse.ok) {
       throw new Error(`Failed to fetch curve pools`)
     }
 
-    const { data } = await response.json()
+    const [{ data: allPoolsData }, stableNgJson] = await Promise.all([allPoolsResponse.json(), stableNgResponse.json()])
 
-    return data?.poolData
+    const allPools = allPoolsData?.poolData || []
+    const stableNgPools = stableNgJson?.data?.poolData || []
+    const stableNgByAddress = new Map(stableNgPools.map((pool: EarnPoolsData) => [String(pool.address).toLowerCase(), pool]))
+
+    return allPools.map((pool: EarnPoolsData) => {
+      const stableNgPool = stableNgByAddress.get(String(pool.address).toLowerCase())
+
+      return stableNgPool ? { ...pool, ...stableNgPool } : pool
+    })
   } catch (error) {
     console.error("Failed to fetch curve pools :", error)
     return []

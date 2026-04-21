@@ -148,11 +148,13 @@ export default function USGStakeContent() {
               }}
             />
 
-            <div
-              onClick={() => setCurrentFeature(isStake ? "unstake" : "stake")}
-              className="my-[10px] flex w-full cursor-pointer items-center justify-center border-none"
-            >
-              <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-10 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
+            <div className="my-[10px] flex w-full items-center justify-center">
+              <ReliefCard
+                onClick={() => setCurrentFeature(isStake ? "unstake" : "stake")}
+                className="flex h-9 w-9 cursor-pointer items-center justify-center border-none hover:bg-white/10"
+              >
+                <IconChevron className="h-auto w-8 rounded-[10px] stroke-white p-2 text-white" />
+              </ReliefCard>
             </div>
 
             <GenericInputAssetAmount

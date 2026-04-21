@@ -19,8 +19,8 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 const listeState: ListState = {
   search: undefined,
   sort: {
-    key: "time",
-    direction: "asc",
+    key: "date",
+    direction: "desc",
   },
 }
 
@@ -77,11 +77,11 @@ function PositionList() {
   return (
     <>
       <div className="rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
-        <div className={`hidden p-4 text-sm xl:block`}>
+        <div className="hidden p-[10px] text-sm xl:block">
           <HistoryRowDisposition>
             {!!headers?.at(0)?.key && (
               <div className="flex-1">
-                <span>{headers?.at(0)?.label}</span>
+                <span className="text-subtitle">{headers?.at(0)?.label}</span>
               </div>
             )}
             {!!headers?.at(1)?.key && (
@@ -93,13 +93,13 @@ function PositionList() {
                 >
                   <div
                     className={cn(
-                      "flex items-center gap-2 rounded-md px-2 py-0.5 transition-colors",
-                      listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction !== "none" ? "bg-white/10 text-row-tonic" : "hover:bg-white/10"
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
                     )}
                   >
                     <span>{headers?.at(1)?.label}</span>
                     <IconSortHeader
-                      className={listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction !== "none" ? "fill-row-tonic" : "fill-white"}
+                      className={listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction !== "none" ? "fill-white" : "fill-subtitle"}
                       sort={(listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction) || "none"}
                     />
                   </div>
@@ -115,8 +115,8 @@ function PositionList() {
                 >
                   <div
                     className={cn(
-                      "flex items-center gap-2 rounded-md px-2 py-0.5 transition-colors",
-                      listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction !== "none" ? "bg-white/10 text-row-tonic" : "hover:bg-white/10"
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
                     )}
                   >
                     <span>{headers?.at(2)?.label}</span>
@@ -134,8 +134,8 @@ function PositionList() {
                 >
                   <div
                     className={cn(
-                      "flex items-center gap-2 rounded-md px-2 py-0.5 transition-colors",
-                      listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction !== "none" ? "bg-white/10 text-row-tonic" : "hover:bg-white/10"
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
                     )}
                   >
                     <span>{headers?.at(3)?.label}</span>
@@ -144,7 +144,7 @@ function PositionList() {
                 </button>
               </div>
             )}
-            {!!headers?.at(4)?.key && <span>{headers?.at(4)?.label}</span>}
+            {!!headers?.at(4)?.key && <span className="text-subtitle">{headers?.at(4)?.label}</span>}
           </HistoryRowDisposition>
         </div>
       </div>

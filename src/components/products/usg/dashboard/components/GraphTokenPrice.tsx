@@ -1,11 +1,16 @@
 "use client"
 
 import { useId } from "react"
+import type { ComponentType } from "react"
 import { formatDollar } from "@/lib/number_formatter"
 import { Divider } from "@/components/design_system/structure/divider"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
-import { Area, AreaChart, CartesianGrid, ReferenceDot, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { Area, AreaChart, CartesianGrid, Customized, ReferenceDot, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+
+type AxisWithScale = { scale: (v: number) => number }
+type CustomizedChartProps = { xAxisMap: Record<string, AxisWithScale>; yAxisMap: Record<string, AxisWithScale> }
+const TypedCustomized = Customized as ComponentType<{ component: (props: CustomizedChartProps) => React.ReactElement | null }>
 
 type PricePoint = {
   date: number
@@ -67,7 +72,6 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
   const yTickCount = 5
   const yTickStep = (domainMax - domainMin) / (yTickCount - 1)
   const yTicks = Array.from({ length: yTickCount }, (_, index) => domainMin + yTickStep * index)
-  const badgeTopPercent = domainMax === domainMin ? 50 : ((domainMax - latestValue) / (domainMax - domainMin)) * 100 - 10
   const badgeLabel = formatDollar(latestValue, 4)
   const badgeTextColor = token === "sUSG" ? "#05070A" : "#FFFFFF"
   const hasMultipleYears = new Set(data.map((point) => new Date(point.date).getFullYear())).size > 1
@@ -118,19 +122,6 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
       <Divider />
 
       <div className="relative flex h-56 min-h-56 w-full items-center justify-center">
-        {latestPoint && (
-          <div
-            className="pointer-events-none absolute right-3 z-10 -translate-y-1/2 rounded-full px-2 py-1 text-[10px] font-semibold leading-none"
-            style={{
-              top: `${Math.min(80, Math.max(6, badgeTopPercent))}%`,
-              backgroundColor: accentColor,
-              color: badgeTextColor,
-            }}
-          >
-            {badgeLabel}
-          </div>
-        )}
-
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
@@ -194,6 +185,26 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
             />
 
             {latestPoint && <ReferenceDot x={latestPoint.date} y={latestPoint.uv} r={4} fill={accentColor} stroke={accentColor} isFront={true} />}
+
+            <TypedCustomized
+              component={(props) => {
+                const xScale = Object.values(props.xAxisMap)[0]?.scale
+                const yScale = Object.values(props.yAxisMap)[0]?.scale
+                if (!xScale || !yScale || !latestPoint) return null
+                const cx = xScale(latestPoint.date)
+                const cy = yScale(latestPoint.uv)
+                return (
+                  <foreignObject x={cx - 37} y={cy + 12} width={70} height={20} style={{ overflow: "visible" }}>
+                    <div
+                      style={{ backgroundColor: accentColor, color: badgeTextColor }}
+                      className="w-fit whitespace-nowrap rounded-full p-[5px] text-[10px] font-semibold leading-none"
+                    >
+                      {badgeLabel}
+                    </div>
+                  </foreignObject>
+                )
+              }}
+            />
           </AreaChart>
         </ResponsiveContainer>
       </div>

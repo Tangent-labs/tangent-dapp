@@ -32,18 +32,18 @@ const HeaderDisplay = ({ label, sort = "none", onSort, field, indicator, classNa
     <div className={cn(className, "cursor-pointer text-sm")} onClick={() => onSort && onSort(field)}>
       <div
         className={cn(
-          "flex items-center gap-2 hover:bg-white/10",
-          isSortable && "rounded-md px-2 py-0.5 transition-colors",
-          isSortable && isActive && "text-row-tonic"
+          "flex items-center gap-2 text-subtitle",
+          isSortable && "rounded-[10px] p-[5px] transition-colors hover:bg-white/10 hover:text-white",
+          isSortable && isActive && "text-white"
         )}
       >
         <span>{label}</span>
         {indicator && (
-          <USGHoverCard iconClassName={isActive ? "fill-row-tonic w-[13px]" : "fill-white w-[13px]"} title={label as string}>
+          <USGHoverCard iconClassName={isActive ? "fill-white w-[13px]" : "fill-subtitle w-[13px]"} title={label as string}>
             {indicator}
           </USGHoverCard>
         )}
-        {isSortable && <IconSortHeader sort={sort} className={isActive ? "fill-row-tonic" : "fill-white"} />}
+        {isSortable && <IconSortHeader sort={sort} className={isActive ? "fill-white" : "fill-subtitle"} />}
       </div>
     </div>
   )
@@ -52,7 +52,7 @@ const HeaderDisplay = ({ label, sort = "none", onSort, field, indicator, classNa
 export const ListHeader = ({ headers, activeSort, onSort, rowDisposition: CustomRowDisposition = ListRowDisposition }: ListHeaderProps) => {
   return (
     <div className="relative hidden w-full xl:block">
-      <div className={`w-full rounded-t-[10px] bg-overlay-panel px-4 py-[11.5px] leading-[10px] backdrop-blur-[60px]`}>
+      <div className={`w-full rounded-t-[10px] bg-overlay-panel px-4 py-[6.5px] leading-[10px] backdrop-blur-[60px]`}>
         <CustomRowDisposition>
           {!!headers[0]?.key && (
             <HeaderDisplay

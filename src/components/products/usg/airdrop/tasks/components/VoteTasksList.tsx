@@ -88,12 +88,12 @@ export const VoteTasksList = () => {
           <VoteTaskListDisposition>
             {!!headers?.at(0)?.key && (
               <div className="flex w-full pl-2">
-                <span>{headers?.at(0)?.label}</span>
+                <span className="text-subtitle">{headers?.at(0)?.label}</span>
               </div>
             )}
             {!!headers?.at(1)?.key && (
               <div className="flex w-full items-center justify-center">
-                <span>{headers?.at(1)?.label}</span>
+                <span className="text-subtitle">{headers?.at(1)?.label}</span>
               </div>
             )}
 
@@ -102,8 +102,8 @@ export const VoteTasksList = () => {
                 <button className="flex w-full justify-center" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(2)?.key))}>
                   <div
                     className={cn(
-                      "flex items-center gap-2 rounded-md px-2 py-0.5 transition-colors hover:bg-white/10",
-                      listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction !== "none" ? "text-row-tonic" : ""
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
                     )}
                   >
                     <span>{headers?.at(2)?.label}</span>
@@ -117,8 +117,8 @@ export const VoteTasksList = () => {
                 <button className="flex w-full justify-center" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(3)?.key))}>
                   <div
                     className={cn(
-                      "flex items-center gap-2 rounded-md px-2 py-0.5 transition-colors hover:bg-white/10",
-                      listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction !== "none" ? "text-row-tonic" : ""
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
                     )}
                   >
                     <span>{headers?.at(3)?.label}</span>
@@ -132,8 +132,8 @@ export const VoteTasksList = () => {
                 <button className="flex w-full justify-center" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(4)?.key))}>
                   <div
                     className={cn(
-                      "flex items-center gap-2 rounded-md px-2 py-0.5 transition-colors hover:bg-white/10",
-                      listState?.sort?.key === headers?.at(4)?.key && listState?.sort?.direction !== "none" ? "text-row-tonic" : ""
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(4)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
                     )}
                   >
                     <span>{headers?.at(4)?.label}</span>

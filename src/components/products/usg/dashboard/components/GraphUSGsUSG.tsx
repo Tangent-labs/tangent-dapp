@@ -56,7 +56,7 @@ export const GraphUSGsUSG = ({
           <div className="flex text-xs text-subtitle sm:hidden">Total supply </div>
           <div className="hidden text-xs text-subtitle sm:flex">Total </div>
 
-          <div className="text-xs font-semibold text-white"> {`$${formatMillions(sUSGCurrentSupply + USGCurrentSupply)}`}</div>
+          <div className="text-xs font-semibold text-white"> {`$${formatMillions(USGCurrentSupply)}`}</div>
         </div>
 
         {USGCurrentSupply > 0 && (

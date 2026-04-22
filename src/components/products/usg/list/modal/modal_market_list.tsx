@@ -40,7 +40,7 @@ export function USGModalMarketList() {
           />
         </div>
 
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex w-full items-center justify-center gap-2 md:w-fit">
           <div className="flex w-full flex-col items-center justify-center md:w-fit">
             <div className="mb-1 text-xs text-subtitle"> Type </div>
             <InputSelect

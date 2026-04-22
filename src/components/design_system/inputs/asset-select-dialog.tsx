@@ -8,7 +8,7 @@ import { ChevronDown } from "lucide-react"
 
 import { TokenImage } from "../structure/token_image"
 import { Input } from "@/components/ui/input"
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { DepositReceiveAsset } from "@/components/products/usg/usg_type"
 import { specialTokensList } from "@/components/products/usg/usg_repository"
 
@@ -104,16 +104,19 @@ export function AssetSelectionDialog<T extends OptionT>({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <div className="rounded-[10px] border border-white/10 p-0 transition-all duration-200 hover:scale-[1.02] hover:bg-white/5 active:scale-[0.99]">
-          <button disabled={disabled} type="button" className="flex h-10 w-full items-center justify-between rounded-[9px] bg-select-input px-2.5">
-            <span className="flex items-center gap-2">
-              <RenderAsset selected={selected} placeholder={placeholder} />
-            </span>
-            <ChevronDown className="ml-1 h-4 w-4 opacity-80" />
-          </button>
-        </div>
-      </DialogTrigger>
+      <div
+        onClick={() => {
+          if (!disabled) setOpen(true)
+        }}
+        className="rounded-[10px] border border-white/10 p-0 transition-all duration-200 hover:scale-[1.02] hover:bg-white/5 active:scale-[0.99]"
+      >
+        <button disabled={disabled} type="button" className="flex h-10 w-full items-center justify-between rounded-[9px] bg-select-input px-2.5">
+          <span className="flex items-center gap-2">
+            <RenderAsset selected={selected} placeholder={placeholder} />
+          </span>
+          <ChevronDown className="ml-1 h-4 w-4 opacity-80" />
+        </button>
+      </div>
 
       <DialogContent aria-describedby={undefined} className="h-[500px] w-full max-w-[500px] rounded-[10px] bg-overlay-panel p-4 text-white">
         <div data-combobox className="flex min-h-56 w-full min-w-32 flex-col">

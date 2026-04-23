@@ -6,7 +6,6 @@ import { useUSGContext } from "../usg_context"
 import { AssetDataPriced, ListState, TokenAmount } from "@/types"
 import { ToastComponent } from "@/components/design_system/toast"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { SortedRows } from "@/components/design_system/list/list_context"
 import { HarvestableMarket, HarvesterInfo, HarvesterInfoDisplay, USGStakingInfo } from "../usg_type"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import {
@@ -30,7 +29,7 @@ type USGHarvestContextValues = {
   displayRows: HarvesterInfoDisplay[]
   actionHarvest: (arg: Address) => void
   // Harvest overrides how the provider's internal sort state is applied because several columns are computed.
-  getSortedRows: (rows: SortedRows, arg: ListState) => HarvesterInfoDisplay[]
+  getSortedRows: (rows: HarvesterInfoDisplay[], arg: ListState) => HarvesterInfoDisplay[]
   onClickSelectAll: () => void
   marketsToHarvest: HarvestableMarket[]
   addToHarvestableMarkets: (rowData: HarvestableMarket) => void
@@ -182,11 +181,10 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
     return Array.from(set).length
   }
 
-  const getSortedRows = (rows: SortedRows, listState: ListState) => {
+  const getSortedRows = (rows: HarvesterInfoDisplay[], listState: ListState) => {
     const { key, direction } = listState.sort!
-    const harvestRows = rows as HarvesterInfoDisplay[]
 
-    return [...harvestRows].sort((elementA: HarvesterInfoDisplay, elementB: HarvesterInfoDisplay) => {
+    return [...rows].sort((elementA: HarvesterInfoDisplay, elementB: HarvesterInfoDisplay) => {
       let aValue: number | string = elementA[key as keyof HarvesterInfoDisplay] as number | string
       let bValue: number | string = elementB[key as keyof HarvesterInfoDisplay] as number | string
 

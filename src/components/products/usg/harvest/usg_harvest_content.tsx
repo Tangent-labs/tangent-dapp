@@ -167,9 +167,9 @@ function HarvestList() {
                   <ListAsset name={item?.logoKey} token={item?.logoKey} />
                 </div>
                 {/* COL "TOTAL REWARDS" — desktop only */}
-                <div className="hidden gap-2 text-sm md:text-[15px] xl:flex xl:w-[42.86%] xl:justify-center">
+                <div className="hidden items-center gap-2 text-sm md:text-[15px] xl:flex xl:w-[42.86%] xl:justify-center">
                   {formatDollar(item?.rewards?.totalDollar || 0)}
-                  <USGHoverCard iconClassName="w-3" title={`${item?.asset} Rewards Breakdown`}>
+                  <USGHoverCard iconClassName="w-3 fill-white" title={`${item?.asset} Rewards Breakdown`}>
                     <div className="flex flex-col gap-1 text-sm">
                       {item?.rewards?.details?.map((reward, index) => (
                         <div key={index} className="flex items-center gap-2">

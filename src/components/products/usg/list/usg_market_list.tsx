@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Fragment } from "react"
 import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
-import { ListState } from "@/types"
+import { ListRowData, ListState } from "@/types"
 import { useUSGContext } from "../usg_context"
 import { useRootContext } from "../../root/root_context"
 import { IconStars } from "@/components/icons/icon_stars"
@@ -79,7 +79,7 @@ export default function USGMarketList() {
     searchValue,
     setSearchValue,
     userData,
-    sortMarketList,
+    getSortedRows,
     marketType,
     protocol,
     setMarketType,
@@ -274,7 +274,7 @@ export default function USGMarketList() {
         </div>
       </div>
 
-      <ListProvider customSort={sortMarketList} _headers={USGListHeaders} _rows={displayRows!} _listState={listeState}>
+      <ListProvider getSortedRows={getSortedRows} _headers={USGListHeaders} _rows={displayRows!} _listState={listeState}>
         <USGMarketListInner />
       </ListProvider>
     </>
@@ -282,15 +282,15 @@ export default function USGMarketList() {
 }
 
 export function USGMarketListInner() {
-  const { headers, listState, udpateSort } = useListContext()
+  const { headers, listState, udpateSort, displayRows } = useListContext()
 
-  const { displayRows, marketData } = useUSGMaketListContext()
+  const { marketData } = useUSGMaketListContext()
 
   return (
     <>
       <MarketListHeader rowDisposition={CustomMarketListRow} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
 
-      {displayRows?.map((item, index) => (
+      {(displayRows as ListRowData[])?.map((item, index) => (
         <MarketListRow
           rowDisposition={CustomMarketListRow}
           className={cn("my-1", !!marketData.length && !!displayRows ? "" : "shimmer")}

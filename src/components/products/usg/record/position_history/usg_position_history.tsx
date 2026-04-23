@@ -39,7 +39,7 @@ const HistoryRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
 }
 
 export function USGPositionHistory() {
-  const { displayRows, customSort, isUserHistoryLoading } = useUSGRecordContext()
+  const { displayRows, getSortedRows, isUserHistoryLoading } = useUSGRecordContext()
 
   return (
     <ReliefCard className="p-5">
@@ -54,7 +54,7 @@ export function USGPositionHistory() {
         ) : (
           <div className="flex w-full items-start justify-start">
             <div className="flex w-full flex-col">
-              <ListProvider customSort={customSort} _headers={userPositionListHeaders} _rows={displayRows} _listState={listeState}>
+              <ListProvider getSortedRows={getSortedRows} _headers={userPositionListHeaders} _rows={displayRows} _listState={listeState}>
                 <PositionList></PositionList>
               </ListProvider>
             </div>

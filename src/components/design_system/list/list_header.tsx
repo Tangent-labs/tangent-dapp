@@ -13,6 +13,8 @@ interface ListHeaderProps {
   onSort?: (key: string) => void
   indicator?: string
   rowDisposition?: React.ComponentType<{ children: React.ReactNode[] }>
+  /** Default `hidden w-full xl:block`. Override e.g. for Earn opportunities: `hidden w-full md-lg:block`. */
+  className?: string
 }
 
 interface HeaderDisplayProps {
@@ -38,9 +40,9 @@ const HeaderDisplay = ({ label, sort = "none", onSort, field, indicator, classNa
   )
 }
 
-export const ListHeader = ({ headers, activeSort, onSort, rowDisposition: CustomRowDisposition = ListRowDisposition }: ListHeaderProps) => {
+export const ListHeader = ({ headers, activeSort, onSort, className, rowDisposition: CustomRowDisposition = ListRowDisposition }: ListHeaderProps) => {
   return (
-    <div className="relative hidden w-full xl:block">
+    <div className={cn("relative", className ?? "hidden w-full xl:block")}>
       <div className={`w-full rounded-t-[10px] bg-overlay-panel px-4 py-[11.5px] leading-[10px] backdrop-blur-[60px]`}>
         <CustomRowDisposition>
           {!!headers[0]?.key && (
@@ -65,21 +67,17 @@ export const ListHeader = ({ headers, activeSort, onSort, rowDisposition: Custom
               className="flex w-full items-center justify-center"
             />
           )}
-          <>
-            {headers
-              ?.slice(2)
-              ?.map((header) => (
-                <HeaderDisplay
-                  key={header.key}
-                  label={header.label}
-                  sort={(activeSort?.key == header.key && activeSort?.direction) || "none"}
-                  field={header.key}
-                  onSort={!!header.sort ? onSort : undefined}
-                  indicator={header.indicator}
-                  className="flex w-full flex-1 items-center justify-center"
-                />
-              ))}
-          </>
+          {headers?.slice(2)?.map((header) => (
+            <HeaderDisplay
+              key={header.key}
+              label={header.label}
+              sort={(activeSort?.key == header.key && activeSort?.direction) || "none"}
+              field={header.key}
+              onSort={!!header.sort ? onSort : undefined}
+              indicator={header.indicator}
+              className="flex w-full flex-1 items-center justify-center"
+            />
+          ))}
         </CustomRowDisposition>
       </div>
 

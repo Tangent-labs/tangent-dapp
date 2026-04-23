@@ -1,4 +1,5 @@
 "use client"
+import React from "react"
 import { cn } from "@/lib/utils"
 import { AprOpportunityItem } from "../../usg_type"
 import { ListRow } from "@/components/design_system/list/list_row"
@@ -15,14 +16,18 @@ type AprOpportunityProps = {
 }
 
 export const AprOpportunityRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
+  const flat = React.Children.toArray(children)
   return (
-    <div className="flex items-center justify-between max-xl:flex-col">
-      <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
-        <div className="xl:w-1/2">{children?.at(0)}</div>
-        <div className="flex justify-center xl:w-1/2">{children?.at(1)}</div>
+    <div className="flex w-full flex-col xl:flex-row xl:items-center">
+      <div className="flex w-full items-center justify-between xl:w-1/3 xl:justify-start">
+        <div> {flat.at(0)}</div>
+        <div className="flex justify-self-end xl:hidden">{flat.at(1)}</div>
       </div>
-
-      <div className="flex w-full flex-wrap items-center justify-between xl:w-1/2">{children?.at(2)}</div>
+      <div className="flex justify-between xl:w-2/3">
+        <div className="hidden flex-1 items-center xl:flex">{flat.at(1)}</div>
+        <div className="flex flex-1 items-center">{flat.at(2)}</div>
+        <div className="flex flex-1 items-center">{flat.at(3)}</div>
+      </div>
     </div>
   )
 }
@@ -45,7 +50,8 @@ export const AprOpportunity = ({ item, index, isLoading, openInNewTab = false }:
             <span className="text-xs text-subtitle">{item?.subLabel}</span>
           </div>
         </div>
-        <div className="x flex items-center justify-center">
+
+        <div className="flex flex-1 items-center justify-center">
           <div className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-2 py-1 text-xs lg:text-sm">
             {protocolConfig[item.protocolName as ProtocolName] && (
               <>
@@ -56,27 +62,24 @@ export const AprOpportunity = ({ item, index, isLoading, openInNewTab = false }:
           </div>
         </div>
 
-        <div className="flex w-full items-center">
-          <div className="flex w-1/2 items-center justify-center gap-2">
-            <MarketAPR
-              marketType={item?.marketType}
-              poolName={item?.asset?.replaceAll("-", "/")}
-              logoKey={item.asset}
-              rewardToken={item?.rewardToken}
-              maxLeverage={1}
-              currentAPRDetails={item.currentAPRDetails}
-              projectedAPRDetails={item.projectedAPRDetails}
-              apr={item?.currentAPR}
-              projectedApr={item?.projectedAPR}
-              isMarketListDisplay={true}
-            />
-          </div>
+        <div className="flex flex-1 items-center">
+          <MarketAPR
+            marketType={item?.marketType}
+            poolName={item?.asset?.replaceAll("-", "/")}
+            logoKey={item.asset}
+            rewardToken={item?.rewardToken}
+            maxLeverage={1}
+            currentAPRDetails={item.currentAPRDetails}
+            projectedAPRDetails={item.projectedAPRDetails}
+            apr={item?.currentAPR}
+            projectedApr={item?.projectedAPR}
+            isMarketListDisplay={true}
+          />
+        </div>
 
-          <div className="flex w-1/2 items-center justify-center">
-            <div className="hidden text-[15px] xl:flex"> {item?.points} </div>
-
-            <div className="flex text-xs md:text-sm xl:hidden"> {item?.points} Pts/Day/$ </div>
-          </div>
+        <div className="flex flex-1 items-center justify-end xl:justify-center">
+          <div className="hidden text-[15px] xl:flex">{item?.points}</div>
+          <div className="flex text-xs md:text-sm xl:hidden">{item?.points} Pts/Day/$</div>
         </div>
       </ListRow>
     </>

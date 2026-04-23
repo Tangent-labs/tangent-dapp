@@ -47,12 +47,12 @@ export const getStakeDAOPools = async (): Promise<StakeDaoAPRData[]> => {
     })
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch convex pool`)
+      throw new Error(`Failed to fetch stakeDAO pool`)
     }
 
     return await response.json()
   } catch (error) {
-    console.error("Failed to fetch convex pool :", error)
+    console.error("Failed to fetch stakeDAO pool :", error)
     return []
   }
 }
@@ -102,9 +102,10 @@ export const getCurvePools = async (): Promise<EarnPoolsData[]> => {
       throw new Error(`Failed to fetch curve pools`)
     }
 
-    const [{ data: allPoolsData }, stableNgJson] = await Promise.all([allPoolsResponse.json(), stableNgResponse.json()])
+    const [allPoolsData, stableNgJson] = await Promise.all([allPoolsResponse.json(), stableNgResponse.json()])
 
-    const allPools = allPoolsData?.poolData || []
+    const allPools = allPoolsData?.data?.poolData || []
+
     const stableNgPools = stableNgJson?.data?.poolData || []
     const stableNgByAddress = new Map(stableNgPools.map((pool: EarnPoolsData) => [String(pool.address).toLowerCase(), pool]))
 

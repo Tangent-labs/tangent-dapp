@@ -226,7 +226,7 @@ function ClaimList() {
                 />
               </div>
 
-              <div className="mt-2 flex w-full flex-col items-center justify-between gap-2 xl:w-1/2 xl:flex-row">
+              <div className="mt-2 flex w-full flex-col items-center justify-between gap-2 xl:mt-0 xl:w-1/2 xl:flex-row">
                 <div className="flex w-full flex-1 items-center justify-between gap-2 text-[15px] xl:w-1/2 xl:justify-center">
                   <span className="flex text-sm text-subtitle xl:hidden"> Claimable </span>
 

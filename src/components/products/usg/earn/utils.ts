@@ -45,7 +45,6 @@ export const mapPoolsAndTasks = (
       return { protocol: "Stake DAO", address, gaugeCrvApy, gaugeFutureCrvApy }
     })
 
-  // TODO : Implement the correct behaviour/APR
   const pendleYT = pendlePools
     ?.filter((p: EarnPoolsData) => allPendlePoolsAddresses.includes(p.address))
     ?.map((pool) => {

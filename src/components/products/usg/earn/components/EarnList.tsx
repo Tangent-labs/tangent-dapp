@@ -46,7 +46,8 @@ export const AprOpportunity = ({ item, index, isLoading, openInNewTab = false }:
             <span className="text-xs text-subtitle">{item?.subLabel}</span>
           </div>
         </div>
-        <div className="mb-1 flex w-full items-center justify-between xl:justify-center">
+
+        <div className="flex w-full items-center justify-between xl:justify-center">
           <span className="flex text-sm text-subtitle xl:hidden">Protocol</span>
 
           <div className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-2 py-1 text-xs lg:text-sm">
@@ -60,7 +61,7 @@ export const AprOpportunity = ({ item, index, isLoading, openInNewTab = false }:
         </div>
 
         <>
-          <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-center">
+          <div className="mt-2 flex w-full items-center justify-between xl:mt-0 xl:w-1/2 xl:justify-center">
             <MarketAPR
               marketType={item?.marketType}
               poolName={item?.asset?.replaceAll("-", "/")}

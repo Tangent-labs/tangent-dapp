@@ -83,13 +83,13 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
       const currentAPR = isCurveUnstaked
         ? getAPYValue(currentPool?.gaugeCrvApy)
         : isCurveStaked
-          ? getGaugeValue(currentPool?.gaugeCrvApy)
+          ? getAPYValue(currentPool?.gaugeCrvApy)
           : sumAPRValues(currentPool?.gaugeCrvApy)
 
       const projectedAPR = isCurveUnstaked
         ? getAPYValue(currentPool?.gaugeFutureCrvApy)
         : isCurveStaked
-          ? getGaugeValue(currentPool?.gaugeFutureCrvApy)
+          ? getAPYValue(currentPool?.gaugeFutureCrvApy)
           : sumAPRValues(currentPool?.gaugeFutureCrvApy)
 
       const rewardToken = "CRV"
@@ -97,13 +97,13 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
       const currentAPRDetails = isCurveUnstaked
         ? { APY: getAPYValue(currentPool?.gaugeCrvApy) }
         : isCurveStaked
-          ? { CRV: getGaugeValue(currentPool?.gaugeCrvApy) }
+          ? { CRV: getAPYValue(currentPool?.gaugeCrvApy) }
           : { APY: getAPYValue(currentPool?.gaugeCrvApy), CRV: getGaugeValue(currentPool?.gaugeCrvApy) }
 
       const projectedAPRDetails = isCurveUnstaked
         ? { APY: getAPYValue(currentPool?.gaugeFutureCrvApy) }
         : isCurveStaked
-          ? { CRV: getGaugeValue(currentPool?.gaugeFutureCrvApy) }
+          ? { CRV: getAPYValue(currentPool?.gaugeFutureCrvApy) }
           : { APY: getAPYValue(currentPool?.gaugeFutureCrvApy), CRV: getGaugeValue(currentPool?.gaugeFutureCrvApy) }
 
       return {

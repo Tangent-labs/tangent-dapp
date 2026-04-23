@@ -5,8 +5,8 @@ import { ListState } from "@/types"
 import { useUSGContext } from "../usg_context"
 import { useUSGEarnContext } from "./usg_earn_context"
 import { AprOpportunity, AprOpportunityRowDisposition } from "./components/EarnList"
-import { AprOpportunityItem } from "../usg_type"
 import { aprOpportunitiesListHeaders } from "./usg_earn_controller"
+import { AprOpportunityItem } from "../usg_type"
 import { InputSearch } from "@/components/design_system/inputs/input_search"
 import { InputSelect } from "@/components/design_system/inputs/input_select"
 import { protocolOptions } from "../list/usg_market_controller"
@@ -81,9 +81,15 @@ export function USGEarnListInner() {
         </div>
       </div>
 
-      <ListHeader rowDisposition={AprOpportunityRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
-      {(displayRows as AprOpportunityItem[]).map((item, index) => (
-        <AprOpportunity item={item} key={index} index={index} isLoading={isLoading} />
+      <ListHeader
+        className="hidden w-full xl:block"
+        rowDisposition={AprOpportunityRowDisposition}
+        headers={headers}
+        activeSort={listState?.sort}
+        onSort={udpateSort}
+      />
+      {(displayRows as AprOpportunityItem[])?.map((item, index) => (
+        <AprOpportunity item={item} key={index} index={index} isLoading={isLoading} openInNewTab={true}></AprOpportunity>
       ))}
     </>
   )

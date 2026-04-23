@@ -24,7 +24,7 @@ export const ListRow = ({
   return (
     <div className="group relative mt-1 w-full">
       <div
-        className={`relative bg-overlay-panel p-[10px] backdrop-blur-[60px] hover-lift-row lg:px-4 ${isSelected ? "before:bg-list-row-hover" : ""} // Selected state styling ${className} `}
+        className={`relative bg-overlay-panel p-[10px] backdrop-blur-[60px] hover-lift-row ${isSelected ? "before:bg-list-row-hover" : ""} // Selected state styling ${className} `}
       >
         <Link href={route} target={openInNewTab ? "_blank" : undefined} rel={openInNewTab ? "noopener noreferrer" : undefined}>
           <CustomRowDisposition>

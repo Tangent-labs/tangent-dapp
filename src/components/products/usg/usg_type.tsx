@@ -625,6 +625,7 @@ type FormErrorKey =
   | "wallet-repay"
   | "repay-exceeds-debt"
   | "max-leverage"
+  | "low-max-leverage"
   | "lock-expired"
   | "same-position"
   | "no-zap-value"

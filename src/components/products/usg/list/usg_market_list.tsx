@@ -90,7 +90,7 @@ export default function USGMarketList() {
 
   return (
     <>
-      <div className="mb-4 hidden items-stretch justify-between gap-6 xl:flex">
+      <div className="mb-4 hidden items-stretch justify-between gap-5 xl:flex">
         <PageHeader>
           <Image height={150} width={150} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
 
@@ -145,7 +145,7 @@ export default function USGMarketList() {
 
       <Divider className="hidden xl:flex" />
 
-      <div className="mb-2 mt-0 flex w-full flex-col items-stretch justify-center gap-2 lg:flex-row xl:mb-0 xl:mt-4 xl:gap-6">
+      <div className="mb-2 mt-0 flex w-full flex-col items-stretch justify-center gap-2 lg:flex-row xl:mb-0 xl:mt-4 xl:gap-5">
         <div className="hidden w-full justify-center md:flex lg:w-1/2">
           <div className="flex h-full w-full items-stretch gap-4">
             <div className="basis-[40%]">

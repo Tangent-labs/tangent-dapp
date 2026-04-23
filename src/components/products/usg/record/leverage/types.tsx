@@ -67,15 +67,13 @@ export type USGLeverageContextValues = {
 
   maxDepositString: string
 
-  computedDepositAmount: bigint
-
   isZapping: boolean
 
   handleLeverageSliderChange: (arg: number) => void
 
   handleBorrowChange: (arg: bigint | undefined) => Promise<void>
 
-  leverageRange: { sliderLegendValues: string[]; startEndRange: [string, string, string]; maxLeverageRaw: number; maxLeverageAdjusted: number }
+  leverageRange: { sliderLegendValues: string[]; startEndRange: [string, string, string]; maxLeverageAdjusted: number }
 
   // aprVariation: { current: string; currentUpdated: string; projected: string; projectedUpdated: string }
   slippageLoss: { tokenLoss: string; dollarLoss: string }

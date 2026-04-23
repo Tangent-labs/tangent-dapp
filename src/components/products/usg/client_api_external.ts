@@ -105,6 +105,7 @@ export const getCurvePools = async (): Promise<EarnPoolsData[]> => {
     const [allPoolsData, stableNgJson] = await Promise.all([allPoolsResponse.json(), stableNgResponse.json()])
 
     const allPools = allPoolsData?.data?.poolData || []
+
     const stableNgPools = stableNgJson?.data?.poolData || []
     const stableNgByAddress = new Map(stableNgPools.map((pool: EarnPoolsData) => [String(pool.address).toLowerCase(), pool]))
 

@@ -9,9 +9,8 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { Button } from "@/components/design_system/inputs/button"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { TokenImage } from "@/components/design_system/structure/token_image"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { PopoverTriggerElement } from "@/components/design_system/structure/popover_trigger_element"
 
 type WalletConnexionContentProps = {
   className?: string
@@ -40,9 +39,9 @@ export function WalletConnexionContent({ className }: WalletConnexionContentProp
         setPopoverOpen(open)
       }}
     >
-      <PopoverTrigger asChild>
-        <PopoverTriggerElement
-          className={cn("w-full max-w-36", className)}
+      <PopoverAnchor asChild>
+        <div
+          className={cn("flex w-full max-w-36 items-center justify-center", className)}
           onClick={(e) => {
             if (!isConnected) {
               e.preventDefault()
@@ -50,11 +49,12 @@ export function WalletConnexionContent({ className }: WalletConnexionContentProp
               connect()
               return
             }
+            setPopoverOpen((prev) => !prev)
           }}
         >
           <Button classNameChild="py-[9px] md:py-[10.5px] px-1">{buttonLabel}</Button>
-        </PopoverTriggerElement>
-      </PopoverTrigger>
+        </div>
+      </PopoverAnchor>
 
       {isConnected && currentAddress && (
         <PopoverContent align="end">

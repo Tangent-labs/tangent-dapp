@@ -1,5 +1,6 @@
 "use client"
 
+import { cn } from "@/lib/utils"
 import { ListState } from "@/types"
 import { VoteTask } from "../../../usg_type"
 import { formatMillions } from "@/lib/number_formatter"
@@ -12,7 +13,7 @@ export const voteListState: ListState = {
   search: undefined,
   sort: {
     key: "points",
-    direction: "asc",
+    direction: "desc",
   },
 }
 
@@ -87,20 +88,25 @@ export const VoteTasksList = () => {
           <VoteTaskListDisposition>
             {!!headers?.at(0)?.key && (
               <div className="flex w-full pl-2">
-                <span>{headers?.at(0)?.label}</span>
+                <span className="text-subtitle">{headers?.at(0)?.label}</span>
               </div>
             )}
             {!!headers?.at(1)?.key && (
               <div className="flex w-full items-center justify-center">
-                <span>{headers?.at(1)?.label}</span>
+                <span className="text-subtitle">{headers?.at(1)?.label}</span>
               </div>
             )}
 
             {!!headers?.at(2)?.key && (
               <div className="flex w-full items-center justify-center">
-                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(2)?.key))}>
-                  <span>{headers?.at(2)?.label}</span>
-                  <div className="text-row-tonic">
+                <button className="flex w-full justify-center" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(2)?.key))}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
+                    )}
+                  >
+                    <span>{headers?.at(2)?.label}</span>
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
@@ -108,9 +114,14 @@ export const VoteTasksList = () => {
             )}
             {!!headers?.at(3)?.key && (
               <div key={headers?.at(3)?.label} className="flex w-full items-center justify-center">
-                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(3)?.key))}>
-                  <span>{headers?.at(3)?.label} </span>
-                  <div className="text-row-tonic">
+                <button className="flex w-full justify-center" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(3)?.key))}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
+                    )}
+                  >
+                    <span>{headers?.at(3)?.label}</span>
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
@@ -118,9 +129,14 @@ export const VoteTasksList = () => {
             )}
             {!!headers?.at(4)?.key && (
               <div key={headers?.at(4)?.label} className="flex w-full items-center justify-center">
-                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(4)?.key))}>
-                  <span>{headers?.at(4)?.label} </span>
-                  <div className="text-row-tonic">
+                <button className="flex w-full justify-center" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(4)?.key))}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(4)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
+                    )}
+                  >
+                    <span>{headers?.at(4)?.label}</span>
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(4)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
@@ -135,10 +151,11 @@ export const VoteTasksList = () => {
         (displayRows as VoteTask[])?.map((task: VoteTask) => (
           <div
             key={task?.taskId}
-            className="relative mb-1 bg-overlay-panel px-2 py-3 backdrop-blur-[60px] hover-lift-row"
+            className="relative mb-1 bg-overlay-panel p-[10px] backdrop-blur-[60px] hover-lift-row"
             onClick={() => window.open(task?.url, "_blank", "noopener,noreferrer")}
           >
-            <div className="hidden items-center justify-between md:flex">
+            {/* Desktop */}
+            <div className="hidden items-center justify-between xl:flex">
               <div className="flex w-[35%] items-center gap-2 xl:gap-4">
                 <span className="flex text-[15px] font-semibold">{task.description}</span>
               </div>
@@ -151,32 +168,40 @@ export const VoteTasksList = () => {
                 <div className="text flex items-center justify-center">{task?.pointRate}</div>
               </div>
               <div className="flex w-[16.25%] items-center justify-center">{formatMillions(task.points)}</div>
-
               <div className="flex w-[16.25%] items-center justify-center">{formatMillions(task.lastVotingPower)}</div>
             </div>
 
-            {/* MOBILE */}
-            <div className="flex flex-col items-center justify-between md:hidden">
-              <div className="mb-1 flex w-full items-center justify-center text-sm font-semibold"> {task?.description}</div>
+            {/* Mobile card */}
+            <div className="flex w-full flex-col xl:hidden">
+              <span className="text-[15px] font-semibold">{task?.description}</span>
 
-              <div className="flex w-full items-center justify-between gap-1 border-t border-white border-opacity-10 py-2">
-                <div className="flex flex-col items-center justify-center">
-                  <span className="text-xs text-subtitle">Current Vote</span>
-                  <span className="flex text-sm">{task.lastVotingPower}</span>
+              <hr className="my-2 w-full opacity-20" />
+
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Protocol</span>
+                  <div className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-2 py-1 text-sm backdrop-blur-[60px]">
+                    {computeProtocolDisplay(task.organisation)}
+                  </div>
                 </div>
 
-                <div className="flex flex-col items-center justify-center">
-                  <span className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-2 py-1 text-sm backdrop-blur-[60px]">
-                    {computeProtocolDisplay(task?.protocol)}
-                  </span>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Pts/Epoch/Tkn</span>
+                  <span>{task?.pointRate}</span>
                 </div>
 
-                <div className="flex flex-col items-center justify-center">
-                  <span className="text-xs text-subtitle">Points</span>
-                  <span className="flex text-sm">{task.points}</span>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Points</span>
+                  <span>{formatMillions(task.points)}</span>
+                </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Current Vote</span>
+                  <span>{formatMillions(task.lastVotingPower)}</span>
                 </div>
               </div>
             </div>
+
             <ListGradientBorder />
           </div>
         ))}

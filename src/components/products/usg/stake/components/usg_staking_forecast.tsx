@@ -1,14 +1,12 @@
 "use client"
 
+import { APRDisplay } from "./apr_display"
 import { ReactNode, useMemo, useState } from "react"
 import { formatDollar } from "@/lib/number_formatter"
-import { IconStars } from "@/components/icons/icon_stars"
-import { computedProjection } from "./usg_stake_controller"
+import { computedProjection } from "../usg_stake_controller"
 import type { LineDot } from "recharts/types/cartesian/Line"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
-import { TokenImage } from "@/components/design_system/structure/token_image"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer, Tooltip } from "recharts"
 
 const MS_PER_YEAR = 365.25 * 24 * 60 * 60 * 1000
@@ -245,26 +243,8 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apr, currentFea
 
   return (
     <>
-      <div className="flex w-full justify-between">
-        <div className="flex items-center justify-start gap-2">
-          <div className="flex items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-3 py-1.5">
-            <TokenImage token="sUSG" size={20} />
-            sUSG
-          </div>
-
-          <HoverCard openDelay={100} closeDelay={100}>
-            <HoverCardTrigger asChild>
-              <button type="button" className="inline-flex items-center hover:text-[#95FF00]">
-                <div className="mr-1 text-xl font-semibold">{apr.toFixed(2)}%</div>
-                <IconStars className="fill-[#95FF00]" />
-              </button>
-            </HoverCardTrigger>
-
-            <HoverCardContent side="top" align="center" className="z-1001 p-2 text-center text-xs">
-              7 days trailing APY
-            </HoverCardContent>
-          </HoverCard>
-        </div>
+      <div className="flex w-full items-center justify-between">
+        <APRDisplay apr={apr} />
 
         <div className="hidden items-end justify-end gap-2 md:flex">
           <ButtonTab onClick={() => setRange("1m")} label={"1m"} active={range === "1m"} className="rounded-full !py-1" />
@@ -274,7 +254,7 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apr, currentFea
       </div>
 
       {!!apr && apr > 0 ? (
-        <div className="mb mt-3 flex h-72 min-h-72 w-full">
+        <div className="mt-[10px] flex h-72 min-h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart margin={{ top: 12, right: 16, bottom: 8, left: 8 }} data={forecastData}>
               <defs>

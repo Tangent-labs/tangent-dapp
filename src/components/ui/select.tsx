@@ -108,7 +108,7 @@ const SelectItem = React.forwardRef<React.ElementRef<typeof SelectPrimitive.Item
       className={cn(
         "hover:bg-white/10 hover:text-accent-foreground", // Important : le hover ici
         "focus:bg-white/10",
-        "flex w-full cursor-default items-center rounded-[10px] px-2 py-1 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "flex w-full cursor-default items-center rounded-[8px] px-2 py-1 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}
       {...props}

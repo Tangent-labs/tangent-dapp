@@ -18,6 +18,7 @@ type AssetSelectProps = {
   depositAsset: string | undefined
   setDepositAsset: (s: string) => void
   caseType: "deposit" | "repay"
+  disabled?: boolean
 }
 
 export type AssetInfos = {
@@ -71,7 +72,7 @@ export const getTokenSymbolPriorityIndex = (symbol: string): number => {
   return idx === -1 ? tokenOrder?.length + 1 : idx
 }
 
-export const ZapAssetSelector = ({ collateralInfo, depositAsset, setDepositAsset, caseType }: AssetSelectProps) => {
+export const ZapAssetSelector = ({ collateralInfo, depositAsset, setDepositAsset, caseType, disabled = false }: AssetSelectProps) => {
   const { marketData } = useUSGRecordContext()
 
   const { balances } = useUSGContext()
@@ -131,6 +132,7 @@ export const ZapAssetSelector = ({ collateralInfo, depositAsset, setDepositAsset
       template={AssetSelectTemplate}
       value={depositAsset}
       options={allAssets ?? []}
+      disabled={disabled}
       onChange={(v: string) => setDepositAsset(v)}
     />
   )

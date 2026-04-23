@@ -1,5 +1,4 @@
 "use client"
-import React from "react"
 import { cn } from "@/lib/utils"
 import { AprOpportunityItem } from "../../usg_type"
 import { ListRow } from "@/components/design_system/list/list_row"
@@ -16,18 +15,15 @@ type AprOpportunityProps = {
 }
 
 export const AprOpportunityRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
-  const flat = React.Children.toArray(children)
   return (
-    <div className="flex w-full flex-col xl:flex-row xl:items-center">
-      <div className="flex w-full items-center justify-between xl:w-1/3 xl:justify-start">
-        <div> {flat.at(0)}</div>
-        <div className="flex justify-self-end xl:hidden">{flat.at(1)}</div>
-      </div>
-      <div className="flex justify-between xl:w-2/3">
-        <div className="hidden flex-1 items-center xl:flex">{flat.at(1)}</div>
-        <div className="flex flex-1 items-center">{flat.at(2)}</div>
-        <div className="flex flex-1 items-center">{flat.at(3)}</div>
-      </div>
+    <div className="flex flex-col items-center justify-between xl:flex-row">
+      <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">{children?.at(0)}</div>
+
+      <hr className="my-2 w-full opacity-20 xl:hidden" />
+
+      <div className="flex w-full justify-center xl:w-1/2">{children?.at(1)}</div>
+
+      <div className="flex w-full flex-col items-center justify-between gap-2 xl:w-1/2 xl:flex-row">{children?.at(2)}</div>
     </div>
   )
 }
@@ -45,13 +41,15 @@ export const AprOpportunity = ({ item, index, isLoading, openInNewTab = false }:
         <div className="relative flex items-center gap-2">
           <CustomAssetDisplay token={item?.asset} />
 
-          <div className="flex min-h-11 flex-col items-center justify-center md:flex-col md:items-start">
+          <div className="flex min-h-6 items-center justify-center gap-2 xl:min-h-11 xl:flex-col xl:items-start xl:gap-0">
             <span className="text-sm font-semibold md:text-xl">{item?.asset?.replaceAll("-", "/")}</span>
             <span className="text-xs text-subtitle">{item?.subLabel}</span>
           </div>
         </div>
 
-        <div className="flex flex-1 items-center justify-center">
+        <div className="flex w-full items-center justify-between xl:justify-center">
+          <span className="flex text-sm text-subtitle xl:hidden">Protocol</span>
+
           <div className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-2 py-1 text-xs lg:text-sm">
             {protocolConfig[item.protocolName as ProtocolName] && (
               <>
@@ -62,25 +60,27 @@ export const AprOpportunity = ({ item, index, isLoading, openInNewTab = false }:
           </div>
         </div>
 
-        <div className="flex flex-1 items-center">
-          <MarketAPR
-            marketType={item?.marketType}
-            poolName={item?.asset?.replaceAll("-", "/")}
-            logoKey={item.asset}
-            rewardToken={item?.rewardToken}
-            maxLeverage={1}
-            currentAPRDetails={item.currentAPRDetails}
-            projectedAPRDetails={item.projectedAPRDetails}
-            apr={item?.currentAPR}
-            projectedApr={item?.projectedAPR}
-            isMarketListDisplay={true}
-          />
-        </div>
+        <>
+          <div className="mt-2 flex w-full items-center justify-between xl:mt-0 xl:w-1/2 xl:justify-center">
+            <MarketAPR
+              marketType={item?.marketType}
+              poolName={item?.asset?.replaceAll("-", "/")}
+              logoKey={item.asset}
+              rewardToken={item?.rewardToken}
+              maxLeverage={1}
+              currentAPRDetails={item.currentAPRDetails}
+              projectedAPRDetails={item.projectedAPRDetails}
+              apr={item?.currentAPR}
+              projectedApr={item?.projectedAPR}
+              isMarketListDisplay={true}
+            />
+          </div>
 
-        <div className="flex flex-1 items-center justify-end xl:justify-center">
-          <div className="hidden text-[15px] xl:flex">{item?.points}</div>
-          <div className="flex text-xs md:text-sm xl:hidden">{item?.points} Pts/Day/$</div>
-        </div>
+          <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-center">
+            <div className="flex text-sm text-subtitle xl:hidden"> Pts/Day/$ </div>
+            <div className="text-sm xl:text-[15px]"> {item?.points} </div>
+          </div>
+        </>
       </ListRow>
     </>
   )

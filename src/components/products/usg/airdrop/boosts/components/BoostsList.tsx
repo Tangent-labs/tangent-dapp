@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { cn } from "@/lib/utils"
 import { ListState } from "@/types"
 import { Boost } from "../../../usg_type"
 import { TaskStatus } from "../../components/TaskStatus"
@@ -11,8 +12,8 @@ import { ListGradientBorder } from "@/components/design_system/list/list_gradien
 export const boostsListState: ListState = {
   search: undefined,
   sort: {
-    key: "points",
-    direction: "asc",
+    key: "status",
+    direction: "desc",
   },
 }
 
@@ -32,19 +33,24 @@ export const BoostsList = () => {
   return (
     <>
       <div className="relative mb-1 mt-5 hidden w-full xl:block">
-        <div className={`w-full rounded-t-[10px] bg-overlay-panel p-2 leading-[10px] backdrop-blur-[60px]`}>
+        <div className={`w-full rounded-t-[10px] bg-overlay-panel p-2 text-sm leading-[10px] backdrop-blur-[60px]`}>
           <BoostRowLayout>
             {!!headers?.at(0)?.key && (
               <div className="flex w-full">
-                <span>{headers?.at(0)?.label}</span>
+                <span className="text-subtitle">{headers?.at(0)?.label}</span>
               </div>
             )}
 
             {!!headers?.at(1)?.key && (
               <div key={headers?.at(1)?.label} className="flex w-full items-center justify-center">
-                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(1)?.key))}>
-                  <span>{headers?.at(1)?.label} </span>
-                  <div className="text-row-tonic">
+                <button className="flex w-full justify-center" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(1)?.key))}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
+                    )}
+                  >
+                    <span>{headers?.at(1)?.label}</span>
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
@@ -53,9 +59,14 @@ export const BoostsList = () => {
 
             {!!headers?.at(2)?.key && (
               <div key={headers?.at(2)?.label} className="flex w-full items-center justify-center">
-                <button className="flex w-full justify-center gap-2" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(2)?.key))}>
-                  <span>{headers?.at(2)?.label} </span>
-                  <div className="text-row-tonic">
+                <button className="flex w-full justify-center" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(2)?.key))}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
+                    )}
+                  >
+                    <span>{headers?.at(2)?.label}</span>
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>

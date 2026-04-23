@@ -1,11 +1,11 @@
 "use client"
 
+import { cn } from "@/lib/utils"
 import { ListState } from "@/types"
 import { IconOpenOutside, IconSortHeader } from "@/components/icons"
-import { formatToken } from "../usg_tasks_controller"
 import { TaskStatus } from "../../components/TaskStatus"
 import { LpTaskCustomAssetDisplay } from "./custom_token_display"
-import { formatNumber, formatMillions } from "@/lib/number_formatter"
+import { formatMillions } from "@/lib/number_formatter"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { useListContext } from "@/components/design_system/list/list_context"
 import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
@@ -16,8 +16,8 @@ import { LpTask } from "../../../usg_type"
 export const lpListState: ListState = {
   search: undefined,
   sort: {
-    key: "status",
-    direction: "asc",
+    key: "points",
+    direction: "desc",
   },
 }
 
@@ -80,29 +80,30 @@ export const LPTasksList = () => {
 
   return (
     <>
-      <div className="relative mb-1 mt-4 hidden w-full xl:block">
+      <div className="relative mb-1 mt-[10px] hidden w-full xl:block">
         <div className={`w-full rounded-t-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]`}>
           <LpTaskListDisposition>
             {!!headers?.at(0)?.key && (
               <div className="flex w-full">
-                <span>{headers?.at(0)?.label}</span>
+                <span className="text-subtitle">{headers?.at(0)?.label}</span>
               </div>
             )}
             {!!headers?.at(1)?.key && (
               <div className="flex w-full items-center justify-center">
-                <span>{headers?.at(1)?.label}</span>
+                <span className="text-subtitle">{headers?.at(1)?.label}</span>
               </div>
             )}
 
             {!!headers?.at(2)?.key && (
               <div className="flex w-full items-center justify-center">
-                <button
-                  className="flex w-full items-center justify-center gap-2"
-                  type="button"
-                  onClick={() => udpateSort && udpateSort(String(headers?.at(2)?.key))}
-                >
-                  <span>{headers?.at(2)?.label}</span>
-                  <div className="text-row-tonic">
+                <button className="flex w-full items-center justify-center" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(2)?.key))}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
+                    )}
+                  >
+                    <span>{headers?.at(2)?.label}</span>
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
@@ -111,13 +112,14 @@ export const LPTasksList = () => {
 
             {!!headers?.at(3)?.key && (
               <div key={headers?.at(3)?.label} className="flex w-full items-center justify-center">
-                <button
-                  className="flex w-full items-center justify-center gap-2"
-                  type="button"
-                  onClick={() => udpateSort && udpateSort(String(headers?.at(3)?.key))}
-                >
-                  <span>{headers?.at(3)?.label} </span>
-                  <div className="text-row-tonic">
+                <button className="flex w-full items-center justify-center" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(3)?.key))}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
+                    )}
+                  >
+                    <span>{headers?.at(3)?.label}</span>
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
@@ -126,13 +128,14 @@ export const LPTasksList = () => {
 
             {!!headers?.at(4)?.key && (
               <div key={headers?.at(4)?.label} className="flex w-full items-center justify-center">
-                <button
-                  className="flex w-full items-center justify-center gap-2"
-                  type="button"
-                  onClick={() => udpateSort && udpateSort(String(headers?.at(4)?.key))}
-                >
-                  <span>{headers?.at(4)?.label} </span>
-                  <div className="text-row-tonic">
+                <button className="flex w-full items-center justify-center" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(4)?.key))}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(4)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
+                    )}
+                  >
+                    <span>{headers?.at(4)?.label}</span>
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(4)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
@@ -141,13 +144,14 @@ export const LPTasksList = () => {
 
             {!!headers?.at(5)?.key && (
               <div key={headers?.at(5)?.label} className="flex w-full items-center justify-center">
-                <button
-                  className="‚ flex w-full items-center justify-center gap-2"
-                  type="button"
-                  onClick={() => udpateSort && udpateSort(String(headers?.at(5)?.key))}
-                >
-                  <span>{headers?.at(5)?.label} </span>
-                  <div className="text-row-tonic">
+                <button className="flex w-full items-center justify-center" type="button" onClick={() => udpateSort && udpateSort(String(headers?.at(5)?.key))}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(5)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
+                    )}
+                  >
+                    <span>{headers?.at(5)?.label}</span>
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(5)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
@@ -164,9 +168,10 @@ export const LPTasksList = () => {
           <div
             onClick={() => window.open(task.url, "_blank")}
             key={task?.taskId}
-            className="relative mb-1 bg-overlay-panel py-2 backdrop-blur-[60px] hover-lift-row lg:px-5"
+            className="relative mb-1 bg-overlay-panel p-[10px] backdrop-blur-[60px] hover-lift-row"
           >
-            <div className="hidden items-center justify-between md:flex">
+            {/* Desktop */}
+            <div className="hidden items-center justify-between xl:flex">
               <div className="flex w-[35%] items-center gap-2">
                 <LpTaskCustomAssetDisplay token={task.asset.replaceAll("_", "-")} />
 
@@ -206,22 +211,56 @@ export const LPTasksList = () => {
               </div>
             </div>
 
-            <div className="flex w-full flex-col items-center justify-center md:hidden">
-              <div className="mb-1 flex w-full items-center justify-center text-sm font-semibold"> {task?.description}</div>
+            {/* Mobile card */}
+            <div className="flex w-full flex-col xl:hidden">
+              <div className="flex w-full items-center gap-1">
+                <LpTaskCustomAssetDisplay token={task.asset.replaceAll("_", "-")} />
 
-              <div className="flex w-full items-center justify-between gap-1 border-t border-white border-opacity-10 py-2">
-                <div className="flex items-center justify-center gap-2">
-                  <TokenImage token={formatToken(task.asset)} className="w-8" size={48} />
+                <div className="flex flex-row items-center gap-2">
+                  <span className="text-[15px] font-semibold">{task?.description}</span>
 
-                  <span className="flex text-sm font-semibold">{task.asset}</span>
+                  {task?.canZap && (
+                    <ReliefCard
+                      onClick={(e) => {
+                        e?.stopPropagation()
+                        e?.preventDefault()
+                        router.push(`/swap?tokenIn=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&tokenOut=${task?.tokenAddress}`)
+                      }}
+                      className="flex items-center justify-center !rounded-full px-2 py-1 text-sm"
+                    >
+                      Zap
+                      <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white"></IconOpenOutside>
+                    </ReliefCard>
+                  )}
+                </div>
+              </div>
+
+              <hr className="my-2 w-full opacity-20" />
+
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Protocol</span>
+                  {computeProtocolDisplay(task?.protocol)}
                 </div>
 
-                <div className="flex flex-col items-center justify-center text-sm">{computeProtocolDisplay(task?.protocol)}</div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Pts/Day/USD</span>
+                  <span>{(task?.pointRate * 86400).toFixed(0)}</span>
+                </div>
 
-                <div className="flex flex-col items-center justify-center">
-                  <span className="text-xs text-subtitle">Points</span>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Owned</span>
+                  <span>{formatMillions(task?.balanceUsd)}</span>
+                </div>
 
-                  <span className="flex text-sm">{formatNumber(task.points, 0)}</span>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Points</span>
+                  <span>{formatMillions(task?.points)}</span>
+                </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-subtitle">Status</span>
+                  <span className={`text-xs font-semibold ${task?.status ? "text-tonic" : "text-subtitle"}`}>{task?.status ? "ON" : "OFF"}</span>
                 </div>
               </div>
             </div>

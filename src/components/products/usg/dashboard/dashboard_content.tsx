@@ -1,24 +1,20 @@
 "use client"
 
-import { cn } from "@/lib/utils"
 import { GraphMarketDebts } from "./components/GraphMarketDebts"
 import { GraphUSGCollaterals } from "./components/GraphUSGCollaterals"
 import { useUSGDashboardContext } from "./dashboard_context"
-import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { useRootContext } from "@/components/products/root/root_context"
-import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import IndicatorCards from "@/components/design_system/structure/indicators_card"
 import { GraphGlobalTVL } from "./components/GraphGlobalTVL"
 import { GraphUSGsUSG } from "./components/GraphUSGsUSG"
+import { GraphTokenPrice } from "./components/GraphTokenPrice"
 
 export const USGDashboardContent = () => {
-  const { globalData, userData, marketDebtMaxValue, marketTVLMaxValue } = useUSGDashboardContext()
+  const { userData, marketDebtMaxValue, marketTVLMaxValue } = useUSGDashboardContext()
 
   const {
     tvl,
     protocolCurrentTVL,
-    sUSGCurrentAPY,
     tvlSelectedTab,
     USGCurrentSupply,
     sUSGCurrentSupply,
@@ -26,10 +22,13 @@ export const USGDashboardContent = () => {
     USGsUSGTotalSupplyData,
     fetchTVLData,
     fetchTotalSupplyData,
+    priceSelectedTabs,
+    priceHistory,
+    fetchPriceHistoryData,
   } = useRootContext()
 
   return (
-    <div className="flex w-full flex-col items-start justify-start gap-3">
+    <div className="flex w-full flex-col items-start justify-start gap-5">
       {/* POINTS CAMPAIGN COMPONENT */}
       <div className="flex h-full w-full flex-col items-start justify-start gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
         <ReliefCard className="w-full">
@@ -43,44 +42,44 @@ export const USGDashboardContent = () => {
         </ReliefCard>
       </div>
 
-      {/* INFOS USG & sUSG */}
-      <div className="flex w-full flex-col justify-between gap-4 md:flex-row md:justify-start">
-        <IndicatorCards
-          className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "flex w-full items-center justify-around")}
-          indicators={[
-            { title: "USG", value: formatDollar(globalData.USGPrice, 4) },
-            { title: "Supply", value: formatMillions(globalData.USGSupply) },
-          ]}
-        >
-          <TokenImage token="USG" className="h-8 w-8" size={32} />
-        </IndicatorCards>
+      <div className="flex w-full flex-col gap-5 lg:flex-row">
+        <GraphTokenPrice
+          token="USG"
+          title="USG"
+          selectedTab={priceSelectedTabs.USG}
+          data={priceHistory.USG}
+          fetchPriceHistoryData={fetchPriceHistoryData}
+          accentColor="#0075FF"
+          gradientStart="#0075FF"
+        />
 
-        <IndicatorCards
-          className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "flex w-full items-center justify-around")}
-          indicators={[
-            { title: "sUSG ", value: formatDollar(globalData.sUSGPrice, 4) },
-            { title: "Supply", value: formatMillions(globalData.sUSGSupply) },
-            { title: "APY", value: sUSGCurrentAPY.toFixed(2) + "%" },
-          ]}
-        >
-          <TokenImage token="sUSG" className="h-8 w-8" size={32} />
-        </IndicatorCards>
+        <GraphTokenPrice
+          token="sUSG"
+          title="sUSG"
+          selectedTab={priceSelectedTabs.sUSG}
+          data={priceHistory.sUSG}
+          fetchPriceHistoryData={fetchPriceHistoryData}
+          accentColor="#A3FF12"
+          gradientStart="#D9FB0B"
+        />
       </div>
 
-      {/* USG & sUSG TOTAL SUPPLY GRAPH */}
-      <GraphUSGsUSG
-        fetchTotalSupplyData={fetchTotalSupplyData}
-        USGCurrentSupply={USGCurrentSupply}
-        sUSGCurrentSupply={sUSGCurrentSupply}
-        USGsUSGTotalSupplyData={USGsUSGTotalSupplyData}
-        totalSupplySelectedTab={totalSupplySelectedTab}
-      />
+      <div className="flex w-full flex-col gap-5 lg:flex-row">
+        {/* USG & sUSG TOTAL SUPPLY GRAPH */}
+        <GraphUSGsUSG
+          fetchTotalSupplyData={fetchTotalSupplyData}
+          USGCurrentSupply={USGCurrentSupply}
+          sUSGCurrentSupply={sUSGCurrentSupply}
+          USGsUSGTotalSupplyData={USGsUSGTotalSupplyData}
+          totalSupplySelectedTab={totalSupplySelectedTab}
+        />
 
-      {/* TVL GRAPH */}
-      <GraphGlobalTVL fetchTVLData={fetchTVLData} tvlSelectedTab={tvlSelectedTab} protocolCurrentTVL={protocolCurrentTVL} tvl={tvl} />
+        {/* TVL GRAPH */}
+        <GraphGlobalTVL fetchTVLData={fetchTVLData} tvlSelectedTab={tvlSelectedTab} protocolCurrentTVL={protocolCurrentTVL} tvl={tvl} />
+      </div>
 
       {/* USG Collaterals & Market debts */}
-      <div className="flex w-full flex-col items-start justify-start gap-3 md:flex-row">
+      <div className="flex w-full flex-col items-start justify-start gap-5 md:flex-row">
         {userData && (
           <>
             <GraphUSGCollaterals userData={userData} marketTVLMaxValue={marketTVLMaxValue} />

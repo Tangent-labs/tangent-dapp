@@ -26,23 +26,34 @@ interface MarketHeaderDisplayProps {
 }
 
 const MarketHeaderDisplay = ({ label, sort = "none", onSort, field, indicator, className }: MarketHeaderDisplayProps) => {
-  return (
-    <div className={cn(className, "cursor-pointer gap-2 text-sm")} onClick={() => onSort && onSort(field)}>
-      <span>{label}</span>
-      {indicator && (
-        <HoverCard openDelay={150} closeDelay={100}>
-          <HoverCardTrigger asChild>
-            <button type="button" className="inline-flex items-center">
-              <IconCircleHelp className="w-3" />
-            </button>
-          </HoverCardTrigger>
+  const isSortable = !!onSort
+  const isActive = sort !== "none"
 
-          <HoverCardContent side="top" align="center" className="z-1001 w-fit max-w-64 p-2 text-xs">
-            {indicator}
-          </HoverCardContent>
-        </HoverCard>
-      )}
-      {!!onSort && <IconSortHeader sort={sort} />}
+  return (
+    <div className={cn(className, "cursor-pointer text-sm")} onClick={() => onSort && onSort(field)}>
+      <div
+        className={cn(
+          "flex items-center gap-2 text-subtitle",
+          isSortable && "rounded-[10px] p-[5px] transition-colors hover:bg-white/10 hover:text-white",
+          isSortable && isActive && "text-white"
+        )}
+      >
+        <span>{label}</span>
+        {indicator && (
+          <HoverCard openDelay={150} closeDelay={100}>
+            <HoverCardTrigger asChild>
+              <button type="button" className="inline-flex items-center">
+                <IconCircleHelp className={isActive ? "w-3 fill-white" : "w-3 fill-subtitle"} />
+              </button>
+            </HoverCardTrigger>
+
+            <HoverCardContent side="top" align="center" className="z-1001 w-fit max-w-64 p-2 text-xs">
+              {indicator}
+            </HoverCardContent>
+          </HoverCard>
+        )}
+        {isSortable && <IconSortHeader sort={sort} className={isActive ? "fill-white" : "fill-subtitle"} />}
+      </div>
     </div>
   )
 }
@@ -86,17 +97,19 @@ export const MarketListHeader = ({ headers, activeSort, onSort, rowDisposition: 
             />
           )}
           <>
-            {headers?.slice(3)?.map((header) => (
-              <MarketHeaderDisplay
-                key={header.key}
-                label={header.label}
-                sort={(activeSort?.key == header.key && activeSort?.direction) || "none"}
-                field={header.key}
-                onSort={!!header.sort ? onSort : undefined}
-                indicator={header.indicator}
-                className="flex w-full flex-1 items-center justify-center"
-              />
-            ))}
+            {headers
+              ?.slice(3)
+              ?.map((header) => (
+                <MarketHeaderDisplay
+                  key={header.key}
+                  label={header.label}
+                  sort={(activeSort?.key == header.key && activeSort?.direction) || "none"}
+                  field={header.key}
+                  onSort={!!header.sort ? onSort : undefined}
+                  indicator={header.indicator}
+                  className="flex w-full flex-1 items-center justify-center"
+                />
+              ))}
           </>
         </CustomRowDisposition>
       </div>

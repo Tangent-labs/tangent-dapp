@@ -96,6 +96,13 @@ export const dappErrors = {
     content: "Please reduce your leverage to proceed.",
     type: "form-alert",
   },
+  "low-max-leverage": {
+    key: "low-max-leverage",
+    title: "Deposit Too Large",
+    subtitle: "Your deposit exceeds the market's remaining borrow capacity.",
+    content: "Please reduce your deposit amount to access leverage.",
+    type: "form-alert",
+  },
   // — Zap
   "no-zap-value": {
     key: "no-zap-value",

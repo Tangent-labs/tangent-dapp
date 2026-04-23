@@ -140,7 +140,7 @@ export const VsTanLayoutContent = ({
 
           <Divider />
 
-          <ListProvider customSort={() => {}} _headers={lockListHeaders} _rows={[]} _listState={listeState}>
+          <ListProvider _headers={lockListHeaders} _rows={[]} _listState={listeState}>
             <LockPositionList></LockPositionList>
           </ListProvider>
         </div>

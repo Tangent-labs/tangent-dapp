@@ -27,23 +27,34 @@ interface HeaderDisplayProps {
 }
 
 const HeaderDisplay = ({ label, sort = "none", onSort, field, indicator, className }: HeaderDisplayProps) => {
+  const isSortable = !!onSort
+  const isActive = sort !== "none"
+
   return (
-    <div className={cn(className, "cursor-pointer gap-2 text-sm")} onClick={() => onSort && onSort(field)}>
-      <span>{label}</span>
-      {indicator && (
-        <USGHoverCard iconClassName="w-[13px]" title={label as string}>
-          {indicator}
-        </USGHoverCard>
-      )}
-      {!!onSort && <IconSortHeader sort={sort} />}
+    <div className={cn(className, "cursor-pointer text-sm")} onClick={() => onSort && onSort(field)}>
+      <div
+        className={cn(
+          "flex items-center gap-2 text-subtitle",
+          isSortable && "rounded-[10px] p-[5px] transition-colors hover:bg-white/10 hover:text-white",
+          isSortable && isActive && "text-white"
+        )}
+      >
+        <span>{label}</span>
+        {indicator && (
+          <USGHoverCard iconClassName={isActive ? "fill-white w-[13px]" : "fill-subtitle w-[13px]"} title={label as string}>
+            {indicator}
+          </USGHoverCard>
+        )}
+        {isSortable && <IconSortHeader sort={sort} className={isActive ? "fill-white" : "fill-subtitle"} />}
+      </div>
     </div>
   )
 }
 
-export const ListHeader = ({ headers, activeSort, onSort, className, rowDisposition: CustomRowDisposition = ListRowDisposition }: ListHeaderProps) => {
+export const ListHeader = ({ headers, activeSort, onSort, rowDisposition: CustomRowDisposition = ListRowDisposition }: ListHeaderProps) => {
   return (
-    <div className={cn("relative", className ?? "hidden w-full xl:block")}>
-      <div className={`w-full rounded-t-[10px] bg-overlay-panel px-4 py-[11.5px] leading-[10px] backdrop-blur-[60px]`}>
+    <div className="relative hidden w-full xl:block">
+      <div className={`w-full rounded-t-[10px] bg-overlay-panel px-4 py-[6.5px] leading-[10px] backdrop-blur-[60px]`}>
         <CustomRowDisposition>
           {!!headers[0]?.key && (
             <HeaderDisplay
@@ -67,17 +78,19 @@ export const ListHeader = ({ headers, activeSort, onSort, className, rowDisposit
               className="flex w-full items-center justify-center"
             />
           )}
-          {headers?.slice(2)?.map((header) => (
-            <HeaderDisplay
-              key={header.key}
-              label={header.label}
-              sort={(activeSort?.key == header.key && activeSort?.direction) || "none"}
-              field={header.key}
-              onSort={!!header.sort ? onSort : undefined}
-              indicator={header.indicator}
-              className="flex w-full flex-1 items-center justify-center"
-            />
-          ))}
+          {headers
+            ?.slice(2)
+            ?.map((header) => (
+              <HeaderDisplay
+                key={header.key}
+                label={header.label}
+                sort={(activeSort?.key == header.key && activeSort?.direction) || "none"}
+                field={header.key}
+                onSort={!!header.sort ? onSort : undefined}
+                indicator={header.indicator}
+                className="flex w-full flex-1 items-center justify-center"
+              />
+            ))}
         </CustomRowDisposition>
       </div>
 

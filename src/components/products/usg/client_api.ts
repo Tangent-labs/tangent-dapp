@@ -3,6 +3,7 @@
 import { Address } from "viem"
 
 import { MarketHistoricalData, VoteTask, MarketAPRs, SavingAccountsApy, TVLData, PointsResult, LpTask } from "./usg_type"
+import { USG_CONTRACT } from "./usg_repository"
 
 export interface UserStatus {
   hasUsedCode: boolean
@@ -143,6 +144,56 @@ export const getHistoricalMarketData = async (marketAddress: string, range: stri
 // ────────────────────────────────────────
 //           POINTS API CALLS
 // ────────────────────────────────────────
+
+export type PriceHistoryRange = "1d" | "1w" | "1m" | "3m" | "1y" | "all" | (string & {})
+
+export type PriceHistoryPoint = {
+  timestamp: string
+  amount: string
+}
+
+export type PriceHistoryTokenHistory = {
+  tokenAddress: Address
+  history: PriceHistoryPoint[]
+}
+
+export type PriceHistoryResponse = PriceHistoryTokenHistory[]
+export type PriceHistoryTokenInput = Address | Address[]
+
+export const PRICE_HISTORY_TOKENS = {
+  USG: USG_CONTRACT.USG,
+  sUSG: USG_CONTRACT.SUSG,
+} as const
+
+export const getPriceHistory = async (
+  tokenAddresses: PriceHistoryTokenInput = [PRICE_HISTORY_TOKENS.USG, PRICE_HISTORY_TOKENS.sUSG],
+  range: PriceHistoryRange = "1d"
+): Promise<PriceHistoryResponse> => {
+  try {
+    const normalizedTokenAddresses = (Array.isArray(tokenAddresses) ? tokenAddresses : [tokenAddresses]).map((address) => address.toLowerCase())
+    const encodedTokenAddresses = encodeURIComponent(normalizedTokenAddresses.join(","))
+    const url = `${baseUrl}/price-history/${encodedTokenAddresses}?range=${encodeURIComponent(range)}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch price history")
+    }
+
+    const data: PriceHistoryResponse = await response.json()
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch price history:", error)
+    return []
+  }
+}
 
 interface TasksCache {
   timestamp: number

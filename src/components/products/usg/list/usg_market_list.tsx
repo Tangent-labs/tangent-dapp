@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Fragment } from "react"
 import { cn } from "@/lib/utils"
 import { formatUnits } from "viem"
-import { ListState } from "@/types"
+import { ListRowData, ListState } from "@/types"
 import { useUSGContext } from "../usg_context"
 import { useRootContext } from "../../root/root_context"
 import { IconStars } from "@/components/icons/icon_stars"
@@ -37,8 +37,8 @@ interface ListRowDispositionProps {
 const listeState: ListState = {
   search: undefined,
   sort: {
-    key: "collateral",
-    direction: "asc",
+    key: "tvl",
+    direction: "desc",
   },
 }
 
@@ -50,7 +50,7 @@ const CustomMarketListRow = ({ children }: ListRowDispositionProps) => {
       <hr className="my-2 w-full opacity-20 xl:hidden" />
 
       <div className="flex w-full xl:w-3/4">
-        <div className="flex hidden w-full items-center justify-between xl:flex xl:w-2/5 xl:justify-start">
+        <div className="hidden w-full items-center justify-between xl:flex xl:w-2/5 xl:justify-start">
           <div className="hidden items-center justify-center xl:flex xl:w-1/2">{children?.at(1)}</div>
           <div className="hidden items-center justify-center xl:flex xl:w-1/2">{children?.at(2)}</div>
         </div>
@@ -79,7 +79,7 @@ export default function USGMarketList() {
     searchValue,
     setSearchValue,
     userData,
-    sortMarketList,
+    getSortedRows,
     marketType,
     protocol,
     setMarketType,
@@ -90,7 +90,7 @@ export default function USGMarketList() {
 
   return (
     <>
-      <div className="mb-4 hidden items-stretch justify-between gap-6 xl:flex">
+      <div className="mb-4 hidden items-stretch justify-between gap-5 xl:flex">
         <PageHeader>
           <Image height={150} width={150} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
 
@@ -145,7 +145,7 @@ export default function USGMarketList() {
 
       <Divider className="hidden xl:flex" />
 
-      <div className="mb-2 mt-0 flex w-full flex-col items-stretch justify-center gap-2 lg:flex-row xl:mb-0 xl:mt-4 xl:gap-6">
+      <div className="mb-2 mt-0 flex w-full flex-col items-stretch justify-center gap-2 lg:flex-row xl:mb-0 xl:mt-4 xl:gap-5">
         <div className="hidden w-full justify-center md:flex lg:w-1/2">
           <div className="flex h-full w-full items-stretch gap-4">
             <div className="basis-[40%]">
@@ -197,7 +197,7 @@ export default function USGMarketList() {
                       <div className="text-xs text-subtitle">APY</div>
                       <div className="flex items-center justify-center gap-1">
                         <div className="text-sm font-semibold text-white">{sUSGCurrentAPY.toFixed(2) + "%"}</div>
-                        <IconStars className="w-3 fill-[#95FF00]"></IconStars>
+                        <IconStars className="w-3 fill-row-success"></IconStars>
                       </div>
                     </div>
                   </div>
@@ -274,7 +274,7 @@ export default function USGMarketList() {
         </div>
       </div>
 
-      <ListProvider customSort={sortMarketList} _headers={USGListHeaders} _rows={displayRows!} _listState={listeState}>
+      <ListProvider getSortedRows={getSortedRows} _headers={USGListHeaders} _rows={displayRows!} _listState={listeState}>
         <USGMarketListInner />
       </ListProvider>
     </>
@@ -282,15 +282,15 @@ export default function USGMarketList() {
 }
 
 export function USGMarketListInner() {
-  const { headers, listState, udpateSort } = useListContext()
+  const { headers, listState, udpateSort, displayRows } = useListContext()
 
-  const { displayRows, marketData } = useUSGMaketListContext()
+  const { marketData } = useUSGMaketListContext()
 
   return (
     <>
       <MarketListHeader rowDisposition={CustomMarketListRow} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
 
-      {displayRows?.map((item, index) => (
+      {(displayRows as ListRowData[])?.map((item, index) => (
         <MarketListRow
           rowDisposition={CustomMarketListRow}
           className={cn("my-1", !!marketData.length && !!displayRows ? "" : "shimmer")}

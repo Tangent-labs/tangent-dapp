@@ -1,6 +1,7 @@
 const ONE_DAY_MS = 24 * 60 * 60 * 1000
 
 const RANGE_TO_MS: Record<string, number | null> = {
+  "1d": ONE_DAY_MS,
   "1w": 7 * ONE_DAY_MS,
   "1m": 30 * ONE_DAY_MS,
   "3m": 90 * ONE_DAY_MS,

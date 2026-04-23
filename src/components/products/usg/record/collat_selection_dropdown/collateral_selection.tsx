@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { MarketDetailData } from "../../usg_type"
 import { IconChevron } from "@/components/icons"
 import { MarketMetadata } from "../market_metadata"
@@ -7,7 +8,7 @@ import { specialTokensList } from "../../usg_repository"
 import { USGModalMarketList } from "../../list/modal/modal_market_list"
 import { USGMarketListProvider } from "../../list/usg_market_list_context"
 import { TokenImage } from "@/components/design_system/structure/token_image"
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 
 type CollateralCardProps = {
@@ -17,29 +18,30 @@ type CollateralCardProps = {
 }
 
 export const CollateralCard = ({ collateralInfo, marketData, className }: CollateralCardProps) => {
+  const [open, setOpen] = useState(false)
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <ReliefCard
-          className={`${className || ""} flex w-full cursor-pointer items-center justify-start gap-4 px-4 py-2.5 pl-2.5 pr-5 transition-colors duration-200 ease-in-out hover:bg-white/10 xl:w-1/2`}
-        >
-          <div className="flex items-center gap-2">
-            {specialTokensList.includes(collateralInfo?.logoKey?.substring(0, collateralInfo?.logoKey.indexOf(" ")).trim()) ? (
-              <TokenImage token={collateralInfo?.logoKey} size={32} className="w-6 md:w-10" />
-            ) : (
-              <TokenImage token={collateralInfo?.logoKey} size={32} className="w-8 md:w-16" />
-            )}
+    <Dialog open={open} onOpenChange={setOpen}>
+      <ReliefCard
+        onClick={() => setOpen(true)}
+        className={`${className || ""} flex w-full cursor-pointer items-center justify-start gap-4 px-4 py-2.5 pl-2.5 pr-5 transition-colors duration-200 ease-in-out hover:bg-white/10 xl:w-1/2`}
+      >
+        <div className="flex items-center gap-2">
+          {specialTokensList.includes(collateralInfo?.logoKey?.substring(0, collateralInfo?.logoKey.indexOf(" ")).trim()) ? (
+            <TokenImage token={collateralInfo?.logoKey} size={32} className="w-6 md:w-10" />
+          ) : (
+            <TokenImage token={collateralInfo?.logoKey} size={32} className="w-8 md:w-16" />
+          )}
 
-            <span className="text-sm font-semibold md:text-[24px]">{collateralInfo?.symbol}</span>
-          </div>
+          <span className="text-sm font-semibold md:text-[24px]">{collateralInfo?.symbol}</span>
+        </div>
 
-          {marketData && <MarketMetadata marketData={marketData} />}
+        {marketData && <MarketMetadata marketData={marketData} />}
 
-          <IconChevron className="ml-auto flex w-3 stroke-white" />
-        </ReliefCard>
-      </DialogTrigger>
+        <IconChevron className="ml-auto flex w-3 stroke-white" />
+      </ReliefCard>
 
-      <DialogContent className="h-[640px] max-w-[763px] rounded-[10px] bg-overlay-panel p-4 text-white focus:outline-none">
+      <DialogContent className="h-[640px] max-w-[763px] rounded-[10px] bg-overlay-panel p-2 text-white focus:outline-none xl:p-4">
         <DialogTitle></DialogTitle>
         <USGMarketListProvider>
           <USGModalMarketList />

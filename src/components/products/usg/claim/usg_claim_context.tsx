@@ -4,7 +4,6 @@ import { zeroAddress } from "viem"
 import { useUSGContext } from "../usg_context"
 import { USGMarkets } from "../usg_repository"
 import { AssetDataPriced, ListState } from "@/types"
-import { SortedRows } from "@/components/design_system/list/list_context"
 import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { ClaimableMarket, ClaimData, ClaimerInfo, USGStakingInfo } from "../usg_type"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -29,7 +28,7 @@ type USGClaimContextValues = {
   onClickClaim: (marketsToClaim: ClaimableMarket[]) => void
   addToClaimableMarkets: (rowData: ClaimableMarket) => void
   marketsToClaim: ClaimableMarket[]
-  getSortedRows: (rows: SortedRows, arg: ListState) => ClaimData[]
+  getSortedRows: (rows: ClaimData[], arg: ListState) => ClaimData[]
   onClickClaimAll: () => void
   USGsUSGMetrics: USGStakingInfo | undefined
 
@@ -102,11 +101,10 @@ export const USGClaimProvider = ({ children }: USGClaimContextProps) => {
     setMarketsToClaim([])
   }, [claimInfo, rewardsInfo, marketAprs])
 
-  const getSortedRows = (rows: SortedRows, listState: ListState) => {
+  const getSortedRows = (rows: ClaimData[], listState: ListState) => {
     const { key, direction } = listState.sort!
-    const claimRows = rows as ClaimData[]
 
-    return [...claimRows].sort((elementA: ClaimData, elementB: ClaimData) => {
+    return [...rows].sort((elementA: ClaimData, elementB: ClaimData) => {
       let aValue: number | string = elementA[key as keyof ClaimData] as number | string
       let bValue: number | string = elementB[key as keyof ClaimData] as number | string
 

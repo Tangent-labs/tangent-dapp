@@ -18,7 +18,7 @@ type USGEarnContextValues = {
   displayRows: AprOpportunityItem[]
   USGsUSGMetrics: USGStakingInfo | undefined
   lpUserPoints: LpUserPoints
-  sortAprOpportunities: (l: ListState) => void
+  getSortedRows: (rows: AprOpportunityItem[], listState: ListState) => AprOpportunityItem[]
   searchValue: string
   setSearchValue: (value: string) => void
   protocolFilter: string
@@ -47,7 +47,7 @@ export const USGEarnProvider = ({ children }: USGEarnContextProps) => {
       )
     }
 
-    return rows.sort((a, b) => (b.currentAPR ?? 0) - (a.currentAPR ?? 0))
+    return rows
   }, [poolsData, searchValue, protocolFilter])
 
   const fetchPoolsData = async () => {
@@ -63,10 +63,10 @@ export const USGEarnProvider = ({ children }: USGEarnContextProps) => {
     fetchPoolsData()
   }, [])
 
-  const sortAprOpportunities = (l: ListState) => {
-    const { key, direction } = l.sort!
+  const getSortedRows = (rows: AprOpportunityItem[], listState: ListState) => {
+    const { key, direction } = listState.sort!
 
-    displayRows.sort((elementA: AprOpportunityItem, elementB: AprOpportunityItem) => {
+    return [...rows].sort((elementA, elementB) => {
       const aValue = elementA[key as keyof AprOpportunityItem] ?? 0
       const bValue = elementB[key as keyof AprOpportunityItem] ?? 0
 
@@ -82,7 +82,7 @@ export const USGEarnProvider = ({ children }: USGEarnContextProps) => {
     displayRows,
     USGsUSGMetrics,
     lpUserPoints,
-    sortAprOpportunities,
+    getSortedRows,
     searchValue,
     setSearchValue,
     protocolFilter,

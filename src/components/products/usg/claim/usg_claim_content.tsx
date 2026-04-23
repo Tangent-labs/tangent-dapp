@@ -233,7 +233,7 @@ function ClaimList() {
                   <div className="flex items-center justify-center gap-2 text-sm xl:text-[15px]">
                     {formatDollar(item?.totalClaimableValue || 0, 2)}
 
-                    <USGHoverCard iconClassName="w-3" title={`${item?.marketName} Rewards Breakdown`}>
+                    <USGHoverCard iconClassName="w-3 fill-white" title={`${item?.marketName} Rewards Breakdown`}>
                       {(item?.claimable as ClaimAsset[]).map((reward: ClaimAsset) => (
                         <div key={reward?.symbol} className="my-1 flex items-center gap-4">
                           <TokenImage token={reward.symbol} size={16} />

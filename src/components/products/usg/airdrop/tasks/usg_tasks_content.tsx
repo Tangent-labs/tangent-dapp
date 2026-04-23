@@ -31,10 +31,10 @@ export default function UsgTasksContent() {
     lpTaskFilteredBy,
     selectedFeature,
     voteTaskSearchValue,
-    sortLpTasks,
+    getSortedLpRows,
     setLpTaskProtocol,
     setVoteTaskProtocol,
-    sortVoteTasks,
+    getSortedVoteRows,
     setLpTaskFilteredBy,
     setLpTaskSearchValue,
     setSelectedFeature,
@@ -112,7 +112,7 @@ export default function UsgTasksContent() {
                   </div>
                 </div>
               </div>
-              <ListProvider customSort={sortLpTasks} _headers={lpListHeaders} _rows={lpTasks} _listState={lpListState}>
+              <ListProvider getSortedRows={getSortedLpRows} _headers={lpListHeaders} _rows={lpTasks} _listState={lpListState}>
                 <LPTasksList />
               </ListProvider>
             </>
@@ -146,7 +146,7 @@ export default function UsgTasksContent() {
                 </div>
               </div>
 
-              <ListProvider customSort={sortVoteTasks} _headers={voteListHeaders} _rows={voteTasks} _listState={voteListState}>
+              <ListProvider getSortedRows={getSortedVoteRows} _headers={voteListHeaders} _rows={voteTasks} _listState={voteListState}>
                 <VoteTasksList />
               </ListProvider>
             </>

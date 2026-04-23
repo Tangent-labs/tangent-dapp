@@ -5,6 +5,7 @@ import { ListState } from "@/types"
 import { useUSGContext } from "../usg_context"
 import { useUSGEarnContext } from "./usg_earn_context"
 import { AprOpportunity, AprOpportunityRowDisposition } from "./components/EarnList"
+import { AprOpportunityItem } from "../usg_type"
 import { aprOpportunitiesListHeaders } from "./usg_earn_controller"
 import { InputSearch } from "@/components/design_system/inputs/input_search"
 import { InputSelect } from "@/components/design_system/inputs/input_select"
@@ -24,7 +25,7 @@ const listeState: ListState = {
 }
 
 export const USGEarnContent = () => {
-  const { displayRows, USGsUSGMetrics, sortAprOpportunities } = useUSGEarnContext()
+  const { displayRows, USGsUSGMetrics, getSortedRows } = useUSGEarnContext()
 
   const { lpUserPoints, voteUserPoints } = useUSGContext()
 
@@ -50,7 +51,7 @@ export const USGEarnContent = () => {
         </div>
       </div>
 
-      <ListProvider _headers={aprOpportunitiesListHeaders} _rows={displayRows!} customSort={sortAprOpportunities} _listState={listeState}>
+      <ListProvider _headers={aprOpportunitiesListHeaders} _rows={displayRows} getSortedRows={getSortedRows} _listState={listeState}>
         <USGEarnListInner />
       </ListProvider>
     </>
@@ -58,9 +59,9 @@ export const USGEarnContent = () => {
 }
 
 export function USGEarnListInner() {
-  const { headers, udpateSort, listState } = useListContext()
+  const { headers, udpateSort, listState, displayRows } = useListContext()
 
-  const { displayRows, isLoading, searchValue, setSearchValue, protocolFilter, setProtocolFilter } = useUSGEarnContext()
+  const { isLoading, searchValue, setSearchValue, protocolFilter, setProtocolFilter } = useUSGEarnContext()
 
   return (
     <>
@@ -81,7 +82,9 @@ export function USGEarnListInner() {
       </div>
 
       <ListHeader rowDisposition={AprOpportunityRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
-      {displayRows?.map((item, index) => <AprOpportunity item={item} key={index} index={index} isLoading={isLoading}></AprOpportunity>)}
+      {(displayRows as AprOpportunityItem[]).map((item, index) => (
+        <AprOpportunity item={item} key={index} index={index} isLoading={isLoading} />
+      ))}
     </>
   )
 }

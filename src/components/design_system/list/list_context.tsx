@@ -7,15 +7,12 @@ import { Boost, ClaimData, AprOpportunityItem, HarvesterInfoDisplay, UserPositio
 export type SortedRows = ListRowData[] | ClaimData[] | LpTask[] | VoteTask[] | UserPosition[] | AprOpportunityItem[] | Boost[] | HarvesterInfoDisplay[]
 
 //  Defined what is injected into the Provider ( mosty via server execution)
-interface ListProviderProps {
+interface ListProviderProps<T> {
   _listState: ListState
-  _rows: ListRowData[] | ClaimData[] | LpTask[] | VoteTask[] | UserPosition[] | AprOpportunityItem[] | Boost[] | HarvesterInfoDisplay[]
+  _rows: T
   _headers: ListHeaderData[]
   children: ReactNode
-  // Legacy hook kept for list implementations that apply sorting through external state mutations.
-  customSort?: (arg: ListState) => void
-  // Pure hook for list implementations that want to customize how the internal list state sorts displayed rows.
-  getSortedRows?: (rows: SortedRows, arg: ListState) => SortedRows
+  getSortedRows?: (rows: T, arg: ListState) => T
 }
 
 // Define what is returned by the provider
@@ -31,7 +28,7 @@ interface ListContextValues {
 const ListContext = createContext<ListContextValues | undefined>(undefined)
 
 // Create a provider component
-export const ListProvider = ({ children, _listState, _rows, _headers, customSort, getSortedRows }: ListProviderProps) => {
+export const ListProvider = <T extends SortedRows>({ children, _listState, _rows, _headers, getSortedRows }: ListProviderProps<T>) => {
   const [listState, setListState] = useState<ListState>(_listState)
   const [headers] = useState<ListHeaderData[]>(_headers)
 
@@ -61,10 +58,6 @@ export const ListProvider = ({ children, _listState, _rows, _headers, customSort
     }
 
     setListState({ ...listState, sort: newSort })
-    if (customSort) {
-      // Preserve the previous contract where sorting is handled outside the provider.
-      customSort({ ...listState, sort: newSort })
-    }
   }
 
   const udpateSearch = (search?: string) => {

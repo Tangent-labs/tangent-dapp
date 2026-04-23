@@ -18,8 +18,8 @@ type UsgTasksContextValues = {
   lpTasks: LpTask[]
 
   voteTasks: VoteTask[]
-  sortLpTasks: (arg: ListState) => void
-  sortVoteTasks: (arg: ListState) => void
+  getSortedLpRows: (rows: LpTask[], listState: ListState) => LpTask[]
+  getSortedVoteRows: (rows: VoteTask[], listState: ListState) => VoteTask[]
   selectedFeature: string
   setSelectedFeature: (s: string) => void
 
@@ -137,10 +137,10 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
     return [...rowsToShow].sort((a, b) => (b.points ?? 0) - (a.points ?? 0))
   }, [rawLpTasks, lpTaskSearchValue, lpTaskFilteredBy, lpTaskProtocol])
 
-  const sortVoteTasks = (listState: ListState) => {
+  const getSortedVoteRows = (rows: VoteTask[], listState: ListState) => {
     const { key, direction } = listState.sort!
 
-    voteTasks.sort((elementA: VoteTask, elementB: VoteTask) => {
+    return [...rows].sort((elementA, elementB) => {
       const aValue = elementA[key as keyof VoteTask]
       const bValue = elementB[key as keyof VoteTask]
 
@@ -151,10 +151,10 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
     })
   }
 
-  const sortLpTasks = (listState: ListState) => {
+  const getSortedLpRows = (rows: LpTask[], listState: ListState) => {
     const { key, direction } = listState.sort!
 
-    lpTasks.sort((elementA: LpTask, elementB: LpTask) => {
+    return [...rows].sort((elementA, elementB) => {
       const aValue = elementA[key as keyof LpTask]!
       const bValue = elementB[key as keyof LpTask]!
 
@@ -170,8 +170,8 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
 
     voteTasks,
 
-    sortLpTasks,
-    sortVoteTasks,
+    getSortedLpRows,
+    getSortedVoteRows,
 
     selectedFeature,
     setSelectedFeature,

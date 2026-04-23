@@ -14,7 +14,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 export const UsgBoostsContent = () => {
   const { lpUserPoints, voteUserPoints, userBoostFactor } = useUSGContext()
 
-  const { userBoosts, sortBoosts } = useUsgBoostsContext()
+  const { userBoosts, getSortedRows } = useUsgBoostsContext()
 
   const { isConnected } = useWalletConnexionContext()
 
@@ -44,7 +44,7 @@ export const UsgBoostsContent = () => {
       </div>
 
       <div className="mt-2 flex w-full flex-col xl:mt-0">
-        <ListProvider customSort={sortBoosts} _headers={boostHeaders} _rows={userBoosts} _listState={boostsListState}>
+        <ListProvider getSortedRows={getSortedRows} _headers={boostHeaders} _rows={userBoosts} _listState={boostsListState}>
           <BoostsList></BoostsList>
         </ListProvider>
       </div>

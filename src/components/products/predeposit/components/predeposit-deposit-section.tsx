@@ -67,7 +67,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
     isUSGfrxUSDTransactionBlockedBySlippage,
     USGfrxUSDSlippageLoss,
     setIsUSGfrxUSDTransactionBlockedBySlippage,
-    setIsUSDGUSDCTransactionBlockedBySlippage,
+    setIsUSGUSDCTransactionBlockedBySlippage,
     setfrxUSDSlippage,
     actionApproveUSGUSDC,
     actionDepositUSGUSDC,
@@ -83,23 +83,11 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
     signMessage,
     isFetchApiInitialLoading,
     isSigningLoading,
+    isDisplayYouAreNotWL,
+    isDisplayBlurry,
   } = usePredepositContext()
 
   const { connect, isConnected, isWalletContextLoaded } = useWalletConnexionContext()
-
-  let isDisplayYouAreNotWL = false
-  // In private
-  if (predepositStatus?.predepositState === "deposit_private") {
-    // Show you are not WL only in private if an user is not WL
-    isDisplayYouAreNotWL = predepositStatus.userState !== "private"
-  }
-
-  // Display the blurr when ( OR ) :
-  //  - Wallet not connected
-  //  - API is loading
-  //  - Wallet Connected, predeposit in private and now WL
-  //  - Wallet connected, privileges are OK but no signatures
-  const isDisplayBlurry = !isConnected || isFetchApiInitialLoading || (isConnected && (isDisplayYouAreNotWL || !predepositStatus?.isSigned))
 
   return (
     <section className="mt-8 flex w-full flex-col">
@@ -165,7 +153,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
             tanAllocation={projectedUSDCTANAllocation}
             minValueReceived={minUSGUSDCReceived}
             isTransactionBlockedBySlippage={isUSGUSDCTransactionBlockedBySlippage}
-            setIsTransactionBlockedBySlippage={setIsUSDGUSDCTransactionBlockedBySlippage}
+            setIsTransactionBlockedBySlippage={setIsUSGUSDCTransactionBlockedBySlippage}
             slippageLoss={USGUSDCSlippageLoss}
           />
 

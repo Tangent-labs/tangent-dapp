@@ -46,7 +46,7 @@ type PredepositContextValues = {
   setUSGUSDCDepositValue: (v: bigint | undefined) => void
 
   USGfrxUSDDepositValue: bigint | undefined
-  setUSGfrxUSDDepositValue: (v: bigint) => void
+  setUSGfrxUSDDepositValue: (v: bigint | undefined) => void
 
   USDCInfo: AssetDataPriced
 
@@ -103,7 +103,7 @@ type PredepositContextValues = {
   minUSGfrxUSDReceived: string
 
   isUSGUSDCTransactionBlockedBySlippage: boolean
-  setIsUSDGUSDCTransactionBlockedBySlippage: (v: boolean) => void
+  setIsUSGUSDCTransactionBlockedBySlippage: (v: boolean) => void
 
   isUSGfrxUSDTransactionBlockedBySlippage: boolean
   setIsUSGfrxUSDTransactionBlockedBySlippage: (v: boolean) => void
@@ -120,12 +120,15 @@ type PredepositContextValues = {
   signMessage: () => void
   isFetchApiInitialLoading: boolean
   isSigningLoading: boolean
+
+  isDisplayYouAreNotWL: boolean
+  isDisplayBlurry: boolean
 }
 
 export const PredepositContext = createContext<PredepositContextValues | undefined>(undefined)
 
 export const PredepositProvider = ({ children }: PredepositContextProps) => {
-  const { currentAddress, walletClient, isWalletContextLoaded } = useWalletConnexionContext()
+  const { currentAddress, walletClient, isWalletContextLoaded, isConnected } = useWalletConnexionContext()
 
   const { getCachedCurrentBlock } = useRootContext()
 
@@ -171,7 +174,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
 
   const [isfrxUSDQuoteLoading, setIsfrxUSDQuoteLoading] = useState<boolean>(false)
 
-  const [isUSGUSDCTransactionBlockedBySlippage, setIsUSDGUSDCTransactionBlockedBySlippage] = useState<boolean>(false)
+  const [isUSGUSDCTransactionBlockedBySlippage, setIsUSGUSDCTransactionBlockedBySlippage] = useState<boolean>(false)
 
   const [isUSGfrxUSDTransactionBlockedBySlippage, setIsUSGfrxUSDTransactionBlockedBySlippage] = useState<boolean>(false)
 
@@ -621,7 +624,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   }, [frxUSDslippage, USGfrxUSDDepositValue])
 
   useEffect(() => {
-    setIsUSDGUSDCTransactionBlockedBySlippage(!!USGUSDCDepositValue && slippage >= 1)
+    setIsUSGUSDCTransactionBlockedBySlippage(!!USGUSDCDepositValue && slippage >= 1)
   }, [slippage, USGUSDCDepositValue])
 
   useEffect(() => {
@@ -639,6 +642,18 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   useEffect(() => {
     fetchPoolsData()
   }, [])
+
+  const isDisplayYouAreNotWL = useMemo(() => {
+    if (predepositStatus?.predepositState === "deposit_private") {
+      return predepositStatus.userState !== "private"
+    }
+    return false
+  }, [predepositStatus])
+
+  const isDisplayBlurry = useMemo(
+    () => !isConnected || isFetchApiInitialLoading || (isConnected && (isDisplayYouAreNotWL || !predepositStatus?.isSigned)),
+    [isConnected, isFetchApiInitialLoading, isDisplayYouAreNotWL, predepositStatus?.isSigned]
+  )
 
   const contextValue: PredepositContextValues = {
     isUSDCDepositLoading,
@@ -682,7 +697,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     minUSGUSDCReceived,
     minUSGfrxUSDReceived,
     isUSGUSDCTransactionBlockedBySlippage,
-    setIsUSDGUSDCTransactionBlockedBySlippage,
+    setIsUSGUSDCTransactionBlockedBySlippage,
     USGUSDCSlippageLoss,
     isUSGfrxUSDTransactionBlockedBySlippage,
     setIsUSGfrxUSDTransactionBlockedBySlippage,
@@ -693,6 +708,8 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     signMessage,
     isFetchApiInitialLoading,
     isSigningLoading,
+    isDisplayYouAreNotWL,
+    isDisplayBlurry,
   }
 
   return <PredepositContext.Provider value={contextValue}>{children}</PredepositContext.Provider>

@@ -3,10 +3,10 @@
 import { ListState } from "@/types"
 import { mapPoolsAndTasks } from "./utils"
 import { useUSGContext } from "../usg_context"
-import { mapAPROpportunities } from "./usg_earn_controller"
+import { mapAPROpportunities, getConvexBoost } from "./usg_earn_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { AprOpportunityItem, USGStakingInfo, LpUserPoints } from "../usg_type"
-import { EarnPoolsData, getConvexPools, getCurvePools, getPendlePools, getStakeDAOPools } from "../client_api_external"
+import { CurveSubgraphPool, EarnPoolsData, getConvexPools, getCurvePools, getCurveSubgraph, getPendlePools, getStakeDAOPools } from "../client_api_external"
 import { opportunities } from "@/app/(products)/(usg)/earn/aprOpportunities"
 
 type USGEarnContextProps = {
@@ -32,6 +32,7 @@ export const USGEarnProvider = ({ children }: USGEarnContextProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [poolsData, setPoolsData] = useState<EarnPoolsData[]>()
+  const [curveSubgraphData] = useState<CurveSubgraphPool[]>([])
   const [searchValue, setSearchValue] = useState<string>("")
   const [protocolFilter, setProtocolFilter] = useState<string>("All")
 
@@ -48,12 +49,21 @@ export const USGEarnProvider = ({ children }: USGEarnContextProps) => {
     }
 
     return rows
-  }, [poolsData, searchValue, protocolFilter])
+  }, [poolsData, curveSubgraphData, searchValue, protocolFilter])
 
   const fetchPoolsData = async () => {
-    const [curvePools, convexPools, stakeDaoPools, pendlePools] = await Promise.all([getCurvePools(), getConvexPools(), getStakeDAOPools(), getPendlePools()])
+    const pids = opportunities.filter((o) => o.protocolName === "Convex" && o.pid).map((o) => o.pid) as number[]
 
-    const poolsAndTasks = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, opportunities)
+    const [curvePools, convexPools, stakeDaoPools, pendlePools, subgraphPools, convexBoosts] = await Promise.all([
+      getCurvePools(),
+      getConvexPools(),
+      getStakeDAOPools(),
+      getPendlePools(),
+      getCurveSubgraph(),
+      getConvexBoost(pids! || []),
+    ])
+
+    const poolsAndTasks = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, opportunities, subgraphPools, convexBoosts)
 
     setPoolsData(poolsAndTasks)
     setIsLoading(false)

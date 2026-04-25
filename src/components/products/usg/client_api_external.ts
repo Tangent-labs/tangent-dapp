@@ -21,7 +21,13 @@ export type StakeDaoAPRData = {
     projected?: { total: number }
   }
 }
-export type EarnPoolsData = {
+export type curveAPy = {
+  apy?: {
+    latestWeeklyApy?: number
+  }
+}
+
+export type EarnPoolsData = curveAPy & {
   protocol: string
   address: Address
   gaugeCrvApy?: Array<number>
@@ -30,12 +36,24 @@ export type EarnPoolsData = {
   convexPoolData?: { usdTotal?: number }
   usdTotal?: number
   pendleBaseAPY?: number
+  baseApy?: number
   details?: {
     impliedApy: number
     aggregatedApy: number
   }
   pt?: string
   yt?: string
+}
+
+/** Pool row from Curve `getSubgraphData` API (APY / volume from subgraph). */
+export type CurveSubgraphPool = {
+  address: Address
+  latestDailyApy: number
+  latestWeeklyApy: number
+  rawVolume: number | null
+  type: string
+  virtualPrice: number | null
+  volumeUSD: number
 }
 
 export const getStakeDAOPools = async (): Promise<StakeDaoAPRData[]> => {
@@ -116,6 +134,34 @@ export const getCurvePools = async (): Promise<EarnPoolsData[]> => {
     })
   } catch (error) {
     console.error("Failed to fetch curve pools :", error)
+    return []
+  }
+}
+
+export const getCurveSubgraph = async (chain = "ethereum"): Promise<CurveSubgraphPool[]> => {
+  try {
+    const url = `https://api.curve.finance/v1/getSubgraphData/${chain}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch curve subgraph data")
+    }
+
+    const json: { success?: boolean; data?: { poolList?: CurveSubgraphPool[] } } = await response.json()
+
+    if (!json.success || !Array.isArray(json.data?.poolList)) {
+      return []
+    }
+
+    return json.data.poolList
+  } catch (error) {
+    console.error("Failed to fetch curve subgraph data:", error)
     return []
   }
 }

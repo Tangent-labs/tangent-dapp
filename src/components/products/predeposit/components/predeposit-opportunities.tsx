@@ -63,7 +63,9 @@ export function PredepositOpportunitiesListInner() {
   return (
     <>
       <ListHeader rowDisposition={AprOpportunityRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
-      {(displayRows as AprOpportunityItem[])?.map((item, index) => <AprOpportunity key={index} item={item} index={index} openInNewTab={true} />)}
+      {(displayRows as AprOpportunityItem[])?.map((item, index) => (
+        <AprOpportunity key={index} item={item} index={index} openInNewTab={true} />
+      ))}
     </>
   )
 }

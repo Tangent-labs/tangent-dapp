@@ -26,17 +26,19 @@ export type APROpportunitiesData = {
 }
 
 export const aprOpportunitiesListHeaders: ListHeaderData[] = [
-  { label: "Asset", key: "asset" },
+  { label: "Asset", key: "asset", className: "xl:w-1/3 w-full " },
   {
     label: "Protocol",
     key: "protocol",
+    className: "xl:w-1/3 w-full",
   },
   {
     label: "APR",
     key: "currentAPR",
     sort: "sort",
+    className: "xl:w-1/3  ",
   },
-  { label: "Pts/Day/$", key: "points", sort: "sort" },
+  { label: "Pts/Day/$", key: "points", sort: "sort", className: "xl:w-1/3  " },
 ]
 
 export const getConvexBoost = async (pids: number[]): Promise<ConvexBoostData> => {
@@ -109,7 +111,7 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
       if (isCurveStaked || isCurveUnstaked) {
         currentAPRDetails.APY = baseAPY
         projectedAPRDetails.APY = baseAPY
-        if (isCurveStaked) {
+        if (isCurveUnstaked) {
           currentAPR = baseAPY
           projectedAPR = baseAPY
           currentAPRDetails.CRV = 0

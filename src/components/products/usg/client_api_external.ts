@@ -29,7 +29,7 @@ export type curveAPy = {
 
 export type EarnPoolsData = curveAPy & {
   protocol: string
-  address: Address
+  address: string
   gaugeCrvApy?: Array<number>
   gaugeFutureCrvApy?: Array<number>
   lpTokenAddress?: Address

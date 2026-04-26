@@ -30,7 +30,7 @@ export const USGDashboardContent = () => {
   return (
     <div className="flex w-full flex-col items-start justify-start gap-5">
       {/* POINTS CAMPAIGN COMPONENT */}
-      <div className="flex h-full w-full flex-col items-start justify-start gap-8 rounded-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="flex h-full w-full flex-col items-start justify-start gap-8 rounded-[10px]">
         <ReliefCard className="w-full">
           <div
             style={{ fontSize: "20px", lineHeight: "20px" }}

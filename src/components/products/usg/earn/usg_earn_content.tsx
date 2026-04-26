@@ -31,7 +31,7 @@ export const USGEarnContent = () => {
 
   return (
     <>
-      <div className="mb-[10px] flex items-stretch justify-between gap-6">
+      <div className="mb-[10px] flex items-stretch justify-between gap-5">
         <PageHeader>
           <Image height={165} width={165} src="/medias/logos/earn.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px", paddingLeft: "16px" }} />
 

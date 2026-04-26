@@ -6,7 +6,7 @@ type PageHeaderProps = {
 
 export function PageHeader({ children }: PageHeaderProps) {
   return (
-    <div className="relative hidden h-[150px] w-1/2 overflow-hidden rounded-lg xl:flex">
+    <div className="relative hidden h-[150px] w-1/2 overflow-hidden rounded-lg backdrop-blur-[60px] xl:flex">
       <div
         className="pointer-events-none absolute inset-0 rounded-lg"
         style={{

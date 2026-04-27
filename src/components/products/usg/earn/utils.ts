@@ -1,44 +1,56 @@
-import { Address } from "viem"
-import { EarnProtocolInput } from "../usg_type"
-import { EarnPoolsData, StakeDaoAPRData } from "../client_api_external"
+import { Address, formatEther } from "viem"
+import { EarnProtocolInput, ConvexBoostData, ConvexBoostDataGauge } from "../usg_type"
+import { EarnPoolsData, StakeDaoAPRData, CurveSubgraphPool, curveAPy } from "../client_api_external"
 
 export const mapPoolsAndTasks = (
   curvePools: EarnPoolsData[],
   convexPools: EarnPoolsData[],
   stakeDaoPools: StakeDaoAPRData[],
   pendlePools: EarnPoolsData[],
-  tasks: EarnProtocolInput[]
+  tasks: EarnProtocolInput[],
+  subgraphPools: CurveSubgraphPool[],
+  convexBoost: ConvexBoostData
 ) => {
-  const allCurvePoolsAddresses = tasks.filter((t) => t.protocolName === "Curve").map((t) => t.address)
-  const allConvexPoolsAddresses = tasks.filter((t) => t.protocolName === "Convex").map((t) => t.address)
-  const allStakeDaoPoolsPoolsAddresses = tasks.filter((t) => t.protocolName === "Stake DAO").map((t) => t.address)
-  const allPendlePoolsAddresses = tasks.filter((t) => t.protocolName === "Pendle").map((t) => t.address)
+  const allCurvePoolsAddresses = tasks.filter((t) => t.protocolName === "Curve").map((t) => t.address?.toLowerCase())
+  const allConvexPoolsAddresses = tasks.filter((t) => t.protocolName === "Convex").map((t) => t.address?.toLowerCase())
+  const allStakeDaoPoolsPoolsAddresses = tasks.filter((t) => t.protocolName === "Stake DAO").map((t) => t.address?.toLowerCase())
+  const allPendlePoolsAddresses = tasks.filter((t) => t.protocolName === "Pendle").map((t) => t.address?.toLowerCase())
 
   const curvePoolsOfInterest = curvePools
-    .filter((p: EarnPoolsData) => allCurvePoolsAddresses.includes(p.address))
+    .filter((p: EarnPoolsData) => allCurvePoolsAddresses.includes(p.address?.toLowerCase()))
     .map((el) => {
-      return { ...el, protocol: "Curve" }
+      const subgraph = { apy: subgraphPools.find((s) => s.address?.toLowerCase() === el.address?.toLocaleLowerCase()) } as curveAPy
+      return { ...el, protocol: "Curve", ...subgraph }
     })
 
+  const convexFees = Number(formatEther(convexBoost?.fee || 0n))
   const convexPoolsOfInterest = convexPools
-    .filter((p: EarnPoolsData) => allConvexPoolsAddresses.includes(p.address))
+    .filter((p: EarnPoolsData) => allConvexPoolsAddresses.includes(p.address?.toLowerCase()))
     .map((el) => {
-      return { ...el, protocol: "Convex" }
+      const task = tasks.find((t) => t.protocolName === "Convex" && t.address?.toLowerCase() === el.address?.toLowerCase())
+      const boostItem = convexBoost?.gaugeBoosts?.find((b: ConvexBoostDataGauge) => Number(b.pid) === task?.pid)
+      const boost = Number(formatEther(boostItem?.boost || 0n))
+      const processConvexAPR = (value: number) => (value || 0) * boost * (1 - convexFees)
+
+      const gaugeCrvApy = [el.baseApy, processConvexAPR(el.gaugeCrvApy?.at(0) || 0)]
+      const gaugeFutureCrvApy = [el.baseApy, processConvexAPR(el.gaugeFutureCrvApy?.at(0) || 0)]
+      return { address: el.address, protocol: "Convex", gaugeCrvApy, gaugeFutureCrvApy }
     })
 
   const stakeDaoPoolsOfInterest = stakeDaoPools
-    .filter((p: { lpToken: { address: string } }) => allStakeDaoPoolsPoolsAddresses.includes(p.lpToken.address))
+    .filter((p: { lpToken: { address: string } }) => allStakeDaoPoolsPoolsAddresses.includes(p.lpToken.address?.toLowerCase()))
     .map((el) => {
+      //  console.log(el)
       const address = el.lpToken.address as Address
       const currentDetails = el.apr.current.details || []
-      const tradingFees = currentDetails.find((detail) => detail.label.toLowerCase().includes("trading fees"))?.value?.[0] || el.tradingApy || 0
+      const tradingFees = el.tradingApy || 0
+
       const rewardAPR =
         currentDetails
           .filter((detail) => !detail.label.toLowerCase().includes("trading fees"))
           .reduce((sum, detail) => sum + (detail.value?.reduce((innerSum, value) => innerSum + value, 0) || 0), 0) || 0
 
       // v2 does not expose a projected APR in the same shape as the legacy endpoint.
-      // Keep current values for the projected slot so the existing UI remains stable.
       const gaugeCrvApy = [tradingFees, rewardAPR]
       const gaugeFutureCrvApy = [tradingFees, rewardAPR]
 
@@ -46,7 +58,7 @@ export const mapPoolsAndTasks = (
     })
 
   const pendleYT = pendlePools
-    ?.filter((p: EarnPoolsData) => allPendlePoolsAddresses.includes(p.address))
+    ?.filter((p: EarnPoolsData) => allPendlePoolsAddresses.includes(p.address?.toLowerCase()))
     ?.map((pool) => {
       return {
         address: pool?.yt?.substring(2, pool?.yt?.length) as Address,
@@ -77,5 +89,6 @@ export const mapPoolsAndTasks = (
 
   const pendlePoolsOfInterest = pendleYT?.concat(pendlePT)?.concat(pendleLP)
 
+  // @ts-expect-error multiple format
   return curvePoolsOfInterest.concat(convexPoolsOfInterest).concat(stakeDaoPoolsOfInterest)?.concat(pendlePoolsOfInterest)
 }

@@ -16,14 +16,14 @@ type AprOpportunityProps = {
 
 export const AprOpportunityRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
-    <div className="flex flex-col items-center justify-between xl:flex-row">
-      <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">{children?.at(0)}</div>
-
+    <div className="flex w-full flex-col items-center justify-between xl:flex-row">
+      <div className="flex w-full items-center justify-between xl:w-1/3 xl:justify-start">{children?.at(0)}</div>
       <hr className="my-2 w-full opacity-20 xl:hidden" />
 
-      <div className="flex w-full justify-center xl:w-1/2">{children?.at(1)}</div>
-
-      <div className="flex w-full flex-col items-center justify-between gap-2 xl:w-1/2 xl:flex-row">{children?.at(2)}</div>
+      <div className="flex w-full flex-col gap-2 xl:w-2/3 xl:flex-row">
+        {children?.at(1)}
+        {children?.at(2)}
+      </div>
     </div>
   )
 }
@@ -47,40 +47,40 @@ export const AprOpportunity = ({ item, index, isLoading, openInNewTab = false }:
           </div>
         </div>
 
-        <div className="flex w-full items-center justify-between xl:justify-center">
-          <span className="flex text-sm text-subtitle xl:hidden">Protocol</span>
-
-          <div className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-2 py-1 text-xs lg:text-sm">
-            {protocolConfig[item.protocolName as ProtocolName] && (
-              <>
-                <TokenImage token={protocolConfig[item.protocolName as ProtocolName]} size={16} />
-                <span>{item.protocolName}</span>
-              </>
-            )}
+        <div className="flex w-full flex-col xl:flex-row">
+          <div className="flex w-full items-center justify-between py-1 xl:w-1/3 xl:justify-center">
+            <span className="flex text-sm text-subtitle xl:hidden">Protocol</span>
+            <div className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-2 text-xs lg:text-sm">
+              {protocolConfig[item.protocolName as ProtocolName] && (
+                <>
+                  <TokenImage token={protocolConfig[item.protocolName as ProtocolName]} size={16} />
+                  <span>{item.protocolName}</span>
+                </>
+              )}
+            </div>
           </div>
+          <>
+            <div className="flex w-full items-center justify-between py-1 xl:mt-0 xl:w-1/3 xl:justify-center">
+              <MarketAPR
+                marketType={item?.marketType}
+                poolName={item?.asset?.replaceAll("-", "/")}
+                logoKey={item.asset}
+                rewardToken={item?.rewardToken}
+                maxLeverage={1}
+                currentAPRDetails={item.currentAPRDetails}
+                projectedAPRDetails={item.projectedAPRDetails}
+                apr={item?.currentAPR}
+                projectedApr={item?.projectedAPR}
+                isMarketListDisplay={true}
+              />
+            </div>
+
+            <div className="flex w-full items-center justify-between py-1 xl:mt-0 xl:w-1/3 xl:justify-center">
+              <div className="flex text-sm text-subtitle xl:hidden"> Pts/Day/$ </div>
+              <div className="pr-2 text-sm xl:text-[15px]"> {item?.points} </div>
+            </div>
+          </>
         </div>
-
-        <>
-          <div className="mt-2 flex w-full items-center justify-between xl:mt-0 xl:w-1/2 xl:justify-center">
-            <MarketAPR
-              marketType={item?.marketType}
-              poolName={item?.asset?.replaceAll("-", "/")}
-              logoKey={item.asset}
-              rewardToken={item?.rewardToken}
-              maxLeverage={1}
-              currentAPRDetails={item.currentAPRDetails}
-              projectedAPRDetails={item.projectedAPRDetails}
-              apr={item?.currentAPR}
-              projectedApr={item?.projectedAPR}
-              isMarketListDisplay={true}
-            />
-          </div>
-
-          <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-center">
-            <div className="flex text-sm text-subtitle xl:hidden"> Pts/Day/$ </div>
-            <div className="text-sm xl:text-[15px]"> {item?.points} </div>
-          </div>
-        </>
       </ListRow>
     </>
   )

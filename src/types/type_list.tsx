@@ -18,6 +18,7 @@ export type ListHeaderData = {
   key: string
   indicator?: string
   sort?: null | string
+  className?: string
 }
 
 export type ListRowData = {

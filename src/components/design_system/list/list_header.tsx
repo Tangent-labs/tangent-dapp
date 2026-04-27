@@ -76,17 +76,19 @@ export const ListHeader = ({ headers, activeSort, onSort, rowDisposition: Custom
               className={cn(headers[1]?.className || "", "flex w-full items-center justify-center")}
             />
           )}
-          {headers?.slice(2)?.map((header) => (
-            <HeaderDisplay
-              key={header.key}
-              label={header.label}
-              sort={(activeSort?.key == header.key && activeSort?.direction) || "none"}
-              field={header.key}
-              onSort={!!header.sort ? onSort : undefined}
-              indicator={header.indicator}
-              className={cn(header.className || "", "flex w-full flex-1 items-center justify-center")}
-            />
-          ))}
+          {headers
+            ?.slice(2)
+            ?.map((header) => (
+              <HeaderDisplay
+                key={header.key}
+                label={header.label}
+                sort={(activeSort?.key == header.key && activeSort?.direction) || "none"}
+                field={header.key}
+                onSort={!!header.sort ? onSort : undefined}
+                indicator={header.indicator}
+                className={cn(header.className || "", "flex w-full flex-1 items-center justify-center")}
+              />
+            ))}
         </CustomRowDisposition>
       </div>
 

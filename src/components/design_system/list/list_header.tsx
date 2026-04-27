@@ -13,8 +13,6 @@ interface ListHeaderProps {
   onSort?: (key: string) => void
   indicator?: string
   rowDisposition?: React.ComponentType<{ children: React.ReactNode[] }>
-  /** Default `hidden w-full xl:block`. Override e.g. for Earn opportunities: `hidden w-full md-lg:block`. */
-  className?: string
 }
 
 interface HeaderDisplayProps {

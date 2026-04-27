@@ -81,13 +81,7 @@ export function USGEarnListInner() {
         </div>
       </div>
 
-      <ListHeader
-        className="hidden w-full xl:block"
-        rowDisposition={AprOpportunityRowDisposition}
-        headers={headers}
-        activeSort={listState?.sort}
-        onSort={udpateSort}
-      />
+      <ListHeader rowDisposition={AprOpportunityRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       {(displayRows as AprOpportunityItem[])?.map((item, index) => (
         <AprOpportunity item={item} key={index} index={index} isLoading={isLoading} openInNewTab={true}></AprOpportunity>
       ))}

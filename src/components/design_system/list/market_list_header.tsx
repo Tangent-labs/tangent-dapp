@@ -52,7 +52,7 @@ const MarketHeaderDisplay = ({ label, sort = "none", onSort, field, indicator, c
             </HoverCardContent>
           </HoverCard>
         )}
-        {isSortable && <IconSortHeader sort={sort} className={isActive ? "fill-white" : "fill-subtitle"} />}
+        {isSortable && <IconSortHeader sort={sort} />}
       </div>
     </div>
   )

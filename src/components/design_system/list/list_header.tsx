@@ -45,7 +45,7 @@ const HeaderDisplay = ({ label, sort = "none", onSort, field, indicator, classNa
             {indicator}
           </USGHoverCard>
         )}
-        {isSortable && <IconSortHeader sort={sort} className={isActive ? "fill-white" : "fill-subtitle"} />}
+        {isSortable && <IconSortHeader sort={sort} />}
       </div>
     </div>
   )

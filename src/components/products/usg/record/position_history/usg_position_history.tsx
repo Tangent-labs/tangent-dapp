@@ -97,11 +97,8 @@ function PositionList() {
                       listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
                     )}
                   >
-                    <span>{headers?.at(1)?.label}</span>
-                    <IconSortHeader
-                      className={listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction !== "none" ? "fill-white" : "fill-subtitle"}
-                      sort={(listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction) || "none"}
-                    />
+                    {headers?.at(1)?.label}
+                    <IconSortHeader sort={(listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
               </div>
@@ -119,7 +116,7 @@ function PositionList() {
                       listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
                     )}
                   >
-                    <span>{headers?.at(2)?.label}</span>
+                    {headers?.at(2)?.label}
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
@@ -138,7 +135,7 @@ function PositionList() {
                       listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
                     )}
                   >
-                    <span>{headers?.at(3)?.label}</span>
+                    {headers?.at(3)?.label}
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>

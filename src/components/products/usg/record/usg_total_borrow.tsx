@@ -1,6 +1,6 @@
 "use client"
 
-import { formatDollar } from "@/lib/number_formatter"
+import { formatCompact, formatDollar } from "@/lib/number_formatter"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 
 type UsgTotalBorrowProps = {
@@ -22,6 +22,12 @@ const getAdaptiveYAxisStep = (maxValue: number) => {
   return Y_AXIS_STEPS.find((step) => step >= minimumStep) ?? Y_AXIS_STEPS[Y_AXIS_STEPS.length - 1]
 }
 
+const PriceAxisTick = ({ x, y, value }: { x?: number; y?: number; value: string }) => (
+  <text x={(x ?? 0) + 25} y={y} dy={4} textAnchor="end" fill="rgba(255,255,255,0.45)" fontSize={11}>
+    ${value}
+  </text>
+)
+
 export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
   const maxBorrowValue = totalBorrow.length > 0 ? Math.max(...totalBorrow.map((d) => Number(d?.value))) : 0
 
@@ -32,7 +38,6 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
   const yAxisStep = getAdaptiveYAxisStep(maxBorrowValue)
   const yAxisMax = Math.max(yAxisStep, Math.ceil(maxBorrowValue / yAxisStep) * yAxisStep)
   const yAxisTicks = Array.from({ length: Math.floor(yAxisMax / yAxisStep) + 1 }, (_, index) => index * yAxisStep)
-  const hasMultipleYears = new Set(totalBorrow.map((d) => new Date(d.timestamp).getFullYear())).size > 1
   const xAxisTicks = totalBorrow.reduce<string[]>((ticks, point) => {
     const dayKey = new Date(point.timestamp).toISOString().slice(0, 10)
     const lastTick = ticks[ticks.length - 1]
@@ -49,7 +54,6 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
     const date = new Date(timestamp)
 
     return date.toLocaleDateString(undefined, {
-      year: hasMultipleYears ? "2-digit" : undefined,
       month: "short",
       day: "numeric",
     })
@@ -67,73 +71,72 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
   }
 
   return (
-    <div className="flex h-full w-full items-center justify-center">
-      <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
-          data={totalBorrow}
-          margin={{
-            top: 12,
-            right: 12,
-            left: 8,
-            bottom: 12,
-          }}
-        >
-          <defs>
-            <linearGradient id="borrowGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.4} />
-              <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid horizontal={true} vertical={false} stroke="#454545" strokeOpacity={0.3} />
-          <XAxis
-            dataKey="timestamp"
-            ticks={xAxisTicks}
-            minTickGap={24}
-            tickMargin={8}
-            className="text-sm"
-            axisLine={false}
-            tickLine={false}
-            tickFormatter={formatAxisDate}
-          />
+    <ResponsiveContainer width="100%" height="100%">
+      <AreaChart
+        data={totalBorrow}
+        margin={{
+          top: 12,
+          right: -28,
+          left: 0,
+          bottom: 12,
+        }}
+      >
+        <defs>
+          <linearGradient id="borrowGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.4} />
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid horizontal={true} vertical={false} stroke="#454545" strokeOpacity={0.3} />
+        <XAxis
+          dataKey="timestamp"
+          ticks={xAxisTicks}
+          minTickGap={24}
+          tickMargin={8}
+          tick={{ fontSize: 12 }}
+          axisLine={false}
+          tickLine={false}
+          tickFormatter={formatAxisDate}
+        />
 
-          <YAxis
-            width={72}
-            ticks={yAxisTicks}
-            domain={[0, yAxisMax]}
-            orientation="right"
-            tickMargin={8}
-            className="text-xs"
-            axisLine={false}
-            tickLine={false}
-            tickFormatter={formatYAxisValue}
-          />
+        <YAxis
+          width={72}
+          ticks={yAxisTicks}
+          domain={[0, yAxisMax]}
+          orientation="right"
+          className="text-xs"
+          axisLine={false}
+          tickMargin={8}
+          tickLine={false}
+          tick={({ x, y, payload }) => <PriceAxisTick x={x + 5} y={y} value={formatCompact(payload.value)} />}
+          tickFormatter={formatYAxisValue}
+        />
 
-          <Tooltip
-            content={({ active, payload, label }) => {
-              if (active && payload && payload.length) {
-                const formattedValue = formatDollar(Number(payload[0]?.value || 0).toFixed(0), 0)
-                const formattedDate = new Date(label).toISOString().slice(0, 16).replace("T", " ")
+        <Tooltip
+          content={({ active, payload, label }) => {
+            if (active && payload && payload.length) {
+              const formattedValue = formatDollar(Number(payload[0]?.value || 0).toFixed(0), 0)
+              const formattedDate = new Date(label).toISOString().slice(0, 16).replace("T", " ")
 
-                return (
-                  <div className="flex flex-col items-center justify-center rounded-[10px] border border-white border-opacity-10 bg-input p-2 text-white backdrop-blur-[60px]">
-                    <div className="flex w-full items-center justify-between">
-                      <p className="min-w-24 font-semibold">Total Borrow:</p>
-                      {formattedValue}
-                    </div>
-                    <div className="flex w-full items-center justify-between">
-                      <p className="min-w-24 font-semibold">Date:</p>
-                      {formattedDate}
-                    </div>
+              return (
+                <div className="flex flex-col items-center justify-center rounded-[10px] border border-white border-opacity-10 bg-input p-2 text-white backdrop-blur-[60px]">
+                  <div className="flex w-full items-center justify-between">
+                    <p className="min-w-24 font-semibold">Total Borrow:</p>
+                    {formattedValue}
                   </div>
-                )
-              }
+                  <div className="flex w-full items-center justify-between">
+                    <p className="min-w-24 font-semibold">Date:</p>
+                    {formattedDate}
+                  </div>
+                </div>
+              )
+            }
 
-              return null
-            }}
-          />
-          <Area type="monotone" dataKey="value" stroke="#1568ed" strokeWidth={1.5} fill="url(#borrowGradient)" dot={false} />
-        </AreaChart>
-      </ResponsiveContainer>
-    </div>
+            return null
+          }}
+        />
+        <Area type="monotone" dataKey="value" stroke="#1568ed" strokeWidth={1.5} fill="url(#borrowGradient)" dot={false} />
+      </AreaChart>
+    </ResponsiveContainer>
   )
 }

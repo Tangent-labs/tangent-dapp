@@ -52,7 +52,7 @@ export default function USGHarvestContent() {
 
   return (
     <>
-      <div className="flex items-stretch justify-between gap-6">
+      <div className="flex items-stretch justify-between gap-5">
         <PageHeader>
           <Image height={150} width={150} src="/medias/logos/claim.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           <div className="flex flex-col items-start justify-center gap-3 px-6">

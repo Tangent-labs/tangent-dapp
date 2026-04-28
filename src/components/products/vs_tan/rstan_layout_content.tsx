@@ -59,7 +59,7 @@ export const VsTanLayoutContent = ({
 
   return (
     <>
-      <div className="flex items-stretch justify-between gap-6">
+      <div className="flex items-stretch justify-between gap-5">
         <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
           <div className="flex items-center justify-center">
             <Image height={360} width={360} src={`/medias/tokens/vsTAN.png`} alt="token" />

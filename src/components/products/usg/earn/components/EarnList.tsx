@@ -50,7 +50,7 @@ export const AprOpportunity = ({ item, index, isLoading, openInNewTab = false }:
         <div className="flex w-full flex-col xl:flex-row">
           <div className="flex w-full items-center justify-between py-1 xl:w-1/3 xl:justify-center">
             <span className="flex text-sm text-subtitle xl:hidden">Protocol</span>
-            <div className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-2 text-xs lg:text-sm">
+            <div className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-2 py-1 text-xs backdrop-blur-[60px] lg:text-sm">
               {protocolConfig[item.protocolName as ProtocolName] && (
                 <>
                   <TokenImage token={protocolConfig[item.protocolName as ProtocolName]} size={16} />

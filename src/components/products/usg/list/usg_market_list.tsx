@@ -28,7 +28,6 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
-import { PageHeader } from "@/components/design_system/structure/page_header"
 
 interface ListRowDispositionProps {
   children: React.ReactNode[]
@@ -90,25 +89,47 @@ export default function USGMarketList() {
 
   return (
     <>
-      <div className="mb-4 hidden items-stretch justify-between gap-5 xl:flex">
-        <PageHeader>
-          <Image height={150} width={150} src="/medias/tokens/USG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+      <div className="mb-2 flex w-full items-stretch justify-between gap-5 xl:mb-4">
+        <div className="relative flex h-[100px] w-full overflow-hidden rounded-lg xl:h-[150px] xl:w-1/2">
+          <div
+            className="pointer-events-none absolute inset-0 rounded-lg"
+            style={{
+              border: "1px solid",
+              background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
+              WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
+              WebkitMaskComposite: "xor",
+              maskComposite: "exclude",
+              borderImageSource: "radial-gradient(50% 50% at 0% 50%, #0075FF 0%, rgba(0, 0, 0, 0) 100%)",
+            }}
+          />
 
-          <div className="flex flex-col items-start justify-center px-6">
-            <h2 className="text-4xl font-semibold">Markets</h2>
-            <p className="mt-2 text-[15px]">Borrow USG against accepted collateral. Tangent features two kinds of markets.</p>
-            <Link
-              className="flex cursor-pointer items-center justify-center underline hover:text-white/30"
-              href="https://docs.tangent.finance/docs/usg/overview_usg#markets%E2%80%8B"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn more about HEC and LEC markets <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white"></IconOpenOutside>
-            </Link>
+          <div className="flex w-full items-center justify-center rounded-lg bg-panel-title-gradient">
+            <Image
+              height={150}
+              width={150}
+              src="/medias/tokens/USG.png"
+              alt="token"
+              className="hidden xl:flex"
+              style={{ maxWidth: "320px", maxHeight: "320px" }}
+            />
+            <Image style={{ maxWidth: "80px", maxHeight: "80px" }} height={80} width={80} src="/medias/tokens/USG.png" alt="token" className="flex xl:hidden" />
+
+            <div className="flex flex-col items-start justify-center gap-2 px-2 xl:gap-0 xl:px-6">
+              <h2 className="hidden text-4xl font-semibold xl:flex">Markets</h2>
+              <p className="mt-2 text-[15px]">Borrow USG against accepted collateral. Tangent features two kinds of markets.</p>
+              <Link
+                className="flex cursor-pointer items-center justify-center text-sm underline hover:text-white/30 xl:text-[15px]"
+                href="https://docs.tangent.finance/docs/usg/overview_usg#markets%E2%80%8B"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Learn more about HEC and LEC markets <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white"></IconOpenOutside>
+              </Link>
+            </div>
           </div>
-        </PageHeader>
+        </div>
 
-        <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
+        <div className="hidden h-auto flex-col justify-between gap-[10px] xl:flex xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
           <ThreeCardRowWithMask
@@ -229,6 +250,17 @@ export default function USGMarketList() {
             <div className="whitespace-nowrap text-sm font-semibold">{formatMillions(globalData.globalDebt)} USG</div>
           </div>
         </ReliefCard>
+      </div>
+
+      <Divider className="flex xl:hidden" />
+
+      <div className="mb-2 flex w-full flex-col items-center justify-center gap-2 md:hidden">
+        <InputSearch
+          placeholder="Search"
+          className="flex w-full flex-col items-center justify-center"
+          value={searchValue ?? ""}
+          onChange={(e) => setSearchValue(e as string)}
+        />
       </div>
 
       <div className="my-4 hidden items-end justify-between xl:flex">

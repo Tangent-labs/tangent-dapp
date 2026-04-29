@@ -1,11 +1,14 @@
 "use client"
 
-import { useMemo } from "react"
-import { MarketDetailData } from "../../../usg_type"
+import { Address } from "viem"
 import Image from "next/image"
+import { ERC20S } from "@/data/erc20s"
+import { TOKEN_INFOS } from "@/data/tokenInfos"
+import { MarketDetailData } from "../../../usg_type"
+import { useEffect, useMemo, useState } from "react"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import { TOKEN_INFOS } from "@/data/tokenInfos"
+import { getTokensPrice, getTokensPriceChange } from "@/services/service_price"
 import { MARKET_TYPE_TO_PLATFORMS, PLATFORM_INFOS, PlatformInfo } from "@/data/platformInfos"
 
 type MarketDetailsInfosProps = {
@@ -28,7 +31,7 @@ const PlatformRow = ({ platform }: { platform: PlatformInfo }) => (
           <Image src={platform.logoPath} alt={platform.name} width={12} height={12} className="h-3 w-3" />
           <span className="text-xs text-white">{platform.name}</span>
         </div>
-        <span className="rounded-full bg-overlay-panel p-1 text-xs text-white">{platform.type}</span>
+        <span className="rounded-full bg-overlay-panel px-2 py-1 text-xs text-white">{platform.type}</span>
       </div>
       <div className="flex items-center gap-2">
         <LinkButton href={platform.website} label="Website" />
@@ -39,7 +42,7 @@ const PlatformRow = ({ platform }: { platform: PlatformInfo }) => (
   </div>
 )
 
-const AssetRow = ({ token }: { token: string }) => {
+const AssetRow = ({ token, price, priceChange }: { token: string; price?: number; priceChange?: number }) => {
   const info = TOKEN_INFOS[token]
 
   return (
@@ -48,6 +51,16 @@ const AssetRow = ({ token }: { token: string }) => {
         <div className="flex items-center justify-center gap-1 rounded-full">
           <TokenImage token={token} size={16} className="h-4 w-4" />
           <span className="text-xs text-white">{token}</span>
+
+          {!!price && !!priceChange && (
+            <div className="flex items-center justify-center gap-1 rounded-full bg-overlay-panel px-2 py-1">
+              <span className="text-xs text-subtitle">${price.toLocaleString("en-US", { minimumFractionDigits: 3, maximumFractionDigits: 4 })}</span>
+              <span className={`text-xs ${priceChange >= 0 ? "text-green-400" : "text-red-400"}`}>
+                {priceChange >= 0 ? "+" : ""}
+                {priceChange.toFixed(2)}%
+              </span>
+            </div>
+          )}
         </div>
         {info && (
           <div className="flex items-center gap-2">
@@ -70,9 +83,38 @@ export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
     return marketData.collateralInfo.name.split("/").filter(Boolean)
   }, [marketData.collateralInfo.name, marketData.marketType])
 
+  const [tokenPrices, setTokenPrices] = useState<Record<string, number>>({})
+  const [tokenPriceChanges, setTokenPriceChanges] = useState<Record<string, number>>({})
+
+  useEffect(() => {
+    const addressBySymbol = Object.fromEntries(
+      tokens.flatMap((symbol) => {
+        const addr = ERC20S.find((e) => e.symbol === symbol)?.address
+        return addr ? [[symbol, addr]] : []
+      })
+    ) as Record<string, Address>
+
+    const addresses = Object.values(addressBySymbol)
+    if (addresses.length === 0) return
+
+    const toBySymbol = (prices: Record<Address, number>) => {
+      const bySymbol: Record<string, number> = {}
+      tokens.forEach((symbol) => {
+        const addr = addressBySymbol[symbol]
+        if (addr && prices[addr] !== undefined) bySymbol[symbol] = prices[addr]
+      })
+      return bySymbol
+    }
+
+    Promise.all([getTokensPrice(addresses), getTokensPriceChange(addresses)]).then(([prices, changes]) => {
+      if (prices) setTokenPrices(toBySymbol(prices))
+      if (changes) setTokenPriceChanges(toBySymbol(changes))
+    })
+  }, [tokens])
+
   const platforms = useMemo(() => {
     if (!marketData.marketType) return []
-    return (MARKET_TYPE_TO_PLATFORMS[marketData.marketType] ?? []).map((name) => PLATFORM_INFOS[name]).filter(Boolean)
+    return (MARKET_TYPE_TO_PLATFORMS[marketData.marketType] ?? []).map((name) => PLATFORM_INFOS[name])
   }, [marketData.marketType])
 
   return (
@@ -91,7 +133,7 @@ export const MarketDetailsInfos = ({ marketData }: MarketDetailsInfosProps) => {
         <span className="mb-4 text-base font-semibold text-white">Assets</span>
         <div className="flex flex-col gap-5">
           {tokens.map((token) => (
-            <AssetRow key={token} token={token} />
+            <AssetRow key={token} token={token} price={tokenPrices[token]} priceChange={tokenPriceChanges[token]} />
           ))}
         </div>
       </div>

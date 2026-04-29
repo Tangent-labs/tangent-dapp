@@ -28,7 +28,7 @@ export function MarketDetailsParameters() {
   return (
     <ReliefCard className="my-2 md:my-5 md:h-[110px]">
       {currentMarketApr && marketData && (
-        <div className="flex hidden items-center justify-evenly py-5 md:flex">
+        <div className="hidden items-center justify-evenly py-5 md:flex">
           <RecordPageHeader
             poolName={marketData?.collateralInfo?.name}
             logoKey={marketData.collateralInfo.logoKey}

@@ -2,7 +2,7 @@
 
 import { APRDisplay } from "./apr_display"
 import { ReactNode, useMemo, useState } from "react"
-import { formatDollar } from "@/lib/number_formatter"
+import { formatCompact, formatDollar } from "@/lib/number_formatter"
 import { computedProjection } from "../usg_stake_controller"
 import type { LineDot } from "recharts/types/cartesian/Line"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
@@ -20,7 +20,7 @@ const EndDot = (lastIndex: number) =>
     const { cx, cy, index } = props
     if (index !== lastIndex || cx == null || cy == null) return null
     return (
-      <g pointerEvents="none">
+      <g pointerEvents="none" key={`EndDot${lastIndex}`}>
         <circle cx={cx} cy={cy} r={4.5} fill="#FFFFFF" stroke="#000" strokeWidth={2} />
       </g>
     )
@@ -31,7 +31,7 @@ const EndDotGradient = (lastIndex: number) =>
     const { cx, cy, index } = props
     if (index !== lastIndex || cx == null || cy == null) return null
     return (
-      <g pointerEvents="none">
+      <g pointerEvents="none" key={`EndDotGradient${lastIndex}`}>
         <circle cx={cx} cy={cy} r={4.5} fill="url(#gradientColor)" stroke="#000" strokeWidth={2} />
       </g>
     )
@@ -110,13 +110,13 @@ const CustomTooltip = (props: {
 interface ForecastGraphProps {
   currentInvestment: number
   newLiquidity: number
-  apr: number
+  apy: number
   currentFeature: string
 }
 
 type RangeKey = "1m" | "3m" | "1y"
 
-export const ForecastGraph = ({ currentInvestment, newLiquidity, apr, currentFeature }: ForecastGraphProps) => {
+export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFeature }: ForecastGraphProps) => {
   const [range, setRange] = useState<RangeKey>("1m")
 
   const {
@@ -171,12 +171,11 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apr, currentFea
       let existingCompounded = 0
       let newCompounded = 0
 
+      existingCompounded = computedProjection(currentInvestment, timeInYears, apy)
       if (currentFeature === "stake") {
-        existingCompounded = newLiquidity + computedProjection(currentInvestment, timeInYears, apr)
-        newCompounded = computedProjection(currentInvestment + newLiquidity, timeInYears, apr)
+        newCompounded = computedProjection(currentInvestment + newLiquidity, timeInYears, apy)
       } else {
-        existingCompounded = computedProjection(currentInvestment, timeInYears, apr)
-        newCompounded = computedProjection(currentInvestment - newLiquidity, timeInYears, apr)
+        newCompounded = computedProjection(currentInvestment - newLiquidity, timeInYears, apy)
       }
 
       points.push({
@@ -230,7 +229,7 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apr, currentFea
       startTs: now.getTime(),
       endTs,
     }
-  }, [range, currentInvestment, newLiquidity, apr])
+  }, [range, currentInvestment, newLiquidity, apy])
 
   const allValues = useMemo(() => {
     const base = forecastData.map((d) => d.baseAmount)
@@ -244,8 +243,7 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apr, currentFea
   return (
     <>
       <div className="flex w-full items-center justify-between">
-        <APRDisplay apr={apr} />
-
+        <APRDisplay apy={apy} />
         <div className="hidden items-end justify-end gap-2 md:flex">
           <ButtonTab onClick={() => setRange("1m")} label={"1m"} active={range === "1m"} className="rounded-full !py-1" />
           <ButtonTab onClick={() => setRange("3m")} label={"3m"} active={range === "3m"} className="rounded-full !py-1" />
@@ -253,10 +251,10 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apr, currentFea
         </div>
       </div>
 
-      {!!apr && apr > 0 ? (
-        <div className="mt-[10px] flex h-72 min-h-72 w-full">
+      {!!apy && apy > 0 ? (
+        <div className="mt-2.5 flex h-72 min-h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart margin={{ top: 12, right: 16, bottom: 8, left: 8 }} data={forecastData}>
+            <LineChart margin={{ top: 12, right: 0, bottom: 8, left: 0 }} data={forecastData}>
               <defs>
                 <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#FBF911" />
@@ -270,7 +268,8 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apr, currentFea
 
               <YAxis
                 orientation="right"
-                tickFormatter={(v) => `$${v}`}
+                tickFormatter={(v) => `$${formatCompact(v)}`}
+                width={52}
                 domain={[yAxis.min, yAxis.max]}
                 ticks={Array.from({ length: Math.floor((yAxis.max - yAxis.min) / yAxis.stepSize) + 1 }, (_, i) => yAxis.min + i * yAxis.stepSize)}
                 tick={{ fontSize: 12 }}

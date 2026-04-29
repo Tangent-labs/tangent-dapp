@@ -5,7 +5,7 @@ import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import { Area, AreaChart, CartesianGrid, ReferenceDot, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 type PositionAPRProps = {
-  apr: number
+  apy: number
   fetchsUSGHistoryAPY: (range: string) => Promise<void>
   sUSGSelectedTab: string
   apyHistory: {
@@ -45,7 +45,7 @@ const CustomsUSGPerformanceTooltip = (props: {
       <div className="font-extralight text-white">{dateLabel}</div>
       <div className="flex items-center justify-center gap-1">
         <div className="h-3 w-3 rounded-[3px] bg-row-success"></div>
-        <div className="text-xs font-semibold text-white">APR: {value.toFixed(1)}%</div>
+        <div className="text-xs font-semibold text-white">APY: {value.toFixed(1)}%</div>
       </div>
     </div>
   )
@@ -58,7 +58,7 @@ const formatXAxis = (tick: string) => {
   return `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}`
 }
 
-export const PositionAPR = ({ apr, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHistory }: PositionAPRProps) => {
+export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHistory }: PositionAPRProps) => {
   const averageApy = useMemo(() => {
     if (!apyHistory || apyHistory.length === 0) return 0
     const sum = apyHistory.reduce((acc, point) => acc + point.uv, 0)
@@ -68,7 +68,7 @@ export const PositionAPR = ({ apr, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
   return (
     <>
       <div className="flex w-full items-center justify-between">
-        <APRDisplay apr={apr} />
+        <APRDisplay apy={apy} />
 
         <div className="hidden items-end justify-end gap-2 md:flex">
           <ButtonTab onClick={() => fetchsUSGHistoryAPY("1m")} label={"1m"} active={sUSGSelectedTab === "1m"} className="rounded-full !py-1" />
@@ -80,14 +80,12 @@ export const PositionAPR = ({ apr, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
       <div className="mb mt-3 flex h-72 min-h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
-            width={500}
-            height={400}
             data={apyHistory}
             margin={{
-              top: 10,
-              right: 20,
-              left: 20,
-              bottom: 10,
+              top: 0,
+              right: 0,
+              left: 0,
+              bottom: 0,
             }}
           >
             <defs>
@@ -103,13 +101,20 @@ export const PositionAPR = ({ apr, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
               dataKey="date"
               tickFormatter={formatXAxis}
               scale="point"
-              padding={{ left: 10, right: 10 }}
+              padding={{ left: 0, right: 0 }}
               tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
               axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
               tickLine={false}
             />
 
-            <YAxis orientation="right" tickFormatter={formatYAxis} tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }} axisLine={false} tickLine={false} />
+            <YAxis
+              orientation="right"
+              width={28}
+              tickFormatter={formatYAxis}
+              tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
+              axisLine={false}
+              tickLine={false}
+            />
 
             <Area
               type="monotone"

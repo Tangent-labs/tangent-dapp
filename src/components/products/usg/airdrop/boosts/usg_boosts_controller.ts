@@ -11,26 +11,18 @@ export const boostHeaders: ListHeaderData[] = [
   { label: "Status", key: "status" },
 ]
 
-const OFFCHAIN_BOOST_INFOS: NumMap = {
-  CVG_COMPENSATION: 1,
+const BOOST_INFOS: NumMap = {
   LP_DEALS: 1,
-  CVG_PEPE: 0.75,
   DEWHALE_MEMBERS: 0.75,
-  TURTLE_CLUB: 0.5,
   ONBOARDED: 0.1,
-}
-
-const ONCHAIN_BOOST_INFOS: NumMap = {
   LLAMA_NFT: 0.5,
   VECRV: 0.25,
   VLCVX: 0.25,
-  VESDT: 0.25,
   VEFXN: 0.25,
-  VEPENDLE: 0.25,
-  VEYFI: 0.25,
   SINV: 0.25,
-  STRESOLV: 0.25,
   STRSUP: 0.25,
+  CVG_COMPENSATION: 1,
+  CVG_PEPE: 0.75,
 }
 
 type BoostMetadata = {
@@ -41,29 +33,24 @@ type BoostMetadata = {
 
 const BOOST_METADATA: Record<string, BoostMetadata> = {
   CVG_COMPENSATION: {
-    title: "CVG Compensation Boost",
+    title: "Convergence boost",
     logo: "CVG",
     description: "Receive a boost for being a CVG OG.",
   },
   LP_DEALS: {
-    title: "LP Deals Boost",
+    title: "Pre-Deposit boost",
     logo: "USG",
     description: "You are a member of our private lp deals.",
   },
   CVG_PEPE: {
-    title: "Pepe Booster",
+    title: "NFT boost",
     logo: "PEPE",
     description: "Hold a CVG Pepe NFT to receive this boost.",
   },
   DEWHALE_MEMBERS: {
-    title: "Dewhales Boost",
+    title: "Dewhales boost",
     logo: "Dewhales",
     description: "Be a Dewhales member.",
-  },
-  TURTLE_CLUB: {
-    title: "Turtle Club Boost",
-    logo: "Turtle",
-    description: "Be a Turtle Club member.",
   },
   ONBOARDED: {
     title: "Onboarded User",
@@ -85,35 +72,16 @@ const BOOST_METADATA: Record<string, BoostMetadata> = {
     logo: "CVX",
     description: "vlCVX Holder",
   },
-  VESDT: {
-    title: "veSDT Holder",
-    logo: "SDT",
-    description: "veSDT Holder",
-  },
+
   VEFXN: {
     title: "veFXN Holder",
     logo: "FX",
     description: "veFXN Holder",
   },
-  VEPENDLE: {
-    title: "vePENDLE Holder",
-    logo: "Pendle",
-    description: "vePENDLE Holder",
-  },
-  VEYFI: {
-    title: "veYFI Holder",
-    logo: "YFI",
-    description: "veYFI Holder",
-  },
   SINV: {
     title: "sINV Holder",
     logo: "Inverse",
     description: "sINV Holder",
-  },
-  STRESOLV: {
-    title: "stRESOLV Holder",
-    logo: "Resolv",
-    description: "stRESOLV Holder",
   },
   STRSUP: {
     title: "stRSUP Holder",
@@ -142,8 +110,5 @@ export const mapUserBoosts = (boosts: string[]): Boost[] => {
     }
   }
 
-  const offChainBoosts = Object.entries(OFFCHAIN_BOOST_INFOS).map(toRow)
-  const onChainBoosts = Object.entries(ONCHAIN_BOOST_INFOS).map(toRow)
-
-  return offChainBoosts.concat(onChainBoosts)
+  return Object.entries(BOOST_INFOS).map(toRow)
 }

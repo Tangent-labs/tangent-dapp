@@ -45,7 +45,7 @@ export const UsgBoostsContent = () => {
 
       <div className="mt-2 flex w-full flex-col xl:mt-0">
         <ListProvider getSortedRows={getSortedRows} _headers={boostHeaders} _rows={userBoosts} _listState={boostsListState}>
-          <BoostsList></BoostsList>
+          <BoostsList />
         </ListProvider>
       </div>
     </>

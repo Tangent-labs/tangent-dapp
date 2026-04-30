@@ -3,12 +3,12 @@ import { TokenImage } from "@/components/design_system/structure/token_image"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 type APRDisplayProps = {
-  apr: number
+  apy: number
 }
 
-export const APRDisplay = ({ apr }: APRDisplayProps) => {
+export const APRDisplay = ({ apy }: APRDisplayProps) => {
   return (
-    <div className="flex items-center justify-start gap-[5px]">
+    <div className="flex items-center justify-start gap-3">
       <div className="flex items-center justify-center gap-[5px] rounded-[10px] bg-overlay-panel p-[10px]">
         <TokenImage token="sUSG" size={20} />
         sUSG
@@ -17,7 +17,7 @@ export const APRDisplay = ({ apr }: APRDisplayProps) => {
       <HoverCard openDelay={100} closeDelay={100}>
         <HoverCardTrigger asChild>
           <button type="button" className="inline-flex items-center hover:text-row-success">
-            <div className="mr-1 text-xl font-semibold">{apr.toFixed(2)}%</div>
+            <div className="mr-1 text-xl font-semibold">{apy.toFixed(2)}%</div>
             <IconStars className="fill-row-success" />
           </button>
         </HoverCardTrigger>

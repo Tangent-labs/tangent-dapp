@@ -171,51 +171,55 @@ export default function USGMarketList() {
           <div className="flex h-full w-full items-stretch gap-4">
             <div className="basis-[40%]">
               <NeonLightCard
-                paddingHorizontal={2.5}
+                paddingHorizontal={2}
                 className={cn(globalData.USGPrice === "-" ? "shimmer" : "", "h-full w-full")}
                 color1="#0077ffa3"
                 color2="#0075FF"
               >
-                <div className="flex h-full items-center justify-between gap-2 xl:gap-4">
-                  <TokenImage token="USG" className="h-8 w-8" size={32} />
-
-                  {[
-                    { key: "USG", value: formatDollar(globalData.USGPrice, 4) },
-                    { key: "Supply", value: formatMillions(globalData.USGSupply) },
-                  ].map((item, index) => (
-                    <div className="text-center" key={index}>
-                      <div className="text-center text-xs text-subtitle">{item.key}</div>
-                      <div className="text-center text-sm font-semibold">{item.value}</div>
-                    </div>
-                  ))}
+                <div className="flex h-full items-center gap-2 xl:gap-4">
+                  <div className="flex-shrink-0">
+                    <TokenImage token="USG" className="h-8 w-8" size={32} />
+                  </div>
+                  <div className="flex flex-1 items-center justify-center gap-4 md:gap-10">
+                    {[
+                      { key: "USG", value: formatDollar(globalData.USGPrice, 4) },
+                      { key: "Supply", value: formatMillions(globalData.USGSupply) },
+                    ].map((item, index) => (
+                      <div className="text-center" key={index}>
+                        <div className="text-center text-xs text-subtitle">{item.key}</div>
+                        <div className="text-center text-sm font-semibold">{item.value}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </NeonLightCard>
             </div>
             <div className="basis-[60%]">
               <NeonLightCard
-                paddingHorizontal={2.5}
+                paddingHorizontal={2}
                 className={cn(globalData.sUSGPrice === "-" ? "shimmer" : "", "h-full w-full")}
                 color1="#95ff006d"
                 color2="#95FF00"
               >
-                <div className="flex h-full items-center justify-between">
-                  <TokenImage token="sUSG" className="h-8 w-8" size={32} />
-
-                  <div className="text-center">
-                    <div className="text-xs text-subtitle">sUSG</div>
-                    <div className="text-sm font-semibold">{globalData.sUSGPrice}</div>
+                <div className="flex h-full items-center gap-5">
+                  <div className="flex-shrink-0">
+                    <TokenImage token="sUSG" className="h-8 w-8" size={32} />
                   </div>
-
-                  <div className="text-center">
-                    <div className="text-xs text-subtitle">Supply</div>
-                    <div className="text-sm font-semibold">{formatMillions(globalData.sUSGSupply)}</div>
-                  </div>
-
-                  <div className="text-center">
-                    <div className="text-xs text-subtitle">APY</div>
-                    <div className="flex items-center justify-center gap-1">
-                      <div className="text-sm font-semibold text-white">{sUSGCurrentAPY.toFixed(2) + "%"}</div>
-                      <IconStars className="w-3 fill-row-success"></IconStars>
+                  <div className="flex flex-1 items-center justify-center gap-4 md:gap-10">
+                    <div className="text-center">
+                      <div className="text-xs text-subtitle">sUSG</div>
+                      <div className="text-sm font-semibold">{globalData.sUSGPrice}</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs text-subtitle">Supply</div>
+                      <div className="text-sm font-semibold">{formatMillions(globalData.sUSGSupply)}</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs text-subtitle">APY</div>
+                      <div className="flex items-center justify-center gap-1">
+                        <div className="text-sm font-semibold text-white">{sUSGCurrentAPY.toFixed(2) + "%"}</div>
+                        <IconStars className="w-3 fill-row-success"></IconStars>
+                      </div>
                     </div>
                   </div>
                 </div>

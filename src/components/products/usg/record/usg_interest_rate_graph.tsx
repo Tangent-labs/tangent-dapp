@@ -4,16 +4,16 @@ import { useEffect, useState } from "react"
 import { formatUnits, parseUnits } from "viem"
 import { computeIR } from "./usg_record_controller"
 import { useUSGRecordContext } from "./usg_record_context"
-import { ResponsiveContainer, AreaChart, XAxis, YAxis, CartesianGrid, Legend, Area, Tooltip } from "recharts"
+import { ResponsiveContainer, AreaChart, XAxis, YAxis, CartesianGrid, Area, Tooltip } from "recharts"
 
 const RewardsCutAxisTick = ({ x, y, value }: { x?: number; y?: number; value: string }) => (
-  <text x={(x ?? 0) - 26} y={y} dy={4} textAnchor="start" fill="#0075FF" fontSize={11}>
+  <text x={(x ?? 0) + 8} y={y} dy={4} textAnchor="start" fill="rgba(255,255,255,0.6)" fontSize={11}>
     {value}%
   </text>
 )
 
 const InterestRateAxisTick = ({ x, y, value }: { x?: number; y?: number; value: string }) => (
-  <text x={(x ?? 0) + 24} y={y} dy={4} textAnchor="end" fill="#e5ff00" fontSize={11}>
+  <text x={(x ?? 0) - 8} y={y} dy={4} textAnchor="end" fill="rgba(255,255,255,0.6)" fontSize={11}>
     {value}%
   </text>
 )
@@ -104,10 +104,10 @@ export function InterestRateGraph() {
       <AreaChart
         data={chartData}
         margin={{
-          top: 10,
-          right: -22,
-          left: -30,
-          bottom: 0,
+          top: 12,
+          right: -60,
+          left: -60,
+          bottom: 12,
         }}
       >
         <defs>
@@ -117,9 +117,9 @@ export function InterestRateGraph() {
             <stop offset="100%" stopColor="rgba(0,117,255,0)" stopOpacity={0} />
           </linearGradient>
           <linearGradient id="gradiant-yellow" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(251,249,17,0.3)" stopOpacity={1} />
-            <stop offset="50%" stopColor="rgba(251,249,17,0.05)" stopOpacity={1} />
-            <stop offset="100%" stopColor="rgba(251,249,17,0)" stopOpacity={0} />
+            <stop offset="0%" stopColor="rgba(149,255,0,0.3)" stopOpacity={1} />
+            <stop offset="50%" stopColor="rgba(149,255,0,0.05)" stopOpacity={1} />
+            <stop offset="100%" stopColor="rgba(149,255,0,0)" stopOpacity={0} />
           </linearGradient>
         </defs>
 
@@ -128,13 +128,14 @@ export function InterestRateGraph() {
           type="number"
           reversed
           className="text-sm"
-          axisLine={{ stroke: "#454545" }}
+          axisLine={false}
           tickLine={false}
           tickFormatter={(value) => value.toFixed(4)}
           ticks={[1.0, 0.9975, 0.995, 0.9925, 0.99, 0.9875, 0.985, 0.9825, 0.98]}
           domain={[0.98, 1.0]}
+          padding={{ left: 25, right: 30 }}
           textAnchor="middle"
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 12, fill: "rgba(255,255,255,0.6)" }}
           tickMargin={8}
         />
 
@@ -142,11 +143,11 @@ export function InterestRateGraph() {
           yAxisId="left"
           dataKey="rewardsCut"
           className="text-xs"
-          axisLine={{ stroke: "#454545" }}
+          axisLine={false}
           tickLine={false}
-          tickFormatter={(value) => `${value}%`}
           domain={[0, 100]}
-          tick={({ x, y, payload }) => <RewardsCutAxisTick x={x + 5} y={y} value={payload.value} />}
+          ticks={[0, 25, 50, 75, 100]}
+          tick={({ x, y, payload }) => <RewardsCutAxisTick x={x} y={y - 7} value={payload.value} />}
         />
 
         <YAxis
@@ -154,16 +155,14 @@ export function InterestRateGraph() {
           dataKey="interestRate"
           orientation="right"
           className="text-xs"
-          axisLine={{ stroke: "#454545" }}
+          axisLine={false}
           tickLine={false}
-          tickFormatter={(value) => `${value}%`}
-          domain={[0, 160]}
-          tick={({ x, y, payload }) => <InterestRateAxisTick x={x + 5} y={y} value={payload.value} />}
+          domain={[0, 400]}
+          ticks={[0, 100, 200, 300, 400]}
+          tick={({ x, y, payload }) => <InterestRateAxisTick x={x} y={y - 7} value={payload.value} />}
         />
 
-        <CartesianGrid horizontal={true} vertical={false} stroke="#454545" strokeOpacity={0.3} />
-
-        <Legend verticalAlign="top" height={36} formatter={(value) => (value === "rewardsCut" ? "Rewards cut 90%" : "Interest rate 10%")} />
+        <CartesianGrid horizontal={true} vertical={false} stroke="#FFFFFF1A" />
 
         <Tooltip
           contentStyle={{ backgroundColor: "#333", color: "#fff", border: "none", borderRadius: "4px" }}
@@ -178,7 +177,7 @@ export function InterestRateGraph() {
           yAxisId="right"
           type="monotone"
           dataKey="interestRate"
-          stroke="#e5ff00"
+          stroke="#95FF00"
           strokeWidth={1.5}
           fill="url(#gradiant-yellow)"
           fillOpacity={1}

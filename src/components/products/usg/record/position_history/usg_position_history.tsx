@@ -76,7 +76,7 @@ function PositionList() {
 
   return (
     <>
-      <div className="rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
+      <div className="rounded-t-[10px] bg-overlay-panel">
         <div className="hidden p-[10px] text-sm xl:block">
           <HistoryRowDisposition>
             {!!headers?.at(0)?.key && (
@@ -146,7 +146,7 @@ function PositionList() {
         </div>
       </div>
 
-      <div className="scrollbar-thin mt-0 h-full max-h-[200px] overflow-y-auto bg-overlay-panel backdrop-blur-[60px] lg:mt-1">
+      <div className="scrollbar-thin mt-0 h-full max-h-[200px] overflow-y-auto bg-overlay-panel lg:mt-1">
         {displayRows &&
           (displayRows as UserPosition[])?.map((pos: UserPosition) => (
             <div key={pos.txHash} className="px-5 py-2 text-[15px] hover:cursor-pointer hover:before:bg-list-row-hover">

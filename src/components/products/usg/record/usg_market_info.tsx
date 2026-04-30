@@ -11,16 +11,18 @@ export function USGMarketInfo() {
   const { totalBorrow, totalBorrowTimeWindow, setTotalBorrowTimeWindow } = useUSGRecordContext()
 
   return (
-    <ReliefCard className="p-5">
-      <div className="flex flex-col gap-[10px] xl:flex-row">
-        <div className="flex w-1/2 flex-col">
+    <ReliefCard className="px-5 pt-5">
+      <div className="flex flex-col md:flex-row">
+        <div className="flex w-1/2 flex-col pr-5">
           <div className="flex items-center text-base text-white">Interest rate model</div>
-          <div className="mt-5 h-[280px] w-full">
+          <div className="mt-5 h-[260px] w-full">
             <InterestRateGraph />
           </div>
         </div>
 
-        <div className="flex w-1/2 flex-col border-l border-l-white border-opacity-10 pl-[10px]">
+        <div className="mb-5 w-[1px] self-stretch bg-white/10"></div>
+
+        <div className="flex w-1/2 flex-col pl-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1 text-base text-white">
               Total borrow:
@@ -38,7 +40,7 @@ export function USGMarketInfo() {
               />
             </div>
           </div>
-          <div className="mt-4 h-[280px] w-full">
+          <div className="mt-4 h-[260px] w-full">
             <UsgTotalBorrow totalBorrow={totalBorrow?.data} />
           </div>
         </div>

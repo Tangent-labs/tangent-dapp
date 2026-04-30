@@ -23,7 +23,7 @@ const getAdaptiveYAxisStep = (maxValue: number) => {
 }
 
 const PriceAxisTick = ({ x, y, value }: { x?: number; y?: number; value: string }) => (
-  <text x={(x ?? 0) + 25} y={y} dy={4} textAnchor="end" fill="rgba(255,255,255,0.45)" fontSize={11}>
+  <text x={(x ?? 0) - 8} y={y} dy={4} textAnchor="end" fill="rgba(255,255,255,0.6)" fontSize={11}>
     ${value}
   </text>
 )
@@ -76,9 +76,9 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
         data={totalBorrow}
         margin={{
           top: 12,
-          right: -28,
+          right: -60,
           left: 0,
-          bottom: 12,
+          bottom: 15,
         }}
       >
         <defs>
@@ -87,28 +87,27 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
             <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid horizontal={true} vertical={false} stroke="#454545" strokeOpacity={0.3} />
+        <CartesianGrid horizontal={true} vertical={false} stroke="#FFFFFF1A" />
         <XAxis
           dataKey="timestamp"
           ticks={xAxisTicks}
           minTickGap={24}
           tickMargin={8}
-          tick={{ fontSize: 12 }}
+          padding={{ right: 38 }}
+          tick={{ fontSize: 12, fill: "rgba(255,255,255,0.6)" }}
           axisLine={false}
           tickLine={false}
           tickFormatter={formatAxisDate}
         />
 
         <YAxis
-          width={72}
           ticks={yAxisTicks}
           domain={[0, yAxisMax]}
           orientation="right"
           className="text-xs"
           axisLine={false}
-          tickMargin={8}
           tickLine={false}
-          tick={({ x, y, payload }) => <PriceAxisTick x={x + 5} y={y} value={formatCompact(payload.value)} />}
+          tick={({ x, y, payload }) => <PriceAxisTick x={x} y={y - 7} value={formatCompact(payload.value)} />}
           tickFormatter={formatYAxisValue}
         />
 

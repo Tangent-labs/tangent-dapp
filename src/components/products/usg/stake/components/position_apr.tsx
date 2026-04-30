@@ -23,9 +23,9 @@ const CustomAverageDisplay = (props: { averageApy: number; viewBox?: { y: number
 
   return (
     <g>
-      <rect x={width - 35} y={y + 6} width={56} rx={15} height={30} fill="#0075FF" />
-      <text x={width - 6} y={y + 25} textAnchor="middle" fill="#ffffff" fontSize={13} fontWeight={700}>
-        Avg {averageApy.toFixed(0)}%
+      <rect x={width - 52} y={y + 6} width={72} rx={15} height={30} fill="#0075FF" />
+      <text x={width - 15} y={y + 25} textAnchor="middle" fill="#ffffff" fontSize={13} fontWeight={700}>
+        Avg {averageApy.toFixed(2)}%
       </text>
     </g>
   )

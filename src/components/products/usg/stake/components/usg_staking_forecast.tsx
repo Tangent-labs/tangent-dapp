@@ -43,9 +43,10 @@ const addDays = (d: Date, days: number) => {
   return x
 }
 const addMonths = (d: Date, months: number) => {
-  const x = new Date(d)
-  x.setMonth(x.getMonth() + months)
-  return x
+  const targetYear = d.getFullYear()
+  const targetMonth = d.getMonth() + months
+  const lastDayOfTargetMonth = new Date(targetYear, targetMonth + 1, 0).getDate()
+  return new Date(d.getFullYear(), targetMonth, Math.min(d.getDate(), lastDayOfTargetMonth), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds())
 }
 const addYears = (d: Date, years: number) => {
   const x = new Date(d)
@@ -196,6 +197,9 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
     const pushTicksMonths = (every: number) => {
       let m = new Date(now.getFullYear(), now.getMonth(), 1)
       const final = new Date(end.getFullYear(), end.getMonth(), 1)
+      if (m.getTime() < now.getTime()) {
+        m = addMonths(m, every)
+      }
       while (m <= final) {
         ticks.push(m.getTime())
         m = addMonths(m, every)
@@ -213,6 +217,9 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
         pushPoint(cursor)
         cursor = addMonths(cursor, 1)
       }
+      if (points.at(-1)?.t !== end.getTime()) {
+        pushPoint(end)
+      }
       pushTicksMonths(tickEveryMonths)
     }
 
@@ -229,7 +236,7 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
       startTs: now.getTime(),
       endTs,
     }
-  }, [range, currentInvestment, newLiquidity, apy])
+  }, [range, currentInvestment, newLiquidity, apy, currentFeature])
 
   const allValues = useMemo(() => {
     const base = forecastData.map((d) => d.baseAmount)
@@ -264,7 +271,17 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
 
               <CartesianGrid horizontal vertical={false} stroke="rgba(255,255,255,0.05)" />
 
-              <XAxis dataKey="t" type="number" scale="time" domain={[startTs, endTs]} ticks={ticks} tickFormatter={fmtTick} tick={{ fontSize: 12 }} />
+              <XAxis
+                dataKey="t"
+                type="number"
+                scale="time"
+                domain={[startTs, endTs]}
+                ticks={ticks}
+                tickFormatter={fmtTick}
+                tick={{ fontSize: 12 }}
+                padding={{ left: 0, right: 0 }}
+                allowDataOverflow
+              />
 
               <YAxis
                 orientation="right"

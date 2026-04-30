@@ -99,8 +99,6 @@ export const BoostsList = () => {
               </div>
             </div>
             <ListGradientBorder />
-
-            <ListGradientBorder />
           </div>
         ))}
     </>

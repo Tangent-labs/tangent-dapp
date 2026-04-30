@@ -4,6 +4,14 @@ import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import { Area, AreaChart, CartesianGrid, ReferenceDot, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
+const TIME_TICK_COUNT = 7
+const ONE_DAY_MS = 24 * 60 * 60 * 1000
+const RANGE_TO_MS: Record<string, number> = {
+  "1m": 30 * ONE_DAY_MS,
+  "3m": 90 * ONE_DAY_MS,
+  "1y": 365 * ONE_DAY_MS,
+}
+
 type PositionAPRProps = {
   apy: number
   fetchsUSGHistoryAPY: (range: string) => Promise<void>
@@ -23,8 +31,8 @@ const CustomAverageDisplay = (props: { averageApy: number; viewBox?: { y: number
 
   return (
     <g>
-      <rect x={width - 52} y={y + 6} width={72} rx={15} height={30} fill="#0075FF" />
-      <text x={width - 15} y={y + 25} textAnchor="middle" fill="#ffffff" fontSize={13} fontWeight={700}>
+      <rect x={width - 72} y={y + 6} width={72} rx={15} height={30} fill="#0075FF" />
+      <text x={width - 34} y={y + 25} textAnchor="middle" fill="#ffffff" fontSize={13} fontWeight={700}>
         Avg {averageApy.toFixed(2)}%
       </text>
     </g>
@@ -35,10 +43,19 @@ const CustomsUSGPerformanceTooltip = (props: {
   active?: boolean | undefined
   payload?: Array<{ dataKey?: string | number | undefined; value?: ValueType | undefined }> | undefined
   label?: number
+  range: string
 }) => {
-  const date = new Date(props?.label as number)
-  const value = Number(props?.payload ? props?.payload[0]?.value : 0)
-  const dateLabel = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${date.getFullYear()}`
+  if (!props.active || !props.payload || props.payload.length === 0 || props.label == null) return null
+
+  const date = new Date(props.label)
+  const value = Number(props.payload[0]?.value)
+
+  if (!Number.isFinite(date.getTime()) || !Number.isFinite(value)) return null
+
+  const dateLabel =
+    props.range === "1y"
+      ? new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(date)
+      : new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(date)
 
   return (
     <div className="pointer-events-none flex flex-col items-start justify-between gap-3 rounded-[10px] bg-dark px-3 py-2 text-[10px]">
@@ -53,9 +70,13 @@ const CustomsUSGPerformanceTooltip = (props: {
 
 const formatYAxis = (tick: number) => `${tick}%`
 
-const formatXAxis = (tick: string) => {
+const formatXAxis = (tick: number | string, range: string) => {
   const date = new Date(tick)
-  return `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}`
+  if (range === "1y") {
+    return new Intl.DateTimeFormat("en-US", { month: "short" }).format(date)
+  }
+
+  return new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(date)
 }
 
 export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHistory }: PositionAPRProps) => {
@@ -64,6 +85,29 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
     const sum = apyHistory.reduce((acc, point) => acc + point.uv, 0)
     return sum / apyHistory.length
   }, [apyHistory])
+
+  const timeAxis = useMemo(() => {
+    if (!apyHistory || apyHistory.length === 0) return null
+
+    const dates = apyHistory.map((point) => point.date).filter(Number.isFinite)
+    if (dates.length === 0) return null
+
+    const endTs = Math.max(...dates)
+    const startTs = RANGE_TO_MS[sUSGSelectedTab] ? endTs - RANGE_TO_MS[sUSGSelectedTab] : Math.min(...dates)
+    const spanMs = endTs - startTs
+
+    if (spanMs <= 0) {
+      return {
+        domain: [startTs, endTs] as [number, number],
+        ticks: [startTs],
+      }
+    }
+
+    return {
+      domain: [startTs, endTs] as [number, number],
+      ticks: Array.from({ length: TIME_TICK_COUNT }, (_, i) => startTs + (spanMs * i) / (TIME_TICK_COUNT - 1)),
+    }
+  }, [apyHistory, sUSGSelectedTab])
 
   return (
     <>
@@ -99,12 +143,16 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
 
             <XAxis
               dataKey="date"
-              tickFormatter={formatXAxis}
-              scale="point"
+              type="number"
+              scale="time"
+              domain={timeAxis?.domain ?? ["dataMin", "dataMax"]}
+              ticks={timeAxis?.ticks}
+              tickFormatter={(tick) => formatXAxis(tick, sUSGSelectedTab)}
               padding={{ left: 0, right: 0 }}
               tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
               axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
               tickLine={false}
+              allowDataOverflow
             />
 
             <YAxis
@@ -135,7 +183,7 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
             <Tooltip
               cursor={{ stroke: "rgba(255,255,255,0.65)", strokeWidth: 1.5, strokeDasharray: "4 4" }}
               allowEscapeViewBox={{ x: false, y: false }}
-              content={<CustomsUSGPerformanceTooltip />}
+              content={<CustomsUSGPerformanceTooltip range={sUSGSelectedTab} />}
             />
 
             <ReferenceLine y={averageApy} stroke="#0075FF" strokeDasharray="8 6" strokeWidth={2} label={<CustomAverageDisplay averageApy={averageApy} />} />

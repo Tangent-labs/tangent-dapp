@@ -14,6 +14,7 @@ const MS_PER_YEAR = 365.25 * 24 * 60 * 60 * 1000
 const MIN_RIGHT_PADDING_MS = 6 * 60 * 60 * 1000 // 6 hours
 const MAX_RIGHT_PADDING_MS = 45 * 24 * 60 * 60 * 1000 // 45 days
 const RIGHT_PADDING_FRACTION = 0.01 // 1% of total span
+const TIME_TICK_COUNT = 7
 
 const EndDot = (lastIndex: number) =>
   function Dot(props: { cx?: number; cy?: number; index?: number }) {
@@ -132,8 +133,6 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
 
     let end: Date
     let step: "day" | "month"
-    let tickEveryDays = 1
-    let tickEveryMonths = 1
     let tickFormatter: (ts: number) => string
     let tooltipFormatter: (ts: number) => string
 
@@ -141,28 +140,24 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
       case "1m":
         end = addMonths(now, 1)
         step = "day"
-        tickEveryDays = 7
         tickFormatter = (ts) => new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(new Date(ts))
         tooltipFormatter = (ts) => new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(new Date(ts))
         break
       case "3m":
         end = addMonths(now, 3)
         step = "day"
-        tickEveryDays = 7
         tickFormatter = (ts) => new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(new Date(ts))
         tooltipFormatter = (ts) => new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(new Date(ts))
         break
       case "1y":
         end = addYears(now, 1)
         step = "month"
-        tickEveryMonths = 1
         tickFormatter = (ts) => new Intl.DateTimeFormat("en-US", { month: "short" }).format(new Date(ts))
         tooltipFormatter = (ts) => new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(new Date(ts))
         break
     }
 
     const points: Array<{ t: number; baseAmount: number; amountWithLiquidity: number }> = []
-    const ticks: number[] = []
     let cursor = new Date(now)
 
     const pushPoint = (date: Date) => {
@@ -186,32 +181,11 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
       })
     }
 
-    const pushTicksDays = (every: number) => {
-      let d = new Date(now)
-      while (d <= end) {
-        ticks.push(d.getTime())
-        d = addDays(d, every)
-      }
-    }
-
-    const pushTicksMonths = (every: number) => {
-      let m = new Date(now.getFullYear(), now.getMonth(), 1)
-      const final = new Date(end.getFullYear(), end.getMonth(), 1)
-      if (m.getTime() < now.getTime()) {
-        m = addMonths(m, every)
-      }
-      while (m <= final) {
-        ticks.push(m.getTime())
-        m = addMonths(m, every)
-      }
-    }
-
     if (step === "day") {
       while (cursor <= end) {
         pushPoint(cursor)
         cursor = addDays(cursor, 1)
       }
-      pushTicksDays(tickEveryDays)
     } else {
       while (cursor <= end) {
         pushPoint(cursor)
@@ -220,13 +194,13 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
       if (points.at(-1)?.t !== end.getTime()) {
         pushPoint(end)
       }
-      pushTicksMonths(tickEveryMonths)
     }
 
     // Put some padding to the right so that the edge point isn’t cut off
     const spanMs = end.getTime() - now.getTime()
     const paddingMs = Math.max(MIN_RIGHT_PADDING_MS, Math.min(MAX_RIGHT_PADDING_MS, RIGHT_PADDING_FRACTION * spanMs))
     const endTs = end.getTime() + paddingMs
+    const ticks = Array.from({ length: TIME_TICK_COUNT }, (_, i) => now.getTime() + (spanMs * i) / (TIME_TICK_COUNT - 1))
 
     return {
       data: points,

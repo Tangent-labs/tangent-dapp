@@ -14,9 +14,21 @@ type EvolutionBoxProps = {
   className?: string
   displayHover?: boolean
   hoverContent?: string
+  originalColor?: string
+  newValueColor?: string
 }
 
-export function EvolutionBox({ label, originalValue, newValue, logo, displayHover = false, hoverContent, className = "" }: EvolutionBoxProps) {
+export function EvolutionBox({
+  label,
+  originalValue,
+  newValue,
+  logo,
+  displayHover = false,
+  hoverContent,
+  className = "",
+  originalColor,
+  newValueColor,
+}: EvolutionBoxProps) {
   const hasChanged = useMemo(() => {
     return newValue !== undefined && newValue !== originalValue
   }, [newValue, originalValue])
@@ -52,7 +64,9 @@ export function EvolutionBox({ label, originalValue, newValue, logo, displayHove
             <>
               <HoverCard openDelay={150} closeDelay={100}>
                 <HoverCardTrigger asChild>
-                  <span className="cursor-pointer font-semibold">{originalValue}</span>
+                  <span className="cursor-pointer font-semibold" style={{ color: originalColor }}>
+                    {originalValue}
+                  </span>
                 </HoverCardTrigger>
                 <HoverCardContent side="top" align="center" className="z-[9999] flex w-full justify-center px-2 py-1 text-xs text-subtitle">
                   {hoverContent}
@@ -60,7 +74,9 @@ export function EvolutionBox({ label, originalValue, newValue, logo, displayHove
               </HoverCard>
             </>
           ) : (
-            <span className="font-semibold">{originalValue}</span>
+            <span className="font-semibold" style={{ color: originalColor }}>
+              {originalValue}
+            </span>
           )}
 
           {logo && (
@@ -94,7 +110,9 @@ export function EvolutionBox({ label, originalValue, newValue, logo, displayHove
               transition={{ duration: 0.35, type: "spring", stiffness: 400, damping: 28 }}
               className="flex items-center gap-2 text-sm"
             >
-              <span className="font-semibold text-tonic">{newValue}</span>
+              <span className="font-semibold" style={{ color: newValueColor ?? "var(--color-tonic)" }}>
+                {newValue}
+              </span>
               {logo && (
                 <div className="w-4">
                   <TokenImage size={48} token={logo} />

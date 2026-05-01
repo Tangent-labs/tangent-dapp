@@ -1,6 +1,6 @@
 "use client"
 
-import { formatCompact, formatDollar } from "@/lib/number_formatter"
+import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 
 type UsgTotalBorrowProps = {
@@ -107,7 +107,7 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
           className="text-xs"
           axisLine={false}
           tickLine={false}
-          tick={({ x, y, payload }) => <PriceAxisTick x={x} y={y - 7} value={formatCompact(payload.value)} />}
+          tick={({ x, y, payload }) => <PriceAxisTick x={x} y={y - 7} value={formatMillions(payload.value)} />}
           tickFormatter={formatYAxisValue}
         />
 

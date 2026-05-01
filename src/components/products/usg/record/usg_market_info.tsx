@@ -1,7 +1,7 @@
 "use client"
 
 import UsgTotalBorrow from "./usg_total_borrow"
-import { formatCompact } from "@/lib/number_formatter"
+import { formatMillions } from "@/lib/number_formatter"
 import { InterestRateGraph } from "./usg_interest_rate_graph"
 import { useUSGRecordContext } from "./usg_record_context"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
@@ -26,7 +26,7 @@ export function USGMarketInfo() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1 text-base text-white">
               Total borrow:
-              <span className="font-semibold">${formatCompact(totalBorrow?.latestTotalDebt)}</span>
+              <span className="font-semibold">${formatMillions(totalBorrow?.latestTotalDebt)}</span>
             </div>
             <div className="flex gap-2">
               <ButtonTab onClick={() => setTotalBorrowTimeWindow("1w")} label={"1w"} active={totalBorrowTimeWindow === "1w"} className="rounded-full !py-1" />

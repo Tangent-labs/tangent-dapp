@@ -3,9 +3,9 @@
 import { useId } from "react"
 import type { ComponentType } from "react"
 import { formatDollar } from "@/lib/number_formatter"
-import { Divider } from "@/components/design_system/structure/divider"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { formatXAxis, getDataRangeMs, getXAxisTicks } from "../dashboard_controller"
 import { Area, AreaChart, CartesianGrid, Customized, ReferenceDot, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 type AxisWithScale = { scale: (v: number) => number }
@@ -53,7 +53,7 @@ const formatPriceTick = (tick: number, step: number) => {
 }
 
 const PriceAxisTick = ({ x, y, value }: { x?: number; y?: number; value: string }) => (
-  <text x={(x ?? 0) + 25} y={y} dy={4} textAnchor="end" fill="rgba(255,255,255,0.45)" fontSize={11}>
+  <text x={x ?? 0} y={y} dy={4} textAnchor="end" fill="rgba(255,255,255,0.45)" fontSize={11}>
     {value}
   </text>
 )
@@ -74,36 +74,8 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
   const yTicks = Array.from({ length: yTickCount }, (_, index) => domainMin + yTickStep * index)
   const badgeLabel = formatDollar(latestValue, 4)
   const badgeTextColor = token === "sUSG" ? "#05070A" : "#FFFFFF"
-  const hasMultipleYears = new Set(data.map((point) => new Date(point.date).getFullYear())).size > 1
-  const rangeMs = data.length > 1 ? data[data.length - 1].date - data[0].date : 0
-  const isIntraday = rangeMs < 2 * 24 * 60 * 60 * 1000
-
-  const toBucketKey = (ts: number) => {
-    const d = new Date(ts)
-    return isIntraday ? `${d.toISOString().slice(0, 13)}` : d.toISOString().slice(0, 10)
-  }
-
-  const xAxisTicks = data.reduce<number[]>((ticks, point) => {
-    const lastTick = ticks[ticks.length - 1]
-    if (!lastTick || toBucketKey(point.date) !== toBucketKey(lastTick)) {
-      ticks.push(point.date)
-    }
-    return ticks
-  }, [])
-
-  const formatAxisDate = (timestamp: number) => {
-    const date = new Date(timestamp)
-
-    if (isIntraday) {
-      return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`
-    }
-
-    return date.toLocaleDateString(undefined, {
-      year: hasMultipleYears ? "2-digit" : undefined,
-      month: "short",
-      day: "numeric",
-    })
-  }
+  const rangeMs = getDataRangeMs(data)
+  const xAxisTicks = getXAxisTicks(data)
 
   return (
     <ReliefCard className="flex h-full w-full flex-col items-start justify-start px-5 pt-5">
@@ -119,15 +91,13 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
         </div>
       </div>
 
-      <Divider />
-
-      <div className="relative flex h-56 min-h-56 w-full items-center justify-center">
+      <div className="relative mt-4 flex h-56 min-h-56 w-full items-center justify-center">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
             margin={{
-              top: 10,
-              right: 4,
+              top: 20,
+              right: -50,
               left: 0,
               bottom: 12,
             }}
@@ -150,7 +120,8 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
               tick={{ fontSize: 11, fill: "rgba(255,255,255,0.45)" }}
               axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
               tickLine={false}
-              tickFormatter={formatAxisDate}
+              tickFormatter={(tick) => formatXAxis(tick, rangeMs)}
+              padding={{ left: 0, right: 44 }}
             />
 
             <YAxis
@@ -158,7 +129,7 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
               orientation="right"
               ticks={yTicks}
               tickFormatter={(tick) => formatPriceTick(tick, yTickStep)}
-              tick={({ x, y, payload }) => <PriceAxisTick x={x + 19} y={y} value={formatPriceTick(payload.value, yTickStep)} />}
+              tick={({ x, y, payload }) => <PriceAxisTick x={x - 10} y={y - 7} value={formatPriceTick(payload.value, yTickStep)} />}
               tickLine={false}
               width={48}
               domain={[domainMin, domainMax]}
@@ -194,7 +165,7 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
                 const cx = xScale(latestPoint.date)
                 const cy = yScale(latestPoint.uv)
                 return (
-                  <foreignObject x={cx - 37} y={cy + 12} width={70} height={20} style={{ overflow: "visible" }}>
+                  <foreignObject x={cx - 40} y={cy + 10} width={70} height={20} style={{ overflow: "visible" }}>
                     <div
                       style={{ backgroundColor: accentColor, color: badgeTextColor }}
                       className="w-fit whitespace-nowrap rounded-full p-[5px] text-[10px] font-semibold leading-none"

@@ -9,9 +9,10 @@ export type TooltipCategory = {
 
 type CustomChartTooltipProps = TooltipProps<number, string> & {
   categories: TooltipCategory[]
+  totalKeys?: string[]
 }
 
-export const CustomTooltip = ({ active, payload, categories }: CustomChartTooltipProps) => {
+export const CustomTooltip = ({ active, payload, categories, totalKeys }: CustomChartTooltipProps) => {
   if (!active || !payload || payload.length === 0) return null
 
   const values: Record<string, number> = {}
@@ -21,7 +22,7 @@ export const CustomTooltip = ({ active, payload, categories }: CustomChartToolti
     const item = payload.find((p) => p.dataKey === key)
     const val = (item?.value as number) ?? 0
     values[key] = val
-    total += val
+    if (!totalKeys || totalKeys.includes(key)) total += val
   })
 
   const ts = payload[0]?.payload?.date as number

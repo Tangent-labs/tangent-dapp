@@ -16,7 +16,7 @@ import { usePathname } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { useRootContext } from "../root/root_context"
 import { useScrollDirection } from "@/lib/animations"
-import { formatCompact } from "@/lib/number_formatter"
+import { formatMillions } from "@/lib/number_formatter"
 import { isOnMarket } from "./menu_bar_feature_controller"
 import { SwapButton } from "@/components/design_system/inputs/swap_button"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
@@ -200,10 +200,10 @@ export default function MenuBarFeature() {
 
             <div className="flex w-full items-center justify-end gap-3">
               <ReliefCard className="hidden items-center justify-center px-1 py-2.5 text-xs xl:flex">
-                <span className="border-r border-white/10 px-2">TVL: ${formatCompact(protocolCurrentTVL?.total)}</span>
+                <span className="border-r border-white/10 px-2">TVL: ${formatMillions(protocolCurrentTVL?.total)}</span>
                 <span className="flex items-center justify-center gap-2 border-r border-white/10 px-2">
                   <TokenImage token="USG" size={20} />
-                  {formatCompact(USGCurrentSupply)}
+                  {formatMillions(USGCurrentSupply)}
                 </span>
                 <span className="flex items-center justify-center gap-2 px-2">
                   <TokenImage token="sUSG" size={20} />

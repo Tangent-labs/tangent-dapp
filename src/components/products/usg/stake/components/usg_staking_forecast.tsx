@@ -2,7 +2,7 @@
 
 import { APRDisplay } from "./apr_display"
 import { ReactNode, useMemo, useState } from "react"
-import { formatCompact, formatDollar } from "@/lib/number_formatter"
+import { formatMillions, formatDollar } from "@/lib/number_formatter"
 import { computedProjection } from "../usg_stake_controller"
 import type { LineDot } from "recharts/types/cartesian/Line"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
@@ -259,7 +259,7 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
 
               <YAxis
                 orientation="right"
-                tickFormatter={(v) => `$${formatCompact(v)}`}
+                tickFormatter={(v) => `$${formatMillions(v)}`}
                 width={52}
                 domain={[yAxis.min, yAxis.max]}
                 ticks={Array.from({ length: Math.floor((yAxis.max - yAxis.min) / yAxis.stepSize) + 1 }, (_, i) => yAxis.min + i * yAxis.stepSize)}

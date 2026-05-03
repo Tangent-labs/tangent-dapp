@@ -30,7 +30,7 @@ export const UsgReferralCode = () => {
 
   return (
     <div className="flex w-full flex-col items-center justify-center">
-      <div className="flex w-full items-stretch justify-between gap-6">
+      <div className="flex w-full items-stretch justify-between gap-5">
         <PageHeader>
           <Image height={140} width={140} src="/medias/logos/referral.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
 

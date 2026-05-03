@@ -16,13 +16,13 @@ import { usePathname } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { useRootContext } from "../root/root_context"
 import { useScrollDirection } from "@/lib/animations"
-import { formatCompact } from "@/lib/number_formatter"
+import { formatMillions } from "@/lib/number_formatter"
 import { isOnMarket } from "./menu_bar_feature_controller"
 import { SwapButton } from "@/components/design_system/inputs/swap_button"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTask } from "@/components/icons"
+import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
 
 export default function MenuBarFeature() {
   const { USGCurrentSupply, sUSGCurrentAPY, protocolCurrentTVL } = useRootContext()
@@ -73,20 +73,32 @@ export default function MenuBarFeature() {
     {
       baseLabel: "DAO",
       routes: [
-        { route: "https://snapshot.box/#/s:tangent-finance.eth", label: "Snapshot", logo: <IconSnapshot className="w-3" />, external: true },
-        { route: "https://tangentfinance.discourse.group/categories", label: "Forum", logo: <IconForum className="w-3" />, external: true },
-        { route: "/harvest", label: "Harvest", logo: <IconHarvest className="w-2" /> },
+        { route: "https://snapshot.box/#/s:tangent-finance.eth", label: "Snapshot", logo: <IconSnapshot className="w-4" />, external: true },
+        { route: "https://tangentfinance.discourse.group/categories", label: "Forum", logo: <IconForum className="w-4" />, external: true },
+        { route: "/harvest", label: "Harvest", logo: <IconHarvest className="w-3" /> },
       ],
     },
     {
       baseLabel: "Airdrop",
       routes: [
-        { route: "/tasks", label: "Tasks", logo: <IconTask className="w-3" /> },
-        { route: "/referral", label: "Referral", logo: <IconReferral className="w-3" /> },
-        { route: "/boosts", label: "Boosts", logo: <IconBoosts className="w-3" /> },
+        { route: "/tasks", label: "Tasks", logo: <IconTask className="w-4" /> },
+        { route: "/referral", label: "Referral", logo: <IconReferral className="w-4" /> },
+        { route: "/boosts", label: "Boosts", logo: <IconBoosts className="w-4" /> },
       ],
     },
   ]
+
+  const getCurrentLabel = () => {
+    const menuItem = routesMenuItem.find((r) => (r.condition ? r.condition(pathname) : pathname === r.route))
+    if (menuItem) return menuItem.label
+    for (const dropdown of routesDropdown) {
+      const match = dropdown.routes.find((r) => r.route === pathname)
+      if (match) return match.label
+    }
+    return null
+  }
+
+  const currentLabel = getCurrentLabel()
 
   const headerRef = useRef<HTMLDivElement>(null)
   const [headerHeight, setHeaderHeight] = useState(0)
@@ -111,8 +123,15 @@ export default function MenuBarFeature() {
             <div className="flex w-full items-center justify-start gap-3">
               <div className="flex cursor-pointer items-center gap-2 text-xl text-white">
                 <Link href="/">
-                  <IconTangent className="mb-1 w-24 transition-transform duration-200 ease-out hover:scale-[1.02] active:scale-[0.98] md-lg:mb-2" />
+                  <IconTangent className="mb-1 hidden w-24 transition-transform duration-200 ease-out hover:scale-[1.02] active:scale-[0.98] md-lg:mb-2 md-lg:block" />
+                  <IconTangentLogo className="mb-1 transition-transform duration-200 ease-out hover:scale-[1.02] active:scale-[0.98] md-lg:hidden" />
                 </Link>
+                {currentLabel && (
+                  <div className="flex items-center gap-2 md-lg:hidden">
+                    <div className="h-8 w-px bg-white/20" />
+                    <span className="font-gilroy text-xl font-normal leading-none tracking-normal text-white">{currentLabel}</span>
+                  </div>
+                )}
               </div>
 
               {/* Desktop navigation */}
@@ -181,10 +200,10 @@ export default function MenuBarFeature() {
 
             <div className="flex w-full items-center justify-end gap-3">
               <ReliefCard className="hidden items-center justify-center px-1 py-2.5 text-xs xl:flex">
-                <span className="border-r border-white/10 px-2">TVL: ${formatCompact(protocolCurrentTVL?.total)}</span>
+                <span className="border-r border-white/10 px-2">TVL: ${formatMillions(protocolCurrentTVL?.total)}</span>
                 <span className="flex items-center justify-center gap-2 border-r border-white/10 px-2">
                   <TokenImage token="USG" size={20} />
-                  {formatCompact(USGCurrentSupply)}
+                  {formatMillions(USGCurrentSupply)}
                 </span>
                 <span className="flex items-center justify-center gap-2 px-2">
                   <TokenImage token="sUSG" size={20} />
@@ -265,7 +284,7 @@ export default function MenuBarFeature() {
                         href={route.route}
                         onClick={() => setMobileMenuOpen(false)}
                         className={cn(
-                          "flex items-center gap-3 border-b border-white/5 py-3 text-sm font-semibold transition-colors",
+                          "flex items-center gap-3 border-b border-white/5 py-3 text-base font-semibold transition-colors",
                           isActive ? "text-white" : "text-white/50"
                         )}
                       >

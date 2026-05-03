@@ -72,7 +72,7 @@ export function RecordPageHeader({
           <HoverCard openDelay={100} closeDelay={100}>
             <HoverCardTrigger asChild>
               <button type="button">
-                <IconCircleHelp className="h-auto w-[12px]" />
+                <IconCircleHelp className="h-auto w-[12px] fill-white" />
               </button>
             </HoverCardTrigger>
 
@@ -128,7 +128,7 @@ export const RecordPageHeaderIndicator = ({ title, value, subValue, indicator, c
             <HoverCard openDelay={100} closeDelay={100}>
               <HoverCardTrigger asChild>
                 <button type="button">
-                  <IconCircleHelp className="h-auto w-[12px] text-white" />
+                  <IconCircleHelp className="h-auto w-[12px] fill-white" />
                 </button>
               </HoverCardTrigger>
 

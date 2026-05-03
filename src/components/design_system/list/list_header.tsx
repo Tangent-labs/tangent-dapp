@@ -13,8 +13,6 @@ interface ListHeaderProps {
   onSort?: (key: string) => void
   indicator?: string
   rowDisposition?: React.ComponentType<{ children: React.ReactNode[] }>
-  /** Default `hidden w-full xl:block`. Override e.g. for Earn opportunities: `hidden w-full md-lg:block`. */
-  className?: string
 }
 
 interface HeaderDisplayProps {
@@ -45,7 +43,7 @@ const HeaderDisplay = ({ label, sort = "none", onSort, field, indicator, classNa
             {indicator}
           </USGHoverCard>
         )}
-        {isSortable && <IconSortHeader sort={sort} className={isActive ? "fill-white" : "fill-subtitle"} />}
+        {isSortable && <IconSortHeader sort={sort} />}
       </div>
     </div>
   )
@@ -64,7 +62,7 @@ export const ListHeader = ({ headers, activeSort, onSort, rowDisposition: Custom
               field={headers[0]?.key || ""}
               onSort={!!headers[0]?.sort ? onSort : undefined}
               indicator={headers[0]?.indicator}
-              className="flex w-full items-center justify-start pl-8"
+              className={cn(headers[0]?.className || "", "flex w-full items-center justify-start pl-8")}
             />
           )}
           {!!headers[1]?.key && (
@@ -75,7 +73,7 @@ export const ListHeader = ({ headers, activeSort, onSort, rowDisposition: Custom
               field={headers[1]?.key || ""}
               onSort={!!headers[1]?.sort ? onSort : undefined}
               indicator={headers[1]?.indicator}
-              className="flex w-full items-center justify-center"
+              className={cn(headers[1]?.className || "", "flex w-full items-center justify-center")}
             />
           )}
           {headers
@@ -88,7 +86,7 @@ export const ListHeader = ({ headers, activeSort, onSort, rowDisposition: Custom
                 field={header.key}
                 onSort={!!header.sort ? onSort : undefined}
                 indicator={header.indicator}
-                className="flex w-full flex-1 items-center justify-center"
+                className={cn(header.className || "", "flex w-full flex-1 items-center justify-center")}
               />
             ))}
         </CustomRowDisposition>

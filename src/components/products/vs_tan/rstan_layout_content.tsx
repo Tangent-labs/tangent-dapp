@@ -80,7 +80,7 @@ export const VsTanLayoutContent = ({
         <div className="hidden h-auto w-full flex-col items-center justify-between gap-3 md:flex xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
-          <div className="justify-bewteen flex w-full items-center rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
+          <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
             <IconVsTan className="h-10 w-32"></IconVsTan>
 
             <div className="flex w-full flex-col items-center justify-center">

@@ -365,6 +365,7 @@ export type EarnProtocolInput = {
   points: number
   address: string
   marketType: string
+  pid?: number
 }
 
 export type AprOpportunityItem = {
@@ -642,4 +643,11 @@ export type FormState = {
   canProcess: boolean
   errors: FormError[]
   haveToApprove: boolean
+}
+
+export type ConvexBoostDataGauge = { pid: bigint; boost: bigint }
+
+export type ConvexBoostData = {
+  fee: bigint
+  gaugeBoosts?: ConvexBoostDataGauge[]
 }

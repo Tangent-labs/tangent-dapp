@@ -211,7 +211,7 @@ function ClaimList() {
 
               <hr className="my-2 w-full opacity-20 xl:hidden" />
 
-              <div className="justify-bewteen flex w-full items-center xl:hidden">
+              <div className="flex w-full xl:hidden">
                 <MarketAPR
                   marketType={item?.marketType}
                   logoKey={item.logoKey}

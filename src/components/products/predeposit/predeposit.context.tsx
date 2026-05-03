@@ -15,6 +15,7 @@ import { PredepositStatus } from "./types/types"
 import { USGTokens } from "../usg/usg_repository"
 import { useRootContext } from "../root/root_context"
 import { mapPoolsAndTasks } from "../usg/earn/utils"
+import { getConvexBoost } from "../usg/earn/usg_earn_controller"
 import { COMMON_ERC20S } from "@tangent/defi-resources"
 import { getTokensPrice } from "@/services/service_price"
 import { Address, formatUnits, WalletClient, zeroAddress } from "viem"
@@ -23,7 +24,7 @@ import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { fetchUserStatus, validatePredepositSignature } from "./api/client.api"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { EarnPoolsData, getConvexPools, getCurvePools, getPendlePools, getStakeDAOPools } from "../usg/client_api_external"
+import { EarnPoolsData, getConvexPools, getCurvePools, getCurveSubgraph, getPendlePools, getStakeDAOPools } from "../usg/client_api_external"
 import { deposit, fetchQuote, getFormState, mapPredepositStatus, TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "./predeposit.controller"
 import { opportunities } from "@/app/(products)/(usg)/earn/aprOpportunities"
 import { PREDEPOSIT_MESSAGE_SIGN } from "./message"
@@ -632,9 +633,18 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   }, [frxUSDslippage, USGfrxUSDDepositValue])
 
   const fetchPoolsData = async () => {
-    const [curvePools, convexPools, stakeDaoPools, pendlePools] = await Promise.all([getCurvePools(), getConvexPools(), getStakeDAOPools(), getPendlePools()])
+    const pids = opportunities.filter((o) => o.protocolName === "Convex" && o.pid).map((o) => o.pid) as number[]
 
-    const mappedPools = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, opportunities)
+    const [curvePools, convexPools, stakeDaoPools, pendlePools, subgraphPools, convexBoosts] = await Promise.all([
+      getCurvePools(),
+      getConvexPools(),
+      getStakeDAOPools(),
+      getPendlePools(),
+      getCurveSubgraph(),
+      getConvexBoost(pids),
+    ])
+
+    const mappedPools = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, opportunities, subgraphPools, convexBoosts)
 
     setOpportunitiesData(mappedPools)
   }

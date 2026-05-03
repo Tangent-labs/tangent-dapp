@@ -156,8 +156,11 @@ export const VoteTasksList = () => {
           >
             {/* Desktop */}
             <div className="hidden items-center justify-between xl:flex">
-              <div className="flex w-[35%] items-center gap-2 xl:gap-4">
-                <span className="flex text-[15px] font-semibold">{task.description}</span>
+              <div className="flex w-[35%] items-center gap-2">
+                {task?.protocol === "sdcrv.eth" && <TokenImage token="sdCRV" size={24} />}
+                {task?.protocol === "cvx.eth" && <TokenImage token="vlCVX" size={24} />}
+                {task?.protocol === "CRV" && <TokenImage token="veCRV" size={24} />}
+                <span className="text-[15px] font-semibold">{task.description}</span>
               </div>
               <div className="hidden w-[16.25%] justify-center lg:flex">
                 <div className="flex items-center justify-center gap-2 rounded-full bg-overlay-panel px-2 py-1 text-sm backdrop-blur-[60px]">
@@ -173,7 +176,13 @@ export const VoteTasksList = () => {
 
             {/* Mobile card */}
             <div className="flex w-full flex-col xl:hidden">
-              <span className="text-[15px] font-semibold">{task?.description}</span>
+              <div className="flex items-center gap-1">
+                {task?.protocol === "sdcrv.eth" && <TokenImage token="sdCRV" size={20} />}
+                {task?.protocol === "cvx.eth" && <TokenImage token="vlCVX" size={20} />}
+                {task?.protocol === "CRV" && <TokenImage token="veCRV" size={20} />}
+
+                <span className="text-[15px] font-semibold">{task.description}</span>
+              </div>
 
               <hr className="my-2 w-full opacity-20" />
 

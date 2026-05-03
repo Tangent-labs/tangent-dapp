@@ -3,7 +3,7 @@ import { Divider } from "@/components/design_system/structure/divider"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip, CartesianGrid } from "recharts"
-import { formatXAxis, formatYAxis, getDataRangeMs, getTickInterval } from "../dashboard_controller"
+import { formatXAxis, formatYAxis, getDataRangeMs, getXAxisTicks } from "../dashboard_controller"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
 
@@ -32,7 +32,7 @@ export const GraphUSGsUSG = ({
   USGsUSGTotalSupplyData,
 }: MarketDebtProps) => {
   const rangeMs = getDataRangeMs(USGsUSGTotalSupplyData)
-  const tickInterval = getTickInterval(USGsUSGTotalSupplyData.length)
+  const xAxisTicks = getXAxisTicks(USGsUSGTotalSupplyData)
   return (
     <ReliefCard className="flex h-full w-full flex-col items-start justify-start p-5">
       {/* TITLE AND BUTTONS */}
@@ -104,8 +104,8 @@ export const GraphUSGsUSG = ({
           <AreaChart
             data={USGsUSGTotalSupplyData}
             margin={{
-              top: 10,
-              right: 4,
+              top: 15,
+              right: -50,
               left: -5,
               bottom: -10,
             }}
@@ -113,18 +113,19 @@ export const GraphUSGsUSG = ({
             <XAxis
               dataKey="date"
               tickFormatter={(tick) => formatXAxis(tick, rangeMs)}
-              interval={tickInterval}
+              ticks={xAxisTicks}
               scale="point"
               tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
               axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
               tickLine={false}
+              padding={{ left: 0, right: 40 }}
             />
 
             <YAxis
               orientation="right"
               axisLine={false}
               tick={({ x, y, payload }) => (
-                <text x={x + 44} y={y} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
+                <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
                   {formatYAxis(payload.value)}
                 </text>
               )}
@@ -172,7 +173,7 @@ export const GraphUSGsUSG = ({
                 strokeDasharray: "4 4",
               }}
               allowEscapeViewBox={{ x: false, y: false }}
-              content={<CustomTooltip categories={SUPPLY_CATEGORIES} />}
+              content={<CustomTooltip categories={SUPPLY_CATEGORIES} totalKeys={["usg"]} />}
             />
           </AreaChart>
         </ResponsiveContainer>

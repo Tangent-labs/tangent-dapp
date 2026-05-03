@@ -83,9 +83,9 @@ export const BoostsList = () => {
             <div className="flex items-center justify-between">
               <div className="flex w-2/3 items-center gap-2 xl:w-1/2">
                 {boost?.type === "Onboarded User" ? (
-                  <IconReferral className="w-7" />
+                  <IconReferral className="w-4 xl:w-7" />
                 ) : (
-                  <Image src={`/medias/logos/${boost.logo}.webp`} alt={boost.logo} height={32} width={32} />
+                  <Image className="w-4 xl:w-7" src={`/medias/logos/${boost.logo}.webp`} alt={boost.logo} height={32} width={32} />
                 )}
                 <span className="flex text-[15px] font-semibold">{boost?.type}</span>
               </div>
@@ -98,8 +98,6 @@ export const BoostsList = () => {
                 </div>
               </div>
             </div>
-            <ListGradientBorder />
-
             <ListGradientBorder />
           </div>
         ))}

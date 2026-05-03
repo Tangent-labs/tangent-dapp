@@ -7,7 +7,7 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { cn } from "@/lib/utils"
 import { ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip, CartesianGrid } from "recharts"
-import { formatXAxis, formatYAxis, getDataRangeMs, getTickInterval } from "../dashboard_controller"
+import { formatXAxis, formatYAxis, getDataRangeMs, getXAxisTicks } from "../dashboard_controller"
 import { returnTVLType } from "../utils"
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
 
@@ -32,7 +32,7 @@ const SERIES_CONFIG = [
 
 export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTVL, tvl }: MarketDebtProps) => {
   const rangeMs = getDataRangeMs(tvl)
-  const tickInterval = getTickInterval(tvl.length)
+  const xAxisTicks = getXAxisTicks(tvl)
 
   const sortedSeries = tvl?.length
     ? [...SERIES_CONFIG].sort((a, b) => {
@@ -97,8 +97,8 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
           <AreaChart
             data={tvl}
             margin={{
-              top: 10,
-              right: 4,
+              top: 15,
+              right: -50,
               left: -5,
               bottom: -10,
             }}
@@ -106,18 +106,19 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
             <XAxis
               dataKey="date"
               tickFormatter={(tick) => formatXAxis(tick, rangeMs)}
-              interval={tickInterval}
+              ticks={xAxisTicks}
               scale="point"
               tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
               axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
               tickLine={false}
+              padding={{ left: 0, right: 40 }}
             />
 
             <YAxis
               orientation="right"
               axisLine={false}
               tick={({ x, y, payload }) => (
-                <text x={x + 44} y={y} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
+                <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
                   {formatYAxis(payload.value)}
                 </text>
               )}

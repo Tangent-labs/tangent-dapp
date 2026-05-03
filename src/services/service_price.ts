@@ -43,6 +43,22 @@ export const getTokensPrice = async (tokens: Address[]) => {
   return _fetchAndReturnPrices(tokens)
 }
 
+export const getTokensPriceChange = async (tokens: Address[]): Promise<{ [tokenAddress: Address]: number } | undefined> => {
+  const param = `ethereum:${tokens.join(",ethereum:")}`
+  const response = await fetch(`https://coins.llama.fi/percentage/${param}?period=24h`)
+  if (response.status === 200) {
+    const data = (await response.json()) as { coins: { [key: string]: number } }
+    return Object.entries(data.coins).reduce(
+      (acc, [key, pct]) => {
+        const address = key.replace("ethereum:", "") as Address
+        acc[address] = pct
+        return acc
+      },
+      {} as { [tokenAddress: Address]: number }
+    )
+  }
+}
+
 /**
  *
  * @param tokens only returns the price of a selected token

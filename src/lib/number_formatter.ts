@@ -69,6 +69,7 @@ export function formatBigInt(value: bigint | string | undefined, decimals: numbe
   }
   return ""
 }
+
 export function formatDollarBigInt(value: bigint | string | undefined, decimals: number, displayDecimals: number): string {
   if (value === undefined || value === null) return ""
   const bigIntValue: bigint = typeof value === "string" ? BigInt(value) : value
@@ -105,54 +106,23 @@ export const formatBigIntAsNumber = (value: bigint, decimals: number, displayDec
   return formatNumber(Number(formatUnits(value || 0n, decimals)), displayDecimals)
 }
 
-export const formatMarketListCompact = (value: string | number): string => {
-  const number = typeof value === "string" ? parseFloat(value) : value
-
-  if (isNaN(number)) return "0"
-
-  if (number >= 1_000_000) {
-    return `$${(number / 1_000_000).toFixed(2)}M`
-  } else return `$${formatNumber(number, 0)}`
-}
-
-export const formatCompact = (value: string | number): string => {
-  const number = typeof value === "string" ? parseFloat(value) : value
-
-  if (isNaN(number)) return "0"
-
-  if (number >= 1_000_000_000) {
-    return `${(number / 1_000_000_000).toFixed(2)}B`
-  } else if (number >= 1_000_000) {
-    return `${(number / 1_000_000).toFixed(2)}M`
-  } else if (number >= 1_000) {
-    return `${(number / 1_000).toFixed(2)}K`
-  } else {
-    return `${number.toFixed(0)}`
-  }
-}
-
-const MILLION_FORMATTING_RULES = [
-  { threshold: 100_000_000, decimals: 0 }, // ≥ 100M
-  { threshold: 5_000_000, decimals: 2 }, // ≥ 5M
-  { threshold: 1_000_000, decimals: 3 }, // ≥ 1M
+const COMPACT_FORMATTING_RULES = [
+  { threshold: 1_000_000_000, divisor: 1_000_000_000, suffix: "B", decimals: 2 },
+  { threshold: 1_000_000, divisor: 1_000_000, suffix: "M", decimals: 2 },
+  { threshold: 10_000, divisor: 1_000, suffix: "K", decimals: 2 },
 ] as const
 
 export function formatMillions(value: string | number | undefined): string {
   const num = normalizeToNumber(value)
   if (num === 0 || Number.isNaN(num)) return "0"
 
-  if (num < 1_000_000) {
-    return formatNumber(num, 0)
-  }
+  const rule = COMPACT_FORMATTING_RULES.find((r) => num >= r.threshold)
+  if (!rule) return formatNumber(num, 0)
 
-  const millions = num / 1_000_000
-
-  // Première règle qui matche (la plus restrictive en premier)
-  const rule = MILLION_FORMATTING_RULES.find((r) => num >= r.threshold) ?? { decimals: 3 } // fallback (ne devrait pas arriver)
-
-  const formatted = formatNumber(millions, rule.decimals)
+  const divided = num / rule.divisor
+  const formatted = formatNumber(divided, rule.decimals)
   const clean = formatted.replace(/(\.\d*?)0+$/, "$1").replace(/\.$/, "")
-  return `${clean}M`
+  return `${clean}${rule.suffix}`
 }
 
 /**

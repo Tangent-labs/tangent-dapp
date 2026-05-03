@@ -4,7 +4,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { formatUnits } from "viem"
 import { useUSGStakeContext } from "./usg_stake_context"
-import { IconStars } from "@/components/icons/icon_stars"
 import { computeProjection } from "./usg_stake_controller"
 import { IconChevron, IconOpenOutside } from "@/components/icons"
 import { Divider } from "@/components/design_system/structure/divider"
@@ -89,15 +88,8 @@ export default function USGStakeContent() {
           <ThreeCardRowWithMask
             contents={[
               { key: "Supply", value: formatMillions(Number(formatUnits(USGsUSGMetrics?.sUSGSupply || 0n, 18))) },
-              { key: "sUSG", value: formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 2) },
-              {
-                key: "APY",
-                value: (
-                  <div className="flex items-center justify-center gap-1">
-                    {sUSGCurrentAPY.toFixed(2)}%<IconStars className="w-4 fill-row-success"></IconStars>
-                  </div>
-                ),
-              },
+              { key: "sUSG price", value: formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 4) },
+              { key: "sUSG balance", value: formatMillions(Number(formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18))) },
             ]}
           ></ThreeCardRowWithMask>
         </div>

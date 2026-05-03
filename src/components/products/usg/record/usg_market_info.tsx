@@ -1,7 +1,7 @@
 "use client"
 
 import UsgTotalBorrow from "./usg_total_borrow"
-import { formatCompact } from "@/lib/number_formatter"
+import { formatMillions } from "@/lib/number_formatter"
 import { InterestRateGraph } from "./usg_interest_rate_graph"
 import { useUSGRecordContext } from "./usg_record_context"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
@@ -11,57 +11,40 @@ export function USGMarketInfo() {
   const { totalBorrow, totalBorrowTimeWindow, setTotalBorrowTimeWindow } = useUSGRecordContext()
 
   return (
-    <>
-      <ReliefCard className="p-5">
-        <div className="flex flex-col justify-between xl:flex-row">
-          <div className="flex flex-1 items-center justify-between border-r border-r-white border-opacity-10 pr-3">
-            <div className="flex w-full flex-col">
-              <div className="flex w-full items-center justify-between gap-2">
-                <div className="flex items-center justify-center gap-1 text-base text-white">
-                  <span>Total borrow:</span>
-                  <span className="font-semibold">${formatCompact(totalBorrow?.latestTotalDebt)}</span>
-                </div>
-                <div className="flex gap-2">
-                  <ButtonTab
-                    onClick={() => setTotalBorrowTimeWindow("1w")}
-                    label={"1w"}
-                    active={totalBorrowTimeWindow === "1w"}
-                    className="rounded-full !py-1"
-                  />
-                  <ButtonTab
-                    onClick={() => setTotalBorrowTimeWindow("1m")}
-                    label={"1m"}
-                    active={totalBorrowTimeWindow === "1m"}
-                    className="rounded-full !py-1"
-                  />
-                  <ButtonTab
-                    onClick={() => setTotalBorrowTimeWindow("1y")}
-                    label={"1y"}
-                    active={totalBorrowTimeWindow === "1y"}
-                    className="rounded-full !py-1"
-                  />
-                  <ButtonTab
-                    onClick={() => setTotalBorrowTimeWindow("all")}
-                    label={"all"}
-                    active={totalBorrowTimeWindow === "all"}
-                    className="rounded-full !py-1"
-                  />
-                </div>
-              </div>
-              <div className="flex h-[300px] w-full border-0 p-4">
-                <UsgTotalBorrow totalBorrow={totalBorrow?.data} />
-              </div>
-            </div>
-          </div>
-
-          <div className="ml-3 flex flex-1 items-center justify-between">
-            <div className="flex w-full flex-col">
-              Interest rate model
-              <InterestRateGraph />
-            </div>
+    <ReliefCard className="px-5 pt-5">
+      <div className="flex flex-col md:flex-row">
+        <div className="flex w-1/2 flex-col pr-5">
+          <div className="flex items-center text-base text-white">Interest rate model</div>
+          <div className="mt-5 h-[260px] w-full">
+            <InterestRateGraph />
           </div>
         </div>
-      </ReliefCard>
-    </>
+
+        <div className="mb-5 w-[1px] self-stretch bg-white/10"></div>
+
+        <div className="flex w-1/2 flex-col pl-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1 text-base text-white">
+              Total borrow:
+              <span className="font-semibold">${formatMillions(totalBorrow?.latestTotalDebt)}</span>
+            </div>
+            <div className="flex gap-2">
+              <ButtonTab onClick={() => setTotalBorrowTimeWindow("1w")} label={"1w"} active={totalBorrowTimeWindow === "1w"} className="rounded-full !py-1" />
+              <ButtonTab onClick={() => setTotalBorrowTimeWindow("1m")} label={"1m"} active={totalBorrowTimeWindow === "1m"} className="rounded-full !py-1" />
+              <ButtonTab onClick={() => setTotalBorrowTimeWindow("1y")} label={"1y"} active={totalBorrowTimeWindow === "1y"} className="rounded-full !py-1" />
+              <ButtonTab
+                onClick={() => setTotalBorrowTimeWindow("all")}
+                label={"all"}
+                active={totalBorrowTimeWindow === "all"}
+                className="rounded-full !py-1"
+              />
+            </div>
+          </div>
+          <div className="mt-4 h-[260px] w-full">
+            <UsgTotalBorrow totalBorrow={totalBorrow?.data} />
+          </div>
+        </div>
+      </div>
+    </ReliefCard>
   )
 }

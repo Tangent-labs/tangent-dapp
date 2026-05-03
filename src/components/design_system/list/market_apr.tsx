@@ -60,8 +60,10 @@ export const MarketAPR = ({
   }, [projectedAPRDetails])
 
   const computedAPR = useMemo(() => {
-    if (currentAPRDetails && rewardToken && projectedApr) {
-      return Number(currentAPRDetails[rewardToken]) === 0 ? projectedApr : apr
+    if (currentAPRDetails && rewardToken && projectedApr !== undefined) {
+      const rewardApr = currentAPRDetails[rewardToken]
+      if (rewardApr === undefined || rewardApr === null) return apr
+      return Number(rewardApr) === 0 ? projectedApr : apr
     }
 
     return apr
@@ -89,7 +91,7 @@ export const MarketAPR = ({
                       {poolName} Rewards
                     </div>
                     {/* Display streaming label or not */}
-                    {marketType === "Pendle_PT" ? <></> : <StreamTile active={!!currentAPRDetails && Number(currentAPRDetails[rewardToken]) !== 0} />}
+                    {marketType === "Pendle_PT" ? <></> : <StreamTile active={!!currentAPRDetails && Number(currentAPRDetails[rewardToken] ?? 0) !== 0} />}
                   </div>
 
                   {marketType === "Pendle_PT" ? (
@@ -162,11 +164,12 @@ export const MarketAPR = ({
               </AprIndicator>
             </span>
 
-            {marketType !== "Pendle_PT" && ((projectedApr && !!currentAPRDetails && Number(currentAPRDetails[rewardToken]) !== 0) || !isMarketListDisplay) && (
-              <span className="hidden text-xs text-subtitle xl:flex">
-                Proj: <span className="ml-1">{(projectedApr! * maxLeverage).toFixed(2)}%</span>
-              </span>
-            )}
+            {marketType !== "Pendle_PT" &&
+              ((projectedApr && !!currentAPRDetails && Number(currentAPRDetails[rewardToken] ?? 0) !== 0) || !isMarketListDisplay) && (
+                <span className="hidden text-xs text-subtitle xl:flex">
+                  Proj: <span className="ml-1">{(projectedApr! * maxLeverage).toFixed(2)}%</span>
+                </span>
+              )}
           </>
         )}
       </div>

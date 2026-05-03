@@ -40,7 +40,7 @@ export function PositionPerformancePanel({
 
   const sUSGBalance = useMemo(() => {
     return Number(formatUnits(USGsUSGMetrics?.sUSGBalance ?? 0n, 18))
-  }, [USGsUSGMetrics?.USGBalance])
+  }, [USGsUSGMetrics?.sUSGBalance])
 
   const addLiq = useMemo(() => {
     return weiValue ? Number(formatUnits(weiValue, 18)) : 0
@@ -78,13 +78,13 @@ export function PositionPerformancePanel({
         />
       </ReliefCard>
 
-      <ReliefCard className="mt-5 flex w-full flex-col px-[20px] pt-[20px]">
+      <ReliefCard className="mt-5 flex w-full flex-col px-5 pt-5">
         {selectedFeature === PROJECTED_EARNINGS && (
-          <ForecastGraph currentFeature={currentFeature} currentInvestment={sUSGBalance} apr={sUSGCurrentAPY} newLiquidity={addLiq} />
+          <ForecastGraph currentFeature={currentFeature} currentInvestment={sUSGBalance} apy={sUSGCurrentAPY} newLiquidity={addLiq} />
         )}
 
         {selectedFeature === APY_HISTORY && (
-          <PositionAPR apyHistory={apyHistory} fetchsUSGHistoryAPY={fetchsUSGHistoryAPY} sUSGSelectedTab={sUSGSelectedTab} apr={sUSGCurrentAPY} />
+          <PositionAPR apyHistory={apyHistory} fetchsUSGHistoryAPY={fetchsUSGHistoryAPY} sUSGSelectedTab={sUSGSelectedTab} apy={sUSGCurrentAPY} />
         )}
       </ReliefCard>
     </div>

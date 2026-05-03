@@ -13,7 +13,7 @@ import { InputSelect } from "@/components/design_system/inputs/input_select"
 import { marketOptions, protocolOptions, USGMarketModalListHeaders } from "../usg_market_controller"
 
 const MarketListSelectTemplate = (option: { label: string; value: string }) => {
-  return <span className="flex w-full cursor-pointer items-center rounded-[10px] px-3 text-sm font-semibold text-white hover:bg-white/10">{option?.label}</span>
+  return <span className="flex w-full cursor-pointer items-center rounded-[10px] px-3 text-sm font-semibold text-white">{option?.label}</span>
 }
 
 const listeState: ListState = {

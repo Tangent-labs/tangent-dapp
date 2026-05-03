@@ -60,7 +60,7 @@ export function ThreeCardRowWithMask(props: { contents: [KeyValue, KeyValue, Key
               }}
             />
 
-            <div className="p-2 text-center xl:p-4">
+            <div className="relative z-10 p-2 text-center xl:p-4">
               <h3 className="mb-1 text-xs text-subtitle">{props.contents[i].key}</h3>
               <div className="font-semibold text-white">{props.contents[i].value}</div>
             </div>

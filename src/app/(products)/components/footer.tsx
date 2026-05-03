@@ -10,7 +10,7 @@ import Link from "next/link"
 
 export const Footer = () => {
   return (
-    <div className="mt-4 flex w-full items-center justify-between border-t border-t-white/10 p-2">
+    <div className="mt-8 flex w-full items-center justify-between border-t border-t-white/10 p-2 backdrop-blur-[60px]">
       <div className="flex items-center justify-center">
         <IconTangent className="w-24" />
       </div>

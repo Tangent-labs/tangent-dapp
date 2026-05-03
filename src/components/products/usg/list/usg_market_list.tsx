@@ -90,7 +90,7 @@ export default function USGMarketList() {
   return (
     <>
       <div className="mb-2 flex w-full items-stretch justify-between gap-5 xl:mb-4">
-        <div className="relative flex h-[100px] w-full overflow-hidden rounded-lg xl:h-[150px] xl:w-1/2">
+        <div className="relative flex h-[100px] w-full overflow-hidden rounded-lg backdrop-blur-[60px] xl:h-[150px] xl:w-1/2">
           <div
             className="pointer-events-none absolute inset-0 rounded-lg"
             style={{

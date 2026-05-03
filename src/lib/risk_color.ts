@@ -1,6 +1,6 @@
 const RISK_COLORS = {
   safe: "#2e8b57",
-  caution: "#b8860b",
+  caution: "#f5c518",
   warning: "#ff8c00",
   danger: "#ff0000",
 }
@@ -17,13 +17,13 @@ export function getLTVColor(ltv: string | number, maxLtv: number, volatile = fal
   if (isNaN(ltvValue) || ltvValue <= 0 || maxLtv <= 0) return undefined
   const ltvRatio = ltvValue / maxLtv
   if (volatile) {
-    if (ltvRatio < 0.4) return RISK_COLORS.safe
-    if (ltvRatio < 0.55) return RISK_COLORS.caution
-    if (ltvRatio < 0.7) return RISK_COLORS.warning
+    if (ltvRatio < 0.5) return RISK_COLORS.safe
+    if (ltvRatio < 0.65) return RISK_COLORS.caution
+    if (ltvRatio < 0.8) return RISK_COLORS.warning
     return RISK_COLORS.danger
   }
-  if (ltvRatio < 0.7) return RISK_COLORS.safe
-  if (ltvRatio < 0.8) return RISK_COLORS.caution
-  if (ltvRatio < 0.92) return RISK_COLORS.warning
+  if (ltvRatio < 0.75) return RISK_COLORS.safe
+  if (ltvRatio < 0.85) return RISK_COLORS.caution
+  if (ltvRatio < 0.95) return RISK_COLORS.warning
   return RISK_COLORS.danger
 }

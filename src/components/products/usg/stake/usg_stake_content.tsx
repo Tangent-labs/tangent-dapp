@@ -88,8 +88,8 @@ export default function USGStakeContent() {
           <ThreeCardRowWithMask
             contents={[
               { key: "Supply", value: formatMillions(Number(formatUnits(USGsUSGMetrics?.sUSGSupply || 0n, 18))) },
-              { key: "sUSG price", value: formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 2) },
-              { key: "sUSG balance", value: formatNumber(Number(formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18)), 2) },
+              { key: "sUSG price", value: formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 4) },
+              { key: "sUSG balance", value: formatMillions(Number(formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18))) },
             ]}
           ></ThreeCardRowWithMask>
         </div>

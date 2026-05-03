@@ -110,7 +110,7 @@ export function EvolutionBox({
               transition={{ duration: 0.35, type: "spring", stiffness: 400, damping: 28 }}
               className="flex items-center gap-2 text-sm"
             >
-              <span className="font-semibold" style={{ color: newValueColor ?? "var(--color-tonic)" }}>
+              <span className="font-semibold" style={{ color: newValueColor ?? "var(--tgt-tonic)" }}>
                 {newValue}
               </span>
               {logo && (

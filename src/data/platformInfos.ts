@@ -37,12 +37,13 @@ export const PLATFORM_INFOS: Record<string, PlatformInfo> = {
       "Pendle is a yield trading protocol that allows users to split, trade, and manage the yield of yield-bearing assets through fixed and variable rate strategies.",
   },
   StakeDAO: {
-    name: "StakeDAO",
-    type: "Liquid Locker",
+    name: "Stake DAO",
+    type: "Yield Optimizer",
     logoPath: "/medias/tokens/SDT.webp",
     website: "https://stakedao.org",
     twitter: "https://twitter.com/StakeDAOHQ",
-    description: "StakeDAO is a liquid locker that boosts Curve LP rewards through veToken governance, without requiring users to lock tokens directly.",
+    description:
+      "Stake DAO is a yield optimizer that maximizes Curve LP rewards by pooling CRV boosting power across depositors, without requiring users to lock CRV directly.",
   },
   "f(x)": {
     name: "f(x)",
@@ -50,7 +51,8 @@ export const PLATFORM_INFOS: Record<string, PlatformInfo> = {
     logoPath: "/medias/logos/FX.webp",
     website: "https://fx.aladdin.club",
     twitter: "https://twitter.com/protocol_fx",
-    description: "f(x) Protocol is a CDP that splits ETH yield into stable and leveraged components, collateralized by ETH and ETH LSTs.",
+    description:
+      "f(x) Protocol is a decentralized on-chain trading platform that enables stress-free leverage on ETH and WBTC while delivering organic & sustainable yield on stablecoins.",
   },
 }
 

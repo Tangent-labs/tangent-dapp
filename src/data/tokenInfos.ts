@@ -31,12 +31,12 @@ export const TOKEN_INFOS: Record<string, TokenInfo> = {
     docs: "https://ripple.com/solutions/stablecoin/",
   },
   USDe: {
-    info: "USDe is a synthetic stablecoin issued by Ethena, partly redeemable for USDC and USDT. USDe is backed with crypto assets and corresponding short futures positions.",
+    info: "USDe is a synthetic stablecoin backed by a mix of stablecoins, U.S. Treasury bonds, and basis-trade strategies. USDe is issued by Ethena.",
     website: "https://ethena.fi",
     docs: "https://docs.ethena.fi/",
   },
   sUSDe: {
-    info: "sUSDe is the staked version of USDe issued by Ethena. Stakers earn a portion of the protocol's yield generated through its delta-neutral strategy.",
+    info: "sUSDe is the savings version of USDe, a synthetic stablecoin issued by Ethena. USDe is backed by a mix of stablecoins, U.S. Treasury bonds, and basis-trade strategies.",
     website: "https://ethena.fi",
     docs: "https://docs.ethena.fi/",
   },
@@ -64,6 +64,41 @@ export const TOKEN_INFOS: Record<string, TokenInfo> = {
     info: "USDS is a stablecoin issued by Sky. USDS is collateralized with crypto assets and RWAs.",
     website: "https://sky.money/",
     docs: "https://sky.money/",
+  },
+  sUSDS: {
+    info: "sUSDS is the savings version of USDS, a stablecoin issued by Sky. USDS is collateralized with onchain collateral and RWAs.",
+    website: "https://sky.money/",
+    docs: "https://sky.money/",
+  },
+  DOLA: {
+    info: "DOLA is a CDP stablecoin issued by Inverse Finance. DOLA is overcollateralized with crypto assets.",
+    website: "https://www.inversefinance.xyz/",
+    docs: "https://docs.inverse.finance/",
+  },
+  sDOLA: {
+    info: "sDOLA is the savings version of DOLA, a CDP stablecoin issued by Inverse Finance. DOLA is overcollateralized with crypto assets.",
+    website: "https://www.inversefinance.xyz/",
+    docs: "https://docs.inverse.finance/",
+  },
+  OUSD: {
+    info: "OUSD is backed by USDC deposits into Morpho vaults. OUSD is issued by Origin.",
+    website: "https://originprotocol.com/",
+    docs: "https://docs.ousd.com/",
+  },
+  eUSD: {
+    info: "eUSD is backed by USDC deposits into lending protocols such as AAVE and Compound. eUSD is issued by Reserve Protocol.",
+    website: "https://app.reserve.org/",
+    docs: "https://docs.reserve.org/",
+  },
+  scrvUSD: {
+    info: "scrvUSD is the savings version of crvUSD, a CDP stablecoin issued by Curve. crvUSD is overcollateralized with crypto assets.",
+    website: "https://curve.fi",
+    docs: "https://resources.curve.finance/crvusd/overview/",
+  },
+  BOLD: {
+    info: "BOLD is an immutable CDP stablecoin issued by Liquity. BOLD is overcollateralized with ETH, wstETH, and rETH.",
+    website: "https://liquity.org/",
+    docs: "https://docs.liquity.org/",
   },
   msUSD: {
     info: "msUSD is a CDP stablecoin issued by Metronome. msUSD is overcollateralized with crypto assets.",

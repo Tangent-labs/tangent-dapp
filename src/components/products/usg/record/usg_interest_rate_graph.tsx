@@ -6,6 +6,31 @@ import { computeIR } from "./usg_record_controller"
 import { useUSGRecordContext } from "./usg_record_context"
 import { ResponsiveContainer, AreaChart, XAxis, YAxis, CartesianGrid, Area, Tooltip } from "recharts"
 
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean
+  payload?: Array<{ dataKey: string; value: number; color: string }>
+  label?: number
+}) => {
+  if (!active || !payload?.length) return null
+  return (
+    <div className="flex flex-col items-start justify-center gap-1 rounded-[10px] border border-white border-opacity-10 bg-input p-2 text-xs text-white backdrop-blur-[60px]">
+      <span className="text-xs text-white">Price: ${(label ?? 0).toFixed(5)}</span>
+      {payload.map((entry) => (
+        <div key={entry?.dataKey} className="flex items-center justify-center gap-2">
+          <span className="h-[10px] w-[10px] rounded-[3px]" style={{ background: entry.color }}></span>
+          <span>
+            {entry.dataKey === "rewardsCut" ? "Rewards Cut" : "Interest Rate"}: {entry.value.toFixed(2)}%
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 const RewardsCutAxisTick = ({ x, y, value }: { x?: number; y?: number; value: string }) => (
   <text x={(x ?? 0) + 8} y={y} dy={4} textAnchor="start" fill="rgba(255,255,255,0.6)" fontSize={11}>
     {value}%
@@ -164,12 +189,7 @@ export function InterestRateGraph() {
 
         <CartesianGrid horizontal={true} vertical={false} stroke="#FFFFFF1A" />
 
-        <Tooltip
-          contentStyle={{ backgroundColor: "#333", color: "#fff", border: "none", borderRadius: "4px" }}
-          itemStyle={{ color: "#fff" }}
-          formatter={(value: number, name: string) => [`${value.toFixed(2)}%`, name === "rewardsCut" ? "Rewards Cut" : "Interest Rate"]}
-          labelFormatter={(label: number) => `Price: $${label.toFixed(5)}`}
-        />
+        <Tooltip content={<CustomTooltip />} />
 
         <Area yAxisId="left" type="stepAfter" dataKey="rewardsCut" stroke="#0075FF" strokeWidth={1.5} fill="url(#gradiant-blue)" fillOpacity={1} />
 

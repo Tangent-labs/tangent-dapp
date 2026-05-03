@@ -2,7 +2,7 @@ import { ReactNode } from "react"
 
 export function NeonLightCard(props: { paddingHorizontal: number; color1: string; color2: string; className: string; children: ReactNode }) {
   return (
-    <div className={`flex overflow-hidden rounded-lg ${props.className}`}>
+    <div className={`flex overflow-hidden rounded-lg backdrop-blur-[60px] ${props.className}`}>
       <div
         className={`shadow-2x relative w-full rounded-lg py-2.5 px-${props.paddingHorizontal}`}
         style={{

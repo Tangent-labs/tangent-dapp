@@ -81,7 +81,7 @@ export const USGPredepositComponent = ({
         <span className="flex items-center">
           <span className="text-white">${formatNumber(Number(formatUnits(BigInt(currentDeposit || 0n), 18)), 0)}</span>
 
-          {predepositStatus && <span className="text-subtitle"> /{formatDollar(Number(formatUnits(cap || 0n, 18)))}</span>}
+          {predepositStatus && <span className="text-subtitle"> /{formatDollar(Number(formatUnits(cap || 0n, 18)), 0)}</span>}
         </span>
       </div>
 

@@ -185,11 +185,11 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
       if (!status) return
       setPredepositStatus(mapPredepositStatus(status))
 
-      setIsFetchApiLoading(false)
-
       if (currentAddress === zeroAddress) return
     } catch (error) {
       console.error("Failed to fetch user status:", error)
+    } finally {
+      setIsFetchApiLoading(false)
     }
   }
 

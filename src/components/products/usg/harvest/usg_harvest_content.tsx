@@ -52,7 +52,7 @@ export default function USGHarvestContent() {
 
   return (
     <>
-      <div className="flex items-stretch justify-between gap-6">
+      <div className="flex items-stretch justify-between gap-5">
         <PageHeader>
           <Image height={150} width={150} src="/medias/logos/claim.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           <div className="flex flex-col items-start justify-center gap-3 px-6">
@@ -150,7 +150,7 @@ function HarvestList() {
         return (
           <div
             key={item.contractAddress}
-            className={`my-0.5 px-4 py-1 backdrop-blur-[60px] hover-lift-row ${selectedClass}`}
+            className={`my-0.5 p-[10px] backdrop-blur-[60px] hover-lift-row ${selectedClass}`}
             onClick={() =>
               addToHarvestableMarkets({
                 ...item,
@@ -166,11 +166,10 @@ function HarvestList() {
                 <div className="xl:w-[57.14%]">
                   <ListAsset name={item?.logoKey} token={item?.logoKey} />
                 </div>
-                {/* COL "TOTAL REWARDS" */}
-                <div className="flex justify-center gap-2 text-sm md:text-[15px] xl:w-[42.86%]">
+                {/* COL "TOTAL REWARDS" — desktop only */}
+                <div className="hidden items-center gap-2 text-sm md:text-[15px] xl:flex xl:w-[42.86%] xl:justify-center">
                   {formatDollar(item?.rewards?.totalDollar || 0)}
-
-                  <USGHoverCard iconClassName="w-3" title={`${item?.asset} Rewards Breakdown`}>
+                  <USGHoverCard iconClassName="w-3 fill-white" title={`${item?.asset} Rewards Breakdown`}>
                     <div className="flex flex-col gap-1 text-sm">
                       {item?.rewards?.details?.map((reward, index) => (
                         <div key={index} className="flex items-center gap-2">
@@ -184,18 +183,42 @@ function HarvestList() {
                 </div>
               </div>
               <hr className="my-2 w-full opacity-20 xl:hidden" />
-              <div className="flex w-full flex-wrap items-center justify-between gap-2 xl:w-[56.25%] xl:gap-0">
+              <div className="flex w-full flex-col items-stretch justify-between gap-1 xl:w-[56.25%] xl:flex-row xl:items-center xl:gap-0">
+                {/* COL "TOTAL REWARDS" — mobile only */}
+                <div className="flex w-full items-center justify-between text-sm xl:hidden">
+                  <span className="text-subtitle">Total Rewards</span>
+                  <div className="flex items-center gap-2">
+                    {formatDollar(item?.rewards?.totalDollar || 0)}
+                    <USGHoverCard iconClassName="w-3 fill-white" title={`${item?.asset} Rewards Breakdown`}>
+                      <div className="flex flex-col gap-1 text-sm">
+                        {item?.rewards?.details?.map((reward, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <TokenImage token={reward.logoKey} size={16} />
+                            <span className="w-20"> {reward.logoKey}</span>
+                            <span> {formatDollar(reward.dollarValue)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </USGHoverCard>
+                  </div>
+                </div>
+
                 {/* COL "HARVESTER FEES" */}
-                <div className="flex w-full flex-1 items-center justify-center gap-2 text-sm md:text-[15px]">{formatPercent(item?.percentage)}</div>
+                <div className="flex w-full flex-1 items-center justify-between gap-2 text-sm md:text-[15px] xl:justify-center">
+                  <span className="text-subtitle xl:hidden">Harvester Fees</span>
+                  {formatPercent(item?.percentage)}
+                </div>
 
                 {/* COL "HARVESTER REWARDS" */}
-                <div className="flex w-full flex-1 items-center justify-center text-sm md:text-[15px]">
+                <div className="flex w-full flex-1 items-center justify-between text-sm md:text-[15px] xl:justify-center">
+                  <span className="text-subtitle xl:hidden">Harvester Rewards</span>
                   {formatDollar((item?.rewards.totalDollar * item?.percentage) / 100)}
                 </div>
 
-                {/* COL "SWITCH LAST & LAST HARVEST" */}
-                <div className="flex w-full flex-1 flex-col items-center justify-center">
-                  <span className="text-sm">{item.lastHarvestDate} </span>
+                {/* COL "LAST HARVEST" */}
+                <div className="flex w-full flex-1 items-center justify-between xl:flex-col xl:justify-center">
+                  <span className="text-sm text-subtitle xl:hidden">Last Harvest</span>
+                  <span className="text-sm">{item.lastHarvestDate}</span>
                 </div>
               </div>
             </div>

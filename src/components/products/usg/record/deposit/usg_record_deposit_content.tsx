@@ -134,7 +134,10 @@ export default function USGDepositContent() {
             disabled={maxBorrowCapReached}
             label="You borrow"
             depositSelect={<StaticCardAssetInput assetName="USG" logoKey="USG" />}
-            maxAmountParams={{ maxWeiValue: maxBorrowableValue, setMaxAmount: maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue) }}
+            maxAmountParams={{
+              maxWeiValue: maxBorrowableValue,
+              setMaxAmount: maxBorrowCapReached ? () => {} : () => setBorrowWeiValue(maxBorrowableValue - 10_000n),
+            }}
             sliderParams={{
               sliderPercentage: borrowSliderPercent,
               setSliderPercentage: maxBorrowCapReached ? () => {} : setBorrowSliderPercent,

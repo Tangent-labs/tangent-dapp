@@ -6,6 +6,10 @@ import { useUSGContext } from "../usg_context"
 import { useUSGEarnContext } from "./usg_earn_context"
 import { AprOpportunity, AprOpportunityRowDisposition } from "./components/EarnList"
 import { aprOpportunitiesListHeaders } from "./usg_earn_controller"
+import { AprOpportunityItem } from "../usg_type"
+import { InputSearch } from "@/components/design_system/inputs/input_search"
+import { InputSelect } from "@/components/design_system/inputs/input_select"
+import { protocolOptions } from "../list/usg_market_controller"
 import { ListHeader } from "@/components/design_system/list/list_header"
 import { PageHeader } from "@/components/design_system/structure/page_header"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
@@ -15,19 +19,19 @@ import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/b
 const listeState: ListState = {
   search: undefined,
   sort: {
-    key: "assets",
-    direction: "asc",
+    key: "currentAPR",
+    direction: "desc",
   },
 }
 
 export const USGEarnContent = () => {
-  const { displayRows, USGsUSGMetrics, sortAprOpportunities } = useUSGEarnContext()
+  const { displayRows, USGsUSGMetrics, getSortedRows } = useUSGEarnContext()
 
   const { lpUserPoints, voteUserPoints } = useUSGContext()
 
   return (
     <>
-      <div className="mb-5 flex items-stretch justify-between gap-6">
+      <div className="mb-[10px] flex items-stretch justify-between gap-5">
         <PageHeader>
           <Image height={165} width={165} src="/medias/logos/earn.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px", paddingLeft: "16px" }} />
 
@@ -47,7 +51,7 @@ export const USGEarnContent = () => {
         </div>
       </div>
 
-      <ListProvider _headers={aprOpportunitiesListHeaders} _rows={displayRows!} customSort={sortAprOpportunities} _listState={listeState}>
+      <ListProvider _headers={aprOpportunitiesListHeaders} _rows={displayRows} getSortedRows={getSortedRows} _listState={listeState}>
         <USGEarnListInner />
       </ListProvider>
     </>
@@ -55,14 +59,32 @@ export const USGEarnContent = () => {
 }
 
 export function USGEarnListInner() {
-  const { headers, udpateSort } = useListContext()
+  const { headers, udpateSort, listState, displayRows } = useListContext()
 
-  const { displayRows, isLoading } = useUSGEarnContext()
+  const { isLoading, searchValue, setSearchValue, protocolFilter, setProtocolFilter } = useUSGEarnContext()
 
   return (
     <>
-      <ListHeader rowDisposition={AprOpportunityRowDisposition} headers={headers} onSort={udpateSort} />
-      {displayRows?.map((item, index) => <AprOpportunity item={item} key={index} index={index} isLoading={isLoading}></AprOpportunity>)}
+      <div className="mb-[10px] mt-4 hidden items-end justify-between xl:flex">
+        <div className="flex w-full min-w-96 flex-col items-center justify-center md:w-fit">
+          <div className="mb-1 text-xs text-subtitle"> Search </div>
+          <InputSearch
+            placeholder=""
+            className="flex w-full flex-col items-center justify-center"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e as string)}
+          />
+        </div>
+        <div className="flex flex-col items-center justify-center md:w-fit">
+          <div className="mb-1 text-xs text-subtitle"> Protocol </div>
+          <InputSelect className="w-full min-w-48" value={protocolFilter} options={protocolOptions} onChange={(e) => setProtocolFilter(e)} />
+        </div>
+      </div>
+
+      <ListHeader rowDisposition={AprOpportunityRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
+      {(displayRows as AprOpportunityItem[])?.map((item, index) => (
+        <AprOpportunity item={item} key={index} index={index} isLoading={isLoading} openInNewTab={true}></AprOpportunity>
+      ))}
     </>
   )
 }

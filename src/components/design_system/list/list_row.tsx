@@ -10,15 +10,23 @@ interface ListRowProps {
   route: string
   rowDisposition?: React.ComponentType<{ children: React.ReactNode[] }>
   isSelected?: boolean
+  openInNewTab?: boolean
 }
 
-export const ListRow = ({ children, route, className = "", rowDisposition: CustomRowDisposition = ListRowDisposition, isSelected = false }: ListRowProps) => {
+export const ListRow = ({
+  children,
+  route,
+  className = "",
+  rowDisposition: CustomRowDisposition = ListRowDisposition,
+  isSelected = false,
+  openInNewTab = false,
+}: ListRowProps) => {
   return (
     <div className="group relative mt-1 w-full">
       <div
-        className={`relative bg-overlay-panel px-2 py-1.5 backdrop-blur-[60px] hover-lift-row lg:px-4 ${isSelected ? "before:bg-list-row-hover" : ""} // Selected state styling ${className} `}
+        className={`relative bg-overlay-panel p-[10px] backdrop-blur-[60px] hover-lift-row ${isSelected ? "before:bg-list-row-hover" : ""} // Selected state styling ${className} `}
       >
-        <Link href={route}>
+        <Link href={route} target={openInNewTab ? "_blank" : undefined} rel={openInNewTab ? "noopener noreferrer" : undefined}>
           <CustomRowDisposition>
             <> {children?.at(0)}</>
             <> {children?.at(1)}</>

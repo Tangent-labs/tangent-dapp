@@ -13,13 +13,14 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { CollateralPriceProvider } from "./collat_price/collat_price_context"
 import { MarketDetailsParameters } from "./header/components/market_details_parameters"
 import { FeatureTabs } from "@/components/design_system/inputs/feature_tabs/feature_tabs"
+import { MarketDetailsContracts } from "./header/components/market_details_contracts"
 
 type USGRecordLayoutProps = {
   children: React.ReactNode
 }
 
 export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
-  const { feature, canLeverage, marketInfo, setIsRepayAndWithdraw, setActiveTab, activeTab } = useUSGRecordContext()
+  const { feature, canLeverage, marketContracts, marketInfo, setIsRepayAndWithdraw, setActiveTab, activeTab } = useUSGRecordContext()
 
   const router = useRouter()
 
@@ -110,7 +111,9 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
 
         <MarketDetails />
 
-        <Divider />
+        <MarketDetailsContracts marketContracts={marketContracts} />
+
+        <Divider className="hidden md:flex" />
 
         <USGPositionHistory />
       </div>

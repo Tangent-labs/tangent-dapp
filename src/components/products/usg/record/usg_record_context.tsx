@@ -87,7 +87,7 @@ type USGRecordContextValues = {
   isUserHistoryLoading: boolean
   setIsUserHistoryLoading: (v: boolean) => void
 
-  customSort: (arg: ListState) => void
+  getSortedRows: (rows: UserPosition[], listState: ListState) => UserPosition[]
 
   isLeveraged: boolean
   setIsLeveraged: (v: boolean) => void
@@ -310,10 +310,10 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
     }
   }, [userPositions])
 
-  const customSort = (listState: ListState) => {
+  const getSortedRows = (rows: UserPosition[], listState: ListState) => {
     const { key, direction } = listState.sort!
 
-    displayRows.sort((elementA: UserPosition, elementB: UserPosition) => {
+    return [...rows].sort((elementA, elementB) => {
       if (key === "usgAmount") {
         const aValue = elementA[key as keyof UserPosition]
         const bValue = elementB[key as keyof UserPosition]
@@ -508,7 +508,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
     marketInfo,
     //
     displayRows,
-    customSort,
+    getSortedRows,
     isUserHistoryLoading,
     setIsUserHistoryLoading,
     isLeveraged,

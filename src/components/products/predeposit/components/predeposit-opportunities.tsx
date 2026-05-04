@@ -13,8 +13,8 @@ import { opportunities } from "@/app/(products)/(usg)/earn/aprOpportunities"
 const listState: ListState = {
   search: undefined,
   sort: {
-    key: "asset",
-    direction: "asc",
+    key: "currentAPR",
+    direction: "desc",
   },
 }
 
@@ -26,15 +26,13 @@ export const PredepositOpportunities = ({ opportunitiesData }: PredepositOpportu
   const displayRows = useMemo(() => {
     if (!opportunitiesData) return []
 
-    const mappedTasks = mapAPROpportunities(opportunities, opportunitiesData)
-
-    return mappedTasks
+    return mapAPROpportunities(opportunities, opportunitiesData)
   }, [opportunitiesData])
 
-  const sortAprOpportunities = (l: ListState) => {
+  const getSortedRows = (rows: AprOpportunityItem[], l: ListState) => {
     const { key, direction } = l.sort!
 
-    displayRows.sort((elementA: AprOpportunityItem, elementB: AprOpportunityItem) => {
+    return [...rows].sort((elementA, elementB) => {
       const aValue = elementA[key as keyof AprOpportunityItem] ?? 0
       const bValue = elementB[key as keyof AprOpportunityItem] ?? 0
 
@@ -52,25 +50,20 @@ export const PredepositOpportunities = ({ opportunitiesData }: PredepositOpportu
         <div className="text-sm text-subtitle">View all available rewards opportunities.</div>
       </section>
 
-      <ListProvider _headers={aprOpportunitiesListHeaders} _rows={displayRows!} customSort={sortAprOpportunities} _listState={listState}>
-        <PredepositOpportunitiesListInner displayRows={displayRows} />
+      <ListProvider _headers={aprOpportunitiesListHeaders} _rows={displayRows} getSortedRows={getSortedRows} _listState={listState}>
+        <PredepositOpportunitiesListInner />
       </ListProvider>
     </>
   )
 }
 
-type PredepositOpportunitiesListInnerProps = {
-  displayRows: Array<AprOpportunityItem>
-}
-
-export function PredepositOpportunitiesListInner({ displayRows }: PredepositOpportunitiesListInnerProps) {
-  const { headers, listState, udpateSort } = useListContext()
+export function PredepositOpportunitiesListInner() {
+  const { headers, listState, udpateSort, displayRows } = useListContext()
 
   return (
     <>
       <ListHeader rowDisposition={AprOpportunityRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
-
-      {displayRows?.map((item, index) => <AprOpportunity key={index} item={item} index={index}></AprOpportunity>)}
+      {(displayRows as AprOpportunityItem[])?.map((item, index) => <AprOpportunity key={index} item={item} index={index} openInNewTab={true} />)}
     </>
   )
 }

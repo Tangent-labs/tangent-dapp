@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { ListState } from "@/types"
+import { ListRowData, ListState } from "@/types"
 import { ListRow } from "@/components/design_system/list/list_row"
 import { ListAsset } from "@/components/design_system/list/list_asset"
 import { ListHeader } from "@/components/design_system/list/list_header"
@@ -13,7 +13,7 @@ import { InputSelect } from "@/components/design_system/inputs/input_select"
 import { marketOptions, protocolOptions, USGMarketModalListHeaders } from "../usg_market_controller"
 
 const MarketListSelectTemplate = (option: { label: string; value: string }) => {
-  return <span className="flex w-full cursor-pointer items-center rounded-[10px] px-3 text-sm font-semibold text-white hover:bg-white/10">{option?.label}</span>
+  return <span className="flex w-full cursor-pointer items-center rounded-[10px] px-3 text-sm font-semibold text-white">{option?.label}</span>
 }
 
 const listeState: ListState = {
@@ -25,7 +25,7 @@ const listeState: ListState = {
 }
 
 export function USGModalMarketList() {
-  const { displayRows, searchValue, setSearchValue, sortMarketList, marketType, setMarketType, protocol, setProtocol } = useUSGMaketListContext()
+  const { displayRows, searchValue, setSearchValue, getSortedRows, marketType, setMarketType, protocol, setProtocol } = useUSGMaketListContext()
 
   return (
     <div className="p-0 lg:p-4">
@@ -40,7 +40,7 @@ export function USGModalMarketList() {
           />
         </div>
 
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex w-full items-center justify-center gap-2 md:w-fit">
           <div className="flex w-full flex-col items-center justify-center md:w-fit">
             <div className="mb-1 text-xs text-subtitle"> Type </div>
             <InputSelect
@@ -65,7 +65,7 @@ export function USGModalMarketList() {
           </div>
         </div>
       </div>
-      <ListProvider customSort={sortMarketList} _headers={USGMarketModalListHeaders} _rows={displayRows!} _listState={listeState}>
+      <ListProvider getSortedRows={getSortedRows} _headers={USGMarketModalListHeaders} _rows={displayRows!} _listState={listeState}>
         <USGModalMarketListInner />
       </ListProvider>
     </div>
@@ -83,8 +83,8 @@ const ModalMarketListRowDisposition = ({ children }: { children: React.ReactNode
 }
 
 export function USGModalMarketListInner() {
-  const { headers, listState, udpateSort } = useListContext()
-  const { displayRows, marketData } = useUSGMaketListContext()
+  const { headers, listState, udpateSort, displayRows } = useListContext()
+  const { marketData } = useUSGMaketListContext()
 
   return (
     <>
@@ -93,7 +93,7 @@ export function USGModalMarketListInner() {
       </div>
 
       <div className="scrollbar-thin h-[448px] overflow-y-auto pr-1">
-        {displayRows?.map((item, index) => (
+        {(displayRows as ListRowData[])?.map((item, index) => (
           <ListRow
             rowDisposition={ModalMarketListRowDisposition}
             className={cn("my-1", !!marketData.length && !!displayRows ? "" : "shimmer")}

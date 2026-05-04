@@ -19,8 +19,8 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 const listeState: ListState = {
   search: undefined,
   sort: {
-    key: "time",
-    direction: "asc",
+    key: "date",
+    direction: "desc",
   },
 }
 
@@ -39,7 +39,7 @@ const HistoryRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
 }
 
 export function USGPositionHistory() {
-  const { displayRows, customSort, isUserHistoryLoading } = useUSGRecordContext()
+  const { displayRows, getSortedRows, isUserHistoryLoading } = useUSGRecordContext()
 
   return (
     <ReliefCard className="p-5">
@@ -54,7 +54,7 @@ export function USGPositionHistory() {
         ) : (
           <div className="flex w-full items-start justify-start">
             <div className="flex w-full flex-col">
-              <ListProvider customSort={customSort} _headers={userPositionListHeaders} _rows={displayRows} _listState={listeState}>
+              <ListProvider getSortedRows={getSortedRows} _headers={userPositionListHeaders} _rows={displayRows} _listState={listeState}>
                 <PositionList></PositionList>
               </ListProvider>
             </div>
@@ -76,23 +76,28 @@ function PositionList() {
 
   return (
     <>
-      <div className="rounded-t-[10px] bg-overlay-panel backdrop-blur-[60px]">
-        <div className={`hidden p-4 xl:block`}>
+      <div className="rounded-t-[10px] bg-overlay-panel">
+        <div className="hidden p-[10px] text-sm xl:block">
           <HistoryRowDisposition>
             {!!headers?.at(0)?.key && (
               <div className="flex-1">
-                <span>{headers?.at(0)?.label}</span>
+                <span className="text-subtitle">{headers?.at(0)?.label}</span>
               </div>
             )}
             {!!headers?.at(1)?.key && (
               <div key={headers?.at(1)?.label} className="flex-1">
                 <button
-                  className="flex w-full items-center justify-center gap-2"
+                  className="flex w-full items-center justify-center"
                   type="button"
                   onClick={() => udpateSort && udpateSort(headers?.at(1)?.key as string)}
                 >
-                  <span>{headers?.at(1)?.label} </span>
-                  <div className="text-row-tonic">
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
+                    )}
+                  >
+                    {headers?.at(1)?.label}
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(1)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
@@ -101,12 +106,17 @@ function PositionList() {
             {!!headers?.at(2)?.key && (
               <div key={headers?.at(2)?.label} className="flex-1">
                 <button
-                  className="flex w-full items-center justify-center gap-2"
+                  className="flex w-full items-center justify-center"
                   type="button"
                   onClick={() => udpateSort && udpateSort(headers?.at(2)?.key as string)}
                 >
-                  <span>{headers?.at(2)?.label} </span>
-                  <div className="text-row-tonic">
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
+                    )}
+                  >
+                    {headers?.at(2)?.label}
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(2)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
@@ -115,23 +125,28 @@ function PositionList() {
             {!!headers?.at(3)?.key && (
               <div key={headers?.at(3)?.label} className="flex-1">
                 <button
-                  className="flex w-full items-center justify-center gap-2"
+                  className="flex w-full items-center justify-center"
                   type="button"
                   onClick={() => udpateSort && udpateSort(headers?.at(3)?.key as string)}
                 >
-                  <span>{headers?.at(3)?.label} </span>
-                  <div className="text-row-tonic">
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 rounded-[10px] p-[5px] text-subtitle transition-colors hover:bg-white/10 hover:text-white",
+                      listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction !== "none" ? "text-white" : ""
+                    )}
+                  >
+                    {headers?.at(3)?.label}
                     <IconSortHeader sort={(listState?.sort?.key === headers?.at(3)?.key && listState?.sort?.direction) || "none"} />
                   </div>
                 </button>
               </div>
             )}
-            {!!headers?.at(4)?.key && <span>{headers?.at(4)?.label}</span>}
+            {!!headers?.at(4)?.key && <span className="text-subtitle">{headers?.at(4)?.label}</span>}
           </HistoryRowDisposition>
         </div>
       </div>
 
-      <div className="scrollbar-thin mt-0 h-full max-h-[200px] overflow-y-auto bg-overlay-panel backdrop-blur-[60px] lg:mt-1">
+      <div className="scrollbar-thin mt-0 h-full max-h-[200px] overflow-y-auto bg-overlay-panel lg:mt-1">
         {displayRows &&
           (displayRows as UserPosition[])?.map((pos: UserPosition) => (
             <div key={pos.txHash} className="px-5 py-2 text-[15px] hover:cursor-pointer hover:before:bg-list-row-hover">

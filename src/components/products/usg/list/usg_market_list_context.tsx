@@ -28,7 +28,7 @@ type USGMaketListContextValues = {
   globalData: USGGlobalData
   searchValue: string | null
   setSearchValue: (value: string | null) => void
-  sortMarketList: (arg: ListState) => void
+  getSortedRows: (rows: ListRowData[], listState: ListState) => ListRowData[]
 
   marketData: Array<{
     marketType: USGMarketType | undefined
@@ -207,10 +207,10 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     return null
   }, [onChainData])
 
-  const sortMarketList = (listState: ListState) => {
+  const getSortedRows = (rows: ListRowData[], listState: ListState) => {
     const { key, direction } = listState.sort!
 
-    displayRows.sort((elementA: ListRowData, elementB: ListRowData) => {
+    return [...rows].sort((elementA, elementB) => {
       if (key === "vapr") {
         return sortMarketListByType(elementA, elementB, direction)
       } else if (key === "maxvapr") {
@@ -251,7 +251,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     setSearchValue,
     marketData,
     userData,
-    sortMarketList,
+    getSortedRows,
     marketType,
     setMarketType,
     protocol,

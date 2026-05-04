@@ -365,6 +365,7 @@ export type EarnProtocolInput = {
   points: number
   address: string
   marketType: string
+  pid?: number
 }
 
 export type AprOpportunityItem = {
@@ -380,12 +381,10 @@ export type AprOpportunityItem = {
   address: string
   rewardToken: string
   currentAPRDetails?: {
-    APY?: number
-    CRV?: number
+    [rewardToken: string]: number | undefined
   }
   projectedAPRDetails?: {
-    APY?: number
-    CRV?: number
+    [rewardToken: string]: number | undefined
   }
 }
 
@@ -627,6 +626,7 @@ type FormErrorKey =
   | "wallet-repay"
   | "repay-exceeds-debt"
   | "max-leverage"
+  | "low-max-leverage"
   | "lock-expired"
   | "same-position"
   | "no-zap-value"
@@ -643,4 +643,11 @@ export type FormState = {
   canProcess: boolean
   errors: FormError[]
   haveToApprove: boolean
+}
+
+export type ConvexBoostDataGauge = { pid: bigint; boost: bigint }
+
+export type ConvexBoostData = {
+  fee: bigint
+  gaugeBoosts?: ConvexBoostDataGauge[]
 }

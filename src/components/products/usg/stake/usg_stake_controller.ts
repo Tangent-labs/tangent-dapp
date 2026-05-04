@@ -5,8 +5,6 @@ import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/se
 import { Address, EstimateContractGasParameters, formatUnits, maxUint256, WalletClient, WriteContractParameters } from "viem"
 import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 
-export const COMPOUNDING_PERIODS_PER_YEAR = 52
-
 export function getStakeFormState(
   stakeInfo: USGStakingInfo,
   currentFeature: "stake" | "unstake",
@@ -136,8 +134,8 @@ export const doStakeUSG = async ({ walletClient, stakingAddress, weiValue }: { w
   return await waitForTransaction(hash)
 }
 
-export const computedProjection = (amount: number, timeFrame: number, apr: number) => {
-  return amount * Math.pow(1 + apr / 100 / COMPOUNDING_PERIODS_PER_YEAR, COMPOUNDING_PERIODS_PER_YEAR * timeFrame)
+export const computedProjection = (amount: number, timeFrame: number, apy: number) => {
+  return amount * Math.pow(1 + apy / 100, timeFrame)
 }
 
 export const computeProjection = (sUSGBalance: bigint, timeFrame: number, apr: number, currentFeature: "stake" | "unstake", amount?: bigint) => {

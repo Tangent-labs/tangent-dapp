@@ -4,18 +4,11 @@ import { formatMillions } from "@/lib/number_formatter"
 
 export const formatYAxis = (tick: number) => `$${formatMillions(tick)}`
 
-// export const formatXAxis = (tick: string) => {
-//   const date = new Date(tick)
-//   return `${date.toLocaleString("en-US", { month: "short" })} ${date.getDate()}`
-// }
-
-/**
- * Compute a sensible tick interval based on data length
- * Aims for ~6-8 visible ticks max
- */
-export const getTickInterval = (dataLength: number): number => {
-  if (dataLength <= 8) return 0 // show all
-  return Math.floor(dataLength / 6) - 1
+export const getXAxisTicks = (data: { date: number }[], tickCount: number = 6): number[] => {
+  if (data.length === 0) return []
+  if (data.length <= tickCount) return data.map((d) => d.date)
+  const step = (data.length - 1) / (tickCount - 1)
+  return Array.from({ length: tickCount }, (_, i) => data[Math.round(i * step)].date)
 }
 
 /**
@@ -38,6 +31,7 @@ export const formatXAxis = (tick: number, rangeMs?: number) => {
   // > 6 months → "Mar '25"
   return `${date.toLocaleString("en-US", { month: "short" })} '${String(date.getFullYear()).slice(2)}`
 }
+
 export const getDataRangeMs = (data: { date: number }[]): number => {
   if (!data || data.length < 2) return 0
   return data[data.length - 1].date - data[0].date

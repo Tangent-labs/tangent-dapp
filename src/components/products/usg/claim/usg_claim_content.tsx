@@ -33,13 +33,14 @@ const listeState: ListState = {
 
 const ClaimRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
-    <div className="flex items-center justify-between max-xl:flex-col">
-      <div className="flex w-full items-center justify-between xl:w-1/2 xl:justify-start">
-        <div className="xl:w-1/2">{children?.at(0)}</div>
-        <div className="flex justify-center xl:w-1/2">{children?.at(1)}</div>
-      </div>
+    <div className="flex flex-col items-center justify-between xl:flex-row">
+      <div className="flex w-full items-center justify-between xl:w-1/4 xl:justify-start">{children?.at(0)}</div>
 
-      <div className="flex w-full flex-wrap items-center justify-between xl:w-1/2">{children?.at(2)}</div>
+      <hr className="my-2 w-full opacity-20 xl:hidden" />
+
+      <div className="flex w-full justify-center xl:w-1/4">{children?.at(1)}</div>
+
+      <div className="flex w-full flex-col items-center justify-between gap-2 xl:w-1/2 xl:flex-row">{children?.at(2)}</div>
     </div>
   )
 }
@@ -62,7 +63,7 @@ export default function USGClaimContent() {
 
   return (
     <>
-      <div className="flex items-stretch justify-between gap-6">
+      <div className="flex items-stretch justify-between gap-5">
         <PageHeader>
           <Image height={150} width={150} src="/medias/logos/claim.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
 
@@ -175,7 +176,7 @@ function ClaimList() {
         return (
           <div
             key={item.marketAddress}
-            className={`my-0.5 px-4 py-1 backdrop-blur-[60px] hover-lift-row ${selectedClass}`}
+            className={`my-0.5 p-[10px] backdrop-blur-[60px] hover-lift-row ${selectedClass}`}
             onClick={() =>
               addToClaimableMarkets({
                 marketName: item.marketName,
@@ -186,13 +187,13 @@ function ClaimList() {
               })
             }
           >
-            <div className={`flex items-center justify-between max-xl:flex-col`}>
+            <div className="flex flex-col items-center justify-between xl:flex-row">
               <div className="flex w-full items-center justify-between xl:w-1/2">
-                <div className="xl:w-1/2">
+                <div className="w-full xl:w-1/2">
                   <ListAsset name={item?.marketName} token={item.logoKey} />
                 </div>
 
-                <div className="flex justify-center xl:w-1/2">
+                <div className="hidden justify-center xl:flex xl:w-1/2">
                   <MarketAPR
                     marketType={item?.marketType}
                     logoKey={item.logoKey}
@@ -210,23 +211,44 @@ function ClaimList() {
 
               <hr className="my-2 w-full opacity-20 xl:hidden" />
 
-              <div className="flex w-full flex-wrap items-center justify-between xl:col-span-3 xl:w-1/2">
-                <div className="flex w-full flex-1 items-center justify-center gap-2 text-[15px] xl:w-1/2">
-                  {formatDollar(item?.totalClaimableValue || 0, 2)}
+              <div className="flex w-full xl:hidden">
+                <MarketAPR
+                  marketType={item?.marketType}
+                  logoKey={item.logoKey}
+                  poolName={item?.marketName}
+                  rewardToken={item?.rewardToken}
+                  maxLeverage={1}
+                  currentAPRDetails={item.currentAPRDetails}
+                  projectedAPRDetails={item.projectedAPRDetails}
+                  apr={item?.apr?.current}
+                  projectedApr={item?.apr?.projected}
+                  isMarketListDisplay={true}
+                />
+              </div>
 
-                  <USGHoverCard iconClassName="w-3" title={`${item?.marketName} Rewards Breakdown`}>
-                    {(item?.claimable as ClaimAsset[]).map((reward: ClaimAsset) => (
-                      <div key={reward?.symbol} className="my-1 flex items-center gap-4">
-                        <TokenImage token={reward.symbol} size={16} />
-                        <span> {Number(formatUnits(BigInt(reward.amount), 18)).toFixed(2)}</span>
-                        <span className="w-6"> {reward.symbol}</span>
-                        <span className="text-white/60"> ({formatDollar(reward?.valueInUsd)})</span>
-                      </div>
-                    ))}
-                  </USGHoverCard>
+              <div className="mt-2 flex w-full flex-col items-center justify-between gap-2 xl:mt-0 xl:w-1/2 xl:flex-row">
+                <div className="flex w-full flex-1 items-center justify-between gap-2 text-[15px] xl:w-1/2 xl:justify-center">
+                  <span className="flex text-sm text-subtitle xl:hidden"> Claimable </span>
+
+                  <div className="flex items-center justify-center gap-2 text-sm xl:text-[15px]">
+                    {formatDollar(item?.totalClaimableValue || 0, 2)}
+
+                    <USGHoverCard iconClassName="w-3 fill-white" title={`${item?.marketName} Rewards Breakdown`}>
+                      {(item?.claimable as ClaimAsset[]).map((reward: ClaimAsset) => (
+                        <div key={reward?.symbol} className="my-1 flex items-center gap-4">
+                          <TokenImage token={reward.symbol} size={16} />
+                          <span> {Number(formatUnits(BigInt(reward.amount), 18)).toFixed(2)}</span>
+                          <span className="w-6"> {reward.symbol}</span>
+                          <span className="text-white/60"> ({formatDollar(reward?.valueInUsd)})</span>
+                        </div>
+                      ))}
+                    </USGHoverCard>
+                  </div>
                 </div>
 
-                <div className="flex w-full flex-1 items-center justify-center text-[15px] xl:w-auto">${formatMillions(item?.totalDepositedValue || 0)}</div>
+                <div className="flex w-full flex-1 items-center justify-between text-sm xl:w-auto xl:justify-center xl:text-[15px]">
+                  <span className="flex text-sm text-subtitle xl:hidden"> Deposited </span>${formatMillions(item?.totalDepositedValue || 0)}
+                </div>
               </div>
             </div>
 

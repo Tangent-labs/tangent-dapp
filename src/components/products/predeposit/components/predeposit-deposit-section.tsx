@@ -16,7 +16,7 @@ type BlurrySectionProps = {
 
 const BlurrySection = ({ children, scrollToFaq }: BlurrySectionProps) => {
   return (
-    <div className="absolute inset-0 z-10 flex items-start justify-center rounded-[12px] bg-black/70 backdrop-blur-sm xl:items-center">
+    <div className="absolute inset-0 z-10 flex items-start justify-center rounded-[9px] bg-black/70 backdrop-blur-sm xl:items-center">
       <div className="flex flex-col items-center gap-4 rounded-[10px] p-6 text-center">
         <span className="text-2xl font-semibold text-white lg:text-4xl">Pre-deposit campaign</span>
 
@@ -57,7 +57,6 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
     USGUSDCformState,
     USGfrxUSDformState,
     predepositStatus,
-    isWhitelisted,
     frxUSDslippage,
     projectedUSDCTANAllocation,
     projectedfrxUSDTANAllocation,
@@ -68,7 +67,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
     isUSGfrxUSDTransactionBlockedBySlippage,
     USGfrxUSDSlippageLoss,
     setIsUSGfrxUSDTransactionBlockedBySlippage,
-    setIsUSDGUSDCTransactionBlockedBySlippage,
+    setIsUSGUSDCTransactionBlockedBySlippage,
     setfrxUSDSlippage,
     actionApproveUSGUSDC,
     actionDepositUSGUSDC,
@@ -81,14 +80,20 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
     actionDepositUSGfrxUSD,
     setDepositMaxUSGUSDC,
     setDepositMaxUSGfrxUSD,
+    signMessage,
+    isFetchApiInitialLoading,
+    isSigningLoading,
+    isDisplayYouAreNotWL,
+    isDisplayBlurry,
   } = usePredepositContext()
 
-  const { connect, isConnected } = useWalletConnexionContext()
+  const { connect, isConnected, isWalletContextLoaded } = useWalletConnexionContext()
 
   return (
-    <section className="mt-4 flex w-full flex-col">
+    <section className="mt-8 flex w-full flex-col">
       <div className="flex w-full items-center justify-between">
         <span className="text-lg font-semibold text-white">Total Deposit cap</span>
+
         <span className="flex items-center">
           <span className="text-button-active">
             $
@@ -122,7 +127,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
         currentValue={(predepositStatus?.USGUSDCData.USGUSDCAccumulatedTotal || 0n) + (predepositStatus?.USGfrxUSDData.USGfrxUSDAccumulatedTotal || 0n)}
       ></DynamicProgressBar>
 
-      <div className="relative mt-4">
+      <div className="relative mt-[10px]">
         <div className="flex w-full flex-col items-start justify-center gap-[10px] lg:flex-row">
           <USGPredepositComponent
             predepositStatus={predepositStatus}
@@ -148,7 +153,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
             tanAllocation={projectedUSDCTANAllocation}
             minValueReceived={minUSGUSDCReceived}
             isTransactionBlockedBySlippage={isUSGUSDCTransactionBlockedBySlippage}
-            setIsTransactionBlockedBySlippage={setIsUSDGUSDCTransactionBlockedBySlippage}
+            setIsTransactionBlockedBySlippage={setIsUSGUSDCTransactionBlockedBySlippage}
             slippageLoss={USGUSDCSlippageLoss}
           />
 
@@ -181,19 +186,37 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
           />
         </div>
 
-        {!isConnected && (
+        {isDisplayBlurry && (
           <BlurrySection scrollToFaq={scrollToFaq}>
-            <Button onClick={connect} className="flex h-10 items-center justify-center">
-              Connect wallet
-            </Button>
-          </BlurrySection>
-        )}
+            {/* When not connected, propose to connect after the loading of the wallet context */}
+            {!isConnected && isWalletContextLoaded && (
+              <Button onClick={connect} className="flex h-10 items-center justify-center">
+                Connect wallet
+              </Button>
+            )}
 
-        {isConnected && !isWhitelisted && (
-          <BlurrySection scrollToFaq={scrollToFaq}>
-            <Button state="disabled" className="flex h-10 items-center justify-center">
-              You are not whitelisted
-            </Button>
+            {/* Wallet connected, api in fetching, 2 scenarios : 
+                - User not WL and we are in private, is prio compare to signMessage
+                - User WL or in public, signauture needed
+            */}
+
+            {!isFetchApiInitialLoading &&
+              isConnected &&
+              (predepositStatus?.predepositState === "deposit_private" && isDisplayYouAreNotWL ? (
+                <Button state="disabled" className="flex h-10 items-center justify-center">
+                  You are not whitelisted
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => signMessage()}
+                  state={isSigningLoading ? "disabled" : "active"}
+                  className="flex h-10 items-center justify-center"
+                  hasLoadingState={true}
+                  isLoading={isSigningLoading}
+                >
+                  Sign the message
+                </Button>
+              ))}
           </BlurrySection>
         )}
       </div>

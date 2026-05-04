@@ -12,7 +12,7 @@ type UsgBoostsContextProps = {
 
 type UsgBoostsContextValues = {
   userBoosts: Array<Boost>
-  sortBoosts: (arg: ListState) => void
+  getSortedRows: (rows: Boost[], listState: ListState) => Boost[]
 }
 
 export const UsgBoostsContext = createContext<UsgBoostsContextValues | undefined>(undefined)
@@ -28,10 +28,10 @@ export const UsgBoostsProvider = ({ children }: UsgBoostsContextProps) => {
     }
   }, [currentAddress])
 
-  const sortBoosts = (listState: ListState) => {
+  const getSortedRows = (rows: Boost[], listState: ListState) => {
     const { key, direction } = listState.sort!
 
-    userBoosts.sort((elementA: Boost, elementB: Boost) => {
+    return [...rows].sort((elementA, elementB) => {
       const aValue = elementA[key as keyof Boost]
       const bValue = elementB[key as keyof Boost]
 
@@ -43,8 +43,8 @@ export const UsgBoostsProvider = ({ children }: UsgBoostsContextProps) => {
   }
 
   const contextValue: UsgBoostsContextValues = {
-    userBoosts,
-    sortBoosts,
+    userBoosts: [...userBoosts].sort((a, b) => (a.status === b.status ? 0 : b.status ? 1 : -1)),
+    getSortedRows,
   }
 
   return <UsgBoostsContext.Provider value={contextValue}>{children}</UsgBoostsContext.Provider>

@@ -11,10 +11,10 @@ interface ListAPRProps {
   rewardToken: string
   maxLeverage: number
   currentAPRDetails?: {
-    [rewardToken: string]: number
+    [rewardToken: string]: number | undefined
   }
   projectedAPRDetails?: {
-    [rewardToken: string]: number
+    [rewardToken: string]: number | undefined
   }
   apr?: number
   projectedApr?: number
@@ -49,19 +49,21 @@ export const MarketAPR = ({
 }: ListAPRProps) => {
   const currentRewardEntries = useMemo(() => {
     return Object.entries(currentAPRDetails ?? {})
-      .filter(([k, v]) => k !== "APY" && typeof v === "number")
+      .filter((entry): entry is [string, number] => entry[0] !== "APY" && typeof entry[1] === "number")
       .sort((a, b) => b[1] - a[1])
   }, [currentAPRDetails])
 
   const projectedRewardEntries = useMemo(() => {
     return Object.entries(projectedAPRDetails ?? {})
-      .filter(([k, v]) => k !== "APY" && typeof v === "number")
+      .filter((entry): entry is [string, number] => entry[0] !== "APY" && typeof entry[1] === "number")
       .sort((a, b) => b[1] - a[1])
   }, [projectedAPRDetails])
 
   const computedAPR = useMemo(() => {
-    if (currentAPRDetails && rewardToken && projectedApr) {
-      return Number(currentAPRDetails[rewardToken]) === 0 ? projectedApr : apr
+    if (currentAPRDetails && rewardToken && projectedApr !== undefined) {
+      const rewardApr = currentAPRDetails[rewardToken]
+      if (rewardApr === undefined || rewardApr === null) return apr
+      return Number(rewardApr) === 0 ? projectedApr : apr
     }
 
     return apr
@@ -69,9 +71,7 @@ export const MarketAPR = ({
 
   return (
     <div className="flex w-full items-center justify-between gap-2 xl:justify-center">
-      {isMarketListDisplay && (
-        <div className="flex items-center justify-center text-xs text-subtitle md:text-sm xl:hidden">{maxLeverage === 1 ? "vAPR" : "Max vAPR"}</div>
-      )}
+      {isMarketListDisplay && <div className="flex items-center justify-center text-sm text-subtitle xl:hidden">{maxLeverage === 1 ? "vAPR" : "Max vAPR"}</div>}
 
       <div className={cn("flex min-h-min min-w-16 items-center justify-center text-center xl:min-h-8 xl:flex-col", isMarketListDisplay ? "" : "w-full")}>
         {!!computedAPR && Number(computedAPR) > 0 && (
@@ -91,7 +91,7 @@ export const MarketAPR = ({
                       {poolName} Rewards
                     </div>
                     {/* Display streaming label or not */}
-                    {marketType === "Pendle_PT" ? <></> : <StreamTile active={!!currentAPRDetails && Number(currentAPRDetails[rewardToken]) !== 0} />}
+                    {marketType === "Pendle_PT" ? <></> : <StreamTile active={!!currentAPRDetails && Number(currentAPRDetails[rewardToken] ?? 0) !== 0} />}
                   </div>
 
                   {marketType === "Pendle_PT" ? (
@@ -106,10 +106,12 @@ export const MarketAPR = ({
                         <span> {((apr || 0) * maxLeverage).toFixed(2)}%</span>
                       </div>
 
-                      <div className="flex min-w-44 items-center justify-between text-subtitle">
-                        Base APY
-                        <span className="flex items-center justify-center">{((currentAPRDetails?.APY ?? 0) * maxLeverage).toFixed(2)}%</span>
-                      </div>
+                      {!!currentAPRDetails && typeof currentAPRDetails.APY === "number" && currentAPRDetails.APY > 0 && (
+                        <div className="flex min-w-44 items-center justify-between text-subtitle">
+                          Base APY
+                          <span className="flex items-center justify-center">{((currentAPRDetails.APY || 0) * maxLeverage).toFixed(2)}%</span>
+                        </div>
+                      )}
 
                       {currentRewardEntries.length > 0 && (
                         <div className="flex flex-col gap-2 text-subtitle">
@@ -133,10 +135,12 @@ export const MarketAPR = ({
                         <span> {((projectedApr || 0) * maxLeverage).toFixed(2)}%</span>
                       </div>
 
-                      <div className="flex min-w-44 items-center justify-between text-subtitle">
-                        Base APY
-                        <span className="flex items-center justify-center">{((projectedAPRDetails?.APY ?? 0) * maxLeverage).toFixed(2)}%</span>
-                      </div>
+                      {!!projectedAPRDetails && typeof projectedAPRDetails.APY === "number" && projectedAPRDetails.APY > 0 && (
+                        <div className="flex min-w-44 items-center justify-between text-subtitle">
+                          Base APY
+                          <span className="flex items-center justify-center">{((projectedAPRDetails.APY || 0) * maxLeverage).toFixed(2)}%</span>
+                        </div>
+                      )}
 
                       {projectedRewardEntries.length > 0 && (
                         <div className="flex flex-col gap-2 text-subtitle">
@@ -160,11 +164,12 @@ export const MarketAPR = ({
               </AprIndicator>
             </span>
 
-            {marketType !== "Pendle_PT" && ((projectedApr && !!currentAPRDetails && Number(currentAPRDetails[rewardToken]) !== 0) || !isMarketListDisplay) && (
-              <span className="hidden text-xs text-subtitle xl:flex">
-                Proj: <span className="ml-1">{(projectedApr! * maxLeverage).toFixed(2)}%</span>
-              </span>
-            )}
+            {marketType !== "Pendle_PT" &&
+              ((projectedApr && !!currentAPRDetails && Number(currentAPRDetails[rewardToken] ?? 0) !== 0) || !isMarketListDisplay) && (
+                <span className="hidden text-xs text-subtitle xl:flex">
+                  Proj: <span className="ml-1">{(projectedApr! * maxLeverage).toFixed(2)}%</span>
+                </span>
+              )}
           </>
         )}
       </div>

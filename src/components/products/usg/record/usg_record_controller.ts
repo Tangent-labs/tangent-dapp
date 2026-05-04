@@ -196,7 +196,7 @@ export function getMarketDisplayData(usgPrice: number, marketData?: MarketDetail
   const loanData = getComputedFutureLoanData(usgPrice, marketData!, collateralInfo, { borrowWeiValue: 0n, depositWeiValue: 0n })
 
   const rawAvailable = marketData.constants.maxMarketDebt - marketData.debtInfos.totalDebt
-  const flooredAvailable = rawAvailable > 0n ? rawAvailable : 0n
+  const flooredAvailable = rawAvailable >= BigInt(10 ** 18) ? rawAvailable : 0n
 
   return {
     ...loanData,

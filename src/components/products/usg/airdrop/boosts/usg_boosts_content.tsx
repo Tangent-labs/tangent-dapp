@@ -14,7 +14,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 export const UsgBoostsContent = () => {
   const { lpUserPoints, voteUserPoints, userBoostFactor } = useUSGContext()
 
-  const { userBoosts, sortBoosts } = useUsgBoostsContext()
+  const { userBoosts, getSortedRows } = useUsgBoostsContext()
 
   const { isConnected } = useWalletConnexionContext()
 
@@ -22,7 +22,7 @@ export const UsgBoostsContent = () => {
 
   return (
     <>
-      <div className="flex w-full items-stretch justify-between gap-6">
+      <div className="flex w-full items-stretch justify-between gap-5">
         <PageHeader>
           <Image height={140} width={140} src="/medias/logos/boosts.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           <div className="flex flex-col items-start justify-center gap-3 px-6">
@@ -44,8 +44,8 @@ export const UsgBoostsContent = () => {
       </div>
 
       <div className="mt-2 flex w-full flex-col xl:mt-0">
-        <ListProvider customSort={sortBoosts} _headers={boostHeaders} _rows={userBoosts} _listState={boostsListState}>
-          <BoostsList></BoostsList>
+        <ListProvider getSortedRows={getSortedRows} _headers={boostHeaders} _rows={userBoosts} _listState={boostsListState}>
+          <BoostsList />
         </ListProvider>
       </div>
     </>

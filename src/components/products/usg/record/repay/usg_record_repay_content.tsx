@@ -100,7 +100,13 @@ export default function USGRepayContent() {
           inputWeiValue={repayWeiValue}
           label={isZapping ? "You sell" : "You repay"}
           depositSelect={
-            <ZapAssetSelector collateralInfo={collateralInfo} depositAsset={repayAsset || "USG"} setDepositAsset={setRepayAsset} caseType="repay" />
+            <ZapAssetSelector
+              disabled={isRepayMax || marketData?.debtInfos?.userDebt === 0n}
+              collateralInfo={collateralInfo}
+              depositAsset={repayAsset || "USG"}
+              setDepositAsset={setRepayAsset}
+              caseType="repay"
+            />
           }
           slippageInput={isZapping && <SlippageInput slippage={slippage} setSlippage={setSlippage} />}
           disabled={isRepayMax || marketData?.debtInfos?.userDebt === 0n}

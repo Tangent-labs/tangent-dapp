@@ -3,9 +3,13 @@
 import { Address } from "viem"
 
 export type StakeDaoAPRData = {
+  vault: string
   lpToken: {
     address: string
   }
+  tradingApy?: number
+  minApr?: number
+  maxApr?: number
   apr: {
     current: {
       total: number
@@ -14,18 +18,25 @@ export type StakeDaoAPRData = {
         value: number[]
       }>
     }
-    projected: { total: number }
+    projected?: { total: number }
   }
 }
-export type EarnPoolsData = {
+export type curveAPy = {
+  apy?: {
+    latestWeeklyApy?: number
+  }
+}
+
+export type EarnPoolsData = curveAPy & {
   protocol: string
-  address: Address
+  address: string
   gaugeCrvApy?: Array<number>
   gaugeFutureCrvApy?: Array<number>
   lpTokenAddress?: Address
   convexPoolData?: { usdTotal?: number }
   usdTotal?: number
   pendleBaseAPY?: number
+  baseApy?: number
   details?: {
     impliedApy: number
     aggregatedApy: number
@@ -34,23 +45,32 @@ export type EarnPoolsData = {
   yt?: string
 }
 
+/** Pool row from Curve `getSubgraphData` API (APY / volume from subgraph). */
+export type CurveSubgraphPool = {
+  address: Address
+  latestDailyApy: number
+  latestWeeklyApy: number
+  rawVolume: number | null
+  type: string
+  virtualPrice: number | null
+  volumeUSD: number
+}
+
 export const getStakeDAOPools = async (): Promise<StakeDaoAPRData[]> => {
   try {
-    const url = `https://api.stakedao.org/api/strategies/curve/`
+    const url = `https://api.stakedao.org/api/strategies/v2/curve/`
 
     const response = await fetch(url, {
       method: "GET",
     })
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch convex pool`)
+      throw new Error(`Failed to fetch stakeDAO pool`)
     }
 
-    const { deployed } = await response.json()
-
-    return deployed
+    return await response.json()
   } catch (error) {
-    console.error("Failed to fetch convex pool :", error)
+    console.error("Failed to fetch stakeDAO pool :", error)
     return []
   }
 }
@@ -81,7 +101,46 @@ export const getConvexPools = async (): Promise<EarnPoolsData[]> => {
 
 export const getCurvePools = async (): Promise<EarnPoolsData[]> => {
   try {
-    const url = `https://api.curve.finance/v1/getPools/all/ethereum`
+    const [allPoolsResponse, stableNgResponse] = await Promise.all([
+      fetch(`https://api.curve.finance/v1/getPools/all/ethereum`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      fetch(`https://api.curve.finance/api/getPools/ethereum/factory-stable-ng`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    ])
+
+    if (!allPoolsResponse.ok || !stableNgResponse.ok) {
+      throw new Error(`Failed to fetch curve pools`)
+    }
+
+    const [allPoolsData, stableNgJson] = await Promise.all([allPoolsResponse.json(), stableNgResponse.json()])
+
+    const allPools = allPoolsData?.data?.poolData || []
+
+    const stableNgPools = stableNgJson?.data?.poolData || []
+    const stableNgByAddress = new Map(stableNgPools.map((pool: EarnPoolsData) => [String(pool.address).toLowerCase(), pool]))
+
+    return allPools.map((pool: EarnPoolsData) => {
+      const stableNgPool = stableNgByAddress.get(String(pool.address).toLowerCase())
+
+      return stableNgPool ? { ...pool, ...stableNgPool } : pool
+    })
+  } catch (error) {
+    console.error("Failed to fetch curve pools :", error)
+    return []
+  }
+}
+
+export const getCurveSubgraph = async (chain = "ethereum"): Promise<CurveSubgraphPool[]> => {
+  try {
+    const url = `https://api.curve.finance/v1/getSubgraphData/${chain}`
 
     const response = await fetch(url, {
       method: "GET",
@@ -91,14 +150,18 @@ export const getCurvePools = async (): Promise<EarnPoolsData[]> => {
     })
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch curve pools`)
+      throw new Error("Failed to fetch curve subgraph data")
     }
 
-    const { data } = await response.json()
+    const json: { success?: boolean; data?: { poolList?: CurveSubgraphPool[] } } = await response.json()
 
-    return data?.poolData
+    if (!json.success || !Array.isArray(json.data?.poolList)) {
+      return []
+    }
+
+    return json.data.poolList
   } catch (error) {
-    console.error("Failed to fetch curve pools :", error)
+    console.error("Failed to fetch curve subgraph data:", error)
     return []
   }
 }

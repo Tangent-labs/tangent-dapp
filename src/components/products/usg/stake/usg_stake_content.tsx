@@ -4,7 +4,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { formatUnits } from "viem"
 import { useUSGStakeContext } from "./usg_stake_context"
-import { IconStars } from "@/components/icons/icon_stars"
 import { computeProjection } from "./usg_stake_controller"
 import { IconChevron, IconOpenOutside } from "@/components/icons"
 import { Divider } from "@/components/design_system/structure/divider"
@@ -65,7 +64,7 @@ export default function USGStakeContent() {
 
   return (
     <>
-      <div className="flex items-stretch justify-between gap-6">
+      <div className="flex items-stretch justify-between gap-5">
         <PageHeader>
           <Image height={150} width={150} src="/medias/tokens/SUSG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
 
@@ -89,15 +88,8 @@ export default function USGStakeContent() {
           <ThreeCardRowWithMask
             contents={[
               { key: "Supply", value: formatMillions(Number(formatUnits(USGsUSGMetrics?.sUSGSupply || 0n, 18))) },
-              { key: "sUSG", value: formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 2) },
-              {
-                key: "APY",
-                value: (
-                  <div className="flex items-center justify-center gap-1">
-                    {sUSGCurrentAPY.toFixed(2)}%<IconStars className="w-4 fill-row-success"></IconStars>
-                  </div>
-                ),
-              },
+              { key: "sUSG price", value: formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 4) },
+              { key: "sUSG balance", value: formatMillions(Number(formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18))) },
             ]}
           ></ThreeCardRowWithMask>
         </div>
@@ -148,11 +140,13 @@ export default function USGStakeContent() {
               }}
             />
 
-            <div
-              onClick={() => setCurrentFeature(isStake ? "unstake" : "stake")}
-              className="my-[10px] flex w-full cursor-pointer items-center justify-center border-none"
-            >
-              <IconChevron className="h-auto w-8 rounded-[10px] border border-white border-white/10 border-opacity-10 bg-select-input stroke-white p-2 text-white backdrop-blur-[60px] hover:bg-white/10" />
+            <div className="my-[10px] flex w-full items-center justify-center">
+              <ReliefCard
+                onClick={() => setCurrentFeature(isStake ? "unstake" : "stake")}
+                className="flex h-9 w-9 cursor-pointer items-center justify-center border-none hover:bg-white/10"
+              >
+                <IconChevron className="h-auto w-8 rounded-[10px] stroke-white p-2 text-white" />
+              </ReliefCard>
             </div>
 
             <GenericInputAssetAmount

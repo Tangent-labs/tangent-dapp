@@ -86,7 +86,7 @@ export const MarketAPR = ({
 
                 <div className="flex flex-col gap-2 p-2">
                   <div className="flex w-full items-center justify-between gap-2">
-                    <div className="flex items-center justify-start gap-2 text-xs font-semibold">
+                    <div className="flex items-center justify-start gap-1 text-xs font-semibold">
                       <TokenImage token={logoKey} size={24} />
                       {poolName} Rewards
                     </div>

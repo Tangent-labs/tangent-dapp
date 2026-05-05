@@ -45,7 +45,7 @@ export default function TokenImageHighlighted({ token, size, ...props }: TokenIm
             height={size}
           />
         </HoverCardTrigger>
-        <HoverCardContent side="top" align="center" className="z-[9999] flex justify-center border border-white/10 p-2 text-sm">
+        <HoverCardContent side="top" align="center" className="z-[9999] flex justify-center p-2 text-sm">
           This market is built on top of
           <span
             className="ml-1 cursor-pointer text-white underline hover:text-white/30"

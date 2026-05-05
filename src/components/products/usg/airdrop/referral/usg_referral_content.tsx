@@ -128,7 +128,7 @@ export const UsgReferralCode = () => {
             <IconTrophy className="w-12 fill-row-tonic"></IconTrophy>
             <span className="text-lg font-semibold">Earn points</span>
             <span className="mt-2 text-center text-sm text-subtitle">
-              Referrer will earn 10% of referees points, referees will have a x1.1 boost on all tasks points.
+              Referrers will earn 10% of the points earned by their referred users, while referred users receive a 1.1x multiplier on all task points.{" "}
             </span>
           </div>
         </div>

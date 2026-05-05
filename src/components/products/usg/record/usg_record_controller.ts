@@ -213,8 +213,8 @@ export function getMarketDisplayData(usgPrice: number, marketData?: MarketDetail
     ltDollar: "-",
     maxLtv: formatNumber(Number(BigInt(marketData?.constants.maxLTV || 0n)) / 1000, 2) + "%",
     maxLtvDollar: formatDollar(Number(formatEther(BigInt(marketData?.constants.maxMarketDebt || 0n))), 2),
-    rewardsCutCurrent: formatNumber(Number(marketData?.debtInfos.currentRewardCut || 0n) / 1000, 0) + "%",
-    rewardsCutNext: formatNumber(Number(marketData?.debtInfos.futureRewardCut || 0n) / 1000, 0) + "%",
+    rewardsCutCurrent: (Number(marketData?.debtInfos.currentRewardCut || 0n) / 1000).toFixed(2) + "%",
+    rewardsCutNext: (Number(marketData?.debtInfos.futureRewardCut || 0n) / 1000).toFixed(2) + "%",
   } as USGMarketDisplayData
 }
 

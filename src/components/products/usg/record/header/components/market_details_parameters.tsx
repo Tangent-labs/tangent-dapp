@@ -1,12 +1,12 @@
 "use client"
 
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { useMemo } from "react"
+import { USGMarkets } from "../../../usg_repository"
 import { useUSGContext } from "../../../usg_context"
 import { useUSGRecordContext } from "../../usg_record_context"
-import { RecordPageHeader } from "@/components/design_system/structure/record_page_header"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { getRewardTokenFromAprDetails } from "../../../list/usg_market_controller"
-import { USGMarkets } from "../../../usg_repository"
-import { useMemo } from "react"
+import { RecordPageHeader } from "@/components/design_system/structure/record_page_header"
 
 type RewardsApr = Record<string, number>
 
@@ -42,21 +42,13 @@ export function MarketDetailsParameters() {
               {
                 title: "Borrow rate",
                 value: <div className="flex items-center">{computedBorrowRate.current}</div>,
-                subValue: (
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm text-subtitle"> Proj:</span> {computedBorrowRate.next}
-                  </div>
-                ),
+                subValue: <div className="flex items-center gap-1 text-xs text-subtitle">Proj: {computedBorrowRate.next}</div>,
                 indicator: "Interest rate that borrowers pay on their outstanding debt.",
               },
               {
                 title: "Rewards cut",
                 value: marketDisplayData.rewardsCutCurrent,
-                subValue: (
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm text-subtitle"> Proj:</span> {marketDisplayData.rewardsCutNext}
-                  </div>
-                ),
+                subValue: <div className="flex items-center gap-1 text-xs text-subtitle">Proj: {marketDisplayData.rewardsCutNext}</div>,
                 indicator: "The percentage of collateral's rewards that are deducted.",
               },
               {

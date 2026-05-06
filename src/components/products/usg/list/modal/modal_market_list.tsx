@@ -84,6 +84,7 @@ const ModalMarketListRowDisposition = ({ children }: { children: React.ReactNode
 
 export function USGModalMarketListInner() {
   const { headers, listState, udpateSort, displayRows } = useListContext()
+
   const { marketData } = useUSGMaketListContext()
 
   return (

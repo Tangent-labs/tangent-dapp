@@ -86,7 +86,7 @@ export const TOKEN_INFOS: Record<string, TokenInfo> = {
     docs: "https://docs.ousd.com/",
   },
   eUSD: {
-    info: "eUSD is backed by USDC deposits into lending protocols such as AAVE and Compound. eUSD is issued by Reserve Protocol.",
+    info: "eUSD is backed by major stablecoin deposits into lending protocols such as AAVE and Compound. eUSD is issued by Reserve Protocol.",
     website: "https://app.reserve.org/",
     docs: "https://docs.reserve.org/",
   },

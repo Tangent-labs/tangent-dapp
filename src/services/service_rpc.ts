@@ -121,39 +121,42 @@ export const executeChainViewUnique = async <T>(abi: Abi, byteCode: Hex, args?: 
   return data?.at(0)
 }
 
+function extractRevertData(error: unknown): Hex | undefined {
+  if (typeof error !== "object" || error === null) return undefined
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const e = error as any
+  const candidates: unknown[] = [
+    e?.cause?.cause?.cause?.data,
+    e?.cause?.cause?.cause?.data?.data,
+    e?.cause?.cause?.data?.data,
+    e?.cause?.data?.data,
+    e?.data?.data,
+    e?.cause?.cause?.data,
+    e?.cause?.data,
+    e?.data,
+  ]
+  return candidates.find((v): v is Hex => typeof v === "string" && v.startsWith("0x") && v.length > 2)
+}
+
 export const executeChainView = async <T>(abi: Abi, byteCode: Hex, args?: unknown[], retryCount: number = 0): Promise<T | undefined> => {
-  function isNestedErrorWithData(error: unknown): error is { cause: { cause: { cause: { data: { data: Hex } } } } } {
-    return (
-      typeof error === "object" &&
-      error !== null &&
-      "cause" in error &&
-      typeof (error as { cause: unknown }).cause === "object" &&
-      (error as { cause: { cause: unknown } }).cause.cause !== undefined &&
-      typeof (error as { cause: { cause: { cause: unknown } } }).cause.cause.cause === "object" &&
-      (error as { cause: { cause: { cause: { data: unknown } } } }).cause.cause.cause.data !== undefined &&
-      typeof (error as { cause: { cause: { cause: { data: { data: Hex } } } } }).cause.cause.cause.data.data === "string"
-    )
-  }
+  const maxRetries = Math.min(getBackupClients().length + 1, 10)
+  if (retryCount > maxRetries) return undefined
 
   const txData = getDeployTx(abi, byteCode, args)
   const client = retryCount === 0 ? getPublicClient() : getBackupClients()[retryCount - 1]
 
   try {
     await client.estimateGas({ data: txData })
-  } catch (e: unknown | { cause: { cause: { cause: { data: { data: Hex } } } } }) {
-    if (!isNestedErrorWithData(e)) {
-      return executeChainView(abi, byteCode, args, retryCount + 1)
-    }
-    const dataRaw = e.cause.cause.cause.data.data
-    if (!dataRaw) {
-      return executeChainView(abi, byteCode, args, retryCount + 1)
-    }
+  } catch (e: unknown) {
+    const dataRaw = extractRevertData(e)
+    if (!dataRaw) return executeChainView(abi, byteCode, args, retryCount + 1)
 
-    const v = decodeErrorResult({
-      abi,
-      data: dataRaw,
-    })
-    return v?.args as T
+    try {
+      const v = decodeErrorResult({ abi, data: dataRaw })
+      return v?.args as T
+    } catch {
+      return executeChainView(abi, byteCode, args, retryCount + 1)
+    }
   }
 }
 

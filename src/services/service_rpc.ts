@@ -139,7 +139,7 @@ function extractRevertData(error: unknown): Hex | undefined {
 }
 
 export const executeChainView = async <T>(abi: Abi, byteCode: Hex, args?: unknown[], retryCount: number = 0): Promise<T | undefined> => {
-  const maxRetries = getBackupClients().length + 1
+  const maxRetries = Math.min(getBackupClients().length + 1, 10)
   if (retryCount > maxRetries) return undefined
 
   const txData = getDeployTx(abi, byteCode, args)

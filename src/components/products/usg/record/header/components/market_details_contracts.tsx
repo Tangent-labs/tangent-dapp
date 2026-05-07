@@ -28,7 +28,7 @@ export const MarketDetailsContracts = ({ marketContracts }: MarketDetailsContrac
       <Divider />
       <div className="w-full flex-wrap items-center justify-center gap-6 text-sm md:flex">
         {marketContracts.map((c) => (
-          <div key={c?.address} className="flex w-fit items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 py-2">
+          <ReliefCard key={c?.address} className="flex w-fit items-center justify-center gap-2 px-4 py-2">
             <div
               onClick={() => window.open(`https://etherscan.io/address/${c?.address}`)}
               className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] px-2 py-1 hover:bg-white/10"
@@ -37,7 +37,7 @@ export const MarketDetailsContracts = ({ marketContracts }: MarketDetailsContrac
               <span className="hidden xl:flex">{formatAddress(c?.address, 4)}</span>
             </div>
             <IconCopyPaste onClickIcon={() => onClickCopyAddress(c?.address)} className="cursor-pointer fill-white hover:fill-white/30"></IconCopyPaste>
-          </div>
+          </ReliefCard>
         ))}
       </div>
     </ReliefCard>

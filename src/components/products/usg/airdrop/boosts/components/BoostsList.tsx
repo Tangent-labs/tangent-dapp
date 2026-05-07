@@ -79,9 +79,9 @@ export const BoostsList = () => {
 
       {displayRows &&
         (displayRows as Boost[])?.map((boost: Boost) => (
-          <div key={boost?.type} className="relative mb-1 bg-overlay-panel p-2 backdrop-blur-[60px] hover-lift-row xl:px-5 xl:py-3">
+          <div key={boost?.type} className="relative mb-1 bg-overlay-panel p-[10px] backdrop-blur-[60px] hover-lift-row">
             <div className="flex items-center justify-between">
-              <div className="flex w-2/3 items-center gap-2 xl:w-1/2">
+              <div className="flex w-2/3 items-center gap-3 xl:w-1/2">
                 {boost?.type === "Onboarded User" ? (
                   <IconReferral className="w-4 xl:w-7" />
                 ) : (
@@ -93,9 +93,7 @@ export const BoostsList = () => {
               <div className="flex w-1/6 justify-center text-[15px] xl:w-1/4">+{boost?.boost}</div>
 
               <div className="flex w-1/6 items-center justify-center xl:w-1/4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg xl:h-10 xl:w-10">
-                  <TaskStatus status={boost?.status} />
-                </div>
+                <TaskStatus status={boost?.status} />
               </div>
             </div>
             <ListGradientBorder />

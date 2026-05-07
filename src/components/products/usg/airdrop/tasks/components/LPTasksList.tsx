@@ -175,21 +175,21 @@ export const LPTasksList = () => {
               <div className="flex w-[35%] items-center gap-2">
                 <LpTaskCustomAssetDisplay token={task.asset.replaceAll("_", "-")} />
 
-                <div className="flex h-full flex-col items-start justify-between">
+                <div className="flex h-[46.5px] flex-col items-start justify-center">
                   <span className="flex text-[15px] font-semibold">{task?.description}</span>
 
                   {task?.canZap && (
-                    <ReliefCard
+                    <div
                       onClick={(e) => {
                         e?.stopPropagation()
                         e?.preventDefault()
                         router.push(`/swap?tokenIn=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&tokenOut=${task?.tokenAddress}`)
                       }}
-                      className="flex items-center justify-center !rounded-full px-2 py-1 text-sm"
+                      className="flex items-center justify-center rounded-full bg-overlay-panel px-2 py-1 text-sm hover:bg-white/10"
                     >
                       Zap
                       <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white"></IconOpenOutside>
-                    </ReliefCard>
+                    </div>
                   )}
                 </div>
               </div>
@@ -205,9 +205,7 @@ export const LPTasksList = () => {
               <div className="flex w-[13%] items-center justify-center text-[15px]">{formatMillions(task?.points)}</div>
 
               <div className="flex w-[13%] flex-col items-center justify-center">
-                <div className="flex h-10 w-10 flex-col items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg">
-                  <TaskStatus status={task?.status} />
-                </div>
+                <TaskStatus status={task?.status} />
               </div>
             </div>
 

@@ -5,6 +5,7 @@ import { formatUnits, parseUnits } from "viem"
 import { computeIR } from "./usg_record_controller"
 import { useUSGRecordContext } from "./usg_record_context"
 import { ResponsiveContainer, AreaChart, XAxis, YAxis, CartesianGrid, Area, Tooltip } from "recharts"
+import { isVolatileCollateral } from "@/lib/risk_color"
 
 const CustomTooltip = ({
   active,
@@ -44,7 +45,9 @@ const InterestRateAxisTick = ({ x, y, value }: { x?: number; y?: number; value: 
 )
 
 export function InterestRateGraph() {
-  const { marketData } = useUSGRecordContext()
+  const { marketData, marketInfo } = useUSGRecordContext()
+  const maxInterestRate = isVolatileCollateral(marketInfo.marketName) ? 400 : 200
+  const interestRateTicks = maxInterestRate === 400 ? [0, 100, 200, 300, 400] : [0, 50, 100, 150, 200]
 
   interface RCParams {
     endCutPercentage: bigint
@@ -182,8 +185,8 @@ export function InterestRateGraph() {
           className="text-xs"
           axisLine={false}
           tickLine={false}
-          domain={[0, 400]}
-          ticks={[0, 100, 200, 300, 400]}
+          domain={[0, maxInterestRate]}
+          ticks={interestRateTicks}
           tick={({ x, y, payload }) => <InterestRateAxisTick x={x} y={y - 7} value={payload.value} />}
         />
 

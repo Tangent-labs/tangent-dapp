@@ -4,7 +4,7 @@ type ReliefCardProps = HTMLAttributes<HTMLDivElement>
 
 export const ReliefCard = forwardRef<HTMLDivElement, ReliefCardProps>(({ children, className = "", ...props }, ref) => {
   return (
-    <div ref={ref} {...props} className={`relative rounded-lg bg-overlay-panel backdrop-blur-[60px] [clip-path:inset(0_round_0.5rem)] ${className}`}>
+    <div ref={ref} {...props} className={`relative overflow-hidden rounded-lg bg-overlay-panel backdrop-blur-[60px] ${className}`}>
       {/* Gradient border effect */}
       <div
         className="pointer-events-none absolute inset-0 rounded-lg"

@@ -150,7 +150,7 @@ export default function USGMarketList() {
                       <HoverCardContent
                         side="top"
                         align="center"
-                        className="z-[9999] flex w-full flex-col items-center justify-center border border-white/10 p-2 text-sm text-subtitle"
+                        className="z-[9999] flex w-full flex-col items-center justify-center p-2 text-sm text-subtitle"
                       >
                         <div className="flex w-full items-center justify-center">LP points: {formatMillions(lpUserPoints?.lpTotalPoints)}</div>
                         <div className="flex w-full items-center justify-center">Vote points: {formatMillions(voteUserPoints?.voteTotalPoints)}</div>

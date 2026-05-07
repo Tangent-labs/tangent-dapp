@@ -89,14 +89,14 @@ export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumula
                 <TokenImage token="USG-USDC" size={12} className="w-10" />
                 USG/USDC
               </span>
-              <span className="text-xs text-subtitle"> {formatNumber(Number(formatUnits(BigInt(USGUSDCAccumulatedBalance || 0n), 18)), 0)} </span>
+              <span className="text-sm text-subtitle"> {formatNumber(Number(formatUnits(BigInt(USGUSDCAccumulatedBalance || 0n), 18)), 0)} </span>
             </ReliefCard>
             <ReliefCard className="flex w-full flex-col items-center justify-center gap-2 p-[20px]">
               <span className="flex items-center justify-center gap-2 font-semibold">
                 <TokenImage token="USG-frxUSD" size={12} className="w-10" />
                 USG/frxUSD
               </span>
-              <span className="text-xs text-subtitle">{formatNumber(Number(formatUnits(BigInt(USGfrxUSDAccumulatedBalance || 0n), 18)), 0)} </span>
+              <span className="text-sm text-subtitle">{formatNumber(Number(formatUnits(BigInt(USGfrxUSDAccumulatedBalance || 0n), 18)), 0)} </span>
             </ReliefCard>
           </div>
         </div>

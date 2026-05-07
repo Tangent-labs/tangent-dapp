@@ -93,9 +93,7 @@ export const BoostsList = () => {
               <div className="flex w-1/6 justify-center text-[15px] xl:w-1/4">+{boost?.boost}</div>
 
               <div className="flex w-1/6 items-center justify-center xl:w-1/4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-white/10 backdrop-blur-lg xl:h-10 xl:w-10">
-                  <TaskStatus status={boost?.status} />
-                </div>
+                <TaskStatus status={boost?.status} />
               </div>
             </div>
             <ListGradientBorder />

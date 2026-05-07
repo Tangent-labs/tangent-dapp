@@ -79,9 +79,9 @@ export const BoostsList = () => {
 
       {displayRows &&
         (displayRows as Boost[])?.map((boost: Boost) => (
-          <div key={boost?.type} className="relative mb-1 bg-overlay-panel p-2 backdrop-blur-[60px] hover-lift-row xl:px-5 xl:py-3">
+          <div key={boost?.type} className="relative mb-1 bg-overlay-panel p-[10px] backdrop-blur-[60px] hover-lift-row">
             <div className="flex items-center justify-between">
-              <div className="flex w-2/3 items-center gap-2 xl:w-1/2">
+              <div className="flex w-2/3 items-center gap-3 xl:w-1/2">
                 {boost?.type === "Onboarded User" ? (
                   <IconReferral className="w-4 xl:w-7" />
                 ) : (

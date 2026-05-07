@@ -4,6 +4,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Safari fix: -webkit-backdrop-filter with CSS variables is unreliable in Safari.
+   Override with direct values so blur works regardless of Safari version. */
+.backdrop-blur-\[60px\] {
+  -webkit-backdrop-filter: blur(60px);
+}
+.backdrop-blur-\[10px\] {
+  -webkit-backdrop-filter: blur(10px);
+}
+.backdrop-blur-sm {
+  -webkit-backdrop-filter: blur(4px);
+}
+.backdrop-blur-lg {
+  -webkit-backdrop-filter: blur(16px);
+}
+.backdrop-blur-xl {
+  -webkit-backdrop-filter: blur(24px);
+}
+
 @layer base {
   /* Variables tangent   */
   :root {

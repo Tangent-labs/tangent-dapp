@@ -19,18 +19,11 @@ export function AprIndicator({ children, isMax, className = "" }: AprIndicatorPr
   )
 
   return (
-    <div
-      /* prettier-ignore */
-      className={`
-        flex items-center gap-1
-        text-white
-        transition duration-200
-       ${isMax ? "hover:text-row-success" : "hover:text-row-tonic"} ${className}`}
-    >
+    <div className={`flex items-center gap-1 text-white transition duration-200 ${isMax ? "hover:text-row-success" : "hover:text-row-tonic"} ${className}`}>
       {/* Desktop: hover */}
       <HoverCard openDelay={150} closeDelay={100}>
         <HoverCardTrigger asChild>
-          <span className="hidden cursor-pointer items-center justify-center gap-1 text-sm xl:flex xl:text-[15px]">{trigger}</span>
+          <span className="hidden cursor-pointer appearance-none items-center justify-center gap-1 text-sm xl:flex xl:text-[15px]">{trigger}</span>
         </HoverCardTrigger>
         <HoverCardContent side="top" align="center" className="z-[9999] w-full text-xs">
           {children[1]}
@@ -41,7 +34,7 @@ export function AprIndicator({ children, isMax, className = "" }: AprIndicatorPr
       <div className="stop-navigation xl:hidden">
         <Popover>
           <PopoverTrigger asChild>
-            <span className="no-parent-hover flex cursor-pointer items-center justify-center gap-1 text-sm">{trigger}</span>
+            <span className="no-parent-hover flex cursor-pointer appearance-none items-center justify-center gap-1 text-sm">{trigger}</span>
           </PopoverTrigger>
           <PopoverContent side="top" align="center" className="z-[9999] w-full text-xs">
             {children[1]}

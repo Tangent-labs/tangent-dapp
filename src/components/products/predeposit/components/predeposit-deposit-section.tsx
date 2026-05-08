@@ -92,7 +92,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
   return (
     <section className="mt-8 flex w-full flex-col">
       <div className="flex w-full items-center justify-between">
-        <span className="text-lg font-semibold text-white">Total Deposit cap</span>
+        <span className="text-lg font-semibold text-white">Total deposit cap</span>
 
         <span className="flex items-center">
           <span className="text-button-active">

@@ -7,7 +7,7 @@ import { computedProjection } from "../usg_stake_controller"
 import type { LineDot } from "recharts/types/cartesian/Line"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer, Tooltip } from "recharts"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts"
 
 const MS_PER_YEAR = 365.25 * 24 * 60 * 60 * 1000
 
@@ -15,6 +15,10 @@ const MIN_RIGHT_PADDING_MS = 6 * 60 * 60 * 1000 // 6 hours
 const MAX_RIGHT_PADDING_MS = 45 * 24 * 60 * 60 * 1000 // 45 days
 const RIGHT_PADDING_FRACTION = 0.01 // 1% of total span
 const TIME_TICK_COUNT = 7
+const CHART_Y_AXIS_WIDTH = 52
+// const AXIS_TICK_STYLE = { fontSize: 12, fill: "rgba(255,255,255,0.5)" }
+const TICK_STYLE = { fontSize: 12, stroke: "rgba(255,255,255,0.08)" }
+const AXIS_LINE_STYLE = { stroke: "rgba(255,255,255,0.5)" }
 
 const EndDot = (lastIndex: number) =>
   function Dot(props: { cx?: number; cy?: number; index?: number }) {
@@ -56,6 +60,17 @@ const addYears = (d: Date, years: number) => {
 }
 
 const calculateYAxis = (minValue: number, maxValue: number) => {
+  if (minValue === maxValue) {
+    const stepSizes = [1, 10, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 25000, 40000, 50000, 75000, 100000]
+    const max = Math.max(maxValue, 1)
+    const stepSize = stepSizes.find((s) => max / s < 6) ?? stepSizes[stepSizes.length - 1]
+    return {
+      min: 0,
+      max: Math.ceil(max / stepSize) * stepSize,
+      stepSize,
+    }
+  }
+
   const range = maxValue - minValue
   const stepSizes = [10, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 25000, 40000, 50000, 75000, 100000]
   const stepSize = stepSizes.find((s) => range / s < 6) ?? stepSizes[stepSizes.length - 1]
@@ -220,6 +235,11 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
   const yAxis = calculateYAxis(Math.min(...allValues), Math.max(...allValues))
 
   const showSecondLine = newLiquidity > 0
+  const lastForecastPoint = forecastData.at(-1)
+  const baseForecastValue = lastForecastPoint?.baseAmount ?? currentInvestment
+  const liquidityForecastValue = lastForecastPoint?.amountWithLiquidity ?? baseForecastValue
+  const liquidityForecastDelta = liquidityForecastValue - baseForecastValue
+  const liquidityForecastLabel = currentFeature === "stake" ? "Compounding Forecast" : "Forecast if unstake"
 
   return (
     <>
@@ -233,72 +253,112 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
       </div>
 
       {!!apy && apy > 0 ? (
-        <div className="mt-2.5 flex h-72 min-h-72 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart margin={{ top: 12, right: 0, bottom: 8, left: 0 }} data={forecastData}>
-              <defs>
-                <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#FBF911" />
-                  <stop offset="100%" stopColor="#99FF00" />
-                </linearGradient>
-              </defs>
+        <>
+          <div className="relative bottom-0 mt-2.5 flex h-20 w-full items-stretch justify-start gap-2 border border-white text-xs">
+            <div className="flex flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2">
+              <div className="flex w-full items-center justify-between gap-2">
+                <div className="flex h-2 w-2 rounded-full bg-white"></div>
+                <div className="flex items-center justify-center gap-1">Current Forecast</div>
+              </div>
 
-              <CartesianGrid horizontal vertical={false} stroke="rgba(255,255,255,0.05)" />
+              <div className="flex w-full items-center justify-between gap-2 font-semibold">{formatDollar(baseForecastValue)}</div>
+            </div>
 
-              <XAxis
-                dataKey="t"
-                type="number"
-                scale="time"
-                domain={[startTs, endTs]}
-                ticks={ticks}
-                tickFormatter={fmtTick}
-                tick={{ fontSize: 12 }}
-                padding={{ left: 0, right: 0 }}
-                allowDataOverflow
-              />
+            {showSecondLine && (
+              <div className="flex flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2">
+                <div className="flex w-full items-center justify-between gap-2">
+                  <div className="flex h-2 w-2 rounded-full bg-gradient-to-r from-[#FBF911] to-[#99FF00]"></div>
+                  <div className="flex items-center justify-center gap-1">{liquidityForecastLabel}</div>
+                </div>
 
-              <YAxis
-                orientation="right"
-                tickFormatter={(v) => `$${formatMillions(v)}`}
-                width={52}
-                domain={[yAxis.min, yAxis.max]}
-                ticks={Array.from({ length: Math.floor((yAxis.max - yAxis.min) / yAxis.stepSize) + 1 }, (_, i) => yAxis.min + i * yAxis.stepSize)}
-                tick={{ fontSize: 12 }}
-              />
+                <div className="flex w-full items-center justify-between gap-2 font-semibold">
+                  <span>{formatDollar(liquidityForecastValue)}</span>
+                  <span className="h-1 w-1 rounded-full bg-white"></span>
+                  <span>{formatDollar(liquidityForecastDelta, 0)}</span>
+                </div>
+              </div>
+            )}
+          </div>
 
-              <Tooltip
-                cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
-                content={<CustomTooltip fmtLabel={fmtTooltipLabel} currentInvestment={currentInvestment} newLiquidity={newLiquidity} />}
-              />
+          <div className="mt-2.5 flex h-[12rem] min-h-[12rem] w-full">
+            <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
+              <LineChart
+                margin={{
+                  top: 0,
+                  right: 0,
+                  left: 0,
+                  bottom: 0,
+                }}
+                data={forecastData}
+                className="border border-white"
+              >
+                <defs>
+                  <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FBF911" />
+                    <stop offset="100%" stopColor="#99FF00" />
+                  </linearGradient>
+                </defs>
 
-              <Legend />
+                <CartesianGrid horizontal vertical={false} stroke="rgba(255,255,255,0.05)" />
 
-              <Line
-                strokeWidth={2}
-                type="monotone"
-                dataKey="baseAmount"
-                stroke="#FFFFFF"
-                name="Current Position Growth"
-                dot={EndDot(forecastData.length - 1) as LineDot}
-                isAnimationActive={false}
-              />
+                <XAxis
+                  dataKey="t"
+                  type="number"
+                  scale="time"
+                  domain={[startTs, endTs]}
+                  ticks={ticks}
+                  tickFormatter={fmtTick}
+                  tick={TICK_STYLE}
+                  padding={{ left: 0, right: 0 }}
+                  axisLine={AXIS_LINE_STYLE}
+                  height={25}
+                  tickLine={false}
+                  allowDataOverflow
+                />
 
-              {showSecondLine && (
+                <YAxis
+                  orientation="right"
+                  tickFormatter={(v) => `$${formatMillions(v)}`}
+                  width={CHART_Y_AXIS_WIDTH}
+                  domain={[yAxis.min, yAxis.max]}
+                  ticks={Array.from({ length: Math.floor((yAxis.max - yAxis.min) / yAxis.stepSize) + 1 }, (_, i) => yAxis.min + i * yAxis.stepSize)}
+                  tick={TICK_STYLE}
+                  axisLine={true}
+                  tickLine={false}
+                />
+
+                <Tooltip
+                  cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
+                  content={<CustomTooltip fmtLabel={fmtTooltipLabel} currentInvestment={currentInvestment} newLiquidity={newLiquidity} />}
+                />
+
                 <Line
                   strokeWidth={2}
                   type="monotone"
-                  dataKey="amountWithLiquidity"
-                  stroke="url(#gradientColor)"
-                  name={`Total After +${formatDollar(newLiquidity, 0)}`}
-                  dot={EndDotGradient(forecastData.length - 1) as LineDot}
+                  dataKey="baseAmount"
+                  stroke="#FFFFFF"
+                  name="Current Position Growth"
+                  dot={EndDot(forecastData.length - 1) as LineDot}
                   isAnimationActive={false}
                 />
-              )}
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+
+                {showSecondLine && (
+                  <Line
+                    strokeWidth={2}
+                    type="monotone"
+                    dataKey="amountWithLiquidity"
+                    stroke="url(#gradientColor)"
+                    name={`Total After +${formatDollar(newLiquidity, 0)}`}
+                    dot={EndDotGradient(forecastData.length - 1) as LineDot}
+                    isAnimationActive={false}
+                  />
+                )}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </>
       ) : (
-        <div className="flex min-h-80 w-full items-center justify-center text-subtitle">No APY data</div>
+        <div className={`mb mt-3 flex h-full w-full items-center justify-center text-subtitle`}>No APY data</div>
       )}
     </>
   )

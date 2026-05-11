@@ -5,13 +5,15 @@ import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import { Area, AreaChart, CartesianGrid, ReferenceDot, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 const TIME_TICK_COUNT = 7
+const CHART_Y_AXIS_WIDTH = 52
 const ONE_DAY_MS = 24 * 60 * 60 * 1000
 const RANGE_TO_MS: Record<string, number> = {
   "1m": 30 * ONE_DAY_MS,
   "3m": 90 * ONE_DAY_MS,
   "1y": 365 * ONE_DAY_MS,
 }
-
+const AXIS_LINE_STYLE = { stroke: "rgba(255,255,255,0.5)" }
+const TICK_STYLE = { fontSize: 12, stroke: "rgba(255,255,255,0.08)" }
 type PositionAPRProps = {
   apy: number
   fetchsUSGHistoryAPY: (range: string) => Promise<void>
@@ -121,8 +123,8 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
         </div>
       </div>
 
-      <div className="mb mt-3 flex h-72 min-h-72 w-full">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="relative mt-2.5 h-[17.6rem] border border-white">
+        <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
           <AreaChart
             data={apyHistory}
             margin={{
@@ -131,6 +133,7 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
               left: 0,
               bottom: 0,
             }}
+            className="border border-red-400"
           >
             <defs>
               <linearGradient id="greenGradient" x1="0" y1="0" x2="0" y2="1">
@@ -139,7 +142,7 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
               </linearGradient>
             </defs>
 
-            <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
+            <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.05)" />
 
             <XAxis
               dataKey="date"
@@ -148,21 +151,15 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
               domain={timeAxis?.domain ?? ["dataMin", "dataMax"]}
               ticks={timeAxis?.ticks}
               tickFormatter={(tick) => formatXAxis(tick, sUSGSelectedTab)}
+              tick={TICK_STYLE}
               padding={{ left: 0, right: 0 }}
-              tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
-              axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
+              axisLine={AXIS_LINE_STYLE}
+              height={24}
               tickLine={false}
               allowDataOverflow
             />
 
-            <YAxis
-              orientation="right"
-              width={28}
-              tickFormatter={formatYAxis}
-              tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
-              axisLine={false}
-              tickLine={false}
-            />
+            <YAxis orientation="right" width={CHART_Y_AXIS_WIDTH} tickFormatter={formatYAxis} tick={TICK_STYLE} axisLine={false} tickLine={false} />
 
             <Area
               type="monotone"
@@ -181,7 +178,7 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
             />
 
             <Tooltip
-              cursor={{ stroke: "rgba(255,255,255,0.65)", strokeWidth: 1.5, strokeDasharray: "4 4" }}
+              cursor={{ ...AXIS_LINE_STYLE, strokeWidth: 1.5, strokeDasharray: "4 4" }}
               allowEscapeViewBox={{ x: false, y: false }}
               content={<CustomsUSGPerformanceTooltip range={sUSGSelectedTab} />}
             />

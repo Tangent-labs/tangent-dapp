@@ -26,7 +26,14 @@ export const ListRow = ({
       <div
         className={`relative bg-overlay-panel p-[10px] backdrop-blur-[60px] hover-lift-row ${isSelected ? "before:bg-list-row-hover" : ""} // Selected state styling ${className} `}
       >
-        <Link href={route} target={openInNewTab ? "_blank" : undefined} rel={openInNewTab ? "noopener noreferrer" : undefined}>
+        <Link
+          href={route}
+          target={openInNewTab ? "_blank" : undefined}
+          rel={openInNewTab ? "noopener noreferrer" : undefined}
+          onClick={(e) => {
+            if ((e.target as HTMLElement).closest(".stop-navigation")) e.preventDefault()
+          }}
+        >
           <CustomRowDisposition>
             <> {children?.at(0)}</>
             <> {children?.at(1)}</>

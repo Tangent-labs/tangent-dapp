@@ -139,8 +139,8 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
 
   const [opportunitiesData, setOpportunitiesData] = useState<EarnPoolsData[]>([])
 
-  const [slippage, setSlippage] = useState<number>(0.2)
-  const [frxUSDslippage, setfrxUSDSlippage] = useState<number>(0.2)
+  const [slippage, setSlippage] = useState<number>(0.05)
+  const [frxUSDslippage, setfrxUSDSlippage] = useState<number>(0.05)
 
   const [USDCDepositValue, setUSDCDepositValue] = useState<bigint>()
   const [frxUSDDepositValue, setfrxUSDDepositValue] = useState<bigint>()

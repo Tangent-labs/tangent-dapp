@@ -157,9 +157,9 @@ export const VoteTasksList = () => {
             {/* Desktop */}
             <div className="hidden items-center justify-between xl:flex">
               <div className="flex w-[35%] items-center gap-2">
-                {task?.protocol === "sdcrv.eth" && <TokenImage token="sdCRV" size={24} />}
-                {task?.protocol === "cvx.eth" && <TokenImage token="vlCVX" size={24} />}
-                {task?.protocol === "CRV" && <TokenImage token="veCRV" size={24} />}
+                {task?.protocol === "sdcrv.eth" && <TokenImage token="sdCRV" size={32} />}
+                {task?.protocol === "cvx.eth" && <TokenImage token="vlCVX" size={32} />}
+                {task?.protocol === "CRV" && <TokenImage token="veCRV" size={32} />}
                 <span className="text-[15px] font-semibold">{task.description}</span>
               </div>
               <div className="hidden w-[16.25%] justify-center lg:flex">

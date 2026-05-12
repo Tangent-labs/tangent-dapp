@@ -12,9 +12,11 @@ import {
 
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { formatUnits } from "viem"
 import { usePathname } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { useRootContext } from "../root/root_context"
+import { useUSGContext } from "../usg/usg_context"
 import { useScrollDirection } from "@/lib/animations"
 import { formatMillions } from "@/lib/number_formatter"
 import { isOnMarket } from "./menu_bar_feature_controller"
@@ -25,7 +27,9 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
 
 export default function MenuBarFeature() {
-  const { USGCurrentSupply, sUSGCurrentAPY, protocolCurrentTVL } = useRootContext()
+  const { USGsUSGMetrics } = useUSGContext()
+
+  const { sUSGCurrentAPY, protocolCurrentTVL } = useRootContext()
 
   const pathname = usePathname()
 
@@ -201,14 +205,14 @@ export default function MenuBarFeature() {
             <div className="flex w-full items-center justify-end gap-3">
               <ReliefCard
                 className={cn(
-                  USGCurrentSupply === 0 || protocolCurrentTVL.total === 0 ? "shimmer" : "",
+                  !USGsUSGMetrics || protocolCurrentTVL.total === 0 ? "shimmer" : "",
                   "hidden items-center justify-center px-1 py-2.5 text-xs xl:flex"
                 )}
               >
                 <span className="border-r border-white/10 px-2">TVL: ${formatMillions(protocolCurrentTVL?.total)}</span>
                 <span className="flex items-center justify-center gap-2 border-r border-white/10 px-2">
                   <TokenImage token="USG" size={20} />
-                  {formatMillions(USGCurrentSupply)}
+                  {formatMillions(Number(formatUnits(USGsUSGMetrics?.USGSupply || 0n, 18)))}
                 </span>
                 <span className="flex items-center justify-center gap-2 px-2">
                   <TokenImage token="sUSG" size={20} />

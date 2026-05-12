@@ -3,10 +3,11 @@
 import { Address, zeroAddress } from "viem"
 import { getUSGsUSGMetrics } from "./usg_controller"
 import { getBalances } from "./record/usg_record_controller"
-import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { getMarketsAprs, getPointsDetails } from "./client_api"
-import { USGStakingInfo, VoteUserPoints, RefereesPoints, MarketAPRs, LpUserPoints, Boost } from "./usg_type"
+import { ChainViewMarketList, USGGlobalData, USGStakingInfo, VoteUserPoints, RefereesPoints, MarketAPRs, LpUserPoints, Boost } from "./usg_type"
+import { getUSGMarketsData, transformGlobalData } from "./list/usg_market_controller"
 import { useRootContext } from "../root/root_context"
 import { ERC20S } from "@/data/erc20s"
 import { mapUserBoosts } from "./airdrop/boosts/usg_boosts_controller"
@@ -31,6 +32,8 @@ type USGContextValues = {
   refereesPoints: RefereesPoints
   marketAprs: MarketAPRs[]
   userBoosts: Boost[]
+  onChainData: ChainViewMarketList | undefined
+  globalData: USGGlobalData
 }
 
 export const USGContext = createContext<USGContextValues | undefined>(undefined)
@@ -54,6 +57,8 @@ export const USGProvider = ({ children }: USGContextProps) => {
 
   // const [TANsTANMetrics, setTANsTANMetrics] = useState<TANStakingInfo | undefined>()
 
+  const [onChainData, setOnChainData] = useState<ChainViewMarketList | undefined>()
+
   const [marketAprs, setMarketAprs] = useState<Array<MarketAPRs>>([])
 
   const [userBoosts, setUserBoosts] = useState<Array<Boost>>([])
@@ -70,6 +75,12 @@ export const USGProvider = ({ children }: USGContextProps) => {
     })
   }
 
+  const loadOnChainData = () => {
+    getUSGMarketsData(currentAddress || zeroAddress).then((data) => {
+      setOnChainData(data)
+    })
+  }
+
   // const loadTanSTANMetrics = () => {
   //   getTanStakeOnChainData(currentAddress || zeroAddress).then((data) => {
   //     setTANsTANMetrics(data)
@@ -82,10 +93,13 @@ export const USGProvider = ({ children }: USGContextProps) => {
   useEffect(() => {
     if (isWalletContextLoaded) {
       loadUSGsUSGMetrics()
+      loadOnChainData()
       refetchPoints()
       // loadTanSTANMetrics()
     }
   }, [isWalletContextLoaded, currentAddress])
+
+  const globalData = useMemo(() => transformGlobalData(onChainData), [onChainData])
 
   const refetchPoints = async () => {
     const currentBlock = await getCachedCurrentBlock()
@@ -129,6 +143,8 @@ export const USGProvider = ({ children }: USGContextProps) => {
     marketAprs,
     userBoostFactor,
     userBoosts,
+    onChainData,
+    globalData,
     // loadTanSTANMetrics,
     // TANsTANMetrics,
   }

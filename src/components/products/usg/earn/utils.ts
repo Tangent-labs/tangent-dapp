@@ -40,7 +40,6 @@ export const mapPoolsAndTasks = (
   const stakeDaoPoolsOfInterest = stakeDaoPools
     .filter((p: { lpToken: { address: string } }) => allStakeDaoPoolsPoolsAddresses.includes(p.lpToken.address?.toLowerCase()))
     .map((el) => {
-      //  console.log(el)
       const address = el.lpToken.address as Address
       const currentDetails = el.apr.current.details || []
       const tradingFees = el.tradingApy || 0

@@ -2,6 +2,7 @@
 
 import {
   computeCollatData,
+  getUSGMarketsData,
   matchProtocol,
   sortMarketListByType,
   sortMarketsByUserPositionAndTVL,
@@ -13,9 +14,10 @@ import {
 import { USGMarkets } from "../usg_repository"
 import { useUSGContext } from "../usg_context"
 import { ListRowData, ListState } from "@/types"
-import { Address, formatUnits } from "viem"
-import { createContext, ReactNode, useContext, useMemo, useState } from "react"
-import { MarketConstants, MarketDebtData, USGCollateralData, USGGlobalData, USGMarketType } from "../usg_type"
+import { Address, formatUnits, zeroAddress } from "viem"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { ChainViewMarketList, MarketConstants, MarketDebtData, USGCollateralData, USGGlobalData, USGMarketType } from "../usg_type"
 
 type USGMaketListContextProps = {
   children: ReactNode
@@ -56,7 +58,11 @@ type USGMaketListContextValues = {
 export const USGMaketListContext = createContext<USGMaketListContextValues | undefined>(undefined)
 
 export const USGMarketListProvider = ({ children }: USGMaketListContextProps) => {
-  const { marketAprs, onChainData } = useUSGContext()
+  const { currentAddress, isWalletContextLoaded } = useWalletConnexionContext()
+
+  const { marketAprs } = useUSGContext()
+
+  const [onChainData, setOnChainData] = useState<ChainViewMarketList | undefined>()
 
   const [searchValue, setSearchValue] = useState<string | null>(null)
 
@@ -65,6 +71,28 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
   const [protocol, setProtocol] = useState<string>("All")
 
   const [filteredBy, setFilteredBy] = useState<string>("all")
+
+  /**
+   * On init
+   */
+  useEffect(() => {
+    if (isWalletContextLoaded) {
+      getUSGMarketsData(currentAddress || zeroAddress).then((d) => {
+        setOnChainData(d)
+      })
+    }
+  }, [isWalletContextLoaded])
+
+  /**
+   * On user logs in/logs out
+   */
+  useEffect(() => {
+    if (isWalletContextLoaded && onChainData) {
+      getUSGMarketsData(currentAddress || zeroAddress).then((d) => {
+        setOnChainData(d)
+      })
+    }
+  }, [currentAddress])
 
   const marketDataWithAPR = useMemo(() => {
     return USGMarkets.map((market) => {

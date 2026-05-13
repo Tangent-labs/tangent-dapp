@@ -2,7 +2,7 @@
 
 import { Abi, Hex } from "viem"
 import sUSGUI from "../../../abi/USG/sUSGUI.json"
-import { USG_CONTRACT } from "./usg_repository"
+import { USG_CONTRACT, USGPegKeepers } from "./usg_repository"
 import { USGStakingInfo } from "./usg_type"
 import { executeChainViewUnique } from "@/services/service_rpc"
 
@@ -12,5 +12,6 @@ export async function getUSGsUSGMetrics(currentAddress: string) {
     USG_CONTRACT.USG_ORACLE,
     USG_CONTRACT.USG,
     USG_CONTRACT.SUSG,
+    USGPegKeepers,
   ])
 }

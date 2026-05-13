@@ -161,11 +161,9 @@ export const MarketAPR = ({
                 )}
               </div>
             </AprIndicator>
-
-            {marketType !== "Pendle_PT" &&
-              ((projectedApr && !!currentAPRDetails && Number(currentAPRDetails[rewardToken] ?? 0) !== 0) || !isMarketListDisplay) && (
-                <span className="hidden gap-2 text-xs text-subtitle xl:flex">Proj: {(projectedApr! * maxLeverage).toFixed(2)}%</span>
-              )}
+            {marketType !== "Pendle_PT" && ((projectedApr && !!currentAPRDetails && Number(projectedApr ?? 0) !== 0) || !isMarketListDisplay) && (
+              <span className="hidden gap-2 text-xs text-subtitle xl:flex">Proj: {(projectedApr! * maxLeverage).toFixed(2)}%</span>
+            )}{" "}
           </>
         )}
       </div>

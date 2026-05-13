@@ -1,15 +1,15 @@
 "use client"
 
-import { toast, ToastContainer } from "react-toastify"
+import { convertRange } from "./root_controller"
+import { USG_CONTRACT } from "../usg/usg_repository"
 import * as swapRoutes from "../usg/swapRoutes.json"
+import { toast, ToastContainer } from "react-toastify"
 import { getPublicClient } from "@/services/service_rpc"
 import { SavingAccountsApy, TVLData } from "../usg/usg_type"
-import { USG_CONTRACT } from "../usg/usg_repository"
 import { ToastComponent } from "@/components/design_system/toast"
-import { convertRange } from "./root_controller"
-import { getPriceHistory, getSavingsAPY, getTotalSupply, getTVL, PRICE_HISTORY_TOKENS } from "../usg/client_api"
 import { CustomCurveRoutes } from "../usg/global_quote_controller"
 import { useContext, useEffect, useState, createContext, ReactNode, useMemo } from "react"
+import { getPriceHistory, getSavingsAPY, getTotalSupply, getTVL, PRICE_HISTORY_TOKENS } from "../usg/client_api"
 
 export type RootContextValues = {
   curveRoutes: CustomCurveRoutes
@@ -349,7 +349,6 @@ export const RootProvider = ({ children }: RootProviderProps) => {
   const USGCurrentSupply = useMemo(() => {
     if (totalSupplies.USGTotalSupply && totalSupplies.USGTotalSupply.length > 0) {
       const latestSupplyValue = totalSupplies.USGTotalSupply.reduce((latest, current) => (current.date > latest.date ? current : latest))
-
       return latestSupplyValue.uv
     }
     return 0

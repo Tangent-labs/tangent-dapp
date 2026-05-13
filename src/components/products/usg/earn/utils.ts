@@ -38,10 +38,10 @@ export const mapPoolsAndTasks = (
     })
 
   const stakeDaoPoolsOfInterest = stakeDaoPools
-    .filter((p: { lpToken: { address: string } }) => allStakeDaoPoolsPoolsAddresses.includes(p.lpToken.address?.toLowerCase()))
+    .filter((p) => allStakeDaoPoolsPoolsAddresses.includes(p.vault?.toLowerCase()))
     .map((el) => {
       //  console.log(el)
-      const address = el.lpToken.address as Address
+      const address = el.vault as Address
       const currentDetails = el.apr.current.details || []
       const tradingFees = el.tradingApy || 0
 
@@ -54,7 +54,7 @@ export const mapPoolsAndTasks = (
       const gaugeCrvApy = [tradingFees, rewardAPR]
       const gaugeFutureCrvApy = [tradingFees, rewardAPR]
 
-      return { protocol: "Stake DAO", address, gaugeCrvApy, gaugeFutureCrvApy }
+      return { protocol: "Stake DAO", address, lpTokenAddress: el.lpToken.address as Address, gaugeCrvApy, gaugeFutureCrvApy }
     })
 
   const pendleYT = pendlePools
@@ -68,7 +68,7 @@ export const mapPoolsAndTasks = (
     })
 
   const pendlePT = pendlePools
-    ?.filter((p: EarnPoolsData) => allPendlePoolsAddresses.includes(p.address))
+    ?.filter((p: EarnPoolsData) => allPendlePoolsAddresses.includes(p.address?.toLowerCase()))
     ?.map((pool) => {
       return {
         address: pool?.pt?.substring(2, pool?.pt?.length) as Address,
@@ -78,7 +78,7 @@ export const mapPoolsAndTasks = (
     })
 
   const pendleLP = pendlePools
-    ?.filter((p: EarnPoolsData) => allPendlePoolsAddresses.includes(p.address))
+    ?.filter((p: EarnPoolsData) => allPendlePoolsAddresses.includes(p.address?.toLowerCase()))
     ?.map((pool) => {
       return {
         address: pool.address as Address,

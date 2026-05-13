@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { ReactNode, useMemo } from "react"
 import { APRDisplay } from "./apr_display"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
@@ -6,62 +6,87 @@ import { Area, AreaChart, CartesianGrid, ReferenceDot, ReferenceLine, Responsive
 
 const TIME_TICK_COUNT = 7
 const CHART_Y_AXIS_WIDTH = 52
-const ONE_DAY_MS = 24 * 60 * 60 * 1000
-const RANGE_TO_MS: Record<string, number> = {
-  "1m": 30 * ONE_DAY_MS,
-  "3m": 90 * ONE_DAY_MS,
-  "1y": 365 * ONE_DAY_MS,
+const AVERAGE_LABEL_WIDTH = 72
+const AVERAGE_LABEL_HEIGHT = 30
+const CHART_MARGIN = { top: 20, right: -50, left: 0, bottom: 0 }
+const X_AXIS_PADDING = { left: 0, right: 35 }
+const AXIS_LINE_STYLE = { stroke: "rgba(255,255,255,0.08)" }
+const TICK_STYLE = { fontSize: 12, fill: "rgba(255,255,255,0.5)" }
+
+type RangeKey = "1m" | "3m" | "1y"
+type ApyHistoryPoint = {
+  date: number
+  uv: number
 }
-const AXIS_LINE_STYLE = { stroke: "rgba(255,255,255,0.5)" }
-const TICK_STYLE = { fontSize: 12, stroke: "rgba(255,255,255,0.08)" }
+
 type PositionAPRProps = {
   apy: number
   fetchsUSGHistoryAPY: (range: string) => Promise<void>
   sUSGSelectedTab: string
-  apyHistory: {
-    date: number
-    uv: number
-  }[]
+  apyHistory: ApyHistoryPoint[]
 }
+
+const formatDayMonth = (ts: number) => new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(new Date(ts))
+const formatMonth = (ts: number) => new Intl.DateTimeFormat("en-US", { month: "short" }).format(new Date(ts))
+const formatMonthYear = (ts: number) => new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(new Date(ts))
+
+const RANGE_CONFIG: Record<
+  RangeKey,
+  {
+    formatTick: (ts: number) => string
+    formatTooltip: (ts: number) => string
+  }
+> = {
+  "1m": {
+    formatTick: formatDayMonth,
+    formatTooltip: formatDayMonth,
+  },
+  "3m": {
+    formatTick: formatDayMonth,
+    formatTooltip: formatDayMonth,
+  },
+  "1y": {
+    formatTick: formatMonth,
+    formatTooltip: formatMonthYear,
+  },
+}
+
+const RANGE_KEYS = Object.keys(RANGE_CONFIG) as RangeKey[]
+
+const isRangeKey = (range: string): range is RangeKey => RANGE_KEYS.includes(range as RangeKey)
 
 const CustomAverageDisplay = (props: { averageApy: number; viewBox?: { y: number; width: number } }) => {
   const { viewBox, averageApy } = props
 
-  if (!viewBox || !averageApy) return null
+  if (!viewBox || !Number.isFinite(averageApy)) return null
 
   const { width, y } = viewBox
 
   return (
     <g>
-      <rect x={width - 72} y={y + 6} width={72} rx={15} height={30} fill="#0075FF" />
-      <text x={width - 34} y={y + 25} textAnchor="middle" fill="#ffffff" fontSize={13} fontWeight={700}>
+      <rect x={width - AVERAGE_LABEL_WIDTH} y={y + 6} width={AVERAGE_LABEL_WIDTH} rx={15} height={AVERAGE_LABEL_HEIGHT} fill="#0075FF" />
+      <text x={width - AVERAGE_LABEL_WIDTH / 2 + 2} y={y + 25} textAnchor="middle" fill="#ffffff" fontSize={13} fontWeight={700}>
         Avg {averageApy.toFixed(2)}%
       </text>
     </g>
   )
 }
 
-const CustomsUSGPerformanceTooltip = (props: {
-  active?: boolean | undefined
-  payload?: Array<{ dataKey?: string | number | undefined; value?: ValueType | undefined }> | undefined
+const ApyTooltip = (props: {
+  active?: boolean
+  payload?: Array<{ dataKey?: string | number; value?: ValueType }>
   label?: number
-  range: string
+  fmtLabel: (v: number) => ReactNode
 }) => {
   if (!props.active || !props.payload || props.payload.length === 0 || props.label == null) return null
 
-  const date = new Date(props.label)
   const value = Number(props.payload[0]?.value)
 
-  if (!Number.isFinite(date.getTime()) || !Number.isFinite(value)) return null
-
-  const dateLabel =
-    props.range === "1y"
-      ? new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(date)
-      : new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(date)
+  if (!Number.isFinite(props.label) || !Number.isFinite(value)) return null
 
   return (
     <div className="pointer-events-none flex flex-col items-start justify-between gap-3 rounded-[10px] bg-dark px-3 py-2 text-[10px]">
-      <div className="font-extralight text-white">{dateLabel}</div>
+      <div className="font-extralight text-white">{props.fmtLabel(props.label)}</div>
       <div className="flex items-center justify-center gap-1">
         <div className="h-3 w-3 rounded-[3px] bg-row-success"></div>
         <div className="text-xs font-semibold text-white">APY: {value.toFixed(1)}%</div>
@@ -72,44 +97,45 @@ const CustomsUSGPerformanceTooltip = (props: {
 
 const formatYAxis = (tick: number) => `${tick}%`
 
-const formatXAxis = (tick: number | string, range: string) => {
-  const date = new Date(tick)
-  if (range === "1y") {
-    return new Intl.DateTimeFormat("en-US", { month: "short" }).format(date)
-  }
-
-  return new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(date)
-}
-
 export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHistory }: PositionAPRProps) => {
-  const averageApy = useMemo(() => {
-    if (!apyHistory || apyHistory.length === 0) return 0
-    const sum = apyHistory.reduce((acc, point) => acc + point.uv, 0)
-    return sum / apyHistory.length
-  }, [apyHistory])
+  const selectedRange: RangeKey = isRangeKey(sUSGSelectedTab) ? sUSGSelectedTab : "1m"
 
-  const timeAxis = useMemo(() => {
-    if (!apyHistory || apyHistory.length === 0) return null
+  const { data, averageApy, ticks, fmtTick, fmtTooltipLabel, startTs, endTs, latestPoint } = useMemo(() => {
+    const rangeConfig = RANGE_CONFIG[selectedRange]
+    const validHistory = apyHistory.filter((point) => Number.isFinite(point.date) && Number.isFinite(point.uv))
 
-    const dates = apyHistory.map((point) => point.date).filter(Number.isFinite)
-    if (dates.length === 0) return null
-
-    const endTs = Math.max(...dates)
-    const startTs = RANGE_TO_MS[sUSGSelectedTab] ? endTs - RANGE_TO_MS[sUSGSelectedTab] : Math.min(...dates)
-    const spanMs = endTs - startTs
-
-    if (spanMs <= 0) {
+    if (validHistory.length === 0) {
       return {
-        domain: [startTs, endTs] as [number, number],
-        ticks: [startTs],
+        data: [],
+        averageApy: 0,
+        ticks: [],
+        fmtTick: rangeConfig.formatTick,
+        fmtTooltipLabel: rangeConfig.formatTooltip,
+        startTs: 0,
+        endTs: 0,
+        latestPoint: undefined,
       }
     }
 
+    const dates = validHistory.map((point) => point.date)
+    const startTs = Math.min(...dates)
+    const endTs = Math.max(...dates)
+    const spanMs = endTs - startTs
+    const averageApy = validHistory.reduce((acc, point) => acc + point.uv, 0) / validHistory.length
+
     return {
-      domain: [startTs, endTs] as [number, number],
-      ticks: Array.from({ length: TIME_TICK_COUNT }, (_, i) => startTs + (spanMs * i) / (TIME_TICK_COUNT - 1)),
+      data: validHistory,
+      averageApy,
+      ticks: spanMs <= 0 ? [startTs] : Array.from({ length: TIME_TICK_COUNT }, (_, i) => startTs + (spanMs * i) / (TIME_TICK_COUNT - 1)),
+      fmtTick: rangeConfig.formatTick,
+      fmtTooltipLabel: rangeConfig.formatTooltip,
+      startTs,
+      endTs,
+      latestPoint: validHistory.at(-1),
     }
-  }, [apyHistory, sUSGSelectedTab])
+  }, [apyHistory, selectedRange])
+
+  const hasApyHistory = latestPoint != null
 
   return (
     <>
@@ -117,78 +143,79 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
         <APRDisplay apy={apy} />
 
         <div className="hidden items-end justify-end gap-2 md:flex">
-          <ButtonTab onClick={() => fetchsUSGHistoryAPY("1m")} label={"1m"} active={sUSGSelectedTab === "1m"} className="rounded-full !py-1" />
-          <ButtonTab onClick={() => fetchsUSGHistoryAPY("3m")} label={"3m"} active={sUSGSelectedTab === "3m"} className="rounded-full !py-1" />
-          <ButtonTab onClick={() => fetchsUSGHistoryAPY("1y")} label={"1y"} active={sUSGSelectedTab === "1y"} className="rounded-full !py-1" />
+          {RANGE_KEYS.map((range) => (
+            <ButtonTab key={range} onClick={() => fetchsUSGHistoryAPY(range)} label={range} active={selectedRange === range} className="rounded-full !py-1" />
+          ))}
         </div>
       </div>
 
-      <div className="relative mt-2.5 h-[17.6rem] border border-white">
-        <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
-          <AreaChart
-            data={apyHistory}
-            margin={{
-              top: 0,
-              right: 0,
-              left: 0,
-              bottom: 0,
-            }}
-            className="border border-red-400"
-          >
-            <defs>
-              <linearGradient id="greenGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#95FF00" stopOpacity={0.4} />
-                <stop offset="100%" stopColor="#95FF00" stopOpacity={0} />
-              </linearGradient>
-            </defs>
+      {hasApyHistory ? (
+        <div className="relative mt-2.5 h-[18rem]">
+          <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
+            <AreaChart data={data} margin={CHART_MARGIN}>
+              <defs>
+                <linearGradient id="greenGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#95FF00" stopOpacity={0.4} />
+                  <stop offset="100%" stopColor="#95FF00" stopOpacity={0} />
+                </linearGradient>
+              </defs>
 
-            <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.05)" />
+              <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.05)" />
 
-            <XAxis
-              dataKey="date"
-              type="number"
-              scale="time"
-              domain={timeAxis?.domain ?? ["dataMin", "dataMax"]}
-              ticks={timeAxis?.ticks}
-              tickFormatter={(tick) => formatXAxis(tick, sUSGSelectedTab)}
-              tick={TICK_STYLE}
-              padding={{ left: 0, right: 0 }}
-              axisLine={AXIS_LINE_STYLE}
-              height={24}
-              tickLine={false}
-              allowDataOverflow
-            />
+              <XAxis
+                padding={X_AXIS_PADDING}
+                dataKey="date"
+                type="number"
+                scale="time"
+                domain={[startTs, endTs]}
+                ticks={ticks}
+                tickFormatter={fmtTick}
+                tick={TICK_STYLE}
+                axisLine={AXIS_LINE_STYLE}
+                tickLine={false}
+                allowDataOverflow
+                height={20}
+              />
 
-            <YAxis orientation="right" width={CHART_Y_AXIS_WIDTH} tickFormatter={formatYAxis} tick={TICK_STYLE} axisLine={false} tickLine={false} />
+              <YAxis
+                orientation="right"
+                width={CHART_Y_AXIS_WIDTH}
+                axisLine={false}
+                tick={({ x, y, payload }) => (
+                  <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
+                    {formatYAxis(payload.value)}
+                  </text>
+                )}
+                tickLine={false}
+              />
 
-            <Area
-              type="monotone"
-              dataKey="uv"
-              stroke="#95FF00"
-              strokeWidth={2}
-              fill="url(#greenGradient)"
-              dot={false}
-              activeDot={{
-                r: 4,
-                stroke: "#95FF00",
-                strokeWidth: 2,
-                fill: "#95FF00",
-                filter: "drop-shadow(0 0 8px rgba(217, 251, 11, 0.7))",
-              }}
-            />
+              <Area
+                type="monotone"
+                dataKey="uv"
+                stroke="#95FF00"
+                strokeWidth={2}
+                fill="url(#greenGradient)"
+                dot={false}
+                activeDot={{
+                  r: 4,
+                  stroke: "#95FF00",
+                  strokeWidth: 2,
+                  fill: "#95FF00",
+                  filter: "drop-shadow(0 0 8px rgba(217, 251, 11, 0.7))",
+                }}
+              />
 
-            <Tooltip
-              cursor={{ ...AXIS_LINE_STYLE, strokeWidth: 1.5, strokeDasharray: "4 4" }}
-              allowEscapeViewBox={{ x: false, y: false }}
-              content={<CustomsUSGPerformanceTooltip range={sUSGSelectedTab} />}
-            />
+              <Tooltip cursor={{ ...AXIS_LINE_STYLE, strokeWidth: 1.5, strokeDasharray: "4 4" }} content={<ApyTooltip fmtLabel={fmtTooltipLabel} />} />
 
-            <ReferenceLine y={averageApy} stroke="#0075FF" strokeDasharray="8 6" strokeWidth={2} label={<CustomAverageDisplay averageApy={averageApy} />} />
+              <ReferenceLine y={averageApy} stroke="#0075FF" strokeDasharray="8 6" strokeWidth={2} label={<CustomAverageDisplay averageApy={averageApy} />} />
 
-            {apyHistory.at(-1) && <ReferenceDot x={apyHistory.at(-1)!.date} y={apyHistory.at(-1)!.uv} r={4} fill="#95FF00" stroke="#95FF00" isFront={true} />}
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
+              <ReferenceDot x={latestPoint.date} y={latestPoint.uv} r={4} fill="#95FF00" stroke="#95FF00" isFront={true} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="mb mt-3 flex h-[18rem] h-full w-full items-center justify-center text-subtitle">No APY data</div>
+      )}
     </>
   )
 }

@@ -78,7 +78,7 @@ export function PositionPerformancePanel({
         />
       </ReliefCard>
 
-      <ReliefCard className="mt-5 flex h-96 min-h-96 w-full flex-col overflow-visible border p-5">
+      <ReliefCard className="mt-5 flex w-full flex-col overflow-visible p-5">
         {selectedFeature === PROJECTED_EARNINGS && (
           <ForecastGraph currentFeature={currentFeature} currentInvestment={sUSGBalance} apy={sUSGCurrentAPY} newLiquidity={addLiq} />
         )}

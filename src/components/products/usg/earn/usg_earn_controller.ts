@@ -53,16 +53,23 @@ export const getConvexBoost = async (pids: number[]): Promise<ConvexBoostData> =
 
 export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Array<EarnPoolsData>) => {
   const sanitizeValue = (value?: number | null) => (typeof value === "number" && Number.isFinite(value) ? value : 0)
+  const sameAddress = (a?: string, b?: string) => !!a && !!b && a.toLowerCase() === b.toLowerCase()
   const getMinAPYValue = (values?: Array<number | null>) => sanitizeValue(values?.[0])
   const sumAPRValues = (values?: Array<number | null>) => values?.reduce<number>((sum, value) => sum + sanitizeValue(value), 0) || 0
+  const getBaseAPY = (pool?: EarnPoolsData) => {
+    const weeklyAPY = sanitizeValue(pool?.apy?.latestWeeklyApy)
+    const dailyAPY = sanitizeValue(pool?.apy?.latestDailyApy)
+
+    return weeklyAPY > 0 ? weeklyAPY : dailyAPY
+  }
 
   return tasks.map((t) => {
     const currentPool = poolsData?.find((el) => {
       if (el?.protocol === "Pendle") {
-        return (el.address === t.address && el.protocol === t.protocolName) || el?.pt === t.address || el?.yt === t.address
+        return (sameAddress(el.address, t.address) && el.protocol === t.protocolName) || sameAddress(el?.pt, t.address) || sameAddress(el?.yt, t.address)
       }
 
-      return (el.address === t.address && el.protocol === t.protocolName) || null
+      return (sameAddress(el.address, t.address) && el.protocol === t.protocolName) || null
     })
 
     if (currentPool?.protocol === "Pendle") {
@@ -107,7 +114,7 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
       const minAPYCurr = getMinAPYValue(currentPool?.gaugeCrvApy)
       const minAPYFut = getMinAPYValue(currentPool?.gaugeFutureCrvApy)
 
-      const baseAPY = currentPool?.apy?.latestWeeklyApy || 0
+      const baseAPY = getBaseAPY(currentPool)
       if (isCurveStaked || isCurveUnstaked) {
         currentAPRDetails.APY = baseAPY
         projectedAPRDetails.APY = baseAPY

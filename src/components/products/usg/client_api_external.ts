@@ -24,6 +24,7 @@ export type StakeDaoAPRData = {
 export type curveAPy = {
   apy?: {
     latestWeeklyApy?: number
+    latestDailyApy?: number
   }
 }
 

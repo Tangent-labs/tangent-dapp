@@ -34,7 +34,7 @@
 
 ### Example of a feature level organization
 
-THe context,controller and specific types will be put in the components folder for better organisation
+The context,controller and specific types will be put in the components folder for better organisation
 like this :
 
 - `example_form/`
@@ -57,7 +57,7 @@ like this :
 
 ## styling
 
-use of tailwindcss https://tailwindcss.com/
+Use of tailwindcss https://tailwindcss.com/
 
 ## Commands
 

@@ -7,33 +7,31 @@ import { computedProjection } from "../usg_stake_controller"
 import type { LineDot } from "recharts/types/cartesian/Line"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer, Tooltip } from "recharts"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts"
 
 const MS_PER_YEAR = 365.25 * 24 * 60 * 60 * 1000
 
-const MIN_RIGHT_PADDING_MS = 6 * 60 * 60 * 1000 // 6 hours
-const MAX_RIGHT_PADDING_MS = 45 * 24 * 60 * 60 * 1000 // 45 days
-const RIGHT_PADDING_FRACTION = 0.01 // 1% of total span
 const TIME_TICK_COUNT = 7
+const CHART_Y_AXIS_WIDTH = 52
+const TICK_STYLE = { fontSize: 12, stroke: "rgba(255,255,255,0.08)" }
+const AXIS_LINE_STYLE = { stroke: "rgba(255,255,255,0.08)" }
 
-const EndDot = (lastIndex: number) =>
+type ForecastMode = "stake" | "unstake"
+type RangeKey = "1m" | "3m" | "1y"
+type RangeStep = "day" | "month"
+type ForecastPoint = { t: number; baseAmount: number; amountWithLiquidity: number }
+
+const formatDayMonth = (ts: number) => new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(new Date(ts))
+const formatMonth = (ts: number) => new Intl.DateTimeFormat("en-US", { month: "short" }).format(new Date(ts))
+const formatMonthYear = (ts: number) => new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(new Date(ts))
+
+const EndDot = (lastIndex: number, fill: string) =>
   function Dot(props: { cx?: number; cy?: number; index?: number }) {
     const { cx, cy, index } = props
     if (index !== lastIndex || cx == null || cy == null) return null
     return (
       <g pointerEvents="none" key={`EndDot${lastIndex}`}>
-        <circle cx={cx} cy={cy} r={4.5} fill="#FFFFFF" stroke="#000" strokeWidth={2} />
-      </g>
-    )
-  }
-
-const EndDotGradient = (lastIndex: number) =>
-  function Dot(props: { cx?: number; cy?: number; index?: number }) {
-    const { cx, cy, index } = props
-    if (index !== lastIndex || cx == null || cy == null) return null
-    return (
-      <g pointerEvents="none" key={`EndDotGradient${lastIndex}`}>
-        <circle cx={cx} cy={cy} r={4.5} fill="url(#gradientColor)" stroke="#000" strokeWidth={2} />
+        <circle cx={cx} cy={cy} r={4.5} fill={fill} />
       </g>
     )
   }
@@ -55,7 +53,47 @@ const addYears = (d: Date, years: number) => {
   return x
 }
 
+const RANGE_CONFIG: Record<
+  RangeKey,
+  {
+    getEndDate: (start: Date) => Date
+    step: RangeStep
+    formatTick: (ts: number) => string
+    formatTooltip: (ts: number) => string
+  }
+> = {
+  "1m": {
+    getEndDate: (start) => addMonths(start, 1),
+    step: "day",
+    formatTick: formatDayMonth,
+    formatTooltip: formatDayMonth,
+  },
+  "3m": {
+    getEndDate: (start) => addMonths(start, 3),
+    step: "day",
+    formatTick: formatDayMonth,
+    formatTooltip: formatDayMonth,
+  },
+  "1y": {
+    getEndDate: (start) => addYears(start, 1),
+    step: "month",
+    formatTick: formatMonth,
+    formatTooltip: formatMonthYear,
+  },
+}
+
 const calculateYAxis = (minValue: number, maxValue: number) => {
+  if (minValue === maxValue) {
+    const stepSizes = [1, 10, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 25000, 40000, 50000, 75000, 100000]
+    const max = Math.max(maxValue, 1)
+    const stepSize = stepSizes.find((s) => max / s < 6) ?? stepSizes[stepSizes.length - 1]
+    return {
+      min: 0,
+      max: Math.ceil(max / stepSize) * stepSize,
+      stepSize,
+    }
+  }
+
   const range = maxValue - minValue
   const stepSizes = [10, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 25000, 40000, 50000, 75000, 100000]
   const stepSize = stepSizes.find((s) => range / s < 6) ?? stepSizes[stepSizes.length - 1]
@@ -64,12 +102,55 @@ const calculateYAxis = (minValue: number, maxValue: number) => {
   return { min, max, stepSize }
 }
 
+const buildForecastData = ({
+  start,
+  end,
+  step,
+  currentInvestment,
+  newLiquidity,
+  apy,
+  currentFeature,
+}: {
+  start: Date
+  end: Date
+  step: RangeStep
+  currentInvestment: number
+  newLiquidity: number
+  apy: number
+  currentFeature: ForecastMode
+}) => {
+  const points: ForecastPoint[] = []
+  let cursor = new Date(start)
+  const adjustedInvestment = currentFeature === "stake" ? currentInvestment + newLiquidity : currentInvestment - newLiquidity
+
+  const pushPoint = (date: Date) => {
+    const t = date.getTime()
+    const timeInYears = (t - start.getTime()) / MS_PER_YEAR
+
+    points.push({
+      t,
+      baseAmount: Number(computedProjection(currentInvestment, timeInYears, apy).toFixed(2)),
+      amountWithLiquidity: Number(computedProjection(adjustedInvestment, timeInYears, apy).toFixed(2)),
+    })
+  }
+
+  while (cursor <= end) {
+    pushPoint(cursor)
+    cursor = step === "day" ? addDays(cursor, 1) : addMonths(cursor, 1)
+  }
+
+  if (points.at(-1)?.t !== end.getTime()) {
+    pushPoint(end)
+  }
+
+  return points
+}
+
 const CustomTooltip = (props: {
   active?: boolean
   payload?: Array<{ dataKey?: string | number; value?: ValueType }>
   label?: number
   fmtLabel: (v: number) => ReactNode
-  currentInvestment: number
   newLiquidity: number
 }) => {
   if (!props.active || !props.payload || props.payload.length === 0) return null
@@ -113,10 +194,8 @@ interface ForecastGraphProps {
   currentInvestment: number
   newLiquidity: number
   apy: number
-  currentFeature: string
+  currentFeature: ForecastMode
 }
-
-type RangeKey = "1m" | "3m" | "1y"
 
 export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFeature }: ForecastGraphProps) => {
   const [range, setRange] = useState<RangeKey>("1m")
@@ -131,83 +210,19 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
   } = useMemo(() => {
     const now = new Date()
 
-    let end: Date
-    let step: "day" | "month"
-    let tickFormatter: (ts: number) => string
-    let tooltipFormatter: (ts: number) => string
-
-    switch (range) {
-      case "1m":
-        end = addMonths(now, 1)
-        step = "day"
-        tickFormatter = (ts) => new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(new Date(ts))
-        tooltipFormatter = (ts) => new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(new Date(ts))
-        break
-      case "3m":
-        end = addMonths(now, 3)
-        step = "day"
-        tickFormatter = (ts) => new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(new Date(ts))
-        tooltipFormatter = (ts) => new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(new Date(ts))
-        break
-      case "1y":
-        end = addYears(now, 1)
-        step = "month"
-        tickFormatter = (ts) => new Intl.DateTimeFormat("en-US", { month: "short" }).format(new Date(ts))
-        tooltipFormatter = (ts) => new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(new Date(ts))
-        break
-    }
-
-    const points: Array<{ t: number; baseAmount: number; amountWithLiquidity: number }> = []
-    let cursor = new Date(now)
-
-    const pushPoint = (date: Date) => {
-      const t = date.getTime()
-      const timeInYears = (t - now.getTime()) / MS_PER_YEAR
-
-      let existingCompounded = 0
-      let newCompounded = 0
-
-      existingCompounded = computedProjection(currentInvestment, timeInYears, apy)
-      if (currentFeature === "stake") {
-        newCompounded = computedProjection(currentInvestment + newLiquidity, timeInYears, apy)
-      } else {
-        newCompounded = computedProjection(currentInvestment - newLiquidity, timeInYears, apy)
-      }
-
-      points.push({
-        t,
-        baseAmount: Number(existingCompounded.toFixed(2)),
-        amountWithLiquidity: Number(newCompounded.toFixed(2)),
-      })
-    }
-
-    if (step === "day") {
-      while (cursor <= end) {
-        pushPoint(cursor)
-        cursor = addDays(cursor, 1)
-      }
-    } else {
-      while (cursor <= end) {
-        pushPoint(cursor)
-        cursor = addMonths(cursor, 1)
-      }
-      if (points.at(-1)?.t !== end.getTime()) {
-        pushPoint(end)
-      }
-    }
-
-    // Put some padding to the right so that the edge point isn’t cut off
-    const spanMs = end.getTime() - now.getTime()
-    const paddingMs = Math.max(MIN_RIGHT_PADDING_MS, Math.min(MAX_RIGHT_PADDING_MS, RIGHT_PADDING_FRACTION * spanMs))
-    const endTs = end.getTime() + paddingMs
-    const ticks = Array.from({ length: TIME_TICK_COUNT }, (_, i) => now.getTime() + (spanMs * i) / (TIME_TICK_COUNT - 1))
+    const rangeConfig = RANGE_CONFIG[range]
+    const end = rangeConfig.getEndDate(now)
+    const startTs = now.getTime()
+    const endTs = end.getTime()
+    const spanMs = endTs - startTs
+    const ticks = Array.from({ length: TIME_TICK_COUNT }, (_, i) => startTs + (spanMs * i) / (TIME_TICK_COUNT - 1))
 
     return {
-      data: points,
+      data: buildForecastData({ start: now, end, step: rangeConfig.step, currentInvestment, newLiquidity, apy, currentFeature }),
       ticks,
-      fmtTick: tickFormatter,
-      fmtTooltipLabel: tooltipFormatter,
-      startTs: now.getTime(),
+      fmtTick: rangeConfig.formatTick,
+      fmtTooltipLabel: rangeConfig.formatTooltip,
+      startTs,
       endTs,
     }
   }, [range, currentInvestment, newLiquidity, apy, currentFeature])
@@ -220,6 +235,7 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
   const yAxis = calculateYAxis(Math.min(...allValues), Math.max(...allValues))
 
   const showSecondLine = newLiquidity > 0
+  const liquidityChangeSign = currentFeature === "stake" ? "+" : "-"
 
   return (
     <>
@@ -232,73 +248,90 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
         </div>
       </div>
 
-      {!!apy && apy > 0 ? (
-        <div className="mt-2.5 flex h-72 min-h-72 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart margin={{ top: 12, right: 0, bottom: 8, left: 0 }} data={forecastData}>
-              <defs>
-                <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#FBF911" />
-                  <stop offset="100%" stopColor="#99FF00" />
-                </linearGradient>
-              </defs>
+      {apy && apy > 0 ? (
+        <>
+          <div className="mt-2.5 flex h-[18rem] w-full">
+            <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
+              <LineChart
+                margin={{
+                  top: 20,
+                  right: -50,
+                  left: 0,
+                  bottom: 0,
+                }}
+                data={forecastData}
+              >
+                <defs>
+                  <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FBF911" />
+                    <stop offset="100%" stopColor="#99FF00" />
+                  </linearGradient>
+                </defs>
 
-              <CartesianGrid horizontal vertical={false} stroke="rgba(255,255,255,0.05)" />
+                <CartesianGrid horizontal vertical={false} stroke="rgba(255,255,255,0.05)" />
 
-              <XAxis
-                dataKey="t"
-                type="number"
-                scale="time"
-                domain={[startTs, endTs]}
-                ticks={ticks}
-                tickFormatter={fmtTick}
-                tick={{ fontSize: 12 }}
-                padding={{ left: 0, right: 0 }}
-                allowDataOverflow
-              />
+                <XAxis
+                  dataKey="t"
+                  type="number"
+                  scale="time"
+                  domain={[startTs, endTs]}
+                  ticks={ticks}
+                  tickFormatter={fmtTick}
+                  tick={TICK_STYLE}
+                  padding={{ left: 0, right: 45 }}
+                  axisLine={AXIS_LINE_STYLE}
+                  tickLine={false}
+                  allowDataOverflow
+                  height={20}
+                />
 
-              <YAxis
-                orientation="right"
-                tickFormatter={(v) => `$${formatMillions(v)}`}
-                width={52}
-                domain={[yAxis.min, yAxis.max]}
-                ticks={Array.from({ length: Math.floor((yAxis.max - yAxis.min) / yAxis.stepSize) + 1 }, (_, i) => yAxis.min + i * yAxis.stepSize)}
-                tick={{ fontSize: 12 }}
-              />
+                <YAxis
+                  orientation="right"
+                  tickFormatter={(v) => `$${formatMillions(v)}`}
+                  width={CHART_Y_AXIS_WIDTH}
+                  domain={[yAxis.min, yAxis.max]}
+                  ticks={Array.from({ length: Math.floor((yAxis.max - yAxis.min) / yAxis.stepSize) + 1 }, (_, i) => yAxis.min + i * yAxis.stepSize)}
+                  tick={({ x, y, payload }) => (
+                    <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
+                      ${formatMillions(payload.value)}
+                    </text>
+                  )}
+                  axisLine={false}
+                  tickLine={false}
+                />
 
-              <Tooltip
-                cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
-                content={<CustomTooltip fmtLabel={fmtTooltipLabel} currentInvestment={currentInvestment} newLiquidity={newLiquidity} />}
-              />
+                <Tooltip
+                  cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
+                  content={<CustomTooltip fmtLabel={fmtTooltipLabel} newLiquidity={newLiquidity} />}
+                />
 
-              <Legend />
-
-              <Line
-                strokeWidth={2}
-                type="monotone"
-                dataKey="baseAmount"
-                stroke="#FFFFFF"
-                name="Current Position Growth"
-                dot={EndDot(forecastData.length - 1) as LineDot}
-                isAnimationActive={false}
-              />
-
-              {showSecondLine && (
                 <Line
                   strokeWidth={2}
                   type="monotone"
-                  dataKey="amountWithLiquidity"
-                  stroke="url(#gradientColor)"
-                  name={`Total After +${formatDollar(newLiquidity, 0)}`}
-                  dot={EndDotGradient(forecastData.length - 1) as LineDot}
+                  dataKey="baseAmount"
+                  stroke="#FFFFFF"
+                  name="Current Position Growth"
+                  dot={EndDot(forecastData.length - 1, "#FFFFFF") as LineDot}
                   isAnimationActive={false}
                 />
-              )}
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+
+                {showSecondLine && (
+                  <Line
+                    strokeWidth={2}
+                    type="monotone"
+                    dataKey="amountWithLiquidity"
+                    stroke="url(#gradientColor)"
+                    name={`Total After ${liquidityChangeSign}${formatDollar(newLiquidity, 0)}`}
+                    dot={EndDot(forecastData.length - 1, "url(#gradientColor)") as LineDot}
+                    isAnimationActive={false}
+                  />
+                )}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </>
       ) : (
-        <div className="flex min-h-80 w-full items-center justify-center text-subtitle">No APY data</div>
+        <div className={`mb mt-3 flex h-[18rem] w-full items-center justify-center text-subtitle`}>No APY data</div>
       )}
     </>
   )

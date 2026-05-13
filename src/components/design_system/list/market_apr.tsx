@@ -59,29 +59,15 @@ export const MarketAPR = ({
       .sort((a, b) => b[1] - a[1])
   }, [projectedAPRDetails])
 
-  const computedAPR = useMemo(() => {
-    if (currentAPRDetails && rewardToken && projectedApr !== undefined) {
-      const rewardApr = currentAPRDetails[rewardToken]
-      if (rewardApr === undefined || rewardApr === null) return apr
-      return Number(rewardApr) === 0 ? projectedApr : apr
-    }
-
-    return apr
-  }, [rewardToken, currentAPRDetails, projectedApr, apr])
-
   return (
     <div className="flex w-full items-center justify-between gap-2 xl:justify-center">
       {isMarketListDisplay && <div className="flex items-center justify-center text-sm text-subtitle xl:hidden">{maxLeverage === 1 ? "vAPR" : "Max vAPR"}</div>}
 
       <div className={cn("flex min-h-min min-w-16 items-center justify-center text-center xl:min-h-8 xl:flex-col", isMarketListDisplay ? "" : "w-full")}>
-        {!!computedAPR && Number(computedAPR) > 0 && (
+        {!!apr && Number(apr) > 0 && (
           <>
             <AprIndicator isMax={maxLeverage !== 1}>
-              {isMarketListDisplay ? (
-                <div className={className}>{(computedAPR * maxLeverage).toFixed(2)}%</div>
-              ) : (
-                <div className={className}>{((apr || 0) * maxLeverage).toFixed(2)}%</div>
-              )}
+              <div className={className}>{((apr || 0) * maxLeverage).toFixed(2)}%</div>
 
               <div className="flex flex-col gap-2 p-2">
                 <div className="flex w-full items-center justify-between gap-2">

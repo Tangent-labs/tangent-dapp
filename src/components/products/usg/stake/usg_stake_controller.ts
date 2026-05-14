@@ -34,13 +34,13 @@ export function getStakeFormState(
       if (currentFeature === "unstake" && weiValue > (stakeInfo?.sUSGBalance || 0n)) {
         errors.push(dappErrors["balance"])
       }
-      if (!expected || expected === 0n) {
+      if (expected === 0n) {
         errors.push(dappErrors["empty-form"])
       }
     }
   }
 
-  return { canProcess: isApproved && errors.length === 0 && !isLoading, errors, haveToApprove: !isApproved }
+  return { canProcess: isApproved && !!expected && expected > 0n && errors.length === 0 && !isLoading, errors, haveToApprove: !isApproved }
 }
 
 export const getExpectedUSG = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {

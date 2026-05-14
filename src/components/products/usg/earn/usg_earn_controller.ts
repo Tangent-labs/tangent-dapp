@@ -144,7 +144,7 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
         projectedAPRDetails.CRV = gauge0Fut
 
         currentAPR = sumAPRValues(currentPool?.gaugeCrvApy)
-        projectedAPR = sumAPRValues(currentPool?.gaugeFutureCrvApy)
+        projectedAPR = currentPool?.gaugeFutureCrvApy?.at(0) === undefined ? -1 : sumAPRValues(currentPool?.gaugeFutureCrvApy)
       }
 
       return {

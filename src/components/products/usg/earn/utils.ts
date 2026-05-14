@@ -38,7 +38,7 @@ export const mapPoolsAndTasks = (
       }, 0)
 
       const gaugeCrvApy = [el.baseApy, rewardApr]
-      const gaugeFutureCrvApy = [el.baseApy, rewardApr]
+      const gaugeFutureCrvApy = [undefined, undefined]
       return { address: el.address, protocol: "Convex", gaugeCrvApy, gaugeFutureCrvApy }
     })
 

@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 import { cn } from "@/lib/utils"
+import { parseAPRDetails } from "@/lib/apr"
 import { AprIndicator } from "./apr_indicator"
 import { TokenImage } from "../structure/token_image"
 import { USGMarketType } from "@/components/products/usg/usg_type"
@@ -47,17 +48,8 @@ export const MarketAPR = ({
   isMarketListDisplay,
   className = "",
 }: ListAPRProps) => {
-  const currentRewardEntries = useMemo(() => {
-    return Object.entries(currentAPRDetails ?? {})
-      .filter((entry): entry is [string, number] => entry[0] !== "APY" && typeof entry[1] === "number")
-      .sort((a, b) => b[1] - a[1])
-  }, [currentAPRDetails])
-
-  const projectedRewardEntries = useMemo(() => {
-    return Object.entries(projectedAPRDetails ?? {})
-      .filter((entry): entry is [string, number] => entry[0] !== "APY" && typeof entry[1] === "number")
-      .sort((a, b) => b[1] - a[1])
-  }, [projectedAPRDetails])
+  const current = useMemo(() => parseAPRDetails(currentAPRDetails), [currentAPRDetails])
+  const projected = useMemo(() => parseAPRDetails(projectedAPRDetails), [projectedAPRDetails])
 
   return (
     <div className="flex w-full items-center justify-between gap-2 xl:justify-center">
@@ -82,7 +74,7 @@ export const MarketAPR = ({
                 {marketType === "Pendle_PT" ? (
                   <div className="flex min-w-44 items-center justify-between text-white">
                     Fixed APY
-                    <span className="flex items-center justify-center">{((currentAPRDetails?.APY ?? 0) * maxLeverage).toFixed(2)}%</span>
+                    <span className="flex items-center justify-center">{((current.baseAPY ?? 0) * maxLeverage).toFixed(2)}%</span>
                   </div>
                 ) : (
                   <>
@@ -91,16 +83,16 @@ export const MarketAPR = ({
                       <span> {((apr || 0) * maxLeverage).toFixed(2)}%</span>
                     </div>
 
-                    {!!currentAPRDetails && typeof currentAPRDetails.APY === "number" && currentAPRDetails.APY > 0 && (
+                    {current.baseAPY !== undefined && (
                       <div className="flex min-w-44 items-center justify-between text-subtitle">
                         Base APY
-                        <span className="flex items-center justify-center">{((currentAPRDetails.APY || 0) * maxLeverage).toFixed(2)}%</span>
+                        <span className="flex items-center justify-center">{(current.baseAPY * maxLeverage).toFixed(2)}%</span>
                       </div>
                     )}
 
-                    {currentRewardEntries.length > 0 && (
+                    {current.rewards.length > 0 && (
                       <div className="flex flex-col gap-2 text-subtitle">
-                        {currentRewardEntries.map(([token, value], index) => (
+                        {current.rewards.map(([token, value], index) => (
                           <span key={index}>
                             {!!value && value >= 0.01 ? (
                               <div className="flex items-center justify-between" key={token}>
@@ -120,16 +112,16 @@ export const MarketAPR = ({
                       <span> {((projectedApr || 0) * maxLeverage).toFixed(2)}%</span>
                     </div>
 
-                    {!!projectedAPRDetails && typeof projectedAPRDetails.APY === "number" && projectedAPRDetails.APY > 0 && (
+                    {projected.baseAPY !== undefined && (
                       <div className="flex min-w-44 items-center justify-between text-subtitle">
                         Base APY
-                        <span className="flex items-center justify-center">{((projectedAPRDetails.APY || 0) * maxLeverage).toFixed(2)}%</span>
+                        <span className="flex items-center justify-center">{(projected.baseAPY * maxLeverage).toFixed(2)}%</span>
                       </div>
                     )}
 
-                    {projectedRewardEntries.length > 0 && (
+                    {projected.rewards.length > 0 && (
                       <div className="flex flex-col gap-2 text-subtitle">
-                        {projectedRewardEntries.map(([token, value], index) => (
+                        {projected.rewards.map(([token, value], index) => (
                           <span key={index}>
                             {!!value && value >= 0.01 ? (
                               <div className="flex items-center justify-between" key={token}>

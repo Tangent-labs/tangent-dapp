@@ -113,39 +113,43 @@ export const MarketAPR = ({
                       </div>
                     )}
 
-                    <div className="flex w-full items-center justify-between gap-2 border-b border-white/10 pb-1 font-semibold">
-                      Projected vAPR
-                      <span> {((projectedApr || 0) * maxLeverage).toFixed(2)}%</span>
-                    </div>
+                    {projectedApr !== -1 && (
+                      <>
+                        <div className="flex w-full items-center justify-between gap-2 border-b border-white/10 pb-1 font-semibold">
+                          Projected vAPR
+                          <span> {((projectedApr || 0) * maxLeverage).toFixed(2)}%</span>
+                        </div>
 
-                    {projected.baseAPY !== undefined && (
-                      <div className="flex min-w-44 items-center justify-between text-subtitle">
-                        Base APY
-                        <span className="flex items-center justify-center">{(projected.baseAPY * maxLeverage).toFixed(2)}%</span>
-                      </div>
-                    )}
+                        {projected.baseAPY !== undefined && (
+                          <div className="flex min-w-44 items-center justify-between text-subtitle">
+                            Base APY
+                            <span className="flex items-center justify-center">{(projected.baseAPY * maxLeverage).toFixed(2)}%</span>
+                          </div>
+                        )}
 
-                    {projected.rewards.length > 0 && (
-                      <div className="flex flex-col gap-2 text-subtitle">
-                        {projected.rewards.map(([token, value], index) => (
-                          <span key={index}>
-                            {!!value && value >= 0.01 ? (
-                              <div className="flex items-center justify-between" key={token}>
-                                <span>{token} APR</span>
-                                <span>{(value * maxLeverage)?.toFixed(2)}%</span>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-                          </span>
-                        ))}
-                      </div>
+                        {projected.rewards.length > 0 && (
+                          <div className="flex flex-col gap-2 text-subtitle">
+                            {projected.rewards.map(([token, value], index) => (
+                              <span key={index}>
+                                {!!value && value >= 0.01 ? (
+                                  <div className="flex items-center justify-between" key={token}>
+                                    <span>{token} APR</span>
+                                    <span>{(value * maxLeverage)?.toFixed(2)}%</span>
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </>
                     )}
                   </>
                 )}
               </div>
             </AprIndicator>
-            {marketType !== "Pendle_PT" && (!isMarketListDisplay || computedAPR === apr) && (
+            {marketType !== "Pendle_PT" && (!isMarketListDisplay || computedAPR === apr) && projectedApr !== -1 && (
               <span className="hidden gap-2 text-xs text-subtitle xl:flex">Proj: {(projectedApr! * maxLeverage).toFixed(2)}%</span>
             )}
           </>

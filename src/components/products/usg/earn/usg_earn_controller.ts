@@ -2,10 +2,26 @@
 
 import { Address, Hex, Abi } from "viem"
 import { ListHeaderData } from "@/types"
-import { EarnProtocolInput, USGMarketType, ConvexBoostData } from "../usg_type"
+import { EarnProtocolInput, USGMarketType, ConvexBoostData, ConvexRewardRate } from "../usg_type"
 import { EarnPoolsData } from "../client_api_external"
-import { executeChainViewUnique } from "@/services/service_rpc"
+import { executeChainViewUnique, getPublicClient, getBackupClients } from "@/services/service_rpc"
 import ConvexBoostsUI from "@/abi/USG/ConvexBoostsUI.json"
+
+// Convex PoolUtilities helper — rewardRates(pid) returns realized CRV/CVX stream per LP/sec (1e18).
+// Used to compute the "current" vAPR that matches Convex's UI exactly.
+const CONVEX_POOL_UTILITIES = "0x5Fba69a794F395184b5760DAf1134028608e5Cd1" as Address
+const poolUtilitiesAbi = [
+  {
+    type: "function",
+    stateMutability: "view",
+    name: "rewardRates",
+    inputs: [{ name: "_pid", type: "uint256" }],
+    outputs: [
+      { name: "tokens", type: "address[]" },
+      { name: "rates", type: "uint256[]" },
+    ],
+  },
+] as const
 export type APROpportunitiesData = {
   protocol: string
   address: Address
@@ -49,6 +65,30 @@ export const getConvexBoost = async (pids: number[]): Promise<ConvexBoostData> =
     console.error("ConvexBoost Chainview failed", e)
     return empty
   }
+}
+
+export const getConvexRewardRates = async (pids: number[]): Promise<ConvexRewardRate[]> => {
+  if (pids.length === 0) return []
+  const clients = [getPublicClient(), ...getBackupClients()]
+  const toNum = (x?: bigint) => (x ? Number(x) / 1e18 : 0)
+  const readRates = async (pid: number): Promise<ConvexRewardRate> => {
+    for (const client of clients) {
+      try {
+        const [, rates] = (await client.readContract({
+          address: CONVEX_POOL_UTILITIES,
+          abi: poolUtilitiesAbi,
+          functionName: "rewardRates",
+          args: [BigInt(pid)],
+        })) as readonly [readonly Address[], readonly bigint[]]
+        return { pid, crvRatePerSec: toNum(rates[0]), cvxRatePerSec: toNum(rates[1]) }
+      } catch {
+        // try the next fallback RPC
+      }
+    }
+    console.error(`getConvexRewardRates: all RPCs failed for pid ${pid}`)
+    return { pid, crvRatePerSec: 0, cvxRatePerSec: 0 }
+  }
+  return Promise.all(pids.map(readRates))
 }
 
 export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Array<EarnPoolsData>) => {
@@ -97,7 +137,7 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
       }
     } else {
       const rewardToken = "CRV"
-      const currentAPRDetails: { APY: number; CRV?: number } = {
+      const currentAPRDetails: { APY: number; CRV?: number; CVX?: number } = {
         APY: 0,
         CRV: undefined,
       }
@@ -132,12 +172,16 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
         }
       } else {
         // STAKE DAO / CONVEX
+        // For Convex pools mapPoolsAndTasks stores [baseApy, currentCRV, currentCVX] in gaugeCrvApy
+        // and [baseApy, projectedCRV] in gaugeFutureCrvApy. Stake DAO leaves CVX absent.
         const baseApy = sanitizeValue(currentPool?.gaugeCrvApy?.[0])
         const gauge0Curr = sanitizeValue(currentPool?.gaugeCrvApy?.[1])
+        const gauge0CurrCvx = sanitizeValue(currentPool?.gaugeCrvApy?.[2])
         const gauge0Fut = sanitizeValue(currentPool?.gaugeFutureCrvApy?.[1])
 
         currentAPRDetails.APY = baseApy
         currentAPRDetails.CRV = gauge0Curr
+        if (gauge0CurrCvx > 0) currentAPRDetails.CVX = gauge0CurrCvx
 
         projectedAPRDetails.APY = baseApy
         projectedAPRDetails.CRV = gauge0Fut

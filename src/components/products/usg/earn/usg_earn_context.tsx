@@ -3,7 +3,7 @@
 import { ListState } from "@/types"
 import { mapPoolsAndTasks } from "./utils"
 import { useUSGContext } from "../usg_context"
-import { mapAPROpportunities, getConvexBoost } from "./usg_earn_controller"
+import { mapAPROpportunities, getConvexBoost, getConvexRewardRates } from "./usg_earn_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { AprOpportunityItem, USGStakingInfo, LpUserPoints } from "../usg_type"
 import { EarnPoolsData, getConvexPools, getCurvePools, getCurveSubgraph, getPendlePools, getStakeDAOPools } from "../client_api_external"
@@ -53,16 +53,17 @@ export const USGEarnProvider = ({ children }: USGEarnContextProps) => {
   const fetchPoolsData = async () => {
     const pids = opportunities.filter((o) => o.protocolName === "Convex" && o.pid).map((o) => o.pid) as number[]
 
-    const [curvePools, convexPools, stakeDaoPools, pendlePools, subgraphPools, convexBoosts] = await Promise.all([
+    const [curvePools, convexPools, stakeDaoPools, pendlePools, subgraphPools, convexBoosts, convexRewardRates] = await Promise.all([
       getCurvePools(),
       getConvexPools(),
       getStakeDAOPools(),
       getPendlePools(),
       getCurveSubgraph(),
       getConvexBoost(pids),
+      getConvexRewardRates(pids),
     ])
 
-    const poolsAndTasks = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, opportunities, subgraphPools, convexBoosts)
+    const poolsAndTasks = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, opportunities, subgraphPools, convexBoosts, convexRewardRates)
 
     setPoolsData(poolsAndTasks)
     setIsLoading(false)

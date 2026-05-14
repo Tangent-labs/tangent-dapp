@@ -15,7 +15,7 @@ import { PredepositStatus } from "./types/types"
 import { USGTokens } from "../usg/usg_repository"
 import { useRootContext } from "../root/root_context"
 import { mapPoolsAndTasks } from "../usg/earn/utils"
-import { getConvexBoost } from "../usg/earn/usg_earn_controller"
+import { getConvexBoost, getConvexRewardRates } from "../usg/earn/usg_earn_controller"
 import { COMMON_ERC20S } from "@tangent/defi-resources"
 import { getTokensPrice } from "@/services/service_price"
 import { Address, formatUnits, WalletClient, zeroAddress } from "viem"
@@ -635,16 +635,17 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   const fetchPoolsData = async () => {
     const pids = opportunities.filter((o) => o.protocolName === "Convex" && o.pid).map((o) => o.pid) as number[]
 
-    const [curvePools, convexPools, stakeDaoPools, pendlePools, subgraphPools, convexBoosts] = await Promise.all([
+    const [curvePools, convexPools, stakeDaoPools, pendlePools, subgraphPools, convexBoosts, convexRewardRates] = await Promise.all([
       getCurvePools(),
       getConvexPools(),
       getStakeDAOPools(),
       getPendlePools(),
       getCurveSubgraph(),
       getConvexBoost(pids),
+      getConvexRewardRates(pids),
     ])
 
-    const mappedPools = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, opportunities, subgraphPools, convexBoosts)
+    const mappedPools = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, opportunities, subgraphPools, convexBoosts, convexRewardRates)
 
     setOpportunitiesData(mappedPools)
   }

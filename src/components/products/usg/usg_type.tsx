@@ -651,3 +651,9 @@ export type ConvexBoostData = {
   fee: bigint
   gaugeBoosts?: ConvexBoostDataGauge[]
 }
+
+export type ConvexRewardRate = {
+  pid: number
+  crvRatePerSec: number
+  cvxRatePerSec: number
+}

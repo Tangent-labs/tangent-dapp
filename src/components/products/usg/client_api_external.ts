@@ -36,6 +36,8 @@ export type EarnPoolsData = curveAPy & {
   lpTokenAddress?: Address
   convexPoolData?: { usdTotal?: number }
   usdTotal?: number
+  totalSupply?: string
+  coins?: Array<{ address?: string; usdPrice?: number }>
   pendleBaseAPY?: number
   baseApy?: number
   details?: {

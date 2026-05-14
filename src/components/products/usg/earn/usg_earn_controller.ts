@@ -2,10 +2,11 @@
 
 import { Address, Hex, Abi } from "viem"
 import { ListHeaderData } from "@/types"
-import { EarnProtocolInput, USGMarketType, ConvexBoostData } from "../usg_type"
+import { EarnProtocolInput, USGMarketType, ConvexAprData } from "../usg_type"
 import { EarnPoolsData } from "../client_api_external"
 import { executeChainViewUnique } from "@/services/service_rpc"
-import ConvexBoostsUI from "@/abi/USG/ConvexBoostsUI.json"
+
+import ConvexAPR from "@/abi/USG/ConvexAPR.json"
 export type APROpportunitiesData = {
   protocol: string
   address: Address
@@ -41,10 +42,10 @@ export const aprOpportunitiesListHeaders: ListHeaderData[] = [
   { label: "Pts/Day/$", key: "points", sort: "sort", className: "xl:w-1/3  " },
 ]
 
-export const getConvexBoost = async (pids: number[]): Promise<ConvexBoostData> => {
-  const empty = { fee: 0n, gaugeBoosts: [] } satisfies ConvexBoostData
+export const getConvexRates = async (pids: number[]) => {
+  const empty = [] satisfies ConvexAprData[]
   try {
-    return (await executeChainViewUnique<ConvexBoostData>(ConvexBoostsUI.abi as Abi, ConvexBoostsUI.bytecode as Hex, [pids])) || empty
+    return (await executeChainViewUnique<ConvexAprData[]>(ConvexAPR.abi as Abi, ConvexAPR.bytecode as Hex, [pids])) || empty
   } catch (e) {
     console.error("ConvexBoost Chainview failed", e)
     return empty

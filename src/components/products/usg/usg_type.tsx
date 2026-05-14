@@ -645,9 +645,7 @@ export type FormState = {
   haveToApprove: boolean
 }
 
-export type ConvexBoostDataGauge = { pid: bigint; boost: bigint }
-
-export type ConvexBoostData = {
-  fee: bigint
-  gaugeBoosts?: ConvexBoostDataGauge[]
+export type ConvexAprData = {
+  pid: bigint
+  yearlyRewardPerLp?: TokenAmount[]
 }

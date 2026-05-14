@@ -1,5 +1,6 @@
 "use client"
 
+import { AssetPrices } from "@/types/type_asset"
 import { Address } from "viem"
 
 type DefillamaTokenInfo = {
@@ -48,14 +49,11 @@ export const getTokensPriceChange = async (tokens: Address[]): Promise<{ [tokenA
   const response = await fetch(`https://coins.llama.fi/percentage/${param}?period=24h`)
   if (response.status === 200) {
     const data = (await response.json()) as { coins: { [key: string]: number } }
-    return Object.entries(data.coins).reduce(
-      (acc, [key, pct]) => {
-        const address = key.replace("ethereum:", "") as Address
-        acc[address] = pct
-        return acc
-      },
-      {} as { [tokenAddress: Address]: number }
-    )
+    return Object.entries(data.coins).reduce((acc, [key, pct]) => {
+      const address = key.replace("ethereum:", "") as Address
+      acc[address] = pct
+      return acc
+    }, {} as AssetPrices)
   }
 }
 

@@ -59,3 +59,5 @@ export type TokenAmountPriced = {
   totalDollar: number
   details: TokenAmountPricedRow[]
 }
+
+export type AssetPrices = { [tokenAddress: Address]: number }

@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 import { cn } from "@/lib/utils"
-import { parseAPRDetails } from "@/lib/apr"
+import { parseAPRDetails, computeDisplayAPR } from "@/lib/apr"
 import { AprIndicator } from "./apr_indicator"
 import { TokenImage } from "../structure/token_image"
 import { USGMarketType } from "@/components/products/usg/usg_type"
@@ -51,15 +51,21 @@ export const MarketAPR = ({
   const current = useMemo(() => parseAPRDetails(currentAPRDetails), [currentAPRDetails])
   const projected = useMemo(() => parseAPRDetails(projectedAPRDetails), [projectedAPRDetails])
 
+  const computedAPR = useMemo(() => computeDisplayAPR(apr, projectedApr, currentAPRDetails, rewardToken), [apr, projectedApr, currentAPRDetails, rewardToken])
+
   return (
     <div className="flex w-full items-center justify-between gap-2 xl:justify-center">
       {isMarketListDisplay && <div className="flex items-center justify-center text-sm text-subtitle xl:hidden">{maxLeverage === 1 ? "vAPR" : "Max vAPR"}</div>}
 
       <div className={cn("flex min-h-min min-w-16 items-center justify-center text-center xl:min-h-8 xl:flex-col", isMarketListDisplay ? "" : "w-full")}>
-        {!!apr && Number(apr) > 0 && (
+        {!!computedAPR && Number(computedAPR) > 0 && (
           <>
             <AprIndicator isMax={maxLeverage !== 1}>
-              <div className={className}>{((apr || 0) * maxLeverage).toFixed(2)}%</div>
+              {isMarketListDisplay ? (
+                <div className={className}>{(computedAPR * maxLeverage).toFixed(2)}%</div>
+              ) : (
+                <div className={className}>{((apr || 0) * maxLeverage).toFixed(2)}%</div>
+              )}
 
               <div className="flex flex-col gap-2 p-2">
                 <div className="flex w-full items-center justify-between gap-2">
@@ -139,9 +145,9 @@ export const MarketAPR = ({
                 )}
               </div>
             </AprIndicator>
-            {marketType !== "Pendle_PT" && ((projectedApr && !!currentAPRDetails && Number(projectedApr ?? 0) !== 0) || !isMarketListDisplay) && (
+            {marketType !== "Pendle_PT" && (!isMarketListDisplay || computedAPR === apr) && (
               <span className="hidden gap-2 text-xs text-subtitle xl:flex">Proj: {(projectedApr! * maxLeverage).toFixed(2)}%</span>
-            )}{" "}
+            )}
           </>
         )}
       </div>

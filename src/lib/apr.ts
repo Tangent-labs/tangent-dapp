@@ -12,3 +12,22 @@ export function parseAPRDetails(details: Record<string, number | undefined> | un
     .sort((a, b) => b[1] - a[1])
   return { baseAPY, rewards }
 }
+
+/**
+ * When the reward stream hasn't started yet (rewardToken's current APR is 0),
+ * the projected APR is displayed as main APR (current is hidden).
+ */
+export function computeDisplayAPR(
+  apr: number | undefined,
+  projectedApr: number | undefined,
+  currentAPRDetails: Record<string, number | undefined> | undefined,
+  rewardToken: string | undefined
+): number | undefined {
+  if (currentAPRDetails && rewardToken && projectedApr !== undefined) {
+    const rewardApr = currentAPRDetails[rewardToken]
+    if (rewardApr === undefined || rewardApr === null) return apr
+    return Number(rewardApr) === 0 ? projectedApr : apr
+  }
+
+  return apr
+}

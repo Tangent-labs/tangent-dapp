@@ -3,7 +3,7 @@
 import { ListState } from "@/types"
 import { mapPoolsAndTasks } from "./utils"
 import { useUSGContext } from "../usg_context"
-import { mapAPROpportunities, getConvexRates } from "./usg_earn_controller"
+import { mapAPROpportunities, getConvexRates, getConvexBoost } from "./usg_earn_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { AssetPrices } from "@/types/type_asset"
 import { AprOpportunityItem, USGStakingInfo, LpUserPoints } from "../usg_type"
@@ -57,13 +57,14 @@ export const USGEarnProvider = ({ children }: USGEarnContextProps) => {
     try {
       const pids = opportunities.filter((o) => o.protocolName === "Convex" && o.pid).map((o) => o.pid) as number[]
 
-      const [curvePools, convexPools, stakeDaoPools, pendlePools, subgraphPools, convexRates] = await Promise.all([
+      const [curvePools, convexPools, stakeDaoPools, pendlePools, subgraphPools, convexRates, convexBoost] = await Promise.all([
         getCurvePools(),
         getConvexPools(),
         getStakeDAOPools(),
         getPendlePools(),
         getCurveSubgraph(),
         getConvexRates(pids),
+        getConvexBoost(pids),
       ])
 
       const tokens = new Set<Address>()
@@ -74,7 +75,17 @@ export const USGEarnProvider = ({ children }: USGEarnContextProps) => {
 
       const prices: AssetPrices | undefined = await getTokensPrice(Array.from(tokens)).catch(() => undefined)
 
-      const poolsAndTasks = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, opportunities, subgraphPools, convexRates, prices)
+      const poolsAndTasks = mapPoolsAndTasks(
+        curvePools,
+        convexPools,
+        stakeDaoPools,
+        pendlePools,
+        opportunities,
+        subgraphPools,
+        convexRates,
+        prices,
+        convexBoost
+      )
 
       setPoolsData(poolsAndTasks)
     } catch (e) {

@@ -21,7 +21,7 @@ export function AprIndicator({ children, isMax, className = "" }: AprIndicatorPr
   return (
     <div className={`flex items-center gap-1 text-white transition duration-200 ${isMax ? "hover:text-row-success" : "hover:text-row-tonic"} ${className}`}>
       {/* Desktop: hover */}
-      <HoverCard openDelay={150} closeDelay={100}>
+      <HoverCard openDelay={50} closeDelay={100}>
         <HoverCardTrigger asChild>
           <span className="hidden cursor-pointer appearance-none items-center justify-center gap-1 text-sm xl:flex xl:text-[15px]">{trigger}</span>
         </HoverCardTrigger>

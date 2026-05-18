@@ -14,14 +14,14 @@ type USGHoverCardProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 export function USGHoverCard({ children, title, iconClassName, contentClassName, className, ...buttonProps }: USGHoverCardProps) {
   return (
-    <HoverCard openDelay={150} closeDelay={100}>
+    <HoverCard openDelay={50} closeDelay={100}>
       <HoverCardTrigger asChild>
         <button type="button" className={cn("inline-flex items-center", className)} {...buttonProps}>
           <IconCircleHelp className={iconClassName} />
         </button>
       </HoverCardTrigger>
 
-      <HoverCardContent side="top" align="center" className={cn("z-1001 w-fit max-w-64 text-xs", contentClassName)}>
+      <HoverCardContent side="top" align="center" className={cn("z-[1001] w-fit max-w-64 text-xs", contentClassName)}>
         <div className="grid gap-3 p-3">
           <span className="font-medium leading-tight">{title}</span>
           <div className="leading-relaxed">{children}</div>

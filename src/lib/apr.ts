@@ -23,7 +23,7 @@ export function computeDisplayAPR(
   currentAPRDetails: Record<string, number | undefined> | undefined,
   rewardToken: string | undefined
 ): number | undefined {
-  if (currentAPRDetails && rewardToken && projectedApr !== undefined) {
+  if (currentAPRDetails && rewardToken && projectedApr !== undefined && projectedApr !== -1) {
     const rewardApr = currentAPRDetails[rewardToken]
     if (rewardApr === undefined || rewardApr === null) return apr
     return Number(rewardApr) === 0 ? projectedApr : apr

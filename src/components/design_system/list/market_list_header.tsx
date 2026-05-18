@@ -40,14 +40,14 @@ const MarketHeaderDisplay = ({ label, sort = "none", onSort, field, indicator, c
       >
         <span>{label}</span>
         {indicator && (
-          <HoverCard openDelay={150} closeDelay={100}>
+          <HoverCard openDelay={50} closeDelay={100}>
             <HoverCardTrigger asChild>
               <button type="button" className="inline-flex items-center">
                 <IconCircleHelp className={isActive ? "w-3 fill-white" : "w-3 fill-subtitle"} />
               </button>
             </HoverCardTrigger>
 
-            <HoverCardContent side="top" align="center" className="z-1001 w-fit max-w-64 p-2 text-xs">
+            <HoverCardContent side="top" align="center" className="z-[1001] w-fit max-w-64 p-2 text-xs">
               {indicator}
             </HoverCardContent>
           </HoverCard>

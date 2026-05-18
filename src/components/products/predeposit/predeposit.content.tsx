@@ -12,7 +12,7 @@ import { PredepositDepositSection } from "./components/predeposit-deposit-sectio
 import { PredepositRetentionPhase } from "./components/predeposit-retention-phase"
 
 export const PredepositContent = () => {
-  const { predepositStatus, opportunitiesData } = usePredepositContext()
+  const { predepositStatus, opportunitiesData, USGUSDCLiquidity, USGfrxUSDLiquidity } = usePredepositContext()
 
   const faqRef = useRef<HTMLDivElement | null>(null)
 
@@ -69,6 +69,8 @@ export const PredepositContent = () => {
           <PredepositHeading
             USGUSDCAccumulatedBalance={predepositStatus?.USGUSDCData.USGUSDCAccumulatedBalance || 0n}
             USGfrxUSDAccumulatedBalance={predepositStatus?.USGfrxUSDData.USGfrxUSDAccumulatedBalance || 0n}
+            USGUSDCLiquidity={USGUSDCLiquidity}
+            USGfrxUSDLiquidity={USGfrxUSDLiquidity}
           />
 
           {predepositStatus?.predepositState === "retention" ? (

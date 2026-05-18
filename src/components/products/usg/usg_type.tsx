@@ -649,3 +649,10 @@ export type ConvexAprData = {
   pid: bigint
   yearlyRewardPerLp?: TokenAmount[]
 }
+
+export type ConvexBoostDataGauge = { pid: bigint; boost: bigint }
+
+export type ConvexBoostData = {
+  fee: bigint
+  gaugeBoosts?: ConvexBoostDataGauge[]
+}

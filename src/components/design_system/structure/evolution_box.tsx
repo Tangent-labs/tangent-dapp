@@ -62,7 +62,7 @@ export function EvolutionBox({
         <div className="flex items-center gap-2 text-sm">
           {displayHover ? (
             <>
-              <HoverCard openDelay={150} closeDelay={100}>
+              <HoverCard openDelay={50} closeDelay={100}>
                 <HoverCardTrigger asChild>
                   <span className="cursor-pointer font-semibold" style={{ color: originalColor }}>
                     {originalValue}

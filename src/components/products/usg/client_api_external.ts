@@ -32,7 +32,7 @@ export type EarnPoolsData = curveAPy & {
   protocol: string
   address: string
   gaugeCrvApy?: Array<number>
-  gaugeFutureCrvApy?: Array<number>
+  gaugeFutureCrvApy?: Array<number | undefined | null>
   lpTokenAddress?: Address
   convexPoolData?: { usdTotal?: number }
   usdTotal?: number

@@ -22,7 +22,7 @@ export const APRDisplay = ({ apy }: APRDisplayProps) => {
           </button>
         </HoverCardTrigger>
 
-        <HoverCardContent side="top" align="center" className="z-1001 p-2 text-center text-xs">
+        <HoverCardContent side="top" align="center" className="z-[1001] p-2 text-center text-xs">
           7 days trailing APY
         </HoverCardContent>
       </HoverCard>

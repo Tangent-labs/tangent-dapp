@@ -24,7 +24,7 @@ export const mapPoolsAndTasks = (
     .filter((p: EarnPoolsData) => allCurvePoolsAddresses.includes(p.address?.toLowerCase()))
     .map((el) => {
       const subgraph = { apy: subgraphPools.find((s) => s.address?.toLowerCase() === el.address?.toLocaleLowerCase()) } as curveAPy
-      return { ...el, protocol: "Curve", ...subgraph }
+      return { ...el, protocol: "Curve", ...subgraph, gaugeFutureCrvApy: [undefined, undefined] }
     })
 
   const convexPoolsOfInterest = convexPools
@@ -62,7 +62,7 @@ export const mapPoolsAndTasks = (
 
       // v2 does not expose a projected APR in the same shape as the legacy endpoint.
       const gaugeCrvApy = [tradingFees, rewardAPR]
-      const gaugeFutureCrvApy = [tradingFees, rewardAPR]
+      const gaugeFutureCrvApy = [undefined, undefined]
 
       return { protocol: "Stake DAO", address, lpTokenAddress: el.lpToken.address as Address, gaugeCrvApy, gaugeFutureCrvApy }
     })

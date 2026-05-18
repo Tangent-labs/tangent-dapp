@@ -24,7 +24,7 @@ import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { fetchUserStatus, validatePredepositSignature } from "./api/client.api"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { EarnPoolsData, getConvexPools, getCurvePools, getCurveSubgraph, getPendlePools, getStakeDAOPools } from "../usg/client_api_external"
-import { getConvexRates } from "../usg/earn/usg_earn_controller"
+import { getConvexRates, getConvexBoost } from "../usg/earn/usg_earn_controller"
 import { AssetPrices } from "@/types/type_asset"
 import { deposit, fetchQuote, getFormState, mapPredepositStatus, TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "./predeposit.controller"
 import { opportunities } from "@/app/(products)/(usg)/earn/aprOpportunities"
@@ -655,13 +655,14 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     try {
       const pids = opportunities.filter((o) => o.protocolName === "Convex" && o.pid).map((o) => o.pid) as number[]
 
-      const [curvePools, convexPools, stakeDaoPools, pendlePools, subgraphPools, convexRates] = await Promise.all([
+      const [curvePools, convexPools, stakeDaoPools, pendlePools, subgraphPools, convexRates, convexBoost] = await Promise.all([
         getCurvePools(),
         getConvexPools(),
         getStakeDAOPools(),
         getPendlePools(),
         getCurveSubgraph(),
         getConvexRates(pids),
+        getConvexBoost(pids),
       ])
 
       const tokens = new Set<Address>()
@@ -672,7 +673,7 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
 
       const prices: AssetPrices | undefined = await getTokensPrice(Array.from(tokens)).catch(() => undefined)
 
-      const mappedPools = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, opportunities, subgraphPools, convexRates, prices)
+      const mappedPools = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, opportunities, subgraphPools, convexRates, prices, convexBoost)
 
       setOpportunitiesData(mappedPools)
 

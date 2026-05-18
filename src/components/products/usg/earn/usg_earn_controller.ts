@@ -1,12 +1,13 @@
 "use client"
 
-import { Address, Hex, Abi } from "viem"
 import { ListHeaderData } from "@/types"
-import { EarnProtocolInput, USGMarketType, ConvexAprData } from "../usg_type"
-import { EarnPoolsData } from "../client_api_external"
-import { executeChainViewUnique } from "@/services/service_rpc"
-
+import { Address, Hex, Abi } from "viem"
 import ConvexAPR from "@/abi/USG/ConvexAPR.json"
+import { EarnPoolsData } from "../client_api_external"
+import ConvexBoostsUI from "@/abi/USG/ConvexBoostsUI.json"
+import { executeChainViewUnique } from "@/services/service_rpc"
+import { EarnProtocolInput, USGMarketType, ConvexAprData, ConvexBoostData } from "../usg_type"
+
 export type APROpportunitiesData = {
   protocol: string
   address: Address
@@ -46,6 +47,16 @@ export const getConvexRates = async (pids: number[]) => {
   const empty = [] satisfies ConvexAprData[]
   try {
     return (await executeChainViewUnique<ConvexAprData[]>(ConvexAPR.abi as Abi, ConvexAPR.bytecode as Hex, [pids])) || empty
+  } catch (e) {
+    console.error("ConvexBoost Chainview failed", e)
+    return empty
+  }
+}
+
+export const getConvexBoost = async (pids: number[]): Promise<ConvexBoostData> => {
+  const empty = { fee: 0n, gaugeBoosts: [] } satisfies ConvexBoostData
+  try {
+    return (await executeChainViewUnique<ConvexBoostData>(ConvexBoostsUI.abi as Abi, ConvexBoostsUI.bytecode as Hex, [pids])) || empty
   } catch (e) {
     console.error("ConvexBoost Chainview failed", e)
     return empty

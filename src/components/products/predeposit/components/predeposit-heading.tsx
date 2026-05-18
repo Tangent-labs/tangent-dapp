@@ -87,7 +87,7 @@ export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumula
 
                     <div className="ml-2 text-center text-xs text-subtitle">{item.key}</div>
                   </div>
-                  <div className="mt-1 text-center text-[16px] font-semibold">{item.value === null ? "—" : formatDollar(item.value, 0)} </div>
+                  <div className="mt-1 text-center text-[16px] font-semibold">{item.value === null ? "—" : `$${formatNumber(item.value, 0)}`} </div>
                 </div>
               ))}
             </div>

@@ -112,7 +112,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
         <div className="relative hidden h-5 w-full text-sm xl:flex">
           {predepositStatus && (
             <span
-              className="absolute bottom-0 flex items-center gap-1.5 whitespace-nowrap transition-all duration-1000 ease-out"
+              className="absolute bottom-0 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap transition-all duration-1000 ease-out"
               style={{ left: `${dynamicPercentages.eligible}%` }}
             >
               <HoverCard openDelay={50} closeDelay={100}>
@@ -122,7 +122,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
                   </button>
                 </HoverCardTrigger>
                 <HoverCardContent side="top" align="center" className="z-[1001] w-fit max-w-64 p-2 text-xs">
-                  Deposits eligible for TAN rewards :{" "}
+                  Deposits eligible for TAN rewards:{" "}
                   <span className="text-button-active">${formatNumber(Number(formatUnits(eligibleDepositsTotal, 18)), 0)}</span>
                 </HoverCardContent>
               </HoverCard>
@@ -132,7 +132,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
 
           {totalDepositsUsd !== null && (
             <span
-              className="absolute bottom-0 flex items-center gap-1.5 whitespace-nowrap transition-all duration-1000 ease-out"
+              className="absolute bottom-0 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap transition-all duration-1000 ease-out"
               style={{ left: `${dynamicPercentages.total}%` }}
             >
               <HoverCard openDelay={50} closeDelay={100}>
@@ -142,7 +142,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
                   </button>
                 </HoverCardTrigger>
                 <HoverCardContent side="top" align="center" className="z-[1001] w-fit max-w-64 p-2 text-xs">
-                  Total deposits in Curve pools : <span className="text-button-active">{formatDollar(totalDepositsUsd, 0)}</span>
+                  Total deposits in Curve pools: <span className="text-button-active">{formatDollar(totalDepositsUsd, 0)}</span>
                 </HoverCardContent>
               </HoverCard>
               <span className="text-subtitle">Total deposits</span>

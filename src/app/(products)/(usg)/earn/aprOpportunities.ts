@@ -7,7 +7,7 @@ export const opportunities = [
     link: "https://www.curve.finance/dex/ethereum/pools/0x97ba10115da528c113462ede9c20d7adc806d93f/deposit",
     protocolName: "Curve",
     marketType: "Convex_CRV",
-    points: 45,
+    points: 105,
   },
 
   {
@@ -18,7 +18,7 @@ export const opportunities = [
     link: "https://www.curve.finance/dex/ethereum/pools/0xefc056790bb19702b2164ec6ea6ba3ae01d81195/deposit",
     protocolName: "Curve",
     marketType: "Convex_CRV",
-    points: 45,
+    points: 105,
   },
   {
     name: "USG/USDC (staked) - Curve",

@@ -78,7 +78,7 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
   const xAxisTicks = getXAxisTicks(data)
 
   return (
-    <ReliefCard className="flex h-full w-full flex-col items-start justify-start px-5 pt-5">
+    <ReliefCard className="flex h-full w-full flex-col items-start justify-start p-5">
       <div className="flex w-full items-center justify-between">
         <div className="text-xl font-semibold">{title}</div>
 

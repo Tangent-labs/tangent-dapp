@@ -1,11 +1,13 @@
 "use client"
 
-import { Address, Hex, Abi } from "viem"
 import { ListHeaderData } from "@/types"
-import { EarnProtocolInput, USGMarketType, ConvexBoostData } from "../usg_type"
+import { Address, Hex, Abi } from "viem"
+import ConvexAPR from "@/abi/USG/ConvexAPR.json"
 import { EarnPoolsData } from "../client_api_external"
-import { executeChainViewUnique } from "@/services/service_rpc"
 import ConvexBoostsUI from "@/abi/USG/ConvexBoostsUI.json"
+import { executeChainViewUnique } from "@/services/service_rpc"
+import { EarnProtocolInput, USGMarketType, ConvexAprData, ConvexBoostData } from "../usg_type"
+
 export type APROpportunitiesData = {
   protocol: string
   address: Address
@@ -41,6 +43,16 @@ export const aprOpportunitiesListHeaders: ListHeaderData[] = [
   { label: "Pts/Day/$", key: "points", sort: "sort", className: "xl:w-1/3  " },
 ]
 
+export const getConvexRates = async (pids: number[]) => {
+  const empty = [] satisfies ConvexAprData[]
+  try {
+    return (await executeChainViewUnique<ConvexAprData[]>(ConvexAPR.abi as Abi, ConvexAPR.bytecode as Hex, [pids])) || empty
+  } catch (e) {
+    console.error("ConvexBoost Chainview failed", e)
+    return empty
+  }
+}
+
 export const getConvexBoost = async (pids: number[]): Promise<ConvexBoostData> => {
   const empty = { fee: 0n, gaugeBoosts: [] } satisfies ConvexBoostData
   try {
@@ -54,8 +66,8 @@ export const getConvexBoost = async (pids: number[]): Promise<ConvexBoostData> =
 export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Array<EarnPoolsData>) => {
   const sanitizeValue = (value?: number | null) => (typeof value === "number" && Number.isFinite(value) ? value : 0)
   const sameAddress = (a?: string, b?: string) => !!a && !!b && a.toLowerCase() === b.toLowerCase()
-  const getMinAPYValue = (values?: Array<number | null>) => sanitizeValue(values?.[0])
-  const sumAPRValues = (values?: Array<number | null>) => values?.reduce<number>((sum, value) => sum + sanitizeValue(value), 0) || 0
+  const getMinAPYValue = (values?: Array<number | null | undefined>) => sanitizeValue(values?.[0])
+  const sumAPRValues = (values?: Array<number | null | undefined>) => values?.reduce<number>((sum, value) => sum + sanitizeValue(value), 0) || 0
   const getBaseAPY = (pool?: EarnPoolsData) => {
     const weeklyAPY = sanitizeValue(pool?.apy?.latestWeeklyApy)
     const dailyAPY = sanitizeValue(pool?.apy?.latestDailyApy)
@@ -120,7 +132,7 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
         projectedAPRDetails.APY = baseAPY
         if (isCurveUnstaked) {
           currentAPR = baseAPY
-          projectedAPR = baseAPY
+          projectedAPR = -1
           currentAPRDetails.CRV = 0
 
           projectedAPRDetails.CRV = 0
@@ -128,7 +140,7 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
           currentAPRDetails.CRV = minAPYCurr
           projectedAPRDetails.CRV = minAPYFut
           currentAPR = baseAPY + minAPYCurr
-          projectedAPR = baseAPY + minAPYFut
+          projectedAPR = -1
         }
       } else {
         // STAKE DAO / CONVEX
@@ -143,9 +155,8 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
         projectedAPRDetails.CRV = gauge0Fut
 
         currentAPR = sumAPRValues(currentPool?.gaugeCrvApy)
-        projectedAPR = sumAPRValues(currentPool?.gaugeFutureCrvApy)
+        projectedAPR = currentPool?.gaugeFutureCrvApy?.at(0) === undefined ? -1 : sumAPRValues(currentPool?.gaugeFutureCrvApy)
       }
-
       return {
         marketType: t?.marketType as USGMarketType,
         name: t.name,

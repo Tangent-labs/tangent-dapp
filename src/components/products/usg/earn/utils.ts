@@ -1,6 +1,7 @@
 import { Address, formatEther } from "viem"
-import { EarnProtocolInput, ConvexBoostData, ConvexBoostDataGauge } from "../usg_type"
+import { AssetPrices } from "@/types/type_asset"
 import { EarnPoolsData, StakeDaoAPRData, CurveSubgraphPool, curveAPy } from "../client_api_external"
+import { EarnProtocolInput, ConvexAprData, ConvexBoostData, ConvexBoostDataGauge } from "../usg_type"
 
 export const mapPoolsAndTasks = (
   curvePools: EarnPoolsData[],
@@ -9,8 +10,11 @@ export const mapPoolsAndTasks = (
   pendlePools: EarnPoolsData[],
   tasks: EarnProtocolInput[],
   subgraphPools: CurveSubgraphPool[],
-  convexBoost: ConvexBoostData
+  convexRates?: ConvexAprData[],
+  convexPrices?: AssetPrices,
+  convexBoost?: ConvexBoostData
 ) => {
+  const convexFees = Number(formatEther(convexBoost?.fee || 0n))
   const allCurvePoolsAddresses = tasks.filter((t) => t.protocolName === "Curve").map((t) => t.address?.toLowerCase())
   const allConvexPoolsAddresses = tasks.filter((t) => t.protocolName === "Convex").map((t) => t.address?.toLowerCase())
   const allStakeDaoPoolsPoolsAddresses = tasks.filter((t) => t.protocolName === "Stake DAO").map((t) => t.address?.toLowerCase())
@@ -20,27 +24,33 @@ export const mapPoolsAndTasks = (
     .filter((p: EarnPoolsData) => allCurvePoolsAddresses.includes(p.address?.toLowerCase()))
     .map((el) => {
       const subgraph = { apy: subgraphPools.find((s) => s.address?.toLowerCase() === el.address?.toLocaleLowerCase()) } as curveAPy
-      return { ...el, protocol: "Curve", ...subgraph }
+      return { ...el, protocol: "Curve", ...subgraph, gaugeFutureCrvApy: [undefined, undefined] }
     })
 
-  const convexFees = Number(formatEther(convexBoost?.fee || 0n))
   const convexPoolsOfInterest = convexPools
     .filter((p: EarnPoolsData) => allConvexPoolsAddresses.includes(p.address?.toLowerCase()))
     .map((el) => {
       const task = tasks.find((t) => t.protocolName === "Convex" && t.address?.toLowerCase() === el.address?.toLowerCase())
+      const rateData = convexRates?.find((r) => Number(r.pid) === task?.pid)
       const boostItem = convexBoost?.gaugeBoosts?.find((b: ConvexBoostDataGauge) => Number(b.pid) === task?.pid)
       const boost = Number(formatEther(boostItem?.boost || 0n))
       const processConvexAPR = (value: number) => (value || 0) * boost * (1 - convexFees)
 
-      const gaugeCrvApy = [el.baseApy, processConvexAPR(el.gaugeCrvApy?.at(0) || 0)]
+      const rewardApr = (rateData?.yearlyRewardPerLp ?? []).reduce((sum, r) => {
+        const price = convexPrices?.[r.token as Address] ?? 0
+        const amount = Number(formatEther(r.amount))
+        return sum + amount * price * 100
+      }, 0)
+
+      const gaugeCrvApy = [el.baseApy, rewardApr]
       const gaugeFutureCrvApy = [el.baseApy, processConvexAPR(el.gaugeFutureCrvApy?.at(0) || 0)]
+
       return { address: el.address, protocol: "Convex", gaugeCrvApy, gaugeFutureCrvApy }
     })
 
   const stakeDaoPoolsOfInterest = stakeDaoPools
     .filter((p) => allStakeDaoPoolsPoolsAddresses.includes(p.vault?.toLowerCase()))
     .map((el) => {
-      //  console.log(el)
       const address = el.vault as Address
       const currentDetails = el.apr.current.details || []
       const tradingFees = el.tradingApy || 0
@@ -52,7 +62,7 @@ export const mapPoolsAndTasks = (
 
       // v2 does not expose a projected APR in the same shape as the legacy endpoint.
       const gaugeCrvApy = [tradingFees, rewardAPR]
-      const gaugeFutureCrvApy = [tradingFees, rewardAPR]
+      const gaugeFutureCrvApy = [undefined, undefined]
 
       return { protocol: "Stake DAO", address, lpTokenAddress: el.lpToken.address as Address, gaugeCrvApy, gaugeFutureCrvApy }
     })

@@ -26,6 +26,23 @@ export type PredepositStatus = {
   }
 }
 
+export type PoolLiquidity = {
+  usdTotal: number
+  coins: Array<{ symbol: string; usdValue: number }>
+}
+
+export type CurvePoolApiEntry = {
+  address: string
+  usdTotal: number
+  coins: Array<{
+    address: string
+    symbol: string
+    decimals: string | number
+    usdPrice: number
+    poolBalance: string
+  }>
+}
+
 export type PredepositRawState = {
   predepositState: string
   userState: string

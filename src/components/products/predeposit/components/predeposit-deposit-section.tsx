@@ -1,13 +1,15 @@
 "use client"
 
-import { ReactNode } from "react"
 import { formatUnits } from "viem"
+import { IconCircleHelp } from "@/components/icons"
+import { ReactNode, useEffect, useState } from "react"
 import { DynamicProgressBar } from "./dynamic-progress-bar"
 import { usePredepositContext } from "../predeposit.context"
 import { Button } from "@/components/design_system/inputs/button"
 import { formatDollar, formatNumber } from "@/lib/number_formatter"
 import { USGPredepositComponent } from "./usg-predeposit-component"
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 type BlurrySectionProps = {
   children: ReactNode
@@ -85,46 +87,89 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
     isSigningLoading,
     isDisplayYouAreNotWL,
     isDisplayBlurry,
+    eligibleDepositsTotal,
+    predepositCap,
+    totalDepositsUsd,
+    totalDepositsWei,
+    eligibleDepositsPercentage,
+    totalDepositsPercentage,
   } = usePredepositContext()
+
+  const [dynamicPercentages, setDynamicPercentages] = useState({ eligible: 0, total: 0 })
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDynamicPercentages({ eligible: eligibleDepositsPercentage, total: totalDepositsPercentage })
+    }, 100)
+    return () => clearTimeout(t)
+  }, [eligibleDepositsPercentage, totalDepositsPercentage])
 
   const { connect, isConnected, isWalletContextLoaded } = useWalletConnexionContext()
 
   return (
-    <section className="mt-8 flex w-full flex-col">
-      <div className="flex w-full items-center justify-between">
-        <span className="text-lg font-semibold text-white">Total deposit cap</span>
-
-        <span className="flex items-center">
-          <span className="text-button-active">
-            $
-            {formatNumber(
-              Number(
-                formatUnits(
-                  (predepositStatus?.USGUSDCData.USGUSDCAccumulatedTotal || 0n) + (predepositStatus?.USGfrxUSDData.USGfrxUSDAccumulatedTotal || 0n),
-                  18
-                )
-              ),
-              0
-            )}
-          </span>
-
+    <section className="mt-6 flex w-full flex-col">
+      <div className="px-3">
+        <div className="relative hidden h-5 w-full text-sm xl:flex">
           {predepositStatus && (
-            <span className="text-white">
-              /
-              {formatDollar(
-                Number(formatUnits(predepositStatus?.USGUSDCData?.USGUSDCCap || 0n, 18)) +
-                  Number(formatUnits(predepositStatus?.USGfrxUSDData?.USGfrxUSDCap || 0n, 18)),
-                0
-              )}
+            <span
+              className="absolute bottom-0 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap transition-all duration-1000 ease-out"
+              style={{ left: `${dynamicPercentages.eligible}%` }}
+            >
+              <HoverCard openDelay={50} closeDelay={100}>
+                <HoverCardTrigger asChild>
+                  <button type="button" className="inline-flex items-center">
+                    <IconCircleHelp className="w-3 fill-subtitle" />
+                  </button>
+                </HoverCardTrigger>
+                <HoverCardContent side="top" align="center" className="z-[1001] w-fit max-w-64 p-2 text-xs">
+                  Deposits eligible for TAN rewards:{" "}
+                  <span className="text-button-active">${formatNumber(Number(formatUnits(eligibleDepositsTotal, 18)), 0)}</span>
+                </HoverCardContent>
+              </HoverCard>
+              <span className="text-subtitle">Eligible deposits</span>
             </span>
           )}
-        </span>
+
+          {totalDepositsUsd !== null && (
+            <span
+              className="absolute bottom-0 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap transition-all duration-1000 ease-out"
+              style={{ left: `${dynamicPercentages.total}%` }}
+            >
+              <HoverCard openDelay={50} closeDelay={100}>
+                <HoverCardTrigger asChild>
+                  <button type="button" className="inline-flex items-center">
+                    <IconCircleHelp className="w-3 fill-subtitle" />
+                  </button>
+                </HoverCardTrigger>
+                <HoverCardContent side="top" align="center" className="z-[1001] w-fit max-w-64 p-2 text-xs">
+                  Total deposits in Curve pools: <span className="text-button-active">{formatDollar(totalDepositsUsd, 0)}</span>
+                </HoverCardContent>
+              </HoverCard>
+              <span className="text-subtitle">Total deposits</span>
+            </span>
+          )}
+
+          {predepositStatus && (
+            <span className="absolute bottom-0 right-0 flex items-center text-[15px]">
+              <span className="text-button-active">${formatNumber(Number(formatUnits(eligibleDepositsTotal, 18)), 0)}</span>
+              <span className="text-white">/{formatDollar(Number(formatUnits(predepositCap, 18)), 0)}</span>
+            </span>
+          )}
+        </div>
       </div>
+
+      <span className="flex w-full items-center justify-end text-sm xl:hidden">
+        <span className="text-button-active">${formatNumber(Number(formatUnits(eligibleDepositsTotal, 18)), 0)}</span>
+
+        {predepositStatus && <span className="text-white">/{formatDollar(Number(formatUnits(predepositCap, 18)), 0)}</span>}
+      </span>
 
       <DynamicProgressBar
         progressBarColor="bg-button-active"
-        maxValue={(predepositStatus?.USGUSDCData?.USGUSDCCap || 0n) + (predepositStatus?.USGfrxUSDData?.USGfrxUSDCap || 0n)}
-        currentValue={(predepositStatus?.USGUSDCData.USGUSDCAccumulatedTotal || 0n) + (predepositStatus?.USGfrxUSDData.USGfrxUSDAccumulatedTotal || 0n)}
+        secondaryColor="bg-button-active"
+        maxValue={predepositCap}
+        currentValue={eligibleDepositsTotal}
+        secondaryValue={totalDepositsWei}
       ></DynamicProgressBar>
 
       <div className="relative mt-[10px]">

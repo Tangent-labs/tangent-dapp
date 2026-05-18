@@ -11,11 +11,10 @@ import {
 import { toast } from "react-toastify"
 import { FormState } from "../usg/usg_type"
 import { AssetDataPriced } from "@/types"
-import { PredepositStatus } from "./types/types"
+import { CurvePoolApiEntry, PoolLiquidity, PredepositStatus } from "./types/types"
 import { USGTokens } from "../usg/usg_repository"
 import { useRootContext } from "../root/root_context"
 import { mapPoolsAndTasks } from "../usg/earn/utils"
-import { getConvexBoost } from "../usg/earn/usg_earn_controller"
 import { COMMON_ERC20S } from "@tangent/defi-resources"
 import { getTokensPrice } from "@/services/service_price"
 import { Address, formatUnits, WalletClient, zeroAddress } from "viem"
@@ -25,6 +24,8 @@ import { useWalletConnexionContext } from "../wallet/wallet_connexion_context"
 import { fetchUserStatus, validatePredepositSignature } from "./api/client.api"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { EarnPoolsData, getConvexPools, getCurvePools, getCurveSubgraph, getPendlePools, getStakeDAOPools } from "../usg/client_api_external"
+import { getConvexRates, getConvexBoost } from "../usg/earn/usg_earn_controller"
+import { AssetPrices } from "@/types/type_asset"
 import { deposit, fetchQuote, getFormState, mapPredepositStatus, TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "./predeposit.controller"
 import { opportunities } from "@/app/(products)/(usg)/earn/aprOpportunities"
 import { PREDEPOSIT_MESSAGE_SIGN } from "./message"
@@ -114,6 +115,9 @@ type PredepositContextValues = {
 
   opportunitiesData: EarnPoolsData[]
 
+  USGUSDCLiquidity: PoolLiquidity | null
+  USGfrxUSDLiquidity: PoolLiquidity | null
+
   isQuoteLoading: boolean
 
   isfrxUSDQuoteLoading: boolean
@@ -124,6 +128,18 @@ type PredepositContextValues = {
 
   isDisplayYouAreNotWL: boolean
   isDisplayBlurry: boolean
+
+  eligibleDepositsTotal: bigint
+
+  predepositCap: bigint
+
+  totalDepositsUsd: number | null
+
+  totalDepositsWei: bigint | undefined
+
+  eligibleDepositsPercentage: number
+
+  totalDepositsPercentage: number
 }
 
 export const PredepositContext = createContext<PredepositContextValues | undefined>(undefined)
@@ -138,6 +154,9 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   const [isUSDCDepositLoading, setIsUSDCDepositLoading] = useState<boolean>(false)
 
   const [opportunitiesData, setOpportunitiesData] = useState<EarnPoolsData[]>([])
+
+  const [USGUSDCLiquidity, setUSGUSDCLiquidity] = useState<PoolLiquidity | null>(null)
+  const [USGfrxUSDLiquidity, setUSGfrxUSDLiquidity] = useState<PoolLiquidity | null>(null)
 
   const [slippage, setSlippage] = useState<number>(0.05)
   const [frxUSDslippage, setfrxUSDSlippage] = useState<number>(0.05)
@@ -633,20 +652,48 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
   }, [frxUSDslippage, USGfrxUSDDepositValue])
 
   const fetchPoolsData = async () => {
-    const pids = opportunities.filter((o) => o.protocolName === "Convex" && o.pid).map((o) => o.pid) as number[]
+    try {
+      const pids = opportunities.filter((o) => o.protocolName === "Convex" && o.pid).map((o) => o.pid) as number[]
 
-    const [curvePools, convexPools, stakeDaoPools, pendlePools, subgraphPools, convexBoosts] = await Promise.all([
-      getCurvePools(),
-      getConvexPools(),
-      getStakeDAOPools(),
-      getPendlePools(),
-      getCurveSubgraph(),
-      getConvexBoost(pids),
-    ])
+      const [curvePools, convexPools, stakeDaoPools, pendlePools, subgraphPools, convexRates, convexBoost] = await Promise.all([
+        getCurvePools(),
+        getConvexPools(),
+        getStakeDAOPools(),
+        getPendlePools(),
+        getCurveSubgraph(),
+        getConvexRates(pids),
+        getConvexBoost(pids),
+      ])
 
-    const mappedPools = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, opportunities, subgraphPools, convexBoosts)
+      const tokens = new Set<Address>()
+      convexRates
+        .map((r) => r.yearlyRewardPerLp)
+        .flat()
+        .forEach((r) => r?.token && tokens.add(r.token as Address))
 
-    setOpportunitiesData(mappedPools)
+      const prices: AssetPrices | undefined = await getTokensPrice(Array.from(tokens)).catch(() => undefined)
+
+      const mappedPools = mapPoolsAndTasks(curvePools, convexPools, stakeDaoPools, pendlePools, opportunities, subgraphPools, convexRates, prices, convexBoost)
+
+      setOpportunitiesData(mappedPools)
+
+      const findPoolLiquidity = (poolAddress: Address): PoolLiquidity | null => {
+        const entry = (curvePools as unknown as CurvePoolApiEntry[]).find((p) => p?.address?.toLowerCase() === poolAddress.toLowerCase())
+        if (!entry) return null
+        return {
+          usdTotal: entry.usdTotal ?? 0,
+          coins: (entry.coins ?? []).map((c) => ({
+            symbol: c.symbol,
+            usdValue: Number(formatUnits(BigInt(c.poolBalance ?? "0"), Number(c.decimals))) * (c.usdPrice ?? 0),
+          })),
+        }
+      }
+
+      setUSGUSDCLiquidity(findPoolLiquidity(USGTokens[1]["USG-USDC"]))
+      setUSGfrxUSDLiquidity(findPoolLiquidity(USGTokens[1]["USG-frxUSD"]))
+    } catch (e) {
+      console.error("fetchPoolsData failed", e)
+    }
   }
 
   useEffect(() => {
@@ -664,6 +711,36 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     () => !isConnected || isFetchApiInitialLoading || (isConnected && (isDisplayYouAreNotWL || !predepositStatus?.isSigned)),
     [isConnected, isFetchApiInitialLoading, isDisplayYouAreNotWL, predepositStatus?.isSigned]
   )
+
+  const eligibleDepositsTotal = useMemo(
+    () => (predepositStatus?.USGUSDCData.USGUSDCAccumulatedTotal || 0n) + (predepositStatus?.USGfrxUSDData.USGfrxUSDAccumulatedTotal || 0n),
+    [predepositStatus]
+  )
+
+  const predepositCap = useMemo(
+    () => (predepositStatus?.USGUSDCData?.USGUSDCCap || 0n) + (predepositStatus?.USGfrxUSDData?.USGfrxUSDCap || 0n),
+    [predepositStatus]
+  )
+
+  const totalDepositsUsd = useMemo(() => {
+    if (!USGUSDCLiquidity || !USGfrxUSDLiquidity) return null
+    const sumNonUsg = (pool: PoolLiquidity) => pool.coins.filter((c) => c.symbol !== "USG").reduce((sum, c) => sum + c.usdValue, 0)
+    return sumNonUsg(USGUSDCLiquidity) + sumNonUsg(USGfrxUSDLiquidity)
+  }, [USGUSDCLiquidity, USGfrxUSDLiquidity])
+
+  const totalDepositsWei = useMemo(() => (totalDepositsUsd !== null ? BigInt(Math.round(totalDepositsUsd * 1e6)) * 10n ** 12n : undefined), [totalDepositsUsd])
+
+  const eligibleDepositsPercentage = useMemo(() => {
+    if (predepositCap <= 0n) return 0
+    const clamped = eligibleDepositsTotal > predepositCap ? predepositCap : eligibleDepositsTotal
+    return Number((clamped * 100n) / predepositCap)
+  }, [eligibleDepositsTotal, predepositCap])
+
+  const totalDepositsPercentage = useMemo(() => {
+    if (totalDepositsWei === undefined || predepositCap <= 0n) return 0
+    const clamped = totalDepositsWei > predepositCap ? predepositCap : totalDepositsWei
+    return Number((clamped * 100n) / predepositCap)
+  }, [totalDepositsWei, predepositCap])
 
   const contextValue: PredepositContextValues = {
     isUSDCDepositLoading,
@@ -713,6 +790,8 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     setIsUSGfrxUSDTransactionBlockedBySlippage,
     USGfrxUSDSlippageLoss,
     opportunitiesData,
+    USGUSDCLiquidity,
+    USGfrxUSDLiquidity,
     isQuoteLoading,
     isfrxUSDQuoteLoading,
     signMessage,
@@ -720,6 +799,12 @@ export const PredepositProvider = ({ children }: PredepositContextProps) => {
     isSigningLoading,
     isDisplayYouAreNotWL,
     isDisplayBlurry,
+    eligibleDepositsTotal,
+    predepositCap,
+    totalDepositsUsd,
+    totalDepositsWei,
+    eligibleDepositsPercentage,
+    totalDepositsPercentage,
   }
 
   return <PredepositContext.Provider value={contextValue}>{children}</PredepositContext.Provider>

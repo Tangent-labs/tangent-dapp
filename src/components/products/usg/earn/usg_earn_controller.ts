@@ -55,8 +55,8 @@ export const getConvexRates = async (pids: number[]) => {
 export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Array<EarnPoolsData>) => {
   const sanitizeValue = (value?: number | null) => (typeof value === "number" && Number.isFinite(value) ? value : 0)
   const sameAddress = (a?: string, b?: string) => !!a && !!b && a.toLowerCase() === b.toLowerCase()
-  const getMinAPYValue = (values?: Array<number | null>) => sanitizeValue(values?.[0])
-  const sumAPRValues = (values?: Array<number | null>) => values?.reduce<number>((sum, value) => sum + sanitizeValue(value), 0) || 0
+  const getMinAPYValue = (values?: Array<number | null | undefined>) => sanitizeValue(values?.[0])
+  const sumAPRValues = (values?: Array<number | null | undefined>) => values?.reduce<number>((sum, value) => sum + sanitizeValue(value), 0) || 0
   const getBaseAPY = (pool?: EarnPoolsData) => {
     const weeklyAPY = sanitizeValue(pool?.apy?.latestWeeklyApy)
     const dailyAPY = sanitizeValue(pool?.apy?.latestDailyApy)
@@ -121,7 +121,7 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
         projectedAPRDetails.APY = baseAPY
         if (isCurveUnstaked) {
           currentAPR = baseAPY
-          projectedAPR = baseAPY
+          projectedAPR = -1
           currentAPRDetails.CRV = 0
 
           projectedAPRDetails.CRV = 0
@@ -129,7 +129,7 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
           currentAPRDetails.CRV = minAPYCurr
           projectedAPRDetails.CRV = minAPYFut
           currentAPR = baseAPY + minAPYCurr
-          projectedAPR = baseAPY + minAPYFut
+          projectedAPR = -1
         }
       } else {
         // STAKE DAO / CONVEX
@@ -146,7 +146,6 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
         currentAPR = sumAPRValues(currentPool?.gaugeCrvApy)
         projectedAPR = currentPool?.gaugeFutureCrvApy?.at(0) === undefined ? -1 : sumAPRValues(currentPool?.gaugeFutureCrvApy)
       }
-
       return {
         marketType: t?.marketType as USGMarketType,
         name: t.name,

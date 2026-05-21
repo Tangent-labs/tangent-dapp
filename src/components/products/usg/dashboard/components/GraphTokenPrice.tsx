@@ -121,7 +121,7 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
               axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
               tickLine={false}
               tickFormatter={(tick) => formatXAxis(tick, rangeMs)}
-              padding={{ left: 0, right: 44 }}
+              padding={{ left: 0, right: 48 }}
             />
 
             <YAxis

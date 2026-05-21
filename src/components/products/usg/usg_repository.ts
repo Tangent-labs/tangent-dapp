@@ -1,7 +1,7 @@
 "use-client"
 
 import { USGMarket } from "./usg_type"
-import { Address } from "viem"
+import { Address, getAddress } from "viem"
 
 const addresses = process.env.NEXT_PUBLIC_ADDRESSES_JSON
 
@@ -47,8 +47,11 @@ export const USGOracles = Object.entries(envAddresses?.oracles).map(([key, addre
   }
 })
 
+// map .env markets with valid addresses
 export const USGMarkets: USGMarket[] = envAddresses.markets.map((market: RawMarket) => ({
   ...market,
+  marketAddress: getAddress(market.marketAddress),
+  collatAddress: getAddress(market.collatAddress),
   collatDecimals: market.collatDecimals ?? 18,
   logoKey: market.marketName.replace("/", "-"),
 }))

@@ -1,15 +1,14 @@
-import { AssetDataPriced } from "@/types"
-import WStable from "@/abi/USG/WStable.json"
 import IERC4626 from "@/abi/USG/IERC4626.json"
-import { BalanceAllowanceData, FormError, FormState } from "../usg_type"
-import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import { Abi, Address, EstimateContractGasParameters, SendTransactionParameters, WalletClient, WriteContractParameters } from "viem"
+import WStable from "@/abi/USG/WStable.json"
 import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { AssetDataPriced } from "@/types"
+import { Abi, Address, EstimateContractGasParameters, SendTransactionParameters, WalletClient, WriteContractParameters } from "viem"
+import { BalanceAllowanceData, FormError, FormState } from "../usg_type"
 
-export const doApprove = async (walletClient: WalletClient, depositAssetAddress: Address, amount: bigint, spender: Address) => {
+export const doApprove = async (walletClient: WalletClient, erc20: Address, amount: bigint, spender: Address) => {
   const publicClient = getPublicClient()
-
-  const txData = getApproveTx(depositAssetAddress, spender, amount)
+  const txData = getApproveTx(walletClient, erc20, spender, amount)
 
   const gas = await publicClient.estimateContractGas(txData as EstimateContractGasParameters)
   txData.gas = gas

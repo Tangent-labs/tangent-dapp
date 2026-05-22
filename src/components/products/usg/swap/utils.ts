@@ -1,8 +1,8 @@
-import { AssetDataPriced } from "@/types"
-import { SwapToken } from "../usg_type"
-import { USGTokens } from "../usg_repository"
-import { Address } from "viem"
 import { ERC20S } from "@/data/erc20s"
+import { AssetDataPriced } from "@/types"
+import { Address } from "viem"
+import { USGTokens } from "../usg_repository"
+import { SwapToken } from "../usg_type"
 
 export const wTokens: SwapToken[] = Object.entries(USGTokens).flatMap(([, group]) =>
   Object.entries(group).map(([name, address]) => ({

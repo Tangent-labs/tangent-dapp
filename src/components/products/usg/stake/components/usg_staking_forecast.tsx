@@ -331,7 +331,7 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
           </div>
         </>
       ) : (
-        <div className={`mb mt-3 flex h-[18rem] w-full items-center justify-center text-subtitle`}>No APY data</div>
+        <div className="mt-3 flex h-[18rem] w-full items-center justify-center text-subtitle">No APY data</div>
       )}
     </>
   )

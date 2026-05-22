@@ -139,7 +139,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
         label: "Borrow Rate",
         value:
           !!onChainRow?.debtInfos.currentBorrowRate && onChainRow?.debtInfos.currentBorrowRate >= 0n
-            ? ((Math.exp(Number(formatBigInt(onChainRow?.debtInfos.currentBorrowRate, 18, 4))) - 1) * 100).toFixed(2) + "%"
+            ? ((Math.exp(Number(formatUnits(onChainRow?.debtInfos.currentBorrowRate, 18))) - 1) * 100).toFixed(2) + "%"
             : "0%",
         raw: onChainRow?.debtInfos.currentBorrowRate?.toString() || "0",
       },

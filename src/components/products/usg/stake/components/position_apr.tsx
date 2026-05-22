@@ -214,7 +214,7 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
           </ResponsiveContainer>
         </div>
       ) : (
-        <div className="mb mt-3 flex h-[18rem] h-full w-full items-center justify-center text-subtitle">No APY data</div>
+        <div className="mb mt-3 flex h-[18rem] w-full items-center justify-center text-subtitle">No APY data</div>
       )}
     </>
   )

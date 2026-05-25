@@ -171,13 +171,15 @@ function HarvestList() {
                   {formatDollar(item?.rewards?.totalDollar || 0)}
                   <USGHoverCard iconClassName="w-3 fill-white" title={`${item?.asset} Rewards Breakdown`}>
                     <div className="flex flex-col gap-1 text-sm">
-                      {item?.rewards?.details?.map((reward, index) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <TokenImage token={reward.logoKey} size={16} />
-                          <span className="w-20"> {reward.logoKey}</span>
-                          <span> {formatDollar(reward.dollarValue)}</span>
-                        </div>
-                      ))}
+                      {item?.rewards?.details
+                        ?.filter((reward) => reward?.dollarValue > 0)
+                        ?.map((reward, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <TokenImage token={reward.logoKey} size={16} />
+                            <span className="w-20"> {reward.logoKey}</span>
+                            <span> {formatDollar(reward.dollarValue)}</span>
+                          </div>
+                        ))}
                     </div>
                   </USGHoverCard>
                 </div>
@@ -191,13 +193,15 @@ function HarvestList() {
                     {formatDollar(item?.rewards?.totalDollar || 0)}
                     <USGHoverCard iconClassName="w-3 fill-white" title={`${item?.asset} Rewards Breakdown`}>
                       <div className="flex flex-col gap-1 text-sm">
-                        {item?.rewards?.details?.map((reward, index) => (
-                          <div key={index} className="flex items-center gap-2">
-                            <TokenImage token={reward.logoKey} size={16} />
-                            <span className="w-20"> {reward.logoKey}</span>
-                            <span> {formatDollar(reward.dollarValue)}</span>
-                          </div>
-                        ))}
+                        {item?.rewards?.details
+                          ?.filter((reward) => reward?.dollarValue > 0)
+                          ?.map((reward, index) => (
+                            <div key={index} className="flex items-center gap-2">
+                              <TokenImage token={reward.logoKey} size={16} />
+                              <span className="w-20"> {reward.logoKey}</span>
+                              <span> {formatDollar(reward.dollarValue)}</span>
+                            </div>
+                          ))}
                       </div>
                     </USGHoverCard>
                   </div>

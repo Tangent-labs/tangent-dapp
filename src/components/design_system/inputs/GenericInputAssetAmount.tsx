@@ -6,7 +6,7 @@ import { BorderPanel } from "../structure/border_panel"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { IconThunder, IconWallet } from "@/components/icons"
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
-import { formatBigInt, formatDollar, truncateDecimals } from "@/lib/number_formatter"
+import { formatBigIntFloor, formatDollar, truncateDecimals } from "@/lib/number_formatter"
 import { SliderInput } from "./SliderInput"
 import { MaxButton } from "./MaxButton"
 import { useAutoGrowInputWidth } from "@/hooks/useAutoGrowInputWidth"
@@ -264,7 +264,7 @@ export function GenericInputAssetAmount({
           <div className="flex items-center justify-center gap-1 text-xs text-subtitle">
             {displayBalance ? (
               <>
-                <div> {formatBigInt(maxWeiValue, asset?.decimals || 18, 2)}</div>
+                <div> {formatBigIntFloor(maxWeiValue, asset?.decimals || 18, 2)}</div>
                 <IconWallet className="w-3"></IconWallet>
               </>
             ) : (

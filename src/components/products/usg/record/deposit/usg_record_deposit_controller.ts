@@ -24,7 +24,7 @@ export function getDepositFormState(
   const errors: FormError[] = []
   const depositValue = depositWeiValue || 0n
   const isApproved = depositValue <= (balanceAllowanceData?.allowances[0]?.allowance || 0n)
-  const isEnoughBalance = depositValue < (balanceAllowanceData?.balance || 0n)
+  const isEnoughBalance = depositValue <= (balanceAllowanceData?.balance || 0n)
 
   if (!isWellConnected) {
     return {

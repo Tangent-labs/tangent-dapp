@@ -9,7 +9,7 @@ import { AssetSelectionDialog } from "./asset-select-dialog"
 import { useUSGContext } from "@/components/products/usg/usg_context"
 import { useUSGRecordContext } from "@/components/products/usg/record/usg_record_context"
 import { useMemo } from "react"
-import { formatNumber } from "@/lib/number_formatter"
+import { formatBigIntFloor } from "@/lib/number_formatter"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
 import { USG_CONTRACT } from "@/components/products/usg/usg_repository"
 
@@ -86,7 +86,7 @@ export const ZapAssetSelector = ({ collateralInfo, depositAsset, setDepositAsset
     const assets = ERC20S.map((el: Erc20Details) => {
       const balWei = balances?.[el.address as Address] ?? 0n
       const balNumber = Number(formatUnits(balWei, el.decimals))
-      const formattedBal = formatNumber(balNumber, el.displayDecimals ?? 2)
+      const formattedBal = formatBigIntFloor(balWei, el.decimals, el.displayDecimals ?? 2)
       const address = el.address.toLowerCase()
 
       let pinPriority = 2

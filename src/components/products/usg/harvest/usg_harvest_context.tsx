@@ -92,8 +92,7 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
 
   const displayRows = useMemo(() => {
     if (!harvestInfo || !rewardsInfo) return []
-    const rows = transformHarvestOnChainData(harvestInfo, rewardsInfo)
-    return rows.filter((market) => market?.rewards?.totalDollar > 0)
+    return transformHarvestOnChainData(harvestInfo, rewardsInfo)
   }, [harvestInfo, rewardsInfo])
 
   // Rewards already claimed by our markets on the Merkle claim contract of StakeDao

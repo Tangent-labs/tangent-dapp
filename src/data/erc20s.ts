@@ -940,6 +940,7 @@ export const ERC20S: Erc20Details[] = [
     decimals: 18,
     chainId: 1,
     logoURI: "https://files.cow.fi/token-lists/images/1/0x6440f144b7e50d6a8439336510312d2f54beb01d/logo.png",
+    logoKey: "BOLD",
   },
   {
     symbol: "OHM",

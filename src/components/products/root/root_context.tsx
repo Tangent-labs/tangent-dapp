@@ -173,16 +173,16 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     fetchAndStore(CUSTOM_CURVE_ROUTES_KEY)
   }, [])
 
-  const [totalSupplySelectedTab, setTotalSupplySelectedTab] = useState<string>("1m")
+  const [totalSupplySelectedTab, setTotalSupplySelectedTab] = useState<string>("all")
 
-  const [tvlSelectedTab, setTvlSelectedTab] = useState<string>("1m")
+  const [tvlSelectedTab, setTvlSelectedTab] = useState<string>("all")
 
   const [priceSelectedTabs, setPriceSelectedTabs] = useState<{
     USG: string
     sUSG: string
   }>({
-    USG: "1d",
-    sUSG: "1d",
+    USG: "all",
+    sUSG: "all",
   })
 
   const [totalSupplies, setTotalSupplies] = useState<{
@@ -210,17 +210,23 @@ export const RootProvider = ({ children }: RootProviderProps) => {
   const fetchTotalSupplyData = async (range: string) => {
     setTotalSupplySelectedTab(range)
 
-    const rangeInMilliseconds = convertRange(range)
-    const currentBlock = await getCachedCurrentBlock()
-    const toIso = Number(currentBlock.timestamp) * 1000
-    const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
+    try {
+      const rangeInMilliseconds = convertRange(range)
+      const currentBlock = await getCachedCurrentBlock()
+      const toIso = Number(currentBlock.timestamp) * 1000
+      const fromIso = rangeInMilliseconds ? new Date(toIso).getTime() - rangeInMilliseconds : null
 
-    const [usgSupply, sUsgSupply] = await Promise.all([getTotalSupply(toIso, fromIso, USG_CONTRACT.USG), getTotalSupply(toIso, fromIso, USG_CONTRACT.SUSG)])
+      const [usgSupply, sUsgSupply] = await Promise.all([getTotalSupply(toIso, fromIso, USG_CONTRACT.USG), getTotalSupply(toIso, fromIso, USG_CONTRACT.SUSG)])
 
-    const USGData = usgSupply.map((p) => ({ date: new Date(p.timestamp).getTime(), uv: Number(p.amount) }))
-    const sUSGData = sUsgSupply.map((p) => ({ date: new Date(p.timestamp).getTime(), uv: Number(p.amount) }))
+      const USGData = usgSupply.map((p) => ({ date: new Date(p.timestamp).getTime(), uv: Number(p.amount) }))
+      const sUSGData = sUsgSupply.map((p) => ({ date: new Date(p.timestamp).getTime(), uv: Number(p.amount) }))
 
-    setTotalSupplies({ USGTotalSupply: USGData, sUSGTotalSupply: sUSGData })
+      setTotalSupplies({ USGTotalSupply: USGData, sUSGTotalSupply: sUSGData })
+    } catch {
+      setTotalSupplies({ USGTotalSupply: [], sUSGTotalSupply: [] })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const fetchTVLData = async (range: string) => {
@@ -298,26 +304,6 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     return Array.from(map.values()).sort((a, b) => a.date - b.date)
   }, [totalSupplies])
 
-  const fetchTotalSupplies = async () => {
-    try {
-      const currentBlock = await getCachedCurrentBlock()
-      const date = new Date(Number(currentBlock.timestamp) * 1000).toISOString()
-      const toIso = new Date(date).getTime()
-      const fromIso = new Date(date).getTime() - 30 * 24 * 60 * 60 * 1000
-
-      const [usgSupply, sUsgSupply] = await Promise.all([getTotalSupply(toIso, fromIso, USG_CONTRACT.USG), getTotalSupply(toIso, fromIso, USG_CONTRACT.SUSG)])
-
-      const USGData = usgSupply.map((p) => ({ date: new Date(p.timestamp).getTime(), uv: Number(p.amount) }))
-      const sUSGData = sUsgSupply.map((p) => ({ date: new Date(p.timestamp).getTime(), uv: Number(p.amount) }))
-
-      setTotalSupplies({ USGTotalSupply: USGData, sUSGTotalSupply: sUSGData })
-      setIsLoading(false)
-    } catch {
-      setIsLoading(false)
-      setTotalSupplies({ USGTotalSupply: [], sUSGTotalSupply: [] })
-    }
-  }
-
   const fetchSavingsAPY = () => {
     getSavingsAPY().then((apys) => {
       setSavingsAPY(apys)
@@ -326,11 +312,11 @@ export const RootProvider = ({ children }: RootProviderProps) => {
 
   useEffect(() => {
     setIsLoading(true)
-    fetchTotalSupplies()
-    fetchAndSetTvl()
+    fetchTotalSupplyData("all")
+    fetchTVLData("all")
     fetchSavingsAPY()
 
-    getPriceHistory([PRICE_HISTORY_TOKENS.USG, PRICE_HISTORY_TOKENS.sUSG], "1d").then((data) => {
+    getPriceHistory([PRICE_HISTORY_TOKENS.USG, PRICE_HISTORY_TOKENS.sUSG], "all").then((data) => {
       const initialRangeData = data.reduce<{ USG: Array<{ date: number; uv: number }>; sUSG: Array<{ date: number; uv: number }> }>(
         (acc, tokenHistory) => {
           const mappedHistory = tokenHistory.history.map((point) => ({ date: new Date(point.timestamp).getTime(), uv: Number(point.amount) }))
@@ -342,7 +328,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
         { USG: [], sUSG: [] }
       )
       setPriceHistory(initialRangeData)
-      setPriceHistoryByRange({ "1d": initialRangeData })
+      setPriceHistoryByRange({ all: initialRangeData })
     })
   }, [])
 

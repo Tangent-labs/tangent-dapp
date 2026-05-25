@@ -1,11 +1,11 @@
-import { TANStakingInfo } from "../rstan_types"
-import sTANUI from "../../../../abi/USG/sTANUI.json"
-import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { FormError, FormState } from "../../usg/usg_type"
-import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
-import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import sTANUI from "../../../../abi/USG/sTANUI.json"
+import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
+import { FormError, FormState } from "../../usg/usg_type"
+import { VSTAN_CONTRACT } from "../rs_tan_repository"
+import { TANStakingInfo } from "../rstan_types"
 
 export async function getTanStakeOnChainData(currentAddress: string) {
   return await executeChainViewUnique<TANStakingInfo>(sTANUI.abi as Abi, sTANUI.bytecode as Hex, [
@@ -93,7 +93,7 @@ export const doApprove = async (walletClient: WalletClient, assetAddress: Addres
   const publicClient = getPublicClient()
   amount = amount || maxUint256
 
-  const txData = getApproveTx(assetAddress, stakingContract, amount)
+  const txData = getApproveTx(walletClient, assetAddress, stakingContract, amount)
   const gas = await publicClient.estimateContractGas(txData as unknown as EstimateContractGasParameters)
   txData.gas = gas
   const hash = await walletClient.writeContract(txData as unknown as WriteContractParameters)

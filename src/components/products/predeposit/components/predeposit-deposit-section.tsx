@@ -121,7 +121,7 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
                     <IconCircleHelp className="w-3 fill-subtitle" />
                   </button>
                 </HoverCardTrigger>
-                <HoverCardContent side="top" align="center" className="z-[1001] w-fit max-w-64 p-2 text-xs">
+                <HoverCardContent side="top" align="center" className="z-[1001] w-fit max-w-80 p-2 text-xs">
                   Deposits eligible for TAN rewards:{" "}
                   <span className="text-button-active">${formatNumber(Number(formatUnits(eligibleDepositsTotal, 18)), 0)}</span>
                 </HoverCardContent>

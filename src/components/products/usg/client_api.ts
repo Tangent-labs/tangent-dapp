@@ -371,30 +371,6 @@ export const validateReferralCode = async (referralCode: string, signature: Addr
   }
 }
 
-export const generateCode = async (account: Address): Promise<string> => {
-  try {
-    const url = `${baseUrl}/referral/generate`
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ account }),
-    })
-
-    if (!response.ok) {
-      throw new Error(`Referral code creation failed with status ${response.status}`)
-    }
-
-    const data = await response.json()
-
-    return data.message as string
-  } catch {
-    throw new Error("Referral code creation failed with status")
-  }
-}
-
 export const getReferralStatus = async (account: Address): Promise<UserStatus> => {
   try {
     const url = `${baseUrl}/referral/status?account=${account}`

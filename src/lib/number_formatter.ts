@@ -70,6 +70,18 @@ export function formatBigInt(value: bigint | string | undefined, decimals: numbe
   return ""
 }
 
+// Use for "available balance" displays where rounding up would mislead the user
+// into thinking they have more than they do (e.g. showing 55.78 when the wallet
+// actually has 55.779147 — Max would then exceed the real balance).
+export function formatBigIntFloor(value: bigint | string | undefined, decimals: number, displayDecimals: number): string {
+  if (value === undefined || value === null) return ""
+  const bigIntValue: bigint = typeof value === "string" ? BigInt(value) : value
+  const truncated = truncateDecimals(formatUnits(bigIntValue, decimals), displayDecimals)
+  const num = Number(truncated)
+  if (isNaN(num)) return ""
+  return new Intl.NumberFormat("en-US", { maximumFractionDigits: displayDecimals }).format(num)
+}
+
 export function formatDollarBigInt(value: bigint | string | undefined, decimals: number, displayDecimals: number): string {
   if (value === undefined || value === null) return ""
   const bigIntValue: bigint = typeof value === "string" ? BigInt(value) : value

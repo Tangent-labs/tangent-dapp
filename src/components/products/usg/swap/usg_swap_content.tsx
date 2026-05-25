@@ -6,7 +6,7 @@ import { useUSGContext } from "../usg_context"
 import { IconChevron } from "@/components/icons"
 import { formatAddress } from "@/lib/other_formatter"
 import { useUSGSwapContext } from "./usg_swap_context"
-import { formatBigInt } from "@/lib/number_formatter"
+import { formatBigIntFloor } from "@/lib/number_formatter"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { RecapAccordion } from "@/components/design_system/structure/recap"
 import { SlippageInput } from "@/components/design_system/inputs/slippage"
@@ -151,7 +151,7 @@ export default function USGSwapContent() {
         <ReliefCard className="flex w-full max-w-[450px] flex-col items-center justify-center gap-1.5 p-5">
           <div className="flex w-full items-end justify-end">
             <span className="text-xs text-subtitle">
-              Max: {formatBigInt(balanceAllowanceData?.balance ?? 0n, sellAssetInfo?.decimals || 18, 2)} {sellAssetInfo?.symbol}
+              Max: {formatBigIntFloor(balanceAllowanceData?.balance ?? 0n, sellAssetInfo?.decimals || 18, 2)} {sellAssetInfo?.symbol}
             </span>
           </div>
           <div className="w-full">

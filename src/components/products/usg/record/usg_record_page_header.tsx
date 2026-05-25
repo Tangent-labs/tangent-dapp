@@ -44,7 +44,7 @@ export default function USGRecordPageHeader() {
 
         {/* MOBILE COMPONENT */}
         <div className="mt-2 flex items-end gap-1 md:hidden">
-          <IndicatorV2 indicators={[{ title: "Current vAPR", value: `${currentTotalMarketApr}%` }]} />
+          <IndicatorV2 indicators={[{ title: "Current vAPR", value: `${currentTotalMarketApr?.toFixed(2)}%` }]} />
           <IndicatorV2 indicators={[{ title: "Borrow rate", value: `${((Math.exp(marketDisplayData.borrowRateCurrent) - 1) * 100).toFixed(2)}%` }]} />
           <IndicatorV2 indicators={[{ title: "Max LTV", value: marketDisplayData.maxLtv }]} />
         </div>

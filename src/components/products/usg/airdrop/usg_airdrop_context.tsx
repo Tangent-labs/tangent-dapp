@@ -3,7 +3,8 @@
 import { toast } from "react-toastify"
 import { ToastComponent } from "@/components/design_system/toast"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { generateCode, getReferralStatus, validateReferralCode } from "../client_api"
+import { getReferralStatus, validateReferralCode } from "../client_api"
+import { generateCode } from "./generate_referral_code"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { useRootContext } from "../../root/root_context"
 

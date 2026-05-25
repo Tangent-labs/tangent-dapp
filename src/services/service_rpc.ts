@@ -7,12 +7,15 @@ import {
   Address,
   Chain,
   createPublicClient,
+  custom,
   decodeErrorResult,
+  EIP1193Provider,
   encodeDeployData,
   EncodeFunctionDataParameters,
   Hash,
   Hex,
   http,
+  PublicClient,
   WalletClient,
   WriteContractParameters,
 } from "viem"
@@ -31,13 +34,29 @@ export const chain: Chain = {
   name: dappConfig.chain.name,
 }
 
-const publicClient = createPublicClient({
+const httpPublicClient: PublicClient = createPublicClient({
   chain,
   transport: http(chain.rpcUrls.default.http[0], {
     retryCount: 0,
     timeout: 30_000,
   }),
 })
+
+// When a wallet is connected on the correct chain, reads go through its EIP-1193
+// provider (e.g. MetaMask's bundled Infura) instead of our public RPC.
+// Set/cleared by WalletConnexionProvider via setWalletPublicProvider.
+let walletPublicClient: PublicClient | undefined
+
+export const setWalletPublicProvider = (provider: EIP1193Provider | null) => {
+  if (!provider) {
+    walletPublicClient = undefined
+    return
+  }
+  walletPublicClient = createPublicClient({
+    chain,
+    transport: custom(provider),
+  })
+}
 
 function getRetryClients() {
   return dappConfig.chain.fallbackRpcs.map((url) => {
@@ -51,13 +70,12 @@ function getRetryClients() {
   })
 }
 
-// Make getPublicClient great again (singleton version)
-export const getPublicClient = () => publicClient
+export const getPublicClient = () => walletPublicClient ?? httpPublicClient
 
 export const getBackupClients = () => getRetryClients()
 
 export const getCurrentBlock = async () => {
-  return publicClient.getBlock({ blockTag: "latest" })
+  return getPublicClient().getBlock({ blockTag: "latest" })
 }
 
 export type ApproveTxResult = EncodeFunctionDataParameters & { gas: undefined | bigint; address: Address; account: Address }

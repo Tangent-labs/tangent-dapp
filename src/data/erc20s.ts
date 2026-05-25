@@ -64,14 +64,6 @@ export const ERC20S: Erc20Details[] = [
     symbol: "crvUSD/USDC",
   },
   {
-    address: CURVE_LPS.crvUSD_USDT as Address,
-    chainId: 1,
-    decimals: 18,
-    logoKey: "crvUSD-USDT",
-    name: "crvUSD/USDT",
-    symbol: "crvUSD/USDT",
-  },
-  {
     address: CURVE_LPS.DUO_USDC_USDT as Address,
     chainId: 1,
     decimals: 18,
@@ -102,14 +94,6 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "fxUSD-reUSD",
     name: "fxUSD/reUSD",
     symbol: "fxUSD/reUSD",
-  },
-  {
-    address: CURVE_LPS.DUO_frxUSD_sUSDS as Address,
-    chainId: 1,
-    decimals: 18,
-    logoKey: "frxUSD-sUSDS",
-    name: "frxUSD/sUSDS",
-    symbol: "frxUSD/sUSDS",
   },
   {
     address: CURVE_LPS.DUO_BOLD_USDC as Address,
@@ -308,8 +292,8 @@ export const ERC20S: Erc20Details[] = [
     chainId: 1,
     decimals: 18,
     logoKey: "crvUSD-USDT",
-    name: "Vault crvUSD/USDT",
-    symbol: "Vault crvUSD/USDT",
+    name: "Vault USDT/crvUSD",
+    symbol: "Vault USDT/crvUSD",
   },
   {
     address: SDT_tBTC_cbBTC_VAULT,

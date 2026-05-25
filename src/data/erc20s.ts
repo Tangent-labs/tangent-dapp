@@ -112,6 +112,14 @@ export const ERC20S: Erc20Details[] = [
     symbol: "eUSD/USDC",
   },
   {
+    address: CURVE_LPS.DUO_reUSD_scrvUSD as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "reUSD-scrvUSD",
+    name: "reUSD/scrvUSD",
+    symbol: "reUSD/scrvUSD",
+  },
+  {
     address: CURVE_LPS.DUO_frxUSD_OUSD as Address,
     chainId: 1,
     decimals: 18,

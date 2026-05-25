@@ -13,7 +13,7 @@ export const FeatureSelect = ({
 }: {
   value: string
   onChange: (f: string) => void
-  options: Array<{ key: string; value: string }>
+  options: Array<{ key: string; value: string; disabled?: boolean }>
   title?: string
 }) => {
   const [open, setOpen] = useState(false)
@@ -43,13 +43,16 @@ export const FeatureSelect = ({
                 type="button"
                 role="option"
                 aria-selected={isActive}
+                aria-disabled={opt.disabled}
                 onClick={() => {
+                  if (opt.disabled) return
                   onChange(opt.key)
                   setOpen(false)
                 }}
                 className={cn(
                   "h-10 w-full rounded-[10px] text-center font-gilroy text-[15px] font-semibold transition-colors duration-200",
-                  isActive ? "bg-button-active text-white" : "border border-white/20 bg-transparent text-subtitle hover:bg-white/10 hover:text-white"
+                  isActive ? "bg-button-active text-white" : "border border-white/20 bg-transparent text-subtitle hover:bg-white/10 hover:text-white",
+                  opt.disabled && "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-subtitle"
                 )}
               >
                 {opt.value}

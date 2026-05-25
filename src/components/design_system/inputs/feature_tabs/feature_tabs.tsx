@@ -8,6 +8,8 @@ import { LargeButtonTab } from "../large_button_tab"
 import { FeatureTabsMotionDiv } from "./motion_div"
 import { FeatureSelect } from "../../structure/feature_select"
 
+const IS_LEVERAGE_ON = process.env.NEXT_PUBLIC_IS_LEVERAGE_ON === "true"
+
 type FeatureTabsProps = {
   feature: string
   activeTab: string
@@ -52,17 +54,20 @@ export const FeatureTabs = ({
                 {feature === "deposit-borrow" && <FeatureTabsMotionDiv marketAddress={marketAddress} />}
                 <span className="relative z-20">Deposit & Borrow</span>
               </div>
+
               <div
-                onClick={() => onTabClickLeverage()}
+                onClick={() => IS_LEVERAGE_ON && onTabClickLeverage()}
                 className={cn(
-                  "relative z-10 flex w-[128px] items-center justify-center rounded-[10px] px-1 py-1.5 font-semibold transition-colors duration-200 ease-in-out hover:bg-white/10",
+                  "relative z-10 flex w-[128px] items-center justify-center rounded-[10px] px-1 py-1.5 font-semibold transition-colors duration-200 ease-in-out",
                   feature === "leverage" ? "text-black" : "text-white",
-                  canLeverage ? "cursor-pointer" : "cursor-not-allowed"
+                  IS_LEVERAGE_ON && canLeverage ? "cursor-pointer hover:bg-white/10" : "cursor-not-allowed",
+                  !IS_LEVERAGE_ON && "opacity-50"
                 )}
               >
                 {feature === "leverage" && <FeatureTabsMotionDiv marketAddress={marketAddress} />}
                 <span className="relative z-20">Leverage</span>
               </div>
+
               <div
                 onClick={() => onTabClick("deposit")}
                 className={cn(
@@ -138,7 +143,7 @@ export const FeatureTabs = ({
         <FeatureSelect
           options={[
             { value: "Deposit & Borrow", key: "deposit-borrow" },
-            { value: "Leverage", key: "leverage" },
+            { value: "Leverage", key: "leverage", disabled: !IS_LEVERAGE_ON },
             { value: "Deposit", key: "deposit" },
             { value: "Borrow", key: "borrow" },
             { value: "Repay & Withdraw", key: "repay-withdraw" },

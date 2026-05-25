@@ -51,7 +51,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
   }
 
   const onTabClickLeverage = () => {
-    if (canLeverage) {
+    if (canLeverage && process.env.NEXT_PUBLIC_IS_LEVERAGE_ON === "true") {
       onTabClick("leverage")
     }
   }

@@ -1,13 +1,13 @@
 "use client"
 
 import { dappConfig } from "@/dapp_config"
-import { chain, setWalletPublicProvider } from "@/services/service_rpc"
-import type { WalletInfo } from "@/services/wallet"
-import { createAdapter } from "@/services/wallet"
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { Address, createWalletClient, custom, toHex, WalletClient, zeroAddress } from "viem"
+import { chain } from "@/services/service_rpc"
 import { registerUser } from "./register_user"
+import { createAdapter } from "@/services/wallet"
+import type { WalletInfo } from "@/services/wallet"
 import { getUserBalances } from "./wallet_connexion_controller"
+import { Address, createWalletClient, custom, toHex, WalletClient, zeroAddress } from "viem"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 
 export type Account = {
   address: Address
@@ -50,14 +50,6 @@ export const WalletConnexionProvider = ({ children }: { children: ReactNode }) =
     if (!adapter) return
 
     const unsubscribe = adapter.subscribe((wallet) => {
-      // Route read calls through the wallet's RPC synchronously, before any
-      // consumer effect reacting to the new state can fire getPublicClient().
-      if (wallet && wallet.chainIdHex === toHex(dappConfig.chain.id)) {
-        setWalletPublicProvider(wallet.provider)
-      } else {
-        setWalletPublicProvider(null)
-      }
-
       // A wallet connected → trust immediately
       if (wallet) {
         hasReceivedFirstUpdate.current = true

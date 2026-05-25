@@ -197,7 +197,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   useEffect(() => {
     const tokenAddresses: Address[] = ERC20S.map((el) => el.address)
 
-    if (currentAddress && tokenAddresses.length > 0) {
+    if (currentAddress && currentAddress !== zeroAddress && tokenAddresses.length > 0) {
       getBalances(currentAddress, tokenAddresses).then((data) => {
         if (data) {
           const tokenBalances = tokenAddresses.reduce(
@@ -210,6 +210,8 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
           setBalances(tokenBalances)
         }
       })
+    } else {
+      setBalances(null)
     }
   }, [currentAddress])
   // --- Quote handlers ---

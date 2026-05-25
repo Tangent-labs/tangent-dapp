@@ -2,7 +2,6 @@
 
 import { dappConfig } from "@/dapp_config"
 import { TxContractCallData } from "@/types"
-import { getSwapAssetPrice } from "./service_price"
 import {
   Abi,
   Address,
@@ -17,6 +16,7 @@ import {
   WalletClient,
   WriteContractParameters,
 } from "viem"
+import { getSwapAssetPrice } from "./service_price"
 
 export const chain: Chain = {
   id: dappConfig.chain.id,
@@ -60,9 +60,10 @@ export const getCurrentBlock = async () => {
   return publicClient.getBlock({ blockTag: "latest" })
 }
 
-export type ApproveTxResult = EncodeFunctionDataParameters & { gas: undefined | bigint; address: Address }
+export type ApproveTxResult = EncodeFunctionDataParameters & { gas: undefined | bigint; address: Address; account: Address }
 
-export const getApproveTx = (contract: Address, spender: Address, amount: bigint): ApproveTxResult => {
+export const getApproveTx = (walletClient: WalletClient, erc20: Address, spender: Address, amount: bigint): ApproveTxResult => {
+  const account = walletClient.account!.address
   const approveAbi = [
     {
       inputs: [
@@ -82,12 +83,13 @@ export const getApproveTx = (contract: Address, spender: Address, amount: bigint
     functionName: "approve",
     args: [spender, amount],
     gas: undefined,
-    address: contract,
+    address: erc20,
+    account: account,
   }
 }
 
 export const executeApprove = async (client: WalletClient, contract: Address, spender: Address, amount: bigint) => {
-  const txData = getApproveTx(contract, spender, amount)
+  const txData = getApproveTx(client, contract, spender, amount)
   return executeContractCall(client, txData as TxContractCallData)
 }
 

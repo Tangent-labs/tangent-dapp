@@ -68,7 +68,9 @@ export const UsgAirdropProvider = ({ children }: UsgAirdropContextProps) => {
     setAirdropDataIsLoading(true)
 
     try {
-      const message = `I am using the following referral code ${referralStatus?.referralCode}`
+      const message = `By signing this message, I'm enrolling in the Tangent referral program using code: ${referralStatus?.referralCode}
+
+This signature is free and does not authorize any transaction.`
 
       if (walletClient && currentAddress) {
         const signature = await walletClient.signMessage({

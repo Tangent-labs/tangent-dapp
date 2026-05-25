@@ -1,9 +1,9 @@
-import { FormError, FormState, USGStakingInfo } from "../usg_type"
+import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 import { formatNumber } from "@/lib/number_formatter"
-import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Address, EstimateContractGasParameters, formatUnits, maxUint256, WalletClient, WriteContractParameters } from "viem"
-import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
+import { FormError, FormState, USGStakingInfo } from "../usg_type"
 
 export function getStakeFormState(
   stakeInfo: USGStakingInfo,
@@ -85,7 +85,7 @@ export const doApprove = async (walletClient: WalletClient, assetAddress: Addres
   const publicClient = getPublicClient()
   amount = amount || maxUint256
 
-  const txData = getApproveTx(assetAddress, stakingContract, amount)
+  const txData = getApproveTx(walletClient, assetAddress, stakingContract, amount)
   const gas = await publicClient.estimateContractGas(txData as unknown as EstimateContractGasParameters)
   txData.gas = gas
   const hash = await walletClient.writeContract(txData as unknown as WriteContractParameters)

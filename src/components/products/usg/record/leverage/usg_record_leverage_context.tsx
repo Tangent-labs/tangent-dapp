@@ -9,7 +9,7 @@ import { AssetDataPriced, CollateralInfo } from "@/types"
 import { formatEther, formatUnits, maxUint256 } from "viem"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
-import { formatBigInt, formatBigIntAsNumber } from "@/lib/number_formatter"
+import { formatBigInt, formatBigIntAsNumber, formatBigIntFloor } from "@/lib/number_formatter"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { USGLeverageContextProps, USGLeverageContextValues } from "./types"
 import { useUSGMaketListContext } from "../../list/usg_market_list_context"
@@ -690,11 +690,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
 
     let amountDisplayed = "0"
 
-    if (!!balanceAllowanceData && currentAddress && (isZapping || depositAssetInfo?.address == marketData?.constants?.receipt)) {
-      amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
-    }
-    if (currentAddress && !isZapping) {
-      amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
+    if (balanceAllowanceData && currentAddress) {
+      amountDisplayed = formatBigIntFloor(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
     }
     return `Max ${amountDisplayed} ${asset}`
   }, [currentAddress, depositAssetInfo, balanceAllowanceData, isZapping])

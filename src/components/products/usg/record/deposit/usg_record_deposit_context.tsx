@@ -4,7 +4,7 @@ import { toast } from "react-toastify"
 import { FormState, USGMarket } from "../../usg_type"
 import { useUSGContext } from "../../usg_context"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
-import { formatBigInt } from "@/lib/number_formatter"
+import { formatBigInt, formatBigIntFloor } from "@/lib/number_formatter"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { useRootContext } from "@/components/products/root/root_context"
@@ -463,11 +463,8 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
     if (isConnected) {
       let amountDisplayed = "0"
 
-      if (!!balanceAllowanceData && currentAddress && (isZapping || depositAssetInfo?.address == marketData?.constants?.receipt)) {
-        amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
-      }
-      if (currentAddress && !isZapping) {
-        amountDisplayed = formatBigInt(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
+      if (balanceAllowanceData && currentAddress) {
+        amountDisplayed = formatBigIntFloor(balanceAllowanceData?.balance, depositAssetInfo?.decimals, 2)
       }
       return `Max ${amountDisplayed} ${asset}`
     }

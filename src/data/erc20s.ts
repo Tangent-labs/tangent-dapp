@@ -1,13 +1,19 @@
-import { Address } from "viem"
 import { COMMON_ERC20S, CURVE_GAUGES, CURVE_LPS, PENDLE_POOLS } from "@tangent/defi-resources"
 import {
+  SDT_BOLD_USDC_VAULT,
   SDT_crvUSD_USDC_VAULT,
   SDT_crvUSD_USDT_VAULT,
+  SDT_eUSD_USDC_VAULT,
+  SDT_frxUSD_OUSD_VAULT,
+  SDT_frxUSD_scrvUSD_VAULT,
+  SDT_frxUSD_sDOLA_VAULT,
+  SDT_frxUSD_sUSDS_VAULT,
   SDT_GHO_crvUSD_VAULT,
   SDT_tBTC_cbBTC_VAULT,
   SDT_USG_frxUSD_VAULT,
   SDT_USG_USDC_VAULT,
 } from "@tangent/defi-resources/build/ressources/erc20/stakeDao"
+import { Address } from "viem"
 
 export type Erc20Details = {
   address: Address
@@ -272,6 +278,71 @@ export const ERC20S: Erc20Details[] = [
 
   // Stake DAO VAULT
   {
+    address: SDT_frxUSD_sUSDS_VAULT as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "frxUSD-sUSDS",
+    name: "Vault frxUSD/sUSDS",
+    symbol: "Vault frxUSD/sUSDS",
+  },
+  {
+    address: SDT_BOLD_USDC_VAULT as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "BOLD-USDC",
+    name: "Vault BOLD/USDC",
+    symbol: "Vault BOLD/USDC",
+  },
+  {
+    address: SDT_frxUSD_OUSD_VAULT as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "frxUSD-OUSD",
+    name: "Vault frxUSD/OUSD",
+    symbol: "Vault frxUSD/OUSD",
+  },
+  // TODO : To add in resources
+  {
+    address: "0xC5F79C63715cc7F3d65818b6b7B585Eb5b00AA74" as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "reUSD-scrvUSD",
+    name: "Vault reUSD/scrvUSD",
+    symbol: "Vault reUSD/scrvUSD",
+  },
+  {
+    address: SDT_crvUSD_USDT_VAULT as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "USDT-crvUSD",
+    name: "Vault USDT/crvUSD",
+    symbol: "Vault USDT/crvUSD",
+  },
+  {
+    address: SDT_frxUSD_scrvUSD_VAULT as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "frxUSD-scrvUSD",
+    name: "Vault frxUSD/scrvUSD",
+    symbol: "Vault frxUSD/scrvUSD",
+  },
+  {
+    address: SDT_eUSD_USDC_VAULT as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "eUSD-USDC",
+    name: "Vault eUSD/USDC",
+    symbol: "Vault eUSD/USDC",
+  },
+  {
+    address: SDT_frxUSD_sDOLA_VAULT as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "frxUSD-sDOLA",
+    name: "Vault frxUSD/sDOLA",
+    symbol: "Vault frxUSD/sDOLA",
+  },
+  {
     address: SDT_USG_frxUSD_VAULT,
     chainId: 1,
     decimals: 18,
@@ -294,14 +365,6 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "crvUSD-USDC",
     name: "Vault crvUSD/USDC",
     symbol: "Vault crvUSD/USDC",
-  },
-  {
-    address: SDT_crvUSD_USDT_VAULT,
-    chainId: 1,
-    decimals: 18,
-    logoKey: "crvUSD-USDT",
-    name: "Vault USDT/crvUSD",
-    symbol: "Vault USDT/crvUSD",
   },
   {
     address: SDT_tBTC_cbBTC_VAULT,

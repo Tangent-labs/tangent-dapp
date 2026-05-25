@@ -1,7 +1,7 @@
 "use-client"
 
-import { USGMarket } from "./usg_type"
 import { Address, getAddress } from "viem"
+import { USGMarket } from "./usg_type"
 
 const addresses = process.env.NEXT_PUBLIC_ADDRESSES_JSON
 
@@ -38,9 +38,9 @@ export const USGTokens = [
 
 export const USGPegKeepers: Address[] = Object.values(envAddresses.pegKeepers)
 
-export const USGOracles = Object.entries(envAddresses?.oracles).map(([key, address]) => {
+// NOTE : Quick and dirty fix. Our collaterals are for now only duoPoolStable so it's fine
+export const USGOracles = Object.entries(envAddresses?.oracles?.duoPoolStable).map(([key, address]) => {
   const trimmedName = key.replace("_", "-")
-
   return {
     token: trimmedName,
     address: address as `0x${string}`,

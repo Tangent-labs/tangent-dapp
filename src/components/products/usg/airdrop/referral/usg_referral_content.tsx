@@ -80,7 +80,7 @@ export const UsgReferralCode = () => {
                 </div>
                 <div className="flex w-full flex-col items-center justify-center">
                   <SecondaryButton
-                    onClick={() => copy(`https://tangent-dapp.vercel.app/referral?code=${referralStatus?.generatedCode}`)}
+                    onClick={() => copy(`${process.env.NEXT_PUBLIC_REFERAL_BASE_LINK}/referral?code=${referralStatus?.generatedCode}`)}
                     className="flex w-32 justify-center font-semibold"
                   >
                     {copied ? "Copied" : "Share"}

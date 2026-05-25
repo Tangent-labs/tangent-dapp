@@ -1,7 +1,7 @@
 "use client"
 
 import { dappConfig } from "@/dapp_config"
-import { chain } from "@/services/service_rpc"
+import { chain, setWalletPublicProvider } from "@/services/service_rpc"
 import { registerUser } from "./register_user"
 import { createAdapter } from "@/services/wallet"
 import type { WalletInfo } from "@/services/wallet"
@@ -112,6 +112,19 @@ export const WalletConnexionProvider = ({ children }: { children: ReactNode }) =
       account: currentAccount.address,
     }) as WalletClient
   }, [currentWallet, currentAccount])
+
+  // Route read calls through the wallet's RPC when connected on the correct chain.
+  // Wallets (e.g. MetaMask) ship with their own provider that is typically faster
+  // and more reliable than our public node. Falls back to env RPC when disconnected
+  // or on the wrong chain.
+  useEffect(() => {
+    if (currentWallet?.provider && isChainConnected) {
+      setWalletPublicProvider(currentWallet.provider)
+    } else {
+      setWalletPublicProvider(null)
+    }
+    return () => setWalletPublicProvider(null)
+  }, [currentWallet, isChainConnected])
 
   // ─── Actions ───
   const connect = async () => {

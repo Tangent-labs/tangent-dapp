@@ -1,13 +1,16 @@
-import { ReactNode, useMemo } from "react"
+import { ReactNode, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { APRDisplay } from "./apr_display"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import { Area, AreaChart, CartesianGrid, ReferenceDot, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
+const CLEAN_DATA_STARTING_TIMESTAMP = 1779752700000
 const TIME_TICK_COUNT = 7
 const CHART_Y_AXIS_WIDTH = 52
-const AVERAGE_LABEL_WIDTH = 72
+const AVERAGE_LABEL_PADDING_X = 14
 const AVERAGE_LABEL_HEIGHT = 30
+const AVERAGE_LABEL_RIGHT_OFFSET = 25
+const AVERAGE_LABEL_ESTIMATED_CHAR_WIDTH = 7.5
 const CHART_MARGIN = { top: 20, right: -50, left: 0, bottom: 0 }
 const X_AXIS_PADDING = { left: 0, right: 35 }
 const AXIS_LINE_STYLE = { stroke: "rgba(255,255,255,0.08)" }
@@ -57,16 +60,28 @@ const isRangeKey = (range: string): range is RangeKey => RANGE_KEYS.includes(ran
 
 const CustomAverageDisplay = (props: { averageApy: number; viewBox?: { y: number; width: number } }) => {
   const { viewBox, averageApy } = props
+  const textRef = useRef<SVGTextElement>(null)
+  const text = Number.isFinite(averageApy) ? `Avg ${averageApy.toFixed(2)}%` : ""
+  const [measuredTextWidth, setMeasuredTextWidth] = useState(() => text.length * AVERAGE_LABEL_ESTIMATED_CHAR_WIDTH)
 
-  if (!viewBox || !Number.isFinite(averageApy)) return null
+  useLayoutEffect(() => {
+    if (textRef.current) {
+      setMeasuredTextWidth(textRef.current.getBBox().width)
+    }
+  }, [text])
+
+  if (!viewBox || !text) return null
 
   const { width, y } = viewBox
+  const labelWidth = Math.ceil(measuredTextWidth) + AVERAGE_LABEL_PADDING_X * 2
+
+  const rectX = width - labelWidth - AVERAGE_LABEL_RIGHT_OFFSET
 
   return (
     <g>
-      <rect x={width - AVERAGE_LABEL_WIDTH} y={y + 6} width={AVERAGE_LABEL_WIDTH} rx={15} height={AVERAGE_LABEL_HEIGHT} fill="#0075FF" />
-      <text x={width - AVERAGE_LABEL_WIDTH / 2 + 2} y={y + 25} textAnchor="middle" fill="#ffffff" fontSize={13} fontWeight={700}>
-        Avg {averageApy.toFixed(2)}%
+      <rect x={rectX} y={y + 6} width={labelWidth} rx={15} height={AVERAGE_LABEL_HEIGHT} fill="#0075FF" />
+      <text ref={textRef} x={rectX + labelWidth / 2} y={y + 25} textAnchor="middle" fill="#ffffff" fontSize={13} fontWeight={700}>
+        {text}
       </text>
     </g>
   )
@@ -102,7 +117,10 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
 
   const { data, averageApy, ticks, fmtTick, fmtTooltipLabel, startTs, endTs, latestPoint } = useMemo(() => {
     const rangeConfig = RANGE_CONFIG[selectedRange]
-    const validHistory = apyHistory.filter((point) => Number.isFinite(point.date) && Number.isFinite(point.uv))
+
+    const validHistory = apyHistory
+      ?.filter((p) => p?.date > CLEAN_DATA_STARTING_TIMESTAMP)
+      .filter((point) => Number.isFinite(point.date) && Number.isFinite(point.uv))
 
     if (validHistory.length === 0) {
       return {

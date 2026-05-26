@@ -109,10 +109,10 @@ export const PredepositDepositSection = ({ scrollToFaq }: PredepositDepositSecti
   return (
     <section className="mt-6 flex w-full flex-col">
       <div className="px-3">
-        <div className="relative hidden h-5 w-full text-sm xl:flex">
+        <div className="relative hidden h-10 w-full text-sm xl:flex">
           {predepositStatus && (
             <span
-              className="absolute bottom-0 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap transition-all duration-1000 ease-out"
+              className="absolute top-0 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap transition-all duration-1000 ease-out"
               style={{ left: `${dynamicPercentages.eligible}%` }}
             >
               <HoverCard openDelay={50} closeDelay={100}>

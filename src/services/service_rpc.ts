@@ -10,6 +10,7 @@ import {
   decodeErrorResult,
   encodeDeployData,
   EncodeFunctionDataParameters,
+  fallback,
   Hash,
   Hex,
   http,
@@ -31,12 +32,20 @@ export const chain: Chain = {
   name: dappConfig.chain.name,
 }
 
+const httpRpcUrls = [dappConfig.chain.rpc, ...dappConfig.chain.fallbackRpcs].filter((url) => url.length > 0)
+
 const publicClient = createPublicClient({
   chain,
-  transport: http(chain.rpcUrls.default.http[0], {
-    retryCount: 0,
-    timeout: 30_000,
-  }),
+  transport: fallback(
+    httpRpcUrls.map((url) =>
+      http(url, {
+        retryCount: 2,
+        retryDelay: 200,
+        timeout: 10_000,
+      })
+    ),
+    { rank: true, retryCount: 0 }
+  ),
 })
 
 function getRetryClients() {

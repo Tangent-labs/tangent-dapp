@@ -15,7 +15,7 @@ export const CollateralEmissionLabel = ({ isHEC }: CollateralEmissionLabelProps)
           </span>
         </HoverCardTrigger>
         <HoverCardContent side="top" align="center" className="z-[9999] p-2 text-sm">
-          This market is an HEC market. Learn more about {isHEC ? "HEC" : "LEC"} in the
+          This market is an {isHEC ? "HEC" : "LEC"} market. Learn more about {isHEC ? "HEC" : "LEC"} in the
           <Link
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}

@@ -30,7 +30,7 @@ export const dappConfig: DappConfig = {
     id: Number(process.env.NEXT_PUBLIC_CHAIN_ID),
     name: process.env.NEXT_PUBLIC_CHAIN_NAME || "",
     rpc: process.env.NEXT_PUBLIC_CHAIN_RPC || "",
-    fallbackRpcs: process.env.NEXT_BACKUP_RPCS?.split(",") || [],
+    fallbackRpcs: process.env.NEXT_PUBLIC_BACKUP_RPCS?.split(",") || [],
     walletConnectId: process.env.NEXT_PUBLIC_WALLETCONECT_ID || "",
     explorerContractUrl: process.env.NEXT_PUBLIC_CHAIN_CONTRACT_EXPLORER || "",
   },

@@ -1,16 +1,17 @@
 "use client"
 
+import { ERC20S } from "@/data/erc20s"
+import { getPricesFromTokenAmounts } from "@/lib/asset_utils"
 import { formatDate } from "@/lib/other_formatter"
+import { getTokensPrice } from "@/services/service_price"
+import { executeChainViewUnique, executeContractCall, waitForTransaction } from "@/services/service_rpc"
+import { AssetDataPriced, ListHeaderData } from "@/types"
+import { COMMON_ERC20S } from "@tangent/defi-resources"
 import { Abi, Address, Hex, WalletClient } from "viem"
 import harvestUI from "../../../../abi/USG/HarvestUI.json"
-import { getTokensPrice } from "@/services/service_price"
-import { getPricesFromTokenAmounts } from "@/lib/asset_utils"
+import rewardAccumulator from "../../../../abi/USG/RewardAccumulator.json"
 import { USG_CONTRACT, USGMarkets } from "../usg_repository"
 import { HarvesterInfo, HarvesterInfoDisplay, USGTokenAmount } from "../usg_type"
-import { AssetDataPriced, ListHeaderData } from "@/types"
-import rewardAccumulator from "../../../../abi/USG/RewardAccumulator.json"
-import { executeChainViewUnique, executeContractCall, waitForTransaction } from "@/services/service_rpc"
-import { ERC20S } from "@/data/erc20s"
 
 export async function doHarvest(stakingAddress: Address, walletClient: WalletClient) {
   const [account] = await walletClient.requestAddresses()
@@ -79,6 +80,7 @@ export function transformHarvestOnChainData(harvestInfos: (HarvesterInfo & { mar
     if (!stakingInfo) return
     const isStakeDao = stakingInfo.marketType === "STAKEDAO_CRV_Vault"
     let tokenAmounts: USGTokenAmount[] = []
+    const crvAddress = COMMON_ERC20S.CRV.toLowerCase()
 
     // For stake DAO, harvestable rewards are :
     //      - Rewards held by the contracts
@@ -88,7 +90,10 @@ export function transformHarvestOnChainData(harvestInfos: (HarvesterInfo & { mar
       tokenAmounts = marketInfo.balancesRewards.map((bR) => {
         let claimable = 0n
         if (bR.symbol === "CRV") {
-          claimable = marketInfo.claimableRewards.find((cR) => cR.token === "CRV")?.amount || 0n
+          claimable =
+            marketInfo.claimableRewards.find((cR) => {
+              return cR.token.toLowerCase() === crvAddress
+            })?.amount || 0n
         }
         return { ...bR, amount: bR.amount + claimable }
       })

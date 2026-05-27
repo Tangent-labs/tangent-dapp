@@ -23,6 +23,8 @@ export const PredepositContent = () => {
     })
   }
 
+  const totalDeposits = (predepositStatus?.USGUSDCData?.USGUSDCAccumulatedTotal || 0n) + (predepositStatus?.USGfrxUSDData?.USGfrxUSDAccumulatedTotal || 0n)
+
   return (
     <>
       <header className="sticky top-0 z-50 flex h-[80px] w-full font-gilroy backdrop-blur-[60px]">
@@ -71,12 +73,11 @@ export const PredepositContent = () => {
             USGfrxUSDAccumulatedBalance={predepositStatus?.USGfrxUSDData.USGfrxUSDAccumulatedBalance || 0n}
             USGUSDCLiquidity={USGUSDCLiquidity}
             USGfrxUSDLiquidity={USGfrxUSDLiquidity}
+            totalDeposits={totalDeposits}
           />
 
           {predepositStatus?.predepositState === "retention" ? (
-            <PredepositRetentionPhase
-              amount={predepositStatus?.USGfrxUSDData?.USGfrxUSDAccumulatedTotal + predepositStatus?.USGUSDCData.USGUSDCAccumulatedTotal}
-            />
+            <PredepositRetentionPhase amount={totalDeposits} />
           ) : (
             <PredepositDepositSection scrollToFaq={scrollToFaq} />
           )}

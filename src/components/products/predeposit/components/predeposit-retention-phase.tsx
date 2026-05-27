@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect, useMemo, useCallback } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { formatBigInt, formatBigIntAsNumber } from "@/lib/number_formatter"
 import { TokenImage } from "@/components/design_system/structure/token_image"
-import { formatTimeNumber, TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "../predeposit.controller"
+import { formatTimeNumber } from "../predeposit.controller"
 
 type PredepositRetentionPhaseProps = {
   amount: bigint
@@ -42,10 +42,6 @@ export const PredepositRetentionPhase = ({ amount }: PredepositRetentionPhasePro
     return () => clearInterval(timer)
   }, [])
 
-  const tanAllocation = useMemo(() => {
-    return (amount * TOTAL_TAN_ALLOCATION) / TOTAL_DEPOSIT_CAP
-  }, [amount])
-
   return (
     <section className="mt-12 flex w-full flex-col items-center justify-center">
       {amount === PREDEPOSIT_CAP && <div className="text-center text-4xl text-subtitle">Cap reached</div>}
@@ -79,7 +75,7 @@ export const PredepositRetentionPhase = ({ amount }: PredepositRetentionPhasePro
       <div className="my-8 flex w-full max-w-[640px] items-center justify-between rounded-[10px] bg-overlay-panel px-3 py-4 backdrop-blur-[60px]">
         <span className="text-xl font-semibold">TAN distributed</span>
         <span className="flex items-center justify-center gap-2 text-[30px] font-semibold">
-          {formatBigIntAsNumber(tanAllocation, 18, 0)} <TokenImage token="tan" size={12} className="w-8" />
+          {formatBigIntAsNumber(200000n, 0, 0)} <TokenImage token="tan" size={12} className="w-8" />
         </span>
       </div>
     </section>

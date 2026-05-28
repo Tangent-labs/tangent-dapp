@@ -9,7 +9,7 @@ const TIME_TICK_COUNT = 7
 const CHART_Y_AXIS_WIDTH = 52
 const AVERAGE_LABEL_PADDING_X = 14
 const AVERAGE_LABEL_HEIGHT = 30
-const AVERAGE_LABEL_RIGHT_OFFSET = 25
+const AVERAGE_LABEL_RIGHT_OFFSET = 0
 const AVERAGE_LABEL_ESTIMATED_CHAR_WIDTH = 7.5
 const CHART_MARGIN = { top: 20, right: -50, left: 0, bottom: 0 }
 const X_AXIS_PADDING = { left: 0, right: 35 }
@@ -58,8 +58,8 @@ const RANGE_KEYS = Object.keys(RANGE_CONFIG) as RangeKey[]
 
 const isRangeKey = (range: string): range is RangeKey => RANGE_KEYS.includes(range as RangeKey)
 
-const CustomAverageDisplay = (props: { averageApy: number; viewBox?: { y: number; width: number } }) => {
-  const { viewBox, averageApy } = props
+const CustomAverageDisplay = (props: { averageApy: number; apy: number; viewBox?: { y: number; width: number } }) => {
+  const { viewBox, averageApy, apy } = props
   const textRef = useRef<SVGTextElement>(null)
   const text = Number.isFinite(averageApy) ? `Avg ${averageApy.toFixed(2)}%` : ""
   const [measuredTextWidth, setMeasuredTextWidth] = useState(() => text.length * AVERAGE_LABEL_ESTIMATED_CHAR_WIDTH)
@@ -77,10 +77,14 @@ const CustomAverageDisplay = (props: { averageApy: number; viewBox?: { y: number
 
   const rectX = width - labelWidth - AVERAGE_LABEL_RIGHT_OFFSET
 
+  const isAboveLine = apy < averageApy
+  const rectY = isAboveLine ? y - AVERAGE_LABEL_HEIGHT - 6 : y + 6
+  const textY = rectY + 19
+
   return (
     <g>
-      <rect x={rectX} y={y + 6} width={labelWidth} rx={15} height={AVERAGE_LABEL_HEIGHT} fill="#0075FF" />
-      <text ref={textRef} x={rectX + labelWidth / 2} y={y + 25} textAnchor="middle" fill="#ffffff" fontSize={13} fontWeight={700}>
+      <rect x={rectX} y={rectY} width={labelWidth} rx={15} height={AVERAGE_LABEL_HEIGHT} fill="#0075FF" />
+      <text ref={textRef} x={rectX + labelWidth / 2} y={textY} textAnchor="middle" fill="#ffffff" fontSize={13} fontWeight={700}>
         {text}
       </text>
     </g>
@@ -119,7 +123,7 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
     const rangeConfig = RANGE_CONFIG[selectedRange]
 
     const validHistory = apyHistory
-      ?.filter((p) => p?.date > CLEAN_DATA_STARTING_TIMESTAMP)
+      .filter((p) => p?.date > CLEAN_DATA_STARTING_TIMESTAMP)
       .filter((point) => Number.isFinite(point.date) && Number.isFinite(point.uv))
 
     if (validHistory.length === 0) {
@@ -139,7 +143,7 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
     const startTs = Math.min(...dates)
     const endTs = Math.max(...dates)
     const spanMs = endTs - startTs
-    const averageApy = validHistory.reduce((acc, point) => acc + point.uv, 0) / validHistory.length
+    const averageApy = validHistory.filter((p) => p?.date > CLEAN_DATA_STARTING_TIMESTAMP).reduce((acc, point) => acc + point.uv, 0) / validHistory.length
 
     return {
       data: validHistory,
@@ -225,7 +229,16 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
 
               <Tooltip cursor={{ ...AXIS_LINE_STYLE, strokeWidth: 1.5, strokeDasharray: "4 4" }} content={<ApyTooltip fmtLabel={fmtTooltipLabel} />} />
 
-              <ReferenceLine y={averageApy} stroke="#0075FF" strokeDasharray="8 6" strokeWidth={2} label={<CustomAverageDisplay averageApy={averageApy} />} />
+              <ReferenceLine
+                segment={[
+                  { x: startTs, y: averageApy },
+                  { x: endTs, y: averageApy },
+                ]}
+                stroke="#0075FF"
+                strokeDasharray="8 6"
+                strokeWidth={2}
+                label={<CustomAverageDisplay averageApy={averageApy} apy={apy} />}
+              />
 
               <ReferenceDot x={latestPoint.date} y={latestPoint.uv} r={4} fill="#95FF00" stroke="#95FF00" isFront={true} />
             </AreaChart>

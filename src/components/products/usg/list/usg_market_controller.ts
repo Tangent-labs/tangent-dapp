@@ -117,6 +117,12 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
 
   const marketType = onChainRow?.marketType as USGMarketType
 
+  const totalDebt = onChainRow?.debtInfos?.totalDebt || 0n
+
+  const maxMarketDebt = onChainRow?.constants?.maxMarketDebt || 0n
+
+  const isBorrowCapReached = maxMarketDebt > 0n && totalDebt >= maxMarketDebt
+
   return {
     marketType,
     token: data.collateral,
@@ -163,6 +169,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
     positionCollateralUSDValue: onChainRow?.collateralInfos?.positionCollateralUSDValue.toString() || "0",
     totalCollateralUSDValue: onChainRow?.collateralInfos?.totalCollateralUSDValue?.toString() || "0",
     rewardToken,
+    isBorrowCapReached,
   }
 }
 

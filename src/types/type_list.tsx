@@ -54,4 +54,5 @@ export type ListRowData = {
   protocol: string
   type: string
   rewardToken: string
+  isBorrowCapReached: boolean
 }

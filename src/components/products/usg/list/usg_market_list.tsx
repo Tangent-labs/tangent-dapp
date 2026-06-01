@@ -390,6 +390,13 @@ export function USGMarketListInner() {
                 <div className="h-10 w-2 rounded-full bg-tonic"></div>
               </div>
             )}
+
+            {item.isDepositPaused && (
+              <div className="absolute -top-5 right-3 flex h-full w-2 items-center justify-center">
+                <div className="h-3 w-1 bg-danger"></div>
+                <div className="ml-1 h-3 w-1 bg-danger"></div>
+              </div>
+            )}
           </>
         </MarketListRow>
       ))}

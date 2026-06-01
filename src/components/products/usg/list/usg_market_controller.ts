@@ -117,6 +117,12 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
 
   const marketType = onChainRow?.marketType as USGMarketType
 
+  const isDepositPaused = onChainRow?.constants?.pauseStruct?.isDepositPaused || false
+
+  const isBorrowPaused = onChainRow?.constants?.pauseStruct?.isBorrowPaused || false
+
+  const isLeveragePaused = onChainRow?.constants?.pauseStruct?.isLeveragePaused || false
+
   return {
     marketType,
     token: data.collateral,
@@ -163,6 +169,9 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
     positionCollateralUSDValue: onChainRow?.collateralInfos?.positionCollateralUSDValue.toString() || "0",
     totalCollateralUSDValue: onChainRow?.collateralInfos?.totalCollateralUSDValue?.toString() || "0",
     rewardToken,
+    isDepositPaused,
+    isBorrowPaused,
+    isLeveragePaused,
   }
 }
 

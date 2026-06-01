@@ -5,7 +5,7 @@ import { useMemo } from "react"
 import { formatUnits } from "viem"
 import { formatDollar, formatNumber } from "@/lib/number_formatter"
 import { TokenImage } from "@/components/design_system/structure/token_image"
-import { TOTAL_DEPOSIT_CAP, TOTAL_TAN_ALLOCATION } from "../predeposit.controller"
+import { TOTAL_TAN_ALLOCATION } from "../predeposit.controller"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { NeonLightCard } from "@/components/design_system/structure/neon_light_card"
 import { IconCircleHelp } from "@/components/icons"
@@ -18,14 +18,22 @@ type PredepositHeadingProps = {
   USGfrxUSDAccumulatedBalance: bigint
   USGUSDCLiquidity: PoolLiquidity | null
   USGfrxUSDLiquidity: PoolLiquidity | null
+  totalDeposits: bigint
 }
 
 const color1 = "#0077ff67"
 const color2 = "#0075FF"
 
-export const PredepositHeading = ({ USGUSDCAccumulatedBalance, USGfrxUSDAccumulatedBalance, USGUSDCLiquidity, USGfrxUSDLiquidity }: PredepositHeadingProps) => {
+export const PredepositHeading = ({
+  USGUSDCAccumulatedBalance,
+  USGfrxUSDAccumulatedBalance,
+  USGUSDCLiquidity,
+  USGfrxUSDLiquidity,
+  totalDeposits,
+}: PredepositHeadingProps) => {
   const tanAllocation = useMemo(() => {
-    return ((USGUSDCAccumulatedBalance + USGfrxUSDAccumulatedBalance) * TOTAL_TAN_ALLOCATION) / (TOTAL_DEPOSIT_CAP * 10n ** 18n)
+    if (totalDeposits === 0n) return 0
+    return ((USGUSDCAccumulatedBalance + USGfrxUSDAccumulatedBalance) * TOTAL_TAN_ALLOCATION) / totalDeposits
   }, [USGUSDCAccumulatedBalance, USGfrxUSDAccumulatedBalance])
 
   const liquidityItems = useMemo(() => {

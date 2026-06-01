@@ -81,9 +81,10 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, borrowWe
     errors.push(dappErrors["empty-form"])
   } else {
     const minLoan = BigInt(marketData?.constants?.minimumLoan || "0")
+    const userDebt = marketData?.debtInfos?.userDebt || 0n
     const totalDebt = marketData?.debtInfos?.totalDebt || 0n
 
-    if (borrowWeiValue + totalDebt < minLoan) {
+    if (borrowWeiValue + userDebt < minLoan) {
       errors.push({
         key: "min-debt",
         title: "Below Minimum Debt",
@@ -91,7 +92,7 @@ export function getBorrowCommonFormState(marketData?: MarketDetailData, borrowWe
         content: "Please increase your borrow amount to meet the minimum debt requirement.",
         type: "form-alert",
       })
-    } else if (BigInt(marketData?.debtInfos?.userDebt || 0n) + BigInt(borrowWeiValue || 0n) > (marketData?.constants?.maxMarketDebt || 0n)) {
+    } else if (totalDebt + BigInt(borrowWeiValue || 0n) > (marketData?.constants?.maxMarketDebt || 0n)) {
       errors.push(dappErrors["max-market-debt"])
     }
   }

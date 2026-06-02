@@ -97,10 +97,11 @@ export function getRewardTokenFromAprDetails(aprDetails: RewardsApr, protocol: s
 }
 
 const BORROW_CAP_WARNING_PCT = 90n
+const BORROW_CAP_CRITICAL_PCT = 99n
 
 export function getBorrowCapStatus(totalDebt: bigint, maxMarketDebt: bigint): BorrowCapStatus {
   if (maxMarketDebt <= 0n) return "none"
-  if (totalDebt >= maxMarketDebt) return "critical"
+  if (totalDebt >= (maxMarketDebt * BORROW_CAP_CRITICAL_PCT) / 100n) return "critical"
   return totalDebt >= (maxMarketDebt * BORROW_CAP_WARNING_PCT) / 100n ? "warning" : "none"
 }
 

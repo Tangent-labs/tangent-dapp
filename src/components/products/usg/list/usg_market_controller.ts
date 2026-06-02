@@ -3,7 +3,7 @@
 import MarketListUI from "@/abi/USG/MarketListUI.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import { Abi, Address, formatEther, formatUnits, Hex } from "viem"
-import { ListHeaderData, ListRowData } from "@/types"
+import { BorrowCapStatus, ListHeaderData, ListRowData } from "@/types"
 import { USG_CONTRACT, USGMarkets, USGPegKeepers } from "../usg_repository"
 import { formatBigInt, formatMillions, formatNumber } from "@/lib/number_formatter"
 import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, USGGlobalData, USGMarketType } from "../usg_type"
@@ -96,6 +96,14 @@ export function getRewardTokenFromAprDetails(aprDetails: RewardsApr, protocol: s
   }
 }
 
+const BORROW_CAP_WARNING_PCT = 90n
+
+export function getBorrowCapStatus(totalDebt: bigint, maxMarketDebt: bigint): BorrowCapStatus {
+  if (maxMarketDebt <= 0n) return "none"
+  if (totalDebt >= maxMarketDebt) return "critical"
+  return totalDebt >= (maxMarketDebt * BORROW_CAP_WARNING_PCT) / 100n ? "warning" : "none"
+}
+
 function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainViewMarketRow): ListRowData {
   let totalCurrentAPR = 0
   let totalProjectedAPR = 0
@@ -121,7 +129,9 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
 
   const maxMarketDebt = onChainRow?.constants?.maxMarketDebt || 0n
 
-  const isBorrowCapReached = maxMarketDebt > 0n && totalDebt >= maxMarketDebt
+  const borrowCapStatus = getBorrowCapStatus(totalDebt, maxMarketDebt)
+
+  const isBorrowCapReached = borrowCapStatus === "critical"
 
   return {
     marketType,
@@ -170,6 +180,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
     totalCollateralUSDValue: onChainRow?.collateralInfos?.totalCollateralUSDValue?.toString() || "0",
     rewardToken,
     isBorrowCapReached,
+    borrowCapStatus,
   }
 }
 

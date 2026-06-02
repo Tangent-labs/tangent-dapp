@@ -3,6 +3,8 @@ import { USGMarketType } from "@/components/products/usg/usg_type"
 
 export type SortedState = "asc" | "desc" | "none"
 
+export type BorrowCapStatus = "none" | "warning" | "critical"
+
 export type ListSort = {
   key: string
   direction: SortedState
@@ -55,4 +57,5 @@ export type ListRowData = {
   type: string
   rewardToken: string
   isBorrowCapReached: boolean
+  borrowCapStatus: BorrowCapStatus
 }

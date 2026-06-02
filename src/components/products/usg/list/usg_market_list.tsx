@@ -322,7 +322,7 @@ export function USGMarketListInner() {
           className={cn("my-1", !!marketData.length && !!displayRows ? "" : "shimmer")}
           key={index}
           route={"/" + item.address + "/deposit-borrow"}
-          isBorrowCapReached={item.isBorrowCapReached}
+          borrowCapStatus={item.borrowCapStatus}
         >
           <ListAsset name={item.name} token={item.logoKey} marketData={marketData.find((el) => el.marketAddress === item.address)} />
 

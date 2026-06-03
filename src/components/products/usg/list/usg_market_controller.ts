@@ -126,13 +126,19 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
 
   const marketType = onChainRow?.marketType as USGMarketType
 
+  const isDepositPaused = onChainRow?.constants?.pauseStruct?.isDepositPaused || false
+
+  const isBorrowPaused = onChainRow?.constants?.pauseStruct?.isBorrowPaused || false
+
+  const isLeveragePaused = onChainRow?.constants?.pauseStruct?.isLeveragePaused || false
+
   const totalDebt = onChainRow?.debtInfos?.totalDebt || 0n
 
   const maxMarketDebt = onChainRow?.constants?.maxMarketDebt || 0n
 
   const borrowCapStatus = getBorrowCapStatus(totalDebt, maxMarketDebt)
 
-  const isBorrowCapReached = borrowCapStatus === "critical"
+  const isBorrowCapReached = totalDebt >= maxMarketDebt
 
   return {
     marketType,
@@ -180,6 +186,9 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
     positionCollateralUSDValue: onChainRow?.collateralInfos?.positionCollateralUSDValue.toString() || "0",
     totalCollateralUSDValue: onChainRow?.collateralInfos?.totalCollateralUSDValue?.toString() || "0",
     rewardToken,
+    isDepositPaused,
+    isBorrowPaused,
+    isLeveragePaused,
     isBorrowCapReached,
     borrowCapStatus,
   }

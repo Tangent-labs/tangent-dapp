@@ -18,16 +18,7 @@ export const opportunities = [
     marketType: "Convex_CRV",
     points: 105,
   },
-  {
-    name: "USG/sDOLA (unstaked) - Curve",
-    asset: "USG-sDOLA",
-    subLabel: "(unstaked)",
-    address: "0x317837aed98bea887074d1f97fd3c83ebca6905b",
-    link: "https://www.curve.finance/dex/ethereum/pools/0x317837aed98bea887074d1f97fd3c83ebca6905b/deposit",
-    protocolName: "Curve",
-    marketType: "Convex_CRV",
-    points: 315,
-  },
+
   {
     name: "USG/sDOLA (unstaked) - Curve",
     asset: "USG-sDOLA",

@@ -18,6 +18,7 @@ export const opportunities = [
     marketType: "Convex_CRV",
     points: 105,
   },
+
   {
     name: "USG/sDOLA (unstaked) - Curve",
     asset: "USG-sDOLA",

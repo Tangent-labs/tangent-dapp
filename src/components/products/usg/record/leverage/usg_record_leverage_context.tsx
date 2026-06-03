@@ -498,7 +498,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         USG_CONTRACT.USG,
         marketInfo?.collatAddress,
         borrowWeiValue,
-        leveragedCollateralQuote,
+        computedMinAmountOut(leveragedCollateralQuote, slippage),
         marketInfo?.marketAddress,
         USG_CONTRACT.ZAPPER,
         curveRoutes

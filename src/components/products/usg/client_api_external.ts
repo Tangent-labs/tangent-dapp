@@ -1,6 +1,7 @@
 "use client"
 
 import { Address } from "viem"
+import { getBalancerPools as fetchBalancerPools, BalancerPool } from "@/components/products/usg/getBalancerPools"
 
 export type StakeDaoAPRData = {
   vault: string
@@ -163,6 +164,15 @@ export const getCurveSubgraph = async (chain = "ethereum"): Promise<CurveSubgrap
     return json.data.poolList
   } catch (error) {
     console.error("Failed to fetch curve subgraph data:", error)
+    return []
+  }
+}
+
+export const getBalancerPools = async (addresses: string[]): Promise<BalancerPool[]> => {
+  try {
+    return await fetchBalancerPools(addresses)
+  } catch (error) {
+    console.error("Failed to fetch balancer pools :", error)
     return []
   }
 }

@@ -181,6 +181,7 @@ export const protocolConfig = {
   Convex: "CVX",
   "Stake DAO": "SDT",
   Pendle: "PENDLE",
+  Balancer: "BALANCER",
 } as const
 
 export type ProtocolName = keyof typeof protocolConfig

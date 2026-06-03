@@ -1,5 +1,24 @@
 export const opportunities = [
   {
+    name: "USG/GHO - Balancer",
+    asset: "USG-GHO",
+    address: "0xe858f8c6e0ba60fed092ac0b21681fd4cde4fa11",
+    link: "https://balancer.fi/pools/ethereum/v3/0xe858f8c6e0ba60fed092ac0b21681fd4cde4fa11",
+    protocolName: "Balancer",
+    marketType: "Balancer",
+    points: 315,
+  },
+  {
+    name: "sUSG/reUSDe - Curve",
+    asset: "sUSG-reUSDe",
+    subLabel: "(unstaked)",
+    address: "0x2cbbfc9bd710c689cf3ec20b95fcf1dd1336b648",
+    link: "https://www.curve.finance/dex/ethereum/pools/0x2cbbfc9bd710c689cf3ec20b95fcf1dd1336b648/deposit",
+    protocolName: "Curve",
+    marketType: "Convex_CRV",
+    points: 315,
+  },
+  {
     name: "USG/sDOLA (unstaked) - Curve",
     asset: "USG-sDOLA",
     subLabel: "(unstaked)",

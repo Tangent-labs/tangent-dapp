@@ -366,6 +366,7 @@ export type EarnProtocolInput = {
   address: string
   marketType: string
   pid?: number
+  isPredeposit?: boolean
 }
 
 export type AprOpportunityItem = {
@@ -380,6 +381,8 @@ export type AprOpportunityItem = {
   points: number
   address: string
   rewardToken: string
+  isPredeposit?: boolean
+
   currentAPRDetails?: {
     [rewardToken: string]: number | undefined
   }

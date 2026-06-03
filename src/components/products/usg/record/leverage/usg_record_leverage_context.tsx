@@ -507,7 +507,15 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
 
       await toastTx(
-        doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, isReceiptIn, leverageData!),
+        doMarketLeverage(
+          marketInfo?.marketAddress,
+          walletClient,
+          depositWeiValue || 0n,
+          borrowWeiValue,
+          computedMinAmountOut(leveragedCollateralQuote, slippage),
+          isReceiptIn,
+          leverageData!
+        ),
         {
           pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
           success: () => ({

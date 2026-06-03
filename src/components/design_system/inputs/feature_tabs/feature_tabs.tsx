@@ -79,7 +79,7 @@ export const FeatureTabs = ({
                 )}
               >
                 {feature === "leverage" && <FeatureTabsMotionDiv marketAddress={marketAddress} />}
-                {isLeveragePaused && <PauseIcon />}
+                {(isLeveragePaused || isBorrowPaused || isDepositPaused) && <PauseIcon />}
                 <span className="relative z-20">Leverage</span>
               </div>
 

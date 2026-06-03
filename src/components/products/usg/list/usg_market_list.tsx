@@ -391,7 +391,7 @@ export function USGMarketListInner() {
               </div>
             )}
 
-            {item.isDepositPaused && (
+            {(item.isDepositPaused || item.isBorrowPaused || item.isLeveragePaused) && (
               <div className="absolute -top-5 right-3 flex h-full w-2 items-center justify-center">
                 <div className="h-3 w-1 bg-danger"></div>
                 <div className="ml-1 h-3 w-1 bg-danger"></div>

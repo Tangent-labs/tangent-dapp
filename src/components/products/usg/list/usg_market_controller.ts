@@ -3,7 +3,7 @@
 import MarketListUI from "@/abi/USG/MarketListUI.json"
 import { executeChainViewUnique } from "@/services/service_rpc"
 import { Abi, Address, formatEther, formatUnits, Hex } from "viem"
-import { ListHeaderData, ListRowData } from "@/types"
+import { BorrowCapStatus, ListHeaderData, ListRowData } from "@/types"
 import { USG_CONTRACT, USGMarkets, USGPegKeepers } from "../usg_repository"
 import { formatBigInt, formatMillions, formatNumber } from "@/lib/number_formatter"
 import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, USGGlobalData, USGMarketType } from "../usg_type"
@@ -96,6 +96,15 @@ export function getRewardTokenFromAprDetails(aprDetails: RewardsApr, protocol: s
   }
 }
 
+const BORROW_CAP_WARNING_PCT = 90n
+const BORROW_CAP_CRITICAL_PCT = 99n
+
+export function getBorrowCapStatus(totalDebt: bigint, maxMarketDebt: bigint): BorrowCapStatus {
+  if (maxMarketDebt <= 0n) return "none"
+  if (totalDebt >= (maxMarketDebt * BORROW_CAP_CRITICAL_PCT) / 100n) return "critical"
+  return totalDebt >= (maxMarketDebt * BORROW_CAP_WARNING_PCT) / 100n ? "warning" : "none"
+}
+
 function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainViewMarketRow): ListRowData {
   let totalCurrentAPR = 0
   let totalProjectedAPR = 0
@@ -122,6 +131,14 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
   const isBorrowPaused = onChainRow?.constants?.pauseStruct?.isBorrowPaused || false
 
   const isLeveragePaused = onChainRow?.constants?.pauseStruct?.isLeveragePaused || false
+
+  const totalDebt = onChainRow?.debtInfos?.totalDebt || 0n
+
+  const maxMarketDebt = onChainRow?.constants?.maxMarketDebt || 0n
+
+  const borrowCapStatus = getBorrowCapStatus(totalDebt, maxMarketDebt)
+
+  const isBorrowCapReached = totalDebt >= maxMarketDebt
 
   return {
     marketType,
@@ -172,6 +189,8 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
     isDepositPaused,
     isBorrowPaused,
     isLeveragePaused,
+    isBorrowCapReached,
+    borrowCapStatus,
   }
 }
 

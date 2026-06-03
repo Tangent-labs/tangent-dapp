@@ -20,7 +20,9 @@ type USGRecordLayoutProps = {
 }
 
 export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
-  const { feature, canLeverage, marketContracts, marketInfo, setIsRepayAndWithdraw, setActiveTab, activeTab } = useUSGRecordContext()
+  const { feature, canLeverage, marketContracts, marketInfo, onChainData, setIsRepayAndWithdraw, setActiveTab, activeTab } = useUSGRecordContext()
+
+  const marketPauseStruct = onChainData?.constants?.pauseStruct
 
   const router = useRouter()
 
@@ -89,6 +91,9 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
               activeTab={activeTab}
               canLeverage={canLeverage}
               marketAddress={marketInfo?.marketAddress}
+              isDepositPaused={marketPauseStruct?.isDepositPaused || false}
+              isBorrowPaused={marketPauseStruct?.isBorrowPaused || false}
+              isLeveragePaused={marketPauseStruct?.isLeveragePaused || false}
               onTabClick={onTabClick}
               onTabClickLeverage={onTabClickLeverage}
               onClickBorrow={onClickBorrow}

@@ -186,6 +186,11 @@ export interface MarketConstants {
     stepAmount: number
   }
   receipt: Address
+  pauseStruct: {
+    isDepositPaused: boolean
+    isBorrowPaused: boolean
+    isLeveragePaused: boolean
+  }
 }
 
 export interface OutputBalanceAllowances {

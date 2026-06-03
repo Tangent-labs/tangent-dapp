@@ -10,11 +10,21 @@ import { FeatureSelect } from "../../structure/feature_select"
 
 const IS_LEVERAGE_ON = process.env.NEXT_PUBLIC_IS_LEVERAGE_ON === "true"
 
+const PauseIcon = () => (
+  <span className="absolute right-1 top-1 flex h-3 items-center" aria-hidden="true">
+    <span className="h-2 w-0.5 bg-danger"></span>
+    <span className="ml-0.5 h-2 w-0.5 bg-danger"></span>
+  </span>
+)
+
 type FeatureTabsProps = {
   feature: string
   activeTab: string
   canLeverage: boolean
   marketAddress: Address
+  isDepositPaused: boolean
+  isBorrowPaused: boolean
+  isLeveragePaused: boolean
   onClickBorrow: () => void
   onClickRepay: () => void
   onTabClick: (v: string) => void
@@ -26,6 +36,9 @@ export const FeatureTabs = ({
   activeTab,
   canLeverage,
   marketAddress,
+  isDepositPaused,
+  isBorrowPaused,
+  isLeveragePaused,
   onClickBorrow,
   onClickRepay,
   onTabClick,
@@ -52,6 +65,7 @@ export const FeatureTabs = ({
                 )}
               >
                 {feature === "deposit-borrow" && <FeatureTabsMotionDiv marketAddress={marketAddress} />}
+                {(isDepositPaused || isBorrowPaused) && <PauseIcon />}
                 <span className="relative z-20">Deposit & Borrow</span>
               </div>
 
@@ -65,6 +79,7 @@ export const FeatureTabs = ({
                 )}
               >
                 {feature === "leverage" && <FeatureTabsMotionDiv marketAddress={marketAddress} />}
+                {(isLeveragePaused || isBorrowPaused || isDepositPaused) && <PauseIcon />}
                 <span className="relative z-20">Leverage</span>
               </div>
 
@@ -76,6 +91,7 @@ export const FeatureTabs = ({
                 )}
               >
                 {feature === "deposit" && <FeatureTabsMotionDiv marketAddress={marketAddress} />}
+                {isDepositPaused && <PauseIcon />}
                 <span className="relative z-20">Deposit</span>
               </div>
               <div
@@ -86,6 +102,7 @@ export const FeatureTabs = ({
                 )}
               >
                 {feature === "borrow" && <FeatureTabsMotionDiv marketAddress={marketAddress} />}
+                {isBorrowPaused && <PauseIcon />}
                 <span className="relative z-20">Borrow</span>
               </div>
             </LayoutGroup>

@@ -171,6 +171,7 @@ export const mapAPROpportunities = (tasks: EarnProtocolInput[], poolsData?: Arra
         rewardToken,
         currentAPRDetails,
         projectedAPRDetails,
+        isPredeposit: t.isPredeposit,
       }
     }
   })

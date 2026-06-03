@@ -7,7 +7,7 @@ import { mapAPROpportunities, getConvexRates, getConvexBoost } from "./usg_earn_
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { AssetPrices } from "@/types/type_asset"
 import { AprOpportunityItem, USGStakingInfo, LpUserPoints } from "../usg_type"
-import { EarnPoolsData, getBalancerPools, getConvexPools, getCurvePools, getCurveSubgraph, getPendlePools, getStakeDAOPools } from "../client_api_external"
+import { EarnPoolsData, getConvexPools, getCurvePools, getCurveSubgraph, getPendlePools, getStakeDAOPools } from "../client_api_external"
 import { opportunities } from "@/app/(products)/(usg)/earn/aprOpportunities"
 import { getTokensPrice } from "@/services/service_price"
 import { Address } from "viem"
@@ -56,9 +56,18 @@ export const USGEarnProvider = ({ children }: USGEarnContextProps) => {
   const fetchPoolsData = async () => {
     try {
       const pids = opportunities.filter((o) => o.protocolName === "Convex" && o.pid).map((o) => o.pid) as number[]
-      const balancerAddresses = opportunities.filter((o) => o.protocolName === "Balancer").map((o) => o.address)
+      // const balancerAddresses = opportunities.filter((o) => o.protocolName === "Balancer").map((o) => o.address)
 
-      const [curvePools, convexPools, stakeDaoPools, pendlePools, subgraphPools, convexRates, convexBoost, balancerPools] = await Promise.all([
+      const [
+        curvePools,
+        convexPools,
+        stakeDaoPools,
+        pendlePools,
+        subgraphPools,
+        convexRates,
+        convexBoost,
+        // balancerPools
+      ] = await Promise.all([
         getCurvePools(),
         getConvexPools(),
         getStakeDAOPools(),
@@ -66,7 +75,7 @@ export const USGEarnProvider = ({ children }: USGEarnContextProps) => {
         getCurveSubgraph(),
         getConvexRates(pids),
         getConvexBoost(pids),
-        getBalancerPools(balancerAddresses),
+        // getBalancerPools(balancerAddresses),
       ])
 
       const tokens = new Set<Address>()
@@ -89,18 +98,21 @@ export const USGEarnProvider = ({ children }: USGEarnContextProps) => {
         convexBoost
       )
 
-      const balancerPoolsData: EarnPoolsData[] = balancerPools.map((pool) => {
-        const totalAPR = pool.dynamicData.aprItems.reduce((sum, item) => sum + (Number.isFinite(item.apr) ? item.apr : 0), 0) * 100
+      // const balancerPoolsData: EarnPoolsData[] = balancerPools.map((pool) => {
+      //   const totalAPR = pool.dynamicData.aprItems.reduce((sum, item) => sum + (Number.isFinite(item.apr) ? item.apr : 0), 0) * 100
 
-        return {
-          protocol: "Balancer",
-          address: pool.address,
-          gaugeCrvApy: [totalAPR, 0],
-          gaugeFutureCrvApy: [undefined, undefined],
-        }
-      })
+      //   return {
+      //     protocol: "Balancer",
+      //     address: pool.address,
+      //     gaugeCrvApy: [totalAPR, 0],
+      //     gaugeFutureCrvApy: [undefined, undefined],
+      //   }
+      // })
 
-      setPoolsData([...poolsAndTasks, ...balancerPoolsData])
+      setPoolsData([
+        ...poolsAndTasks,
+        // ...balancerPoolsData
+      ])
     } catch (e) {
       console.error("fetchPoolsData failed", e)
     } finally {

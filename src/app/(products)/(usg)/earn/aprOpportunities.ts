@@ -1,13 +1,13 @@
 export const opportunities = [
-  {
-    name: "USG/GHO - Balancer",
-    asset: "USG-GHO",
-    address: "0xe858f8c6e0ba60fed092ac0b21681fd4cde4fa11",
-    link: "https://balancer.fi/pools/ethereum/v3/0xe858f8c6e0ba60fed092ac0b21681fd4cde4fa11",
-    protocolName: "Balancer",
-    marketType: "Balancer",
-    points: 315,
-  },
+  // {
+  //   name: "USG/GHO - Balancer",
+  //   asset: "USG-GHO",
+  //   address: "0xe858f8c6e0ba60fed092ac0b21681fd4cde4fa11",
+  //   link: "https://balancer.fi/pools/ethereum/v3/0xe858f8c6e0ba60fed092ac0b21681fd4cde4fa11",
+  //   protocolName: "Balancer",
+  //   marketType: "Balancer",
+  //   points: 105,
+  // },
   {
     name: "sUSG/reUSDe - Curve",
     asset: "sUSG-reUSDe",
@@ -16,7 +16,7 @@ export const opportunities = [
     link: "https://www.curve.finance/dex/ethereum/pools/0x2cbbfc9bd710c689cf3ec20b95fcf1dd1336b648/deposit",
     protocolName: "Curve",
     marketType: "Convex_CRV",
-    points: 315,
+    points: 105,
   },
   {
     name: "USG/sDOLA (unstaked) - Curve",
@@ -37,6 +37,7 @@ export const opportunities = [
     protocolName: "Curve",
     marketType: "Convex_CRV",
     points: 105,
+    isPredeposit: true,
   },
   {
     name: "USG/frxUSD (unstaked) - Curve",
@@ -47,6 +48,7 @@ export const opportunities = [
     protocolName: "Curve",
     marketType: "Convex_CRV",
     points: 105,
+    isPredeposit: true,
   },
   {
     name: "USG/USDC (staked) - Curve",
@@ -57,6 +59,7 @@ export const opportunities = [
     protocolName: "Curve",
     marketType: "Convex_CRV",
     points: 15,
+    isPredeposit: true,
   },
 
   {
@@ -68,8 +71,8 @@ export const opportunities = [
     protocolName: "Curve",
     marketType: "Convex_CRV",
     points: 15,
+    isPredeposit: true,
   },
-
   {
     name: "USG/USDC - Convex",
     asset: "USG-USDC",
@@ -79,6 +82,7 @@ export const opportunities = [
     marketType: "Convex_CRV",
     pid: 541,
     points: 15,
+    isPredeposit: true,
   },
 
   {
@@ -90,6 +94,7 @@ export const opportunities = [
     pid: 542,
     marketType: "Convex_CRV",
     points: 15,
+    isPredeposit: true,
   },
 
   {
@@ -100,6 +105,7 @@ export const opportunities = [
     protocolName: "Stake DAO",
     marketType: "Convex_CRV",
     points: 15,
+    isPredeposit: true,
   },
 
   {
@@ -110,5 +116,6 @@ export const opportunities = [
     protocolName: "Stake DAO",
     marketType: "Convex_CRV",
     points: 15,
+    isPredeposit: true,
   },
 ]

@@ -64,15 +64,14 @@ export const CurveCollaterals: Array<Address> = envAddresses.markets
       m.marketType.includes("CRV_Gauge") ||
       m.marketType.includes("STAKEDAO_CRV_Vault")
   )
-  .map((market: RawMarket) => market.collatAddress as Address)
+  .map((market: RawMarket) => getAddress(market.collatAddress))
 
 export const PendleCollaterals: Array<Address> = envAddresses.markets
   .filter((m: RawMarket) => m.marketType.includes("Pendle_PT"))
-  .map((market: RawMarket) => market.collatAddress as Address)
+  .map((market: RawMarket) => getAddress(market.collatAddress))
 
 export const USG_CONTRACT = {
   REWARD_ACCUMULATOR: envAddresses.utilities.rewardAccumulator as Address,
-  LIQUIDATOR_PROXY: envAddresses.utilities.liquidatorProxy as Address,
   ZAPPER: envAddresses.utilities.zappingProxy as Address,
   CONTROL_TOWER: envAddresses.utilities.controlTower as Address,
   USG: envAddresses.tokens.USG as Address,

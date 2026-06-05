@@ -257,8 +257,32 @@ export const ERC20S: Erc20Details[] = [
     symbol: "GHO/crvUSD",
   },
 
-  // PENDLE PT
+  {
+    address: "0x317837aed98bea887074d1f97fd3c83ebca6905b",
+    chainId: 1,
+    decimals: 18,
+    logoKey: "USG-sDOLA",
+    name: "USG/sDOLA",
+    symbol: "USG/sDOLA",
+  },
 
+  {
+    address: "0xe858f8c6e0ba60fed092ac0b21681fd4cde4fa11",
+    chainId: 1,
+    decimals: 18,
+    logoKey: "GHO-USG",
+    name: "GHO-USG",
+    symbol: "GHO-USG",
+  },
+  // PENDLE PT
+  {
+    address: PENDLE_POOLS?.["sUSDe 08/13/2026"]?.PT,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "sUSDe 08/13/2026",
+    name: "sUSDe 08/13/2026",
+    symbol: "sUSDe 08/13/2026",
+  },
   {
     address: PENDLE_POOLS?.["sUSDe 07/05/26"]?.PT,
     chainId: 1,

@@ -1,4 +1,4 @@
-import { Address } from "viem"
+import { Address, getAddress } from "viem"
 import { getEnsoData } from "./server_api"
 import { PendleCollaterals, CurveCollaterals } from "./usg_repository"
 import { getCurveQuote, getCurveRouterRoute } from "./curve_routing_controller"
@@ -9,12 +9,14 @@ export type CustomCurveRoutes = {
   errors: string[]
 }
 
+const isCollateral = (collaterals: Array<Address>, token: Address) => collaterals.includes(getAddress(token))
+
 const isCurveRouter = (tokenIn: Address, tokenOut: Address) => {
-  return CurveCollaterals.includes(tokenIn) || CurveCollaterals.includes(tokenOut)
+  return isCollateral(CurveCollaterals, tokenIn) || isCollateral(CurveCollaterals, tokenOut)
 }
 
 const isPendleRouter = (tokenIn: Address, tokenOut: Address) => {
-  return PendleCollaterals.includes(tokenIn) || PendleCollaterals.includes(tokenOut)
+  return isCollateral(PendleCollaterals, tokenIn) || isCollateral(PendleCollaterals, tokenOut)
 }
 
 export const getQuote = async (
@@ -26,7 +28,7 @@ export const getQuote = async (
 ): Promise<{ quote: bigint; priceImpact: number }> => {
   let customQuote: Promise<{ quote: bigint; priceImpact: number }>
   if (isPendleRouter(tokenIn, tokenOut)) {
-    customQuote = getCustomPendleQuote(curveRoutes, tokenIn, tokenOut, amountIn, PendleCollaterals.includes(tokenIn) ? "PTToToken" : "tokenToPT")
+    customQuote = getCustomPendleQuote(curveRoutes, tokenIn, tokenOut, amountIn, isCollateral(PendleCollaterals, tokenIn) ? "PTToToken" : "tokenToPT")
   } else {
     customQuote = getCurveQuote(curveRoutes, tokenIn, tokenOut, amountIn)
   }
@@ -57,7 +59,7 @@ export const getRoute = async (
   } else if (isPendleRouter(tokenIn, tokenOut)) {
     let swapDirection = "tokenToPT"
 
-    if (PendleCollaterals.includes(tokenIn)) {
+    if (isCollateral(PendleCollaterals, tokenIn)) {
       swapDirection = "PTToToken"
     }
 

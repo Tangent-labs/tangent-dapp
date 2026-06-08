@@ -61,6 +61,23 @@ export const ERC20S: Erc20Details[] = [
     name: "USG/frxUSD",
     symbol: "USG/frxUSD",
   },
+
+  {
+    address: "0x317837aed98bea887074d1f97fd3c83ebca6905b",
+    chainId: 1,
+    decimals: 18,
+    logoKey: "USG-sDOLA",
+    name: "USG/sDOLA",
+    symbol: "USG/sDOLA",
+  },
+  {
+    address: "0xc6ac08424ee6d1373f03611b96f5da849594b6d8",
+    chainId: 1,
+    decimals: 18,
+    logoKey: "sUSG-reUSD",
+    name: "sUSG/reUSD",
+    symbol: "sUSG/reUSD",
+  },
   {
     address: CURVE_LPS.crvUSD_USDC as Address,
     chainId: 1,
@@ -92,6 +109,7 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "frxETH-WETH",
     name: "frxETH/WETH",
     symbol: "frxETH/WETH",
+    displayDecimals: 4,
   },
   {
     address: CURVE_LPS.DUO_fxUSD_reUSD as Address,
@@ -231,6 +249,7 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "msETH-OETH",
     name: "msETH/OETH",
     symbol: "msETH/OETH",
+    displayDecimals: 4,
   },
   {
     address: CURVE_LPS["ETHp_WETH_LP"] as Address,
@@ -239,6 +258,7 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "ETH+-WETH",
     name: "ETH+/WETH",
     symbol: "ETH+/WETH",
+    displayDecimals: 4,
   },
   {
     address: CURVE_LPS.DUO_tBTC_crvUSD as Address,
@@ -247,6 +267,7 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "tBTC-cbBTC",
     name: "tBTC/cbBTC",
     symbol: "tBTC/cbBTC",
+    displayDecimals: 5,
   },
   {
     address: CURVE_LPS.DUO_GHO_crvUSD,
@@ -257,24 +278,8 @@ export const ERC20S: Erc20Details[] = [
     symbol: "GHO/crvUSD",
   },
 
-  {
-    address: "0x317837aed98bea887074d1f97fd3c83ebca6905b",
-    chainId: 1,
-    decimals: 18,
-    logoKey: "USG-sDOLA",
-    name: "USG/sDOLA",
-    symbol: "USG/sDOLA",
-  },
-
-  {
-    address: "0xe858f8c6e0ba60fed092ac0b21681fd4cde4fa11",
-    chainId: 1,
-    decimals: 18,
-    logoKey: "GHO-USG",
-    name: "GHO-USG",
-    symbol: "GHO-USG",
-  },
   // PENDLE PT
+
   {
     address: PENDLE_POOLS?.["sUSDe 08/13/2026"]?.PT,
     chainId: 1,
@@ -283,6 +288,7 @@ export const ERC20S: Erc20Details[] = [
     name: "sUSDe 08/13/2026",
     symbol: "sUSDe 08/13/2026",
   },
+
   {
     address: PENDLE_POOLS?.["sUSDe 07/05/26"]?.PT,
     chainId: 1,
@@ -397,6 +403,8 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "tBTC-cbBTC",
     name: "Vault tBTC/cbBTC",
     symbol: "Vault tBTC/cbBTC",
+    // Volatile (BTC) collateral: ~$100k/unit, needs the most display granularity.
+    displayDecimals: 5,
   },
 
   {

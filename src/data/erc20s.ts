@@ -61,6 +61,23 @@ export const ERC20S: Erc20Details[] = [
     name: "USG/frxUSD",
     symbol: "USG/frxUSD",
   },
+
+  {
+    address: "0x317837aed98bea887074d1f97fd3c83ebca6905b",
+    chainId: 1,
+    decimals: 18,
+    logoKey: "USG-sDOLA",
+    name: "USG/sDOLA",
+    symbol: "USG/sDOLA",
+  },
+  {
+    address: "0xc6ac08424ee6d1373f03611b96f5da849594b6d8",
+    chainId: 1,
+    decimals: 18,
+    logoKey: "sUSG-reUSD",
+    name: "sUSG/reUSD",
+    symbol: "sUSG/reUSD",
+  },
   {
     address: CURVE_LPS.crvUSD_USDC as Address,
     chainId: 1,

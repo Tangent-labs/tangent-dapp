@@ -434,17 +434,28 @@ export const computedMinAmountOut = (value: bigint | string, slippagePercentage:
 
 type MarketContract = { name: string; address: Address }
 
+// Need to re-match token pairs before mapping contract addresses because of how duoPoolStable is set
+const pairKey = (pair: string) =>
+  pair
+    .split("/")
+    .map((token) => token.toLowerCase())
+    .sort()
+    .join("/")
+
 const MARKET_CONTRACTS = Object.fromEntries(
-  USGMarkets.map((el) => el.marketName).map((marketName) => {
-    const market = USGMarkets.find((el) => el.marketName === marketName)
-    const oracle = USGOracles.find((el) => el.token === marketName)
+  USGMarkets.map((market) => {
+    const oracle = USGOracles.find((el) => pairKey(el.token) === pairKey(market.marketName))
 
     return [
-      marketName,
+      market.marketName,
       [
-        { name: "Market", address: market?.marketAddress as Address },
-        { name: "Collateral Token", address: market?.collatAddress as Address },
+        { name: "Market", address: market.marketAddress as Address },
+        { name: "Collateral Token", address: market.collatAddress as Address },
         { name: "Oracle", address: oracle?.address as Address },
+        { name: "USG", address: USG_CONTRACT.USG },
+        { name: "USG Oracle", address: USG_CONTRACT.USG_ORACLE },
+        { name: "IR Calculator", address: USG_CONTRACT.IR_CALCULATOR },
+        { name: "Rewards Accumulator", address: USG_CONTRACT.REWARD_ACCUMULATOR },
       ],
     ]
   })

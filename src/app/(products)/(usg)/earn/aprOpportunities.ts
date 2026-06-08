@@ -8,6 +8,17 @@ export const opportunities = [
   //   marketType: "Balancer",
   //   points: 105,
   // },
+
+  {
+    name: "sUSG/reUSD (unstaked) - Curve",
+    asset: "sUSG-reUSD",
+    subLabel: "(unstaked)",
+    address: "0xc6ac08424ee6d1373f03611b96f5da849594b6d8",
+    link: "https://www.curve.finance/dex/ethereum/pools/0xc6ac08424ee6d1373f03611b96f5da849594b6d8/deposit",
+    protocolName: "Curve",
+    marketType: "Convex_CRV",
+    points: 105,
+  },
   {
     name: "USG/sDOLA (unstaked) - Curve",
     asset: "USG-sDOLA",

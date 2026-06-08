@@ -472,6 +472,9 @@ export const computeTransactionPotentialLoss = (buyWeiValue: bigint, buyAssetInf
 
 export function matchBlockChainErrors(err: string) {
   if (err.includes("User denied transaction signature")) {
-    return "User denied transaction signature"
+    return "User denied transaction signature."
+  }
+  if (err.includes("No swap route available")) {
+    return "No swap route available for this asset?"
   }
 }

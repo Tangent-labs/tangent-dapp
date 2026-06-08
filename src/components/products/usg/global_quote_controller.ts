@@ -1,6 +1,6 @@
 import { Address, getAddress } from "viem"
 import { getEnsoData } from "./server_api"
-import { PendleCollaterals, CurveCollaterals } from "./usg_repository"
+import { PendleCollaterals } from "./usg_repository"
 import { getCurveQuote, getCurveRouterRoute } from "./curve_routing_controller"
 import { getCustomPendleQuote, getPendleCustomRouterRoute } from "./pendle_routing_controller"
 
@@ -10,10 +10,6 @@ export type CustomCurveRoutes = {
 }
 
 const isCollateral = (collaterals: Array<Address>, token: Address) => collaterals.includes(getAddress(token))
-
-const isCurveRouter = (tokenIn: Address, tokenOut: Address) => {
-  return isCollateral(CurveCollaterals, tokenIn) || isCollateral(CurveCollaterals, tokenOut)
-}
 
 const isPendleRouter = (tokenIn: Address, tokenOut: Address) => {
   return isCollateral(PendleCollaterals, tokenIn) || isCollateral(PendleCollaterals, tokenOut)
@@ -39,6 +35,36 @@ export const getQuote = async (
   return customRes.quote >= ensoRes.quote ? customRes : ensoRes
 }
 
+const getCustomQuote = (
+  tokenIn: Address,
+  tokenOut: Address,
+  amount: bigint,
+  curveRoutes: CustomCurveRoutes
+): Promise<{ quote: bigint; priceImpact: number }> => {
+  if (isPendleRouter(tokenIn, tokenOut)) {
+    return getCustomPendleQuote(curveRoutes, tokenIn, tokenOut, amount, isCollateral(PendleCollaterals, tokenIn) ? "PTToToken" : "tokenToPT")
+  }
+  return getCurveQuote(curveRoutes, tokenIn, tokenOut, amount)
+}
+
+const customRouteFor = (
+  tokenIn: Address,
+  tokenOut: Address,
+  amount: bigint,
+  minAmountOut: bigint,
+  receiver: Address,
+  curveRoutes: CustomCurveRoutes
+): Promise<{ data: string; routerAddress: string }> => {
+  if (isPendleRouter(tokenIn, tokenOut)) {
+    const swapDirection = isCollateral(PendleCollaterals, tokenIn) ? "PTToToken" : "tokenToPT"
+    return getPendleCustomRouterRoute(curveRoutes, tokenIn, tokenOut, amount, minAmountOut, receiver, swapDirection)
+  }
+  return getCurveRouterRoute(curveRoutes, tokenIn, tokenOut, amount, minAmountOut, receiver)
+}
+
+/**
+ * Fetches both routes bewteen ENSO and custom router and uses the best one
+ */
 export const getRoute = async (
   tokenIn: Address,
   tokenOut: Address,
@@ -49,33 +75,30 @@ export const getRoute = async (
   curveRoutes: CustomCurveRoutes,
   user?: Address
 ) => {
-  const route = await getEnsoData(amount, tokenIn, tokenOut, fromAddress, receiver, minAmountOut)
+  const recv = user ?? receiver
 
-  if (route) {
-    return { data: route?.tx?.data as string, routerAddress: route?.tx?.to }
-  } else if (isCurveRouter(tokenIn, tokenOut)) {
-    const { data, routerAddress } = await getCurveRouterRoute(curveRoutes, tokenIn, tokenOut, amount, minAmountOut, user ? user : receiver)
-    return { data, routerAddress }
-  } else if (isPendleRouter(tokenIn, tokenOut)) {
-    let swapDirection = "tokenToPT"
+  // Quote both sources
+  const [ensoRoute, customQuote] = await Promise.all([
+    getEnsoData(amount, tokenIn, tokenOut, fromAddress, receiver, minAmountOut),
+    getCustomQuote(tokenIn, tokenOut, amount, curveRoutes),
+  ])
 
-    if (isCollateral(PendleCollaterals, tokenIn)) {
-      swapDirection = "PTToToken"
+  const ensoAmount = BigInt(ensoRoute?.amountOut || 0n)
+  const customAmount = BigInt(customQuote?.quote || 0n)
+
+  // Go for custom when it quotes at least as well as ENSO
+  if (customAmount > 0n && customAmount >= ensoAmount) {
+    const custom = await customRouteFor(tokenIn, tokenOut, amount, minAmountOut, recv, curveRoutes)
+    if (custom?.data) {
+      return { data: custom.data, routerAddress: custom.routerAddress }
     }
-
-    const { data, routerAddress } = await getPendleCustomRouterRoute(
-      curveRoutes,
-      tokenIn,
-      tokenOut,
-      amount,
-      minAmountOut,
-      user ? user : receiver,
-      swapDirection
-    )
-
-    return { data, routerAddress }
-  } else {
-    const { data, routerAddress } = await getCurveRouterRoute(curveRoutes, tokenIn, tokenOut, amount, minAmountOut, user ? user : receiver)
-    return { data, routerAddress }
   }
+
+  // Otherwise use ENSO's route when it returned executable calldata
+  if (ensoRoute?.tx?.data) {
+    return { data: ensoRoute.tx.data as string, routerAddress: ensoRoute.tx.to }
+  }
+
+  // If no route is satisfying throw an error
+  throw new Error("No swap route available for this asset.")
 }

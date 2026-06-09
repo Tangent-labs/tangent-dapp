@@ -765,17 +765,22 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     }
   }, [isZapping, depositWeiValue, zapValue, marketData?.collateralInfos.positionCollateralAmount, globalData.usgPriceWei, remainingDebtBorrowable])
 
+  // Total collateral on which slippage is applied
+  const totalCollateralAmountSwapped = useMemo(() => {
+    return BigInt(zapValue || 0n) + (leveragedCollateralQuote || 0n)
+  }, [zapValue, leveragedCollateralQuote])
+
   const priceImpactLoss = useMemo(() => {
-    const { dollarLoss } = computeTransactionPotentialLoss(zapValue as bigint, collateralInfo, priceImpact)
+    const { dollarLoss } = computeTransactionPotentialLoss(totalCollateralAmountSwapped, collateralInfo, priceImpact)
 
     return dollarLoss
-  }, [zapValue, priceImpact])
+  }, [totalCollateralAmountSwapped, priceImpact])
 
   const slippageLoss = useMemo(() => {
-    const { tokenLoss, dollarLoss } = computeTransactionPotentialLoss(zapValue as bigint, collateralInfo, slippage)
+    const { tokenLoss, dollarLoss } = computeTransactionPotentialLoss(totalCollateralAmountSwapped, collateralInfo, slippage)
 
     return { tokenLoss, dollarLoss }
-  }, [slippage, zapValue])
+  }, [slippage, totalCollateralAmountSwapped])
 
   const USGDumpDollarLoss = useMemo(() => {
     if (!borrowWeiValue || !leveragedCollateralQuote || !collateralInfo?.price || !globalData.usgPriceWei) {

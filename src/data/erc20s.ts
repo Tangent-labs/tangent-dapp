@@ -279,7 +279,6 @@ export const ERC20S: Erc20Details[] = [
   },
 
   // PENDLE PT
-
   {
     address: PENDLE_POOLS?.["sUSDe 08/13/2026"]?.PT,
     chainId: 1,
@@ -288,24 +287,6 @@ export const ERC20S: Erc20Details[] = [
     name: "sUSDe 08/13/2026",
     symbol: "sUSDe 08/13/2026",
   },
-
-  {
-    address: PENDLE_POOLS?.["sUSDe 07/05/26"]?.PT,
-    chainId: 1,
-    decimals: 18,
-    logoKey: "sUSDe 07/05/26",
-    name: "sUSDe 07/05/26",
-    symbol: "sUSDe 07/05/26",
-  },
-  {
-    address: PENDLE_POOLS?.["USDe 07/05/26"]?.PT,
-    chainId: 1,
-    decimals: 18,
-    logoKey: "USDe 07/05/26",
-    name: "USDe 07/05/26",
-    symbol: "USDe 07/05/26",
-  },
-
   // Stake DAO VAULT
   {
     address: SDT_frxUSD_sUSDS_VAULT as Address,

@@ -217,7 +217,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
         repayAssetInfo?.address,
         USG_CONTRACT?.USG,
         repayWeiValue,
-        usgRepayedValue!,
+        computedMinAmountOut(usgRepayedValue!, slippage),
         currentAddress!,
         USG_CONTRACT.ZAPPER,
         curveRoutes
@@ -226,7 +226,7 @@ export const USGRepayProvider = ({ children, isRepayAndWithdrawInput }: USGRepay
       const zapMarketData = {
         tokenIn: repayAssetInfo?.address,
         amountIn: repayWeiValue,
-        minAmountOut: usgRepayedValue!,
+        minAmountOut: computedMinAmountOut(usgRepayedValue!, slippage),
       }
 
       const isReceiptOut = withdrawSelectedAsset !== collateralInfo?.name

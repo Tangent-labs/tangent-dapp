@@ -8,7 +8,6 @@ export const opportunities = [
   //   marketType: "Balancer",
   //   points: 105,
   // },
-
   {
     name: "sUSG/reUSD (unstaked) - Curve",
     asset: "sUSG-reUSD",
@@ -19,6 +18,8 @@ export const opportunities = [
     marketType: "Convex_CRV",
     points: 105,
   },
+
+  // USG-sDOLA
   {
     name: "USG/sDOLA (unstaked) - Curve",
     asset: "USG-sDOLA",
@@ -27,25 +28,47 @@ export const opportunities = [
     link: "https://www.curve.finance/dex/ethereum/pools/0x317837aed98bea887074d1f97fd3c83ebca6905b/deposit",
     protocolName: "Curve",
     marketType: "Convex_CRV",
-    points: 315,
+    points: 105,
   },
+
+  {
+    name: "USG/sDOLA (staked) - Curve",
+    asset: "USG-sDOLA",
+    subLabel: "(staked)",
+    address: "0x317837aed98bea887074d1f97fd3c83ebca6905b",
+    link: "https://www.curve.finance/dex/ethereum/pools/0x317837aed98bea887074d1f97fd3c83ebca6905b/deposit",
+    protocolName: "Curve",
+    marketType: "Convex_CRV",
+    points: 15,
+  },
+
+  {
+    name: "USG/sDOLA - Convex",
+    asset: "USG-sDOLA",
+    address: "0x317837aed98bea887074d1f97fd3c83ebca6905b",
+    link: "https://curve.convexfinance.com/stake/ethereum/566",
+    protocolName: "Convex",
+    marketType: "Convex_CRV",
+    pid: 566,
+    points: 15,
+  },
+  {
+    name: "USG/sDOLA - Stake DAO",
+    asset: "USG-sDOLA",
+    address: "0x6E195fabfaB7FC6eB242049a8519a91a333D9de1",
+    link: "https://www.stakedao.org/strategy?protocol=curve&vault=1-0x6E195fabfaB7FC6eB242049a8519a91a333D9de1",
+    protocolName: "Stake DAO",
+    marketType: "Convex_CRV",
+    points: 15,
+  },
+
+  // USG-USDC
   {
     name: "USG/USDC (unstaked) - Curve",
     asset: "USG-USDC",
     subLabel: "(unstaked)",
     address: "0x97ba10115da528c113462ede9c20d7adc806d93f",
     link: "https://www.curve.finance/dex/ethereum/pools/0x97ba10115da528c113462ede9c20d7adc806d93f/deposit",
-    protocolName: "Curve",
-    marketType: "Convex_CRV",
-    points: 105,
-    isPredeposit: true,
-  },
-  {
-    name: "USG/frxUSD (unstaked) - Curve",
-    asset: "USG-frxUSD",
-    subLabel: "(unstaked)",
-    address: "0xefc056790bb19702b2164ec6ea6ba3ae01d81195",
-    link: "https://www.curve.finance/dex/ethereum/pools/0xefc056790bb19702b2164ec6ea6ba3ae01d81195/deposit",
     protocolName: "Curve",
     marketType: "Convex_CRV",
     points: 105,
@@ -62,7 +85,40 @@ export const opportunities = [
     points: 15,
     isPredeposit: true,
   },
+  {
+    name: "USG/USDC - Convex",
+    asset: "USG-USDC",
+    address: "0x97BA10115da528c113462EDE9C20D7adc806D93f",
+    link: "https://curve.convexfinance.com/stake/ethereum/541",
+    protocolName: "Convex",
+    marketType: "Convex_CRV",
+    pid: 541,
+    points: 15,
+    isPredeposit: true,
+  },
+  {
+    name: "USG/USDC - Stake DAO",
+    asset: "USG-USDC",
+    address: "0x909B19F659b8B99c50128487DE14F9c8F011b3d2",
+    link: "https://www.stakedao.org/strategy?protocol=curve&vault=1-0x909B19F659b8B99c50128487DE14F9c8F011b3d2",
+    protocolName: "Stake DAO",
+    marketType: "Convex_CRV",
+    points: 15,
+    isPredeposit: true,
+  },
 
+  // USG-frxUSD
+  {
+    name: "USG/frxUSD (unstaked) - Curve",
+    asset: "USG-frxUSD",
+    subLabel: "(unstaked)",
+    address: "0xefc056790bb19702b2164ec6ea6ba3ae01d81195",
+    link: "https://www.curve.finance/dex/ethereum/pools/0xefc056790bb19702b2164ec6ea6ba3ae01d81195/deposit",
+    protocolName: "Curve",
+    marketType: "Convex_CRV",
+    points: 105,
+    isPredeposit: true,
+  },
   {
     name: "USG/frxUSD (staked) - Curve",
     asset: "USG-frxUSD",
@@ -75,18 +131,6 @@ export const opportunities = [
     isPredeposit: true,
   },
   {
-    name: "USG/USDC - Convex",
-    asset: "USG-USDC",
-    address: "0x97BA10115da528c113462EDE9C20D7adc806D93f",
-    link: "https://curve.convexfinance.com/stake/ethereum/541",
-    protocolName: "Convex",
-    marketType: "Convex_CRV",
-    pid: 541,
-    points: 15,
-    isPredeposit: true,
-  },
-
-  {
     name: "USG/frxUSD - Convex",
     asset: "USG-frxUSD",
     address: "0xEfc056790bb19702b2164ec6Ea6bA3AE01d81195",
@@ -97,18 +141,6 @@ export const opportunities = [
     points: 15,
     isPredeposit: true,
   },
-
-  {
-    name: "USG/USDC - Stake DAO",
-    asset: "USG-USDC",
-    address: "0x909B19F659b8B99c50128487DE14F9c8F011b3d2",
-    link: "https://www.stakedao.org/strategy?protocol=curve&vault=1-0x909B19F659b8B99c50128487DE14F9c8F011b3d2",
-    protocolName: "Stake DAO",
-    marketType: "Convex_CRV",
-    points: 15,
-    isPredeposit: true,
-  },
-
   {
     name: "USG/frxUSD - Stake DAO",
     asset: "USG-frxUSD",

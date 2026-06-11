@@ -72,7 +72,6 @@ export const PendleCollaterals: Array<Address> = envAddresses.markets
 
 export const USG_CONTRACT = {
   REWARD_ACCUMULATOR: envAddresses.utilities.rewardAccumulator as Address,
-  LIQUIDATOR_PROXY: envAddresses.utilities.liquidatorProxy as Address,
   ZAPPER: envAddresses.utilities.zappingProxy as Address,
   CONTROL_TOWER: envAddresses.utilities.controlTower as Address,
   USG: envAddresses.tokens.USG as Address,

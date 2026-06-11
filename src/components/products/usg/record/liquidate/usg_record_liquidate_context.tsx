@@ -122,11 +122,11 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
     try {
       setIsTxLoading(true)
 
-      if (walletClient && liquidateWeiValue && currentAddress && USGReceivedValue && marketData && repayWeiValue) {
+      if (walletClient && liquidateWeiValue && currentAddress && USGReceivedValue && marketData) {
         let repayValue = repayWeiValue
 
         // Replay value + 0.01% to handle IR
-        const maxUSGToBurn = repayValue + repayValue / 10_000n
+        const maxUSGToBurn = (repayValue || 0n) + (repayValue || 0n) / 10_000n
 
         if (repayWeiValue === maxRepayable && repayWeiValue !== 0n) {
           repayValue = maxUint256
@@ -138,14 +138,14 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
           liquidateWeiValue,
           computedMinAmountOut(USGReceivedValue, slippage),
           currentAddress,
-          USG_CONTRACT.LIQUIDATOR_PROXY,
+          USG_CONTRACT.ZAPPER,
           curveRoutes
         )
 
         await toastTx(
           doMarketLiquidate(
             liquidateWeiValue,
-            repayValue,
+            repayValue || 0n,
             maxUSGToBurn,
             computedMinAmountOut(USGReceivedValue, slippage),
             false,

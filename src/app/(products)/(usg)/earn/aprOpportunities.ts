@@ -8,7 +8,7 @@ export const opportunities = [
   //   marketType: "Balancer",
   //   points: 105,
   // },
-
+  //
   {
     name: "sUSG/reUSD (unstaked) - Curve",
     asset: "sUSG-reUSD",

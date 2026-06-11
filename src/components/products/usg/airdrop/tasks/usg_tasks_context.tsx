@@ -5,7 +5,7 @@ import { Address, formatEther } from "viem"
 import { useUSGContext } from "../../usg_context"
 import { USGMarkets } from "../../usg_repository"
 import { LpTask, VoteTask } from "../../usg_type"
-import { getUserBalancesAndDebtForLpTasks, mapAirdropData, mapVoteTasksProtocol } from "./usg_tasks_controller"
+import { getMorphoCollateral, getUserBalancesAndDebtForLpTasks, isMorphoTask, mapAirdropData, mapVoteTasksProtocol } from "./usg_tasks_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { getTasks } from "../../client_api"
@@ -80,7 +80,7 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
         currentAddress as Address,
         USGMarkets.map((m) => m.marketAddress),
         tokens.slice(1) // Remove the first element as there is no tokens on the first task
-      ).then((balances) => {
+      ).then(async (balances) => {
         if (balances) {
           const tasksCopy = [...rawLpTasks]
 
@@ -99,6 +99,19 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
             t.balanceUsd = t.balance * t.priceUSD
             t.status = t.balanceUsd > 0.1
           }
+
+          // Morpho positions are not wallet balances: read the collateral (in sUSG, 18 decimals)
+          // from the Morpho singleton instead of the chainview result
+          await Promise.all(
+            tasksCopy.filter(isMorphoTask).map(async (t) => {
+              const collateral = await getMorphoCollateral(t, currentAddress as Address).catch(() => undefined)
+              if (collateral === undefined) return
+              t.balance = Number(formatEther(collateral))
+              t.balanceUsd = t.balance * t.priceUSD
+              t.status = t.balanceUsd > 0.1
+            })
+          )
+
           setRawLpTasks(tasksCopy)
         }
       })

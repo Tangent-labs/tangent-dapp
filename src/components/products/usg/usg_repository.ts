@@ -70,6 +70,20 @@ export const PendleCollaterals: Array<Address> = envAddresses.markets
   .filter((m: RawMarket) => m.marketType.includes("Pendle_PT"))
   .map((market: RawMarket) => getAddress(market.collatAddress))
 
+type MorphoMarket = {
+  id: string
+  collateralToken: string
+  loanToken: string
+  creationBlock: number
+}
+
+export const USG_MORPHO = envAddresses.morpho
+  ? {
+      SINGLETON: getAddress(envAddresses.morpho.singleton),
+      MARKETS: envAddresses.morpho.markets as Record<string, MorphoMarket>,
+    }
+  : undefined
+
 export const USG_CONTRACT = {
   REWARD_ACCUMULATOR: envAddresses.utilities.rewardAccumulator as Address,
   ZAPPER: envAddresses.utilities.zappingProxy as Address,

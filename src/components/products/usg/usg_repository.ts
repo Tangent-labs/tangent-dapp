@@ -40,7 +40,8 @@ export const USGPegKeepers: Address[] = Object.values(envAddresses.pegKeepers)
 
 // NOTE : Quick and dirty fix. Our collaterals are for now only duoPoolStable so it's fine
 export const USGOracles = Object.entries(envAddresses?.oracles?.duoPoolStable).map(([key, address]) => {
-  const trimmedName = key.replace("_", "-")
+  const trimmedName = key.replace("_", "/")
+
   return {
     token: trimmedName,
     address: address as `0x${string}`,
@@ -74,6 +75,7 @@ export const USG_CONTRACT = {
   REWARD_ACCUMULATOR: envAddresses.utilities.rewardAccumulator as Address,
   ZAPPER: envAddresses.utilities.zappingProxy as Address,
   CONTROL_TOWER: envAddresses.utilities.controlTower as Address,
+  IR_CALCULATOR: envAddresses.utilities.irCalculator as Address,
   USG: envAddresses.tokens.USG as Address,
   SUSG: envAddresses.tokens.sUSG as Address,
   USG_ORACLE: envAddresses.oracles.USG as Address,

@@ -453,7 +453,6 @@ const MARKET_CONTRACTS = Object.fromEntries(
         { name: "Collateral Token", address: market.collatAddress as Address },
         { name: "Oracle", address: oracle?.address as Address },
         { name: "USG", address: USG_CONTRACT.USG },
-        { name: "USG Oracle", address: USG_CONTRACT.USG_ORACLE },
         { name: "IR Calculator", address: USG_CONTRACT.IR_CALCULATOR },
         { name: "Rewards Accumulator", address: USG_CONTRACT.REWARD_ACCUMULATOR },
       ],

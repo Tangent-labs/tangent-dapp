@@ -299,11 +299,11 @@ export const USGLiquidateProvider = ({ children }: USGLiquidateContextProps) => 
   }, [marketData, repayWeiValue])
 
   useEffect(() => {
-    setIsTransactionBlockedByPriceImpact(!!USGReceivedValue && !!liquidateWeiValue && priceImpact >= 0.25)
+    setIsTransactionBlockedByPriceImpact(!!USGReceivedValue && !!liquidateWeiValue && priceImpact >= 1)
   }, [priceImpact, liquidateWeiValue, USGReceivedValue])
 
   useEffect(() => {
-    setIsTransactionBlockedBySlippage(!!USGReceivedValue && !!liquidateWeiValue && slippage >= 0.25)
+    setIsTransactionBlockedBySlippage(!!USGReceivedValue && !!liquidateWeiValue && slippage >= 1)
   }, [slippage, liquidateWeiValue, USGReceivedValue])
 
   useEffect(() => {

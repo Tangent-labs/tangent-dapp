@@ -109,6 +109,7 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "frxETH-WETH",
     name: "frxETH/WETH",
     symbol: "frxETH/WETH",
+    displayDecimals: 4,
   },
   {
     address: CURVE_LPS.DUO_fxUSD_reUSD as Address,
@@ -248,6 +249,7 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "msETH-OETH",
     name: "msETH/OETH",
     symbol: "msETH/OETH",
+    displayDecimals: 4,
   },
   {
     address: CURVE_LPS["ETHp_WETH_LP"] as Address,
@@ -256,6 +258,7 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "ETH+-WETH",
     name: "ETH+/WETH",
     symbol: "ETH+/WETH",
+    displayDecimals: 4,
   },
   {
     address: CURVE_LPS.DUO_tBTC_crvUSD as Address,
@@ -264,6 +267,7 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "tBTC-cbBTC",
     name: "tBTC/cbBTC",
     symbol: "tBTC/cbBTC",
+    displayDecimals: 5,
   },
   {
     address: CURVE_LPS.DUO_GHO_crvUSD,
@@ -275,24 +279,14 @@ export const ERC20S: Erc20Details[] = [
   },
 
   // PENDLE PT
-
   {
-    address: PENDLE_POOLS?.["sUSDe 07/05/26"]?.PT,
+    address: PENDLE_POOLS?.["sUSDe 08/13/2026"]?.PT,
     chainId: 1,
     decimals: 18,
-    logoKey: "sUSDe 07/05/26",
-    name: "sUSDe 07/05/26",
-    symbol: "sUSDe 07/05/26",
+    logoKey: "sUSDe 08/13/2026",
+    name: "sUSDe 08/13/2026",
+    symbol: "sUSDe 08/13/2026",
   },
-  {
-    address: PENDLE_POOLS?.["USDe 07/05/26"]?.PT,
-    chainId: 1,
-    decimals: 18,
-    logoKey: "USDe 07/05/26",
-    name: "USDe 07/05/26",
-    symbol: "USDe 07/05/26",
-  },
-
   // Stake DAO VAULT
   {
     address: SDT_frxUSD_sUSDS_VAULT as Address,
@@ -390,6 +384,8 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "tBTC-cbBTC",
     name: "Vault tBTC/cbBTC",
     symbol: "Vault tBTC/cbBTC",
+    // Volatile (BTC) collateral: ~$100k/unit, needs the most display granularity.
+    displayDecimals: 5,
   },
 
   {

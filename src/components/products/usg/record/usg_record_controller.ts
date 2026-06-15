@@ -12,17 +12,17 @@ import {
   FormError,
 } from "../usg_type"
 
+import { Erc20Details, ERC20S } from "@/data/erc20s"
 import GetBalances from "@/abi/USG/GetBalances.json"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { getSwapAssetPrice } from "@/services/service_price"
 import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
 import { USG_CONTRACT, USGMarkets, USGOracles } from "../usg_repository"
 import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
-import { Abi, Address, formatEther, formatUnits, Hex, parseEther, parseUnits, WalletClient, zeroAddress } from "viem"
-import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
-import { formatBigInt, formatBigIntAsNumber, formatDollar, formatDollarBigInt, formatNumber, truncateDecimals } from "@/lib/number_formatter"
-import { Erc20Details, ERC20S } from "@/data/erc20s"
 import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
+import { Abi, Address, formatEther, formatUnits, Hex, parseEther, parseUnits, WalletClient, zeroAddress } from "viem"
+import { formatBigInt, formatBigIntAsNumber, formatDollar, formatDollarBigInt, formatNumber, truncateDecimals } from "@/lib/number_formatter"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
@@ -472,6 +472,17 @@ export const computeTransactionPotentialLoss = (buyWeiValue: bigint, buyAssetInf
 
 export function matchBlockChainErrors(err: string) {
   if (err.includes("User denied transaction signature")) {
-    return "User denied transaction signature"
+    return "User denied transaction signature."
   }
+  if (err.includes("No swap route available")) {
+    return "No swap route available for this asset?"
+  }
+}
+
+const DEFAULT_DISPLAY_DECIMALS = 2
+
+// How many decimals to show for a market's collateral amount.
+export const getCollateralDisplayDecimals = (collatAddress: Address, marketName: string): number => {
+  const meta = ERC20S.find((e) => e.address.toLowerCase() === collatAddress.toLowerCase() || e.symbol === marketName || e.name === marketName)
+  return meta?.displayDecimals ?? DEFAULT_DISPLAY_DECIMALS
 }

@@ -1,9 +1,10 @@
 import { ListHeaderData } from "@/types"
-import { Abi, Address, Hex } from "viem"
-import { executeChainViewUnique } from "@/services/service_rpc"
+import { Abi, Address, getAddress, Hex } from "viem"
+import { executeChainViewUnique, getPublicClient } from "@/services/service_rpc"
 import TaskListUI from "../../../../../abi/USG/TaskListUI.json"
 import { USG_CONTRACT } from "../../usg_repository"
 import { LpTask } from "../../usg_type"
+import { MORPHO_MARKETS } from "@tangent/defi-resources"
 
 export const mapAirdropData = (tasks: LpTask[]) => {
   if (!tasks || tasks.length === 0) return []
@@ -38,6 +39,44 @@ export const voteListHeaders: ListHeaderData[] = [
 
 export async function getUserBalancesAndDebtForLpTasks(address: Address, markets: Address[], tokens: Address[]) {
   return await executeChainViewUnique<bigint[]>(TaskListUI.abi as Abi, TaskListUI.bytecode as Hex, [address, markets, tokens, USG_CONTRACT.MARKET_VIEWER])
+}
+
+const morphoPositionAbi = [
+  {
+    inputs: [
+      { internalType: "Id", name: "id", type: "bytes32" },
+      { internalType: "address", name: "user", type: "address" },
+    ],
+    name: "position",
+    outputs: [
+      { internalType: "uint256", name: "supplyShares", type: "uint256" },
+      { internalType: "uint128", name: "borrowShares", type: "uint128" },
+      { internalType: "uint128", name: "collateral", type: "uint128" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const
+
+export const isMorphoTask = (task: LpTask) => task.protocol?.toLowerCase() === "morpho"
+
+const { singleton: morphoSingleton, ...morphoMarkets } = MORPHO_MARKETS
+
+// A Morpho position is not an ERC20 balance: collateral lives inside the Morpho
+// singleton, keyed by market id. The task's tokenAddress is a synthetic address
+// made of the first 20 bytes of that id, so match markets on that prefix.
+export async function getMorphoCollateral(task: LpTask, account: Address): Promise<bigint | undefined> {
+  const market = Object.values(morphoMarkets).find((m) => m.id.toLowerCase().startsWith(task.tokenAddress.toLowerCase()))
+  if (!market) return undefined
+
+  const [, , collateral] = await getPublicClient().readContract({
+    address: getAddress(morphoSingleton),
+    abi: morphoPositionAbi,
+    functionName: "position",
+    args: [market.id as Hex, account],
+  })
+
+  return collateral
 }
 
 export const formatToken = (token: string): string => {

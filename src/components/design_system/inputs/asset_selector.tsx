@@ -83,45 +83,50 @@ export const ZapAssetSelector = ({ collateralInfo, depositAsset, setDepositAsset
     const receiptAddress = marketData?.constants?.receipt !== zeroAddress ? marketData?.constants?.receipt?.toLowerCase() : undefined
     const collatAddress = collateralInfo?.address.toLowerCase()
 
-    const assets = ERC20S.map((el: Erc20Details) => {
-      const balWei = balances?.[el.address as Address] ?? 0n
-      const balNumber = Number(formatUnits(balWei, el.decimals))
-      const formattedBal = formatBigIntFloor(balWei, el.decimals, el.displayDecimals ?? 2)
-      const address = el.address.toLowerCase()
+    const assets = ERC20S
+      // Guard against entries whose address failed to resolve (e.g. a missing
+      // resource key) so one bad token can't crash the whole selector.
+      .filter((el: Erc20Details) => !!el.address)
+      .map((el: Erc20Details) => {
+        const balWei = balances?.[el.address as Address] ?? 0n
+        const balNumber = Number(formatUnits(balWei, el.decimals))
+        const formattedBal = formatBigIntFloor(balWei, el.decimals, el.displayDecimals ?? 2)
+        const address = el.address.toLowerCase()
 
-      let pinPriority = 2
-      if (caseType === "deposit") {
-        // Find receipt and collateral and pin them
-        if (receiptAddress && address === receiptAddress) {
-          pinPriority = 0
-        } else if (address === collatAddress) {
-          pinPriority = 1
+        let pinPriority = 2
+        if (caseType === "deposit") {
+          // Find receipt and collateral and pin them
+          if (receiptAddress && address === receiptAddress) {
+            pinPriority = 0
+          } else if (address === collatAddress) {
+            pinPriority = 1
+          }
+        } else if (caseType === "repay") {
+          if (address === USG_CONTRACT.USG.toLowerCase()) {
+            pinPriority = 0
+          }
         }
-      } else if (caseType === "repay") {
-        if (address === USG_CONTRACT.USG.toLowerCase()) {
-          pinPriority = 0
-        }
-      }
 
-      return {
-        ...el,
-        value: el.name as string,
-        address: address as Address,
-        balanceWei: balWei,
-        balanceNumber: balNumber,
-        balanceFormatted: formattedBal,
-        pinPriority,
-        displayDecimals: el.displayDecimals ?? 18,
-        logoURI: el.logoURI,
-      }
-    }).sort((a, b) => {
-      // Sort the Receipt first then the collateral
-      if (a.pinPriority !== b.pinPriority) return a.pinPriority - b.pinPriority
-      // Sort by balance then
-      if (a.balanceNumber !== b.balanceNumber) return b.balanceNumber - a.balanceNumber
-      // Finally sort per manual token order list
-      return getTokenSymbolPriorityIndex(a.symbol) - getTokenSymbolPriorityIndex(b.symbol)
-    })
+        return {
+          ...el,
+          value: el.name as string,
+          address: address as Address,
+          balanceWei: balWei,
+          balanceNumber: balNumber,
+          balanceFormatted: formattedBal,
+          pinPriority,
+          displayDecimals: el.displayDecimals ?? 18,
+          logoURI: el.logoURI,
+        }
+      })
+      .sort((a, b) => {
+        // Sort the Receipt first then the collateral
+        if (a.pinPriority !== b.pinPriority) return a.pinPriority - b.pinPriority
+        // Sort by balance then
+        if (a.balanceNumber !== b.balanceNumber) return b.balanceNumber - a.balanceNumber
+        // Finally sort per manual token order list
+        return getTokenSymbolPriorityIndex(a.symbol) - getTokenSymbolPriorityIndex(b.symbol)
+      })
 
     return assets
   }, [balances, marketData?.constants?.receipt])

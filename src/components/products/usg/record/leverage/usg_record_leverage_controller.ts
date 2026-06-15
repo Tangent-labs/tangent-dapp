@@ -105,7 +105,12 @@ export const doZapLeverage = async (
     ] as unknown[],
     address: marketAddress,
     account,
+    value: 0n,
   } as EstimateContractGasParameters
+
+  if (tokenIn === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
+    estimateGasData.value = amountIn
+  }
 
   const gas = await publicClient.estimateContractGas(estimateGasData)
   const txData = { ...estimateGasData, gas }

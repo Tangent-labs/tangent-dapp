@@ -454,7 +454,6 @@ const MARKET_CONTRACTS = Object.fromEntries(
         { name: "Oracle", address: oracle?.address as Address },
         { name: "USG", address: USG_CONTRACT.USG },
         { name: "IR Calculator", address: USG_CONTRACT.IR_CALCULATOR },
-        { name: "Rewards Accumulator", address: USG_CONTRACT.REWARD_ACCUMULATOR },
       ],
     ]
   })

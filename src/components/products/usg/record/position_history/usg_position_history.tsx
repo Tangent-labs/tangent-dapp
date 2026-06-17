@@ -95,7 +95,9 @@ function PositionList() {
                 <div className="flex w-3/12 items-center justify-center gap-1 lg:w-1/3">
                   {formatBigInt(pos.collatAmount, 18, 2)} <TokenImage token={collateralInfo.logoKey} size={24} />
                   <span className="hidden lg:flex"> {collateralInfo?.symbol} </span>
-                  <span className="hidden text-xs text-subtitle md:flex"> {formatDollar(formatUnits(pos.collatAmount, 18), 0)}</span>
+                  <span className="hidden text-xs text-subtitle md:flex">
+                    {formatDollar(formatUnits(BigInt(pos.collatAmount) * BigInt(Number(collateralInfo?.price?.toFixed(0))), 18), 0)}
+                  </span>
                 </div>
                 <div className="flex w-2/12 items-center justify-center gap-1 md:w-1/12 lg:w-2/12">
                   {formatBigInt(pos.usgAmount, 18, 2)} <TokenImage token="USG" size={16} /> <span className="hidden md:flex">USG</span>

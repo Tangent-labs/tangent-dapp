@@ -1,4 +1,4 @@
-import { COMMON_ERC20S, CURVE_GAUGES, CURVE_LPS, PENDLE_POOLS } from "@tangent/defi-resources"
+import { COMMON_ERC20S, CURVE_GAUGES, CURVE_LPS } from "@tangent/defi-resources"
 import {
   SDT_BOLD_USDC_VAULT,
   SDT_crvUSD_USDC_VAULT,
@@ -278,15 +278,6 @@ export const ERC20S: Erc20Details[] = [
     symbol: "GHO/crvUSD",
   },
 
-  // PENDLE PT
-  {
-    address: PENDLE_POOLS?.["sUSDe 08/13/2026"]?.PT,
-    chainId: 1,
-    decimals: 18,
-    logoKey: "sUSDe 08/13/2026",
-    name: "sUSDe 08/13/2026",
-    symbol: "sUSDe 08/13/2026",
-  },
   // Stake DAO VAULT
   {
     address: SDT_frxUSD_sUSDS_VAULT as Address,

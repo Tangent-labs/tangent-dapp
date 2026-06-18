@@ -434,17 +434,26 @@ export const computedMinAmountOut = (value: bigint | string, slippagePercentage:
 
 type MarketContract = { name: string; address: Address }
 
+// Need to re-match token pairs before mapping contract addresses because of how duoPoolStable is set
+const pairKey = (pair: string) =>
+  pair
+    .split("/")
+    .map((token) => token.toLowerCase())
+    .sort()
+    .join("/")
+
 const MARKET_CONTRACTS = Object.fromEntries(
-  USGMarkets.map((el) => el.marketName).map((marketName) => {
-    const market = USGMarkets.find((el) => el.marketName === marketName)
-    const oracle = USGOracles.find((el) => el.token === marketName)
+  USGMarkets.map((market) => {
+    const oracle = USGOracles.find((el) => pairKey(el.token) === pairKey(market.marketName))
 
     return [
-      marketName,
+      market.marketName,
       [
-        { name: "Market", address: market?.marketAddress as Address },
-        { name: "Collateral Token", address: market?.collatAddress as Address },
+        { name: "Market", address: market.marketAddress as Address },
+        { name: "Collateral Token", address: market.collatAddress as Address },
         { name: "Oracle", address: oracle?.address as Address },
+        { name: "USG", address: USG_CONTRACT.USG },
+        { name: "IR Calculator", address: USG_CONTRACT.IR_CALCULATOR },
       ],
     ]
   })
@@ -459,8 +468,14 @@ export const computeTransactionPotentialLoss = (buyWeiValue: bigint, buyAssetInf
     if (buyWeiValue && buyAssetInfo) {
       const minAmountOutWei = computedMinAmountOut(buyWeiValue, delta)
 
-      const tokenLoss = `${formatNumber(Number(truncateDecimals(formatUnits(BigInt(buyWeiValue) - minAmountOutWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
-      const dollarLoss = `$${formatNumber(Number(truncateDecimals(formatUnits(((BigInt(buyWeiValue) - minAmountOutWei) * BigInt(Math.round(Number(buyAssetInfo?.price?.toFixed(2)) * 10000))) / BigInt(10000n), buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
+      const tokenLossWei = BigInt(buyWeiValue) - minAmountOutWei
+      const dollarLossWei = (tokenLossWei * BigInt(Math.round(Number(buyAssetInfo?.price?.toFixed(2)) * 10000))) / BigInt(10000n)
+
+      const tokenLossTruncated = truncateDecimals(formatUnits(tokenLossWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)
+      const dollarLossTruncated = truncateDecimals(formatUnits(dollarLossWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)
+
+      const tokenLoss = `${formatNumber(Number(tokenLossTruncated), buyAssetInfo?.displayDecimals)}`
+      const dollarLoss = `$${formatNumber(Number(dollarLossTruncated), buyAssetInfo?.displayDecimals)}`
 
       return { tokenLoss, dollarLoss }
     }

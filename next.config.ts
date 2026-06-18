@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
       "porto/internal": false,
       porto: false,
       "@react-native-async-storage/async-storage": false,
+      // Optional Tempo connector peer dep, loaded via guarded dynamic import
+      accounts: false,
     }
     return config
   },

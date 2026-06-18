@@ -4,7 +4,7 @@ export const opportunities = [
   //   asset: "USG-GHO",
   //   address: "0xe858f8c6e0ba60fed092ac0b21681fd4cde4fa11",
   //   link: "https://balancer.fi/pools/ethereum/v3/0xe858f8c6e0ba60fed092ac0b21681fd4cde4fa11",
-  //   protocolName: "Balancer",
+  //   protocolName: "balancer",
   //   marketType: "Balancer",
   //   points: 105,
   // },

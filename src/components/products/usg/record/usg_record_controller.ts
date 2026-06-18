@@ -468,8 +468,14 @@ export const computeTransactionPotentialLoss = (buyWeiValue: bigint, buyAssetInf
     if (buyWeiValue && buyAssetInfo) {
       const minAmountOutWei = computedMinAmountOut(buyWeiValue, delta)
 
-      const tokenLoss = `${formatNumber(Number(truncateDecimals(formatUnits(BigInt(buyWeiValue) - minAmountOutWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
-      const dollarLoss = `$${formatNumber(Number(truncateDecimals(formatUnits(((BigInt(buyWeiValue) - minAmountOutWei) * BigInt(Math.round(Number(buyAssetInfo?.price?.toFixed(2)) * 10000))) / BigInt(10000n), buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
+      const tokenLossWei = BigInt(buyWeiValue) - minAmountOutWei
+      const dollarLossWei = (tokenLossWei * BigInt(Math.round(Number(buyAssetInfo?.price?.toFixed(2)) * 10000))) / BigInt(10000n)
+
+      const tokenLossTruncated = truncateDecimals(formatUnits(tokenLossWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)
+      const dollarLossTruncated = truncateDecimals(formatUnits(dollarLossWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)
+
+      const tokenLoss = `${formatNumber(Number(tokenLossTruncated), buyAssetInfo?.displayDecimals)}`
+      const dollarLoss = `$${formatNumber(Number(dollarLossTruncated), buyAssetInfo?.displayDecimals)}`
 
       return { tokenLoss, dollarLoss }
     }

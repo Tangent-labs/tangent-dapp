@@ -114,3 +114,35 @@ export const mapVoteTasksProtocol = (protocol: string) => {
       return "Stake DAO"
   }
 }
+
+export const tasksProtocolOptions = [
+  { label: "All", value: "All" },
+  { label: "Curve", value: "Curve" },
+  { label: "Convex", value: "Convex" },
+  { label: "Stake DAO", value: "Stake DAO" },
+  { label: "Balancer", value: "Balancer" },
+  { label: "Morpho", value: "Morpho" },
+  { label: "Spectra", value: "Spectra" },
+]
+
+export const tasksTypeOptions = [
+  { label: "All", value: "All" },
+  { label: "LP", value: "LP" },
+  { label: "Lending", value: "Lending" },
+  { label: "Yield trading", value: "Yield trading" },
+]
+
+const PROTOCOL_TYPE: Record<string, string> = {
+  curve: "LP",
+  stakedao: "LP",
+  convex: "LP",
+  balancer: "LP",
+  morpho: "Lending",
+  spectra: "Yield trading",
+}
+
+export const mapTaskType = (protocol: string | undefined | null, selectedType: string): boolean => {
+  if (!protocol) return false
+  const normalized = protocol.replaceAll(" ", "").toLowerCase()
+  return PROTOCOL_TYPE[normalized] === selectedType
+}

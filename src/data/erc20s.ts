@@ -277,7 +277,25 @@ export const ERC20S: Erc20Details[] = [
     name: "GHO/crvUSD",
     symbol: "GHO/crvUSD",
   },
+  {
+    address: CURVE_LPS.DUO_msETH_WETH as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "msETH-WETH",
+    name: "msETH/WETH",
+    symbol: "msETH/WETH",
+    displayDecimals: 4,
+  },
 
+  // // PENDLE PT
+  // {
+  //   address: PENDLE_POOLS?.["sUSDe 08/13/2026"]?.PT,
+  //   chainId: 1,
+  //   decimals: 18,
+  //   logoKey: "sUSDe 08/13/2026",
+  //   name: "sUSDe 08/13/2026",
+  //   symbol: "sUSDe 08/13/2026",
+  // },
   // Stake DAO VAULT
   {
     address: SDT_frxUSD_sUSDS_VAULT as Address,
@@ -386,6 +404,15 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "GHO-crvUSD",
     name: "Vault GHO/crvUSD",
     symbol: "Vault GHO/crvUSD",
+  },
+  {
+    address: "0x7053FA875C478045124CE3Ef740a189b6037DF91" as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "msETH-WETH",
+    name: "Vault msETH/WETH",
+    symbol: "Vault msETH/WETH",
+    displayDecimals: 4,
   },
 
   // CURVE GAUGES

@@ -44,7 +44,7 @@ const publicClient = createPublicClient({
         timeout: 10_000,
       })
     ),
-    { rank: true, retryCount: 0 }
+    { rank: false, retryCount: 0 }
   ),
 })
 

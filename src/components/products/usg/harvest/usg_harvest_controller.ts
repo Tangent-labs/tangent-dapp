@@ -8,13 +8,34 @@ import { executeChainViewUnique, executeContractCall, waitForTransaction } from 
 import { AssetDataPriced, ListHeaderData } from "@/types"
 import { COMMON_ERC20S } from "@tangent/defi-resources"
 import { Abi, Address, Hex, WalletClient } from "viem"
+import campaignRewardDistrib from "../../../../abi/USG/CampaignRewardsDistributorStakeDao.json"
 import harvestUI from "../../../../abi/USG/HarvestUI.json"
 import rewardAccumulator from "../../../../abi/USG/RewardAccumulator.json"
+
 import { USG_CONTRACT, USGMarkets } from "../usg_repository"
 import { HarvesterInfo, HarvesterInfoDisplay, USGTokenAmount } from "../usg_type"
 
-export async function doHarvest(stakingAddress: Address, walletClient: WalletClient) {
+type ExtraRewards = {
+  token: string
+  claimable: bigint
+  proof: string[]
+}
+
+export async function doHarvest(stakingAddress: string, walletClient: WalletClient, extraRewards: ExtraRewards | undefined) {
   const [account] = await walletClient.requestAddresses()
+
+  if (extraRewards) {
+    const campaignRewardDistributor = "0xd4898a378ea555595c4e7dbde722b134a3f346d1" as Address
+    const txExtraData = {
+      abi: campaignRewardDistrib as Abi,
+      functionName: "claim",
+      args: [stakingAddress, extraRewards.token, extraRewards.claimable, extraRewards.proof],
+      address: campaignRewardDistributor,
+      gas: undefined as undefined | bigint,
+    }
+    const txExtraHash = await executeContractCall(walletClient, txExtraData)
+    return await waitForTransaction(txExtraHash)
+  }
 
   const txData = {
     abi: rewardAccumulator.abi as Abi,

@@ -2,8 +2,7 @@
 
 import { ToastComponent } from "@/components/design_system/toast"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { AssetDataPriced, ListState, TokenAmount } from "@/types"
-import { COMMON_ERC20S } from "@tangent/defi-resources"
+import { AssetDataPriced, ListState } from "@/types"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
 import { Address } from "viem"
@@ -95,38 +94,24 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
     return transformHarvestOnChainData(harvestInfo, rewardsInfo)
   }, [harvestInfo, rewardsInfo])
 
-  // Rewards already claimed by our markets on the Merkle claim contract of StakeDao
-  const stakeDaoMerkleAlreadyClaimed = useMemo(() => {
-    if (stakeDaoMarkets.length === 0) return []
-    return stakeDaoMarkets.map((market) => {
-      return { marketAddress: market.marketAddress, alreadyClaimed: market.claimableRewards.filter((cR) => cR.token !== COMMON_ERC20S.CRV) }
-    })
-  }, [stakeDaoMarkets])
-
-  // Rewards claimable on our markets from extra rewards of StakeDAO
-  // Need to have stakeDaoMemo already claimed & the answers of the call to StakeDAO merkle
-  // We have to do this because :
-  //  - StakeDAO API call returns the totalClaimable
-  //  - Contract call returns what has been already claimed
-  // => What is claimable is the total - claimed
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const stakeDaoMerkleClaimable = useMemo(() => {
-    if (stakeDaoMerkleAlreadyClaimed.length === 0 || stakeDaoMerkle.length === 0) return []
-    return stakeDaoMerkleAlreadyClaimed.map((ac) => {
-      const claimable: TokenAmount[] = []
-      const merkle = stakeDaoMerkle.find((sdm) => ac.marketAddress.toLowerCase() === sdm.marketAddress.toLowerCase())!
-
-      ac.alreadyClaimed.forEach((t) => {
-        const totalClaimable = BigInt(merkle.merkleData.find((md) => md.tokenObj.address.toLowerCase() === t.token)?.merkle.amount || 0n)
-        claimable.push({ token: t.token, amount: totalClaimable - t.amount })
-      })
-
-      return { marketAddress: ac.marketAddress, claimable: claimable }
-    })
-  }, [stakeDaoMerkleAlreadyClaimed, stakeDaoMerkle])
-
   const actionHarvest = () => {
-    doHarvest(marketsToHarvest[0].marketAddress, walletClient!)
+    const market = marketsToHarvest[0].marketAddress.toLowerCase()
+
+    const merkle = stakeDaoMerkle.find((m) => market === m.marketAddress.toLowerCase())!
+
+    let claimable = 0n
+    let token = ""
+    let proof: string[] = []
+    merkle.merkleData.forEach((t) => {
+      const amount = BigInt(t.merkle.amount)
+      if (amount !== 0n) {
+        claimable = amount
+        token = t.merkle.token
+        proof = t.merkle.proof
+      }
+    })
+
+    doHarvest(market, walletClient!, { token: token, claimable: claimable, proof: proof })
       .then(() => {
         loadChainviewData()
         setMarketsToHarvest([])

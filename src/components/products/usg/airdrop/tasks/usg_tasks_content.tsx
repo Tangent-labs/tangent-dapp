@@ -5,9 +5,8 @@ import { useUSGContext } from "../../usg_context"
 import { SlidingTabs } from "./components/SlidingTabs"
 import { useUsgTasksContext } from "./usg_tasks_context"
 import { useUsgAirdropContext } from "../usg_airdrop_context"
-import { protocolOptions } from "../../list/usg_market_controller"
 import { lpListState, LPTasksList } from "./components/LPTasksList"
-import { lpListHeaders, voteListHeaders } from "./usg_tasks_controller"
+import { lpListHeaders, tasksProtocolOptions, tasksTypeOptions, voteListHeaders } from "./usg_tasks_controller"
 import { AirdropSharedHeader } from "../components/airdrop_side_header"
 import { voteListState, VoteTasksList } from "./components/VoteTasksList"
 import { ListProvider } from "@/components/design_system/list/list_context"
@@ -25,6 +24,7 @@ export default function UsgTasksContent() {
   const {
     lpTasks,
     lpTaskProtocol,
+    lpTaskType,
     voteTaskProtocol,
     voteTasks,
     lpTaskSearchValue,
@@ -33,6 +33,7 @@ export default function UsgTasksContent() {
     voteTaskSearchValue,
     getSortedLpRows,
     setLpTaskProtocol,
+    setLpTaskType,
     setVoteTaskProtocol,
     getSortedVoteRows,
     setLpTaskFilteredBy,
@@ -104,11 +105,22 @@ export default function UsgTasksContent() {
                     ></LargeButtonTab>
                   </div>
                 </div>
-                <div className="flex flex-col items-stretch justify-end gap-3">
+                <div className="flex items-center justify-center gap-3">
+                  <div className="flex w-full flex-col items-center justify-center md:w-fit">
+                    <div className="mb-1 text-xs text-subtitle"> Type </div>
+
+                    <InputSelect className="w-full min-w-48" value={lpTaskType || ""} options={tasksTypeOptions} onChange={(e) => setLpTaskType(e)} />
+                  </div>
+
                   <div className="flex w-full flex-col items-center justify-center md:w-fit">
                     <div className="mb-1 text-xs text-subtitle"> Protocol </div>
 
-                    <InputSelect className="w-full min-w-48" value={lpTaskProtocol || ""} options={protocolOptions} onChange={(e) => setLpTaskProtocol(e)} />
+                    <InputSelect
+                      className="w-full min-w-48"
+                      value={lpTaskProtocol || ""}
+                      options={tasksProtocolOptions}
+                      onChange={(e) => setLpTaskProtocol(e)}
+                    />
                   </div>
                 </div>
               </div>
@@ -139,7 +151,7 @@ export default function UsgTasksContent() {
                     <InputSelect
                       className="w-full min-w-48"
                       value={voteTaskProtocol || ""}
-                      options={protocolOptions}
+                      options={tasksProtocolOptions}
                       onChange={(e) => setVoteTaskProtocol(e)}
                     />
                   </div>

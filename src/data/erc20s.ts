@@ -15,6 +15,8 @@ import {
 } from "@tangent/defi-resources/build/ressources/erc20/stakeDao"
 import { Address } from "viem"
 
+export const NATIVE_ETH_ADDRESS: Address = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+
 export type Erc20Details = {
   address: Address
   chainId: number
@@ -461,7 +463,7 @@ export const ERC20S: Erc20Details[] = [
     symbol: "ETH",
     name: "Ethereum",
     decimals: 18,
-    address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    address: NATIVE_ETH_ADDRESS,
     logoKey: "ETH",
     displayDecimals: 5,
     chainId: 1,

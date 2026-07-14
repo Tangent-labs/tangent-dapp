@@ -141,8 +141,14 @@ const PROTOCOL_TYPE: Record<string, string> = {
   spectra: "Yield trading",
 }
 
-export const mapTaskType = (protocol: string | undefined | null, selectedType: string): boolean => {
-  if (!protocol) return false
+export const mapTaskType = (t: LpTask, selectedType: string): boolean => getTaskType(t?.protocol, t?.asset) === selectedType
+
+// hack because Spectra tasks can be "LP" and "Yield trading"
+export const getTaskType = (protocol: string | undefined | null, asset?: string): string => {
+  if (!protocol) return ""
   const normalized = protocol.replaceAll(" ", "").toLowerCase()
-  return PROTOCOL_TYPE[normalized] === selectedType
+  if (normalized === "spectra" && asset?.replace(/[\s_]/g, "").toUpperCase().startsWith("LP")) {
+    return "LP"
+  }
+  return PROTOCOL_TYPE[normalized]
 }

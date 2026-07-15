@@ -6,6 +6,7 @@ import { executeContractCall, getPublicClient, waitForTransaction } from "@/serv
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { BalanceAllowanceData, FormError, FormState, MarketDetailData, USGMarketDepositParams, ZapMarketData } from "../../usg_type"
 import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import { NATIVE_ETH_ADDRESS } from "@/data/erc20s"
 
 export function getDepositFormState(
   isTransactionBlockedByPriceImpact: boolean,
@@ -132,7 +133,7 @@ export const doZapDepositAndBorrow = async (
     value: 0n,
   } as EstimateContractGasParameters
 
-  if (zapMarket?.tokenIn === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
+  if (zapMarket?.tokenIn === NATIVE_ETH_ADDRESS) {
     estimateGasData.value = zapMarket?.amountIn
   }
 
@@ -164,7 +165,7 @@ export const doZapDeposit = async (marketAddress: Address, walletClient: WalletC
     value: 0n,
   } as EstimateContractGasParameters
 
-  if (zapMarket?.tokenIn === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
+  if (zapMarket?.tokenIn === NATIVE_ETH_ADDRESS) {
     estimateGasData.value = zapMarket?.amountIn
   }
 

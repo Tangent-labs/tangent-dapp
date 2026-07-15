@@ -1,6 +1,7 @@
 "use client"
 
 import { dappConfig } from "@/dapp_config"
+import { NATIVE_ETH_ADDRESS } from "@/data/erc20s"
 import { TxContractCallData } from "@/types"
 import {
   Abi,
@@ -177,7 +178,7 @@ export const gasCostToUSD = async (gasUsed: bigint): Promise<number> => {
     const gasPriceData = await gasPriceResponse.json()
     const gasPriceInGwei = Number(gasPriceData.result.ProposeGasPrice)
 
-    const ethPriceData = await getSwapAssetPrice("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE")
+    const ethPriceData = await getSwapAssetPrice(NATIVE_ETH_ADDRESS)
 
     const gasPriceInEth = gasPriceInGwei * 1e-9
 

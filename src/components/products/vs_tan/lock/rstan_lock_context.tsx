@@ -15,7 +15,7 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computedMinAmountOut, computeSwapAssetPrice } from "../../usg/record/usg_record_controller"
 import { doApprove, doIncreaseLockAmount, doLock, doZapAndIncreaseLock, doZapAndLock, getLockFormState } from "./rstan_lock_controller"
-import { Erc20Details, ERC20S } from "@/data/erc20s"
+import { Erc20Details, ERC20S, NATIVE_ETH_ADDRESS } from "@/data/erc20s"
 
 type VsTanLockContextProps = {
   children: ReactNode
@@ -127,7 +127,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
   const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
     if (depositAsset === "ETH") {
       return {
-        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        address: NATIVE_ETH_ADDRESS,
         decimals: 18,
         displayDecimals: 5,
         symbol: "ETH",

@@ -4,6 +4,7 @@ import { FormError, FormState, LockPosition, ZapMarketData } from "../../usg/usg
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { executeApprove, executeContractCall, getCurrentBlock, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import { NATIVE_ETH_ADDRESS } from "@/data/erc20s"
 
 export async function doApprove(walletClient: WalletClient, contract: Address, spender: Address, amount: bigint) {
   const txHash = await executeApprove(walletClient, contract, spender, amount)
@@ -38,7 +39,7 @@ export const doZapAndIncreaseLock = async (
     value: 0n,
   } as EstimateContractGasParameters
 
-  if (zapMarket?.tokenIn === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
+  if (zapMarket?.tokenIn === NATIVE_ETH_ADDRESS) {
     estimateGasData.value = zapMarket?.amountIn
   }
 
@@ -76,7 +77,7 @@ export const doZapAndLock = async (
     value: 0n,
   } as EstimateContractGasParameters
 
-  if (zapMarket?.tokenIn === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
+  if (zapMarket?.tokenIn === NATIVE_ETH_ADDRESS) {
     estimateGasData.value = zapMarket?.amountIn
   }
 

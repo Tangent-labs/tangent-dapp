@@ -5,7 +5,7 @@ import { Address, formatEther } from "viem"
 import { useUSGContext } from "../../usg_context"
 import { USGMarkets } from "../../usg_repository"
 import { LpTask, VoteTask } from "../../usg_type"
-import { getMorphoCollateral, getUserBalancesAndDebtForLpTasks, isMorphoTask, mapAirdropData, mapVoteTasksProtocol } from "./usg_tasks_controller"
+import { getMorphoCollateral, getUserBalancesAndDebtForLpTasks, isMorphoTask, mapAirdropData, mapTaskType, mapVoteTasksProtocol } from "./usg_tasks_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { getTasks } from "../../client_api"
@@ -35,6 +35,9 @@ type UsgTasksContextValues = {
   lpTaskProtocol: string
   setLpTaskProtocol: (s: string) => void
 
+  lpTaskType: string
+  setLpTaskType: (s: string) => void
+
   voteTaskProtocol: string
   setVoteTaskProtocol: (s: string) => void
 }
@@ -59,6 +62,8 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
   const [voteTaskSearchValue, setVoteTaskSearchValue] = useState<string | null>(null)
 
   const [lpTaskProtocol, setLpTaskProtocol] = useState<string>("All")
+
+  const [lpTaskType, setLpTaskType] = useState<string>("All")
 
   const [voteTaskProtocol, setVoteTaskProtocol] = useState<string>("All")
 
@@ -141,6 +146,7 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
     let rowsToShow = rows
       .filter((row) => lpTaskFilteredBy === "All" || (row?.balance ?? 0) > 0)
       .filter((row) => lpTaskProtocol === "All" || row.protocol?.replaceAll(" ", "") === lpTaskProtocol?.replaceAll(" ", ""))
+      .filter((row) => lpTaskType === "All" || mapTaskType(row, lpTaskType))
 
     if (lpTaskSearchValue?.trim()) {
       const lowered = lpTaskSearchValue.toLowerCase().trim()
@@ -148,7 +154,7 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
     }
 
     return [...rowsToShow].sort((a, b) => (b.points ?? 0) - (a.points ?? 0))
-  }, [rawLpTasks, lpTaskSearchValue, lpTaskFilteredBy, lpTaskProtocol])
+  }, [rawLpTasks, lpTaskSearchValue, lpTaskFilteredBy, lpTaskProtocol, lpTaskType])
 
   const getSortedVoteRows = (rows: VoteTask[], listState: ListState) => {
     const { key, direction } = listState.sort!
@@ -203,6 +209,9 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
 
     setLpTaskProtocol,
     setVoteTaskProtocol,
+
+    lpTaskType,
+    setLpTaskType,
   }
 
   return <UsgTasksContext.Provider value={contextValue}>{children}</UsgTasksContext.Provider>

@@ -114,3 +114,41 @@ export const mapVoteTasksProtocol = (protocol: string) => {
       return "Stake DAO"
   }
 }
+
+export const tasksProtocolOptions = [
+  { label: "All", value: "All" },
+  { label: "Curve", value: "Curve" },
+  { label: "Convex", value: "Convex" },
+  { label: "Stake DAO", value: "Stake DAO" },
+  { label: "Balancer", value: "Balancer" },
+  { label: "Morpho", value: "Morpho" },
+  { label: "Spectra", value: "Spectra" },
+]
+
+export const tasksTypeOptions = [
+  { label: "All", value: "All" },
+  { label: "LP", value: "LP" },
+  { label: "Lending", value: "Lending" },
+  { label: "Yield trading", value: "Yield trading" },
+]
+
+const PROTOCOL_TYPE: Record<string, string> = {
+  curve: "LP",
+  stakedao: "LP",
+  convex: "LP",
+  balancer: "LP",
+  morpho: "Lending",
+  spectra: "Yield trading",
+}
+
+export const mapTaskType = (t: LpTask, selectedType: string): boolean => getTaskType(t?.protocol, t?.asset) === selectedType
+
+// hack because Spectra tasks can be "LP" and "Yield trading"
+export const getTaskType = (protocol: string | undefined | null, asset?: string): string => {
+  if (!protocol) return ""
+  const normalized = protocol.replaceAll(" ", "").toLowerCase()
+  if (normalized === "spectra" && asset?.replace(/[\s_]/g, "").toUpperCase().startsWith("LP")) {
+    return "LP"
+  }
+  return PROTOCOL_TYPE[normalized]
+}

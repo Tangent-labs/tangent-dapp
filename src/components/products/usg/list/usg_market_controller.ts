@@ -140,6 +140,16 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
 
   const isBorrowCapReached = totalDebt >= maxMarketDebt
 
+  const maxLeverageVAPR = (
+    (Number(totalCurrentAPR) - maxLTV * ((Math.exp(Number(formatUnits(onChainRow?.debtInfos.currentBorrowRate || 0n, 18))) - 1) * 100)) * (1 / (1 - maxLTV)) ||
+    0
+  ).toFixed(2)
+
+  const maxProjectedLeverageVAPR = (
+    (Number(totalProjectedAPR) - maxLTV * ((Math.exp(Number(formatUnits(onChainRow?.debtInfos.currentBorrowRate || 0n, 18))) - 1) * 100)) *
+      (1 / (1 - maxLTV)) || 0
+  ).toFixed(2)
+
   return {
     marketType,
     token: data.collateral,
@@ -159,13 +169,21 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
     indicators: [
       {
         key: "borrowRate",
-        label: "Borrow Rate",
+        label: "Borrow APY",
         value:
           !!onChainRow?.debtInfos.currentBorrowRate && onChainRow?.debtInfos.currentBorrowRate >= 0n
             ? ((Math.exp(Number(formatUnits(onChainRow?.debtInfos.currentBorrowRate, 18))) - 1) * 100).toFixed(2) + "%"
             : "0%",
         raw: onChainRow?.debtInfos.currentBorrowRate?.toString() || "0",
       },
+
+      {
+        label: "Max lev. vAPR",
+        key: "maxvapr",
+        value: maxLeverageVAPR,
+        subValue: maxProjectedLeverageVAPR,
+      },
+
       {
         key: "tvl",
         label: "Tvl",
@@ -213,17 +231,18 @@ export const USGListHeaders: ListHeaderData[] = [
     indicator: "vAPR of the collateral.",
   },
   {
-    label: "Max vAPR",
-    key: "maxvapr",
-    indicator: "vAPR of the collateral at max leverage.",
-    sort: "sort",
-  },
-  {
-    label: "Borrow Rate",
+    label: "Borrow APY",
     key: "borrowRate",
     indicator: "Interest rate that borrowers pay on their outstanding debt.",
     sort: "sort",
   },
+  {
+    label: "Max lev. vAPR",
+    key: "maxvapr",
+    indicator: "vAPR of the collateral at max leverage.",
+    sort: "sort",
+  },
+
   { label: "TVL", key: "tvl", sort: "sort" },
   { label: "Borrowed", key: "borrowed", sort: "sort" },
 ]

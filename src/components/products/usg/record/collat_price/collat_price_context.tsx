@@ -63,7 +63,9 @@ export const CollateralPriceProvider = ({ children }: CollateralPriceContextProp
       const endDate = new Date(currentTimeMs)
       const bucketSizeMinutes = computeOracleBucketSizeMinutes(customStartTime)
 
-      const resp = await fetchOracleGraphData(marketAddress, endDate.toISOString(), bucketSizeMinutes, 50)
+      const bucketCount = Math.round(computeTimeDiff(customStartTime) / (bucketSizeMinutes * 60))
+
+      const resp = await fetchOracleGraphData(marketAddress, endDate.toISOString(), bucketSizeMinutes, bucketCount)
 
       return mapOracleResponseToLineData(resp, bucketSizeMinutes)
     } catch (error) {

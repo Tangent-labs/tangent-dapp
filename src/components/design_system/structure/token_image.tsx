@@ -57,6 +57,9 @@ export function TokenImage({ token, size, ...props }: TokenImageProps) {
     "LP SUSDE": "SUSDE.webp",
     "PT SUSDE": "PT_sUSDe.webp",
     "YT SUSDE": "YT_sUSDe.webp",
+    "PT SUSG": "sUSG_PT.webp",
+    "YT SUSG": "sUSG_YT.webp",
+    "LP SUSG": "sUSG_LP.webp",
     REUSD: "reUSD.webp",
   }
 

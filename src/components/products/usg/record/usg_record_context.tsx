@@ -23,22 +23,23 @@ import {
   mapToTotalBorrow,
   computeLiquidationPrice,
   fetchMarketContracts,
+  getCollateralDisplayDecimals,
 } from "./usg_record_controller"
 
 import { toast } from "react-toastify"
 import { usePathname } from "next/navigation"
 import { useUSGContext } from "../usg_context"
+import { formatNumber } from "@/lib/number_formatter"
+import { AssetDataPriced, CollateralInfo } from "@/types"
 import { USG_CONTRACT, USGMarkets } from "../usg_repository"
 import { ToastComponent } from "@/components/design_system/toast"
 import { Address, formatUnits, parseEther, zeroAddress } from "viem"
 import { useRootContext } from "@/components/products/root/root_context"
 import { useUSGMaketListContext } from "../list/usg_market_list_context"
 import { getHistoricalMarketData, getPositions } from "../client_api"
-import { AssetDataPriced, CollateralInfo } from "@/types"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { AssetInfos } from "@/components/design_system/inputs/asset_selector"
-import { formatNumber } from "@/lib/number_formatter"
 
 type USGRecordContextProps = {
   children: ReactNode
@@ -168,7 +169,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
     symbol: marketInfo.marketName as string,
     name: marketInfo.marketName as string,
     logoKey: marketInfo.logoKey,
-    displayDecimals: 2,
+    displayDecimals: getCollateralDisplayDecimals(marketInfo.collatAddress as Address, marketInfo.marketName),
     price: 0,
   }
 

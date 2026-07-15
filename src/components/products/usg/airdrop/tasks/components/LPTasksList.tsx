@@ -46,6 +46,18 @@ const computeProtocolDisplay = (protocol: string) => {
       token = "PENDLE"
       label = "Pendle"
       break
+    case "morpho":
+      token = "morpho"
+      label = "Morpho"
+      break
+    case "spectra":
+      token = "spectra"
+      label = "Spectra"
+      break
+    case "balancer":
+      token = "balancer"
+      label = "Balancer"
+      break
     default:
       token = "CRV"
       label = "Curve"

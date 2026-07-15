@@ -498,7 +498,7 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
         USG_CONTRACT.USG,
         marketInfo?.collatAddress,
         borrowWeiValue,
-        leveragedCollateralQuote,
+        computedMinAmountOut(leveragedCollateralQuote, slippage),
         marketInfo?.marketAddress,
         USG_CONTRACT.ZAPPER,
         curveRoutes
@@ -507,7 +507,15 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       const isReceiptIn = marketData?.constants?.receipt.toLowerCase() === depositAssetInfo?.address.toLowerCase()
 
       await toastTx(
-        doMarketLeverage(marketInfo?.marketAddress, walletClient, depositWeiValue || 0n, borrowWeiValue, leveragedCollateralQuote, isReceiptIn, leverageData!),
+        doMarketLeverage(
+          marketInfo?.marketAddress,
+          walletClient,
+          depositWeiValue || 0n,
+          borrowWeiValue,
+          computedMinAmountOut(leveragedCollateralQuote, slippage),
+          isReceiptIn,
+          leverageData!
+        ),
         {
           pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
           success: () => ({
@@ -757,17 +765,22 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
     }
   }, [isZapping, depositWeiValue, zapValue, marketData?.collateralInfos.positionCollateralAmount, globalData.usgPriceWei, remainingDebtBorrowable])
 
+  // Total collateral on which slippage is applied
+  const totalCollateralAmountReceived = useMemo(() => {
+    return BigInt(zapValue || 0n) + (leveragedCollateralQuote || 0n)
+  }, [zapValue, leveragedCollateralQuote])
+
   const priceImpactLoss = useMemo(() => {
-    const { dollarLoss } = computeTransactionPotentialLoss(zapValue as bigint, collateralInfo, priceImpact)
+    const { dollarLoss } = computeTransactionPotentialLoss(totalCollateralAmountReceived, collateralInfo, priceImpact)
 
     return dollarLoss
-  }, [zapValue, priceImpact])
+  }, [totalCollateralAmountReceived, priceImpact])
 
   const slippageLoss = useMemo(() => {
-    const { tokenLoss, dollarLoss } = computeTransactionPotentialLoss(zapValue as bigint, collateralInfo, slippage)
+    const { tokenLoss, dollarLoss } = computeTransactionPotentialLoss(totalCollateralAmountReceived, collateralInfo, slippage)
 
     return { tokenLoss, dollarLoss }
-  }, [slippage, zapValue])
+  }, [slippage, totalCollateralAmountReceived])
 
   const USGDumpDollarLoss = useMemo(() => {
     if (!borrowWeiValue || !leveragedCollateralQuote || !collateralInfo?.price || !globalData.usgPriceWei) {

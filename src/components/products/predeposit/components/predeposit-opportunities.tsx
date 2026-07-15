@@ -32,15 +32,17 @@ export const PredepositOpportunities = ({ opportunitiesData }: PredepositOpportu
   const getSortedRows = (rows: AprOpportunityItem[], l: ListState) => {
     const { key, direction } = l.sort!
 
-    return [...rows].sort((elementA, elementB) => {
-      const aValue = elementA[key as keyof AprOpportunityItem] ?? 0
-      const bValue = elementB[key as keyof AprOpportunityItem] ?? 0
+    return [...rows]
+      .filter((r) => r.isPredeposit)
+      .sort((elementA, elementB) => {
+        const aValue = elementA[key as keyof AprOpportunityItem] ?? 0
+        const bValue = elementB[key as keyof AprOpportunityItem] ?? 0
 
-      if (aValue < bValue) return direction === "asc" ? -1 : 1
-      if (aValue > bValue) return direction === "asc" ? 1 : -1
+        if (aValue < bValue) return direction === "asc" ? -1 : 1
+        if (aValue > bValue) return direction === "asc" ? 1 : -1
 
-      return 0
-    })
+        return 0
+      })
   }
 
   return (

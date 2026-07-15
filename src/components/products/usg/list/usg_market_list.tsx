@@ -322,6 +322,7 @@ export function USGMarketListInner() {
           className={cn("my-1", !!marketData.length && !!displayRows ? "" : "shimmer")}
           key={index}
           route={"/" + item.address + "/deposit-borrow"}
+          borrowCapStatus={item.borrowCapStatus}
         >
           <ListAsset name={item.name} token={item.logoKey} marketData={marketData.find((el) => el.marketAddress === item.address)} />
 
@@ -360,10 +361,24 @@ export function USGMarketListInner() {
                       {/* MOBILE CARD LABEL  */}
                       <span className={cn("flex text-sm text-subtitle md:text-xl xl:hidden")}>{indicator?.label}</span>
 
-                      {/* VALUE TOP  */}
-                      <span className="text-xs md:text-[15px]">{indicator?.value}</span>
-                      {/* VALUE DOWN */}
-                      <span className="hidden text-xs text-subtitle md:flex md:text-[10px]">/{indicator?.subValue}</span>
+                      {item.isBorrowCapReached ? (
+                        <HoverCard openDelay={50} closeDelay={100}>
+                          <HoverCardTrigger asChild>
+                            <span className="hidden cursor-pointer flex-col items-center justify-center xl:flex">
+                              <span className="text-xs md:text-[15px]">{indicator?.value}</span>
+                              <span className="text-xs text-subtitle md:text-[10px]">/{indicator?.subValue}</span>
+                            </span>
+                          </HoverCardTrigger>
+                          <HoverCardContent side="top" align="center" className="z-[9999] w-full p-2 text-xs">
+                            Borrow cap has been reached
+                          </HoverCardContent>
+                        </HoverCard>
+                      ) : (
+                        <>
+                          <span className="text-xs md:text-[15px]">{indicator?.value}</span>
+                          <span className="hidden text-xs text-subtitle md:flex md:text-[10px]">/{indicator?.subValue}</span>
+                        </>
+                      )}
                     </span>
                   </div>
                 ) : (
@@ -388,6 +403,13 @@ export function USGMarketListInner() {
             {item.userHasDeposited && (
               <div className="absolute -right-4 top-0 flex h-full w-2 items-center justify-center">
                 <div className="h-10 w-2 rounded-full bg-tonic"></div>
+              </div>
+            )}
+
+            {(item.isDepositPaused || item.isBorrowPaused || item.isLeveragePaused) && (
+              <div className="absolute -top-5 right-3 flex h-full w-2 items-center justify-center">
+                <div className="h-3 w-1 bg-danger"></div>
+                <div className="ml-1 h-3 w-1 bg-danger"></div>
               </div>
             )}
           </>

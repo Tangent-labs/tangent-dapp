@@ -103,7 +103,7 @@ export function formatNumber(value: number | undefined, displayDecimals: number)
   let num = parseFloat(value?.toString())
   if (isNaN(num)) return ""
   num = Number(num.toFixed(displayDecimals))
-  return new Intl.NumberFormat("en-US").format(num)
+  return new Intl.NumberFormat("en-US", { maximumFractionDigits: displayDecimals }).format(num)
 }
 
 export const formatDisplayValue = (value: string | number): string => {

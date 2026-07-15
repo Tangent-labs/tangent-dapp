@@ -12,17 +12,17 @@ import {
   FormError,
 } from "../usg_type"
 
+import { Erc20Details, ERC20S } from "@/data/erc20s"
 import GetBalances from "@/abi/USG/GetBalances.json"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { getSwapAssetPrice } from "@/services/service_price"
 import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
 import { USG_CONTRACT, USGMarkets, USGOracles } from "../usg_repository"
 import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
-import { Abi, Address, formatEther, formatUnits, Hex, parseEther, parseUnits, WalletClient, zeroAddress } from "viem"
-import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
-import { formatBigInt, formatBigIntAsNumber, formatDollar, formatDollarBigInt, formatNumber, truncateDecimals } from "@/lib/number_formatter"
-import { Erc20Details, ERC20S } from "@/data/erc20s"
 import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
+import { Abi, Address, formatEther, formatUnits, Hex, parseEther, parseUnits, WalletClient, zeroAddress } from "viem"
+import { formatBigInt, formatBigIntAsNumber, formatDollar, formatDollarBigInt, formatNumber, truncateDecimals } from "@/lib/number_formatter"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
@@ -434,17 +434,26 @@ export const computedMinAmountOut = (value: bigint | string, slippagePercentage:
 
 type MarketContract = { name: string; address: Address }
 
+// Need to re-match token pairs before mapping contract addresses because of how duoPoolStable is set
+const pairKey = (pair: string) =>
+  pair
+    .split("/")
+    .map((token) => token.toLowerCase())
+    .sort()
+    .join("/")
+
 const MARKET_CONTRACTS = Object.fromEntries(
-  USGMarkets.map((el) => el.marketName).map((marketName) => {
-    const market = USGMarkets.find((el) => el.marketName === marketName)
-    const oracle = USGOracles.find((el) => el.token === marketName)
+  USGMarkets.map((market) => {
+    const oracle = USGOracles.find((el) => pairKey(el.token) === pairKey(market.marketName))
 
     return [
-      marketName,
+      market.marketName,
       [
-        { name: "Market", address: market?.marketAddress as Address },
-        { name: "Collateral Token", address: market?.collatAddress as Address },
+        { name: "Market", address: market.marketAddress as Address },
+        { name: "Collateral Token", address: market.collatAddress as Address },
         { name: "Oracle", address: oracle?.address as Address },
+        { name: "USG", address: USG_CONTRACT.USG },
+        { name: "IR Calculator", address: USG_CONTRACT.IR_CALCULATOR },
       ],
     ]
   })
@@ -459,8 +468,14 @@ export const computeTransactionPotentialLoss = (buyWeiValue: bigint, buyAssetInf
     if (buyWeiValue && buyAssetInfo) {
       const minAmountOutWei = computedMinAmountOut(buyWeiValue, delta)
 
-      const tokenLoss = `${formatNumber(Number(truncateDecimals(formatUnits(BigInt(buyWeiValue) - minAmountOutWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
-      const dollarLoss = `$${formatNumber(Number(truncateDecimals(formatUnits(((BigInt(buyWeiValue) - minAmountOutWei) * BigInt(Math.round(Number(buyAssetInfo?.price?.toFixed(2)) * 10000))) / BigInt(10000n), buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)), buyAssetInfo?.displayDecimals)}`
+      const tokenLossWei = BigInt(buyWeiValue) - minAmountOutWei
+      const dollarLossWei = (tokenLossWei * BigInt(Math.round(Number(buyAssetInfo?.price?.toFixed(2)) * 10000))) / BigInt(10000n)
+
+      const tokenLossTruncated = truncateDecimals(formatUnits(tokenLossWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)
+      const dollarLossTruncated = truncateDecimals(formatUnits(dollarLossWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)
+
+      const tokenLoss = `${formatNumber(Number(tokenLossTruncated), buyAssetInfo?.displayDecimals)}`
+      const dollarLoss = `$${formatNumber(Number(dollarLossTruncated), buyAssetInfo?.displayDecimals)}`
 
       return { tokenLoss, dollarLoss }
     }
@@ -472,6 +487,17 @@ export const computeTransactionPotentialLoss = (buyWeiValue: bigint, buyAssetInf
 
 export function matchBlockChainErrors(err: string) {
   if (err.includes("User denied transaction signature")) {
-    return "User denied transaction signature"
+    return "User denied transaction signature."
   }
+  if (err.includes("No swap route available")) {
+    return "No swap route available for this asset?"
+  }
+}
+
+const DEFAULT_DISPLAY_DECIMALS = 2
+
+// How many decimals to show for a market's collateral amount.
+export const getCollateralDisplayDecimals = (collatAddress: Address, marketName: string): number => {
+  const meta = ERC20S.find((e) => e.address.toLowerCase() === collatAddress.toLowerCase() || e.symbol === marketName || e.name === marketName)
+  return meta?.displayDecimals ?? DEFAULT_DISPLAY_DECIMALS
 }

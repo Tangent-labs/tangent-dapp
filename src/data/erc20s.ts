@@ -1,4 +1,4 @@
-import { COMMON_ERC20S, CURVE_GAUGES, CURVE_LPS, PENDLE_POOLS } from "@tangent/defi-resources"
+import { COMMON_ERC20S, CURVE_GAUGES, CURVE_LPS } from "@tangent/defi-resources"
 import {
   SDT_BOLD_USDC_VAULT,
   SDT_crvUSD_USDC_VAULT,
@@ -14,6 +14,8 @@ import {
   SDT_USG_USDC_VAULT,
 } from "@tangent/defi-resources/build/ressources/erc20/stakeDao"
 import { Address } from "viem"
+
+export const NATIVE_ETH_ADDRESS: Address = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 
 export type Erc20Details = {
   address: Address
@@ -61,6 +63,23 @@ export const ERC20S: Erc20Details[] = [
     name: "USG/frxUSD",
     symbol: "USG/frxUSD",
   },
+
+  {
+    address: "0x317837aed98bea887074d1f97fd3c83ebca6905b",
+    chainId: 1,
+    decimals: 18,
+    logoKey: "USG-sDOLA",
+    name: "USG/sDOLA",
+    symbol: "USG/sDOLA",
+  },
+  {
+    address: "0xc6ac08424ee6d1373f03611b96f5da849594b6d8",
+    chainId: 1,
+    decimals: 18,
+    logoKey: "sUSG-reUSD",
+    name: "sUSG/reUSD",
+    symbol: "sUSG/reUSD",
+  },
   {
     address: CURVE_LPS.crvUSD_USDC as Address,
     chainId: 1,
@@ -92,6 +111,7 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "frxETH-WETH",
     name: "frxETH/WETH",
     symbol: "frxETH/WETH",
+    displayDecimals: 4,
   },
   {
     address: CURVE_LPS.DUO_fxUSD_reUSD as Address,
@@ -231,6 +251,7 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "msETH-OETH",
     name: "msETH/OETH",
     symbol: "msETH/OETH",
+    displayDecimals: 4,
   },
   {
     address: CURVE_LPS["ETHp_WETH_LP"] as Address,
@@ -239,6 +260,7 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "ETH+-WETH",
     name: "ETH+/WETH",
     symbol: "ETH+/WETH",
+    displayDecimals: 4,
   },
   {
     address: CURVE_LPS.DUO_tBTC_crvUSD as Address,
@@ -247,6 +269,7 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "tBTC-cbBTC",
     name: "tBTC/cbBTC",
     symbol: "tBTC/cbBTC",
+    displayDecimals: 5,
   },
   {
     address: CURVE_LPS.DUO_GHO_crvUSD,
@@ -256,26 +279,25 @@ export const ERC20S: Erc20Details[] = [
     name: "GHO/crvUSD",
     symbol: "GHO/crvUSD",
   },
-
-  // PENDLE PT
-
   {
-    address: PENDLE_POOLS?.["sUSDe 07/05/26"]?.PT,
+    address: CURVE_LPS.DUO_msETH_WETH as Address,
     chainId: 1,
     decimals: 18,
-    logoKey: "sUSDe 07/05/26",
-    name: "sUSDe 07/05/26",
-    symbol: "sUSDe 07/05/26",
-  },
-  {
-    address: PENDLE_POOLS?.["USDe 07/05/26"]?.PT,
-    chainId: 1,
-    decimals: 18,
-    logoKey: "USDe 07/05/26",
-    name: "USDe 07/05/26",
-    symbol: "USDe 07/05/26",
+    logoKey: "msETH-WETH",
+    name: "msETH/WETH",
+    symbol: "msETH/WETH",
+    displayDecimals: 4,
   },
 
+  // // PENDLE PT
+  // {
+  //   address: PENDLE_POOLS?.["sUSDe 08/13/2026"]?.PT,
+  //   chainId: 1,
+  //   decimals: 18,
+  //   logoKey: "sUSDe 08/13/2026",
+  //   name: "sUSDe 08/13/2026",
+  //   symbol: "sUSDe 08/13/2026",
+  // },
   // Stake DAO VAULT
   {
     address: SDT_frxUSD_sUSDS_VAULT as Address,
@@ -373,6 +395,8 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "tBTC-cbBTC",
     name: "Vault tBTC/cbBTC",
     symbol: "Vault tBTC/cbBTC",
+    // Volatile (BTC) collateral: ~$100k/unit, needs the most display granularity.
+    displayDecimals: 5,
   },
 
   {
@@ -382,6 +406,15 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "GHO-crvUSD",
     name: "Vault GHO/crvUSD",
     symbol: "Vault GHO/crvUSD",
+  },
+  {
+    address: "0x7053FA875C478045124CE3Ef740a189b6037DF91" as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "msETH-WETH",
+    name: "Vault msETH/WETH",
+    symbol: "Vault msETH/WETH",
+    displayDecimals: 4,
   },
 
   // CURVE GAUGES
@@ -430,7 +463,7 @@ export const ERC20S: Erc20Details[] = [
     symbol: "ETH",
     name: "Ethereum",
     decimals: 18,
-    address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    address: NATIVE_ETH_ADDRESS,
     logoKey: "ETH",
     displayDecimals: 5,
     chainId: 1,

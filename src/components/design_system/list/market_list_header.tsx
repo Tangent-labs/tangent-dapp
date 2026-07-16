@@ -85,20 +85,9 @@ export const MarketListHeader = ({ headers, activeSort, onSort, rowDisposition: 
               className="flex w-full items-center justify-center"
             />
           )}
-          {!!headers[2]?.key && (
-            <MarketHeaderDisplay
-              key={headers[2]?.key}
-              label={headers[2]?.label}
-              sort={(activeSort?.key == headers[2]?.key && activeSort?.direction) || "none"}
-              field={headers[2]?.key || ""}
-              onSort={!!headers[2]?.sort ? onSort : undefined}
-              indicator={headers[2]?.indicator}
-              className="flex w-full items-center justify-center"
-            />
-          )}
           <>
             {headers
-              ?.slice(3)
+              ?.slice(2)
               ?.map((header) => (
                 <MarketHeaderDisplay
                   key={header.key}

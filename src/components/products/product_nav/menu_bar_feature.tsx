@@ -24,7 +24,7 @@ import { SwapButton } from "@/components/design_system/inputs/swap_button"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import { IconBoosts, IconForum, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
+import { IconBoosts, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
 
 export default function MenuBarFeature() {
   const { USGsUSGMetrics } = useUSGContext()
@@ -78,7 +78,6 @@ export default function MenuBarFeature() {
       baseLabel: "DAO",
       routes: [
         { route: "https://snapshot.box/#/s:tangent-finance.eth", label: "Snapshot", logo: <IconSnapshot className="w-4" />, external: true },
-        { route: "https://tangentfinance.discourse.group/categories", label: "Forum", logo: <IconForum className="w-4" />, external: true },
         { route: "/harvest", label: "Harvest", logo: <IconHarvest className="w-3" /> },
       ],
     },

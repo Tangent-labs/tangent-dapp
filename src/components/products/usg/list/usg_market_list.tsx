@@ -28,6 +28,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
+import { MaxLeverageVAPR } from "@/components/design_system/list/market_max_lev_vapr"
 
 interface ListRowDispositionProps {
   children: React.ReactNode[]
@@ -49,18 +50,15 @@ const CustomMarketListRow = ({ children }: ListRowDispositionProps) => {
       <hr className="my-2 w-full opacity-20 xl:hidden" />
 
       <div className="flex w-full xl:w-3/4">
-        <div className="hidden w-full items-center justify-between xl:flex xl:w-2/5 xl:justify-start">
-          <div className="hidden items-center justify-center xl:flex xl:w-1/2">{children?.at(1)}</div>
-          <div className="hidden items-center justify-center xl:flex xl:w-1/2">{children?.at(2)}</div>
-        </div>
-        <div className="flex w-full items-center justify-evenly gap-2 xl:w-3/5">
+        <div className="hidden w-full items-center justify-between xl:flex xl:w-1/5 xl:justify-center">{children?.at(1)}</div>
+        <div className="flex w-full items-center justify-evenly gap-2 xl:w-4/5">
           <div className="flex w-full flex-col items-center justify-evenly gap-2 xl:hidden">
             {children?.at(1)}
             {children?.at(2)}
             {children?.at(3)}
           </div>
 
-          <div className="hidden w-full items-center justify-evenly xl:flex">{children?.at(3)}</div>
+          <div className="hidden w-full items-center justify-evenly xl:flex">{children?.at(2)}</div>
         </div>
       </div>
     </div>
@@ -339,23 +337,27 @@ export function USGMarketListInner() {
             isMarketListDisplay={true}
           />
 
-          <MarketAPR
-            poolName={item.name}
-            logoKey={item.logoKey}
-            rewardToken={item?.rewardToken}
-            maxLeverage={1 / (1 - item?.maxLTV) || 1}
-            currentAPRDetails={item.currentAPRDetails}
-            projectedAPRDetails={item.projectedAPRDetails}
-            apr={item.apr.current}
-            projectedApr={item.apr.projected}
-            marketType={marketData.find((el) => el.marketAddress === item.address)?.marketType}
-            isMarketListDisplay={true}
-          />
-
           <>
-            {item.indicators.map((indicator, index) => (
+            {item.indicators.map((indicator) => (
               <Fragment key={indicator.key}>
-                {indicator?.key === "borrowed" ? (
+                {indicator?.key === "maxvapr" && (
+                  <div key={indicator.key} style={{ fontWeight: 300 }} className={cn("w-full basis-[48%] flex-col items-center leading-5 md:flex-1 xl:block")}>
+                    <MaxLeverageVAPR
+                      poolName={item.name}
+                      logoKey={item.logoKey}
+                      rewardToken={item?.rewardToken}
+                      currentAPRDetails={item.currentAPRDetails}
+                      apr={item.apr.current}
+                      projectedApr={item.apr.projected}
+                      marketType={marketData.find((el) => el.marketAddress === item.address)?.marketType}
+                      isMarketListDisplay={true}
+                      maxLevAPR={indicator?.value}
+                      maxProjectedLevAPR={indicator?.subValue || "0"}
+                    />
+                  </div>
+                )}
+
+                {indicator?.key === "borrowed" && (
                   <div key={indicator.key} style={{ fontWeight: 300 }} className={cn("hidden basis-[48%] flex-col items-center leading-5 md:flex-1 xl:block")}>
                     <span className="flex flex-col items-center justify-center">
                       {/* MOBILE CARD LABEL  */}
@@ -381,11 +383,13 @@ export function USGMarketListInner() {
                       )}
                     </span>
                   </div>
-                ) : (
+                )}
+
+                {indicator?.key !== "borrowed" && indicator?.key !== "maxvapr" && (
                   <div
                     key={indicator.key}
                     style={{ fontWeight: 300 }}
-                    className={cn("flex w-full basis-[48%] flex-col items-center justify-between leading-5 md:flex-1", index >= 2 ? "hidden xl:block" : "")}
+                    className={cn("flex w-full basis-[48%] flex-col items-center justify-between leading-5 md:flex-1")}
                   >
                     <span className="flex w-full items-center justify-between gap-2 xl:justify-center">
                       {/* MOBILE CARD LABEL  */}

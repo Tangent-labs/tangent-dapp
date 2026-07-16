@@ -30,17 +30,16 @@ import { toast } from "react-toastify"
 import { usePathname } from "next/navigation"
 import { useUSGContext } from "../usg_context"
 import { formatNumber } from "@/lib/number_formatter"
+import { AssetDataPriced, CollateralInfo } from "@/types"
 import { USG_CONTRACT, USGMarkets } from "../usg_repository"
 import { ToastComponent } from "@/components/design_system/toast"
-import { AssetDataPriced, CollateralInfo, ListState } from "@/types"
 import { Address, formatUnits, parseEther, zeroAddress } from "viem"
 import { useRootContext } from "@/components/products/root/root_context"
 import { useUSGMaketListContext } from "../list/usg_market_list_context"
-import { getHistoricalMarketData, getUserPositions } from "../client_api"
-import { AssetInfos } from "@/components/design_system/inputs/asset_selector"
-import { sortUserData } from "./position_history/usg_position_history_controller"
+import { getHistoricalMarketData, getPositions } from "../client_api"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { AssetInfos } from "@/components/design_system/inputs/asset_selector"
 
 type USGRecordContextProps = {
   children: ReactNode
@@ -88,7 +87,13 @@ type USGRecordContextValues = {
   isUserHistoryLoading: boolean
   setIsUserHistoryLoading: (v: boolean) => void
 
-  getSortedRows: (rows: UserPosition[], listState: ListState) => UserPosition[]
+  historyPage: number
+  setHistoryPage: (v: number) => void
+  historyTotalPages: number
+
+  isUserConnected: boolean
+  showUserHistoryOnly: boolean
+  setShowUserHistoryOnly: (v: boolean) => void
 
   isLeveraged: boolean
   setIsLeveraged: (v: boolean) => void
@@ -150,6 +155,8 @@ type USGRecordContextValues = {
 
 const LEVERAGE_TRESHOLD = 0.989
 
+const HISTORY_PAGE_SIZE = 10
+
 export const USGRecordContext = createContext<USGRecordContextValues | undefined>(undefined)
 
 export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextProps) => {
@@ -181,7 +188,13 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
 
   const [onChainData, setOnChainData] = useState<ChainViewMarketRow | undefined>()
 
-  const [userPositions, setUserPositions] = useState<UserPosition[] | null>(null)
+  const [historyRows, setHistoryRows] = useState<UserPosition[]>([])
+
+  const [historyPage, setHistoryPage] = useState<number>(1)
+
+  const [historyTotal, setHistoryTotal] = useState<number>(0)
+
+  const [showUserHistoryOnly, setShowUserHistoryOnlyState] = useState<boolean>(false)
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -247,19 +260,28 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
   }, [currentAddress])
 
   /**
-   * Loads user positions if wallet is initialized and if currentAddress is defined
+   * Loads the market's transaction history for the current page.
+   * Shows every user's events by default; when the "only my tx" toggle is on and a
+   * wallet is connected, it scopes the request to the connected address.
    */
   useEffect(() => {
-    if (isWalletContextLoaded && currentAddress) {
-      getUserPositions(currentAddress!, marketInfo!.marketAddress).then((pos) => {
-        if (pos) {
-          setUserPositions(pos)
-        } else {
-          setUserPositions([])
-        }
-      })
+    let cancelled = false
+    setIsUserHistoryLoading(true)
+
+    const offset = (historyPage - 1) * HISTORY_PAGE_SIZE
+    const userFilter = showUserHistoryOnly && currentAddress ? (currentAddress as Address) : undefined
+
+    getPositions(marketInfo!.marketAddress, HISTORY_PAGE_SIZE, offset, userFilter).then((res) => {
+      if (cancelled) return
+      setHistoryRows(res.data ?? [])
+      setHistoryTotal(res.total ?? 0)
+      setIsUserHistoryLoading(false)
+    })
+
+    return () => {
+      cancelled = true
     }
-  }, [isWalletContextLoaded, currentAddress])
+  }, [marketInfo, historyPage, showUserHistoryOnly, currentAddress])
 
   const USGInfo = useMemo(() => {
     if (globalData && globalData.USGPrice) {
@@ -299,40 +321,17 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
     }
   }
 
-  const displayRows = useMemo(() => {
-    if (userPositions) {
-      const rows = sortUserData(userPositions)
+  // The server returns each page already ordered, so expose the rows directly.
+  const displayRows = historyRows
 
-      setIsUserHistoryLoading(false)
+  const historyTotalPages = Math.max(1, Math.ceil(historyTotal / HISTORY_PAGE_SIZE))
 
-      return rows
-    } else {
-      return []
-    }
-  }, [userPositions])
+  const isUserConnected = !!currentAddress
 
-  const getSortedRows = (rows: UserPosition[], listState: ListState) => {
-    const { key, direction } = listState.sort!
-
-    return [...rows].sort((elementA, elementB) => {
-      if (key === "usgAmount") {
-        const aValue = elementA[key as keyof UserPosition]
-        const bValue = elementB[key as keyof UserPosition]
-
-        if (Number(aValue) < Number(bValue)) return direction === "asc" ? -1 : 1
-        if (Number(aValue) > Number(bValue)) return direction === "asc" ? 1 : -1
-
-        return 0
-      } else {
-        const aValue = elementA[key as keyof UserPosition]
-        const bValue = elementB[key as keyof UserPosition]
-
-        if (aValue < bValue) return direction === "asc" ? -1 : 1
-        if (aValue > bValue) return direction === "asc" ? 1 : -1
-
-        return 0
-      }
-    })
+  // Switching scope changes the underlying dataset, so reset to the first page.
+  const setShowUserHistoryOnly = (v: boolean) => {
+    setShowUserHistoryOnlyState(v)
+    setHistoryPage(1)
   }
 
   const currentTotalMarketApr = useMemo(() => {
@@ -509,9 +508,14 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
     marketInfo,
     //
     displayRows,
-    getSortedRows,
     isUserHistoryLoading,
     setIsUserHistoryLoading,
+    historyPage,
+    setHistoryPage,
+    historyTotalPages,
+    isUserConnected,
+    showUserHistoryOnly,
+    setShowUserHistoryOnly,
     isLeveraged,
     setIsLeveraged,
 

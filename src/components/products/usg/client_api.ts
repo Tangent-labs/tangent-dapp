@@ -2,7 +2,7 @@
 
 import { Address } from "viem"
 
-import { MarketHistoricalData, VoteTask, MarketAPRs, SavingAccountsApy, TVLData, PointsResult, LpTask } from "./usg_type"
+import { MarketHistoricalData, VoteTask, MarketAPRs, SavingAccountsApy, TVLData, PointsResult, LpTask, UserPosition } from "./usg_type"
 import { USG_CONTRACT } from "./usg_repository"
 
 export interface UserStatus {
@@ -95,9 +95,25 @@ export const fetchOracleGraphData = async (
   }
 }
 
-export const getUserPositions = async (user: Address, market: Address) => {
+export type PaginatedPositions = {
+  data: UserPosition[]
+  total: number
+}
+
+/**
+ * Fetches a market's transaction history one page at a time.
+ * Without `userAddress` it returns events from every user; with it, only that user's.
+ * Pagination is offset-based and `total` is the full sample size (for page count).
+ */
+export const getPositions = async (market: Address, pageSize: number, offset: number, userAddress?: Address): Promise<PaginatedPositions> => {
   try {
-    const url = `${baseUrl}/events/${user}/${market}`
+    const params = new URLSearchParams({
+      pageSize: String(pageSize),
+      offset: String(offset),
+    })
+    if (userAddress) params.set("userAddress", userAddress)
+
+    const url = `${baseUrl}/positions/${market}?${params.toString()}`
 
     const response = await fetch(url, {
       method: "GET",
@@ -107,13 +123,13 @@ export const getUserPositions = async (user: Address, market: Address) => {
     })
 
     if (!response.ok) {
-      throw new Error(`getUserPositions API request failed with status ${response.status}`)
+      throw new Error(`getPositions API request failed with status ${response.status}`)
     }
 
     return await response.json()
   } catch (error) {
-    console.error("Failed to fetch user positions:", error)
-    return null
+    console.error("Failed to fetch positions:", error)
+    return { data: [], total: 0 }
   }
 }
 

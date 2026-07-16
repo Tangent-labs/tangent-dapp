@@ -8,6 +8,7 @@ import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Address, EstimateContractGasParameters, formatEther, formatUnits, parseUnits, WalletClient, WriteContractParameters } from "viem"
 import { ONE_ETHER } from "@/lib/utils"
 import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import { NATIVE_ETH_ADDRESS } from "@/data/erc20s"
 
 export function getLeverageFormState(
   isTransactionBlockedByPriceImpact: boolean,
@@ -108,7 +109,7 @@ export const doZapLeverage = async (
     value: 0n,
   } as EstimateContractGasParameters
 
-  if (tokenIn === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
+  if (tokenIn === NATIVE_ETH_ADDRESS) {
     estimateGasData.value = amountIn
   }
 

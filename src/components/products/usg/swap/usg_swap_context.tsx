@@ -12,7 +12,7 @@ import { AssetDataPriced } from "@/types"
 import { useUSGContext } from "../usg_context"
 import { USG_CONTRACT } from "../usg_repository"
 import { useSearchParams } from "next/navigation"
-import { Erc20Details, ERC20S } from "@/data/erc20s"
+import { Erc20Details, ERC20S, NATIVE_ETH_ADDRESS } from "@/data/erc20s"
 import { SwapConfig, swapConfig } from "./swap_config"
 import { toastTx } from "@/components/design_system/toast"
 import { buildAssetInfo, resolveAssetName } from "./utils"
@@ -464,6 +464,8 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
             to: routeData?.routerAddress,
             value: 0n,
           } as SendTransactionParameters
+
+          if (sellAssetInfo?.address === NATIVE_ETH_ADDRESS) tx.value = sellWeiValue
 
           await toastTx(doSwap(walletClient!, tx), {
             pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },

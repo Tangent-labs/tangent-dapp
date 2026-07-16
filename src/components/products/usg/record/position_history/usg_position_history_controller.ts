@@ -1,26 +1,14 @@
 "use client"
 
 import { ListHeaderData } from "@/types"
-import { UserPosition } from "../../usg_type"
 
 export const userPositionListHeaders: ListHeaderData[] = [
   { label: "Action", key: "label" },
-  { label: "Amount Collat", key: "collatAmount" },
-  { label: "Amount USG", key: "usgAmount" },
+  { label: "Collateral amount", key: "collatAmount" },
+  { label: "USG amount", key: "usgAmount" },
   { label: "Time", key: "date" },
   { label: "Tx", key: "txHash" },
 ]
-
-export const sortUserData = (pos: UserPosition[]) => {
-  if (!pos || pos.length === 0) return []
-
-  return [...pos].sort((a: UserPosition, b: UserPosition) => {
-    if (a.date > b.date) return -1
-    if (a.date < b.date) return 1
-
-    return 0
-  })
-}
 
 export const formatActionLabel = (event: string) => {
   switch (event.toLowerCase()) {

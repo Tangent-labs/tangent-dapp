@@ -214,10 +214,13 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
       if (key === "vapr") {
         return sortMarketListByType(elementA, elementB, direction)
       } else if (key === "maxvapr") {
-        const elementAMaxLeverage = 1 / (1 - elementA?.maxLTV)
-        const elementBMaxLeverage = 1 / (1 - elementB?.maxLTV)
+        const elementAMaxLeverage = Number(elementA?.indicators[1]?.value)
+        const elementBMaxLeverage = Number(elementB?.indicators[1]?.value)
 
-        return sortMarketListByType(elementA, elementB, direction, elementAMaxLeverage, elementBMaxLeverage)
+        if (elementAMaxLeverage < elementBMaxLeverage) return direction === "asc" ? -1 : 1
+        if (elementAMaxLeverage > elementBMaxLeverage) return direction === "asc" ? 1 : -1
+
+        return 0
       } else if (key === "collateral") {
         const aValue = elementA.token || ""
         const bValue = elementB.token || ""

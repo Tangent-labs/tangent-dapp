@@ -239,7 +239,7 @@ export const USGListHeaders: ListHeaderData[] = [
   {
     label: "Max lev. vAPR",
     key: "maxvapr",
-    indicator: "vAPR of the collateral at max leverage.",
+    indicator: "Net vAPR at max leverage.",
     sort: "sort",
   },
 

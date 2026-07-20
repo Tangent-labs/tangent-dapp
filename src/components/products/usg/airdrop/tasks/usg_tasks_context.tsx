@@ -146,7 +146,7 @@ export const UsgTasksProvider = ({ children }: UsgTasksContextProps) => {
     let rowsToShow = rows
       .filter((row) => lpTaskFilteredBy === "All" || (row?.balance ?? 0) > 0)
       .filter((row) => lpTaskProtocol === "All" || row.protocol?.replaceAll(" ", "") === lpTaskProtocol?.replaceAll(" ", ""))
-      .filter((row) => lpTaskType === "All" || mapTaskType(row.protocol, lpTaskType))
+      .filter((row) => lpTaskType === "All" || mapTaskType(row, lpTaskType))
 
     if (lpTaskSearchValue?.trim()) {
       const lowered = lpTaskSearchValue.toLowerCase().trim()

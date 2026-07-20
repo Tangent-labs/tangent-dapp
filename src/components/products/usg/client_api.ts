@@ -72,7 +72,7 @@ export const fetchOracleGraphData = async (
   bucketCount = 50
 ): Promise<OracleGraphDataPoint[] | null> => {
   try {
-    const safeBucketCount = Math.min(Math.max(1, bucketCount), 200)
+    const safeBucketCount = Math.min(Math.max(1, bucketCount), 300)
     const safeBucketSizeMinutes = Math.min(Math.max(1, bucketSizeMinutes), 10080)
     const url = `${baseUrl}/oracle/${marketAddress}?dateEnd=${encodeURIComponent(dateEnd)}&bucketCount=${safeBucketCount}&bucketSizeMinutes=${safeBucketSizeMinutes}`
 

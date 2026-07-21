@@ -9,6 +9,7 @@ import {
   SDT_frxUSD_sDOLA_VAULT,
   SDT_frxUSD_sUSDS_VAULT,
   SDT_GHO_crvUSD_VAULT,
+  SDT_msETH_OETH_VAULT,
   SDT_tBTC_cbBTC_VAULT,
   SDT_USG_frxUSD_VAULT,
   SDT_USG_USDC_VAULT,
@@ -245,15 +246,6 @@ export const ERC20S: Erc20Details[] = [
     symbol: "frxUSD/msUSD",
   },
   {
-    address: CURVE_LPS.DUO_msETH_OETH as Address,
-    chainId: 1,
-    decimals: 18,
-    logoKey: "msETH-OETH",
-    name: "msETH/OETH",
-    symbol: "msETH/OETH",
-    displayDecimals: 4,
-  },
-  {
     address: CURVE_LPS["ETHp_WETH_LP"] as Address,
     chainId: 1,
     decimals: 18,
@@ -286,6 +278,16 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "msETH-WETH",
     name: "msETH/WETH",
     symbol: "msETH/WETH",
+    displayDecimals: 4,
+  },
+
+  {
+    address: CURVE_LPS.DUO_msETH_OETH as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "msETH-OETH",
+    name: "msETH/OETH",
+    symbol: "msETH/OETH",
     displayDecimals: 4,
   },
 
@@ -416,7 +418,15 @@ export const ERC20S: Erc20Details[] = [
     symbol: "Vault msETH/WETH",
     displayDecimals: 4,
   },
-
+  {
+    address: SDT_msETH_OETH_VAULT as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "msETH-OETH",
+    name: "Vault msETH/OETH",
+    symbol: "Vault msETH/OETH",
+    displayDecimals: 4,
+  },
   // CURVE GAUGES
   {
     address: CURVE_GAUGES.RLUSD_USDC,

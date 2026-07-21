@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { formatUnits, parseUnits } from "viem"
 import { computeIR } from "./usg_record_controller"
 import { useUSGRecordContext } from "./usg_record_context"
-import { ResponsiveContainer, AreaChart, XAxis, YAxis, CartesianGrid, Area, Tooltip } from "recharts"
+import { ResponsiveContainer, AreaChart, XAxis, YAxis, CartesianGrid, Area, Tooltip, ReferenceLine } from "recharts"
 import { isVolatileCollateral } from "@/lib/risk_color"
 
 const CustomTooltip = ({
@@ -45,7 +45,7 @@ const InterestRateAxisTick = ({ x, y, value }: { x?: number; y?: number; value: 
 )
 
 export function InterestRateGraph() {
-  const { marketData, marketInfo } = useUSGRecordContext()
+  const { marketData, marketInfo, USGInfo } = useUSGRecordContext()
   const maxInterestRate = isVolatileCollateral(marketInfo.marketName) ? 400 : 200
   const interestRateTicks = maxInterestRate === 400 ? [0, 100, 200, 300, 400] : [0, 50, 100, 150, 200]
 
@@ -193,6 +193,19 @@ export function InterestRateGraph() {
         <CartesianGrid horizontal={true} vertical={false} stroke="#FFFFFF1A" />
 
         <Tooltip content={<CustomTooltip />} />
+
+        <ReferenceLine
+          yAxisId="right"
+          x={USGInfo?.price}
+          stroke="rgba(255,255,255,0.6)"
+          strokeDasharray="3 3"
+          label={{
+            value: `$${(USGInfo?.price ?? 1).toFixed(4)}`,
+            position: "insideTopRight",
+            fill: "rgba(255,255,255,0.6)",
+            fontSize: 11,
+          }}
+        />
 
         <Area yAxisId="left" type="stepAfter" dataKey="rewardsCut" stroke="#0075FF" strokeWidth={1.5} fill="url(#gradiant-blue)" fillOpacity={1} />
 

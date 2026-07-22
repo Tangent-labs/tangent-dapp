@@ -2,11 +2,14 @@ import { cn } from "@/lib/utils"
 import { ReactNode } from "react"
 import { MarketAPR } from "../list/market_apr"
 import { IconCircleHelp } from "@/components/icons"
+import { MaxLeverageVAPR } from "../list/market_max_lev_vapr"
 import { MarketAPRs, USGMarketType } from "@/components/products/usg/usg_type"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 type RecordPageHeaderProps = {
   maxLTV: number
+  projectedBorrowRate: number
+  currentBorrowRate: number
   apr?: MarketAPRs
   indicators?: RecordPageHeaderIndicatorProps[]
   poolName: string
@@ -29,6 +32,8 @@ export function RecordPageHeader({
   apr,
   indicators,
   maxLTV,
+  projectedBorrowRate,
+  currentBorrowRate,
   poolName,
   logoKey,
   rewardToken,
@@ -44,7 +49,9 @@ export function RecordPageHeader({
     totalCurrentAPR = Object.values(apr?.currentAPR).reduce((sum, value) => Number(sum) + Number(value), 0) as number
   }
 
-  const maxLeverage = 1 / (1 - maxLTV)
+  const maxLevAPR = ((Number(totalCurrentAPR) - maxLTV * ((Math.exp(currentBorrowRate) - 1) * 100)) * (1 / (1 - maxLTV)) || 0).toFixed(2)
+
+  const maxProjectedLevAPR = ((Number(totalProjectedAPR) - maxLTV * ((Math.exp(projectedBorrowRate) - 1) * 100)) * (1 / (1 - maxLTV)) || 0).toFixed(2)
 
   return (
     <>
@@ -68,7 +75,7 @@ export function RecordPageHeader({
 
       <div className="flex h-[70px] w-full max-w-32 flex-col items-center justify-center text-[15px] xl:max-w-none xl:border-r xl:border-white/10">
         <div className="flex items-center justify-center gap-1">
-          Max vAPR
+          Max lev. vAPR
           <HoverCard openDelay={100} closeDelay={100}>
             <HoverCardTrigger asChild>
               <button type="button">
@@ -77,23 +84,23 @@ export function RecordPageHeader({
             </HoverCardTrigger>
 
             <HoverCardContent side="top" align="center" className="z-101 w-fit max-w-64 p-2 text-xs">
-              vAPR of the collateral at max leverage.
+              Net vAPR at max leverage.
             </HoverCardContent>
           </HoverCard>
         </div>
 
-        <MarketAPR
+        <MaxLeverageVAPR
           poolName={poolName}
           rewardToken={rewardToken}
           logoKey={logoKey}
-          maxLeverage={maxLeverage}
           currentAPRDetails={currentAPRDetails}
-          projectedAPRDetails={projectedAPRDetails}
           apr={totalCurrentAPR}
           projectedApr={totalProjectedAPR}
           marketType={marketType}
           className="text-xl font-semibold"
           isMarketListDisplay={false}
+          maxLevAPR={maxLevAPR}
+          maxProjectedLevAPR={maxProjectedLevAPR}
         />
       </div>
 

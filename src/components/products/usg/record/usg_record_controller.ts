@@ -315,7 +315,7 @@ export const computeVAPR = (
 
     let result: bigint
     if (isLeveraged && initialCollatAmountBigInt) {
-      result = (totalCollateralAmount * collatVApr - userDebt * debtRate) / initialCollatAmountBigInt
+      result = (totalCollateralAmount * collatVApr - userDebt * debtRate + debtFarmingBigInt * debtVAPRBigInt) / initialCollatAmountBigInt
     } else {
       result = (collatVApr * collatAmount - userDebt * debtRate + debtFarmingBigInt * debtVAPRBigInt) / collatAmount
     }

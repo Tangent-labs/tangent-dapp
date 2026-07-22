@@ -146,9 +146,6 @@ type USGRecordContextValues = {
   simulatedCollatAmount: number
   setSimulatedCollatAmount: (n: number) => void
 
-  simulatedDebtAmount: number
-  setSimulatedDebtAmount: (n: number) => void
-
   isTxLoading: boolean
   setIsTxLoading: (n: boolean) => void
 }
@@ -209,8 +206,6 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
   const [initialCollatAmount, setInitialCollatAmount] = useState<number>(0)
 
   const [simulatedCollatAmount, setSimulatedCollatAmount] = useState<number>(0)
-
-  const [simulatedDebtAmount, setSimulatedDebtAmount] = useState<number>(0)
 
   const [isUserHistoryLoading, setIsUserHistoryLoading] = useState<boolean>(true)
 
@@ -351,7 +346,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
 
   // Generate chart data
   useEffect(() => {
-    if (marketData && onChainData) {
+    if (marketData) {
       const { irParams } = marketData.constants
       const priceRange = 1.005 - 0.9887
       const prices = Array.from({ length: 40 }, (_, i) => 0.9887 + (i * priceRange) / 39)
@@ -360,12 +355,12 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
         .map((price) => {
           const vAPR = computeVAPR(
             BigInt(Math.round(currentTotalMarketApr * 10 ** 18)) / BigInt(100),
-            onChainData?.collateralInfos?.positionCollateralUSDValue || parseEther(simulatedCollatAmount.toFixed(0)),
-            onChainData?.debtInfos.userDebt || parseEther(simulatedDebtAmount.toFixed(0)),
+            parseEther(simulatedCollatAmount.toFixed(0)) || onChainData?.collateralInfos?.positionCollateralUSDValue || 0n,
+            parseEther(debtFarming.toFixed(0)) || onChainData?.debtInfos.userDebt || 0n,
             computeIR(BigInt(Math.round(price * 10 ** 18)), irParams),
             debtFarming,
             debtVAPR / 100,
-            onChainData?.debtInfos.userDebt,
+            onChainData?.collateralInfos?.positionCollateralUSDValue || 0n,
             isLeveraged,
             initialCollatAmount
           )
@@ -375,7 +370,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
 
       setChartData(data)
     }
-  }, [isLeveraged, debtFarming, debtVAPR, marketData, onChainData, initialCollatAmount, currentTotalMarketApr, simulatedCollatAmount, simulatedDebtAmount])
+  }, [isLeveraged, debtFarming, debtVAPR, marketData, onChainData, initialCollatAmount, currentTotalMarketApr, simulatedCollatAmount])
 
   const feature = useMemo(() => {
     const lastIndexOfSlash = path.lastIndexOf("/") + 1
@@ -561,8 +556,6 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
     simulatedCollatAmount,
     setSimulatedCollatAmount,
 
-    simulatedDebtAmount,
-    setSimulatedDebtAmount,
     isTxLoading,
     setIsTxLoading,
   }

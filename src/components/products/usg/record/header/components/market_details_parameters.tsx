@@ -36,12 +36,14 @@ export function MarketDetailsParameters() {
             projectedAPRDetails={currentMarketApr?.aprs?.projectedAPR}
             rewardToken={currentMarketApr?.rewardToken}
             maxLTV={Number(marketData?.constants?.maxLTV) / 100000}
+            currentBorrowRate={marketDisplayData.borrowRateCurrent}
+            projectedBorrowRate={marketDisplayData.borrowRateNext}
             apr={currentMarketApr?.aprs}
             marketType={marketData?.marketType}
             indicators={[
               {
                 title: "Borrow rate",
-                value: <div className="flex items-center">{computedBorrowRate.current}</div>,
+                value: computedBorrowRate.current,
                 subValue: <div className="flex items-center gap-1 text-xs text-subtitle">Proj: {computedBorrowRate.next}</div>,
                 indicator: "Interest rate that borrowers pay on their outstanding debt.",
               },

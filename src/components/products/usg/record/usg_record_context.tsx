@@ -354,20 +354,20 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
     if (marketData) {
       const { irParams } = marketData.constants
       const priceRange = 1.005 - 0.9887
-      const prices = Array.from({ length: 40 }, (_, i) => 0.9887 + (i * priceRange) / 39)
+      const prices = Array.from({ length: 80 }, (_, i) => 0.9887 + (i * priceRange) / 79)
 
       const data = prices
         .map((price) => {
           const vAPR = computeVAPR(
             BigInt(Math.round(currentTotalMarketApr * 10 ** 18)) / BigInt(100),
             parseEther(simulatedCollatAmount.toFixed(0)) || onChainData?.collateralInfos?.positionCollateralUSDValue || 0n,
-            isLeveraged
-              ? parseEther((leveragedCollatAmount + debtFarming).toFixed(0)) || onChainData?.debtInfos.userDebt || 0n
-              : parseEther(debtFarming.toFixed(0)) || onChainData?.debtInfos.userDebt || 0n,
+            (isLeveraged ? parseEther((leveragedCollatAmount + debtFarming).toFixed(0)) : parseEther(debtFarming.toFixed(0))) ||
+              onChainData?.debtInfos.userDebt ||
+              0n,
             computeIR(BigInt(Math.round(price * 10 ** 18)), irParams),
             debtFarming,
             debtVAPR / 100,
-            isLeveraged ? parseEther((initialCollatAmount + leveragedCollatAmount).toFixed(0)) : onChainData?.collateralInfos?.positionCollateralUSDValue || 0n,
+            parseEther((initialCollatAmount + leveragedCollatAmount).toFixed(0)),
             isLeveraged,
             initialCollatAmount
           )

@@ -12,11 +12,11 @@ import { Button } from "@/components/design_system/inputs/button"
 import { ToastComponent } from "@/components/design_system/toast"
 import { Divider } from "@/components/design_system/structure/divider"
 import { SliderInput } from "@/components/design_system/inputs/SliderInput"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { NeonLightCard } from "@/components/design_system/structure/neon_light_card"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import { NeonLightCard } from "@/components/design_system/structure/neon_light_card"
 
 type VAPRSimulation = {
   isLeveraged: boolean
@@ -30,7 +30,6 @@ type VAPRSimulation = {
 const INPUT_BASE =
   "flex h-[34px] flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white placeholder:text-subtitle/60 focus-visible:border-opacity-40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 
-// Gentle slide used both by the collateral swap and by the fields below it as they reflow.
 const LAYOUT_TRANSITION = { layout: { duration: 0.28, ease: "easeInOut" }, opacity: { duration: 0.2 } } as const
 
 const InputLabel = ({ label, info }: { label: string; info: string }) => (
@@ -91,10 +90,7 @@ export const VAPRCalculator = () => {
   useEffect(() => {
     try {
       if (onChainData?.collateralInfos?.positionCollateralUSDValue) {
-        const totalCollatUSD = Number(onChainData.collateralInfos.positionCollateralUSDValue / 10n ** 18n)
-
-        // Collateral / leveraged collateral = the position's total; initial collateral = equity = total − debt.
-        setSimulatedCollatAmount(totalCollatUSD)
+        setSimulatedCollatAmount(Number(formatUnits(onChainData.collateralInfos.positionCollateralUSDValue, 18)))
       }
 
       const stored = localStorage.getItem(storageKey)
@@ -105,7 +101,8 @@ export const VAPRCalculator = () => {
       setIsLeveraged(simulation.isLeveraged || false)
       setInitialCollatAmount(simulation.initialCollatAmount || 0)
       setLeveragedCollatAmount(simulation.leveragedCollatAmount || 0)
-      setSimulatedCollatAmount(simulation.simulatedCollatAmount || 0)
+
+      if (simulation.simulatedCollatAmount) setSimulatedCollatAmount(simulation.simulatedCollatAmount)
       setDebtFarming(simulation.debtFarming || 0)
       setDebtVAPR(simulation.debtVAPR || 0)
     } catch (err) {
@@ -151,7 +148,6 @@ export const VAPRCalculator = () => {
     }
   }, [chartData, USGInfo, isLeveraged, initialCollatAmount, leveragedCollatAmount, simulatedCollatAmount, debtFarming, onChainData, marketData])
 
-  // Adaptive Y range so the curve (which goes negative under leverage) is always visible, with 0 kept in view.
   const yAxisDomain = useMemo<[number, number]>(() => {
     if (!chartData?.length) return [-1, 1]
     const values = chartData.map((d) => d.vAPR)
@@ -174,9 +170,9 @@ export const VAPRCalculator = () => {
               <Divider />
 
               <div className="mb-4 mt-2 flex w-full items-start justify-start text-xs text-subtitle">
-                This calculator allows you to compute your position&lsquo;s net vAPR depending on USG&lsquo;s price. Note that the result will always be
-                accurate only for leveraged positions where all the debt has been converted to collateral. If you&lsquo;re using your debt to farm elsewhere,
-                you will need to regurlaly update your debt info (amount used to farm and vAPR) so the calculator display a correct result.
+                This calculator allows you to compute your position&rsquo;s net vAPR depending on USG&rsquo;s price. Note that the result will always be
+                accurate only for leveraged positions where all the debt has been converted to collateral. If you&rsquo;re using your debt to farm elsewhere,
+                you will need to regularly update your debt info (amount used to farm and vAPR) so the calculator display a correct result.
               </div>
 
               <div className="flex w-full gap-4">
@@ -200,7 +196,7 @@ export const VAPRCalculator = () => {
                         className="flex w-full flex-col gap-3"
                       >
                         <div className="flex w-full flex-col items-start justify-center">
-                          <InputLabel label="Initial collateral" info="The collateral you deposit yourself, before borrowing — your equity." />
+                          <InputLabel label="Initial collateral" info="The collateral you deposit yourself, before borrowing." />
                           <input
                             placeholder="0"
                             type="number"
@@ -295,7 +291,7 @@ export const VAPRCalculator = () => {
                   </div>
                   {chartData && (
                     <>
-                      <div className="min-h-[300px] w-full flex-1">
+                      <div className="h-[360px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                           <LineChart data={chartData} margin={{ top: 30, right: 5, left: 5, bottom: 5 }}>
                             <CartesianGrid horizontal vertical={false} />

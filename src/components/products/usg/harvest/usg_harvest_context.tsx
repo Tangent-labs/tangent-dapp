@@ -11,6 +11,7 @@ import { HarvestableMarket, HarvesterInfo, HarvesterInfoDisplay, USGStakingInfo 
 import {
   doHarvest,
   doMultiHarvest,
+  ExtraRewards,
   getRewardTokensInfos,
   getStakeDaoMerkleData,
   getUSGHarvestOnChainData,
@@ -80,7 +81,9 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
   // Fetch Merkle data from StakeDao
   useEffect(() => {
     if (stakeDaoMarkets.length === 0) return
-    getStakeDaoMerkleData(stakeDaoMarkets).then((data) => setStakeDaoMerkle(data))
+    getStakeDaoMerkleData(stakeDaoMarkets).then((data) => {
+      setStakeDaoMerkle(data)
+    })
   }, [stakeDaoMarkets])
 
   const loadChainviewData = useCallback(() => {
@@ -97,21 +100,19 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
   const actionHarvest = () => {
     const market = marketsToHarvest[0].marketAddress.toLowerCase()
 
-    const merkle = stakeDaoMerkle.find((m) => market === m.marketAddress.toLowerCase())!
+    const merkle = stakeDaoMerkle.find((m) => market === m.marketAddress.toLowerCase())
 
-    let claimable = 0n
-    let token = ""
-    let proof: string[] = []
-    merkle.merkleData.forEach((t) => {
-      const amount = BigInt(t.merkle.amount)
-      if (amount !== 0n) {
-        claimable = amount
-        token = t.merkle.token
-        proof = t.merkle.proof
-      }
-    })
+    let extraReward: ExtraRewards | undefined = undefined
+    if (merkle) {
+      merkle.merkleData.forEach((t) => {
+        const amount = BigInt(t.merkle.amount)
+        if (amount !== 0n) {
+          extraReward = { token: t.merkle.token, claimable: amount, proof: t.merkle.proof }
+        }
+      })
+    }
 
-    doHarvest(market, walletClient!, { token: token, claimable: claimable, proof: proof })
+    doHarvest(market, walletClient!, extraReward)
       .then(() => {
         loadChainviewData()
         setMarketsToHarvest([])

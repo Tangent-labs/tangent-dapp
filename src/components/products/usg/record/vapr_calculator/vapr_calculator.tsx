@@ -3,13 +3,16 @@
 import { useEffect, useMemo } from "react"
 import { toast } from "react-toastify"
 import { formatUnits } from "viem"
+import { AnimatePresence, motion } from "framer-motion"
 import { formatDollar } from "@/lib/number_formatter"
 import { Switch } from "@/components/ui/switch"
+import { IconCircleHelp } from "@/components/icons"
 import { useUSGRecordContext } from "../usg_record_context"
 import { Button } from "@/components/design_system/inputs/button"
 import { ToastComponent } from "@/components/design_system/toast"
 import { Divider } from "@/components/design_system/structure/divider"
 import { SliderInput } from "@/components/design_system/inputs/SliderInput"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
@@ -18,16 +21,40 @@ import { NeonLightCard } from "@/components/design_system/structure/neon_light_c
 type VAPRSimulation = {
   isLeveraged: boolean
   initialCollatAmount?: number
+  leveragedCollatAmount?: number
   simulatedCollatAmount?: number
   debtFarming: number
   debtVAPR: number
 }
+
+const INPUT_BASE =
+  "flex h-[34px] flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white placeholder:text-subtitle/60 focus-visible:border-opacity-40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+
+// Gentle slide used both by the collateral swap and by the fields below it as they reflow.
+const LAYOUT_TRANSITION = { layout: { duration: 0.28, ease: "easeInOut" }, opacity: { duration: 0.2 } } as const
+
+const InputLabel = ({ label, info }: { label: string; info: string }) => (
+  <div className="mb-1 flex items-center gap-1 text-xs text-subtitle">
+    {label}
+    <HoverCard openDelay={100} closeDelay={100}>
+      <HoverCardTrigger asChild>
+        <button type="button" className="flex items-center">
+          <IconCircleHelp className="h-auto w-[11px] fill-subtitle" />
+        </button>
+      </HoverCardTrigger>
+      <HoverCardContent side="top" align="start" className="z-[9999] w-fit max-w-56 p-2 text-xs">
+        {info}
+      </HoverCardContent>
+    </HoverCard>
+  </div>
+)
 
 export const VAPRCalculator = () => {
   const {
     setDebtVAPR,
     setIsLeveraged,
     setInitialCollatAmount,
+    setLeveragedCollatAmount,
     setSimulatedCollatAmount,
     setDebtFarming,
     USGInfo,
@@ -35,6 +62,7 @@ export const VAPRCalculator = () => {
     debtVAPR,
     isLeveraged,
     initialCollatAmount,
+    leveragedCollatAmount,
     simulatedCollatAmount,
     marketInfo,
     debtFarming,
@@ -49,7 +77,7 @@ export const VAPRCalculator = () => {
       isLeveraged,
       debtFarming,
       debtVAPR,
-      ...(isLeveraged ? { initialCollatAmount } : { simulatedCollatAmount }),
+      ...(isLeveraged ? { initialCollatAmount, leveragedCollatAmount } : { simulatedCollatAmount }),
     }
 
     try {
@@ -76,6 +104,7 @@ export const VAPRCalculator = () => {
 
       setIsLeveraged(simulation.isLeveraged || false)
       setInitialCollatAmount(simulation.initialCollatAmount || 0)
+      setLeveragedCollatAmount(simulation.leveragedCollatAmount || 0)
       setSimulatedCollatAmount(simulation.simulatedCollatAmount || 0)
       setDebtFarming(simulation.debtFarming || 0)
       setDebtVAPR(simulation.debtVAPR || 0)
@@ -92,19 +121,17 @@ export const VAPRCalculator = () => {
         ? chartData.reduce((prev, cur) => (Math.abs(cur.price - USGInfo.price) < Math.abs(prev.price - USGInfo.price) ? cur : prev)).vAPR
         : 0
 
-    const totalCollatUSD = onChainData?.collateralInfos?.positionCollateralUSDValue
-      ? Number(formatUnits(onChainData.collateralInfos.positionCollateralUSDValue, 18))
-      : 0
-
     const positionDebtUSD = onChainData?.debtInfos?.userDebt ? Number(formatUnits(onChainData.debtInfos.userDebt, 18)) : 0
 
-    const collateralUSD = isLeveraged ? totalCollatUSD : simulatedCollatAmount
+    const collateralUSD = isLeveraged ? initialCollatAmount + leveragedCollatAmount : simulatedCollatAmount
 
-    const debtUSD = isLeveraged ? Math.max(0, totalCollatUSD - initialCollatAmount) : debtFarming || positionDebtUSD
+    const debtUSD = isLeveraged ? leveragedCollatAmount + debtFarming || positionDebtUSD : debtFarming || positionDebtUSD
 
     const accountedCollatAmount = isLeveraged ? initialCollatAmount : simulatedCollatAmount
 
     const yearlyGains = accountedCollatAmount * (netVAPR / 100)
+
+    const positionValue = accountedCollatAmount + debtUSD
 
     const ltFraction = marketData?.constants?.liquidationThreshold ? Number(marketData.constants.liquidationThreshold) / 100000 : 0
     const ltvValue = collateralUSD > 0 ? (debtUSD / collateralUSD) * 100 : 0
@@ -113,11 +140,26 @@ export const VAPRCalculator = () => {
     return {
       "Net vAPR": `${netVAPR.toFixed(2)}%`,
       "Yearly gains": formatDollar(yearlyGains, 0),
-      "Position's value": formatDollar(collateralUSD, 0),
+      "Position's value": (
+        <span className="flex items-baseline justify-center gap-1">
+          {formatDollar(positionValue, 0)}
+          <span className="text-[10px] font-normal text-subtitle">(Collateral + debt)</span>
+        </span>
+      ),
       LTV: collateralUSD > 0 ? `${ltvValue.toFixed(2)}%` : "-",
       Health: debtUSD > 0 ? healthValue.toFixed(2) : "-",
     }
-  }, [chartData, USGInfo, isLeveraged, initialCollatAmount, simulatedCollatAmount, debtFarming, onChainData, marketData])
+  }, [chartData, USGInfo, isLeveraged, initialCollatAmount, leveragedCollatAmount, simulatedCollatAmount, debtFarming, onChainData, marketData])
+
+  // Adaptive Y range so the curve (which goes negative under leverage) is always visible, with 0 kept in view.
+  const yAxisDomain = useMemo<[number, number]>(() => {
+    if (!chartData?.length) return [-1, 1]
+    const values = chartData.map((d) => d.vAPR)
+    const lo = Math.min(0, ...values)
+    const hi = Math.max(0, ...values)
+    const pad = Math.max((hi - lo) * 0.15, 1)
+    return [lo - pad, hi + pad]
+  }, [chartData])
 
   return (
     <Accordion type="single" collapsible>
@@ -137,62 +179,95 @@ export const VAPRCalculator = () => {
                 you will need to regurlaly update your debt info (amount used to farm and vAPR) so the calculator display a correct result.
               </div>
 
-              <div className="flex w-full">
-                <ReliefCard className="flex w-2/12 flex-col flex-wrap items-start justify-start p-3">
+              <div className="flex w-full gap-4">
+                <ReliefCard className="flex w-1/4 flex-col items-start justify-start gap-3 p-4">
                   <span className="text-xl font-semibold text-white">Settings</span>
 
-                  <div className="my-2 flex w-full items-center justify-between gap-1 text-xs text-subtitle">
-                    Leverage <Switch checked={isLeveraged} onCheckedChange={(v) => setIsLeveraged(v)} />
+                  <div className="flex w-full items-center justify-between gap-1">
+                    <InputLabel label="Leverage" info="Simulate a leveraged position where borrowed USG is used to buy additional collateral." />
+                    <Switch checked={isLeveraged} onCheckedChange={(v) => setIsLeveraged(v)} />
                   </div>
 
-                  {isLeveraged ? (
-                    <div className="flex w-full flex-col items-center justify-center lg:items-start">
-                      <div className="mb-1 text-xs text-subtitle">Initial collateral </div>
-                      <input
-                        placeholder=""
-                        type="number"
-                        step={1}
-                        className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                        value={initialCollatAmount}
-                        onChange={(e) => setInitialCollatAmount(Number(e?.target?.value))}
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex w-full flex-col items-start justify-center">
-                      <div className="mb-1 text-xs text-subtitle">Collateral</div>
-                      <input
-                        placeholder=""
-                        type="number"
-                        step={1}
-                        className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                        value={simulatedCollatAmount}
-                        onChange={(e) => setSimulatedCollatAmount(Number(e?.target?.value))}
-                      />
-                    </div>
-                  )}
+                  <AnimatePresence initial={false} mode="popLayout">
+                    {isLeveraged ? (
+                      <motion.div
+                        key="leveraged-collateral"
+                        layout
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={LAYOUT_TRANSITION}
+                        className="flex w-full flex-col gap-3"
+                      >
+                        <div className="flex w-full flex-col items-start justify-center">
+                          <InputLabel label="Initial collateral" info="The collateral you deposit yourself, before borrowing — your equity." />
+                          <input
+                            placeholder="0"
+                            type="number"
+                            step={1}
+                            className={`${INPUT_BASE} w-full`}
+                            value={initialCollatAmount || ""}
+                            onChange={(e) => setInitialCollatAmount(Number(e?.target?.value))}
+                          />
+                        </div>
 
-                  <div className="mt-2 flex w-full flex-col items-start justify-center">
-                    <div className="mb-1 text-xs text-subtitle">Debt farming</div>
+                        <div className="flex w-full flex-col items-start justify-center">
+                          <InputLabel label="Leveraged collateral" info="Extra collateral bought with borrowed USG, on top of your initial collateral." />
+                          <input
+                            placeholder="0"
+                            type="number"
+                            step={1}
+                            className={`${INPUT_BASE} w-full`}
+                            value={leveragedCollatAmount || ""}
+                            onChange={(e) => setLeveragedCollatAmount(Number(e?.target?.value))}
+                          />
+                        </div>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="simulated-collateral"
+                        layout
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={LAYOUT_TRANSITION}
+                        className="flex w-full flex-col items-start justify-center"
+                      >
+                        <InputLabel label="Collateral" info="The USD value of collateral deposited in this position." />
+                        <input
+                          placeholder="0"
+                          type="number"
+                          step={1}
+                          className={`${INPUT_BASE} w-full`}
+                          value={simulatedCollatAmount || ""}
+                          onChange={(e) => setSimulatedCollatAmount(Number(e?.target?.value))}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <motion.div layout transition={LAYOUT_TRANSITION} className="flex w-full flex-col items-start justify-center">
+                    <InputLabel label="Debt farming" info="Share of the total debt currently yielding." />
                     <input
-                      placeholder=""
+                      placeholder="0"
                       type="number"
                       step={1}
-                      className="flex h-[30px] w-full flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                      value={debtFarming}
+                      className={`${INPUT_BASE} w-full`}
+                      value={debtFarming || ""}
                       onChange={(e) => setDebtFarming(Number(e?.target?.value))}
                     />
-                  </div>
+                  </motion.div>
 
-                  <div className="mt-2 flex w-full flex-col items-start justify-center">
-                    <div className="mb-1 text-xs text-subtitle">Debt farming vAPR</div>
+                  <motion.div layout transition={LAYOUT_TRANSITION} className="flex w-full flex-col items-start justify-center">
+                    <InputLabel label="Debt farming vAPR" info="The vAPR earned on the debt-farming amount above." />
 
                     <div className="flex w-full items-center justify-between">
                       <input
-                        placeholder=""
+                        placeholder="0"
                         type="number"
                         step={1}
-                        className="flex h-[30px] w-12 flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                        value={debtVAPR}
+                        className={`${INPUT_BASE} w-12`}
+                        value={debtVAPR || ""}
                         onChange={(e) => setDebtVAPR(Math.min(100, Math.max(0, Number(e?.target?.value))))}
                       />
 
@@ -207,14 +282,14 @@ export const VAPRCalculator = () => {
                         />
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
 
-                  <div className="mt-2 flex w-full items-center justify-center">
+                  <motion.div layout transition={LAYOUT_TRANSITION} className="mt-1 flex w-full items-center justify-center">
                     <Button onClick={onClickSaveAndCompute}>Save and compute</Button>
-                  </div>
+                  </motion.div>
                 </ReliefCard>
 
-                <div className="flex w-full flex-col lg:w-10/12">
+                <div className="flex w-full flex-col lg:w-3/4">
                   <div className="relative mt-8 hidden items-start justify-start lg:flex">
                     <div className="absolute -top-7 left-6 text-lg font-semibold text-white">vAPR</div>
                   </div>
@@ -243,7 +318,7 @@ export const VAPRCalculator = () => {
                                 return `${symbol}${formatted?.toFixed(2)}%`
                               }}
                               type="number"
-                              domain={[0, Number(Math.max(...chartData.map((d) => d.vAPR))) * 1.5 + 1]}
+                              domain={yAxisDomain}
                             />
 
                             <Line strokeWidth="3px" type="monotone" dataKey="vAPR" stroke="url(#gradientColor)" name="vAPR (%)" dot={false} />

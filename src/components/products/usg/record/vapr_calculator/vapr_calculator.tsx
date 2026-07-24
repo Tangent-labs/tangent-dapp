@@ -27,12 +27,17 @@ type VAPRSimulation = {
   debtVAPR: number
 }
 
-const INPUT_BASE =
+const inputClassName =
   "flex h-[34px] flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white placeholder:text-subtitle/60 focus-visible:border-opacity-40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 
-const LAYOUT_TRANSITION = { layout: { duration: 0.28, ease: "easeInOut" }, opacity: { duration: 0.2 } } as const
+const LAYOUT_TRANSITION = { layout: { duration: 0.3, ease: "easeInOut" }, opacity: { duration: 0.3 } } as const
 
-const InputLabel = ({ label, info }: { label: string; info: string }) => (
+type InputLabelProps = {
+  label: string
+  info: string
+}
+
+const InputLabel = ({ label, info }: InputLabelProps) => (
   <div className="mb-1 flex items-center gap-1 text-xs text-subtitle">
     {label}
     <HoverCard openDelay={100} closeDelay={100}>
@@ -69,7 +74,7 @@ export const VAPRCalculator = () => {
     marketData,
   } = useUSGRecordContext()
 
-  const storageKey = useMemo(() => `vapr-calculator:${marketInfo?.marketAddress?.toLowerCase()}`, [marketInfo])
+  const localStorageKey = useMemo(() => `vapr-calculator:${marketInfo?.marketAddress?.toLowerCase()}`, [marketInfo])
 
   const onClickSaveAndCompute = () => {
     const simulation: VAPRSimulation = {
@@ -80,7 +85,7 @@ export const VAPRCalculator = () => {
     }
 
     try {
-      localStorage.setItem(storageKey, JSON.stringify(simulation))
+      localStorage.setItem(localStorageKey, JSON.stringify(simulation))
       toast.info(ToastComponent, { data: { type: "Notification", content: "vAPR simulation saved." } })
     } catch (err) {
       console.error("Failed to save vAPR simulation : ", err)
@@ -88,14 +93,13 @@ export const VAPRCalculator = () => {
   }
 
   useEffect(() => {
-    try {
-      if (onChainData?.collateralInfos?.positionCollateralUSDValue) {
-        setSimulatedCollatAmount(Number(formatUnits(onChainData.collateralInfos.positionCollateralUSDValue, 18)))
-      }
+    if (onChainData?.collateralInfos?.positionCollateralUSDValue) {
+      setSimulatedCollatAmount(Number(formatUnits(onChainData.collateralInfos.positionCollateralUSDValue, 18)))
+    }
 
-      const stored = localStorage.getItem(storageKey)
-      if (!stored) return
+    const stored = localStorage.getItem(localStorageKey)
 
+    if (stored) {
       const simulation = JSON.parse(stored) as Partial<VAPRSimulation>
 
       setIsLeveraged(simulation.isLeveraged || false)
@@ -105,10 +109,8 @@ export const VAPRCalculator = () => {
       if (simulation.simulatedCollatAmount) setSimulatedCollatAmount(simulation.simulatedCollatAmount)
       setDebtFarming(simulation.debtFarming || 0)
       setDebtVAPR(simulation.debtVAPR || 0)
-    } catch (err) {
-      console.error("Failed to restore vAPR simulation : ", err)
     }
-  }, [storageKey, onChainData])
+  }, [localStorageKey, onChainData])
 
   // feeds the bottom neon light card
   const positionMetrics = useMemo(() => {
@@ -130,9 +132,11 @@ export const VAPRCalculator = () => {
 
     const positionValue = accountedCollatAmount + debtUSD
 
-    const ltFraction = marketData?.constants?.liquidationThreshold ? Number(marketData.constants.liquidationThreshold) / 100000 : 0
+    const lt = marketData?.constants?.liquidationThreshold ? Number(marketData.constants.liquidationThreshold) / 100000 : 1
+
     const ltvValue = collateralUSD > 0 ? (debtUSD / collateralUSD) * 100 : 0
-    const healthValue = debtUSD > 0 ? (collateralUSD * ltFraction) / debtUSD : 0
+
+    const healthValue = debtUSD > 0 ? (collateralUSD * lt) / debtUSD : 0
 
     return {
       "Net vAPR": `${netVAPR.toFixed(2)}%`,
@@ -147,15 +151,6 @@ export const VAPRCalculator = () => {
       Health: debtUSD > 0 ? healthValue.toFixed(2) : "-",
     }
   }, [chartData, USGInfo, isLeveraged, initialCollatAmount, leveragedCollatAmount, simulatedCollatAmount, debtFarming, onChainData, marketData])
-
-  const yAxisDomain = useMemo<[number, number]>(() => {
-    if (!chartData?.length) return [-1, 1]
-    const values = chartData.map((d) => d.vAPR)
-    const lo = Math.min(0, ...values)
-    const hi = Math.max(0, ...values)
-    const pad = Math.max((hi - lo) * 0.15, 1)
-    return [lo - pad, hi + pad]
-  }, [chartData])
 
   return (
     <Accordion type="single" collapsible>
@@ -201,7 +196,7 @@ export const VAPRCalculator = () => {
                             placeholder="0"
                             type="number"
                             step={1}
-                            className={`${INPUT_BASE} w-full`}
+                            className={inputClassName + " w-full"}
                             value={initialCollatAmount || ""}
                             onChange={(e) => setInitialCollatAmount(Number(e?.target?.value))}
                           />
@@ -213,7 +208,7 @@ export const VAPRCalculator = () => {
                             placeholder="0"
                             type="number"
                             step={1}
-                            className={`${INPUT_BASE} w-full`}
+                            className={inputClassName + " w-full"}
                             value={leveragedCollatAmount || ""}
                             onChange={(e) => setLeveragedCollatAmount(Number(e?.target?.value))}
                           />
@@ -234,7 +229,7 @@ export const VAPRCalculator = () => {
                           placeholder="0"
                           type="number"
                           step={1}
-                          className={`${INPUT_BASE} w-full`}
+                          className={inputClassName + " w-full"}
                           value={simulatedCollatAmount || ""}
                           onChange={(e) => setSimulatedCollatAmount(Number(e?.target?.value))}
                         />
@@ -248,7 +243,7 @@ export const VAPRCalculator = () => {
                       placeholder="0"
                       type="number"
                       step={1}
-                      className={`${INPUT_BASE} w-full`}
+                      className={inputClassName + " w-full"}
                       value={debtFarming || ""}
                       onChange={(e) => setDebtFarming(Number(e?.target?.value))}
                     />
@@ -262,7 +257,7 @@ export const VAPRCalculator = () => {
                         placeholder="0"
                         type="number"
                         step={1}
-                        className={`${INPUT_BASE} w-12`}
+                        className={inputClassName + " w-12"}
                         value={debtVAPR || ""}
                         onChange={(e) => setDebtVAPR(Math.min(100, Math.max(0, Number(e?.target?.value))))}
                       />
@@ -314,7 +309,6 @@ export const VAPRCalculator = () => {
                                 return `${symbol}${formatted?.toFixed(2)}%`
                               }}
                               type="number"
-                              domain={yAxisDomain}
                             />
 
                             <Line strokeWidth="3px" type="monotone" dataKey="vAPR" stroke="url(#gradientColor)" name="vAPR (%)" dot={false} />
@@ -361,7 +355,7 @@ export const VAPRCalculator = () => {
                             />
 
                             <ReferenceLine
-                              x={String(Number(USGInfo?.price) + 0.0001)}
+                              x={String(Number(USGInfo?.price))}
                               stroke="white"
                               strokeDasharray="4 4"
                               strokeWidth={2}
@@ -377,7 +371,7 @@ export const VAPRCalculator = () => {
                                     textAnchor="start"
                                     dominantBaseline="hanging"
                                   >
-                                    ${(USGInfo?.price).toFixed(3)} (USG Price)
+                                    ${(USGInfo?.price).toFixed(4)} (USG Price)
                                   </text>
                                 )
                               }}

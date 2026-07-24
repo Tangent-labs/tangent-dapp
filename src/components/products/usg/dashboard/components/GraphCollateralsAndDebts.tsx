@@ -21,8 +21,7 @@ type CollateralsAndDebtsProps = {
 
 const getDebtRatio = (debtValue: bigint, collateralValue: bigint) => {
   if (collateralValue <= 0n) return 0
-  const ratio = Number(formatEther(debtValue)) / Number(formatEther(collateralValue))
-  return Math.min(1, Math.max(0, ratio))
+  return Number(formatEther(debtValue)) / Number(formatEther(collateralValue))
 }
 
 export const GraphCollateralsAndDebts = ({ userData, marketTVLMaxValue }: CollateralsAndDebtsProps) => {
@@ -53,7 +52,7 @@ export const GraphCollateralsAndDebts = ({ userData, marketTVLMaxValue }: Collat
       <div className="scrollbar-thin flex w-full flex-col gap-1 overflow-y-auto">
         {collaterals.map((data: USGCollateralData, index: number) => {
           const debtValue = debtByMarket.get(data.marketAddress) ?? 0n
-          const debtRatio = getDebtRatio(debtValue, data.rawValue)
+          const ltv = getDebtRatio(debtValue, data.rawValue)
 
           return (
             <div key={index} className="flex w-full items-center justify-start gap-2">
@@ -72,6 +71,7 @@ export const GraphCollateralsAndDebts = ({ userData, marketTVLMaxValue }: Collat
                 }
                 key={data?.name}
               >
+                {/* leave 12rem for the label on the right side of the graph */}
                 <div
                   className="relative h-2 shrink-0 cursor-pointer overflow-hidden rounded-full"
                   style={{
@@ -79,16 +79,13 @@ export const GraphCollateralsAndDebts = ({ userData, marketTVLMaxValue }: Collat
                     backgroundColor: "rgba(0, 117, 255, 0.5)",
                   }}
                 >
-                  <div
-                    className="absolute left-0 top-0 h-full rounded-full"
-                    style={{ width: `${debtRatio * 100}%`, backgroundColor: "rgba(0, 117, 255, 1)" }}
-                  />
+                  <div className="absolute left-0 top-0 h-full rounded-full" style={{ width: `${ltv * 100}%`, backgroundColor: "rgba(0, 117, 255, 1)" }} />
                 </div>
               </InnerTooltip>
 
               <div className="flex flex-shrink-0 items-center justify-start gap-1 whitespace-nowrap text-xs">
                 <span className="font-semibold">{data.value}%</span>
-                <span>{data.name?.replaceAll("-", "/")}</span>
+                {data.name?.replaceAll("-", "/")}
 
                 {specialTokensList.includes(data.name?.substring(0, data.name.indexOf(" ")).trim()) ? (
                   <TokenImage token={data.logoKey} size={16} className="w-4" />

@@ -459,6 +459,7 @@ export type MarketDebtData = {
   value: number
   name: string
   rawValue: bigint
+  marketAddress: string
   logoKey?: string
 }
 
@@ -466,6 +467,7 @@ export type USGCollateralData = {
   name: string
   value: number
   rawValue: bigint
+  marketAddress: string
   logoKey?: string
 }
 

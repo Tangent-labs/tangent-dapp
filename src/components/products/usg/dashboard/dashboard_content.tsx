@@ -1,7 +1,6 @@
 "use client"
 
-import { GraphMarketDebts } from "./components/GraphMarketDebts"
-import { GraphUSGCollaterals } from "./components/GraphUSGCollaterals"
+import { GraphCollateralsAndDebts } from "./components/GraphCollateralsAndDebts"
 import { useUSGDashboardContext } from "./dashboard_context"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
@@ -10,7 +9,7 @@ import { GraphUSGsUSG } from "./components/GraphUSGsUSG"
 import { GraphTokenPrice } from "./components/GraphTokenPrice"
 
 export const USGDashboardContent = () => {
-  const { userData, marketDebtMaxValue, marketTVLMaxValue } = useUSGDashboardContext()
+  const { userData, marketTVLMaxValue } = useUSGDashboardContext()
 
   const {
     tvl,
@@ -78,15 +77,7 @@ export const USGDashboardContent = () => {
       </div>
 
       {/* USG Collaterals & Market debts */}
-      <div className="flex w-full flex-col items-start justify-start gap-5 md:flex-row">
-        {userData && (
-          <>
-            <GraphUSGCollaterals userData={userData} marketTVLMaxValue={marketTVLMaxValue} />
-
-            <GraphMarketDebts userData={userData} marketDebtMaxValue={marketDebtMaxValue} />
-          </>
-        )}
-      </div>
+      {userData && <GraphCollateralsAndDebts userData={userData} marketTVLMaxValue={marketTVLMaxValue} />}
     </div>
   )
 }

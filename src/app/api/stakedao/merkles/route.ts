@@ -4,7 +4,7 @@ export async function GET(request: NextRequest) {
   const user = request.nextUrl.searchParams.get("user")
 
   if (!user?.startsWith("0x")) {
-    return NextResponse.json({ error: "Invalid user parameter" }, { status: 400 })
+    return NextResponse.json({ error: "Invalid user param" }, { status: 400 })
   }
 
   try {

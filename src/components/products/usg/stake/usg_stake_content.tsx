@@ -43,7 +43,6 @@ export default function USGStakeContent() {
     sUSGSelectedTab,
     apyHistory,
     isLoading,
-    // aprVariation,
   } = useUSGStakeContext()
 
   const { sUSGCurrentAPY } = useRootContext()
@@ -77,21 +76,21 @@ export default function USGStakeContent() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Learn more about sUSG <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white"></IconOpenOutside>
+              Learn more about sUSG <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white" />
             </Link>
           </div>
         </PageHeader>
 
         <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
-          <PointsCampaignLiveCard></PointsCampaignLiveCard>
+          <PointsCampaignLiveCard />
 
           <ThreeCardRowWithMask
             contents={[
               { key: "Supply", value: formatMillions(Number(formatUnits(USGsUSGMetrics?.sUSGSupply || 0n, 18))) },
               { key: "sUSG price", value: formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 4) },
-              { key: "sUSG balance", value: formatMillions(Number(formatUnits(USGsUSGMetrics?.sUSGBalance || 0n, 18))) },
+              { key: "sUSG APY", value: sUSGCurrentAPY.toFixed(2) + "%" },
             ]}
-          ></ThreeCardRowWithMask>
+          />
         </div>
       </div>
 
@@ -103,13 +102,13 @@ export default function USGStakeContent() {
               active={currentFeature === "stake"}
               className="flex w-full justify-center"
               label="Stake"
-            ></LargeButtonTab>
+            />
             <LargeButtonTab
               onClick={() => setCurrentFeature("unstake")}
               active={currentFeature === "unstake"}
               className="flex w-full justify-center"
               label="Unstake"
-            ></LargeButtonTab>
+            />
           </div>
 
           <Divider className="w-full" />
@@ -159,8 +158,6 @@ export default function USGStakeContent() {
             />
           </div>
 
-          {/* <RecapAccordion aprVariationParams={{ current: aprVariation.current, currentUpdated: aprVariation.updated }} /> */}
-
           {formState.errors
             .filter((e) => e.type === "form-alert")
             .map((error) => (
@@ -179,7 +176,6 @@ export default function USGStakeContent() {
           />
         </ReliefCard>
 
-        {/*  */}
         <div className="flex w-full flex-col lg:hidden">
           {!!USGsUSGMetrics && !!sUSGCurrentAPY && sUSGCurrentAPY > 0 && (
             <div className="mt-5 flex w-full flex-col items-end justify-between gap-2 self-end sm:flex-row">

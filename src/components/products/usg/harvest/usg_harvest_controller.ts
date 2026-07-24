@@ -15,7 +15,7 @@ import rewardAccumulator from "../../../../abi/USG/RewardAccumulator.json"
 import { USG_CONTRACT, USGMarkets } from "../usg_repository"
 import { HarvesterInfo, HarvesterInfoDisplay, USGTokenAmount } from "../usg_type"
 
-type ExtraRewards = {
+export type ExtraRewards = {
   token: string
   claimable: bigint
   proof: string[]
@@ -178,7 +178,7 @@ export async function getStakeDaoMerkleData(stakeDaoInfos: HarvesterInfo[]) {
   const results: Merk[] = []
   // Iterate over stakeDao markets
   stakeDaoInfos.forEach((sdi) => {
-    fetch(`https://hub.stakedao.org/v1/merkles?user=${sdi.marketAddress}`).then(async (res) => {
+    fetch(`/api/stakedao/merkles?user=${sdi.marketAddress}`).then(async (res) => {
       const data = (await res.json()) as TokenReward[]
       results.push({
         marketAddress: sdi.marketAddress,

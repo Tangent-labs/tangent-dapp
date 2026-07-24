@@ -328,7 +328,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
         { USG: [], sUSG: [] }
       )
       setPriceHistory(initialRangeData)
-      setPriceHistoryByRange({ all: initialRangeData })
+      setPriceHistoryByRange({ "1m": initialRangeData })
     })
   }, [])
 

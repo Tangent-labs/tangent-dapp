@@ -230,7 +230,7 @@ export const VAPRCalculator = () => {
                           type="number"
                           step={1}
                           className={inputClassName + " w-full"}
-                          value={simulatedCollatAmount || ""}
+                          value={simulatedCollatAmount?.toFixed(0) || ""}
                           onChange={(e) => setSimulatedCollatAmount(Number(e?.target?.value))}
                         />
                       </motion.div>

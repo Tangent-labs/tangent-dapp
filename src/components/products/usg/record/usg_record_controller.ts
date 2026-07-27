@@ -10,6 +10,7 @@ import {
   TotalBorrow,
   MarketAPRs,
   FormError,
+  RCParams,
 } from "../usg_type"
 
 import { Erc20Details, ERC20S } from "@/data/erc20s"
@@ -23,6 +24,7 @@ import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, formatEther, formatUnits, Hex, parseEther, parseUnits, WalletClient, zeroAddress } from "viem"
 import { formatBigInt, formatBigIntAsNumber, formatDollar, formatDollarBigInt, formatNumber, truncateDecimals } from "@/lib/number_formatter"
+import { parseAPRDetails } from "@/lib/apr"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
@@ -251,6 +253,62 @@ export const computeMaxBorrowable = (maxBorrowable: bigint, maxMarketDebt: bigin
     return maxBorrowable > BORROW_BUFFER ? (maxBorrowable * 9995n) / 10000n : 0n
   }
   return ((maxMarketDebt - totalDebt) / 10n ** 18n) * 10n ** 18n
+}
+
+export const computeRewardsCut = (USGPrice: bigint, rcParams: RCParams) => {
+  const stepAmount = rcParams.stepAmount
+  const startCutPrice = rcParams.startCutPrice * BigInt(10 ** 12)
+  const endCutPrice = rcParams.endCutPrice * BigInt(10 ** 12)
+  const USGPriceScaled = USGPrice as bigint
+
+  if (stepAmount === 1) {
+    return rcParams.startCutPercentage
+  } else if (stepAmount === 2) {
+    if (USGPriceScaled >= startCutPrice) {
+      return rcParams.startCutPercentage
+    } else {
+      return rcParams.endCutPercentage
+    }
+  } else {
+    if (USGPriceScaled >= startCutPrice) {
+      return rcParams.startCutPercentage
+    }
+    if (USGPriceScaled <= endCutPrice) {
+      return rcParams.endCutPercentage
+    }
+
+    const actualStep = BigInt(1) + (BigInt(stepAmount - 2) * (startCutPrice - USGPriceScaled)) / (startCutPrice - endCutPrice)
+
+    return BigInt(rcParams.startCutPercentage) + (BigInt(actualStep) * BigInt(rcParams.endCutPercentage - rcParams.startCutPercentage)) / BigInt(stepAmount - 1)
+  }
+}
+
+export const computeHECvAPR = (currentTotalMarketApr: number, marketAprs: MarketAPRs, price: number, rcParams: RCParams, currentRC: number) => {
+  let totalCurrentAPR = 0
+
+  const currentPriceRC = computeRewardsCut(parseUnits(price.toFixed(6), 18), rcParams)
+
+  if (!!marketAprs && marketAprs?.currentAPR) {
+    const { baseAPY, rewards } = parseAPRDetails(marketAprs?.currentAPR)
+
+    // We apply rewards cut to every reward component except baseAPY
+    totalCurrentAPR = rewards.reduce((sum, _, index) => {
+      // Remove baseAPY from currentTotal
+      let rawComponentAPR = currentTotalMarketApr - (baseAPY || 0)
+
+      // Remove any other APR component
+      rewards?.forEach((el, i) => {
+        if (i !== index) {
+          rawComponentAPR -= el?.[1]
+        }
+      })
+
+      // Remove current RC and add back the projected "price dependent" RC
+      return sum + (rawComponentAPR / (1 - currentRC)) * (1 - Number(formatUnits(currentPriceRC, 5)))
+    }, baseAPY || 0)
+  }
+
+  return BigInt(Math.round(totalCurrentAPR * 10 ** 18)) / BigInt(100)
 }
 
 export const computeIR = (USGPrice: bigint, irParams: IrParams) => {

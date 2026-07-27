@@ -10,6 +10,7 @@ import {
   USGMarketLoanDisplayData,
   TotalBorrow,
   UserPosition,
+  MarketAPRs,
 } from "../usg_type"
 
 import {
@@ -24,6 +25,7 @@ import {
   computeLiquidationPrice,
   fetchMarketContracts,
   getCollateralDisplayDecimals,
+  computeHECvAPR,
 } from "./usg_record_controller"
 
 import { toast } from "react-toastify"
@@ -352,14 +354,22 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
   // Generate chart data
   useEffect(() => {
     if (marketData) {
-      const { irParams } = marketData.constants
+      const { irParams, rcParams } = marketData.constants
+
       const priceRange = 1.005 - 0.9887
       const prices = Array.from({ length: 80 }, (_, i) => 0.9887 + (i * priceRange) / 79)
 
+      const APRS = marketAprs.find((m) => m.marketAddress.toLowerCase() === marketData?.marketAddress.toLowerCase()) as MarketAPRs
+
       const data = prices
         .map((price) => {
+          const HECvAPR = computeHECvAPR(currentTotalMarketApr, APRS, price, rcParams, Number(marketData?.debtInfos?.currentRewardCut) / 100000)
+          const LECvAPR = BigInt(Math.round(currentTotalMarketApr * 10 ** 18)) / BigInt(100)
+
+          const appliedAPR = irParams?.isHEC ? HECvAPR : LECvAPR
+
           const vAPR = computeVAPR(
-            BigInt(Math.round(currentTotalMarketApr * 10 ** 18)) / BigInt(100),
+            appliedAPR,
             parseEther(simulatedCollatAmount.toFixed(0)) || onChainData?.collateralInfos?.positionCollateralUSDValue || 0n,
             (isLeveraged ? parseEther((leveragedCollatAmount + debtFarming).toFixed(0)) : parseEther(debtFarming.toFixed(0))) ||
               onChainData?.debtInfos.userDebt ||
@@ -377,7 +387,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
 
       setChartData(data)
     }
-  }, [isLeveraged, debtFarming, debtVAPR, marketData, onChainData, initialCollatAmount, leveragedCollatAmount, currentTotalMarketApr, simulatedCollatAmount])
+  }, [isLeveraged, debtFarming, debtVAPR, marketData, onChainData, initialCollatAmount, leveragedCollatAmount, marketAprs, simulatedCollatAmount])
 
   const feature = useMemo(() => {
     const lastIndexOfSlash = path.lastIndexOf("/") + 1

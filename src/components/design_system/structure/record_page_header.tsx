@@ -49,8 +49,7 @@ export function RecordPageHeader({
   return (
     <>
       <div className="flex h-[70px] w-full max-w-32 flex-col items-center justify-center text-[15px] xl:max-w-none xl:border-r xl:border-white/10">
-        <span>Collateral vAPR</span>
-
+        Collateral vAPR
         <MarketAPR
           poolName={poolName}
           logoKey={logoKey}

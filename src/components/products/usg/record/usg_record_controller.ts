@@ -283,30 +283,20 @@ export const computeRewardsCut = (USGPrice: bigint, rcParams: RCParams) => {
   }
 }
 
+/**
+ * Here the idea is that for HEC markets we need to recompute the price dependent RC and apply it to every rewards component.
+ * For this we need to isolate the rewards component, remove the currently applied RC and apply the price dependent projected one.
+ */
 export const computeHECvAPR = (currentTotalMarketApr: number, marketAprs: MarketAPRs, price: number, rcParams: RCParams, currentRC: number) => {
-  let totalCurrentAPR = 0
+  if (!marketAprs?.currentAPR) return 0n
 
-  const currentPriceRC = computeRewardsCut(parseUnits(price.toFixed(6), 18), rcParams)
+  const { baseAPY } = parseAPRDetails(marketAprs.currentAPR)
+  const base = baseAPY || 0
+  const rewardsAPR = currentTotalMarketApr - base
 
-  if (!!marketAprs && marketAprs?.currentAPR) {
-    const { baseAPY, rewards } = parseAPRDetails(marketAprs?.currentAPR)
-
-    // We apply rewards cut to every reward component except baseAPY
-    totalCurrentAPR = rewards.reduce((sum, _, index) => {
-      // Remove baseAPY from currentTotal
-      let rawComponentAPR = currentTotalMarketApr - (baseAPY || 0)
-
-      // Remove any other APR component
-      rewards?.forEach((el, i) => {
-        if (i !== index) {
-          rawComponentAPR -= el?.[1]
-        }
-      })
-
-      // Remove current RC and add back the projected "price dependent" RC
-      return sum + (rawComponentAPR / (1 - currentRC)) * (1 - Number(formatUnits(currentPriceRC, 5)))
-    }, baseAPY || 0)
-  }
+  // Remove the RC currently live in production and apply the projected "price dependent" one.
+  const projectedRC = Number(formatUnits(computeRewardsCut(parseUnits(price.toFixed(6), 18), rcParams), 5))
+  const totalCurrentAPR = base + (rewardsAPR / (1 - currentRC)) * (1 - projectedRC)
 
   return BigInt(Math.round(totalCurrentAPR * 10 ** 18)) / BigInt(100)
 }

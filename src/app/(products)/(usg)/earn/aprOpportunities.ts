@@ -12,7 +12,7 @@ export const opportunities = [
   {
     name: "sUSG/reUSD - Convex",
     asset: "sUSG-reUSD",
-    address: "0x21c32256b62c06684e62c9c04ec21100a8919d02",
+    address: "0xc6ac08424ee6d1373f03611b96f5da849594b6d8",
     link: "https://curve.convexfinance.com/stake/ethereum/573",
     protocolName: "Convex",
     marketType: "Convex_CRV",

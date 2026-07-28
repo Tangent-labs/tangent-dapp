@@ -1,5 +1,37 @@
 export const opportunities = [
   {
+    name: "sUSG/reUSD - Stake DAO",
+    asset: "sUSG-reUSD",
+    address: "0xD4F41eF4127F07335024278433f928B6bAb023D4",
+    link: "https://www.stakedao.org/strategy?protocol=curve&vault=1-0xD4F41eF4127F07335024278433f928B6bAb023D4",
+    protocolName: "Stake DAO",
+    marketType: "Convex_CRV",
+    points: 15,
+  },
+
+  {
+    name: "sUSG/reUSD - Convex",
+    asset: "sUSG-reUSD",
+    address: "0x21c32256b62c06684e62c9c04ec21100a8919d02",
+    link: "https://curve.convexfinance.com/stake/ethereum/573",
+    protocolName: "Convex",
+    marketType: "Convex_CRV",
+    pid: 573,
+    points: 15,
+  },
+
+  {
+    name: "sUSG/reUSD - Curve",
+    asset: "sUSG-reUSD",
+    subLabel: "(staked)",
+    address: "0xc6ac08424ee6d1373f03611b96f5da849594b6d8",
+    link: "https://www.curve.finance/dex/ethereum/pools/0xc6ac08424ee6d1373f03611b96f5da849594b6d8/deposit",
+    protocolName: "Curve",
+    marketType: "Convex_CRV",
+    points: 15,
+  },
+
+  {
     name: "msUSD/USG (unstaked) - Curve",
     asset: "msUSD-USG",
     subLabel: "(unstaked)",

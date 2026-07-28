@@ -1,19 +1,21 @@
 "use client"
 
 import { toast } from "react-toastify"
-import { FormState, USGMarket } from "../../usg_type"
 import { useUSGContext } from "../../usg_context"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
-import { formatBigInt, formatBigIntFloor } from "@/lib/number_formatter"
-import { getQuote, getRoute } from "../../global_quote_controller"
+import { FormState, USGMarket } from "../../usg_type"
 import { AssetDataPriced, CollateralInfo } from "@/types"
+import { BuyAndMinOutFormatted } from "../leverage/types"
+import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
+import { formatBigIntFloor, truncateDecimals } from "@/lib/number_formatter"
 import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
 import { Address, formatEther, formatUnits, parseEther, zeroAddress } from "viem"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { doMarketDeposit, doMarketDepositAndBorrow, doZapDeposit, doZapDepositAndBorrow, getDepositFormState } from "./usg_record_deposit_controller"
+
 import {
   computedMinAmountOut,
   computeMaxBorrowable,
@@ -22,7 +24,6 @@ import {
   doApprove,
   matchBlockChainErrors,
 } from "../usg_record_controller"
-import { BuyAndMinOutFormatted } from "../leverage/types"
 
 type USGDepositContextProps = {
   children: ReactNode
@@ -449,8 +450,8 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       const displayDecimals = collateralInfo?.displayDecimals || 2
 
       return {
-        expectedFormatted: `${formatBigInt(zapValue, decimals, displayDecimals)} `,
-        minOutFormatted: `${formatBigInt(minAmountOutWei, decimals, displayDecimals)}`,
+        expectedFormatted: `${truncateDecimals(formatUnits(zapValue, decimals), displayDecimals)}`,
+        minOutFormatted: `${truncateDecimals(formatUnits(minAmountOutWei, decimals), displayDecimals)}`,
       }
     }
 

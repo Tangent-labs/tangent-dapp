@@ -16,7 +16,7 @@ import { SwapConfig, swapConfig } from "./swap_config"
 import { toastTx } from "@/components/design_system/toast"
 import { buildAssetInfo, resolveAssetName } from "./utils"
 import { getQuote, getRoute } from "../global_quote_controller"
-import { formatNumber, truncateDecimals } from "@/lib/number_formatter"
+import { formatBigIntFloor, formatNumber } from "@/lib/number_formatter"
 import { Erc20Details, ERC20S, NATIVE_ETH_ADDRESS } from "@/data/erc20s"
 import { useRootContext } from "@/components/products/root/root_context"
 import { USDC } from "@tangent/defi-resources/build/ressources/erc20/common"
@@ -591,8 +591,8 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
       const minAmountOutWei = computedMinAmountOut(buyWeiValue, slippage)
       const decimals = buyAssetInfo?.decimals || 18
       const displayDecimals = buyAssetInfo?.displayDecimals || 2
-      const buyFormatted = truncateDecimals(formatUnits(buyWeiValue, decimals), displayDecimals)
-      const minOutFormatted = truncateDecimals(formatUnits(minAmountOutWei, decimals), displayDecimals)
+      const buyFormatted = formatBigIntFloor(buyWeiValue, decimals, displayDecimals)
+      const minOutFormatted = formatBigIntFloor(minAmountOutWei, decimals, displayDecimals)
 
       return { buyFormatted, minOutFormatted }
     }

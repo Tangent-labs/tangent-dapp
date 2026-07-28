@@ -5,11 +5,11 @@ import { useUSGContext } from "../../usg_context"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
 import { FormState, USGMarket } from "../../usg_type"
 import { AssetDataPriced, CollateralInfo } from "@/types"
+import { formatBigIntFloor } from "@/lib/number_formatter"
 import { BuyAndMinOutFormatted } from "../leverage/types"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
-import { formatBigIntFloor, truncateDecimals } from "@/lib/number_formatter"
 import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
 import { Address, formatEther, formatUnits, parseEther, zeroAddress } from "viem"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
@@ -450,8 +450,8 @@ export const USGDepositProvider = ({ children, isDepositAndBorrowInput }: USGDep
       const displayDecimals = collateralInfo?.displayDecimals || 2
 
       return {
-        expectedFormatted: `${truncateDecimals(formatUnits(zapValue, decimals), displayDecimals)}`,
-        minOutFormatted: `${truncateDecimals(formatUnits(minAmountOutWei, decimals), displayDecimals)}`,
+        expectedFormatted: `${formatBigIntFloor(zapValue, decimals, displayDecimals)}`,
+        minOutFormatted: `${formatBigIntFloor(minAmountOutWei, decimals, displayDecimals)}`,
       }
     }
 

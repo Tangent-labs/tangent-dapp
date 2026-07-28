@@ -22,7 +22,7 @@ import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
 import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, formatEther, formatUnits, Hex, parseEther, parseUnits, WalletClient, zeroAddress } from "viem"
-import { formatBigInt, formatBigIntAsNumber, formatDollar, formatDollarBigInt, formatNumber, truncateDecimals } from "@/lib/number_formatter"
+import { formatBigInt, formatBigIntAsNumber, formatBigIntFloor, formatDollar, formatDollarBigInt, formatNumber } from "@/lib/number_formatter"
 
 const DENOMINATOR = 100_000n
 const DECIMALS = BigInt(10 ** 18)
@@ -471,8 +471,8 @@ export const computeTransactionPotentialLoss = (buyWeiValue: bigint, buyAssetInf
       const tokenLossWei = BigInt(buyWeiValue) - minAmountOutWei
       const dollarLossWei = (tokenLossWei * BigInt(Math.round(Number(buyAssetInfo?.price?.toFixed(2)) * 10000))) / BigInt(10000n)
 
-      const tokenLossTruncated = truncateDecimals(formatUnits(tokenLossWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)
-      const dollarLossTruncated = truncateDecimals(formatUnits(dollarLossWei, buyAssetInfo?.decimals || 18), buyAssetInfo?.displayDecimals)
+      const tokenLossTruncated = formatBigIntFloor(tokenLossWei, buyAssetInfo?.decimals || 18, buyAssetInfo?.displayDecimals)
+      const dollarLossTruncated = formatBigIntFloor(dollarLossWei, buyAssetInfo?.decimals || 18, buyAssetInfo?.displayDecimals)
 
       const tokenLoss = `${formatNumber(Number(tokenLossTruncated), buyAssetInfo?.displayDecimals)}`
       const dollarLoss = `$${formatNumber(Number(dollarLossTruncated), buyAssetInfo?.displayDecimals)}`

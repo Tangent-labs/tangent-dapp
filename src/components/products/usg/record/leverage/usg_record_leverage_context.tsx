@@ -9,12 +9,12 @@ import { AssetDataPriced, CollateralInfo } from "@/types"
 import { formatEther, formatUnits, maxUint256 } from "viem"
 import { getQuote, getRoute } from "../../global_quote_controller"
 import { useRootContext } from "@/components/products/root/root_context"
-import { formatBigInt, formatBigIntAsNumber, formatBigIntFloor } from "@/lib/number_formatter"
 import { ToastComponent, toastTx } from "@/components/design_system/toast"
 import { USGLeverageContextProps, USGLeverageContextValues } from "./types"
 import { useUSGMaketListContext } from "../../list/usg_market_list_context"
 import { getReceiptPrefix, useUSGRecordContext } from "../usg_record_context"
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { formatBigInt, formatBigIntAsNumber, formatBigIntFloor } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { computeBorrowValue, computeMaxLeverageAdjusted, doMarketLeverage, doZapLeverage, getLeverageFormState } from "./usg_record_leverage_controller"
 import { computedMinAmountOut, computeSwapAssetPrice, computeTransactionPotentialLoss, doApprove, matchBlockChainErrors } from "../usg_record_controller"
@@ -578,8 +578,8 @@ export const USGLeverageProvider = ({ children }: USGLeverageContextProps) => {
       return {
         expectedWei: zapValue,
         minOutWei: minAmountOutWei,
-        expectedFormatted: formatBigInt(zapValue, collateralInfo?.decimals, collateralInfo.displayDecimals),
-        minOutFormatted: formatBigInt(minAmountOutWei, collateralInfo?.decimals, collateralInfo.displayDecimals),
+        expectedFormatted: formatBigIntFloor(zapValue, collateralInfo?.decimals, collateralInfo.displayDecimals),
+        minOutFormatted: formatBigIntFloor(minAmountOutWei, collateralInfo?.decimals, collateralInfo.displayDecimals),
       }
     }
 

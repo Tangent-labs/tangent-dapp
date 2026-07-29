@@ -1,15 +1,15 @@
 "use client"
 
-import { cn, PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
+import { MaxButton } from "./MaxButton"
+import { SliderInput } from "./SliderInput"
 import { formatUnits, parseUnits } from "viem"
 import { BorderPanel } from "../structure/border_panel"
 import { AssetDataPriced, CollateralInfo } from "@/types"
+import { cn, PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { IconThunder, IconWallet } from "@/components/icons"
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
-import { formatBigIntFloor, formatDollar, truncateDecimals } from "@/lib/number_formatter"
-import { SliderInput } from "./SliderInput"
-import { MaxButton } from "./MaxButton"
 import { useAutoGrowInputWidth } from "@/hooks/useAutoGrowInputWidth"
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
+import { formatBigIntFloor, formatDollar } from "@/lib/number_formatter"
 
 type SliderParams = {
   sliderPercentage: number
@@ -116,7 +116,7 @@ export function GenericInputAssetAmount({
     }
 
     if (document.activeElement !== inputRef.current) {
-      setLocalDisplay(truncateDecimals(formatUnits(inputWeiValue, decimals), asset?.displayDecimals))
+      setLocalDisplay(formatBigIntFloor(inputWeiValue, decimals, asset?.displayDecimals || 2))
     }
   }, [inputWeiValue, decimals])
 
@@ -215,7 +215,7 @@ export function GenericInputAssetAmount({
       const wei = (BigInt(Math.round(percentage)) * maxWeiValue) / 100n
       onValueChange?.(wei)
 
-      setLocalDisplay(truncateDecimals(formatUnits(wei, decimals), asset?.displayDecimals))
+      setLocalDisplay(formatBigIntFloor(wei, decimals, asset?.displayDecimals || 2))
     }, 300)
   }
 
@@ -228,7 +228,7 @@ export function GenericInputAssetAmount({
     setSliderPercentage(Number(sliderStartEndRange[1]))
     // Do not treat this part for the leverage, it's externally controlled
     if (maxWeiValue !== 0n) {
-      setLocalDisplay(truncateDecimals(formatUnits(maxWeiValue, decimals), asset?.displayDecimals))
+      setLocalDisplay(formatBigIntFloor(maxWeiValue, decimals, asset?.displayDecimals || 2))
     }
   }
 

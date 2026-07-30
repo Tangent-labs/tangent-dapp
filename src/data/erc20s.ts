@@ -290,6 +290,15 @@ export const ERC20S: Erc20Details[] = [
     symbol: "msETH/OETH",
     displayDecimals: 4,
   },
+  {
+    address: CURVE_LPS.DUO_cbBTC_WBTC as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "cbBTC-WBTC",
+    name: "cbBTC/WBTC",
+    symbol: "cbBTC/WBTC",
+    displayDecimals: 6,
+  },
 
   // // PENDLE PT
   // {
@@ -426,6 +435,16 @@ export const ERC20S: Erc20Details[] = [
     name: "Vault msETH/OETH",
     symbol: "Vault msETH/OETH",
     displayDecimals: 4,
+  },
+
+  {
+    address: "0x3bf225861cbB865A0aBeccC8ba924748118276f3" as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "cbBTC-WBTC",
+    name: "Vault cbBTC/WBTC",
+    symbol: "Vault cbBTC/WBTC",
+    displayDecimals: 6,
   },
   // CURVE GAUGES
   {

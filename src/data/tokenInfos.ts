@@ -103,7 +103,7 @@ export const TOKEN_INFOS: Record<string, TokenInfo> = {
   msUSD: {
     info: "msUSD is a CDP stablecoin issued by Metronome. msUSD is overcollateralized with crypto assets.",
     website: "https://metronome.io/",
-    docs: "https://metronome.io/",
+    docs: "https://docs.metronome.io/",
   },
   WETH: {
     info: "WETH is ETH wrapped as an ERC20.",
@@ -134,5 +134,15 @@ export const TOKEN_INFOS: Record<string, TokenInfo> = {
     info: "XAUt is a tokenized version of an ounce of Gold on Ethereum issued by Tether. Each XAUt is backed by a physical ounce of Gold.",
     website: "https://gold.tether.to/",
     docs: "https://gold.tether.to/",
+  },
+  msETH: {
+    info: "msETH is a CDP ETH stablecoin issued by Metronome DAO. msETH is overcollateralized with crypto assets.",
+    website: "https://metronome.io/",
+    docs: "https://docs.metronome.io/",
+  },
+  OETH: {
+    info: "OETH is an ETH LST issued by Origin Protocol.",
+    website: "https://www.originprotocol.com/",
+    docs: "https://docs.originprotocol.com/",
   },
 }

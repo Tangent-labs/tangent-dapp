@@ -146,8 +146,8 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
   ).toFixed(2)
 
   const maxProjectedLeverageVAPR = (
-    (Number(totalProjectedAPR) - maxLTV * ((Math.exp(Number(formatUnits(onChainRow?.debtInfos.currentBorrowRate || 0n, 18))) - 1) * 100)) *
-      (1 / (1 - maxLTV)) || 0
+    (Number(totalProjectedAPR) - maxLTV * ((Math.exp(Number(formatUnits(onChainRow?.debtInfos.futureBorrowRate || 0n, 18))) - 1) * 100)) * (1 / (1 - maxLTV)) ||
+    0
   ).toFixed(2)
 
   return {

@@ -58,7 +58,7 @@ export const MaxLeverageVAPR = ({
         {!!computedAPR && Number(computedAPR) > 0 && (
           <>
             <AprIndicator isMax={true}>
-              {isMarketListDisplay ? <div className={className}>{maxLevAPR}%</div> : <div className={className}>{(apr || 0).toFixed(2)}%</div>}
+              <div className={className}>{maxLevAPR}%</div>
 
               <div className="flex flex-col gap-2 p-2">
                 <div className="flex w-full items-center justify-between gap-2">

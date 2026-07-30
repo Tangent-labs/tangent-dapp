@@ -181,8 +181,8 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     USG: string
     sUSG: string
   }>({
-    USG: "all",
-    sUSG: "all",
+    USG: "1m",
+    sUSG: "1m",
   })
 
   const [totalSupplies, setTotalSupplies] = useState<{
@@ -316,7 +316,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     fetchTVLData("all")
     fetchSavingsAPY()
 
-    getPriceHistory([PRICE_HISTORY_TOKENS.USG, PRICE_HISTORY_TOKENS.sUSG], "all").then((data) => {
+    getPriceHistory([PRICE_HISTORY_TOKENS.USG, PRICE_HISTORY_TOKENS.sUSG], "1m").then((data) => {
       const initialRangeData = data.reduce<{ USG: Array<{ date: number; uv: number }>; sUSG: Array<{ date: number; uv: number }> }>(
         (acc, tokenHistory) => {
           const mappedHistory = tokenHistory.history.map((point) => ({ date: new Date(point.timestamp).getTime(), uv: Number(point.amount) }))
@@ -328,7 +328,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
         { USG: [], sUSG: [] }
       )
       setPriceHistory(initialRangeData)
-      setPriceHistoryByRange({ all: initialRangeData })
+      setPriceHistoryByRange({ "1m": initialRangeData })
     })
   }, [])
 

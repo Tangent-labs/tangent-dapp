@@ -10,8 +10,10 @@ import {
   TotalBorrow,
   MarketAPRs,
   FormError,
+  RCParams,
 } from "../usg_type"
 
+import { parseAPRDetails } from "@/lib/apr"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
 import GetBalances from "@/abi/USG/GetBalances.json"
 import { AssetDataPriced, CollateralInfo } from "@/types"
@@ -253,6 +255,52 @@ export const computeMaxBorrowable = (maxBorrowable: bigint, maxMarketDebt: bigin
   return ((maxMarketDebt - totalDebt) / 10n ** 18n) * 10n ** 18n
 }
 
+export const computeRewardsCut = (USGPrice: bigint, rcParams: RCParams) => {
+  const stepAmount = rcParams.stepAmount
+  const startCutPrice = rcParams.startCutPrice * BigInt(10 ** 12)
+  const endCutPrice = rcParams.endCutPrice * BigInt(10 ** 12)
+  const USGPriceScaled = USGPrice as bigint
+
+  if (stepAmount === 1) {
+    return rcParams.startCutPercentage
+  } else if (stepAmount === 2) {
+    if (USGPriceScaled >= startCutPrice) {
+      return rcParams.startCutPercentage
+    } else {
+      return rcParams.endCutPercentage
+    }
+  } else {
+    if (USGPriceScaled >= startCutPrice) {
+      return rcParams.startCutPercentage
+    }
+    if (USGPriceScaled <= endCutPrice) {
+      return rcParams.endCutPercentage
+    }
+
+    const actualStep = BigInt(1) + (BigInt(stepAmount - 2) * (startCutPrice - USGPriceScaled)) / (startCutPrice - endCutPrice)
+
+    return BigInt(rcParams.startCutPercentage) + (BigInt(actualStep) * BigInt(rcParams.endCutPercentage - rcParams.startCutPercentage)) / BigInt(stepAmount - 1)
+  }
+}
+
+/**
+ * Here the idea is that for HEC markets we need to recompute the price dependent RC and apply it to every rewards component.
+ * For this we need to isolate the rewards component, remove the currently applied RC and apply the price dependent projected one.
+ */
+export const computeHECvAPR = (currentTotalMarketApr: number, marketAprs: MarketAPRs, price: number, rcParams: RCParams, currentRC: number) => {
+  if (!marketAprs?.currentAPR) return 0n
+
+  const { baseAPY } = parseAPRDetails(marketAprs.currentAPR)
+  const base = baseAPY || 0
+  const rewardsAPR = currentTotalMarketApr - base
+
+  // Remove the RC currently live in production and apply the projected "price dependent" one.
+  const projectedRC = Number(formatUnits(computeRewardsCut(parseUnits(price.toFixed(6), 18), rcParams), 5))
+  const totalCurrentAPR = base + (rewardsAPR / (1 - currentRC)) * (1 - projectedRC)
+
+  return BigInt(Math.round(totalCurrentAPR * 10 ** 18)) / BigInt(100)
+}
+
 export const computeIR = (USGPrice: bigint, irParams: IrParams) => {
   const USGPriceNumber = Number(formatUnits(USGPrice, 18))
   const normalizedPMin = Number(formatUnits(BigInt(irParams.pMin), 6))
@@ -315,7 +363,7 @@ export const computeVAPR = (
 
     let result: bigint
     if (isLeveraged && initialCollatAmountBigInt) {
-      result = (totalCollateralAmount * collatVApr - userDebt * debtRate) / initialCollatAmountBigInt
+      result = (totalCollateralAmount * collatVApr - userDebt * debtRate + debtFarmingBigInt * debtVAPRBigInt) / initialCollatAmountBigInt
     } else {
       result = (collatVApr * collatAmount - userDebt * debtRate + debtFarmingBigInt * debtVAPRBigInt) / collatAmount
     }

@@ -18,12 +18,17 @@ type USGDashboardContextValues = {
     USGCollateralsData: USGCollateralData[]
     marketDebtData: MarketDebtData[]
   } | null
+
   globalData: USGGlobalData
-  marketDebtMaxValue: number
+
   marketTVLMaxValue: number
 
+  marketDebtMaxValue: number
+
   protocolRevenues: ProtocolRevenue[]
+
   selectedRevenueTab: RevenueRange
+
   fetchRevenues: (range: RevenueRange) => void
 }
 
@@ -55,18 +60,15 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
     return Math.max(...(userData?.USGCollateralsData?.filter((el: USGCollateralData) => el.value > 0).map((el: USGCollateralData) => el.value) || [1]))
   }, [userData])
 
-  const contextValue: USGDashboardContextValues = useMemo(
-    () => ({
-      globalData,
-      userData,
-      marketDebtMaxValue,
-      marketTVLMaxValue,
-      protocolRevenues,
-      selectedRevenueTab,
-      fetchRevenues,
-    }),
-    [globalData, userData, marketDebtMaxValue, marketTVLMaxValue, protocolRevenues, selectedRevenueTab, fetchRevenues]
-  )
+  const contextValue: USGDashboardContextValues = {
+    globalData,
+    userData,
+    marketDebtMaxValue,
+    marketTVLMaxValue,
+    protocolRevenues,
+    selectedRevenueTab,
+    fetchRevenues,
+  }
 
   return <USGDashboardContext.Provider value={contextValue}>{children}</USGDashboardContext.Provider>
 }

@@ -176,6 +176,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
             name: displayName || "",
             value: Number(percentage.toFixed(2)),
             rawValue: collateralValue,
+            marketAddress: market.marketAddress,
             logoKey: marketConfig.logoKey,
           }
         })

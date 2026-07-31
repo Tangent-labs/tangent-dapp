@@ -218,6 +218,15 @@ export type SociabilizationData = {
   socFeePercentage: bigint
 }
 
+export interface RCParams {
+  endCutPercentage: bigint
+  endCutPrice: bigint
+  harvestFeePercentage: bigint
+  startCutPercentage: bigint
+  startCutPrice: bigint
+  stepAmount: number
+}
+
 export type MarketDetailData = {
   marketAddress: Address
   collateralInfo: CollateralInfo

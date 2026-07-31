@@ -218,6 +218,15 @@ export type SociabilizationData = {
   socFeePercentage: bigint
 }
 
+export interface RCParams {
+  endCutPercentage: bigint
+  endCutPrice: bigint
+  harvestFeePercentage: bigint
+  startCutPercentage: bigint
+  startCutPrice: bigint
+  stepAmount: number
+}
+
 export type MarketDetailData = {
   marketAddress: Address
   collateralInfo: CollateralInfo
@@ -666,3 +675,12 @@ export type ConvexBoostData = {
   fee: bigint
   gaugeBoosts?: ConvexBoostDataGauge[]
 }
+
+export type ProtocolRevenue = {
+  period: string
+  ir: number
+  reward: number
+  total: number
+}
+
+export type RevenueRange = "week" | "month" | "year"

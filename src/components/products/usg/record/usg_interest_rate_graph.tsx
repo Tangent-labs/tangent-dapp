@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { formatUnits, parseUnits } from "viem"
-import { computeIR } from "./usg_record_controller"
+import { computeIR, computeRewardsCut } from "./usg_record_controller"
 import { useUSGRecordContext } from "./usg_record_context"
 import { ResponsiveContainer, AreaChart, XAxis, YAxis, CartesianGrid, Area, Tooltip, ReferenceLine } from "recharts"
 import { isVolatileCollateral } from "@/lib/risk_color"
@@ -49,15 +49,6 @@ export function InterestRateGraph() {
   const maxInterestRate = isVolatileCollateral(marketInfo.marketName) ? 400 : 200
   const interestRateTicks = maxInterestRate === 400 ? [0, 100, 200, 300, 400] : [0, 50, 100, 150, 200]
 
-  interface RCParams {
-    endCutPercentage: bigint
-    endCutPrice: bigint
-    harvestFeePercentage: bigint
-    startCutPercentage: bigint
-    startCutPrice: bigint
-    stepAmount: number
-  }
-
   interface ChartData {
     price: number
     interestRate: number
@@ -65,36 +56,6 @@ export function InterestRateGraph() {
   }
 
   const [chartData, setChartData] = useState<ChartData[]>([])
-
-  const computeRewardsCut = (USGPrice: bigint, rcParams: RCParams) => {
-    const stepAmount = rcParams.stepAmount
-    const startCutPrice = rcParams.startCutPrice * BigInt(10 ** 12)
-    const endCutPrice = rcParams.endCutPrice * BigInt(10 ** 12)
-    const USGPriceScaled = USGPrice as bigint
-
-    if (stepAmount === 1) {
-      return rcParams.startCutPercentage
-    } else if (stepAmount === 2) {
-      if (USGPriceScaled >= startCutPrice) {
-        return rcParams.startCutPercentage
-      } else {
-        return rcParams.endCutPercentage
-      }
-    } else {
-      if (USGPriceScaled >= startCutPrice) {
-        return rcParams.startCutPercentage
-      }
-      if (USGPriceScaled <= endCutPrice) {
-        return rcParams.endCutPercentage
-      }
-
-      const actualStep = BigInt(1) + (BigInt(stepAmount - 2) * (startCutPrice - USGPriceScaled)) / (startCutPrice - endCutPrice)
-
-      return (
-        BigInt(rcParams.startCutPercentage) + (BigInt(actualStep) * BigInt(rcParams.endCutPercentage - rcParams.startCutPercentage)) / BigInt(stepAmount - 1)
-      )
-    }
-  }
 
   useEffect(() => {
     if (!marketData?.constants?.irParams || !marketData?.constants?.rcParams) return

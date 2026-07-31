@@ -1,8 +1,9 @@
 "use client"
 
-import { createContext, ReactNode, useContext, useMemo } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useUSGMaketListContext } from "../list/usg_market_list_context"
-import { MarketDebtData, USGCollateralData, USGGlobalData } from "../usg_type"
+import { MarketDebtData, ProtocolRevenue, RevenueRange, USGCollateralData, USGGlobalData } from "../usg_type"
+import { fetchProtocolRevenues } from "../client_api"
 
 type USGDashboardContextProps = {
   children: ReactNode
@@ -20,12 +21,31 @@ type USGDashboardContextValues = {
   globalData: USGGlobalData
   marketDebtMaxValue: number
   marketTVLMaxValue: number
+
+  protocolRevenues: ProtocolRevenue[]
+  selectedRevenueTab: RevenueRange
+  fetchRevenues: (range: RevenueRange) => void
 }
 
 export const USGDashboardContext = createContext<USGDashboardContextValues | undefined>(undefined)
 
 export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => {
   const { globalData, userData } = useUSGMaketListContext()
+
+  const [protocolRevenues, setProtocolRevenues] = useState<ProtocolRevenue[]>([])
+
+  const [selectedRevenueTab, setSelectedRevenueTab] = useState<RevenueRange>("week")
+
+  const fetchRevenues = async (range: RevenueRange) => {
+    setSelectedRevenueTab(range)
+
+    const revenues = await fetchProtocolRevenues(range)
+    setProtocolRevenues(revenues)
+  }
+
+  useEffect(() => {
+    fetchRevenues("week")
+  }, [])
 
   const marketDebtMaxValue = useMemo(() => {
     return Math.max(...(userData?.marketDebtData?.filter((el: MarketDebtData) => el.value > 0).map((el: MarketDebtData) => el.value) || [1]))
@@ -35,12 +55,18 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
     return Math.max(...(userData?.USGCollateralsData?.filter((el: USGCollateralData) => el.value > 0).map((el: USGCollateralData) => el.value) || [1]))
   }, [userData])
 
-  const contextValue: USGDashboardContextValues = {
-    globalData,
-    userData,
-    marketDebtMaxValue,
-    marketTVLMaxValue,
-  }
+  const contextValue: USGDashboardContextValues = useMemo(
+    () => ({
+      globalData,
+      userData,
+      marketDebtMaxValue,
+      marketTVLMaxValue,
+      protocolRevenues,
+      selectedRevenueTab,
+      fetchRevenues,
+    }),
+    [globalData, userData, marketDebtMaxValue, marketTVLMaxValue, protocolRevenues, selectedRevenueTab, fetchRevenues]
+  )
 
   return <USGDashboardContext.Provider value={contextValue}>{children}</USGDashboardContext.Provider>
 }

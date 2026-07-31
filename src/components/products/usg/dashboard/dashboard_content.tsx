@@ -8,22 +8,23 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { GraphGlobalTVL } from "./components/GraphGlobalTVL"
 import { GraphUSGsUSG } from "./components/GraphUSGsUSG"
 import { GraphTokenPrice } from "./components/GraphTokenPrice"
+import { GraphProtocolRevenues } from "./components/GraphProtocolRevenues"
 
 export const USGDashboardContent = () => {
-  const { userData, marketDebtMaxValue, marketTVLMaxValue } = useUSGDashboardContext()
+  const { userData, marketDebtMaxValue, marketTVLMaxValue, selectedRevenueTab, protocolRevenues, fetchRevenues } = useUSGDashboardContext()
 
   const {
     tvl,
-    protocolCurrentTVL,
+    priceHistory,
     tvlSelectedTab,
     USGCurrentSupply,
     sUSGCurrentSupply,
-    totalSupplySelectedTab,
+    priceSelectedTabs,
+    protocolCurrentTVL,
     USGsUSGTotalSupplyData,
+    totalSupplySelectedTab,
     fetchTVLData,
     fetchTotalSupplyData,
-    priceSelectedTabs,
-    priceHistory,
     fetchPriceHistoryData,
   } = useRootContext()
 
@@ -87,6 +88,9 @@ export const USGDashboardContent = () => {
           </>
         )}
       </div>
+
+      {/* PROTOCOL REVENUES */}
+      <GraphProtocolRevenues protocolRevenues={protocolRevenues} selectedRevenueTab={selectedRevenueTab} fetchRevenues={fetchRevenues} />
     </div>
   )
 }

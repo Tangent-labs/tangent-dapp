@@ -673,3 +673,12 @@ export type ConvexBoostData = {
   fee: bigint
   gaugeBoosts?: ConvexBoostDataGauge[]
 }
+
+export type ProtocolRevenue = {
+  period: string
+  ir: number
+  reward: number
+  total: number
+}
+
+export type RevenueRange = "week" | "month" | "year"

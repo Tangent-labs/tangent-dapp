@@ -29,7 +29,7 @@ export const GraphCollateralsAndDebts = ({ userData, marketTVLMaxValue }: Collat
   const debtByMarket = new Map<string, bigint>((userData?.marketDebtData || []).map((el: MarketDebtData) => [el.marketAddress, el.rawValue]))
 
   return (
-    <ReliefCard className="flex h-64 w-full flex-col items-start justify-start p-5">
+    <ReliefCard className="flex h-full max-h-80 w-full flex-col items-start justify-start p-5">
       <div className="text-xl font-semibold">USG collaterals & debt</div>
 
       <Divider />
@@ -49,7 +49,7 @@ export const GraphCollateralsAndDebts = ({ userData, marketTVLMaxValue }: Collat
         </div>
       </div>
 
-      <div className="scrollbar-thin flex w-full flex-col gap-1 overflow-y-auto">
+      <div className="scrollbar-thin flex min-h-0 w-full flex-1 flex-col gap-1 overflow-y-auto">
         {collaterals.map((data: USGCollateralData, index: number) => {
           const debtValue = debtByMarket.get(data.marketAddress) ?? 0n
           const ltv = getDebtRatio(debtValue, data.rawValue)

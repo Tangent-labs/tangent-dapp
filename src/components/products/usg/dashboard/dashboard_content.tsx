@@ -77,11 +77,13 @@ export const USGDashboardContent = () => {
         <GraphGlobalTVL fetchTVLData={fetchTVLData} tvlSelectedTab={tvlSelectedTab} protocolCurrentTVL={protocolCurrentTVL} tvl={tvl} />
       </div>
 
-      {/* USG Collaterals & Market debts */}
-      {userData && <GraphCollateralsAndDebts userData={userData} marketTVLMaxValue={marketTVLMaxValue} />}
+      <div className="flex w-full flex-col gap-5 lg:flex-row">
+        {/* USG Collaterals & Market debts */}
+        {userData && <GraphCollateralsAndDebts userData={userData} marketTVLMaxValue={marketTVLMaxValue} />}
 
-      {/* PROTOCOL REVENUES */}
-      <GraphProtocolRevenues protocolRevenues={protocolRevenues} selectedRevenueTab={selectedRevenueTab} fetchRevenues={fetchRevenues} />
+        {/* PROTOCOL REVENUES */}
+        <GraphProtocolRevenues protocolRevenues={protocolRevenues} selectedRevenueTab={selectedRevenueTab} fetchRevenues={fetchRevenues} />
+      </div>
     </div>
   )
 }

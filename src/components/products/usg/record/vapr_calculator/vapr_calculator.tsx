@@ -183,7 +183,7 @@ export const VAPRCalculator = () => {
                         className="flex w-full flex-col gap-3"
                       >
                         <div className="flex w-full flex-col items-start justify-center">
-                          <InputLabel label="Initial collateral" info="The collateral you deposit yourself, before borrowing." />
+                          <InputLabel label="Initial collateral" info="The value of the collateral you deposited first, without leverage." />
                           <input
                             placeholder="0"
                             type="number"
@@ -195,7 +195,7 @@ export const VAPRCalculator = () => {
                         </div>
 
                         <div className="flex w-full flex-col items-start justify-center">
-                          <InputLabel label="Total collateral" info="The value of the collateral you deposited first, without leverage." />
+                          <InputLabel label="Total collateral" info="Total collateral farming." />
                           <input
                             placeholder="0"
                             type="number"

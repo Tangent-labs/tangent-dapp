@@ -37,7 +37,7 @@ interface ListRowDispositionProps {
 const listeState: ListState = {
   search: undefined,
   sort: {
-    key: "tvl",
+    key: "default",
     direction: "desc",
   },
 }

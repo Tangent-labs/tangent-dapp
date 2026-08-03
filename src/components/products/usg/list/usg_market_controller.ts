@@ -5,7 +5,7 @@ import { executeChainViewUnique } from "@/services/service_rpc"
 import { Abi, Address, formatEther, formatUnits, Hex } from "viem"
 import { BorrowCapStatus, ListHeaderData, ListRowData } from "@/types"
 import { USG_CONTRACT, USGMarkets, USGPegKeepers } from "../usg_repository"
-import { formatBigInt, formatMillions, formatNumber } from "@/lib/number_formatter"
+import { formatBigInt, formatMillions, formatNumber, toBigInt } from "@/lib/number_formatter"
 import { ChainViewMarketList, ChainViewMarketRow, MarketListAPRData, USGGlobalData, USGMarketType } from "../usg_type"
 
 export const getUSGMarketsData = async (address: string) => {
@@ -201,7 +201,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
       },
     ],
     userHasDeposited: !!onChainRow?.collateralInfos?.positionCollateralUSDValue && onChainRow?.collateralInfos?.positionCollateralUSDValue > 0n,
-    positionCollateralUSDValue: onChainRow?.collateralInfos?.positionCollateralUSDValue.toString() || "0",
+    positionCollateralUSDValue: onChainRow?.collateralInfos?.positionCollateralUSDValue?.toString() || "0",
     totalCollateralUSDValue: onChainRow?.collateralInfos?.totalCollateralUSDValue?.toString() || "0",
     rewardToken,
     isDepositPaused,
@@ -301,17 +301,22 @@ export const sortMarketListByType = (elementA: ListRowData, elementB: ListRowDat
 }
 
 export const sortMarketsByUserPositionAndTVL = (a: ListRowData, b: ListRowData): number => {
-  const posA = BigInt(a.positionCollateralUSDValue ?? 0)
-  const posB = BigInt(b.positionCollateralUSDValue ?? 0)
+  // 1. Put paused markets at the bottom of the list
+  if (!a.isDepositPaused === !!b.isDepositPaused) {
+    return a.isDepositPaused ? 1 : -1
+  }
 
-  // 1. Prority to user position
+  const posA = toBigInt(Number(a.positionCollateralUSDValue), 18)
+  const posB = toBigInt(Number(b.positionCollateralUSDValue), 18)
+
+  // 2. Priority to user position
   if (posA !== posB) {
     return posA > posB ? -1 : 1
   }
 
-  // else by tvl
-  const totalA = BigInt(a.totalCollateralUSDValue ?? 0)
-  const totalB = BigInt(b.totalCollateralUSDValue ?? 0)
+  // 3. else by tvl
+  const totalA = toBigInt(Number(a.totalCollateralUSDValue), 18)
+  const totalB = toBigInt(Number(b.totalCollateralUSDValue), 18)
 
   if (totalA !== totalB) {
     return totalA > totalB ? -1 : 1

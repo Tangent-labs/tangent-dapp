@@ -212,7 +212,13 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     const { key, direction } = listState.sort!
 
     return [...rows].sort((elementA, elementB) => {
-      if (key === "vapr") {
+      if (elementA.isDepositPaused !== elementB.isDepositPaused) {
+        return elementA.isDepositPaused ? 1 : -1
+      }
+
+      if (key === "default") {
+        return sortMarketsByUserPositionAndTVL(elementA, elementB)
+      } else if (key === "vapr") {
         return sortMarketListByType(elementA, elementB, direction)
       } else if (key === "maxvapr") {
         const elementAMaxLeverage = Number(elementA?.indicators[1]?.value)

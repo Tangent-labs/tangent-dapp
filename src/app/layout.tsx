@@ -3,10 +3,17 @@ import type { Metadata } from "next"
 import "@/css_globals.css"
 
 import { gilroy } from "./fonts"
+import { siteUrl, socialMetadata } from "./site_metadata"
+
+const title = "Tangent Finance"
+const description =
+  "Tangent is a decentralized stablecoin protocol maximizing capital efficiency. Borrow against productive collateral with interest-free option on dedicated markets."
 
 export const metadata: Metadata = {
-  title: "Tangent Finance",
-  description: "Tangent Finance dApp",
+  metadataBase: new URL(siteUrl),
+  title,
+  description,
+  ...socialMetadata(title, description),
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

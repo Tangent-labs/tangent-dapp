@@ -1,8 +1,14 @@
 import type { Metadata } from "next"
+import { socialMetadata } from "../site_metadata"
+
+const title = "Tangent"
+const description =
+  "Tangent is a decentralized stablecoin protocol maximizing capital efficiency. Borrow against productive collateral with interest-free option on dedicated markets."
+
 export const metadata: Metadata = {
-  title: "Tangent",
-  description:
-    "Tangent is a decentralized stablecoin protocol maximizing capital efficiency. Borrow against productive collateral with interest-free option on dedicated markets.",
+  title,
+  description,
+  ...socialMetadata(title, description),
 }
 import { ReactNode } from "react"
 import { RouteManager } from "./components/route-manager"

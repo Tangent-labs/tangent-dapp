@@ -10,9 +10,8 @@ import { mapUserBoosts } from "./airdrop/boosts/usg_boosts_controller"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { USGStakingInfo, VoteUserPoints, RefereesPoints, MarketAPRs, LpUserPoints, Boost } from "./usg_type"
-
-// import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
-// import { TANStakingInfo } from "../vs_tan/rstan_types"
+import { TANStakingInfo } from "../vs_tan/rstan_types"
+import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
 
 type USGContextProps = {
   children: ReactNode
@@ -26,8 +25,8 @@ type USGContextValues = {
   refetchPoints: () => Promise<void>
   loadUSGsUSGMetrics: () => void
   USGsUSGMetrics: USGStakingInfo | undefined
-  // TANsTANMetrics: TANStakingInfo | undefined
-  // loadTanSTANMetrics: () => void
+  TANsTANMetrics: TANStakingInfo | undefined
+  loadTanSTANMetrics: () => void
   refereesPoints: RefereesPoints
   marketAprs: MarketAPRs[]
   userBoosts: Boost[]
@@ -52,7 +51,7 @@ export const USGProvider = ({ children }: USGContextProps) => {
 
   const [USGsUSGMetrics, setUSGsUSGMetrics] = useState<USGStakingInfo | undefined>()
 
-  // const [TANsTANMetrics, setTANsTANMetrics] = useState<TANStakingInfo | undefined>()
+  const [TANsTANMetrics, setTANsTANMetrics] = useState<TANStakingInfo | undefined>()
 
   const [marketAprs, setMarketAprs] = useState<Array<MarketAPRs>>([])
 
@@ -70,11 +69,11 @@ export const USGProvider = ({ children }: USGContextProps) => {
     })
   }
 
-  // const loadTanSTANMetrics = () => {
-  //   getTanStakeOnChainData(currentAddress || zeroAddress).then((data) => {
-  //     setTANsTANMetrics(data)
-  //   })
-  // }
+  const loadTanSTANMetrics = () => {
+    getTanStakeOnChainData(currentAddress || zeroAddress).then((data) => {
+      setTANsTANMetrics(data)
+    })
+  }
 
   /**
    * On init
@@ -83,7 +82,7 @@ export const USGProvider = ({ children }: USGContextProps) => {
     if (isWalletContextLoaded) {
       loadUSGsUSGMetrics()
       refetchPoints()
-      // loadTanSTANMetrics()
+      loadTanSTANMetrics()
     }
   }, [isWalletContextLoaded, currentAddress])
 
@@ -129,8 +128,8 @@ export const USGProvider = ({ children }: USGContextProps) => {
     marketAprs,
     userBoostFactor,
     userBoosts,
-    // loadTanSTANMetrics,
-    // TANsTANMetrics,
+    loadTanSTANMetrics,
+    TANsTANMetrics,
   }
 
   return <USGContext.Provider value={contextValue}>{children}</USGContext.Provider>

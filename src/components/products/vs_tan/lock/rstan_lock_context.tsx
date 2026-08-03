@@ -74,6 +74,8 @@ type VsTanLockContextValues = {
 
   maxAmountToDeposit: string
 
+  maxDepositWeiValue: bigint
+
   slippage: number
   setSlippage: (arg: number) => void
 }
@@ -290,7 +292,10 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
       return { balance: balanceAllowanceData?.balance, allowance: balanceAllowanceData?.allowances[0]?.allowance }
     }
     return { balance: 0n, allowance: 0n }
-  }, [lockData, balanceAllowanceData])
+  }, [lockData, balanceAllowanceData, depositAsset])
+
+  // Balance of the currently selected asset : drives the slider and the max button
+  const maxDepositWeiValue = useMemo(() => lockBalanceAllowanceData?.balance ?? 0n, [lockBalanceAllowanceData])
 
   useEffect(() => {
     const computeFormState = async () => {
@@ -506,6 +511,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
     handleDepositChange,
     depositAssetInfo,
     maxAmountToDeposit,
+    maxDepositWeiValue,
     slippage,
     setSlippage,
   }

@@ -69,6 +69,7 @@ export default function MenuBarFeature() {
     { route: "/stake", label: "Savings" },
     { route: "/earn", label: "Earn" },
     { route: "/claim", label: "Claim" },
+    { route: "/tan/lock", label: "TAN" },
     { route: "/dashboard", label: "Dashboard" },
     { route: "/swap", label: "Swap", mobileOnly: true },
   ]

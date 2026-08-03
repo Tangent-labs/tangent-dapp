@@ -2,7 +2,18 @@
 
 import { Address } from "viem"
 
-import { MarketHistoricalData, VoteTask, MarketAPRs, SavingAccountsApy, TVLData, PointsResult, LpTask, UserPosition } from "./usg_type"
+import {
+  MarketHistoricalData,
+  VoteTask,
+  MarketAPRs,
+  SavingAccountsApy,
+  TVLData,
+  PointsResult,
+  LpTask,
+  UserPosition,
+  ProtocolRevenue,
+  RevenueRange,
+} from "./usg_type"
 import { USG_CONTRACT } from "./usg_repository"
 
 export interface UserStatus {
@@ -574,6 +585,29 @@ async function _callMarketsAprs(): Promise<MarketAPRs[]> {
     return data
   } catch (error) {
     console.error("Failed to fetch aprs :", error)
+    return []
+  }
+}
+
+export const fetchProtocolRevenues = async (range: RevenueRange): Promise<ProtocolRevenue[]> => {
+  try {
+    const url = `${baseUrl}/revenues/${range}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch revenues")
+    }
+
+    const data: ProtocolRevenue[] = await response.json()
+    return data
+  } catch (error) {
+    console.error("Failed to fetch revenues :", error)
     return []
   }
 }

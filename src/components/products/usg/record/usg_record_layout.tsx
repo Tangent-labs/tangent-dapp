@@ -14,6 +14,7 @@ import { CollateralPriceProvider } from "./collat_price/collat_price_context"
 import { MarketDetailsParameters } from "./header/components/market_details_parameters"
 import { FeatureTabs } from "@/components/design_system/inputs/feature_tabs/feature_tabs"
 import { MarketDetailsContracts } from "./header/components/market_details_contracts"
+import { VAPRCalculator } from "./vapr_calculator/vapr_calculator"
 
 type USGRecordLayoutProps = {
   children: React.ReactNode
@@ -111,6 +112,10 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
             </CollateralPriceProvider>
           </div>
         </div>
+
+        <Divider />
+
+        <VAPRCalculator />
 
         <Divider />
 

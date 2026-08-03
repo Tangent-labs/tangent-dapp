@@ -109,8 +109,8 @@ type USGRecordContextValues = {
   initialCollatAmount: number
   setInitialCollatAmount: (v: number) => void
 
-  leveragedCollatAmount: number
-  setLeveragedCollatAmount: (v: number) => void
+  totalCollatAmount: number
+  setTotalCollatAmount: (v: number) => void
 
   chartData: Array<{ price: number; vAPR: number }>
   setChartData: (v: Array<{ price: number; vAPR: number }>) => void
@@ -210,7 +210,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
 
   const [initialCollatAmount, setInitialCollatAmount] = useState<number>(0)
 
-  const [leveragedCollatAmount, setLeveragedCollatAmount] = useState<number>(0)
+  const [totalCollatAmount, setTotalCollatAmount] = useState<number>(0)
 
   const [simulatedCollatAmount, setSimulatedCollatAmount] = useState<number>(0)
 
@@ -371,13 +371,13 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
           const vAPR = computeVAPR(
             appliedAPR,
             parseEther(simulatedCollatAmount.toFixed(0)) || onChainData?.collateralInfos?.positionCollateralUSDValue || 0n,
-            (isLeveraged ? parseEther((leveragedCollatAmount + debtFarming).toFixed(0)) : parseEther(debtFarming.toFixed(0))) ||
+            (isLeveraged ? parseEther((totalCollatAmount - initialCollatAmount + debtFarming).toFixed(0)) : parseEther(debtFarming.toFixed(0))) ||
               onChainData?.debtInfos.userDebt ||
               0n,
             computeIR(BigInt(Math.round(price * 10 ** 18)), irParams),
             debtFarming,
             debtVAPR / 100,
-            parseEther((initialCollatAmount + leveragedCollatAmount).toFixed(0)),
+            parseEther(totalCollatAmount.toFixed(0)),
             isLeveraged,
             initialCollatAmount
           )
@@ -387,7 +387,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
 
       setChartData(data)
     }
-  }, [isLeveraged, debtFarming, debtVAPR, marketData, onChainData, initialCollatAmount, leveragedCollatAmount, marketAprs, simulatedCollatAmount])
+  }, [isLeveraged, debtFarming, debtVAPR, marketData, onChainData, initialCollatAmount, totalCollatAmount, marketAprs, simulatedCollatAmount])
 
   const feature = useMemo(() => {
     const lastIndexOfSlash = path.lastIndexOf("/") + 1
@@ -540,8 +540,8 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
     initialCollatAmount,
     setInitialCollatAmount,
 
-    leveragedCollatAmount,
-    setLeveragedCollatAmount,
+    totalCollatAmount,
+    setTotalCollatAmount,
 
     chartData,
     setChartData,

@@ -21,7 +21,7 @@ import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContai
 type VAPRSimulation = {
   isLeveraged: boolean
   initialCollatAmount?: number
-  leveragedCollatAmount?: number
+  totalCollatAmount?: number
   simulatedCollatAmount?: number
   debtFarming: number
   debtVAPR: number
@@ -58,7 +58,7 @@ export const VAPRCalculator = () => {
     setDebtVAPR,
     setIsLeveraged,
     setInitialCollatAmount,
-    setLeveragedCollatAmount,
+    setTotalCollatAmount,
     setSimulatedCollatAmount,
     setDebtFarming,
     USGInfo,
@@ -66,7 +66,7 @@ export const VAPRCalculator = () => {
     debtVAPR,
     isLeveraged,
     initialCollatAmount,
-    leveragedCollatAmount,
+    totalCollatAmount,
     simulatedCollatAmount,
     marketInfo,
     debtFarming,
@@ -81,7 +81,7 @@ export const VAPRCalculator = () => {
       isLeveraged,
       debtFarming,
       debtVAPR,
-      ...(isLeveraged ? { initialCollatAmount, leveragedCollatAmount } : { simulatedCollatAmount }),
+      ...(isLeveraged ? { initialCollatAmount, totalCollatAmount } : { simulatedCollatAmount }),
     }
 
     try {
@@ -104,7 +104,7 @@ export const VAPRCalculator = () => {
 
       setIsLeveraged(simulation.isLeveraged || false)
       setInitialCollatAmount(simulation.initialCollatAmount || 0)
-      setLeveragedCollatAmount(simulation.leveragedCollatAmount || 0)
+      setTotalCollatAmount(simulation.totalCollatAmount || 0)
 
       if (simulation.simulatedCollatAmount) setSimulatedCollatAmount(simulation.simulatedCollatAmount)
       setDebtFarming(simulation.debtFarming || 0)
@@ -122,15 +122,13 @@ export const VAPRCalculator = () => {
 
     const positionDebtUSD = onChainData?.debtInfos?.userDebt ? Number(formatUnits(onChainData.debtInfos.userDebt, 18)) : 0
 
-    const collateralUSD = isLeveraged ? initialCollatAmount + leveragedCollatAmount : simulatedCollatAmount
+    const collateralUSD = isLeveraged ? totalCollatAmount : simulatedCollatAmount
 
-    const debtUSD = isLeveraged ? leveragedCollatAmount + debtFarming || positionDebtUSD : debtFarming || positionDebtUSD
+    const debtUSD = isLeveraged ? totalCollatAmount - initialCollatAmount + debtFarming || positionDebtUSD : debtFarming || positionDebtUSD
 
     const accountedCollatAmount = isLeveraged ? initialCollatAmount : simulatedCollatAmount
 
     const yearlyGains = accountedCollatAmount * (netVAPR / 100)
-
-    const positionValue = accountedCollatAmount + debtUSD
 
     const lt = marketData?.constants?.liquidationThreshold ? Number(marketData.constants.liquidationThreshold) / 100000 : 1
 
@@ -141,16 +139,10 @@ export const VAPRCalculator = () => {
     return {
       "Net vAPR": `${netVAPR.toFixed(2)}%`,
       "Yearly gains": formatDollar(yearlyGains, 0),
-      "Position's value": (
-        <span className="flex items-baseline justify-center gap-1">
-          {formatDollar(positionValue, 0)}
-          <span className="text-[10px] font-normal text-subtitle">(Collateral + debt)</span>
-        </span>
-      ),
       LTV: collateralUSD > 0 ? `${ltvValue.toFixed(2)}%` : "-",
       Health: debtUSD > 0 ? healthValue.toFixed(2) : "-",
     }
-  }, [chartData, USGInfo, isLeveraged, initialCollatAmount, leveragedCollatAmount, simulatedCollatAmount, debtFarming, onChainData, marketData])
+  }, [chartData, USGInfo, isLeveraged, initialCollatAmount, totalCollatAmount, simulatedCollatAmount, debtFarming, onChainData, marketData])
 
   return (
     <Accordion type="single" collapsible>
@@ -203,14 +195,14 @@ export const VAPRCalculator = () => {
                         </div>
 
                         <div className="flex w-full flex-col items-start justify-center">
-                          <InputLabel label="Leveraged collateral" info="Extra collateral bought with borrowed USG, on top of your initial collateral." />
+                          <InputLabel label="Total collateral" info="The value of the collateral you deposited first, without leverage." />
                           <input
                             placeholder="0"
                             type="number"
                             step={1}
                             className={inputClassName + " w-full"}
-                            value={leveragedCollatAmount || ""}
-                            onChange={(e) => setLeveragedCollatAmount(Number(e?.target?.value))}
+                            value={totalCollatAmount || ""}
+                            onChange={(e) => setTotalCollatAmount(Number(e?.target?.value))}
                           />
                         </div>
                       </motion.div>

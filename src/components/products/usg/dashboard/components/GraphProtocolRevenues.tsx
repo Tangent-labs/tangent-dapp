@@ -70,7 +70,7 @@ export const GraphProtocolRevenues = ({ protocolRevenues, selectedRevenueTab, fe
                     <div className="font-semibold text-white">{el?.period}</div>
 
                     <div className="flex w-full items-center justify-between gap-4">
-                      <div className="text-subtitle">Interest rate</div>
+                      <div className="text-subtitle">Interests</div>
                       <div className="text-white">{formatDollar(el?.ir)}</div>
                     </div>
 

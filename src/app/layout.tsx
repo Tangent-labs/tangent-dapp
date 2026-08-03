@@ -1,8 +1,6 @@
-import type { Metadata } from "next"
-
 import "@/css_globals.css"
-
 import { gilroy } from "./fonts"
+import type { Metadata } from "next"
 import { siteUrl, socialMetadata } from "./site_metadata"
 
 const title = "Tangent Finance"

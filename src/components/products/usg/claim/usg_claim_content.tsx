@@ -20,7 +20,7 @@ import { USGHoverCard } from "@/components/design_system/structure/usg_hover_car
 import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
+import { FeatureBannerCarousel } from "@/components/design_system/structure/feature_banner_carousel"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 
 const listeState: ListState = {
@@ -74,7 +74,7 @@ export default function USGClaimContent() {
         </PageHeader>
 
         <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
-          <PointsCampaignLiveCard></PointsCampaignLiveCard>
+          <FeatureBannerCarousel />
           <ThreeCardRowWithMask
             contents={[
               { key: "Total claimable", value: totalClaimable },

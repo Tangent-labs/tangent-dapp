@@ -19,7 +19,7 @@ import { StaticCardAssetInput } from "../../predeposit/components/StaticCardAsse
 import { formatBigInt, formatDollar, formatMillions, formatNumber } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
-import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
+import { FeatureBannerCarousel } from "@/components/design_system/structure/feature_banner_carousel"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 
 export default function USGStakeContent() {
@@ -82,7 +82,7 @@ export default function USGStakeContent() {
         </PageHeader>
 
         <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
-          <PointsCampaignLiveCard />
+          <FeatureBannerCarousel />
 
           <ThreeCardRowWithMask
             contents={[

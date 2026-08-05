@@ -13,16 +13,27 @@ interface FeatureBannerResponse {
   updatedAt: string
 }
 
-// The banner card is mounted on most pages; one shared request serves them all.
 let pending: Promise<FeatureBanner[]> | null = null
+
+let settled: FeatureBanner[] | null = null
+
+export const getSettledFeatureBanners = (): FeatureBanner[] | null => settled
 
 export const fetchFeatureBanners = async (): Promise<FeatureBanner[]> => {
   if (!pending) {
-    pending = loadFeatureBanners().catch(() => {
-      // Let a later mount retry rather than caching the failure for the session.
-      pending = null
-      return []
-    })
+    pending = loadFeatureBanners()
+      .then((banners) => {
+        settled = banners
+        return banners
+      })
+      .catch(() => {
+        // Let a later mount retry rather than caching the failure for the session.
+        pending = null
+        // A failed load still counts as settled: a remount should show the fallback
+        // card while it retries, rather than dropping back to a loading skeleton.
+        settled = []
+        return []
+      })
   }
 
   return pending

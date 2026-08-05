@@ -4,7 +4,8 @@ import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import { ReliefCard } from "./relief_card"
 import { PointsCampaignLiveCard } from "./points_campaign_live_card"
-import { FeatureBanner, fetchFeatureBanners } from "./feature_banners"
+import { FeatureBannerSkeleton } from "./feature_banner_skeleton"
+import { FeatureBanner, fetchFeatureBanners, getSettledFeatureBanners } from "./feature_banners"
 
 const SLIDE_INTERVAL_MS = 5500
 const SLIDE_DURATION_MS = 700
@@ -13,17 +14,16 @@ const SLIDE_EASING = "cubic-bezier(0.22, 1, 0.36, 1)"
 /** How far the artwork's left edge fades into the card. */
 const IMAGE_FADE_PX = 80
 /** Artwork height as a multiple of the card's, so it bleeds past the top and bottom edges. */
-const IMAGE_ZOOM = 1.4
+const IMAGE_ZOOM = 1.2
 
 interface FeatureBannerCarouselProps {
   className?: string
 }
 
 export function FeatureBannerCarousel({ className }: FeatureBannerCarouselProps) {
-  const [banners, setBanners] = useState<FeatureBanner[]>([])
+  const [banners, setBanners] = useState<FeatureBanner[]>(() => getSettledFeatureBanners() ?? [])
 
-  // `index` runs one past the last banner onto a clone of the first, so the wrap
-  // keeps travelling upwards instead of rewinding through every slide.
+  const [isLoading, setIsLoading] = useState(() => getSettledFeatureBanners() === null)
 
   const [index, setIndex] = useState(0)
 
@@ -36,7 +36,10 @@ export function FeatureBannerCarousel({ className }: FeatureBannerCarouselProps)
   useEffect(() => {
     let cancelled = false
     fetchFeatureBanners().then((result) => {
-      if (!cancelled) setBanners(result)
+      if (cancelled) return
+
+      setBanners(result)
+      setIsLoading(false)
     })
 
     return () => {
@@ -67,6 +70,8 @@ export function FeatureBannerCarousel({ className }: FeatureBannerCarouselProps)
     return () => clearInterval(interval)
   }, [count, isPaused, prefersReducedMotion])
 
+  if (isLoading) return <FeatureBannerSkeleton className={className} />
+
   if (count === 0) return <PointsCampaignLiveCard className={className} />
 
   const activeIndex = index % count
@@ -95,7 +100,11 @@ export function FeatureBannerCarousel({ className }: FeatureBannerCarouselProps)
 
   return (
     <ReliefCard className={cn("w-full", className)}>
-      <div className="relative h-16 w-full overflow-hidden rounded-[10px]" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
+      <div
+        className="relative h-16 w-full overflow-hidden rounded-[10px] transition-colors duration-300 hover:bg-white/10"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
         {count > 1 && (
           <div className="absolute left-6 top-1/2 z-10 flex -translate-y-1/2 flex-col gap-[5px]">
             {banners.map((banner, slideIndex) => (

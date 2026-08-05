@@ -5,7 +5,7 @@ interface PointsCampaignLiveCardProps {
   className?: string
 }
 
-/** Static fallback for the carousel: what shows while banners load, or if the API has none. */
+/** Static fallback for the carousel: what shows once banners have loaded and the API has none. */
 export function PointsCampaignLiveCard({ className }: PointsCampaignLiveCardProps) {
   return (
     <ReliefCard className={cn("w-full", className)}>

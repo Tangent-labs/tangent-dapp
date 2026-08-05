@@ -20,7 +20,7 @@ import { USGHoverCard } from "@/components/design_system/structure/usg_hover_car
 import { LargeButtonTab } from "@/components/design_system/inputs/large_button_tab"
 import { FeatureSelect } from "@/components/design_system/structure/feature_select"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
+import { FeatureBannerCarousel } from "@/components/design_system/structure/feature_banner_carousel"
 
 const listeState: ListState = {
   search: undefined,
@@ -78,7 +78,7 @@ export const VsTanLayoutContent = ({
         </div>
 
         <div className="hidden h-auto w-full flex-col items-center justify-between gap-3 md:flex xl:w-1/2">
-          <PointsCampaignLiveCard></PointsCampaignLiveCard>
+          <FeatureBannerCarousel />
 
           <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
             <IconVsTan className="h-10 w-32"></IconVsTan>

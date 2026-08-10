@@ -147,9 +147,8 @@ export function FeatureBannerCarousel({ className }: FeatureBannerCarouselProps)
                 Live
               </div>
 
-              {/* Takes whatever room is left after the badge, so the artwork centres in it. */}
               <div
-                className="ml-4 h-full min-w-[35%] flex-1 bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-[1.03]"
+                className="ml-4 h-full min-w-[35%] flex-1 bg-right bg-no-repeat transition-transform duration-500 group-hover:scale-[1.03]"
                 style={{
                   backgroundImage: `url(${banner.imageUrl})`,
                   // Taller than the card so the artwork is cropped by the top and bottom edges

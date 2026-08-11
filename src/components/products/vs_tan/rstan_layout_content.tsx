@@ -2,13 +2,13 @@
 
 import Image from "next/image"
 import { ListState } from "@/types"
+import { useRouter } from "next/navigation"
 import { InfinityIcon } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
 import { formatDate } from "@/lib/other_formatter"
 import { LockPosition } from "../usg/usg_type"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useVsTanContext } from "./rstan_layout_context"
-import { usePathname, useRouter } from "next/navigation"
 import { IconVsTan, IconChevron } from "@/components/icons"
 import { lockListHeaders } from "./rstan_layout_controller"
 import { ListRow } from "@/components/design_system/list/list_row"
@@ -16,9 +16,9 @@ import { Button } from "@/components/design_system/inputs/button"
 import { Divider } from "@/components/design_system/structure/divider"
 import { ListHeader } from "@/components/design_system/list/list_header"
 import { TokenImage } from "@/components/design_system/structure/token_image"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { VsTanFeatureTabs } from "./vs_tan_features_tabs/vs_tan_features_tabs"
 import { USGHoverCard } from "@/components/design_system/structure/usg_hover_card"
-import { LargeButtonTab } from "@/components/design_system/inputs/large_button_tab"
-import { FeatureSelect } from "@/components/design_system/structure/feature_select"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 
@@ -48,8 +48,6 @@ export const VsTanLayoutContent = ({
   children: React.ReactNode
 }>) => {
   const router = useRouter()
-
-  const pathname = usePathname()
 
   const { lockData, feature } = useVsTanContext()
 
@@ -102,40 +100,15 @@ export const VsTanLayoutContent = ({
       </div>
 
       <div className="my-4 flex w-full flex-col gap-4 xl:flex-row">
-        <div className="flex w-full flex-col items-center justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-5/12">
-          <div className="hidden w-full items-center justify-between gap-2 md:flex">
-            <LargeButtonTab label="Lock" active={pathname === "/tan/lock"} onClick={() => onTabClick("lock")} className="h-8! flex w-full justify-center" />
-            <LargeButtonTab
-              label="Unlock"
-              active={pathname === "/tan/unlock"}
-              onClick={() => onTabClick("unlock")}
-              className="h-8! flex w-full justify-center"
-            />
-            <LargeButtonTab label="Claim" active={pathname === "/tan/claim"} onClick={() => onTabClick("claim")} className="h-8! flex w-full justify-center" />
-            <LargeButtonTab label="Split" active={pathname === "/tan/split"} onClick={() => onTabClick("split")} className="h-8! flex w-full justify-center" />
-            <LargeButtonTab label="Merge" active={pathname === "/tan/merge"} onClick={() => onTabClick("merge")} className="h-8! flex w-full justify-center" />
-          </div>
-
-          <div className="flex w-full flex-col items-center justify-between gap-1 md:hidden">
-            <FeatureSelect
-              options={[
-                { value: "Lock", key: "Lock" },
-                { value: "Unlock", key: "Unlock" },
-                { value: "Claim", key: "Claim" },
-                { value: "Split", key: "Split" },
-                { value: "Merge", key: "Merge" },
-              ]}
-              value={feature}
-              onChange={(v: string) => onTabClick(v)}
-            ></FeatureSelect>
-          </div>
+        <ReliefCard className="flex w-full flex-col items-center justify-start p-3 xl:w-5/12">
+          <VsTanFeatureTabs feature={feature} onTabClick={onTabClick}></VsTanFeatureTabs>
 
           <Divider />
 
           {children}
-        </div>
+        </ReliefCard>
 
-        <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px] xl:w-7/12">
+        <div className="flex w-full flex-col items-start justify-start p-3 xl:w-7/12">
           <div className="mr-auto text-3xl font-semibold text-white">Locked Positions</div>
 
           <Divider />

@@ -8,6 +8,7 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { MultiPositionSelect } from "@/components/design_system/inputs/input_multiselect"
 import { Switch } from "@/components/ui/switch"
+import { BorderPanel } from "@/components/design_system/structure/border_panel"
 
 export const VsTanClaimContent = () => {
   const { lockData } = useVsTanContext()
@@ -71,10 +72,11 @@ export const VsTanClaimContent = () => {
         </div>
 
         <div className="flex h-full flex-col items-center justify-center">
-          <div className="flex items-center justify-center rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
-            <TokenImage token={claimAsSUSG ? "sUSG" : "USG"} className="mr-2" size={16} />
-            {claimAsSUSG ? "sUSG" : "USG"}
-          </div>
+          <BorderPanel className="flex h-10 items-center gap-2 bg-select-input px-2.5 py-2">
+            <TokenImage token={claimAsSUSG ? "sUSG" : "USG"} size={20} />
+
+            <span className="flex flex-col text-sm font-semibold">{claimAsSUSG ? "sUSG" : "USG"}</span>
+          </BorderPanel>
         </div>
       </div>
 

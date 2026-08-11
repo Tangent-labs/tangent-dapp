@@ -2,7 +2,7 @@ import { motion } from "framer-motion"
 import { Address } from "viem"
 
 type FeatureTabsMotionDivProps = {
-  marketAddress: Address
+  marketAddress: Address | string
 }
 
 export const FeatureTabsMotionDiv = ({ marketAddress }: FeatureTabsMotionDivProps) => {

@@ -21,7 +21,7 @@ export const resolveAssetName = (assetAddress: string | null | undefined): strin
 
   const normalized = assetAddress.toLowerCase()
 
-  const found = ERC20S.find((el) => el.address.toLowerCase() === normalized)
+  const found = ERC20S.find((el) => el.address?.toLowerCase() === normalized)
   // ||wTokens.find((el) => el.address.toLowerCase() === normalized)
 
   return found?.symbol ?? assetAddress
@@ -32,7 +32,7 @@ export const resolveAssetName = (assetAddress: string | null | undefined): strin
  */
 export const buildAssetInfo = (tokenAddress: string | null | undefined, price: number | null): AssetDataPriced | null => {
   if (!tokenAddress || !price) return null
-  const assetInfo = ERC20S.find((el) => el.address.toLowerCase() === tokenAddress.toLowerCase())
+  const assetInfo = ERC20S.find((el) => el.address?.toLowerCase() === tokenAddress.toLowerCase())
   // || wTokens.find((el) => el.tokenAddress === tokenAddress || el.symbol === assetName)
 
   if (!assetInfo) return null

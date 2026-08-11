@@ -33,6 +33,8 @@ export function FeatureBannerCarousel({ className }: FeatureBannerCarouselProps)
 
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
+  const [isPageHidden, setIsPageHidden] = useState(false)
+
   useEffect(() => {
     let cancelled = false
     fetchFeatureBanners().then((result) => {
@@ -57,10 +59,21 @@ export function FeatureBannerCarousel({ className }: FeatureBannerCarouselProps)
     return () => query.removeEventListener("change", onChange)
   }, [])
 
+  useEffect(() => {
+    const onVisibilityChange = () => setIsPageHidden(document.hidden)
+    onVisibilityChange()
+
+    document.addEventListener("visibilitychange", onVisibilityChange)
+
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange)
+  }, [])
+
   const count = banners.length
 
+  // A hidden tab keeps firing timers but stops rendering, so slides would advance
+  // against a frozen strip and burn through the banners nobody is watching.
   useEffect(() => {
-    if (count <= 1 || isPaused || prefersReducedMotion) return
+    if (count <= 1 || isPaused || prefersReducedMotion || isPageHidden) return
 
     const interval = setInterval(() => {
       setIsAnimated(true)
@@ -68,7 +81,22 @@ export function FeatureBannerCarousel({ className }: FeatureBannerCarouselProps)
     }, SLIDE_INTERVAL_MS)
 
     return () => clearInterval(interval)
-  }, [count, isPaused, prefersReducedMotion])
+  }, [count, isPaused, prefersReducedMotion, isPageHidden])
+
+  // The snap back onto the real first banner normally rides on onTransitionEnd, which
+  // the browser never fires when the transition is skipped or the tab is not painting.
+  // Backing it with a timer keeps the strip from parking past its last slide, where
+  // every later tick would push it further into empty space.
+  useEffect(() => {
+    if (count <= 1 || index < count) return
+
+    const timeout = setTimeout(() => {
+      setIsAnimated(false)
+      setIndex(0)
+    }, SLIDE_DURATION_MS + 100)
+
+    return () => clearTimeout(timeout)
+  }, [index, count])
 
   if (isLoading) return <FeatureBannerSkeleton className={className} />
 
@@ -92,7 +120,7 @@ export function FeatureBannerCarousel({ className }: FeatureBannerCarouselProps)
     // Transitions inside a slide (the artwork's hover zoom) bubble up here too.
     if (event.target !== event.currentTarget) return
 
-    if (index === count) {
+    if (index >= count) {
       setIsAnimated(false)
       setIndex(0)
     }
@@ -126,7 +154,9 @@ export function FeatureBannerCarousel({ className }: FeatureBannerCarouselProps)
         <div
           className="h-full transition-transform"
           style={{
-            transform: `translateY(-${index * 100}%)`,
+            // Clamped so an index that outran the reset shows the last slide rather
+            // than scrolling the strip off into an empty card.
+            transform: `translateY(-${Math.min(index, slides.length - 1) * 100}%)`,
             transitionDuration: isAnimated && !prefersReducedMotion ? `${SLIDE_DURATION_MS}ms` : "0ms",
             transitionTimingFunction: SLIDE_EASING,
           }}

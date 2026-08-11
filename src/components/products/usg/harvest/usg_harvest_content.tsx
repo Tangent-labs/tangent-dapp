@@ -18,7 +18,7 @@ import { USGHoverCard } from "@/components/design_system/structure/usg_hover_car
 import { useWalletConnexionContext } from "../../wallet/wallet_connexion_context"
 import { ListGradientBorder } from "@/components/design_system/list/list_gradient_border"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
+import { FeatureBannerCarousel } from "@/components/design_system/structure/feature_banner_carousel"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
 
 const listeState: ListState = {
@@ -62,7 +62,7 @@ export default function USGHarvestContent() {
         </PageHeader>
 
         <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
-          <PointsCampaignLiveCard />
+          <FeatureBannerCarousel />
 
           <UsgBalanceAndTotalPoints USGsUSGMetrics={USGsUSGMetrics} lpUserPoints={lpUserPoints} voteUserPoints={voteUserPoints} />
         </div>

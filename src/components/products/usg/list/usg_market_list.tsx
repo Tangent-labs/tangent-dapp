@@ -26,7 +26,7 @@ import { MarketListHeader } from "@/components/design_system/list/market_list_he
 import { marketOptions, protocolOptions, USGListHeaders } from "./usg_market_controller"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
+import { FeatureBannerCarousel } from "@/components/design_system/structure/feature_banner_carousel"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 import { MaxLeverageVAPR } from "@/components/design_system/list/market_max_lev_vapr"
 
@@ -128,7 +128,7 @@ export default function USGMarketList() {
         </div>
 
         <div className="hidden h-auto flex-col justify-between gap-[10px] xl:flex xl:w-1/2">
-          <PointsCampaignLiveCard></PointsCampaignLiveCard>
+          <FeatureBannerCarousel />
 
           <ThreeCardRowWithMask
             contents={[

@@ -13,7 +13,7 @@ import { protocolOptions } from "../list/usg_market_controller"
 import { ListHeader } from "@/components/design_system/list/list_header"
 import { PageHeader } from "@/components/design_system/structure/page_header"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
+import { FeatureBannerCarousel } from "@/components/design_system/structure/feature_banner_carousel"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
 
 const listeState: ListState = {
@@ -45,7 +45,7 @@ export const USGEarnContent = () => {
         </PageHeader>
 
         <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
-          <PointsCampaignLiveCard />
+          <FeatureBannerCarousel />
 
           <UsgBalanceAndTotalPoints USGsUSGMetrics={USGsUSGMetrics} lpUserPoints={lpUserPoints} voteUserPoints={voteUserPoints} />
         </div>

@@ -10,6 +10,7 @@ import {
   SDT_frxUSD_sUSDS_VAULT,
   SDT_GHO_crvUSD_VAULT,
   SDT_msETH_OETH_VAULT,
+  SDT_reUSD_sDOLA_VAULT,
   SDT_tBTC_cbBTC_VAULT,
   SDT_USG_frxUSD_VAULT,
   SDT_USG_USDC_VAULT,
@@ -255,13 +256,13 @@ export const ERC20S: Erc20Details[] = [
     displayDecimals: 4,
   },
   {
-    address: CURVE_LPS.DUO_tBTC_crvUSD as Address,
+    address: CURVE_LPS.DUO_tBTC_cbBTC as Address,
     chainId: 1,
     decimals: 18,
     logoKey: "tBTC-cbBTC",
     name: "tBTC/cbBTC",
     symbol: "tBTC/cbBTC",
-    displayDecimals: 5,
+    displayDecimals: 6,
   },
   {
     address: CURVE_LPS.DUO_GHO_crvUSD,
@@ -298,6 +299,14 @@ export const ERC20S: Erc20Details[] = [
     name: "cbBTC/WBTC",
     symbol: "cbBTC/WBTC",
     displayDecimals: 6,
+  },
+  {
+    address: CURVE_LPS.DUO_reUSD_sDOLA as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "reUSD-sDOLA",
+    name: "reUSD/sDOLA",
+    symbol: "reUSD/sDOLA",
   },
 
   // // PENDLE PT
@@ -445,6 +454,14 @@ export const ERC20S: Erc20Details[] = [
     name: "Vault cbBTC/WBTC",
     symbol: "Vault cbBTC/WBTC",
     displayDecimals: 6,
+  },
+  {
+    address: SDT_reUSD_sDOLA_VAULT as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "reUSD-sDOLA",
+    name: "Vault reUSD/sDOLA",
+    symbol: "Vault reUSD/sDOLA",
   },
   // CURVE GAUGES
   {

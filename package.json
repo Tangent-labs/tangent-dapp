@@ -76,6 +76,9 @@
   },
   "overrides": {
     "@wagmi/core": "3.4.0",
-    "@wagmi/connectors": "7.2.1"
+    "@wagmi/connectors": "7.2.1",
+    "@coinbase/cdp-sdk": "1.51.1",
+    "motion-dom": "12.40.0",
+    "motion-utils": "12.39.0"
   }
 }

@@ -546,6 +546,6 @@ const DEFAULT_DISPLAY_DECIMALS = 2
 
 // How many decimals to show for a market's collateral amount.
 export const getCollateralDisplayDecimals = (collatAddress: Address, marketName: string): number => {
-  const meta = ERC20S.find((e) => e.address.toLowerCase() === collatAddress.toLowerCase() || e.symbol === marketName || e.name === marketName)
+  const meta = ERC20S.find((e) => e.address?.toLowerCase() === collatAddress.toLowerCase() || e.symbol === marketName || e.name === marketName)
   return meta?.displayDecimals ?? DEFAULT_DISPLAY_DECIMALS
 }

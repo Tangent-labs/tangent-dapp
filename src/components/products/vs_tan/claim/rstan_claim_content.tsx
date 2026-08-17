@@ -2,8 +2,10 @@
 
 import { useVsTanContext } from "../rstan_layout_context"
 import { LockPosition, LockPositionSelectTemplate } from "../../usg/usg_type"
-import { Button } from "@/components/design_system/inputs/button"
 import { useVsTanClaimContext } from "./rstan_claim_context"
+import FormButtons from "@/components/design_system/form/form_actions"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { formatBigInt } from "@/lib/number_formatter"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { MultiPositionSelect } from "@/components/design_system/inputs/input_multiselect"
@@ -13,7 +15,21 @@ import { BorderPanel } from "@/components/design_system/structure/border_panel"
 export const VsTanClaimContent = () => {
   const { lockData } = useVsTanContext()
 
-  const { claimAsSUSG, selectedPositions, hasDuplicates, selectedPositionsData, actionClaim, setClaimAsSUSG, setSelectedPositions } = useVsTanClaimContext()
+  const { connect } = useWalletConnexionContext()
+
+  const {
+    claimAsSUSG,
+    selectedPositions,
+    selectedPositionsData,
+    actionClaim,
+    setClaimAsSUSG,
+    setSelectedPositions,
+    formState,
+    isLoading,
+    receivedTotal,
+    receivedFor,
+    claimableDollarValue,
+  } = useVsTanClaimContext()
 
   const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {
     return (
@@ -58,17 +74,13 @@ export const VsTanClaimContent = () => {
             <input
               type="string"
               disabled={true}
-              value={formatBigInt(
-                selectedPositionsData.reduce((el, acc) => el + acc.claimable, 0n),
-                18,
-                2
-              )}
+              value={formatBigInt(receivedTotal, 18, 2)}
               placeholder="Amount"
               className="min-h-10 rounded-[10px] border-opacity-10 bg-transparent py-2 font-semibold focus:outline-none"
             />
           </div>
 
-          <div className="text-xs text-subtitle">$({12})</div>
+          <div className="text-xs text-subtitle">{claimableDollarValue}</div>
         </div>
 
         <div className="flex h-full flex-col items-center justify-center">
@@ -95,7 +107,7 @@ export const VsTanClaimContent = () => {
                 #{position.tokenId}
               </div>
               <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
-                {formatBigInt(position.claimable, 18, 2)}
+                {formatBigInt(receivedFor(position), 18, 2)}
                 <TokenImage token={claimAsSUSG ? "sUSG" : "USG"} className="" size={16} />
               </div>
             </div>
@@ -107,11 +119,15 @@ export const VsTanClaimContent = () => {
         <span>Rewards can be claimed separately, or all together.</span>
       </div>
 
-      {selectedPositionsData && selectedPositionsData.length > 0 && (
-        <Button state={hasDuplicates ? "disabled" : "active"} className="mt-3 flex w-full justify-center" onClick={actionClaim}>
-          Claim
-        </Button>
-      )}
+      {formState.errors
+        .filter((e) => e.type === "form-alert")
+        .map((error) => (
+          <FormAlert key={error.key} error={error} className="my-1" isLoading={isLoading} />
+        ))}
+
+      <div className="mt-3 flex w-full justify-center">
+        <FormButtons actions={{ handleProcess: actionClaim }} connect={connect} formState={formState} isLoading={isLoading} labelProcess="Claim" />
+      </div>
     </div>
   )
 }

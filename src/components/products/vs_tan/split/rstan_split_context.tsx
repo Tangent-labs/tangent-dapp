@@ -1,10 +1,15 @@
 "use client"
 
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, ReactNode, useContext, useMemo, useState } from "react"
 import { useVsTanContext } from "../rstan_layout_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { FormState, LockPosition } from "../../usg/usg_type"
+import { toastTx } from "@/components/design_system/toast"
+import { matchBlockChainErrors } from "../../usg/record/usg_record_controller"
 import { doSplit, getSplitFormState } from "./rstan_split_controller"
+import { useMinLock } from "../use_min_lock"
+import { tanAmountToDollar } from "../tan_price"
+import { useNextEndLockTime } from "../use_next_end_lock_time"
 import { formatBigInt } from "@/lib/number_formatter"
 
 type VsTanSplitContextProps = {
@@ -27,7 +32,7 @@ type VsTanSplitContextValues = {
 
   actionSplit: () => void
 
-  computedSplitAmounts: { firstSplit: string; secondSplit: string }
+  computedSplitAmounts: { firstSplit: string; secondSplit: string; firstSplitDollar: string; secondSplitDollar: string }
 
   visualPercentage: number
 
@@ -36,14 +41,21 @@ type VsTanSplitContextValues = {
 
 export const VsTanSplitContext = createContext<VsTanSplitContextValues | undefined>(undefined)
 
+const toastErrorMapper = (err: unknown) => {
+  const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+  return { type: "Error" as const, content: error || "Unable to proceed with the transaction." }
+}
+
 export const VsTanSplitProvider = ({ children }: VsTanSplitContextProps) => {
   const { walletClient, isWellConnected } = useWalletConnexionContext()
 
   const { loadData, lockData } = useVsTanContext()
 
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const minLock = useMinLock()
 
-  const [formState, setFormState] = useState<FormState>({ canProcess: false, errors: [], haveToApprove: false })
+  const { chainTimestamp } = useNextEndLockTime(lockData)
+
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [splitPercentage, setSplitPercentage] = useState<number>(50)
 
@@ -75,7 +87,7 @@ export const VsTanSplitProvider = ({ children }: VsTanSplitContextProps) => {
 
   const computedSplitAmounts = useMemo(() => {
     if (!splitPositionInfo || !splitPositionInfo.amount) {
-      return { firstSplit: "0", secondSplit: "0" }
+      return { firstSplit: "0", secondSplit: "0", firstSplitDollar: "", secondSplitDollar: "" }
     }
 
     const totalAmount = splitPositionInfo.amount
@@ -85,39 +97,41 @@ export const VsTanSplitProvider = ({ children }: VsTanSplitContextProps) => {
     return {
       firstSplit: formatBigInt(firstSplitAmount, 18, 2),
       secondSplit: formatBigInt(secondSplitAmount, 18, 2),
+      firstSplitDollar: tanAmountToDollar(firstSplitAmount, lockData?.tanPrice),
+      secondSplitDollar: tanAmountToDollar(secondSplitAmount, lockData?.tanPrice),
     }
-  }, [splitPercentage, splitPositionInfo])
+  }, [splitPercentage, splitPositionInfo, lockData])
+
+  const amountToRemove = useMemo(
+    () => (splitPositionInfo ? (splitPositionInfo.amount * BigInt(100 - splitPercentage)) / BigInt(100) : 0n),
+    [splitPositionInfo, splitPercentage]
+  )
 
   const actionSplit = async () => {
+    if (isLoading || !walletClient || !splitPositionInfo) return
+
     setIsLoading(true)
 
-    if (walletClient && splitPositionInfo) {
-      const amountToRemove = (splitPositionInfo.amount * BigInt(100 - splitPercentage)) / BigInt(100)
+    try {
+      await toastTx(doSplit(splitPositionInfo?.tokenId, walletClient, amountToRemove), {
+        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+        success: () => ({ type: "Success", content: "Position successfully split in two." }),
+        error: toastErrorMapper,
+      })
 
-      await doSplit(splitPositionInfo?.tokenId, walletClient, amountToRemove)
       loadData()
-      setIsLoading(false)
       setSplitPosition("")
-    } else {
+    } catch {
+      // toastTx already surfaced the failure
+    } finally {
       setIsLoading(false)
     }
   }
 
-  useEffect(() => {
-    const computeFormState = async () => {
-      if (!lockData || !splitPositionInfo) {
-        setFormState({ canProcess: false, errors: [], haveToApprove: false })
-      } else {
-        getSplitFormState(splitPositionInfo, isWellConnected).then((d) => {
-          setFormState(d)
-        })
-      }
-    }
-
-    if (splitPositionInfo) {
-      computeFormState()
-    }
-  }, [splitPositionInfo, lockData])
+  const formState = useMemo<FormState>(
+    () => getSplitFormState(splitPositionInfo, amountToRemove, minLock, chainTimestamp, isWellConnected),
+    [splitPositionInfo, amountToRemove, minLock, chainTimestamp, isWellConnected]
+  )
 
   const contextValue: VsTanSplitContextValues = {
     isLoading,

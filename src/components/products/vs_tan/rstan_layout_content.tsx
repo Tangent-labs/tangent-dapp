@@ -10,8 +10,11 @@ import { LockPosition } from "../usg/usg_type"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useVsTanContext } from "./rstan_layout_context"
 import { IconVsTan, IconChevron } from "@/components/icons"
-import { lockListHeaders } from "./rstan_layout_controller"
+import { isPermaLocked, lockListHeaders } from "./rstan_layout_controller"
+import { tanPriceToDollar } from "./tan_price"
 import { ListRow } from "@/components/design_system/list/list_row"
+import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
+import { useNextEndLockTime } from "./use_next_end_lock_time"
 import { Button } from "@/components/design_system/inputs/button"
 import { Divider } from "@/components/design_system/structure/divider"
 import { ListHeader } from "@/components/design_system/list/list_header"
@@ -75,7 +78,7 @@ export const VsTanLayoutContent = ({
           </div>
         </div>
 
-        <div className="hidden h-auto w-full flex-col items-center justify-between gap-3 md:flex xl:w-1/2">
+        <div className="flex h-auto w-full flex-col items-center justify-between gap-3 xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
 
           <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
@@ -88,7 +91,7 @@ export const VsTanLayoutContent = ({
 
             <div className="flex w-full flex-col items-center justify-center">
               <div className="text-xs font-semibold text-subtitle">vsTan</div>
-              <div className="text-md font-semibold text-white">$1.23</div>
+              <div className="text-md font-semibold text-white">{tanPriceToDollar(lockData?.tanPrice)}</div>
             </div>
 
             <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-button-active py-2">
@@ -122,10 +125,31 @@ export const VsTanLayoutContent = ({
   )
 }
 
+// Unlock date a position currently has
+const currentUnlockDate = (position: LockPosition) => {
+  if (isPermaLocked(position)) return "∞"
+
+  return formatDate(new Date(Number(position?.endLockTime) * 1000), "dd/MM/yyyy")
+}
+
+// Unlock date the Extend button would move it to : perma lock never unlocks, otherwise the lock is
+// reset to its full duration
+const extendedUnlockDate = (position: LockPosition, extendToPermaLock: boolean, nextEndLockTime: string | null) => {
+  if (isPermaLocked(position)) return "∞"
+
+  if (extendToPermaLock) return "∞"
+
+  if (!nextEndLockTime) return currentUnlockDate(position)
+
+  return formatDate(new Date(Number(nextEndLockTime) * 1000), "dd/MM/yyyy")
+}
+
 function LockPositionList() {
   const { headers, listState, udpateSort } = useListContext()
 
-  const { lockData, selectedPosition, extendToPermaLock, onClickExtend, setExtendToPermaLock, onClickRemovePermaLock } = useVsTanContext()
+  const { lockData, selectedPosition, setSelectedPosition, extendToPermaLock, onClickExtend, setExtendToPermaLock, onClickRemovePermaLock } = useVsTanContext()
+
+  const { nextEndLockTime } = useNextEndLockTime(lockData)
 
   return (
     <>
@@ -138,8 +162,8 @@ function LockPositionList() {
           <div className="flex w-full flex-col" key={lockPosition?.tokenId}>
             <ListRow
               route=""
-              // navigate={() => setSelectedPosition(!!selectedPosition && lockPosition === selectedPosition ? undefined : lockPosition)}
-              className="mt-2 w-full"
+              navigate={() => setSelectedPosition(lockPosition === selectedPosition ? undefined : lockPosition)}
+              className="w-full"
               rowDisposition={LockRowDisposition}
               isSelected={lockPosition == selectedPosition}
             >
@@ -157,7 +181,7 @@ function LockPositionList() {
                   <TokenImage token="USG" className="ml-1" size={16} />
                 </div>
                 <div className="flex w-1/3 items-center justify-center text-lg font-semibold">
-                  {lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (
+                  {isPermaLocked(lockPosition) ? (
                     <InfinityIcon className="w-5"></InfinityIcon>
                   ) : (
                     <> {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd/MM/yyyy")}</>
@@ -170,14 +194,22 @@ function LockPositionList() {
             </ListRow>
 
             {lockPosition == selectedPosition && (
-              <div className="slide-down-fade-in flex w-full flex-wrap items-center justify-between gap-3 rounded-b-lg bg-overlay-panel p-3 md:flex-row">
-                <div className="flex items-center justify-center gap-2">
-                  <div className="hidden w-full text-sm text-subtitle md:flex">Unlock date</div>
+              <div className="slide-down-fade-in flex w-full items-center justify-between gap-3 rounded-b-lg bg-overlay-panel p-3">
+                <div className="flex shrink-0 items-center justify-start gap-3">
+                  <div className="hidden text-sm text-subtitle md:flex">Unlock date</div>
+
+                  <EvolutionBox
+                    className="flex w-[232px] justify-center"
+                    originalValue={currentUnlockDate(lockPosition)}
+                    newValue={extendedUnlockDate(lockPosition, extendToPermaLock, nextEndLockTime)}
+                  />
                 </div>
 
-                {!!lockPosition?.endLockTime && lockPosition?.endLockTime == "281474976710655" ? (
+                {isPermaLocked(lockPosition) ? (
                   <>
-                    <Button onClick={() => onClickRemovePermaLock()}> Remove permalock</Button>
+                    <Button className="w-40" onClick={() => onClickRemovePermaLock()}>
+                      Remove permalock
+                    </Button>
                   </>
                 ) : (
                   <>
@@ -191,7 +223,9 @@ function LockPositionList() {
                       <Switch checked={extendToPermaLock} onCheckedChange={() => setExtendToPermaLock(!extendToPermaLock)} />
                     </div>
 
-                    <Button onClick={() => onClickExtend(selectedPosition)}> Extend</Button>
+                    <Button className="w-24" onClick={() => onClickExtend(selectedPosition)}>
+                      Extend
+                    </Button>
                   </>
                 )}
               </div>

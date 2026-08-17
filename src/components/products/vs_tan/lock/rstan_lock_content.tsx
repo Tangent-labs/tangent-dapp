@@ -5,17 +5,24 @@ import { formatBigInt } from "@/lib/number_formatter"
 import { useVsTanContext } from "../rstan_layout_context"
 import { useVsTanLockContext } from "./rstan_lock_context"
 import { LockPositionSelectTemplate } from "../../usg/usg_type"
-import { IconCircleHelp, IconThunder } from "@/components/icons"
 import FormButtons from "@/components/design_system/form/form_actions"
-import { SlippageInput } from "@/components/design_system/inputs/slippage"
-import { PanelRaw } from "@/components/design_system/structure/panel_raw"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
 import { InputSelect } from "@/components/design_system/inputs/input_select"
 import { TokenImage } from "@/components/design_system/structure/token_image"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
-import { ZapAssetSelector } from "@/components/design_system/inputs/asset_selector"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { InputSelectLockPosition } from "@/components/design_system/inputs/input_select_lock_position"
+
+// Locking only ever takes TAN, so the asset slot is a static card rather than a selector.
+// Mirrors the AssetSelectionDialog trigger, without the chevron and the interactive states.
+const TanAssetCard = () => (
+  <div className="rounded-[10px] border border-white/10 p-0">
+    <div className="flex h-10 w-full items-center justify-center gap-2 rounded-[9px] bg-select-input px-2.5">
+      <TokenImage token="TAN" size={20} />
+      <span className="text-sm font-semibold">TAN</span>
+    </div>
+  </div>
+)
 
 export default function VsTanLockContent() {
   const { lockData } = useVsTanContext()
@@ -30,28 +37,17 @@ export default function VsTanLockContent() {
     isPermaLock,
     isLoading,
     formState,
-    depositAsset,
-    zapValue,
-    zapInnerValue,
-    estimatedZapDollarValue,
-    isZapLoading,
     depositAssetInfo,
     maxAmountToDeposit,
     maxDepositWeiValue,
-    slippage,
-    setSlippage,
-    setDepositAsset,
+    currentEndLockDate,
+    computedNewEndLockDate,
     setDepositPosition,
     actionLock,
-    actionZapAndLock,
     actionApprove,
-    actionApproveZap,
     setIsPermaLock,
-    handleZapInputChange,
     handleDepositChange,
   } = useVsTanLockContext()
-
-  const isZapping = !!depositAsset && depositAsset !== "TAN"
 
   const PositionSelectTemplate = (option: LockPositionSelectTemplate) => {
     return (
@@ -109,49 +105,16 @@ export default function VsTanLockContent() {
       <InputSelectLockPosition
         depositAmount={depositWeiValue}
         depositSelect={<PositionSelect />}
-        assetSelect={<ZapAssetSelector caseType="lock" depositAsset={depositAsset} setDepositAsset={setDepositAsset} disabled={isLoading} />}
+        assetSelect={<TanAssetCard />}
         depositAsset={depositAssetInfo}
-        labelDeposit={isZapping ? "You sell" : "You deposit"}
-        isZapping={isZapping}
+        labelDeposit="You deposit"
         isLoading={isLoading}
-        slippageInput={isZapping ? <SlippageInput slippage={slippage} setSlippage={setSlippage} /> : undefined}
         balance={maxDepositWeiValue}
         setMaxBalance={() => {
           handleDepositChange(maxDepositWeiValue)
         }}
         onValueChange={handleDepositChange}
       />
-
-      {isZapping && (
-        <PanelRaw className={`${isZapLoading ? "shimmer" : ""} mt-1.5 flex w-full flex-col gap-1 p-2.5`}>
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col items-start justify-start">
-              <div className="flex items-center justify-center gap-1">
-                <div className="text-sm text-subtitle">Zap</div>
-                <IconThunder className="h-auto w-[8px] text-row-tonic" />
-                <IconCircleHelp className="h-auto w-[12px] text-row-tonic" />
-              </div>
-              <div className="flex items-center justify-center gap-2">
-                <input
-                  type="number"
-                  disabled={isZapLoading}
-                  className="flex w-fit max-w-[140px] justify-start bg-transparent text-[24px] font-semibold focus:outline-none"
-                  value={zapInnerValue ?? ""}
-                  onChange={handleZapInputChange}
-                />
-              </div>
-              <div className="flex items-center justify-start gap-2 text-xs text-subtitle">
-                <div className="hidden md:flex">Minimum received </div>
-                <div> {!!zapValue ? estimatedZapDollarValue : ""}</div>
-              </div>
-            </div>
-            <ReliefCard className="flex items-center justify-center gap-2 px-2.5 py-2">
-              <TokenImage token="TAN" size={24} />
-              <div className="font-semibold">TAN</div>
-            </ReliefCard>
-          </div>
-        </PanelRaw>
-      )}
 
       <div className="mb-1 mt-4 flex w-full items-center justify-between">
         <div className="mb-1 text-lg font-semibold text-white">Position recap :</div>
@@ -171,20 +134,26 @@ export default function VsTanLockContent() {
           label="vsTan"
           newValue={computedNewLockValue}
         />
+
+        <EvolutionBox className="w-full" originalValue={currentEndLockDate} label="Unlock date" newValue={computedNewEndLockDate} />
       </div>
 
       <div className="mt-2 flex w-full items-center justify-center gap-4 rounded-[10px] p-3 text-sm text-subtitle backdrop-blur-[60px]">
-        Locking more tokens on a existing position will automatically extend the lock duration to its maximum (12weeks).
+        Locking more tokens on an existing position will automatically extend the lock duration to its maximum (13 weeks).
       </div>
+
+      {formState.errors
+        .filter((e) => e.type === "form-alert")
+        .map((error) => (
+          <FormAlert key={error.key} error={error} className="my-1" isLoading={isLoading} />
+        ))}
 
       <div className="mt-2 flex w-full justify-center">
         <FormButtons
-          actions={{
-            handleApprove: depositAsset === "TAN" ? actionApprove : actionApproveZap,
-            handleProcess: depositAsset === "TAN" ? actionLock : actionZapAndLock,
-          }}
+          actions={{ handleApprove: actionApprove, handleProcess: actionLock }}
           connect={connect}
           formState={formState}
+          isLoading={isLoading}
           labelProcess="Lock"
         />
       </div>

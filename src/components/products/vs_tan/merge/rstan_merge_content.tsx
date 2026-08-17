@@ -5,6 +5,8 @@ import { Switch } from "@/components/ui/switch"
 import { formatDate } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useVsTanContext } from "../rstan_layout_context"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
+import { isPermaLocked } from "../rstan_layout_controller"
 import { useVsTanMergeContext } from "./rstan_merge_context"
 import { LockPositionSelectTemplate } from "../../usg/usg_type"
 import { IconVsTan, IconOpenOutside } from "@/components/icons"
@@ -19,6 +21,7 @@ export const VsTanMergeContent = () => {
   const { connect } = useWalletConnexionContext()
 
   const {
+    isLoading,
     actionMerge,
     setSecondPositionToMerge,
     setFirstPositionToMerge,
@@ -30,6 +33,7 @@ export const VsTanMergeContent = () => {
     firstPositionToMergeInfo,
     secondPositionToMergeInfo,
     computedNewUnlockDate,
+    computedNewAmount,
   } = useVsTanMergeContext()
 
   const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {
@@ -145,15 +149,21 @@ export const VsTanMergeContent = () => {
               <div className="hidden w-3/12 text-subtitle sm:flex">Unlock date</div>
             </div>
 
-            <div className="my-1 flex w-full items-center justify-center gap-2 text-[16px]">
+            {/* Both rows mirror the header widths above : 1/3 - 8/12 - hidden, then 3/12 - 6/12 - 3/12 from sm */}
+            <div className="my-1 flex w-full items-center gap-2 text-[16px]">
               <div className="relative flex h-10 w-1/3 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px] sm:w-3/12">
                 #{firstPositionToMergeInfo?.tokenId}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-tonic py-0.5 text-xs text-black">Updated</div>
               </div>
 
+              {/* The surviving position ends up holding both balances */}
+              <div className="flex h-10 w-8/12 items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px] sm:w-6/12">
+                {formatBigInt(computedNewAmount, 18, 2)}
+                <IconVsTan className="h-5 w-5"></IconVsTan>
+              </div>
+
               <div className="hidden h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px] sm:flex">
-                {(firstPositionToMergeInfo?.endLockTime && firstPositionToMergeInfo?.endLockTime == "281474976710655") ||
-                (secondPositionToMergeInfo?.endLockTime && secondPositionToMergeInfo?.endLockTime == "281474976710655") ? (
+                {isPermaLocked(firstPositionToMergeInfo) || isPermaLocked(secondPositionToMergeInfo) ? (
                   <InfinityIcon className="w-5"></InfinityIcon>
                 ) : (
                   <> {formatDate(new Date(Number(computedNewUnlockDate) * 1000), "dd/MM/yyyy")}</>
@@ -161,18 +171,24 @@ export const VsTanMergeContent = () => {
               </div>
             </div>
 
-            <div className="my-1 flex w-full items-center justify-center gap-2 text-[16px]">
+            <div className="my-1 flex w-full items-center gap-2 text-[16px]">
               <div className="relative flex h-10 w-1/3 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px] sm:w-3/12">
                 #{secondPositionToMergeInfo?.tokenId}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-danger py-0.5 text-xs text-black">Deleted</div>
+              </div>
+
+              {/* Emptied into the position above, so it ends at zero */}
+              <div className="flex h-10 w-8/12 items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 font-semibold text-subtitle backdrop-blur-[60px] sm:w-6/12">
+                {formatBigInt(secondPositionToMergeInfo?.amount, 18, 2)}
+                <IconVsTan className="h-5 w-5"></IconVsTan>
+                <span className="text-sm">→ 0</span>
               </div>
 
               <div className="hidden h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px] sm:flex">-</div>
             </div>
 
             <div className="flex h-10 w-full items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px] sm:hidden">
-              {(firstPositionToMergeInfo?.endLockTime && firstPositionToMergeInfo?.endLockTime == "281474976710655") ||
-              (secondPositionToMergeInfo?.endLockTime && secondPositionToMergeInfo?.endLockTime == "281474976710655") ? (
+              {isPermaLocked(firstPositionToMergeInfo) || isPermaLocked(secondPositionToMergeInfo) ? (
                 <InfinityIcon className="w-5"></InfinityIcon>
               ) : (
                 <> Unlock Date {formatDate(new Date(Number(computedNewUnlockDate) * 1000), "dd/MM/yyyy")}</>
@@ -216,6 +232,12 @@ export const VsTanMergeContent = () => {
               Learn more <IconOpenOutside className="w-3"></IconOpenOutside>
             </span>
           </div>
+
+          {formState.errors
+            .filter((e) => e.type === "form-alert")
+            .map((error) => (
+              <FormAlert key={error.key} error={error} className="my-1" isLoading={isLoading} />
+            ))}
 
           <FormButtons connect={connect} actions={{ handleApprove: undefined, handleProcess: actionMerge }} formState={formState} labelProcess="Merge" />
         </>

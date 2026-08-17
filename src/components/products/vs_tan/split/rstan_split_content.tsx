@@ -2,6 +2,8 @@
 
 import { InputSelect } from "@/components/design_system/inputs/input_select"
 import { useVsTanContext } from "../rstan_layout_context"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
+import { isPermaLocked } from "../rstan_layout_controller"
 import { LockPositionSelectTemplate } from "../../usg/usg_type"
 import { IconVsTan } from "@/components/icons/icon_vstan"
 import { formatBigInt } from "@/lib/number_formatter"
@@ -19,6 +21,7 @@ export const VsTanSplitContent = () => {
   const { connect } = useWalletConnexionContext()
 
   const {
+    isLoading,
     splitPosition,
     splitPositionInfo,
     splitPercentage,
@@ -102,7 +105,7 @@ export const VsTanSplitContent = () => {
                     className="min-h-10 rounded-[10px] border-opacity-10 bg-transparent py-2 font-semibold focus:outline-none"
                   />
                 </div>
-                <div className="text-xs text-subtitle">($1,500)</div>
+                <div className="text-xs text-subtitle">{computedSplitAmounts?.firstSplitDollar && `(${computedSplitAmounts.firstSplitDollar})`}</div>
               </div>
               <div className="flex h-full items-end justify-end gap-3 xl:items-center xl:justify-center">
                 <div className="hidden h-full flex-col items-center justify-center md:flex">
@@ -133,7 +136,7 @@ export const VsTanSplitContent = () => {
                     className="min-h-10 rounded-[10px] border-opacity-10 bg-transparent py-2 font-semibold focus:outline-none"
                   />
                 </div>
-                <div className="text-xs text-subtitle">($1,500)</div>
+                <div className="text-xs text-subtitle">{computedSplitAmounts?.secondSplitDollar && `(${computedSplitAmounts.secondSplitDollar})`}</div>
               </div>
               <div className="flex h-full items-end justify-end gap-3 xl:items-center xl:justify-center">
                 <div className="hidden h-full flex-col items-center justify-center md:flex">
@@ -204,14 +207,20 @@ export const VsTanSplitContent = () => {
               <div className="w-3/12">Unlock date</div>
             </div>
 
-            <div className="flex w-full items-center justify-center gap-2">
-              <div className="flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px]">
+            {/* Both rows mirror the header widths above : 3/12 - 6/12 - 3/12 */}
+            <div className="flex w-full items-center gap-2">
+              <div className="relative flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px]">
                 #{splitPositionInfo?.tokenId}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-tonic py-0.5 text-xs text-black">Updated</div>
               </div>
 
+              <div className="flex h-10 w-6/12 items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px]">
+                {computedSplitAmounts?.firstSplit}
+                <IconVsTan className="h-5 w-5"></IconVsTan>
+              </div>
+
               <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px]">
-                {splitPositionInfo?.endLockTime && splitPositionInfo?.endLockTime == "281474976710655" ? (
+                {isPermaLocked(splitPositionInfo) ? (
                   <InfinityIcon className="w-5"></InfinityIcon>
                 ) : (
                   <> {formatDate(new Date(Number(splitPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")}</>
@@ -219,27 +228,19 @@ export const VsTanSplitContent = () => {
               </div>
             </div>
 
-            <div className="flex w-full items-center justify-center gap-2">
+            <div className="flex w-full items-center gap-2">
               <div className="relative flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px]">
                 #{computedNewPositionIds?.newPositionId2}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-button-active py-0.5 text-xs text-black">New</div>
               </div>
-              {/* 
-              <EvolutionBox
-                className="w-6/12"
-                originalValue={
-                  <div className="flex items-center justify-center gap-2">
-                    0 <IconVsTan className="h-5 w-5"></IconVsTan>
-                  </div>
-                }
-                newValue={
-                  <div className="flex items-center justify-center gap-2">
-                    {formatBigInt(BigInt((100 - splitPercentage) / 10) * splitPositionInfo?.amount, 19, 2)} <IconVsTan className="h-5 w-5"></IconVsTan>
-                  </div>
-                }
-              /> */}
+
+              <div className="flex h-10 w-6/12 items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px]">
+                {computedSplitAmounts?.secondSplit}
+                <IconVsTan className="h-5 w-5"></IconVsTan>
+              </div>
+
               <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px]">
-                {splitPositionInfo?.endLockTime && splitPositionInfo?.endLockTime == "281474976710655" ? (
+                {isPermaLocked(splitPositionInfo) ? (
                   <InfinityIcon className="w-5"></InfinityIcon>
                 ) : (
                   <> {formatDate(new Date(Number(splitPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")}</>
@@ -254,6 +255,12 @@ export const VsTanSplitContent = () => {
               Learn more <IconOpenOutside className="w-3"></IconOpenOutside>
             </span>
           </div>
+
+          {formState.errors
+            .filter((e) => e.type === "form-alert")
+            .map((error) => (
+              <FormAlert key={error.key} error={error} className="my-1" isLoading={isLoading} />
+            ))}
 
           <FormButtons
             actions={{

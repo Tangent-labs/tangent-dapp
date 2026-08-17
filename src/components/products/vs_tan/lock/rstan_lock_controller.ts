@@ -1,90 +1,15 @@
 import VsTan from "../../../../abi/USG/VsTAN.json"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { FormError, FormState, LockPosition, ZapMarketData } from "../../usg/usg_type"
-import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
-import { executeApprove, executeContractCall, getCurrentBlock, getPublicClient, waitForTransaction } from "@/services/service_rpc"
+import { isExpired } from "../rstan_layout_controller"
+import { FormError, FormState, LockPosition } from "../../usg/usg_type"
+import { Abi, Address, WalletClient } from "viem"
+import { executeApprove, executeContractCall, waitForTransaction } from "@/services/service_rpc"
 import { dappErrors } from "@/components/design_system/notifications/dap-errors"
-import { NATIVE_ETH_ADDRESS } from "@/data/erc20s"
+import { formatBigInt } from "@/lib/number_formatter"
 
 export async function doApprove(walletClient: WalletClient, contract: Address, spender: Address, amount: bigint) {
   const txHash = await executeApprove(walletClient, contract, spender, amount)
   return await waitForTransaction(txHash)
-}
-
-export const doZapAndIncreaseLock = async (
-  marketAddress: Address,
-  walletClient: WalletClient,
-  zapMarket: ZapMarketData,
-  zapLockData: { routerAddress: string; data: string },
-  tokenId: bigint
-) => {
-  const [account] = await walletClient.requestAddresses()
-
-  const publicClient = getPublicClient()
-
-  const estimateGasData = {
-    abi: VsTan.abi,
-    functionName: "zapIncreaseLockAmount",
-    args: [
-      tokenId,
-      {
-        tokenIn: zapMarket?.tokenIn,
-        amountIn: zapMarket?.amountIn,
-        minAmountOut: zapMarket?.minAmountOut,
-        zap: { router: zapLockData?.routerAddress, routerCall: zapLockData?.data },
-      },
-    ] as unknown[],
-    address: marketAddress,
-    account,
-    value: 0n,
-  } as EstimateContractGasParameters
-
-  if (zapMarket?.tokenIn === NATIVE_ETH_ADDRESS) {
-    estimateGasData.value = zapMarket?.amountIn
-  }
-
-  const gas = await publicClient.estimateContractGas(estimateGasData)
-  const txData = { ...estimateGasData, gas }
-  const hash = await walletClient.writeContract(txData as WriteContractParameters)
-  return await waitForTransaction(hash)
-}
-
-export const doZapAndLock = async (
-  marketAddress: Address,
-  walletClient: WalletClient,
-  zapMarket: ZapMarketData,
-  zapLockData: { routerAddress: string; data: string },
-  isPermaLock: boolean
-) => {
-  const [account] = await walletClient.requestAddresses()
-
-  const publicClient = getPublicClient()
-
-  const estimateGasData = {
-    abi: VsTan.abi,
-    functionName: "zapCreateLock",
-    args: [
-      isPermaLock,
-      {
-        tokenIn: zapMarket?.tokenIn,
-        amountIn: zapMarket?.amountIn,
-        minAmountOut: zapMarket?.minAmountOut,
-        zap: { router: zapLockData?.routerAddress, routerCall: zapLockData?.data },
-      },
-    ] as unknown[],
-    address: marketAddress,
-    account,
-    value: 0n,
-  } as EstimateContractGasParameters
-
-  if (zapMarket?.tokenIn === NATIVE_ETH_ADDRESS) {
-    estimateGasData.value = zapMarket?.amountIn
-  }
-
-  const gas = await publicClient.estimateContractGas(estimateGasData)
-  const txData = { ...estimateGasData, gas }
-  const hash = await walletClient.writeContract(txData as WriteContractParameters)
-  return await waitForTransaction(hash)
 }
 
 export const doLock = async (depositWeiValue: bigint, walletClient: WalletClient, isPermaLock: boolean) => {
@@ -111,34 +36,43 @@ export const doIncreaseLockAmount = async (tokenId: bigint, depositWeiValue: big
   return await waitForTransaction(txHash)
 }
 
-export async function getLockFormState(
+export function getLockFormState(
   lockBalanceAllowanceData: { balance: bigint; allowance: bigint },
   depositPositionInfo: LockPosition | undefined,
-  depositWeiValue: bigint,
-  depositAsset: string,
-  isWellConnected: boolean
-): Promise<FormState> {
+  depositWeiValue: bigint | undefined,
+  isWellConnected: boolean,
+  isNewPosition: boolean,
+  minLock: bigint | undefined,
+  chainTimestamp: bigint | undefined
+): FormState {
   const errors: FormError[] = []
-  const isZapMode = depositAsset !== "TAN"
-
-  const currentBlock = await getCurrentBlock()
-
-  const isApproved =
-    (!isZapMode && (depositWeiValue || 0n) <= (lockBalanceAllowanceData?.allowance || 0n)) ||
-    (isZapMode && (depositWeiValue || 0n) <= (lockBalanceAllowanceData?.allowance || 0n))
 
   if (!isWellConnected) {
-    errors.push(dappErrors["no-wallet"])
-  } else {
-    if (!depositWeiValue || depositWeiValue === 0n) {
-      errors.push(dappErrors["empty-form"])
-    } else if (lockBalanceAllowanceData?.balance < depositWeiValue) {
-      errors.push(dappErrors["balance"])
-    }
-    if (!!depositPositionInfo?.endLockTime && currentBlock.timestamp > Number(depositPositionInfo?.endLockTime)) {
-      errors.push(dappErrors["lock-expired"])
-    }
+    return { canProcess: false, errors: [dappErrors["no-wallet"]], haveToApprove: false }
   }
 
-  return { canProcess: errors.length === 0, errors, haveToApprove: !isApproved }
+  // TAN is approved against the vsTAN contract, which pulls it on createLock / increaseLockAmount
+  const isApproved = (depositWeiValue || 0n) <= (lockBalanceAllowanceData?.allowance || 0n)
+
+  // Nothing typed yet : not an error to show the user, just nothing to process
+  if (!depositWeiValue || depositWeiValue === 0n) {
+    return { canProcess: false, errors: [], haveToApprove: !isApproved }
+  }
+
+  if ((lockBalanceAllowanceData?.balance || 0n) < depositWeiValue) {
+    errors.push(dappErrors["balance"])
+  }
+
+  // createLock reverts with MinLockAmountNotReached below the minimum. increaseLockAmount doesn't
+  // enforce it, so topping up an existing position with any amount is fine.
+  if (isNewPosition && !!minLock && depositWeiValue < minLock) {
+    errors.push({ ...dappErrors["min-lock"], subtitle: `A new position requires at least ${formatBigInt(minLock, 18, 2)} TAN.` })
+  }
+
+  // Topping up a position that already unlocked : it has to be withdrawn instead
+  if (isExpired(depositPositionInfo, chainTimestamp)) {
+    errors.push(dappErrors["lock-expired"])
+  }
+
+  return { canProcess: errors.length === 0 && isApproved, errors, haveToApprove: !isApproved }
 }

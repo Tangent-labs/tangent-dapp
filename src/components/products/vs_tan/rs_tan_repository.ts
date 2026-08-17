@@ -8,6 +8,15 @@ if (!addresses) {
 
 const envAddresses = JSON.parse(addresses)
 
+// MAX_UINT48 : endLockTime the contract writes on a perma locked position
+export const PERMA_LOCK_END_TIME = "281474976710655"
+
+// Locks are aligned on 7 day epochs, for a maximum duration of 13 of them. Locking mid epoch
+// therefore gives 12 weeks plus 1 to 7 days.
+export const EPOCH_DURATION = 604800n
+
+export const LOCK_DURATION_IN_EPOCHS = 13n
+
 export const VSTAN_CONTRACT = {
   ZAPPER: envAddresses.utilities.zappingProxy as Address,
   TAN: envAddresses.tokens.TAN as Address,

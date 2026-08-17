@@ -1,21 +1,20 @@
 "use client"
 
-import { toast } from "react-toastify"
-import { formatUnits, parseEther } from "viem"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { getCurrentBlock } from "@/services/service_rpc"
 import { useVsTanContext } from "../rstan_layout_context"
+import { isPermaLocked } from "../rstan_layout_controller"
+import { useNextEndLockTime } from "../use_next_end_lock_time"
 import { FormState, LockPosition } from "../../usg/usg_type"
-import { ToastComponent } from "@/components/design_system/toast"
-import { formatBigInt, formatDollar } from "@/lib/number_formatter"
-import { getQuote, getRoute } from "../../usg/global_quote_controller"
-import { useRootContext } from "@/components/products/root/root_context"
-import { AssetDataPriced, CollateralInfo } from "@/types"
+import { toastTx } from "@/components/design_system/toast"
+import { matchBlockChainErrors } from "../../usg/record/usg_record_controller"
+import { formatDate } from "@/lib/other_formatter"
+import { formatBigInt } from "@/lib/number_formatter"
+import { AssetDataPriced } from "@/types"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { computedMinAmountOut, computeSwapAssetPrice } from "../../usg/record/usg_record_controller"
-import { doApprove, doIncreaseLockAmount, doLock, doZapAndIncreaseLock, doZapAndLock, getLockFormState } from "./rstan_lock_controller"
-import { Erc20Details, ERC20S, NATIVE_ETH_ADDRESS } from "@/data/erc20s"
+import { doApprove, doIncreaseLockAmount, doLock, getLockFormState } from "./rstan_lock_controller"
+import { useMinLock } from "../use_min_lock"
+import { TAN_PRICE_DECIMALS } from "../tan_price"
 
 type VsTanLockContextProps = {
   children: ReactNode
@@ -38,447 +37,191 @@ type VsTanLockContextValues = {
 
   actionApprove: () => void
 
-  actionApproveZap: () => void
-
   actionLock: () => void
-
-  actionZapAndLock: () => void
 
   formState: FormState
 
   computedNewLockValue: string
 
-  computedNewEndLockTime: string | null
+  currentEndLockDate: string
 
-  depositAsset: string | undefined
-  setDepositAsset: (arg: string) => void
-
-  isZapLoading: boolean
-  setIsZapLoading: (arg: boolean) => void
-
-  zapValue: bigint | undefined
-  setZapValue: (arg: bigint) => void
-
-  zapInnerValue: number | undefined
-
-  handleZapInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  computedNewEndLockDate: string
 
   handleDepositChange: (arg: bigint | undefined) => void
 
-  isZapUserInput: boolean
-  setIsZapUserInput: (arg: boolean) => void
-
-  estimatedZapDollarValue: string
-
-  depositAssetInfo: AssetDataPriced | CollateralInfo
+  depositAssetInfo: AssetDataPriced
 
   maxAmountToDeposit: string
 
   maxDepositWeiValue: bigint
-
-  slippage: number
-  setSlippage: (arg: number) => void
 }
 
 export const VsTanLockContext = createContext<VsTanLockContextValues | undefined>(undefined)
 
-export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
-  const { curveRoutes, handleQuote } = useRootContext()
+const toastErrorMapper = (err: unknown) => {
+  const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+  return { type: "Error" as const, content: error || "Unable to proceed with the transaction." }
+}
 
+export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
   const { walletClient, isWellConnected, currentAddress } = useWalletConnexionContext()
 
-  const { loadData, lockData, fetchBalanceAllowanceData, balanceAllowanceData } = useVsTanContext()
+  const { loadData, lockData } = useVsTanContext()
+
+  const { nextEndLockTime, chainTimestamp } = useNextEndLockTime(lockData)
+
+  const minLock = useMinLock()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [formState, setFormState] = useState<FormState>({ canProcess: false, errors: [], haveToApprove: false })
-
   const [isPermaLock, setIsPermaLock] = useState<boolean>(false)
-
-  const [computedNewEndLockTime, setComputedNewEndLockTime] = useState<string | null>(null)
 
   const [depositWeiValue, setDepositWeiValue] = useState<bigint | undefined>()
 
-  const [swapAssetPrice, setSwapAssetPrice] = useState<number>(0)
-
-  const [slippage, setSlippage] = useState<number>(0.2)
-
   const [depositPosition, setDepositPosition] = useState<string>("New")
-
-  const [depositAsset, setDepositAsset] = useState<string>("TAN")
-
-  const [isZapLoading, setIsZapLoading] = useState(false)
-
-  const [zapValue, setZapValue] = useState<bigint | undefined>()
-
-  const [zapInnerValue, setZapInnerValue] = useState<number | undefined>(zapValue !== undefined ? Number(formatUnits(zapValue || BigInt(0), 18)) : undefined)
-
-  const [isZapUserInput, setIsZapUserInput] = useState<boolean>(false)
 
   const depositPositionInfo = useMemo(() => {
     if (depositPosition === "New") {
       return { amount: 0n, claimable: 0n, endLockTime: "", tokenId: 0n }
     }
 
-    const pos = lockData?.positions.find((position) => position?.tokenId.toString() === depositPosition)
-    setIsPermaLock(false)
+    return lockData?.positions.find((position) => position?.tokenId.toString() === depositPosition)
+  }, [depositPosition, lockData])
 
-    return pos
+  // The perma lock switch only drives the creation of a new position : an existing one is toggled from the positions list
+  useEffect(() => {
+    if (depositPosition !== "New") {
+      setIsPermaLock(false)
+    }
   }, [depositPosition])
 
-  const depositAssetInfo = useMemo<AssetDataPriced | CollateralInfo>(() => {
-    if (depositAsset === "ETH") {
-      return {
-        address: NATIVE_ETH_ADDRESS,
-        decimals: 18,
-        displayDecimals: 5,
-        symbol: "ETH",
-        name: "ETH",
-        price: swapAssetPrice,
-      }
-    }
+  // Locking only ever takes TAN
+  const depositAssetInfo = useMemo<AssetDataPriced>(
+    () => ({
+      symbol: "TAN",
+      name: "TAN",
+      decimals: 18,
+      address: VSTAN_CONTRACT?.TAN,
+      displayDecimals: 5,
+      price: Number(formatBigInt(lockData?.tanPrice, TAN_PRICE_DECIMALS, 6)),
+    }),
+    [lockData]
+  )
 
-    if (depositAsset === "TAN") {
-      return {
-        symbol: "TAN",
-        name: "TAN",
-        value: "TAN",
-        decimals: 18,
-        address: VSTAN_CONTRACT?.TAN,
-        logo: "TAN",
-        displayDecimals: 5,
-        // TODO : update to formatBigInt(lockData?.tanPrice, 18, 6)
-        price: Number(formatBigInt(lockData?.tanPrice, 13, 6)),
-      }
-    }
-
-    const assetInfo = ERC20S.find((el: Erc20Details) => el.name === depositAsset || el.symbol === depositAsset) || undefined
-
-    if (!swapAssetPrice || !assetInfo)
-      return {
-        symbol: "TAN",
-        name: "TAN",
-        value: "TAN",
-        decimals: 18,
-        address: VSTAN_CONTRACT?.TAN,
-        logo: "TAN",
-        displayDecimals: 5,
-        // TODO : update to formatBigInt(lockData?.tanPrice, 18, 6)
-        price: Number(formatBigInt(lockData?.tanPrice, 13, 6)),
-      }
-
-    const asset: AssetDataPriced = {
-      address: assetInfo?.address,
-      decimals: assetInfo?.decimals,
-      displayDecimals: 2,
-      symbol: assetInfo?.symbol,
-      name: assetInfo?.name,
-      price: swapAssetPrice,
-    }
-
-    return asset
-  }, [depositAsset, swapAssetPrice, lockData])
-
-  const actionApproveZap = async () => {
-    setIsLoading(true)
-
-    if (walletClient && depositWeiValue) {
-      await doApprove(walletClient, depositAssetInfo?.address, VSTAN_CONTRACT.VSTAN, depositWeiValue)
-        .then(() => {
-          fetchBalanceAllowanceData(depositAssetInfo?.address)
-          setIsLoading(false)
-        })
-        .catch((error) => {
-          console.error("Error during approval:", error)
-          setIsLoading(false)
-        })
-    }
-  }
-
-  const actionApprove = () => {
-    setIsLoading(true)
-
-    if (walletClient && depositWeiValue)
-      doApprove(walletClient, VSTAN_CONTRACT.TAN, VSTAN_CONTRACT.VSTAN, depositWeiValue)
-        .then(() => {
-          loadData()
-          setIsLoading(false)
-        })
-        .catch((error) => {
-          console.error("Error during approval:", error)
-          setIsLoading(false)
-        })
-  }
-
-  const actionZapAndLock = async () => {
-    if (!zapValue || !depositWeiValue) return
+  const actionApprove = async () => {
+    if (isLoading || !walletClient || !depositWeiValue) return
 
     setIsLoading(true)
 
-    if (walletClient) {
-      const zapMarketData = {
-        tokenIn: depositAssetInfo?.address,
-        amountIn: depositWeiValue,
-        minAmountOut: computedMinAmountOut(zapValue, slippage),
-      }
+    try {
+      await toastTx(doApprove(walletClient, VSTAN_CONTRACT.TAN, VSTAN_CONTRACT.VSTAN, depositWeiValue), {
+        pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
+        success: () => ({ type: "Success", content: "TAN approved successfully." }),
+        error: toastErrorMapper,
+      })
 
-      const zapAndLockData = await getRoute(
-        depositAssetInfo?.address,
-        VSTAN_CONTRACT.TAN,
-        depositWeiValue,
-        computedMinAmountOut(zapValue, slippage),
-        VSTAN_CONTRACT.VSTAN,
-        currentAddress!,
-        curveRoutes
-      )
-
-      if (depositPositionInfo && depositPositionInfo?.tokenId !== 0n) {
-        doZapAndIncreaseLock(VSTAN_CONTRACT?.VSTAN, walletClient!, zapMarketData, zapAndLockData!, depositPositionInfo?.tokenId)
-          .then(() => {
-            loadData()
-            setIsLoading(false)
-            setDepositWeiValue(undefined)
-            setZapValue(undefined)
-            setZapInnerValue(0)
-            toast.success(ToastComponent, { data: { type: "Success", content: "Successfully increased lock position." } })
-          })
-          .catch(() => {
-            setIsLoading(false)
-          })
-      } else {
-        doZapAndLock(VSTAN_CONTRACT?.VSTAN, walletClient!, zapMarketData, zapAndLockData!, isPermaLock)
-          .then(() => {
-            loadData()
-            setIsLoading(false)
-            setDepositWeiValue(undefined)
-            setZapValue(undefined)
-            setZapInnerValue(0)
-            toast.success(ToastComponent, { data: { type: "Success", content: "Successfully created lock position." } })
-          })
-          .catch(() => {
-            setIsLoading(false)
-          })
-      }
-    } else {
+      loadData()
+    } catch {
+      // toastTx already surfaced the failure
+    } finally {
       setIsLoading(false)
     }
   }
 
   const actionLock = async () => {
+    if (isLoading || !walletClient || !depositWeiValue) return
+
+    const isIncrease = !!depositPositionInfo && depositPositionInfo?.tokenId !== 0n
+
     setIsLoading(true)
 
-    if (walletClient && depositWeiValue) {
-      if (depositPositionInfo && depositPositionInfo?.tokenId !== 0n) {
-        await doIncreaseLockAmount(depositPositionInfo?.tokenId, depositWeiValue, walletClient)
-        loadData()
-        setIsLoading(false)
-        toast.success(ToastComponent, { data: { type: "Success", content: "Successfully increased lock position." } })
-      } else {
-        await doLock(depositWeiValue, walletClient, isPermaLock)
-        loadData()
-        setIsLoading(false)
-        toast.success(ToastComponent, { data: { type: "Success", content: "Successfully created lock position." } })
-        setDepositWeiValue(undefined)
-      }
-    } else {
+    try {
+      await toastTx(
+        isIncrease ? doIncreaseLockAmount(depositPositionInfo!.tokenId, depositWeiValue, walletClient) : doLock(depositWeiValue, walletClient, isPermaLock),
+        {
+          pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+          success: () => ({
+            type: "Success",
+            content: isIncrease ? "Successfully increased lock position." : "Successfully created lock position.",
+          }),
+          error: toastErrorMapper,
+        }
+      )
+
+      loadData()
+      setDepositWeiValue(undefined)
+    } catch {
+      // toastTx already surfaced the failure
+    } finally {
       setIsLoading(false)
     }
   }
 
   const lockBalanceAllowanceData = useMemo(() => {
-    if (!!lockData && depositAsset === "TAN") {
-      return { balance: lockData?.balance, allowance: lockData?.allowance }
-    } else if (!!balanceAllowanceData && depositAsset !== "TAN") {
-      return { balance: balanceAllowanceData?.balance, allowance: balanceAllowanceData?.allowances[0]?.allowance }
-    }
-    return { balance: 0n, allowance: 0n }
-  }, [lockData, balanceAllowanceData, depositAsset])
+    if (!lockData) return { balance: 0n, allowance: 0n }
 
-  // Balance of the currently selected asset : drives the slider and the max button
+    return { balance: lockData?.balance, allowance: lockData?.allowance }
+  }, [lockData])
+
+  // TAN balance : drives the slider and the max button
   const maxDepositWeiValue = useMemo(() => lockBalanceAllowanceData?.balance ?? 0n, [lockBalanceAllowanceData])
 
-  useEffect(() => {
-    const computeFormState = async () => {
-      if (!lockData || !depositWeiValue) {
-        setFormState({ canProcess: false, errors: [], haveToApprove: false })
-      } else {
-        getLockFormState(lockBalanceAllowanceData, depositPositionInfo, depositWeiValue, depositAsset, isWellConnected).then((d) => {
-          setFormState(d)
-        })
-      }
-    }
-
-    if (depositPositionInfo) {
-      computeFormState()
-    }
-  }, [depositWeiValue, isWellConnected, lockBalanceAllowanceData, depositPositionInfo])
+  const formState = useMemo<FormState>(
+    () => getLockFormState(lockBalanceAllowanceData, depositPositionInfo, depositWeiValue, isWellConnected, depositPosition === "New", minLock, chainTimestamp),
+    [lockBalanceAllowanceData, depositPositionInfo, depositWeiValue, isWellConnected, depositPosition, minLock, chainTimestamp]
+  )
 
   const computedNewLockValue = useMemo(() => {
     const baseValue = depositPositionInfo?.amount ? depositPositionInfo?.amount : 0n
 
-    const addedValue = depositAsset !== "TAN" && !!zapValue ? zapValue : depositWeiValue || 0n
+    return formatBigInt((depositWeiValue || 0n) + baseValue, 18, 2)
+  }, [depositPositionInfo, depositWeiValue])
 
-    return formatBigInt(addedValue + baseValue, 18, 2)
-  }, [depositPositionInfo, depositWeiValue, depositAsset, zapValue])
+  // A new position is perma locked through the form switch, an existing one through its own endLockTime
+  const isTargetPermaLocked = useMemo(() => {
+    if (depositPosition === "New") return isPermaLock
+
+    return isPermaLocked(depositPositionInfo)
+  }, [depositPosition, isPermaLock, depositPositionInfo])
+
+  // Date a lock created or extended right now would unlock on
+  const prospectiveEndLockDate = useMemo(() => {
+    // Perma locked positions never unlock, and increaseLockAmount doesn't lift the perma lock
+    if (isTargetPermaLocked) return "∞"
+
+    if (!nextEndLockTime) return "-"
+
+    return formatDate(new Date(Number(nextEndLockTime) * 1000), "dd/MM/yyyy")
+  }, [isTargetPermaLocked, nextEndLockTime])
+
+  const currentEndLockDate = useMemo(() => {
+    // A new position has no unlock date to evolve from : show the one it would get instead of an empty value
+    if (!depositPositionInfo?.endLockTime) return prospectiveEndLockDate
+
+    if (isPermaLocked(depositPositionInfo)) return "∞"
+
+    return formatDate(new Date(Number(depositPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")
+  }, [depositPositionInfo, prospectiveEndLockDate])
+
+  const computedNewEndLockDate = useMemo(() => {
+    // Without a deposit nothing gets locked, so the unlock date doesn't move
+    if (!depositWeiValue) return currentEndLockDate
+
+    // Both createLock and increaseLockAmount reset the lock to its full duration
+    return prospectiveEndLockDate
+  }, [depositWeiValue, prospectiveEndLockDate, currentEndLockDate])
 
   const handleDepositChange = (value: bigint | undefined) => {
     setDepositWeiValue(value)
-
-    const fetchZapValue = async () => {
-      if (!value || !currentAddress) return
-
-      setIsZapLoading(true)
-      try {
-        const { quote, priceImpact: pI } = await getQuote(value, currentAddress, VSTAN_CONTRACT?.TAN, depositAssetInfo?.address, curveRoutes)
-
-        const { validQuote, validPriceImpact } = handleQuote(quote, pI)
-
-        if (validPriceImpact >= 0 && validQuote) {
-          setZapValue(validQuote)
-        }
-      } catch (error) {
-        console.error("Error fetching zap value:", error)
-      } finally {
-        setIsZapLoading(false)
-      }
-    }
-
-    if (!!depositAsset && depositAsset !== "TAN") {
-      fetchZapValue()
-    }
   }
-
-  const handleZapChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setZapValue(parseEther(e?.target?.value))
-
-    if (e?.target?.value === "") {
-      setDepositWeiValue(undefined)
-      return
-    }
-
-    const debounceTimeout = setTimeout(async () => {
-      if (!parseEther(e?.target?.value) || !currentAddress) return
-      setIsZapLoading(true)
-
-      try {
-        const { quote, priceImpact: pI } = await getQuote(
-          parseEther(e?.target?.value),
-          currentAddress,
-          depositAssetInfo?.address,
-          VSTAN_CONTRACT?.TAN,
-
-          curveRoutes
-        )
-
-        const { validQuote, validPriceImpact } = handleQuote(quote, pI)
-
-        if (validPriceImpact >= 0 && validQuote) {
-          setDepositWeiValue(validQuote)
-        }
-      } catch (error) {
-        console.error("Error fetching depositWeiValue:", error)
-      } finally {
-        setIsZapLoading(false)
-      }
-    }, 500)
-
-    return () => clearTimeout(debounceTimeout)
-  }
-
-  useEffect(() => {
-    const computeEndLockTime = async () => {
-      const currentBlock = await getCurrentBlock()
-
-      const weekId = currentBlock.timestamp / 604800n
-      const adjustedTime = (weekId + 13n) * 604800n
-
-      setComputedNewEndLockTime(adjustedTime.toString())
-    }
-
-    if (depositPositionInfo) {
-      computeEndLockTime()
-    }
-  }, [depositPositionInfo, depositWeiValue])
-
-  const handleZapInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value ? Number(e.target.value) : undefined
-    setZapInnerValue(value)
-    setIsZapUserInput(true)
-  }
-
-  useEffect(() => {
-    if (zapValue !== undefined) {
-      const updatedValue = Number(Number(formatUnits(zapValue || 0n, 18)).toFixed(3))
-      setZapInnerValue(updatedValue)
-      setIsZapUserInput(false)
-    } else {
-      setZapInnerValue(undefined)
-    }
-  }, [zapValue])
-
-  useEffect(() => {
-    if (zapInnerValue === undefined) {
-      setDepositWeiValue(undefined)
-      setZapValue(undefined)
-      return
-    }
-
-    if (!isZapUserInput) return
-
-    const handler = setTimeout(() => {
-      handleZapChange({ target: { value: zapInnerValue.toString() } } as React.ChangeEvent<HTMLInputElement>)
-    }, 500)
-
-    return () => clearTimeout(handler)
-  }, [zapInnerValue, isZapUserInput])
-
-  useEffect(() => {
-    if (!depositAsset) return
-
-    const fetchSwapAssetData = async () => {
-      setIsZapLoading(true)
-      try {
-        // TODO 1 hardcoded, to fix
-        const data = await computeSwapAssetPrice(depositAsset, 1n, 1n)
-
-        setSwapAssetPrice(data || 0)
-      } catch (error) {
-        console.error("Error fetching Enso data:", error)
-      } finally {
-        setIsZapLoading(false)
-      }
-    }
-
-    fetchSwapAssetData()
-  }, [depositAsset])
-
-  const estimatedZapDollarValue = useMemo(() => {
-    if (zapValue && lockData) {
-      const result = `~(${formatDollar(formatUnits((BigInt(zapValue) * lockData?.tanPrice) / BigInt(10 ** 13), 18))})` // TODO update to BigInt(10 ** 18)
-      return result
-    }
-
-    return ""
-  }, [zapValue])
 
   const maxAmountToDeposit = useMemo(() => {
     if (lockData && currentAddress) {
-      const amount = depositAsset === "TAN" ? lockData?.balance : balanceAllowanceData?.balance
-
-      return `Max : ${formatBigInt(amount, depositAssetInfo?.decimals, 2)} ${depositAssetInfo?.symbol}`
+      // Same source as the slider and the max button, so the label can't disagree with them
+      return `Max : ${formatBigInt(maxDepositWeiValue, depositAssetInfo?.decimals, 2)} ${depositAssetInfo?.symbol}`
     }
     return ""
-  }, [depositAssetInfo, lockData, balanceAllowanceData, currentAddress])
-
-  useEffect(() => {
-    if (depositAssetInfo) {
-      fetchBalanceAllowanceData(depositAssetInfo?.address)
-    }
-
-    if (depositAsset !== depositAssetInfo?.symbol) {
-      setDepositWeiValue(undefined)
-    }
-  }, [depositAssetInfo])
+  }, [depositAssetInfo, lockData, maxDepositWeiValue, currentAddress])
 
   const contextValue: VsTanLockContextValues = {
     isLoading,
@@ -489,31 +232,17 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
     depositPosition,
     setDepositPosition,
     actionApprove,
-    actionApproveZap,
     actionLock,
-    actionZapAndLock,
     formState,
     computedNewLockValue,
-    computedNewEndLockTime,
+    currentEndLockDate,
+    computedNewEndLockDate,
     setIsPermaLock,
     isPermaLock,
-    depositAsset,
-    setDepositAsset,
-    isZapLoading,
-    setIsZapLoading,
-    zapInnerValue,
-    zapValue,
-    setZapValue,
-    handleZapInputChange,
-    isZapUserInput,
-    setIsZapUserInput,
-    estimatedZapDollarValue,
     handleDepositChange,
     depositAssetInfo,
     maxAmountToDeposit,
     maxDepositWeiValue,
-    slippage,
-    setSlippage,
   }
 
   return <VsTanLockContext.Provider value={contextValue}>{children}</VsTanLockContext.Provider>

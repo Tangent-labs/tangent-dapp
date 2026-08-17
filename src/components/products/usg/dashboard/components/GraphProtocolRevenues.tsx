@@ -11,6 +11,7 @@ import { formatPeriodLabel, formatYAxis, computeYAxisTicks } from "../dashboard_
 
 type GraphProtocolRevenuesProps = {
   protocolRevenues: ProtocolRevenue[]
+  totalProtocolRevenues: number
   selectedRevenueTab: RevenueRange
   fetchRevenues: (range: RevenueRange) => void
 }
@@ -20,10 +21,8 @@ const REVENUE_RANGE_TABS: { label: string; range: RevenueRange }[] = [
   { label: "1m", range: "month" },
 ]
 
-export const GraphProtocolRevenues = ({ protocolRevenues, selectedRevenueTab, fetchRevenues }: GraphProtocolRevenuesProps) => {
+export const GraphProtocolRevenues = ({ protocolRevenues, totalProtocolRevenues, selectedRevenueTab, fetchRevenues }: GraphProtocolRevenuesProps) => {
   const { ticks, axisMax } = useMemo(() => computeYAxisTicks(Math.max(0, ...protocolRevenues.map((el) => el?.total ?? 0))), [protocolRevenues])
-
-  const totalRevenues = useMemo(() => protocolRevenues.reduce((sum, el) => sum + (el?.total ?? 0), 0), [protocolRevenues])
 
   return (
     <ReliefCard className="flex w-full flex-col items-start justify-start p-5">
@@ -47,7 +46,7 @@ export const GraphProtocolRevenues = ({ protocolRevenues, selectedRevenueTab, fe
 
       <div className="mb-4 flex items-center justify-start gap-1 text-xs">
         <div className="text-subtitle">Total: </div>
-        <div className="font-semibold text-white">{formatDollar(totalRevenues, 0)}</div>
+        <div className="font-semibold text-white">{formatDollar(totalProtocolRevenues, 0)}</div>
       </div>
 
       <div className="w-full pr-12">

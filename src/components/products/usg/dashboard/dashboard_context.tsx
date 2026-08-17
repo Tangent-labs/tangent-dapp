@@ -27,6 +27,9 @@ type USGDashboardContextValues = {
 
   protocolRevenues: ProtocolRevenue[]
 
+  /** All-time protocol revenues — served by the API, not derived from the displayed buckets */
+  totalProtocolRevenues: number
+
   selectedRevenueTab: RevenueRange
 
   fetchRevenues: (range: RevenueRange) => void
@@ -39,13 +42,16 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
 
   const [protocolRevenues, setProtocolRevenues] = useState<ProtocolRevenue[]>([])
 
+  const [totalProtocolRevenues, setTotalProtocolRevenues] = useState<number>(0)
+
   const [selectedRevenueTab, setSelectedRevenueTab] = useState<RevenueRange>("week")
 
   const fetchRevenues = async (range: RevenueRange) => {
     setSelectedRevenueTab(range)
 
-    const revenues = await fetchProtocolRevenues(range)
+    const { total, revenues } = await fetchProtocolRevenues(range)
     setProtocolRevenues(revenues)
+    setTotalProtocolRevenues(total)
   }
 
   useEffect(() => {
@@ -66,6 +72,7 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
     marketDebtMaxValue,
     marketTVLMaxValue,
     protocolRevenues,
+    totalProtocolRevenues,
     selectedRevenueTab,
     fetchRevenues,
   }

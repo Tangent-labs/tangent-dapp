@@ -9,7 +9,7 @@ import { GraphProtocolRevenues } from "./components/GraphProtocolRevenues"
 import { GraphCollateralsAndDebts } from "./components/GraphCollateralsAndDebts"
 
 export const USGDashboardContent = () => {
-  const { userData, marketTVLMaxValue, selectedRevenueTab, protocolRevenues, fetchRevenues } = useUSGDashboardContext()
+  const { userData, marketTVLMaxValue, selectedRevenueTab, protocolRevenues, totalProtocolRevenues, fetchRevenues } = useUSGDashboardContext()
 
   const {
     tvl,
@@ -69,7 +69,12 @@ export const USGDashboardContent = () => {
         {userData && <GraphCollateralsAndDebts userData={userData} marketTVLMaxValue={marketTVLMaxValue} />}
 
         {/* PROTOCOL REVENUES */}
-        <GraphProtocolRevenues protocolRevenues={protocolRevenues} selectedRevenueTab={selectedRevenueTab} fetchRevenues={fetchRevenues} />
+        <GraphProtocolRevenues
+          protocolRevenues={protocolRevenues}
+          totalProtocolRevenues={totalProtocolRevenues}
+          selectedRevenueTab={selectedRevenueTab}
+          fetchRevenues={fetchRevenues}
+        />
       </div>
     </div>
   )

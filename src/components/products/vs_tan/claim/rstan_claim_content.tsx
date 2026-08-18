@@ -49,7 +49,7 @@ export const VsTanClaimContent = () => {
 
   return (
     <div className="flex w-full flex-col items-start justify-start">
-      <div className="mb-1 text-lg font-semibold text-white">Select position(s) :</div>
+      <div className="mb-1 text-xl font-semibold text-white">Select position(s) :</div>
 
       <MultiPositionSelect
         template={AssetSelectTemplate}
@@ -96,9 +96,9 @@ export const VsTanClaimContent = () => {
       <div className="flex w-full flex-col items-center justify-around gap-2 rounded-[10px] p-3 backdrop-blur-[10px]">
         <div className="flex w-full flex-col items-start justify-start">
           <div className="flex w-full items-start justify-start">
-            <div className="flex w-1/2 items-start justify-start text-subtitle">Position ID</div>
+            <div className="flex w-1/2 items-start justify-start text-[15px] text-subtitle">Position ID</div>
 
-            <div className="flex w-1/2 items-start justify-start text-subtitle"> {claimAsSUSG ? "sUSG" : "USG"} received</div>
+            <div className="flex w-1/2 items-start justify-start text-[15px] text-subtitle"> {claimAsSUSG ? "sUSG" : "USG"} received</div>
           </div>
 
           {selectedPositionsData.map((position: LockPosition, index: number) => (

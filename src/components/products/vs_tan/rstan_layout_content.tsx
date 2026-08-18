@@ -24,6 +24,7 @@ import { VsTanFeatureTabs } from "./vs_tan_features_tabs/vs_tan_features_tabs"
 import { USGHoverCard } from "@/components/design_system/structure/usg_hover_card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
+import { PageHeader } from "@/components/design_system/structure/page_header"
 
 const listeState: ListState = {
   search: undefined,
@@ -60,23 +61,18 @@ export const VsTanLayoutContent = ({
 
   return (
     <>
-      <div className="flex items-stretch justify-between gap-5">
-        <div className="hidden w-1/2 rounded-[10px] bg-panel-title-gradient xl:flex">
-          <div className="flex items-center justify-center">
-            <Image height={360} width={360} src={`/medias/tokens/vsTAN.png`} alt="token" />
-          </div>
+      <div className="flex w-full items-stretch justify-between gap-5">
+        <PageHeader>
+          <Image height={140} width={140} src={`/medias/tokens/vsTAN.png`} alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
           <div className="flex flex-col items-start justify-center gap-3 px-6">
-            <span className="mt-1 text-5xl font-semibold">Lock TAN</span>
-
-            <span className="text-xs">
+            <span className="text-4xl font-semibold">Lock TAN</span>
+            <p className="text-xs">
               Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT
               stable pool & CVX stable pool).
-            </span>
-            <span className="text-xs">
-              Rewards are distributed weekly, at the beginning of each epoch. Staking positions are represented by NFTs. Learn more
-            </span>
+            </p>
+            <p className="text-xs">Rewards are distributed weekly, at the beginning of each epoch. Staking positions are represented by NFTs. Learn more</p>
           </div>
-        </div>
+        </PageHeader>
 
         <div className="flex h-auto w-full flex-col items-center justify-between gap-3 xl:w-1/2">
           <PointsCampaignLiveCard></PointsCampaignLiveCard>
@@ -176,15 +172,19 @@ function LockPositionList() {
               </div>
 
               <>
-                <div className="flex w-1/3 items-center justify-center text-lg font-semibold">
+                <div className="flex w-1/2 items-center justify-center text-sm font-semibold sm:text-lg xl:w-1/3">
                   {formatBigInt(lockPosition?.claimable, 18, 2)}
                   <TokenImage token="USG" className="ml-1" size={16} />
                 </div>
-                <div className="flex w-1/3 items-center justify-center text-lg font-semibold">
+                <div className="flex w-1/2 items-center justify-center whitespace-nowrap text-sm font-semibold sm:text-lg xl:w-1/3">
                   {isPermaLocked(lockPosition) ? (
                     <InfinityIcon className="w-5"></InfinityIcon>
                   ) : (
-                    <> {formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd/MM/yyyy")}</>
+                    <>
+                      {/* Two-digit year on small screens : the date is the widest cell and was clipping */}
+                      <span className="sm:hidden">{formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd/MM/yy")}</span>
+                      <span className="hidden sm:inline">{formatDate(new Date(Number(lockPosition?.endLockTime) * 1000), "dd/MM/yyyy")}</span>
+                    </>
                   )}
                 </div>
                 <div className="hidden w-3/12 items-center justify-center text-lg font-semibold xl:flex">
@@ -194,12 +194,13 @@ function LockPositionList() {
             </ListRow>
 
             {lockPosition == selectedPosition && (
-              <div className="slide-down-fade-in flex w-full items-center justify-between gap-3 rounded-b-lg bg-overlay-panel p-3">
-                <div className="flex shrink-0 items-center justify-start gap-3">
+              <div className="slide-down-fade-in flex w-full flex-wrap items-center justify-between gap-3 rounded-b-lg bg-overlay-panel p-3">
+                {/* Full width on mobile so the toggle and the button wrap onto their own row */}
+                <div className="flex w-full items-center justify-start gap-3 sm:w-auto sm:shrink-0">
                   <div className="hidden text-sm text-subtitle md:flex">Unlock date</div>
 
                   <EvolutionBox
-                    className="flex w-[232px] justify-center"
+                    className="flex w-full justify-center sm:w-[232px]"
                     originalValue={currentUnlockDate(lockPosition)}
                     newValue={extendedUnlockDate(lockPosition, extendToPermaLock, nextEndLockTime)}
                   />
@@ -214,7 +215,7 @@ function LockPositionList() {
                 ) : (
                   <>
                     <div className="flex w-fit items-center justify-center gap-1">
-                      <div className="text-xs font-semibold text-subtitle">Perma lock</div>
+                      <div className="whitespace-nowrap text-xs font-semibold text-subtitle">Perma lock</div>
 
                       <USGHoverCard iconClassName="h-auto w-[14px] text-white" title="">
                         Lock your tokens in perpetuity. You can remove the perma lock option at any time.

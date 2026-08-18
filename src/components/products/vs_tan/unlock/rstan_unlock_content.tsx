@@ -91,7 +91,7 @@ export const VsTanUnlockContent = () => {
 
   return (
     <div className="flex w-full flex-col items-start justify-start">
-      <div className="mb-1 text-lg font-semibold text-white">Select position :</div>
+      <div className="mb-1 text-xl font-semibold text-white">Select position :</div>
 
       <PositionSelect />
 
@@ -106,7 +106,7 @@ export const VsTanUnlockContent = () => {
 
           <div className="flex w-full items-center justify-around gap-2 rounded-[10px] p-3 backdrop-blur-[60px]">
             <div className="flex w-full flex-col items-start justify-start">
-              <div className="text-subtitle">TAN received</div>
+              <div className="text-[15px] text-subtitle">TAN received</div>
 
               {unlockPositionInfo && unlockPositionInfo?.amount ? (
                 <div className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 font-semibold text-tonic backdrop-blur-[60px]">
@@ -120,7 +120,7 @@ export const VsTanUnlockContent = () => {
             </div>
 
             <div className="flex w-full flex-col items-start justify-start">
-              <div className="text-subtitle">TAN forfeited</div>
+              <div className="text-[15px] text-subtitle">TAN forfeited</div>
 
               {unlockPositionInfo && unlockPositionInfo?.amount ? (
                 <div className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 font-semibold backdrop-blur-[60px]">
@@ -149,9 +149,9 @@ export const VsTanUnlockContent = () => {
           <div className="flex w-full flex-col items-center justify-around gap-2 rounded-[10px] p-3 backdrop-blur-[10px]">
             <div className="flex w-full flex-col items-start justify-start">
               <div className="flex w-full items-start justify-start">
-                <div className="flex w-1/2 items-start justify-start text-subtitle">Position ID</div>
+                <div className="flex w-1/2 items-start justify-start text-[15px] text-subtitle">Position ID</div>
 
-                <div className="flex w-1/2 items-start justify-start text-subtitle"> {claimAsSUSG ? "sUSG" : "USG"} received</div>
+                <div className="flex w-1/2 items-start justify-start text-[15px] text-subtitle"> {claimAsSUSG ? "sUSG" : "USG"} received</div>
               </div>
 
               <div className="my-1 flex w-full items-center gap-2">

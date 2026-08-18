@@ -98,7 +98,7 @@ export default function VsTanLockContent() {
   return (
     <div className="flex w-full flex-col items-start justify-start">
       <div className="mb-1 flex w-full items-end justify-between gap-2">
-        <span className="text-lg font-semibold text-white">Deposit Tan</span>
+        <span className="text-xl font-semibold text-white">Deposit Tan</span>
         <span className="text-xs text-subtitle">{maxAmountToDeposit}</span>
       </div>
 
@@ -117,7 +117,7 @@ export default function VsTanLockContent() {
       />
 
       <div className="mb-1 mt-4 flex w-full items-center justify-between">
-        <div className="mb-1 text-lg font-semibold text-white">Position recap :</div>
+        <div className="mb-1 text-xl font-semibold text-white">Position recap :</div>
 
         {depositPosition === "New" && (
           <div className="flex gap-2">

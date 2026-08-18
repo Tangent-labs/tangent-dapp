@@ -74,7 +74,7 @@ export const VsTanSplitContent = () => {
 
   return (
     <div className="flex w-full flex-col items-start justify-start">
-      <div className="mb-1 text-lg font-semibold text-white">Select position to split:</div>
+      <div className="mb-1 text-xl font-semibold text-white">Select position to split:</div>
 
       <div className="mt-2 flex h-10 w-full items-center justify-between gap-2">
         <PositionSelect />
@@ -91,7 +91,7 @@ export const VsTanSplitContent = () => {
       {splitPositionInfo && splitPositionInfo?.amount && (
         <>
           <div className="flex w-full flex-col items-start justify-start">
-            <div className="mb-3 mt-6 text-lg font-semibold text-white">Choose splitting amount & positions:</div>
+            <div className="mb-3 mt-6 text-xl font-semibold text-white">Choose splitting amount & positions:</div>
 
             <PanelRaw className="flex h-full w-full items-center justify-between gap-2 px-2 py-3">
               <div className="flex flex-col">
@@ -180,9 +180,7 @@ export const VsTanSplitContent = () => {
                     <span className="mr-2 font-semibold">Position</span>
                     <span className="font-semibold text-white"> #{computedNewPositionIds?.newPositionId1}</span>
                   </span>
-                  <PanelRaw className="text-md flex min-w-16 items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">
-                    {splitPercentage}%
-                  </PanelRaw>
+                  <PanelRaw className="text-md flex min-w-16 items-center justify-center font-semibold text-row-tonic">{splitPercentage}%</PanelRaw>
                 </div>
 
                 <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel pl-2 backdrop-blur-[60px]">
@@ -190,9 +188,7 @@ export const VsTanSplitContent = () => {
                     <span className="mr-2 font-semibold">Position</span>
                     <span className="font-semibold text-white"> #{computedNewPositionIds?.newPositionId2}</span>
                   </span>{" "}
-                  <PanelRaw className="text-md flex min-w-16 items-center justify-center bg-button-active bg-clip-text font-semibold text-transparent">
-                    {100 - splitPercentage}%
-                  </PanelRaw>
+                  <PanelRaw className="text-md flex min-w-16 items-center justify-center font-semibold text-row-tonic">{100 - splitPercentage}%</PanelRaw>
                 </div>
               </div>
             </PanelRaw>
@@ -200,7 +196,7 @@ export const VsTanSplitContent = () => {
 
           <div className="mb-3 mt-6 text-lg font-semibold text-white">Split recap:</div>
 
-          <div className="mb-2 flex w-full flex-col items-start justify-start gap-2 rounded-[10px] bg-overlay-panel px-2 py-3 backdrop-blur-[60px]">
+          <div className="mb-2 flex w-full flex-col items-start justify-start gap-2 rounded-[10px] bg-overlay-panel px-2 py-3">
             <div className="flex w-full items-start justify-start gap-2">
               <div className="w-3/12">Pos. ID</div>
               <div className="w-6/12">vsTan</div>
@@ -209,17 +205,17 @@ export const VsTanSplitContent = () => {
 
             {/* Both rows mirror the header widths above : 3/12 - 6/12 - 3/12 */}
             <div className="flex w-full items-center gap-2">
-              <div className="relative flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px]">
+              <div className="relative flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold">
                 #{splitPositionInfo?.tokenId}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-tonic py-0.5 text-xs text-black">Updated</div>
               </div>
 
-              <div className="flex h-10 w-6/12 items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px]">
+              <div className="flex h-10 w-6/12 items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 font-semibold">
                 {computedSplitAmounts?.firstSplit}
                 <IconVsTan className="h-5 w-5"></IconVsTan>
               </div>
 
-              <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px]">
+              <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4">
                 {isPermaLocked(splitPositionInfo) ? (
                   <InfinityIcon className="w-5"></InfinityIcon>
                 ) : (
@@ -229,17 +225,17 @@ export const VsTanSplitContent = () => {
             </div>
 
             <div className="flex w-full items-center gap-2">
-              <div className="relative flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px]">
+              <div className="relative flex h-10 w-3/12 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold">
                 #{computedNewPositionIds?.newPositionId2}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-button-active py-0.5 text-xs text-black">New</div>
               </div>
 
-              <div className="flex h-10 w-6/12 items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 font-semibold backdrop-blur-[60px]">
+              <div className="flex h-10 w-6/12 items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 font-semibold">
                 {computedSplitAmounts?.secondSplit}
                 <IconVsTan className="h-5 w-5"></IconVsTan>
               </div>
 
-              <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 backdrop-blur-[60px]">
+              <div className="flex h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4">
                 {isPermaLocked(splitPositionInfo) ? (
                   <InfinityIcon className="w-5"></InfinityIcon>
                 ) : (

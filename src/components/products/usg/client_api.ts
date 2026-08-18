@@ -611,3 +611,31 @@ export const fetchProtocolRevenues = async (range: RevenueRange): Promise<Protoc
     return []
   }
 }
+
+/**
+ * All-time protocol revenues. Served by a dedicated endpoint because /revenues/:range
+ * only returns the 12 most recent buckets — summing those client-side gives a
+ * range-dependent figure.
+ */
+export const fetchProtocolRevenuesTotal = async (): Promise<number> => {
+  try {
+    const url = `${baseUrl}/revenues/total`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch total revenues")
+    }
+
+    const data: { total: number } = await response.json()
+    return data.total
+  } catch (error) {
+    console.error("Failed to fetch total revenues :", error)
+    return 0
+  }
+}

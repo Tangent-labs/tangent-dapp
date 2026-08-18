@@ -13,6 +13,7 @@ type GraphProtocolRevenuesProps = {
   protocolRevenues: ProtocolRevenue[]
   selectedRevenueTab: RevenueRange
   fetchRevenues: (range: RevenueRange) => void
+  totalRevenues: number
 }
 
 const REVENUE_RANGE_TABS: { label: string; range: RevenueRange }[] = [
@@ -20,10 +21,8 @@ const REVENUE_RANGE_TABS: { label: string; range: RevenueRange }[] = [
   { label: "1m", range: "month" },
 ]
 
-export const GraphProtocolRevenues = ({ protocolRevenues, selectedRevenueTab, fetchRevenues }: GraphProtocolRevenuesProps) => {
+export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selectedRevenueTab, fetchRevenues }: GraphProtocolRevenuesProps) => {
   const { ticks, axisMax } = useMemo(() => computeYAxisTicks(Math.max(0, ...protocolRevenues.map((el) => el?.total ?? 0))), [protocolRevenues])
-
-  const totalRevenues = useMemo(() => protocolRevenues.reduce((sum, el) => sum + (el?.total ?? 0), 0), [protocolRevenues])
 
   return (
     <ReliefCard className="flex w-full flex-col items-start justify-start p-5">

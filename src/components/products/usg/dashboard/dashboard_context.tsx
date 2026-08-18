@@ -49,8 +49,9 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
   const fetchRevenues = async (range: RevenueRange) => {
     setSelectedRevenueTab(range)
 
-    const revenues = await fetchProtocolRevenues(range)
+    const { total, revenues } = await fetchProtocolRevenues(range)
     setProtocolRevenues(revenues)
+    setTotalProtocolRevenues(total)
   }
 
   useEffect(() => {

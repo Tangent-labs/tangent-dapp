@@ -683,4 +683,10 @@ export type ProtocolRevenue = {
   total: number
 }
 
+export type ProtocolRevenues = {
+  /** All-time revenues, independent of the selected range (`revenues` only holds the 12 most recent buckets) */
+  total: number
+  revenues: ProtocolRevenue[]
+}
+
 export type RevenueRange = "week" | "month" | "year"

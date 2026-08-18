@@ -11,7 +11,7 @@ import {
   PointsResult,
   LpTask,
   UserPosition,
-  ProtocolRevenue,
+  ProtocolRevenues,
   RevenueRange,
 } from "./usg_type"
 import { USG_CONTRACT } from "./usg_repository"
@@ -589,7 +589,7 @@ async function _callMarketsAprs(): Promise<MarketAPRs[]> {
   }
 }
 
-export const fetchProtocolRevenues = async (range: RevenueRange): Promise<ProtocolRevenue[]> => {
+export const fetchProtocolRevenues = async (range: RevenueRange): Promise<ProtocolRevenues> => {
   try {
     const url = `${baseUrl}/revenues/${range}`
 
@@ -604,11 +604,11 @@ export const fetchProtocolRevenues = async (range: RevenueRange): Promise<Protoc
       throw new Error("Failed to fetch revenues")
     }
 
-    const data: ProtocolRevenue[] = await response.json()
+    const data: ProtocolRevenues = await response.json()
     return data
   } catch (error) {
     console.error("Failed to fetch revenues :", error)
-    return []
+    return { total: 0, revenues: [] }
   }
 }
 

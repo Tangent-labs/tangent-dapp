@@ -17,6 +17,7 @@ import { NeonLightCard } from "@/components/design_system/structure/neon_light_c
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { cn } from "@/lib/utils"
 
 type VAPRSimulation = {
   isLeveraged: boolean
@@ -147,23 +148,37 @@ export const VAPRCalculator = () => {
   return (
     <Accordion type="single" collapsible>
       <AccordionItem value="item-1">
-        <ReliefCard className="hidden cursor-pointer flex-col px-2 text-xs lg:flex">
-          <AccordionTrigger className="flex w-full justify-between">
-            <span className="py-2 text-[18px] font-semibold text-white">vAPR Calculator</span>
+        <ReliefCard className="hidden cursor-pointer flex-col p-5 text-xs lg:flex">
+          <AccordionTrigger className="flex w-full justify-between py-0">
+            <span className="text-[18px] font-semibold text-white">vAPR Calculator</span>
           </AccordionTrigger>
 
-          <AccordionContent>
+          <AccordionContent className="pb-0">
             <div className="flex w-full flex-col items-center justify-center text-primary">
-              <Divider />
+              <Divider className="my-5" />
 
-              <div className="mb-4 mt-2 flex w-full items-start justify-start text-xs text-subtitle">
-                This calculator allows you to compute your position&rsquo;s net vAPR depending on USG&rsquo;s price. Note that the result will always be
-                accurate only for leveraged positions where all the debt has been converted to collateral. If you&rsquo;re using your debt to farm elsewhere,
-                you will need to regularly update your debt info (amount used to farm and vAPR) so the calculator display a correct result.
+              <div className="mb-5 flex w-full items-start gap-5">
+                <div className="flex w-full items-start justify-start text-xs text-subtitle">
+                  This calculator allows you to compute your position&rsquo;s net vAPR depending on USG&rsquo;s price. Note that the result will always be
+                  accurate only for leveraged positions where all the debt has been converted to collateral. If you&rsquo;re using your debt to farm elsewhere,
+                  you will need to regularly update your debt info (amount used to farm and vAPR) so the calculator display a correct result.
+                </div>
+
+                <NeonLightCard paddingHorizontal={0} className="flex w-full" color1="#0077ffa3" color2="#0075FF">
+                  <div className="flex items-center gap-2 xl:gap-4">
+                    <div className="flex w-full items-center justify-between py-0.5">
+                      {Object.entries(positionMetrics).map(([label, value], i) => (
+                        <div key={label} className={cn("flex-1 text-center", i > 0 ? "xl:border-l xl:border-white/10" : "")}>
+                          <div className="text-center text-xs text-subtitle">{label}</div>
+                          <div className="mt-1 text-center text-sm font-semibold">{value}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </NeonLightCard>
               </div>
-
-              <div className="flex w-full gap-4">
-                <ReliefCard className="flex w-1/4 flex-col items-start justify-start gap-3 p-4">
+              <div className="flex w-full items-start gap-5">
+                <ReliefCard className="flex w-1/4 flex-col items-start justify-start gap-3 p-5">
                   <span className="text-xl font-semibold text-white">Settings</span>
 
                   <div className="flex w-full items-center justify-between gap-1">
@@ -279,9 +294,9 @@ export const VAPRCalculator = () => {
                   {chartData && (
                     <>
                       <div className="h-[360px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
                           <LineChart data={chartData} margin={{ top: 30, right: 5, left: 5, bottom: 5 }}>
-                            <CartesianGrid horizontal vertical={false} />
+                            <CartesianGrid horizontal vertical={false} stroke="#FFFFFF1A" />
 
                             <XAxis
                               dataKey="price"
@@ -382,24 +397,8 @@ export const VAPRCalculator = () => {
                       </svg>
                     </>
                   )}
-                  <div className="hidden items-end justify-end lg:relative lg:flex">
-                    <div className="absolute bottom-0 right-2 text-lg font-semibold text-white">USG&apos;s Price</div>
-                  </div>
                 </div>
               </div>
-
-              <NeonLightCard paddingHorizontal={0} className="mt-4 flex w-full" color1="#0077ffa3" color2="#0075FF">
-                <div className="flex items-center gap-2 xl:gap-4">
-                  <div className="flex w-full items-center justify-between py-0.5">
-                    {Object.entries(positionMetrics).map(([label, value]) => (
-                      <div key={label} className="flex-1 text-center">
-                        <div className="text-center text-xs text-subtitle">{label}</div>
-                        <div className="mt-1 text-center text-sm font-semibold">{value}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </NeonLightCard>
             </div>
           </AccordionContent>
         </ReliefCard>

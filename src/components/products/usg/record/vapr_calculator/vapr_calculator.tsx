@@ -178,7 +178,7 @@ export const VAPRCalculator = () => {
                 </NeonLightCard>
               </div>
               <div className="flex w-full items-start gap-5">
-                <ReliefCard className="flex w-1/4 flex-col items-start justify-start gap-3 p-5">
+                <div className="flex w-1/4 flex-col items-start justify-start gap-3">
                   <span className="text-xl font-semibold text-white">Settings</span>
 
                   <div className="flex w-full items-center justify-between gap-1">
@@ -285,7 +285,7 @@ export const VAPRCalculator = () => {
                   <motion.div layout transition={LAYOUT_TRANSITION} className="mt-1 flex w-full items-center justify-center">
                     <Button onClick={onClickSaveAndCompute}>Save and compute</Button>
                   </motion.div>
-                </ReliefCard>
+                </div>
 
                 <div className="flex w-full flex-col lg:w-3/4">
                   <div className="relative mt-8 hidden items-start justify-start lg:flex">

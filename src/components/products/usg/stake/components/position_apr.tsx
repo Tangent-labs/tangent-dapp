@@ -24,6 +24,7 @@ type ApyHistoryPoint = {
 
 type PositionAPRProps = {
   apy: number
+  token?: string
   fetchsUSGHistoryAPY: (range: string) => Promise<void>
   sUSGSelectedTab: string
   apyHistory: ApyHistoryPoint[]
@@ -116,7 +117,7 @@ const ApyTooltip = (props: {
 
 const formatYAxis = (tick: number) => `${tick}%`
 
-export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHistory }: PositionAPRProps) => {
+export const PositionAPR = ({ apy, token, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHistory }: PositionAPRProps) => {
   const selectedRange: RangeKey = isRangeKey(sUSGSelectedTab) ? sUSGSelectedTab : "1m"
 
   const { data, averageApy, ticks, fmtTick, fmtTooltipLabel, startTs, endTs, latestPoint } = useMemo(() => {
@@ -162,7 +163,7 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
   return (
     <>
       <div className="flex w-full items-center justify-between">
-        <APRDisplay apy={apy} />
+        <APRDisplay apy={apy} token={token} />
 
         <div className="hidden items-end justify-end gap-2 md:flex">
           {RANGE_KEYS.map((range) => (

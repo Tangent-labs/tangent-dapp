@@ -21,7 +21,11 @@ export const VSTAN_CONTRACT = {
   ZAPPER: envAddresses.utilities.zappingProxy as Address,
   TAN: envAddresses.tokens.TAN as Address,
   VSTAN: envAddresses.tokens.vsTAN as Address,
-  STAN: envAddresses.tokens.sTAN as Address,
+  // PLACEHOLDER : sTAN is not deployed yet and is absent from the addresses JSON. Deliberately an
+  // obviously-fake address so it can never be mistaken for a real one — swap it for
+  // `envAddresses.tokens.sTAN` once the contract ships. Reads against it revert, which the chain
+  // view guard turns into an empty state rather than a crash.
+  STAN: "0x11111111111111111111111111111111111111Aa" as Address,
   TAN_LP: envAddresses.lps?.["TAN-WETH"],
   ETH_ORACLE: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
   DAO: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",

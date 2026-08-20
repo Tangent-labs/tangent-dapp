@@ -1,217 +1,217 @@
-// "use client"
+"use client"
 
-// import Image from "next/image"
-// import { formatUnits } from "viem"
-// import {  SelectOption } from "@/types"
-// import { VSTAN_CONTRACT } from "../rs_tan_repository"
-// import { ForecastGraph } from "./tan_staking_forecast"
-// import { useStakeTanContext } from "./stake_tan_context"
-// import { computeProjection } from "./stake_tan_controller"
-// import { formatBigInt, formatDollar } from "@/lib/number_formatter"
-// import Divider from "@/components/design_system/structure/divider"
-// import ButtonTab from "@/components/design_system/inputs/button_tab"
-// import FormButtons from "@/components/design_system/form/form_actions"
-// import InputSelect from "@/components/design_system/inputs/input_select"
-// import TokenImage from "@/components/design_system/structure/token_image"
-// import BorderPanel from "@/components/design_system/structure/border_panel"
-// import EvolutionBox from "@/components/design_system/structure/evolution_box"
-// import { DepositReceiveInput } from "@/components/design_system/inputs/deposit_receive_input"
-// import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import Link from "next/link"
+import Image from "next/image"
+import { formatUnits } from "viem"
+import { useStakeTanContext } from "./stake_tan_context"
+import { computeProjection } from "./stake_tan_controller"
+import { TanPositionPerformancePanel } from "./components/position_performance_panel"
+import { IconChevron, IconOpenOutside } from "@/components/icons"
+import { Divider } from "@/components/design_system/structure/divider"
+import FormButtons from "@/components/design_system/form/form_actions"
+import { useRootContext } from "@/components/products/root/root_context"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
+import { PageHeader } from "@/components/design_system/structure/page_header"
+import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
+import { LargeButtonTab } from "@/components/design_system/inputs/large_button_tab"
+import { StaticCardAssetInput } from "../../predeposit/components/StaticCardAssetInput"
+import { formatBigInt, formatDollar, formatMillions, formatNumber } from "@/lib/number_formatter"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
+import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 
-// export default function StakeTanContent() {
-//   const {
-//     actionStake,
-//     actionUnstake,
-//     setCurrentFeature,
-//     actionApprove,
-//     setWeiValue,
-//     setStakePercentage,
-//     TANsTANMetrics,
-//     currentFeature,
-//     depositAssetOptions,
-//     currentAssetInfo,
-//     weiValue,
-//     expected,
-//     receivedTokenInfo,
-//     formState,
-//     computeProjectedValue,
-//     stakePercentage,
-//   } = useStakeTanContext()
+export default function StakeTanContent() {
+  const {
+    actionStake,
+    actionUnstake,
+    setCurrentFeature,
+    actionApprove,
+    setStakePercentage,
+    setWeiValue,
+    currentFeature,
+    currentAssetInfo,
+    weiValue,
+    expected,
+    receivedTokenInfo,
+    formState,
+    computeProjectedValue,
+    stakePercentage,
+    TANsTANMetrics,
+    sTanSelectedTab,
+    apyHistory,
+    fetchsTanHistoryAPY,
+    isLoading,
+  } = useStakeTanContext()
 
-//   const { connect } = useWalletConnexionContext()
+  const { sTanCurrentAPY } = useRootContext()
 
-//   const AssetSelect = () => {
-//     return <InputSelect className="w-full" template={AssetSelectTemplate} value={currentAssetInfo?.current} options={depositAssetOptions} onChange={() => {}} />
-//   }
+  const { connect } = useWalletConnexionContext()
 
-//   const AssetSelectTemplate = (option: SelectOption) => {
-//     const assetInfo = {
-//       address: VSTAN_CONTRACT.TAN,
-//       decimals: 18,
-//       displayDecimals: 2,
-//       logo: "TAN",
-//       name: "TAN",
-//       price: TANsTANMetrics?.tanPrice,
-//       symbol: "TAN",
-//     }
+  const isStake = "stake" === currentFeature
 
-//     const sTANInfo = {
-//       address: VSTAN_CONTRACT?.STAN,
-//       decimals: 18,
-//       displayDecimals: 0,
-//       logo: "sTAN",
-//       name: "sTAN",
-//       price: TANsTANMetrics?.sTanPrice,
-//       symbol: "sTAN",
-//     }
+  const inputInAsset = isStake ? "TAN" : "sTAN"
+  const inputOutAsset = isStake ? "sTAN" : "TAN"
 
-//     let logo = assetInfo?.logo
-//     if (option.value === "sdAsset") {
-//       logo = sTANInfo.logo
-//     }
+  return (
+    <>
+      <div className="flex items-stretch justify-between gap-5">
+        <PageHeader>
+          <Image height={150} width={150} src="/medias/tokens/STAN.webp" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
 
-//     return (
-//       <div className="flex items-center gap-2">
-//         <TokenImage token={logo} size={24} />
-//         <span className="text-sm font-semibold">{option.label}</span>
-//       </div>
-//     )
-//   }
+          <div className="flex flex-col items-start justify-center px-6">
+            <span className="text-4xl font-semibold">Stake TAN</span>
+            <p className="mt-2 text-[15px]">
+              Stake TAN to receive sTAN and earn a share of protocol earnings passively. Staked TAN stays liquid and carries no governance rights.
+            </p>
+            <Link
+              className="flex cursor-pointer items-center justify-center underline hover:text-white/30"
+              href="https://docs.tangent.finance/docs/tan/stan"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Learn more about sTAN <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white" />
+            </Link>
+          </div>
+        </PageHeader>
 
-//   const ReceiveAssetDisplay = () => {
-//     if (!receivedTokenInfo) return <></>
+        <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
+          <PointsCampaignLiveCard />
 
-//     return (
-//       <BorderPanel className="flex items-center gap-2 bg-select-input px-2.5 py-2">
-//         <TokenImage token={receivedTokenInfo.logo } size={24} />
-//         <span className="text-sm font-semibold">
-//           <span>{receivedTokenInfo.symbol}</span>
-//         </span>
-//       </BorderPanel>
-//     )
-//   }
+          <ThreeCardRowWithMask
+            contents={[
+              { key: "Supply", value: formatMillions(Number(formatUnits(TANsTANMetrics?.sTanSupply || 0n, 18))) },
+              { key: "sTAN price", value: formatDollar(formatUnits(TANsTANMetrics?.sTanPrice || 0n, 18), 4) },
+              { key: "sTAN APY", value: sTanCurrentAPY.toFixed(2) + "%" },
+            ]}
+          />
+        </div>
+      </div>
 
-//   return (
-//     <>
-//       <div className="flex w-full items-end justify-between gap-8">
-//         <div className="usg-header hidden w-7/12 lg:flex">
-//           <div className="flex items-center justify-center">
-//             <Image height={360} width={360} src="/medias/tokens/TAN.png" alt="token" />
-//           </div>
-//           <div className="flex flex-col items-start justify-center gap-3">
-//             <span className="text-5xl font-semibold">Stake TAN</span>
-//             <p>
-//               Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT
-//               stable pool & CVX stable pool).
-//             </p>
-//             <p>Rewards are distributed weekly, at the beginning of each epoch. Staking positions are represented by NFTs. Learn more</p>
-//           </div>
-//         </div>
+      <div className="mt-5 flex w-full flex-col gap-2 lg:flex-row lg:items-start lg:gap-5">
+        <ReliefCard className="flex w-full flex-col items-center justify-start gap-1 p-5 lg:w-5/12 xl:w-1/3">
+          <div className="flex w-full items-center justify-between gap-4">
+            <LargeButtonTab
+              onClick={() => setCurrentFeature("stake")}
+              active={currentFeature === "stake"}
+              className="flex w-full justify-center"
+              label="Stake"
+            />
+            <LargeButtonTab
+              onClick={() => setCurrentFeature("unstake")}
+              active={currentFeature === "unstake"}
+              className="flex w-full justify-center"
+              label="Unstake"
+            />
+          </div>
 
-//         {TANsTANMetrics && (
-//           <div className="flex w-5/12 items-center justify-between gap-3 rounded-[10px] bg-overlay-panel p-2 backdrop-blur-[60px]">
-//             <TokenImage token="sTAN" size={48} />
+          <Divider className="w-full" />
 
-//             <div className="flex flex-col items-center justify-center font-semibold">
-//               <span className="text-sm text-subtitle">Supply</span>
-//               <span className="text-lg font-semibold">{formatBigInt(TANsTANMetrics?.sTanSupply, 18, 0)}</span>
-//             </div>
-//             <div className="flex flex-col items-center justify-center font-semibold">
-//               <span className="text-sm text-subtitle">sTan</span>
-//               <span className="text-lg font-semibold">{formatDollar(formatBigInt(TANsTANMetrics.sTanPrice, 12, 6), 6)}</span>
-//             </div>
-//             <div className="flex flex-col items-center justify-center rounded-[10px] bg-button-active px-8 py-2">
-//               <span className="font-semibold text-black">APR</span>
-//               <span className="text-lg font-semibold">15.32%</span>
-//             </div>
-//           </div>
-//         )}
-//       </div>
+          <div className="mb-[5px] flex w-full items-center justify-between">
+            <span className="text-sm font-semibold md:text-xl">Deposit</span>
+            <span className="text-xs text-subtitle">
+              Max: {formatBigInt(currentAssetInfo?.balance, 18, 2)} {isStake ? "TAN" : "sTAN"}{" "}
+            </span>
+          </div>
 
-//       <div className="my-8 flex w-full flex-col items-start justify-start gap-4 md:flex-row">
-//         <div className="flex w-full flex-col items-center justify-center gap-2 rounded-[10px] bg-overlay-panel p-4 backdrop-blur-[60px] md:w-5/12">
-//           <div className="flex w-full items-center justify-between gap-4">
-//             <ButtonTab
-//               onClick={() => setCurrentFeature("stake")}
-//               active={currentFeature === "stake"}
-//               className="flex w-full justify-center"
-//               label="Stake"
-//             ></ButtonTab>
-//             <ButtonTab
-//               onClick={() => setCurrentFeature("unstake")}
-//               active={currentFeature === "unstake"}
-//               className="flex w-full justify-center"
-//               label="Unstake"
-//             ></ButtonTab>
-//           </div>
+          <div className="mb-[5px] w-full">
+            <GenericInputAssetAmount
+              inputWeiValue={weiValue}
+              onValueChange={(value: bigint | undefined) => setWeiValue(value)}
+              depositSelect={<StaticCardAssetInput assetName={inputInAsset} logoKey={inputInAsset} />}
+              asset={currentAssetInfo?.asset}
+              label={isStake ? "You deposit" : "You unstake"}
+              maxAmountParams={{
+                maxWeiValue: currentAssetInfo?.balance || 0n,
+                setMaxAmount: () => {
+                  setStakePercentage(100)
+                  setWeiValue(currentAssetInfo?.balance)
+                },
+              }}
+              sliderParams={{
+                sliderPercentage: stakePercentage,
+                setSliderPercentage: setStakePercentage,
+              }}
+            />
 
-//           <Divider className="h-1 w-full"></Divider>
+            <div className="my-[10px] flex w-full items-center justify-center">
+              <ReliefCard
+                onClick={() => setCurrentFeature(isStake ? "unstake" : "stake")}
+                className="flex h-9 w-9 cursor-pointer items-center justify-center border-none hover:bg-white/10"
+              >
+                <IconChevron className="h-auto w-8 rounded-[10px] stroke-white p-2 text-white" />
+              </ReliefCard>
+            </div>
 
-//           <div className="flex w-full items-end justify-end">
-//             <span className="text-xs text-subtitle">
-//               Max: {formatBigInt(currentAssetInfo?.balance, 18, 3)} {currentFeature === "stake" ? "TAN" : "sTAN"}
-//             </span>
-//           </div>
+            <GenericInputAssetAmount
+              inputWeiValue={expected}
+              onValueChange={(value: bigint | undefined) => setWeiValue(value)}
+              depositSelect={<StaticCardAssetInput assetName={inputOutAsset} logoKey={inputOutAsset} />}
+              asset={receivedTokenInfo}
+              label="You receive"
+              disabled={true}
+            />
+          </div>
 
-//           <DepositReceiveInput
-//             labelDeposit={currentFeature === "stake" ? "You deposit" : "You unstake"}
-//             labelReceive={currentFeature === "stake" ? "You stake" : "You receive"}
-//             className="w-full"
-//             depositAmount={weiValue}
-//             depositSelect={<AssetSelect />}
-//             disabled={false}
-//             receiveAssetDisplay={<ReceiveAssetDisplay />}
-//             depositAsset={currentAssetInfo?.asset}
-//             receiveDollarValue={(Number(formatUnits(expected || 0n, 18)) * Number(formatUnits(TANsTANMetrics?.sTanPrice || 0n, 18)))?.toFixed(2)}
-//             balance={currentAssetInfo?.balance}
-//             receiveAmount={formatBigInt(expected, 18, 2)}
-//             setMaxBalance={() => {}}
-//             onValueChange={(value: bigint | undefined) => setWeiValue(value)}
-//             percentage={stakePercentage}
-//             setPercentage={setStakePercentage}
-//           />
+          {formState.errors
+            .filter((e) => e.type === "form-alert")
+            .map((error) => (
+              <FormAlert key={error.key} error={error} className="my-1" isLoading={isLoading} />
+            ))}
 
-//           <FormButtons
-//             actions={{
-//               handleApprove: currentFeature === "stake" ? actionApprove : undefined,
-//               handleProcess: currentFeature === "stake" ? actionStake : actionUnstake,
-//             }}
-//             connect={connect}
-//             formState={formState}
-//             labelProcess={currentFeature === "stake" ? "Deposit & Stake" : "Unstake"}
-//           />
-//         </div>
-//         <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel px-4 py-2 backdrop-blur-[60px] md:w-7/12">
-//           <span className="text-2xl font-semibold">Performance</span>
+          <FormButtons
+            actions={{
+              handleApprove: isStake ? actionApprove : undefined,
+              handleProcess: isStake ? actionStake : actionUnstake,
+            }}
+            connect={connect}
+            formState={formState}
+            isLoading={isLoading}
+            labelProcess={isStake ? "Stake" : "Unstake"}
+          />
+        </ReliefCard>
 
-//           <Divider className="h-1 w-full"></Divider>
+        <div className="flex w-full flex-col lg:hidden">
+          {!!TANsTANMetrics && sTanCurrentAPY > 0 && (
+            <div className="mt-5 flex w-full flex-col items-end justify-between gap-2 self-end sm:flex-row">
+              <EvolutionBox
+                className="w-full"
+                originalValue={formatNumber(Number(formatUnits(TANsTANMetrics?.sTanBalance ?? 0n, 18)), 0)}
+                label="sTAN balance"
+                newValue={formatNumber(computeProjectedValue >= 0 ? computeProjectedValue : 0, 0)}
+              />
 
-//           <ForecastGraph
-//             initialInvestment={Number(formatUnits(TANsTANMetrics?.sTanBalance || 0n, 18))}
-//             apr={15}
-//             additionalLiquidity={weiValue ? Number(formatUnits(weiValue!, 18)) : 0}
-//           ></ForecastGraph>
+              <EvolutionBox
+                className="w-full"
+                originalValue={computeProjection(TANsTANMetrics?.sTanBalance ?? 0n, 1 / 12, sTanCurrentAPY, currentFeature)}
+                label="30 days projection"
+                newValue={computeProjection(TANsTANMetrics?.sTanBalance ?? 0n, 1 / 12, sTanCurrentAPY, currentFeature, weiValue)}
+                logo="TAN"
+              />
 
-//           <div className="flex w-full items-center justify-between gap-2">
-//             <EvolutionBox
-//               originalValue={formatBigInt(TANsTANMetrics?.sTanBalance || 0n, 18, 2)}
-//               label="sTan balance"
-//               newValue={computeProjectedValue.toString()}
-//             />
+              <EvolutionBox
+                className="w-full"
+                originalValue={computeProjection(TANsTANMetrics?.sTanBalance ?? 0n, 1, sTanCurrentAPY, currentFeature)}
+                label="1 year projection"
+                newValue={computeProjection(TANsTANMetrics?.sTanBalance ?? 0n, 1, sTanCurrentAPY, currentFeature, weiValue)}
+                logo="TAN"
+              />
+            </div>
+          )}
+        </div>
 
-//             <EvolutionBox
-//               originalValue={computeProjection(TANsTANMetrics!, 1 / 12, 15).toFixed(2)}
-//               label="30 days projection"
-//               newValue={computeProjection(TANsTANMetrics!, 1 / 12, 15, weiValue).toFixed(2)}
-//             />
-//             <EvolutionBox
-//               originalValue={computeProjection(TANsTANMetrics!, 1, 15).toFixed(2)}
-//               label="1 year projection"
-//               newValue={computeProjection(TANsTANMetrics!, 1, 15, weiValue).toFixed(2)}
-//             />
-//           </div>
-//         </div>
-//       </div>
-//     </>
-//   )
-// }
+        <TanPositionPerformancePanel
+          currentFeature={currentFeature}
+          sTanBalance={TANsTANMetrics?.sTanBalance ?? 0n}
+          computeProjectedValue={computeProjectedValue}
+          weiValue={weiValue || 0n}
+          sTanSelectedTab={sTanSelectedTab}
+          fetchsTanHistoryAPY={fetchsTanHistoryAPY}
+          apyHistory={apyHistory}
+          sTanCurrentAPY={sTanCurrentAPY}
+        />
+      </div>
+    </>
+  )
+}

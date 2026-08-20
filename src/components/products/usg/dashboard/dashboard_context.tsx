@@ -30,6 +30,8 @@ type USGDashboardContextValues = {
   selectedRevenueTab: RevenueRange
 
   fetchRevenues: (range: RevenueRange) => void
+
+  totalRevenues: number
 }
 
 export const USGDashboardContext = createContext<USGDashboardContextValues | undefined>(undefined)
@@ -41,11 +43,15 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
 
   const [selectedRevenueTab, setSelectedRevenueTab] = useState<RevenueRange>("week")
 
+  const [totalRevenues, setTotalRevenues] = useState(0)
+
   const fetchRevenues = async (range: RevenueRange) => {
     setSelectedRevenueTab(range)
 
-    const revenues = await fetchProtocolRevenues(range)
+    const { revenues, total } = await fetchProtocolRevenues(range)
+
     setProtocolRevenues(revenues)
+    setTotalRevenues(total)
   }
 
   useEffect(() => {
@@ -68,6 +74,7 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
     protocolRevenues,
     selectedRevenueTab,
     fetchRevenues,
+    totalRevenues,
   }
 
   return <USGDashboardContext.Provider value={contextValue}>{children}</USGDashboardContext.Provider>

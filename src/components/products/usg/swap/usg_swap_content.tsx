@@ -165,7 +165,7 @@ export default function USGSwapContent() {
               label={"You sell"}
               maxAmountParams={{
                 maxWeiValue: balanceAllowanceData?.balance ?? 0n,
-                setMaxAmount: () => () => handleSellChange(balanceAllowanceData?.balance),
+                setMaxAmount: () => handleSellChange(balanceAllowanceData?.balance),
               }}
               sliderParams={{
                 sliderPercentage: depositSliderPercent,

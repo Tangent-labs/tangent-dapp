@@ -589,7 +589,7 @@ async function _callMarketsAprs(): Promise<MarketAPRs[]> {
   }
 }
 
-export const fetchProtocolRevenues = async (range: RevenueRange): Promise<ProtocolRevenue[]> => {
+export const fetchProtocolRevenues = async (range: RevenueRange): Promise<{ revenues: ProtocolRevenue[]; total: number }> => {
   try {
     const url = `${baseUrl}/revenues/${range}`
 
@@ -604,10 +604,15 @@ export const fetchProtocolRevenues = async (range: RevenueRange): Promise<Protoc
       throw new Error("Failed to fetch revenues")
     }
 
-    const data: ProtocolRevenue[] = await response.json()
+    const data: ProtocolRevenue[] | { revenues: ProtocolRevenue[]; total: number } = await response.json()
+
+    if (Array.isArray(data)) {
+      return { revenues: data, total: data.reduce((sum, row) => sum + row.total, 0) }
+    }
+
     return data
   } catch (error) {
     console.error("Failed to fetch revenues :", error)
-    return []
+    return { revenues: [], total: 0 }
   }
 }

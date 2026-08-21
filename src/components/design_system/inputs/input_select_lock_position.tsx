@@ -4,7 +4,7 @@ import { MaxButton } from "./MaxButton"
 import { SliderInput } from "./SliderInput"
 import { formatUnits, parseUnits } from "viem"
 import { IconThunder } from "@/components/icons"
-import { ReliefCard } from "../structure/relief_card"
+import { BorderPanel } from "../structure/border_panel"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { cn, PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { useAutoGrowInputWidth } from "@/hooks/useAutoGrowInputWidth"
@@ -164,7 +164,7 @@ export const InputSelectLockPosition = ({
   }
 
   return (
-    <ReliefCard
+    <BorderPanel
       className={cn(
         isLoading ? "shimmer" : "",
         disabled
@@ -193,7 +193,7 @@ export const InputSelectLockPosition = ({
               lang="en"
               disabled={isLoading || disabled}
               type="text"
-              value={isLoading ? "-" : localDisplay}
+              value={localDisplay}
               placeholder="0.00"
               onChange={handleInputChange}
               onBlur={handleBlur}
@@ -211,7 +211,7 @@ export const InputSelectLockPosition = ({
             />
           </div>
 
-          <div className="select-none text-xs text-subtitle">{isLoading ? "($-)" : dollarDepositDisplay}</div>
+          <div className="select-none text-xs text-subtitle">{dollarDepositDisplay}</div>
         </div>
 
         <div className="stop-focus flex select-none items-center justify-center gap-2">
@@ -236,6 +236,6 @@ export const InputSelectLockPosition = ({
       </div>
 
       {bottomPart}
-    </ReliefCard>
+    </BorderPanel>
   )
 }

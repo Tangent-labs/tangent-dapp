@@ -98,7 +98,7 @@ export const VsTanLayoutContent = ({
         </div>
       </div>
 
-      <div className="my-4 flex w-full flex-col gap-4 xl:flex-row">
+      <div className="my-4 flex w-full flex-col gap-[20px] xl:flex-row">
         <ReliefCard className="flex w-full flex-col items-center justify-start p-3 xl:w-5/12">
           <VsTanFeatureTabs feature={feature} onTabClick={onTabClick}></VsTanFeatureTabs>
 
@@ -107,7 +107,7 @@ export const VsTanLayoutContent = ({
           {children}
         </ReliefCard>
 
-        <div className="flex w-full flex-col items-start justify-start p-3 xl:w-7/12">
+        <div className="flex w-full flex-col items-start justify-start xl:w-7/12">
           <div className="mr-auto text-3xl font-semibold text-white">Locked Positions</div>
 
           <Divider />
@@ -149,9 +149,7 @@ function LockPositionList() {
 
   return (
     <>
-      <div className="mb-2 w-full">
-        <ListHeader rowDisposition={LockRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
-      </div>
+      <ListHeader rowDisposition={LockRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
 
       <div className="flex h-full max-h-[400px] w-full flex-col overflow-x-hidden overflow-y-scroll">
         {lockData?.positions.map((lockPosition: LockPosition) => (
@@ -194,41 +192,43 @@ function LockPositionList() {
             </ListRow>
 
             {lockPosition == selectedPosition && (
-              <div className="slide-down-fade-in flex w-full flex-wrap items-center justify-between gap-3 rounded-b-lg bg-overlay-panel p-3">
-                {/* Full width on mobile so the toggle and the button wrap onto their own row */}
-                <div className="flex w-full items-center justify-start gap-3 sm:w-auto sm:shrink-0">
-                  <div className="hidden text-sm text-subtitle md:flex">Unlock date</div>
+              <div className="slide-down-fade-in flex w-full flex-wrap rounded-b-lg bg-overlay-panel px-3 backdrop-blur-[60px]">
+                <div className="flex w-full flex-wrap items-center justify-between gap-3 rounded-b-lg border-t border-white/10 py-[10px]">
+                  {/* Full width on mobile so the toggle and the button wrap onto their own row */}
+                  <div className="flex w-full items-center justify-start gap-3 sm:w-auto sm:shrink-0">
+                    <div className="hidden text-sm text-subtitle md:flex">Unlock date</div>
 
-                  <EvolutionBox
-                    className="flex w-full justify-center sm:w-[232px]"
-                    originalValue={currentUnlockDate(lockPosition)}
-                    newValue={extendedUnlockDate(lockPosition, extendToPermaLock, nextEndLockTime)}
-                  />
+                    <EvolutionBox
+                      className="flex w-full justify-center sm:w-[232px]"
+                      originalValue={currentUnlockDate(lockPosition)}
+                      newValue={extendedUnlockDate(lockPosition, extendToPermaLock, nextEndLockTime)}
+                    />
+                  </div>
+
+                  {isPermaLocked(lockPosition) ? (
+                    <>
+                      <Button className="w-40" onClick={() => onClickRemovePermaLock()}>
+                        Remove permalock
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex w-fit items-center justify-center gap-1">
+                        <div className="whitespace-nowrap text-xs font-semibold text-subtitle">Perma lock</div>
+
+                        <USGHoverCard iconClassName="h-auto w-[14px] text-white" title="">
+                          Lock your tokens in perpetuity. You can remove the perma lock option at any time.
+                        </USGHoverCard>
+
+                        <Switch checked={extendToPermaLock} onCheckedChange={() => setExtendToPermaLock(!extendToPermaLock)} />
+                      </div>
+
+                      <Button className="w-24" onClick={() => onClickExtend(selectedPosition)}>
+                        Extend
+                      </Button>
+                    </>
+                  )}
                 </div>
-
-                {isPermaLocked(lockPosition) ? (
-                  <>
-                    <Button className="w-40" onClick={() => onClickRemovePermaLock()}>
-                      Remove permalock
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex w-fit items-center justify-center gap-1">
-                      <div className="whitespace-nowrap text-xs font-semibold text-subtitle">Perma lock</div>
-
-                      <USGHoverCard iconClassName="h-auto w-[14px] text-white" title="">
-                        Lock your tokens in perpetuity. You can remove the perma lock option at any time.
-                      </USGHoverCard>
-
-                      <Switch checked={extendToPermaLock} onCheckedChange={() => setExtendToPermaLock(!extendToPermaLock)} />
-                    </div>
-
-                    <Button className="w-24" onClick={() => onClickExtend(selectedPosition)}>
-                      Extend
-                    </Button>
-                  </>
-                )}
               </div>
             )}
           </div>

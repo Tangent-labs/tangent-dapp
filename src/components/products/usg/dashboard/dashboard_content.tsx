@@ -1,16 +1,15 @@
 "use client"
 
-import { GraphCollateralsAndDebts } from "./components/GraphCollateralsAndDebts"
-import { useUSGDashboardContext } from "./dashboard_context"
-import { useRootContext } from "@/components/products/root/root_context"
-import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import { GraphGlobalTVL } from "./components/GraphGlobalTVL"
 import { GraphUSGsUSG } from "./components/GraphUSGsUSG"
+import { useUSGDashboardContext } from "./dashboard_context"
+import { GraphGlobalTVL } from "./components/GraphGlobalTVL"
 import { GraphTokenPrice } from "./components/GraphTokenPrice"
+import { useRootContext } from "@/components/products/root/root_context"
 import { GraphProtocolRevenues } from "./components/GraphProtocolRevenues"
+import { GraphCollateralsAndDebts } from "./components/GraphCollateralsAndDebts"
 
 export const USGDashboardContent = () => {
-  const { userData, marketTVLMaxValue, selectedRevenueTab, protocolRevenues, fetchRevenues } = useUSGDashboardContext()
+  const { userData, marketTVLMaxValue, selectedRevenueTab, totalRevenues, protocolRevenues, fetchRevenues } = useUSGDashboardContext()
 
   const {
     tvl,
@@ -29,18 +28,6 @@ export const USGDashboardContent = () => {
 
   return (
     <div className="flex w-full flex-col items-start justify-start gap-5">
-      {/* POINTS CAMPAIGN COMPONENT */}
-
-      <ReliefCard className="w-full">
-        <div
-          style={{ fontSize: "20px", lineHeight: "20px" }}
-          className="flex h-16 w-full items-center justify-start rounded-[10px] bg-[url('/medias/fulltan.png')] bg-[size:30%] bg-[position:calc(100%)_bottom] bg-no-repeat px-6 !font-semibold italic"
-        >
-          Points campaign
-          <div className="ml-6 flex items-center justify-center rounded-[10px] bg-tonic px-6 py-0.5 font-semibold not-italic text-black">Live</div>
-        </div>
-      </ReliefCard>
-
       <div className="flex w-full flex-col gap-5 lg:flex-row">
         <GraphTokenPrice
           token="USG"
@@ -82,7 +69,12 @@ export const USGDashboardContent = () => {
         {userData && <GraphCollateralsAndDebts userData={userData} marketTVLMaxValue={marketTVLMaxValue} />}
 
         {/* PROTOCOL REVENUES */}
-        <GraphProtocolRevenues protocolRevenues={protocolRevenues} selectedRevenueTab={selectedRevenueTab} fetchRevenues={fetchRevenues} />
+        <GraphProtocolRevenues
+          totalRevenues={totalRevenues}
+          protocolRevenues={protocolRevenues}
+          selectedRevenueTab={selectedRevenueTab}
+          fetchRevenues={fetchRevenues}
+        />
       </div>
     </div>
   )

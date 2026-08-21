@@ -13,6 +13,7 @@ type GraphProtocolRevenuesProps = {
   protocolRevenues: ProtocolRevenue[]
   selectedRevenueTab: RevenueRange
   fetchRevenues: (range: RevenueRange) => void
+  totalRevenues: number
 }
 
 const REVENUE_RANGE_TABS: { label: string; range: RevenueRange }[] = [
@@ -20,17 +21,15 @@ const REVENUE_RANGE_TABS: { label: string; range: RevenueRange }[] = [
   { label: "1m", range: "month" },
 ]
 
-export const GraphProtocolRevenues = ({ protocolRevenues, selectedRevenueTab, fetchRevenues }: GraphProtocolRevenuesProps) => {
+export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selectedRevenueTab, fetchRevenues }: GraphProtocolRevenuesProps) => {
   const { ticks, axisMax } = useMemo(() => computeYAxisTicks(Math.max(0, ...protocolRevenues.map((el) => el?.total ?? 0))), [protocolRevenues])
-
-  const totalRevenues = useMemo(() => protocolRevenues.reduce((sum, el) => sum + (el?.total ?? 0), 0), [protocolRevenues])
 
   return (
     <ReliefCard className="flex w-full flex-col items-start justify-start p-5">
       <div className="flex w-full items-center justify-between">
         <div className="text-xl font-semibold">Protocol revenues</div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           {REVENUE_RANGE_TABS.map((tab) => (
             <ButtonTab
               key={tab.range}
@@ -45,7 +44,7 @@ export const GraphProtocolRevenues = ({ protocolRevenues, selectedRevenueTab, fe
 
       <Divider />
 
-      <div className="mb-4 flex items-center justify-start gap-2 text-xs">
+      <div className="mb-4 flex items-center justify-start gap-1 text-xs">
         <div className="text-subtitle">Total: </div>
         <div className="font-semibold text-white">{formatDollar(totalRevenues, 0)}</div>
       </div>

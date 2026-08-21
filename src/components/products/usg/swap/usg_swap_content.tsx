@@ -17,7 +17,7 @@ import { PriceImpactAlert } from "@/components/design_system/inputs/price_impact
 import { AssetSelectionDialog } from "@/components/design_system/inputs/asset-select-dialog"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
-import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
+import { FeatureBannerCarousel } from "@/components/design_system/structure/feature_banner_carousel"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
 import { FormAlert } from "@/components/design_system/inputs/form_alert"
 import { PageHeader } from "@/components/design_system/structure/page_header"
@@ -141,7 +141,7 @@ export default function USGSwapContent() {
         </PageHeader>
 
         <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
-          <PointsCampaignLiveCard />
+          <FeatureBannerCarousel />
 
           <UsgBalanceAndTotalPoints USGsUSGMetrics={USGsUSGMetrics} lpUserPoints={lpUserPoints} voteUserPoints={voteUserPoints} />
         </div>

@@ -56,11 +56,11 @@
     "tailwind-merge": "2.5.2",
     "tailwindcss-animate": "1.0.7",
     "use-debounce": "10.0.4",
-    "viem": "2.52.2",
+    "viem": "^2.52.2",
     "wagmi": "3.5.0"
   },
   "devDependencies": {
-    "@tangent/defi-resources": "github:Tangent-labs/defi-resources#main",
+    "@tangent/defi-resources": "github:Tangent-labs/defi-resources#410026521bdf122352632aad6835aeab5b0f1156",
     "@types/js-cookie": "3.0.6",
     "@types/node": "20",
     "@types/react": "19",
@@ -73,5 +73,12 @@
     "prettier-plugin-tailwindcss": "0.6.8",
     "tailwindcss": "3.4.1",
     "typescript": "5"
+  },
+  "overrides": {
+    "@wagmi/core": "3.4.0",
+    "@wagmi/connectors": "7.2.1",
+    "@coinbase/cdp-sdk": "1.51.1",
+    "motion-dom": "12.40.0",
+    "motion-utils": "12.39.0"
   }
 }

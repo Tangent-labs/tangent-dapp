@@ -115,7 +115,7 @@ export const VsTanClaimContent = () => {
         </div>
       </div>
 
-      <div className="my-2 flex flex-col rounded-[10px] bg-overlay-panel p-2 text-xs text-subtitle">
+      <div className="my-2 flex w-full flex-col rounded-[10px] bg-overlay-panel p-2 text-xs text-subtitle">
         <span>Rewards can be claimed separately, or all together.</span>
       </div>
 

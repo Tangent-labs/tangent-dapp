@@ -169,10 +169,10 @@ export const VsTanUnlockContent = () => {
       )}
 
       {mode === "locked" && (
-        <div className="my-2 flex flex-col rounded-[10px] bg-overlay-panel p-2 text-xs text-subtitle">
+        <div className="my-2 flex w-full flex-col rounded-[10px] bg-overlay-panel p-2 text-xs text-subtitle">
           <span>A penalty is applied for early unlocks (prior to the initial unlock schedule).</span>
           <span onClick={() => window.open("https://youtu.be/5Hplx-geZHo?t=5")} className="flex cursor-pointer items-center underline hover:text-white">
-            Learn more <IconOpenOutside className="w-3"></IconOpenOutside>
+            Learn more <IconOpenOutside className="ml-1 mt-1 w-3" />
           </span>
         </div>
       )}

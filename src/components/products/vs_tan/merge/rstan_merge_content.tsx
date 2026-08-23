@@ -230,7 +230,7 @@ export const VsTanMergeContent = () => {
               onClick={() => window.open("https://youtu.be/5Hplx-geZHo?t=5")}
               className="inline-flex cursor-pointer items-center underline hover:text-white"
             >
-              Learn more <IconOpenOutside className="w-3" />
+              Learn more <IconOpenOutside className="ml-1 mt-1 w-3" />
             </span>
           </div>
 

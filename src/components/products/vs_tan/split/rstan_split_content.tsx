@@ -248,7 +248,7 @@ export const VsTanSplitContent = () => {
           <div className="my-2 flex rounded-[10px] bg-overlay-panel p-2 text-xs text-subtitle">
             <span>The newly created positions will share the same unlock schedule. </span>
             <span onClick={() => window.open("https://youtu.be/5Hplx-geZHo?t=5")} className="ml-1 flex cursor-pointer items-center underline hover:text-white">
-              Learn more <IconOpenOutside className="w-3"></IconOpenOutside>
+              Learn more <IconOpenOutside className="ml-1 mt-1 w-3" />
             </span>
           </div>
 

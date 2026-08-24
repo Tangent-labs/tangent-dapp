@@ -15,6 +15,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { doApprove, doIncreaseLockAmount, doLock, getLockFormState } from "./rstan_lock_controller"
 import { useMinLock } from "../use_min_lock"
 import { TAN_PRICE_DECIMALS } from "../tan_price"
+import { IconInfinity } from "@/components/icons/icon_infinity"
 
 type VsTanLockContextProps = {
   children: ReactNode
@@ -43,9 +44,7 @@ type VsTanLockContextValues = {
 
   computedNewLockValue: string
 
-  currentEndLockDate: string
-
-  computedNewEndLockDate: string
+  computedNewEndLockDate: ReactNode
 
   handleDepositChange: (arg: bigint | undefined) => void
 
@@ -187,7 +186,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
   // Date a lock created or extended right now would unlock on
   const prospectiveEndLockDate = useMemo(() => {
     // Perma locked positions never unlock, and increaseLockAmount doesn't lift the perma lock
-    if (isTargetPermaLocked) return "∞"
+    if (isTargetPermaLocked) return <IconInfinity className="h-4 w-auto" />
 
     if (!nextEndLockTime) return "-"
 
@@ -198,7 +197,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
     // A new position has no unlock date to evolve from : show the one it would get instead of an empty value
     if (!depositPositionInfo?.endLockTime) return prospectiveEndLockDate
 
-    if (isPermaLocked(depositPositionInfo)) return "∞"
+    if (isPermaLocked(depositPositionInfo)) return <IconInfinity className="h-4 w-auto" />
 
     return formatDate(new Date(Number(depositPositionInfo?.endLockTime) * 1000), "dd/MM/yyyy")
   }, [depositPositionInfo, prospectiveEndLockDate])
@@ -235,7 +234,6 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
     actionLock,
     formState,
     computedNewLockValue,
-    currentEndLockDate,
     computedNewEndLockDate,
     setIsPermaLock,
     isPermaLock,

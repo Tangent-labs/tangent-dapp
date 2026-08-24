@@ -1,6 +1,5 @@
 "use client"
 
-import { InfinityIcon } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
 import { formatDate } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
@@ -9,11 +8,12 @@ import { FormAlert } from "@/components/design_system/inputs/form_alert"
 import { isPermaLocked } from "../rstan_layout_controller"
 import { useVsTanMergeContext } from "./rstan_merge_context"
 import { LockPositionSelectTemplate } from "../../usg/usg_type"
-import { IconVsTan, IconOpenOutside } from "@/components/icons"
+import { IconOpenOutside } from "@/components/icons"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { InputSelect } from "@/components/design_system/inputs/input_select"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
+import { IconInfinity } from "@/components/icons/icon_infinity"
 
 export const VsTanMergeContent = () => {
   const { lockData } = useVsTanContext()
@@ -120,7 +120,7 @@ export const VsTanMergeContent = () => {
           Balance:
           {firstPositionToMerge && firstPositionToMergeInfo?.amount && (
             <span className="flex items-center justify-end text-lg font-semibold text-white">
-              {formatBigInt(firstPositionToMergeInfo?.amount, 18, 2)} <IconVsTan className="ml-2 h-5 w-5" />
+              {formatBigInt(firstPositionToMergeInfo?.amount, 18, 2)} <TokenImage token="VSTAN" size={16} className="ml-2 w-4" />
             </span>
           )}
         </div>
@@ -132,7 +132,7 @@ export const VsTanMergeContent = () => {
           Balance:
           {secondPositionToMerge && secondPositionToMergeInfo?.amount && (
             <span className="flex items-center justify-end text-lg font-semibold text-white">
-              {formatBigInt(secondPositionToMergeInfo?.amount, 18, 2)} <IconVsTan className="ml-2 h-5 w-5" />
+              {formatBigInt(secondPositionToMergeInfo?.amount, 18, 2)} <TokenImage token="VSTAN" size={16} className="ml-2 w-4" />
             </span>
           )}
         </div>
@@ -151,20 +151,20 @@ export const VsTanMergeContent = () => {
 
             {/* Both rows mirror the header widths above : 1/3 - 8/12 - hidden, then 3/12 - 6/12 - 3/12 from sm */}
             <div className="my-1 flex w-full items-center gap-2 text-[16px]">
-              <div className="relative flex h-10 w-1/3 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold sm:w-3/12">
+              <div className="relative flex h-8 w-1/3 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold sm:w-3/12">
                 #{firstPositionToMergeInfo?.tokenId}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-tonic py-0.5 text-xs text-black">Updated</div>
               </div>
 
               {/* The surviving position ends up holding both balances */}
-              <div className="flex h-10 w-8/12 items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 font-semibold sm:w-6/12">
+              <div className="flex h-8 w-8/12 items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 font-semibold sm:w-6/12">
                 {formatBigInt(computedNewAmount, 18, 2)}
-                <IconVsTan className="h-5 w-5" />
+                <TokenImage token="VSTAN" size={16} className="w-4" />
               </div>
 
-              <div className="hidden h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 sm:flex">
+              <div className="hidden h-8 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 sm:flex">
                 {isPermaLocked(firstPositionToMergeInfo) || isPermaLocked(secondPositionToMergeInfo) ? (
-                  <InfinityIcon className="w-5" />
+                  <IconInfinity className="w-4" />
                 ) : (
                   <> {formatDate(new Date(Number(computedNewUnlockDate) * 1000), "dd/MM/yyyy")}</>
                 )}
@@ -172,24 +172,24 @@ export const VsTanMergeContent = () => {
             </div>
 
             <div className="my-1 flex w-full items-center gap-2 text-[16px]">
-              <div className="relative flex h-10 w-1/3 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold sm:w-3/12">
+              <div className="relative flex h-8 w-1/3 items-center justify-start rounded-[10px] bg-overlay-panel px-4 font-semibold sm:w-3/12">
                 #{secondPositionToMergeInfo?.tokenId}
                 <div className="absolute right-0 top-0 flex w-[60px] justify-center rounded-[10px] bg-danger py-0.5 text-xs text-black">Deleted</div>
               </div>
 
               {/* Emptied into the position above, so it ends at zero */}
-              <div className="flex h-10 w-8/12 items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 font-semibold text-subtitle sm:w-6/12">
+              <div className="flex h-8 w-8/12 items-center justify-center gap-2 rounded-[10px] bg-overlay-panel px-4 font-semibold text-subtitle sm:w-6/12">
                 {formatBigInt(secondPositionToMergeInfo?.amount, 18, 2)}
-                <IconVsTan className="h-5 w-5" />
+                <TokenImage token="VSTAN" size={16} className="w-4" />
                 <span className="text-sm">→ 0</span>
               </div>
 
-              <div className="hidden h-10 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 sm:flex">-</div>
+              <div className="hidden h-8 w-3/12 items-center justify-center rounded-[10px] bg-overlay-panel px-4 sm:flex">-</div>
             </div>
 
-            <div className="flex h-10 w-full items-center justify-center rounded-[10px] bg-overlay-panel px-4 sm:hidden">
+            <div className="flex h-8 w-full items-center justify-center rounded-[10px] bg-overlay-panel px-4 sm:hidden">
               {isPermaLocked(firstPositionToMergeInfo) || isPermaLocked(secondPositionToMergeInfo) ? (
-                <InfinityIcon className="w-5" />
+                <IconInfinity className="w-4" />
               ) : (
                 <> Unlock Date {formatDate(new Date(Number(computedNewUnlockDate) * 1000), "dd/MM/yyyy")}</>
               )}
@@ -213,10 +213,10 @@ export const VsTanMergeContent = () => {
               </div>
 
               <div className="my-1 flex w-full items-center gap-2">
-                <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[10px]">
+                <div className="flex h-8 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[10px]">
                   #{secondPositionToMergeInfo.tokenId}
                 </div>
-                <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
+                <div className="flex h-8 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
                   {formatBigInt(secondPositionToMergeInfo.claimable, 18, 2)}
                   <TokenImage token={claimAsSUSG ? "sUSG" : "USG"} className="" size={16} />
                 </div>

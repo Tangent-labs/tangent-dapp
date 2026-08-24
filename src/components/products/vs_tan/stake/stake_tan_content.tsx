@@ -1,26 +1,21 @@
 "use client"
 
-import Link from "next/link"
-import Image from "next/image"
 import { formatUnits } from "viem"
 import { useStakeTanContext } from "./stake_tan_context"
 import { computeProjection } from "./stake_tan_controller"
 import { TanPositionPerformancePanel } from "./components/position_performance_panel"
-import { IconChevron, IconOpenOutside } from "@/components/icons"
+import { IconChevron } from "@/components/icons"
 import { Divider } from "@/components/design_system/structure/divider"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { useRootContext } from "@/components/products/root/root_context"
 import { FormAlert } from "@/components/design_system/inputs/form_alert"
-import { PageHeader } from "@/components/design_system/structure/page_header"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
 import { LargeButtonTab } from "@/components/design_system/inputs/large_button_tab"
 import { StaticCardAssetInput } from "../../predeposit/components/StaticCardAssetInput"
-import { formatBigInt, formatDollar, formatMillions, formatNumber } from "@/lib/number_formatter"
+import { formatBigInt, formatNumber } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
-import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
-import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 
 export default function StakeTanContent() {
   const {
@@ -56,40 +51,7 @@ export default function StakeTanContent() {
 
   return (
     <>
-      <div className="flex items-stretch justify-between gap-5">
-        <PageHeader>
-          <Image height={150} width={150} src="/medias/tokens/STAN.webp" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
-
-          <div className="flex flex-col items-start justify-center px-6">
-            <span className="text-4xl font-semibold">Stake TAN</span>
-            <p className="mt-2 text-[15px]">
-              Stake TAN to receive sTAN and earn a share of protocol earnings passively. Staked TAN stays liquid and carries no governance rights.
-            </p>
-            <Link
-              className="flex cursor-pointer items-center justify-center underline hover:text-white/30"
-              href="https://docs.tangent.finance/docs/tan/stan"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn more about sTAN <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white" />
-            </Link>
-          </div>
-        </PageHeader>
-
-        <div className="flex h-auto w-full flex-col justify-between gap-[10px] xl:w-1/2">
-          <PointsCampaignLiveCard />
-
-          <ThreeCardRowWithMask
-            contents={[
-              { key: "Supply", value: formatMillions(Number(formatUnits(TANsTANMetrics?.sTanSupply || 0n, 18))) },
-              { key: "sTAN price", value: formatDollar(formatUnits(TANsTANMetrics?.sTanPrice || 0n, 18), 4) },
-              { key: "sTAN APY", value: sTanCurrentAPY.toFixed(2) + "%" },
-            ]}
-          />
-        </div>
-      </div>
-
-      <div className="mt-5 flex w-full flex-col gap-2 lg:flex-row lg:items-start lg:gap-5">
+      <div className="mt-4 flex w-full flex-col gap-2 lg:flex-row lg:items-start lg:gap-5">
         <ReliefCard className="flex w-full flex-col items-center justify-start gap-1 p-5 lg:w-5/12 xl:w-1/3">
           <div className="flex w-full items-center justify-between gap-4">
             <LargeButtonTab

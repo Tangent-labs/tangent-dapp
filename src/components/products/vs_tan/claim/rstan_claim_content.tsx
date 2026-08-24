@@ -103,10 +103,10 @@ export const VsTanClaimContent = () => {
 
           {selectedPositionsData.map((position: LockPosition, index: number) => (
             <div key={index} className="my-1 flex w-full items-center gap-2">
-              <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[10px]">
+              <div className="flex h-8 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[10px]">
                 #{position.tokenId}
               </div>
-              <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
+              <div className="flex h-8 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
                 {formatBigInt(receivedFor(position), 18, 2)}
                 <TokenImage token={claimAsSUSG ? "sUSG" : "USG"} className="" size={16} />
               </div>

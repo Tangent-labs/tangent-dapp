@@ -40,7 +40,6 @@ export default function VsTanLockContent() {
     depositAssetInfo,
     maxAmountToDeposit,
     maxDepositWeiValue,
-    currentEndLockDate,
     computedNewEndLockDate,
     setDepositPosition,
     actionLock,
@@ -135,7 +134,7 @@ export default function VsTanLockContent() {
           newValue={computedNewLockValue}
         />
 
-        <EvolutionBox className="w-full" originalValue={currentEndLockDate} label="Unlock date" newValue={computedNewEndLockDate} />
+        <EvolutionBox className="w-full" originalValue={computedNewEndLockDate} label="Unlock date" />
       </div>
 
       <div className="mt-2 flex w-full items-center justify-center gap-4 rounded-[10px] p-3 text-sm text-subtitle backdrop-blur-[60px]">

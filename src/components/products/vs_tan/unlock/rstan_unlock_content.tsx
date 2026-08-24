@@ -4,7 +4,7 @@ import { Switch } from "@/components/ui/switch"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useVsTanContext } from "../rstan_layout_context"
 import { useVsTanUnlockContext } from "./rstan_unlock_context"
-import { IconOpenOutside, IconVsTan } from "@/components/icons"
+import { IconOpenOutside } from "@/components/icons"
 import { Button } from "@/components/design_system/inputs/button"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { FormAlert } from "@/components/design_system/inputs/form_alert"
@@ -110,11 +110,12 @@ export const VsTanUnlockContent = () => {
 
               {unlockPositionInfo && unlockPositionInfo?.amount ? (
                 <div className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 font-semibold text-tonic backdrop-blur-[60px]">
-                  {formatBigInt(tanReceived, 18, 2)} <IconVsTan className="h-5 w-5" />
+                  {formatBigInt(tanReceived, 18, 2)} <TokenImage token="VSTAN" size={16} className="w-4" />
                 </div>
               ) : (
                 <div className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px]">
-                  0 <IconVsTan className="h-5 w-5" />
+                  0
+                  <TokenImage token="VSTAN" size={16} className="w-4" />
                 </div>
               )}
             </div>
@@ -124,11 +125,11 @@ export const VsTanUnlockContent = () => {
 
               {unlockPositionInfo && unlockPositionInfo?.amount ? (
                 <div className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 font-semibold backdrop-blur-[60px]">
-                  {formatBigInt(tanForfeited, 18, 2)} <IconVsTan className="h-5 w-5" />
+                  {formatBigInt(tanForfeited, 18, 2)} <TokenImage token="VSTAN" size={16} className="w-4" />
                 </div>
               ) : (
                 <div className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-2 backdrop-blur-[60px]">
-                  0 <IconVsTan className="h-5 w-5" />
+                  0 <TokenImage token="VSTAN" size={16} className="w-4" />
                 </div>
               )}
             </div>
@@ -155,10 +156,10 @@ export const VsTanUnlockContent = () => {
               </div>
 
               <div className="my-1 flex w-full items-center gap-2">
-                <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[10px]">
+                <div className="flex h-8 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[10px]">
                   #{unlockPositionInfo.tokenId}
                 </div>
-                <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
+                <div className="flex h-8 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
                   {formatBigInt(unlockPositionInfo.claimable, 18, 2)}
                   <TokenImage token={claimAsSUSG ? "sUSG" : "USG"} className="" size={16} />
                 </div>
@@ -214,11 +215,11 @@ export const VsTanUnlockContent = () => {
                 <div className="flex items-center font-semibold">#{position.tokenId.toString()}</div>
 
                 <div className="flex items-center gap-1 font-semibold">
-                  {formatBigInt(position.amount, 18, 2)} <IconVsTan className="h-5 w-5" />
+                  {formatBigInt(position.amount, 18, 2)} <TokenImage token="VSTAN" size={16} className="w-4" />
                 </div>
 
                 <div className="flex items-center gap-1 text-subtitle">
-                  Bounty {formatBigInt(bounty, 18, 4)} <IconVsTan className="h-4 w-4" />
+                  Bounty {formatBigInt(bounty, 18, 4)} <TokenImage token="VSTAN" size={16} className="w-4" />
                 </div>
 
                 <Button disabled={isLoading} onClick={() => actionKick(position.tokenId)}>

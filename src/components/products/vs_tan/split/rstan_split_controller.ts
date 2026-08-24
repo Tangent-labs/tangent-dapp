@@ -5,7 +5,6 @@ import { FormError, FormState, LockPosition } from "../../usg/usg_type"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 import { isExpired } from "../rstan_layout_controller"
-import { formatBigInt } from "@/lib/number_formatter"
 
 export const doSplit = async (tokenId: bigint, walletClient: WalletClient, amountToRemove: bigint) => {
   const txData = {
@@ -19,13 +18,7 @@ export const doSplit = async (tokenId: bigint, walletClient: WalletClient, amoun
   return await waitForTransaction(txHash)
 }
 
-export function getSplitFormState(
-  splitPositionInfo: LockPosition | undefined,
-  amountToRemove: bigint,
-  minLock: bigint | undefined,
-  chainTimestamp: bigint | undefined,
-  isWellConnected: boolean
-): FormState {
+export function getSplitFormState(splitPositionInfo: LockPosition | undefined, chainTimestamp: bigint | undefined, isWellConnected: boolean): FormState {
   const errors: FormError[] = []
 
   if (!isWellConnected) {
@@ -39,21 +32,6 @@ export function getSplitFormState(
 
   if (isExpired(splitPositionInfo, chainTimestamp)) {
     errors.push(dappErrors["lock-expired"])
-  }
-
-  // split() enforces the minimum on BOTH resulting positions, so a position below twice the
-  // minimum cannot be split at any ratio
-  if (!!minLock) {
-    const remaining = splitPositionInfo.amount - amountToRemove
-
-    if (splitPositionInfo.amount < minLock * 2n) {
-      errors.push({
-        ...dappErrors["min-lock"],
-        subtitle: `This position holds ${formatBigInt(splitPositionInfo.amount, 18, 2)} TAN. Splitting requires at least ${formatBigInt(minLock * 2n, 18, 2)}.`,
-      })
-    } else if (amountToRemove < minLock || remaining < minLock) {
-      errors.push({ ...dappErrors["min-lock"], subtitle: `Each of the two positions must keep at least ${formatBigInt(minLock, 18, 2)} TAN.` })
-    }
   }
 
   return { canProcess: errors.length === 0, errors, haveToApprove: false }

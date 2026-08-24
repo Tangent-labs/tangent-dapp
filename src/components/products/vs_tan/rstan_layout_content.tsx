@@ -1,17 +1,14 @@
 "use client"
 
-import Image from "next/image"
 import { ListState } from "@/types"
 import { useRouter } from "next/navigation"
-import { InfinityIcon } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
 import { formatDate } from "@/lib/other_formatter"
 import { LockPosition } from "../usg/usg_type"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useVsTanContext } from "./rstan_layout_context"
-import { IconVsTan, IconChevron } from "@/components/icons"
+import { IconChevron } from "@/components/icons"
 import { isPermaLocked, lockListHeaders } from "./rstan_layout_controller"
-import { tanPriceToDollar } from "./tan_price"
 import { ListRow } from "@/components/design_system/list/list_row"
 import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
 import { useNextEndLockTime } from "./use_next_end_lock_time"
@@ -23,8 +20,7 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { VsTanFeatureTabs } from "./vs_tan_features_tabs/vs_tan_features_tabs"
 import { USGHoverCard } from "@/components/design_system/structure/usg_hover_card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
-import { PageHeader } from "@/components/design_system/structure/page_header"
+import { IconInfinity } from "@/components/icons/icon_infinity"
 
 const listeState: ListState = {
   search: undefined,
@@ -53,7 +49,7 @@ export const VsTanLayoutContent = ({
 }>) => {
   const router = useRouter()
 
-  const { lockData, feature } = useVsTanContext()
+  const { feature } = useVsTanContext()
 
   const onTabClick = (feat: string) => {
     router.push(`/tan/${feat.toLowerCase()}`)
@@ -61,46 +57,9 @@ export const VsTanLayoutContent = ({
 
   return (
     <>
-      <div className="flex w-full items-stretch justify-between gap-5">
-        <PageHeader>
-          <Image height={140} width={140} src={`/medias/tokens/vsTAN.png`} alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
-          <div className="flex flex-col items-start justify-center gap-3 px-6">
-            <span className="text-4xl font-semibold">Lock TAN</span>
-            <p className="text-xs">
-              Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT
-              stable pool & CVX stable pool).
-            </p>
-            <p className="text-xs">Rewards are distributed weekly, at the beginning of each epoch. Staking positions are represented by NFTs. Learn more</p>
-          </div>
-        </PageHeader>
-
-        <div className="flex h-auto w-full flex-col items-center justify-between gap-3 xl:w-1/2">
-          <PointsCampaignLiveCard></PointsCampaignLiveCard>
-
-          <div className="flex w-full items-center justify-between rounded-[10px] bg-overlay-panel p-3 backdrop-blur-[60px]">
-            <IconVsTan className="h-10 w-32"></IconVsTan>
-
-            <div className="flex w-full flex-col items-center justify-center">
-              <div className="text-xs font-semibold text-subtitle">Total Locked</div>
-              <div className="text-md font-semibold text-white">{formatBigInt(lockData?.totalLocked, 18, 2)}</div>
-            </div>
-
-            <div className="flex w-full flex-col items-center justify-center">
-              <div className="text-xs font-semibold text-subtitle">vsTan</div>
-              <div className="text-md font-semibold text-white">{tanPriceToDollar(lockData?.tanPrice)}</div>
-            </div>
-
-            <div className="flex w-full flex-col items-center justify-center rounded-[10px] bg-button-active py-2">
-              <div className="text-xs font-semibold text-black">APR</div>
-              <div className="text-md font-semibold text-white">{formatBigInt(lockData?.tanAPR, 18, 2)}%</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="my-4 flex w-full flex-col gap-[20px] xl:flex-row">
-        <ReliefCard className="flex w-full flex-col items-center justify-start p-3 xl:w-5/12">
-          <VsTanFeatureTabs feature={feature} onTabClick={onTabClick}></VsTanFeatureTabs>
+        <ReliefCard className="flex w-full flex-col items-center justify-start p-[20px] xl:w-5/12">
+          <VsTanFeatureTabs feature={feature} onTabClick={onTabClick} />
 
           <Divider />
 
@@ -121,9 +80,13 @@ export const VsTanLayoutContent = ({
   )
 }
 
+// One shared element : EvolutionBox compares old and new by reference, so both helpers must
+// return the very same instance for an already-infinite date to read as unchanged.
+const infinityDate = <IconInfinity className="h-auto w-5" />
+
 // Unlock date a position currently has
 const currentUnlockDate = (position: LockPosition) => {
-  if (isPermaLocked(position)) return "∞"
+  if (isPermaLocked(position)) return infinityDate
 
   return formatDate(new Date(Number(position?.endLockTime) * 1000), "dd/MM/yyyy")
 }
@@ -131,9 +94,9 @@ const currentUnlockDate = (position: LockPosition) => {
 // Unlock date the Extend button would move it to : perma lock never unlocks, otherwise the lock is
 // reset to its full duration
 const extendedUnlockDate = (position: LockPosition, extendToPermaLock: boolean, nextEndLockTime: string | null) => {
-  if (isPermaLocked(position)) return "∞"
+  if (isPermaLocked(position)) return infinityDate
 
-  if (extendToPermaLock) return "∞"
+  if (extendToPermaLock) return infinityDate
 
   if (!nextEndLockTime) return currentUnlockDate(position)
 
@@ -166,7 +129,8 @@ function LockPositionList() {
               </div>
               <div className="flex items-center justify-center text-lg font-semibold">
                 {formatBigInt(lockPosition?.amount, 18, 2)}
-                <IconVsTan className="ml-1 w-5"></IconVsTan>
+
+                <TokenImage token="VSTAN" size={16} className="ml-1 w-4" />
               </div>
 
               <>
@@ -176,7 +140,7 @@ function LockPositionList() {
                 </div>
                 <div className="flex w-1/2 items-center justify-center whitespace-nowrap text-sm font-semibold sm:text-lg xl:w-1/3">
                   {isPermaLocked(lockPosition) ? (
-                    <InfinityIcon className="w-5"></InfinityIcon>
+                    <IconInfinity className="w-4" />
                   ) : (
                     <>
                       {/* Two-digit year on small screens : the date is the widest cell and was clipping */}
@@ -223,7 +187,7 @@ function LockPositionList() {
                         <Switch checked={extendToPermaLock} onCheckedChange={() => setExtendToPermaLock(!extendToPermaLock)} />
                       </div>
 
-                      <Button className="w-24" onClick={() => onClickExtend(selectedPosition)}>
+                      <Button size="sm" className="w-24" onClick={() => onClickExtend(selectedPosition)}>
                         Extend
                       </Button>
                     </>

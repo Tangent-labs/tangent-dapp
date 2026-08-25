@@ -2,29 +2,17 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { cn } from "@/lib/utils"
+import { useMemo } from "react"
 import { IconOpenOutside } from "@/components/icons"
 import { usePathname, useRouter } from "next/navigation"
+import { formatBigInt } from "@/lib/number_formatter"
+import { useVsTanContext } from "./rstan_layout_context"
 import { IconStars } from "@/components/icons/icon_stars"
 import { PageHeader } from "@/components/design_system/structure/page_header"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
-
-const SectionTab = ({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) => (
-  <button
-    type="button"
-    role="tab"
-    aria-selected={active}
-    onClick={onClick}
-    className={cn(
-      "w-1/2 border-b-2 pb-2 text-center text-lg font-semibold transition-colors duration-200 ease-in-out",
-      active ? "border-button-active text-white" : "border-white/10 text-subtitle hover:text-white"
-    )}
-  >
-    {label}
-  </button>
-)
+import { SlidingTabs } from "@/components/products/usg/airdrop/tasks/components/SlidingTabs"
 
 /**
  * Header shared by every /tan route : only the left card changes with the section,
@@ -36,6 +24,10 @@ export const TanPageHeader = () => {
   const pathname = usePathname()
 
   const isStakeSection = !!pathname?.startsWith("/tan/stake")
+
+  const { lockData } = useVsTanContext()
+
+  const vsTanBalance = useMemo(() => lockData?.positions.reduce((acc, position) => acc + position.amount, 0n), [lockData])
 
   return (
     <>
@@ -87,17 +79,17 @@ export const TanPageHeader = () => {
         <div className="flex h-auto w-full flex-col items-center justify-between gap-3 xl:w-1/2">
           <PointsCampaignLiveCard />
 
-          <ReliefCard className="relative mb-2 flex w-full flex-col items-center justify-between gap-2 px-3 py-[15.5px] md:flex-row xl:mb-0">
+          <ReliefCard className="relative mb-2 grid w-full grid-cols-2 gap-x-2 gap-y-4 px-3 py-[15.5px] md:grid-cols-4 md:gap-2 xl:mb-0">
             <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: 'url("./medias/card_bg_blocks.png")' }} />
 
             <div className="flex w-full flex-col items-center justify-center">
               <div className="text-xs font-semibold text-subtitle">vsTAN Balance</div>
               <div className="text-md flex items-center justify-center gap-1 font-semibold text-white">
-                <span>1,234,567</span>
+                <span>{formatBigInt(vsTanBalance, 18, 2)}</span>
                 <TokenImage token="VSTAN" size={16} className="w-4" />
               </div>
             </div>
-            <div className="flex w-full flex-col items-center justify-center border-r border-white/10">
+            <div className="flex w-full flex-col items-center justify-center md:border-r md:border-white/10">
               <div className="text-xs font-semibold text-subtitle">vsTAN APY</div>
               <div className="text-md flex items-center justify-center gap-1 font-semibold text-white">
                 12%
@@ -125,10 +117,12 @@ export const TanPageHeader = () => {
         </div>
       </div>
 
-      <div role="tablist" className="my-4 flex w-full">
-        <SectionTab label="vsTAN" active={!isStakeSection} onClick={() => router.push("/tan/lock")} />
-        <SectionTab label="sTAN" active={isStakeSection} onClick={() => router.push("/tan/stake")} />
-      </div>
+      <SlidingTabs
+        className="my-4"
+        labels={["vsTAN", "sTAN"]}
+        value={isStakeSection ? "sTAN" : "vsTAN"}
+        onSwitchTab={(label: string) => router.push(label === "sTAN" ? "/tan/stake" : "/tan/lock")}
+      />
     </>
   )
 }

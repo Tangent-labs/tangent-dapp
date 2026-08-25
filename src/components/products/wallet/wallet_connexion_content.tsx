@@ -19,7 +19,7 @@ type WalletConnexionContentProps = {
 export function WalletConnexionContent({ className }: WalletConnexionContentProps) {
   const { copied, copy } = useClipboard()
 
-  const { USGsUSGMetrics } = useUSGContext()
+  const { USGsUSGMetrics, TANsTANMetrics } = useUSGContext()
 
   const { connect, disconnect, isConnected, isChainConnected, currentAddress } = useWalletConnexionContext()
 
@@ -65,7 +65,7 @@ export function WalletConnexionContent({ className }: WalletConnexionContentProp
               </span>
             </div>
 
-            <div className="my-3 flex w-full items-center justify-between gap-2">
+            <div className="my-3 grid w-full grid-cols-2 gap-2">
               <ReliefCard className="flex w-full items-center justify-center gap-3 p-2">
                 <TokenImage token="USG" size={24} />
 
@@ -84,6 +84,28 @@ export function WalletConnexionContent({ className }: WalletConnexionContentProp
                   <span className="text-xs"> {formatBigInt(USGsUSGMetrics?.sUSGBalance, 18, 2)} </span>
                   <span className="text-xs text-subtitle">
                     ${formatBigInt(((USGsUSGMetrics?.sUSGBalance || 0n) * (USGsUSGMetrics?.sUSGPrice || 0n)) / BigInt(10 ** 18), 18, 2)}
+                  </span>
+                </div>
+              </ReliefCard>
+
+              <ReliefCard className="flex w-full items-center justify-center gap-3 p-2">
+                <TokenImage token="TAN" size={24} />
+
+                <div className="flex flex-col items-start justify-center">
+                  <span className="text-xs"> {formatBigInt(TANsTANMetrics?.tanBalance, 18, 2)} </span>
+                  <span className="text-xs text-subtitle">
+                    ${formatBigInt(((TANsTANMetrics?.tanBalance || 0n) * (TANsTANMetrics?.tanPrice || 0n)) / BigInt(10 ** 18), 18, 2)}
+                  </span>
+                </div>
+              </ReliefCard>
+
+              <ReliefCard className="flex w-full items-center justify-center gap-3 p-2">
+                <TokenImage token="sTAN" size={24} />
+
+                <div className="flex flex-col items-start justify-center">
+                  <span className="text-xs"> {formatBigInt(TANsTANMetrics?.sTanBalance, 18, 2)} </span>
+                  <span className="text-xs text-subtitle">
+                    ${formatBigInt(((TANsTANMetrics?.sTanBalance || 0n) * (TANsTANMetrics?.sTanPrice || 0n)) / BigInt(10 ** 18), 18, 2)}
                   </span>
                 </div>
               </ReliefCard>

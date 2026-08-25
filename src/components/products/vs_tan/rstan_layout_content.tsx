@@ -21,6 +21,7 @@ import { VsTanFeatureTabs } from "./vs_tan_features_tabs/vs_tan_features_tabs"
 import { USGHoverCard } from "@/components/design_system/structure/usg_hover_card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { IconInfinity } from "@/components/icons/icon_infinity"
+import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
 
 const listeState: ListState = {
   search: undefined,
@@ -104,11 +105,34 @@ const extendedUnlockDate = (position: LockPosition, extendToPermaLock: boolean, 
 }
 
 function LockPositionList() {
+  const router = useRouter()
+
   const { headers, listState, udpateSort } = useListContext()
 
-  const { lockData, selectedPosition, setSelectedPosition, extendToPermaLock, onClickExtend, setExtendToPermaLock, onClickRemovePermaLock } = useVsTanContext()
+  const { lockData, selectedPosition, setSelectedPosition, extendToPermaLock, onClickExtend, setExtendToPermaLock, onClickRemovePermaLock, feature } =
+    useVsTanContext()
 
   const { nextEndLockTime } = useNextEndLockTime(lockData)
+
+  // lockData is undefined until the first fetch resolves : keep the bare header rather than
+  // flashing the empty state at every page load
+  if (lockData && lockData.positions.length === 0) {
+    return (
+      <div className="flex w-full flex-col items-center justify-center gap-3 py-16">
+        <TokenImage token="VSTAN" size={48} className="w-12" />
+
+        <div className="text-lg font-semibold text-white">No locked positions yet</div>
+
+        <div className="max-w-72 text-center text-xs text-subtitle">Lock TAN to create your first position and start earning weekly rewards.</div>
+
+        {feature !== "lock" && (
+          <Button size="sm" className="mt-2 w-28" onClick={() => router.push("/tan/lock")}>
+            Lock TAN
+          </Button>
+        )}
+      </div>
+    )
+  }
 
   return (
     <>
@@ -158,12 +182,23 @@ function LockPositionList() {
             {lockPosition == selectedPosition && (
               <div className="slide-down-fade-in flex w-full flex-wrap rounded-b-lg bg-overlay-panel px-3 backdrop-blur-[60px]">
                 <div className="flex w-full flex-wrap items-center justify-between gap-3 rounded-b-lg border-t border-white/10 py-[10px]">
-                  {/* Full width on mobile so the toggle and the button wrap onto their own row */}
-                  <div className="flex w-full items-center justify-start gap-3 sm:w-auto sm:shrink-0">
+                  <div className="flex items-center justify-start gap-3 sm:shrink-0">
                     <div className="hidden text-sm text-subtitle md:flex">Unlock date</div>
 
+                    {/* The boxed EvolutionBox is too wide for one row on mobile : plain text there, animated box from sm up */}
+                    <div className="flex items-center gap-2 text-sm font-semibold sm:hidden">
+                      <span>{currentUnlockDate(lockPosition)}</span>
+
+                      {extendedUnlockDate(lockPosition, extendToPermaLock, nextEndLockTime) !== currentUnlockDate(lockPosition) && (
+                        <>
+                          <IconSingleArrow className="h-3 w-3" />
+                          <span style={{ color: "var(--tgt-tonic)" }}>{extendedUnlockDate(lockPosition, extendToPermaLock, nextEndLockTime)}</span>
+                        </>
+                      )}
+                    </div>
+
                     <EvolutionBox
-                      className="flex w-full justify-center sm:w-[232px]"
+                      className="hidden w-[232px] sm:flex sm:justify-center"
                       originalValue={currentUnlockDate(lockPosition)}
                       newValue={extendedUnlockDate(lockPosition, extendToPermaLock, nextEndLockTime)}
                     />

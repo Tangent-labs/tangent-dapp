@@ -7,11 +7,12 @@ import { formatTimeNumber } from "../predeposit.controller"
 
 type PredepositRetentionPhaseProps = {
   amount: bigint
+  isFinished?: boolean
 }
 
 const PREDEPOSIT_CAP = 7_000_000n * 10n ** 18n
 
-export const PredepositRetentionPhase = ({ amount }: PredepositRetentionPhaseProps) => {
+export const PredepositRetentionPhase = ({ amount, isFinished }: PredepositRetentionPhaseProps) => {
   const targetDate = new Date(process.env.NEXT_PUBLIC_PREDEPOSIT_END_DATE as string)?.getTime()
 
   const computeTimeLeft = useCallback(() => {
@@ -44,11 +45,15 @@ export const PredepositRetentionPhase = ({ amount }: PredepositRetentionPhasePro
 
   return (
     <section className="mt-12 flex w-full flex-col items-center justify-center">
-      {amount === PREDEPOSIT_CAP && <div className="text-center text-4xl text-subtitle">Cap reached</div>}
+      {!isFinished && amount === PREDEPOSIT_CAP && <div className="text-center text-4xl text-subtitle">Cap reached</div>}
 
-      <div className="text-[72px] font-semibold text-white lg:text-[120px]"> ${formatBigInt(amount, 18, 0)} </div>
+      {isFinished ? (
+        <div className="text-[48px] font-semibold text-white"> Pre-Deposit ended</div>
+      ) : (
+        <div className="text-[72px] font-semibold text-white lg:text-[120px]"> ${formatBigInt(amount, 18, 0)} </div>
+      )}
 
-      {timeLeft && (
+      {!isFinished && timeLeft && (
         <div className="flex items-center gap-0 lg:gap-12">
           <div className="flex w-24 flex-col items-center justify-center">
             <div className="text-4xl font-light tracking-wider text-white">{formatTimeNumber(timeLeft.days)}</div>

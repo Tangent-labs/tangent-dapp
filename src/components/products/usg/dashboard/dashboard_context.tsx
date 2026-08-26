@@ -2,8 +2,8 @@
 
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useUSGMaketListContext } from "../list/usg_market_list_context"
-import { MarketDebtData, ProtocolRevenue, RevenueRange, USGCollateralData, USGGlobalData } from "../usg_type"
-import { fetchProtocolRevenues } from "../client_api"
+import { MarketDebtData, ProtocolRevenue, ProtocolVolume, RevenueRange, USGCollateralData, USGGlobalData, VolumeRange } from "../usg_type"
+import { fetchProtocolRevenues, fetchProtocolVolumes } from "../client_api"
 
 type USGDashboardContextProps = {
   children: ReactNode
@@ -32,6 +32,14 @@ type USGDashboardContextValues = {
   fetchRevenues: (range: RevenueRange) => void
 
   totalRevenues: number
+
+  protocolVolumes: ProtocolVolume[]
+
+  selectedVolumeTab: VolumeRange
+
+  fetchVolumes: (range: VolumeRange) => void
+
+  totalVolumes: number
 }
 
 export const USGDashboardContext = createContext<USGDashboardContextValues | undefined>(undefined)
@@ -54,8 +62,24 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
     setTotalRevenues(total)
   }
 
+  const [protocolVolumes, setProtocolVolumes] = useState<ProtocolVolume[]>([])
+
+  const [selectedVolumeTab, setSelectedVolumeTab] = useState<VolumeRange>("week")
+
+  const [totalVolumes, setTotalVolumes] = useState(0)
+
+  const fetchVolumes = async (range: VolumeRange) => {
+    setSelectedVolumeTab(range)
+
+    const { volumes, total } = await fetchProtocolVolumes(range)
+
+    setProtocolVolumes(volumes)
+    setTotalVolumes(total)
+  }
+
   useEffect(() => {
     fetchRevenues("week")
+    fetchVolumes("week")
   }, [])
 
   const marketDebtMaxValue = useMemo(() => {
@@ -75,6 +99,10 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
     selectedRevenueTab,
     fetchRevenues,
     totalRevenues,
+    protocolVolumes,
+    selectedVolumeTab,
+    fetchVolumes,
+    totalVolumes,
   }
 
   return <USGDashboardContext.Provider value={contextValue}>{children}</USGDashboardContext.Provider>

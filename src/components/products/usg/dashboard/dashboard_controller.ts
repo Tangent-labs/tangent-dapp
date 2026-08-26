@@ -1,7 +1,7 @@
 "use client"
 
 import { formatMillions } from "@/lib/number_formatter"
-import { RevenueRange } from "../usg_type"
+import { RevenueRange, VolumeRange } from "../usg_type"
 
 export const formatYAxis = (tick: number) => `$${formatMillions(tick)}`
 
@@ -75,7 +75,7 @@ const MONTHS_RECORD: Record<string, string> = {
 /**
  * Map what the API returns with shorter version for X axis
  */
-export const formatPeriodLabel = (period: string, range: RevenueRange): string => {
+export const formatPeriodLabel = (period: string, range: RevenueRange | VolumeRange): string => {
   if (!period) return ""
 
   if (range === "month") return period.split(" ")[0]

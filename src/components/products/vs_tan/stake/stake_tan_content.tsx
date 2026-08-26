@@ -16,6 +16,8 @@ import { StaticCardAssetInput } from "../../predeposit/components/StaticCardAsse
 import { formatBigInt, formatNumber } from "@/lib/number_formatter"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 export default function StakeTanContent() {
   const {
@@ -48,6 +50,12 @@ export default function StakeTanContent() {
 
   const inputInAsset = isStake ? "TAN" : "sTAN"
   const inputOutAsset = isStake ? "sTAN" : "TAN"
+
+  const router = useRouter()
+
+  useEffect(() => {
+    router.push("/tan/lock")
+  }, [])
 
   return (
     <>

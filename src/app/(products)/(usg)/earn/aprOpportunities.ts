@@ -6,7 +6,7 @@ export const opportunities = [
     link: "https://www.stakedao.org/strategy?protocol=curve&vault=1-0xD4F41eF4127F07335024278433f928B6bAb023D4",
     protocolName: "Stake DAO",
     marketType: "Convex_CRV",
-    points: 15,
+    points: 45,
   },
 
   {
@@ -17,7 +17,7 @@ export const opportunities = [
     protocolName: "Convex",
     marketType: "Convex_CRV",
     pid: 573,
-    points: 15,
+    points: 45,
   },
 
   {
@@ -28,7 +28,7 @@ export const opportunities = [
     link: "https://www.curve.finance/dex/ethereum/pools/0xc6ac08424ee6d1373f03611b96f5da849594b6d8/deposit",
     protocolName: "Curve",
     marketType: "Convex_CRV",
-    points: 15,
+    points: 45,
   },
 
   {
@@ -39,7 +39,7 @@ export const opportunities = [
     link: "https://www.curve.finance/dex/ethereum/pools/0x21c32256b62c06684e62c9c04ec21100a8919d02/deposit",
     protocolName: "Curve",
     marketType: "Convex_CRV",
-    points: 105,
+    points: 315,
   },
 
   {
@@ -50,7 +50,7 @@ export const opportunities = [
     link: "https://www.curve.finance/dex/ethereum/pools/0x21c32256b62c06684e62c9c04ec21100a8919d02/deposit",
     protocolName: "Curve",
     marketType: "Convex_CRV",
-    points: 15,
+    points: 45,
   },
 
   {
@@ -61,7 +61,7 @@ export const opportunities = [
     protocolName: "Convex",
     marketType: "Convex_CRV",
     pid: 572,
-    points: 15,
+    points: 45,
   },
 
   {
@@ -71,7 +71,7 @@ export const opportunities = [
     link: "https://www.stakedao.org/strategy?protocol=curve&vault=1-0x6309fB9bD951e48ec02Ac0B5B99aA5D9B4F17694",
     protocolName: "Stake DAO",
     marketType: "Convex_CRV",
-    points: 15,
+    points: 45,
   },
 
   {
@@ -81,7 +81,7 @@ export const opportunities = [
     link: "https://balancer.fi/pools/ethereum/v3/0xe858f8c6e0ba60fed092ac0b21681fd4cde4fa11",
     protocolName: "Balancer",
     marketType: "Balancer",
-    points: 105,
+    points: 315,
   },
   {
     name: "sUSG/reUSD (unstaked) - Curve",
@@ -91,7 +91,7 @@ export const opportunities = [
     link: "https://www.curve.finance/dex/ethereum/pools/0xc6ac08424ee6d1373f03611b96f5da849594b6d8/deposit",
     protocolName: "Curve",
     marketType: "Convex_CRV",
-    points: 105,
+    points: 315,
   },
   {
     name: "USG/sDOLA (unstaked) - Curve",
@@ -101,7 +101,7 @@ export const opportunities = [
     link: "https://www.curve.finance/dex/ethereum/pools/0x317837aed98bea887074d1f97fd3c83ebca6905b/deposit",
     protocolName: "Curve",
     marketType: "Convex_CRV",
-    points: 105,
+    points: 315,
   },
 
   {
@@ -112,7 +112,7 @@ export const opportunities = [
     link: "https://www.curve.finance/dex/ethereum/pools/0x317837aed98bea887074d1f97fd3c83ebca6905b/deposit",
     protocolName: "Curve",
     marketType: "Convex_CRV",
-    points: 15,
+    points: 45,
   },
 
   {
@@ -123,7 +123,7 @@ export const opportunities = [
     protocolName: "Convex",
     marketType: "Convex_CRV",
     pid: 566,
-    points: 15,
+    points: 45,
   },
   {
     name: "USG/sDOLA - Stake DAO",
@@ -132,7 +132,7 @@ export const opportunities = [
     link: "https://www.stakedao.org/strategy?protocol=curve&vault=1-0x6E195fabfaB7FC6eB242049a8519a91a333D9de1",
     protocolName: "Stake DAO",
     marketType: "Convex_CRV",
-    points: 15,
+    points: 45,
   },
 
   // USG-USDC
@@ -144,7 +144,7 @@ export const opportunities = [
     link: "https://www.curve.finance/dex/ethereum/pools/0x97ba10115da528c113462ede9c20d7adc806d93f/deposit",
     protocolName: "Curve",
     marketType: "Convex_CRV",
-    points: 105,
+    points: 315,
     isPredeposit: true,
   },
   {
@@ -155,7 +155,7 @@ export const opportunities = [
     link: "https://www.curve.finance/dex/ethereum/pools/0x97ba10115da528c113462ede9c20d7adc806d93f/deposit",
     protocolName: "Curve",
     marketType: "Convex_CRV",
-    points: 15,
+    points: 45,
     isPredeposit: true,
   },
   {
@@ -166,7 +166,7 @@ export const opportunities = [
     protocolName: "Convex",
     marketType: "Convex_CRV",
     pid: 541,
-    points: 15,
+    points: 45,
     isPredeposit: true,
   },
   {
@@ -176,7 +176,7 @@ export const opportunities = [
     link: "https://www.stakedao.org/strategy?protocol=curve&vault=1-0x909B19F659b8B99c50128487DE14F9c8F011b3d2",
     protocolName: "Stake DAO",
     marketType: "Convex_CRV",
-    points: 15,
+    points: 45,
     isPredeposit: true,
   },
 
@@ -189,7 +189,7 @@ export const opportunities = [
     link: "https://www.curve.finance/dex/ethereum/pools/0xefc056790bb19702b2164ec6ea6ba3ae01d81195/deposit",
     protocolName: "Curve",
     marketType: "Convex_CRV",
-    points: 105,
+    points: 315,
     isPredeposit: true,
   },
   {
@@ -200,7 +200,7 @@ export const opportunities = [
     link: "https://www.curve.finance/dex/ethereum/pools/0xefc056790bb19702b2164ec6ea6ba3ae01d81195/deposit",
     protocolName: "Curve",
     marketType: "Convex_CRV",
-    points: 15,
+    points: 45,
     isPredeposit: true,
   },
   {
@@ -211,7 +211,7 @@ export const opportunities = [
     protocolName: "Convex",
     pid: 542,
     marketType: "Convex_CRV",
-    points: 15,
+    points: 45,
     isPredeposit: true,
   },
   {
@@ -221,7 +221,7 @@ export const opportunities = [
     link: "https://www.stakedao.org/strategy?protocol=curve&vault=1-0x247E3D3A476a537E740E90a04BC5327663a303e2",
     protocolName: "Stake DAO",
     marketType: "Convex_CRV",
-    points: 15,
+    points: 45,
     isPredeposit: true,
   },
 ]

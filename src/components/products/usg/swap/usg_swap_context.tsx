@@ -15,7 +15,7 @@ import { useSearchParams } from "next/navigation"
 import { SwapConfig, swapConfig } from "./swap_config"
 import { toastTx } from "@/components/design_system/toast"
 import { buildAssetInfo, resolveAssetName } from "./utils"
-import { getQuote, getRoute } from "../global_quote_controller"
+import { getQuote, getRoute, RouteSource } from "../global_quote_controller"
 import { formatBigIntFloor, formatNumber } from "@/lib/number_formatter"
 import { Erc20Details, ERC20S, NATIVE_ETH_ADDRESS } from "@/data/erc20s"
 import { useRootContext } from "@/components/products/root/root_context"
@@ -167,26 +167,33 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     window.history.pushState(null, "", newUrl)
   }, [sellAssetAddress, buyAssetAddress])
 
+  const [selectedRoute, setSelectedRoute] = useState<{ type: RouteSource; routerAddress: Address } | null>(null)
+
+  // For custom swap, the address in swapData, otherwise the selectedRoute routerAddress
+  const spender = useMemo<Address | undefined>(() => {
+    if (!sellAssetInfo || !buyAssetInfo || !swapData) return undefined
+
+    if (swapData.swap) {
+      if (swapData.approval === "noApprovalNeeded") return undefined
+      return ([sellAssetInfo, buyAssetInfo].find((el) => el.symbol === swapData.contract)?.address as Address | undefined) ?? undefined
+    }
+
+    return selectedRoute?.routerAddress ?? undefined
+  }, [sellAssetInfo, buyAssetInfo, swapData, selectedRoute])
+
   // --- Balance/allowance ---
   useEffect(() => {
     if (sellAssetInfo && buyAssetInfo && walletClient) {
       fetchBalanceAllowanceData(walletClient)
     }
-  }, [sellAssetInfo, buyAssetInfo, walletClient])
+  }, [sellAssetInfo, buyAssetInfo, walletClient, spender])
 
   const fetchBalanceAllowanceData = async (walletClient: WalletClient) => {
     if (!sellAssetInfo || !buyAssetInfo) return
 
     try {
-      let spender = "" as Address
-
-      if (buyAssetInfo?.address === USG_CONTRACT?.USG || sellAssetInfo?.address === USG_CONTRACT?.USG) {
-        spender = USG_CONTRACT.CURVE_ROUTER as Address
-      } else {
-        spender = USG_CONTRACT.ENSO_ROUTER as Address
-      }
-
-      const data = await getBalancesAndAllowances(walletClient, sellAssetInfo.address, spender)
+      // zeroAddress when no spender is known yet (or none needed): we still need the balance for the form state
+      const data = await getBalancesAndAllowances(walletClient, sellAssetInfo.address, spender ?? zeroAddress)
       setBalanceAllowanceData(data ? (data[0] as BalanceAllowanceData) : null)
     } catch (error) {
       console.error("Failed to fetch balance/allowance:", error)
@@ -264,6 +271,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
             return
 
           if (quote) {
+            setSelectedRoute({ type: quote.type, routerAddress: quote.routerAddress })
             setPriceImpact(Number(handledQuote.validPriceImpact) / 100)
             setBuyWeiValue(handledQuote.validQuote)
           }
@@ -327,6 +335,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
             return
 
           if (quote) {
+            setSelectedRoute({ type: quote.type, routerAddress: quote.routerAddress })
             setPriceImpact(Number(handledQuote.validPriceImpact) / 100)
             setSellWeiValue(handledQuote.validQuote)
           }
@@ -390,15 +399,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
     try {
       setIsTxLoading(true)
 
-      if (walletClient && buyAssetInfo && sellAssetInfo) {
-        let spender = "" as Address
-
-        if (buyAssetInfo?.address === USG_CONTRACT?.USG || sellAssetInfo?.address === USG_CONTRACT?.USG) {
-          spender = USG_CONTRACT.CURVE_ROUTER as Address
-        } else {
-          spender = USG_CONTRACT.ENSO_ROUTER as Address
-        }
-
+      if (walletClient && buyAssetInfo && sellAssetInfo && spender) {
         await toastTx(doApprove(walletClient, sellAssetInfo?.address, sellWeiValue || 0n, spender), {
           pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
           success: () => ({
@@ -456,7 +457,9 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
             computedMinAmountOut(buyWeiValue, slippage),
             currentAddress,
             currentAddress,
-            curveRoutes
+            curveRoutes,
+            undefined,
+            selectedRoute?.type
           )
 
           const tx = {
@@ -497,6 +500,7 @@ export const USGSwapProvider = ({ children }: USGSwapContextProps) => {
   useEffect(() => {
     setSellWeiValue(undefined)
     setBuyWeiValue(undefined)
+    setSelectedRoute(null)
 
     if (sellAssetName && buyAssetName) {
       try {

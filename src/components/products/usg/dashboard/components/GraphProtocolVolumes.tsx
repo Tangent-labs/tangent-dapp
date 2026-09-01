@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
 import { formatDollar } from "@/lib/number_formatter"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { ProtocolVolume, VolumeRange } from "../../usg_type"
 import { Divider } from "@/components/design_system/structure/divider"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
@@ -24,11 +24,11 @@ const VOLUME_RANGE_TABS: { label: string; range: VolumeRange }[] = [
 ]
 
 const VOLUME_CATEGORIES: { key: string; label: string; color: string; value: (el: ProtocolVolume) => number }[] = [
-  { key: "collateral", label: "Collateral", color: "#3E9B78", value: (el) => el.collateralIn + el.collateralOut },
-  { key: "debt", label: "Debt", color: "#3F7FD1", value: (el) => el.debtIn + el.debtOut },
-  { key: "lpLiquidity", label: "LP liquidity", color: "#C46A45", value: (el) => el.lpLiquidityIn + el.lpLiquidityOut },
-  { key: "lpSwap", label: "LP swaps", color: "#8672C9", value: (el) => el.lpSwap },
-  { key: "susg", label: "sUSG", color: "#D8CF4A", value: (el) => el.susgIn + el.susgOut },
+  { key: "collateral", label: "Collateral", color: "#8FC1FF", value: (el) => el.collateralIn + el.collateralOut },
+  { key: "debt", label: "Debt", color: "#0075FF", value: (el) => el.debtIn + el.debtOut },
+  { key: "lpLiquidity", label: "LP liquidity", color: "#6A3DE8", value: (el) => el.lpLiquidityIn + el.lpLiquidityOut },
+  { key: "lpSwap", label: "LP swaps", color: "#B84DFF", value: (el) => el.lpSwap },
+  { key: "susg", label: "sUSG", color: "#FC76FF", value: (el) => el.susgIn + el.susgOut },
 ]
 
 const PLOT_HEIGHT_PX = 256
@@ -48,12 +48,13 @@ const stackSegments = (el: ProtocolVolume, axisMax: number) => {
   })
 }
 
-// Same breakdown in the hover tooltip and in the tap-to-open panel
+const VOLUME_CATEGORIES_TOP_DOWN = [...VOLUME_CATEGORIES].reverse()
+
 const VolumeBreakdown = ({ volume }: { volume: ProtocolVolume }) => (
   <>
     <div className="font-semibold text-white">{volume.period}</div>
 
-    {VOLUME_CATEGORIES.map((category) => (
+    {VOLUME_CATEGORIES_TOP_DOWN.map((category) => (
       <div key={category.key} className="flex w-full items-center justify-between gap-4">
         <div className="flex items-center gap-1.5 text-subtitle">
           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: category.color }} />

@@ -60,7 +60,12 @@ const SplitAmountInput = ({ value, onChange, disabled }: { value: bigint; onChan
       disabled={disabled}
       value={localDisplay}
       onChange={handleChange}
-      onBlur={() => setLocalDisplay(formatBigIntFloor(value, 18, 2))}
+      onBlur={() => {
+        // Re-commit the clamped value : the display snaps back to it, so any oversized-amount
+        // error must clear with it
+        setLocalDisplay(formatBigIntFloor(value, 18, 2))
+        onChange(value)
+      }}
       placeholder="Amount"
       className="min-h-10 w-full rounded-[10px] border-opacity-10 bg-transparent py-2 font-semibold focus:outline-none"
     />

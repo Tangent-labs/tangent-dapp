@@ -7,7 +7,7 @@ import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Address, EstimateContractGasParameters, formatEther, formatUnits, parseUnits, WalletClient, WriteContractParameters } from "viem"
 import { ONE_ETHER } from "@/lib/utils"
-import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import { dappErrors } from "@/components/design_system/notifications/form-errors"
 import { NATIVE_ETH_ADDRESS } from "@/data/erc20s"
 
 export function getLeverageFormState(

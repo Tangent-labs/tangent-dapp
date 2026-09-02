@@ -2,26 +2,26 @@
 
 import { ListState } from "@/types"
 import { useRouter } from "next/navigation"
+import { LockPosition } from "../usg/usg_type"
 import { Switch } from "@/components/ui/switch"
 import { formatDate } from "@/lib/other_formatter"
-import { LockPosition } from "../usg/usg_type"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useVsTanContext } from "./rstan_layout_context"
-import { IconChevron } from "@/components/icons"
-import { isPermaLocked, lockListHeaders } from "./rstan_layout_controller"
-import { ListRow } from "@/components/design_system/list/list_row"
-import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
 import { useNextEndLockTime } from "./use_next_end_lock_time"
+import { IconInfinity } from "@/components/icons/icon_infinity"
+import { IconChevron, IconCircleHelp } from "@/components/icons"
 import { Button } from "@/components/design_system/inputs/button"
+import { ListRow } from "@/components/design_system/list/list_row"
+import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
 import { Divider } from "@/components/design_system/structure/divider"
 import { ListHeader } from "@/components/design_system/list/list_header"
+import { isPermaLocked, lockListHeaders } from "./rstan_layout_controller"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { VsTanFeatureTabs } from "./vs_tan_features_tabs/vs_tan_features_tabs"
-import { USGHoverCard } from "@/components/design_system/structure/usg_hover_card"
+import { EvolutionBox } from "@/components/design_system/structure/evolution_box"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
-import { IconInfinity } from "@/components/icons/icon_infinity"
-import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
 
 const listeState: ListState = {
   search: undefined,
@@ -213,11 +213,20 @@ function LockPositionList() {
                   ) : (
                     <>
                       <div className="flex w-fit items-center justify-center gap-1">
-                        <div className="whitespace-nowrap text-xs font-semibold text-subtitle">Perma lock</div>
+                        <div className="flex items-center justify-center gap-1 text-xs">
+                          Perma lock
+                          <HoverCard openDelay={100} closeDelay={100}>
+                            <HoverCardTrigger asChild>
+                              <button type="button">
+                                <IconCircleHelp className="h-auto w-[12px] fill-white" />
+                              </button>
+                            </HoverCardTrigger>
 
-                        <USGHoverCard iconClassName="h-auto w-[14px] text-white" title="">
-                          Lock your tokens in perpetuity. You can remove the perma lock option at any time.
-                        </USGHoverCard>
+                            <HoverCardContent side="top" align="center" className="z-101 w-fit max-w-64 p-2 text-xs">
+                              Lock your tokens in perpetuity. You can remove the perma lock option at any time.
+                            </HoverCardContent>
+                          </HoverCard>
+                        </div>
 
                         <Switch checked={extendToPermaLock} onCheckedChange={() => setExtendToPermaLock(!extendToPermaLock)} />
                       </div>

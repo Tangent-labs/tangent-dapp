@@ -72,9 +72,14 @@ export const VsTanSplitProvider = ({ children }: VsTanSplitContextProps) => {
   // amount actually sent to split() — is derived from this one value, so they cannot disagree.
   const [amountToRemove, setAmountToRemove] = useState<bigint>(0n)
 
+  // A typed amount larger than the position is clamped below, so the overflow has to be
+  // remembered here for the form state to surface it
+  const [amountExceedsPosition, setAmountExceedsPosition] = useState<boolean>(false)
+
   // Reset to an even split whenever another position is picked
   useEffect(() => {
     setAmountToRemove(totalAmount / 2n)
+    setAmountExceedsPosition(false)
   }, [totalAmount])
 
   const firstSplitAmount = totalAmount > amountToRemove ? totalAmount - amountToRemove : 0n
@@ -89,12 +94,19 @@ export const VsTanSplitProvider = ({ children }: VsTanSplitContextProps) => {
   const setSplitPercentage = (percentage: number) => {
     if (!totalAmount) return
 
+    setAmountExceedsPosition(false)
     setAmountToRemove((totalAmount * BigInt(Math.round((100 - percentage) * 100))) / 10000n)
   }
 
   // Typing an amount on either side pins that side and gives the remainder to the other
-  const setFirstSplitAmount = (value: bigint) => setAmountToRemove(value >= totalAmount ? 0n : totalAmount - value)
-  const setSecondSplitAmount = (value: bigint) => setAmountToRemove(value >= totalAmount ? totalAmount : value)
+  const setFirstSplitAmount = (value: bigint) => {
+    setAmountExceedsPosition(value > totalAmount)
+    setAmountToRemove(value >= totalAmount ? 0n : totalAmount - value)
+  }
+  const setSecondSplitAmount = (value: bigint) => {
+    setAmountExceedsPosition(value > totalAmount)
+    setAmountToRemove(value >= totalAmount ? totalAmount : value)
+  }
 
   const visualPercentage = Math.min(100, Math.max(0, ((splitPercentage - 1) / (99 - 1)) * 100))
 
@@ -149,8 +161,8 @@ export const VsTanSplitProvider = ({ children }: VsTanSplitContextProps) => {
   }
 
   const formState = useMemo<FormState>(
-    () => getSplitFormState(splitPositionInfo, chainTimestamp, isWellConnected),
-    [splitPositionInfo, chainTimestamp, isWellConnected]
+    () => getSplitFormState(splitPositionInfo, chainTimestamp, isWellConnected, amountExceedsPosition),
+    [splitPositionInfo, chainTimestamp, isWellConnected, amountExceedsPosition]
   )
 
   const contextValue: VsTanSplitContextValues = {

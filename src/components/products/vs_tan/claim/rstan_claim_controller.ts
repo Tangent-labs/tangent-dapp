@@ -4,7 +4,7 @@ import VsTAN from "../../../../abi/USG/VsTAN.json"
 import { Abi, WalletClient } from "viem"
 import { FormError, FormState, LockPosition } from "../../usg/usg_type"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import { dappErrors } from "@/components/design_system/notifications/form-errors"
 
 export const totalClaimable = (positions: LockPosition[] | undefined) => (positions || []).reduce((total, position) => total + position.claimable, 0n)
 

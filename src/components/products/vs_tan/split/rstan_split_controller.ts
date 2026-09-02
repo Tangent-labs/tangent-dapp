@@ -3,7 +3,7 @@ import VsTan from "../../../../abi/USG/VsTAN.json"
 import { Abi, WalletClient } from "viem"
 import { FormError, FormState, LockPosition } from "../../usg/usg_type"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import { dappErrors } from "@/components/design_system/notifications/form-errors"
 import { isExpired } from "../rstan_layout_controller"
 
 export const doSplit = async (tokenId: bigint, walletClient: WalletClient, amountToRemove: bigint) => {
@@ -18,7 +18,12 @@ export const doSplit = async (tokenId: bigint, walletClient: WalletClient, amoun
   return await waitForTransaction(txHash)
 }
 
-export function getSplitFormState(splitPositionInfo: LockPosition | undefined, chainTimestamp: bigint | undefined, isWellConnected: boolean): FormState {
+export function getSplitFormState(
+  splitPositionInfo: LockPosition | undefined,
+  chainTimestamp: bigint | undefined,
+  isWellConnected: boolean,
+  amountExceedsPosition: boolean
+): FormState {
   const errors: FormError[] = []
 
   if (!isWellConnected) {
@@ -32,6 +37,10 @@ export function getSplitFormState(splitPositionInfo: LockPosition | undefined, c
 
   if (isExpired(splitPositionInfo, chainTimestamp)) {
     errors.push(dappErrors["lock-expired"])
+  }
+
+  if (amountExceedsPosition) {
+    errors.push(dappErrors["split-exceeds-position"])
   }
 
   return { canProcess: errors.length === 0, errors, haveToApprove: false }

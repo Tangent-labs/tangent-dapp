@@ -89,6 +89,13 @@ export const dappErrors = {
     content: "Increase your amount, or add it to one of your existing positions instead.",
     type: "form-alert",
   },
+  "split-exceeds-position": {
+    key: "split-exceeds-position",
+    title: "Amount Exceeds Position",
+    subtitle: "You can't split more than the position holds.",
+    content: "Please enter an amount within the position's vsTAN balance.",
+    type: "form-alert",
+  },
   "same-position": {
     key: "same-position",
     title: "Invalid Merge",

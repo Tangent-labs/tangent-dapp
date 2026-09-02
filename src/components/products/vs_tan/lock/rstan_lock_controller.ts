@@ -4,7 +4,7 @@ import { isExpired } from "../rstan_layout_controller"
 import { FormError, FormState, LockPosition } from "../../usg/usg_type"
 import { Abi, Address, WalletClient } from "viem"
 import { executeApprove, executeContractCall, waitForTransaction } from "@/services/service_rpc"
-import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import { dappErrors } from "@/components/design_system/notifications/form-errors"
 import { formatBigInt } from "@/lib/number_formatter"
 
 export async function doApprove(walletClient: WalletClient, contract: Address, spender: Address, amount: bigint) {

@@ -648,6 +648,7 @@ type FormErrorKey =
   | "low-max-leverage"
   | "lock-expired"
   | "min-lock"
+  | "split-exceeds-position"
   | "same-position"
   | "no-position-selected"
   | "duplicate-position"

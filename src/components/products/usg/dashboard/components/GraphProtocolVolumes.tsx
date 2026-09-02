@@ -8,6 +8,7 @@ import { Divider } from "@/components/design_system/structure/divider"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { InnerTooltip } from "@/components/design_system/structure/inner_tooltip"
+import { useGraphPeriodSelection } from "@/hooks/useGraphPeriodSelection"
 import { formatPeriodLabel, formatYAxis, computeYAxisTicks } from "../dashboard_controller"
 
 type GraphProtocolVolumesProps = {
@@ -35,8 +36,6 @@ const PLOT_HEIGHT_PX = 256
 const MIN_SEGMENT_PX = 1
 
 const MIN_SLOT_PX = 44
-
-const DESKTOP_MIN_WIDTH_PX = 768
 
 const stackSegments = (el: ProtocolVolume, axisMax: number) => {
   const barPx = axisMax > 0 && el.total > 0 ? (el.total / axisMax) * PLOT_HEIGHT_PX : 0
@@ -72,24 +71,11 @@ const VolumeBreakdown = ({ volume }: { volume: ProtocolVolume }) => (
 )
 
 export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVolumeTab, fetchVolumes }: GraphProtocolVolumesProps) => {
-  const cardRef = useRef<HTMLDivElement>(null)
+  const { cardRef, isDesktop, selectedPeriod, toggleSelection } = useGraphPeriodSelection(protocolVolumes)
 
   const plotRef = useRef<HTMLDivElement>(null)
 
   const [plotWidth, setPlotWidth] = useState(0)
-
-  const [selectedPeriod, setSelectedPeriod] = useState<string | null>(null)
-
-  const [isDesktop, setIsDesktop] = useState(true)
-
-  useEffect(() => {
-    const desktopQuery = window.matchMedia(`(min-width: ${DESKTOP_MIN_WIDTH_PX}px)`)
-    const onChange = () => setIsDesktop(desktopQuery.matches)
-    onChange()
-    desktopQuery.addEventListener("change", onChange)
-
-    return () => desktopQuery.removeEventListener("change", onChange)
-  }, [])
 
   useEffect(() => {
     const plot = plotRef.current
@@ -104,33 +90,12 @@ export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVo
     return () => resizeObserver.disconnect()
   }, [])
 
-  // A new range or a refetch invalidates the selected period
-  useEffect(() => {
-    setSelectedPeriod(null)
-  }, [protocolVolumes])
-
-  // A tap anywhere outside the card closes the details panel
-  useEffect(() => {
-    if (isDesktop || selectedPeriod === null) return
-
-    const onPointerDown = (event: PointerEvent) => {
-      if (cardRef.current && !cardRef.current.contains(event.target as Node)) {
-        setSelectedPeriod(null)
-      }
-    }
-    document.addEventListener("pointerdown", onPointerDown)
-
-    return () => document.removeEventListener("pointerdown", onPointerDown)
-  }, [isDesktop, selectedPeriod])
-
   const maxBars = plotWidth > 0 ? Math.max(1, Math.floor(plotWidth / MIN_SLOT_PX)) : Infinity
   const visibleVolumes = useMemo(() => (maxBars < protocolVolumes.length ? protocolVolumes.slice(-maxBars) : protocolVolumes), [protocolVolumes, maxBars])
 
   const { ticks, axisMax } = useMemo(() => computeYAxisTicks(Math.max(0, ...visibleVolumes.map((el) => el?.total ?? 0))), [visibleVolumes])
 
   const selectedVolume = visibleVolumes.find((el) => el?.period === selectedPeriod) ?? null
-
-  const toggleSelection = (period: string) => setSelectedPeriod((current) => (current === period ? null : period))
 
   return (
     <ReliefCard ref={cardRef} className="flex w-full flex-col items-start justify-start p-5">
@@ -197,29 +162,37 @@ export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVo
                     onClick: () => toggleSelection(el?.period),
                   }
 
+              const bar = (
+                <div
+                  key={el?.period}
+                  {...touchProps}
+                  className={cn(
+                    "group flex h-full flex-1 cursor-pointer items-end justify-center outline-none transition-opacity duration-200",
+                    isDimmed && "opacity-40"
+                  )}
+                >
+                  <div className={cn("relative h-full w-6 overflow-hidden rounded-md bg-white/[0.08]", isSelected && "ring-1 ring-white/40")}>
+                    {/* Stack bottom-up, 1px of track between segments so adjacent colors never touch */}
+                    <div className="absolute bottom-0 left-0 flex w-full flex-col-reverse gap-px transition-opacity duration-300 group-hover:opacity-80">
+                      {segments
+                        .filter((segment) => segment.px > 0)
+                        .map((segment) => (
+                          <div key={segment.key} className="w-full" style={{ height: `${segment.px}px`, backgroundColor: segment.color }} />
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              )
+
+              // Hover tooltip is desktop-only: on touch, a tap would open it on top of the details panel
+              if (!isDesktop) return bar
+
               return (
                 <InnerTooltip
                   key={el?.period}
                   innerContent={<div className="flex min-w-36 flex-col items-start justify-center gap-1 px-4">{el && <VolumeBreakdown volume={el} />}</div>}
                 >
-                  <div
-                    {...touchProps}
-                    className={cn(
-                      "group flex h-full flex-1 cursor-pointer items-end justify-center outline-none transition-opacity duration-200",
-                      isDimmed && "opacity-40"
-                    )}
-                  >
-                    <div className={cn("relative h-full w-6 overflow-hidden rounded-md bg-white/[0.08]", isSelected && "ring-1 ring-white/40")}>
-                      {/* Stack bottom-up, 1px of track between segments so adjacent colors never touch */}
-                      <div className="absolute bottom-0 left-0 flex w-full flex-col-reverse gap-px transition-opacity duration-300 group-hover:opacity-80">
-                        {segments
-                          .filter((segment) => segment.px > 0)
-                          .map((segment) => (
-                            <div key={segment.key} className="w-full" style={{ height: `${segment.px}px`, backgroundColor: segment.color }} />
-                          ))}
-                      </div>
-                    </div>
-                  </div>
+                  {bar}
                 </InnerTooltip>
               )
             })}

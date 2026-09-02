@@ -49,8 +49,8 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
 
   return (
     <ReliefCard className="flex h-full w-full flex-col items-start justify-start p-5">
-      <div className="flex w-full items-center justify-end sm:justify-between">
-        <div className="hidden text-xl font-semibold sm:flex">TVL </div>
+      <div className="flex w-full items-center justify-between">
+        <div className="flex text-xl font-semibold">TVL </div>
 
         <div className="flex gap-2">
           <ButtonTab onClick={() => fetchTVLData("1w")} label={"1w"} active={tvlSelectedTab === "1w"} className="rounded-full !py-1" />

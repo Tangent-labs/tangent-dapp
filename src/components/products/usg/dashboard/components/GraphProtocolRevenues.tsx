@@ -2,13 +2,14 @@
 
 import { useMemo } from "react"
 import { cn } from "@/lib/utils"
-import { formatDollar } from "@/lib/number_formatter"
 import { ProtocolRevenue, RevenueRange } from "../../usg_type"
+import { useVisiblePeriods } from "@/hooks/useVisiblePeriods"
+import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { Divider } from "@/components/design_system/structure/divider"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
+import { useGraphPeriodSelection } from "@/hooks/useGraphPeriodSelection"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { InnerTooltip } from "@/components/design_system/structure/inner_tooltip"
-import { useGraphPeriodSelection } from "@/hooks/useGraphPeriodSelection"
 import { formatPeriodLabel, formatYAxis, computeYAxisTicks } from "../dashboard_controller"
 
 type GraphProtocolRevenuesProps = {
@@ -47,9 +48,11 @@ const RevenueBreakdown = ({ revenue }: { revenue: ProtocolRevenue }) => (
 export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selectedRevenueTab, fetchRevenues }: GraphProtocolRevenuesProps) => {
   const { cardRef, isDesktop, selectedPeriod, toggleSelection } = useGraphPeriodSelection(protocolRevenues)
 
-  const { ticks, axisMax } = useMemo(() => computeYAxisTicks(Math.max(0, ...protocolRevenues.map((el) => el?.total ?? 0))), [protocolRevenues])
+  const { plotRef, visible: visibleRevenues } = useVisiblePeriods(protocolRevenues)
 
-  const selectedRevenue = protocolRevenues.find((el) => el?.period === selectedPeriod) ?? null
+  const { ticks, axisMax } = useMemo(() => computeYAxisTicks(Math.max(0, ...visibleRevenues.map((el) => el?.total ?? 0))), [visibleRevenues])
+
+  const selectedRevenue = visibleRevenues.find((el) => el?.period === selectedPeriod) ?? null
 
   return (
     <ReliefCard ref={cardRef} className="flex w-full flex-col items-start justify-start p-5">
@@ -73,11 +76,11 @@ export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selecte
 
       <div className="mb-4 flex items-center justify-start gap-1 text-xs">
         <div className="text-subtitle">Total: </div>
-        <div className="font-semibold text-white">{formatDollar(totalRevenues, 0)}</div>
+        <div className="font-semibold text-white">${formatMillions(totalRevenues)}</div>
       </div>
 
       <div className="w-full pr-12">
-        <div className="relative h-44 w-full">
+        <div ref={plotRef} className="relative h-44 w-full">
           {ticks.map((tick) => (
             <div key={tick} className="pointer-events-none absolute inset-x-0" style={{ bottom: `${(tick / axisMax) * 100}%` }}>
               <div className="h-px w-full bg-white/[0.06]" />
@@ -88,7 +91,7 @@ export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selecte
           ))}
 
           <div className="absolute inset-0 flex items-end transition-opacity duration-200">
-            {protocolRevenues.map((el) => {
+            {visibleRevenues.map((el) => {
               const isSelected = !isDesktop && el?.period === selectedPeriod
               const isDimmed = !isDesktop && selectedPeriod !== null && !isSelected
 
@@ -112,9 +115,9 @@ export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selecte
                     isDimmed && "opacity-40"
                   )}
                 >
-                  <div className={cn("relative h-full w-2 overflow-hidden rounded-full bg-white/[0.08]", isSelected && "ring-1 ring-white/40")}>
+                  <div className={cn("relative h-full w-4 overflow-hidden rounded-md bg-white/[0.08]", isSelected && "ring-1 ring-white/40")}>
                     <div
-                      className="absolute bottom-0 left-0 w-full rounded-full bg-[#0075FF] transition-all duration-300 group-hover:bg-[#3B93FF]"
+                      className="absolute bottom-0 left-0 w-full bg-[#0075FF] transition-all duration-300 group-hover:bg-[#3B93FF]"
                       style={{ height: `${el?.total > 0 ? (el.total / axisMax) * 100 : 0}%` }}
                     />
                   </div>
@@ -137,7 +140,7 @@ export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selecte
         </div>
 
         <div className="mt-2 flex w-full">
-          {protocolRevenues.map((el) => (
+          {visibleRevenues.map((el) => (
             <span key={el?.period} className="flex-1 text-center text-[10px] text-subtitle">
               {formatPeriodLabel(el?.period, selectedRevenueTab)}
             </span>

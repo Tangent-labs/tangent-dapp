@@ -1,14 +1,15 @@
 "use client"
 
+import { useMemo } from "react"
 import { cn } from "@/lib/utils"
-import { formatDollar } from "@/lib/number_formatter"
-import { useEffect, useMemo, useRef, useState } from "react"
 import { ProtocolVolume, VolumeRange } from "../../usg_type"
+import { useVisiblePeriods } from "@/hooks/useVisiblePeriods"
+import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { Divider } from "@/components/design_system/structure/divider"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
+import { useGraphPeriodSelection } from "@/hooks/useGraphPeriodSelection"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { InnerTooltip } from "@/components/design_system/structure/inner_tooltip"
-import { useGraphPeriodSelection } from "@/hooks/useGraphPeriodSelection"
 import { formatPeriodLabel, formatYAxis, computeYAxisTicks } from "../dashboard_controller"
 
 type GraphProtocolVolumesProps = {
@@ -34,8 +35,6 @@ const VOLUME_CATEGORIES: { key: string; label: string; color: string; value: (el
 
 const PLOT_HEIGHT_PX = 256
 const MIN_SEGMENT_PX = 1
-
-const MIN_SLOT_PX = 44
 
 const stackSegments = (el: ProtocolVolume, axisMax: number) => {
   const barPx = axisMax > 0 && el.total > 0 ? (el.total / axisMax) * PLOT_HEIGHT_PX : 0
@@ -65,7 +64,7 @@ const VolumeBreakdown = ({ volume }: { volume: ProtocolVolume }) => (
 
     <div className="flex w-full items-center justify-between gap-4 border-t border-white/10 pt-1">
       <div className="text-subtitle">Total</div>
-      <div className="font-semibold text-white">{formatDollar(volume.total)}</div>
+      <div className="font-semibold text-white">${formatMillions(volume.total)}</div>
     </div>
   </>
 )
@@ -73,25 +72,7 @@ const VolumeBreakdown = ({ volume }: { volume: ProtocolVolume }) => (
 export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVolumeTab, fetchVolumes }: GraphProtocolVolumesProps) => {
   const { cardRef, isDesktop, selectedPeriod, toggleSelection } = useGraphPeriodSelection(protocolVolumes)
 
-  const plotRef = useRef<HTMLDivElement>(null)
-
-  const [plotWidth, setPlotWidth] = useState(0)
-
-  useEffect(() => {
-    const plot = plotRef.current
-    if (!plot) return
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      const entry = entries[0]
-      if (entry) setPlotWidth(entry.contentRect.width)
-    })
-    resizeObserver.observe(plot)
-
-    return () => resizeObserver.disconnect()
-  }, [])
-
-  const maxBars = plotWidth > 0 ? Math.max(1, Math.floor(plotWidth / MIN_SLOT_PX)) : Infinity
-  const visibleVolumes = useMemo(() => (maxBars < protocolVolumes.length ? protocolVolumes.slice(-maxBars) : protocolVolumes), [protocolVolumes, maxBars])
+  const { plotRef, visible: visibleVolumes } = useVisiblePeriods(protocolVolumes)
 
   const { ticks, axisMax } = useMemo(() => computeYAxisTicks(Math.max(0, ...visibleVolumes.map((el) => el?.total ?? 0))), [visibleVolumes])
 
@@ -120,7 +101,7 @@ export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVo
       <div className="mb-4 flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-2 text-xs">
         <div className="flex items-center justify-start gap-1">
           <div className="text-subtitle">Total: </div>
-          <div className="font-semibold text-white">{formatDollar(totalVolumes, 0)}</div>
+          <div className="font-semibold text-white">${formatMillions(totalVolumes)}</div>
         </div>
 
         {/* LEGEND */}
@@ -206,12 +187,6 @@ export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVo
             </span>
           ))}
         </div>
-
-        {visibleVolumes.length < protocolVolumes.length && (
-          <div className="mt-1 text-[10px] text-subtitle">
-            Last {visibleVolumes.length} of {protocolVolumes.length} periods
-          </div>
-        )}
       </div>
 
       {!isDesktop && selectedVolume && (

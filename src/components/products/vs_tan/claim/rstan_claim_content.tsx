@@ -2,17 +2,34 @@
 
 import { useVsTanContext } from "../rstan_layout_context"
 import { LockPosition, LockPositionSelectTemplate } from "../../usg/usg_type"
-import { Button } from "@/components/design_system/inputs/button"
 import { useVsTanClaimContext } from "./rstan_claim_context"
+import FormButtons from "@/components/design_system/form/form_actions"
+import { FormAlert } from "@/components/design_system/inputs/form_alert"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { formatBigInt } from "@/lib/number_formatter"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { MultiPositionSelect } from "@/components/design_system/inputs/input_multiselect"
 import { Switch } from "@/components/ui/switch"
+import { BorderPanel } from "@/components/design_system/structure/border_panel"
 
 export const VsTanClaimContent = () => {
   const { lockData } = useVsTanContext()
 
-  const { claimAsSUSG, selectedPositions, hasDuplicates, selectedPositionsData, actionClaim, setClaimAsSUSG, setSelectedPositions } = useVsTanClaimContext()
+  const { connect } = useWalletConnexionContext()
+
+  const {
+    claimAsSUSG,
+    selectedPositions,
+    selectedPositionsData,
+    actionClaim,
+    setClaimAsSUSG,
+    setSelectedPositions,
+    formState,
+    isLoading,
+    receivedTotal,
+    receivedFor,
+    claimableDollarValue,
+  } = useVsTanClaimContext()
 
   const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {
     return (
@@ -32,7 +49,7 @@ export const VsTanClaimContent = () => {
 
   return (
     <div className="flex w-full flex-col items-start justify-start">
-      <div className="mb-1 text-lg font-semibold text-white">Select position(s) :</div>
+      <div className="mb-1 text-xl font-semibold text-white">Select position(s) :</div>
 
       <MultiPositionSelect
         template={AssetSelectTemplate}
@@ -57,24 +74,21 @@ export const VsTanClaimContent = () => {
             <input
               type="string"
               disabled={true}
-              value={formatBigInt(
-                selectedPositionsData.reduce((el, acc) => el + acc.claimable, 0n),
-                18,
-                2
-              )}
+              value={formatBigInt(receivedTotal, 18, 2)}
               placeholder="Amount"
               className="min-h-10 rounded-[10px] border-opacity-10 bg-transparent py-2 font-semibold focus:outline-none"
             />
           </div>
 
-          <div className="text-xs text-subtitle">$({12})</div>
+          <div className="text-xs text-subtitle">{claimableDollarValue}</div>
         </div>
 
         <div className="flex h-full flex-col items-center justify-center">
-          <div className="flex items-center justify-center rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
-            <TokenImage token={claimAsSUSG ? "sUSG" : "USG"} className="mr-2" size={16} />
-            {claimAsSUSG ? "sUSG" : "USG"}
-          </div>
+          <BorderPanel className="flex h-10 items-center gap-2 bg-select-input px-2.5 py-2">
+            <TokenImage token={claimAsSUSG ? "sUSG" : "USG"} size={20} />
+
+            <span className="flex flex-col text-sm font-semibold">{claimAsSUSG ? "sUSG" : "USG"}</span>
+          </BorderPanel>
         </div>
       </div>
 
@@ -82,18 +96,18 @@ export const VsTanClaimContent = () => {
       <div className="flex w-full flex-col items-center justify-around gap-2 rounded-[10px] p-3 backdrop-blur-[10px]">
         <div className="flex w-full flex-col items-start justify-start">
           <div className="flex w-full items-start justify-start">
-            <div className="flex w-1/2 items-start justify-start text-subtitle">Position ID</div>
+            <div className="flex w-1/2 items-start justify-start text-[15px] text-subtitle">Position ID</div>
 
-            <div className="flex w-1/2 items-start justify-start text-subtitle"> {claimAsSUSG ? "sUSG" : "USG"} received</div>
+            <div className="flex w-1/2 items-start justify-start text-[15px] text-subtitle"> {claimAsSUSG ? "sUSG" : "USG"} received</div>
           </div>
 
           {selectedPositionsData.map((position: LockPosition, index: number) => (
             <div key={index} className="my-1 flex w-full items-center gap-2">
-              <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[10px]">
+              <div className="flex h-8 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel py-1 backdrop-blur-[10px]">
                 #{position.tokenId}
               </div>
-              <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
-                {formatBigInt(position.claimable, 18, 2)}
+              <div className="flex h-8 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
+                {formatBigInt(receivedFor(position), 18, 2)}
                 <TokenImage token={claimAsSUSG ? "sUSG" : "USG"} className="" size={16} />
               </div>
             </div>
@@ -101,15 +115,19 @@ export const VsTanClaimContent = () => {
         </div>
       </div>
 
-      <div className="my-2 flex flex-col rounded-[10px] bg-overlay-panel p-2 text-xs text-subtitle">
+      <div className="my-2 flex w-full flex-col rounded-[10px] bg-overlay-panel p-2 text-xs text-subtitle">
         <span>Rewards can be claimed separately, or all together.</span>
       </div>
 
-      {selectedPositionsData && selectedPositionsData.length > 0 && (
-        <Button state={hasDuplicates ? "disabled" : "active"} className="mt-3 flex w-full justify-center" onClick={actionClaim}>
-          Claim
-        </Button>
-      )}
+      {formState.errors
+        .filter((e) => e.type === "form-alert")
+        .map((error) => (
+          <FormAlert key={error.key} error={error} className="my-1" isLoading={isLoading} />
+        ))}
+
+      <div className="mt-3 flex w-full justify-center">
+        <FormButtons actions={{ handleProcess: actionClaim }} connect={connect} formState={formState} isLoading={isLoading} labelProcess="Claim" />
+      </div>
     </div>
   )
 }

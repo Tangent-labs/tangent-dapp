@@ -4,6 +4,13 @@ import { cn } from "@/lib/utils"
 import { createRippleEffect } from "@/lib/animations"
 import { ButtonHTMLAttributes, useRef, ReactNode, useEffect, useState } from "react"
 
+export const BUTTON_SIZES = {
+  sm: { wrapper: "h-[30px]", inner: "h-full px-3 text-xs" },
+  md: { wrapper: "", inner: "px-4 py-2.5 text-sm" },
+} as const
+
+export type ButtonSize = keyof typeof BUTTON_SIZES
+
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   label?: string
   children?: ReactNode
@@ -11,6 +18,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   hasLoadingState?: boolean
   isLoading?: boolean
   classNameChild?: string
+  size?: ButtonSize
 }
 
 export const Button = ({
@@ -23,6 +31,7 @@ export const Button = ({
   onClick,
   hasLoadingState = false,
   isLoading,
+  size = "md",
   ...props
 }: ButtonProps) => {
   const [mounted, setMounted] = useState(false)
@@ -41,6 +50,7 @@ export const Button = ({
     <div
       className={cn(
         "relative inline-flex w-full rounded-[11px] p-[1px]",
+        BUTTON_SIZES[size].wrapper,
         effectiveState === "active" ? "bg-gradient-to-b from-[#00C2FF] to-[#00c2ff00]" : "px-[0px]",
         className
       )}
@@ -56,7 +66,8 @@ export const Button = ({
           onClick?.(e)
         }}
         className={cn(
-          "group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[10px] px-4 py-2.5 font-gilroy text-sm font-semibold disabled:cursor-not-allowed",
+          "group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[10px] font-gilroy font-semibold disabled:cursor-not-allowed",
+          BUTTON_SIZES[size].inner,
           {
             "bg-button-active hover:bg-button-active-hover": effectiveState === "active",
             "bg-overlay-panel backdrop-blur-[60px] backdrop-filter": effectiveState !== "active",

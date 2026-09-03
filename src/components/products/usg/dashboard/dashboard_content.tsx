@@ -6,10 +6,22 @@ import { GraphGlobalTVL } from "./components/GraphGlobalTVL"
 import { GraphTokenPrice } from "./components/GraphTokenPrice"
 import { useRootContext } from "@/components/products/root/root_context"
 import { GraphProtocolRevenues } from "./components/GraphProtocolRevenues"
+import { GraphProtocolVolumes } from "./components/GraphProtocolVolumes"
 import { GraphCollateralsAndDebts } from "./components/GraphCollateralsAndDebts"
 
 export const USGDashboardContent = () => {
-  const { userData, marketTVLMaxValue, selectedRevenueTab, totalRevenues, protocolRevenues, fetchRevenues } = useUSGDashboardContext()
+  const {
+    userData,
+    marketTVLMaxValue,
+    selectedRevenueTab,
+    totalRevenues,
+    protocolRevenues,
+    fetchRevenues,
+    selectedVolumeTab,
+    totalVolumes,
+    protocolVolumes,
+    fetchVolumes,
+  } = useUSGDashboardContext()
 
   const {
     tvl,
@@ -75,6 +87,11 @@ export const USGDashboardContent = () => {
           selectedRevenueTab={selectedRevenueTab}
           fetchRevenues={fetchRevenues}
         />
+      </div>
+
+      <div className="flex w-full flex-col gap-5 lg:flex-row">
+        {/* PROTOCOL VOLUMES */}
+        <GraphProtocolVolumes totalVolumes={totalVolumes} protocolVolumes={protocolVolumes} selectedVolumeTab={selectedVolumeTab} fetchVolumes={fetchVolumes} />
       </div>
     </div>
   )

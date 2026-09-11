@@ -104,12 +104,12 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
 
     let extraReward: ExtraRewards | undefined = undefined
     if (merkle) {
-      merkle.merkleData.forEach((t) => {
-        const amount = BigInt(t.merkle.amount)
-        if (amount !== 0n) {
-          extraReward = { token: t.merkle.token, claimable: amount, proof: t.merkle.proof }
-        }
-      })
+      const t = merkle.merkleData[0]
+      const amount = BigInt(t.merkle.amount)
+
+      if (amount !== 0n) {
+        extraReward = { token: t.merkle.token, claimable: amount, proof: t.merkle.proof }
+      }
     }
 
     doHarvest(market, walletClient!, extraReward)

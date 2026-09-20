@@ -20,6 +20,7 @@ type GraphProtocolRevenuesProps = {
 }
 
 const REVENUE_RANGE_TABS: { label: string; range: RevenueRange }[] = [
+  { label: "1d", range: "day" },
   { label: "1w", range: "week" },
   { label: "1m", range: "month" },
 ]

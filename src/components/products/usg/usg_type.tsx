@@ -683,7 +683,7 @@ export type ProtocolRevenue = {
   total: number
 }
 
-export type RevenueRange = "week" | "month" | "year"
+export type RevenueRange = "day" | "week" | "month" | "year"
 
 // One bar of the protocol volume graph, every amount in USD. Each flow is counted as volume,
 // so `total` sums the in AND out legs (a deposit followed by a withdraw counts twice).

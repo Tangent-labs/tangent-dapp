@@ -397,7 +397,10 @@ export function USGMarketListInner() {
                         {indicator?.label}
                       </span>
                       {/* VALUE  */}
-                      <span className="text-sm md:text-[15px]">{indicator?.value}</span>
+                      <span className="flex flex-col items-end xl:items-center">
+                        <span className="text-sm md:text-[15px]">{indicator?.value}</span>
+                        {indicator?.subValue && <span className="text-xs text-subtitle md:text-[10px]">{indicator.subValue}</span>}
+                      </span>
                     </span>
                   </div>
                 )}

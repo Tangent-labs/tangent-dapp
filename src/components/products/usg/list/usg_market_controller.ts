@@ -96,6 +96,9 @@ export function getRewardTokenFromAprDetails(aprDetails: RewardsApr, protocol: s
   }
 }
 
+/** A market has a fixed borrow rate when its IR curve is flat: rMin === rMax (the rate always equals rMin). */
+export const isFixedRateMarket = (irParams?: { rMin: number; rMax: number }) => !!irParams && Number(irParams.rMin) === Number(irParams.rMax)
+
 const BORROW_CAP_WARNING_PCT = 90n
 const BORROW_CAP_CRITICAL_PCT = 99n
 
@@ -174,6 +177,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
           !!onChainRow?.debtInfos.currentBorrowRate && onChainRow?.debtInfos.currentBorrowRate >= 0n
             ? ((Math.exp(Number(formatUnits(onChainRow?.debtInfos.currentBorrowRate, 18))) - 1) * 100).toFixed(2) + "%"
             : "0%",
+        subValue: isFixedRateMarket(onChainRow?.constants?.irParams) ? "Fixed" : undefined,
         raw: onChainRow?.debtInfos.currentBorrowRate?.toString() || "0",
       },
 

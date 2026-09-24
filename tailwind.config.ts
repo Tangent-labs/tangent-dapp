@@ -122,12 +122,39 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        // Popups. The blur and the darkness of the page are animated on their own (not through opacity, which delays the
+        // blur and shows the page sharp behind the popup). The popup itself only scales (no opacity / filter on the
+        // element that has backdrop blurs), its content fades in.
+        "overlay-in": {
+          from: { backgroundColor: "rgba(0, 0, 0, 0)", backdropFilter: "blur(0px)", WebkitBackdropFilter: "blur(0px)" },
+          to: { backgroundColor: "rgba(0, 0, 0, 0.6)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" },
+        },
+        "overlay-out": {
+          from: { backgroundColor: "rgba(0, 0, 0, 0.6)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" },
+          to: { backgroundColor: "rgba(0, 0, 0, 0)", backdropFilter: "blur(0px)", WebkitBackdropFilter: "blur(0px)" },
+        },
+        "modal-in": {
+          from: { transform: "translate(-50%, -50%) scale(0.92)" },
+          to: { transform: "translate(-50%, -50%) scale(1)" },
+        },
+        "modal-out": {
+          from: { transform: "translate(-50%, -50%) scale(1)" },
+          to: { transform: "translate(-50%, -50%) scale(0.95)" },
+        },
+        "content-in": { from: { opacity: "0" }, to: { opacity: "1" } },
+        "content-out": { from: { opacity: "1" }, to: { opacity: "0" } },
         ripple: {
           "0%": { transform: "scale(0)", opacity: "0.6" },
           "100%": { transform: "scale(1.8)", opacity: "0" },
         },
       },
       animation: {
+        "overlay-in": "overlay-in 300ms ease-out",
+        "overlay-out": "overlay-out 200ms ease-in forwards",
+        "modal-in": "modal-in 350ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "modal-out": "modal-out 200ms ease-in forwards",
+        "content-in": "content-in 300ms ease-out",
+        "content-out": "content-out 150ms ease-in forwards",
         ripple: "ripple 1500ms cubic-bezier(0.16, 0.8, 0.32, 1.6) forwards",
         sonar: "sonar 2s linear infinite",
         "accordion-down": "accordion-down 0.2s ease-out",

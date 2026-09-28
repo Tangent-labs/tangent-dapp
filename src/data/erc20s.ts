@@ -48,6 +48,25 @@ export const ERC20S: Erc20Details[] = [
     symbol: "sUSG",
   },
 
+  {
+    address: "0x8787678DB688eaD8D53F8F96f33Ceeb0FD821d5a",
+    chainId: 1,
+    decimals: 18,
+    displayDecimals: 3,
+    logoKey: "TAN",
+    name: "TAN",
+    symbol: "TAN",
+  },
+  {
+    address: "0x59b030801a113c7148aa5b38834d679e9Df52B34",
+    chainId: 1,
+    decimals: 18,
+    displayDecimals: 3,
+    logoKey: "vsTAN",
+    name: "vsTAN",
+    symbol: "vsTAN",
+  },
+
   // CURVE LP
   {
     address: "0x97ba10115da528c113462ede9c20d7adc806d93f",

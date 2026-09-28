@@ -1,14 +1,14 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { ReactNode, useEffect, useMemo, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { TokenImage } from "./token_image"
 import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 type EvolutionBoxProps = {
-  originalValue: string | number
-  newValue?: string | number
+  originalValue: ReactNode
+  newValue?: ReactNode
   label?: string
   logo?: string
   className?: string

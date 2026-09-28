@@ -19,7 +19,7 @@ import { useRootContext } from "../root/root_context"
 import { useUSGContext } from "../usg/usg_context"
 import { useScrollDirection } from "@/lib/animations"
 import { formatMillions } from "@/lib/number_formatter"
-import { isOnMarket } from "./menu_bar_feature_controller"
+import { isOnMarket, isOnTAN } from "./menu_bar_feature_controller"
 import { SwapButton } from "@/components/design_system/inputs/swap_button"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 import { TokenImage } from "@/components/design_system/structure/token_image"
@@ -58,6 +58,7 @@ export default function MenuBarFeature() {
     }
     return () => {
       document.body.style.overflow = ""
+
       document.body.style.position = ""
       document.body.style.width = ""
       document.body.style.top = ""
@@ -69,6 +70,7 @@ export default function MenuBarFeature() {
     { route: "/stake", label: "Savings" },
     { route: "/earn", label: "Earn" },
     { route: "/claim", label: "Claim" },
+    { route: "/tan/lock", label: "TAN", condition: (path: string) => isOnTAN(path) },
     { route: "/dashboard", label: "Dashboard" },
     { route: "/swap", label: "Swap", mobileOnly: true },
   ]

@@ -36,7 +36,7 @@ export function PositionPerformancePanel({
   computeProjection,
   fetchsUSGHistoryAPY,
 }: PositionPerformancePanelProps) {
-  const [selectedFeature, setSelectedFeature] = useState<string>(PROJECTED_EARNINGS)
+  const [selectedFeature, setSelectedFeature] = useState<string>(APY_HISTORY)
 
   const sUSGBalance = useMemo(() => {
     return Number(formatUnits(USGsUSGMetrics?.sUSGBalance ?? 0n, 18))

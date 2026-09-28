@@ -1,4 +1,5 @@
-import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import { dappErrors } from "@/components/design_system/notifications/form-errors"
+import { formatNumber } from "@/lib/number_formatter"
 import { executeChainViewUnique, getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, formatUnits, Hex, maxUint256, WalletClient, WriteContractParameters } from "viem"
 import sTANUI from "../../../../abi/USG/sTANUI.json"
@@ -100,7 +101,7 @@ export const doApprove = async (walletClient: WalletClient, assetAddress: Addres
   return await waitForTransaction(hash)
 }
 
-export const doUnstakeUSG = async ({ walletClient, stakingAddress, weiValue }: { walletClient: WalletClient; stakingAddress: Address; weiValue: bigint }) => {
+export const doUnstakeTAN = async ({ walletClient, stakingAddress, weiValue }: { walletClient: WalletClient; stakingAddress: Address; weiValue: bigint }) => {
   const [account] = await walletClient.requestAddresses()
 
   const params = [weiValue, account, account]
@@ -121,7 +122,7 @@ export const doUnstakeUSG = async ({ walletClient, stakingAddress, weiValue }: {
   return await waitForTransaction(hash)
 }
 
-export const doStakeUSG = async ({ walletClient, stakingAddress, weiValue }: { walletClient: WalletClient; stakingAddress: Address; weiValue: bigint }) => {
+export const doStakeTAN = async ({ walletClient, stakingAddress, weiValue }: { walletClient: WalletClient; stakingAddress: Address; weiValue: bigint }) => {
   const [account] = await walletClient.requestAddresses()
 
   const params = [weiValue, account]
@@ -142,14 +143,23 @@ export const doStakeUSG = async ({ walletClient, stakingAddress, weiValue }: { w
   return await waitForTransaction(hash)
 }
 
-export const computeProjection = (stakeInfo: TANStakingInfo, timeFrame: number, apr: number, addedLiquidity?: bigint) => {
-  let projection = 0
+export const computedProjection = (amount: number, timeFrame: number, apy: number) => {
+  return amount * Math.pow(1 + apy / 100, timeFrame)
+}
 
-  if (addedLiquidity) {
-    projection =
-      (Number(formatUnits(addedLiquidity, 18)) + Number(formatUnits(stakeInfo?.sTanBalance || 0n, 18))) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
+// Mirrors the sUSG projection so both staking pages compound identically
+export const computeProjection = (sTanBalance: bigint, timeFrame: number, apr: number, currentFeature: "stake" | "unstake", amount?: bigint) => {
+  let projection = 0
+  const sTanBalanceNumb = Number(formatUnits(sTanBalance || 0n, 18))
+  const amountNumb = Number(formatUnits(amount || 0n, 18))
+
+  if (currentFeature === "stake" && !!amount && amount > 0n) {
+    projection = computedProjection(sTanBalanceNumb + amountNumb, timeFrame, apr)
+  } else if (currentFeature === "unstake" && !!amount && amount > 0n) {
+    projection = computedProjection(sTanBalanceNumb - amountNumb, timeFrame, apr)
   } else {
-    projection = Number(formatUnits(stakeInfo?.sTanBalance || 0n, 18)) * Math.pow(1 + apr / 100 / 26, 26 * timeFrame)
+    projection = computedProjection(sTanBalanceNumb, timeFrame, apr)
   }
-  return projection
+
+  return formatNumber(projection >= 0 ? projection : 0, 0)
 }

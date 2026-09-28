@@ -5,7 +5,7 @@ import { FormError, FormState, MarketDetailData, USGMarketBorrowParams } from ".
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
 import { getBorrowCommonFormState } from "../usg_record_controller"
-import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import { dappErrors } from "@/components/design_system/notifications/form-errors"
 
 export function getBorrowFormState(
   marketData?: MarketDetailData,

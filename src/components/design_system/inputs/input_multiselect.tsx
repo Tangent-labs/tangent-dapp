@@ -2,7 +2,7 @@
 
 import { LockData, LockPositionSelectTemplate } from "@/components/products/usg/usg_type"
 import { ReactNode } from "react"
-import { Button } from "./button"
+import { Button, BUTTON_SIZES } from "./button"
 import { InputSelect } from "./input_select"
 import { BorderPanel } from "../structure/border_panel"
 
@@ -37,6 +37,8 @@ export const MultiPositionSelect = ({ lockData, selectedPositions, setSelectedPo
     setSelectedPositions(newPositions)
   }
 
+  const allSelected = allPositions.length > 0 && allPositions.length === selectedPositions?.length
+
   const handleRemovePosition = (index: number) => {
     const newPositions = selectedPositions.filter((_, i) => i !== index)
 
@@ -66,7 +68,7 @@ export const MultiPositionSelect = ({ lockData, selectedPositions, setSelectedPo
           </div>
           <BorderPanel
             onClick={() => handleRemovePosition(index)}
-            className="flex h-3 w-3 items-center justify-center !rounded-full p-3 text-xs font-semibold text-subtitle hover:border-white hover:text-white"
+            className="flex h-3 w-3 cursor-pointer items-center justify-center !rounded-full p-3 text-xs font-semibold text-subtitle hover:border-white hover:text-white"
             aria-label="Remove position"
           >
             ✕
@@ -74,18 +76,22 @@ export const MultiPositionSelect = ({ lockData, selectedPositions, setSelectedPo
         </div>
       ))}
 
-      <div className="mt-2 flex h-[30px] gap-2">
-        <Button onClick={handleAddPosition} className="text-md flex h-full w-[30px] items-center justify-center rounded-[10px] text-xl">
-          +
-        </Button>
-        <button
-          onClick={handleSelectAll}
-          disabled={allPositions.length === 0}
-          className="flex h-full items-center justify-center rounded-[10px] border border-gray-600 px-4 py-1 text-white"
-        >
-          Select all
-        </button>
-      </div>
+      {!allSelected && (
+        <div className="mt-2 flex items-center justify-start gap-2">
+          <Button size="sm" onClick={handleAddPosition} className="max-w-10" classNameChild="text-lg" aria-label="Add position">
+            +
+          </Button>
+
+          {/* Same height token as the button beside it, so the two can never drift apart */}
+          <button
+            onClick={handleSelectAll}
+            disabled={allPositions.length === 0}
+            className={`${BUTTON_SIZES.sm.wrapper} flex cursor-pointer items-center justify-center rounded-[10px] border border-gray-600 px-4 text-xs font-semibold text-white hover:bg-white/10 disabled:cursor-not-allowed`}
+          >
+            Select all
+          </button>
+        </div>
+      )}
     </div>
   )
 }

@@ -647,7 +647,12 @@ type FormErrorKey =
   | "max-leverage"
   | "low-max-leverage"
   | "lock-expired"
+  | "min-lock"
+  | "split-exceeds-position"
   | "same-position"
+  | "no-position-selected"
+  | "duplicate-position"
+  | "nothing-to-claim"
   | "no-zap-value"
 
 export type FormError = {

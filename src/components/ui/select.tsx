@@ -18,7 +18,7 @@ const SelectTrigger = React.forwardRef<React.ElementRef<typeof SelectPrimitive.T
       <SelectPrimitive.Trigger
         ref={ref}
         className={cn(
-          "flex min-h-10 w-full items-center justify-between rounded-[10px] bg-white/[0.03] px-2.5 py-1.5 backdrop-blur-[60px] placeholder:text-muted-foreground",
+          "flex min-h-10 w-full items-center justify-between rounded-[10px] bg-select-input px-2.5 py-1.5 backdrop-blur-[60px] placeholder:text-muted-foreground",
           "transition-all duration-200 ease-out",
           className
         )}

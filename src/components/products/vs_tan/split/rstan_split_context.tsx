@@ -4,7 +4,11 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { useVsTanContext } from "../rstan_layout_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { FormState, LockPosition } from "../../usg/usg_type"
+import { toastTx } from "@/components/design_system/toast"
+import { matchBlockChainErrors } from "../../usg/record/usg_record_controller"
 import { doSplit, getSplitFormState } from "./rstan_split_controller"
+import { tanAmountToDollar } from "../tan_price"
+import { useNextEndLockTime } from "../use_next_end_lock_time"
 import { formatBigInt } from "@/lib/number_formatter"
 
 type VsTanSplitContextProps = {
@@ -23,11 +27,17 @@ type VsTanSplitContextValues = {
   setSplitPosition: (arg: string) => void
 
   splitPercentage: number
+
+  // Raw amounts, so the inputs can be edited directly instead of only through the slider
+  firstSplitAmount: bigint
+  secondSplitAmount: bigint
+  setFirstSplitAmount: (arg: bigint) => void
+  setSecondSplitAmount: (arg: bigint) => void
   setSplitPercentage: (arg: number) => void
 
   actionSplit: () => void
 
-  computedSplitAmounts: { firstSplit: string; secondSplit: string }
+  computedSplitAmounts: { firstSplit: string; secondSplit: string; firstSplitDollar: string; secondSplitDollar: string }
 
   visualPercentage: number
 
@@ -36,26 +46,69 @@ type VsTanSplitContextValues = {
 
 export const VsTanSplitContext = createContext<VsTanSplitContextValues | undefined>(undefined)
 
+const toastErrorMapper = (err: unknown) => {
+  const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
+  return { type: "Error" as const, content: error || "Unable to proceed with the transaction." }
+}
+
 export const VsTanSplitProvider = ({ children }: VsTanSplitContextProps) => {
   const { walletClient, isWellConnected } = useWalletConnexionContext()
 
   const { loadData, lockData } = useVsTanContext()
 
+  const { chainTimestamp } = useNextEndLockTime(lockData)
+
   const [isLoading, setIsLoading] = useState<boolean>(false)
-
-  const [formState, setFormState] = useState<FormState>({ canProcess: false, errors: [], haveToApprove: false })
-
-  const [splitPercentage, setSplitPercentage] = useState<number>(50)
 
   const [splitPosition, setSplitPosition] = useState<string>("")
 
-  const visualPercentage = ((splitPercentage - 10) / (90 - 10)) * 100
-
   const splitPositionInfo = useMemo(() => {
-    const pos = lockData?.positions.find((position) => position?.tokenId.toString() === splitPosition)
+    return lockData?.positions.find((position) => position?.tokenId.toString() === splitPosition)
+  }, [splitPosition, lockData])
 
-    return pos
-  }, [splitPosition])
+  const totalAmount = splitPositionInfo?.amount ?? 0n
+
+  // What the NEW position receives. Everything else — the slider, both inputs, the recap and the
+  // amount actually sent to split() — is derived from this one value, so they cannot disagree.
+  const [amountToRemove, setAmountToRemove] = useState<bigint>(0n)
+
+  // A typed amount larger than the position is clamped below, so the overflow has to be
+  // remembered here for the form state to surface it
+  const [amountExceedsPosition, setAmountExceedsPosition] = useState<boolean>(false)
+
+  // Reset to an even split whenever another position is picked
+  useEffect(() => {
+    setAmountToRemove(totalAmount / 2n)
+    setAmountExceedsPosition(false)
+  }, [totalAmount])
+
+  const firstSplitAmount = totalAmount > amountToRemove ? totalAmount - amountToRemove : 0n
+  const secondSplitAmount = amountToRemove
+
+  const splitPercentage = useMemo(() => {
+    if (!totalAmount) return 50
+
+    return Number((firstSplitAmount * 10000n) / totalAmount) / 100
+  }, [totalAmount, firstSplitAmount])
+
+  const setSplitPercentage = (percentage: number) => {
+    if (!totalAmount) return
+
+    setAmountExceedsPosition(false)
+    setAmountToRemove((totalAmount * BigInt(Math.round((100 - percentage) * 100))) / 10000n)
+  }
+
+  // Typing an amount on either side pins that side and gives the remainder to the other
+  const setFirstSplitAmount = (value: bigint) => {
+    setAmountExceedsPosition(value > totalAmount)
+    setAmountToRemove(value >= totalAmount ? 0n : totalAmount - value)
+  }
+  const setSecondSplitAmount = (value: bigint) => {
+    setAmountExceedsPosition(value > totalAmount)
+    setAmountToRemove(value >= totalAmount ? totalAmount : value)
+  }
+
+  const visualPercentage = Math.min(100, Math.max(0, ((splitPercentage - 1) / (99 - 1)) * 100))
 
   const computedNewPositionIds = useMemo(() => {
     if (!lockData || !lockData.positions || lockData.positions.length === 0) {
@@ -74,50 +127,43 @@ export const VsTanSplitProvider = ({ children }: VsTanSplitContextProps) => {
   }, [lockData, splitPositionInfo])
 
   const computedSplitAmounts = useMemo(() => {
-    if (!splitPositionInfo || !splitPositionInfo.amount) {
-      return { firstSplit: "0", secondSplit: "0" }
+    if (!totalAmount) {
+      return { firstSplit: "0", secondSplit: "0", firstSplitDollar: "", secondSplitDollar: "" }
     }
-
-    const totalAmount = splitPositionInfo.amount
-    const firstSplitAmount = (totalAmount * BigInt(Math.round(splitPercentage * 100))) / BigInt(10000)
-    const secondSplitAmount = totalAmount - firstSplitAmount
 
     return {
       firstSplit: formatBigInt(firstSplitAmount, 18, 2),
       secondSplit: formatBigInt(secondSplitAmount, 18, 2),
+      firstSplitDollar: tanAmountToDollar(firstSplitAmount, lockData?.tanPrice),
+      secondSplitDollar: tanAmountToDollar(secondSplitAmount, lockData?.tanPrice),
     }
-  }, [splitPercentage, splitPositionInfo])
+  }, [firstSplitAmount, secondSplitAmount, totalAmount, lockData])
 
   const actionSplit = async () => {
+    if (isLoading || !walletClient || !splitPositionInfo) return
+
     setIsLoading(true)
 
-    if (walletClient && splitPositionInfo) {
-      const amountToRemove = (splitPositionInfo.amount * BigInt(100 - splitPercentage)) / BigInt(100)
+    try {
+      await toastTx(doSplit(splitPositionInfo?.tokenId, walletClient, amountToRemove), {
+        pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
+        success: () => ({ type: "Success", content: "Position successfully split in two." }),
+        error: toastErrorMapper,
+      })
 
-      await doSplit(splitPositionInfo?.tokenId, walletClient, amountToRemove)
       loadData()
-      setIsLoading(false)
       setSplitPosition("")
-    } else {
+    } catch {
+      // toastTx already surfaced the failure
+    } finally {
       setIsLoading(false)
     }
   }
 
-  useEffect(() => {
-    const computeFormState = async () => {
-      if (!lockData || !splitPositionInfo) {
-        setFormState({ canProcess: false, errors: [], haveToApprove: false })
-      } else {
-        getSplitFormState(splitPositionInfo, isWellConnected).then((d) => {
-          setFormState(d)
-        })
-      }
-    }
-
-    if (splitPositionInfo) {
-      computeFormState()
-    }
-  }, [splitPositionInfo, lockData])
+  const formState = useMemo<FormState>(
+    () => getSplitFormState(splitPositionInfo, chainTimestamp, isWellConnected, amountExceedsPosition),
+    [splitPositionInfo, chainTimestamp, isWellConnected, amountExceedsPosition]
+  )
 
   const contextValue: VsTanSplitContextValues = {
     isLoading,
@@ -128,6 +174,10 @@ export const VsTanSplitProvider = ({ children }: VsTanSplitContextProps) => {
     actionSplit,
     splitPercentage,
     setSplitPercentage,
+    firstSplitAmount,
+    secondSplitAmount,
+    setFirstSplitAmount,
+    setSecondSplitAmount,
     computedSplitAmounts,
     visualPercentage,
     computedNewPositionIds,

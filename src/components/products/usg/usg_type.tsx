@@ -703,3 +703,10 @@ export type ProtocolVolume = {
 
 // The API exposes no "year" range for volumes
 export type VolumeRange = "day" | "week" | "month"
+
+export type LiquidityRange = "1w" | "1m" | "1y" | "all"
+
+export type LpLiquidityHistory = {
+  total: number
+  lps: { lpName: string; lpAddress: string; history: { date: string; liquidityUsd: number }[] }[]
+}

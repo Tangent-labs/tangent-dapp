@@ -116,7 +116,7 @@ export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selecte
                     isDimmed && "opacity-40"
                   )}
                 >
-                  <div className={cn("relative h-full w-4 overflow-hidden rounded-md bg-white/[0.08]", isSelected && "ring-1 ring-white/40")}>
+                  <div className={cn("relative h-full w-6 overflow-hidden rounded-md bg-white/[0.08]", isSelected && "ring-1 ring-white/40")}>
                     <div
                       className="absolute bottom-0 left-0 w-full bg-[#0075FF] transition-all duration-300 group-hover:bg-[#3B93FF]"
                       style={{ height: `${el?.total > 0 ? (el.total / axisMax) * 100 : 0}%` }}

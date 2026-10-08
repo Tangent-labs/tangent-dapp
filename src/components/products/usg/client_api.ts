@@ -15,6 +15,8 @@ import {
   RevenueRange,
   ProtocolVolume,
   VolumeRange,
+  LiquidityRange,
+  LpLiquidityHistory,
 } from "./usg_type"
 import { USG_CONTRACT } from "./usg_repository"
 
@@ -638,5 +640,25 @@ export const fetchProtocolVolumes = async (range: VolumeRange): Promise<{ volume
   } catch (error) {
     console.error("Failed to fetch volumes :", error)
     return { volumes: [], total: 0 }
+  }
+}
+
+export const fetchLiquidityHistory = async (range: LiquidityRange): Promise<LpLiquidityHistory> => {
+  try {
+    const response = await fetch(`${baseUrl}/liquidity/${range}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch liquidity history")
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Failed to fetch liquidity history :", error)
+    return { total: 0, lps: [] }
   }
 }

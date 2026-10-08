@@ -7,6 +7,7 @@ import { GraphTokenPrice } from "./components/GraphTokenPrice"
 import { useRootContext } from "@/components/products/root/root_context"
 import { GraphProtocolRevenues } from "./components/GraphProtocolRevenues"
 import { GraphProtocolVolumes } from "./components/GraphProtocolVolumes"
+import { GraphLpLiquidity } from "./components/GraphLpLiquidity"
 import { GraphCollateralsAndDebts } from "./components/GraphCollateralsAndDebts"
 
 export const USGDashboardContent = () => {
@@ -21,6 +22,9 @@ export const USGDashboardContent = () => {
     totalVolumes,
     protocolVolumes,
     fetchVolumes,
+    liquidity,
+    selectedLiquidityTab,
+    fetchLiquidity,
   } = useUSGDashboardContext()
 
   const {
@@ -90,6 +94,9 @@ export const USGDashboardContent = () => {
       </div>
 
       <div className="flex w-full flex-col gap-5 lg:flex-row">
+        {/* LP LIQUIDITY */}
+        <GraphLpLiquidity liquidity={liquidity} selectedTab={selectedLiquidityTab} fetchLiquidity={fetchLiquidity} />
+
         {/* PROTOCOL VOLUMES */}
         <GraphProtocolVolumes totalVolumes={totalVolumes} protocolVolumes={protocolVolumes} selectedVolumeTab={selectedVolumeTab} fetchVolumes={fetchVolumes} />
       </div>

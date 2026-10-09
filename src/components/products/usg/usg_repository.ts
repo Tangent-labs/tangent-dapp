@@ -38,8 +38,11 @@ export const USGTokens = [
 
 export const USGPegKeepers: Address[] = Object.values(envAddresses.pegKeepers)
 
-// NOTE : Quick and dirty fix. Our collaterals are for now only duoPoolStable so it's fine
-export const USGOracles = Object.entries(envAddresses?.oracles?.duoPoolStable).map(([key, address]) => {
+// Collateral oracles keyed by pair name ("A_B" or "A/B")
+export const USGOracles = Object.entries({
+  ...envAddresses?.oracles?.duoPoolStable,
+  ...envAddresses?.oracles?.cryptoSwap,
+}).map(([key, address]) => {
   const trimmedName = key.replace("_", "/")
 
   return {

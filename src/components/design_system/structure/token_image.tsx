@@ -60,6 +60,7 @@ export function TokenImage({ token, size, ...props }: TokenImageProps) {
     "PT SUSG": "sUSG_PT.webp",
     "YT SUSG": "sUSG_YT.webp",
     "MARKET SUSG": "sUSG_LP.webp",
+    "LP SUSG": "sUSG_LP.webp",
     REUSD: "reUSD.webp",
   }
 

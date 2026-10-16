@@ -1,4 +1,4 @@
-import { Address, getAddress } from "viem"
+import { Address, getAddress, zeroAddress } from "viem"
 import { getEnsoData } from "./server_api"
 import { PendleCollaterals, USG_CONTRACT } from "./usg_repository"
 import { getCurveQuote, getCurveRouterRoute } from "./curve_routing_controller"
@@ -27,9 +27,12 @@ const isPendleRouter = (tokenIn: Address, tokenOut: Address) => {
 const getCustomRouterAddress = (tokenIn: Address, tokenOut: Address): Address =>
   (isPendleRouter(tokenIn, tokenOut) ? USG_CONTRACT.PENDLE_ROUTER : USG_CONTRACT.CURVE_ROUTER) as Address
 
+// Enso rejects the null address, so quote from a placeholder EOA when no wallet is connected (quote only, never executed)
+const QUOTE_PLACEHOLDER_ADDRESS: Address = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+
 export const getQuote = async (
   amountIn: bigint,
-  walletConnected: Address,
+  walletConnected: Address | undefined,
   tokenOut: Address,
   tokenIn: Address,
   curveRoutes: CustomCurveRoutes
@@ -41,7 +44,8 @@ export const getQuote = async (
     customQuote = getCurveQuote(curveRoutes, tokenIn, tokenOut, amountIn)
   }
 
-  const [ensoResult, customResult] = await Promise.all([getEnsoData(amountIn, tokenIn, tokenOut, walletConnected, walletConnected, 0n), customQuote])
+  const quoter = walletConnected && walletConnected !== zeroAddress ? walletConnected : QUOTE_PLACEHOLDER_ADDRESS
+  const [ensoResult, customResult] = await Promise.all([getEnsoData(amountIn, tokenIn, tokenOut, quoter, quoter, 0n), customQuote])
   const customRes: QuoteResult = {
     quote: BigInt(customResult?.quote || 0n),
     priceImpact: customResult.priceImpact || 0,

@@ -325,6 +325,15 @@ export const ERC20S: Erc20Details[] = [
     symbol: "CVX/ETH",
   },
 
+  {
+    address: "0x104d6a1b97a6cef88d905d7b865a378d90be932a" as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "frxUSD-DUSD",
+    name: "frxUSD/DUSD",
+    symbol: "frxUSD/DUSD",
+  },
+
   // PENDLE PT
   {
     address: "0xe2dbd6bafcd6b1da90483108f0f437addf7bd885",
@@ -501,6 +510,14 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "reUSD-sDOLA",
     name: "Vault reUSD/sDOLA",
     symbol: "Vault reUSD/sDOLA",
+  },
+  {
+    address: "0x6ea128D83bc4223A0d1e6E475CEE85998AcB6337" as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "frxUSD-DUSD",
+    name: "Vault frxUSD/DUSD",
+    symbol: "Vault frxUSD/DUSD",
   },
   // CURVE GAUGES
   {

@@ -24,7 +24,7 @@ import { SwapButton } from "@/components/design_system/inputs/swap_button"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import { IconBoosts, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
+import { IconBoosts, IconHarvest, IconPortfolio, IconProtocol, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
 
 export default function MenuBarFeature() {
   const { USGsUSGMetrics } = useUSGContext()
@@ -69,11 +69,17 @@ export default function MenuBarFeature() {
     { route: "/stake", label: "Savings" },
     { route: "/earn", label: "Earn" },
     { route: "/claim", label: "Claim" },
-    { route: "/dashboard", label: "Dashboard" },
     { route: "/swap", label: "Swap", mobileOnly: true },
   ]
 
   const routesDropdown = [
+    {
+      baseLabel: "Dashboard",
+      routes: [
+        { route: "/dashboard", label: "Protocol", logo: <IconProtocol className="w-4" /> },
+        { route: "/dashboard/user", label: "Portfolio", logo: <IconPortfolio className="w-4" /> },
+      ],
+    },
     {
       baseLabel: "DAO",
       routes: [

@@ -280,6 +280,12 @@ export default function USGMarketList() {
               active={filteredBy === "deposits"}
               label="Deposits"
             ></LargeButtonTab>
+            <LargeButtonTab
+              onClick={() => setFilteredBy("deprecated")}
+              className="h-10 px-4"
+              active={filteredBy === "deprecated"}
+              label="Deprecated"
+            ></LargeButtonTab>
           </div>
         </div>
         <div className="flex flex-col items-stretch justify-end gap-3">

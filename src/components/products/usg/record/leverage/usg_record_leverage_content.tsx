@@ -87,7 +87,7 @@ export default function USGLeverageContent() {
         maxAmountParams={{
           maxWeiValue: (!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance) || 0n,
           setMaxAmount: () => {
-            handleDepositChange(marketData?.collateralBalance || 0n)
+            handleDepositChange((!!depositAssetInfo ? balanceAllowanceData?.balance : marketData?.collateralBalance) || 0n)
           },
         }}
         sliderParams={{

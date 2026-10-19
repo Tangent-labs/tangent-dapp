@@ -121,6 +121,8 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
 
   const type = onChainRow?.constants.irParams.isHEC ? "HEC" : "LEC"
 
+  const isFixedRate = isFixedRateMarket(onChainRow?.constants?.irParams)
+
   const rewardToken = getRewardTokenFromAprDetails(data?.currentAPR, protocol)
 
   const maxLTV = Number(onChainRow?.constants?.maxLTV) / 100000
@@ -158,6 +160,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
     token: data.collateral,
     protocol,
     type,
+    isFixedRate,
     name: data.collateral,
     logoKey: data.logoKey,
     address: data.marketAddress as Address,
@@ -177,7 +180,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
           !!onChainRow?.debtInfos.currentBorrowRate && onChainRow?.debtInfos.currentBorrowRate >= 0n
             ? ((Math.exp(Number(formatUnits(onChainRow?.debtInfos.currentBorrowRate, 18))) - 1) * 100).toFixed(2) + "%"
             : "0%",
-        subValue: isFixedRateMarket(onChainRow?.constants?.irParams) ? "Fixed" : undefined,
+        subValue: isFixedRate ? "Fixed" : undefined,
         raw: onChainRow?.debtInfos.currentBorrowRate?.toString() || "0",
       },
 
@@ -255,6 +258,7 @@ export const marketOptions = [
   { label: "All", value: "All" },
   { label: "HEC", value: "HEC" },
   { label: "LEC", value: "LEC" },
+  { label: "FIR", value: "FIR" },
 ]
 
 export const protocolOptions = [

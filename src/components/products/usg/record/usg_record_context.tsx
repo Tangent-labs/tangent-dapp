@@ -86,9 +86,6 @@ type USGRecordContextValues = {
 
   displayRows: UserPosition[]
 
-  isUserHistoryLoading: boolean
-  setIsUserHistoryLoading: (v: boolean) => void
-
   historyPage: number
   setHistoryPage: (v: number) => void
   historyTotalPages: number
@@ -214,8 +211,6 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
 
   const [simulatedCollatAmount, setSimulatedCollatAmount] = useState<number>(0)
 
-  const [isUserHistoryLoading, setIsUserHistoryLoading] = useState<boolean>(true)
-
   const [totalBorrow, setTotalBorrow] = useState<TotalBorrow>({ latestTotalDebt: "0", data: [] })
 
   const [balanceAllowanceData, setBalanceAllowanceData] = useState<BalanceAllowanceData | null>(null)
@@ -268,7 +263,6 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
    */
   useEffect(() => {
     let cancelled = false
-    setIsUserHistoryLoading(true)
 
     const offset = (historyPage - 1) * HISTORY_PAGE_SIZE
     const userFilter = showUserHistoryOnly && currentAddress ? (currentAddress as Address) : undefined
@@ -277,7 +271,6 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
       if (cancelled) return
       setHistoryRows(res.data ?? [])
       setHistoryTotal(res.total ?? 0)
-      setIsUserHistoryLoading(false)
     })
 
     return () => {
@@ -520,8 +513,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
     marketInfo,
     //
     displayRows,
-    isUserHistoryLoading,
-    setIsUserHistoryLoading,
+
     historyPage,
     setHistoryPage,
     historyTotalPages,

@@ -59,6 +59,7 @@ export function TokenImage({ token, size, ...props }: TokenImageProps) {
     "YT SUSDE": "YT_sUSDe.webp",
     "PT SUSG": "sUSG_PT.webp",
     "YT SUSG": "sUSG_YT.webp",
+    "MARKET SUSG": "sUSG_LP.webp",
     "LP SUSG": "sUSG_LP.webp",
     REUSD: "reUSD.webp",
     // asset on disk is stan.webp — without this, token="sTAN" 404s on a case-sensitive filesystem

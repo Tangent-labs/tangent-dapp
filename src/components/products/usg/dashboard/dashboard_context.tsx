@@ -2,8 +2,18 @@
 
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useUSGMaketListContext } from "../list/usg_market_list_context"
-import { MarketDebtData, ProtocolRevenue, RevenueRange, USGCollateralData, USGGlobalData } from "../usg_type"
-import { fetchProtocolRevenues } from "../client_api"
+import {
+  LiquidityRange,
+  LpLiquidityHistory,
+  MarketDebtData,
+  ProtocolRevenue,
+  ProtocolVolume,
+  RevenueRange,
+  USGCollateralData,
+  USGGlobalData,
+  VolumeRange,
+} from "../usg_type"
+import { fetchLiquidityHistory, fetchProtocolRevenues, fetchProtocolVolumes } from "../client_api"
 
 type USGDashboardContextProps = {
   children: ReactNode
@@ -32,6 +42,20 @@ type USGDashboardContextValues = {
   fetchRevenues: (range: RevenueRange) => void
 
   totalRevenues: number
+
+  protocolVolumes: ProtocolVolume[]
+
+  selectedVolumeTab: VolumeRange
+
+  fetchVolumes: (range: VolumeRange) => void
+
+  totalVolumes: number
+
+  liquidity: LpLiquidityHistory
+
+  selectedLiquidityTab: LiquidityRange
+
+  fetchLiquidity: (range: LiquidityRange) => void
 }
 
 export const USGDashboardContext = createContext<USGDashboardContextValues | undefined>(undefined)
@@ -54,8 +78,39 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
     setTotalRevenues(total)
   }
 
+  const [protocolVolumes, setProtocolVolumes] = useState<ProtocolVolume[]>([])
+
+  const [selectedVolumeTab, setSelectedVolumeTab] = useState<VolumeRange>("week")
+
+  const [totalVolumes, setTotalVolumes] = useState(0)
+
+  const fetchVolumes = async (range: VolumeRange) => {
+    setSelectedVolumeTab(range)
+
+    const { volumes, total } = await fetchProtocolVolumes(range)
+
+    setProtocolVolumes(volumes)
+    setTotalVolumes(total)
+  }
+
+  const [liquidity, setLiquidity] = useState<LpLiquidityHistory>({ total: 0, lps: [] })
+
+  const [selectedLiquidityTab, setSelectedLiquidityTab] = useState<LiquidityRange>("1m")
+
+  const fetchLiquidity = async (range: LiquidityRange) => {
+    setSelectedLiquidityTab(range)
+
+    const data = await fetchLiquidityHistory(range)
+
+    // Hide dust LPs (current liquidity < $5k)
+    const lps = data.lps.filter((lp) => (lp.history.at(-1)?.liquidityUsd ?? 0) >= 5_000)
+    setLiquidity({ ...data, lps })
+  }
+
   useEffect(() => {
     fetchRevenues("week")
+    fetchVolumes("week")
+    fetchLiquidity("1m")
   }, [])
 
   const marketDebtMaxValue = useMemo(() => {
@@ -75,6 +130,13 @@ export const USGDashboardProvider = ({ children }: USGDashboardContextProps) => 
     selectedRevenueTab,
     fetchRevenues,
     totalRevenues,
+    protocolVolumes,
+    selectedVolumeTab,
+    fetchVolumes,
+    totalVolumes,
+    liquidity,
+    selectedLiquidityTab,
+    fetchLiquidity,
   }
 
   return <USGDashboardContext.Provider value={contextValue}>{children}</USGDashboardContext.Provider>

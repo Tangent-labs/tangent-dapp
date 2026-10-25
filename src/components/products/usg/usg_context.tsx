@@ -82,7 +82,7 @@ export const USGProvider = ({ children }: USGContextProps) => {
     if (isWalletContextLoaded) {
       loadUSGsUSGMetrics()
       refetchPoints()
-      loadTanSTANMetrics()
+      // ponytail: sTAN not deployed yet, re-enable loadTanSTANMetrics() once VSTAN_CONTRACT.STAN is real
     }
   }, [isWalletContextLoaded, currentAddress])
 

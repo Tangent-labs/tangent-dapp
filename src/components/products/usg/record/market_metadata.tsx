@@ -5,6 +5,7 @@ import Image from "next/image"
 import { MarketConstants, USGMarketType } from "../usg_type"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { CollateralEmissionLabel } from "@/components/design_system/list/collat_emission_label"
+import { isFixedRateMarket } from "../list/usg_market_controller"
 import TokenImageHighlighted from "@/components/design_system/structure/token_image_highlighted"
 
 type MarketMetadataProps = {
@@ -28,7 +29,10 @@ export const MarketMetadata = ({ marketData }: MarketMetadataProps) => {
 
       <LiquityBadge address={marketData?.marketAddress?.toLowerCase()} />
 
-      <CollateralEmissionLabel isHEC={marketData?.constants?.irParams.isHEC}></CollateralEmissionLabel>
+      <CollateralEmissionLabel
+        isHEC={marketData?.constants?.irParams.isHEC}
+        isFixedRate={isFixedRateMarket(marketData?.constants?.irParams)}
+      ></CollateralEmissionLabel>
     </div>
   )
 }

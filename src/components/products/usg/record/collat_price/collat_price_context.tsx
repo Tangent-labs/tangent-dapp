@@ -6,7 +6,7 @@ import { CollatGraphData, USGMarket } from "../../usg_type"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useRootContext } from "@/components/products/root/root_context"
 import { fetchGraphData, fetchOracleGraphData, fetchPendlePTGraphData } from "../../client_api"
-import { CRV_DUO_ETH_CVX } from "@tangent/defi-resources/build/ressources/lps/curve"
+import { CRV_DUO_ETH_CVX, CRV_DUO_ETH_CVX_TOKEN } from "@tangent/defi-resources/build/ressources/lps/curve"
 import { createContext, ReactNode, useContext, useEffect, useState, useTransition } from "react"
 import {
   OraclePricePoint,
@@ -132,7 +132,8 @@ export const CollateralPriceProvider = ({ children }: CollateralPriceContextProp
       if (marketInfo?.marketType === "Pendle_PT") {
         candlePromise = fetchGraphDataForPendlePT(marketInfo?.collatAddress, timeWindow)
       } else {
-        const collatAddress = marketInfo?.marketName === "CVX-ETH" ? CRV_DUO_ETH_CVX : marketInfo?.collatAddress
+        // Curve prices API indexes this LP by pool address, not LP token
+        const collatAddress = marketInfo?.collatAddress?.toLowerCase() === CRV_DUO_ETH_CVX_TOKEN ? (CRV_DUO_ETH_CVX as Address) : marketInfo?.collatAddress
         candlePromise = fetchGraphDataForCurveLP(collatAddress, timeWindow)
       }
 
@@ -142,7 +143,7 @@ export const CollateralPriceProvider = ({ children }: CollateralPriceContextProp
     }
 
     loadGraphData()
-  }, [marketInfo?.collatAddress, marketInfo?.marketAddress, marketInfo?.marketName, marketInfo?.marketType, timeWindow])
+  }, [marketInfo?.collatAddress, marketInfo?.marketAddress, marketInfo?.marketType, timeWindow])
 
   const contextValue: CollateralPriceContextValues = {
     collateralInfo,

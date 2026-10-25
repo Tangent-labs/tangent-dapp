@@ -38,8 +38,11 @@ export const USGTokens = [
 
 export const USGPegKeepers: Address[] = Object.values(envAddresses.pegKeepers)
 
-// NOTE : Quick and dirty fix. Our collaterals are for now only duoPoolStable so it's fine
-export const USGOracles = Object.entries(envAddresses?.oracles?.duoPoolStable).map(([key, address]) => {
+// Collateral oracles keyed by pair name ("A_B" or "A/B")
+export const USGOracles = Object.entries({
+  ...envAddresses?.oracles?.duoPoolStable,
+  ...envAddresses?.oracles?.cryptoSwap,
+}).map(([key, address]) => {
   const trimmedName = key.replace("_", "/")
 
   return {
@@ -86,4 +89,17 @@ export const USG_CONTRACT = {
   DAO: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
 }
 
-export const specialTokensList = ["USDe", "sUSDe", "LP sUSDe", "PT sUSDe", "YT sUSDe", "LP USDe", "PT USDe", "YT USDe", "reUSD"]
+export const specialTokensList = [
+  "USDe",
+  "sUSDe",
+  "LP sUSDe",
+  "PT sUSDe",
+  "YT sUSDe",
+  "LP USDe",
+  "PT USDe",
+  "YT USDe",
+  "reUSD",
+  "LP sUSG",
+  "PT sUSG",
+  "YT sUSG",
+]

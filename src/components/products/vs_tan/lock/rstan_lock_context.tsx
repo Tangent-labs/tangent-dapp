@@ -58,6 +58,7 @@ type VsTanLockContextValues = {
 export const VsTanLockContext = createContext<VsTanLockContextValues | undefined>(undefined)
 
 const toastErrorMapper = (err: unknown) => {
+  console.error(err)
   const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
   return { type: "Error" as const, content: error || "Unable to proceed with the transaction." }
 }

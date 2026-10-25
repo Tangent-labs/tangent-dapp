@@ -1,6 +1,6 @@
-import { Address, getAddress } from "viem"
+import { Address, getAddress, zeroAddress } from "viem"
 import { getEnsoData } from "./server_api"
-import { PendleCollaterals } from "./usg_repository"
+import { PendleCollaterals, USG_CONTRACT } from "./usg_repository"
 import { getCurveQuote, getCurveRouterRoute } from "./curve_routing_controller"
 import { getCustomPendleQuote, getPendleCustomRouterRoute } from "./pendle_routing_controller"
 
@@ -9,19 +9,34 @@ export type CustomCurveRoutes = {
   errors: string[]
 }
 
+export type RouteSource = "custom" | "enso"
+
+export type QuoteResult = {
+  quote: bigint
+  priceImpact: number
+  type: RouteSource
+  routerAddress: Address
+}
+
 const isCollateral = (collaterals: Array<Address>, token: Address) => collaterals.includes(getAddress(token))
 
 const isPendleRouter = (tokenIn: Address, tokenOut: Address) => {
   return isCollateral(PendleCollaterals, tokenIn) || isCollateral(PendleCollaterals, tokenOut)
 }
 
+const getCustomRouterAddress = (tokenIn: Address, tokenOut: Address): Address =>
+  (isPendleRouter(tokenIn, tokenOut) ? USG_CONTRACT.PENDLE_ROUTER : USG_CONTRACT.CURVE_ROUTER) as Address
+
+// Enso rejects the null address, so quote from a placeholder EOA when no wallet is connected (quote only, never executed)
+const QUOTE_PLACEHOLDER_ADDRESS: Address = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+
 export const getQuote = async (
   amountIn: bigint,
-  walletConnected: Address,
+  walletConnected: Address | undefined,
   tokenOut: Address,
   tokenIn: Address,
   curveRoutes: CustomCurveRoutes
-): Promise<{ quote: bigint; priceImpact: number; type: "custom" | "enso" }> => {
+): Promise<QuoteResult> => {
   let customQuote: Promise<{ quote: bigint; priceImpact: number }>
   if (isPendleRouter(tokenIn, tokenOut)) {
     customQuote = getCustomPendleQuote(curveRoutes, tokenIn, tokenOut, amountIn, isCollateral(PendleCollaterals, tokenIn) ? "PTToToken" : "tokenToPT")
@@ -29,16 +44,19 @@ export const getQuote = async (
     customQuote = getCurveQuote(curveRoutes, tokenIn, tokenOut, amountIn)
   }
 
-  const [ensoResult, customResult] = await Promise.all([getEnsoData(amountIn, tokenIn, tokenOut, walletConnected, walletConnected, 0n), customQuote])
-  const customRes: { quote: bigint; priceImpact: number; type: "custom" | "enso" } = {
+  const quoter = walletConnected && walletConnected !== zeroAddress ? walletConnected : QUOTE_PLACEHOLDER_ADDRESS
+  const [ensoResult, customResult] = await Promise.all([getEnsoData(amountIn, tokenIn, tokenOut, quoter, quoter, 0n), customQuote])
+  const customRes: QuoteResult = {
     quote: BigInt(customResult?.quote || 0n),
     priceImpact: customResult.priceImpact || 0,
     type: "custom",
+    routerAddress: getCustomRouterAddress(tokenIn, tokenOut),
   }
-  const ensoRes: { quote: bigint; priceImpact: number; type: "custom" | "enso" } = {
+  const ensoRes: QuoteResult = {
     quote: BigInt(ensoResult?.amountOut || 0n),
     priceImpact: ensoResult?.priceImpact || 0,
     type: "enso",
+    routerAddress: (ensoResult?.tx?.to ?? USG_CONTRACT.ENSO_ROUTER) as Address,
   }
   return customRes.quote >= ensoRes.quote ? customRes : ensoRes
 }
@@ -71,7 +89,8 @@ const customRouteFor = (
 }
 
 /**
- * Fetches both routes bewteen ENSO and custom router and uses the best one
+ * Fetches both routes bewteen ENSO and custom router and uses the best one.
+ * `preferred` pins the source picked at quote time so the executed router matches the one the user approved.
  */
 export const getRoute = async (
   tokenIn: Address,
@@ -81,7 +100,8 @@ export const getRoute = async (
   receiver: Address,
   fromAddress: Address,
   curveRoutes: CustomCurveRoutes,
-  user?: Address
+  user?: Address,
+  preferred?: RouteSource
 ) => {
   const recv = user ?? receiver
 
@@ -94,8 +114,10 @@ export const getRoute = async (
   const ensoAmount = BigInt(ensoRoute?.amountOut || 0n)
   const customAmount = BigInt(customQuote?.quote || 0n)
 
-  // Go for custom when it quotes at least as well as ENSO
-  if (customAmount > 0n && customAmount >= ensoAmount) {
+  // Go for custom when it quotes at least as well as ENSO (or when it was the source approved at quote time)
+  const useCustom = preferred === "enso" ? false : preferred === "custom" ? customAmount > 0n : customAmount > 0n && customAmount >= ensoAmount
+
+  if (useCustom) {
     const custom = await customRouteFor(tokenIn, tokenOut, amount, minAmountOut, recv, curveRoutes)
     if (custom?.data) {
       return { data: custom.data, routerAddress: custom.routerAddress }

@@ -122,9 +122,11 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     const allRows = transformToRows(marketDataWithAPR, onChainData)
 
     const filteredRows = allRows
-      .filter((market) => marketType === "All" || market.type === marketType)
+      .filter((market) => marketType === "All" || (marketType === "FIR" ? market.isFixedRate : market.type === marketType))
       .filter((market) => matchProtocol(market.protocol, protocol))
-      .filter((row) => filteredBy === "all" || row.userHasDeposited)
+      // maxBorrowable defaults to "0" before on-chain data loads, so only flag deprecated once loaded
+      .filter((row) => (!!onChainData && row.maxBorrowable === "0") === (filteredBy === "deprecated"))
+      .filter((row) => filteredBy !== "deposits" || row.userHasDeposited)
 
     let rowsToShow = filteredRows
 

@@ -48,6 +48,25 @@ export const ERC20S: Erc20Details[] = [
     symbol: "sUSG",
   },
 
+  {
+    address: "0x8787678DB688eaD8D53F8F96f33Ceeb0FD821d5a",
+    chainId: 1,
+    decimals: 18,
+    displayDecimals: 3,
+    logoKey: "TAN",
+    name: "TAN",
+    symbol: "TAN",
+  },
+  {
+    address: "0x59b030801a113c7148aa5b38834d679e9Df52B34",
+    chainId: 1,
+    decimals: 18,
+    displayDecimals: 3,
+    logoKey: "vsTAN",
+    name: "vsTAN",
+    symbol: "vsTAN",
+  },
+
   // CURVE LP
   {
     address: "0x97ba10115da528c113462ede9c20d7adc806d93f",
@@ -81,6 +100,14 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "sUSG-reUSD",
     name: "sUSG/reUSD",
     symbol: "sUSG/reUSD",
+  },
+  {
+    address: "0xf182fE2f1a1014543848E261087B6740b78Acf71",
+    chainId: 1,
+    decimals: 18,
+    logoKey: "USG-OUSD",
+    name: "Vault USG/OUSD",
+    symbol: "Vault USG/OUSD",
   },
   {
     address: CURVE_LPS.crvUSD_USDC as Address,
@@ -308,16 +335,33 @@ export const ERC20S: Erc20Details[] = [
     name: "reUSD/sDOLA",
     symbol: "reUSD/sDOLA",
   },
+  {
+    address: CURVE_LPS.DUO_ETH_CVX_TOKEN as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "CVX-ETH",
+    name: "CVX/ETH",
+    symbol: "CVX/ETH",
+  },
 
-  // // PENDLE PT
-  // {
-  //   address: PENDLE_POOLS?.["sUSDe 08/13/2026"]?.PT,
-  //   chainId: 1,
-  //   decimals: 18,
-  //   logoKey: "sUSDe 08/13/2026",
-  //   name: "sUSDe 08/13/2026",
-  //   symbol: "sUSDe 08/13/2026",
-  // },
+  {
+    address: "0x104d6a1b97a6cef88d905d7b865a378d90be932a" as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "frxUSD-DUSD",
+    name: "frxUSD/DUSD",
+    symbol: "frxUSD/DUSD",
+  },
+
+  // PENDLE PT
+  {
+    address: "0xe2dbd6bafcd6b1da90483108f0f437addf7bd885",
+    chainId: 1,
+    decimals: 18,
+    logoKey: "sUSG_PT",
+    name: "sUSG 26/11/2026",
+    symbol: "sUSG 26/11/2026",
+  },
   // Stake DAO VAULT
   {
     address: SDT_frxUSD_sUSDS_VAULT as Address,
@@ -418,7 +462,30 @@ export const ERC20S: Erc20Details[] = [
     // Volatile (BTC) collateral: ~$100k/unit, needs the most display granularity.
     displayDecimals: 5,
   },
-
+  {
+    address: "0x6E195fabfaB7FC6eB242049a8519a91a333D9de1",
+    chainId: 1,
+    decimals: 18,
+    logoKey: "USG-sDOLA",
+    name: "Vault USG/sDOLA",
+    symbol: "Vault USG/sDOLA",
+  },
+  {
+    address: "0xD4F41eF4127F07335024278433f928B6bAb023D4",
+    chainId: 1,
+    decimals: 18,
+    logoKey: "sUSG-reUSD",
+    name: "Vault sUSG/reUSD",
+    symbol: "Vault sUSG/reUSD",
+  },
+  {
+    address: "0xBadF707Fbd1348C6786902F8160706a4F181b7B9",
+    chainId: 1,
+    decimals: 18,
+    logoKey: "USG-OUSD",
+    name: "Vault USG/OUSD",
+    symbol: "Vault USG/OUSD",
+  },
   {
     address: SDT_GHO_crvUSD_VAULT,
     chainId: 1,
@@ -462,6 +529,14 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "reUSD-sDOLA",
     name: "Vault reUSD/sDOLA",
     symbol: "Vault reUSD/sDOLA",
+  },
+  {
+    address: "0x6ea128D83bc4223A0d1e6E475CEE85998AcB6337" as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "frxUSD-DUSD",
+    name: "Vault frxUSD/DUSD",
+    symbol: "Vault frxUSD/DUSD",
   },
   // CURVE GAUGES
   {

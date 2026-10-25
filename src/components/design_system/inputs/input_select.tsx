@@ -27,7 +27,7 @@ export const InputSelect = <T extends { value: string }>({
   return (
     <>
       <div className={`flex flex-col ${className}`}>
-        <div className="mb-1 flex w-full justify-between text-xs font-semibold text-subtitle">{label}</div>
+        <div className="flex w-full justify-between text-xs font-semibold text-subtitle">{label}</div>
 
         <Select disabled={disabled} value={value} onValueChange={(value) => onChange(value)}>
           <SelectTrigger disabled={disabled} className={className}>

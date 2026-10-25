@@ -1,6 +1,6 @@
 import IERC4626 from "@/abi/USG/IERC4626.json"
 import WStable from "@/abi/USG/WStable.json"
-import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import { dappErrors } from "@/components/design_system/notifications/form-errors"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { AssetDataPriced } from "@/types"
 import { Abi, Address, EstimateContractGasParameters, SendTransactionParameters, WalletClient, WriteContractParameters } from "viem"

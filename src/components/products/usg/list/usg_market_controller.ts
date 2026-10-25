@@ -96,6 +96,9 @@ export function getRewardTokenFromAprDetails(aprDetails: RewardsApr, protocol: s
   }
 }
 
+/** A market has a fixed borrow rate when its IR curve is flat: rMin === rMax (the rate always equals rMin). */
+export const isFixedRateMarket = (irParams?: { rMin: number; rMax: number }) => !!irParams && Number(irParams.rMin) === Number(irParams.rMax)
+
 const BORROW_CAP_WARNING_PCT = 90n
 const BORROW_CAP_CRITICAL_PCT = 99n
 
@@ -117,6 +120,8 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
   const protocol = (USGMarkets.find((m) => m.marketAddress === onChainRow?.marketAddress)?.marketType || "Curve") as string
 
   const type = onChainRow?.constants.irParams.isHEC ? "HEC" : "LEC"
+
+  const isFixedRate = isFixedRateMarket(onChainRow?.constants?.irParams)
 
   const rewardToken = getRewardTokenFromAprDetails(data?.currentAPR, protocol)
 
@@ -155,6 +160,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
     token: data.collateral,
     protocol,
     type,
+    isFixedRate,
     name: data.collateral,
     logoKey: data.logoKey,
     address: data.marketAddress as Address,
@@ -174,6 +180,7 @@ function transformMarketDataToRow(data: MarketListAPRData, onChainRow?: ChainVie
           !!onChainRow?.debtInfos.currentBorrowRate && onChainRow?.debtInfos.currentBorrowRate >= 0n
             ? ((Math.exp(Number(formatUnits(onChainRow?.debtInfos.currentBorrowRate, 18))) - 1) * 100).toFixed(2) + "%"
             : "0%",
+        subValue: isFixedRate ? "Fixed" : undefined,
         raw: onChainRow?.debtInfos.currentBorrowRate?.toString() || "0",
       },
 
@@ -251,6 +258,7 @@ export const marketOptions = [
   { label: "All", value: "All" },
   { label: "HEC", value: "HEC" },
   { label: "LEC", value: "LEC" },
+  { label: "FIR", value: "FIR" },
 ]
 
 export const protocolOptions = [

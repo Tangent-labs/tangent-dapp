@@ -114,14 +114,14 @@ export default function USGMarketList() {
 
             <div className="flex flex-col items-start justify-center gap-2 px-2 xl:gap-0 xl:px-6">
               <h2 className="hidden text-4xl font-semibold xl:flex">Markets</h2>
-              <p className="mt-2 text-[15px]">Borrow USG against accepted collateral. Tangent features two kinds of markets.</p>
+              <p className="mt-2 text-[15px]">Borrow USG against accepted collateral. Tangent features three kinds of markets.</p>
               <Link
                 className="flex cursor-pointer items-center justify-center text-sm underline hover:text-white/30 xl:text-[15px]"
                 href="https://docs.tangent.finance/docs/usg/overview_usg#markets%E2%80%8B"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Learn more about HEC and LEC markets <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white"></IconOpenOutside>
+                Learn more about HEC, LEC, and FIR markets <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white"></IconOpenOutside>
               </Link>
             </div>
           </div>
@@ -280,6 +280,12 @@ export default function USGMarketList() {
               active={filteredBy === "deposits"}
               label="Deposits"
             ></LargeButtonTab>
+            <LargeButtonTab
+              onClick={() => setFilteredBy("deprecated")}
+              className="h-10 px-4"
+              active={filteredBy === "deprecated"}
+              label="Deprecated"
+            ></LargeButtonTab>
           </div>
         </div>
         <div className="flex flex-col items-stretch justify-end gap-3">
@@ -397,7 +403,10 @@ export function USGMarketListInner() {
                         {indicator?.label}
                       </span>
                       {/* VALUE  */}
-                      <span className="text-sm md:text-[15px]">{indicator?.value}</span>
+                      <span className="flex flex-col items-end xl:items-center">
+                        <span className="text-sm md:text-[15px]">{indicator?.value}</span>
+                        {indicator?.subValue && <span className="text-xs text-subtitle md:text-[10px]">{indicator.subValue}</span>}
+                      </span>
                     </span>
                   </div>
                 )}

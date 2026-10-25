@@ -647,7 +647,12 @@ type FormErrorKey =
   | "max-leverage"
   | "low-max-leverage"
   | "lock-expired"
+  | "min-lock"
+  | "split-exceeds-position"
   | "same-position"
+  | "no-position-selected"
+  | "duplicate-position"
+  | "nothing-to-claim"
   | "no-zap-value"
 
 export type FormError = {
@@ -683,4 +688,30 @@ export type ProtocolRevenue = {
   total: number
 }
 
-export type RevenueRange = "week" | "month" | "year"
+export type RevenueRange = "day" | "week" | "month" | "year"
+
+// One bar of the protocol volume graph, every amount in USD. Each flow is counted as volume,
+// so `total` sums the in AND out legs (a deposit followed by a withdraw counts twice).
+export type ProtocolVolume = {
+  period: string
+  collateralIn: number
+  collateralOut: number
+  debtIn: number
+  debtOut: number
+  lpLiquidityIn: number
+  lpLiquidityOut: number
+  lpSwap: number
+  susgIn: number
+  susgOut: number
+  total: number
+}
+
+// The API exposes no "year" range for volumes
+export type VolumeRange = "day" | "week" | "month"
+
+export type LiquidityRange = "1w" | "1m" | "1y" | "all"
+
+export type LpLiquidityHistory = {
+  total: number
+  lps: { lpName: string; lpAddress: string; history: { date: string; liquidityUsd: number }[] }[]
+}

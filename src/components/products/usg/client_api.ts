@@ -13,6 +13,10 @@ import {
   UserPosition,
   ProtocolRevenue,
   RevenueRange,
+  ProtocolVolume,
+  VolumeRange,
+  LiquidityRange,
+  LpLiquidityHistory,
 } from "./usg_type"
 import { USG_CONTRACT } from "./usg_repository"
 
@@ -614,5 +618,47 @@ export const fetchProtocolRevenues = async (range: RevenueRange): Promise<{ reve
   } catch (error) {
     console.error("Failed to fetch revenues :", error)
     return { revenues: [], total: 0 }
+  }
+}
+
+export const fetchProtocolVolumes = async (range: VolumeRange): Promise<{ volumes: ProtocolVolume[]; total: number }> => {
+  try {
+    const url = `${baseUrl}/volumes/${range}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch volumes")
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Failed to fetch volumes :", error)
+    return { volumes: [], total: 0 }
+  }
+}
+
+export const fetchLiquidityHistory = async (range: LiquidityRange): Promise<LpLiquidityHistory> => {
+  try {
+    const response = await fetch(`${baseUrl}/liquidity/${range}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch liquidity history")
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Failed to fetch liquidity history :", error)
+    return { total: 0, lps: [] }
   }
 }

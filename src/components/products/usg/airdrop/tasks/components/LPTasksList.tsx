@@ -50,10 +50,6 @@ const computeProtocolDisplay = (protocol: string) => {
       token = "morpho"
       label = "Morpho"
       break
-    case "spectra":
-      token = "spectra"
-      label = "Spectra"
-      break
     case "balancer":
       token = "balancer"
       label = "Balancer"

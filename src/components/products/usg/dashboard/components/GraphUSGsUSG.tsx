@@ -36,7 +36,8 @@ export const GraphUSGsUSG = ({
   return (
     <ReliefCard className="flex h-full w-full flex-col items-start justify-start p-5">
       {/* TITLE AND BUTTONS */}
-      <div className="flex w-full items-center justify-end sm:justify-between">
+      <div className="flex w-full items-center justify-between">
+        <div className="flex text-xl font-semibold sm:hidden">Supply </div>
         <div className="hidden text-xl font-semibold sm:flex">Total Supply </div>
 
         <div className="flex gap-2">

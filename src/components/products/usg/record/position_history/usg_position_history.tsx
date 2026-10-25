@@ -7,7 +7,6 @@ import { UserPosition } from "../../usg_type"
 import { useUSGRecordContext } from "../usg_record_context"
 import { Switch } from "@/components/ui/switch"
 import { Title } from "@/components/design_system/structure/title"
-import { Loader } from "@/components/design_system/structure/loader"
 import { Divider } from "@/components/design_system/structure/divider"
 import { formatBigInt, formatDollar } from "@/lib/number_formatter"
 import { TokenImage } from "@/components/design_system/structure/token_image"
@@ -29,7 +28,7 @@ const HistoryRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
 }
 
 export function USGPositionHistory() {
-  const { isUserHistoryLoading, isUserConnected, showUserHistoryOnly, setShowUserHistoryOnly } = useUSGRecordContext()
+  const { isUserConnected, showUserHistoryOnly, setShowUserHistoryOnly } = useUSGRecordContext()
 
   return (
     <ReliefCard className="p-5">
@@ -45,13 +44,7 @@ export function USGPositionHistory() {
       </div>
       <Divider />
 
-      {isUserHistoryLoading ? (
-        <div className="flex w-full items-start justify-center">
-          <Loader />
-        </div>
-      ) : (
-        <PositionList />
-      )}
+      <PositionList />
     </ReliefCard>
   )
 }

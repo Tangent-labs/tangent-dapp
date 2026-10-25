@@ -76,8 +76,8 @@ export const PredepositContent = () => {
             totalDeposits={totalDeposits}
           />
 
-          {predepositStatus?.predepositState === "retention" ? (
-            <PredepositRetentionPhase amount={totalDeposits} />
+          {predepositStatus?.predepositState === "retention" || predepositStatus?.predepositState === "finished" ? (
+            <PredepositRetentionPhase amount={totalDeposits} isFinished={predepositStatus?.predepositState === "finished"} />
           ) : (
             <PredepositDepositSection scrollToFaq={scrollToFaq} />
           )}

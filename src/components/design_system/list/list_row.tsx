@@ -11,6 +11,8 @@ interface ListRowProps {
   rowDisposition?: React.ComponentType<{ children: React.ReactNode[] }>
   isSelected?: boolean
   openInNewTab?: boolean
+  // Rows that expand in place instead of navigating : when set, the click runs this and `route` is unused
+  navigate?: () => void
 }
 
 export const ListRow = ({
@@ -20,6 +22,7 @@ export const ListRow = ({
   rowDisposition: CustomRowDisposition = ListRowDisposition,
   isSelected = false,
   openInNewTab = false,
+  navigate,
 }: ListRowProps) => {
   return (
     <div className="group relative mt-1 w-full">
@@ -30,8 +33,17 @@ export const ListRow = ({
           href={route}
           target={openInNewTab ? "_blank" : undefined}
           rel={openInNewTab ? "noopener noreferrer" : undefined}
+          className={navigate ? "cursor-pointer" : undefined}
           onClick={(e) => {
-            if ((e.target as HTMLElement).closest(".stop-navigation")) e.preventDefault()
+            if ((e.target as HTMLElement).closest(".stop-navigation")) {
+              e.preventDefault()
+              return
+            }
+
+            if (navigate) {
+              e.preventDefault()
+              navigate()
+            }
           }}
         >
           <CustomRowDisposition>

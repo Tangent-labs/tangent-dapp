@@ -7,17 +7,17 @@ import { formatAddress } from "@/lib/other_formatter"
 import { CollateralInfo } from "@/types"
 import { AssetSelectionDialog } from "./asset-select-dialog"
 import { useUSGContext } from "@/components/products/usg/usg_context"
-import { useUSGRecordContext } from "@/components/products/usg/record/usg_record_context"
-import { useMemo } from "react"
+import { USGRecordContext } from "@/components/products/usg/record/usg_record_context"
+import { useContext, useMemo } from "react"
 import { formatBigIntFloor } from "@/lib/number_formatter"
 import { Erc20Details, ERC20S } from "@/data/erc20s"
 import { USG_CONTRACT } from "@/components/products/usg/usg_repository"
 
 type AssetSelectProps = {
-  collateralInfo: CollateralInfo
+  collateralInfo?: CollateralInfo
   depositAsset: string | undefined
   setDepositAsset: (s: string) => void
-  caseType: "deposit" | "repay"
+  caseType: "deposit" | "repay" | "lock"
   disabled?: boolean
 }
 
@@ -73,7 +73,8 @@ export const getTokenSymbolPriorityIndex = (symbol: string): number => {
 }
 
 export const ZapAssetSelector = ({ collateralInfo, depositAsset, setDepositAsset, caseType, disabled = false }: AssetSelectProps) => {
-  const { marketData } = useUSGRecordContext()
+  // Read the record context optionally : the selector is also used outside of a market record (e.g. vsTAN lock)
+  const marketData = useContext(USGRecordContext)?.marketData
 
   const { balances } = useUSGContext()
 
@@ -81,7 +82,7 @@ export const ZapAssetSelector = ({ collateralInfo, depositAsset, setDepositAsset
   // Takes the static token list we have
   const allAssets: AssetInfos[] = useMemo(() => {
     const receiptAddress = marketData?.constants?.receipt !== zeroAddress ? marketData?.constants?.receipt?.toLowerCase() : undefined
-    const collatAddress = collateralInfo?.address.toLowerCase()
+    const collatAddress = collateralInfo?.address?.toLowerCase()
 
     const assets = ERC20S
       // Guard against entries whose address failed to resolve (e.g. a missing
@@ -129,7 +130,7 @@ export const ZapAssetSelector = ({ collateralInfo, depositAsset, setDepositAsset
       })
 
     return assets
-  }, [balances, marketData?.constants?.receipt])
+  }, [balances, marketData?.constants?.receipt, collateralInfo?.address, caseType])
 
   return (
     <AssetSelectionDialog

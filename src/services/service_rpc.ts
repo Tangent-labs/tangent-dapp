@@ -165,6 +165,17 @@ export const executeChainView = async <T>(abi: Abi, byteCode: Hex, args?: unknow
 
     try {
       const v = decodeErrorResult({ abi, data: dataRaw })
+
+      // This pattern returns its payload by reverting with a custom error, but Solidity's built-in
+      // Panic(uint256) and Error(string) decode against any ABI too. Handing their args back as if
+      // they were the payload turns a plain revert into a wrongly-typed value downstream — a failed
+      // view surfacing as `50n` (Panic 0x32, array out of bounds) instead of nothing.
+      // Retrying another RPC is pointless : a revert reproduces identically everywhere.
+      if (v?.errorName === "Panic" || v?.errorName === "Error") {
+        console.error(`Chain view reverted with ${v.errorName}(${(v.args || []).join(", ")})`)
+        return undefined
+      }
+
       return v?.args as T
     } catch {
       return executeChainView(abi, byteCode, args, retryCount + 1)

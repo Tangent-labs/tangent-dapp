@@ -224,6 +224,7 @@ export function GenericInputAssetAmount({
   // Sets input to max value and slider to 100%
   // ---------------------------
   const handleMaxClick = () => {
+    if (sliderDebounceRef.current) clearTimeout(sliderDebounceRef.current)
     setMaxAmount()
     setSliderPercentage(Number(sliderStartEndRange[1]))
     // Do not treat this part for the leverage, it's externally controlled

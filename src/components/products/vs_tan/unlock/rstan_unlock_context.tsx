@@ -12,9 +12,9 @@ import {
   UnlockMode,
 } from "./rstan_unlock_controller"
 import { FormState, LockPosition } from "../../usg/usg_type"
-import { useVsTanContext } from "../rstan_layout_context"
+import { useVsTanContext } from "../vstan_layout_context"
 import { useNextEndLockTime } from "../use_next_end_lock_time"
-import { doTogglePermaLock } from "../rstan_layout_controller"
+import { doTogglePermaLock } from "../vstan_layout_controller"
 import { toastTx } from "@/components/design_system/toast"
 import { matchBlockChainErrors } from "../../usg/record/usg_record_controller"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"

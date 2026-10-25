@@ -4,7 +4,7 @@ import { VSTAN_CONTRACT } from "../rs_tan_repository"
 import { FormError, FormState, LockPosition } from "../../usg/usg_type"
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
 import { dappErrors } from "@/components/design_system/notifications/form-errors"
-import { isExpired } from "../rstan_layout_controller"
+import { isExpired } from "../vstan_layout_controller"
 
 export const doMerge = async (walletClient: WalletClient, tokenIdA: bigint, tokenIdB: bigint, claimAsSUSG: boolean) => {
   const txData = {

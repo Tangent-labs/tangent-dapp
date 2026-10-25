@@ -10,7 +10,7 @@ import { mapUserBoosts } from "./airdrop/boosts/usg_boosts_controller"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { USGStakingInfo, VoteUserPoints, RefereesPoints, MarketAPRs, LpUserPoints, Boost } from "./usg_type"
-import { TANStakingInfo } from "../vs_tan/rstan_types"
+import { TANStakingInfo } from "../vs_tan/vstan_types"
 import { getTanStakeOnChainData } from "../vs_tan/stake/stake_tan_controller"
 
 type USGContextProps = {

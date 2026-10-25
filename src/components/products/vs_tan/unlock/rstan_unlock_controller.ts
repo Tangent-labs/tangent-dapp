@@ -2,7 +2,7 @@ import { executeContractCall, getPublicClient, waitForTransaction } from "@/serv
 import VsTan from "../../../../abi/USG/VsTAN.json"
 import { Abi, Address, WalletClient } from "viem"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { isPermaLocked } from "../rstan_layout_controller"
+import { isPermaLocked } from "../vstan_layout_controller"
 import { dappErrors } from "@/components/design_system/notifications/form-errors"
 import { FormError, FormState, LockPosition } from "../../usg/usg_type"
 

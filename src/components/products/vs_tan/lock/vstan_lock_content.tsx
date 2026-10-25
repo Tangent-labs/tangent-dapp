@@ -2,8 +2,8 @@
 
 import { Switch } from "@/components/ui/switch"
 import { formatBigInt } from "@/lib/number_formatter"
-import { useVsTanContext } from "../rstan_layout_context"
-import { useVsTanLockContext } from "./rstan_lock_context"
+import { useVsTanContext } from "../vstan_layout_context"
+import { useVsTanLockContext } from "./vstan_lock_context"
 import { LockPositionSelectTemplate } from "../../usg/usg_type"
 import FormButtons from "@/components/design_system/form/form_actions"
 import { FormAlert } from "@/components/design_system/inputs/form_alert"

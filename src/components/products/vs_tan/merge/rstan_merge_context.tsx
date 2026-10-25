@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, ReactNode, useContext, useMemo, useState } from "react"
-import { useVsTanContext } from "../rstan_layout_context"
+import { useVsTanContext } from "../vstan_layout_context"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { FormState, LockPosition } from "../../usg/usg_type"
 import { toastTx } from "@/components/design_system/toast"

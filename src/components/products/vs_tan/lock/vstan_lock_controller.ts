@@ -1,6 +1,6 @@
 import VsTan from "../../../../abi/USG/VsTAN.json"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { isExpired } from "../rstan_layout_controller"
+import { isExpired } from "../vstan_layout_controller"
 import { FormError, FormState, LockPosition } from "../../usg/usg_type"
 import { Abi, Address, WalletClient } from "viem"
 import { executeApprove, executeContractCall, waitForTransaction } from "@/services/service_rpc"

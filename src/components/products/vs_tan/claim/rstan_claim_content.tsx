@@ -1,6 +1,6 @@
 "use client"
 
-import { useVsTanContext } from "../rstan_layout_context"
+import { useVsTanContext } from "../vstan_layout_context"
 import { LockPosition, LockPositionSelectTemplate } from "../../usg/usg_type"
 import { useVsTanClaimContext } from "./rstan_claim_context"
 import FormButtons from "@/components/design_system/form/form_actions"

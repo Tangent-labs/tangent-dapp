@@ -2,7 +2,7 @@
 
 import { Switch } from "@/components/ui/switch"
 import { formatBigInt } from "@/lib/number_formatter"
-import { useVsTanContext } from "../rstan_layout_context"
+import { useVsTanContext } from "../vstan_layout_context"
 import { useVsTanUnlockContext } from "./rstan_unlock_context"
 import { IconOpenOutside } from "@/components/icons"
 import { Button } from "@/components/design_system/inputs/button"

@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { doIncreaseLockTime, doTogglePermaLock, getVsTanData } from "./rstan_layout_controller"
+import { doIncreaseLockTime, doTogglePermaLock, getVsTanData } from "./vstan_layout_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { BalanceAllowanceData, LockData, LockPosition } from "../usg/usg_type"
 import { getBalancesAndAllowances } from "../usg/record/usg_record_controller"

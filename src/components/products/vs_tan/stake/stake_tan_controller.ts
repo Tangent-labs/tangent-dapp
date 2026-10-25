@@ -6,7 +6,7 @@ import sTANUI from "../../../../abi/USG/sTANUI.json"
 import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import { FormError, FormState } from "../../usg/usg_type"
 import { VSTAN_CONTRACT } from "../rs_tan_repository"
-import { TANStakingInfo } from "../rstan_types"
+import { TANStakingInfo } from "../vstan_types"
 
 export async function getTanStakeOnChainData(currentAddress: string) {
   return await executeChainViewUnique<TANStakingInfo>(sTANUI.abi as Abi, sTANUI.bytecode as Hex, [

@@ -1,6 +1,7 @@
 import { COMMON_ERC20S, CURVE_GAUGES, CURVE_LPS } from "@tangent/defi-resources"
 import {
   SDT_BOLD_USDC_VAULT,
+  SDT_crvUSD_frxUSD_VAULT,
   SDT_crvUSD_USDC_VAULT,
   SDT_crvUSD_USDT_VAULT,
   SDT_eUSD_USDC_VAULT,
@@ -97,6 +98,14 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "crvUSD-USDC",
     name: "crvUSD/USDC",
     symbol: "crvUSD/USDC",
+  },
+  {
+    address: CURVE_LPS.DUO_crvUSD_frxUSD as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "crvUSD-frxUSD",
+    name: "crvUSD/frxUSD",
+    symbol: "crvUSD/frxUSD",
   },
   {
     address: CURVE_LPS.DUO_USDC_USDT as Address,
@@ -519,6 +528,15 @@ export const ERC20S: Erc20Details[] = [
     name: "Vault frxUSD/DUSD",
     symbol: "Vault frxUSD/DUSD",
   },
+  {
+    address: SDT_crvUSD_frxUSD_VAULT as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "crvUSD-frxUSD",
+    name: "Vault crvUSD/frxUSD",
+    symbol: "Vault crvUSD/frxUSD",
+  },
+
   // CURVE GAUGES
   {
     address: CURVE_GAUGES.RLUSD_USDC,

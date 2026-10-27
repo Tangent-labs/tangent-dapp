@@ -103,9 +103,9 @@ export const ERC20S: Erc20Details[] = [
     address: CURVE_LPS.DUO_crvUSD_frxUSD as Address,
     chainId: 1,
     decimals: 18,
-    logoKey: "crvUSD-frxUSD",
-    name: "crvUSD/frxUSD",
-    symbol: "crvUSD/frxUSD",
+    logoKey: "frxUSD-crvUSD",
+    name: "frxUSD/crvUSD",
+    symbol: "frxUSD/crvUSD",
   },
   {
     address: CURVE_LPS.DUO_USDC_USDT as Address,
@@ -532,9 +532,9 @@ export const ERC20S: Erc20Details[] = [
     address: SDT_crvUSD_frxUSD_VAULT as Address,
     chainId: 1,
     decimals: 18,
-    logoKey: "crvUSD-frxUSD",
-    name: "Vault crvUSD/frxUSD",
-    symbol: "Vault crvUSD/frxUSD",
+    logoKey: "frxUSD-crvUSD",
+    name: "Vault frxUSD/crvUSD",
+    symbol: "Vault frxUSD/crvUSD",
   },
 
   // CURVE GAUGES

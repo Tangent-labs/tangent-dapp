@@ -3,7 +3,8 @@
 import { formatUnits } from "viem"
 import { useMemo, useState } from "react"
 import { PositionAPR } from "./position_apr"
-import { USGStakingInfo } from "../../usg_type"
+import { PositionTVL } from "./position_tvl"
+import { TVLData, USGStakingInfo } from "../../usg_type"
 import { formatNumber } from "@/lib/number_formatter"
 import { ForecastGraph } from "./usg_staking_forecast"
 import { SlidingTabs } from "../../airdrop/tasks/components/SlidingTabs"
@@ -20,10 +21,15 @@ interface PositionPerformancePanelProps {
   apyHistory: Array<{ date: number; uv: number }>
   fetchsUSGHistoryAPY: (range: string) => Promise<void>
   computeProjection: (balance: bigint, timeFrame: number, apr: number, currentFeature: "stake" | "unstake", amount?: bigint) => string
+  tvl: TVLData[]
+  tvlSelectedTab: string
+  fetchTVLData: (range: string) => void
 }
 
-const PROJECTED_EARNINGS = "Projected earnings"
 const APY_HISTORY = "APY history"
+const TVL_HISTORY = "TVL history"
+const PROJECTED_EARNINGS = "Projected earnings"
+const TAB_LABELS = [APY_HISTORY, TVL_HISTORY, PROJECTED_EARNINGS]
 
 export function PositionPerformancePanel({
   USGsUSGMetrics,
@@ -35,8 +41,11 @@ export function PositionPerformancePanel({
   apyHistory,
   computeProjection,
   fetchsUSGHistoryAPY,
+  tvl,
+  tvlSelectedTab,
+  fetchTVLData,
 }: PositionPerformancePanelProps) {
-  const [selectedFeature, setSelectedFeature] = useState<string>(PROJECTED_EARNINGS)
+  const [selectedFeature, setSelectedFeature] = useState<string>(APY_HISTORY)
 
   const sUSGBalance = useMemo(() => {
     return Number(formatUnits(USGsUSGMetrics?.sUSGBalance ?? 0n, 18))
@@ -49,7 +58,7 @@ export function PositionPerformancePanel({
   return (
     <div className="hidden h-full w-full flex-col items-stretch justify-stretch lg:flex lg:w-7/12 xl:w-2/3">
       <div className="w-full">
-        <SlidingTabs labels={["Projected earnings", "APY history"]} value={selectedFeature} onSwitchTab={(e: string) => setSelectedFeature(e)} />
+        <SlidingTabs labels={TAB_LABELS} value={selectedFeature} onSwitchTab={(e: string) => setSelectedFeature(e)} />
       </div>
 
       <ReliefCard className="mt-[20px] flex w-full flex-col items-center justify-between gap-2 p-5 sm:flex-row">
@@ -79,12 +88,14 @@ export function PositionPerformancePanel({
       </ReliefCard>
 
       <ReliefCard className="mt-5 flex w-full flex-col overflow-visible p-5">
-        {selectedFeature === PROJECTED_EARNINGS && (
-          <ForecastGraph currentFeature={currentFeature} currentInvestment={sUSGBalance} apy={sUSGCurrentAPY} newLiquidity={addLiq} />
-        )}
-
         {selectedFeature === APY_HISTORY && (
           <PositionAPR apyHistory={apyHistory} fetchsUSGHistoryAPY={fetchsUSGHistoryAPY} sUSGSelectedTab={sUSGSelectedTab} apy={sUSGCurrentAPY} />
+        )}
+
+        {selectedFeature === TVL_HISTORY && <PositionTVL tvl={tvl} tvlSelectedTab={tvlSelectedTab} fetchTVLData={fetchTVLData} />}
+
+        {selectedFeature === PROJECTED_EARNINGS && (
+          <ForecastGraph currentFeature={currentFeature} currentInvestment={sUSGBalance} apy={sUSGCurrentAPY} newLiquidity={addLiq} />
         )}
       </ReliefCard>
     </div>

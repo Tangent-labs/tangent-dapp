@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useMemo, useState } from "react"
+import { ReactNode, useMemo, useState } from "react"
 import { TVLData } from "../../usg_type"
 import { formatMillions } from "@/lib/number_formatter"
 import { convertRange } from "@/components/products/root/root_controller"
@@ -13,7 +13,7 @@ const CHART_MARGIN = { top: 20, right: -50, left: 0, bottom: 0 }
 const X_AXIS_PADDING = { left: 0, right: 35 }
 const AXIS_LINE_STYLE = { stroke: "rgba(255,255,255,0.08)" }
 const TICK_STYLE = { fontSize: 12, fill: "rgba(255,255,255,0.5)" }
-const SUSG_COLOR = "#4EB3DF"
+const SUSG_COLOR = "var(--tgt-dash-susg)"
 
 type RangeKey = "1m" | "3m" | "1y"
 type TvlHistoryPoint = {
@@ -23,8 +23,6 @@ type TvlHistoryPoint = {
 
 type PositionTVLProps = {
   tvl: TVLData[]
-  tvlSelectedTab: string
-  fetchTVLData: (range: string) => void
 }
 
 const formatDayMonth = (ts: number) => new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short" }).format(new Date(ts))
@@ -79,15 +77,10 @@ const TvlTooltip = (props: {
 
 const formatYAxis = (tick: number) => `$${formatMillions(tick)}`
 
-export const PositionTVL = ({ tvl, tvlSelectedTab, fetchTVLData }: PositionTVLProps) => {
+export const PositionTVL = ({ tvl }: PositionTVLProps) => {
   const [selectedRange, setSelectedRange] = useState<RangeKey>("1m")
 
-  // The sUSG TVL history is filtered locally from the full history kept in the root context (shared with the Dashboard TVL graph)
-  useEffect(() => {
-    if (tvlSelectedTab !== "all") fetchTVLData("all")
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
+  // No fetch here: the range is filtered locally from the TVL history already loaded by the root context
   const { data, ticks, fmtTick, fmtTooltipLabel, startTs, endTs, latestPoint } = useMemo(() => {
     const rangeConfig = RANGE_CONFIG[selectedRange]
 
@@ -200,7 +193,7 @@ export const PositionTVL = ({ tvl, tvlSelectedTab, fetchTVLData }: PositionTVLPr
                   stroke: SUSG_COLOR,
                   strokeWidth: 2,
                   fill: SUSG_COLOR,
-                  filter: "drop-shadow(0 0 8px rgba(78, 179, 223, 0.7))",
+                  filter: `drop-shadow(0 0 8px ${SUSG_COLOR})`,
                 }}
               />
 

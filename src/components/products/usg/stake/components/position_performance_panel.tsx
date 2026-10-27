@@ -22,8 +22,6 @@ interface PositionPerformancePanelProps {
   fetchsUSGHistoryAPY: (range: string) => Promise<void>
   computeProjection: (balance: bigint, timeFrame: number, apr: number, currentFeature: "stake" | "unstake", amount?: bigint) => string
   tvl: TVLData[]
-  tvlSelectedTab: string
-  fetchTVLData: (range: string) => void
 }
 
 const APY_HISTORY = "APY history"
@@ -42,8 +40,6 @@ export function PositionPerformancePanel({
   computeProjection,
   fetchsUSGHistoryAPY,
   tvl,
-  tvlSelectedTab,
-  fetchTVLData,
 }: PositionPerformancePanelProps) {
   const [selectedFeature, setSelectedFeature] = useState<string>(APY_HISTORY)
 
@@ -92,7 +88,7 @@ export function PositionPerformancePanel({
           <PositionAPR apyHistory={apyHistory} fetchsUSGHistoryAPY={fetchsUSGHistoryAPY} sUSGSelectedTab={sUSGSelectedTab} apy={sUSGCurrentAPY} />
         )}
 
-        {selectedFeature === TVL_HISTORY && <PositionTVL tvl={tvl} tvlSelectedTab={tvlSelectedTab} fetchTVLData={fetchTVLData} />}
+        {selectedFeature === TVL_HISTORY && <PositionTVL tvl={tvl} />}
 
         {selectedFeature === PROJECTED_EARNINGS && (
           <ForecastGraph currentFeature={currentFeature} currentInvestment={sUSGBalance} apy={sUSGCurrentAPY} newLiquidity={addLiq} />

@@ -45,7 +45,7 @@ export default function USGStakeContent() {
     isLoading,
   } = useUSGStakeContext()
 
-  const { sUSGCurrentAPY } = useRootContext()
+  const { sUSGCurrentAPY, tvl } = useRootContext()
 
   const { connect } = useWalletConnexionContext()
 
@@ -215,6 +215,7 @@ export default function USGStakeContent() {
           fetchsUSGHistoryAPY={fetchsUSGHistoryAPY}
           apyHistory={apyHistory}
           sUSGCurrentAPY={sUSGCurrentAPY}
+          tvl={tvl}
         />
       </div>
     </>

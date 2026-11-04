@@ -28,5 +28,6 @@ export const VSTAN_CONTRACT = {
   STAN: "0x11111111111111111111111111111111111111Aa" as Address,
   TAN_LP: "0x20abec6573f0599D94396F010F4E35df3770376E",
   ETH_ORACLE: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
-  DAO: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  // Multisig holding the non-circulating TAN : the chain views exclude its balance from the circulating supply
+  DAO: "0xd2c46b4c28f4B7976d9f87687863c46Bb2f71Dbb",
 }

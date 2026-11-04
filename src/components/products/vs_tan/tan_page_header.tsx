@@ -24,10 +24,10 @@ export const TanPageHeader = () => {
           <Image height={140} width={140} src={`/medias/tokens/TANvsTAN.webp`} alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
 
           <div className="flex flex-col items-start justify-center gap-1 px-6">
-            <span className="text-4xl font-semibold">Lock TAN</span>
+            <span className="text-4xl font-semibold">TAN</span>
             <p className="text-[15px]">
               Lock your TAN for vsTAN to earn a share of protocol revenue and governance rights. Locked positions are tokenized; you can split and/or merge
-              them. Unlocking before the scheduled date will result in a penalty. Learn more about vsTAN
+              them. Unlocking before the scheduled date will result in a penalty.
             </p>
             <Link
               className="flex cursor-pointer items-center justify-center text-sm underline hover:text-white/30 xl:text-[15px]"
@@ -44,7 +44,11 @@ export const TanPageHeader = () => {
           <PointsCampaignLiveCard />
 
           <ReliefCard className="relative mb-2 grid w-full grid-cols-2 gap-x-2 gap-y-4 px-3 py-[15.5px] md:grid-cols-4 md:gap-2 xl:mb-0">
-            <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: 'url("./medias/card_bg_blocks.png")' }} />
+            {/* Absolute url : the relative one resolved to /tan/medias/... on nested routes. pointer-events-none so the stats stay selectable */}
+            <div
+              className="pointer-events-none absolute inset-0 rounded-[10px] bg-cover bg-center opacity-20"
+              style={{ backgroundImage: 'url("/medias/card_bg_blocks.png")' }}
+            />
 
             <div className="flex w-full flex-col items-center justify-center">
               <div className="text-xs font-semibold text-subtitle">vsTAN Balance</div>

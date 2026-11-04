@@ -57,7 +57,8 @@ export const VsTanLayoutContent = ({
 
   return (
     <>
-      <div className="my-4 flex w-full flex-col gap-[20px] xl:flex-row">
+      {/* items-start : the action card keeps its own height instead of stretching when a position expands */}
+      <div className="my-4 flex w-full flex-col gap-[20px] xl:flex-row xl:items-start">
         <ReliefCard className="flex w-full flex-col items-center justify-start p-[20px] xl:w-5/12">
           <VsTanFeatureTabs feature={feature} onTabClick={onTabClick} />
 
@@ -135,9 +136,12 @@ function LockPositionList() {
 
   return (
     <>
-      <ListHeader rowDisposition={LockRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
+      {/* The rows always keep a 6px gutter for the scrollbar (scrollbar-thin width) : same offset on the header so columns line up */}
+      <div className="w-full pr-1.5">
+        <ListHeader rowDisposition={LockRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
+      </div>
 
-      <div className="flex h-full max-h-[400px] w-full flex-col overflow-x-hidden overflow-y-scroll">
+      <div className="scrollbar-thin flex h-full max-h-[400px] w-full flex-col overflow-y-auto overflow-x-hidden [scrollbar-gutter:stable]">
         {lockData?.positions.map((lockPosition: LockPosition) => (
           <div className="flex w-full flex-col" key={lockPosition?.tokenId}>
             <ListRow
@@ -147,7 +151,7 @@ function LockPositionList() {
               rowDisposition={LockRowDisposition}
               isSelected={lockPosition == selectedPosition}
             >
-              <div className="flex w-fit items-center justify-center justify-self-center rounded-[10px] px-2 py-1.5 text-xs backdrop-blur-[60px] md:text-[15px] xl:ml-6 xl:justify-self-start">
+              <div className="flex w-fit items-center justify-center justify-self-center rounded-[10px] px-2 py-1.5 text-xs backdrop-blur-[60px] md:text-[15px]">
                 #{lockPosition?.tokenId}
               </div>
               <div className="flex items-center justify-center text-xs md:text-[15px]">

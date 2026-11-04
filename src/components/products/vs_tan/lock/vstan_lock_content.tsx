@@ -97,7 +97,7 @@ export default function VsTanLockContent() {
   return (
     <div className="flex w-full flex-col justify-start">
       <div className="mb-1 flex w-full items-end justify-between gap-2">
-        <span className="text-xl font-semibold text-white">Deposit TAN</span>
+        <span className="text-xl font-semibold text-white">Deposit TAN:</span>
         <span className="text-xs text-subtitle">{maxAmountToDeposit}</span>
       </div>
 

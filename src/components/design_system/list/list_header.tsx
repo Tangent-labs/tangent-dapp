@@ -62,7 +62,7 @@ export const ListHeader = ({ headers, activeSort, onSort, rowDisposition: Custom
               field={headers[0]?.key || ""}
               onSort={!!headers[0]?.sort ? onSort : undefined}
               indicator={headers[0]?.indicator}
-              className={cn(headers[0]?.className || "", "flex w-full items-center justify-start pl-8")}
+              className={cn("flex w-full items-center justify-start pl-8", headers[0]?.className)}
             />
           )}
           {!!headers[1]?.key && (
@@ -73,7 +73,7 @@ export const ListHeader = ({ headers, activeSort, onSort, rowDisposition: Custom
               field={headers[1]?.key || ""}
               onSort={!!headers[1]?.sort ? onSort : undefined}
               indicator={headers[1]?.indicator}
-              className={cn(headers[1]?.className || "", "flex w-full items-center justify-center")}
+              className={cn("flex w-full items-center justify-center", headers[1]?.className)}
             />
           )}
           {headers
@@ -86,7 +86,7 @@ export const ListHeader = ({ headers, activeSort, onSort, rowDisposition: Custom
                 field={header.key}
                 onSort={!!header.sort ? onSort : undefined}
                 indicator={header.indicator}
-                className={cn(header.className || "", "flex w-full flex-1 items-center justify-center")}
+                className={cn("flex w-full flex-1 items-center justify-center", header.className)}
               />
             ))}
         </CustomRowDisposition>

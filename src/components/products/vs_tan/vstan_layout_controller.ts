@@ -35,7 +35,7 @@ export async function getVsTanData(user: string) {
 }
 
 export const lockListHeaders: ListHeaderData[] = [
-  { label: "Token ID", key: "id" },
+  { label: "Token ID", key: "id", className: "justify-center pl-0" },
   { label: "vsTAN", key: "vsTAN" },
   { label: "Claimable", key: "claimable" },
   { label: "Unlock date", key: "unlock_date" },

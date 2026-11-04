@@ -57,8 +57,7 @@ export const VsTanLayoutContent = ({
 
   return (
     <>
-      {/* items-start : the action card keeps its own height instead of stretching when a position expands */}
-      <div className="my-4 flex w-full flex-col gap-[20px] xl:flex-row xl:items-start">
+      <div className="my-4 flex w-full flex-col gap-[20px] xl:flex-row">
         <ReliefCard className="flex w-full flex-col items-center justify-start p-[20px] xl:w-5/12">
           <VsTanFeatureTabs feature={feature} onTabClick={onTabClick} />
 
@@ -67,14 +66,18 @@ export const VsTanLayoutContent = ({
           {children}
         </ReliefCard>
 
-        <div className="flex w-full flex-col items-start justify-start xl:w-7/12">
-          <div className="mr-auto text-3xl font-semibold text-white">Locked Positions</div>
+        {/* The action card alone sets the row height : the absolute inner column fills it exactly, so both
+            bottoms line up and an expanding position scrolls inside the list instead of growing the row */}
+        <div className="w-full xl:relative xl:w-7/12">
+          <div className="flex w-full flex-col items-start justify-start xl:absolute xl:inset-0">
+            <div className="mr-auto text-3xl font-semibold text-white">Locked Positions</div>
 
-          <Divider />
+            <Divider />
 
-          <ListProvider _headers={lockListHeaders} _rows={[]} _listState={listeState}>
-            <LockPositionList></LockPositionList>
-          </ListProvider>
+            <ListProvider _headers={lockListHeaders} _rows={[]} _listState={listeState}>
+              <LockPositionList></LockPositionList>
+            </ListProvider>
+          </div>
         </div>
       </div>
     </>
@@ -141,7 +144,7 @@ function LockPositionList() {
         <ListHeader rowDisposition={LockRowDisposition} headers={headers} activeSort={listState?.sort} onSort={udpateSort} />
       </div>
 
-      <div className="scrollbar-thin flex h-full max-h-[400px] w-full flex-col overflow-y-auto overflow-x-hidden [scrollbar-gutter:stable]">
+      <div className="scrollbar-thin flex h-full max-h-[400px] min-h-0 w-full flex-1 flex-col overflow-y-auto overflow-x-hidden [scrollbar-gutter:stable] xl:max-h-none">
         {lockData?.positions.map((lockPosition: LockPosition) => (
           <div className="flex w-full flex-col" key={lockPosition?.tokenId}>
             <ListRow

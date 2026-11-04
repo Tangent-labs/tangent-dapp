@@ -10,7 +10,7 @@ import { IconStars } from "@/components/icons/icon_stars"
 import { PageHeader } from "@/components/design_system/structure/page_header"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { TokenImage } from "@/components/design_system/structure/token_image"
-import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
+import { FeatureBannerCarousel } from "@/components/design_system/structure/feature_banner_carousel"
 
 export const TanPageHeader = () => {
   const { lockData } = useVsTanContext()
@@ -40,25 +40,26 @@ export const TanPageHeader = () => {
           </div>
         </PageHeader>
 
-        <div className="flex h-auto w-full flex-col items-center justify-between gap-3 xl:w-1/2">
-          <PointsCampaignLiveCard />
+        <div className="flex h-auto w-full flex-col items-center justify-between gap-[10px] xl:w-1/2">
+          <FeatureBannerCarousel />
 
-          <ReliefCard className="relative mb-2 grid w-full grid-cols-2 gap-x-2 gap-y-4 px-3 py-[15.5px] md:grid-cols-4 md:gap-2 xl:mb-0">
-            {/* Absolute url : the relative one resolved to /tan/medias/... on nested routes. pointer-events-none so the stats stay selectable */}
+          <ReliefCard className="relative mb-2 grid w-full grid-cols-2 gap-x-2 gap-y-4 px-3 py-4 md:grid-cols-4 md:gap-2 xl:mb-0">
+            {/* Absolute url : the relative one resolved to /tan/medias/... on nested routes. pointer-events-none so the stats stay selectable,
+                -z-10 so it paints behind them (the card's backdrop-blur keeps it above the card background) */}
             <div
-              className="pointer-events-none absolute inset-0 rounded-[10px] bg-cover bg-center opacity-20"
+              className="pointer-events-none absolute inset-0 -z-10 rounded-[10px] bg-cover bg-center opacity-20"
               style={{ backgroundImage: 'url("/medias/card_bg_blocks.png")' }}
             />
 
             <div className="flex w-full flex-col items-center justify-center">
-              <div className="text-xs font-semibold text-subtitle">vsTAN Balance</div>
+              <div className="mb-1 text-xs text-subtitle">vsTAN Balance</div>
               <div className="text-md flex items-center justify-center gap-1 font-semibold text-white">
                 <span>{formatBigInt(vsTanBalance, 18, 2)}</span>
                 <TokenImage token="VSTAN" size={16} className="w-4" />
               </div>
             </div>
             <div className="flex w-full flex-col items-center justify-center">
-              <div className="text-xs font-semibold text-subtitle">vsTAN APR</div>
+              <div className="mb-1 text-xs text-subtitle">vsTAN APR</div>
               <div className="text-md flex items-center justify-center gap-1 font-semibold text-white">
                 {/* LockUI returns the APR as a 1e18-scaled fraction (1e18 = 100%), so 16 decimals gives a percentage */}
                 {formatBigInt(lockData?.tanAPR, 16, 2)}%
@@ -67,7 +68,7 @@ export const TanPageHeader = () => {
             </div>
 
             <div className="flex w-full flex-col items-center justify-center">
-              <div className="text-xs font-semibold text-subtitle">Total vsTAN Locked</div>
+              <div className="mb-1 text-xs text-subtitle">Total vsTAN Locked</div>
               <div className="text-md flex items-center justify-center gap-1 font-semibold text-white">
                 <span>{formatBigInt(lockData?.totalLocked, 18, 2)}</span>
                 <TokenImage token="VSTAN" size={16} className="w-4" />
@@ -75,7 +76,7 @@ export const TanPageHeader = () => {
             </div>
 
             <div className="flex w-full flex-col items-center justify-center">
-              <div className="text-xs font-semibold text-subtitle">Supply Locked</div>
+              <div className="mb-1 text-xs text-subtitle">Supply Locked</div>
               <div className="text-md flex items-center justify-center gap-1 font-semibold text-white">
                 {/* LockUI returns the share of circulating supply (DAO excluded) as a 1e18-scaled fraction */}
                 {formatBigInt(lockData?.percentageLocked, 16, 2)}%
@@ -87,7 +88,7 @@ export const TanPageHeader = () => {
                 indicator from /savingAccounts/apy (indexer side currently commented out).
 
             <div className="flex w-full flex-col items-center justify-center">
-              <div className="text-xs font-semibold text-subtitle">sTAN Balance</div>
+              <div className="mb-1 text-xs text-subtitle">sTAN Balance</div>
               <div className="text-md flex items-center justify-center gap-1 font-semibold text-white">
                 <span>10,384</span>
 
@@ -96,7 +97,7 @@ export const TanPageHeader = () => {
             </div>
 
             <div className="flex w-full flex-col items-center justify-center">
-              <div className="text-xs font-semibold text-subtitle">sTAN APY</div>
+              <div className="mb-1 text-xs text-subtitle">sTAN APY</div>
               <div className="text-md flex items-center justify-center gap-1 font-semibold text-white">
                 12%
                 <IconStars className="fill-row-tonic" />

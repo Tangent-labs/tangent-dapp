@@ -5,7 +5,7 @@ import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
 import { BalanceAllowanceData, FormError, FormState, MarketDetailData, USGMarketDepositParams, ZapMarketData } from "../../usg_type"
-import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import { dappErrors } from "@/components/design_system/notifications/form-errors"
 import { NATIVE_ETH_ADDRESS } from "@/data/erc20s"
 
 export function getDepositFormState(

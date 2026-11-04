@@ -62,6 +62,10 @@ export function TokenImage({ token, size, ...props }: TokenImageProps) {
     "MARKET SUSG": "sUSG_LP.webp",
     "LP SUSG": "sUSG_LP.webp",
     REUSD: "reUSD.webp",
+    // asset on disk is stan.webp — without this, token="sTAN" 404s on a case-sensitive filesystem
+    STAN: "stan.webp",
+    VSTAN: "vsTAN.webp",
+    TAN: "TAN.webp",
   }
 
   const imageFilename = specialImages[prefix] || specialImages[token?.toUpperCase()] || `${token}.webp`

@@ -27,13 +27,14 @@ export const InputSelect = <T extends { value: string }>({
   return (
     <>
       <div className={`flex flex-col ${className}`}>
-        <div className="mb-1 flex w-full justify-between text-xs font-semibold text-subtitle">{label}</div>
+        <div className="flex w-full justify-between text-xs font-semibold text-subtitle">{label}</div>
 
         <Select disabled={disabled} value={value} onValueChange={(value) => onChange(value)}>
           <SelectTrigger disabled={disabled} className={className}>
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
-          <SelectContent>
+          {/* Same width as the trigger : the base min-w-[8rem] overflowed narrow triggers */}
+          <SelectContent className="w-[var(--radix-select-trigger-width)] min-w-0">
             {options?.map((option) => (
               <SelectItem value={option.value} key={option.value} className="cursor-pointer">
                 {template ? (

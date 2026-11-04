@@ -94,25 +94,19 @@ export const USGHarvestProvider = ({ children }: USGHarvestContextProps) => {
 
   const displayRows = useMemo(() => {
     if (!harvestInfo || !rewardsInfo) return []
-    return transformHarvestOnChainData(harvestInfo, rewardsInfo)
-  }, [harvestInfo, rewardsInfo])
+    return transformHarvestOnChainData(harvestInfo, rewardsInfo, stakeDaoMerkle)
+  }, [harvestInfo, rewardsInfo, stakeDaoMerkle])
 
   const actionHarvest = () => {
     const market = marketsToHarvest[0].marketAddress.toLowerCase()
 
     const merkle = stakeDaoMerkle.find((m) => market === m.marketAddress.toLowerCase())
 
-    let extraReward: ExtraRewards | undefined = undefined
-    if (merkle) {
-      const t = merkle.merkleData[0]
-      const amount = BigInt(t.merkle.amount)
+    const extraRewards: ExtraRewards[] = (merkle?.merkleData ?? [])
+      .map((t) => ({ token: t.merkle.token, claimable: BigInt(t.merkle.amount), proof: t.merkle.proof }))
+      .filter((r) => r.claimable !== 0n)
 
-      if (amount !== 0n) {
-        extraReward = { token: t.merkle.token, claimable: amount, proof: t.merkle.proof }
-      }
-    }
-
-    doHarvest(market, walletClient!, extraReward)
+    doHarvest(market, walletClient!, extraRewards)
       .then(() => {
         loadChainviewData()
         setMarketsToHarvest([])

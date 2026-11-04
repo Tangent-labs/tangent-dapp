@@ -49,6 +49,25 @@ export const ERC20S: Erc20Details[] = [
     symbol: "sUSG",
   },
 
+  {
+    address: "0x8787678DB688eaD8D53F8F96f33Ceeb0FD821d5a",
+    chainId: 1,
+    decimals: 18,
+    displayDecimals: 3,
+    logoKey: "TAN",
+    name: "TAN",
+    symbol: "TAN",
+  },
+  {
+    address: "0x59b030801a113c7148aa5b38834d679e9Df52B34",
+    chainId: 1,
+    decimals: 18,
+    displayDecimals: 3,
+    logoKey: "vsTAN",
+    name: "vsTAN",
+    symbol: "vsTAN",
+  },
+
   // CURVE LP
   {
     address: "0x97ba10115da528c113462ede9c20d7adc806d93f",
@@ -1157,6 +1176,15 @@ export const ERC20S: Erc20Details[] = [
     chainId: 1,
     logoURI: "https://files.cow.fi/token-lists/images/1/0x6440f144b7e50d6a8439336510312d2f54beb01d/logo.png",
     logoKey: "BOLD",
+  },
+  {
+    address: "0x73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f",
+    symbol: "SDT",
+    name: "Stake DAO Token",
+    decimals: 18,
+    chainId: 1,
+    logoURI: "https://files.cow.fi/token-lists/images/1/0x73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f/logo.png",
+    logoKey: "SDT",
   },
   {
     symbol: "OHM",

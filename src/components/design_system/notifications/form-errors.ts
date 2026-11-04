@@ -81,11 +81,47 @@ export const dappErrors = {
     content: "This position can no longer be used as the lock has expired.",
     type: "form-alert",
   },
+  "min-lock": {
+    key: "min-lock",
+    title: "Minimum Lock Not Reached",
+    // Overridden at runtime with the amount read from vsTAN.minLock()
+    subtitle: "This amount is below the minimum required to create a new position.",
+    content: "Increase your amount, or add it to one of your existing positions instead.",
+    type: "form-alert",
+  },
+  "split-exceeds-position": {
+    key: "split-exceeds-position",
+    title: "Amount Exceeds Position",
+    subtitle: "You can't split more than the position holds.",
+    content: "Please enter an amount within the position's vsTAN balance.",
+    type: "form-alert",
+  },
   "same-position": {
     key: "same-position",
     title: "Invalid Merge",
     subtitle: "You cannot merge a position with itself.",
     content: "Please select two different positions to merge.",
+    type: "form-alert",
+  },
+  "duplicate-position": {
+    key: "duplicate-position",
+    title: "Duplicate Position",
+    subtitle: "The same position is selected more than once.",
+    content: "Remove the duplicate to continue.",
+    type: "form-alert",
+  },
+  "nothing-to-claim": {
+    key: "nothing-to-claim",
+    title: "Nothing To Claim",
+    subtitle: "The selected positions have no rewards accrued.",
+    content: "Rewards stream over each 7-day epoch — select a position with a claimable balance.",
+    type: "form-alert",
+  },
+  "no-position-selected": {
+    key: "no-position-selected",
+    title: "No Position Selected",
+    subtitle: "Select a vsTAN position to continue.",
+    content: "Choose one of your positions from the selector above.",
     type: "form-alert",
   },
   // — Leverage

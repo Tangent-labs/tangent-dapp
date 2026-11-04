@@ -9,3 +9,7 @@ export const isOnMarket = (path: string) => {
     path.includes("borrow")
   )
 }
+
+export const isOnTAN = (path: string) => {
+  return path === "/tan/lock" || path.includes("tan")
+}

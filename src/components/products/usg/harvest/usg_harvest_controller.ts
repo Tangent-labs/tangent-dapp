@@ -4,10 +4,10 @@ import { ERC20S } from "@/data/erc20s"
 import { getPricesFromTokenAmounts } from "@/lib/asset_utils"
 import { formatDate } from "@/lib/other_formatter"
 import { getTokensPrice } from "@/services/service_price"
-import { executeChainViewUnique, executeContractCall, waitForTransaction } from "@/services/service_rpc"
+import { executeChainViewUnique, executeContractCall, getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { AssetDataPriced, ListHeaderData } from "@/types"
 import { COMMON_ERC20S } from "@tangent/defi-resources"
-import { Abi, Address, Hex, WalletClient } from "viem"
+import { Abi, Address, encodeFunctionData, Hex, WalletClient } from "viem"
 import campaignRewardDistrib from "../../../../abi/USG/CampaignRewardsDistributorStakeDao.json"
 import harvestUI from "../../../../abi/USG/HarvestUI.json"
 import rewardAccumulator from "../../../../abi/USG/RewardAccumulator.json"
@@ -21,20 +21,35 @@ export type ExtraRewards = {
   proof: string[]
 }
 
-export async function doHarvest(stakingAddress: string, walletClient: WalletClient, extraRewards: ExtraRewards | undefined) {
+const CAMPAIGN_REWARD_DISTRIBUTOR = "0xd4898a378ea555595c4e7dbde722b134a3f346d1" as Address
+
+export async function doHarvest(stakingAddress: string, walletClient: WalletClient, extraRewards: ExtraRewards[]) {
   const [account] = await walletClient.requestAddresses()
 
-  if (extraRewards) {
-    const campaignRewardDistributor = "0xd4898a378ea555595c4e7dbde722b134a3f346d1" as Address
-    const txExtraData = {
+  // Claim StakeDao extra rewards first. Claims that would revert (already claimed, or the
+  // StakeDao API serving a proof for a root not yet live on-chain) are skipped so they never block the harvest.
+  const claims: Hex[] = []
+  for (const r of extraRewards) {
+    const call = {
       abi: campaignRewardDistrib as Abi,
       functionName: "claim",
-      args: [stakingAddress, extraRewards.token, extraRewards.claimable, extraRewards.proof],
-      address: campaignRewardDistributor,
-      gas: undefined as undefined | bigint,
+      args: [stakingAddress, r.token, r.claimable, r.proof],
     }
-    const txExtraHash = await executeContractCall(walletClient, txExtraData)
-    return await waitForTransaction(txExtraHash)
+    try {
+      await getPublicClient().simulateContract({ ...call, address: CAMPAIGN_REWARD_DISTRIBUTOR, account })
+      claims.push(encodeFunctionData(call))
+    } catch (e) {
+      console.error(`Skipping extra reward claim for ${r.token}`, e)
+    }
+  }
+  if (claims.length) {
+    const txExtraHash = await executeContractCall(walletClient, {
+      abi: campaignRewardDistrib as Abi,
+      functionName: "multicall",
+      args: [claims],
+      address: CAMPAIGN_REWARD_DISTRIBUTOR,
+    })
+    await waitForTransaction(txExtraHash)
   }
 
   const txData = {
@@ -95,7 +110,7 @@ export type StakeDaoAlreadyClaimed = {
   marketAddress: Address
   tokens: USGTokenAmount[]
 }
-export function transformHarvestOnChainData(harvestInfos: (HarvesterInfo & { marketType: number })[], assetInfos: AssetDataPriced[]) {
+export function transformHarvestOnChainData(harvestInfos: (HarvesterInfo & { marketType: number })[], assetInfos: AssetDataPriced[], stakeDaoMerkle: Merk[]) {
   const processOne = (marketInfo: HarvesterInfo) => {
     const stakingInfo = USGMarkets.find((i) => i.marketAddress === marketInfo.marketAddress)
     if (!stakingInfo) return
@@ -106,8 +121,12 @@ export function transformHarvestOnChainData(harvestInfos: (HarvesterInfo & { mar
     // For stake DAO, harvestable rewards are :
     //      - Rewards held by the contracts
     //      - CRV claimable into the accountant
+    //      - Extra rewards (SDT, BOLD...) still to claim on the StakeDao Merkle contract
     // Rewards in .claimableRewards are rewards already claimable by the market on the StakeDao Merkle contract.
     if (isStakeDao) {
+      const marketAddress = marketInfo.marketAddress.toLowerCase()
+      const pending = stakeDaoMerkle.find((m) => m.marketAddress.toLowerCase() === marketAddress)?.pending ?? []
+      // ponytail: extras only counted for tokens the HarvestUI view already lists in balancesRewards
       tokenAmounts = marketInfo.balancesRewards.map((bR) => {
         let claimable = 0n
         if (bR.symbol === "CRV") {
@@ -116,7 +135,8 @@ export function transformHarvestOnChainData(harvestInfos: (HarvesterInfo & { mar
               return cR.token.toLowerCase() === crvAddress
             })?.amount || 0n
         }
-        return { ...bR, amount: bR.amount + claimable }
+        const extra = pending.find((p) => p.token.toLowerCase() === bR.token.toLowerCase())?.amount || 0n
+        return { ...bR, amount: bR.amount + claimable + extra }
       })
     }
     // For any other contracts, we are summing rewards held by the market
@@ -174,19 +194,32 @@ export const getRewardTokensInfos = async (harvestInfo: HarvesterInfo[]) => {
   }
 }
 
-export async function getStakeDaoMerkleData(stakeDaoInfos: HarvesterInfo[]) {
-  const results: Merk[] = []
-  // Iterate over stakeDao markets
-  stakeDaoInfos.forEach((sdi) => {
-    fetch(`/api/stakedao/merkles?user=${sdi.marketAddress}`).then(async (res) => {
-      const data = (await res.json()) as TokenReward[]
-      results.push({
-        marketAddress: sdi.marketAddress,
-        merkleData: data,
-      })
+export async function getStakeDaoMerkleData(stakeDaoInfos: HarvesterInfo[]): Promise<Merk[]> {
+  const results = await Promise.all(
+    stakeDaoInfos.map(async (sdi) => {
+      try {
+        const res = await fetch(`/api/stakedao/merkles?user=${sdi.marketAddress}`)
+        const merkleData = (await res.json()) as TokenReward[]
+        // Merkle amounts are cumulative: what is still to claim is amount - already claimed on-chain
+        const pending = await Promise.all(
+          merkleData.map(async (t) => {
+            const claimed = (await getPublicClient().readContract({
+              abi: campaignRewardDistrib as Abi,
+              address: CAMPAIGN_REWARD_DISTRIBUTOR,
+              functionName: "claimed",
+              args: [sdi.marketAddress, t.merkle.token],
+            })) as bigint
+            const amount = BigInt(t.merkle.amount) - claimed
+            return { token: t.merkle.token, amount: amount > 0n ? amount : 0n }
+          })
+        )
+        return { marketAddress: sdi.marketAddress, merkleData, pending }
+      } catch (e) {
+        console.error(`Failed to load StakeDao merkle for ${sdi.marketAddress}`, e)
+      }
     })
-  })
-  return results
+  )
+  return results.filter((r) => !!r)
 }
 
 interface TokenExtensions {
@@ -234,6 +267,7 @@ export interface TokenReward {
 export interface Merk {
   marketAddress: Address
   merkleData: TokenReward[]
+  pending: { token: Address; amount: bigint }[]
 }
 
 export const harvestListHeaders: ListHeaderData[] = [

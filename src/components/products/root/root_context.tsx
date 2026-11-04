@@ -10,6 +10,7 @@ import { ToastComponent } from "@/components/design_system/toast"
 import { CustomCurveRoutes } from "../usg/global_quote_controller"
 import { useContext, useEffect, useState, createContext, ReactNode, useMemo } from "react"
 import { getPriceHistory, getSavingsAPY, getTotalSupply, getTVL, PRICE_HISTORY_TOKENS } from "../usg/client_api"
+import { VSTAN_CONTRACT } from "../vs_tan/rs_tan_repository"
 
 export type RootContextValues = {
   curveRoutes: CustomCurveRoutes
@@ -34,6 +35,8 @@ export type RootContextValues = {
   savingsAPY: SavingAccountsApy[]
 
   sUSGCurrentAPY: number
+
+  sTanCurrentAPY: number
 
   protocolCurrentTVL: TVLData
 
@@ -366,6 +369,16 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     return 0
   }, [savingsAPY])
 
+  // Same lookup as sUSG. Reads 0 until the savings API serves an sTAN entry — no placeholder to
+  // remember to remove, it starts reporting by itself the day the backend has it.
+  const sTanCurrentAPY = useMemo(() => {
+    const apy = savingsAPY.find((v) => v.tokenAddress.toLowerCase() === VSTAN_CONTRACT.STAN.toLowerCase())
+
+    if (apy) return apy.value
+
+    return 0
+  }, [savingsAPY])
+
   const contextValue: RootContextValues = {
     curveRoutes,
     handleQuote,
@@ -377,6 +390,7 @@ export const RootProvider = ({ children }: RootProviderProps) => {
     fetchTotalSupplyData,
     savingsAPY,
     sUSGCurrentAPY,
+    sTanCurrentAPY,
     getCachedCurrentBlock,
     USGsUSGTotalSupplyData,
     tvl,

@@ -5,7 +5,7 @@ import { PredepositRawState, PredepositStatus } from "./types/types"
 import PredepositPoolsABI from "../../../abi/USG/PredepositPoolsABI.json"
 import { getPublicClient, waitForTransaction } from "@/services/service_rpc"
 import { Abi, Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from "viem"
-import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import { dappErrors } from "@/components/design_system/notifications/form-errors"
 
 export const TOTAL_TAN_ALLOCATION = 200_000n
 export const TOTAL_DEPOSIT_CAP = 10_000_000n

@@ -33,7 +33,8 @@ export const InputSelect = <T extends { value: string }>({
           <SelectTrigger disabled={disabled} className={className}>
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
-          <SelectContent>
+          {/* Same width as the trigger : the base min-w-[8rem] overflowed narrow triggers */}
+          <SelectContent className="w-[var(--radix-select-trigger-width)] min-w-0">
             {options?.map((option) => (
               <SelectItem value={option.value} key={option.value} className="cursor-pointer">
                 {template ? (

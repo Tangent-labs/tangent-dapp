@@ -78,7 +78,7 @@ export const MultiPositionSelect = ({ lockData, selectedPositions, setSelectedPo
 
       {!allSelected && (
         <div className="mt-2 flex items-center justify-start gap-2">
-          <Button size="sm" onClick={handleAddPosition} className="max-w-10" classNameChild="text-lg" aria-label="Add position">
+          <Button size="sm" onClick={handleAddPosition} className="w-[30px] shrink-0" classNameChild="px-0 text-lg" aria-label="Add position">
             +
           </Button>
 

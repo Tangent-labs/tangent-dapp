@@ -13,8 +13,6 @@ import { TokenImage } from "@/components/design_system/structure/token_image"
 import { PointsCampaignLiveCard } from "@/components/design_system/structure/points_campaign_live_card"
 
 export const TanPageHeader = () => {
-  // const isStakeSection = !!pathname?.startsWith("/tan/stake")
-
   const { lockData } = useVsTanContext()
 
   const vsTanBalance = useMemo(() => lockData?.positions.reduce((acc, position) => acc + position.amount, 0n), [lockData])
@@ -23,64 +21,21 @@ export const TanPageHeader = () => {
     <>
       <div className="flex w-full items-stretch justify-between gap-5">
         <PageHeader>
-          {/* {isStakeSection ? (
-            <>
-              <Image height={150} width={150} src="/medias/tokens/TAN.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
-
-              <div className="flex flex-col items-start justify-center px-6">
-                <span className="text-4xl font-semibold">Stake TAN</span>
-                <p className="mt-2 text-xs">
-                  Stake TAN to receive sTAN and earn a share of protocol earnings passively. Staked TAN stays liquid and carries no governance rights.
-                </p>
-                <Link
-                  className="flex cursor-pointer items-center justify-center text-xs underline hover:text-white/30"
-                  href="https://docs.tangent.finance/docs/tan/stan"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Learn more about sTAN <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white text-xs" />
-                </Link>
-              </div>
-            </>
-          ) : (
-            <>
-              <Image height={140} width={140} src={`/medias/tokens/TANvsTAN.webp`} alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
-
-              <div className="flex flex-col items-start justify-center gap-1 px-6">
-                <span className="text-4xl font-semibold">Lock TAN</span>
-                <p className="text-xs">
-                  Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools
-                  (SDT stable pool & CVX stable pool).
-                </p>
-                <p className="text-xs">Rewards are distributed weekly, at the beginning of each epoch. Staking positions are represented by NFTs.</p>
-                <Link
-                  className="flex cursor-pointer items-center justify-center text-xs underline hover:text-white/30"
-                  href="https://docs.tangent.finance/docs/tan/vstan"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Learn more about vsTAN <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white text-xs" />
-                </Link>
-              </div>
-            </>
-          )} */}
-
           <Image height={140} width={140} src={`/medias/tokens/TANvsTAN.webp`} alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
 
           <div className="flex flex-col items-start justify-center gap-1 px-6">
             <span className="text-4xl font-semibold">Lock TAN</span>
-            <p className="text-xs">
-              Convert and stake your governance tokens to earn boosted yield while staying liquid. It is also possible to provide liquidity in stable pools (SDT
-              stable pool & CVX stable pool).
+            <p className="text-[15px]">
+              Lock your TAN for vsTAN to earn a share of protocol revenue and governance rights. Locked positions are tokenized; you can split and/or merge
+              them. Unlocking before the scheduled date will result in a penalty. Learn more about vsTAN
             </p>
-            <p className="text-xs">Rewards are distributed weekly, at the beginning of each epoch. Staking positions are represented by NFTs.</p>
             <Link
-              className="flex cursor-pointer items-center justify-center text-xs underline hover:text-white/30"
+              className="flex cursor-pointer items-center justify-center text-sm underline hover:text-white/30 xl:text-[15px]"
               href="https://docs.tangent.finance/docs/tan/vstan"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Learn more about vsTAN <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white text-xs" />
+              Learn more about vsTAN <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white text-sm xl:text-[15px]" />
             </Link>
           </div>
         </PageHeader>

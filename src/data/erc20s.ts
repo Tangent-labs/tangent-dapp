@@ -1160,6 +1160,15 @@ export const ERC20S: Erc20Details[] = [
     logoKey: "BOLD",
   },
   {
+    address: "0x73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f",
+    symbol: "SDT",
+    name: "Stake DAO Token",
+    decimals: 18,
+    chainId: 1,
+    logoURI: "https://files.cow.fi/token-lists/images/1/0x73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f/logo.png",
+    logoKey: "SDT",
+  },
+  {
     symbol: "OHM",
     name: "Olympus",
     address: "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5",

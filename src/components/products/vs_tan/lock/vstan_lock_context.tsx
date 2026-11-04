@@ -88,7 +88,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
     return lockData?.positions.find((position) => position?.tokenId.toString() === depositPosition)
   }, [depositPosition, lockData])
 
-  // The perma lock switch only drives the creation of a new position : an existing one is toggled from the positions list
+  // The permalock switch only drives the creation of a new position : an existing one is toggled from the positions list
   useEffect(() => {
     if (depositPosition !== "New") {
       setIsPermaLock(false)
@@ -177,7 +177,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
     return formatBigInt((depositWeiValue || 0n) + baseValue, 18, 2)
   }, [depositPositionInfo, depositWeiValue])
 
-  // A new position is perma locked through the form switch, an existing one through its own endLockTime
+  // A new position is permalocked through the form switch, an existing one through its own endLockTime
   const isTargetPermaLocked = useMemo(() => {
     if (depositPosition === "New") return isPermaLock
 
@@ -186,7 +186,7 @@ export const VsTanLockProvider = ({ children }: VsTanLockContextProps) => {
 
   // Date a lock created or extended right now would unlock on
   const prospectiveEndLockDate = useMemo(() => {
-    // Perma locked positions never unlock, and increaseLockAmount doesn't lift the perma lock
+    // Permalocked positions never unlock, and increaseLockAmount doesn't lift the permalock
     if (isTargetPermaLocked) return <IconInfinity className="h-4 w-auto" />
 
     if (!nextEndLockTime) return "-"

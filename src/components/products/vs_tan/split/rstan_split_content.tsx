@@ -166,7 +166,7 @@ export const VsTanSplitContent = () => {
                 <div className="hidden h-full flex-col items-center justify-center md:flex">
                   <div className="flex items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
                     <TokenImage token="VSTAN" size={16} className="w-4" />
-                    vsTan
+                    vsTAN
                   </div>
                 </div>
                 <div className="flex h-full flex-col items-start justify-start">
@@ -191,7 +191,7 @@ export const VsTanSplitContent = () => {
                 <div className="hidden h-full flex-col items-center justify-center md:flex">
                   <div className="flex items-center justify-center gap-1 rounded-[10px] bg-overlay-panel px-3 py-2 font-semibold backdrop-blur-[60px]">
                     <TokenImage token="VSTAN" size={16} className="w-4" />
-                    vsTan
+                    vsTAN
                   </div>
                 </div>
                 <div className="flex h-full flex-col items-start justify-start">
@@ -247,7 +247,7 @@ export const VsTanSplitContent = () => {
           <div className="mb-2 flex w-full flex-col items-start justify-start gap-2 rounded-[10px] bg-overlay-panel px-2 py-3">
             <div className="flex w-full items-start justify-start gap-2">
               <div className="w-3/12">Pos. ID</div>
-              <div className="w-6/12">vsTan</div>
+              <div className="w-6/12">vsTAN</div>
               <div className="w-3/12">Unlock date</div>
             </div>
 

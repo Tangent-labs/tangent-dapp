@@ -1,5 +1,6 @@
 "use client"
 
+import { useSUsgReceived } from "../use_susg_received"
 import { Switch } from "@/components/ui/switch"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useVsTanContext } from "../vstan_layout_context"
@@ -17,7 +18,7 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 const processLabels: Record<UnlockMode, string> = {
   none: "Unlock",
   perma: "Remove perma-lock",
-  locked: "Rage quit",
+  locked: "Unlock",
   expired: "Unlock",
   kickable: "Unlock",
 }
@@ -43,6 +44,8 @@ export const VsTanUnlockContent = () => {
     actionProcess,
     actionKick,
   } = useVsTanUnlockContext()
+
+  const claimReceived = useSUsgReceived(unlockPositionInfo?.claimable, claimAsSUSG)
 
   const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {
     return (
@@ -91,7 +94,7 @@ export const VsTanUnlockContent = () => {
 
   return (
     <div className="flex w-full flex-col items-start justify-start">
-      <div className="mb-1 text-xl font-semibold text-white">Select position :</div>
+      <div className="mb-1 text-xl font-semibold text-white">Select position:</div>
 
       <PositionSelect />
 
@@ -102,7 +105,7 @@ export const VsTanUnlockContent = () => {
         </div>
       ) : (
         <>
-          <div className="mb-1 mt-3 text-lg font-semibold text-white">Unlock recap :</div>
+          <div className="mb-1 mt-3 text-lg font-semibold text-white">Unlock recap:</div>
 
           <div className="flex w-full items-center justify-around gap-2 rounded-[10px] p-3 backdrop-blur-[60px]">
             <div className="flex w-full flex-col items-start justify-start">
@@ -160,7 +163,7 @@ export const VsTanUnlockContent = () => {
                   #{unlockPositionInfo.tokenId}
                 </div>
                 <div className="flex h-8 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
-                  {formatBigInt(unlockPositionInfo.claimable, 18, 2)}
+                  {formatBigInt(claimReceived, 18, 2)}
                   <TokenImage token={claimAsSUSG ? "sUSG" : "USG"} className="" size={16} />
                 </div>
               </div>

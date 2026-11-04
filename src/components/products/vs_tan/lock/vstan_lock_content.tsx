@@ -97,7 +97,7 @@ export default function VsTanLockContent() {
   return (
     <div className="flex w-full flex-col justify-start">
       <div className="mb-1 flex w-full items-end justify-between gap-2">
-        <span className="text-xl font-semibold text-white">Deposit Tan</span>
+        <span className="text-xl font-semibold text-white">Deposit TAN</span>
         <span className="text-xs text-subtitle">{maxAmountToDeposit}</span>
       </div>
 
@@ -116,11 +116,11 @@ export default function VsTanLockContent() {
       />
 
       <div className="mb-1 mt-4 flex w-full items-center justify-between">
-        <div className="mb-1 text-xl font-semibold text-white">Position recap :</div>
+        <div className="mb-1 text-xl font-semibold text-white">Position recap:</div>
 
         {depositPosition === "New" && (
           <div className="flex gap-2">
-            <div className="mb-1 text-sm text-subtitle">Perma Lock</div>
+            <div className="mb-1 text-sm text-subtitle">Permalock</div>
             <Switch checked={isPermaLock} onCheckedChange={() => setIsPermaLock(!isPermaLock)} />
           </div>
         )}
@@ -130,7 +130,7 @@ export default function VsTanLockContent() {
         <EvolutionBox
           className="w-full"
           originalValue={depositPositionInfo ? formatBigInt(depositPositionInfo?.amount, 18, 2) : "0"}
-          label="vsTan"
+          label="vsTAN"
           newValue={computedNewLockValue}
         />
 

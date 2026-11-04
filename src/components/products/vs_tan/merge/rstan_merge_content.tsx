@@ -1,5 +1,6 @@
 "use client"
 
+import { useSUsgReceived } from "../use_susg_received"
 import { Switch } from "@/components/ui/switch"
 import { formatDate } from "@/lib/other_formatter"
 import { formatBigInt } from "@/lib/number_formatter"
@@ -35,6 +36,8 @@ export const VsTanMergeContent = () => {
     computedNewUnlockDate,
     computedNewAmount,
   } = useVsTanMergeContext()
+
+  const claimReceived = useSUsgReceived(secondPositionToMergeInfo?.claimable, claimAsSUSG)
 
   const AssetSelectTemplate = (option: LockPositionSelectTemplate) => {
     return (
@@ -112,7 +115,7 @@ export const VsTanMergeContent = () => {
 
   return (
     <div className="flex w-full flex-col items-start justify-start">
-      <div className="mb-1 text-xl font-semibold text-white">Select positions to merge :</div>
+      <div className="mb-1 text-xl font-semibold text-white">Select positions to merge:</div>
 
       <div className="mt-2 flex h-10 w-full items-center justify-between gap-2">
         <PositionSelect />
@@ -145,7 +148,7 @@ export const VsTanMergeContent = () => {
           <div className="flex w-full flex-col items-start justify-start rounded-[10px] bg-overlay-panel px-2 py-3">
             <div className="flex w-full items-start justify-start gap-2">
               <div className="w-1/3 text-[15px] text-subtitle sm:w-3/12">Pos. ID</div>
-              <div className="w-8/12 text-[15px] text-subtitle sm:w-6/12">vsTan</div>
+              <div className="w-8/12 text-[15px] text-subtitle sm:w-6/12">vsTAN</div>
               <div className="hidden w-3/12 text-[15px] text-subtitle sm:flex">Unlock date</div>
             </div>
 
@@ -217,7 +220,7 @@ export const VsTanMergeContent = () => {
                   #{secondPositionToMergeInfo.tokenId}
                 </div>
                 <div className="flex h-8 w-full items-center justify-center gap-2 rounded-[10px] bg-overlay-panel backdrop-blur-[10px]">
-                  {formatBigInt(secondPositionToMergeInfo.claimable, 18, 2)}
+                  {formatBigInt(claimReceived, 18, 2)}
                   <TokenImage token={claimAsSUSG ? "sUSG" : "USG"} className="" size={16} />
                 </div>
               </div>

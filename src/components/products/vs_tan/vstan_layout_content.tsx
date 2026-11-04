@@ -33,12 +33,11 @@ const listeState: ListState = {
 
 const LockRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex w-5/12 items-center justify-evenly xl:justify-start">
-        <div className="xl:w-1/2">{children?.at(0)}</div>
-        <div className="flex justify-center xl:w-1/2">{children?.at(1)}</div>
-      </div>
-      <div className="flex w-7/12 items-center justify-between">{children?.at(2)}</div>
+    // Grid so header and row cells share the exact same columns : 4 equal data columns + a narrow chevron one
+    <div className="grid grid-cols-4 items-center xl:grid-cols-[repeat(4,minmax(0,1fr))_2rem]">
+      {children?.at(0)}
+      {children?.at(1)}
+      {children?.at(2)}
     </div>
   )
 }
@@ -144,25 +143,25 @@ function LockPositionList() {
             <ListRow
               route=""
               navigate={() => setSelectedPosition(lockPosition === selectedPosition ? undefined : lockPosition)}
-              className="w-full"
+              className="w-full will-change-transform xl:px-4"
               rowDisposition={LockRowDisposition}
               isSelected={lockPosition == selectedPosition}
             >
-              <div className="flex items-center justify-center rounded-[10px] px-2 py-1.5 text-lg font-semibold backdrop-blur-[60px]">
+              <div className="flex w-fit items-center justify-center justify-self-center rounded-[10px] px-2 py-1.5 text-xs backdrop-blur-[60px] md:text-[15px] xl:ml-6 xl:justify-self-start">
                 #{lockPosition?.tokenId}
               </div>
-              <div className="flex items-center justify-center text-lg font-semibold">
+              <div className="flex items-center justify-center text-xs md:text-[15px]">
                 {formatBigInt(lockPosition?.amount, 18, 2)}
 
                 <TokenImage token="VSTAN" size={16} className="ml-1 w-4" />
               </div>
 
               <>
-                <div className="flex w-1/2 items-center justify-center text-sm font-semibold sm:text-lg xl:w-1/3">
+                <div className="flex items-center justify-center text-xs md:text-[15px]">
                   {formatBigInt(lockPosition?.claimable, 18, 2)}
                   <TokenImage token="USG" className="ml-1" size={16} />
                 </div>
-                <div className="flex w-1/2 items-center justify-center whitespace-nowrap text-sm font-semibold sm:text-lg xl:w-1/3">
+                <div className="flex items-center justify-center whitespace-nowrap text-xs md:text-[15px]">
                   {isPermaLocked(lockPosition) ? (
                     <IconInfinity className="w-4" />
                   ) : (
@@ -173,7 +172,7 @@ function LockPositionList() {
                     </>
                   )}
                 </div>
-                <div className="hidden w-3/12 items-center justify-center text-lg font-semibold xl:flex">
+                <div className="hidden items-center justify-center xl:flex">
                   <IconChevron className={`w-4 ${lockPosition == selectedPosition ? "" : "-rotate-90"} `}></IconChevron>
                 </div>
               </>
@@ -214,7 +213,7 @@ function LockPositionList() {
                     <>
                       <div className="flex w-fit items-center justify-center gap-1">
                         <div className="flex items-center justify-center gap-1 text-xs">
-                          Perma lock
+                          Permalock
                           <HoverCard openDelay={100} closeDelay={100}>
                             <HoverCardTrigger asChild>
                               <button type="button">
@@ -223,7 +222,7 @@ function LockPositionList() {
                             </HoverCardTrigger>
 
                             <HoverCardContent side="top" align="center" className="z-101 w-fit max-w-64 p-2 text-xs">
-                              Lock your tokens in perpetuity. You can remove the perma lock option at any time.
+                              Lock your tokens in perpetuity. You can remove the permalock option at any time.
                             </HoverCardContent>
                           </HoverCard>
                         </div>

@@ -8,7 +8,7 @@ if (!addresses) {
 
 const envAddresses = JSON.parse(addresses)
 
-// MAX_UINT48 : endLockTime the contract writes on a perma locked position
+// MAX_UINT48 : endLockTime the contract writes on a permalocked position
 export const PERMA_LOCK_END_TIME = "281474976710655"
 
 // Locks are aligned on 7 day epochs, for a maximum duration of 13 of them. Locking mid epoch
@@ -26,7 +26,7 @@ export const VSTAN_CONTRACT = {
   // `envAddresses.tokens.sTAN` once the contract ships. Reads against it revert, which the chain
   // view guard turns into an empty state rather than a crash.
   STAN: "0x11111111111111111111111111111111111111Aa" as Address,
-  TAN_LP: envAddresses.lps?.["TAN-WETH"],
+  TAN_LP: "0x20abec6573f0599D94396F010F4E35df3770376E",
   ETH_ORACLE: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
   DAO: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
 }

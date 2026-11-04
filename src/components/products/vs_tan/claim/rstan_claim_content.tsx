@@ -49,7 +49,7 @@ export const VsTanClaimContent = () => {
 
   return (
     <div className="flex w-full flex-col items-start justify-start">
-      <div className="mb-1 text-xl font-semibold text-white">Select position(s) :</div>
+      <div className="mb-1 text-xl font-semibold text-white">Select position(s):</div>
 
       <MultiPositionSelect
         template={AssetSelectTemplate}

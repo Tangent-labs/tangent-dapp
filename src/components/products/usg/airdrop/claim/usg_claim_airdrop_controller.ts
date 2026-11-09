@@ -99,7 +99,7 @@ export const TEAM_WALLETS = 6
 export type AirdropCategoryId = "compensationCvg" | "pointCampaign" | "preDeposit" | "others"
 
 export const AIRDROP_CATEGORIES: Record<AirdropCategoryId, { label: string; color: string; glow: string }> = {
-  compensationCvg: { label: "Compensation CVG", color: "#0075FF", glow: "#0077ffa3" },
+  compensationCvg: { label: "CVG Compensation", color: "#0075FF", glow: "#0077ffa3" },
   pointCampaign: { label: "Point campaign", color: "#95FF00", glow: "#95ff006d" },
   preDeposit: { label: "Pre-deposit", color: "#00C2FF", glow: "#00c2ff80" },
   others: { label: "Others", color: "#FFFFFF", glow: "#ffffff80" },
@@ -108,9 +108,9 @@ export const AIRDROP_CATEGORIES: Record<AirdropCategoryId, { label: string; colo
 export const AIRDROP_CATEGORY_ORDER: AirdropCategoryId[] = ["compensationCvg", "pointCampaign", "preDeposit", "others"]
 
 const CVG_USERS_TILES: Array<{ key: keyof Omit<CvgUsersDetails, "tan">; label: string }> = [
-  { key: "holders", label: "Holders" },
-  { key: "lockers", label: "Lockers" },
-  { key: "stakers", label: "Stakers" },
+  { key: "holders", label: "Held" },
+  { key: "lockers", label: "Locked" },
+  { key: "stakers", label: "Staked" },
   { key: "seed", label: "Seed" },
   { key: "bonds", label: "Bonds" },
   { key: "lpEthCvg", label: "LP ETH/CVG" },

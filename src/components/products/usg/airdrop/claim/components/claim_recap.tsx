@@ -134,7 +134,7 @@ function CategoryRecapCard({ allocation, totalAmount, claimStatus }: CategoryRec
 
   if (allocation.amount <= 0) {
     return (
-      <RecapCardShell pill={label} color={color} glow={glow} className="opacity-45">
+      <RecapCardShell pill={label} color={color} glow={glow}>
         <div className="flex flex-col items-center gap-1">
           <span className="text-sm text-subtitle">Not eligible</span>
           <span className="text-[26px] font-semibold text-white">0</span>

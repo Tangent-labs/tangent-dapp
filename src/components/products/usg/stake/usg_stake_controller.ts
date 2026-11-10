@@ -1,7 +1,7 @@
 import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 import { formatNumber } from "@/lib/number_formatter"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import { Address, EstimateContractGasParameters, formatUnits, maxUint256, WalletClient, WriteContractParameters } from "viem"
+import { Address, EstimateContractGasParameters, formatUnits, maxUint256, parseAbi, WalletClient, WriteContractParameters } from "viem"
 import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import { FormError, FormState, USGStakingInfo } from "../usg_type"
 
@@ -168,3 +168,64 @@ export const computeSUSGAprVariation = (currentFeature: string, USGsUSGMetrics: 
     updated: `${(Number(newAPR) / 100).toFixed(2)}%`,
   }
 }
+
+// ────────────────────────────────────────
+//           YEARN V2 VAULT (Curve LP)
+// ────────────────────────────────────────
+
+const yearnV2Abi = parseAbi([
+  "function balanceOf(address) view returns (uint256)",
+  "function allowance(address,address) view returns (uint256)",
+  "function pricePerShare() view returns (uint256)",
+  "function totalSupply() view returns (uint256)",
+  "function get_virtual_price() view returns (uint256)",
+  "function deposit(uint256 amount, address recipient) returns (uint256)",
+  "function withdraw(uint256 maxShares, address recipient) returns (uint256)",
+])
+
+const MULTICALL3: Address = "0xcA11bde05977b3631167028862bE2a173976CA11"
+
+// ponytail: Yearn V2 metrics are returned in the USGStakingInfo shape (asset = USG* slots, vault share = sUSG* slots)
+// so form state / projections / panel are shared with sUSG. Rename to generic fields if a 3rd vault shows up.
+export const getYearnV2Metrics = async (account: Address, lp: Address, vault: Address): Promise<USGStakingInfo & { pricePerShare: bigint }> => {
+  const [lpBalance, lpAllowance, shareBalance, pricePerShare, shareSupply, virtualPrice] = await getPublicClient().multicall({
+    multicallAddress: MULTICALL3,
+    allowFailure: false,
+    contracts: [
+      { address: lp, abi: yearnV2Abi, functionName: "balanceOf", args: [account] },
+      { address: lp, abi: yearnV2Abi, functionName: "allowance", args: [account, vault] },
+      { address: vault, abi: yearnV2Abi, functionName: "balanceOf", args: [account] },
+      { address: vault, abi: yearnV2Abi, functionName: "pricePerShare" },
+      { address: vault, abi: yearnV2Abi, functionName: "totalSupply" },
+      { address: lp, abi: yearnV2Abi, functionName: "get_virtual_price" },
+    ],
+  })
+
+  return {
+    USGBalance: lpBalance,
+    USGAllowance: lpAllowance,
+    USGPrice: virtualPrice,
+    USGSupply: 0n,
+    USGPercentageInsUSG: 0n,
+    sUSGBalance: shareBalance,
+    sUSGPrice: (pricePerShare * virtualPrice) / 10n ** 18n,
+    sUSGSupply: shareSupply,
+    pricePerShare,
+  }
+}
+
+// Yearn V2 has no previewDeposit/previewRedeem: derive from pricePerShare (18 decimals)
+export const previewYearnV2Deposit = (assets: bigint, pricePerShare: bigint) => (pricePerShare ? (assets * 10n ** 18n) / pricePerShare : 0n)
+export const previewYearnV2Withdraw = (shares: bigint, pricePerShare: bigint) => (shares * pricePerShare) / 10n ** 18n
+
+const writeYearnV2 = async (walletClient: WalletClient, vault: Address, functionName: "deposit" | "withdraw", amount: bigint) => {
+  const [account] = await walletClient.requestAddresses()
+  const publicClient = getPublicClient()
+  const txData = { abi: yearnV2Abi, functionName, args: [amount, account] as const, address: vault, account, gas: undefined as undefined | bigint }
+  txData.gas = await publicClient.estimateContractGas(txData)
+  const hash = await walletClient.writeContract(txData as unknown as WriteContractParameters)
+  return await waitForTransaction(hash)
+}
+
+export const doDepositYearnV2 = (walletClient: WalletClient, vault: Address, assets: bigint) => writeYearnV2(walletClient, vault, "deposit", assets)
+export const doWithdrawYearnV2 = (walletClient: WalletClient, vault: Address, shares: bigint) => writeYearnV2(walletClient, vault, "withdraw", shares)

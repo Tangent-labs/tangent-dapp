@@ -5,6 +5,7 @@ import { useMemo, useState } from "react"
 import { PositionAPR } from "./position_apr"
 import { PositionTVL } from "./position_tvl"
 import { TVLData, USGStakingInfo } from "../../usg_type"
+import { SavingsVault } from "../savings_vaults"
 import { formatNumber } from "@/lib/number_formatter"
 import { ForecastGraph } from "./usg_staking_forecast"
 import { SlidingTabs } from "../../airdrop/tasks/components/SlidingTabs"
@@ -22,6 +23,7 @@ interface PositionPerformancePanelProps {
   fetchsUSGHistoryAPY: (range: string) => Promise<void>
   computeProjection: (balance: bigint, timeFrame: number, apr: number, currentFeature: "stake" | "unstake", amount?: bigint) => string
   tvl: TVLData[]
+  vault: SavingsVault
 }
 
 const APY_HISTORY = "APY history"
@@ -40,6 +42,7 @@ export function PositionPerformancePanel({
   computeProjection,
   fetchsUSGHistoryAPY,
   tvl,
+  vault,
 }: PositionPerformancePanelProps) {
   const [selectedFeature, setSelectedFeature] = useState<string>(APY_HISTORY)
 
@@ -61,9 +64,9 @@ export function PositionPerformancePanel({
         <EvolutionBox
           className="w-full"
           originalValue={formatNumber(sUSGBalance, 0)}
-          label="sUSG balance"
+          label={`${vault.share.symbol} balance`}
           newValue={formatNumber(computeProjectedValue >= 0 ? computeProjectedValue : 0, 0)}
-          logo="sUSG"
+          logo={vault.share.logo}
         />
 
         <EvolutionBox
@@ -71,7 +74,7 @@ export function PositionPerformancePanel({
           originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature)}
           label="30 days projection"
           newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature, weiValue)}
-          logo="USG"
+          logo={vault.asset.logo}
         />
 
         <EvolutionBox
@@ -79,7 +82,7 @@ export function PositionPerformancePanel({
           originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature)}
           label="1 year projection"
           newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature, weiValue)}
-          logo="USG"
+          logo={vault.asset.logo}
         />
       </ReliefCard>
 

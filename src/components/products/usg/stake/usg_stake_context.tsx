@@ -1,9 +1,9 @@
 "use client"
 
-import { formatEther, formatUnits } from "viem"
+import { formatEther, formatUnits, zeroAddress } from "viem"
 import { useUSGContext } from "../usg_context"
 import { getsUsgApyData } from "../client_api"
-import { USG_CONTRACT } from "../usg_repository"
+import { SAVINGS_VAULTS, SavingsVault } from "./savings_vaults"
 import { useRootContext } from "../../root/root_context"
 import { convertRange } from "../../root/root_controller"
 import { toastTx } from "@/components/design_system/toast"
@@ -11,14 +11,28 @@ import { AssetDataPriced } from "@/types"
 import { FormState, StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../usg_type"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doApprove, doStakeUSG, doUnstakeUSG, getExpectedSUSG, getExpectedUSG, getStakeFormState } from "./usg_stake_controller"
+import {
+  doApprove,
+  doDepositYearnV2,
+  doStakeUSG,
+  doUnstakeUSG,
+  doWithdrawYearnV2,
+  getExpectedSUSG,
+  getExpectedUSG,
+  getStakeFormState,
+  getYearnV2Metrics,
+  previewYearnV2Deposit,
+  previewYearnV2Withdraw,
+} from "./usg_stake_controller"
 import { matchBlockChainErrors } from "../record/usg_record_controller"
 
 type USGStakeContextProps = {
   children: ReactNode
+  vault?: SavingsVault["key"]
 }
 
 type USGStakeContextValues = {
+  vault: SavingsVault
   weiValue?: bigint
   setWeiValue: (arg: bigint | undefined) => void
   currentFeature: "stake" | "unstake"
@@ -51,10 +65,28 @@ type USGStakeContextValues = {
 
 export const USGStakeContext = createContext<USGStakeContextValues | undefined>(undefined)
 
-export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
-  const { walletClient, isWellConnected } = useWalletConnexionContext()
+export const USGStakeProvider = ({ children, vault: vaultKey = "sUSG" }: USGStakeContextProps) => {
+  const vault = SAVINGS_VAULTS[vaultKey]
+  const isYearnV2 = vault.key !== "sUSG"
 
-  const { loadUSGsUSGMetrics, USGsUSGMetrics } = useUSGContext()
+  const { walletClient, isWellConnected, currentAddress } = useWalletConnexionContext()
+
+  const { loadUSGsUSGMetrics, USGsUSGMetrics: sUSGMetrics } = useUSGContext()
+
+  const [yearnV2Metrics, setYearnV2Metrics] = useState<Awaited<ReturnType<typeof getYearnV2Metrics>> | undefined>()
+
+  const loadYearnV2Metrics = () => {
+    getYearnV2Metrics(currentAddress || zeroAddress, vault.asset.address, vault.share.address)
+      .then(setYearnV2Metrics)
+      .catch((error) => console.error("Failed to load vault metrics:", error))
+  }
+
+  useEffect(() => {
+    if (isYearnV2) loadYearnV2Metrics()
+  }, [isYearnV2, currentAddress])
+
+  const USGsUSGMetrics = isYearnV2 ? yearnV2Metrics : sUSGMetrics
+  const reloadMetrics = isYearnV2 ? loadYearnV2Metrics : loadUSGsUSGMetrics
 
   const { getCachedCurrentBlock } = useRootContext()
 
@@ -73,7 +105,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
-    fetchsUSGHistoryAPY("1m")
+    if (vault.hasData) fetchsUSGHistoryAPY("1m")
   }, [])
 
   const receivedTokenInfo = useMemo(() => {
@@ -81,63 +113,63 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
 
     if (currentFeature === "stake") {
       return {
-        address: USG_CONTRACT.SUSG,
+        address: vault.share.address,
         decimals: 18,
         displayDecimals: 2,
-        logo: "sUSG",
-        name: "sUSG",
+        logo: vault.share.logo,
+        name: vault.share.symbol,
         price: Number(formatEther(USGsUSGMetrics?.sUSGPrice)),
-        symbol: "sUSG",
+        symbol: vault.share.symbol,
         balance: USGsUSGMetrics?.sUSGBalance,
       }
     }
 
     return {
-      address: USG_CONTRACT.USG,
+      address: vault.asset.address,
       decimals: 18,
       displayDecimals: 2,
-      logo: "USG",
-      name: "USG",
+      logo: vault.asset.logo,
+      name: vault.asset.symbol,
       price: Number(formatEther(USGsUSGMetrics?.USGPrice)),
-      symbol: "USG",
+      symbol: vault.asset.symbol,
       balance: USGsUSGMetrics?.USGBalance,
     }
-  }, [currentFeature, USGsUSGMetrics])
+  }, [currentFeature, USGsUSGMetrics, vault])
 
   const currentAssetInfo = useMemo(() => {
     if (!USGsUSGMetrics?.sUSGPrice) return
     if (currentFeature === "stake") {
       return {
         current: "asset" as StakingDepositType,
-        address: USG_CONTRACT.USG,
+        address: vault.asset.address,
         balance: USGsUSGMetrics?.USGBalance,
         asset: {
           price: Number(formatEther(USGsUSGMetrics?.USGPrice)),
           decimals: 18,
-          address: USG_CONTRACT.USG,
+          address: vault.asset.address,
           displayDecimals: 2,
-          symbol: "USG",
-          name: "USG",
-          logo: "USG",
+          symbol: vault.asset.symbol,
+          name: vault.asset.symbol,
+          logo: vault.asset.logo,
         },
       }
     }
 
     return {
       current: "sdAsset" as StakingDepositType,
-      address: USG_CONTRACT.SUSG,
+      address: vault.share.address,
       balance: USGsUSGMetrics?.sUSGBalance,
       asset: {
         price: Number(formatEther(USGsUSGMetrics?.sUSGPrice)),
         decimals: 18,
-        address: USG_CONTRACT.SUSG,
+        address: vault.share.address,
         displayDecimals: 2,
-        symbol: "sUSG",
-        name: "sUSG",
-        logo: "sUSG",
+        symbol: vault.share.symbol,
+        name: vault.share.symbol,
+        logo: vault.share.logo,
       },
     }
-  }, [currentFeature, USGsUSGMetrics])
+  }, [currentFeature, USGsUSGMetrics, vault])
 
   const formState = useMemo<FormState>(
     () => getStakeFormState(USGsUSGMetrics!, currentFeature, weiValue, expected, isWellConnected, isLoading),
@@ -163,11 +195,11 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
 
       const params = {
         walletClient: walletClient!,
-        stakingAddress: USG_CONTRACT.SUSG,
+        stakingAddress: vault.share.address,
         weiValue,
       }
 
-      await toastTx(doUnstakeUSG(params), {
+      await toastTx(isYearnV2 ? doWithdrawYearnV2(params.walletClient, params.stakingAddress, weiValue) : doUnstakeUSG(params), {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
         success: () => ({
           type: "Success",
@@ -178,7 +210,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
         },
       })
 
-      loadUSGsUSGMetrics()
+      reloadMetrics()
       setWeiValue(undefined)
       setExpected(undefined)
       setIsLoading(false)
@@ -196,11 +228,11 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
 
       const params = {
         walletClient: walletClient!,
-        stakingAddress: USG_CONTRACT.SUSG,
+        stakingAddress: vault.share.address,
         weiValue,
       }
 
-      await toastTx(doStakeUSG(params), {
+      await toastTx(isYearnV2 ? doDepositYearnV2(params.walletClient, params.stakingAddress, weiValue) : doStakeUSG(params), {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
         success: () => ({
           type: "Success",
@@ -212,7 +244,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
         },
       })
 
-      loadUSGsUSGMetrics()
+      reloadMetrics()
       setWeiValue(undefined)
       setExpected(undefined)
       setIsLoading(false)
@@ -224,11 +256,11 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   const actionApprove = async () => {
     try {
       setIsLoading(true)
-      await toastTx(doApprove(walletClient!, USG_CONTRACT.USG, weiValue || 0n, USG_CONTRACT.SUSG), {
+      await toastTx(doApprove(walletClient!, vault.asset.address, weiValue || 0n, vault.share.address), {
         pending: { type: "Pending Transaction", content: "Waiting for approval confirmation..." },
         success: () => ({
           type: "Success",
-          content: "USG approved successfully.",
+          content: `${vault.asset.symbol} approved successfully.`,
         }),
         error: (err) => {
           const error = matchBlockChainErrors(typeof err === "string" ? err : err instanceof Error ? err.message : String(err))
@@ -236,7 +268,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
         },
       })
 
-      loadUSGsUSGMetrics()
+      reloadMetrics()
       setIsLoading(false)
     } catch {
       setIsLoading(false)
@@ -246,16 +278,19 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   useEffect(() => {
     if (!weiValue || weiValue === 0n) return
     ;(async () => {
-      if (currentFeature === "stake") {
+      if (isYearnV2) {
+        const pricePerShare = yearnV2Metrics?.pricePerShare ?? 0n
+        setExpected(currentFeature === "stake" ? previewYearnV2Deposit(weiValue, pricePerShare) : previewYearnV2Withdraw(weiValue, pricePerShare))
+      } else if (currentFeature === "stake") {
         try {
-          const sdAssetAmountOut = await getExpectedSUSG(walletClient!, weiValue, USG_CONTRACT?.SUSG)
+          const sdAssetAmountOut = await getExpectedSUSG(walletClient!, weiValue, vault.share.address)
           setExpected(sdAssetAmountOut)
         } catch (error) {
           console.error("Error while estimating deposit preview :", error)
         }
       } else {
         try {
-          const assetAmountOut = await getExpectedUSG(walletClient!, weiValue, USG_CONTRACT?.SUSG)
+          const assetAmountOut = await getExpectedUSG(walletClient!, weiValue, vault.share.address)
           setExpected(assetAmountOut)
         } catch (error) {
           console.error("Error while estimating redeem preview :", error)
@@ -310,6 +345,7 @@ export const USGStakeProvider = ({ children }: USGStakeContextProps) => {
   // }, [USGsUSGMetrics, weiValue, currentFeature])
 
   const contextValue: USGStakeContextValues = {
+    vault,
     actionStake,
     actionApprove,
     actionUnstake,

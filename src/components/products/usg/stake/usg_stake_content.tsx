@@ -43,9 +43,12 @@ export default function USGStakeContent() {
     sUSGSelectedTab,
     apyHistory,
     isLoading,
+    vault,
   } = useUSGStakeContext()
 
-  const { sUSGCurrentAPY, tvl } = useRootContext()
+  const root = useRootContext()
+  const sUSGCurrentAPY = vault.hasData ? root.sUSGCurrentAPY : 0
+  const tvl = vault.hasData ? root.tvl : []
 
   const { connect } = useWalletConnexionContext()
 
@@ -54,29 +57,31 @@ export default function USGStakeContent() {
   let inputOutAsset = ""
 
   if (isStake) {
-    inputInAsset = "USG"
-    inputOutAsset = "sUSG"
+    inputInAsset = vault.asset.symbol
+    inputOutAsset = vault.share.symbol
   } else {
-    inputInAsset = "sUSG"
-    inputOutAsset = "USG"
+    inputInAsset = vault.share.symbol
+    inputOutAsset = vault.asset.symbol
   }
+  const inputInLogo = isStake ? vault.asset.logo : vault.share.logo
+  const inputOutLogo = isStake ? vault.share.logo : vault.asset.logo
 
   return (
     <>
       <div className="flex items-stretch justify-between gap-5">
         <PageHeader>
-          <Image height={150} width={150} src="/medias/tokens/SUSG.png" alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
+          <Image height={150} width={150} src={vault.image} alt="token" style={{ maxWidth: "320px", maxHeight: "320px" }} />
 
           <div className="flex flex-col items-start justify-center px-6">
-            <span className="text-4xl font-semibold">Savings account</span>
-            <p className="mt-2 text-[15px]">Stake USG to receive sUSG and earn yield passively. sUSG is an ERC4626 token and can be used further in DeFi.</p>
+            <span className="text-4xl font-semibold">{vault.title}</span>
+            <p className="mt-2 text-[15px]">{vault.description}</p>
             <Link
               className="flex cursor-pointer items-center justify-center underline hover:text-white/30"
-              href="https://docs.tangent.finance/docs/usg/overview_usg#savings-account%E2%80%8B"
+              href={vault.docsHref}
               target="_blank"
               rel="noopener noreferrer"
             >
-              Learn more about sUSG <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white" />
+              {vault.docsLabel} <IconOpenOutside className="ml-1 mt-1 flex w-4 fill-white" />
             </Link>
           </div>
         </PageHeader>
@@ -87,8 +92,8 @@ export default function USGStakeContent() {
           <ThreeCardRowWithMask
             contents={[
               { key: "Supply", value: formatMillions(Number(formatUnits(USGsUSGMetrics?.sUSGSupply || 0n, 18))) },
-              { key: "sUSG price", value: formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 4) },
-              { key: "sUSG APY", value: sUSGCurrentAPY.toFixed(2) + "%" },
+              { key: `${vault.share.symbol} price`, value: formatDollar(formatUnits(USGsUSGMetrics?.sUSGPrice || 0n, 18), 4) },
+              { key: `${vault.share.symbol} APY`, value: vault.hasData ? sUSGCurrentAPY.toFixed(2) + "%" : "-" },
             ]}
           />
         </div>
@@ -101,13 +106,13 @@ export default function USGStakeContent() {
               onClick={() => setCurrentFeature("stake")}
               active={currentFeature === "stake"}
               className="flex w-full justify-center"
-              label="Stake"
+              label={vault.depositLabel}
             />
             <LargeButtonTab
               onClick={() => setCurrentFeature("unstake")}
               active={currentFeature === "unstake"}
               className="flex w-full justify-center"
-              label="Unstake"
+              label={vault.withdrawLabel}
             />
           </div>
 
@@ -116,16 +121,16 @@ export default function USGStakeContent() {
           <div className="mb-[5px] flex w-full items-center justify-between">
             <span className="text-sm font-semibold md:text-xl">Deposit</span>
             <span className="text-xs text-subtitle">
-              Max: {formatBigInt(currentAssetInfo?.balance, 18, 2)} {currentFeature === "stake" ? "USG" : "sUSG"}{" "}
+              Max: {formatBigInt(currentAssetInfo?.balance, 18, 2)} {inputInAsset}{" "}
             </span>
           </div>
           <div className="mb-[5px] w-full">
             <GenericInputAssetAmount
               inputWeiValue={weiValue}
               onValueChange={(value: bigint | undefined) => setWeiValue(value)}
-              depositSelect={<StaticCardAssetInput assetName={inputInAsset} logoKey={inputInAsset} />}
+              depositSelect={<StaticCardAssetInput assetName={inputInAsset} logoKey={inputInLogo} />}
               asset={currentAssetInfo?.asset}
-              label={isStake ? "You deposit" : "You unstake"}
+              label={isStake ? "You deposit" : `You ${vault.withdrawLabel.toLowerCase()}`}
               maxAmountParams={{
                 maxWeiValue: currentAssetInfo?.balance || 0n,
                 setMaxAmount: () => {
@@ -151,7 +156,7 @@ export default function USGStakeContent() {
             <GenericInputAssetAmount
               inputWeiValue={expected}
               onValueChange={(value: bigint | undefined) => setWeiValue(value)}
-              depositSelect={<StaticCardAssetInput assetName={inputOutAsset} logoKey={inputOutAsset} />}
+              depositSelect={<StaticCardAssetInput assetName={inputOutAsset} logoKey={inputOutLogo} />}
               asset={receivedTokenInfo}
               label={isStake ? "You receive" : "You receive"}
               disabled={true}
@@ -172,7 +177,7 @@ export default function USGStakeContent() {
             connect={connect}
             formState={formState}
             isLoading={isLoading}
-            labelProcess={isStake ? "Stake" : "Unstake"}
+            labelProcess={isStake ? vault.depositLabel : vault.withdrawLabel}
           />
         </ReliefCard>
 
@@ -182,7 +187,7 @@ export default function USGStakeContent() {
               <EvolutionBox
                 className="w-full"
                 originalValue={formatNumber(Number(formatUnits(USGsUSGMetrics?.sUSGBalance ?? 0n, 18)), 0)}
-                label="sUSG balance"
+                label={`${vault.share.symbol} balance`}
                 newValue={formatNumber(computeProjectedValue >= 0 ? computeProjectedValue : 0, 0)}
               />
 
@@ -191,7 +196,7 @@ export default function USGStakeContent() {
                 originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature)}
                 label="30 days projection"
                 newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1 / 12, sUSGCurrentAPY, currentFeature, weiValue)}
-                logo="USG"
+                logo={vault.asset.logo}
               />
 
               <EvolutionBox
@@ -199,7 +204,7 @@ export default function USGStakeContent() {
                 originalValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature)}
                 label="1 year projection"
                 newValue={computeProjection(USGsUSGMetrics?.sUSGBalance, 1, sUSGCurrentAPY, currentFeature, weiValue)}
-                logo="USG"
+                logo={vault.asset.logo}
               />
             </div>
           )}
@@ -216,6 +221,7 @@ export default function USGStakeContent() {
           apyHistory={apyHistory}
           sUSGCurrentAPY={sUSGCurrentAPY}
           tvl={tvl}
+          vault={vault}
         />
       </div>
     </>

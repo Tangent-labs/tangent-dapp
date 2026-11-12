@@ -64,9 +64,18 @@ export default function MenuBarFeature() {
     }
   }, [mobileMenuOpen])
 
+  // Savings renders as a dropdown but keeps its 2nd position in the menu
+  const savingsDropdown = {
+    baseLabel: "Savings",
+    routes: [
+      { route: "/stake", label: "sUSG", logo: <TokenImage token="sUSG" size={16} />, external: false },
+      { route: "/stake/sUSGre", label: "sUSGre", logo: <TokenImage token="sUSG-reUSD" size={16} />, external: false },
+    ],
+  }
+
   const routesMenuItem = [
     { route: "/", label: "Markets", condition: (path: string) => isOnMarket(path) },
-    { route: "/stake", label: "Savings" },
+    { route: "/stake", label: "Savings", dropdown: savingsDropdown },
     { route: "/earn", label: "Earn" },
     { route: "/claim", label: "Claim" },
     { route: "/dashboard", label: "Dashboard" },
@@ -92,9 +101,9 @@ export default function MenuBarFeature() {
   ]
 
   const getCurrentLabel = () => {
-    const menuItem = routesMenuItem.find((r) => (r.condition ? r.condition(pathname) : pathname === r.route))
+    const menuItem = routesMenuItem.find((r) => !r.dropdown && (r.condition ? r.condition(pathname) : pathname === r.route))
     if (menuItem) return menuItem.label
-    for (const dropdown of routesDropdown) {
+    for (const dropdown of [savingsDropdown, ...routesDropdown]) {
       const match = dropdown.routes.find((r) => r.route === pathname)
       if (match) return match.label
     }
@@ -102,6 +111,58 @@ export default function MenuBarFeature() {
   }
 
   const currentLabel = getCurrentLabel()
+
+  const renderDesktopDropdown = (dropdown: (typeof routesDropdown)[number]) => {
+    const isSelected = dropdown.routes.some((r) => r.route === pathname)
+
+    return (
+      <NavigationMenu viewport={false} key={dropdown.baseLabel} delayDuration={150}>
+        <NavigationMenuDropdown>
+          <NavigationMenuTrigger className="active:scale-[0.97]" isSelected={isSelected}>
+            {dropdown.baseLabel}
+          </NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <div className="flex w-[140px] flex-col gap-1 rounded-[10px] border border-white/10 bg-dark p-2">
+              {dropdown.routes.map((route) => (
+                <NavigationMenuLink key={route.label} asChild>
+                  <Link href={route.route} target={route.external ? "_blank" : ""} rel="noopener noreferrer" className="flex items-center justify-start gap-2">
+                    {route.logo}
+                    {route.label}
+                  </Link>
+                </NavigationMenuLink>
+              ))}
+            </div>
+          </NavigationMenuContent>
+        </NavigationMenuDropdown>
+      </NavigationMenu>
+    )
+  }
+
+  const renderMobileDropdown = (dropdown: (typeof routesDropdown)[number]) => (
+    <div key={dropdown.baseLabel} className="mt-4">
+      <span className="text-xs font-semibold uppercase tracking-wider text-white/30">{dropdown.baseLabel}</span>
+      <div className="mt-2 flex flex-col">
+        {dropdown.routes.map((route) => {
+          const isActive = pathname === route.route
+          return (
+            <Link
+              key={route.route}
+              href={route.route}
+              onClick={() => setMobileMenuOpen(false)}
+              className={cn(
+                "flex items-center gap-3 border-b border-white/5 py-3 text-base font-semibold transition-colors",
+                isActive ? "text-white" : "text-white/50"
+              )}
+            >
+              {isActive && <span className="h-4 w-[2px] rounded-full bg-gradient-to-b from-[--tgt-row-tonic] to-blue-600" />}
+              <span className="flex w-4 items-center justify-center">{route.logo}</span>
+              {route.label}
+            </Link>
+          )
+        })}
+      </div>
+    </div>
+  )
 
   const headerRef = useRef<HTMLDivElement>(null)
   const [headerHeight, setHeaderHeight] = useState(0)
@@ -143,6 +204,7 @@ export default function MenuBarFeature() {
                   {routesMenuItem
                     .filter((r) => !r.mobileOnly)
                     .map((route) => {
+                      if (route.dropdown) return renderDesktopDropdown(route.dropdown)
                       return (
                         <Link key={route.route} href={route.route} rel="noopener noreferrer" className="group/link relative pb-1">
                           <NavigationMenuItem
@@ -166,37 +228,7 @@ export default function MenuBarFeature() {
                       )
                     })}
 
-                  {routesDropdown.map((dropdown) => {
-                    const route = dropdown.routes.find((r) => r.route === pathname)
-                    const isSelected = route ? true : false
-
-                    return (
-                      <NavigationMenu viewport={false} key={dropdown.baseLabel} delayDuration={150}>
-                        <NavigationMenuDropdown>
-                          <NavigationMenuTrigger className="active:scale-[0.97]" isSelected={isSelected}>
-                            {dropdown.baseLabel}
-                          </NavigationMenuTrigger>
-                          <NavigationMenuContent>
-                            <div className="flex w-[120px] flex-col gap-1 rounded-[10px] border border-white/10 bg-dark p-2">
-                              {dropdown.routes.map((route) => (
-                                <NavigationMenuLink key={route.label} asChild>
-                                  <Link
-                                    href={route.route}
-                                    target={route.external ? "_blank" : ""}
-                                    rel="noopener noreferrer"
-                                    className="flex items-center justify-start gap-2"
-                                  >
-                                    {route.logo}
-                                    {route.label}
-                                  </Link>
-                                </NavigationMenuLink>
-                              ))}
-                            </div>
-                          </NavigationMenuContent>
-                        </NavigationMenuDropdown>
-                      </NavigationMenu>
-                    )
-                  })}
+                  {routesDropdown.map(renderDesktopDropdown)}
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
@@ -263,6 +295,7 @@ export default function MenuBarFeature() {
         >
           <div className="flex flex-col overflow-y-auto px-4 pb-6 pt-4">
             {routesMenuItem.map((route) => {
+              if (route.dropdown) return renderMobileDropdown(route.dropdown)
               const isActive = route.condition ? route.condition(pathname) : pathname === route.route
               return (
                 <Link
@@ -280,31 +313,7 @@ export default function MenuBarFeature() {
               )
             })}
 
-            {routesDropdown.map((dropdown) => (
-              <div key={dropdown.baseLabel} className="mt-4">
-                <span className="text-xs font-semibold uppercase tracking-wider text-white/30">{dropdown.baseLabel}</span>
-                <div className="mt-2 flex flex-col">
-                  {dropdown.routes.map((route) => {
-                    const isActive = pathname === route.route
-                    return (
-                      <Link
-                        key={route.route}
-                        href={route.route}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={cn(
-                          "flex items-center gap-3 border-b border-white/5 py-3 text-base font-semibold transition-colors",
-                          isActive ? "text-white" : "text-white/50"
-                        )}
-                      >
-                        {isActive && <span className="h-4 w-[2px] rounded-full bg-gradient-to-b from-[--tgt-row-tonic] to-blue-600" />}
-                        <span className="flex w-4 items-center justify-center">{route.logo}</span>
-                        {route.label}
-                      </Link>
-                    )
-                  })}
-                </div>
-              </div>
-            ))}
+            {routesDropdown.map(renderMobileDropdown)}
           </div>
         </div>
       </>

@@ -24,7 +24,7 @@ import { SwapButton } from "@/components/design_system/inputs/swap_button"
 import { WalletConnexionContent } from "../wallet/wallet_connexion_content"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
-import { IconBoosts, IconHarvest, IconReferral, IconSnapshot, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
+import { IconBoosts, IconHarvest, IconReferral, IconSnapshot, IconGift, IconTangent, IconTangentLogo, IconTask } from "@/components/icons"
 
 export default function MenuBarFeature() {
   const { USGsUSGMetrics } = useUSGContext()
@@ -87,6 +87,7 @@ export default function MenuBarFeature() {
         { route: "/tasks", label: "Tasks", logo: <IconTask className="w-4" /> },
         { route: "/referral", label: "Referral", logo: <IconReferral className="w-4" /> },
         { route: "/boosts", label: "Boosts", logo: <IconBoosts className="w-4" /> },
+        { route: "/claim-airdrop", label: "Claim", logo: <IconGift className="w-4" /> },
       ],
     },
   ]

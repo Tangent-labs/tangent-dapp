@@ -196,6 +196,47 @@ export const ERC20S: Erc20Details[] = [
     name: "USDT/crvUSD",
     symbol: "USDT/crvUSD",
   },
+  // CURVE TRICRYPTO
+  {
+    address: CURVE_LPS.TRI_crvUSD_ETH_CRV as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "triCRV",
+    name: "crvUSD/ETH/CRV",
+    symbol: "crvUSD/ETH/CRV",
+  },
+  {
+    address: CURVE_LPS.TRI_GHO_cbBTC_ETH as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "TricryptoGHO",
+    name: "GHO/cbBTC/ETH",
+    symbol: "GHO/cbBTC/ETH",
+  },
+  {
+    address: CURVE_LPS.TRI_crvUSD_TBTC_WSTETH as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "TricryptoLLAMA",
+    name: "crvUSD/tBTC/wstETH",
+    symbol: "crvUSD/tBTC/wstETH",
+  },
+  {
+    address: CURVE_LPS.TRI_USDC_WBTC_ETH as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "TricryptoUSDC",
+    name: "TricryptoUSDC",
+    symbol: "USDC/WBTC/ETH",
+  },
+  {
+    address: CURVE_LPS.TRI_USDT_WBTC_ETH_2_LP as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "TricryptoUSDT",
+    name: "TricryptoUSDT",
+    symbol: "USDT/WBTC/ETH",
+  },
 
   {
     address: CURVE_LPS.DUO_scrvUSD_sUSDe as Address,
@@ -536,7 +577,14 @@ export const ERC20S: Erc20Details[] = [
     name: "Vault frxUSD/crvUSD",
     symbol: "Vault frxUSD/crvUSD",
   },
-
+  {
+    address: "0x22D6aF8d893557d54E40B49Cae140e83f37A8ecb" as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "triCRV",
+    name: "Vault crvUSD/ETH/CRV",
+    symbol: "Vault crvUSD/ETH/CRV",
+  },
   // CURVE GAUGES
   {
     address: CURVE_GAUGES.RLUSD_USDC,

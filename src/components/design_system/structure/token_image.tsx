@@ -62,6 +62,7 @@ export function TokenImage({ token, size, ...props }: TokenImageProps) {
     "MARKET SUSG": "sUSG_LP.webp",
     "LP SUSG": "sUSG_LP.webp",
     REUSD: "reUSD.webp",
+    "CRVUSD-ETH/CRV": "triCRV.webp",
   }
 
   const imageFilename = specialImages[prefix] || specialImages[token?.toUpperCase()] || `${token}.webp`

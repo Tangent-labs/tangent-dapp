@@ -451,7 +451,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
 
   const marketContracts = useMemo(() => {
     if (marketData?.collateralInfo) {
-      return fetchMarketContracts(marketData?.collateralInfo?.name)
+      return fetchMarketContracts(marketData)
     }
     return []
   }, [marketData])

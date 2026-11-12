@@ -3,15 +3,17 @@ import { ReactNode } from "react"
 
 type IndicatorCardProps = {
   title: string
-  value: string | number
+  value: ReactNode
+  subValue?: ReactNode
   className?: string
 }
 
-export const IndicatorCard = ({ title, value, className = "" }: IndicatorCardProps) => {
+export const IndicatorCard = ({ title, value, subValue, className = "" }: IndicatorCardProps) => {
   return (
     <div className={`flex flex-col items-center justify-center ${className}`}>
       <span className="text-xs text-subtitle">{title}</span>
       <span className="text-sm font-semibold text-white">{value}</span>
+      {subValue && <span className="text-xs text-subtitle">{subValue}</span>}
     </div>
   )
 }

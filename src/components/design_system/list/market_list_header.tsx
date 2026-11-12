@@ -58,9 +58,9 @@ const MarketHeaderDisplay = ({ label, sort = "none", onSort, field, indicator, c
   )
 }
 
-export const MarketListHeader = ({ headers, activeSort, onSort, rowDisposition: CustomRowDisposition = ListRowDisposition }: ListHeaderProps) => {
+export const MarketListHeader = ({ headers, className, activeSort, onSort, rowDisposition: CustomRowDisposition = ListRowDisposition }: ListHeaderProps) => {
   return (
-    <div className="relative mt-4 hidden w-full xl:block">
+    <div className={cn("relative mt-4 hidden w-full xl:block", className)}>
       <div className={`w-full rounded-t-[10px] bg-overlay-panel p-2 leading-[10px] backdrop-blur-[60px]`}>
         <CustomRowDisposition>
           {!!headers[0]?.key && (

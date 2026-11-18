@@ -38,7 +38,6 @@ export type EarnPoolsData = curveAPy & {
   convexPoolData?: { usdTotal?: number }
   usdTotal?: number
   pendleBaseAPY?: number
-  baseApy?: number
   details?: {
     impliedApy: number
     aggregatedApy: number

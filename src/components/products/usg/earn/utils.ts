@@ -42,8 +42,13 @@ export const mapPoolsAndTasks = (
         return sum + amount * price * 100
       }, 0)
 
-      const gaugeCrvApy = [el.baseApy, rewardApr]
-      const gaugeFutureCrvApy = [el.baseApy, processConvexAPR(el.gaugeFutureCrvApy?.at(0) || 0)]
+      // Convex API no longer exposes baseApy / gaugeFutureCrvApy: source them from Curve data
+      const subgraph = subgraphPools.find((s) => s.address?.toLowerCase() === el.address?.toLowerCase())
+      const baseApy = subgraph?.latestWeeklyApy || subgraph?.latestDailyApy || 0
+      const curvePool = curvePools.find((p) => p.address?.toLowerCase() === el.address?.toLowerCase())
+
+      const gaugeCrvApy = [baseApy, rewardApr]
+      const gaugeFutureCrvApy = [baseApy, processConvexAPR(curvePool?.gaugeFutureCrvApy?.at(0) || 0)]
 
       return { address: el.address, protocol: "Convex", gaugeCrvApy, gaugeFutureCrvApy }
     })

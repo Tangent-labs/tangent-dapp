@@ -19,7 +19,7 @@ import GetBalances from "@/abi/USG/GetBalances.json"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { getSwapAssetPrice } from "@/services/service_price"
 import MarketDetailsUI from "@/abi/USG/MarketDetailsUI.json"
-import { USG_CONTRACT, USGMarkets, USGOracles } from "../usg_repository"
+import { USG_CONTRACT, USGMarkets } from "../usg_repository"
 import GetBalancesAllowances from "@/abi/USG/GetBalancesAllowances.json"
 import { dappErrors } from "@/components/design_system/notifications/dap-errors"
 import { executeApprove, executeChainViewUnique, waitForTransaction } from "@/services/service_rpc"
@@ -482,34 +482,13 @@ export const computedMinAmountOut = (value: bigint | string, slippagePercentage:
 
 type MarketContract = { name: string; address: Address }
 
-// Need to re-match token pairs before mapping contract addresses because of how duoPoolStable is set
-const pairKey = (pair: string) =>
-  pair
-    .split("/")
-    .map((token) => token.toLowerCase())
-    .sort()
-    .join("/")
-
-const MARKET_CONTRACTS = Object.fromEntries(
-  USGMarkets.map((market) => {
-    const oracle = USGOracles.find((el) => pairKey(el.token) === pairKey(market.marketName))
-
-    return [
-      market.marketName,
-      [
-        { name: "Market", address: market.marketAddress as Address },
-        { name: "Collateral Token", address: market.collatAddress as Address },
-        { name: "Oracle", address: oracle?.address as Address },
-        { name: "USG", address: USG_CONTRACT.USG },
-        { name: "IR Calculator", address: USG_CONTRACT.IR_CALCULATOR },
-      ],
-    ]
-  })
-) as Record<string, MarketContract[]>
-
-export const fetchMarketContracts = (name: string): MarketContract[] => {
-  return MARKET_CONTRACTS[name] ?? []
-}
+export const fetchMarketContracts = (marketData: MarketDetailData): MarketContract[] => [
+  { name: "Market", address: marketData.marketAddress },
+  { name: "Collateral Token", address: marketData.collateralInfo.address as Address },
+  { name: "Oracle", address: marketData.collateralInfos.priceOracle as Address },
+  { name: "USG", address: USG_CONTRACT.USG },
+  { name: "IR Calculator", address: USG_CONTRACT.IR_CALCULATOR },
+]
 
 export const computeTransactionPotentialLoss = (buyWeiValue: bigint, buyAssetInfo: AssetDataPriced | CollateralInfo, delta: number) => {
   try {

@@ -38,19 +38,6 @@ export const USGTokens = [
 
 export const USGPegKeepers: Address[] = Object.values(envAddresses.pegKeepers)
 
-// Collateral oracles keyed by pair name ("A_B" or "A/B")
-export const USGOracles = Object.entries({
-  ...envAddresses?.oracles?.duoPoolStable,
-  ...envAddresses?.oracles?.cryptoSwap,
-}).map(([key, address]) => {
-  const trimmedName = key.replace("_", "/")
-
-  return {
-    token: trimmedName,
-    address: address as `0x${string}`,
-  }
-})
-
 // map .env markets with valid addresses
 export const USGMarkets: USGMarket[] = envAddresses.markets.map((market: RawMarket) => ({
   ...market,

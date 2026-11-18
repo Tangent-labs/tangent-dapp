@@ -383,6 +383,14 @@ export const ERC20S: Erc20Details[] = [
     name: "frxUSD/DUSD",
     symbol: "frxUSD/DUSD",
   },
+  {
+    address: CURVE_LPS.DUO_PYUSD_crvUSD as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "PYUSD-crvUSD",
+    name: "PYUSD/crvUSD",
+    symbol: "PYUSD/crvUSD",
+  },
 
   // PENDLE PT
   {
@@ -585,6 +593,15 @@ export const ERC20S: Erc20Details[] = [
     name: "Vault crvUSD/ETH/CRV",
     symbol: "Vault crvUSD/ETH/CRV",
   },
+  {
+    address: "0x0F67C05A034fEC0183ad74d3be42c8Ba27F6c4c4" as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "PYUSD-crvUSD",
+    name: "Vault PYUSD/crvUSD",
+    symbol: "Vault PYUSD/crvUSD",
+  },
+
   // CURVE GAUGES
   {
     address: CURVE_GAUGES.RLUSD_USDC,

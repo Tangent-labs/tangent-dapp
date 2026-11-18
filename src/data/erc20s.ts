@@ -383,6 +383,14 @@ export const ERC20S: Erc20Details[] = [
     name: "frxUSD/DUSD",
     symbol: "frxUSD/DUSD",
   },
+  {
+    address: CURVE_LPS.DUO_PYUSD_crvUSD as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "PYUSD-crvUSD",
+    name: "PYUSD/crvUSD",
+    symbol: "PYUSD/crvUSD",
+  },
 
   // PENDLE PT
   {
@@ -585,6 +593,15 @@ export const ERC20S: Erc20Details[] = [
     name: "Vault crvUSD/ETH/CRV",
     symbol: "Vault crvUSD/ETH/CRV",
   },
+  {
+    address: "0x0F67C05A034fEC0183ad74d3be42c8Ba27F6c4c4" as Address,
+    chainId: 1,
+    decimals: 18,
+    logoKey: "PYUSD-crvUSD",
+    name: "Vault PYUSD/crvUSD",
+    symbol: "Vault PYUSD/crvUSD",
+  },
+
   // CURVE GAUGES
   {
     address: CURVE_GAUGES.RLUSD_USDC,
@@ -1205,6 +1222,15 @@ export const ERC20S: Erc20Details[] = [
     chainId: 1,
     logoURI: "https://files.cow.fi/token-lists/images/1/0x6440f144b7e50d6a8439336510312d2f54beb01d/logo.png",
     logoKey: "BOLD",
+  },
+  {
+    address: "0x73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f",
+    symbol: "SDT",
+    name: "Stake DAO Token",
+    decimals: 18,
+    chainId: 1,
+    logoURI: "https://files.cow.fi/token-lists/images/1/0x73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f/logo.png",
+    logoKey: "SDT",
   },
   {
     symbol: "OHM",

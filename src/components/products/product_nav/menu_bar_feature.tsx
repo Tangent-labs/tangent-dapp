@@ -66,7 +66,7 @@ export default function MenuBarFeature() {
 
   const routesMenuItem = [
     { route: "/", label: "Markets", condition: (path: string) => isOnMarket(path) },
-    { route: "/stake", label: "Savings" },
+    { route: "/stake", label: "Savings", condition: (path: string) => path.startsWith("/stake") },
     { route: "/earn", label: "Earn" },
     { route: "/claim", label: "Claim" },
     { route: "/dashboard", label: "Dashboard" },

@@ -173,6 +173,7 @@ function HarvestList() {
                     <div className="flex flex-col gap-1 text-sm">
                       {item?.rewards?.details
                         ?.filter((reward) => reward?.dollarValue > 0)
+                        .sort((a, b) => b.dollarValue - a.dollarValue)
                         ?.map((reward, index) => (
                           <div key={index} className="flex items-center gap-2">
                             <TokenImage token={reward.logoKey} size={16} />
@@ -195,6 +196,7 @@ function HarvestList() {
                       <div className="flex flex-col gap-1 text-sm">
                         {item?.rewards?.details
                           ?.filter((reward) => reward?.dollarValue > 0)
+                          .sort((a, b) => b.dollarValue - a.dollarValue)
                           ?.map((reward, index) => (
                             <div key={index} className="flex items-center gap-2">
                               <TokenImage token={reward.logoKey} size={16} />

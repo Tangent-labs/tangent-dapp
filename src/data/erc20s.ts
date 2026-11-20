@@ -1987,6 +1987,7 @@ export const ERC20S: Erc20Details[] = [
     decimals: 18,
     chainId: 1,
     logoURI: "https://files.cow.fi/token-lists/images/1/0xf939e0a03fb07f59a73314e73794be0e57ac1b4e/logo.png",
+    logoKey: "crvUSD",
   },
   {
     address: "0xf951e335afb289353dc249e82926178eac7ded78",

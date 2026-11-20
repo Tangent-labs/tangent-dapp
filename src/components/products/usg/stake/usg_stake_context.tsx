@@ -11,19 +11,7 @@ import { AssetDataPriced } from "@/types"
 import { FormState, StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../usg_type"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import {
-  doApprove,
-  doDepositYearnV2,
-  doStakeUSG,
-  doUnstakeUSG,
-  doWithdrawYearnV2,
-  getExpectedSUSG,
-  getExpectedUSG,
-  getStakeFormState,
-  getYearnV2Metrics,
-  previewYearnV2Deposit,
-  previewYearnV2Withdraw,
-} from "./usg_stake_controller"
+import { doApprove, doStakeUSG, doUnstakeUSG, getExpectedSUSG, getExpectedUSG, getStakeFormState, getYearnV3Metrics } from "./usg_stake_controller"
 import { matchBlockChainErrors } from "../record/usg_record_controller"
 
 type USGStakeContextProps = {
@@ -67,26 +55,26 @@ export const USGStakeContext = createContext<USGStakeContextValues | undefined>(
 
 export const USGStakeProvider = ({ children, vault: vaultKey = "sUSG" }: USGStakeContextProps) => {
   const vault = SAVINGS_VAULTS[vaultKey]
-  const isYearnV2 = vault.key !== "sUSG"
+  const isYearnV3 = vault.source === "Yearn V3"
 
   const { walletClient, isWellConnected, currentAddress } = useWalletConnexionContext()
 
   const { loadUSGsUSGMetrics, USGsUSGMetrics: sUSGMetrics } = useUSGContext()
 
-  const [yearnV2Metrics, setYearnV2Metrics] = useState<Awaited<ReturnType<typeof getYearnV2Metrics>> | undefined>()
+  const [yearnV3Metrics, setYearnV3Metrics] = useState<USGStakingInfo | undefined>()
 
-  const loadYearnV2Metrics = () => {
-    getYearnV2Metrics(currentAddress || zeroAddress, vault.asset.address, vault.share.address)
-      .then(setYearnV2Metrics)
+  const loadYearnV3Metrics = () => {
+    getYearnV3Metrics(currentAddress || zeroAddress, vault.asset.address, vault.share.address)
+      .then(setYearnV3Metrics)
       .catch((error) => console.error("Failed to load vault metrics:", error))
   }
 
   useEffect(() => {
-    if (isYearnV2) loadYearnV2Metrics()
-  }, [isYearnV2, currentAddress])
+    if (isYearnV3) loadYearnV3Metrics()
+  }, [isYearnV3, currentAddress])
 
-  const USGsUSGMetrics = isYearnV2 ? yearnV2Metrics : sUSGMetrics
-  const reloadMetrics = isYearnV2 ? loadYearnV2Metrics : loadUSGsUSGMetrics
+  const USGsUSGMetrics = isYearnV3 ? yearnV3Metrics : sUSGMetrics
+  const reloadMetrics = isYearnV3 ? loadYearnV3Metrics : loadUSGsUSGMetrics
 
   const { getCachedCurrentBlock } = useRootContext()
 
@@ -199,7 +187,7 @@ export const USGStakeProvider = ({ children, vault: vaultKey = "sUSG" }: USGStak
         weiValue,
       }
 
-      await toastTx(isYearnV2 ? doWithdrawYearnV2(params.walletClient, params.stakingAddress, weiValue) : doUnstakeUSG(params), {
+      await toastTx(doUnstakeUSG(params), {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
         success: () => ({
           type: "Success",
@@ -232,7 +220,7 @@ export const USGStakeProvider = ({ children, vault: vaultKey = "sUSG" }: USGStak
         weiValue,
       }
 
-      await toastTx(isYearnV2 ? doDepositYearnV2(params.walletClient, params.stakingAddress, weiValue) : doStakeUSG(params), {
+      await toastTx(doStakeUSG(params), {
         pending: { type: "Pending Transaction", content: "Blockchain transaction in progress..." },
         success: () => ({
           type: "Success",
@@ -278,10 +266,7 @@ export const USGStakeProvider = ({ children, vault: vaultKey = "sUSG" }: USGStak
   useEffect(() => {
     if (!weiValue || weiValue === 0n) return
     ;(async () => {
-      if (isYearnV2) {
-        const pricePerShare = yearnV2Metrics?.pricePerShare ?? 0n
-        setExpected(currentFeature === "stake" ? previewYearnV2Deposit(weiValue, pricePerShare) : previewYearnV2Withdraw(weiValue, pricePerShare))
-      } else if (currentFeature === "stake") {
+      if (currentFeature === "stake") {
         try {
           const sdAssetAmountOut = await getExpectedSUSG(walletClient!, weiValue, vault.share.address)
           setExpected(sdAssetAmountOut)

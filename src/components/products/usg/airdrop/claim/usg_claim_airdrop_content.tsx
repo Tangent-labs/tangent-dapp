@@ -28,7 +28,7 @@ export default function UsgClaimAirdropContent() {
         <PageHeader>
           <div className="flex flex-col items-start justify-center gap-4 px-6">
             <span className="text-5xl font-semibold leading-none">Airdrop</span>
-            <p className="text-sm">Check and claim your TAN allocation </p>
+            <p className="text-sm">Check your TAN allocation</p>
           </div>
         </PageHeader>
 

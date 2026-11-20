@@ -91,10 +91,7 @@ export type AirdropAllocationResponse = {
 //           CONSTANTS
 // ────────────────────────────────────────
 
-export const AIRDROP_SNAPSHOT_DATE = "Oct 30, 2026"
-
-// Team allocation is distributed outside of the merkle tree: only the total is available in airdrop.json
-export const TEAM_WALLETS = 6
+export const AIRDROP_SNAPSHOT_DATE = "Nov 20, 2026"
 
 export type AirdropCategoryId = "compensationCvg" | "pointCampaign" | "preDeposit" | "others"
 
@@ -307,9 +304,9 @@ export function buildDistribution(summary: AirdropSummary): AirdropCategoryDistr
       id: "others",
       pool: pool.creditors + pool.partners + pool.team,
       tiles: [
-        { label: `Creditors, ${wallets(summary.creditors.recipients)}`, value: formatTan(pool.creditors), unit: "TAN" },
-        { label: `Partners, ${wallets(summary.partners.recipients)}`, value: formatTan(pool.partners), unit: "TAN" },
-        { label: `Team, ${wallets(TEAM_WALLETS)}`, value: formatTan(pool.team), unit: "TAN" },
+        { label: "Creditors", value: formatTan(pool.creditors), unit: "TAN" },
+        { label: "Partners", value: formatTan(pool.partners), unit: "TAN" },
+        { label: "Team", value: formatTan(pool.team), unit: "TAN" },
       ],
     },
   ]

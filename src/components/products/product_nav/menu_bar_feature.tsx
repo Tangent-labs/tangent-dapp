@@ -87,7 +87,7 @@ export default function MenuBarFeature() {
         { route: "/tasks", label: "Tasks", logo: <IconTask className="w-4" /> },
         { route: "/referral", label: "Referral", logo: <IconReferral className="w-4" /> },
         { route: "/boosts", label: "Boosts", logo: <IconBoosts className="w-4" /> },
-        { route: "/claim-airdrop", label: "Claim", logo: <IconGift className="w-4" /> },
+        { route: "/claim-airdrop", label: "Checker", logo: <IconGift className="w-4" /> },
       ],
     },
   ]

@@ -91,7 +91,7 @@ export function ClaimDetails({ allocations, isClaimed }: ClaimDetailsProps) {
   const panels = allocations
     .filter((allocation) => allocation.amount > 0)
     .map((allocation) => (
-      <CategoryPanel key={allocation.id} id={allocation.id} amountLabel={isClaimed ? "Claimed" : "Claimable"} amount={allocation.amount}>
+      <CategoryPanel key={allocation.id} id={allocation.id} amountLabel={isClaimed ? "Claimed" : "Allocation"} amount={allocation.amount}>
         <div className="flex w-full flex-col gap-5">
           {allocation.sections.map((section) => (
             <div key={section.title} className="flex w-full flex-col gap-2">

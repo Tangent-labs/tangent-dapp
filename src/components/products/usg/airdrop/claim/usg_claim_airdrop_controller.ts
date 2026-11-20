@@ -97,7 +97,7 @@ export type AirdropCategoryId = "compensationCvg" | "pointCampaign" | "preDeposi
 
 export const AIRDROP_CATEGORIES: Record<AirdropCategoryId, { label: string; color: string; glow: string }> = {
   compensationCvg: { label: "CVG Compensation", color: "#0075FF", glow: "#0077ffa3" },
-  pointCampaign: { label: "Point campaign", color: "#95FF00", glow: "#95ff006d" },
+  pointCampaign: { label: "Points campaign", color: "#95FF00", glow: "#95ff006d" },
   preDeposit: { label: "Pre-deposit", color: "#00C2FF", glow: "#00c2ff80" },
   others: { label: "Others", color: "#FFFFFF", glow: "#ffffff80" },
 }
@@ -196,13 +196,13 @@ export function buildCategoryAllocations(details: AirdropRecipientDetails | unde
     })
   }
 
-  // Point campaign
+  // Points campaign
   const pointSections: AirdropSection[] = []
   if (d.lpPoints) {
     const lp = d.lpPoints
     const tiles: AirdropTile[] = []
     if (lp.points !== undefined) tiles.push({ label: "Points", value: formatAmount(lp.points) })
-    if (lp.boosterPoints !== undefined) tiles.push({ label: "Booster points", value: formatAmount(lp.boosterPoints) })
+    if (lp.boosterPoints !== undefined) tiles.push({ label: "Boosted points", value: formatAmount(lp.boosterPoints) })
     if (lp.referralPoints !== undefined) tiles.push({ label: "Referral points", value: formatAmount(lp.referralPoints) })
     tiles.push(
       { label: "Total points", value: formatAmount(lp.totalPoints) },
@@ -314,7 +314,7 @@ export function buildDistribution(summary: AirdropSummary): AirdropCategoryDistr
 
 /**
  * Splits panels into two columns, alternating in display order
- * (left: Compensation CVG / Pre-deposit, right: Point campaign / Others when all are present).
+ * (left: Compensation CVG / Pre-deposit, right: Points campaign / Others when all are present).
  */
 export function splitInColumns<T>(items: T[]): [T[], T[]] {
   return [items.filter((_, i) => i % 2 === 0), items.filter((_, i) => i % 2 === 1)]

@@ -1,10 +1,10 @@
 "use client"
 
+import Image from "next/image"
 import { useUSGContext } from "../../usg_context"
 import { useUsgAirdropContext } from "../usg_airdrop_context"
 import { AirdropSharedHeader } from "../components/airdrop_side_header"
 import { useUsgClaimAirdropContext } from "./usg_claim_airdrop_context"
-import { AIRDROP_SNAPSHOT_DATE } from "./usg_claim_airdrop_controller"
 import { ClaimRecap } from "./components/claim_recap"
 import { ClaimNotice } from "./components/claim_notice"
 import { GhostButton } from "./components/claim_buttons"
@@ -26,6 +26,8 @@ export default function UsgClaimAirdropContent() {
     <div className="flex w-full flex-col gap-5">
       <div className="flex w-full items-stretch justify-between gap-5">
         <PageHeader>
+          <Image height={240} width={240} src="/medias/tokens/TAN_airdrop.png" alt="TAN" className="-mx-8 -my-[45px] shrink-0" />
+
           <div className="flex flex-col items-start justify-center gap-4 px-6">
             <span className="text-5xl font-semibold leading-none">Airdrop</span>
             <p className="text-sm">Check your TAN allocation</p>
@@ -59,7 +61,7 @@ export default function UsgClaimAirdropContent() {
       {isConnected && !isLoading && !hasAllocation && (
         <ClaimNotice
           title="No TAN allocation for this wallet"
-          description={`This wallet was not part of the snapshot of ${AIRDROP_SNAPSHOT_DATE}. The categories below list who received TAN.`}
+          description="This wallet doesn't have any TAN allocation at the current snapshot."
           action={
             <GhostButton onClick={connect} className="w-full md:w-[140px]">
               Switch wallet

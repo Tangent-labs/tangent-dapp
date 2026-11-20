@@ -77,7 +77,7 @@ function TotalRecapCard({ totalAmount, address, claimStatus, onClaim }: TotalRec
   const hasAllocation = totalAmount > 0
   const isClaimed = claimStatus === "claimed"
 
-  const label = { idle: "Total claimable", claiming: "Claiming", claimed: "Claimed" }[claimStatus]
+  const label = { idle: "Total allocation", claiming: "Claiming", claimed: "Claimed" }[claimStatus]
   const sub = claimStatus === "claiming" ? "Confirm in your wallet" : `Wallet ${shortenAddress(address)}`
 
   return (
@@ -149,7 +149,7 @@ function CategoryRecapCard({ allocation, totalAmount, claimStatus }: CategoryRec
   return (
     <RecapCardShell pill={label} color={color} glow={glow}>
       <div className="flex flex-col items-center gap-1">
-        <span className="text-sm text-subtitle">{claimStatus === "claimed" ? "Claimed" : "Claimable"}</span>
+        <span className="text-sm text-subtitle">{claimStatus === "claimed" ? "Claimed" : "Allocation"}</span>
         <TanAmount amount={allocation.amount} />
         <div className="flex flex-col items-center gap-1.5 pt-1.5">
           <div className="relative h-1 w-[180px] overflow-hidden rounded bg-white/[0.08]">

@@ -409,7 +409,7 @@ function Row({ r }: { r: ListRowData }) {
   return (
     <Link
       href={`/${r.address}/deposit-borrow`}
-      className="group grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,0.85fr))_minmax(0,0.9fr)_minmax(0,1.25fr)_24px] items-center gap-4 rounded-[10px] px-4 py-3 outline-none transition-colors duration-150 hover:bg-white/[0.045] focus-visible:bg-white/[0.045]"
+      className="group grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,0.85fr))_minmax(0,0.9fr)_minmax(0,1.25fr)_24px] items-center gap-4 border-b border-white/[0.06] px-4 py-3.5 outline-none transition-colors duration-150 last:border-b-0 hover:bg-white/[0.035] focus-visible:bg-white/[0.035]"
     >
       <span className="flex min-w-0 items-center gap-3">
         <TokenImage token={r.logoKey} size={32} className="h-8 w-auto shrink-0" />

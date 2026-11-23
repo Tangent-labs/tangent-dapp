@@ -8,6 +8,7 @@ import type { LineDot } from "recharts/types/cartesian/Line"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts"
+import { UI_V2 } from "@/v2/ui"
 
 const MS_PER_YEAR = 365.25 * 24 * 60 * 60 * 1000
 
@@ -240,7 +241,7 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
   return (
     <>
       <div className="flex w-full items-center justify-between">
-        <APRDisplay apy={apy} />
+        {UI_V2 ? <span className="text-[13px] text-ink-2">Value of your sUSG over time</span> : <APRDisplay apy={apy} />}
         <div className="hidden items-end justify-end gap-2 md:flex">
           <ButtonTab onClick={() => setRange("1m")} label={"1m"} active={range === "1m"} className="rounded-full !py-1" />
           <ButtonTab onClick={() => setRange("3m")} label={"3m"} active={range === "3m"} className="rounded-full !py-1" />
@@ -263,8 +264,8 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
               >
                 <defs>
                   <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#FBF911" />
-                    <stop offset="100%" stopColor="#99FF00" />
+                    <stop offset="0%" stopColor={UI_V2 ? "#2f8dff" : "#FBF911"} />
+                    <stop offset="100%" stopColor={UI_V2 ? "#0075FF" : "#99FF00"} />
                   </linearGradient>
                 </defs>
 

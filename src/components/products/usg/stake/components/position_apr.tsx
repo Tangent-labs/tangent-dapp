@@ -1,5 +1,8 @@
 import { ReactNode, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { APRDisplay } from "./apr_display"
+import { UI_V2 } from "@/v2/ui"
+
+const LINE = UI_V2 ? "#0075FF" : "#95FF00"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import { Area, AreaChart, CartesianGrid, ReferenceDot, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
@@ -107,7 +110,7 @@ const ApyTooltip = (props: {
     <div className="pointer-events-none flex flex-col items-start justify-between gap-3 rounded-[10px] bg-dark px-3 py-2 text-[10px]">
       <div className="font-extralight text-white">{props.fmtLabel(props.label)}</div>
       <div className="flex items-center justify-center gap-1">
-        <div className="h-3 w-3 rounded-[3px] bg-row-success"></div>
+        <div className="h-3 w-3 rounded-[3px]" style={{ background: LINE }}></div>
         <div className="text-xs font-semibold text-white">APY: {value.toFixed(1)}%</div>
       </div>
     </div>
@@ -162,7 +165,7 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
   return (
     <>
       <div className="flex w-full items-center justify-between">
-        <APRDisplay apy={apy} />
+        {UI_V2 ? <span className="text-[13px] text-ink-2">APY over time</span> : <APRDisplay apy={apy} />}
 
         <div className="hidden items-end justify-end gap-2 md:flex">
           {RANGE_KEYS.map((range) => (
@@ -177,8 +180,8 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
             <AreaChart data={data} margin={CHART_MARGIN}>
               <defs>
                 <linearGradient id="greenGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#95FF00" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="#95FF00" stopOpacity={0} />
+                  <stop offset="0%" stopColor={LINE} stopOpacity={0.4} />
+                  <stop offset="100%" stopColor={LINE} stopOpacity={0} />
                 </linearGradient>
               </defs>
 
@@ -214,16 +217,16 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
               <Area
                 type="monotone"
                 dataKey="uv"
-                stroke="#95FF00"
+                stroke={LINE}
                 strokeWidth={2}
                 fill="url(#greenGradient)"
                 dot={false}
                 activeDot={{
                   r: 4,
-                  stroke: "#95FF00",
+                  stroke: LINE,
                   strokeWidth: 2,
-                  fill: "#95FF00",
-                  filter: "drop-shadow(0 0 8px rgba(217, 251, 11, 0.7))",
+                  fill: LINE,
+                  filter: UI_V2 ? "drop-shadow(0 0 8px rgba(0, 117, 255, 0.7))" : "drop-shadow(0 0 8px rgba(217, 251, 11, 0.7))",
                 }}
               />
 
@@ -240,7 +243,7 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
                 label={<CustomAverageDisplay averageApy={averageApy} apy={apy} />}
               />
 
-              <ReferenceDot x={latestPoint.date} y={latestPoint.uv} r={4} fill="#95FF00" stroke="#95FF00" isFront={true} />
+              <ReferenceDot x={latestPoint.date} y={latestPoint.uv} r={4} fill={LINE} stroke={LINE} isFront={true} />
             </AreaChart>
           </ResponsiveContainer>
         </div>

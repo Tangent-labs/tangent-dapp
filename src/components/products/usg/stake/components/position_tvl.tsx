@@ -1,4 +1,5 @@
 import { ReactNode, useMemo, useState } from "react"
+import { UI_V2 } from "@/v2/ui"
 import { TVLData } from "../../usg_type"
 import { formatMillions } from "@/lib/number_formatter"
 import { convertRange } from "@/components/products/root/root_controller"
@@ -13,7 +14,7 @@ const CHART_MARGIN = { top: 20, right: -50, left: 0, bottom: 0 }
 const X_AXIS_PADDING = { left: 0, right: 35 }
 const AXIS_LINE_STYLE = { stroke: "rgba(255,255,255,0.08)" }
 const TICK_STYLE = { fontSize: 12, fill: "rgba(255,255,255,0.5)" }
-const SUSG_COLOR = "var(--tgt-dash-susg)"
+const SUSG_COLOR = UI_V2 ? "#0075FF" : "var(--tgt-dash-susg)"
 
 type RangeKey = "1m" | "3m" | "1y"
 type TvlHistoryPoint = {
@@ -126,12 +127,20 @@ export const PositionTVL = ({ tvl }: PositionTVLProps) => {
     <>
       <div className="flex w-full items-center justify-between">
         <div className="flex items-center justify-start gap-3">
-          <div className="flex items-center justify-center gap-[5px] rounded-[10px] bg-overlay-panel p-[10px]">
-            <TokenImage token="sUSG" size={20} />
-            sUSG
-          </div>
+          {UI_V2 ? (
+            <div className="text-[13px] text-ink-2">
+              Total value locked <span className="ml-1.5 text-[15px] font-semibold tabular-nums text-white">${formatMillions(latestPoint?.uv ?? 0)}</span>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-center gap-[5px] rounded-[10px] bg-overlay-panel p-[10px]">
+                <TokenImage token="sUSG" size={20} />
+                sUSG
+              </div>
 
-          <div className="text-xl font-semibold">${formatMillions(latestPoint?.uv ?? 0)}</div>
+              <div className="text-xl font-semibold">${formatMillions(latestPoint?.uv ?? 0)}</div>
+            </>
+          )}
         </div>
 
         <div className="hidden items-end justify-end gap-2 md:flex">

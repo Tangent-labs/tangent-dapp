@@ -21,6 +21,8 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { FeatureBannerCarousel } from "@/components/design_system/structure/feature_banner_carousel"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
+import { UI_V2 } from "@/v2/ui"
+import { StakePageV2 } from "@/v2/stake/stake-page"
 
 export default function USGStakeContent() {
   const {
@@ -48,6 +50,8 @@ export default function USGStakeContent() {
   const { sUSGCurrentAPY, tvl } = useRootContext()
 
   const { connect } = useWalletConnexionContext()
+
+  if (UI_V2) return <StakePageV2 />
 
   const isStake = "stake" === currentFeature
   let inputInAsset = ""

@@ -456,6 +456,10 @@ function Row({ r }: { r: ListRowData }) {
   )
 }
 
+/**
+ * Market card (Aave Pro earn cards): identity on top, the yield as the hero with the leveraged yield beside it,
+ * then label/value rows. Same row data and formatting as the list, nothing new is loaded.
+ */
 function Card({ r }: { r: ListRowData }) {
   const { ratio, label } = capacity(r)
   const lev = Number(ind(r, "maxvapr")?.value)
@@ -470,61 +474,70 @@ function Card({ r }: { r: ListRowData }) {
     >
       <Link
         href={`/${r.address}/deposit-borrow`}
-        className="focus-visible:ring-action/60 group flex h-full flex-col rounded-2xl border border-hairline bg-surface outline-none transition-colors duration-150 hover:border-white/15 hover:bg-raised focus-visible:ring-2"
+        className="focus-visible:ring-action/60 group flex h-full flex-col rounded-2xl border border-hairline bg-surface p-5 outline-none transition-colors duration-150 hover:border-white/15 hover:bg-raised focus-visible:ring-2"
       >
-        <div className="flex items-center gap-3 px-5 pt-5">
-          <TokenImage token={r.logoKey} size={48} className="h-9 w-auto shrink-0" />
+        <div className="flex items-start gap-3">
+          <TokenImage token={r.logoKey} size={48} className="h-8 w-auto shrink-0" />
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-[15px] font-semibold leading-5">{r.name}</span>
-            <span className="flex min-w-0 items-center gap-1.5 text-xs leading-4 text-ink-3">
+            <span className="flex min-w-0 items-center gap-2">
+              <span className="truncate text-[15px] font-semibold leading-5">{r.name}</span>
+              <Status r={r} />
+            </span>
+            <span className="mt-0.5 flex min-w-0 items-center gap-1.5 text-xs leading-4 text-ink-3">
               {kindOf(r)}
-              <span className="text-ink-3/60">·</span>
+              <span className="opacity-50">·</span>
               <Venue type={r.protocol} />
             </span>
           </span>
           <ChevronRight
-            className="h-4 w-4 text-ink-3 opacity-0 transition-[opacity,transform] duration-150 group-hover:translate-x-0.5 group-hover:opacity-100"
+            className="mt-1 h-4 w-4 shrink-0 text-ink-3 transition-[color,transform] duration-150 group-hover:translate-x-0.5 group-hover:text-white"
             strokeWidth={1.75}
           />
         </div>
-        <div className="px-5">
-          <Status r={r} />
-        </div>
-        <div className="grid grid-cols-[1fr_auto] gap-4 px-5 pt-4">
-          <div>
-            <div className="text-xs text-ink-3">Collateral vAPR</div>
-            <div className="mt-1.5 text-[28px] font-semibold tabular-nums leading-none tracking-[-0.02em]">{pct(r.apr.current)}</div>
-            <div className="mt-1.5 text-xs tabular-nums text-ink-3">Projected {pct(r.apr.projected)}</div>
+
+        <div className="mt-5 flex items-end justify-between gap-4">
+          <div className="min-w-0">
+            <div className="text-[13px] text-ink-2">Collateral vAPR</div>
+            <div className="mt-1 flex items-center gap-1.5 text-[26px] font-semibold tabular-nums leading-8 tracking-[-0.02em]">
+              <Roll value={pct(r.apr.current)} />
+              <AprMark className="h-3.5 w-3.5" />
+            </div>
+            <div className="mt-0.5 text-xs tabular-nums text-ink-3">Projected {pct(r.apr.projected)}</div>
           </div>
           <div className="text-right">
-            <div className="text-xs text-ink-3">TVL</div>
-            <div className="mt-1.5 text-[15px] font-medium tabular-nums leading-5">{ind(r, "tvl")?.value}</div>
-            <div className="mt-1 text-xs tabular-nums text-ink-3">Max LTV {(r.maxLTV * 100).toFixed(0)}%</div>
-          </div>
-        </div>
-        <div className="mx-5 mb-4 mt-5 grid grid-cols-2 gap-4 border-t border-divider pt-4">
-          <div>
-            <div className="text-xs text-ink-3">Borrow rate</div>
-            <div className="mt-1 text-[15px] font-medium tabular-nums leading-5">{ind(r, "borrowRate")?.value}</div>
-            <div className="text-xs text-ink-3">{r.isFixedRate ? "Fixed" : "Variable"}</div>
-          </div>
-          <div>
             <div className="text-xs text-ink-3">Max lev. vAPR</div>
-            <div className={cn("mt-1 text-[15px] font-medium tabular-nums leading-5", lev < 0 && "text-negative")}>{pct(lev)}</div>
-            <div className="text-xs tabular-nums text-ink-3">{Number.isNaN(levProj) ? "No projection" : `Projected ${pct(levProj)}`}</div>
+            <div className={cn("mt-1 text-[17px] font-medium tabular-nums leading-6", lev < 0 && "text-negative")}>
+              <Roll value={pct(lev)} />
+            </div>
+            <div className="mt-0.5 text-xs tabular-nums text-ink-3">{Number.isNaN(levProj) ? "No projection" : `Projected ${pct(levProj)}`}</div>
           </div>
         </div>
-        <div className="mt-auto rounded-b-2xl border-t border-divider bg-white/[0.015] px-5 py-3.5">
-          <div className="flex items-baseline justify-between">
-            <span className="text-xs text-ink-3">Borrow capacity</span>
-            <span className={cn("text-xs font-medium tabular-nums", r.isBorrowCapReached ? "text-warning" : "text-white")}>
-              {r.isBorrowCapReached ? "Cap reached" : `${Math.round(ratio * 100)}% used`}
+
+        <div className="mt-5 space-y-3 border-t border-divider pt-4 text-[13px]">
+          <div className="flex items-baseline justify-between gap-3">
+            <span className="text-ink-2">TVL</span>
+            <span className="tabular-nums">
+              <span className="font-medium">{ind(r, "tvl")?.value}</span>
+              <span className="ml-1.5 text-ink-3">Max LTV {(r.maxLTV * 100).toFixed(0)}%</span>
             </span>
           </div>
-          <div className="mt-2 flex items-center justify-between gap-3">
-            <Ticks ratio={ratio} full={r.isBorrowCapReached} />
-            <span className="text-xs tabular-nums text-ink-3">{label} USG</span>
+          <div className="flex items-baseline justify-between gap-3">
+            <span className="text-ink-2">Borrow rate</span>
+            <span className="tabular-nums">
+              <span className="font-medium">{ind(r, "borrowRate")?.value}</span>
+              <span className="ml-1.5 text-ink-3">{r.isFixedRate ? "Fixed" : "Variable"}</span>
+            </span>
           </div>
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-ink-2">Borrow capacity</span>
+            <span className="flex items-center gap-2.5">
+              <Ticks ratio={ratio} full={r.isBorrowCapReached} />
+              <span className={cn("w-[72px] text-right font-medium tabular-nums", r.isBorrowCapReached && "text-warning")}>
+                {r.isBorrowCapReached ? "Cap reached" : `${Math.round(ratio * 100)}% used`}
+              </span>
+            </span>
+          </div>
+          <div className="text-right text-xs tabular-nums text-ink-3">{label} USG borrowed</div>
         </div>
       </Link>
     </motion.div>

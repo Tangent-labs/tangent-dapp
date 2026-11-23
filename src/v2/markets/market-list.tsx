@@ -104,7 +104,7 @@ export function MarketListV2() {
       </p>
 
       {/* overview: the peg first, then the four protocol numbers */}
-      <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-2">
+      <div className="mt-10 grid grid-cols-1 gap-4 xl:grid-cols-2">
         <div className="relative isolate flex flex-col overflow-hidden rounded-2xl border border-hairline bg-surface p-6">
           <span aria-hidden className="pointer-events-none absolute inset-0 -z-10">
             <VoidTexture id="peg-hero" />
@@ -165,7 +165,7 @@ export function MarketListV2() {
       )}
 
       {/* toolbar: same filters as the live list (single select), plus sort and view */}
-      <div className="mb-3 mt-10 flex flex-wrap items-center gap-2">
+      <div className="mb-4 mt-12 flex flex-wrap items-center gap-2">
         <div role="tablist" className="flex h-10 items-center gap-0.5 rounded-[10px] bg-white/[0.03] p-1 ring-1 ring-inset ring-hairline">
           {SHOW.map((s) => (
             <button
@@ -370,7 +370,7 @@ function SortHead({
 function GroupHead({ kind, rows, flush }: { kind: string; rows: ListRowData[]; flush?: boolean }) {
   const tvl = rows.reduce((s, r) => s + Number(formatUnits(BigInt(r.totalCollateralUSDValue || "0"), 18)), 0)
   return (
-    <div className={cn("flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5", flush ? "px-1 pb-3" : "px-4 pb-2 pt-4")}>
+    <div className={cn("flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5", flush ? "px-1 pb-3" : "px-4 pb-3 pt-6")}>
       <span className="text-[14px] font-semibold">{kind}</span>
       <span className="text-[13px] text-ink-2">
         {KINDS[kind]?.title}, {KINDS[kind]?.rule}
@@ -416,10 +416,10 @@ function Row({ r }: { r: ListRowData }) {
   return (
     <Link
       href={`/${r.address}/deposit-borrow`}
-      className="group grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,0.85fr))_minmax(0,0.9fr)_minmax(0,1.25fr)_24px] items-center gap-4 border-b border-white/[0.06] px-4 py-3.5 outline-none transition-colors duration-150 last:border-b-0 hover:bg-white/[0.035] focus-visible:bg-white/[0.035]"
+      className="group grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,0.85fr))_minmax(0,0.9fr)_minmax(0,1.25fr)_24px] items-center gap-4 border-b border-white/[0.06] px-4 py-4 outline-none transition-colors duration-150 last:border-b-0 hover:bg-white/[0.035] focus-visible:bg-white/[0.035]"
     >
       <span className="flex min-w-0 items-center gap-3">
-        <TokenImage token={r.logoKey} size={32} className="h-8 w-auto shrink-0" />
+        <TokenImage token={r.logoKey} size={48} className="h-9 w-auto shrink-0" />
         <span className="min-w-0">
           <span className="flex min-w-0 items-center gap-2 leading-5">
             <span className="truncate text-[14px] font-semibold">{r.name}</span>
@@ -471,7 +471,7 @@ function Card({ r }: { r: ListRowData }) {
         className="focus-visible:ring-action/60 group flex h-full flex-col rounded-2xl border border-hairline bg-surface outline-none transition-colors duration-150 hover:border-white/15 hover:bg-raised focus-visible:ring-2"
       >
         <div className="flex items-center gap-3 px-5 pt-5">
-          <TokenImage token={r.logoKey} size={32} className="h-8 w-auto shrink-0" />
+          <TokenImage token={r.logoKey} size={48} className="h-9 w-auto shrink-0" />
           <span className="min-w-0 flex-1">
             <span className="block truncate text-[15px] font-semibold leading-5">{r.name}</span>
             <span className="flex min-w-0 items-center gap-1.5 text-xs leading-4 text-ink-3">

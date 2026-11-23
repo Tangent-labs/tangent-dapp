@@ -91,9 +91,15 @@ function ProductCard({ vault, apy, tvl, deposit }: SavingsRowV2) {
       </span>
 
       <span className="relative mt-4 flex items-center justify-between gap-3 border-t border-divider pt-3.5">
-        <span className="min-w-0 truncate text-[13px]">
+        <span className="flex min-w-0 items-center truncate text-[13px]">
           <span className="font-semibold">{vault.source === "Tangent" ? "Stake USG" : vault.depositLabel}</span>
-          {vault.depositTokens && <span className="ml-2 text-ink-3">{vault.depositTokens}</span>}
+          {/* accepted tokens with their logos (same list the live card prints as text) */}
+          {(vault.depositTokens ? vault.depositTokens.split(", ") : [vault.asset.symbol]).map((t) => (
+            <span key={t} className="ml-2.5 inline-flex items-center gap-1 align-middle text-ink-2">
+              <TokenImage token={t} size={16} className="h-4 w-4 shrink-0" />
+              {t}
+            </span>
+          ))}
           {deposit > 0 && <span className="ml-2 text-ink-2">· You have {formatDollar(deposit)}</span>}
         </span>
         <ChevronRight

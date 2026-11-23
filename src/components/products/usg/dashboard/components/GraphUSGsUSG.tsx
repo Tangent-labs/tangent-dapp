@@ -7,6 +7,7 @@ import { formatXAxis, formatYAxis, getDataRangeMs, getXAxisTicks } from "../dash
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
 import { UI_V2 } from "@/v2/ui"
+import { ChartHeadV2, ChartLegendV2, V2_CURSOR, rangeChange } from "@/v2/ui/chart"
 
 type MarketDebtProps = {
   USGCurrentSupply: number
@@ -36,71 +37,114 @@ export const GraphUSGsUSG = ({
   const xAxisTicks = getXAxisTicks(USGsUSGTotalSupplyData)
   return (
     <ReliefCard className="flex h-full w-full flex-col items-start justify-start p-5">
-      {/* TITLE AND BUTTONS */}
-      <div className="flex w-full items-center justify-between">
-        <div className="flex text-xl font-semibold sm:hidden">Supply </div>
-        <div className="hidden text-xl font-semibold sm:flex">Total Supply </div>
-
-        <div className="flex gap-2">
-          <ButtonTab onClick={() => fetchTotalSupplyData("1w")} label={"1w"} active={totalSupplySelectedTab === "1w"} className="rounded-full !py-1" />
-          <ButtonTab onClick={() => fetchTotalSupplyData("1m")} label={"1m"} active={totalSupplySelectedTab === "1m"} className="rounded-full !py-1" />
-          <ButtonTab onClick={() => fetchTotalSupplyData("3m")} label={"3m"} active={totalSupplySelectedTab === "3m"} className="rounded-full !py-1" />
-          <ButtonTab onClick={() => fetchTotalSupplyData("1y")} label={"1y"} active={totalSupplySelectedTab === "1y"} className="rounded-full !py-1" />
-          <ButtonTab onClick={() => fetchTotalSupplyData("all")} label={"all"} active={totalSupplySelectedTab === "all"} className="rounded-full !py-1" />
-        </div>
-      </div>
-
-      <Divider />
-
-      {/* LEGEND */}
-      <div className="mb-1 flex w-full items-stretch justify-start gap-2 text-xs">
-        <div className="flex flex-row items-start justify-start gap-2 self-stretch rounded-[10px] bg-overlay-panel p-2 md:flex-col">
-          <div className="flex text-xs text-subtitle sm:hidden">Total supply </div>
-          <div className="hidden text-xs text-subtitle sm:flex">Total </div>
-
-          <div className="text-xs font-semibold text-white"> {`$${formatMillions(USGCurrentSupply)}`}</div>
-        </div>
-
-        {USGCurrentSupply > 0 && (
-          <div className="hidden flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2 md:flex">
-            <div className="flex w-full items-center justify-between gap-2">
-              <div className="flex h-2 w-2 rounded-full bg-button-active"></div>
-
-              <div className="flex items-center justify-center gap-1">
-                <TokenImage token="USG" size={16} />
-                USG
+      {UI_V2 ? (
+        <div className="mb-3 w-full">
+          <ChartHeadV2
+            label="Total supply"
+            value={`$${formatMillions(USGCurrentSupply)}`}
+            change={
+              totalSupplySelectedTab === "all"
+                ? undefined
+                : rangeChange(USGsUSGTotalSupplyData[0]?.usg ?? undefined, USGsUSGTotalSupplyData.at(-1)?.usg ?? undefined)
+            }
+            right={
+              <div className="flex gap-2">
+                <ButtonTab onClick={() => fetchTotalSupplyData("1w")} label={"1w"} active={totalSupplySelectedTab === "1w"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTotalSupplyData("1m")} label={"1m"} active={totalSupplySelectedTab === "1m"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTotalSupplyData("3m")} label={"3m"} active={totalSupplySelectedTab === "3m"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTotalSupplyData("1y")} label={"1y"} active={totalSupplySelectedTab === "1y"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTotalSupplyData("all")} label={"all"} active={totalSupplySelectedTab === "all"} className="rounded-full !py-1" />
               </div>
-            </div>
+            }
+          />
+          {USGCurrentSupply + sUSGCurrentSupply > 0 && (
+            <ChartLegendV2
+              items={[
+                {
+                  color: "#0075FF",
+                  label: "USG",
+                  value: formatMillions(USGCurrentSupply),
+                  share: `${((USGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(1)}%`,
+                },
+                {
+                  color: "#a79bff",
+                  label: "sUSG",
+                  value: formatMillions(sUSGCurrentSupply),
+                  share: `${((sUSGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(1)}%`,
+                },
+              ]}
+            />
+          )}
+        </div>
+      ) : (
+        <>
+          {/* TITLE AND BUTTONS */}
+          <div className="flex w-full items-center justify-between">
+            <div className="flex text-xl font-semibold sm:hidden">Supply </div>
+            <div className="hidden text-xl font-semibold sm:flex">Total Supply </div>
 
-            <div className="flex w-full items-center justify-between gap-2 font-semibold">
-              <span>{formatMillions(USGCurrentSupply)}</span>
-              <span className="h-1 w-1 rounded-full bg-white"></span>
-              <span>{((USGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(2)}%</span>
+            <div className="flex gap-2">
+              <ButtonTab onClick={() => fetchTotalSupplyData("1w")} label={"1w"} active={totalSupplySelectedTab === "1w"} className="rounded-full !py-1" />
+              <ButtonTab onClick={() => fetchTotalSupplyData("1m")} label={"1m"} active={totalSupplySelectedTab === "1m"} className="rounded-full !py-1" />
+              <ButtonTab onClick={() => fetchTotalSupplyData("3m")} label={"3m"} active={totalSupplySelectedTab === "3m"} className="rounded-full !py-1" />
+              <ButtonTab onClick={() => fetchTotalSupplyData("1y")} label={"1y"} active={totalSupplySelectedTab === "1y"} className="rounded-full !py-1" />
+              <ButtonTab onClick={() => fetchTotalSupplyData("all")} label={"all"} active={totalSupplySelectedTab === "all"} className="rounded-full !py-1" />
             </div>
           </div>
-        )}
 
-        {sUSGCurrentSupply > 0 && (
-          <div className="hidden flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2 md:flex">
-            <div className="flex w-full items-center justify-between gap-2">
-              <div className="flex h-2 w-2 rounded-full bg-tonic"></div>
+          <Divider />
 
-              <div className="flex items-center justify-center gap-1">
-                <TokenImage token="sUSG" size={16} />
-                sUSG
+          {/* LEGEND */}
+          <div className="mb-1 flex w-full items-stretch justify-start gap-2 text-xs">
+            <div className="flex flex-row items-start justify-start gap-2 self-stretch rounded-[10px] bg-overlay-panel p-2 md:flex-col">
+              <div className="flex text-xs text-subtitle sm:hidden">Total supply </div>
+              <div className="hidden text-xs text-subtitle sm:flex">Total </div>
+
+              <div className="text-xs font-semibold text-white"> {`$${formatMillions(USGCurrentSupply)}`}</div>
+            </div>
+
+            {USGCurrentSupply > 0 && (
+              <div className="hidden flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2 md:flex">
+                <div className="flex w-full items-center justify-between gap-2">
+                  <div className="flex h-2 w-2 rounded-full bg-button-active"></div>
+
+                  <div className="flex items-center justify-center gap-1">
+                    <TokenImage token="USG" size={16} />
+                    USG
+                  </div>
+                </div>
+
+                <div className="flex w-full items-center justify-between gap-2 font-semibold">
+                  <span>{formatMillions(USGCurrentSupply)}</span>
+                  <span className="h-1 w-1 rounded-full bg-white"></span>
+                  <span>{((USGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(2)}%</span>
+                </div>
               </div>
-            </div>
+            )}
 
-            <div className="flex w-full items-center justify-between gap-2 font-semibold">
-              <span>{formatMillions(sUSGCurrentSupply)}</span>
-              <span className="h-1 w-1 rounded-full bg-white"></span>
-              <span>{((sUSGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(2)}%</span>
-            </div>
+            {sUSGCurrentSupply > 0 && (
+              <div className="hidden flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2 md:flex">
+                <div className="flex w-full items-center justify-between gap-2">
+                  <div className="flex h-2 w-2 rounded-full bg-tonic"></div>
+
+                  <div className="flex items-center justify-center gap-1">
+                    <TokenImage token="sUSG" size={16} />
+                    sUSG
+                  </div>
+                </div>
+
+                <div className="flex w-full items-center justify-between gap-2 font-semibold">
+                  <span>{formatMillions(sUSGCurrentSupply)}</span>
+                  <span className="h-1 w-1 rounded-full bg-white"></span>
+                  <span>{((sUSGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(2)}%</span>
+                </div>
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      {/* CHART */}
+          {/* CHART */}
+        </>
+      )}
       <div className="flex h-56 min-h-56 w-full items-center justify-center">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
@@ -169,11 +213,15 @@ export const GraphUSGsUSG = ({
             />
 
             <Tooltip
-              cursor={{
-                stroke: "rgba(255,255,255,0.7)",
-                strokeWidth: 2,
-                strokeDasharray: "4 4",
-              }}
+              cursor={
+                UI_V2
+                  ? V2_CURSOR
+                  : {
+                      stroke: "rgba(255,255,255,0.7)",
+                      strokeWidth: 2,
+                      strokeDasharray: "4 4",
+                    }
+              }
               allowEscapeViewBox={{ x: false, y: false }}
               content={<CustomTooltip categories={SUPPLY_CATEGORIES} totalKeys={["usg"]} />}
             />

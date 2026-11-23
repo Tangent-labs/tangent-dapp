@@ -1,3 +1,5 @@
+import { UI_V2 } from "@/v2/ui"
+import { ChartTooltipV2, tooltipDate } from "@/v2/ui/chart"
 import { formatMillions } from "@/lib/number_formatter"
 import { TooltipProps } from "recharts"
 
@@ -24,6 +26,20 @@ export const CustomTooltip = ({ active, payload, categories, totalKeys }: Custom
     values[key] = val
     if (!totalKeys || totalKeys.includes(key)) total += val
   })
+
+  if (UI_V2)
+    return (
+      <ChartTooltipV2
+        title={tooltipDate(payload[0]?.payload?.date as number)}
+        total={{ label: "Total", value: "$" + formatMillions(total) }}
+        rows={categories
+          .filter(({ key }) => values[key] !== undefined && values[key] !== null)
+          .map(({ key, label }) => {
+            const item = payload.find((p) => p.dataKey === key)
+            return { label, value: "$" + formatMillions(values[key]), color: (item?.color as string) || (item?.stroke as string) }
+          })}
+      />
+    )
 
   const ts = payload[0]?.payload?.date as number
   const date = new Date(ts)

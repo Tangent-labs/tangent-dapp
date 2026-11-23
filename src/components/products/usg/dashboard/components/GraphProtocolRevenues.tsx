@@ -1,5 +1,8 @@
 "use client"
 
+import { UI_V2 } from "@/v2/ui"
+import { ChartHeadV2 } from "@/v2/ui/chart"
+
 import { useMemo } from "react"
 import { cn } from "@/lib/utils"
 import { ProtocolRevenue, RevenueRange } from "../../usg_type"
@@ -58,7 +61,11 @@ export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selecte
   return (
     <ReliefCard ref={cardRef} className="flex w-full flex-col items-start justify-start p-5">
       <div className="flex w-full items-center justify-between">
-        <div className="text-xl font-semibold">Protocol revenues</div>
+        {UI_V2 ? (
+          <ChartHeadV2 label="Protocol revenues" value={"$" + formatMillions(totalRevenues)} />
+        ) : (
+          <div className="text-xl font-semibold">Protocol revenues</div>
+        )}
 
         <div className="flex gap-3">
           {REVENUE_RANGE_TABS.map((tab) => (
@@ -76,8 +83,8 @@ export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selecte
       <Divider />
 
       <div className="mb-4 flex items-center justify-start gap-1 text-xs">
-        <div className="text-subtitle">Total: </div>
-        <div className="font-semibold text-white">${formatMillions(totalRevenues)}</div>
+        {!UI_V2 && <div className="text-subtitle">Total: </div>}
+        {!UI_V2 && <div className="font-semibold text-white">${formatMillions(totalRevenues)}</div>}
       </div>
 
       <div className="w-full pr-12">

@@ -10,6 +10,7 @@ import { ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip, CartesianG
 import { formatXAxis, formatYAxis, getDataRangeMs, getXAxisTicks } from "../dashboard_controller"
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
 import { UI_V2 } from "@/v2/ui"
+import { ChartHeadV2, V2_CURSOR } from "@/v2/ui/chart"
 
 type GraphLpLiquidityProps = {
   liquidity: LpLiquidityHistory
@@ -76,7 +77,11 @@ export const GraphLpLiquidity = ({ liquidity, selectedTab, fetchLiquidity }: Gra
   return (
     <ReliefCard className="flex w-full flex-col items-start justify-start p-5">
       <div className="flex w-full items-center justify-between">
-        <div className="flex text-xl font-semibold">LP Liquidity</div>
+        {UI_V2 ? (
+          <ChartHeadV2 label="LP liquidity" value={"$" + formatMillions(liquidity.total)} />
+        ) : (
+          <div className="flex text-xl font-semibold">LP Liquidity</div>
+        )}
 
         <div className="flex gap-2">
           {RANGES.map((range) => (
@@ -88,8 +93,8 @@ export const GraphLpLiquidity = ({ liquidity, selectedTab, fetchLiquidity }: Gra
       <Divider />
       <div className="mb-4 flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-2 text-xs">
         <div className="flex items-center justify-start gap-1">
-          <div className="text-subtitle">Total: </div>
-          <div className="font-semibold text-white">${formatMillions(liquidity.total)}</div>
+          {!UI_V2 && <div className="text-subtitle">Total: </div>}
+          {!UI_V2 && <div className="font-semibold text-white">${formatMillions(liquidity.total)}</div>}
         </div>
 
         {/* LEGEND */}
@@ -154,7 +159,7 @@ export const GraphLpLiquidity = ({ liquidity, selectedTab, fetchLiquidity }: Gra
             ))}
 
             <Tooltip
-              cursor={{ stroke: "rgba(255,255,255,0.7)", strokeWidth: 2, strokeDasharray: "4 4" }}
+              cursor={UI_V2 ? V2_CURSOR : { stroke: "rgba(255,255,255,0.7)", strokeWidth: 2, strokeDasharray: "4 4" }}
               allowEscapeViewBox={{ x: false, y: false }}
               content={<CustomTooltip categories={categories} />}
             />

@@ -1,4 +1,6 @@
 import { specialTokensList } from "../../usg_repository"
+import { UI_V2 } from "@/v2/ui"
+import { ChartHeadV2 } from "@/v2/ui/chart"
 import { formatMillions } from "@/lib/number_formatter"
 import { MarketDebtData, USGCollateralData } from "../../usg_type"
 import { Divider } from "@/components/design_system/structure/divider"
@@ -30,7 +32,11 @@ export const GraphCollateralsAndDebts = ({ userData, marketTVLMaxValue }: Collat
 
   return (
     <ReliefCard className="flex h-full max-h-80 w-full flex-col items-start justify-start p-5">
-      <div className="text-xl font-semibold">USG collaterals & debt</div>
+      {UI_V2 ? (
+        <ChartHeadV2 label="USG collaterals & debt" value={`${collaterals.length} markets`} />
+      ) : (
+        <div className="text-xl font-semibold">USG collaterals & debt</div>
+      )}
 
       <Divider />
 

@@ -11,6 +11,7 @@ import { formatXAxis, formatYAxis, getDataRangeMs, getXAxisTicks } from "../dash
 import { returnTVLType } from "../utils"
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
 import { UI_V2 } from "@/v2/ui"
+import { ChartHeadV2, ChartLegendV2, V2_CURSOR, rangeChange, v2ActiveDot } from "@/v2/ui/chart"
 
 type MarketDebtProps = {
   protocolCurrentTVL: TVLData
@@ -50,47 +51,87 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
 
   return (
     <ReliefCard className="flex h-full w-full flex-col items-start justify-start p-5">
-      <div className="flex w-full items-center justify-between">
-        <div className="flex text-xl font-semibold">TVL </div>
-
-        <div className="flex gap-2">
-          <ButtonTab onClick={() => fetchTVLData("1w")} label={"1w"} active={tvlSelectedTab === "1w"} className="rounded-full !py-1" />
-          <ButtonTab onClick={() => fetchTVLData("1m")} label={"1m"} active={tvlSelectedTab === "1m"} className="rounded-full !py-1" />
-          <ButtonTab onClick={() => fetchTVLData("3m")} label={"3m"} active={tvlSelectedTab === "3m"} className="rounded-full !py-1" />
-          <ButtonTab onClick={() => fetchTVLData("1y")} label={"1y"} active={tvlSelectedTab === "1y"} className="rounded-full !py-1" />
-          <ButtonTab onClick={() => fetchTVLData("all")} label={"all"} active={tvlSelectedTab === "all"} className="rounded-full !py-1" />
+      {UI_V2 ? (
+        <div className="mb-3 w-full">
+          <ChartHeadV2
+            label="TVL"
+            value={`$${formatMillions(protocolCurrentTVL?.total)}`}
+            change={
+              tvlSelectedTab === "all"
+                ? undefined
+                : rangeChange(
+                    tvl?.[0] ? ((tvl[0].markets as number) ?? 0) + ((tvl[0].pegkeepers as number) ?? 0) + ((tvl[0].susg as number) ?? 0) : undefined,
+                    tvl?.at(-1)
+                      ? ((tvl.at(-1)!.markets as number) ?? 0) + ((tvl.at(-1)!.pegkeepers as number) ?? 0) + ((tvl.at(-1)!.susg as number) ?? 0)
+                      : undefined
+                  )
+            }
+            right={
+              <div className="flex gap-2">
+                <ButtonTab onClick={() => fetchTVLData("1w")} label={"1w"} active={tvlSelectedTab === "1w"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTVLData("1m")} label={"1m"} active={tvlSelectedTab === "1m"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTVLData("3m")} label={"3m"} active={tvlSelectedTab === "3m"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTVLData("1y")} label={"1y"} active={tvlSelectedTab === "1y"} className="rounded-full !py-1" />
+                <ButtonTab onClick={() => fetchTVLData("all")} label={"all"} active={tvlSelectedTab === "all"} className="rounded-full !py-1" />
+              </div>
+            }
+          />
+          {protocolCurrentTVL && protocolCurrentTVL?.total > 0 && (
+            <ChartLegendV2
+              items={SERIES_CONFIG.map((c) => ({
+                color: c.stroke,
+                label: TVL_CATEGORY_METADATA[c.key as string].label,
+                value: formatMillions(protocolCurrentTVL[c.key as keyof typeof protocolCurrentTVL] as number),
+                share: `${(((protocolCurrentTVL[c.key as keyof typeof protocolCurrentTVL] as number) / protocolCurrentTVL.total) * 100).toFixed(1)}%`,
+              }))}
+            />
+          )}
         </div>
-      </div>
+      ) : (
+        <>
+          <div className="flex w-full items-center justify-between">
+            <div className="flex text-xl font-semibold">TVL </div>
 
-      <Divider />
-      {/* LEGENDS */}
-      {protocolCurrentTVL && protocolCurrentTVL?.total > 0 && (
-        <div className="mb-1 flex w-full items-stretch justify-start gap-2 text-xs">
-          <div className="flex flex-row items-start justify-start gap-2 self-stretch rounded-[10px] bg-overlay-panel p-2 md:flex-col">
-            <div className="flex text-xs text-subtitle">TVL </div>
-
-            <div className="text-xs font-semibold text-white"> {`$${formatMillions(protocolCurrentTVL?.total)}`}</div>
+            <div className="flex gap-2">
+              <ButtonTab onClick={() => fetchTVLData("1w")} label={"1w"} active={tvlSelectedTab === "1w"} className="rounded-full !py-1" />
+              <ButtonTab onClick={() => fetchTVLData("1m")} label={"1m"} active={tvlSelectedTab === "1m"} className="rounded-full !py-1" />
+              <ButtonTab onClick={() => fetchTVLData("3m")} label={"3m"} active={tvlSelectedTab === "3m"} className="rounded-full !py-1" />
+              <ButtonTab onClick={() => fetchTVLData("1y")} label={"1y"} active={tvlSelectedTab === "1y"} className="rounded-full !py-1" />
+              <ButtonTab onClick={() => fetchTVLData("all")} label={"all"} active={tvlSelectedTab === "all"} className="rounded-full !py-1" />
+            </div>
           </div>
 
-          {[
-            { label: "Markets", name: "markets" },
-            { label: "Peg Keepers", name: "pegkeepers" },
-            { label: "sUSG", name: "susg" },
-          ].map((el) => (
-            <div key={el?.name} className="hidden flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2 md:flex">
-              <div className="flex w-full items-center justify-between gap-2">
-                <div className={cn("flex h-2 w-2 rounded-full", returnTVLType(el?.name))}></div>
-                <div className="flex items-center justify-center gap-1">{el?.label}</div>
+          <Divider />
+          {/* LEGENDS */}
+          {protocolCurrentTVL && protocolCurrentTVL?.total > 0 && (
+            <div className="mb-1 flex w-full items-stretch justify-start gap-2 text-xs">
+              <div className="flex flex-row items-start justify-start gap-2 self-stretch rounded-[10px] bg-overlay-panel p-2 md:flex-col">
+                <div className="flex text-xs text-subtitle">TVL </div>
+
+                <div className="text-xs font-semibold text-white"> {`$${formatMillions(protocolCurrentTVL?.total)}`}</div>
               </div>
 
-              <div className="flex w-full items-center justify-between gap-2 font-semibold">
-                {formatMillions(protocolCurrentTVL[el?.name as keyof typeof protocolCurrentTVL])}
-                <span className="h-1 w-1 rounded-full bg-white"></span>
-                <span>{((protocolCurrentTVL[el?.name as keyof typeof protocolCurrentTVL] / protocolCurrentTVL?.total) * 100).toFixed(2)}%</span>
-              </div>
+              {[
+                { label: "Markets", name: "markets" },
+                { label: "Peg Keepers", name: "pegkeepers" },
+                { label: "sUSG", name: "susg" },
+              ].map((el) => (
+                <div key={el?.name} className="hidden flex-col items-center gap-2 rounded-[10px] bg-overlay-panel p-2 md:flex">
+                  <div className="flex w-full items-center justify-between gap-2">
+                    <div className={cn("flex h-2 w-2 rounded-full", returnTVLType(el?.name))}></div>
+                    <div className="flex items-center justify-center gap-1">{el?.label}</div>
+                  </div>
+
+                  <div className="flex w-full items-center justify-between gap-2 font-semibold">
+                    {formatMillions(protocolCurrentTVL[el?.name as keyof typeof protocolCurrentTVL])}
+                    <span className="h-1 w-1 rounded-full bg-white"></span>
+                    <span>{((protocolCurrentTVL[el?.name as keyof typeof protocolCurrentTVL] / protocolCurrentTVL?.total) * 100).toFixed(2)}%</span>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
       {/* CHART */}
       <div className="flex h-56 min-h-56 w-full items-center justify-center">
@@ -146,15 +187,29 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
             </defs>
 
             {sortedSeries.map((s) => (
-              <Area key={s.key} type="monotone" dataKey={s.key} stackId="1" stroke={s.stroke} strokeWidth={1.5} fill={`url(#${s.gradient})`} name={s.name} />
+              <Area
+                key={s.key}
+                type="monotone"
+                dataKey={s.key}
+                stackId="1"
+                stroke={s.stroke}
+                strokeWidth={1.5}
+                fill={`url(#${s.gradient})`}
+                name={s.name}
+                activeDot={UI_V2 ? v2ActiveDot(s.stroke) : undefined}
+              />
             ))}
 
             <Tooltip
-              cursor={{
-                stroke: "rgba(255,255,255,0.7)",
-                strokeWidth: 2,
-                strokeDasharray: "4 4",
-              }}
+              cursor={
+                UI_V2
+                  ? V2_CURSOR
+                  : {
+                      stroke: "rgba(255,255,255,0.7)",
+                      strokeWidth: 2,
+                      strokeDasharray: "4 4",
+                    }
+              }
               allowEscapeViewBox={{ x: false, y: false }}
               content={<CustomTooltip categories={sortedCategories} />}
             />

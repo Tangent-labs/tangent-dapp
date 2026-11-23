@@ -12,6 +12,7 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { InnerTooltip } from "@/components/design_system/structure/inner_tooltip"
 import { formatPeriodLabel, formatYAxis, computeYAxisTicks } from "../dashboard_controller"
 import { UI_V2 } from "@/v2/ui"
+import { ChartHeadV2 } from "@/v2/ui/chart"
 
 type GraphProtocolVolumesProps = {
   protocolVolumes: ProtocolVolume[]
@@ -82,7 +83,11 @@ export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVo
   return (
     <ReliefCard ref={cardRef} className="flex w-full flex-col items-start justify-start p-5">
       <div className="flex w-full items-center justify-between">
-        <div className="text-xl font-semibold">Protocol volumes</div>
+        {UI_V2 ? (
+          <ChartHeadV2 label="Protocol volumes" value={"$" + formatMillions(totalVolumes)} />
+        ) : (
+          <div className="text-xl font-semibold">Protocol volumes</div>
+        )}
 
         <div className="flex gap-3">
           {VOLUME_RANGE_TABS.map((tab) => (
@@ -101,8 +106,8 @@ export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVo
 
       <div className="mb-4 flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-2 text-xs">
         <div className="flex items-center justify-start gap-1">
-          <div className="text-subtitle">Total: </div>
-          <div className="font-semibold text-white">${formatMillions(totalVolumes)}</div>
+          {!UI_V2 && <div className="text-subtitle">Total: </div>}
+          {!UI_V2 && <div className="font-semibold text-white">${formatMillions(totalVolumes)}</div>}
         </div>
 
         {/* LEGEND */}

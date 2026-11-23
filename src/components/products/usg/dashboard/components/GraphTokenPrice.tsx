@@ -1,5 +1,8 @@
 "use client"
 
+import { UI_V2 } from "@/v2/ui"
+import { ChartHeadV2, ChartTooltipV2, V2_CURSOR, rangeChange, tooltipDate, v2ActiveDot } from "@/v2/ui/chart"
+
 import { useId } from "react"
 import type { ComponentType } from "react"
 import { formatDollar } from "@/lib/number_formatter"
@@ -31,6 +34,7 @@ const PriceTooltip = ({ active, payload, label }: { active?: boolean; payload?: 
   if (!active || !payload?.length || !label) return null
 
   const value = Number(payload[0]?.value ?? 0)
+  if (UI_V2) return <ChartTooltipV2 title={tooltipDate(label)} rows={[{ label: "Price", value: formatDollar(value, 4) }]} />
   const date = new Date(label)
   const isoDate = date.toISOString().slice(0, 10)
   const timeLabel = `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`
@@ -80,7 +84,11 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
   return (
     <ReliefCard className="flex h-full w-full flex-col items-start justify-start p-5">
       <div className="flex w-full items-center justify-between">
-        <div className="text-xl font-semibold">{title}</div>
+        {UI_V2 ? (
+          <ChartHeadV2 label={`${title} price`} value={formatDollar(latestValue, 4)} change={rangeChange(data[0]?.uv, latestPoint?.uv)} />
+        ) : (
+          <div className="text-xl font-semibold">{title}</div>
+        )}
 
         <div className="flex gap-2">
           <ButtonTab onClick={() => fetchPriceHistoryData(token, "1d")} label={"1d"} active={selectedTab === "1d"} className="rounded-full !py-1" />
@@ -136,11 +144,15 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
             />
 
             <Tooltip
-              cursor={{
-                stroke: "rgba(255,255,255,0.65)",
-                strokeWidth: 1.5,
-                strokeDasharray: "4 4",
-              }}
+              cursor={
+                UI_V2
+                  ? V2_CURSOR
+                  : {
+                      stroke: "rgba(255,255,255,0.65)",
+                      strokeWidth: 1.5,
+                      strokeDasharray: "4 4",
+                    }
+              }
               allowEscapeViewBox={{ x: false, y: false }}
               content={<PriceTooltip />}
             />
@@ -152,7 +164,7 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
               strokeWidth={2}
               fill={`url(#${gradientId}-fill)`}
               dot={false}
-              activeDot={{ r: 4, fill: accentColor, stroke: accentColor }}
+              activeDot={UI_V2 ? v2ActiveDot(accentColor) : { r: 4, fill: accentColor, stroke: accentColor }}
             />
 
             {latestPoint && <ReferenceDot x={latestPoint.date} y={latestPoint.uv} r={4} fill={accentColor} stroke={accentColor} isFront={true} />}

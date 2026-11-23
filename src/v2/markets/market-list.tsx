@@ -4,7 +4,7 @@ import Link from "next/link"
 import { ReactNode, useMemo, useState } from "react"
 import { formatUnits } from "viem"
 import { AnimatePresence, motion } from "framer-motion"
-import { ChevronRight, LayoutGrid, List, Search } from "lucide-react"
+import { ChevronDown, ChevronRight, LayoutGrid, List, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ListRowData } from "@/types"
 import { formatMillions } from "@/lib/number_formatter"
@@ -14,6 +14,7 @@ import { useUSGMaketListContext } from "@/components/products/usg/list/usg_marke
 import { marketOptions, protocolOptions } from "@/components/products/usg/list/usg_market_controller"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { AprMark } from "@/v2/ui/apr-mark"
 import { Term } from "@/v2/ui/term"
 import { Venue } from "@/v2/ui/venue"
 import { SelectMenu } from "@/v2/ui/select-menu"
@@ -37,6 +38,7 @@ const SORTS = [
   { value: "maxvapr", label: "Max lev. vAPR" },
   { value: "borrowRate", label: "Borrow rate", asc: true },
   { value: "borrowed", label: "Borrowed" },
+  { value: "collateral", label: "Collateral", asc: true },
 ]
 const SHOW = [
   { value: "all", label: "All markets" },
@@ -61,17 +63,20 @@ export function MarketListV2() {
   } = useUSGMaketListContext()
   const { sUSGCurrentAPY, priceHistory } = useRootContext()
   const { lpUserPoints, voteUserPoints } = useUSGContext()
-  const [sort, setSort] = useState("default")
+  // same keys and directions as the live list headers (getSortedRows)
+  const [sort, setSortState] = useState<{ key: string; dir: "asc" | "desc" }>({ key: "default", dir: "desc" })
+  const defaultDir = (key: string) => (SORTS.find((x) => x.value === key)?.asc ? "asc" : "desc")
+  const setSort = (key: string) => setSortState({ key, dir: defaultDir(key) })
+  const toggleSort = (key: string) => setSortState((s) => (s.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: defaultDir(key) }))
   const [view, setView] = useState<"list" | "cards">("list")
 
   const loading = globalData.USGPrice === "-"
   const sorted = useMemo(() => {
-    const s = SORTS.find((x) => x.value === sort)
-    return getSortedRows(displayRows, { search: undefined, sort: { key: sort, direction: s?.asc ? "asc" : "desc" } })
+    return getSortedRows(displayRows, { search: undefined, sort: { key: sort.key, direction: sort.dir } })
   }, [displayRows, sort, getSortedRows])
 
   const groups = (["HEC", "LEC", "FIR"] as const).map((k) => ({ k, rows: sorted.filter((r) => kindOf(r) === k) })).filter((g) => g.rows.length)
-  const grouped = sort === "default"
+  const grouped = sort.key === "default"
 
   const userDebt = Number(formatUnits(userData?.totalUserDebt || 0n, 18))
   const userDeposit = Number(formatUnits(userData?.totalUserDeposit || 0n, 18))
@@ -190,7 +195,7 @@ export function MarketListV2() {
             className="w-full bg-transparent outline-none placeholder:text-ink-3"
           />
         </label>
-        <SelectMenu label="Sort" value={sort} options={SORTS} onChange={setSort} />
+        <SelectMenu label="Sort" value={sort.key} options={SORTS} onChange={setSort} />
         <div role="radiogroup" aria-label="View" className="flex h-10 items-center gap-0.5 rounded-[10px] bg-white/[0.03] p-1 ring-1 ring-inset ring-hairline">
           {(
             [
@@ -249,12 +254,29 @@ export function MarketListV2() {
         <div className="overflow-x-auto rounded-2xl border border-hairline bg-surface px-2 pb-3">
           <div className="min-w-[900px]">
             <div className="grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,0.85fr))_minmax(0,0.9fr)_minmax(0,1.25fr)_24px] gap-4 px-4 pb-2 pt-4 text-xs text-ink-3">
-              <span>Collateral</span>
-              <Head info="vAPR of the collateral. Hover a value for its breakdown.">Collateral vAPR</Head>
-              <Head info="Interest rate that borrowers pay on their outstanding debt.">Borrow rate</Head>
-              <Head info="Net vAPR at max leverage.">Max lev. vAPR</Head>
-              <Head info="Value of the collateral deposited in the market.">TVL</Head>
-              <Head info="USG borrowed out of the market's borrow cap. At the cap, borrowing pauses until debt is repaid.">Borrow capacity</Head>
+              <SortHead k="collateral" sort={sort} onSort={toggleSort}>
+                Collateral
+              </SortHead>
+              <SortHead k="vapr" sort={sort} onSort={toggleSort} info="vAPR of the collateral. Hover a value for its breakdown.">
+                Collateral vAPR
+              </SortHead>
+              <SortHead k="borrowRate" sort={sort} onSort={toggleSort} info="Interest rate that borrowers pay on their outstanding debt.">
+                Borrow rate
+              </SortHead>
+              <SortHead k="maxvapr" sort={sort} onSort={toggleSort} info="Net vAPR at max leverage.">
+                Max lev. vAPR
+              </SortHead>
+              <SortHead k="tvl" sort={sort} onSort={toggleSort} info="Value of the collateral deposited in the market.">
+                TVL
+              </SortHead>
+              <SortHead
+                k="borrowed"
+                sort={sort}
+                onSort={toggleSort}
+                info="USG borrowed out of the market's borrow cap. At the cap, borrowing pauses until debt is repaid."
+              >
+                Borrow capacity
+              </SortHead>
               <span />
             </div>
             {grouped
@@ -308,7 +330,35 @@ function Inline({ label, value }: { label: string; value: ReactNode }) {
   )
 }
 
-const Head = ({ children, info }: { children: ReactNode; info: string }) => <Term info={info}>{children}</Term>
+/** Column header that sorts on click, like the live list: active column in white with its direction, definition on hover. */
+function SortHead({
+  k,
+  sort,
+  onSort,
+  info,
+  children,
+}: {
+  k: string
+  sort: { key: string; dir: "asc" | "desc" }
+  onSort: (key: string) => void
+  info?: string
+  children: ReactNode
+}) {
+  const active = sort.key === k
+  return (
+    <button
+      type="button"
+      onClick={() => onSort(k)}
+      className={cn("flex w-fit items-center gap-1 text-left transition-colors", active ? "text-white" : "hover:text-ink-2")}
+    >
+      {info ? <Term info={info}>{children}</Term> : children}
+      <ChevronDown
+        className={cn("h-3.5 w-3.5 transition-[transform,opacity]", active ? "opacity-100" : "opacity-0", active && sort.dir === "asc" && "rotate-180")}
+        strokeWidth={2}
+      />
+    </button>
+  )
+}
 
 function GroupHead({ kind, rows, flush }: { kind: string; rows: ListRowData[]; flush?: boolean }) {
   const tvl = rows.reduce((s, r) => s + Number(formatUnits(BigInt(r.totalCollateralUSDValue || "0"), 18)), 0)
@@ -498,8 +548,11 @@ function Vapr({ r }: { r: ListRowData }) {
   return (
     <HoverCard openDelay={120} closeDelay={80}>
       <HoverCardTrigger asChild>
-        <span className="min-w-0 cursor-help">
-          <span className="block text-[15px] font-semibold tabular-nums leading-5">{pct(r.apr.current)}</span>
+        <span className="group/apr min-w-0 cursor-help">
+          <span className="flex items-center gap-1 text-[15px] font-semibold tabular-nums leading-5 transition-colors group-hover/apr:text-action">
+            {pct(r.apr.current)}
+            <AprMark />
+          </span>
           <span className="mt-1 block text-xs tabular-nums leading-4 text-ink-3">Proj. {pct(r.apr.projected)}</span>
         </span>
       </HoverCardTrigger>

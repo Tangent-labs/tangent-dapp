@@ -3,6 +3,7 @@
 import { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 import { TokenImage } from "@/components/design_system/structure/token_image"
+import { AprMark } from "./apr-mark"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 type Details = Record<string, number | undefined>
@@ -39,10 +40,13 @@ export function AprHover({
   return (
     <HoverCard openDelay={120} closeDelay={80}>
       <HoverCardTrigger asChild>
-        <span className={cn("min-w-0 cursor-help", className)}>
+        <span className={cn("group/apr min-w-0 cursor-help", className)}>
           {children ?? (
             <>
-              <span className="block text-[15px] font-semibold tabular-nums leading-5">{pct(current)}</span>
+              <span className="flex items-center gap-1 text-[15px] font-semibold tabular-nums leading-5 transition-colors group-hover/apr:text-action">
+                {pct(current)}
+                <AprMark />
+              </span>
               {showProjected && (
                 <span className="mt-1 block text-xs tabular-nums leading-4 text-ink-3">
                   {hasProjection(projected) ? `Proj. ${pct(projected)}` : "No projection"}

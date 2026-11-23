@@ -76,7 +76,7 @@ export function HarvestPageV2() {
               ))}
             </div>
 
-            {isChainviewLoading && Array.from({ length: 4 }, (_, i) => <div key={i} className="mx-2 my-1.5 h-12 animate-pulse rounded-lg bg-white/[0.03]" />)}
+            {isChainviewLoading && Array.from({ length: 4 }, (_, i) => <div key={i} className="v2-shimmer mx-2 my-1.5 h-12 rounded-lg" />)}
             {!isChainviewLoading && rows.length === 0 && (
               <div className="px-4 py-14 text-center">
                 <div className="text-[15px] font-semibold">Nothing to harvest for now</div>

@@ -178,7 +178,7 @@ export function ClaimAirdropPageV2() {
         </div>
       )}
 
-      {isLoading && <div className="mt-6 h-40 animate-pulse rounded-2xl bg-white/[0.03]" />}
+      {isLoading && <div className="v2-shimmer mt-6 h-40 rounded-2xl" />}
 
       {showWallet && !hasAllocation && (
         <div className="mt-4 rounded-2xl border border-hairline bg-surface p-5">

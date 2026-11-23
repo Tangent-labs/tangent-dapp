@@ -85,7 +85,7 @@ export const USGDashboardContent = () => {
 
       <div className="flex w-full flex-col gap-5 lg:flex-row">
         {/* USG Collaterals & Market debts */}
-        {userData && <GraphCollateralsAndDebts userData={userData} marketTVLMaxValue={marketTVLMaxValue} />}
+        {(UI_V2 || userData) && <GraphCollateralsAndDebts userData={userData ?? undefined} marketTVLMaxValue={marketTVLMaxValue} />}
 
         {/* PROTOCOL REVENUES */}
         <GraphProtocolRevenues

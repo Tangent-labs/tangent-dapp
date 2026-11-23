@@ -290,6 +290,27 @@ html:has(.v2-shell)::-webkit-scrollbar-thumb,
   background: rgba(255, 255, 255, 0.14);
   border-radius: 9999px;
 }
+/* V2 loading skeleton: a soft light running across the grey bars (idea of Bencho "Load cards").
+   Fixed attachment so one sweep crosses every bar on screen at once. */
+.v2-shimmer {
+  background-image: linear-gradient(100deg, rgba(255, 255, 255, 0.045) 35%, rgba(255, 255, 255, 0.11) 50%, rgba(255, 255, 255, 0.045) 65%);
+  background-size: 200% 100%;
+  background-attachment: fixed;
+  animation: v2-shimmer 1.6s ease-in-out infinite;
+}
+@keyframes v2-shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v2-shimmer {
+    animation: none;
+  }
+}
 .v2-scroll {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.14) transparent;

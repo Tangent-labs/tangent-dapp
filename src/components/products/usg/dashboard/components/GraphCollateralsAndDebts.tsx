@@ -1,6 +1,6 @@
 import { specialTokensList } from "../../usg_repository"
 import { UI_V2 } from "@/v2/ui"
-import { ChartHeadV2 } from "@/v2/ui/chart"
+import { CollateralsDebtV2 } from "@/v2/dashboard/collaterals"
 import { formatMillions } from "@/lib/number_formatter"
 import { MarketDebtData, USGCollateralData } from "../../usg_type"
 import { Divider } from "@/components/design_system/structure/divider"
@@ -10,7 +10,7 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { formatEther } from "viem"
 
 type CollateralsAndDebtsProps = {
-  userData: {
+  userData?: {
     totalUserDebt: bigint
     totalUserDeposit: bigint
     totalProtocolDeposit: bigint
@@ -27,16 +27,15 @@ const getDebtRatio = (debtValue: bigint, collateralValue: bigint) => {
 }
 
 export const GraphCollateralsAndDebts = ({ userData, marketTVLMaxValue }: CollateralsAndDebtsProps) => {
+  if (UI_V2)
+    return <CollateralsDebtV2 collaterals={userData?.USGCollateralsData} marketDebtData={userData?.marketDebtData} marketTVLMaxValue={marketTVLMaxValue} />
+
   const collaterals = userData?.USGCollateralsData?.filter((el: USGCollateralData) => el.value > 0) || []
   const debtByMarket = new Map<string, bigint>((userData?.marketDebtData || []).map((el: MarketDebtData) => [el.marketAddress, el.rawValue]))
 
   return (
     <ReliefCard className="flex h-full max-h-80 w-full flex-col items-start justify-start p-5">
-      {UI_V2 ? (
-        <ChartHeadV2 label="USG collaterals & debt" value={`${collaterals.length} markets`} />
-      ) : (
-        <div className="text-xl font-semibold">USG collaterals & debt</div>
-      )}
+      <div className="text-xl font-semibold">USG collaterals & debt</div>
 
       <Divider />
 

@@ -67,7 +67,7 @@ export function ReferralPageV2() {
                 </button>
               </div>
             )}
-            {isConnected && airdropDataIsLoading && <div className="h-9 animate-pulse rounded-lg bg-white/[0.04]" />}
+            {isConnected && airdropDataIsLoading && <div className="v2-shimmer h-9 rounded-lg" />}
           </div>
         </div>
       </div>

@@ -84,9 +84,7 @@ export function ClaimPageV2() {
               ))}
             </div>
 
-            {isWellConnected &&
-              isChainviewLoading &&
-              Array.from({ length: 4 }, (_, i) => <div key={i} className="mx-2 my-1.5 h-12 animate-pulse rounded-lg bg-white/[0.03]" />)}
+            {isWellConnected && isChainviewLoading && Array.from({ length: 4 }, (_, i) => <div key={i} className="v2-shimmer mx-2 my-1.5 h-12 rounded-lg" />)}
 
             {(!isWellConnected || !isChainviewLoading) && rows.length === 0 && (
               <div className="px-4 py-14 text-center">

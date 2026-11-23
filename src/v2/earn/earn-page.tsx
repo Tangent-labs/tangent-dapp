@@ -124,7 +124,7 @@ export function EarnPageV2() {
             <span />
           </div>
 
-          {isLoading && Array.from({ length: 6 }, (_, i) => <div key={i} className="mx-2 my-1.5 h-12 animate-pulse rounded-lg bg-white/[0.03]" />)}
+          {isLoading && Array.from({ length: 6 }, (_, i) => <div key={i} className="v2-shimmer mx-2 my-1.5 h-12 rounded-lg" />)}
           {!isLoading && pools.length === 0 && (
             <div className="px-4 py-14 text-center">
               <div className="text-[15px] font-semibold">No opportunity matches</div>

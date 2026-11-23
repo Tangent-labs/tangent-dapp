@@ -233,7 +233,7 @@ export function MarketListV2() {
       {loading ? (
         <div className="space-y-2 rounded-2xl border border-hairline bg-surface p-4">
           {Array.from({ length: 6 }, (_, i) => (
-            <div key={i} className="h-12 animate-pulse rounded-lg bg-white/[0.03]" />
+            <div key={i} className="v2-shimmer h-12 rounded-lg" />
           ))}
         </div>
       ) : sorted.length === 0 ? (

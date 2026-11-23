@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ReactNode, useEffect, useState, useSyncExternalStore } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { ArrowUpRight, Menu, PanelLeft, X } from "lucide-react"
+import { ArrowUpRight, ChevronLeft, Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatMillions } from "@/lib/number_formatter"
 import { useRootContext } from "@/components/products/root/root_context"
@@ -56,55 +56,48 @@ export function ShellV2({ children }: { children: ReactNode }) {
 
   return (
     <div className="v2-shell flex min-h-dvh font-sans text-ink">
-      <motion.aside
-        initial={false}
-        animate={{ width: collapsed ? COLLAPSED : EXPANDED }}
-        transition={{ type: "spring", visualDuration: 0.3, bounce: 0.08 }}
-        className="sticky top-0 hidden h-dvh shrink-0 flex-col overflow-hidden border-r border-hairline bg-sidebar pb-3 lg:flex"
-      >
-        <div className={cn("flex h-[72px] shrink-0 items-center", collapsed ? "justify-center" : "justify-between px-6")}>
-          {collapsed ? (
-            <button
-              onClick={toggle}
-              aria-label="Expand sidebar"
-              title="Expand sidebar  ["
-              className="group grid h-9 w-9 place-items-center rounded-lg transition-colors hover:bg-white/[0.06]"
-            >
-              <span className="col-start-1 row-start-1 transition-opacity group-hover:opacity-0">
+      {/* desktop sidebar: the collapse handle sits on its border line, level with the logo */}
+      <div className="sticky top-0 z-50 hidden h-dvh shrink-0 lg:block">
+        <motion.aside
+          initial={false}
+          animate={{ width: collapsed ? COLLAPSED : EXPANDED }}
+          transition={{ type: "spring", visualDuration: 0.3, bounce: 0.08 }}
+          className="flex h-full flex-col overflow-hidden border-r border-hairline bg-sidebar pb-3"
+        >
+          <div className={cn("flex h-[72px] shrink-0 items-center", collapsed ? "justify-center" : "px-6")}>
+            {collapsed ? (
+              <Link href="/" aria-label="Tangent home" className="grid h-9 w-9 place-items-center rounded-lg transition-colors hover:bg-white/[0.06]">
                 <TangentMark />
-              </span>
-              <PanelLeft className="col-start-1 row-start-1 h-4 w-4 text-white opacity-0 transition-opacity group-hover:opacity-100" strokeWidth={1.75} />
-            </button>
-          ) : (
-            <>
+              </Link>
+            ) : (
               <Brand />
-              <button
-                onClick={toggle}
-                aria-label="Collapse sidebar"
-                title="Collapse sidebar  ["
-                className="grid h-8 w-8 place-items-center rounded-lg text-white opacity-50 transition hover:bg-white/[0.06] hover:opacity-100"
+            )}
+          </div>
+          <Nav path={path} collapsed={collapsed} />
+          <div className="px-3">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={collapsed ? "mini" : "full"}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
               >
-                <PanelLeft className="h-4 w-4" strokeWidth={1.75} />
-              </button>
-            </>
-          )}
-        </div>
-        <Nav path={path} collapsed={collapsed} />
-        <div className="px-3">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={collapsed ? "mini" : "full"}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-            >
-              {collapsed ? <PegMiniV2 /> : <PegCardV2 />}
-            </motion.div>
-          </AnimatePresence>
-          {!collapsed && <Socials />}
-        </div>
-      </motion.aside>
+                {collapsed ? <PegMiniV2 /> : <PegCardV2 />}
+              </motion.div>
+            </AnimatePresence>
+            {!collapsed && <Socials />}
+          </div>
+        </motion.aside>
+        <button
+          onClick={toggle}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={collapsed ? "Expand sidebar  [" : "Collapse sidebar  ["}
+          className="absolute right-0 top-[24px] z-50 grid h-6 w-6 translate-x-1/2 place-items-center rounded-full border border-hairline bg-sidebar text-white opacity-70 transition hover:bg-raised hover:opacity-100"
+        >
+          <ChevronLeft className={cn("h-3.5 w-3.5 transition-transform duration-300", collapsed && "rotate-180")} strokeWidth={2} />
+        </button>
+      </div>
 
       {/* mobile drawer */}
       <AnimatePresence>

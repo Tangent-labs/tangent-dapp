@@ -63,15 +63,31 @@ export function ShellV2({ children }: { children: ReactNode }) {
         className="sticky top-0 hidden h-dvh shrink-0 flex-col overflow-hidden border-r border-hairline bg-sidebar pb-3 lg:flex"
       >
         <div className={cn("flex h-[72px] shrink-0 items-center", collapsed ? "justify-center" : "justify-between px-6")}>
-          {!collapsed && <Brand />}
-          <button
-            onClick={toggle}
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            title={collapsed ? "Expand sidebar  [" : "Collapse sidebar  ["}
-            className="grid h-8 w-8 place-items-center rounded-lg text-ink-3 transition-colors hover:bg-white/[0.06] hover:text-white"
-          >
-            <PanelLeft className="h-4 w-4" strokeWidth={1.75} />
-          </button>
+          {collapsed ? (
+            <button
+              onClick={toggle}
+              aria-label="Expand sidebar"
+              title="Expand sidebar  ["
+              className="group grid h-9 w-9 place-items-center rounded-lg transition-colors hover:bg-white/[0.06]"
+            >
+              <span className="col-start-1 row-start-1 transition-opacity group-hover:opacity-0">
+                <TangentMark />
+              </span>
+              <PanelLeft className="col-start-1 row-start-1 h-4 w-4 text-white opacity-0 transition-opacity group-hover:opacity-100" strokeWidth={1.75} />
+            </button>
+          ) : (
+            <>
+              <Brand />
+              <button
+                onClick={toggle}
+                aria-label="Collapse sidebar"
+                title="Collapse sidebar  ["
+                className="grid h-8 w-8 place-items-center rounded-lg text-white opacity-50 transition hover:bg-white/[0.06] hover:opacity-100"
+              >
+                <PanelLeft className="h-4 w-4" strokeWidth={1.75} />
+              </button>
+            </>
+          )}
         </div>
         <Nav path={path} collapsed={collapsed} />
         <div className="px-3">
@@ -162,18 +178,25 @@ export function ShellV2({ children }: { children: ReactNode }) {
 function Brand() {
   return (
     <Link href="/" className="flex items-center gap-2 text-[17px] font-semibold tracking-[-0.01em]" aria-label="Tangent home">
-      <svg width="14" height="24" viewBox="0 0 47 80" aria-hidden>
-        <path
-          fill="white"
-          d="M46.8381 39.9998C45.7493 40.0763 44.6894 40.191 43.6584 40.344C34.9094 41.6541 28.2319 46.0529 25.2064 59.8325C24.0501 65.0727 23.4335 71.6804 23.4238 79.9902V39.9902H46.8381V39.9998Z"
-        />
-        <path
-          fill="white"
-          d="M23.4143 0V40H0C1.08881 39.9235 2.14872 39.8087 3.17972 39.6557C11.9288 38.3457 18.6062 33.9469 21.6317 20.1673C22.788 14.9271 23.4047 8.31939 23.4143 0.00956251V0Z"
-        />
-      </svg>
+      <TangentMark />
       Tangent
     </Link>
+  )
+}
+
+/** The Tangent logo mark (two petals). */
+function TangentMark() {
+  return (
+    <svg width="14" height="24" viewBox="0 0 47 80" aria-hidden>
+      <path
+        fill="white"
+        d="M46.8381 39.9998C45.7493 40.0763 44.6894 40.191 43.6584 40.344C34.9094 41.6541 28.2319 46.0529 25.2064 59.8325C24.0501 65.0727 23.4335 71.6804 23.4238 79.9902V39.9902H46.8381V39.9998Z"
+      />
+      <path
+        fill="white"
+        d="M23.4143 0V40H0C1.08881 39.9235 2.14872 39.8087 3.17972 39.6557C11.9288 38.3457 18.6062 33.9469 21.6317 20.1673C22.788 14.9271 23.4047 8.31939 23.4143 0.00956251V0Z"
+      />
+    </svg>
   )
 }
 
@@ -212,9 +235,12 @@ function Nav({ path, collapsed }: { path: string; collapsed: boolean }) {
                     transition={{ type: "spring", visualDuration: 0.35, bounce: 0.15 }}
                   />
                 )}
-                <Icon className="relative h-4 w-4 shrink-0" strokeWidth={1.75} />
+                <Icon
+                  className={cn("relative h-4 w-4 shrink-0 text-white transition-opacity", active ? "opacity-100" : "opacity-60 group-hover:opacity-100")}
+                  strokeWidth={1.75}
+                />
                 {!collapsed && <span className="relative whitespace-nowrap">{it.label}</span>}
-                {!collapsed && it.external && <ArrowUpRight className="relative ml-auto h-3.5 w-3.5 text-ink-3" strokeWidth={1.75} />}
+                {!collapsed && it.external && <ArrowUpRight className="relative ml-auto h-3.5 w-3.5 text-white opacity-40" strokeWidth={1.75} />}
                 {collapsed && (
                   <span className="pointer-events-none fixed left-[80px] z-50 -translate-x-1 whitespace-nowrap rounded-md bg-white px-2 py-1 text-xs font-medium text-black opacity-0 transition-[opacity,transform] duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100">
                     {it.label}

@@ -1,5 +1,6 @@
 "use client"
 
+import { VoidTexture } from "@/v2/ui/void-texture"
 import { useMemo, useState } from "react"
 import { formatUnits } from "viem"
 import { AnimatePresence, motion } from "framer-motion"
@@ -75,6 +76,7 @@ export function EarnPageV2() {
 
       <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
         <Tile
+          hero
           label="Best vAPR"
           value={best ? pct(best.currentAPR) : "-"}
           foot={best ? `${label(best)} on ${best.protocolName}` : "Loading opportunities"}
@@ -214,9 +216,14 @@ export function EarnPageV2() {
   )
 }
 
-function Tile({ label, value, foot, loading }: { label: string; value: string; foot: string; loading?: boolean }) {
+function Tile({ label, value, foot, loading, hero }: { label: string; value: string; foot: string; loading?: boolean; hero?: boolean }) {
   return (
-    <div className="flex flex-col rounded-2xl border border-hairline bg-surface p-[18px]">
+    <div className="relative isolate flex flex-col overflow-hidden rounded-2xl border border-hairline bg-surface p-[18px]">
+      {hero && (
+        <span aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+          <VoidTexture id="earn-hero" />
+        </span>
+      )}
       <span className="text-[13px] font-medium text-ink-2">{label}</span>
       <span className={cn("mt-2 text-[26px] font-medium tabular-nums tracking-[-0.02em]", loading && "animate-pulse text-ink-3")}>{value}</span>
       <div className="mt-auto border-t border-divider pt-2.5 text-xs text-ink-3">{foot}</div>

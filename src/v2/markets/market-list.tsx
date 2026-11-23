@@ -1,5 +1,6 @@
 "use client"
 
+import { VoidTexture } from "@/v2/ui/void-texture"
 import Link from "next/link"
 import { ReactNode, useMemo, useState } from "react"
 import { formatUnits } from "viem"
@@ -103,7 +104,10 @@ export function MarketListV2() {
 
       {/* overview: the peg first, then the four protocol numbers */}
       <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <div className="flex flex-col rounded-2xl border border-hairline bg-surface p-6">
+        <div className="relative isolate flex flex-col overflow-hidden rounded-2xl border border-hairline bg-surface p-6">
+          <span aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+            <VoidTexture id="peg-hero" />
+          </span>
           <span className="text-[13px] font-medium text-ink-2">USG price</span>
           <span className={cn("mt-1 text-[44px] font-light tabular-nums leading-none tracking-[-0.03em]", loading && "animate-pulse text-ink-3")}>
             {loading ? "$-" : `$${globalData.USGPrice}`}

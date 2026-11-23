@@ -1,5 +1,6 @@
 "use client"
 
+import { VoidTexture } from "@/v2/ui/void-texture"
 import Link from "next/link"
 import { useMemo, useState } from "react"
 import { formatUnits } from "viem"
@@ -116,7 +117,10 @@ export function StakePageV2() {
       <div className="mt-6 grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_392px]">
         {/* left: the yield first, then the history behind it */}
         <div className="min-w-0 overflow-hidden rounded-2xl border border-hairline bg-surface">
-          <div className="p-6">
+          <div className="relative isolate overflow-hidden p-6">
+            <span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[260px]">
+              <VoidTexture id="savings-hero" />
+            </span>
             <div className="flex items-center gap-2.5">
               <TokenImage token={vault.share.logo} size={32} className="h-7 w-auto" />
               <span>

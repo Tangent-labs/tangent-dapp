@@ -45,16 +45,88 @@ const SCALE = 0.42
 const GAP = 1.5
 const PATH = cellPath(SCALE)
 
-export function VoidTexture({ id }: { id: string }) {
+// deterministic pseudo random (same on server and client, no hydration mismatch)
+const rand = (i: number) => {
+  const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453
+  return x - Math.floor(x)
+}
+
+/**
+ * Tangent void texture. Static by default (hero cards): a repeating petal grid faded from one corner.
+ * With `breathe`, the grid is drawn cell by cell: the whole texture breathes slowly and a scattered set of cells
+ * lights up and dims at its own pace, like slow noise. Pure SVG <animate>, nothing runs in JS per frame.
+ * Callers pass `breathe={!prefersReducedMotion}`.
+ */
+export function VoidTexture({
+  id,
+  breathe = false,
+  origin = "tr",
+  cols = 12,
+  rows = 6,
+}: {
+  id: string
+  breathe?: boolean
+  origin?: "tr" | "tl"
+  cols?: number
+  rows?: number
+}) {
   const pw = W * SCALE + GAP
   const ph = H * SCALE + GAP
+  const cx = origin === "tl" ? "0" : "1"
+
+  if (breathe) {
+    const span = Math.hypot(cols, rows)
+    const cells = []
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const i = r * cols + c
+        // same falloff as the static texture, from the origin corner
+        const dx = origin === "tl" ? c : cols - 1 - c
+        const base = Math.max(0, 0.05 * (1 - Math.hypot(dx, r) / (span * 0.8)))
+        const lit = rand(i) < 0.22
+        cells.push(
+          <path key={i} d={PATH} transform={`translate(${(c * pw).toFixed(2)} ${(r * ph).toFixed(2)})`} fill="white" opacity={base}>
+            {lit && (
+              <animate
+                attributeName="opacity"
+                values={`${base};${(base + 0.025 + rand(i + 7) * 0.025).toFixed(3)};${base}`}
+                dur={`${(2.6 + rand(i + 3) * 3.4).toFixed(2)}s`}
+                begin={`${(rand(i + 11) * 6).toFixed(2)}s`}
+                repeatCount="indefinite"
+                calcMode="spline"
+                keyTimes="0;0.5;1"
+                keySplines="0.45 0 0.55 1;0.45 0 0.55 1"
+              />
+            )}
+          </path>
+        )
+      }
+    }
+    return (
+      <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full">
+        <g>
+          {cells}
+          <animate
+            attributeName="opacity"
+            values="0.85;1;0.85"
+            dur="7s"
+            repeatCount="indefinite"
+            calcMode="spline"
+            keyTimes="0;0.5;1"
+            keySplines="0.45 0 0.55 1;0.45 0 0.55 1"
+          />
+        </g>
+      </svg>
+    )
+  }
+
   return (
     <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full">
       <defs>
         <pattern id={`${id}-p`} width={pw} height={ph} patternUnits="userSpaceOnUse">
           <path d={PATH} fill="white" />
         </pattern>
-        <radialGradient id={`${id}-g`} cx="1" cy="0" r="0.75">
+        <radialGradient id={`${id}-g`} cx={cx} cy="0" r="0.75">
           <stop offset="0" stopColor="white" stopOpacity="0.075" />
           <stop offset="0.55" stopColor="white" stopOpacity="0.02" />
           <stop offset="1" stopColor="white" stopOpacity="0" />
@@ -63,7 +135,7 @@ export function VoidTexture({ id }: { id: string }) {
           <rect width="100%" height="100%" fill={`url(#${id}-g)`} />
         </mask>
       </defs>
-      <rect width="100%" height="100%" fill={`url(#${id}-p)`} mask={`url(#${id}-m)`} style={{ filter: "brightness(1)" }} />
+      <rect width="100%" height="100%" fill={`url(#${id}-p)`} mask={`url(#${id}-m)`} />
     </svg>
   )
 }

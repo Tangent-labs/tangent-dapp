@@ -4,6 +4,8 @@ import { Roll } from "@/v2/ui/roll"
 import { useId, useMemo } from "react"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
+import { useReducedMotion } from "framer-motion"
+import { VoidTexture } from "@/v2/ui/void-texture"
 import { useRootContext } from "@/components/products/root/root_context"
 import { useUSGContext } from "@/components/products/usg/usg_context"
 import { TokenImage } from "@/components/design_system/structure/token_image"
@@ -24,12 +26,16 @@ function usePeg() {
 /** Sidebar peg card, kept to what matters at a glance: price, distance to the peg, the month line against $1, and the sUSG APY. */
 export function PegCardV2() {
   const { points, last, apy } = usePeg()
+  const reduce = useReducedMotion()
   const delta = last !== undefined ? (last - 1) * 100 : undefined
 
   if (last === undefined) return <div className="h-[148px] animate-pulse rounded-xl border border-hairline bg-surface" />
 
   return (
-    <div className="rounded-xl border border-hairline bg-surface p-3.5">
+    <div className="relative isolate overflow-hidden rounded-xl border border-hairline bg-surface p-3.5">
+      <span aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <VoidTexture id="peg-card" origin="tl" breathe={!reduce} cols={12} rows={6} />
+      </span>
       <div className="flex items-center gap-2 text-[13px] font-medium text-ink-2">
         <TokenImage token="USG" size={16} /> USG
         {delta !== undefined && (
@@ -83,7 +89,7 @@ function PegSparkline({ points }: { points: number[] }) {
 
   return (
     <div className="relative mt-3">
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} preserveAspectRatio="none" aria-hidden>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} preserveAspectRatio="none" className="block overflow-visible" aria-hidden>
         <defs>
           <linearGradient id={`peg-${id}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#0075FF" stopOpacity={0.22} />
@@ -93,8 +99,14 @@ function PegSparkline({ points }: { points: number[] }) {
         <line x1="0" x2={W} y1={refY} y2={refY} stroke="rgba(255,255,255,0.25)" strokeDasharray="2 3" strokeWidth={1} vectorEffect="non-scaling-stroke" />
         <path d={area} fill={`url(#peg-${id})`} />
         <path d={path} fill="none" stroke="#0075FF" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
-        {lastY && <circle cx={W} cy={Number(lastY)} r={2.5} fill="#0075FF" />}
       </svg>
+      {lastY && (
+        <span
+          aria-hidden
+          className="absolute right-0 h-[6px] w-[6px] -translate-y-1/2 translate-x-1/2 rounded-full bg-action"
+          style={{ top: `${(Number(lastY) / H) * 100}%` }}
+        />
+      )}
     </div>
   )
 }

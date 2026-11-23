@@ -34,7 +34,7 @@ export const NAV: NavGroup[] = [
     group: null,
     items: [
       { href: "/", label: "Markets", icon: BarChart3, isActive: isOnMarket },
-      { href: "/stake", label: "Savings", icon: PiggyBank },
+      { href: "/stake", label: "Savings", icon: PiggyBank, isActive: (p) => p.startsWith("/stake") },
       { href: "/earn", label: "Earn", icon: Sprout },
       {
         href: "/swap?tokenIn=0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48&tokenOut=0xb1c2db5d6ca03fce73dbd304d320bf76c55ae1b1",

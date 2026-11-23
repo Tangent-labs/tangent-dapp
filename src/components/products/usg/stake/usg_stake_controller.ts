@@ -1,7 +1,7 @@
 import { dappErrors } from "@/components/design_system/notifications/form-errors"
 import { formatNumber } from "@/lib/number_formatter"
 import { getApproveTx, getPublicClient, waitForTransaction } from "@/services/service_rpc"
-import { Address, EstimateContractGasParameters, formatUnits, maxUint256, WalletClient, WriteContractParameters } from "viem"
+import { Address, EstimateContractGasParameters, formatUnits, maxUint256, parseAbi, WalletClient, WriteContractParameters } from "viem"
 import yearnV3Vault from "../../../../abi/USG/YearnV3Vault.json"
 import { FormError, FormState, USGStakingInfo } from "../usg_type"
 
@@ -166,5 +166,47 @@ export const computeSUSGAprVariation = (currentFeature: string, USGsUSGMetrics: 
   return {
     current: `${currentAPY.toFixed(2)}% =>`,
     updated: `${(Number(newAPR) / 100).toFixed(2)}%`,
+  }
+}
+
+// ────────────────────────────────────────
+//      YEARN V3 VAULTS (Curve LP assets)
+// ────────────────────────────────────────
+
+const yearnV3Abi = parseAbi([
+  "function balanceOf(address) view returns (uint256)",
+  "function allowance(address,address) view returns (uint256)",
+  "function convertToAssets(uint256) view returns (uint256)",
+  "function totalSupply() view returns (uint256)",
+  "function get_virtual_price() view returns (uint256)",
+])
+
+const MULTICALL3: Address = "0xcA11bde05977b3631167028862bE2a173976CA11"
+
+// Returned in the USGStakingInfo shape (asset = USG* slots, vault share = sUSG* slots) so the sUSG form/panel is reused.
+// ponytail: LP priced at get_virtual_price (≈ $1 per pool unit), use an oracle if a pool drifts from peg.
+export const getYearnV3Metrics = async (account: Address, lp: Address, vault: Address): Promise<USGStakingInfo> => {
+  const [lpBalance, lpAllowance, shareBalance, assetsPerShare, shareSupply, virtualPrice] = await getPublicClient().multicall({
+    multicallAddress: MULTICALL3,
+    allowFailure: false,
+    contracts: [
+      { address: lp, abi: yearnV3Abi, functionName: "balanceOf", args: [account] },
+      { address: lp, abi: yearnV3Abi, functionName: "allowance", args: [account, vault] },
+      { address: vault, abi: yearnV3Abi, functionName: "balanceOf", args: [account] },
+      { address: vault, abi: yearnV3Abi, functionName: "convertToAssets", args: [10n ** 18n] },
+      { address: vault, abi: yearnV3Abi, functionName: "totalSupply" },
+      { address: lp, abi: yearnV3Abi, functionName: "get_virtual_price" },
+    ],
+  })
+
+  return {
+    USGBalance: lpBalance,
+    USGAllowance: lpAllowance,
+    USGPrice: virtualPrice,
+    USGSupply: 0n,
+    USGPercentageInsUSG: 0n,
+    sUSGBalance: shareBalance,
+    sUSGPrice: (assetsPerShare * virtualPrice) / 10n ** 18n,
+    sUSGSupply: shareSupply,
   }
 }

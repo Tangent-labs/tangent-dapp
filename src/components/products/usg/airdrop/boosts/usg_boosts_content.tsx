@@ -1,5 +1,8 @@
 "use client"
 
+import { UI_V2 } from "@/v2/ui"
+import { BoostsPageV2 } from "@/v2/airdrop/boosts-page"
+
 import Image from "next/image"
 import { useUSGContext } from "../../usg_context"
 import { boostHeaders } from "./usg_boosts_controller"
@@ -12,6 +15,11 @@ import { PageHeader } from "@/components/design_system/structure/page_header"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export const UsgBoostsContent = () => {
+  if (UI_V2) return <BoostsPageV2 />
+  return <UsgBoostsContentV1 />
+}
+
+const UsgBoostsContentV1 = () => {
   const { lpUserPoints, voteUserPoints, userBoostFactor } = useUSGContext()
 
   const { userBoosts, getSortedRows } = useUsgBoostsContext()

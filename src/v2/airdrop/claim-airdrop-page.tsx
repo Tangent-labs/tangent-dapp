@@ -37,8 +37,7 @@ const CAT_COLOR: Record<AirdropCategoryId, string> = {
 export function ClaimAirdropPageV2() {
   const { lpUserPoints, voteUserPoints, userBoostFactor } = useUSGContext()
   const { setReferralStatus, referralStatus, airdropDataIsLoading, signMessage } = useUsgAirdropContext()
-  const { isLoading, isConnected, address, recipient, allocations, distribution, totalAmount, claimStatus, claimAll, connect } =
-    useUsgClaimAirdropContext()
+  const { isLoading, isConnected, address, recipient, allocations, distribution, totalAmount, claimStatus, claimAll, connect } = useUsgClaimAirdropContext()
   const [openCode, setOpenCode] = useState(false)
 
   const hasAllocation = !!recipient && totalAmount > 0
@@ -55,16 +54,16 @@ export function ClaimAirdropPageV2() {
           <div className="text-xs text-ink-3">{isClaimed ? "Claimed" : "Total allocation"}</div>
           <div className="mt-1 flex items-center gap-3">
             <IconTan className="size-9 shrink-0" />
-            <span className="text-[48px] font-light tabular-nums leading-[1.05] tracking-[-0.02em]">
-              {showWallet ? formatTan(totalAmount) : "-"}
-            </span>
+            <span className="text-[48px] font-light tabular-nums leading-[1.05] tracking-[-0.02em]">{showWallet ? formatTan(totalAmount) : "-"}</span>
             <span className="mt-4 text-[15px] text-ink-2">TAN</span>
           </div>
-          <div className="mt-2 text-xs text-ink-3">
-            {showWallet ? `Wallet ${shortenAddress(address)}` : `Snapshot of ${AIRDROP_SNAPSHOT_DATE}`}
-          </div>
+          <div className="mt-2 text-xs text-ink-3">{showWallet ? `Wallet ${shortenAddress(address)}` : `Snapshot of ${AIRDROP_SNAPSHOT_DATE}`}</div>
         </div>
-        <Stat label="Liquidity points" value={`${formatMillions(lpUserPoints?.lpTotalPoints)} pts`} sub={`${formatMillions((lpUserPoints?.lpDailyRate || 0) * userBoostFactor)} pts/day`} />
+        <Stat
+          label="Liquidity points"
+          value={`${formatMillions(lpUserPoints?.lpTotalPoints)} pts`}
+          sub={`${formatMillions((lpUserPoints?.lpDailyRate || 0) * userBoostFactor)} pts/day`}
+        />
         <Stat label="Voting points" value={`${formatNumber(voteUserPoints?.voteTotalPoints, 0)} pts`} sub="Vote campaign" />
         <Stat label="Your boost" value={`x${userBoostFactor}`} sub={referralStatus?.hasUsedCode ? "Referral code applied" : "Enter a code for x1.1"} />
       </div>
@@ -156,7 +155,9 @@ export function ClaimAirdropPageV2() {
                   onClick={claimAll}
                 />
               )}
-              {hasAllocation && claimStatus === "claiming" && <Button label="Claiming..." className="flex w-full items-center justify-center" state="disabled" />}
+              {hasAllocation && claimStatus === "claiming" && (
+                <Button label="Claiming..." className="flex w-full items-center justify-center" state="disabled" />
+              )}
               {isClaimed && (
                 <div className="flex h-10 items-center justify-center gap-2 rounded-[10px] border border-white/10 text-[13px] font-semibold">
                   <Check className="h-4 w-4" strokeWidth={2.5} /> Claimed

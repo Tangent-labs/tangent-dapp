@@ -1,5 +1,8 @@
 "use client"
 
+import { UI_V2 } from "@/v2/ui"
+import { ReferralPageV2 } from "@/v2/airdrop/referral-page"
+
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { useUSGContext } from "../../usg_context"
@@ -18,6 +21,11 @@ import { SecondaryButton } from "@/components/design_system/inputs/secondary_but
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export const UsgReferralCode = () => {
+  if (UI_V2) return <ReferralPageV2 />
+  return <UsgReferralCodeV1 />
+}
+
+const UsgReferralCodeV1 = () => {
   const { copied, copy } = useClipboard()
 
   const { isConnected, currentAddress } = useWalletConnexionContext()

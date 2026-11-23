@@ -1,5 +1,6 @@
 "use client"
 
+import { Roll } from "@/v2/ui/roll"
 import { VoidTexture } from "@/v2/ui/void-texture"
 import Link from "next/link"
 import { useMemo, useState } from "react"
@@ -132,7 +133,7 @@ export function StakePageV2() {
             </div>
             <div className="mt-6 text-[13px] text-ink-2">Current APY</div>
             <div className="mt-1 text-[56px] font-light tabular-nums leading-none tracking-[-0.03em]">
-              {sUSGCurrentAPY ? `${sUSGCurrentAPY.toFixed(2)}%` : "-"}
+              <Roll value={sUSGCurrentAPY ? `${sUSGCurrentAPY.toFixed(2)}%` : "-"} />
             </div>
             <p className="mt-2 text-[13px] text-ink-2">
               {vault.hasData
@@ -262,7 +263,7 @@ export function StakePageV2() {
                           <span className="text-ink-3">→</span>
                         </>
                       )}
-                      <span className="font-medium">{typing ? r.after : r.now}</span>
+                      <Roll className="font-medium" value={typing ? r.after : r.now} />
                     </span>
                   </div>
                 ))}

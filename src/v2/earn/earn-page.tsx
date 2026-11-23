@@ -1,5 +1,6 @@
 "use client"
 
+import { Roll } from "@/v2/ui/roll"
 import { VoidTexture } from "@/v2/ui/void-texture"
 import { useMemo, useState } from "react"
 import { formatUnits } from "viem"
@@ -225,7 +226,9 @@ function Tile({ label, value, foot, loading, hero }: { label: string; value: str
         </span>
       )}
       <span className="text-[13px] font-medium text-ink-2">{label}</span>
-      <span className={cn("mt-2 text-[26px] font-medium tabular-nums tracking-[-0.02em]", loading && "animate-pulse text-ink-3")}>{value}</span>
+      <span className={cn("mt-2 text-[26px] font-medium tabular-nums tracking-[-0.02em]", loading && "animate-pulse text-ink-3")}>
+        <Roll value={value} />
+      </span>
       <div className="mt-auto border-t border-divider pt-2.5 text-xs text-ink-3">{foot}</div>
     </div>
   )

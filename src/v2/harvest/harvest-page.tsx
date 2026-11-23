@@ -1,5 +1,6 @@
 "use client"
 
+import { Roll } from "@/v2/ui/roll"
 import { useMemo, useState } from "react"
 import { Check, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -48,7 +49,7 @@ export function HarvestPageV2() {
         <div className="min-w-[220px] flex-[1.6] pr-8">
           <div className="text-xs text-ink-3">Rewards waiting</div>
           <div className="mt-1 text-[48px] font-light tabular-nums leading-[1.05] tracking-[-0.02em]">
-            {isChainviewLoading ? "-" : formatDollar(totalRewards, 2)}
+            <Roll value={isChainviewLoading ? "-" : formatDollar(totalRewards, 2)} />
           </div>
         </div>
         <Stat label="Harvester rewards" value={isChainviewLoading ? "-" : formatDollar(harvesterRewards, 2)} sub="Your share if you harvest all" />
@@ -162,7 +163,7 @@ export function HarvestPageV2() {
           {marketsToHarvest.length > 0 && (
             <div className="mt-4 flex items-baseline justify-between border-t border-divider pt-4 text-[13px]">
               <span className="text-ink-2">Total harvested</span>
-              <span className="text-[17px] font-medium tabular-nums">{formatDollar(selectedTotal, 2)}</span>
+              <Roll className="text-[17px] font-medium" value={formatDollar(selectedTotal, 2)} />
             </div>
           )}
           <div className="mt-4">

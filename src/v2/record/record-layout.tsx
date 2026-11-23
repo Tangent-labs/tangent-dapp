@@ -1,5 +1,6 @@
 "use client"
 
+import { Roll } from "@/v2/ui/roll"
 import Link from "next/link"
 import { ReactNode, useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
@@ -235,7 +236,7 @@ function Mini({ label, value, negative }: { label: string; value?: string; negat
   return (
     <span className="flex shrink-0 items-baseline gap-1.5 whitespace-nowrap text-[13px]">
       <span className="text-ink-3">{label}</span>
-      <span className={cn("font-medium tabular-nums", negative && "text-negative")}>{value ?? "-"}</span>
+      <Roll className={cn("font-medium", negative && "text-negative")} value={value ?? "-"} />
     </span>
   )
 }
@@ -268,7 +269,7 @@ function Stat({
           negative && "text-negative"
         )}
       >
-        {value}
+        <Roll value={value} />
       </div>
       {sub && <div className="mt-1.5 text-xs tabular-nums text-ink-2">{sub}</div>}
     </div>

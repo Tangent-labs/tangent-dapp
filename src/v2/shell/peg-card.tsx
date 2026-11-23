@@ -1,5 +1,6 @@
 "use client"
 
+import { Roll } from "@/v2/ui/roll"
 import { useId, useMemo } from "react"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
@@ -38,7 +39,9 @@ export function PegCardV2() {
           </span>
         )}
       </div>
-      <div className="mt-1.5 text-[24px] font-light tabular-nums tracking-[-0.02em]">${last.toFixed(4)}</div>
+      <div className="mt-1.5 text-[24px] font-light tabular-nums tracking-[-0.02em]">
+        <Roll value={"$" + last.toFixed(4)} />
+      </div>
       {points.length > 1 && <PegSparkline points={points.map((p) => p.uv)} />}
       <div className="mt-3 flex items-center justify-between border-t border-divider pt-2.5 text-xs">
         <span className="text-ink-2">sUSG APY</span>

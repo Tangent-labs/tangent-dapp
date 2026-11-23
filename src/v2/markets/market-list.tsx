@@ -1,5 +1,6 @@
 "use client"
 
+import { Roll } from "@/v2/ui/roll"
 import { VoidTexture } from "@/v2/ui/void-texture"
 import Link from "next/link"
 import { ReactNode, useMemo, useState } from "react"
@@ -110,7 +111,7 @@ export function MarketListV2() {
           </span>
           <span className="text-[13px] font-medium text-ink-2">USG price</span>
           <span className={cn("mt-1 text-[44px] font-light tabular-nums leading-none tracking-[-0.03em]", loading && "animate-pulse text-ink-3")}>
-            {loading ? "$-" : `$${globalData.USGPrice}`}
+            <Roll value={loading ? "$-" : `${globalData.USGPrice}`} />
           </span>
           {!loading && (
             <p className="mt-3 text-[13px] text-ink-2">
@@ -319,7 +320,9 @@ function Tile({ label, value, foot }: { label: string; value: string; foot: stri
   return (
     <div className="flex flex-col rounded-2xl border border-hairline bg-surface p-[18px]">
       <span className="text-[13px] font-medium text-ink-2">{label}</span>
-      <span className={cn("mt-2 text-[26px] font-medium tabular-nums tracking-[-0.02em]", value === "-" && "animate-pulse text-ink-3")}>{value}</span>
+      <span className={cn("mt-2 text-[26px] font-medium tabular-nums tracking-[-0.02em]", value === "-" && "animate-pulse text-ink-3")}>
+        <Roll value={value} />
+      </span>
       <div className="mt-auto border-t border-divider pt-2.5 text-xs text-ink-3">{foot}</div>
     </div>
   )

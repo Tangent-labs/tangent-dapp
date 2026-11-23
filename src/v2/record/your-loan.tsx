@@ -1,5 +1,6 @@
 "use client"
 
+import { Roll } from "@/v2/ui/roll"
 import { useMemo } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { cn } from "@/lib/utils"
@@ -57,7 +58,7 @@ export function YourLoanV2() {
             <span className="text-ink-3">→</span>
           </>
         )}
-        <span className={cn("font-medium", typing ? afterToneClass : tone)}>{typing ? after : now}</span>
+        <Roll className={cn("font-medium", typing ? afterToneClass : tone)} value={typing ? after : now} />
       </span>
     </div>
   )
@@ -86,7 +87,7 @@ export function YourLoanV2() {
               <div>
                 <div className="text-xs text-ink-3">Collateral</div>
                 <div className="mt-1 text-[17px] font-medium tabular-nums">
-                  {typing ? futureMarketDisplayData.collateralValue : marketDisplayData.collateralValue}
+                  <Roll value={typing ? futureMarketDisplayData.collateralValue : marketDisplayData.collateralValue} />
                 </div>
                 {hasLoan && (
                   <div className="text-xs tabular-nums text-ink-3">
@@ -98,7 +99,9 @@ export function YourLoanV2() {
               </div>
               <div>
                 <div className="text-xs text-ink-3">Debt</div>
-                <div className="mt-1 text-[17px] font-medium tabular-nums">{typing ? futureMarketDisplayData.debt : marketDisplayData.debt} USG</div>
+                <div className="mt-1 text-[17px] font-medium tabular-nums">
+                  <Roll value={`${typing ? futureMarketDisplayData.debt : marketDisplayData.debt} USG`} />
+                </div>
                 {hasLoan && typing && futureMarketDisplayData.debt !== marketDisplayData.debt && (
                   <div className="text-xs tabular-nums text-ink-3">Today {marketDisplayData.debt} USG</div>
                 )}
@@ -126,7 +129,7 @@ export function YourLoanV2() {
                   <span className="text-ink-2">
                     <Term info={TERMS.liquidationPrice}>Liquidation price{typing ? ", after" : ""}</Term>
                   </span>
-                  <span className="font-medium tabular-nums">${liq.toFixed(4)}</span>
+                  <Roll className="font-medium" value={"$" + liq.toFixed(4)} />
                 </div>
               )}
             </div>

@@ -1,5 +1,6 @@
 "use client"
 
+import { Roll } from "@/v2/ui/roll"
 import { ReactNode, useMemo, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronDown } from "lucide-react"
@@ -151,7 +152,7 @@ export function VAPRCalculatorV2(p: VAPRCalculatorV2Props) {
                             isHealth && (health < 1.2 ? "text-negative" : health < 1.5 ? "text-warning" : "")
                           )}
                         >
-                          {value}
+                          <Roll value={value} />
                         </div>
                         {isHealth && health > 0 && <div className="text-xs tabular-nums text-ink-3">{((1 - 1 / health) * 100).toFixed(1)}% to liquidation</div>}
                       </div>

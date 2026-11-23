@@ -1,5 +1,6 @@
 "use client"
 
+import { Roll } from "@/v2/ui/roll"
 import { useMemo, useState } from "react"
 import { formatUnits } from "viem"
 import { Check, ChevronDown } from "lucide-react"
@@ -55,7 +56,9 @@ export function ClaimPageV2() {
       <div className="mt-6 flex flex-wrap items-stretch gap-y-4">
         <div className="min-w-[220px] flex-[1.6] pr-8">
           <div className="text-xs text-ink-3">Total claimable</div>
-          <div className="mt-1 text-[48px] font-light tabular-nums leading-[1.05] tracking-[-0.02em]">{totalClaimable || "-"}</div>
+          <div className="mt-1 text-[48px] font-light tabular-nums leading-[1.05] tracking-[-0.02em]">
+            <Roll value={totalClaimable || "-"} />
+          </div>
         </div>
         <Stat label="Average APR" value={!weightedAPRAverage || weightedAPRAverage.startsWith("-") ? "-" : weightedAPRAverage} sub="Weighted by deposit" />
         <Stat label="Total deposited" value={totalDeposited || "-"} sub="Across your positions" />
@@ -176,7 +179,7 @@ export function ClaimPageV2() {
           {marketsToClaim.length > 0 && (
             <div className="mt-4 flex items-baseline justify-between border-t border-divider pt-4 text-[13px]">
               <span className="text-ink-2">You receive</span>
-              <span className="text-[17px] font-medium tabular-nums">{formatDollar(selectedTotal, 2)}</span>
+              <Roll className="text-[17px] font-medium" value={formatDollar(selectedTotal, 2)} />
             </div>
           )}
           <div className="mt-4">

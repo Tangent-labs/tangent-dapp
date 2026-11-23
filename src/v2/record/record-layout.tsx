@@ -18,6 +18,7 @@ import { TERMS, Term } from "@/v2/ui/term"
 import { Venue } from "@/v2/ui/venue"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { YourLoanV2 } from "./your-loan"
+import { OracleV2 } from "./oracle"
 import { MarketSwitcherV2 } from "./market-switcher"
 
 /**
@@ -176,6 +177,11 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                 {/* the live chart card carries its own title and range tabs */}
                 <CollateralPriceProvider>
                   <USGCollateralPrice />
+                  <div className="mt-10">
+                    <Section title="Oracle" note="The price feed this market uses to value the collateral.">
+                      <OracleV2 />
+                    </Section>
+                  </div>
                 </CollateralPriceProvider>
 
                 <Section

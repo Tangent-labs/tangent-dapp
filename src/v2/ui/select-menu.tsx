@@ -63,7 +63,7 @@ export function SelectMenu({
                   setOpen(false)
                 }}
                 className={cn(
-                  "flex w-full items-start gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-white/[0.06]",
+                  "flex w-full items-start gap-2.5 rounded-[6px] px-2.5 py-2 text-left transition-colors hover:bg-white/[0.06]",
                   active && "bg-white/[0.04]"
                 )}
               >

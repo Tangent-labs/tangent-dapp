@@ -52,7 +52,7 @@ export const InputSelect = <T extends { value: string }>({
                   <SelectPrimitive.Item
                     key={option.value}
                     value={option.value}
-                    className="relative flex cursor-pointer select-none items-center gap-2 rounded-lg py-1.5 pl-2.5 pr-8 text-[13px] outline-none data-[highlighted]:bg-white/[0.07] data-[state=checked]:bg-white/[0.04]"
+                    className="relative flex cursor-pointer select-none items-center gap-2 rounded-[6px] py-1.5 pl-2.5 pr-8 text-[13px] outline-none data-[highlighted]:bg-white/[0.07] data-[state=checked]:bg-white/[0.04]"
                   >
                     <SelectPrimitive.ItemText>{template ? template(option) : option.value}</SelectPrimitive.ItemText>
                     <SelectPrimitive.ItemIndicator className="absolute right-2.5">

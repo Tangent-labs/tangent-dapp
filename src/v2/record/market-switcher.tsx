@@ -119,7 +119,7 @@ function Panel({ current, close }: { current?: string; close: () => void }) {
         <kbd className="rounded-[5px] border border-hairline px-1.5 text-[11px] text-ink-3">esc</kbd>
       </label>
       <div role="listbox" className="v2-scroll max-h-[380px] overflow-y-auto p-1.5">
-        {loading && Array.from({ length: 6 }, (_, i) => <div key={i} className="mx-1.5 my-1 h-9 animate-pulse rounded-lg bg-white/[0.04]" />)}
+        {loading && Array.from({ length: 6 }, (_, i) => <div key={i} className="mx-1.5 my-1 h-9 animate-pulse rounded-[8px] bg-white/[0.04]" />)}
         {!loading && flat.length === 0 && <p className="px-3 py-6 text-center text-[13px] text-ink-2">No market matches “{q}”.</p>}
         {!loading &&
           groups.map((g) => (
@@ -137,7 +137,7 @@ function Panel({ current, close }: { current?: string; close: () => void }) {
                     onPointerEnter={() => setActive(idx)}
                     onClick={() => go(r)}
                     className={cn(
-                      "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors duration-100",
+                      "flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-left transition-colors duration-100",
                       idx === active && "bg-white/[0.07]"
                     )}
                   >

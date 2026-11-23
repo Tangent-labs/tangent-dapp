@@ -88,7 +88,7 @@ export function TokenDialogV2({
         data-idx={idx}
         onPointerMove={() => setActive(idx)}
         onClick={() => pick(o)}
-        className={cn("flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors duration-100", idx === active && "bg-white/[0.07]")}
+        className={cn("flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-left transition-colors duration-100", idx === active && "bg-white/[0.07]")}
       >
         <TokenMark o={o} size={28} />
         <span className="min-w-0 flex-1">

@@ -74,7 +74,7 @@ export function TanLayoutV2({ children }: { children: ReactNode }) {
                 aria-selected={feature === t}
                 onClick={() => router.push(`/tan/${t}`)}
                 className={cn(
-                  "h-8 flex-1 rounded-lg text-[13px] font-medium capitalize transition-colors",
+                  "h-8 flex-1 rounded-[6px] text-[13px] font-medium capitalize transition-colors",
                   feature === t ? "bg-white text-black" : "text-ink-2 hover:text-white"
                 )}
               >

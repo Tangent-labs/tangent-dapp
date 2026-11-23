@@ -175,14 +175,14 @@ export function MarketListV2() {
               aria-selected={filteredBy === s.value}
               onClick={() => setFilteredBy(s.value)}
               className={cn(
-                "relative h-8 rounded-lg px-3 text-[13px] font-medium transition-colors",
+                "relative h-8 rounded-[6px] px-3 text-[13px] font-medium transition-colors",
                 filteredBy === s.value ? "text-white" : "text-ink-3 hover:text-ink-2"
               )}
             >
               {filteredBy === s.value && (
                 <motion.span
                   layoutId="v2-market-show"
-                  className="absolute inset-0 rounded-lg bg-white/[0.09]"
+                  className="absolute inset-0 rounded-[6px] bg-white/[0.09]"
                   transition={{ type: "spring", visualDuration: 0.3, bounce: 0.15 }}
                 />
               )}
@@ -215,12 +215,12 @@ export function MarketListV2() {
               aria-checked={view === v}
               aria-label={v === "list" ? "List view" : "Card view"}
               onClick={() => setView(v)}
-              className={cn("relative grid h-8 w-8 place-items-center rounded-lg", view === v ? "text-white" : "text-ink-3 hover:text-ink-2")}
+              className={cn("relative grid h-8 w-8 place-items-center rounded-[6px]", view === v ? "text-white" : "text-ink-3 hover:text-ink-2")}
             >
               {view === v && (
                 <motion.span
                   layoutId="v2-market-view"
-                  className="absolute inset-0 rounded-lg bg-white/[0.09]"
+                  className="absolute inset-0 rounded-[6px] bg-white/[0.09]"
                   transition={{ type: "spring", visualDuration: 0.3, bounce: 0.15 }}
                 />
               )}

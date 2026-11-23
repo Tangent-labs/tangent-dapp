@@ -14,6 +14,7 @@ import { useUSGMaketListContext } from "@/components/products/usg/list/usg_marke
 import { marketOptions, protocolOptions } from "@/components/products/usg/list/usg_market_controller"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { Term } from "@/v2/ui/term"
 import { Venue } from "@/v2/ui/venue"
 import { SelectMenu } from "@/v2/ui/select-menu"
 import { Sparkline } from "@/v2/ui/sparkline"
@@ -307,18 +308,7 @@ function Inline({ label, value }: { label: string; value: ReactNode }) {
   )
 }
 
-function Head({ children, info }: { children: ReactNode; info: string }) {
-  return (
-    <HoverCard openDelay={150} closeDelay={80}>
-      <HoverCardTrigger asChild>
-        <span className="w-fit cursor-help underline decoration-white/15 decoration-dotted underline-offset-4">{children}</span>
-      </HoverCardTrigger>
-      <HoverCardContent side="top" align="start" className="z-[9999] w-fit max-w-60 rounded-lg border-white/10 bg-[#1a1a1d] p-2 text-xs text-ink-2">
-        {info}
-      </HoverCardContent>
-    </HoverCard>
-  )
-}
+const Head = ({ children, info }: { children: ReactNode; info: string }) => <Term info={info}>{children}</Term>
 
 function GroupHead({ kind, rows, flush }: { kind: string; rows: ListRowData[]; flush?: boolean }) {
   const tvl = rows.reduce((s, r) => s + Number(formatUnits(BigInt(r.totalCollateralUSDValue || "0"), 18)), 0)

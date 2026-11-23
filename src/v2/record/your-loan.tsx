@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { formatBigIntAsNumber } from "@/lib/number_formatter"
 import { getLTVColor, isVolatileCollateral } from "@/lib/risk_color"
+import { TERMS, Term } from "@/v2/ui/term"
 import { useUSGRecordContext } from "@/components/products/usg/record/usg_record_context"
 
 /** getLTVColor thresholds stay the live ones; V2 has no green, so "safe" reads in plain ink. */
@@ -32,9 +33,23 @@ export function YourLoanV2() {
   // same scaling as the live collateral price chart (usg_collateral_price.tsx)
   const liq = Number(Number(liquidationPrice / 10n ** 15n).toFixed(4)) / 1000
 
-  const Row = ({ label, now, after, tone, afterToneClass }: { label: string; now: string; after: string; tone?: string; afterToneClass?: string }) => (
+  const Row = ({
+    label,
+    now,
+    after,
+    tone,
+    afterToneClass,
+    info,
+  }: {
+    label: string
+    now: string
+    after: string
+    tone?: string
+    afterToneClass?: string
+    info?: string
+  }) => (
     <div className="flex items-baseline justify-between gap-3 text-[13px]">
-      <span className="text-ink-2">{label}</span>
+      <span className="text-ink-2">{info ? <Term info={info}>{label}</Term> : label}</span>
       <span className="flex items-baseline gap-1.5 tabular-nums">
         {typing && after !== now && (
           <>
@@ -93,19 +108,24 @@ export function YourLoanV2() {
             <div className="mt-4 space-y-2.5 border-t border-divider pt-4">
               <Row
                 label="Health"
+                info={TERMS.health}
                 now={noDebt(marketDisplayData.health)}
                 after={noDebt(futureMarketDisplayData.health)}
                 tone={nowTone}
                 afterToneClass={afterTone}
               />
-              <Row label="LTV" now={marketDisplayData.ltv} after={futureMarketDisplayData.ltv} tone={nowTone} afterToneClass={afterTone} />
+              <Row label="LTV" info={TERMS.maxLtv} now={marketDisplayData.ltv} after={futureMarketDisplayData.ltv} tone={nowTone} afterToneClass={afterTone} />
               <div className="flex items-baseline justify-between text-[13px]">
-                <span className="text-ink-2">Max LTV</span>
+                <span className="text-ink-2">
+                  <Term info={TERMS.maxLtv}>Max LTV</Term>
+                </span>
                 <span className="font-medium tabular-nums">{marketDisplayData.maxLtv}</span>
               </div>
               {liq > 0 && (
                 <div className="flex items-baseline justify-between text-[13px]">
-                  <span className="text-ink-2">Liquidation price{typing ? ", after" : ""}</span>
+                  <span className="text-ink-2">
+                    <Term info={TERMS.liquidationPrice}>Liquidation price{typing ? ", after" : ""}</Term>
+                  </span>
                   <span className="font-medium tabular-nums">${liq.toFixed(4)}</span>
                 </div>
               )}

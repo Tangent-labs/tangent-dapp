@@ -13,6 +13,7 @@ import { CollateralPriceProvider } from "@/components/products/usg/record/collat
 import { USGPositionHistory } from "@/components/products/usg/record/position_history/usg_position_history"
 import { VAPRCalculator } from "@/components/products/usg/record/vapr_calculator/vapr_calculator"
 import { isFixedRateMarket } from "@/components/products/usg/list/usg_market_controller"
+import { TERMS, Term } from "@/v2/ui/term"
 import { Venue } from "@/v2/ui/venue"
 import { YourLoanV2 } from "./your-loan"
 import { MarketSwitcherV2 } from "./market-switcher"
@@ -101,9 +102,19 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
               >
                 {/* stat strip: the decision metric first and biggest */}
                 <div className="flex items-stretch">
-                  <Stat label="Collateral vAPR" value={`${currentTotalMarketApr?.toFixed(2)}%`} hero />
-                  <Stat label="Borrow rate" value={computedBorrowRate.current} sub={fixed ? "Fixed" : `Proj. ${computedBorrowRate.next}`} />
-                  <Stat label="Rewards cut" value={marketDisplayData.rewardsCutCurrent} sub={`Proj. ${marketDisplayData.rewardsCutNext}`} />
+                  <Stat label="Collateral vAPR" info={TERMS.vapr} value={`${currentTotalMarketApr?.toFixed(2)}%`} hero />
+                  <Stat
+                    label="Borrow rate"
+                    info={TERMS.borrowRate}
+                    value={computedBorrowRate.current}
+                    sub={fixed ? "Fixed" : `Proj. ${computedBorrowRate.next}`}
+                  />
+                  <Stat
+                    label="Rewards cut"
+                    info={TERMS.rewardsCut}
+                    value={marketDisplayData.rewardsCutCurrent}
+                    sub={`Proj. ${marketDisplayData.rewardsCutNext}`}
+                  />
                   <Stat
                     label="Capacity"
                     value={maxBorrowCapReached ? "Cap reached" : `${Math.round(capRatio * 100)}%`}
@@ -125,11 +136,11 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                     {[
                       ["TVL", `$${formatMillions(marketDisplayData?.tvlDollar)}`, "Collateral deposited"],
                       ["Available", `${formatMillions(marketDisplayData?.available)} USG`, "Left to borrow"],
-                      ["Max LTV", marketDisplayData.maxLtv, "Max borrow vs collateral"],
-                      ["Liquidation threshold", marketDisplayData.lt, "Health 1.00 below this"],
-                    ].map(([l, v, s]) => (
+                      ["Max LTV", marketDisplayData.maxLtv, "Max borrow vs collateral", TERMS.maxLtv],
+                      ["Liquidation threshold", marketDisplayData.lt, "Health 1.00 below this", TERMS.lt],
+                    ].map(([l, v, s, info]) => (
                       <div key={l} className="px-4">
-                        <div className="text-xs text-ink-3">{l}</div>
+                        <div className="text-xs text-ink-3">{info ? <Term info={info}>{l}</Term> : l}</div>
                         <div className="mt-1 text-[16px] font-medium tabular-nums">{v}</div>
                         <div className="mt-0.5 text-xs text-ink-3">{s}</div>
                       </div>
@@ -164,10 +175,10 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
   )
 }
 
-function Stat({ label, value, sub, hero, warn }: { label: string; value: string; sub?: string; hero?: boolean; warn?: boolean }) {
+function Stat({ label, value, sub, hero, warn, info }: { label: string; value: string; sub?: string; hero?: boolean; warn?: boolean; info?: string }) {
   return (
     <div className={hero ? "min-w-0 flex-[1.6] pr-8" : "min-w-0 flex-1 border-l border-divider px-6"}>
-      <div className="text-xs text-ink-3">{label}</div>
+      <div className="text-xs text-ink-3">{info ? <Term info={info}>{label}</Term> : label}</div>
       <div
         className={cn(
           "mt-1 whitespace-nowrap tabular-nums tracking-[-0.02em]",

@@ -1,11 +1,11 @@
 import {
+  Activity,
   ArrowLeftRight,
   BarChart3,
   BookOpen,
   Coins,
   Gift,
   HandCoins,
-  LayoutGrid,
   ListChecks,
   LucideIcon,
   PiggyBank,
@@ -44,9 +44,9 @@ export const NAV: NavGroup[] = [
       },
       { href: "/claim", label: "Claim", icon: HandCoins },
       { href: "/tan/lock", label: "TAN", icon: Coins, isActive: (p) => p.startsWith("/tan") },
+      { href: "/dashboard", label: "Protocol", icon: Activity },
     ],
   },
-  { group: "Portfolio", items: [{ href: "/dashboard", label: "Dashboard", icon: LayoutGrid }] },
   {
     group: "DAO",
     items: [

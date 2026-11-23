@@ -111,7 +111,7 @@ export function MarketListV2() {
           </span>
           <span className="text-[13px] font-medium text-ink-2">USG price</span>
           <span className={cn("mt-1 text-[44px] font-light tabular-nums leading-none tracking-[-0.03em]", loading && "animate-pulse text-ink-3")}>
-            <Roll value={loading ? "$-" : `${globalData.USGPrice}`} />
+            <Roll value={loading ? "$-" : "$" + globalData.USGPrice} />
           </span>
           {!loading && (
             <p className="mt-3 text-[13px] text-ink-2">

@@ -36,8 +36,12 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
   const rangeMs = getDataRangeMs(tvl)
   const xAxisTicks = getXAxisTicks(tvl)
 
+  // V2: a series that stays at zero over the whole range only adds an empty legend entry and a flat line
+  const isEmpty = (key: keyof TVLData) => !(protocolCurrentTVL?.[key] as number) && !tvl?.some((d) => ((d[key] as number) ?? 0) > 0)
+  const visibleSeries = UI_V2 && tvl?.length ? SERIES_CONFIG.filter((s) => !isEmpty(s.key)) : SERIES_CONFIG
+
   const sortedSeries = tvl?.length
-    ? [...SERIES_CONFIG].sort((a, b) => {
+    ? [...visibleSeries].sort((a, b) => {
         const avgA = tvl.reduce((sum, d) => sum + ((d[a.key] as number) ?? 0), 0) / tvl.length
         const avgB = tvl.reduce((sum, d) => sum + ((d[b.key] as number) ?? 0), 0) / tvl.length
         return avgA - avgB
@@ -78,7 +82,7 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
           />
           {protocolCurrentTVL && protocolCurrentTVL?.total > 0 && (
             <ChartLegendV2
-              items={SERIES_CONFIG.map((c) => ({
+              items={visibleSeries.map((c) => ({
                 color: c.stroke,
                 label: TVL_CATEGORY_METADATA[c.key as string].label,
                 value: formatMillions(protocolCurrentTVL[c.key as keyof typeof protocolCurrentTVL] as number),

@@ -10,7 +10,7 @@ import { ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip, CartesianG
 import { formatXAxis, formatYAxis, getDataRangeMs, getXAxisTicks } from "../dashboard_controller"
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
 import { UI_V2 } from "@/v2/ui"
-import { ChartHeadV2, V2_CURSOR } from "@/v2/ui/chart"
+import { ChartHeadV2, ChartLegendV2, V2_CURSOR, v2ActiveDot } from "@/v2/ui/chart"
 
 type GraphLpLiquidityProps = {
   liquidity: LpLiquidityHistory
@@ -90,23 +90,44 @@ export const GraphLpLiquidity = ({ liquidity, selectedTab, fetchLiquidity }: Gra
         </div>
       </div>
 
-      <Divider />
-      <div className="mb-4 flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-2 text-xs">
-        <div className="flex items-center justify-start gap-1">
-          {!UI_V2 && <div className="text-subtitle">Total: </div>}
-          {!UI_V2 && <div className="font-semibold text-white">${formatMillions(liquidity.total)}</div>}
+      {UI_V2 ? (
+        <div className="mb-3 w-full">
+          <ChartLegendV2
+            items={[...series].reverse().map((s) => {
+              // Current split: each LP's latest point, as a share of the sum of latest points
+              const lp = liquidity.lps.find((l) => l.lpName === s.key)
+              const now = lp?.history.at(-1)?.liquidityUsd ?? 0
+              const sum = liquidity.lps.reduce((acc, l) => acc + (l.history.at(-1)?.liquidityUsd ?? 0), 0)
+              return {
+                color: s.stroke,
+                label: s.key,
+                value: formatMillions(now),
+                share: sum > 0 ? `${((now / sum) * 100).toFixed(1)}%` : undefined,
+              }
+            })}
+          />
         </div>
-
-        {/* LEGEND */}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-          {[...series].reverse().map((s) => (
-            <div key={s.key} className="flex items-center gap-1.5 text-subtitle">
-              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: s.stroke }} />
-              {s.key}
+      ) : (
+        <>
+          <Divider />
+          <div className="mb-4 flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-2 text-xs">
+            <div className="flex items-center justify-start gap-1">
+              {!UI_V2 && <div className="text-subtitle">Total: </div>}
+              {!UI_V2 && <div className="font-semibold text-white">${formatMillions(liquidity.total)}</div>}
             </div>
-          ))}
-        </div>
-      </div>
+
+            {/* LEGEND */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              {[...series].reverse().map((s) => (
+                <div key={s.key} className="flex items-center gap-1.5 text-subtitle">
+                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: s.stroke }} />
+                  {s.key}
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* CHART */}
       <div className="relative min-h-56 w-full flex-1">
@@ -155,6 +176,7 @@ export const GraphLpLiquidity = ({ liquidity, selectedTab, fetchLiquidity }: Gra
                 strokeWidth={1.5}
                 fill={`url(#lp-liquidity-gradient-${PALETTE.findIndex((c) => c.stroke === s.stroke)})`}
                 name={s.key}
+                activeDot={UI_V2 ? v2ActiveDot(s.stroke) : undefined}
               />
             ))}
 

@@ -140,7 +140,7 @@ export function ShellV2({ children }: { children: ReactNode }) {
       </AnimatePresence>
 
       <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-40 bg-[rgb(15_15_15/0.88)] backdrop-blur-md">
+        <header className="sticky top-0 z-40 bg-page">
           {/* same width and side padding as <main>; the hairline stops at the content edges, like Aave Pro */}
           <div className="mx-auto w-full max-w-[1520px] px-4 md:px-6 lg:px-8">
             <div className="flex h-16 items-center gap-3 border-b border-hairline lg:h-[72px]">

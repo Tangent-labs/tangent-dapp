@@ -38,7 +38,7 @@ export function OracleV2() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-x-8 gap-y-5 rounded-2xl border border-hairline bg-surface p-5 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-x-8 gap-y-5 border-hairline sm:grid-cols-2 md:border-l md:pl-8">
         <div>
           <div className="text-xs text-ink-3">Oracle contract</div>
           {oracleAddress ? (

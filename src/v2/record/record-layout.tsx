@@ -189,7 +189,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                   title="Borrowing"
                   note={`Borrow rate and rewards cut both depend on the USG price.${maxBorrowCapReached ? " Borrowing is paused while the cap is reached." : ""}`}
                 >
-                  <div className="grid grid-cols-2 divide-divider rounded-2xl border border-hairline bg-surface px-2 py-4 md:grid-cols-4 md:divide-x">
+                  <div className="grid grid-cols-2 divide-divider border-y border-hairline py-4 md:grid-cols-4 md:divide-x [&>*:first-child]:pl-0">
                     {[
                       ["TVL", `$${formatMillions(marketDisplayData?.tvlDollar)}`, "Collateral deposited"],
                       ["Available", `${formatMillions(marketDisplayData?.available)} USG`, "Left to borrow"],

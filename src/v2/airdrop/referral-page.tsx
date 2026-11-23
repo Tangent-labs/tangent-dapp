@@ -72,7 +72,7 @@ export function ReferralPageV2() {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 rounded-2xl border border-hairline bg-surface p-5 md:grid-cols-3">
+      <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-3">
         <Step icon={Link2} title="Share link" text="Connect a wallet. Generate a referral link. Invite your friends to register via your referral link." />
         <Step icon={ListChecks} title="Complete tasks" text="Ask your friends to complete tasks so that they earn points to be eligible for the airdrop." />
         <Step
@@ -82,7 +82,7 @@ export function ReferralPageV2() {
         />
       </div>
 
-      <div className="mt-4 grid grid-cols-1 items-start gap-4 xl:grid-cols-3">
+      <div className="mt-10 grid grid-cols-1 items-start gap-4 xl:grid-cols-3">
         <Board title="Liquidity points leaderboard" rows={lpLeaderboard} onCopy={copyAddress} />
         <Board title="Vote points leaderboard" rows={voteLeaderboard} onCopy={copyAddress} />
         <div className="rounded-2xl border border-hairline bg-surface p-5">

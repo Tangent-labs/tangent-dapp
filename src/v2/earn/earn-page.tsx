@@ -1,7 +1,6 @@
 "use client"
 
 import { Roll } from "@/v2/ui/roll"
-import { VoidTexture } from "@/v2/ui/void-texture"
 import { useMemo, useState } from "react"
 import { formatUnits } from "viem"
 import { AnimatePresence, motion } from "framer-motion"
@@ -75,7 +74,7 @@ export function EarnPageV2() {
         markets.
       </p>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-[1.6fr_1fr_1fr]">
         <Tile
           hero
           label="Best vAPR"
@@ -217,19 +216,21 @@ export function EarnPageV2() {
   )
 }
 
+/** Header number, no card: the first one leads, the others sit behind a hairline, like the stat strip on every V2 page. */
 function Tile({ label, value, foot, loading, hero }: { label: string; value: string; foot: string; loading?: boolean; hero?: boolean }) {
   return (
-    <div className="relative isolate flex flex-col overflow-hidden rounded-2xl border border-hairline bg-surface p-[18px]">
-      {hero && (
-        <span aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-          <VoidTexture id="earn-hero" />
-        </span>
-      )}
-      <span className="text-[13px] font-medium text-ink-2">{label}</span>
-      <span className={cn("mt-2 text-[26px] font-medium tabular-nums tracking-[-0.02em]", loading && "animate-pulse text-ink-3")}>
+    <div className={cn("flex flex-col py-1", hero ? "pr-8" : "border-l border-divider px-6")}>
+      <span className="text-xs text-ink-3">{label}</span>
+      <span
+        className={cn(
+          "mt-1 tabular-nums tracking-[-0.02em]",
+          hero ? "text-[48px] font-light leading-[1.05]" : "text-[24px] font-medium",
+          loading && "animate-pulse text-ink-3"
+        )}
+      >
         <Roll value={value} />
       </span>
-      <div className="mt-auto border-t border-divider pt-2.5 text-xs text-ink-3">{foot}</div>
+      <div className="mt-1.5 text-xs text-ink-2">{foot}</div>
     </div>
   )
 }

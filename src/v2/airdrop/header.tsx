@@ -32,7 +32,7 @@ export function AirdropHeaderV2({ title, description }: { title: string; descrip
         <Stat label="Your boost" value={`x${userBoostFactor}`} sub={referralStatus?.hasUsedCode ? "Referral code applied" : "Enter a code for x1.1"} />
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3 rounded-2xl border border-hairline bg-surface px-5 py-3.5">
+      <div className="mt-8 flex flex-wrap items-center gap-3 border-y border-hairline py-3.5">
         {!airdropDataIsLoading && referralStatus?.hasUsedCode ? (
           <span className="text-[13px] text-ink-2">Referral code applied. You keep a permanent +0.1 boost on all your points.</span>
         ) : (

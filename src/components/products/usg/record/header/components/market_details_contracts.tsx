@@ -25,7 +25,7 @@ export const MarketDetailsContracts = ({ marketContracts }: MarketDetailsContrac
 
   if (UI_V2)
     return (
-      <ReliefCard className="p-5">
+      <div>
         <div className="text-[15px] font-semibold">Contracts</div>
         <div className="mt-3 grid grid-cols-1 gap-x-6 md:grid-cols-2">
           {marketContracts.map((c) => (
@@ -53,7 +53,7 @@ export const MarketDetailsContracts = ({ marketContracts }: MarketDetailsContrac
             </div>
           ))}
         </div>
-      </ReliefCard>
+      </div>
     )
 
   return (

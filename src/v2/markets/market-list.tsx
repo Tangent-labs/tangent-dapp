@@ -130,7 +130,7 @@ export function MarketListV2() {
             <Sparkline values={(priceHistory?.USG ?? []).map((p) => p.uv)} height={56} reference={1} />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 border-y border-hairline xl:border-y-0">
           <Tile label="Markets TVL" value={loading ? "-" : `$${formatMillions(globalData.globalTvl)}`} foot="Collateral deposited in all markets" />
           <Tile label="Total debt" value={loading ? "-" : `${formatMillions(globalData.globalDebt)} USG`} foot="USG borrowed across markets" />
           <Tile label="Collateral ratio" value={globalData.globalCr} foot="Markets TVL over total debt" />
@@ -144,7 +144,7 @@ export function MarketListV2() {
 
       {/* your numbers, only when there is something to show */}
       {(userDeposit > 0 || userDebt > 0 || points > 0) && (
-        <div className="mt-4 flex flex-wrap items-center gap-x-8 gap-y-2 rounded-2xl border border-hairline bg-surface px-5 py-3.5 text-[13px]">
+        <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-2 border-t border-hairline pt-5 text-[13px]">
           <span className="font-semibold">You</span>
           <Inline label="Collateral" value={`$${formatMillions(userDeposit)}`} />
           <Inline label="Debt" value={`${formatMillions(userDebt)} USG`} />
@@ -317,14 +317,15 @@ export function MarketListV2() {
   )
 }
 
+/** One overview number, no card: the 2x2 grid is drawn by hairlines (right and bottom edges), like a table. */
 function Tile({ label, value, foot }: { label: string; value: string; foot: string }) {
   return (
-    <div className="flex flex-col rounded-2xl border border-hairline bg-surface p-[18px]">
+    <div className="flex flex-col border-hairline px-6 py-5 [&:nth-child(-n+2)]:border-b [&:nth-child(odd)]:border-r">
       <span className="text-[13px] font-medium text-ink-2">{label}</span>
       <span className={cn("mt-2 text-[26px] font-medium tabular-nums tracking-[-0.02em]", value === "-" && "animate-pulse text-ink-3")}>
         <Roll value={value} />
       </span>
-      <div className="mt-auto border-t border-divider pt-2.5 text-xs text-ink-3">{foot}</div>
+      <div className="mt-1.5 text-xs text-ink-3">{foot}</div>
     </div>
   )
 }

@@ -109,3 +109,17 @@ export function ChartLegendV2({ items }: { items: { color: string; label: ReactN
     </div>
   )
 }
+
+/** Dashed average across the bars (complete periods only), labelled on the left. For the HTML bar charts. */
+export function AverageLine({ values, axisMax }: { values: number[]; axisMax: number }) {
+  const list = values.filter((v) => Number.isFinite(v))
+  if (!list.length || !axisMax) return null
+  const avg = list.reduce((a, b) => a + b, 0) / list.length
+  const label = avg >= 1e6 ? `${(avg / 1e6).toFixed(2)}M` : avg >= 1e3 ? `${(avg / 1e3).toFixed(1)}K` : avg.toFixed(0)
+  return (
+    <div className="pointer-events-none absolute inset-x-0 z-10" style={{ bottom: `${Math.min(100, (avg / axisMax) * 100)}%` }}>
+      <div className="w-full border-t border-dashed border-white/35" />
+      <span className="absolute -top-[18px] left-0 rounded bg-raised px-1.5 py-px text-[10px] tabular-nums text-ink-2">avg ${label}</span>
+    </div>
+  )
+}

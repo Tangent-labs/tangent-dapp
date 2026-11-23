@@ -12,7 +12,7 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { InnerTooltip } from "@/components/design_system/structure/inner_tooltip"
 import { formatPeriodLabel, formatYAxis, computeYAxisTicks } from "../dashboard_controller"
 import { UI_V2 } from "@/v2/ui"
-import { ChartHeadV2 } from "@/v2/ui/chart"
+import { AverageLine, ChartHeadV2 } from "@/v2/ui/chart"
 
 type GraphProtocolVolumesProps = {
   protocolVolumes: ProtocolVolume[]
@@ -132,6 +132,9 @@ export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVo
             </div>
           ))}
 
+          {UI_V2 && (
+            <AverageLine values={visibleVolumes.slice(0, -1).map((el) => VOLUME_CATEGORIES.reduce((sum, s) => sum + s.value(el), 0))} axisMax={axisMax} />
+          )}
           <div className="absolute inset-0 flex items-end transition-opacity duration-200">
             {visibleVolumes.map((el) => {
               const segments = stackSegments(el, axisMax)
@@ -158,7 +161,7 @@ export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVo
                     isDimmed && "opacity-40"
                   )}
                 >
-                  <div className={cn("relative h-full w-6 overflow-hidden rounded-md bg-white/[0.08]", isSelected && "ring-1 ring-white/40")}>
+                  <div className={cn("relative h-full w-6 overflow-hidden rounded-md", !UI_V2 && "bg-white/[0.08]", isSelected && "ring-1 ring-white/40")}>
                     {/* Stack bottom-up, 1px of track between segments so adjacent colors never touch */}
                     <div className="absolute bottom-0 left-0 flex w-full flex-col-reverse gap-px transition-opacity duration-300 group-hover:opacity-80">
                       {segments
@@ -166,6 +169,12 @@ export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVo
                         .map((segment) => (
                           <div key={segment.key} className="w-full" style={{ height: `${segment.px}px`, backgroundColor: segment.color }} />
                         ))}
+                      {UI_V2 && el?.period === visibleVolumes.at(-1)?.period && (
+                        <div
+                          className="pointer-events-none absolute inset-0"
+                          style={{ backgroundImage: "repeating-linear-gradient(135deg, rgba(255,255,255,0.22) 0 2px, transparent 2px 5px)" }}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>

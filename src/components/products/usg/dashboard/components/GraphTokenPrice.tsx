@@ -9,7 +9,7 @@ import { formatDollar } from "@/lib/number_formatter"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { formatXAxis, getDataRangeMs, getXAxisTicks } from "../dashboard_controller"
-import { Area, AreaChart, CartesianGrid, Customized, ReferenceDot, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { Area, AreaChart, CartesianGrid, Customized, ReferenceDot, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 type AxisWithScale = { scale: (v: number) => number }
 type CustomizedChartProps = { xAxisMap: Record<string, AxisWithScale>; yAxisMap: Record<string, AxisWithScale> }
@@ -30,11 +30,20 @@ type GraphTokenPriceProps = {
   gradientStart: string
 }
 
-const PriceTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value?: number }>; label?: number }) => {
+const PriceTooltip = ({ active, payload, label, peg }: { active?: boolean; payload?: Array<{ value?: number }>; label?: number; peg?: boolean }) => {
   if (!active || !payload?.length || !label) return null
 
   const value = Number(payload[0]?.value ?? 0)
-  if (UI_V2) return <ChartTooltipV2 title={tooltipDate(label)} rows={[{ label: "Price", value: formatDollar(value, 4) }]} />
+  if (UI_V2)
+    return (
+      <ChartTooltipV2
+        title={tooltipDate(label)}
+        rows={[
+          { label: "Price", value: formatDollar(value, 4) },
+          ...(peg ? [{ label: "vs peg", value: `${value >= 1 ? "+" : "−"}${Math.abs((value - 1) * 100).toFixed(2)}%` }] : []),
+        ]}
+      />
+    )
   const date = new Date(label)
   const isoDate = date.toISOString().slice(0, 10)
   const timeLabel = `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`
@@ -72,7 +81,9 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
   const spread = Math.max(maxValue - minValue, 0.0001)
   const padding = Math.max(spread * 0.2, 0.0001)
   const domainMin = minValue - padding
-  const domainMax = maxValue + padding
+  // V2 USG chart is read against the peg, so $1.00 always sits inside the frame
+  const pegMode = UI_V2 && token === "USG"
+  const domainMax = pegMode ? Math.max(maxValue + padding, 1 + padding * 0.5) : maxValue + padding
   const yTickCount = 5
   const yTickStep = (domainMax - domainMin) / (yTickCount - 1)
   const yTicks = Array.from({ length: yTickCount }, (_, index) => domainMin + yTickStep * index)
@@ -111,6 +122,10 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
             }}
           >
             <defs>
+              <linearGradient id={`${gradientId}-peg`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#f5b544" stopOpacity={0.18} />
+                <stop offset="100%" stopColor="#f5b544" stopOpacity={0.02} />
+              </linearGradient>
               <linearGradient id={`${gradientId}-fill`} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor={gradientStart} stopOpacity={0.35} />
                 <stop offset="100%" stopColor={gradientStart} stopOpacity={0} />
@@ -154,7 +169,7 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
                     }
               }
               allowEscapeViewBox={{ x: false, y: false }}
-              content={<PriceTooltip />}
+              content={<PriceTooltip peg={pegMode} />}
             />
 
             <Area
@@ -162,11 +177,20 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
               dataKey="uv"
               stroke={accentColor}
               strokeWidth={2}
-              fill={`url(#${gradientId}-fill)`}
+              fill={pegMode ? `url(#${gradientId}-peg)` : `url(#${gradientId}-fill)`}
+              baseValue={pegMode ? 1 : undefined}
               dot={false}
               activeDot={UI_V2 ? v2ActiveDot(accentColor) : { r: 4, fill: accentColor, stroke: accentColor }}
             />
 
+            {pegMode && (
+              <ReferenceLine
+                y={1}
+                stroke="rgba(255,255,255,0.35)"
+                strokeDasharray="3 3"
+                label={{ value: "Peg $1.00", position: "insideTopLeft", fill: "#8f8f8f", fontSize: 11 }}
+              />
+            )}
             {latestPoint && <ReferenceDot x={latestPoint.date} y={latestPoint.uv} r={4} fill={accentColor} stroke={accentColor} isFront={true} />}
 
             <TypedCustomized

@@ -2,6 +2,7 @@
 
 import { useRootContext } from "@/components/products/root/root_context"
 import { formatMillions } from "@/lib/number_formatter"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 
 /** V2 palette for data series: blue first, then quiet tints. No green, no yellow. */
 export const V2_SERIES = { blue: "#0075FF", violet: "#a79bff", pink: "#e78fb3", gold: "#d9c49a", slate: "#8fa3bf" } as const
@@ -28,21 +29,25 @@ export function DashboardHeaderV2() {
           <div className="mt-1 text-[48px] font-light tabular-nums leading-[1.05] tracking-[-0.02em]">{tvl ? `$${formatMillions(tvl)}` : "-"}</div>
         </div>
         <Stat
+          token="USG"
           label="USG price"
           value={price !== undefined ? `$${price.toFixed(4)}` : "-"}
           sub={pegGap !== undefined ? `${pegGap >= 0 ? "+" : "−"}${Math.abs(pegGap).toFixed(2)}% vs peg` : undefined}
         />
-        <Stat label="USG supply" value={USGCurrentSupply ? formatMillions(USGCurrentSupply) : "-"} sub="In circulation" />
-        <Stat label="sUSG APY" value={sUSGCurrentAPY ? `${sUSGCurrentAPY.toFixed(2)}%` : "-"} sub="7 days trailing" />
+        <Stat token="USG" label="USG supply" value={USGCurrentSupply ? formatMillions(USGCurrentSupply) : "-"} sub="In circulation" />
+        <Stat token="sUSG" label="sUSG APY" value={sUSGCurrentAPY ? `${sUSGCurrentAPY.toFixed(2)}%` : "-"} sub="7 days trailing" />
       </div>
     </div>
   )
 }
 
-function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
+function Stat({ label, value, sub, token }: { label: string; value: string; sub?: string; token?: string }) {
   return (
     <div className="min-w-[150px] flex-1 border-l border-divider px-6">
-      <div className="text-xs text-ink-3">{label}</div>
+      <div className="flex items-center gap-1.5 text-xs text-ink-3">
+        {token && <TokenImage token={token} size={16} className="h-4 w-4" />}
+        {label}
+      </div>
       <div className="mt-1 whitespace-nowrap text-[24px] font-medium tabular-nums tracking-[-0.02em]">{value}</div>
       {sub && <div className="mt-1.5 text-xs tabular-nums text-ink-2">{sub}</div>}
     </div>

@@ -38,28 +38,37 @@ export function Sparkline({
   if (!geo) return <div className={className} style={{ height: H }} />
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} preserveAspectRatio="none" className={className} aria-hidden>
-      <defs>
-        <linearGradient id={`spark-${id}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity={0.22} />
-          <stop offset="100%" stopColor={color} stopOpacity={0} />
-        </linearGradient>
-      </defs>
-      {geo.refY !== null && (
-        <line
-          x1="0"
-          x2={W}
-          y1={geo.refY}
-          y2={geo.refY}
-          stroke="rgba(255,255,255,0.25)"
-          strokeDasharray="2 3"
-          strokeWidth={1}
-          vectorEffect="non-scaling-stroke"
+    // the end dot is an HTML dot, not an SVG circle: the SVG is stretched to the width, a circle on its edge would be cut and squashed
+    <div className={`relative ${className ?? ""}`} style={{ height: H }}>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} preserveAspectRatio="none" className="block overflow-visible" aria-hidden>
+        <defs>
+          <linearGradient id={`spark-${id}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity={0.22} />
+            <stop offset="100%" stopColor={color} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        {geo.refY !== null && (
+          <line
+            x1="0"
+            x2={W}
+            y1={geo.refY}
+            y2={geo.refY}
+            stroke="rgba(255,255,255,0.25)"
+            strokeDasharray="2 3"
+            strokeWidth={1}
+            vectorEffect="non-scaling-stroke"
+          />
+        )}
+        {area && <path d={geo.fill} fill={`url(#spark-${id})`} />}
+        <path d={geo.d} fill="none" stroke={color} strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
+      </svg>
+      {dot && (
+        <span
+          aria-hidden
+          className="absolute right-0 h-[6px] w-[6px] -translate-y-1/2 translate-x-1/2 rounded-full"
+          style={{ top: `${(geo.endY / H) * 100}%`, background: color }}
         />
       )}
-      {area && <path d={geo.fill} fill={`url(#spark-${id})`} />}
-      <path d={geo.d} fill="none" stroke={color} strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
-      {dot && <circle cx={W - 1.5} cy={geo.endY} r={2.5} fill={color} />}
-    </svg>
+    </div>
   )
 }

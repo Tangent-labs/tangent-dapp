@@ -554,24 +554,24 @@ function Ticks({ ratio, full }: { ratio: number; full?: boolean }) {
 /** vAPR column: the value that matters, with the live per-token breakdown on hover. */
 function Vapr({ r }: { r: ListRowData }) {
   return (
-    <HoverCard openDelay={120} closeDelay={80}>
-      <HoverCardTrigger asChild>
-        <span className="group/apr min-w-0 cursor-help">
-          <span className="flex items-center gap-1 text-[15px] font-semibold tabular-nums leading-5 transition-colors group-hover/apr:text-action">
+    <span className="min-w-0">
+      <HoverCard openDelay={120} closeDelay={80}>
+        <HoverCardTrigger asChild>
+          <span className="group/apr inline-flex w-fit cursor-help items-center gap-1 text-[15px] font-semibold tabular-nums leading-5 transition-colors hover:text-action">
             {pct(r.apr.current)}
             <AprMark />
           </span>
-          <span className="mt-1 block text-xs tabular-nums leading-4 text-ink-3">Proj. {pct(r.apr.projected)}</span>
-        </span>
-      </HoverCardTrigger>
-      <HoverCardContent side="top" align="start" className="z-[9999] w-[240px] rounded-[10px] border-white/10 bg-raised p-3 text-xs text-white">
-        <div className="flex items-center gap-1.5 font-semibold">
-          <TokenImage token={r.logoKey} size={16} className="h-4 w-auto" /> {r.name}
-        </div>
-        <Breakdown title="Current vAPR" total={r.apr.current} details={r.currentAPRDetails} />
-        {r.protocol !== "Pendle_PT" && <Breakdown title="Projected vAPR" total={r.apr.projected} details={r.projectedAPRDetails} />}
-      </HoverCardContent>
-    </HoverCard>
+        </HoverCardTrigger>
+        <HoverCardContent side="top" align="start" className="z-[9999] w-[240px] rounded-[10px] border-white/10 bg-raised p-3 text-xs text-white">
+          <div className="flex items-center gap-1.5 font-semibold">
+            <TokenImage token={r.logoKey} size={16} className="h-4 w-auto" /> {r.name}
+          </div>
+          <Breakdown title="Current vAPR" total={r.apr.current} details={r.currentAPRDetails} />
+          {r.protocol !== "Pendle_PT" && <Breakdown title="Projected vAPR" total={r.apr.projected} details={r.projectedAPRDetails} />}
+        </HoverCardContent>
+      </HoverCard>
+      <span className="mt-1 block text-xs tabular-nums leading-4 text-ink-3">Proj. {pct(r.apr.projected)}</span>
+    </span>
   )
 }
 

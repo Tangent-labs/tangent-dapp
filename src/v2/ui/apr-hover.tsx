@@ -38,32 +38,30 @@ export function AprHover({
   children?: ReactNode
 }) {
   return (
-    <HoverCard openDelay={120} closeDelay={80}>
-      <HoverCardTrigger asChild>
-        <span className={cn("group/apr min-w-0 cursor-help", className)}>
-          {children ?? (
-            <>
-              <span className="flex items-center gap-1 text-[15px] font-semibold tabular-nums leading-5 transition-colors group-hover/apr:text-action">
-                {pct(current)}
-                <AprMark />
-              </span>
-              {showProjected && (
-                <span className="mt-1 block text-xs tabular-nums leading-4 text-ink-3">
-                  {hasProjection(projected) ? `Proj. ${pct(projected)}` : "No projection"}
-                </span>
-              )}
-            </>
+    <span className={cn("min-w-0", className)}>
+      <HoverCard openDelay={120} closeDelay={80}>
+        <HoverCardTrigger asChild>
+          {children ? (
+            <span className="group/apr inline-block w-fit cursor-help">{children}</span>
+          ) : (
+            <span className="group/apr inline-flex w-fit cursor-help items-center gap-1 text-[15px] font-semibold tabular-nums leading-5 transition-colors hover:text-action">
+              {pct(current)}
+              <AprMark />
+            </span>
           )}
-        </span>
-      </HoverCardTrigger>
-      <HoverCardContent side="top" align="start" className="z-[9999] w-[240px] rounded-[10px] border-white/10 bg-raised p-3 text-xs text-white">
-        <div className="flex items-center gap-1.5 font-semibold">
-          {logoKey && <TokenImage token={logoKey} size={16} className="h-4 w-auto" />} {name}
-        </div>
-        <Breakdown title="Current vAPR" total={current} details={currentDetails} />
-        {showProjected && hasProjection(projected) && <Breakdown title="Projected vAPR" total={projected} details={projectedDetails} />}
-      </HoverCardContent>
-    </HoverCard>
+        </HoverCardTrigger>
+        <HoverCardContent side="top" align="start" className="z-[9999] w-[240px] rounded-[10px] border-white/10 bg-raised p-3 text-xs text-white">
+          <div className="flex items-center gap-1.5 font-semibold">
+            {logoKey && <TokenImage token={logoKey} size={16} className="h-4 w-auto" />} {name}
+          </div>
+          <Breakdown title="Current vAPR" total={current} details={currentDetails} />
+          {showProjected && hasProjection(projected) && <Breakdown title="Projected vAPR" total={projected} details={projectedDetails} />}
+        </HoverCardContent>
+      </HoverCard>
+      {!children && showProjected && (
+        <span className="mt-1 block text-xs tabular-nums leading-4 text-ink-3">{hasProjection(projected) ? `Proj. ${pct(projected)}` : "No projection"}</span>
+      )}
+    </span>
   )
 }
 

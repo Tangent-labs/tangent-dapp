@@ -68,7 +68,7 @@ export function EarnPageV2() {
     setSort((s) => (s.key === key ? { key, direction: s.direction === "desc" ? "asc" : "desc" } : { key, direction: "desc" }))
 
   return (
-    <div className="mx-auto w-full max-w-[1264px] pb-20 pt-2 font-sans">
+    <div className="w-full pb-20 pt-2 font-sans">
       <h1 className="text-[32px] font-semibold tracking-[-0.02em]">Earn</h1>
       <p className="mt-1 max-w-[760px] text-[14px] text-ink-2">
         Use USG and sUSG in DeFi protocols to earn yield. Below is the list of known integrations across DEXs, yield boosters, lending markets and yield trading

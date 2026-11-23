@@ -28,7 +28,7 @@ export function ReferralPageV2() {
   const code = referralStatus?.generatedCode
 
   return (
-    <div className="mx-auto w-full max-w-[1264px] pb-20 pt-2 font-sans">
+    <div className="w-full pb-20 pt-2 font-sans">
       <AirdropHeaderV2 title="Referral and leaderboard" description="Refer your friends and earn 10% of their points." />
 
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">

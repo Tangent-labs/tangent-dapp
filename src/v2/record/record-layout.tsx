@@ -54,7 +54,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
   }, [])
 
   return (
-    <div className="mx-auto w-full max-w-[1264px] px-0 pb-20 pt-2 font-sans">
+    <div className="w-full pb-20 pt-2 font-sans">
       {/* header: breadcrumb, market switcher (same dialog as the live CollateralCard), one sentence */}
       <div className="text-[13px] text-ink-3">
         <Link href="/" className="hover:text-white">
@@ -78,7 +78,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
           : `${formatMillions(marketDisplayData?.available)} USG left to borrow out of a ${formatMillions(marketDisplayData?.cap)} USG cap.`}
       </p>
 
-      <div className="mt-8 grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_392px]">
+      <div className="mt-10 grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_392px]">
         <div className="min-w-0">
           <div className="sticky top-16 z-30 h-0 lg:top-[72px]">
             <AnimatePresence>

@@ -20,10 +20,10 @@ export function BoostsPageV2() {
   const sortable = (key: string) => key !== "type"
 
   return (
-    <div className="mx-auto w-full max-w-[1264px] pb-20 pt-2 font-sans">
+    <div className="w-full pb-20 pt-2 font-sans">
       <AirdropHeaderV2 title="Boosts" description="Boost your points by holding eligible assets or by belonging to selected communities." />
 
-      <div className="mt-8 overflow-x-auto rounded-2xl border border-hairline bg-surface px-2 pb-3">
+      <div className="mt-10 overflow-x-auto rounded-2xl border border-hairline bg-surface px-2 pb-3">
         <div className="min-w-[520px]">
           <div className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,0.6fr)_minmax(0,0.8fr)] items-center gap-4 px-4 pb-2 pt-4 text-xs text-ink-3">
             {boostHeaders.map((h) =>
@@ -48,7 +48,7 @@ export function BoostsPageV2() {
             <div
               key={b.type}
               className={cn(
-                "grid grid-cols-[minmax(0,1.6fr)_minmax(0,0.6fr)_minmax(0,0.8fr)] items-center gap-4 rounded-[10px] px-4 py-3 transition-colors hover:bg-white/[0.035]",
+                "grid grid-cols-[minmax(0,1.6fr)_minmax(0,0.6fr)_minmax(0,0.8fr)] items-center gap-4 border-b border-white/[0.06] px-4 py-3.5 transition-colors last:border-b-0 hover:bg-white/[0.035]",
                 !b.status && "opacity-60"
               )}
             >

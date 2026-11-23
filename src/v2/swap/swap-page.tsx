@@ -58,7 +58,7 @@ export function SwapPageV2() {
   const pick = (symbol: string, set: (a: `0x${string}`) => void) => set(computedAssets?.find((o) => o.symbol === symbol)?.address ?? "0x")
 
   return (
-    <div className="mx-auto w-full max-w-[1264px] pb-20 pt-2 font-sans">
+    <div className="w-full pb-20 pt-2 font-sans">
       <h1 className="text-[32px] font-semibold tracking-[-0.02em]">Swap</h1>
       <p className="mt-1 max-w-[640px] text-[14px] text-ink-2">
         Swap any asset for USG and the other Tangent assets, including Curve LPs and Wrapped Tangent Stablecoins.

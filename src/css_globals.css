@@ -66,17 +66,17 @@
     --tgt-button: linear-gradient(135deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.1) 100%);
     --tgt-image-body: url("/medias/background.svg");
 
-    --tgt-v2-bg-page: #090909;
-    --tgt-v2-bg-sidebar: #090909;
-    --tgt-v2-bg-surface: #101011;
-    --tgt-v2-bg-raised: #161618;
+    --tgt-v2-bg-page: #0f0f0f;
+    --tgt-v2-bg-sidebar: #0f0f0f;
+    --tgt-v2-bg-surface: #1a1a1a;
+    --tgt-v2-bg-raised: #222222;
     --tgt-v2-bg-subtle: rgb(255 255 255 / 0.04);
     --tgt-v2-bg-control: rgb(255 255 255 / 0.08);
-    --tgt-v2-border-hairline: rgb(255 255 255 / 0.07);
+    --tgt-v2-border-hairline: rgb(255 255 255 / 0.05);
     --tgt-v2-border-divider: rgb(255 255 255 / 0.06);
-    --tgt-v2-text-primary: rgb(255 255 255 / 0.95);
-    --tgt-v2-text-secondary: rgb(255 255 255 / 0.65);
-    --tgt-v2-text-tertiary: rgb(255 255 255 / 0.47);
+    --tgt-v2-text-primary: #ffffff;
+    --tgt-v2-text-secondary: #a3a3a3;
+    --tgt-v2-text-tertiary: #8f8f8f;
     --tgt-v2-action-primary: #0075ff;
     --tgt-v2-action-hover: #1a84ff;
     --tgt-v2-data-primary: #0075ff;

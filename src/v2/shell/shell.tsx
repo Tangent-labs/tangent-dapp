@@ -140,7 +140,7 @@ export function ShellV2({ children }: { children: ReactNode }) {
       </AnimatePresence>
 
       <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-hairline bg-[rgb(9_9_9/0.88)] px-4 backdrop-blur-md md:px-8 lg:h-[72px] lg:px-12">
+        <header className="sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-hairline bg-[rgb(15_15_15/0.88)] px-4 backdrop-blur-md md:px-6 lg:h-[72px] lg:px-8">
           <button
             onClick={() => setDrawer(true)}
             aria-label="Open menu"
@@ -162,7 +162,7 @@ export function ShellV2({ children }: { children: ReactNode }) {
           </div>
           <WalletConnexionContent className="ml-auto max-w-none sm:ml-0" />
         </header>
-        <main className="mx-auto w-full max-w-[1264px] px-4 pb-20 pt-6 md:px-8 lg:px-12">{children}</main>
+        <main className="mx-auto w-full max-w-[1520px] px-4 pb-20 pt-8 md:px-6 lg:px-8">{children}</main>
       </div>
     </div>
   )

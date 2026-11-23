@@ -26,7 +26,7 @@ export function SavingsProductsV2({
   docsHref: string
 }) {
   return (
-    <div className="mx-auto w-full max-w-[1264px] pb-20 pt-2 font-sans">
+    <div className="w-full pb-20 pt-2 font-sans">
       <h1 className="text-[32px] font-semibold tracking-[-0.02em]">Savings</h1>
       <p className="mt-1 max-w-[720px] text-[14px] text-ink-2">
         Stake USG directly, or pick a Yearn V3 vault that auto-compounds a USG pool. All products are ERC4626 tokens and can be used further in DeFi.{" "}
@@ -40,7 +40,7 @@ export function SavingsProductsV2({
         </Link>
       </p>
 
-      <div className="mt-6 flex flex-wrap items-stretch gap-y-4">
+      <div className="mt-8 flex flex-wrap items-stretch gap-y-4">
         <div className="min-w-[220px] flex-[1.6] pr-8">
           <div className="text-xs text-ink-3">Best APY</div>
           <div className="mt-1 text-[48px] font-light tabular-nums leading-[1.05] tracking-[-0.02em]">{bestApy > 0 ? `${bestApy.toFixed(2)}%` : "-"}</div>
@@ -49,7 +49,7 @@ export function SavingsProductsV2({
         <Stat label="Your deposits" value={formatDollar(deposits)} sub="Across all products" />
       </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {rows.map((row) => (
           <ProductCard key={row.vault.key} {...row} />
         ))}

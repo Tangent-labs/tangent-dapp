@@ -95,7 +95,7 @@ export function StakePageV2() {
   ]
 
   return (
-    <div className="mx-auto w-full max-w-[1264px] pb-20 pt-2 font-sans">
+    <div className="w-full pb-20 pt-2 font-sans">
       <div className="text-[13px] text-ink-3">
         <Link href="/stake" className="hover:text-white">
           Savings

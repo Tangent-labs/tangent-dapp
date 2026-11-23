@@ -25,7 +25,7 @@ export function TanHeaderV2() {
   const vsTanBalance = useMemo(() => lockData?.positions.reduce((acc, p) => acc + p.amount, 0n), [lockData])
 
   return (
-    <div className="mx-auto w-full max-w-[1264px] pt-2 font-sans">
+    <div className="w-full pt-2 font-sans">
       <h1 className="text-[32px] font-semibold tracking-[-0.02em]">TAN</h1>
       <p className="mt-1 max-w-[760px] text-[14px] text-ink-2">
         Lock your TAN for vsTAN to earn a share of protocol revenue and governance rights. Locked positions are tokenized; you can split and merge them.
@@ -40,7 +40,7 @@ export function TanHeaderV2() {
         Learn more about vsTAN <ExternalLink className="h-3 w-3" strokeWidth={2} />
       </Link>
 
-      <div className="mt-6 flex flex-wrap items-stretch gap-y-4">
+      <div className="mt-8 flex flex-wrap items-stretch gap-y-4">
         <div className="min-w-[220px] flex-[1.6] pr-8">
           <div className="text-xs text-ink-3">Your vsTAN</div>
           <div className="mt-1 flex items-center gap-3">
@@ -63,7 +63,7 @@ export function TanLayoutV2({ children }: { children: ReactNode }) {
   const { feature } = useVsTanContext()
 
   return (
-    <div className="mx-auto mt-8 w-full max-w-[1264px] pb-20 font-sans">
+    <div className="mt-10 w-full pb-20 font-sans">
       <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[440px_minmax(0,1fr)]">
         <div className="rounded-2xl border border-hairline bg-surface p-5">
           <div role="tablist" className="flex gap-1 rounded-[10px] bg-white/[0.04] p-1">
@@ -158,7 +158,7 @@ function Positions() {
                     type="button"
                     onClick={() => setSelectedPosition(open ? undefined : p)}
                     className={cn(
-                      "grid w-full grid-cols-[0.6fr_1fr_1fr_1fr_24px] items-center gap-3 rounded-[10px] px-4 py-3 text-left text-[14px] tabular-nums transition-colors",
+                      "grid w-full grid-cols-[0.6fr_1fr_1fr_1fr_24px] items-center gap-3 border-b border-white/[0.06] px-4 py-3.5 text-left text-[14px] tabular-nums transition-colors last:border-b-0",
                       open ? "bg-white/[0.06]" : "hover:bg-white/[0.035]"
                     )}
                   >

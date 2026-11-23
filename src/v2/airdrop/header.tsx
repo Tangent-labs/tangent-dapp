@@ -21,7 +21,7 @@ export function AirdropHeaderV2({ title, description }: { title: string; descrip
       <h1 className="text-[32px] font-semibold tracking-[-0.02em]">{title}</h1>
       <p className="mt-1 max-w-[760px] text-[14px] text-ink-2">{description}</p>
 
-      <div className="mt-6 flex flex-wrap items-stretch gap-y-4">
+      <div className="mt-8 flex flex-wrap items-stretch gap-y-4">
         <Stat
           first
           label="Liquidity points"

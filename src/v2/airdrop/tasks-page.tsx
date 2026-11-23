@@ -78,7 +78,7 @@ export function TasksPageV2() {
   const next = (s: Sort, key: string): Sort => (s.key === key ? { key, direction: s.direction === "desc" ? "asc" : "desc" } : { key, direction: "desc" })
 
   return (
-    <div className="mx-auto w-full max-w-[1264px] pb-20 pt-2 font-sans">
+    <div className="w-full pb-20 pt-2 font-sans">
       <AirdropHeaderV2
         title="Tasks"
         description="Borrow USG, provide liquidity, and vote for USG and sUSG pools to earn points. Points will be convertible for TAN tokens once the campaign ends."
@@ -134,7 +134,10 @@ export function TasksPageV2() {
                 tabIndex={0}
                 onClick={() => window.open(t.url, "_blank", "noopener,noreferrer")}
                 onKeyDown={(e) => e.key === "Enter" && window.open(t.url, "_blank", "noopener,noreferrer")}
-                className={cn("grid cursor-pointer items-center gap-4 rounded-[10px] px-4 py-3 transition-colors hover:bg-white/[0.035]", LP_GRID)}
+                className={cn(
+                  "grid cursor-pointer items-center gap-4 border-b border-white/[0.06] px-4 py-3.5 transition-colors last:border-b-0 hover:bg-white/[0.035]",
+                  LP_GRID
+                )}
               >
                 <span className="flex min-w-0 items-center gap-3">
                   <LpTaskCustomAssetDisplay token={t.asset.replaceAll("_", "-")} />
@@ -179,7 +182,10 @@ export function TasksPageV2() {
                 tabIndex={0}
                 onClick={() => window.open(t.url, "_blank", "noopener,noreferrer")}
                 onKeyDown={(e) => e.key === "Enter" && window.open(t.url, "_blank", "noopener,noreferrer")}
-                className={cn("grid cursor-pointer items-center gap-4 rounded-[10px] px-4 py-3 transition-colors hover:bg-white/[0.035]", VOTE_GRID)}
+                className={cn(
+                  "grid cursor-pointer items-center gap-4 border-b border-white/[0.06] px-4 py-3.5 transition-colors last:border-b-0 hover:bg-white/[0.035]",
+                  VOTE_GRID
+                )}
               >
                 <span className="flex min-w-0 items-center gap-3">
                   {t.protocol === "sdcrv.eth" && <TokenImage token="sdCRV" size={32} className="h-8 w-auto shrink-0" />}

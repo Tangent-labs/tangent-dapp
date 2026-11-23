@@ -39,13 +39,13 @@ export function HarvestPageV2() {
     setSort((s) => (s.key === key ? { key, direction: s.direction === "desc" ? "asc" : "desc" } : { key, direction: "desc" }))
 
   return (
-    <div className="mx-auto w-full max-w-[1264px] pb-20 pt-2 font-sans">
+    <div className="w-full pb-20 pt-2 font-sans">
       <h1 className="text-[32px] font-semibold tracking-[-0.02em]">Harvest</h1>
       <p className="mt-1 max-w-[720px] text-[14px] text-ink-2">
         Harvest the rewards of Tangent markets. Harvester rewards are the share of a market&apos;s rewards that goes to whoever harvests it.
       </p>
 
-      <div className="mt-6 flex flex-wrap items-stretch gap-y-4">
+      <div className="mt-8 flex flex-wrap items-stretch gap-y-4">
         <div className="min-w-[220px] flex-[1.6] pr-8">
           <div className="text-xs text-ink-3">Rewards waiting</div>
           <div className="mt-1 text-[48px] font-light tabular-nums leading-[1.05] tracking-[-0.02em]">
@@ -56,7 +56,7 @@ export function HarvestPageV2() {
         <Stat label="Markets" value={isChainviewLoading ? "-" : String(displayRows.length)} sub="With rewards to harvest" />
       </div>
 
-      <div className="mt-8 grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="mt-10 grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="overflow-x-auto rounded-2xl border border-hairline bg-surface px-2 pb-3">
           <div className="min-w-[760px]">
             <div className={cn("grid items-center gap-4 px-4 pb-2 pt-4 text-xs text-ink-3", GRID)}>
@@ -97,7 +97,7 @@ export function HarvestPageV2() {
                     addToHarvestableMarkets({ ...item, marketName: item.asset, harvestable: item.rewards.totalDollar, marketAddress: item.contractAddress })
                   }
                   className={cn(
-                    "grid w-full items-center gap-4 rounded-[10px] px-4 py-3 text-left transition-colors",
+                    "grid w-full items-center gap-4 border-b border-white/[0.06] px-4 py-3.5 text-left transition-colors last:border-b-0",
                     GRID,
                     selected ? "bg-white/[0.06]" : "hover:bg-white/[0.035]"
                   )}

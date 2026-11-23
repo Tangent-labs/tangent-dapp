@@ -45,11 +45,11 @@ export function ClaimAirdropPageV2() {
   const showWallet = isConnected && !isLoading
 
   return (
-    <div className="mx-auto w-full max-w-[1264px] pb-20 pt-2 font-sans">
+    <div className="w-full pb-20 pt-2 font-sans">
       <h1 className="text-[32px] font-semibold tracking-[-0.02em]">Airdrop</h1>
       <p className="mt-1 text-[14px] text-ink-2">Check and claim your TAN allocation.</p>
 
-      <div className="mt-6 flex flex-wrap items-stretch gap-y-4">
+      <div className="mt-8 flex flex-wrap items-stretch gap-y-4">
         <div className="min-w-[260px] flex-[1.6] pr-8">
           <div className="text-xs text-ink-3">{isClaimed ? "Claimed" : "Total allocation"}</div>
           <div className="mt-1 flex items-center gap-3">
@@ -188,7 +188,7 @@ export function ClaimAirdropPageV2() {
       )}
 
       {!isLoading && hasAllocation && (
-        <div className="mt-8 grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
+        <div className="mt-10 grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
           {allocations
             .filter((a) => a.amount > 0)
             .map((a) => (

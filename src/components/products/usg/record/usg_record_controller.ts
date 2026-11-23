@@ -296,7 +296,9 @@ export const computeHECvAPR = (currentTotalMarketApr: number, marketAprs: Market
 
   // Remove the RC currently live in production and apply the projected "price dependent" one.
   const projectedRC = Number(formatUnits(computeRewardsCut(parseUnits(price.toFixed(6), 18), rcParams), 5))
-  const totalCurrentAPR = base + (rewardsAPR / (1 - currentRC)) * (1 - projectedRC)
+  let totalCurrentAPR = base + (rewardsAPR / (1 - currentRC)) * (1 - projectedRC)
+  // currentRC of 1 (100% cut) or missing makes the un-cut division NaN/Infinity; BigInt() would throw.
+  if (!Number.isFinite(totalCurrentAPR)) totalCurrentAPR = Number.isFinite(currentTotalMarketApr) ? currentTotalMarketApr : 0
 
   return BigInt(Math.round(totalCurrentAPR * 10 ** 18)) / BigInt(100)
 }

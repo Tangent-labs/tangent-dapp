@@ -43,43 +43,9 @@ export function getStakeFormState(
   return { canProcess: isApproved && !!expected && expected > 0n && errors.length === 0 && !isLoading, errors, haveToApprove: !isApproved }
 }
 
-export const getExpectedUSG = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
-  const [account] = await walletClient.requestAddresses()
-
-  const params = [weiValue]
-
-  const publicClient = getPublicClient()
-  const txData = {
-    abi: yearnV3Vault,
-    functionName: "previewRedeem",
-    args: params as unknown[],
-    address: stakingAddress,
-    account,
-    gas: undefined as undefined | bigint,
-  }
-  const previewRedeem = (await publicClient.readContract(txData)) as bigint
-
-  return previewRedeem
-}
-
-export const getExpectedSUSG = async (walletClient: WalletClient, weiValue: bigint, stakingAddress: Address) => {
-  const [account] = await walletClient.requestAddresses()
-
-  const params = [weiValue]
-
-  const publicClient = getPublicClient()
-  const txData = {
-    abi: yearnV3Vault,
-    functionName: "previewDeposit",
-    args: params as unknown[],
-    address: stakingAddress,
-    account,
-    gas: undefined as undefined | bigint,
-  }
-  const previewDeposit = (await publicClient.readContract(txData)) as bigint
-
-  return previewDeposit
-}
+// previewDeposit (assets -> shares) / previewRedeem (shares -> assets): plain reads, no wallet needed
+export const getExpectedPreview = async (functionName: "previewDeposit" | "previewRedeem", weiValue: bigint, vault: Address) =>
+  (await getPublicClient().readContract({ abi: yearnV3Vault, functionName, args: [weiValue], address: vault })) as bigint
 
 export const doApprove = async (walletClient: WalletClient, assetAddress: Address, amount: bigint, stakingContract: Address) => {
   const publicClient = getPublicClient()

@@ -14,8 +14,8 @@ import { NAV, SOCIALS, isItemActive } from "./nav"
 import { PegCardV2, PegMiniV2 } from "./peg-card"
 
 const KEY = "tangent:sidebar-collapsed"
-const EXPANDED = 248
-const COLLAPSED = 64
+const EXPANDED = 260
+const COLLAPSED = 58
 
 // saved collapse state without a hydration mismatch: the server renders expanded, the client store takes over after mount
 const subscribe = (cb: () => void) => {
@@ -65,7 +65,7 @@ export function ShellV2({ children }: { children: ReactNode }) {
           transition={{ type: "spring", visualDuration: 0.3, bounce: 0.08 }}
           className="flex h-full flex-col overflow-hidden border-r border-hairline bg-sidebar pb-3"
         >
-          <div className="flex h-[72px] shrink-0 items-center px-6">
+          <div className="flex h-[72px] shrink-0 items-center px-5">
             <Link href="/" aria-label="Tangent home" className="relative flex items-center">
               <Image
                 src="/medias/v2/tangent-logo-typo.svg"
@@ -83,7 +83,7 @@ export function ShellV2({ children }: { children: ReactNode }) {
             </Link>
           </div>
           <Nav path={path} collapsed={collapsed} />
-          <div className="px-3">
+          <div className="px-2.5">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={collapsed ? "mini" : "full"}
@@ -209,20 +209,19 @@ function TangentMark({ width = 14, height = 24 }: { width?: number; height?: num
 
 function Nav({ path, collapsed }: { path: string; collapsed: boolean }) {
   return (
-    <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3">
+    <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2.5">
       {NAV.map((g) => (
         <div key={g.group ?? "main"} className="mb-3">
           {g.group && (
-            <div className="relative h-[22px] px-3 pb-1.5" aria-hidden={collapsed || undefined}>
+            <div className="relative h-[22px] px-2.5 pb-1.5" aria-hidden={collapsed || undefined}>
               <span
-                className={cn(
-                  "block whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.06em] text-ink-3 transition-opacity duration-200",
-                  collapsed && "opacity-0"
-                )}
+                className={cn("block whitespace-nowrap text-[11px] font-medium uppercase text-ink-3 transition-opacity duration-200", collapsed && "opacity-0")}
               >
                 {g.group}
               </span>
-              <span className={cn("absolute left-3 top-[7px] h-px w-4 bg-white/20 transition-opacity duration-200", collapsed ? "opacity-100" : "opacity-0")} />
+              <span
+                className={cn("absolute left-2.5 top-[7px] h-px w-[18px] bg-white/20 transition-opacity duration-200", collapsed ? "opacity-100" : "opacity-0")}
+              />
             </div>
           )}
           {g.items.map((it) => {
@@ -237,19 +236,22 @@ function Nav({ path, collapsed }: { path: string; collapsed: boolean }) {
                 aria-label={collapsed ? it.label : undefined}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "group relative flex h-9 items-center gap-3 rounded-lg px-3 text-[14px] font-medium transition-colors",
-                  active ? "text-white" : "text-ink-2 hover:bg-white/[0.04] hover:text-white"
+                  "group relative flex h-9 items-center gap-2 rounded-[8px] px-2.5 text-[14px] transition-colors",
+                  active ? "font-medium text-white" : "text-[#bcbcbc] hover:bg-white/[0.04] hover:text-white"
                 )}
               >
                 {active && (
                   <motion.span
                     layoutId="v2-nav-active"
-                    className="absolute inset-0 rounded-lg bg-white/[0.07]"
+                    className="absolute inset-0 rounded-[8px] bg-white/[0.07]"
                     transition={{ type: "spring", visualDuration: 0.35, bounce: 0.15 }}
                   />
                 )}
                 <Icon
-                  className={cn("relative h-4 w-4 shrink-0 text-white transition-opacity", active ? "opacity-100" : "opacity-60 group-hover:opacity-100")}
+                  className={cn(
+                    "relative h-[18px] w-[18px] shrink-0 text-white transition-opacity",
+                    active ? "opacity-100" : "opacity-75 group-hover:opacity-100"
+                  )}
                   strokeWidth={1.75}
                 />
                 <span className={cn("relative whitespace-nowrap transition-opacity duration-200", collapsed && "opacity-0")}>{it.label}</span>
@@ -260,7 +262,7 @@ function Nav({ path, collapsed }: { path: string; collapsed: boolean }) {
                   />
                 )}
                 {collapsed && (
-                  <span className="pointer-events-none fixed left-[72px] z-50 -translate-x-1 whitespace-nowrap rounded-md bg-white px-2 py-1 text-xs font-medium text-black opacity-0 transition-[opacity,transform] duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100">
+                  <span className="pointer-events-none fixed left-[66px] z-50 -translate-x-1 whitespace-nowrap rounded-md bg-white px-2 py-1 text-xs font-medium text-black opacity-0 transition-[opacity,transform] duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100">
                     {it.label}
                   </span>
                 )}

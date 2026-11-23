@@ -55,7 +55,7 @@ export function ShellV2({ children }: { children: ReactNode }) {
   })
 
   return (
-    <div className="flex min-h-dvh font-sans text-ink">
+    <div className="v2-shell flex min-h-dvh font-sans text-ink">
       <motion.aside
         initial={false}
         animate={{ width: collapsed ? COLLAPSED : EXPANDED }}
@@ -131,7 +131,7 @@ export function ShellV2({ children }: { children: ReactNode }) {
       </AnimatePresence>
 
       <div className="min-w-0 flex-1">
-        <header className="bg-page/85 sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-hairline px-4 backdrop-blur-md md:px-8 lg:h-[72px] lg:px-12">
+        <header className="sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-hairline bg-[rgb(9_9_9/0.88)] px-4 backdrop-blur-md md:px-8 lg:h-[72px] lg:px-12">
           <button
             onClick={() => setDrawer(true)}
             aria-label="Open menu"

@@ -2,63 +2,47 @@
 
 import { useId, useMemo } from "react"
 import { formatUnits } from "viem"
-import { formatMillions } from "@/lib/number_formatter"
+import { cn } from "@/lib/utils"
 import { useRootContext } from "@/components/products/root/root_context"
 import { useUSGContext } from "@/components/products/usg/usg_context"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 
 /**
  * USG peg card for the sidebar. Reads only what the live app already loads:
- * RootContext.priceHistory.USG (price-history API, 1m on mount), sUSGCurrentAPY, and USGsUSGMetrics for supply and spot price.
+ * RootContext.priceHistory.USG (price-history API, 1m on mount), sUSGCurrentAPY, and USGsUSGMetrics for the spot price.
  */
 function usePeg() {
-  const { priceHistory, priceSelectedTabs, sUSGCurrentAPY } = useRootContext()
+  const { priceHistory, sUSGCurrentAPY } = useRootContext()
   const { USGsUSGMetrics } = useUSGContext()
   const points = priceHistory?.USG ?? []
   const spot = USGsUSGMetrics?.USGPrice ? Number(formatUnits(USGsUSGMetrics.USGPrice, 18)) : undefined
   const last = points.at(-1)?.uv ?? spot
-  const supply = USGsUSGMetrics?.USGSupply ? Number(formatUnits(USGsUSGMetrics.USGSupply, 18)) : undefined
-  return { points, last, range: priceSelectedTabs?.USG ?? "1m", apy: sUSGCurrentAPY, supply }
+  return { points, last, apy: sUSGCurrentAPY }
 }
 
+/** Sidebar peg card, kept to what matters at a glance: price, distance to the peg, the month line against $1, and the sUSG APY. */
 export function PegCardV2() {
-  const { points, last, range, apy, supply } = usePeg()
+  const { points, last, apy } = usePeg()
   const delta = last !== undefined ? (last - 1) * 100 : undefined
-  const lo = points.length ? Math.min(...points.map((p) => p.uv)) : undefined
-  const hi = points.length ? Math.max(...points.map((p) => p.uv)) : undefined
 
-  if (last === undefined) return <div className="h-[184px] animate-pulse rounded-xl border border-hairline bg-surface" />
+  if (last === undefined) return <div className="h-[148px] animate-pulse rounded-xl border border-hairline bg-surface" />
 
   return (
     <div className="rounded-xl border border-hairline bg-surface p-3.5">
       <div className="flex items-center gap-2 text-[13px] font-medium text-ink-2">
         <TokenImage token="USG" size={16} /> USG
-        <span className="ml-auto text-xs font-normal uppercase text-ink-3">{range}</span>
-      </div>
-      <div className="mt-2 flex items-baseline gap-2">
-        <span className="text-[24px] font-light tabular-nums tracking-[-0.02em]">${last.toFixed(4)}</span>
         {delta !== undefined && (
-          <span className="text-xs tabular-nums text-ink-2">
+          <span className={cn("ml-auto text-xs tabular-nums", Math.abs(delta) >= 1 ? "text-warning" : "text-ink-3")}>
             {delta < 0 ? "−" : "+"}
             {Math.abs(delta).toFixed(2)}% vs peg
           </span>
         )}
       </div>
+      <div className="mt-1.5 text-[24px] font-light tabular-nums tracking-[-0.02em]">${last.toFixed(4)}</div>
       {points.length > 1 && <PegSparkline points={points.map((p) => p.uv)} />}
-      {lo !== undefined && hi !== undefined && (
-        <div className="mt-1 text-[11px] tabular-nums text-ink-3">
-          Range ${lo.toFixed(4)} to ${hi.toFixed(4)}
-        </div>
-      )}
-      <div className="mt-3 space-y-1.5 border-t border-divider pt-2.5 text-xs">
-        <div className="flex items-center justify-between">
-          <span className="text-ink-2">sUSG APY</span>
-          <span className="font-medium tabular-nums">{apy ? `${apy.toFixed(2)}%` : "-"}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-ink-2">USG supply</span>
-          <span className="font-medium tabular-nums">{supply !== undefined ? formatMillions(supply) : "-"}</span>
-        </div>
+      <div className="mt-3 flex items-center justify-between border-t border-divider pt-2.5 text-xs">
+        <span className="text-ink-2">sUSG APY</span>
+        <span className="font-medium tabular-nums">{apy ? `${apy.toFixed(2)}%` : "-"}</span>
       </div>
     </div>
   )
@@ -96,7 +80,6 @@ function PegSparkline({ points }: { points: number[] }) {
 
   return (
     <div className="relative mt-3">
-      <span className="absolute -top-3.5 right-0 text-[10px] text-ink-3">$1.00</span>
       <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} preserveAspectRatio="none" aria-hidden>
         <defs>
           <linearGradient id={`peg-${id}`} x1="0" y1="0" x2="0" y2="1">

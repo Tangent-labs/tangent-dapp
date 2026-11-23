@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ReactNode, useState } from "react"
+import { ReactNode, useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { formatMillions } from "@/lib/number_formatter"
@@ -13,8 +13,10 @@ import { CollateralPriceProvider } from "@/components/products/usg/record/collat
 import { USGPositionHistory } from "@/components/products/usg/record/position_history/usg_position_history"
 import { VAPRCalculator } from "@/components/products/usg/record/vapr_calculator/vapr_calculator"
 import { isFixedRateMarket } from "@/components/products/usg/list/usg_market_controller"
+import { useUSGMaketListContext } from "@/components/products/usg/list/usg_market_list_context"
 import { TERMS, Term } from "@/v2/ui/term"
 import { Venue } from "@/v2/ui/venue"
+import { TokenImage } from "@/components/design_system/structure/token_image"
 import { YourLoanV2 } from "./your-loan"
 import { MarketSwitcherV2 } from "./market-switcher"
 
@@ -31,7 +33,23 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
   const borrowed = parseFloat(String(marketDisplayData?.borrowed ?? "0").replace(/,/g, ""))
   const cap = parseFloat(String(marketDisplayData?.cap ?? "0").replace(/,/g, ""))
   const capRatio = cap > 0 ? Math.min(1, borrowed / cap) : 0
+  // same "Max lev. vAPR" indicator as the live market list row
+  const { displayRows } = useUSGMaketListContext()
+  const listRow = displayRows?.find((row) => row.address?.toLowerCase() === marketInfo?.marketAddress?.toLowerCase())
+  const maxLevIndicator = listRow?.indicators.find((i) => i.key === "maxvapr")
+  const maxLevNum = Number(maxLevIndicator?.value)
+  const maxLev = Number.isFinite(maxLevNum) && maxLevIndicator ? `${maxLevNum.toFixed(2)}%` : undefined
   const kind = fixed ? "FIR" : marketData?.constants?.irParams?.isHEC ? "HEC" : "LEC"
+  // compact market bar once the page header scrolls under the top bar
+  const headRef = useRef<HTMLDivElement>(null)
+  const [stuck, setStuck] = useState(false)
+  useEffect(() => {
+    const el = headRef.current
+    if (!el) return
+    const io = new IntersectionObserver(([e]) => setStuck(!e.isIntersecting), { rootMargin: "-72px 0px 0px 0px" })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
 
   return (
     <div className="mx-auto w-full max-w-[1264px] px-0 pb-20 pt-2 font-sans">
@@ -42,7 +60,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
         </Link>{" "}
         / <span className="text-ink-2">{name}</span>
       </div>
-      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+      <div ref={headRef} className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
         <MarketSwitcherV2 address={marketInfo?.marketAddress} name={name} logoKey={collateralInfo?.logoKey} />
         {marketData && (
           <span className="flex items-center gap-1.5 text-[13px] text-ink-2">
@@ -60,6 +78,28 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
 
       <div className="mt-8 grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_392px]">
         <div className="min-w-0">
+          <div className="sticky top-16 z-30 h-0 lg:top-[72px]">
+            <AnimatePresence>
+              {stuck && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.18, ease: [0.25, 0.8, 0.25, 1] }}
+                  className="flex items-center gap-x-6 gap-y-1 overflow-x-auto border-b border-hairline bg-page py-2.5"
+                >
+                  <span className="flex shrink-0 items-center gap-2.5">
+                    <TokenImage token={collateralInfo?.logoKey} size={24} className="h-6 w-auto" />
+                    <span className="text-[15px] font-semibold">{name}</span>
+                  </span>
+                  <Mini label="Collateral vAPR" value={`${currentTotalMarketApr?.toFixed(2)}%`} />
+                  <Mini label="Max lev. vAPR" value={maxLev} negative={maxLevNum < 0} />
+                  <Mini label="Borrow rate" value={computedBorrowRate.current} />
+                  <Mini label="Capacity" value={maxBorrowCapReached ? "Cap reached" : `${Math.round(capRatio * 100)}%`} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
           <div role="tablist" className="mb-6 flex gap-6 border-b border-hairline">
             {(["overview", "activity"] as const).map((t) => (
               <button
@@ -104,6 +144,16 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                 <div className="flex items-stretch">
                   <Stat label="Collateral vAPR" info={TERMS.vapr} value={`${currentTotalMarketApr?.toFixed(2)}%`} hero />
                   <Stat
+                    label="Max lev. vAPR"
+                    info={TERMS.maxLevVapr}
+                    value={maxLev ?? "-"}
+                    sub={(() => {
+                      const proj = Number(maxLevIndicator?.subValue)
+                      return Number.isFinite(proj) ? `Proj. ${proj.toFixed(2)}%` : undefined
+                    })()}
+                    negative={maxLevNum < 0}
+                  />
+                  <Stat
                     label="Borrow rate"
                     info={TERMS.borrowRate}
                     value={computedBorrowRate.current}
@@ -118,7 +168,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                   <Stat
                     label="Capacity"
                     value={maxBorrowCapReached ? "Cap reached" : `${Math.round(capRatio * 100)}%`}
-                    sub={`${formatMillions(marketDisplayData?.borrowed)} of ${formatMillions(marketDisplayData?.cap)} USG`}
+                    sub={`${formatMillions(marketDisplayData?.borrowed)} / ${formatMillions(marketDisplayData?.cap)}`}
                     warn={maxBorrowCapReached}
                   />
                 </div>
@@ -175,7 +225,32 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
   )
 }
 
-function Stat({ label, value, sub, hero, warn, info }: { label: string; value: string; sub?: string; hero?: boolean; warn?: boolean; info?: string }) {
+function Mini({ label, value, negative }: { label: string; value?: string; negative?: boolean }) {
+  return (
+    <span className="flex shrink-0 items-baseline gap-1.5 whitespace-nowrap text-[13px]">
+      <span className="text-ink-3">{label}</span>
+      <span className={cn("font-medium tabular-nums", negative && "text-negative")}>{value ?? "-"}</span>
+    </span>
+  )
+}
+
+function Stat({
+  label,
+  value,
+  sub,
+  hero,
+  warn,
+  info,
+  negative,
+}: {
+  label: string
+  value: string
+  sub?: string
+  hero?: boolean
+  warn?: boolean
+  info?: string
+  negative?: boolean
+}) {
   return (
     <div className={hero ? "min-w-0 flex-[1.6] pr-8" : "min-w-0 flex-1 border-l border-divider px-6"}>
       <div className="text-xs text-ink-3">{info ? <Term info={info}>{label}</Term> : label}</div>
@@ -183,7 +258,8 @@ function Stat({ label, value, sub, hero, warn, info }: { label: string; value: s
         className={cn(
           "mt-1 whitespace-nowrap tabular-nums tracking-[-0.02em]",
           hero ? "text-[48px] font-light leading-[1.05]" : warn ? "text-[20px] font-medium leading-[30px]" : "text-[24px] font-medium",
-          warn && "text-warning"
+          warn && "text-warning",
+          negative && "text-negative"
         )}
       >
         {value}

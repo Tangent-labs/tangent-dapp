@@ -231,6 +231,27 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* V2 scrollbars: thin, no track, quiet thumb. Opt-in class, so V1 surfaces are unchanged. */
+/* V2: the same thin dark scrollbar everywhere (page, sidebar, lists, menus), not the browser default */
+html:has(.v2-shell),
+.v2-shell,
+.v2-shell * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+html:has(.v2-shell)::-webkit-scrollbar,
+.v2-shell ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+html:has(.v2-shell)::-webkit-scrollbar-track,
+.v2-shell ::-webkit-scrollbar-track {
+  background: transparent;
+}
+html:has(.v2-shell)::-webkit-scrollbar-thumb,
+.v2-shell ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+}
 .v2-scroll {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.14) transparent;

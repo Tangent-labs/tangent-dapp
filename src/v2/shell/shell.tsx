@@ -140,27 +140,30 @@ export function ShellV2({ children }: { children: ReactNode }) {
       </AnimatePresence>
 
       <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-hairline bg-[rgb(15_15_15/0.88)] px-4 backdrop-blur-md md:px-6 lg:h-[72px] lg:px-8">
-          <button
-            onClick={() => setDrawer(true)}
-            aria-label="Open menu"
-            className="grid h-9 w-9 place-items-center rounded-lg text-ink-2 hover:bg-white/[0.06] lg:hidden"
-          >
-            <Menu className="h-5 w-5" strokeWidth={1.75} />
-          </button>
-          <span className="lg:hidden">
-            <Brand />
-          </span>
-          <div
-            className={cn(
-              "ml-auto hidden h-10 items-center gap-3 rounded-[10px] border border-hairline bg-white/[0.03] px-4 text-[13px] sm:flex",
-              !protocolCurrentTVL?.total && "animate-pulse"
-            )}
-          >
-            <span className="text-ink-3">TVL</span>
-            <span className="font-semibold tabular-nums">{protocolCurrentTVL?.total ? `$${formatMillions(protocolCurrentTVL.total)}` : "-"}</span>
+        <header className="sticky top-0 z-40 border-b border-hairline bg-[rgb(15_15_15/0.88)] backdrop-blur-md">
+          {/* same width and side padding as <main>, so TVL and wallet line up with the content edge */}
+          <div className="mx-auto flex h-16 w-full max-w-[1520px] items-center gap-3 px-4 md:px-6 lg:h-[72px] lg:px-8">
+            <button
+              onClick={() => setDrawer(true)}
+              aria-label="Open menu"
+              className="grid h-9 w-9 place-items-center rounded-lg text-ink-2 hover:bg-white/[0.06] lg:hidden"
+            >
+              <Menu className="h-5 w-5" strokeWidth={1.75} />
+            </button>
+            <span className="lg:hidden">
+              <Brand />
+            </span>
+            <div
+              className={cn(
+                "ml-auto hidden h-10 items-center gap-3 rounded-[10px] border border-hairline bg-white/[0.03] px-4 text-[13px] sm:flex",
+                !protocolCurrentTVL?.total && "animate-pulse"
+              )}
+            >
+              <span className="text-ink-3">TVL</span>
+              <span className="font-semibold tabular-nums">{protocolCurrentTVL?.total ? `$${formatMillions(protocolCurrentTVL.total)}` : "-"}</span>
+            </div>
+            <WalletConnexionContent className="ml-auto max-w-none sm:ml-0" />
           </div>
-          <WalletConnexionContent className="ml-auto max-w-none sm:ml-0" />
         </header>
         <main className="mx-auto w-full max-w-[1520px] px-4 pb-20 pt-8 md:px-6 lg:px-8">{children}</main>
       </div>

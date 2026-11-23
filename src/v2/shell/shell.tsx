@@ -237,7 +237,7 @@ function Nav({ path, collapsed }: { path: string; collapsed: boolean }) {
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "group relative flex h-9 items-center gap-2 rounded-[8px] px-2.5 text-[14px] transition-colors",
-                  active ? "font-medium text-white" : "text-[#bcbcbc] hover:bg-white/[0.04] hover:text-white"
+                  active ? "font-medium text-white" : "text-ink-2 hover:bg-white/[0.04] hover:text-white"
                 )}
               >
                 {active && (
@@ -250,7 +250,7 @@ function Nav({ path, collapsed }: { path: string; collapsed: boolean }) {
                 <Icon
                   className={cn(
                     "relative h-[18px] w-[18px] shrink-0 text-white transition-opacity",
-                    active ? "opacity-100" : "opacity-75 group-hover:opacity-100"
+                    active ? "opacity-100" : "opacity-60 group-hover:opacity-100"
                   )}
                   strokeWidth={1.75}
                 />

@@ -9,6 +9,7 @@ import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip, CartesianGrid } from "recharts"
 import { formatXAxis, formatYAxis, getDataRangeMs, getXAxisTicks } from "../dashboard_controller"
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
+import { UI_V2 } from "@/v2/ui"
 
 type GraphLpLiquidityProps = {
   liquidity: LpLiquidityHistory
@@ -19,7 +20,7 @@ type GraphLpLiquidityProps = {
 const RANGES: LiquidityRange[] = ["1w", "1m", "1y", "all"]
 
 // Class names are spelled out so Tailwind picks them up
-const PALETTE = [
+const LIVE_PALETTE = [
   { stroke: "#0075FF", className: "text-[#0075FF]" },
   { stroke: "#24DD9A", className: "text-[#24DD9A]" },
   { stroke: "#4EB3DF", className: "text-[#4EB3DF]" },
@@ -27,6 +28,16 @@ const PALETTE = [
   { stroke: "#B57BFF", className: "text-[#B57BFF]" },
   { stroke: "#FF9F43", className: "text-[#FF9F43]" },
 ]
+// V2: blue first, then quiet tints (no green, no yellow)
+const V2_PALETTE = [
+  { stroke: "#0075FF", className: "text-[#0075FF]" },
+  { stroke: "#a79bff", className: "text-[#a79bff]" },
+  { stroke: "#e78fb3", className: "text-[#e78fb3]" },
+  { stroke: "#d9c49a", className: "text-[#d9c49a]" },
+  { stroke: "#8fa3bf", className: "text-[#8fa3bf]" },
+  { stroke: "#d4d4d8", className: "text-[#d4d4d8]" },
+]
+const PALETTE = UI_V2 ? V2_PALETTE : LIVE_PALETTE
 
 export const GraphLpLiquidity = ({ liquidity, selectedTab, fetchLiquidity }: GraphLpLiquidityProps) => {
   // Pivot per-LP histories into one row per date; LPs created later count as 0 before their first point

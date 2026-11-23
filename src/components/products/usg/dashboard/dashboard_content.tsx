@@ -9,6 +9,8 @@ import { GraphProtocolRevenues } from "./components/GraphProtocolRevenues"
 import { GraphProtocolVolumes } from "./components/GraphProtocolVolumes"
 import { GraphLpLiquidity } from "./components/GraphLpLiquidity"
 import { GraphCollateralsAndDebts } from "./components/GraphCollateralsAndDebts"
+import { UI_V2 } from "@/v2/ui"
+import { DashboardHeaderV2 } from "@/v2/dashboard/header"
 
 export const USGDashboardContent = () => {
   const {
@@ -44,6 +46,7 @@ export const USGDashboardContent = () => {
 
   return (
     <div className="flex w-full flex-col items-start justify-start gap-5">
+      {UI_V2 && <DashboardHeaderV2 />}
       <div className="flex w-full flex-col gap-5 lg:flex-row">
         <GraphTokenPrice
           token="USG"
@@ -61,8 +64,8 @@ export const USGDashboardContent = () => {
           selectedTab={priceSelectedTabs.sUSG}
           data={priceHistory.sUSG}
           fetchPriceHistoryData={fetchPriceHistoryData}
-          accentColor="#A3FF12"
-          gradientStart="#D9FB0B"
+          accentColor={UI_V2 ? "#a79bff" : "#A3FF12"}
+          gradientStart={UI_V2 ? "#a79bff" : "#D9FB0B"}
         />
       </div>
 

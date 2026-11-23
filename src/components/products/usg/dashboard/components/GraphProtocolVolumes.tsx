@@ -11,6 +11,7 @@ import { useGraphPeriodSelection } from "@/hooks/useGraphPeriodSelection"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { InnerTooltip } from "@/components/design_system/structure/inner_tooltip"
 import { formatPeriodLabel, formatYAxis, computeYAxisTicks } from "../dashboard_controller"
+import { UI_V2 } from "@/v2/ui"
 
 type GraphProtocolVolumesProps = {
   protocolVolumes: ProtocolVolume[]
@@ -26,11 +27,11 @@ const VOLUME_RANGE_TABS: { label: string; range: VolumeRange }[] = [
 ]
 
 const VOLUME_CATEGORIES: { key: string; label: string; color: string; value: (el: ProtocolVolume) => number }[] = [
-  { key: "collateral", label: "Collateral", color: "#8FC1FF", value: (el) => el.collateralIn + el.collateralOut },
-  { key: "debt", label: "Debt", color: "#0075FF", value: (el) => el.debtIn + el.debtOut },
-  { key: "lpLiquidity", label: "LP liquidity", color: "#6A3DE8", value: (el) => el.lpLiquidityIn + el.lpLiquidityOut },
-  { key: "lpSwap", label: "LP swaps", color: "#B84DFF", value: (el) => el.lpSwap },
-  { key: "susg", label: "sUSG", color: "#FC76FF", value: (el) => el.susgIn + el.susgOut },
+  { key: "collateral", label: "Collateral", color: UI_V2 ? "#e78fb3" : "#8FC1FF", value: (el) => el.collateralIn + el.collateralOut },
+  { key: "debt", label: "Debt", color: UI_V2 ? "#d9c49a" : "#0075FF", value: (el) => el.debtIn + el.debtOut },
+  { key: "lpLiquidity", label: "LP liquidity", color: UI_V2 ? "#a79bff" : "#6A3DE8", value: (el) => el.lpLiquidityIn + el.lpLiquidityOut },
+  { key: "lpSwap", label: "LP swaps", color: UI_V2 ? "#0075FF" : "#B84DFF", value: (el) => el.lpSwap },
+  { key: "susg", label: "sUSG", color: UI_V2 ? "#8fa3bf" : "#FC76FF", value: (el) => el.susgIn + el.susgOut },
 ]
 
 const PLOT_HEIGHT_PX = 256

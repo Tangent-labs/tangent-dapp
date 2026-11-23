@@ -10,6 +10,7 @@ import { ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip, CartesianG
 import { formatXAxis, formatYAxis, getDataRangeMs, getXAxisTicks } from "../dashboard_controller"
 import { returnTVLType } from "../utils"
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
+import { UI_V2 } from "@/v2/ui"
 
 type MarketDebtProps = {
   protocolCurrentTVL: TVLData
@@ -26,8 +27,8 @@ const TVL_CATEGORY_METADATA: Record<string, { label: string; className: string }
 
 const SERIES_CONFIG = [
   { key: "markets" as keyof TVLData, stroke: "#0075ff", gradient: "tvl-marketsGradient", name: "Markets" },
-  { key: "pegkeepers" as keyof TVLData, stroke: "#24DD9A", gradient: "tvl-pegKeepersGradient", name: "Peg Keepers" },
-  { key: "susg" as keyof TVLData, stroke: "#4EB3DF", gradient: "tvl-susgGradient", name: "SUSG" },
+  { key: "pegkeepers" as keyof TVLData, stroke: UI_V2 ? "#d9c49a" : "#24DD9A", gradient: "tvl-pegKeepersGradient", name: "Peg Keepers" },
+  { key: "susg" as keyof TVLData, stroke: UI_V2 ? "#a79bff" : "#4EB3DF", gradient: "tvl-susgGradient", name: "SUSG" },
 ]
 
 export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTVL, tvl }: MarketDebtProps) => {
@@ -134,13 +135,13 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
               </linearGradient>
 
               <linearGradient id="tvl-pegKeepersGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#24DD9A" stopOpacity={0.6} />
-                <stop offset="95%" stopColor="#24DD9A" stopOpacity={0} />
+                <stop offset="5%" stopColor={SERIES_CONFIG[1].stroke} stopOpacity={0.6} />
+                <stop offset="95%" stopColor={SERIES_CONFIG[1].stroke} stopOpacity={0} />
               </linearGradient>
 
               <linearGradient id="tvl-susgGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#4EB3DF" stopOpacity={0.6} />
-                <stop offset="95%" stopColor="#4EB3DF" stopOpacity={0} />
+                <stop offset="5%" stopColor={SERIES_CONFIG[2].stroke} stopOpacity={0.6} />
+                <stop offset="95%" stopColor={SERIES_CONFIG[2].stroke} stopOpacity={0} />
               </linearGradient>
             </defs>
 

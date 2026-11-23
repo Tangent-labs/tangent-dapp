@@ -1,14 +1,14 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { ReactNode, useEffect, useMemo, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { TokenImage } from "./token_image"
 import { IconSingleArrow } from "@/components/icons/icon_single_arrow"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 type EvolutionBoxProps = {
-  originalValue: string | number
-  newValue?: string | number
+  originalValue: ReactNode
+  newValue?: ReactNode
   label?: string
   logo?: string
   className?: string
@@ -59,7 +59,15 @@ export function EvolutionBox({
           />
         )}
 
-        <div className="flex items-center gap-2 text-sm">
+        {/* layout : justify-content can't transition, so framer glides the value between centered and left.
+            Only on that switch (layoutDependency), and position only : a plain value swap (date -> infinity) must not slide or stretch.
+            h-4 : the global `line-height: normal !important` makes a text line ~17px but an icon 16px, so the box height jumped on swap */}
+        <motion.div
+          layout="position"
+          layoutDependency={hasChanged}
+          transition={{ type: "spring", stiffness: 400, damping: 32 }}
+          className="flex h-4 items-center gap-2 text-sm"
+        >
           {displayHover ? (
             <>
               <HoverCard openDelay={50} closeDelay={100}>
@@ -84,9 +92,9 @@ export function EvolutionBox({
               <TokenImage size={48} token={logo} />
             </div>
           )}
-        </div>
+        </motion.div>
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
           {hasChanged && (
             <motion.div
               layout
@@ -101,14 +109,14 @@ export function EvolutionBox({
           )}
         </AnimatePresence>
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
           {hasChanged && (
             <motion.div
               initial={{ opacity: 0, x: 8 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -8 }}
               transition={{ duration: 0.35, type: "spring", stiffness: 400, damping: 28 }}
-              className="flex items-center gap-2 text-sm"
+              className="flex h-4 items-center gap-2 text-sm"
             >
               <span className="font-semibold" style={{ color: newValueColor ?? "var(--tgt-tonic)" }}>
                 {newValue}

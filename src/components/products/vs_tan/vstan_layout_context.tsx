@@ -1,7 +1,7 @@
 "use client"
 
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { doIncreaseLockTime, doTogglePermaLock, getVsTanData } from "./rstan_layout_controller"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { doIncreaseLockTime, doTogglePermaLock, getVsTanData } from "./vstan_layout_controller"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { BalanceAllowanceData, LockData, LockPosition } from "../usg/usg_type"
 import { getBalancesAndAllowances } from "../usg/record/usg_record_controller"
@@ -64,30 +64,29 @@ export const VsTanProvider = ({ children }: VsTanContextProps) => {
   }, [path])
 
   /**
-   * On init
+   * On init, user login/logout and account switch — no lockData guard, so an address
+   * change while the first fetch is still in flight triggers a refetch
    */
   useEffect(() => {
     if (isWalletContextLoaded) {
       loadData()
     }
-  }, [isWalletContextLoaded])
-
-  /**
-   * On user logs in
-   */
-  useEffect(() => {
-    if (isWalletContextLoaded && currentAddress && lockData) {
-      loadData()
-    }
-  }, [currentAddress])
+  }, [isWalletContextLoaded, currentAddress])
 
   useEffect(() => {
     setExtendToPermaLock(false)
   }, [selectedPosition])
 
+  const loadDataRequestId = useRef(0)
+
   const loadData = useCallback(() => {
+    const requestId = ++loadDataRequestId.current
+
     getVsTanData(currentAddress || zeroAddress)
       .then((d) => {
+        // a slow stale response (e.g. zero-address fetch racing a login fetch) must not overwrite a newer one
+        if (requestId !== loadDataRequestId.current) return
+
         setLockData(d)
         setIsLoading(false)
       })

@@ -4,14 +4,16 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 
 type APRDisplayProps = {
   apy: number
+  // The panel is shared with sTAN staking ; sUSG stays the default so existing callers are unchanged
+  token?: string
 }
 
-export const APRDisplay = ({ apy }: APRDisplayProps) => {
+export const APRDisplay = ({ apy, token = "sUSG" }: APRDisplayProps) => {
   return (
     <div className="flex items-center justify-start gap-3">
       <div className="flex items-center justify-center gap-[5px] rounded-[10px] bg-overlay-panel p-[10px]">
-        <TokenImage token="sUSG" size={20} />
-        sUSG
+        <TokenImage token={token} size={20} />
+        {token}
       </div>
 
       <HoverCard openDelay={100} closeDelay={100}>

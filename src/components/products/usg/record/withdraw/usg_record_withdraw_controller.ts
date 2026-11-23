@@ -4,7 +4,7 @@ import { Abi, WalletClient } from "viem"
 import { FormError, FormState, MarketDetailData, USGMarketWitrhdrawParams } from "../../usg_type"
 import MarketExternalActions from "@/abi/USG/MarketExternalActions.json"
 import { executeContractCall, waitForTransaction } from "@/services/service_rpc"
-import { dappErrors } from "@/components/design_system/notifications/dap-errors"
+import { dappErrors } from "@/components/design_system/notifications/form-errors"
 
 export function getWithdrawFormState(
   marketData: MarketDetailData,

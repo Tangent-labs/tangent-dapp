@@ -1,5 +1,6 @@
 import "@/css_globals.css"
-import { dmSans } from "./fonts"
+import { dmSans, gilroy } from "./fonts"
+import { UI_V2 } from "@/v2/ui"
 import type { Metadata } from "next"
 import { siteUrl, socialMetadata } from "./site_metadata"
 
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={dmSans.variable} suppressHydrationWarning>
+    <html lang="en" data-ui={UI_V2 ? "v2" : undefined} className={UI_V2 ? dmSans.variable : gilroy.variable} suppressHydrationWarning>
       <body className="dark relative bg-dark font-gilroy antialiased" id="body" suppressHydrationWarning>
         {/* <div className="fixed inset-0 -z-30 bg-body"></div> */}
         <main className="overflow-y-overlay mx-auto min-h-[80vh] w-full">{children}</main>

@@ -16,9 +16,10 @@ const config: Config = {
         "md-lg": "930px",
       },
       fontFamily: {
-        // V2 typeface. The "gilroy" key is kept so existing font-gilroy classes switch to DM Sans without edits.
-        gilroy: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
-        sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
+        // V1 loads Gilroy (--font-gilroy), V2 loads DM Sans (--font-dm-sans), see app/layout.tsx.
+        // font-gilroy falls back to DM Sans under V2, font-sans falls back to the Tailwind default under V1.
+        gilroy: ["var(--font-gilroy, var(--font-dm-sans))", "sans-serif"],
+        sans: ["var(--font-dm-sans, ui-sans-serif)", "system-ui", "sans-serif"],
       },
       borderWidth: {
         tangent: "1.5px",

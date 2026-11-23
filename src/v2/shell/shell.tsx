@@ -55,7 +55,7 @@ export function ShellV2({ children }: { children: ReactNode }) {
   })
 
   return (
-    <div className="flex min-h-dvh font-sans">
+    <div className="flex min-h-dvh font-sans text-ink">
       <motion.aside
         initial={false}
         animate={{ width: collapsed ? COLLAPSED : EXPANDED }}

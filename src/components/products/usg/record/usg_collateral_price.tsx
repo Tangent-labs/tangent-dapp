@@ -386,10 +386,10 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
           className={cn(
             "absolute right-2 z-10 px-1 py-0.5 text-xs",
             UI_V2 ? "rounded bg-warning tabular-nums text-black" : "rounded-[2px] bg-[#ff0300] text-white",
-            isAboveView ? "top-2" : "bottom-2"
+            UI_V2 ? (isAboveView ? "top-2" : "bottom-9") : isAboveView ? "top-2" : "bottom-2"
           )}
         >
-          Liquidation price ${formatNumber(liquidationPriceNumber, 3)}
+          {UI_V2 && (isAboveView ? "↑ " : "↓ ")}Liquidation price ${formatNumber(liquidationPriceNumber, 3)}
         </div>
       )}
     </div>

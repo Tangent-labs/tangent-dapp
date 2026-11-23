@@ -75,13 +75,18 @@ export function YourLoanV2() {
                 </div>
                 {hasLoan && (
                   <div className="text-xs tabular-nums text-ink-3">
-                    {formatBigIntAsNumber(collateral, collateralInfo?.decimals, collateralInfo?.displayDecimals)} {marketData?.collateralInfo?.symbol}
+                    {typing && futureMarketDisplayData.collateralValue !== marketDisplayData.collateralValue
+                      ? `Today ${marketDisplayData.collateralValue}`
+                      : `${formatBigIntAsNumber(collateral, collateralInfo?.decimals, collateralInfo?.displayDecimals)} ${marketData?.collateralInfo?.symbol}`}
                   </div>
                 )}
               </div>
               <div>
                 <div className="text-xs text-ink-3">Debt</div>
                 <div className="mt-1 text-[17px] font-medium tabular-nums">{typing ? futureMarketDisplayData.debt : marketDisplayData.debt} USG</div>
+                {hasLoan && typing && futureMarketDisplayData.debt !== marketDisplayData.debt && (
+                  <div className="text-xs tabular-nums text-ink-3">Today {marketDisplayData.debt} USG</div>
+                )}
               </div>
             </div>
 

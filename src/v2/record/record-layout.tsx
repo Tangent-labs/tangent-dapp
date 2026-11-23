@@ -13,16 +13,9 @@ import { CollateralPriceProvider } from "@/components/products/usg/record/collat
 import { USGPositionHistory } from "@/components/products/usg/record/position_history/usg_position_history"
 import { VAPRCalculator } from "@/components/products/usg/record/vapr_calculator/vapr_calculator"
 import { isFixedRateMarket } from "@/components/products/usg/list/usg_market_controller"
+import { Venue } from "@/v2/ui/venue"
 import { YourLoanV2 } from "./your-loan"
 import { MarketSwitcherV2 } from "./market-switcher"
-
-const VENUE: Record<string, string> = {
-  Convex_CRV: "Curve LP · Convex",
-  Convex_FXN: "Curve LP · Convex",
-  STAKEDAO_CRV_Vault: "Curve LP · Stake DAO",
-  CRV_Gauge: "Curve LP",
-  Pendle_PT: "Pendle PT",
-}
 
 /**
  * V2 market page. Same data and pieces as USGRecordLayout (record context, feature tabs, chart, calculator, contracts, history),
@@ -38,7 +31,6 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
   const cap = parseFloat(String(marketDisplayData?.cap ?? "0").replace(/,/g, ""))
   const capRatio = cap > 0 ? Math.min(1, borrowed / cap) : 0
   const kind = fixed ? "FIR" : marketData?.constants?.irParams?.isHEC ? "HEC" : "LEC"
-  const venue = VENUE[marketData?.marketType ?? ""] ?? ""
 
   return (
     <div className="mx-auto w-full max-w-[1264px] px-0 pb-20 pt-2 font-sans">
@@ -52,8 +44,10 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
         <MarketSwitcherV2 address={marketInfo?.marketAddress} name={name} logoKey={collateralInfo?.logoKey} />
         {marketData && (
-          <span className="text-[13px] text-ink-2">
-            {kind} market{venue && ` · ${venue}`}
+          <span className="flex items-center gap-1.5 text-[13px] text-ink-2">
+            {kind} market
+            {marketData?.marketType && <span className="opacity-50">·</span>}
+            <Venue type={marketData?.marketType ?? ""} />
           </span>
         )}
       </div>

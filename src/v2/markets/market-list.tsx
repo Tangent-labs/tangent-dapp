@@ -14,6 +14,7 @@ import { useUSGMaketListContext } from "@/components/products/usg/list/usg_marke
 import { marketOptions, protocolOptions } from "@/components/products/usg/list/usg_market_controller"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { Venue } from "@/v2/ui/venue"
 import { SelectMenu } from "@/v2/ui/select-menu"
 import { Sparkline } from "@/v2/ui/sparkline"
 
@@ -22,13 +23,6 @@ const KINDS: Record<string, { title: string; rule: string }> = {
   HEC: { title: "High emissions collateral", rule: "rewards cut up to 90%, then interest under the market threshold" },
   LEC: { title: "Low emissions collateral", rule: "dynamic interest from day one, rewards cut 2.5%" },
   FIR: { title: "Fixed interest rate", rule: "fixed interest, rewards cut 10%" },
-}
-const VENUE: Record<string, string> = {
-  Convex_CRV: "Curve LP · Convex",
-  Convex_FXN: "Curve LP · Convex",
-  STAKEDAO_CRV_Vault: "Curve LP · Stake DAO",
-  CRV_Gauge: "Curve LP",
-  Pendle_PT: "Pendle PT",
 }
 const kindOf = (r: ListRowData) => (r.isFixedRate ? "FIR" : r.type)
 const ind = (r: ListRowData, key: string) => r.indicators.find((i) => i.key === key)
@@ -351,7 +345,7 @@ function Status({ r }: { r: ListRowData }) {
   const paused = r.isDepositPaused || r.isBorrowPaused || r.isLeveragePaused
   if (!paused && !r.userHasDeposited) return null
   return (
-    <span className="ml-2 inline-flex items-center gap-3 text-[11px] text-ink-2">
+    <span className="inline-flex shrink-0 items-center gap-3 text-[11px] font-normal text-ink-2">
       {r.userHasDeposited && (
         <span className="inline-flex items-center gap-1">
           <span className="h-1.5 w-1.5 rounded-full bg-action" /> Your deposit
@@ -380,11 +374,11 @@ function Row({ r }: { r: ListRowData }) {
       <span className="flex min-w-0 items-center gap-3">
         <TokenImage token={r.logoKey} size={32} className="h-8 w-auto shrink-0" />
         <span className="min-w-0">
-          <span className="block truncate text-[14px] font-semibold leading-5">{r.name}</span>
-          <span className="flex items-center truncate text-xs leading-4 text-ink-3">
-            {VENUE[r.protocol] ?? r.protocol}
+          <span className="flex min-w-0 items-center gap-2 leading-5">
+            <span className="truncate text-[14px] font-semibold">{r.name}</span>
             <Status r={r} />
           </span>
+          <Venue type={r.protocol} className="text-xs leading-4 text-ink-3" />
         </span>
       </span>
       <Vapr r={r} />
@@ -433,8 +427,10 @@ function Card({ r }: { r: ListRowData }) {
           <TokenImage token={r.logoKey} size={32} className="h-8 w-auto shrink-0" />
           <span className="min-w-0 flex-1">
             <span className="block truncate text-[15px] font-semibold leading-5">{r.name}</span>
-            <span className="block truncate text-xs leading-4 text-ink-3">
-              {kindOf(r)} · {VENUE[r.protocol] ?? r.protocol}
+            <span className="flex min-w-0 items-center gap-1.5 text-xs leading-4 text-ink-3">
+              {kindOf(r)}
+              <span className="text-ink-3/60">·</span>
+              <Venue type={r.protocol} />
             </span>
           </span>
           <ChevronRight

@@ -115,7 +115,7 @@ export function HarvestPageV2() {
                     <span className="truncate text-[14px] font-semibold">{item.logoKey?.replaceAll("-", "/")}</span>
                   </span>
                   <span className="group relative inline-block min-w-0">
-                    <span className="peer cursor-help text-[15px] font-semibold tabular-nums underline decoration-white/15 decoration-dotted underline-offset-4">
+                    <span className="peer text-[15px] font-semibold tabular-nums underline decoration-white/15 decoration-dotted underline-offset-4">
                       {formatDollar(item.rewards?.totalDollar || 0)}
                     </span>
                     {details.length > 0 && (

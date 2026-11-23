@@ -153,7 +153,7 @@ export function MarketListV2() {
             value={
               <HoverCard openDelay={100} closeDelay={100}>
                 <HoverCardTrigger asChild>
-                  <span className="cursor-help underline decoration-white/20 decoration-dotted underline-offset-4">{formatMillions(points)} pts</span>
+                  <span className="underline decoration-white/20 decoration-dotted underline-offset-4">{formatMillions(points)} pts</span>
                 </HoverCardTrigger>
                 <HoverCardContent side="top" className="z-[9999] w-fit rounded-lg border-white/10 bg-raised p-2 text-xs text-ink-2">
                   LP points {formatMillions(lpUserPoints?.lpTotalPoints)}, vote points {formatMillions(voteUserPoints?.voteTotalPoints)}
@@ -557,7 +557,7 @@ function Vapr({ r }: { r: ListRowData }) {
     <span className="min-w-0">
       <HoverCard openDelay={120} closeDelay={80}>
         <HoverCardTrigger asChild>
-          <span className="group/apr inline-flex w-fit cursor-help items-center gap-1 text-[15px] font-semibold tabular-nums leading-5 transition-colors hover:text-action">
+          <span className="group/apr inline-flex w-fit items-center gap-1 text-[15px] font-semibold tabular-nums leading-5 transition-colors hover:text-action">
             {pct(r.apr.current)}
             <AprMark />
           </span>

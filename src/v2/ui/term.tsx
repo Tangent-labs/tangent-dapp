@@ -33,10 +33,7 @@ export function Term({
       <HoverCardTrigger asChild>
         <span
           tabIndex={0}
-          className={cn(
-            "w-fit cursor-help underline decoration-white/15 decoration-dotted underline-offset-4 outline-none focus-visible:text-white",
-            className
-          )}
+          className={cn("w-fit underline decoration-white/15 decoration-dotted underline-offset-4 outline-none focus-visible:text-white", className)}
         >
           {children}
         </span>

@@ -206,7 +206,7 @@ export function ClaimPageV2() {
 function AprHoverRewards({ item }: { item: ClaimData }) {
   return (
     <span className="group relative inline-block min-w-0">
-      <span className="peer cursor-help text-[15px] font-semibold tabular-nums underline decoration-white/15 decoration-dotted underline-offset-4">
+      <span className="peer text-[15px] font-semibold tabular-nums underline decoration-white/15 decoration-dotted underline-offset-4">
         {formatDollar(item.totalClaimableValue || 0, 2)}
       </span>
       <span className="pointer-events-none absolute bottom-full left-0 z-30 mb-2 hidden w-[260px] rounded-[10px] border border-white/10 bg-raised p-3 text-xs shadow-[0_12px_32px_rgba(0,0,0,0.55)] peer-hover:block">

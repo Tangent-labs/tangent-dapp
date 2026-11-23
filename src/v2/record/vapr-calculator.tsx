@@ -276,7 +276,7 @@ function Label({ text, info }: { text: string; info: string }) {
   return (
     <HoverCard openDelay={100} closeDelay={100}>
       <HoverCardTrigger asChild>
-        <span className="cursor-help text-[13px] text-ink-2 underline decoration-white/20 decoration-dotted underline-offset-4">{text}</span>
+        <span className="text-[13px] text-ink-2 underline decoration-white/20 decoration-dotted underline-offset-4">{text}</span>
       </HoverCardTrigger>
       <HoverCardContent side="top" align="start" className="z-[9999] w-fit max-w-56 rounded-lg border-white/10 bg-raised p-2 text-xs">
         {info}

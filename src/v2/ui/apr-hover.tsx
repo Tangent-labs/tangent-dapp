@@ -42,9 +42,9 @@ export function AprHover({
       <HoverCard openDelay={120} closeDelay={80}>
         <HoverCardTrigger asChild>
           {children ? (
-            <span className="group/apr inline-block w-fit cursor-help">{children}</span>
+            <span className="group/apr inline-block w-fit">{children}</span>
           ) : (
-            <span className="group/apr inline-flex w-fit cursor-help items-center gap-1 text-[15px] font-semibold tabular-nums leading-5 transition-colors hover:text-action">
+            <span className="group/apr inline-flex w-fit items-center gap-1 text-[15px] font-semibold tabular-nums leading-5 transition-colors hover:text-action">
               {pct(current)}
               <AprMark />
             </span>

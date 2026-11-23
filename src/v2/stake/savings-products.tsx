@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, ArrowUpRight } from "lucide-react"
+import { ArrowUpRight, ChevronRight } from "lucide-react"
 import { SavingsVault } from "@/components/products/usg/stake/savings_vaults"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { formatDollar, formatMillions } from "@/lib/number_formatter"
@@ -58,18 +58,13 @@ export function SavingsProductsV2({
   )
 }
 
-/** One savings product. Surface card on the page tokens; hover lifts it to raised with a soft blue light from the top and a blue go button. */
+/** One savings product. Same card and hover as the markets cards view: raised on hover, a chevron that steps right. */
 function ProductCard({ vault, apy, tvl, deposit }: SavingsRowV2) {
   return (
     <Link
       href={`/stake/${vault.key}`}
       className="focus-visible:border-action/60 group relative flex flex-col overflow-hidden rounded-2xl border border-hairline bg-surface p-5 outline-none transition-colors duration-200 hover:border-white/[0.12] hover:bg-raised"
     >
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-32 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ background: "radial-gradient(60% 100% at 50% 0%, rgba(0,117,255,0.22) 0%, rgba(0,117,255,0) 100%)" }}
-      />
       <span className="relative flex items-center gap-3">
         <TokenImage token={vault.share.logo} size={48} className="h-10 w-auto shrink-0" />
         <span className="min-w-0">
@@ -101,9 +96,10 @@ function ProductCard({ vault, apy, tvl, deposit }: SavingsRowV2) {
           {vault.depositTokens && <span className="ml-2 text-ink-3">{vault.depositTokens}</span>}
           {deposit > 0 && <span className="ml-2 text-ink-2">· You have {formatDollar(deposit)}</span>}
         </span>
-        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/[0.07] text-ink-2 transition-colors duration-200 group-hover:bg-action group-hover:text-white">
-          <ArrowRight className="h-4 w-4" strokeWidth={2} />
-        </span>
+        <ChevronRight
+          className="h-4 w-4 shrink-0 text-ink-3 transition-[color,transform] duration-150 group-hover:translate-x-0.5 group-hover:text-white"
+          strokeWidth={1.75}
+        />
       </span>
     </Link>
   )

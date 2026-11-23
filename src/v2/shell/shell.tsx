@@ -15,7 +15,7 @@ import { PegCardV2, PegMiniV2 } from "./peg-card"
 
 const KEY = "tangent:sidebar-collapsed"
 const EXPANDED = 248
-const COLLAPSED = 72
+const COLLAPSED = 64
 
 // saved collapse state without a hydration mismatch: the server renders expanded, the client store takes over after mount
 const subscribe = (cb: () => void) => {
@@ -65,14 +65,22 @@ export function ShellV2({ children }: { children: ReactNode }) {
           transition={{ type: "spring", visualDuration: 0.3, bounce: 0.08 }}
           className="flex h-full flex-col overflow-hidden border-r border-hairline bg-sidebar pb-3"
         >
-          <div className={cn("flex h-[72px] shrink-0 items-center", collapsed ? "justify-center" : "px-6")}>
-            {collapsed ? (
-              <Link href="/" aria-label="Tangent home" className="grid h-9 w-9 place-items-center rounded-lg transition-colors hover:bg-white/[0.06]">
-                <TangentMark />
-              </Link>
-            ) : (
-              <Brand />
-            )}
+          <div className="flex h-[72px] shrink-0 items-center px-6">
+            <Link href="/" aria-label="Tangent home" className="relative flex items-center">
+              <Image
+                src="/medias/v2/tangent-logo-typo.svg"
+                alt="Tangent"
+                width={100}
+                height={30}
+                unoptimized
+                priority
+                className={cn("max-w-none transition-opacity duration-200", collapsed && "opacity-0")}
+              />
+              {/* the mark alone, drawn at the exact size and place of the mark inside the full logo */}
+              <span className={cn("absolute left-0 top-0 transition-opacity duration-200", collapsed ? "opacity-100" : "opacity-0")}>
+                <TangentMark width={17.6} height={30} />
+              </span>
+            </Link>
           </div>
           <Nav path={path} collapsed={collapsed} />
           <div className="px-3">
@@ -184,9 +192,9 @@ function Brand() {
 }
 
 /** The Tangent logo mark (two petals). */
-function TangentMark() {
+function TangentMark({ width = 14, height = 24 }: { width?: number; height?: number }) {
   return (
-    <svg width="14" height="24" viewBox="0 0 47 80" aria-hidden>
+    <svg width={width} height={height} viewBox="0 0 47 80" aria-hidden>
       <path
         fill="white"
         d="M46.8381 39.9998C45.7493 40.0763 44.6894 40.191 43.6584 40.344C34.9094 41.6541 28.2319 46.0529 25.2064 59.8325C24.0501 65.0727 23.4335 71.6804 23.4238 79.9902V39.9902H46.8381V39.9998Z"
@@ -204,12 +212,19 @@ function Nav({ path, collapsed }: { path: string; collapsed: boolean }) {
     <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3">
       {NAV.map((g) => (
         <div key={g.group ?? "main"} className="mb-4">
-          {g.group &&
-            (collapsed ? (
-              <div className="mx-auto mb-2 mt-1 h-px w-6 bg-divider" />
-            ) : (
-              <div className="px-3 pb-1.5 text-[11px] font-medium uppercase tracking-[0.06em] text-ink-3">{g.group}</div>
-            ))}
+          {g.group && (
+            <div className="relative h-[22px] px-3 pb-1.5" aria-hidden={collapsed || undefined}>
+              <span
+                className={cn(
+                  "block whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.06em] text-ink-3 transition-opacity duration-200",
+                  collapsed && "opacity-0"
+                )}
+              >
+                {g.group}
+              </span>
+              <span className={cn("absolute left-3 top-[7px] h-px w-4 bg-white/20 transition-opacity duration-200", collapsed ? "opacity-100" : "opacity-0")} />
+            </div>
+          )}
           {g.items.map((it) => {
             const active = isItemActive(it, path)
             const Icon = it.icon
@@ -222,8 +237,7 @@ function Nav({ path, collapsed }: { path: string; collapsed: boolean }) {
                 aria-label={collapsed ? it.label : undefined}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "group relative flex h-10 items-center rounded-lg text-[14px] font-medium transition-colors",
-                  collapsed ? "justify-center" : "gap-3 px-3",
+                  "group relative flex h-10 items-center gap-3 rounded-lg px-3 text-[14px] font-medium transition-colors",
                   active ? "text-white" : "text-ink-2 hover:bg-white/[0.04] hover:text-white"
                 )}
               >
@@ -238,10 +252,15 @@ function Nav({ path, collapsed }: { path: string; collapsed: boolean }) {
                   className={cn("relative h-4 w-4 shrink-0 text-white transition-opacity", active ? "opacity-100" : "opacity-60 group-hover:opacity-100")}
                   strokeWidth={1.75}
                 />
-                {!collapsed && <span className="relative whitespace-nowrap">{it.label}</span>}
-                {!collapsed && it.external && <ArrowUpRight className="relative ml-auto h-3.5 w-3.5 text-white opacity-40" strokeWidth={1.75} />}
+                <span className={cn("relative whitespace-nowrap transition-opacity duration-200", collapsed && "opacity-0")}>{it.label}</span>
+                {it.external && (
+                  <ArrowUpRight
+                    className={cn("relative ml-auto h-3.5 w-3.5 shrink-0 text-white transition-opacity duration-200", collapsed ? "opacity-0" : "opacity-40")}
+                    strokeWidth={1.75}
+                  />
+                )}
                 {collapsed && (
-                  <span className="pointer-events-none fixed left-[80px] z-50 -translate-x-1 whitespace-nowrap rounded-md bg-white px-2 py-1 text-xs font-medium text-black opacity-0 transition-[opacity,transform] duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100">
+                  <span className="pointer-events-none fixed left-[72px] z-50 -translate-x-1 whitespace-nowrap rounded-md bg-white px-2 py-1 text-xs font-medium text-black opacity-0 transition-[opacity,transform] duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100">
                     {it.label}
                   </span>
                 )}

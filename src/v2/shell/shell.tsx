@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ReactNode, useEffect, useState, useSyncExternalStore } from "react"
@@ -173,11 +174,11 @@ export function ShellV2({ children }: { children: ReactNode }) {
   )
 }
 
+/** Tangent logo + wordmark, the brand asset from Figma (Tangent file, node 11371:9555), shown 25% above its 80x24 artboard. */
 function Brand() {
   return (
-    <Link href="/" className="flex items-center gap-2 text-[17px] font-semibold tracking-[-0.01em]" aria-label="Tangent home">
-      <TangentMark />
-      Tangent
+    <Link href="/" className="flex items-center" aria-label="Tangent home">
+      <Image src="/medias/v2/tangent-logo-typo.svg" alt="Tangent" width={100} height={30} unoptimized priority />
     </Link>
   )
 }
